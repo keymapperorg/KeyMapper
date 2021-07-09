@@ -21,6 +21,7 @@
     <string name="no_actions">Нет действий</string>
     <string name="no_trigger">Нет события</string>
     <string name="unknown_keycode">Неизвестный код кнопки: %s</string>
+    <string name="unknown_device_name">Неизвестное имя устройства</string>
     <string name="on">Вкл</string>
     <string name="off">Выкл</string>
     <string name="follow_system">Использовать системные настройки</string>
@@ -29,23 +30,34 @@
     <string name="trigger_device_name_not_found">Неизвестное имя для этого устройства</string>
     <string name="slider_default">По умолчанию</string>
     <string name="button_enable_accessibility_service">Включение службы спец. возможностей</string>
+    <string name="button_restart_accessibility_service">Перезапуск службы специальных возможностей</string>
+    <string name="stop_repeating_dot_dot_dot">Перестаньте повторять, когда…</string>
+    <string name="stop_repeating_when_trigger_released">Триггер освобожден</string>
+    <string name="stop_repeating_trigger_pressed_again">Триггер нажат еще раз</string>
+    <string name="stop_repeating_limit_reached">Лимит достигнут</string>
+    <string name="stop_repeating_when_swiped_again">Снова прокрутка</string>
+    <string name="stop_holding_down_when_trigger_released">Триггер освобожден</string>
     <string name="show_hidden_apps">Показать скрытые приложения</string>
     <string name="modifiers">Модификаторы</string>
     <string name="toggle">Переключить</string>
     <string name="tap_coordinate_screenshot_message">Внимание!!! Эти координаты корректны только если ваш экран в той же ориентации как на скриншоте! Это действие отменит любые касания или жесты которые вы делаете на экране.\n\nЕсли вам нужна помощь в определении координат курсора на экране - сделайте скриншот и затем нажмите на область скриншота где вы хотите произвести это действие.</string>
     <string name="dont_know_device_name">Неизвестное имя устройства!</string>
     <string name="tap_actions_to_fix">Нажмите на действие для исправления!</string>
+    <string name="tap_constraints_to_fix">Нажмите на ограничения, чтобы исправить!</string>
     <string name="shortcut_label_action">Выполнить действия</string>
     <string name="hold_down_until_trigger_is_dot_dot_dot">Нажать и удерживать до события…</string>
     <string name="from_no_device">Нет устройства</string>
     <string name="intent_extras_recycler_view_placeholder">¯\\_(ツ)_/¯\n\nНет дополнительного!</string>
     <string name="content_description_fab_new_keymap">Создайте новый мэппинг</string>
+    <string name="clip_key_mapper_log">Журнал сопоставления ключей</string>
     <string name="whats_new">Что нового</string>
     <string name="caption_action_type_key">Нажмите кнопку на устройстве, которую вы хотите ввести.
             \n\nВАЖНО!
             Ввод кода этой кнопки в качестве действия будет работать только если вы используете совместимую с  Key Mapper клавиатуру.</string>
     <string name="caption_action_type_keycode">ВАЖНО!
             Ввод кода этой кнопки в качестве действия будет работать только если вы используете совместимую с  Key Mapper клавиатуру.</string>
+    <string name="caption_action_type_sound">Звуковой файл будет скопирован в личную папку Key Mapper, что означает, что ваши действия будут по-прежнему работать, даже если файл перемещен или удален. Он также будет резервирован с вашими картами ключей в zip-папке.
+    Вы можете удалить сохраненные звуковые файлы в настройках.</string>
     <string name="caption_action_type_text">Введите текст, который вы хотите вставить при выполнении этого действия.</string>
     <string name="caption_action_type_phone_call">Введите номер телефона.</string>
     <string name="caption_action_type_url">Введите URL, который вы хотите открыть. http://, https:// или www. не требуется.</string>
@@ -54,12 +66,26 @@
     <string name="switch_enabled">Включено</string>
     <string name="disabled">Отключено</string>
     <string name="reset">Сброс</string>
+    <string name="enable_device_admin_message">После включения администратора устройства необходимо ДЕАКТИВИРОВАТЬ его, если вы хотите удалить Key Mapper.</string>
+    <string name="constraints_recyclerview_placeholder">Добавьте ограничение!</string>
     <string name="action_title_wait">Подождите %sмс</string>
+    <string name="email_subject">Отчет об ошибке Key Mapper</string>
+    <string name="email_default_message">Пожалуйста, опишите проблему, с которой вы находитесь...</string>
     <string name="action_title_intent_start_activity">Начать Activity: %s</string>
     <string name="action_title_intent_start_service">Запуск службы: %s</string>
     <string name="action_title_intent_send_broadcast">Отправить Broadcast: %s</string>
     <string name="clipboard_label_keymap_uid">UUID мэппинга</string>
     <string name="check_box_key_event_option_use_shell">Использовать оболочку (только ROOT)</string>
+    <string name="trigger_error_dnd_access_denied">Key Mapper требует разрешения на изменение режима «Не беспокоить», если вы хотите, чтобы кнопки работали должным образом в режиме «Не беспокоить»!</string>
+    <string name="trigger_error_dnd_access_denied_short">Этот триггер не будет работать должным образом в режиме «Не беспокоить»!</string>
+    <string name="trigger_error_screen_off_root_permission_denied">Опция запуска, когда экран выключен, требует root-разрешения для работы!</string>
+    <string name="trigger_error_screen_off_root_permission_denied_short">Опция срабатывания при выключенном экране не будет работать!</string>
+    <string name="home_error_is_battery_optimised">Ваши сопоставления перестанут работать случайным образом!</string>
+    <string name="home_error_key_maps_paused">Ваши сопоставления приостановлены!</string>
+    <string name="home_error_key_maps_paused_button">Отмена паузы</string>
+    <string name="home_error_accessibility_service_is_disabled">Служба специальных возможностей должна быть включена, чтобы ваши сопоставления работали!</string>
+    <string name="home_error_accessibility_service_is_crashed">Ваш телефон убил Key Mapper, когда он был в фоновом режиме или разбился!</string>
+    <string name="home_success_accessibility_service_is_enabled">Услуга специальных возможностей включена! Ваши сопоставления должны работать.</string>
     <!--  Action descriptions  -->
     <string name="description_open_app">Открыть %s</string>
     <string name="description_key">Нажмите \'%s\' кнопку</string>
@@ -188,6 +214,9 @@
     <string name="title_choose_action">Выбор действия</string>
     <!-- Activity titles -->
     <!--  Bug report slides-->
+    <string name="slide_description_read_dont_kill_my_app">Следуйте удивительному руководству на dontkillmyapp.com, которое покажет вам, как отключить все «функции» приложения, убивающие на вашем телефоне.
+
+\n\nПосе после прочтения руководства вам нужно будет перейти к следующему слайду и перезапустить службу специальных возможностей.</string>
     <!--  Bug report slides-->
     <!-- Menu action titles-->
     <string name="action_settings">Настройки</string>
@@ -257,6 +286,9 @@
     <string name="dialog_message_select_compatible_ime">Выберите метод ввода для действий, которые требуют его. Вы можете изменить это позже, нажав на кнопку \"Выбрать клавиатуру для действий\" в нижнем меню главного экрана.</string>
     <string name="dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout">Вам необходимо переключить раскладку клавиатуры на \"Caps Lock для камеры\" в противном случае клавиша Caps Lock будет менять регистр букв, не более. Эту настройку можно найти в общих настройках вашего устройства -&gt; Языки и методы ввода -&gt; Физическая клавиатура -&gt; Нажать на соответствующую клавиатуру -&gt; Выбрать раскладку. Это переназначит клавишу Caps Lock на отправку KEYCODE_CAMERA, таким образом Key Mapper сможет правильно ее обработать.\n\nПОсле того как вы это сделаете нужно удалить событие \"Caps Lock\" и записать событие для клавиши Caps Lock снова. Если при записи будет отображено \"Камера\" вместо \"Caps Lock\" значит вы все проделали верно.</string>
     <string name="dialog_message_cant_record_trigger"><b>Перезагрузите</b> свое устройство если кнопка \"Запишите событие\" ведет отсчет, но не регистрирует нажатий. Или даже НЕ ведет отсчет. Если после перезагрузки устройства нажатия клавиши все равно не регистрируются значит Key Mapper не поддерживает этот тип клавиш. К сожалению эту ситуацию не исправить. Дополнительно можно обратиться к разделу 7 часто задаваемых вопросов.</string>
+    <string name="dialog_message_install_leanback_keyboard">Это настоятельно рекомендуется! Это правильная клавиатура для Android TV, которую вы можете использовать с Key Mapper. Тот, который встроен в Key Mapper (базовый метод ввода), не имеет экранной клавиатуры. Выберите, откуда вы хотите установить его.</string>
+    <string name="dialog_message_disable_battery_optimisation">Вы <b>MUST</b> прочитать это <b>все</b> иначе вы получите <b>фрустрировано</b> в будущем!\n\nВыполнение «исправления частично» <b>майт</b> помешать Android остановить приложение, пока оно находится в фоновом режиме.\n\n<b>Это НЕДОСТАТОЧНО</b>. Скин вашего OEM-производителя, такой как MIUI или Samsung Experience, может иметь другие функции уничтожения приложений, поэтому вы ДОЛЖНЫ отключить их для Key Mapper, а также следуя онлайн-руководству на dontkillmyapp.com.</string>
+    <string name="dialog_message_screen_pinning_warning">Использование этого триггера может привести к черному экрану при разблокировке устройства после использования параметра закрепления экрана в настройках устройства. Это можно исправить с помощью перезагрузки. Это происходит не на всех устройствах, поэтому будьте осторожны и отключите настройку, если это так!</string>
     <string name="pos_yes">Да</string>
     <string name="pos_done">Готово</string>
     <string name="pos_opt_in">Принять участие</string>
