@@ -354,40 +354,61 @@
 \n\nВы следовали ли вы руководству по dontkillmyapp.com, чтобы остановить свой телефон от убийства Key Mapper?</string>
     <string name="dialog_button_read_dont_kill_my_app_yes">Да</string>
     <string name="dialog_button_read_dont_kill_my_app_no">Нет</string>
+    <string name="dialog_title_failed_to_create_bug_report">Не удалось создать отчет об ошибке</string>
     <string name="pos_yes">Да</string>
     <string name="pos_done">Готово</string>
     <string name="pos_opt_in">Принять участие</string>
     <string name="pos_grant_write_secure_settings_guide">Инструкция</string>
+    <string name="pos_grant_report_issues_guide">Гид</string>
     <string name="pos_enable_root_features">Включить Root-функции</string>
     <string name="pos_grant">Предоставить</string>
     <string name="pos_join">Присоединиться</string>
     <string name="pos_change_location">Изменить</string>
+    <string name="pos_turn_off_stock_battery_optimisation">Частично исправить</string>
+    <string name="pos_ok">Хорошо</string>
+    <string name="pos_turn_on">Включать</string>
+    <string name="pos_restart">Перезапуск</string>
+    <string name="pos_never_show_again">Больше никогда не показывать</string>
+    <string name="pos_go_to_dont_kill_my_app">Открыть онлайн-путеводитель</string>
     <string name="neg_turn_off">Выключить</string>
     <string name="neg_stay_out">Оставайтесь</string>
     <string name="neg_no">Нет</string>
     <string name="neg_cancel">Отменить</string>
     <string name="neg_dont_show_again">Больше не показывать</string>
+    <string name="neutral_go_to_dont_kill_my_app">Онлайн-путеводитель</string>
+    <string name="neutral_go_to_settings">Параметры</string>
     <string name="neutral_intent_docs">Документация</string>
+    <string name="neutral_changelog">Список изменений</string>
+    <string name="neutral_report_bug">Сообщить об ошибке</string>
+    <string name="dialog_button_restart_accessibility_service">Перезапуск</string>
+    <string name="dialog_button_open_guide_to_fix_optimisation">Перейти к гиду</string>
     <string name="snackbar_cancel">Отменить</string>
     <string name="snackbar_fix">Исправить</string>
     <!-- Dialog stuff -->
     <!-- Notification strings -->
     <string name="notification_channel_ime_picker">Выбор клавиатуры</string>
+    <string name="notification_channel_toggle_mappings">Сопоставления паузы/возобновления</string>
     <string name="notification_channel_keyboard_hidden">Предупреждение о скрытой клавиатуре</string>
     <string name="notification_channel_toggle_keyboard">Сменить клавиатуру Key Mapper</string>
     <string name="notification_channel_new_features">Новые возможности</string>
     <string name="notification_ime_persistent_text">Нажмите, чтобы изменить клавиатуру.</string>
     <string name="notification_ime_persistent_title">Выбор клавиатуры</string>
     <string name="notification_keymaps_resumed_title">Выполняется</string>
+    <string name="notification_keymaps_resumed_text">Нажмите, чтобы открыть Средство сопоставления клавиш.</string>
+    <string name="notification_action_pause">Пауза</string>
     <string name="notification_keymaps_paused_title">Приостановлено</string>
+    <string name="notification_keymaps_paused_text">Нажмите, чтобы открыть Средство сопоставления клавиш.</string>
     <string name="notification_action_dismiss">Отклонить</string>
     <string name="notification_accessibility_service_disabled_title">Служба специальных возможностей отключена</string>
     <string name="notification_accessibility_service_disabled_text">Нажмите, чтобы запустить службу специальных возможностей.</string>
+    <string name="notification_accessibility_service_crashed_title">Служба специальных возможностей нуждается в перезапуск!</string>
     <string name="notification_accessibility_service_crashed_text">Служба специальных возможностей потерпела крах! Ваш телефон может агрессивно убивать его! Коснитесь, чтобы перезапустить службу специальных возможностей.</string>
     <!--  remove accessibility from the word because the other notification buttons arent visible on small screens  -->
     <string name="notification_action_stop_acc_service">Остановить службу</string>
     <string name="notification_keyboard_hidden_title">Клавиатура скрыта!</string>
+    <string name="notification_keyboard_hidden_text">Нажмите «Показать клавиатуру», чтобы снова начать показывать клавиатуру.</string>
     <string name="notification_toggle_keyboard_title">Сменить клавиатуру Key Mapper</string>
+    <string name="notification_toggle_keyboard_text">Нажмите «переключиться», чтобы переключиться на клавиатуру Key Mapper и с нее.</string>
     <string name="notification_feature_fingerprint_title">Переопределить жесты отпечатков пальцев с помощью Key Mapper!</string>
     <string name="notification_feature_fingerprint_text">Ваше устройство поддерживает переопределение жестов по датчику отпечатков пальцев. Нажмите, чтобы начать переопределение!</string>
     <string name="notification_setup_chosen_devices_again_title">Вам нужно снова произвести некоторые настройки!</string>
@@ -410,6 +431,7 @@
     <string name="title_pref_force_vibrate">Принудительно вибрировать</string>
     <string name="title_pref_show_ime_picker_notification">Уведомление выбора клавиатуры</string>
     <string name="summary_pref_show_ime_picker_notification">Показывать постоянное уведомление, позволяющее выбрать клавиатуру.</string>
+    <string name="summary_pref_show_toggle_keymaps_notification">Отображение постоянного уведомления, которое запускает/приостанавливает сопоставления.</string>
     <string name="title_pref_automatic_backup_location">Автоматическое резервное создание резервных карт сопоставлений в указанном расположении</string>
     <string name="summary_pref_automatic_backup_location_disabled">Местоположение не выбрано.</string>
     <string name="title_pref_choose_devices">Выберите устройства</string>
@@ -427,6 +449,7 @@
     <string name="title_pref_toggle_keyboard_on_toggle_keymaps">Смена клавиатуры при включении мэппинга</string>
     <string name="summary_pref_toggle_keyboard_on_toggle_keymaps">Автоматически выбирать клавиатуру Key Mapper когда снимаете приложение с паузы и выбирать вашу клавиатуру по умолчанию при установки приложения на паузу.</string>
     <string name="title_pref_hide_home_screen_alerts">Скрыть оповещения на главном экране</string>
+    <string name="summary_pref_hide_home_screen_alerts">Скройте оповещения в верхней части главного экрана.</string>
     <string name="title_pref_show_device_descriptors">Показать первые 5 символов id устройства для событий связанных с конкретными устройствами</string>
     <string name="summary_pref_show_device_descriptors">Это используется чтобы отличить друг от друга устройства с одним и тем же именем.</string>
     <string name="title_pref_devices_to_reroute_keyevents">Обработка ошибки Android 11, которая задает идентификатор устройства для событий ввода равным -1</string>
@@ -435,6 +458,9 @@ https://issuetracker.google.com/issues/163120692
 К сожалению этот метод НЕ РАБОТАЕТ с игровыми контроллерами.</string>
     <string name="title_pref_devices_to_reroute_keyevents_choose_devices">4. Выберите устройства</string>
     <string name="title_pref_devices_to_reroute_keyevents_install_gui_keyboard">1. Установите клавиатуру Key Mapper GUI Keyboard (опционально)</string>
+    <string name="title_pref_devices_to_reroute_keyevents_install_leanback_keyboard">1. Установите клавиатуру Key Mapper Leanback (необязательно)</string>
+    <string name="title_pref_devices_to_reroute_keyevents_enable_ime_gui">2. Включите клавиатуру Key Mapper GUI или базовый метод ввода Key Mapper</string>
+    <string name="title_pref_devices_to_reroute_keyevents_enable_ime_leanback">2. Включите клавиатуру Key Mapper Leanback или базовый метод ввода Key Mapper</string>
     <string name="title_pref_devices_to_reroute_keyevents_choose_ime">3. Используйте только что включенную клавиатуру</string>
     <string name="title_pref_devices_to_reroute_keyevents_guide">(Рекомендуется) Прочитать руководство пользователя для этого параметра.</string>
     <!--Preference titles and summaries-->
@@ -626,6 +652,7 @@ https://issuetracker.google.com/issues/163120692
     <string name="error_denied_call_phone_permission">Отказано в доступе к использованию телефонных звонков!</string>
     <string name="error_backup_version_too_new">Вам нужно обновить Key Mapper до последней версии, чтобы использовать эту резервную копию.</string>
     <string name="error_corrupt_json_file">Поврежден файл JSON!</string>
+    <string name="error_no_incompatible_input_methods_installed">У вас установлены только клавиатуры Key Mapper!</string>
     <string name="error_failed_to_change_ime">Изменить ник не получилось!</string>
     <!-- Error messages -->
     <!-- System action labels -->
