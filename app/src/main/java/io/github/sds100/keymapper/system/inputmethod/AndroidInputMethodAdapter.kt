@@ -270,10 +270,10 @@ class AndroidInputMethodAdapter(
         )
     }
 
-    private fun getChosenIme(): ImeInfo {
+    private fun getChosenIme(): ImeInfo? {
         val chosenImeId = getChosenImeId()
 
-        return getInfoById(chosenImeId).valueOrNull()!!
+        return getInfoById(chosenImeId).valueOrNull()
     }
 
     private fun getChosenImeId(): String {
