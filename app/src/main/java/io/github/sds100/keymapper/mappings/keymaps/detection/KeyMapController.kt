@@ -661,7 +661,9 @@ class KeyMapController(
                 val constraintState = parallelTriggerConstraints[triggerIndex]
 
                 if (constraintState.constraints.isNotEmpty()) {
-                    if (!constraintSnapshot.isSatisfied(constraintState)) continue
+                    if (!constraintSnapshot.isSatisfied(constraintState)) {
+                        continue
+                    }
                 }
 
                 for (actionKey in parallelTriggerActions[triggerIndex]) {
@@ -839,7 +841,7 @@ class KeyMapController(
 
                     parallelTriggerActionPerformers[triggerIndex].onTriggered(
                         calledOnTriggerRelease = false,
-                        metaState = metaStateFromKeyEvent.withFlag( metaStateFromActions)
+                        metaState = metaStateFromKeyEvent.withFlag(metaStateFromActions)
                     )
                 }
             }
@@ -1067,12 +1069,6 @@ class KeyMapController(
 
         if (detectParallelTriggers) {
             triggerLoop@ for ((triggerIndex, trigger) in parallelTriggers.withIndex()) {
-                val constraintState = parallelTriggerConstraints[triggerIndex]
-
-                if (constraintState.constraints.isNotEmpty()) {
-                    if (!constraintSnapshot.isSatisfied(constraintState)) continue
-                }
-
                 val isSingleKeyTrigger = parallelTriggers[triggerIndex].keys.size == 1
 
                 var lastHeldDownEventIndex = -1
@@ -1210,7 +1206,11 @@ class KeyMapController(
         }
 
         detectedSequenceTriggerIndexes.forEach { triggerIndex ->
-            sequenceTriggerActionPerformers[triggerIndex].onTriggered(metaState = metaStateFromActions.withFlag(metaStateFromKeyEvent))
+            sequenceTriggerActionPerformers[triggerIndex].onTriggered(
+                metaState = metaStateFromActions.withFlag(
+                    metaStateFromKeyEvent
+                )
+            )
         }
 
         detectedParallelTriggerIndexes.forEach { triggerIndex ->
