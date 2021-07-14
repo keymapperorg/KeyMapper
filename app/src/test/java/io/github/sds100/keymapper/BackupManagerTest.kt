@@ -184,7 +184,7 @@ class BackupManagerTest {
 
         //THEN
 
-        assertThat(result, `is`(Success(Unit)))
+        assertThat(result, `is`(Success(backupZip.path)))
 
         coroutineScope.resumeDispatcher()
 
@@ -240,7 +240,7 @@ class BackupManagerTest {
 
         //THEN
 
-        assertThat(result, `is`(Success(Unit)))
+        assertThat(result, `is`(Success(backupZip.path)))
 
         coroutineScope.resumeDispatcher()
 
@@ -423,7 +423,7 @@ class BackupManagerTest {
             val result = backupManager.backupFingerprintMaps(backupZip.path)
             //THEN
 
-            assertThat(result, `is`(Success(Unit)))
+            assertThat(result, `is`(Success(backupZip.path)))
 
             coroutineScope.resumeDispatcher()
 
@@ -470,7 +470,7 @@ class BackupManagerTest {
             val result = backupManager.backupKeyMaps(backupZip.path, keyMapList.map { it.uid })
 
             //THEN
-            assertThat(result, `is`(Success(Unit)))
+            assertThat(result, `is`(Success(backupZip.path)))
 
             coroutineScope.resumeDispatcher()
 
