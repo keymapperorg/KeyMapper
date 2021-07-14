@@ -16,20 +16,31 @@ import io.github.sds100.keymapper.util.firstBlocking
 /**
  * This allows constraints to be checked lazily because some system calls take a significant amount of time.
  */
-class ConstraintSnapshot(
+class ConstraintSnapshotImpl(
     accessibilityService: IAccessibilityService,
     mediaAdapter: MediaAdapter,
     devicesAdapter: DevicesAdapter,
     displayAdapter: DisplayAdapter,
     private val cameraAdapter: CameraAdapter
-) {
+) : ConstraintSnapshot {
     private val appInForeground: String? by lazy { accessibilityService.rootNode?.packageName }
     private val connectedBluetoothDevices: Set<BluetoothDeviceInfo> by lazy { devicesAdapter.connectedBluetoothDevices.value }
     private val orientation: Orientation by lazy { displayAdapter.orientation }
     private val isScreenOn: Boolean by lazy { displayAdapter.isScreenOn.firstBlocking() }
     private val appsPlayingMedia: List<String> by lazy { mediaAdapter.getPackagesPlayingMedia() }
 
-    fun isSatisfied(constraint: Constraint): Boolean {
+    override fun isSatisfied(constraintState: ConstraintState): Boolean {
+        return when (constraintState.mode) {
+            ConstraintMode.AND -> {
+                constraintState.constraints.all { isSatisfied(it) }
+            }
+            ConstraintMode.OR -> {
+                constraintState.constraints.any { isSatisfied(it) }
+            }
+        }
+    }
+
+    private fun isSatisfied(constraint: Constraint): Boolean {
         return when (constraint) {
             is Constraint.AppInForeground -> appInForeground == constraint.packageName
             is Constraint.AppNotInForeground -> appInForeground != constraint.packageName
@@ -52,15 +63,8 @@ class ConstraintSnapshot(
             is Constraint.FlashlightOn -> cameraAdapter.isFlashlightOn(constraint.lens)
         }
     }
+}
 
-    fun isSatisfied(constraintState: ConstraintState): Boolean {
-        return when (constraintState.mode) {
-            ConstraintMode.AND -> {
-                constraintState.constraints.all { isSatisfied(it) }
-            }
-            ConstraintMode.OR -> {
-                constraintState.constraints.any { isSatisfied(it) }
-            }
-        }
-    }
+interface ConstraintSnapshot {
+    fun isSatisfied(constraintState: ConstraintState): Boolean
 }

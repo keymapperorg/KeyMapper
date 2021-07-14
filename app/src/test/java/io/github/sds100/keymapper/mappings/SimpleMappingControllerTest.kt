@@ -4,7 +4,7 @@ import io.github.sds100.keymapper.actions.FakeAction
 import io.github.sds100.keymapper.actions.KeyEventAction
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.actions.RepeatMode
-import io.github.sds100.keymapper.constraints.ConstraintSnapshot
+import io.github.sds100.keymapper.constraints.ConstraintSnapshotImpl
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import junitparams.JUnitParamsRunner
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -69,7 +69,7 @@ class SimpleMappingControllerTest {
         }
 
         detectConstraintsUseCase = mock {
-            on { getSnapshot() } doReturn ConstraintSnapshot(
+            on { getSnapshot() } doReturn ConstraintSnapshotImpl(
                 accessibilityService = mock(),
                 mediaAdapter = mock(),
                 devicesAdapter = mock(),

@@ -5,6 +5,7 @@ import androidx.collection.*
 import io.github.sds100.keymapper.actions.KeyEventAction
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.actions.RepeatMode
+import io.github.sds100.keymapper.constraints.ConstraintSnapshot
 import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.data.PreferenceDefaults
@@ -597,7 +598,7 @@ class KeyMapController(
         val isModifierKeyCode = isModifierKey(event.keyCode)
         var mappedToParallelTriggerAction = false
 
-        val constraintSnapshot by lazy { detectConstraints.getSnapshot() }
+        val constraintSnapshot: ConstraintSnapshot by lazy { detectConstraints.getSnapshot() }
 
         //consume sequence trigger keys until their timeout has been reached
         sequenceTriggersTimeoutTimes.forEachIndexed { triggerIndex, timeoutTime ->

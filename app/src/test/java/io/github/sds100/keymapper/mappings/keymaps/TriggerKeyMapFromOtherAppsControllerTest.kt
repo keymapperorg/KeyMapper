@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.mappings.keymaps
 import io.github.sds100.keymapper.actions.KeyEventAction
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.actions.RepeatMode
-import io.github.sds100.keymapper.constraints.ConstraintSnapshot
+import io.github.sds100.keymapper.constraints.ConstraintSnapshotImpl
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCase
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTrigger
@@ -78,7 +78,7 @@ class TriggerKeyMapFromOtherAppsControllerTest {
         }
 
         detectConstraintsUseCase = mock {
-            on { getSnapshot() } doReturn ConstraintSnapshot(
+            on { getSnapshot() } doReturn ConstraintSnapshotImpl(
                 accessibilityService = mock(),
                 mediaAdapter = mock(),
                 devicesAdapter = mock(),

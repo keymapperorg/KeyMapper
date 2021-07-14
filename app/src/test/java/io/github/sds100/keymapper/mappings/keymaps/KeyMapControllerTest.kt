@@ -4,7 +4,9 @@ import android.view.KeyEvent
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.github.sds100.keymapper.actions.*
 import io.github.sds100.keymapper.actions.system.SystemActionId
+import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.constraints.ConstraintSnapshot
+import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCase
@@ -13,6 +15,7 @@ import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTrigger
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
+import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.util.*
 import junitparams.JUnitParamsRunner
 import junitparams.Parameters
@@ -133,13 +136,7 @@ class KeyMapControllerTest {
         }
 
         detectConstraintsUseCase = mock {
-            on { getSnapshot() } doReturn ConstraintSnapshot(
-                accessibilityService = mock(),
-                mediaAdapter = mock(),
-                devicesAdapter = mock(),
-                displayAdapter = mock(),
-                cameraAdapter = mock()
-            )
+            on { getSnapshot() } doReturn mock()
         }
 
         controller = KeyMapController(
@@ -154,6 +151,61 @@ class KeyMapControllerTest {
     fun tearDown() {
         coroutineScope.cleanupTestCoroutines()
     }
+
+    /**
+     * #739
+     */
+    @Test
+    fun `Long press trigger shouldn't be triggered if the constraints are changed by the actions`() =
+        coroutineScope.runBlockingTest {
+            coroutineScope.runBlockingTest {
+                //GIVEN
+                val actionData = FlashlightSystemAction.Toggle(CameraLens.BACK)
+
+                val keyMap = KeyMap(
+                    trigger = singleKeyTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            clickType = ClickType.LONG_PRESS
+                        )
+                    ),
+                    actionList = listOf(KeyMapAction(data = actionData)),
+                    constraintState = ConstraintState(
+                        constraints = setOf(Constraint.FlashlightOn(CameraLens.BACK))
+                    )
+                )
+
+                keyMapListFlow.value = listOf(keyMap)
+
+                var isFlashlightEnabled = false
+
+                //WHEN THEN
+                whenever(detectConstraintsUseCase.getSnapshot()).then {
+                    mock<ConstraintSnapshot> {
+                        on { isSatisfied(any()) }.then { isFlashlightEnabled }
+                    }
+                }
+
+                whenever(performActionsUseCase.perform(any(), any(), any())).doAnswer {
+                    isFlashlightEnabled = !isFlashlightEnabled
+                }
+
+                inOrder(performActionsUseCase) {
+                    //flashlight is initially disabled so don't trigger.
+                    mockTriggerKeyInput(keyMap.trigger.keys[0])
+                    verify(performActionsUseCase, never()).perform(any(), any(), any())
+
+                    isFlashlightEnabled = true
+                    //trigger because flashlight is enabled. Triggering the action will disable the flashlight.
+                    mockTriggerKeyInput(keyMap.trigger.keys[0])
+                    verify(performActionsUseCase, times(1)).perform(any(), any(), any())
+
+                    //Don't trigger because the flashlight is now disabled
+                    mockTriggerKeyInput(keyMap.trigger.keys[0])
+                    verify(performActionsUseCase, never()).perform(any(), any(), any())
+                }
+            }
+        }
 
     /**
      * #693
@@ -2944,7 +2996,6 @@ class KeyMapControllerTest {
             //THEN
             verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
         }
-
 
     private suspend fun mockTriggerKeyInput(key: TriggerKey, delay: Long? = null) {
         val deviceDescriptor = triggerKeyDeviceToDescriptor(key.device)

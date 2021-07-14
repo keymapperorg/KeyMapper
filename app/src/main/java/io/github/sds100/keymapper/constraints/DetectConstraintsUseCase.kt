@@ -18,8 +18,8 @@ class DetectConstraintsUseCaseImpl(
     private val cameraAdapter: CameraAdapter
 ) : DetectConstraintsUseCase {
 
-    override fun getSnapshot(): ConstraintSnapshot {
-        return ConstraintSnapshot(accessibilityService, mediaAdapter, devicesAdapter, displayAdapter, cameraAdapter)
+    override fun getSnapshot(): ConstraintSnapshotImpl {
+        return ConstraintSnapshotImpl(accessibilityService, mediaAdapter, devicesAdapter, displayAdapter, cameraAdapter)
     }
 }
 
