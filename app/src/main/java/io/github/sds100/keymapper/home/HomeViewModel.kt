@@ -3,7 +3,6 @@ package io.github.sds100.keymapper.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import io.github.sds100.keymapper.BuildConfig
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.backup.BackupRestoreMappingsUseCase
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
@@ -284,10 +283,17 @@ class HomeViewModel(
         }.launchIn(viewModelScope)
 
         viewModelScope.launch {
+            var isFirstCrashedState = true
+
             showAlertsUseCase.serviceState.collectLatest { state ->
-                //don't show this dialog on debug builds because it will show up every time the app is run.
-                if (state == ServiceState.CRASHED && BuildConfig.BUILD_TYPE != "debug") {
-                    showKeyMapperCrashedDialog()
+                if (state == ServiceState.CRASHED) {
+                    // don't show this the first time the service is detected as being crashed
+                    // because on many devices opening Key Mapper starts the service again.
+                    if (!isFirstCrashedState) {
+                        showKeyMapperCrashedDialog()
+                    }
+
+                    isFirstCrashedState = false
                 }
             }
         }
