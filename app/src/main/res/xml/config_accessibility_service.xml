@@ -5,5 +5,4 @@
     android:canRequestFilterKeyEvents="true"
     android:canRequestFingerprintGestures="true"
     android:canRetrieveWindowContent="true"
-    android:description="@string/accessibility_service_description"
-    android:settingsActivity="io.github.sds100.keymapper.activity.HomeActivity" />
+    android:description="@string/accessibility_service_description" />
