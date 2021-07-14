@@ -43,16 +43,16 @@ class LogFragment : SimpleRecyclerViewFragment<LogEntryListItem>() {
     private val recyclerViewController by lazy { RecyclerViewController() }
 
     private val saveLogToFileLauncher =
-        registerForActivityResult(ActivityResultContracts.CreateDocument()) {
-            it ?: return@registerForActivityResult
+            registerForActivityResult(ActivityResultContracts.CreateDocument()) {
+                it ?: return@registerForActivityResult
 
-            viewModel.onPickFileToSaveTo(it.toString())
+                viewModel.onPickFileToSaveTo(it.toString())
 
-            val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION or
-                Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
 
-            requireContext().contentResolver.takePersistableUriPermission(it, takeFlags)
-        }
+                requireContext().contentResolver.takePersistableUriPermission(it, takeFlags)
+            }
 
     private lateinit var dragSelectTouchListener: DragSelectTouchListener
 
@@ -97,10 +97,10 @@ class LogFragment : SimpleRecyclerViewFragment<LogEntryListItem>() {
         }
 
         val dragSelectionProcessor = DragSelectionProcessor(viewModel.dragSelectionHandler)
-            .withMode(DragSelectionProcessor.Mode.Simple)
+                .withMode(DragSelectionProcessor.Mode.Simple)
 
         dragSelectTouchListener = DragSelectTouchListener()
-            .withSelectListener(dragSelectionProcessor)
+                .withSelectListener(dragSelectionProcessor)
 
         binding.epoxyRecyclerView.addOnItemTouchListener(dragSelectTouchListener)
 
@@ -118,27 +118,36 @@ class LogFragment : SimpleRecyclerViewFragment<LogEntryListItem>() {
     private inner class RecyclerViewController : TypedEpoxyController<List<LogEntryListItem>>() {
         private var scrollToBottom = false
         private var scrolledToBottomInitially = false
+        private var recyclerView: RecyclerView? = null
 
         init {
             addModelBuildListener {
                 currentData?.also { currentData ->
-                    val recyclerView = binding.epoxyRecyclerView
-
                     if (!scrolledToBottomInitially) {
-                        recyclerView.viewTreeObserver.addOnGlobalLayoutListener(object :
-                            ViewTreeObserver.OnGlobalLayoutListener {
+                        recyclerView?.viewTreeObserver?.addOnGlobalLayoutListener(object :
+                                ViewTreeObserver.OnGlobalLayoutListener {
                             override fun onGlobalLayout() {
-                                recyclerView.scrollToPosition(currentData.size - 1)
-                                recyclerView.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                                recyclerView?.scrollToPosition(currentData.size - 1)
+                                recyclerView?.viewTreeObserver?.removeOnGlobalLayoutListener(this)
                             }
                         })
 
                         scrolledToBottomInitially = true
                     } else if (scrollToBottom) {
-                        recyclerView.smoothScrollToPosition(currentData.size)
+                        recyclerView?.smoothScrollToPosition(currentData.size)
                     }
                 }
             }
+        }
+
+        override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+            this.recyclerView = recyclerView
+            super.onAttachedToRecyclerView(recyclerView)
+        }
+
+        override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
+            this.recyclerView = null
+            super.onDetachedFromRecyclerView(recyclerView)
         }
 
         override fun buildModels(data: List<LogEntryListItem>?) {
@@ -146,9 +155,9 @@ class LogFragment : SimpleRecyclerViewFragment<LogEntryListItem>() {
                 return
             }
 
-            if (binding.epoxyRecyclerView.scrollState != RecyclerView.SCROLL_STATE_SETTLING) {
+            if (recyclerView?.scrollState != RecyclerView.SCROLL_STATE_SETTLING) {
                 //only automatically scroll to the bottom if the recyclerview is already scrolled to the button
-                val layoutManager = binding.epoxyRecyclerView.layoutManager as LinearLayoutManager?
+                val layoutManager = recyclerView?.layoutManager as LinearLayoutManager?
 
                 if (layoutManager != null) {
                     val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
