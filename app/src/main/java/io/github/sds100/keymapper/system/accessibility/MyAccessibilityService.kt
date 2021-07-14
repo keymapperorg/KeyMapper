@@ -152,6 +152,11 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
         controller = Inject.accessibilityServiceController(this)
     }
 
+    override fun onUnbind(intent: Intent?): Boolean {
+        Timber.i("Accessibility service: onUnbind")
+        return super.onUnbind(intent)
+    }
+
     override fun onInterrupt() {}
 
     override fun onDestroy() {
