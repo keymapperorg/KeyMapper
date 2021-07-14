@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        Timber.i("App opened")
+        Timber.i("MainActivity: onResume. Version: ${Constants.VERSION}")
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
