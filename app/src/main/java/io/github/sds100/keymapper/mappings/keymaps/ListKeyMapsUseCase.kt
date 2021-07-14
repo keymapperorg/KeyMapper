@@ -53,7 +53,7 @@ class ListKeyMapsUseCaseImpl(
         keyMapRepository.duplicate(*uid)
     }
 
-    override suspend fun backupKeyMaps(vararg uid: String, uri: String): Result<*> {
+    override suspend fun backupKeyMaps(vararg uid: String, uri: String): Result<String> {
         return backupManager.backupKeyMaps(uri, uid.asList())
     }
 }
@@ -64,5 +64,5 @@ interface ListKeyMapsUseCase : DisplayKeyMapUseCase {
     fun enableKeyMap(vararg uid: String)
     fun disableKeyMap(vararg uid: String)
     fun duplicateKeyMap(vararg uid: String)
-    suspend fun backupKeyMaps(vararg uid: String, uri: String): Result<*>
+    suspend fun backupKeyMaps(vararg uid: String, uri: String): Result<String>
 }

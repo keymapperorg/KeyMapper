@@ -57,7 +57,7 @@ class ListFingerprintMapsUseCaseImpl(
         fingerprintMapRepository.disableFingerprintMap(entityId)
     }
 
-    override suspend fun backupFingerprintMaps(uri: String): Result<*> {
+    override suspend fun backupFingerprintMaps(uri: String): Result<String> {
         return backupManager.backupFingerprintMaps(uri)
     }
 }
@@ -69,5 +69,5 @@ interface ListFingerprintMapsUseCase : DisplaySimpleMappingUseCase {
     fun enableFingerprintMap(id: FingerprintMapId)
     fun disableFingerprintMap(id: FingerprintMapId)
     fun resetFingerprintMaps()
-    suspend fun backupFingerprintMaps(uri: String): Result<*>
+    suspend fun backupFingerprintMaps(uri: String): Result<String>
 }

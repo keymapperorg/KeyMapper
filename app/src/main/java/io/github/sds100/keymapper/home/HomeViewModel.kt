@@ -83,6 +83,9 @@ class HomeViewModel(
     private val _showQuickStartGuideHint = MutableStateFlow(false)
     val showQuickStartGuideHint = _showQuickStartGuideHint.asStateFlow()
 
+    private val _shareBackup = MutableSharedFlow<String>()
+    val shareBackup = _shareBackup.asSharedFlow()
+
     val selectionCountViewState = multiSelectProvider.state.map {
         when (it) {
             SelectionState.NotSelecting -> SelectionCountViewState(
@@ -450,13 +453,22 @@ class HomeViewModel(
         }
     }
 
-    private suspend fun onBackupResult(result: Result<*>) {
+    private suspend fun onBackupResult(result: Result<String>) {
         when (result) {
             is Success -> {
-                showPopup(
+                val response = showPopup(
                     "successful_backup_result",
-                    PopupUi.SnackBar(getString(R.string.toast_backup_successful))
+                    PopupUi.SnackBar(
+                        message = getString(R.string.toast_backup_successful),
+                        actionText = getString(R.string.share_backup)
+                    )
                 )
+
+                if (response != null) {
+                    val uri = result.value
+
+                    _shareBackup.emit(uri)
+                }
             }
 
             is Error -> showPopup(

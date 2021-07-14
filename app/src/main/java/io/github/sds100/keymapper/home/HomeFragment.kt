@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.home
 
 import android.content.*
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -255,6 +256,19 @@ class HomeFragment : Fragment() {
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             homeViewModel.menuViewModel.chooseRestoreFile.collectLatest {
                 restoreMappingsLauncher.launch(FileUtils.MIME_TYPE_ALL)
+            }
+        }
+
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
+            homeViewModel.shareBackup.collectLatest { uri ->
+                Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_STREAM, Uri.parse(uri))
+
+                    type = FileUtils.MIME_TYPE_ZIP
+
+                    startActivity(Intent.createChooser(this, getText(R.string.sharesheet_title)))
+                }
             }
         }
 

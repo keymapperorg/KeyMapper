@@ -39,6 +39,7 @@
     <string name="slider_default">Default</string>
     <string name="button_enable_accessibility_service">Enable accessibility service</string>
     <string name="button_restart_accessibility_service">Restart accessibility service</string>
+    <string name="share_backup">Share</string>
 
     <string name="stop_repeating_dot_dot_dot">Stop repeating when…</string>
     <string name="stop_repeating_when_trigger_released">Trigger is released</string>
@@ -65,6 +66,7 @@
     <string name="intent_extras_recycler_view_placeholder">¯\\_(ツ)_/¯\n\nNo extras!</string>
     <string name="content_description_fab_new_keymap">Create a new key map</string>
     <string name="clip_key_mapper_log">Key Mapper log</string>
+    <string name="sharesheet_title">Send to</string>
 
     <string name="whats_new">What\'s New</string>
     <string name="caption_action_type_key">Click the key on the device which you want to be entered.
