@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.system.devices
 
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
 import android.content.Context
 import android.hardware.input.InputManager
 import android.os.Handler
@@ -127,8 +128,12 @@ class AndroidDevicesAdapter(
             return
         }
 
-        val devices = adapter.bondedDevices?.map {
-            BluetoothDeviceInfo(it.address, it.name)
+        val devices = adapter.bondedDevices?.mapNotNull { device: BluetoothDevice? ->
+            if (device == null) {
+                return@mapNotNull null
+            }
+
+            BluetoothDeviceInfo(device.address, device.name)
         }
 
         pairedBluetoothDevices.value = devices ?: emptyList()
