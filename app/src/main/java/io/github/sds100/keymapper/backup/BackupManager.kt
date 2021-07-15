@@ -5,6 +5,7 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.*
 import com.google.gson.annotations.SerializedName
 import com.google.gson.stream.MalformedJsonException
+import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.actions.sound.SoundsManager
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
@@ -49,6 +50,7 @@ class BackupManagerImpl(
         //DON'T CHANGE THESE. Used for serialization and parsing.
         @VisibleForTesting
         private const val NAME_DB_VERSION = "keymap_db_version"
+        private const val NAME_APP_VERSION = "app_version"
         private const val NAME_KEYMAP_LIST = "keymap_list"
         private const val NAME_FINGERPRINT_MAP_LIST = "fingerprint_map_list"
         private const val NAME_DEFAULT_LONG_PRESS_DELAY = "default_long_press_delay"
@@ -233,12 +235,17 @@ class BackupManagerImpl(
 
             //started storing database version at db version 10
             val backupDbVersion = rootElement.get(NAME_DB_VERSION).nullInt ?: 9
+            val backupAppVersion = rootElement.get(NAME_APP_VERSION).nullInt
 
-            val keymapListJsonArray by rootElement.byNullableArray(NAME_KEYMAP_LIST)
+            if (backupAppVersion != null && backupAppVersion > Constants.VERSION_CODE) {
+                return Error.BackupVersionTooNew
+            }
 
             if (backupDbVersion > AppDatabase.DATABASE_VERSION) {
                 return Error.BackupVersionTooNew
             }
+
+            val keymapListJsonArray by rootElement.byNullableArray(NAME_KEYMAP_LIST)
 
             val deviceInfoList by rootElement.byNullableArray("device_info")
 
@@ -397,6 +404,7 @@ class BackupManagerImpl(
             val json = gson.toJson(
                 BackupModel(
                     AppDatabase.DATABASE_VERSION,
+                    Constants.VERSION_CODE,
                     keyMapList,
                     fingerprintMaps,
                     defaultLongPressDelay =
@@ -490,6 +498,9 @@ class BackupManagerImpl(
     private data class BackupModel(
         @SerializedName(NAME_DB_VERSION)
         val dbVersion: Int,
+
+        @SerializedName(NAME_APP_VERSION)
+        val appVersion: Int,
 
         @SerializedName(NAME_KEYMAP_LIST)
         val keymapList: List<KeyMapEntity>? = null,
