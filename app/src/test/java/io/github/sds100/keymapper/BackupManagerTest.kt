@@ -115,6 +115,85 @@ class BackupManagerTest {
         testDispatcher.cleanupTestCoroutines()
     }
 
+    /**
+     * #745
+     */
+    @Test
+    fun `Don't allow back ups from a newer version of key mapper`() = coroutineScope.runBlockingTest {
+        //GIVEN
+        val dataJsonFile = "restore-app-version-too-big.zip/data.json"
+        val zipFile = fakeFileAdapter.getPrivateFile("backup.zip")
+
+        copyFileToPrivateFolder(dataJsonFile, destination = "backup.zip/data.json")
+
+        //WHEN
+        coroutineScope.pauseDispatcher()
+
+        val result = backupManager.restoreMappings(zipFile.uri)
+
+        //THEN
+        assertThat(result, `is`(Error.BackupVersionTooNew))
+
+        coroutineScope.resumeDispatcher()
+    }
+
+    /**
+     * #745
+     */
+    @Test
+    fun `Allow back ups from a back up without a key mapper version in it`() = coroutineScope.runBlockingTest {
+        //GIVEN
+        whenever(mockKeyMapRepository.keyMapList).then {
+            MutableStateFlow(State.Data(emptyList<KeyMapEntity>()))
+        }
+
+        whenever(mockFingerprintMapRepository.fingerprintMapList).then {
+            MutableStateFlow(State.Data(emptyList<FingerprintMapEntity>()))
+        }
+
+        val dataJsonFile = "restore-no-app-version.zip/data.json"
+        val zipFile = fakeFileAdapter.getPrivateFile("backup.zip")
+
+        copyFileToPrivateFolder(dataJsonFile, destination = "backup.zip/data.json")
+
+        //WHEN
+        coroutineScope.pauseDispatcher()
+
+        val result = backupManager.restoreMappings(zipFile.uri)
+
+        //THEN
+        assertThat(result, `is`(Success(Unit)))
+
+        coroutineScope.resumeDispatcher()
+    }
+
+    @Test
+    fun `don't crash if back up does not contain sounds folder`() = coroutineScope.runBlockingTest {
+        //GIVEN
+        whenever(mockKeyMapRepository.keyMapList).then {
+            MutableStateFlow(State.Data(emptyList<KeyMapEntity>()))
+        }
+
+        whenever(mockFingerprintMapRepository.fingerprintMapList).then {
+            MutableStateFlow(State.Data(emptyList<FingerprintMapEntity>()))
+        }
+
+        val dataJsonFile = "restore-no-sounds-folder.zip/data.json"
+        val zipFile = fakeFileAdapter.getPrivateFile("backup.zip")
+
+        copyFileToPrivateFolder(dataJsonFile, destination = "backup.zip/data.json")
+
+        //WHEN
+        coroutineScope.pauseDispatcher()
+
+        val result = backupManager.restoreMappings(zipFile.uri)
+
+        //THEN
+        assertThat(result, `is`(Success(Unit)))
+
+        coroutineScope.resumeDispatcher()
+    }
+
     @Test
     fun `successfully restore zip folder with data json and sound files`() = coroutineScope.runBlockingTest {
         //GIVEN
