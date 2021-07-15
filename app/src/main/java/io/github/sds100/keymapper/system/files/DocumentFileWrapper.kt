@@ -48,7 +48,7 @@ class DocumentFileWrapper(
     override val isFile: Boolean
         get() = file.isFile || toJavaFile().isFile
 
-    override fun listFiles(): List<IFile> {
+    override fun listFiles(): List<IFile>? {
         return file.listFiles()
             .toList()
             .map { DocumentFileWrapper(it, ctx) }

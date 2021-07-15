@@ -49,7 +49,7 @@ class FakeFileAdapter(
     }
 
     override suspend fun extractZipFile(zipFile: IFile, destination: IFile): Result<*> {
-        zipFile.listFiles().forEach { file ->
+        zipFile.listFiles()!!.forEach { file ->
             file.copyTo(destination)
         }
 
