@@ -42,8 +42,8 @@ class JavaFile(val file: File) : IFile {
         return file.outputStream()
     }
 
-    override fun listFiles(): List<IFile> {
-        return file.listFiles()!!.toList().map { JavaFile(it) }
+    override fun listFiles(): List<IFile>? {
+        return file.listFiles()?.toList()?.map { JavaFile(it) }
     }
 
     override fun clear() {

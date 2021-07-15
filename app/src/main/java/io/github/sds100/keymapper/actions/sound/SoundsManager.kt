@@ -67,8 +67,9 @@ class SoundsManagerImpl(
 
     override fun getSound(uid: String): Result<IFile> {
         val soundsDir = fileAdapter.getPrivateFile(SOUNDS_DIR_NAME)
+        soundsDir.createDirectory()
 
-        val matchingFile = soundsDir.listFiles().find { it.name?.contains(uid) == true }
+        val matchingFile = soundsDir.listFiles()!!.find { it.name?.contains(uid) == true }
 
         if (matchingFile == null) {
             return Error.CantFindSoundFile
@@ -96,9 +97,10 @@ class SoundsManagerImpl(
 
     private fun updateSoundFilesFlow() {
         val soundsDir = fileAdapter.getPrivateFile(SOUNDS_DIR_NAME)
+        soundsDir.createDirectory()
 
         soundFiles.value = soundsDir
-            .listFiles()
+            .listFiles()!!
             .map { getSoundFileInfo(it.name!!) }
     }
 

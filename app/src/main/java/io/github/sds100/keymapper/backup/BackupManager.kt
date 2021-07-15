@@ -199,7 +199,7 @@ class BackupManagerImpl(
                         }
 
                         val json = inputStream.bufferedReader().use { it.readText() }
-                        val soundFiles = soundDir.listFiles()
+                        val soundFiles = soundDir.listFiles() ?: emptyList() //null if dir doesn't exist
 
                         restore(json, soundFiles)
                     }

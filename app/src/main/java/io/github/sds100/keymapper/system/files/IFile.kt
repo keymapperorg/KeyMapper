@@ -18,7 +18,7 @@ interface IFile {
     val isDirectory: Boolean
     fun inputStream(): InputStream?
     fun outputStream(): OutputStream?
-    fun listFiles(): List<IFile>
+    fun listFiles(): List<IFile>?
     fun clear()
     fun delete()
     fun exists(): Boolean
