@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.system.accessibility
 
 import android.accessibilityservice.AccessibilityService
-import android.accessibilityservice.AccessibilityServiceInfo
 import android.accessibilityservice.FingerprintGestureController
 import android.accessibilityservice.GestureDescription
 import android.app.ActivityManager
@@ -18,17 +17,12 @@ import androidx.core.os.bundleOf
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
-import androidx.lifecycle.lifecycleScope
 import io.github.sds100.keymapper.api.Api
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapId
 import io.github.sds100.keymapper.system.devices.isExternalCompat
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import splitties.bitflags.minusFlag
-import splitties.bitflags.withFlag
 import timber.log.Timber
 
 /**
@@ -62,7 +56,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
             return rootInActiveWindow?.toModel()
         }
 
-    override val isGestureDetectionAvailable: Boolean
+    override val isFingerprintGestureDetectionAvailable: Boolean
         get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             fingerprintGestureController.isGestureDetectionAvailable
         } else {
@@ -80,28 +74,26 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
     override val isKeyboardHidden: Flow<Boolean>
         get() = _isKeyboardHidden
 
-    private lateinit var controller: AccessibilityServiceController
-
-    private val initialServiceFlags: Int by lazy {
-        var flags = AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS
-            .withFlag(AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS)
-            .withFlag(AccessibilityServiceInfo.DEFAULT)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            flags = flags.withFlag(AccessibilityServiceInfo.FLAG_ENABLE_ACCESSIBILITY_VOLUME)
+    override var serviceFlags: Int?
+        get() = serviceInfo?.flags
+        set(value) {
+            if (serviceInfo != null && value != null) {
+                serviceInfo = serviceInfo.apply {
+                    flags = value
+                }
+            }
         }
 
-        return@lazy flags
-    }
-
-    /*
-    On some devices the onServiceConnected method is called multiple times throughout the lifecycle of the service.
-    Whenever the controller asks to change the service flags they will be changed here. They will be then
-     applied to the serviceInfo whenever the OS has called onServiceConnected.
-     */
-    private var serviceFlags: MutableStateFlow<Int> = MutableStateFlow(initialServiceFlags)
-
-    private var serviceFeedbackType: MutableStateFlow<Int> = MutableStateFlow(0)
+    override var serviceFeedbackType: Int?
+        get() = serviceInfo?.feedbackType
+        set(value) {
+            if (serviceInfo != null && value != null) {
+                serviceInfo = serviceInfo.apply {
+                    feedbackType = value
+                }
+            }
+        }
+    private lateinit var controller: AccessibilityServiceController
 
     override fun onCreate() {
         super.onCreate()
@@ -119,24 +111,6 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
             registerReceiver(broadcastReceiver, this)
         }
 
-        serviceFlags.onEach { flags ->
-            //check that it isn't null because this can only be called once the service is bound
-            if (serviceInfo != null) {
-                serviceInfo = serviceInfo.apply {
-                    this.flags = flags
-                }
-            }
-        }.launchIn(lifecycleScope)
-
-        serviceFeedbackType.onEach { feedbackType ->
-            //check that it isn't null because this can only be called once the service is bound
-            if (serviceInfo != null) {
-                serviceInfo = serviceInfo.apply {
-                    this.feedbackType = feedbackType
-                }
-            }
-        }.launchIn(lifecycleScope)
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             softKeyboardController.addOnShowModeChangedListener { _, showMode ->
                 when (showMode) {
@@ -151,11 +125,6 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
         super.onServiceConnected()
 
         Timber.i("Accessibility service: onServiceConnected")
-
-        serviceInfo = serviceInfo.apply {
-            flags = serviceFlags.value
-            feedbackType = serviceFeedbackType.value
-        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
@@ -188,6 +157,8 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
                 fingerprintGestureController.registerFingerprintGestureCallback(it, null)
             }
         }
+
+        controller.onServiceConnected()
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
@@ -244,21 +215,6 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
     }
 
     override fun getLifecycle() = lifecycleRegistry
-
-    override fun requestFingerprintGestureDetection() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Timber.d("Accessibility service: request fingerprint gesture detection")
-            serviceFlags.value = serviceFlags.value.withFlag(AccessibilityServiceInfo.FLAG_REQUEST_FINGERPRINT_GESTURES)
-        }
-    }
-
-    override fun denyFingerprintGestureDetection() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Timber.d("Accessibility service: deny fingerprint gesture detection")
-            serviceFlags.value =
-                serviceFlags.value.minusFlag(AccessibilityServiceInfo.FLAG_REQUEST_FINGERPRINT_GESTURES)
-        }
-    }
 
     override fun hideKeyboard() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -354,19 +310,5 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
         }
 
         return Error.SdkVersionTooLow(Build.VERSION_CODES.N)
-    }
-
-    override fun enableAccessibilityVolumeStream() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            serviceFeedbackType.value = serviceFeedbackType.value.withFlag(AccessibilityServiceInfo.FEEDBACK_AUDIBLE)
-            serviceFlags.value = serviceFlags.value.withFlag(AccessibilityServiceInfo.FLAG_ENABLE_ACCESSIBILITY_VOLUME)
-        }
-    }
-
-    override fun disableAccessibilityVolumeStream() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            serviceFeedbackType.value = serviceFeedbackType.value.minusFlag(AccessibilityServiceInfo.FEEDBACK_AUDIBLE)
-            serviceFlags.value = serviceFlags.value.minusFlag(AccessibilityServiceInfo.FLAG_ENABLE_ACCESSIBILITY_VOLUME)
-        }
     }
 }
