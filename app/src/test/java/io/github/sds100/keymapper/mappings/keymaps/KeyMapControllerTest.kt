@@ -152,58 +152,102 @@ class KeyMapControllerTest {
         coroutineScope.cleanupTestCoroutines()
     }
 
+    @Test
+    fun `Don't imitate button if 1 long press trigger is successful and another with a longer delay fails`() =
+        coroutineScope.runBlockingTest {
+            //GIVEN
+
+            val longerTrigger =
+                singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS))
+                    .copy(longPressDelay = 900)
+
+            val shorterTrigger =
+                singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS))
+                    .copy(longPressDelay = 500)
+
+            keyMapListFlow.value = listOf(
+                KeyMap(0, trigger = longerTrigger, actionList = listOf(TEST_ACTION)),
+                KeyMap(1, trigger = shorterTrigger, actionList = listOf(TEST_ACTION_2)),
+            )
+
+
+            inOrder(performActionsUseCase, detectKeyMapsUseCase) {
+                //If only the shorter trigger is detected
+
+                mockTriggerKeyInput(shorterTrigger.keys[0], 600L)
+
+                verify(performActionsUseCase, times(1)).perform(TEST_ACTION_2.data)
+                verify(performActionsUseCase, never()).perform(TEST_ACTION_2.data)
+                verify(detectKeyMapsUseCase, never()).imitateButtonPress(any(), any(), any(), any(), any())
+
+                // If both triggers are detected
+
+                mockTriggerKeyInput(shorterTrigger.keys[0], 1000L)
+
+                verify(performActionsUseCase, times(1)).perform(TEST_ACTION_2.data)
+                verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+                verify(detectKeyMapsUseCase, never()).imitateButtonPress(any(), any(), any(), any(), any())
+
+                //If no triggers are detected
+
+                mockTriggerKeyInput(shorterTrigger.keys[0], 100L)
+
+                verify(performActionsUseCase, never()).perform(TEST_ACTION_2.data)
+                verify(performActionsUseCase, never()).perform(TEST_ACTION.data)
+                verify(detectKeyMapsUseCase, times(1)).imitateButtonPress(any(), any(), any(), any(), any())
+            }
+        }
+
     /**
      * #739
      */
     @Test
     fun `Long press trigger shouldn't be triggered if the constraints are changed by the actions`() =
         coroutineScope.runBlockingTest {
-            coroutineScope.runBlockingTest {
-                //GIVEN
-                val actionData = FlashlightSystemAction.Toggle(CameraLens.BACK)
+            //GIVEN
+            val actionData = FlashlightSystemAction.Toggle(CameraLens.BACK)
 
-                val keyMap = KeyMap(
-                    trigger = singleKeyTrigger(
-                        triggerKey(
-                            KeyEvent.KEYCODE_VOLUME_DOWN,
-                            clickType = ClickType.LONG_PRESS
-                        )
-                    ),
-                    actionList = listOf(KeyMapAction(data = actionData)),
-                    constraintState = ConstraintState(
-                        constraints = setOf(Constraint.FlashlightOn(CameraLens.BACK))
+            val keyMap = KeyMap(
+                trigger = singleKeyTrigger(
+                    triggerKey(
+                        KeyEvent.KEYCODE_VOLUME_DOWN,
+                        clickType = ClickType.LONG_PRESS
                     )
+                ),
+                actionList = listOf(KeyMapAction(data = actionData)),
+                constraintState = ConstraintState(
+                    constraints = setOf(Constraint.FlashlightOn(CameraLens.BACK))
                 )
+            )
 
-                keyMapListFlow.value = listOf(keyMap)
+            keyMapListFlow.value = listOf(keyMap)
 
-                var isFlashlightEnabled = false
+            var isFlashlightEnabled = false
 
-                //WHEN THEN
-                whenever(detectConstraintsUseCase.getSnapshot()).then {
-                    mock<ConstraintSnapshot> {
-                        on { isSatisfied(any()) }.then { isFlashlightEnabled }
-                    }
+            //WHEN THEN
+            whenever(detectConstraintsUseCase.getSnapshot()).then {
+                mock<ConstraintSnapshot> {
+                    on { isSatisfied(any()) }.then { isFlashlightEnabled }
                 }
+            }
 
-                whenever(performActionsUseCase.perform(any(), any(), any())).doAnswer {
-                    isFlashlightEnabled = !isFlashlightEnabled
-                }
+            whenever(performActionsUseCase.perform(any(), any(), any())).doAnswer {
+                isFlashlightEnabled = !isFlashlightEnabled
+            }
 
-                inOrder(performActionsUseCase) {
-                    //flashlight is initially disabled so don't trigger.
-                    mockTriggerKeyInput(keyMap.trigger.keys[0])
-                    verify(performActionsUseCase, never()).perform(any(), any(), any())
+            inOrder(performActionsUseCase) {
+                //flashlight is initially disabled so don't trigger.
+                mockTriggerKeyInput(keyMap.trigger.keys[0])
+                verify(performActionsUseCase, never()).perform(any(), any(), any())
 
-                    isFlashlightEnabled = true
-                    //trigger because flashlight is enabled. Triggering the action will disable the flashlight.
-                    mockTriggerKeyInput(keyMap.trigger.keys[0])
-                    verify(performActionsUseCase, times(1)).perform(any(), any(), any())
+                isFlashlightEnabled = true
+                //trigger because flashlight is enabled. Triggering the action will disable the flashlight.
+                mockTriggerKeyInput(keyMap.trigger.keys[0])
+                verify(performActionsUseCase, times(1)).perform(any(), any(), any())
 
-                    //Don't trigger because the flashlight is now disabled
-                    mockTriggerKeyInput(keyMap.trigger.keys[0])
-                    verify(performActionsUseCase, never()).perform(any(), any(), any())
-                }
+                //Don't trigger because the flashlight is now disabled
+                mockTriggerKeyInput(keyMap.trigger.keys[0])
+                verify(performActionsUseCase, never()).perform(any(), any(), any())
             }
         }
 

@@ -902,7 +902,7 @@ class KeyMapController(
         var imitateDownUpKeyEvent = false
         var imitateUpKeyEvent = false
 
-        var successfulLongPress = false
+        var successfulLongPressTrigger = false
         var successfulDoublePress = false
         var mappedToDoublePress = false
         var matchedDoublePressEventIndex = -1
@@ -1001,7 +1001,7 @@ class KeyMapController(
                 val nextIndex = lastMatchedEventIndex + 1
 
                 if ((currentTime - downTime) >= longPressDelay(sequenceTriggers[triggerIndex])) {
-                    successfulLongPress = true
+                    successfulLongPressTrigger = true
                 } else if (detectSequenceLongPresses &&
                     longPressSequenceTriggerKeys.any { it.matchesEvent(event.withLongPress) }
                 ) {
@@ -1009,7 +1009,7 @@ class KeyMapController(
                 }
 
                 val encodedEventWithClickType = when {
-                    successfulLongPress -> event.withLongPress
+                    successfulLongPressTrigger -> event.withLongPress
                     successfulDoublePress -> event.withDoublePress
                     else -> event.withShortPress
                 }
@@ -1069,13 +1069,43 @@ class KeyMapController(
         }
 
         if (detectParallelTriggers) {
-            triggerLoop@ for ((triggerIndex, trigger) in parallelTriggers.withIndex()) {
-                val isSingleKeyTrigger = parallelTriggers[triggerIndex].keys.size == 1
+            /**
+             * Whether a trigger that was triggered successfully has just been released.
+             */
+            var releasedSuccessfulTrigger = false
 
-                var lastHeldDownEventIndex = -1
+            for ((triggerIndex, trigger) in parallelTriggers.withIndex()) {
+
+                if (parallelTriggersAwaitingReleaseAfterBeingTriggered[triggerIndex]) {
+                    releasedSuccessfulTrigger = true
+                }
+
+                for (keyIndex in trigger.keys.indices) {
+                    val keyAwaitingRelease =
+                        parallelTriggerEventsAwaitingRelease[triggerIndex][keyIndex]
+
+                    //long press
+                    if (keyAwaitingRelease && trigger.matchingEventAtIndex(
+                            event.withLongPress,
+                            keyIndex
+                        )
+                    ) {
+                        if ((currentTime - downTime) >= longPressDelay(parallelTriggers[triggerIndex])) {
+                            releasedSuccessfulTrigger = true
+                            successfulLongPressTrigger = true
+                        }
+                    }
+                }
+            }
+
+            triggerLoop@ for ((triggerIndex, trigger) in parallelTriggers.withIndex()) {
 
                 val triggeredSuccessfully =
                     parallelTriggersAwaitingReleaseAfterBeingTriggered[triggerIndex]
+
+                var lastHeldDownEventIndex = -1
+
+                val isSingleKeyTrigger = parallelTriggers[triggerIndex].keys.size == 1
 
                 for (keyIndex in trigger.keys.indices) {
                     val keyAwaitingRelease =
@@ -1091,7 +1121,7 @@ class KeyMapController(
                             shortPressSingleKeyTriggerJustReleased = true
                         }
 
-                        if (!triggeredSuccessfully) {
+                        if (!triggeredSuccessfully && !releasedSuccessfulTrigger) {
                             imitateDownUpKeyEvent = true
                         }
 
@@ -1124,11 +1154,6 @@ class KeyMapController(
                             keyIndex
                         )
                     ) {
-
-                        if ((currentTime - downTime) >= longPressDelay(parallelTriggers[triggerIndex])) {
-                            successfulLongPress = true
-                        }
-
                         parallelTriggerEventsAwaitingRelease[triggerIndex][keyIndex] = false
 
                         parallelTriggerLongPressJobs[triggerIndex]?.cancel()
@@ -1139,15 +1164,16 @@ class KeyMapController(
 
                         val lastMatchedIndex = lastMatchedParallelEventIndices[triggerIndex]
 
-                        if (isSingleKeyTrigger && successfulLongPress) {
+                        if (isSingleKeyTrigger && successfulLongPressTrigger) {
                             longPressSingleKeyTriggerJustReleased = true
                         }
 
                         if (!imitateDownUpKeyEvent) {
-                            if (isSingleKeyTrigger && !successfulLongPress) {
+                            if (isSingleKeyTrigger && !successfulLongPressTrigger && !releasedSuccessfulTrigger) {
                                 imitateDownUpKeyEvent = true
-                            } else if (lastMatchedIndex > -1 &&
-                                lastMatchedIndex < parallelTriggers[triggerIndex].keys.lastIndex
+                            } else if (lastMatchedIndex > -1
+                                && lastMatchedIndex < parallelTriggers[triggerIndex].keys.lastIndex
+                                && !releasedSuccessfulTrigger
                             ) {
                                 imitateDownUpKeyEvent = true
                             }
@@ -1177,7 +1203,7 @@ class KeyMapController(
         }
 
         //perform actions on failed long press
-        if (!successfulLongPress) {
+        if (!successfulLongPressTrigger) {
             val iterator = performActionsOnFailedLongPress.iterator()
 
             while (iterator.hasNext()) {
