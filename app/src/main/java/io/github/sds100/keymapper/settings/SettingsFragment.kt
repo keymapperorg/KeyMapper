@@ -16,6 +16,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.addRepeatingJob
 import androidx.navigation.fragment.findNavController
 import androidx.preference.*
+import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.backup.BackupUtils
@@ -876,7 +877,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             setTitle(R.string.title_pref_report_issue)
 
             setOnPreferenceClickListener {
-                UrlUtils.openUrl(requireContext(), str(R.string.url_report_issues_guide))
+                findNavController().navigate(NavAppDirections.goToReportBugActivity())
 
                 true
             }
