@@ -171,10 +171,9 @@ class AndroidInputMethodAdapter(
         return suAdapter.execute("ime enable $imeId")
     }
 
-    override suspend fun chooseIme(imeId: String, fromForeground: Boolean): Result<ImeInfo> {
+    override suspend fun chooseImeWithoutUserInput(imeId: String): Result<ImeInfo> {
 
         getInfoById(imeId).onSuccess {
-            0
             if (!it.isEnabled) {
                 return Error.ImeDisabled(it)
             }
@@ -200,9 +199,8 @@ class AndroidInputMethodAdapter(
             failed = false
         }
 
-        //show the ime picker as a last resort
         if (failed) {
-            showImePicker(fromForeground).onFailure { return it }
+            return Error.FailedToChangeIme
         }
 
         //wait for the ime to change and then return the info of the ime

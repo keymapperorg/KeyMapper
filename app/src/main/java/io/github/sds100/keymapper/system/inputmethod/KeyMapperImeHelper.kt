@@ -34,23 +34,23 @@ class KeyMapperImeHelper(private val imeAdapter: InputMethodAdapter) {
         }
     }
 
-    suspend fun chooseCompatibleInputMethod(fromForeground: Boolean): Result<ImeInfo> {
+    suspend fun chooseCompatibleInputMethod(): Result<ImeInfo> {
         return getLastUsedCompatibleImeId().suspendThen {
-            imeAdapter.chooseIme(it, fromForeground)
+            imeAdapter.chooseImeWithoutUserInput(it)
         }
     }
 
-    suspend fun chooseLastUsedIncompatibleInputMethod(fromForeground: Boolean): Result<ImeInfo> {
+    suspend fun chooseLastUsedIncompatibleInputMethod(): Result<ImeInfo> {
         return getLastUsedIncompatibleImeId().then {
-            imeAdapter.chooseIme(it, fromForeground)
+            imeAdapter.chooseImeWithoutUserInput(it)
         }
     }
 
-    suspend fun toggleCompatibleInputMethod(fromForeground: Boolean): Result<ImeInfo> {
+    suspend fun toggleCompatibleInputMethod(): Result<ImeInfo> {
         return if (isCompatibleImeChosen()) {
-            chooseLastUsedIncompatibleInputMethod(fromForeground)
+            chooseLastUsedIncompatibleInputMethod()
         } else {
-            chooseCompatibleInputMethod(fromForeground)
+            chooseCompatibleInputMethod()
         }
     }
 

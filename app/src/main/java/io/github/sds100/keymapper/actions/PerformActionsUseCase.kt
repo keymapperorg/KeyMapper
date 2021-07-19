@@ -196,16 +196,16 @@ class PerformActionsUseCaseImpl(
 
             is SwitchKeyboardSystemAction -> {
                 coroutineScope.launch {
-                    inputMethodAdapter.chooseIme(
-                        action.imeId,
-                        fromForeground = false
-                    ).onSuccess {
-                        val message = resourceProvider.getString(
-                            R.string.toast_chose_keyboard,
-                            it.label
-                        )
-                        popupMessageAdapter.showPopupMessage(message)
-                    }.showErrorMessageOnFail()
+                    inputMethodAdapter
+                        .chooseImeWithoutUserInput(action.imeId)
+                        .onSuccess {
+                            val message = resourceProvider.getString(
+                                R.string.toast_chose_keyboard,
+                                it.label
+                            )
+                            popupMessageAdapter.showPopupMessage(message)
+                        }
+                        .showErrorMessageOnFail()
                 }
 
                 result = null
@@ -678,7 +678,13 @@ class PerformActionsUseCaseImpl(
 
         when (result) {
             null, is Success -> Timber.d("Performed action $action, input event type: $inputEventType, key meta state: $keyMetaState")
-            is Error -> Timber.d("Failed to perform action $action, reason: ${result.getFullMessage(resourceProvider)}, action: $action, input event type: $inputEventType, key meta state: $keyMetaState")
+            is Error -> Timber.d(
+                "Failed to perform action $action, reason: ${
+                    result.getFullMessage(
+                        resourceProvider
+                    )
+                }, action: $action, input event type: $inputEventType, key meta state: $keyMetaState"
+            )
         }
 
         result?.showErrorMessageOnFail()
