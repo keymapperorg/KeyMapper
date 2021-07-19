@@ -10,14 +10,9 @@ import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
-import io.github.sds100.keymapper.util.Error
-import io.github.sds100.keymapper.util.Result
-import io.github.sds100.keymapper.util.Success
-import io.github.sds100.keymapper.util.then
+import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.merge
 
 /**
  * Created by sds100 on 03/04/2021.
@@ -54,9 +49,10 @@ class DisplaySimpleMappingUseCaseImpl(
             Error.AccessibilityServiceCrashed -> serviceAdapter.restartService()
             is Error.AppDisabled -> packageManager.enableApp(error.packageName)
             is Error.AppNotFound -> packageManager.installApp(error.packageName)
-            Error.NoCompatibleImeChosen -> keyMapperImeHelper.chooseCompatibleInputMethod(
-                fromForeground = true
-            )
+            Error.NoCompatibleImeChosen -> keyMapperImeHelper.chooseCompatibleInputMethod()
+                .otherwise {
+                    inputMethodAdapter.showImePicker(fromForeground = true)
+                }
             Error.NoCompatibleImeEnabled -> keyMapperImeHelper.enableCompatibleInputMethods()
             is Error.ImeDisabled -> inputMethodAdapter.enableIme(error.ime.id)
             is Error.PermissionDenied -> permissionAdapter.request(error.permission)

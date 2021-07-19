@@ -4,10 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.util.SharedPrefsDataStoreWrapper
-import io.github.sds100.keymapper.util.getFullMessage
-import io.github.sds100.keymapper.util.onFailure
-import io.github.sds100.keymapper.util.onSuccess
+import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -49,15 +46,26 @@ class SettingsViewModel(
 
     fun onChooseCompatibleImeClick() {
         viewModelScope.launch {
-            useCase.chooseCompatibleIme().onSuccess { ime ->
-                val snackBar =
-                    PopupUi.SnackBar(message = getString(R.string.toast_chose_keyboard, ime.label))
-                showPopup("chose_ime_success", snackBar)
-            }.onFailure { error ->
-                val snackBar =
-                    PopupUi.SnackBar(message = error.getFullMessage(this@SettingsViewModel))
-                showPopup("chose_ime_error", snackBar)
-            }
+            useCase
+                .chooseCompatibleIme()
+                .onSuccess { ime ->
+                    val snackBar =
+                        PopupUi.SnackBar(
+                            message = getString(
+                                R.string.toast_chose_keyboard,
+                                ime.label
+                            )
+                        )
+                    showPopup("chose_ime_success", snackBar)
+                }
+                .otherwise {
+                    useCase.showImePicker()
+                }
+                .onFailure { error ->
+                    val snackBar =
+                        PopupUi.SnackBar(message = error.getFullMessage(this@SettingsViewModel))
+                    showPopup("chose_ime_error", snackBar)
+                }
         }
     }
 

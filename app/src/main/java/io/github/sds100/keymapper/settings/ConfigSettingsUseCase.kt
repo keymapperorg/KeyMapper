@@ -57,7 +57,11 @@ class ConfigSettingsUseCaseImpl(
     }
 
     override suspend fun chooseCompatibleIme(): Result<ImeInfo> {
-        return imeHelper.chooseCompatibleInputMethod(fromForeground = true)
+        return imeHelper.chooseCompatibleInputMethod()
+    }
+
+    override suspend fun showImePicker(): Result<*> {
+        return inputMethodAdapter.showImePicker(fromForeground = true)
     }
 
     override fun <T> getPreference(key: Preferences.Key<T>) =
@@ -139,6 +143,7 @@ interface ConfigSettingsUseCase {
 
     fun enableCompatibleIme()
     suspend fun chooseCompatibleIme(): Result<ImeInfo>
+    suspend fun showImePicker(): Result<*>
 
     val defaultLongPressDelay: Flow<Int>
     val defaultDoublePressDelay: Flow<Int>

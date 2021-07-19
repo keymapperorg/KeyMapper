@@ -141,7 +141,7 @@ suspend infix fun <T, U> Result<T>.suspendThen(f: suspend (T) -> Result<U>) =
         is Error -> this
     }
 
-infix fun <T> Result<T>.otherwise(f: (error: Error) -> Result<T>) =
+inline infix fun <T> Result<T>.otherwise(f: (error: Error) -> Result<T>) =
     when (this) {
         is Success -> this
         is Error -> f(this)
