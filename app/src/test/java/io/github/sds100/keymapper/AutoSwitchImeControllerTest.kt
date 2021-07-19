@@ -9,7 +9,6 @@ import io.github.sds100.keymapper.system.inputmethod.AutoSwitchImeController
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.popup.PopupMessageAdapter
-import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -96,12 +95,12 @@ class AutoSwitchImeControllerTest {
                 )
             }
 
-            onBlocking { chooseIme(KEY_MAPPER_IME_ID, fromForeground = false) }.then {
+            onBlocking { chooseImeWithoutUserInput(KEY_MAPPER_IME_ID) }.then {
                 Success(
                     KEY_MAPPER_IME
                 )
             }
-            onBlocking { chooseIme(NORMAL_IME_ID, fromForeground = false) }.then {
+            onBlocking { chooseImeWithoutUserInput(NORMAL_IME_ID) }.then {
                 Success(
                     NORMAL_IME
                 )
@@ -173,9 +172,8 @@ class AutoSwitchImeControllerTest {
             fakeDevicesAdapter.onInputDeviceDisconnect.emit(FAKE_KEYBOARD)
 
             //THEN
-            verify(mockInputMethodAdapter, times(1)).chooseIme(
+            verify(mockInputMethodAdapter, times(1)).chooseImeWithoutUserInput(
                 NORMAL_IME_ID,
-                fromForeground = false
             )
 
             verify(mockResourceProvider, times(1)).getString(
@@ -197,9 +195,8 @@ class AutoSwitchImeControllerTest {
             fakeDevicesAdapter.onInputDeviceConnect.emit(FAKE_KEYBOARD)
 
             //THEN
-            verify(mockInputMethodAdapter, times(1)).chooseIme(
+            verify(mockInputMethodAdapter, times(1)).chooseImeWithoutUserInput(
                 KEY_MAPPER_IME_ID,
-                fromForeground = false
             )
 
             verify(mockResourceProvider, times(1)).getString(
