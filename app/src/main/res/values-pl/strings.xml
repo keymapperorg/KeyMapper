@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="no_action_chosen">Nie wybrano działania</string>
     <string name="accessibility_service_description">Key Mapper musi korzystać z usługi ułatwień dostępu, aby móc czytać naciśnięć przycisków/klawiszy i wykonywać wybrane działania.
     Usługa ułatwień dostępu czyta tylko zdarzeń związanych z klawiszami i wykrywa, w której aplikacji się znajdujesz. Aby to sprawdzić, możesz spojrzeć na kod źródłowy, do którego link znajduje się na ekranie Informacje.</string>
     <string name="selection_count">%d elementy</string>
@@ -8,28 +9,60 @@
     <string name="recyclerview_placeholder">¯\\_(ツ)_/¯\n\nNic tu nie ma!</string>
     <string name="triggers_recyclerview_placeholder">Zarejestruj trigger!</string>
     <string name="actions_recyclerview_placeholder">Dodaj działanie!</string>
+    <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nUtwórz mapę klawiszy!</string>
     <string name="action_shortcut_list_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nNie wybrano żadnych działań dla tego skrótu!</string>
+    <string name="no_key_maps">Nie utworzono żadnych map klawiszy!</string>
     <string name="everything_looks_good">Wszystko wygląda dobrze!</string>
     <string name="warning_the_app_will_work">Aplikacja będzie działać, ale niektóre rzeczy mogą wymagać naprawienia w zależności od tego, co robisz.</string>
     <string name="your_device_doesnt_support_some_actions">Twoje urządzenie nie obsługuje niektórych działań.</string>
+    <string name="tab_unsupported_actions">Nieobsługiwane działania</string>
     <string name="requires_root">WYMAGA ROOT</string>
     <string name="press_dot_dot_dot">Naciśnij…</string>
+    <string name="no_actions">Brak działań</string>
+    <string name="no_trigger">Brak wyzwalacza</string>
+    <string name="unknown_keycode">Nieznany kod klawisza: %s</string>
+    <string name="unknown_device_name">Nieznana nazwa urządzenia</string>
     <string name="on">Włącz</string>
     <string name="off">Wyłącz</string>
     <string name="follow_system">Z motywu systemu</string>
+    <string name="this_device">To urządzenie</string>
+    <string name="any_device">Dowolne urządzenie</string>
     <string name="trigger_device_name_not_found">Nazwa tego urządzenia nie jest znana</string>
     <string name="slider_default">Domyślny</string>
+    <string name="button_enable_accessibility_service">Włącz usługę ułatwień dostępu</string>
+    <string name="button_restart_accessibility_service">Uruchom ponownie usługę ułatwień dostępu</string>
+    <string name="share_backup">Udostępnij</string>
+    <string name="stop_repeating_dot_dot_dot">Przestań powtarzać…</string>
+    <string name="stop_repeating_when_trigger_released">Po zwolnieniu wyzwalacza</string>
+    <string name="stop_repeating_trigger_pressed_again">Po ponownym naciśnięciu wyzwalacza</string>
+    <string name="stop_repeating_limit_reached">Po osiągnięciu limitu</string>
+    <string name="stop_repeating_when_swiped_again">Po ponownym przesunięciu palcem</string>
+    <string name="stop_holding_down_when_trigger_released">Wyzwalacz zostanie zwolniony</string>
+    <string name="stop_holding_down_trigger_pressed_again">Wyzwalacz zostanie naciśnięty ponownie</string>
     <string name="show_hidden_apps">Pokaż ukryte aplikacje</string>
     <string name="modifiers">Modyfikatory</string>
     <string name="toggle">Włącz/wyłącz</string>
     <string name="tap_coordinate_screenshot_message">UWAGA!!! Te współrzędne są poprawne tylko wtedy, gdy urządzenie i zrzut ekranu są w tej samej orientacji! To działanie spowoduje anulowanie wszelkich dotknięć lub gestów, które wykonujesz na ekranie.\n\nJeśli potrzebujesz pomocy w znalezieniu współrzędnych punktu na ekranie, zrób zrzut ekranu, a następnie dotknij go w miejscu, w którym ma zostać wykonane to działanie.</string>
     <string name="dont_know_device_name">Nie znam nazwy urządzenia!</string>
     <string name="tap_actions_to_fix">Kliknij działania, aby naprawić!</string>
+    <string name="tap_constraints_to_fix">Kliknij ograniczenia, aby naprawić!</string>
+    <string name="shortcut_label_action">Wykonaj działania</string>
+    <string name="hold_down_until_trigger_is_dot_dot_dot">Przytrzymaj klawisz, aż…</string>
+    <string name="from_no_device">Brak urządzenia</string>
+    <string name="intent_extras_recycler_view_placeholder">¯\\_(ツ)_/¯\n\nBrak dodatków!</string>
+    <string name="content_description_fab_new_keymap">Utwórz nową mapę klawiszy</string>
+    <string name="clip_key_mapper_log">Dziennik Key Mapper</string>
+    <string name="sharesheet_title">Wyślij do</string>
     <string name="whats_new">Co nowego</string>
     <string name="caption_action_type_key">Kliknij klawisz na urządzeniu, który chcesz wprowadzić.
             \n\nUWAGA!
             Wprowadzenie tego kodu klawisza będzie działać tylko wtedy, gdy używasz klawiatury kompatybilnej z Key Mapper.</string>
+    <string name="caption_action_type_keycode">UWAGA!
+            Wprowadzenie tego kodu klawisza będzie działać tylko wtedy, gdy używasz klawiatury kompatybilnej z Key Mapper.</string>
+    <string name="caption_action_type_sound">Plik dźwiękowy zostanie skopiowany do prywatnego folderu danych Key Mapper, co oznacza, że Twoje działania będą nadal działać, nawet jeśli plik zostanie przeniesiony lub usunięty. Kopia zapasowa zostanie utworzona wraz z mapami klawiszy w folderze zip.
+    Zapisane pliki dźwiękowe można usunąć w ustawieniach.</string>
     <string name="caption_action_type_text">Wpisz tekst, który należy wkleić podczas wykonywania tego działania.</string>
+    <string name="caption_action_type_phone_call">Wprowadź numer telefonu.</string>
     <string name="caption_no_paired_bt_devices">Nie można znaleźć sparowanych urządzeń. Czy Bluetooth jest włączony?</string>
     <string name="switch_enabled">Włączone</string>
     <string name="disabled">Wyłączone</string>
