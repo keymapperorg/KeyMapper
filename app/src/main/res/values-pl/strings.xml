@@ -331,9 +331,11 @@
     <string name="dialog_message_change_location_or_disable">Zmienić lokalizację lub wyłączyć automatyczną kopię zapasową?</string>
     <string name="dialog_message_settings_no_external_devices_connected">Brak podłączonych urządzeń zewnętrznych.</string>
     <string name="dialog_title_install_gui_keyboard">Zainstaluj GUI klawiaturę Key Mapper</string>
+    <string name="dialog_title_install_leanback_keyboard">Zainstaluj klawiaturę Key Mapper Leanback</string>
     <string name="dialog_title_disable_battery_optimisation">Wyłącz optymalizację baterii</string>
     <string name="dialog_title_send_feedback">Prześlij opinię</string>
     <string name="dialog_title_reset_fingerprint_maps">Zresetuj mapy gestów czytnika linii papilarnych</string>
+    <string name="dialog_title_key_mapper_crashed">Key Mapper został zatrzymany lub uległ awarii</string>
     <string name="dialog_button_read_dont_kill_my_app_yes">Tak</string>
     <string name="dialog_button_read_dont_kill_my_app_no">Nie</string>
     <string name="dialog_title_failed_to_create_bug_report">Nie udało się utworzyć zgłoszenie o błędzie</string>
@@ -385,11 +387,13 @@
     <string name="notification_action_restart_accessibility_service">Uruchom ponownie</string>
     <string name="notification_accessibility_service_disabled_title">Usługa ułatwień dostępu jest wyłączona</string>
     <string name="notification_accessibility_service_disabled_text">Kliknij aby uruchomić usługę ułatwień dostępu.</string>
+    <string name="notification_accessibility_service_crashed_title">Usługa ułatwień dostępu wymaga ponownego uruchomienia!</string>
     <!--  remove accessibility from the word because the other notification buttons arent visible on small screens  -->
     <string name="notification_action_stop_acc_service">Zatrzymaj usługę</string>
     <string name="notification_keyboard_hidden_title">Klawiatura jest ukryta!</string>
     <string name="notification_toggle_keyboard_title">Włącz/wyłącz klawiaturę Key Mapper</string>
     <string name="notification_toggle_keyboard_action">Włącz/wyłącz</string>
+    <string name="notification_setup_chosen_devices_again_title">Musisz ponownie skonfigurować niektóre ustawienia!</string>
     <!-- Notification strings -->
     <!--Preference titles and summaries-->
     <string name="title_pref_long_press_delay">Domyślny czas przytrzymania (ms)</string>
@@ -409,9 +413,11 @@
     <string name="title_pref_root_permission">Key Mapper ma uprawnienia roota</string>
     <string name="title_pref_dark_theme">Ciemny motyw</string>
     <string name="title_pref_notification_settings">Ustawienia powiadomień</string>
+    <string name="title_pref_show_toggle_keyboard_notification">Włącz/wyłącz powiadomienie klawiatury Key Mapper</string>
     <string name="title_pref_hide_home_screen_alerts">Ukryj alerty na ekranie głównym</string>
     <string name="title_pref_reroute_keyevents">Obejście błędu Androida 11</string>
     <string name="title_pref_devices_to_reroute_keyevents_choose_devices">4. Wybierz urządzenia</string>
+    <string name="title_pref_devices_to_reroute_keyevents_choose_ime">3. Użyj klawiatury, którą właśnie włączyłeś(-aś)</string>
     <string name="title_pref_toggle_logging">Włącz dodatkowe logowanie</string>
     <string name="title_pref_view_and_share_log">Wyświetl i udostępnij dziennik</string>
     <string name="title_pref_report_issue">Zgłoś problem</string>
@@ -421,9 +427,11 @@
     <string name="title_pref_default_options">Domyślne opcje map klawiszy</string>
     <!--Preference titles and summaries-->
     <!--Preference categories-->
+    <string name="title_pref_category_ime_picker">Automatycznie pokazuj wybór klawiatury</string>
     <string name="title_pref_category_notifications">Powiadomienia</string>
     <string name="title_pref_category_defaults">Domyślne ustawienia</string>
     <string name="title_pref_category_root">Ustawienia roota</string>
+    <string name="title_pref_category_write_secure_settings">Wymóg uprawnienia WRITE_SECURE_SETTINGS</string>
     <string name="title_pref_category_log">Logowanie</string>
     <!--Preference categories-->
     <!-- About activity-->
@@ -459,6 +467,7 @@
     <string name="flag_long_press">Długie naciśnięcie</string>
     <string name="flag_vibrate">Wibruj</string>
     <string name="flag_show_toast">Pokaż komunikat na ekranie</string>
+    <string name="flag_detect_triggers_screen_off">Wykryj wyzwalacz, gdy ekran jest wyłączony</string>
     <string name="flag_repeat_build_description_start">Powtórz</string>
     <string name="flag_repeat_build_description_limit">%d razy</string>
     <string name="flag_repeat_build_description_repeat_delay">po %dms</string>
@@ -484,13 +493,16 @@
     <string name="showcase_record_trigger_title">Usługa ułatwień dostępu jest wyłączona</string>
     <string name="showcase_record_trigger_description">Możesz rejestrować trigger tylko wtedy, gdy usługa ułatwień dostępu jest włączona.</string>
     <string name="showcase_note_from_the_developer_title">Uwaga od programisty</string>
+    <string name="showcase_disable_battery_optimisation_title">Key Mapper może nagle przestać działać!</string>
     <string name="showcase_disable_battery_optimisation_button_turn_off">Wyłącz</string>
     <string name="showcase_disable_battery_optimisation_button_dont_kill_my_app">Przejdź do dontkillmyapp.com</string>
     <string name="showcase_dnd_access_title_disabled">Zmieniasz funkcje przycisków głośności?</string>
     <string name="showcase_dnd_access_title_enabled">Możesz zmienić funkcje przycisków głośności</string>
     <string name="showcase_dnd_access_description_enabled">Wszystko jest dobrze! :)</string>
     <string name="showcase_contributing_title">Wkład</string>
+    <string name="showcase_fingerprint_gesture_support_title_supported_unknown">Zmień funkcje gestów czytnika linii papilarnych</string>
     <string name="showcase_fingerprint_gesture_support_button">Włącz</string>
+    <string name="showcase_setup_chosen_devices_again_title">Musisz ponownie skonfigurować niektóre ustawienia</string>
     <!-- Showcase -->
     <!-- system action options -->
     <string name="stream_accessibility">Ułatwienia dostępu</string>
@@ -514,6 +526,7 @@
     <string name="tile_pause">Wstrzymaj mapy klawiszy</string>
     <string name="tile_resume">Wznów mapy klawiszy</string>
     <string name="tile_service_disabled">Usługa wyłączona</string>
+    <string name="tile_keymapper_keyboard_service_disabled_content_description">Serwis klawiatury Key Mapper jest wyłączony</string>
     <string name="tile_toggle_keymapper_keyboard">Włącz/wyłącz klawiaturę Key Mapper</string>
     <!-- Tiles -->
     <!-- Meta States -->
@@ -545,12 +558,16 @@
     <string name="error_app_is_disabled">Aplikacja jest wyłączona!</string>
     <string name="error_app_is_disabled_package_name">Aplikacja %s jest wyłączona!</string>
     <string name="error_requires_root">To wymaga uprawnień roota!</string>
+    <string name="error_action_requires_camera_permission">Ta czynność wymaga uprawnień do aparatu!</string>
     <string name="error_sdk_version_too_low">To wymaga Androida %s</string>
+    <string name="error_sdk_version_too_high">To jest obsługiwane tylko do wersji Androida %s</string>
     <string name="error_feature_not_available">Twoje urządzenie nie obsługuje %s.</string>
     <string name="error_flag_not_found">Nie znaleziono flagi \"%s\"!</string>
+    <string name="error_cant_find_ime_settings">Nie można wykryć strony ustawień klawiatury!</string>
     <string name="error_in_do_not_disturb_mode">W trybie Nie przeszkadzać!</string>
     <string name="error_opening_app_shortcut">Błąd podczas otwierania tego skrótu aplikacji</string>
     <string name="dnd_access_granted">Uprawienie na zmianę trybu Nie przeszkadzać zostało udzielone!</string>
+    <string name="error_no_app_found_to_open_url">Nie znaleziono aplikacji do otwarcia tego adresu URL</string>
     <string name="error_camera_in_use">Aparat jest w użyciu!</string>
     <string name="error_camera_disconnected">Aparat jest odłączony!</string>
     <string name="error_camera_disabled">Aparat jest wyłączony!</string>
@@ -561,11 +578,18 @@
     <string name="error_back_flash_not_found">Brak lampy błyskowej z tyłu</string>
     <string name="error_accessibility_service_disabled_record_trigger">Usługa ułatwień dostępu musi być włączona!</string>
     <string name="error_accessibility_service_enabled">Usługa ułatwień dostępu jest włączona!</string>
+    <string name="error_accessibility_service_disabled">Usługa ułatwień dostępu musi być włączona!</string>
+    <string name="error_launcher_shortcuts_not_supported">Twój launcher nie obsługuje skrótów.</string>
+    <string name="fixed_need_write_secure_settings_permission">Przyznano uprawnienie WRITE_SECURE_SETTINGS.</string>
+    <string name="error_key_mapper_ime_service_disabled">Klawiatura Key Mapper musi być włączona!</string>
     <string name="error_ime_service_enabled">Klawiatura Key Mapper jest włączona!</string>
     <string name="error_ime_not_found">Nie można znaleźć metody wprowadzania %s</string>
+    <string name="error_cant_show_ime_picker_in_background">Wybór metody wprowadzania nie może być wyświetlony!</string>
     <string name="error_failed_to_find_accessibility_node">Nie udało się znaleźć węzła dostępności!</string>
     <string name="error_failed_to_perform_accessibility_global_action">Nie udało się wykonać czynności globalnej %s!</string>
     <string name="error_extra_not_found">Nie znaleziono dodatku (%s)!</string>
+    <string name="error_duplicate_constraint">Nie możesz mieć dwóch takich samych ograniczeń!</string>
+    <string name="error_fingerprint_gesture_map_constraint_exists">Ten gest ma już to ograniczenie!</string>
     <string name="error_cant_be_empty">Nie może być puste!</string>
     <string name="error_this_is_unsupported">To nie jest obsługiwane. :(</string>
     <string name="error_device_not_found">Nie znaleziono urządzenia!</string>
@@ -574,12 +598,16 @@
     <string name="error_file_access_denied">Odmowa dostępu do pliku! %s</string>
     <string name="error_io_error">Nieznany błąd wejścia/wyjścia!</string>
     <string name="error_file_operation_cancelled">Anulowane!</string>
+    <string name="error_file_access_denied_automatic_backup">Nie udało się utworzyć kopii zapasowej do pliku. Może został usunięty?</string>
     <string name="error_invalid_number">Nieprawidłowa liczba!</string>
     <string name="error_number_too_small">Musi wynosić co najmniej %s!</string>
     <string name="error_number_too_big">Musi wynosić co najwyżej %s!</string>
     <string name="success_battery_optimisation_disabled">Optymalizacja baterii jest wyłączona!</string>
+    <string name="error_denied_notification_listener_service_permission">Odmowa dostępu do powiadomień!</string>
     <string name="error_invalid_intent_extra_value">Nieprawidłowe!</string>
+    <string name="error_denied_call_phone_permission">Odmowa uprawienia na rozpoczęcie połączeń telefonicznych!</string>
     <string name="error_corrupt_json_file">Uszkodzony plik JSON!</string>
+    <string name="error_voice_assistant_not_found">Nie ma zainstalowanej aplikacji asystującą!</string>
     <string name="error_insufficient_permissions">Brak uprawnień</string>
     <string name="error_corrupt_action">Uszkodzone działanie</string>
     <string name="error_no_media_sessions">Brak aplikacji odtwarzających multimedia!</string>
@@ -599,6 +627,7 @@
     <string name="error_directory_not_found">Nie znaleziono katalogu! %s</string>
     <string name="error_cant_find_sound_file">Nie można znaleźć pliku dźwiękowego!</string>
     <string name="error_storage_permission_denied">Odmowa dostępu do pamięci!</string>
+    <string name="error_matching_source_and_target_paths">Ścieżka źródłowa i docelowa nie mogą być takie same!</string>
     <string name="error_no_space_left_at_target">Brak miejsca na cel! %s</string>
     <!-- Error messages -->
     <!-- System action labels -->
@@ -618,6 +647,7 @@
     <string name="action_increase_stream_formatted">Zwiększ strumień %s</string>
     <string name="action_decrease_stream">Zmniejsz strumień</string>
     <string name="action_decrease_stream_formatted">Zmniejsz strumień %s</string>
+    <string name="action_cycle_vibrate_ring">Przełącz pomiędzy trybami dzwonka (dzwonek, wibracja)</string>
     <string name="action_change_ringer_mode">Zmień tryb dzwonka</string>
     <string name="action_change_ringer_mode_formatted">Przełącz na tryb %s</string>
     <string name="action_toggle_dnd_mode">Włącz/wyłącz tryb Nie przeszkadzać</string>
@@ -653,6 +683,7 @@
     <string name="action_play_media_package">Wznów odtwarzanie multimediów dla aplikacji</string>
     <string name="action_play_media_package_formatted">Wznów multimedia dla %s</string>
     <string name="action_play_pause_media">Odtwórz/wstrzymaj odtwarzanie multimediów</string>
+    <string name="action_play_pause_media_package">Odtwórz/wstrzymaj odtwarzanie multimediów dla aplikacji</string>
     <string name="action_play_pause_media_package_formatted">Odtwórz/Wstrzymaj multimedia dla %s</string>
     <string name="action_next_track">Następny utwór</string>
     <string name="action_next_track_package">Następny utwór dla aplikacji</string>
@@ -671,6 +702,7 @@
     <string name="action_open_recents">Naciśnij Przegląd</string>
     <string name="action_open_menu">Otwórz menu</string>
     <string name="action_toggle_split_screen">Włącz/wyłącz podzielony ekran</string>
+    <string name="action_go_last_app">Przejdź do ostatniej aplikacji. (Podwójne naciśnięcie przycisku Przegląd)</string>
     <string name="action_toggle_flashlight">Włącz/wyłącz latarkę</string>
     <string name="action_enable_flashlight">Włącz latarkę</string>
     <string name="action_disable_flashlight">Wyłącz latarkę</string>
