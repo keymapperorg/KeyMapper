@@ -294,10 +294,8 @@
     <!--Preference titles and summaries-->
     <!--Preference titles and summaries-->
     <!--Preference categories-->
-    <string name="title_pref_category_ime_picker">Klavye seçici</string>
     <string name="title_pref_category_notifications">Bildirimler</string>
     <string name="title_pref_category_defaults">Varsayılanlar</string>
-    <string name="title_pref_category_root">KÖK ERİŞİMİ</string>
     <string name="summary_pref_category_root">Bu ayarlar sadece kök erişimi ile çalışır. Eğer kök erişimi hakkında bilginiz yoksa, cihazınızda kök erişimi var mı bilmiyorsanız lütfen düşük puan vermeyin. :)</string>
     <string name="title_pref_category_write_secure_settings">WRITE_SECURE_SETTINGS iznine ihtiyaç var</string>
     <!--Preference categories-->
