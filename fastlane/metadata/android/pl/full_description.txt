@@ -1,4 +1,4 @@
-Funkcje jakich przycisków mogę zmienić?
+Funkcje jakich przycisków można zmienić?
 
  * Gesty czytnika linii papilarnych na obsługiwanych urządzeniach.
  * Przyciski głośności.
@@ -7,39 +7,39 @@ Funkcje jakich przycisków mogę zmienić?
  * Przyciski na innych podłączonych urządzeniach również powinny działać.
 
 TYLKO FIZYCZNE przyciski mogą mieć zmienione funkcje.
-NIE MA GWARANCJI, że twoje przyciski mogą być używane, a także ta aplikacja NIE JEST przeznaczona do sterowania grami. Producent Twojego urządzenia może uniemożliwić ich zmianę.
+NIE MA GWARANCJI, że Twoje przyciski mogą być używane, a także ta aplikacja NIE JEST przeznaczona do sterowania grami. Producent Twojego urządzenia może uniemożliwić ich zmianę.
 
 Możesz połączyć wiele przycisków z określonego lub dowolnego urządzenia, aby utworzyć "wyzwalacz". Każdy wyzwalacz może mieć wiele czynności. Przyciski można ustawić tak, aby były naciskane jednocześnie lub jeden po drugim w kolejności. Przyciski mogą być wykorzystane, gdy są wciśnięte krótko, długo lub podwójnie. Zmiana funkcji może mieć zestaw "ograniczeń", aby działała tylko w określonych sytuacjach.
 
-Funkcje jakich przycisków nie mogę zmieniać?
+Funkcje jakich przycisków nie można zmieniać?
  * Przycisk zasilania
  * Przycisk Bixby
  * Przyciski myszy
- * Dpad, thumb sticks or triggers on game controllers
+ * Krzyżak, gałki albo spusty na kontrolerach gier
 
-Your key maps don't work if the screen is OFF. This is a limitation in Android. There is nothing the dev can do.
+Twoje zmiany funkcji nie będą działać, gdy ekran jest WYŁĄCZONY. To jest ograniczenie w systemie Android. Programista nic nie może na to poradzić.
 
-What can I remap my keys to do?
- Some actions will only work on rooted devices and specific Android versions.
+Jakie funkcje można przypisać do przycisków?
+ Niektóre czynności będą działać tylko na zrootowanych urządzeniach i określonych wersjach Androida.
 
- * Open an app
- * Open an app shortcut.
- * Open a URL
- * Create Intents
- * Go back
- * Go home
- * Open recents
- * Open menu
- * Expand notification drawer
- * Expand quick settings
- * Collapse status bar
- * Toggle/enable/disable WiFi (ROOT only for Android 10+)
- * Toggle/enable/disable Bluetooth
- * Toggle/enable/disable mobile data (ROOT only)
- * Toggle between play and pause/just play/just pause media
- * Fast forward/rewind
- * Next/previous track
- * Volume up/down
+ * Otwórz aplikację
+ * Otwórz skrót aplikacji
+ * Otwórz adres URL
+ * Twórz intencje (aktywności)
+ * Naciśnij Wstecz
+ * Naciśnij przycisk ekranu głównego
+ * Naciśnij Przegląd
+ * Otwórz menu
+ * Rozwiń pasek powiadomień
+ * Rozwiń szybkie ustawienia
+ * Zwiń pasek stanu
+ * Przełącz/włącz/wyłącz Wi-Fi (tylko na zrootowanych urządzeniach z Androidem 10+)
+ * Przełącz/włącz/wyłącz Bluetooth
+ * Przełącz/włącz/wyłącz komórkową transmisję danych (tylko na zrootowanych urządzeniach)
+ * Przełącz między odtwarzaniem a pauzą / tylko odtwórz / tylko spauzuj
+ * Przewiń do przodu/do tyłu
+ * Następny/poprzedni utwór
+ * Zwiększ/zmniejsz głośność
  * Increase/decrease a specific volume stream
  * Show the volume dialog
  * Cycle through and change the ringer mode
