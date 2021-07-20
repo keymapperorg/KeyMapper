@@ -7,7 +7,7 @@
     <string name="enable">Włącz</string>
     <string name="open">Otwórz</string>
     <string name="recyclerview_placeholder">¯\\_(ツ)_/¯\n\nNic tu nie ma!</string>
-    <string name="triggers_recyclerview_placeholder">Zarejestruj trigger!</string>
+    <string name="triggers_recyclerview_placeholder">Nagraj wyzwalacz!</string>
     <string name="actions_recyclerview_placeholder">Dodaj działanie!</string>
     <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nUtwórz mapę klawiszy!</string>
     <string name="action_shortcut_list_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nNie wybrano żadnych działań dla tego skrótu!</string>
@@ -329,9 +329,14 @@
     <string name="dialog_message_sequence_trigger_explanation">Trigger \"kolejkowy\" ma limit czasu w przeciwieństwie do triggerów równoległych. Oznacza to, że po naciśnięciu pierwszego klawisza jest określony czas na wprowadzenie pozostałych. Wszystkie klawisze, które dodałeś do triggera, nie wykonają swojego zwykłego działania, dopóki nie zostanie osiągnięty limit czasu. Ten limit można zmienić na karcie \"Opcje\".</string>
     <string name="dialog_message_bt_constraint_limitation">Android nie pozwala aplikacjom na odczytywanie listy aktualnie połączonych (niesparowanych) urządzeń Bluetooth. Aplikacje mogą je wykrywać tylko w momencie, gdy się łączą i rozłączają. Dlatego jeśli urządzenie Bluetooth było już połączone z urządzeniem w momencie uruchomienia usługi ułatwień dostępu, konieczne będzie ponowne połączenie, aby aplikacja mogła je wykryć.</string>
     <string name="dialog_message_change_location_or_disable">Zmienić lokalizację lub wyłączyć automatyczną kopię zapasową?</string>
+    <string name="dialog_message_settings_no_external_devices_connected">Brak podłączonych urządzeń zewnętrznych.</string>
+    <string name="dialog_title_install_gui_keyboard">Zainstaluj GUI klawiaturę Key Mapper</string>
+    <string name="dialog_title_disable_battery_optimisation">Wyłącz optymalizację baterii</string>
     <string name="dialog_title_send_feedback">Prześlij opinię</string>
+    <string name="dialog_title_reset_fingerprint_maps">Zresetuj mapy gestów czytnika linii papilarnych</string>
     <string name="dialog_button_read_dont_kill_my_app_yes">Tak</string>
     <string name="dialog_button_read_dont_kill_my_app_no">Nie</string>
+    <string name="dialog_title_failed_to_create_bug_report">Nie udało się utworzyć zgłoszenie o błędzie</string>
     <string name="pos_yes">Tak</string>
     <string name="pos_done">Gotowe</string>
     <string name="pos_opt_in">Akceptuj</string>
@@ -345,6 +350,8 @@
     <string name="pos_ok">OK</string>
     <string name="pos_turn_on">Włącz</string>
     <string name="pos_restart">Zrestartuj</string>
+    <string name="pos_never_show_again">Nie pokazuj ponownie</string>
+    <string name="pos_go_to_dont_kill_my_app">Otwórz przewodnik online</string>
     <string name="neg_turn_off">Wyłącz</string>
     <string name="neg_stay_out">Nie wchodź</string>
     <string name="neg_no">Nie</string>
@@ -362,12 +369,17 @@
     <!-- Dialog stuff -->
     <!-- Notification strings -->
     <string name="notification_channel_ime_picker">Wybór klawiatury</string>
+    <string name="notification_channel_toggle_mappings">Wstrzymaj/wznów mapy klawiszy</string>
     <string name="notification_channel_keyboard_hidden">Ostrzeżenie dotyczące ukrytej klawiatury</string>
+    <string name="notification_channel_toggle_keyboard">Włącz/wyłącz klawiaturę Key Mapper</string>
     <string name="notification_channel_new_features">Nowe funkcje</string>
     <string name="notification_ime_persistent_text">Kliknij aby zmienić klawiaturę.</string>
+    <string name="notification_ime_persistent_title">Wybór klawiatury</string>
     <string name="notification_keymaps_resumed_title">Uruchomione</string>
+    <string name="notification_keymaps_resumed_text">Kliknij, aby otworzyć Key Mapper.</string>
     <string name="notification_action_pause">Wstrzymaj</string>
     <string name="notification_keymaps_paused_title">Zatrzymano</string>
+    <string name="notification_keymaps_paused_text">Kliknij, aby otworzyć Key Mapper.</string>
     <string name="notification_action_resume">Wznów</string>
     <string name="notification_action_dismiss">Odrzuć</string>
     <string name="notification_action_restart_accessibility_service">Uruchom ponownie</string>
@@ -376,19 +388,37 @@
     <!--  remove accessibility from the word because the other notification buttons arent visible on small screens  -->
     <string name="notification_action_stop_acc_service">Zatrzymaj usługę</string>
     <string name="notification_keyboard_hidden_title">Klawiatura jest ukryta!</string>
+    <string name="notification_toggle_keyboard_title">Włącz/wyłącz klawiaturę Key Mapper</string>
     <string name="notification_toggle_keyboard_action">Włącz/wyłącz</string>
     <!-- Notification strings -->
     <!--Preference titles and summaries-->
     <string name="title_pref_long_press_delay">Domyślny czas przytrzymania (ms)</string>
     <string name="title_pref_double_press_delay">Domyślny limit czasu dwukrotnego kliknięcia (ms)</string>
+    <string name="title_pref_vibration_duration">Domyślny czas trwania wibracji (ms)</string>
+    <string name="title_pref_repeat_delay">Domyślne opóźnienie powtarzania (ms)</string>
+    <string name="title_pref_repeat_rate">Domyślne opóźnienie między powtórzeniami (ms)</string>
     <string name="title_pref_sequence_trigger_timeout">Domyślny limit czasu kolejkowego triggera (ms)</string>
     <string name="title_pref_reset_defaults">Zresetuj</string>
+    <string name="summary_pref_force_vibrate">Wymuś wibracje wszystkich map klawiszy.</string>
     <string name="title_pref_force_vibrate">Wymuś wibracje</string>
+    <string name="title_pref_show_ime_picker_notification">Powiadomienie wyboru klawiatury</string>
+    <string name="title_pref_show_toggle_keymaps_notification">Powiadomienie o wstrzymaniu/wznowieniu mapowania klawiszy</string>
     <string name="summary_pref_automatic_backup_location_disabled">Nie wybrano lokalizacji.</string>
     <string name="title_pref_choose_devices">Wybierz urządzenie</string>
     <string name="title_pref_auto_show_ime_picker">Automatycznie pokazuj wybór klawiatury</string>
+    <string name="title_pref_root_permission">Key Mapper ma uprawnienia roota</string>
     <string name="title_pref_dark_theme">Ciemny motyw</string>
+    <string name="title_pref_notification_settings">Ustawienia powiadomień</string>
+    <string name="title_pref_hide_home_screen_alerts">Ukryj alerty na ekranie głównym</string>
+    <string name="title_pref_reroute_keyevents">Obejście błędu Androida 11</string>
+    <string name="title_pref_devices_to_reroute_keyevents_choose_devices">4. Wybierz urządzenia</string>
+    <string name="title_pref_toggle_logging">Włącz dodatkowe logowanie</string>
+    <string name="title_pref_view_and_share_log">Wyświetl i udostępnij dziennik</string>
     <string name="title_pref_report_issue">Zgłoś problem</string>
+    <string name="title_pref_delete_sound_files">Usuń pliki dźwiękowe</string>
+    <string name="title_pref_grant_write_secure_settings_not_granted">Przyznaj uprawnienie</string>
+    <string name="title_pref_grant_write_secure_settings_granted">Uprawnienia przyznane</string>
+    <string name="title_pref_default_options">Domyślne opcje map klawiszy</string>
     <!--Preference titles and summaries-->
     <!--Preference categories-->
     <string name="title_pref_category_notifications">Powiadomienia</string>
@@ -402,10 +432,13 @@
     <string name="pref_title_privacy_policy">Polityka prywatności</string>
     <string name="pref_title_credits">Twórcy</string>
     <string name="pref_title_source_code">Kod źródłowy</string>
+    <string name="pref_title_developer_github">Profil GitHub programisty</string>
+    <string name="pref_title_rate_review">Oceń i napisz recenzję</string>
     <string name="pref_title_xda_thread">Wątek na XDA</string>
     <string name="pref_title_version">Wersja</string>
     <string name="pref_title_translate">Pomóż w tłumaczeniu</string>
     <string name="pref_title_discord">Serwer Discord</string>
+    <string name="pref_title_youtube_channel">Kanał YouTube (Poradniki)</string>
     <!-- About activity-->
     <!--Action Types Titles-->
     <string name="action_type_title_application">Aplikacja</string>
@@ -422,22 +455,39 @@
     <string name="action_type_sound">Dźwięk</string>
     <!--Action Types Titles-->
     <!--flags-->
+    <string name="flag_show_volume_dialog">Pokaż wyskakujące okienko głośności</string>
     <string name="flag_long_press">Długie naciśnięcie</string>
     <string name="flag_vibrate">Wibruj</string>
+    <string name="flag_show_toast">Pokaż komunikat na ekranie</string>
     <string name="flag_repeat_build_description_start">Powtórz</string>
     <string name="flag_repeat_build_description_limit">%d razy</string>
     <string name="flag_repeat_build_description_repeat_delay">po %dms</string>
     <string name="flag_repeat_build_description_repeat_rate">co %dms</string>
+    <string name="flag_repeat_build_description_until_swiped_again">do ponownego przeciągnięcia</string>
+    <string name="flag_repeat_build_description_until_pressed_again">do ponownego naciśnięcia</string>
     <string name="flag_repeat_build_description_until_released">do zwolnienia</string>
     <string name="flag_repeat_actions">Powtórz</string>
+    <string name="flag_repeat_actions_trigger_released">Powtarzaj aż do zwolnienia</string>
+    <string name="flag_repeat_actions_pressed_again">Powtarzaj aż do ponownego naciśnięcia</string>
     <string name="flag_hold_down">Przytrzymaj</string>
+    <string name="flag_hold_down_until_pressed_again">Przytrzymaj do ponownego naciśnięcia</string>
+    <string name="flag_dont_override_default_action">Nie nadpisuj domyślnej czynności</string>
+    <string name="flag_hold_down_until_swiped_again">Przytrzymaj do ponownego przeciągnięcia</string>
+    <string name="flag_trigger_from_other_apps">Wyzwalaj z innych aplikacji</string>
     <!--flags-->
     <!-- Showcase -->
+    <string name="showcase_accessibility_service_title_enabled">Usługa ułatwień dostępu jest włączona :)</string>
     <string name="showcase_accessibility_service_description_enabled">Wszystko jest dobrze.</string>
+    <string name="showcase_accessibility_service_title_crashed">Uruchom ponownie usługę ułatwień dostępu</string>
     <string name="showcase_accessibility_service_button_restart">Uruchom ponownie</string>
+    <string name="showcase_accessibility_service_title_disabled">Włącz usługę ułatwień dostępu</string>
     <string name="showcase_record_trigger_title">Usługa ułatwień dostępu jest wyłączona</string>
     <string name="showcase_record_trigger_description">Możesz rejestrować trigger tylko wtedy, gdy usługa ułatwień dostępu jest włączona.</string>
+    <string name="showcase_note_from_the_developer_title">Uwaga od programisty</string>
     <string name="showcase_disable_battery_optimisation_button_turn_off">Wyłącz</string>
+    <string name="showcase_disable_battery_optimisation_button_dont_kill_my_app">Przejdź do dontkillmyapp.com</string>
+    <string name="showcase_dnd_access_title_disabled">Zmieniasz funkcje przycisków głośności?</string>
+    <string name="showcase_dnd_access_title_enabled">Możesz zmienić funkcje przycisków głośności</string>
     <string name="showcase_dnd_access_description_enabled">Wszystko jest dobrze! :)</string>
     <string name="showcase_contributing_title">Wkład</string>
     <string name="showcase_fingerprint_gesture_support_button">Włącz</string>
@@ -462,6 +512,9 @@
     <!-- system action options -->
     <!-- Tiles -->
     <string name="tile_pause">Wstrzymaj mapy klawiszy</string>
+    <string name="tile_resume">Wznów mapy klawiszy</string>
+    <string name="tile_service_disabled">Usługa wyłączona</string>
+    <string name="tile_toggle_keymapper_keyboard">Włącz/wyłącz klawiaturę Key Mapper</string>
     <!-- Tiles -->
     <!-- Meta States -->
     <string name="meta_state_ctrl">Ctrl</string>
@@ -483,53 +536,175 @@
     <string name="meta_state_scroll_lock">Scroll Lock</string>
     <!-- Meta States -->
     <!-- Error messages -->
+    <string name="error_must_type_a_key">Musisz wpisać klawisz!</string>
+    <string name="error_must_have_atleast_one_trigger">Musisz mieć co najmniej jeden wyzwalacz</string>
+    <string name="error_must_choose_action">Musisz wybrać czynność!</string>
     <string name="error_must_have_a_title">Skrót musi mieć nazwę!</string>
     <string name="error_shortcut_not_found">Nie można znaleźć skrótu. Czy ta aplikacja jest zainstalowana i włączona?</string>
+    <string name="error_app_isnt_installed_brief">Aplikacja nie jest zainstalowana!</string>
+    <string name="error_app_is_disabled">Aplikacja jest wyłączona!</string>
+    <string name="error_app_is_disabled_package_name">Aplikacja %s jest wyłączona!</string>
+    <string name="error_requires_root">To wymaga uprawnień roota!</string>
+    <string name="error_sdk_version_too_low">To wymaga Androida %s</string>
+    <string name="error_feature_not_available">Twoje urządzenie nie obsługuje %s.</string>
+    <string name="error_flag_not_found">Nie znaleziono flagi \"%s\"!</string>
+    <string name="error_in_do_not_disturb_mode">W trybie Nie przeszkadzać!</string>
     <string name="error_opening_app_shortcut">Błąd podczas otwierania tego skrótu aplikacji</string>
     <string name="dnd_access_granted">Uprawienie na zmianę trybu Nie przeszkadzać zostało udzielone!</string>
+    <string name="error_camera_in_use">Aparat jest w użyciu!</string>
+    <string name="error_camera_disconnected">Aparat jest odłączony!</string>
+    <string name="error_camera_disabled">Aparat jest wyłączony!</string>
     <string name="error_camera_error">Błąd aparatu!</string>
+    <string name="error_max_cameras_in_use">Maksymalna liczba aparatów w użyciu!</string>
+    <string name="error_camera_access_exception">Nie można uzyskać dostępu do aparatu!</string>
     <string name="error_front_flash_not_found">Brak przedniej lampy błyskowej</string>
     <string name="error_back_flash_not_found">Brak lampy błyskowej z tyłu</string>
     <string name="error_accessibility_service_disabled_record_trigger">Usługa ułatwień dostępu musi być włączona!</string>
+    <string name="error_accessibility_service_enabled">Usługa ułatwień dostępu jest włączona!</string>
+    <string name="error_ime_service_enabled">Klawiatura Key Mapper jest włączona!</string>
+    <string name="error_ime_not_found">Nie można znaleźć metody wprowadzania %s</string>
+    <string name="error_failed_to_find_accessibility_node">Nie udało się znaleźć węzła dostępności!</string>
+    <string name="error_failed_to_perform_accessibility_global_action">Nie udało się wykonać czynności globalnej %s!</string>
+    <string name="error_extra_not_found">Nie znaleziono dodatku (%s)!</string>
+    <string name="error_cant_be_empty">Nie może być puste!</string>
+    <string name="error_this_is_unsupported">To nie jest obsługiwane. :(</string>
+    <string name="error_device_not_found">Nie znaleziono urządzenia!</string>
+    <string name="error_failed_to_pick_file">Nie udało się wybrać pliku</string>
+    <string name="error_empty_json">Pusty plik JSON!</string>
+    <string name="error_file_access_denied">Odmowa dostępu do pliku! %s</string>
+    <string name="error_io_error">Nieznany błąd wejścia/wyjścia!</string>
     <string name="error_file_operation_cancelled">Anulowane!</string>
+    <string name="error_invalid_number">Nieprawidłowa liczba!</string>
+    <string name="error_number_too_small">Musi wynosić co najmniej %s!</string>
+    <string name="error_number_too_big">Musi wynosić co najwyżej %s!</string>
+    <string name="success_battery_optimisation_disabled">Optymalizacja baterii jest wyłączona!</string>
     <string name="error_invalid_intent_extra_value">Nieprawidłowe!</string>
+    <string name="error_corrupt_json_file">Uszkodzony plik JSON!</string>
+    <string name="error_insufficient_permissions">Brak uprawnień</string>
     <string name="error_corrupt_action">Uszkodzone działanie</string>
+    <string name="error_no_media_sessions">Brak aplikacji odtwarzających multimedia!</string>
+    <string name="error_source_file_not_found">Nie znaleziono pliku źródłowego! %s</string>
+    <string name="error_target_file_not_found">Nie znaleziono pliku docelowego! %s</string>
+    <string name="error_failed_to_dispatch_gesture">Nie udało się wprowadzić gestu!</string>
+    <string name="error_failed_to_modify_system_setting">Nie udało się zmodyfikować ustawienia systemu %s!</string>
+    <string name="error_ime_disabled">Musisz włączyć %s!</string>
+    <string name="error_failed_to_change_ime">Nie udało się zmienić metody wprowadzania!</string>
+    <string name="error_no_camera_app">Twoje urządzenie nie ma aplikacji aparatu!</string>
+    <string name="error_no_device_assistant">Twoje urządzenie nie ma aplikacji asystującą!</string>
+    <string name="error_no_settings_app">Twoje urządzenie nie ma aplikacji ustawień!</string>
+    <string name="error_no_app_to_open_url">Żadna aplikacja nie może otworzyć tego adresu URL!</string>
+    <string name="error_file_creation_failed">Nie udało się utworzyć pliku!</string>
+    <string name="error_not_a_directory">To nie folder! %s</string>
+    <string name="error_not_a_file">To nie plik! %s</string>
+    <string name="error_directory_not_found">Nie znaleziono katalogu! %s</string>
+    <string name="error_cant_find_sound_file">Nie można znaleźć pliku dźwiękowego!</string>
+    <string name="error_storage_permission_denied">Odmowa dostępu do pamięci!</string>
+    <string name="error_no_space_left_at_target">Brak miejsca na cel! %s</string>
     <!-- Error messages -->
     <!-- System action labels -->
     <string name="action_toggle_wifi">Włącz/wyłącz Wi-Fi</string>
     <string name="action_enable_wifi">Włącz Wi-Fi</string>
     <string name="action_disable_wifi">Wyłącz Wi-Fi</string>
+    <string name="action_toggle_bluetooth">Włącz/wyłącz Bluetooth</string>
+    <string name="action_enable_bluetooth">Włącz Bluetooth</string>
+    <string name="action_disable_bluetooth">Wyłącz Bluetooth</string>
     <string name="action_volume_up">Zwiększ głośność</string>
     <string name="action_volume_down">Zmniejsz głośność</string>
     <string name="action_volume_mute">Wycisz głośność</string>
     <string name="action_toggle_mute">Wycisz/włącz dźwięk</string>
     <string name="action_volume_unmute">Wyłącz wyciszenie głośności</string>
+    <string name="action_volume_show_dialog">Pokaż wyskakujące okienko głośności</string>
+    <string name="action_increase_stream">Zwiększ strumień</string>
+    <string name="action_increase_stream_formatted">Zwiększ strumień %s</string>
+    <string name="action_decrease_stream">Zmniejsz strumień</string>
+    <string name="action_decrease_stream_formatted">Zmniejsz strumień %s</string>
+    <string name="action_change_ringer_mode">Zmień tryb dzwonka</string>
+    <string name="action_change_ringer_mode_formatted">Przełącz na tryb %s</string>
+    <string name="action_toggle_dnd_mode">Włącz/wyłącz tryb Nie przeszkadzać</string>
+    <string name="action_toggle_dnd_mode_formatted">Włącz/wyłącz %s tylko tryb Nie przeszkadzać</string>
+    <string name="action_enable_dnd_mode">Włącz tryb Nie przeszkadzać</string>
+    <string name="action_enable_dnd_mode_formatted">Włącz %s tylko tryb Nie przeszkadzać</string>
+    <string name="action_disable_dnd_mode">Wyłącz tryb Nie przeszkadzać</string>
+    <string name="action_enable_auto_rotate">Włącz autoobracanie</string>
+    <string name="action_disable_auto_rotate">Wyłącz autoobracanie</string>
+    <string name="action_toggle_auto_rotate">Włącz/wyłącz autoobracanie</string>
     <string name="action_portrait_mode">Orientacja pionowa</string>
     <string name="action_landscape_mode">Orientacja pozioma</string>
+    <string name="action_switch_orientation">Zmień orientację</string>
+    <string name="action_cycle_rotations">Przełącz pomiędzy orientacjami</string>
+    <string name="action_cycle_rotations_formatted">Przełącz pomiędzy %s orientacjami</string>
+    <string name="action_toggle_mobile_data">Włącz/wyłącz mobilną transmisję danych</string>
+    <string name="action_enable_mobile_data">Włącz mobilną transmisję danych</string>
+    <string name="action_disable_mobile_data">Wyłącz mobilną transmisję danych</string>
+    <string name="action_toggle_auto_brightness">Włącz/wyłącz automatyczną jasność</string>
+    <string name="action_disable_auto_brightness">Wyłącz automatyczną jasność</string>
+    <string name="action_enable_auto_brightness">Włącz automatyczną jasność</string>
+    <string name="action_increase_brightness">Zwiększ jasność wyświetlacza</string>
+    <string name="action_decrease_brightness">Zmniejsz jasność wyświetlacza</string>
+    <string name="action_expand_notification_drawer">Rozwiń pasek powiadomień</string>
+    <string name="action_toggle_notification_drawer">Zwiń/rozwiń pasek powiadomień</string>
+    <string name="action_expand_quick_settings">Rozwiń szybkie ustawienia</string>
+    <string name="action_toggle_quick_settings">Pokaż/ukryj panel szybkich ustawień</string>
+    <string name="action_collapse_status_bar">Zwiń pasek stanu</string>
+    <string name="action_pause_media">Wstrzymaj odtwarzanie multimediów</string>
+    <string name="action_pause_media_package">Wstrzymaj odtwarzanie multimediów dla aplikacji</string>
+    <string name="action_pause_media_package_formatted">Wstrzymaj multimedia dla %s</string>
+    <string name="action_play_media">Wznów odtwarzanie multimediów</string>
+    <string name="action_play_media_package">Wznów odtwarzanie multimediów dla aplikacji</string>
+    <string name="action_play_media_package_formatted">Wznów multimedia dla %s</string>
+    <string name="action_play_pause_media">Odtwórz/wstrzymaj odtwarzanie multimediów</string>
+    <string name="action_play_pause_media_package_formatted">Odtwórz/Wstrzymaj multimedia dla %s</string>
     <string name="action_next_track">Następny utwór</string>
+    <string name="action_next_track_package">Następny utwór dla aplikacji</string>
+    <string name="action_next_track_package_formatted">Następny utwór dla %s</string>
     <string name="action_previous_track">Poprzedni utwór</string>
+    <string name="action_previous_track_package">Poprzedni utwór dla aplikacji</string>
+    <string name="action_previous_track_package_formatted">Poprzedni utwór dla %s</string>
     <string name="action_fast_forward">Przewiń do przodu</string>
+    <string name="action_fast_forward_package">Przewiń do przodu dla aplikacji</string>
+    <string name="action_fast_forward_package_formatted">Przewiń do przodu dla %s</string>
     <string name="action_rewind">Przewiń do tyłu</string>
+    <string name="action_rewind_package">Przewiń do tyłu dla aplikacji</string>
     <string name="action_rewind_package_formatted">Przewiń do %s</string>
     <string name="action_go_back">Naciśnij Wstecz</string>
     <string name="action_go_home">Naciśnij przycisk ekranu głównego</string>
     <string name="action_open_recents">Naciśnij Przegląd</string>
     <string name="action_open_menu">Otwórz menu</string>
+    <string name="action_toggle_split_screen">Włącz/wyłącz podzielony ekran</string>
+    <string name="action_toggle_flashlight">Włącz/wyłącz latarkę</string>
+    <string name="action_enable_flashlight">Włącz latarkę</string>
+    <string name="action_disable_flashlight">Wyłącz latarkę</string>
+    <string name="action_toggle_flashlight_formatted">Włącz/wyłącz latarkę %s</string>
+    <string name="action_enable_flashlight_formatted">Włącz latarkę %s</string>
+    <string name="action_disable_flashlight_formatted">Wyłącz latarkę %s</string>
     <string name="action_nfc_enable">Włącz NFC</string>
     <string name="action_nfc_disable">Wyłącz NFC</string>
     <string name="action_nfc_toggle">Włącz/wyłącz NFC</string>
     <string name="action_screenshot">Zrób zrzut ekranu</string>
+    <string name="action_open_assistant">Otwórz aplikację asystującą</string>
+    <string name="action_open_device_assistant">Otwórz asystenta urządzenia</string>
     <string name="action_open_camera">Uruchom aplikację aparatu</string>
     <string name="action_lock_device">Zablokuj urządzenie</string>
+    <string name="action_secure_lock_device">Bezpiecznie zablokuj urządzenie</string>
+    <string name="action_power_on_off_device">Uśpij/obudź urządzenie</string>
     <string name="action_power_on_off_device_message">Musisz włączyć opcję wykrywania triggera gdy ekran jest wyłączony!</string>
     <string name="action_consume_keyevent">Nic nie rób</string>
+    <string name="action_move_to_end_of_text">Przenieś kursor na koniec pliku</string>
+    <string name="action_toggle_keyboard">Pokaż/ukryj klawiaturę</string>
     <string name="action_show_keyboard">Pokaż klawiaturę</string>
     <string name="action_hide_keyboard">Ukryj klawiaturę</string>
+    <string name="action_show_keyboard_picker">Pokaż wybór klawiatury</string>
+    <string name="action_switch_keyboard">Przełącz klawiaturę</string>
     <string name="action_switch_keyboard_formatted">Przełącz na %s</string>
     <string name="action_text_cut">Wytnij</string>
     <string name="action_text_copy">Kopiuj</string>
     <string name="action_text_paste">Wklej</string>
+    <string name="action_select_word_at_cursor">Zaznacz słowo w miejscu kursora</string>
     <string name="action_open_settings">Otwórz ustawienia</string>
+    <string name="action_show_power_menu">Pokaż menu zasilania</string>
+    <string name="action_toggle_airplane_mode">Włącz/wyłącz tryb samolotowy</string>
+    <string name="action_enable_airplane_mode">Włącz tryb samolotowy</string>
+    <string name="action_disable_airplane_mode">Wyłącz tryb samolotowy</string>
     <!-- System action labels -->
     <!-- System action category labels -->
     <string name="system_action_cat_wifi">Wi-Fi</string>
@@ -537,6 +712,7 @@
     <string name="system_action_cat_mobile_data">Mobilna transmisja danych</string>
     <string name="system_action_cat_navigation">Nawigacja</string>
     <string name="system_action_cat_volume">Głośność</string>
+    <string name="system_action_cat_screen_rotation">Obracanie ekranu</string>
     <string name="system_action_cat_brightness">Jasność</string>
     <string name="system_action_cat_status_bar">Pasek stanu</string>
     <string name="system_action_cat_media">Multimedia</string>
@@ -565,8 +741,10 @@
     <string name="intent_type_float_array_header">Tablica typu float</string>
     <string name="intent_type_short_header">Short</string>
     <string name="intent_type_short_array_header">Tablica typu short</string>
+    <string name="intent_type_bool_example">Może być tylko \"prawda\" lub \"fałsz\"</string>
     <string name="intent_type_string_example">Dowolny tekst.</string>
     <!--  Intent action type strings  -->
     <!--  Tap targets  -->
+    <string name="tap_target_quick_start_guide_primary">Przewodnik szybkiego startu</string>
     <!--  Tap targets  -->
 </resources>
