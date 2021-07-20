@@ -1,20 +1,20 @@
-What can be remapped?
+Funkcje jakich przycisków mogę zmienić?
 
- * Fingerprint gestures on supported devices.
- * Volume buttons.
- * Navigation buttons.
- * Bluetooth/wired keyboards.
- * Buttons on other connected devices should also work.
+ * Gesty czytnika linii papilarnych na obsługiwanych urządzeniach.
+ * Przyciski głośności.
+ * Przyciski nawigacji.
+ * Klawiatury przewodowe i Bluetooth.
+ * Przyciski na innych podłączonych urządzeniach również powinny działać.
 
-ONLY HARDWARE buttons can be remapped.
-There is NO GUARANTEE any of these buttons will work and this app is NOT designed to control games. Your device's OEM/vendor can prevent them from being remapped.
+TYLKO FIZYCZNE przyciski mogą mieć zmienione funkcje.
+NIE MA GWARANCJI, że twoje przyciski mogą być używane, a także ta aplikacja NIE JEST przeznaczona do sterowania grami. Producent Twojego urządzenia może uniemożliwić ich zmianę.
 
-You can combine multiple keys from a specific device or any device to form a "trigger". Each trigger can have multiple actions. The keys can be set to be pressed at the same time or one after another in a sequence. Keys can be remapped when they are short pressed, long pressed or double pressed. A keymap can have a set of "constraints" so it only has an effect in certain situations.
+Możesz połączyć wiele przycisków z określonego lub dowolnego urządzenia, aby utworzyć "wyzwalacz". Każdy wyzwalacz może mieć wiele czynności. Przyciski można ustawić tak, aby były naciskane jednocześnie lub jeden po drugim w kolejności. Przyciski mogą być wykorzystane, gdy są wciśnięte krótko, długo lub podwójnie. Zmiana funkcji może mieć zestaw "ograniczeń", aby działała tylko w określonych sytuacjach.
 
-What can’t be remapped?
- * Power button
- * Bixby button
- * Mouse buttons
+Funkcje jakich przycisków nie mogę zmieniać?
+ * Przycisk zasilania
+ * Przycisk Bixby
+ * Przyciski myszy
  * Dpad, thumb sticks or triggers on game controllers
 
 Your key maps don't work if the screen is OFF. This is a limitation in Android. There is nothing the dev can do.
