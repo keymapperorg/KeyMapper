@@ -336,7 +336,9 @@
     <string name="dialog_title_send_feedback">Prześlij opinię</string>
     <string name="dialog_message_send_feedback">Prosimy o zapoznanie się z poradnikiem jak zgłaszać problemy, na stronie internetowej.</string>
     <string name="dialog_message_enable_accessibility_service_to_record_trigger">Włącz usługę ułatwień dostępu aby nagrać wyzwalacz.</string>
+    <string name="dialog_message_restart_accessibility_service_to_record_trigger">Uruchom ponownie usługę ułatwień dostępu, <i>wyłączając</i> ją i <i>włączając</i> ponownie, aby móc nagrać wyzwalacz.</string>
     <string name="dialog_message_enable_accessibility_service_to_test_action">Włącz usługę ułatwień dostępu, aby przetestować czynność.</string>
+    <string name="dialog_message_restart_accessibility_service_to_test_action">Uruchom ponownie usługę ułatwień dostępu, <i>wyłączając</i> ją i <i>włączając</i> ponownie, aby móc przetestować czynność.</string>
     <string name="dialog_title_reset_fingerprint_maps">Zresetuj mapy gestów czytnika linii papilarnych</string>
     <string name="dialog_message_reset_fingerprint_maps">Czy na pewno chcesz zresetować mapy gestów czytnika linii papilarnych?</string>
     <string name="dialog_title_key_mapper_crashed">Key Mapper został zatrzymany lub uległ awarii</string>
@@ -392,6 +394,7 @@
     <string name="notification_accessibility_service_disabled_title">Usługa ułatwień dostępu jest wyłączona</string>
     <string name="notification_accessibility_service_disabled_text">Kliknij aby uruchomić usługę ułatwień dostępu.</string>
     <string name="notification_accessibility_service_crashed_title">Usługa ułatwień dostępu wymaga ponownego uruchomienia!</string>
+    <string name="notification_accessibility_service_crashed_text">Usługa ułatwień dostępu uległa awarii! Najprawdopodobniej, że Twoje urządzenie agresywnie ją zatrzymało! Kliknij, aby ponownie uruchomić usługę ułatwień dostępu.</string>
     <!--  remove accessibility from the word because the other notification buttons arent visible on small screens  -->
     <string name="notification_action_stop_acc_service">Zatrzymaj usługę</string>
     <string name="notification_keyboard_hidden_title">Klawiatura jest ukryta!</string>
@@ -400,14 +403,18 @@
     <string name="notification_toggle_keyboard_text">Kliknij \'przełącz\', aby przełączyć się na i z klawiatury Key Mapper.</string>
     <string name="notification_toggle_keyboard_action">Włącz/wyłącz</string>
     <string name="notification_feature_fingerprint_title">Zmień funkcje gestów czytnika linii papilarnych za pomocą Key Mapper!</string>
+    <string name="notification_feature_fingerprint_text">Twoje urządzenie obsługuje zmianę funkcji gestów na czytniku linii papilarnych. Kliknij, aby rozpocząć!</string>
     <string name="notification_setup_chosen_devices_again_title">Musisz ponownie skonfigurować niektóre ustawienia!</string>
     <!-- Notification strings -->
     <!--Preference titles and summaries-->
     <string name="title_pref_long_press_delay">Domyślny czas przytrzymania (ms)</string>
     <string name="title_pref_double_press_delay">Domyślny limit czasu dwukrotnego kliknięcia (ms)</string>
+    <string name="summary_pref_vibration_duration">Jak długo wibrować, jeśli wibracja jest włączona dla mapy klawiszy. Wartość domyślna to 200ms. Może zostać zastąpione w opcjach mapy klawiszy.</string>
     <string name="title_pref_vibration_duration">Domyślny czas trwania wibracji (ms)</string>
     <string name="title_pref_repeat_delay">Domyślne opóźnienie powtarzania (ms)</string>
+    <string name="summary_pref_repeat_rate">Opóźnienie między każdym powtórzeniem czynności. Wartość domyślna to 50ms. Może zostać zastąpione w opcjach mapy klawiszy.</string>
     <string name="title_pref_repeat_rate">Domyślne opóźnienie między powtórzeniami (ms)</string>
+    <string name="summary_pref_sequence_trigger_timeout">Czas potrzebny do zakończenia kolejkowego wyzwalacza. Wartość domyślna to 1000ms. Może zostać zastąpione w opcjach mapy klawiszy.</string>
     <string name="title_pref_sequence_trigger_timeout">Domyślny limit czasu kolejkowego triggera (ms)</string>
     <string name="title_pref_reset_defaults">Zresetuj</string>
     <string name="summary_pref_force_vibrate">Wymuś wibracje wszystkich map klawiszy.</string>
@@ -420,11 +427,15 @@
     <string name="summary_pref_automatic_backup_location_disabled">Nie wybrano lokalizacji.</string>
     <string name="title_pref_choose_devices">Wybierz urządzenie</string>
     <string name="title_pref_auto_show_ime_picker">Automatycznie pokazuj wybór klawiatury</string>
+    <string name="summary_pref_auto_show_ime_picker">Gdy wybrane urządzenie połączy się lub rozłączy, wybór klawiatury automatycznie się pojawi. Wybierz swoje urządzenia poniżej.</string>
+    <string name="title_pref_auto_change_ime_on_connection">Automatycznie zmieniaj klawiaturę ekranową, gdy urządzenie (np. klawiatura) się łącza/rozłącza</string>
     <string name="title_pref_root_permission">Key Mapper ma uprawnienia roota</string>
     <string name="title_pref_dark_theme">Ciemny motyw</string>
     <string name="title_pref_notification_settings">Ustawienia powiadomień</string>
+    <string name="summary_pref_show_toggle_keyboard_notification">Przełącz między klawiaturą Key Mapper a Twoją klawiaturą domyślną po kliknięciu powiadomienia.</string>
     <string name="title_pref_show_toggle_keyboard_notification">Włącz/wyłącz powiadomienie klawiatury Key Mapper</string>
     <string name="title_pref_toggle_keyboard_on_toggle_keymaps">Automatycznie zmieniaj klawiaturę podczas przełączania map klawiszy</string>
+    <string name="summary_pref_toggle_keyboard_on_toggle_keymaps">Automatycznie wybierz klawiaturę Key Mapper po wznowieniu map klawiszy i wybierz Twoją klawiaturę domyślną po ich wstrzymaniu.</string>
     <string name="title_pref_hide_home_screen_alerts">Ukryj alerty na ekranie głównym</string>
     <string name="summary_pref_hide_home_screen_alerts">Ukryj alerty u góry ekranu głównego.</string>
     <string name="title_pref_show_device_descriptors">Pokaż pierwsze 5 znaków identyfikatora urządzenia dla wyzwalaczy specyficznych dla urządzenia</string>
@@ -515,8 +526,10 @@
     <string name="showcase_accessibility_service_title_enabled">Usługa ułatwień dostępu jest włączona :)</string>
     <string name="showcase_accessibility_service_description_enabled">Wszystko jest dobrze.</string>
     <string name="showcase_accessibility_service_title_crashed">Uruchom ponownie usługę ułatwień dostępu</string>
+    <string name="showcase_accessibility_service_description_crashed">Usługa ułatwień dostępu jest włączona, ale została zatrzymana przez Twoje urządzenie lub uległa awarii. Uruchom ją ponownie.</string>
     <string name="showcase_accessibility_service_button_restart">Uruchom ponownie</string>
     <string name="showcase_accessibility_service_title_disabled">Włącz usługę ułatwień dostępu</string>
+    <string name="showcase_accessibility_service_description_disabled">Twoje mapy klawiszy będą działać dopiero po włączeniu usługi ułatwień dostępu. Musi być również włączony, aby utworzyć wyzwalacz.</string>
     <string name="showcase_record_trigger_title">Usługa ułatwień dostępu jest wyłączona</string>
     <string name="showcase_record_trigger_description">Możesz rejestrować trigger tylko wtedy, gdy usługa ułatwień dostępu jest włączona.</string>
     <string name="showcase_note_from_the_developer_title">Uwaga od programisty</string>
@@ -525,11 +538,15 @@
     <string name="showcase_disable_battery_optimisation_button_dont_kill_my_app">Przejdź do dontkillmyapp.com</string>
     <string name="showcase_dnd_access_title_disabled">Zmieniasz funkcje przycisków głośności?</string>
     <string name="showcase_dnd_access_title_enabled">Możesz zmienić funkcje przycisków głośności</string>
+    <string name="showcase_dnd_access_description_disabled">Key Mapper wymaga dostępu do trybu Nie przeszkadzać, aby czynności zmieniające głośność i przyciski głośności ze zmienionymi funkcjami działały.</string>
     <string name="showcase_dnd_access_description_enabled">Wszystko jest dobrze! :)</string>
     <string name="showcase_contributing_title">Wkład</string>
+    <string name="showcase_action_list">Kliknij przycisk z trzema kropkami, aby zmienić zachowanie powtarzania i nie tylko. Klikając na czynność możesz ją przetestować i naprawić jej błędy.</string>
     <string name="showcase_fingerprint_gesture_support_title_supported_unknown">Zmień funkcje gestów czytnika linii papilarnych</string>
     <string name="showcase_fingerprint_gesture_support_title_supported">Możesz zmienić funkcje gestów czytnika linii papilarnych! :)</string>
     <string name="showcase_fingerprint_gesture_support_title_not_supported">Nie można zmienić funcje gestów czytnika linii papilarnych!</string>
+    <string name="showcase_fingerprint_gesture_support_message_supported_unknown">Musisz włączyć usługę ułatwień dostępu, aby Key Mapper mógł sprawdzić, czy Twoje urządzenie obsługuje wykrywanie gestów czytnika linii papilarnych.</string>
+    <string name="showcase_fingerprint_gesture_support_message_supported">Twoje urządzenie obsługuje wykrywanie gestów na czytniku linii papilarnych! W górnej części ekranu głównego znajduje się karta do zmiany funkcji tych gestów.</string>
     <string name="showcase_fingerprint_gesture_support_button">Włącz</string>
     <string name="showcase_setup_chosen_devices_again_title">Musisz ponownie skonfigurować niektóre ustawienia</string>
     <!-- Showcase -->
@@ -627,8 +644,10 @@
     <string name="error_launcher_shortcuts_not_supported">Twój launcher nie obsługuje skrótów.</string>
     <string name="warning_need_write_secure_settings_permission">Niektóre funkcje wymagają uprawnienia WRITE_SECURE_SETTINGS.</string>
     <string name="fixed_need_write_secure_settings_permission">Przyznano uprawnienie WRITE_SECURE_SETTINGS.</string>
+    <string name="error_ime_service_disabled_status_layout">Wybrana metoda wprowadzania musi być włączona, aby działały \"Zdarzenie klawiszy\", \"Klawisz\", \"Tekst\" i niektóre inne czynności.</string>
     <string name="error_key_mapper_ime_service_disabled">Klawiatura Key Mapper musi być włączona!</string>
     <string name="error_ime_service_enabled">Klawiatura Key Mapper jest włączona!</string>
+    <string name="error_critical_ime_service_disabled">Klawiatura Key Mapper musi być włączona i wybrana, aby niektóre mapy klawiszy działały!</string>
     <string name="error_ime_not_found">Nie można znaleźć metody wprowadzania %s</string>
     <string name="error_cant_show_ime_picker_in_background">Wybór metody wprowadzania nie może być wyświetlony!</string>
     <string name="error_failed_to_find_accessibility_node">Nie udało się znaleźć węzła dostępności!</string>
@@ -651,6 +670,7 @@
     <string name="error_invalid_number">Nieprawidłowa liczba!</string>
     <string name="error_number_too_small">Musi wynosić co najmniej %s!</string>
     <string name="error_number_too_big">Musi wynosić co najwyżej %s!</string>
+    <string name="error_battery_optimisation_enabled">Optymalizacja baterii jest włączona! Wyłącz ją, ponieważ może to spowodować nagle zatrzymanie działania Key Mapper.</string>
     <string name="success_battery_optimisation_disabled">Optymalizacja baterii jest wyłączona!</string>
     <string name="error_cant_find_notification_listener_settings">Nie można znaleźć ustawień dostępu do powiadomień!</string>
     <string name="error_denied_notification_listener_service_permission">Odmowa dostępu do powiadomień!</string>
@@ -777,7 +797,9 @@
     <string name="action_power_on_off_device_message">Musisz włączyć opcję wykrywania wyzwalacza gdy ekran jest wyłączony!</string>
     <string name="action_consume_keyevent">Nic nie rób</string>
     <string name="action_move_to_end_of_text">Przenieś kursor na koniec pliku</string>
+    <string name="action_move_to_end_of_text_message">Klawiatura Key Mapper musi być wybrana, aby ta mapa klawiszy działała, a jej czynności mogą nie działać zgodnie z przeznaczeniem w niektórych aplikacjach.</string>
     <string name="action_toggle_keyboard">Pokaż/ukryj klawiaturę</string>
+    <string name="action_toggle_keyboard_message">Ta czynność zadziała tylko wtedy, gdy klikniesz pola wprowadzania, w którym ma być wyświetlana klawiatura.</string>
     <string name="action_show_keyboard">Pokaż klawiaturę</string>
     <string name="action_hide_keyboard">Ukryj klawiaturę</string>
     <string name="action_show_keyboard_picker">Pokaż wybór klawiatury</string>
@@ -831,17 +853,22 @@
     <string name="intent_type_bool_example">Może być tylko \"true\" lub \"false\"</string>
     <string name="intent_type_bool_array_example">Rozdzielona przecinkami lista \"true\" i \"false\", np. true,false,true</string>
     <string name="intent_type_int_example">Poprawna liczba całkowita w języku programowania Java.</string>
+    <string name="intent_type_int_array_example">Rozdzielana przecinkami lista prawidłowych liczb całkowitych w języku programowania Java, np. 100,399</string>
     <string name="intent_categories_example">Lista oddzielona przecinkami, np. kategoria1,kategoria2</string>
     <string name="intent_type_string_example">Dowolny tekst.</string>
     <string name="intent_type_string_array_example">Lista ciągów oddzielonych przecinkami, np. ciąg1,ciąg2</string>
     <string name="intent_type_long_example">Poprawna liczba Long w języku programowania Java.</string>
+    <string name="intent_type_long_array_example">Rozdzielana przecinkami lista prawidłowych liczb Long w języku programowania Java, np. 102302234234234,399083423234429</string>
     <string name="intent_type_byte_example">Poprawna liczba Bajt w języku programowania Java.</string>
     <string name="intent_type_byte_array_example">Rozdzielana przecinkami lista prawidłowych liczb Bajtowych w języku programowania Java, np. 123,3</string>
     <string name="intent_type_double_example">Poprawna liczba Double w języku programowania Java.</string>
+    <string name="intent_type_double_array_example">Rozdzielana przecinkami lista prawidłowych liczb Double w języku programowania Java, np. 1.0,3.234</string>
     <string name="intent_type_char_example">Poprawny Char w języku programowania Java, np. \'a\' lub \'b\'</string>
     <string name="intent_type_char_array_example">Rozdzielana przecinkami lista prawidłowych znaków Char w języku programowania Java, np. a,b,c</string>
     <string name="intent_type_float_example">Poprawna liczba Float w języku programowania Java, np. 3.145</string>
+    <string name="intent_type_float_array_example">Rozdzielana przecinkami lista prawidłowych liczb Float w języku programowania Java, np. 1241.123</string>
     <string name="intent_type_short_example">Poprawna liczba Short w języku programowania Java, np. 2342</string>
+    <string name="intent_type_short_array_example">Rozdzielana przecinkami lista prawidłowych liczb Short w języku programowania Java, np. 3242,12354</string>
     <!--  Intent action type strings  -->
     <!--  Tap targets  -->
     <string name="tap_target_quick_start_guide_primary">Przewodnik szybkiego startu</string>
