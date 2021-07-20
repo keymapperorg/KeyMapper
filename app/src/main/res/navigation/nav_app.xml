@@ -97,8 +97,7 @@
     <fragment
         android:id="@+id/aboutFragment"
         android:name="io.github.sds100.keymapper.about.AboutFragment"
-        android:label="fragment_about"
-        tools:layout="@layout/fragment_about" />
+        android:label="fragment_about" />
 
     <action
         android:id="@+id/action_global_aboutFragment"

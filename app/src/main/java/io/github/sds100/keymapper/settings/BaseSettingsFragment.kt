@@ -30,6 +30,8 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
         }
 
         view.findViewById<BottomAppBar>(R.id.appBar).apply {
+            replaceMenu(R.menu.menu_settings)
+            
             setNavigationOnClickListener {
                 onBackPressed()
             }
@@ -50,7 +52,6 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun onBackPressed() {
-
         findNavController().navigateUp()
     }
 }

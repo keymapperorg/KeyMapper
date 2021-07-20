@@ -1,17 +1,14 @@
 package io.github.sds100.keymapper.about
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.navigation.fragment.findNavController
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.bottomappbar.BottomAppBar
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.databinding.FragmentAboutBinding
 import io.github.sds100.keymapper.system.url.UrlUtils
 import io.github.sds100.keymapper.util.str
 
@@ -19,48 +16,33 @@ import io.github.sds100.keymapper.util.str
  * Created by sds100 on 05/04/2020.
  */
 
-class AboutFragment : BottomSheetDialogFragment() {
-
-    /**
-     * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
-     */
-    private var _binding: FragmentAboutBinding? = null
-    val binding: FragmentAboutBinding
-        get() = _binding!!
-
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        FragmentAboutBinding.inflate(inflater, container, false).apply {
-            lifecycleOwner = viewLifecycleOwner
-
-            _binding = this
-            return this.root
-        }
-    }
+class AboutFragment : PreferenceFragmentCompat() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        requireActivity().onBackPressedDispatcher.addCallback {
-            findNavController().navigateUp()
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            onBackPressed()
         }
 
-        binding.appBar.setNavigationOnClickListener {
-            findNavController().navigateUp()
+        view.findViewById<BottomAppBar>(R.id.appBar).apply {
+            setNavigationOnClickListener {
+                onBackPressed()
+            }
+
+            setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.action_help -> {
+                        UrlUtils.openUrl(requireContext(), str(R.string.url_settings_guide))
+                        true
+                    }
+
+                    else -> false
+                }
+            }
         }
     }
 
-    override fun onDestroyView() {
-        _binding = null
-        super.onDestroyView()
-    }
-}
-
-class AboutPreferenceFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.about)
 
@@ -125,5 +107,9 @@ class AboutPreferenceFragment : PreferenceFragmentCompat() {
             UrlUtils.openUrl(requireContext(), str(R.string.url_youtube_channel))
             true
         }
+    }
+
+    private fun onBackPressed() {
+        findNavController().navigateUp()
     }
 }
