@@ -72,7 +72,7 @@
     <string name="enable_device_admin_message">Po włączeniu Zarządzanie urządzeniem musisz go DEZAKTYWOWAĆ, jeśli chcesz odinstalować Key Mapper.</string>
     <string name="constraints_recyclerview_placeholder">Dodaj ograniczenie!</string>
     <string name="action_title_wait">Czekaj %sms</string>
-    <string name="email_subject">Raport o błędzie Key Mapper</string>
+    <string name="email_subject">Zgłoszenie o błędzie Key Mapper</string>
     <string name="email_default_message">Proszę opisz swój problem...</string>
     <string name="action_title_intent_start_activity">Uruchom aktywność: %s</string>
     <string name="action_title_intent_start_service">Uruchom usługę: %s</string>
@@ -173,41 +173,88 @@
     <string name="toast_io_exception_shrug">Wyjątek wejścia/wyjścia ¯\\_(ツ)_/¯</string>
     <string name="toast_incorrect_screenshot_resolution">Rozdzielczość zrzutu ekranu nie pasuje do rozdzielczości tego urządzenia!</string>
     <string name="toast_copied_keymap_uid_to_clipboard">Skopiowano UUID mapy klawiszy do schowka</string>
+    <string name="toast_triggered_keymap">Wywołałeś(-aś) mapę klawiszy</string>
+    <string name="toast_copied_log">Dziennik został skopiowany</string>
+    <string name="toast_root_features_turned_on">Funkcje roota są teraz włączone</string>
+    <string name="toast_failed_to_choose_sound_file">Wybranie pliku dźwiękowego nie powiodło się! Sprawdź dziennik.</string>
+    <string name="toast_no_sound_files">Nie ma żadnego pliku dźwiękowego!</string>
     <!--  Toasts  -->
     <!-- Extra labels -->
-    <string name="extra_label_sequence_trigger_timeout">Limit czasu kolejkowego triggera (ms)</string>
+    <string name="extra_label_sequence_trigger_timeout">Limit czasu wyzwalacza kolejkowego (ms)</string>
     <string name="extra_label_long_press_delay_timeout">Czas przytrzymania (ms)</string>
     <string name="extra_label_double_press_delay_timeout">Limit czasu dwukrotnego kliknięcia (ms)</string>
     <string name="extra_label_repeat_delay">Opóźnienie powtarzania (ms)</string>
+    <string name="extra_label_repeat_limit">Limit powtórzeń</string>
     <string name="extra_label_repeat_rate">Powtarzaj co… (ms)</string>
     <string name="extra_label_vibration_duration">Czas trwania wibracji (ms)</string>
+    <string name="extra_label_action_multiplier">Ile razy</string>
+    <string name="extra_label_action_multiplier_with_repeat">Ile razy w każdym powtórzeniu</string>
+    <string name="extra_label_delay_before_next_action">Opóźnienie przed następną czynnością (ms)</string>
+    <string name="extra_label_hold_down_duration">Czas przytrzymania (ms)</string>
     <!-- Extra labels -->
     <!-- Constraints -->
     <string name="constraint_app_foreground_description">%s jest na pierwszym planie</string>
     <string name="constraint_app_not_foreground_description">%s jest w tle</string>
+    <string name="constraint_app_playing_media_description">%s odtwarza multimedia</string>
     <string name="constraint_bt_device_connected_description">%s jest połączone</string>
     <string name="constraint_bt_device_disconnected_description">%s jest odłączone</string>
     <string name="constraint_screen_on_description">Ekran jest włączony</string>
     <string name="constraint_screen_off_description">Ekran jest wyłączony</string>
+    <string name="constraint_flashlight_off_description">%s latarka jest wyłączona</string>
+    <string name="constraint_flashlight_on_description">%s latarka jest włączona</string>
     <string name="constraint_mode_and">oraz</string>
     <string name="constraint_mode_or">lub</string>
     <string name="constraint_category_app">Aplikacja</string>
     <string name="constraint_category_bluetooth">Bluetooth</string>
     <string name="constraint_category_screen">Ekran</string>
+    <string name="constraint_category_orientation">Orientacja</string>
+    <string name="constraint_choose_app_foreground">Aplikacja na pierwszym planie</string>
+    <string name="constraint_choose_app_not_foreground">Aplikacja w tle</string>
+    <string name="constraint_choose_bluetooth_device_connected">Urządzenie Bluetooth podłączone</string>
+    <string name="constraint_choose_bluetooth_device_disconnected">Urządzenie Bluetooth odłączone</string>
     <string name="constraint_choose_screen_on_description">Ekran jest włączony</string>
     <string name="constraint_choose_screen_off_description">Ekran jest wyłączony</string>
+    <string name="constraint_choose_orientation_0">Pionowo (0°)</string>
+    <string name="constraint_choose_orientation_90">Poziomo (90°)</string>
+    <string name="constraint_choose_orientation_180">Pionowo (180°)</string>
+    <string name="constraint_choose_orientation_270">Poziomo (270°)</string>
+    <string name="constraint_choose_orientation_portrait">Pionowo (dowolne)</string>
+    <string name="constraint_choose_orientation_landscape">Poziomo (dowolne)</string>
+    <string name="constraint_choose_app_playing_media">Konkretna aplikacja odtwarza multimedia</string>
+    <string name="constraint_flashlight_on">Latarka jest włączona</string>
+    <string name="constraint_flashlight_off">Latarka jest wyłączona</string>
     <string name="orientation_0">Pionowo (0°)</string>
     <string name="orientation_90">Poziomo (90°)</string>
     <string name="orientation_180">Pionowo (180°)</string>
     <string name="orientation_270">Poziomo (270°)</string>
     <!-- Constraints -->
     <!-- Click types -->
+    <string name="clicktype_short_press">Krótkie naciśnięcie</string>
+    <string name="clicktype_long_press">Długie naciśnięcie</string>
+    <string name="clicktype_double_press">Podwójne naciśnięcie</string>
     <!-- Click types -->
     <!-- URLs -->
     <!-- URLs -->
     <!-- Activity titles -->
+    <string name="title_choose_action">Wybierz czynność</string>
     <!-- Activity titles -->
     <!--  Bug report slides-->
+    <string name="slide_title_read_dont_kill_my_app">Wyłącz zatrzymanie aplikacji</string>
+    <string name="slide_description_read_dont_kill_my_app">Postępuj zgodnie z niesamowitym poradnikiem na dontkillmyapp.com, który pokazuje, jak wyłączyć wszystkie \"funkcje\" zatrzymujące aplikację w telefonie.
+
+    \n\nPo przeczytaniu przewodnika musisz przejść do następnego slajdu i ponownie uruchomić usługę ułatwień dostępu.</string>
+    <string name="slide_button_read_dont_kill_my_app">Otwórz poradnik</string>
+    <string name="slide_title_restart_accessibility_service">Uruchom ponownie usługę ułatwień dostępu</string>
+    <string name="slide_description_restart_accessibility_service">Usługa ułatwień dostępu musi zostać ponownie uruchomiona. Wyłącz i włącz ją ponownie.</string>
+    <string name="slide_button_restart_accessibility_service">Uruchom ponownie</string>
+    <string name="slide_title_create_bug_report">Zgłoś błąd</string>
+    <string name="slide_description_create_bug_report">Wybierz lokalizację, w której chcesz zapisać zgłoszenie błędu, klikając \"Utwórz zgłoszenie\". Następny slajd pokaże, jak możesz wysłać go do programisty.</string>
+    <string name="slide_button_create_bug_report">Utwórz zgłoszenie</string>
+    <string name="slide_title_share_bug_report">Udostępnij zgłoszenie</string>
+    <string name="slide_description_share_bug_report">Istnieją 3 sposoby udostępnienia zgłoszeniu o błędzie programiście. Dołącz do serwera Discord, utwórz zgłoszenie na GitHub lub (najmniej korzystnie) wyślij e-mail. Upewnij się, że dołączasz zgłoszenie o błędzie do swojej wiadomości!</string>
+    <string name="slide_button_share_discord">Discord</string>
+    <string name="slide_button_share_github">GitHub</string>
+    <string name="slide_button_share_email">E-mail</string>
     <!--  Bug report slides-->
     <!-- Menu action titles-->
     <string name="action_settings">Ustawienia</string>
@@ -215,30 +262,60 @@
     <string name="action_select_all">Zaznacz wszystko</string>
     <string name="action_about">Informacje</string>
     <string name="action_search">Znajdź</string>
+    <string name="action_help_home">Przewodnik szybkiego startu</string>
+    <string name="action_help">Pomoc</string>
     <string name="action_enable">Włącz</string>
     <string name="action_disable">Wyłącz</string>
     <string name="action_disable_all_keymaps">Wyłącz wszystko</string>
     <string name="action_enable_all_keymaps">Włącz wszystko</string>
-    <string name="action_seed_database">Baza seedów</string>
+    <string name="action_report_bug">Zgłoś błąd</string>
+    <string name="action_change_keyboard">Pokaż wybór metody wprowadzania</string>
+    <string name="action_seed_database">Baza danych seedów</string>
     <string name="action_save">Zapisz</string>
     <string name="action_duplicate_keymap">Duplikuj</string>
+    <string name="action_backup">Utwórz kopię zapasową</string>
     <string name="action_restore">Przywróć</string>
+    <string name="action_backup_everything">Utwórz kopię zapasową wszystkiego</string>
+    <string name="action_backup_all">Utwórz kopię zapasową wszystkiego</string>
     <string name="action_tap_to_pause_keymaps">Kliknij aby zatrzymać</string>
     <string name="action_tap_to_resume_keymaps">Dotknij aby wznowić</string>
+    <string name="action_reset">Zresetuj</string>
+    <string name="action_save_log">Zapisz</string>
+    <string name="action_short_log_message">Przełącz krótkie wiadomości</string>
+    <string name="action_copy_log">Kopiuj</string>
+    <string name="action_clear_log">Wyczyść</string>
     <!-- Menu action titles-->
     <!-- Button titles -->
+    <string name="button_add_action">Dodaj działanie</string>
+    <string name="button_record_trigger">Nagraj wyzwalacz</string>
     <string name="button_done">Gotowe</string>
     <string name="button_save">Zapisz</string>
     <string name="button_fix">Napraw</string>
     <string name="button_recording_trigger_countdown">%d…</string>
+    <string name="button_add_constraint">Dodaj ograniczenie</string>
+    <string name="button_choose_keycode">Wybierz kod klawisza</string>
     <string name="button_yes">Tak!</string>
+    <string name="button_choose_action">Wybierz czynność</string>
+    <string name="button_add_intent_extra">Dodaj dodatek</string>
+    <string name="button_create_keymap_shortcut_in_launcher">Utwórz skrót w launcherze</string>
+    <string name="button_open_trigger_keymap_from_intent_guide">Przewodnik po Intencjach</string>
+    <string name="button_help">Pomoc</string>
+    <string name="button_pick_coordinate_select_screenshot">Wybierz zrzut ekranu (opcjonalnie)</string>
+    <string name="button_config_intent_choose_activity">Wybierz aktywność</string>
+    <string name="button_config_intent_set_flags">Ustaw flagi</string>
+    <string name="button_copy_log">Kopiuj</string>
+    <string name="button_slider_repeat_no_limit">Bez ograniczeń</string>
+    <string name="button_choose_sound_file">Wybierz plik dźwiękowy</string>
     <!-- Button titles -->
     <!-- Dialog stuff -->
-    <string name="dialog_title_are_you_sure">Czy jesteś pewien?</string>
+    <string name="dialog_title_are_you_sure">Na pewno?</string>
+    <string name="dialog_title_create_shortcut_title">Nazwa skrótu</string>
     <string name="dialog_title_root_prompt">Wymagane uprawnienie roota!</string>
     <string name="dialog_title_flags">Więcej</string>
     <string name="dialog_title_pick_stream">Wybierz strumień</string>
     <string name="dialog_title_choose_flash">Wybierz lampę błyskową</string>
+    <string name="dialog_title_cant_find_accessibility_settings_page">Nie można wykryć strony ustawień ułatwień dostępu</string>
+    <string name="dialog_title_cant_record_trigger">Nie możesz nagrać wyzwalacza?</string>
     <string name="dialog_message_are_you_sure_want_to_leave_without_saving">Czy na pewno chcesz wrócić bez zapisywania?</string>
     <string name="dialog_message_downloading">Pobieranie…</string>
     <string name="dialog_message_describe_your_issue_in_the_email">Czy możesz opisać swój problem przez email? Bo inaczej nie mogę ci pomóc. Dzięki!</string>
