@@ -453,9 +453,6 @@
     <string name="title_pref_show_device_descriptors">Показать первые 5 символов id устройства для событий связанных с конкретными устройствами</string>
     <string name="summary_pref_show_device_descriptors">Это используется чтобы отличить друг от друга устройства с одним и тем же именем.</string>
     <string name="title_pref_devices_to_reroute_keyevents">Обработка ошибки Android 11, которая задает идентификатор устройства для событий ввода равным -1</string>
-    <string name="summary_pref_devices_to_reroute_keyevents">Выберите устройство события нажатий которого необходимо перехватывать и перенаправлять через выбранную клавиатуру Key Mapper. Для этого надо выбрать либо \'Key Mapper GUI Keyboard\', либо \'Key Mapper Basic Input Method\'. Это частичное решение проблемы описанной тут:
-https://issuetracker.google.com/issues/163120692
-К сожалению этот метод НЕ РАБОТАЕТ с игровыми контроллерами.</string>
     <string name="title_pref_devices_to_reroute_keyevents_choose_devices">4. Выберите устройства</string>
     <string name="title_pref_devices_to_reroute_keyevents_install_gui_keyboard">1. Установите клавиатуру Key Mapper GUI Keyboard (опционально)</string>
     <string name="title_pref_devices_to_reroute_keyevents_install_leanback_keyboard">1. Установите клавиатуру Key Mapper Leanback (необязательно)</string>
@@ -465,10 +462,8 @@ https://issuetracker.google.com/issues/163120692
     <string name="title_pref_devices_to_reroute_keyevents_guide">(Рекомендуется) Прочитать руководство пользователя для этого параметра.</string>
     <!--Preference titles and summaries-->
     <!--Preference categories-->
-    <string name="title_pref_category_ime_picker">Выбор клавиатуры</string>
     <string name="title_pref_category_notifications">Уведомления</string>
     <string name="title_pref_category_defaults">Настройки по умолчанию</string>
-    <string name="title_pref_category_root">ROOT</string>
     <string name="summary_pref_category_root">Эти настройки будут работать только на устройствах с Root правами! Если вы не знаете, что такое Root или есть ли на вашем устройстве Root права, пожалуйста, не оставляйте плохих отзывов что они не работают. :)</string>
     <string name="title_pref_category_write_secure_settings">Требуется разрешение WRIT_SECURE_SETTINGS</string>
     <string name="summary_pref_category_write_secure_settings">Эти параметры включены только в том случае, если Key Mapper имеет разрешение WRITE_SECURE_SETTINGS. Нажмите кнопку ниже, чтобы узнать, как предоставить разрешение.</string>
