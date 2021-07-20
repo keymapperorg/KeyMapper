@@ -284,22 +284,6 @@ class HomeViewModel(
             _showQuickStartGuideHint.value = showQuickStartGuideHint
 
         }.launchIn(viewModelScope)
-
-        viewModelScope.launch {
-            var isFirstCrashedState = true
-
-            showAlertsUseCase.serviceState.collectLatest { state ->
-                if (state == ServiceState.CRASHED) {
-                    // don't show this the first time the service is detected as being crashed
-                    // because on many devices opening Key Mapper starts the service again.
-                    if (!isFirstCrashedState) {
-                        showKeyMapperCrashedDialog()
-                    }
-
-                    isFirstCrashedState = false
-                }
-            }
-        }
     }
 
     fun approvedQuickStartGuideTapTarget() {
