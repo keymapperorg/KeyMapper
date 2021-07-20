@@ -12,9 +12,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import io.github.sds100.keymapper.Constants
+import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
-import io.github.sds100.keymapper.UseCases
 import io.github.sds100.keymapper.system.DeviceAdmin
 import io.github.sds100.keymapper.system.Shell
 import io.github.sds100.keymapper.system.url.UrlUtils
@@ -156,7 +156,7 @@ class RequestPermissionDelegate(
                         setIcon(R.drawable.ic_baseline_warning_24)
 
                         okButton {
-                            navController.navigate(R.id.action_global_settingsFragment)
+                            navController.navigate(NavAppDirections.toSettingsFragment())
                             Shell.run("su")
                         }
 
@@ -165,7 +165,7 @@ class RequestPermissionDelegate(
                         show()
                     }
                 } else {
-                    navController.navigate(R.id.action_global_settingsFragment)
+                    navController.navigate(NavAppDirections.toSettingsFragment())
                     Shell.run("su")
                 }
             }

@@ -13,6 +13,7 @@
         <item name="normalChipButtonStyle">@style/NormalChipButton</item>
         <item name="errorChipButtonStyle">@style/ErrorChipButton</item>
         <item name="transparentChipButtonStyle">@style/TransparentChipButton</item>
+        <item name="preferenceFragmentCompatStyle">@style/MyPreferenceFragmentStyle</item>
     </style>
 
     <style name="Base.Splash" parent="Theme.MaterialComponents.DayNight" />
@@ -185,6 +186,10 @@
         <item name="android:textAppearance">@style/TextAppearance.MaterialComponents.Body2</item>
         <item name="iconSize">@dimen/button_chip_icon_size</item>
         <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="MyPreferenceFragmentStyle" parent="@style/PreferenceFragment.Material">
+        <item name="android:layout">@layout/fragment_preferences_with_appbar</item>
     </style>
 
 </resources>

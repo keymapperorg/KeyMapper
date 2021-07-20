@@ -19,7 +19,7 @@ class SettingsViewModel(
     val sharedPrefsDataStoreWrapper = SharedPrefsDataStoreWrapper(useCase)
 
     val automaticBackupLocation = useCase.automaticBackupLocation
-    val hasRootPermission = useCase.isRootGranted
+
     val showWriteSecureSettingsSection: StateFlow<Boolean> =
         useCase.isWriteSecureSettingsGranted.stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
@@ -100,6 +100,17 @@ class SettingsViewModel(
 
     fun resetDefaultMappingOptions() {
         useCase.resetDefaultMappingOptions()
+    }
+
+    fun showNoPairedDevicesDialog() {
+        viewModelScope.launch {
+            val dialog = PopupUi.Dialog(
+                message = getString(R.string.dialog_message_settings_no_external_devices_connected),
+                positiveButtonText = getString(R.string.pos_ok)
+            )
+
+            showPopup("no_external_devices", dialog)
+        }
     }
 
     @Suppress("UNCHECKED_CAST")

@@ -6,13 +6,14 @@
         android:id="@+id/coordinatorLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        
+
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/container"
-            android:name="io.github.sds100.keymapper.settings.SettingsPreferenceFragment"
+            android:name="androidx.navigation.fragment.NavHostFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="?attr/actionBarSize" />
+            android:layout_marginBottom="?attr/actionBarSize"
+            app:navGraph="@navigation/nav_settings" />
 
         <com.google.android.material.bottomappbar.BottomAppBar
             android:id="@+id/appBar"

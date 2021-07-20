@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.util.ui
 
+import android.view.View
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -70,6 +71,13 @@ fun PopupViewModel.showPopups(
     fragment: Fragment,
     binding: ViewDataBinding
 ) {
+    showPopups(fragment, binding.root)
+}
+
+fun PopupViewModel.showPopups(
+    fragment: Fragment,
+    rootView: View
+) {
     val lifecycleOwner = fragment.viewLifecycleOwner
     val ctx = fragment.requireContext()
 
@@ -101,7 +109,7 @@ fun PopupViewModel.showPopups(
 
                 is PopupUi.SnackBar ->
                     SnackBarUtils.show(
-                        binding.root.findViewById(R.id.coordinatorLayout),
+                        rootView.findViewById(R.id.coordinatorLayout),
                         event.ui.message,
                         event.ui.actionText,
                         event.ui.long

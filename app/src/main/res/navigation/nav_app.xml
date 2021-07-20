@@ -23,7 +23,7 @@
     <fragment
         android:id="@+id/home_fragment"
         android:name="io.github.sds100.keymapper.home.HomeFragment"
-        tools:layout="@layout/fragment_home"></fragment>
+        tools:layout="@layout/fragment_home" />
 
     <action
         android:id="@+id/action_to_config_keymap"
@@ -80,37 +80,19 @@
             app:argType="string" />
     </action>
 
-    <include app:graph="@navigation/nav_choose_action" />
-    <include app:graph="@navigation/nav_config_keymap" />
-    <include app:graph="@navigation/nav_config_fingerprint_map" />
-    <include app:graph="@navigation/nav_choose_constraint" />
-
-    <fragment
-        android:id="@+id/logFragment"
-        android:name="io.github.sds100.keymapper.logging.LogFragment"
-        android:label="LogFragment" />
-
-    <fragment
-        android:id="@+id/settingsFragment"
-        android:name="io.github.sds100.keymapper.settings.SettingsFragment"
-        android:label="fragment_settings"
-        tools:layout="@layout/fragment_about">
-
-        <action
-            android:id="@+id/action_to_log_fragment"
-            app:destination="@id/logFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
-    </fragment>
     <action
-        android:id="@+id/action_global_settingsFragment"
-        app:destination="@id/settingsFragment"
+        android:id="@+id/to_settingsFragment"
+        app:destination="@id/nav_settings"
         app:enterAnim="@anim/slide_in_right"
         app:exitAnim="@anim/slide_out_left"
         app:popEnterAnim="@anim/slide_in_left"
         app:popExitAnim="@anim/slide_out_right" />
+
+    <include app:graph="@navigation/nav_choose_action" />
+    <include app:graph="@navigation/nav_config_keymap" />
+    <include app:graph="@navigation/nav_config_fingerprint_map" />
+    <include app:graph="@navigation/nav_choose_constraint" />
+    <include app:graph="@navigation/nav_settings" />
 
     <fragment
         android:id="@+id/aboutFragment"

@@ -611,8 +611,13 @@
     <string name="title_pref_show_device_descriptors">Show the first 5 characters of the device id for device specific triggers</string>
     <string name="summary_pref_show_device_descriptors">This is useful to differentiate between devices that have the same name.</string>
 
+    <string name="title_pref_reroute_keyevents">Workaround for Android 11 bug</string>
+    <string name="summary_pref_reroute_keyevents">This fixes keyboards that don\'t work when any accessibility service is enabled.</string>
+
     <string name="title_pref_devices_to_reroute_keyevents">Workaround for Android 11 bug that sets the device id for input events to -1</string>
-    <string name="summary_pref_devices_to_reroute_keyevents">Select the devices that Key Mapper should intercept all key events and then reroute through the chosen Key Mapper keyboard. You MUST be using the Key Mapper GUI Keyboard or the Key Mapper Basic Input Method for this to work. This is a partial workaround for https://issuetracker.google.com/issues/163120692. This will NOT work with game controllers.</string>
+    <string name="summary_pref_devices_to_reroute_keyevents">Workaround for Android 11 bug that sets the device id for input events to -1</string>
+
+    <string name="summary_pref_devices_to_reroute_keyevents_choose_devices">Select the devices that Key Mapper should intercept all key events and then reroute through the chosen Key Mapper keyboard. You MUST be using the Key Mapper GUI Keyboard or the Key Mapper Basic Input Method for this to work. This is a partial workaround for https://issuetracker.google.com/issues/163120692. This will NOT work with game controllers.</string>
     <string name="title_pref_devices_to_reroute_keyevents_choose_devices">4. Choose devices</string>
 
     <string name="title_pref_devices_to_reroute_keyevents_install_gui_keyboard">1. Install the Key Mapper GUI Keyboard (optional)</string>
@@ -629,20 +634,29 @@
     <string name="title_pref_report_issue">Report issue</string>
 
     <string name="title_pref_delete_sound_files">Delete sound files</string>
+    <string name="summary_pref_delete_sound_files">Delete sound files that can be used for the Sound action.</string>
     <string name="title_pref_grant_write_secure_settings_not_granted">Grant permission</string>
     <string name="title_pref_grant_write_secure_settings_granted">Permission granted</string>
+
+    <string name="title_pref_default_options">Default mapping options</string>
+    <string name="summary_pref_default_options">Change the default options for your mappings.</string>
+
     <!--Preference titles and summaries-->
 
     <!--Preference categories-->
-    <string name="title_pref_category_ime_picker">Keyboard picker</string>
+    <string name="title_pref_category_ime_picker">Automatically show the keyboard picker</string>
+    <string name="summary_pref_category_ime_picker">Tap to see the settings that allow you to automatically show the keyboard picker.</string>
+
     <string name="title_pref_category_notifications">Notifications</string>
     <string name="title_pref_category_defaults">Defaults</string>
 
-    <string name="title_pref_category_root">ROOT</string>
+    <string name="title_pref_category_root">Root settings</string>
     <string name="summary_pref_category_root">These options will only work on root devices! If you don\'t know what root is or whether your device is rooted, please don\'t leave a poor review if they don\'t work. :)</string>
 
     <string name="title_pref_category_write_secure_settings">Require WRITE_SECURE_SETTINGS permission</string>
     <string name="summary_pref_category_write_secure_settings">These options are only enabled if Key Mapper has WRITE_SECURE_SETTINGS permission. Click the button below to learn how to grant the permission.</string>
+
+    <string name="title_pref_category_write_secure_settings_view_settings">Go to the settings that require this permission.</string>
 
     <string name="title_pref_category_log">Logging</string>
     <string name="summary_pref_category_log">This may add latency to your key maps so only turn this on if you are trying to debug the app or have been asked to by the developer.</string>

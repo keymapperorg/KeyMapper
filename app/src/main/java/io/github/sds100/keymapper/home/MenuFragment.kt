@@ -60,7 +60,7 @@ class MenuFragment : BottomSheetDialogFragment() {
 
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED){
             viewModel.openSettings.collectLatest {
-                findNavController().navigate(NavAppDirections.actionGlobalSettingsFragment())
+                findNavController().navigate(NavAppDirections.toSettingsFragment())
             }
         }
 

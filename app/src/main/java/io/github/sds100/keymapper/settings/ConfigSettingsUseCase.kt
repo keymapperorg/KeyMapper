@@ -122,8 +122,8 @@ class ConfigSettingsUseCaseImpl(
         return soundsManager.soundFiles.value
     }
 
-    override fun deleteSoundFiles(uids: List<String>) {
-        uids.forEach {
+    override fun deleteSoundFiles(uid: List<String>) {
+        uid.forEach {
             soundsManager.deleteSound(it)
         }
     }

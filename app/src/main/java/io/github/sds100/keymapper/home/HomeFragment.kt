@@ -310,7 +310,7 @@ class HomeFragment : Fragment() {
 
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             homeViewModel.openSettings.collectLatest {
-                findNavController().navigate(NavAppDirections.actionGlobalSettingsFragment())
+                findNavController().navigate(NavAppDirections.toSettingsFragment())
             }
         }
     }
