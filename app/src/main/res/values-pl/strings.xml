@@ -63,40 +63,116 @@
     Zapisane pliki dźwiękowe można usunąć w ustawieniach.</string>
     <string name="caption_action_type_text">Wpisz tekst, który należy wkleić podczas wykonywania tego działania.</string>
     <string name="caption_action_type_phone_call">Wprowadź numer telefonu.</string>
+    <string name="caption_action_type_url">Wpisz adres URL, który chcesz otworzyć. http://, https:// lub www. nie jest wymagane.</string>
     <string name="caption_no_paired_bt_devices">Nie można znaleźć sparowanych urządzeń. Czy Bluetooth jest włączony?</string>
+    <string name="caption_create_keymap_shortcut">Opcja \"wyzwalacz z innych aplikacji\" zostanie włączona dla wybranej mapy klawiszy, jeśli jeszcze nie jest. Jeśli później wyłączysz tę opcję, żadne skróty ani Intencje uruchamiające tę mapę klawiszy nie będą działać.</string>
     <string name="switch_enabled">Włączone</string>
     <string name="disabled">Wyłączone</string>
     <string name="reset">Zresetuj</string>
+    <string name="enable_device_admin_message">Po włączeniu Zarządzanie urządzeniem musisz go DEZAKTYWOWAĆ, jeśli chcesz odinstalować Key Mapper.</string>
+    <string name="constraints_recyclerview_placeholder">Dodaj ograniczenie!</string>
+    <string name="action_title_wait">Czekaj %sms</string>
+    <string name="email_subject">Raport o błędzie Key Mapper</string>
+    <string name="email_default_message">Proszę opisz swój problem...</string>
+    <string name="action_title_intent_start_activity">Uruchom aktywność: %s</string>
+    <string name="action_title_intent_start_service">Uruchom usługę: %s</string>
+    <string name="action_title_intent_send_broadcast">Wyślij transmisję: %s</string>
+    <string name="clipboard_label_keymap_uid">UUID mapy klawiszy</string>
+    <string name="check_box_key_event_option_use_shell">Użyj powłoki systemowej (tylko ROOT)</string>
+    <string name="trigger_error_dnd_access_denied">Key Mapper wymaga uprawnień do modyfikowania trybu Nie przeszkadzać, jeśli chcesz, aby przyciski działały zgodnie z oczekiwaniami w trybie Nie przeszkadzać!</string>
+    <string name="trigger_error_dnd_access_denied_short">Ten wyzwalacz nie będzie działał zgodnie z oczekiwaniami w trybie Nie przeszkadzać!</string>
+    <string name="trigger_error_screen_off_root_permission_denied">Opcja wyzwalania, gdy ekran jest wyłączony, wymaga uprawnień roota do działania!</string>
+    <string name="trigger_error_screen_off_root_permission_denied_short">Opcja wyzwalania, gdy ekran jest wyłączony, nie będzie działać!</string>
+    <string name="home_error_is_battery_optimised">Twoje działania mogą nagle przestać działać!</string>
+    <string name="home_error_key_maps_paused">Twoje działania są wstrzymane!</string>
+    <string name="home_error_key_maps_paused_button">Wznów</string>
+    <string name="home_error_accessibility_service_is_disabled">Usługa ułatwień dostępu musi być włączona, aby Twoje mapy klawiszy działały!</string>
+    <string name="home_error_accessibility_service_is_crashed">Twoje urządzenie zatrzymało Key Mapper, gdy był w tle, lub aplikacja uległa awarii!</string>
+    <string name="home_success_accessibility_service_is_enabled">Usługa ułatwień dostępu jest właczona! Twoje mapy klawiszy powinny działać.</string>
+    <string name="home_error_logging_enabled">Dodatkowe logowanie jest włączone! Wyłącz to, jeśli nie ma potrzeby naprawiania problemu.</string>
+    <string name="home_error_logging_enabled_button">Wyłącz</string>
     <!--  Action descriptions  -->
     <string name="description_open_app">Otwórz %s</string>
     <string name="description_key">Naciśnij klawisz \'%s\'</string>
     <string name="description_text_block">Wpisz \'%s\'</string>
     <string name="description_keyevent">Wprowadź %s%s</string>
+    <string name="description_keyevent_through_shell">Wprowadź %s przez powłokę systemową</string>
+    <string name="description_keyevent_from_device">Wprowadź %s%s z %s</string>
     <string name="description_url">Otwórz %s</string>
+    <string name="description_tap_coordinate_default">Kliknij współrzędne %d, %d</string>
+    <string name="description_tap_coordinate_with_description">Kliknij współrzędne %d, %d (%s)</string>
+    <string name="description_phone_call">Zadzwoń do %s</string>
+    <string name="description_sound">Odtwórz dźwięk: %s</string>
     <!--  Action descriptions  -->
     <!--  Headers  -->
     <string name="option_list_header">Opcje</string>
     <string name="action_list_header">Działania</string>
+    <string name="trigger_header">Wyzwalacz</string>
     <string name="constraint_list_header">Ograniczenia</string>
+    <string name="header_fingerprint_gesture_up">Przesuń w górę</string>
+    <string name="header_fingerprint_gesture_down">Przesuń w dół</string>
+    <string name="header_fingerprint_gesture_left">Przesuń w lewo</string>
+    <string name="header_fingerprint_gesture_right">Przesuń w prawo</string>
+    <string name="header_click_type">Typ kliknięcia</string>
+    <string name="header_intent_extras">Dodatki</string>
     <!--  Headers  -->
     <!--  Hints  -->
+    <string name="hint_keycode">Kod klawisza</string>
+    <string name="hint_from_device">Z urządzenia</string>
+    <string name="hint_shortcut_name">Nazwa skrótu</string>
     <string name="hint_tap_coordinate_title">Opis współrzędnych (opcjonalnie)</string>
+    <string name="hint_intent_action">Działanie</string>
+    <string name="hint_intent_categories">Kategorie</string>
+    <string name="hint_intent_data">Dane</string>
+    <string name="hint_intent_package">Pakiet</string>
+    <string name="hint_intent_class">Klasa</string>
+    <string name="hint_intent_extra_name">Nazwa</string>
+    <string name="hint_intent_extra_value_with_type">Wartość (%s)</string>
+    <string name="hint_intent_description">Opis dla Key Mapper (wymagane)</string>
+    <string name="hint_intent_flags">Flagi</string>
+    <string name="hint_sound_file_description">Opis pliku dźwiękowego</string>
     <!--  Hints  -->
     <!--  Radio buttons  -->
     <string name="radio_button_parallel">Jednocześnie</string>
     <string name="radio_button_sequence">Kolejno</string>
     <string name="radio_button_and">ORAZ</string>
     <string name="radio_button_or">LUB</string>
+    <string name="radio_button_short_press">Krótkie naciśnięcie</string>
+    <string name="radio_button_long_press">Długie naciśnięcie</string>
+    <string name="radio_button_double_press">Podwójne naciśnięcie</string>
+    <string name="radio_button_intent_extra_value_true">Prawda</string>
+    <string name="radio_button_intent_extra_value_false">Fałsz</string>
+    <string name="radio_button_intent_target_activity">Aktywność</string>
+    <string name="radio_button_intent_target_service">Usługa</string>
+    <string name="radio_button_intent_target_broadcast_receiver">Odbiornik transmisji</string>
     <!--  Radio buttons  -->
     <!--  Tabs  -->
+    <string name="tab_trigger_and_actions">Wyzwalacz i działania</string>
+    <string name="tab_constraints_and_more">Ograniczenia i więcej</string>
+    <string name="tab_options">Opcje</string>
+    <string name="tab_constraints">Ograniczenia</string>
     <string name="tab_actions">Działania</string>
-    <string name="tab_trigger">Trigger</string>
+    <string name="tab_trigger">Wyzwalacz</string>
+    <string name="tab_fingerprint">Odcisk palca</string>
+    <string-array name="home_tab_titles">
+        <item>@string/tab_keyevents</item>
+        <item>@string/tab_fingerprint</item>
+    </string-array>
     <!--  Tabs  -->
     <!--  Navigation argument ids  -->
     <!--  Navigation argument ids  -->
     <!--  Toasts  -->
     <string name="toast_chose_keyboard">Wybierz %s</string>
+    <string name="toast_backup_successful">Kopia zapasowa wykonana pomyślnie!</string>
+    <string name="toast_backup_failed">Tworzenie kopii zapasowej nie powiodło się!</string>
+    <string name="toast_restore_successful">Przywracanie danych wykonane pomyślnie!</string>
+    <string name="toast_restore_failed">Przywracanie danych nie powiodło się!</string>
+    <string name="toast_automatic_backup_successful">Automatyczna kopia zapasowa wykonana pomyślnie!</string>
+    <string name="toast_automatic_backup_failed">Tworzenie automatycznej kopii zapasowej nie powiodło się!</string>
+    <string name="toast_screenshot_taken">Wykonano zrzut ekranu</string>
+    <string name="toast_io_exception_shrug">Wyjątek wejścia/wyjścia ¯\\_(ツ)_/¯</string>
     <string name="toast_incorrect_screenshot_resolution">Rozdzielczość zrzutu ekranu nie pasuje do rozdzielczości tego urządzenia!</string>
+    <string name="toast_copied_keymap_uid_to_clipboard">Skopiowano UUID mapy klawiszy do schowka</string>
     <!--  Toasts  -->
     <!-- Extra labels -->
     <string name="extra_label_sequence_trigger_timeout">Limit czasu kolejkowego triggera (ms)</string>
