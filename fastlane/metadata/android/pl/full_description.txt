@@ -75,19 +75,19 @@ Klawiatura Key Mappera musi być wybrana, aby działały poniższe funkcje:
 
 Co jeszcze może ta aplikacja?
  * Opcja pokazywania trwałego powiadomienia, które może wstrzymać lub wznowić Twoje zmiany funkcji przycisków.
- * Automatically change the keyboard to the Key Mapper one and/or show the keyboard picker when a chosen Bluetooth device is connected and switch back to the old one when it is disconnected.
- * Quick settings to pause/resume keymaps and toggle the Key Mapper keyboard.
- * Create home screen widget to perform the actions mentioned above.
+ * Automatycznie zmień klawiaturę na klawiaturę Key Mapper i/lub pokaż wybór klawiatury, gdy wybrane urządzenie Bluetooth jest podłączone, i przełącz się z powrotem na stare, gdy jest odłączone.
+ * Szybkie ustawienia do wstrzymania/wznowienia zmiany funkcji przycisków i przełączania klawiatury Key Mapper.
+ * Utwórz widżet na ekranie głównym, aby wykonać funkcje wymienione powyżej.
 
-Permissions
-You don't have to grant all the permissions for the app to work. The app will tell you if a permission needs to be granted for a feature to work.
+Uprawnienia
+Nie musisz przyznawać wszystkich uprawnień, aby aplikacja działała. Aplikacja poinformuje Cię, czy do działania funkcji wymagane jest określone uprawnienie.
 
- * Accessibility Service: Basic requirement for remapping to work. It is needed so the app can listen to and block keyevents.
- * Device Admin: To turn the screen off when using the action to turn off the screen.
- * Modify System Settings: To change the brightness and rotation settings.
- * Camera: To control the flashlight.
+ * Usługa ułatwień dostępu: Podstawowe wymaganie dotyczące zmiany funkcji przycisków. Jest to potrzebne, aby aplikacja mogła nasłuchiwać i blokować zdarzenia przycisków.
+ * Zarządzanie urządzeniem: aby wyłączyć ekran podczas korzystania z czynności wyłączenia ekranu.
+ * Modyfikowanie ustawień systemu: Aby zmienić ustawienia jasności i obracania.
+ * Aparat: Aby sterować latarką.
 
- On some devices, enabling the accessibility service will disable "enhanced data encryption".
+ Na niektórych urządzeniach włączenie usługi ułatwień dostępu spowoduje wyłączenie "Ulepszonego szyfrowania danych".
 
 Discord: https://discord.gg/Suj6nyw
-Website: https://docs.keymapper.club
+Strona internetowa: https://docs.keymapper.club
