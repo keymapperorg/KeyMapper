@@ -331,10 +331,8 @@
     <string name="summary_pref_show_device_descriptors">这有助于区分具有相同名称的设备。</string>
     <!--Preference titles and summaries-->
     <!--Preference categories-->
-    <string name="title_pref_category_ime_picker">键盘选择器</string>
     <string name="title_pref_category_notifications">通知</string>
     <string name="title_pref_category_defaults">默认</string>
-    <string name="title_pref_category_root">ROOT</string>
     <string name="summary_pref_category_root">这些选项只适用于 root 设备！ 如果您不知道什么 root 或您的设备是否 root，他们无效时请不要留下不好的评论。:)</string>
     <string name="title_pref_category_write_secure_settings">请求WRITE_SECURE_SETTINGS权限</string>
     <!--Preference categories-->
