@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name" translatable="false">Key Mapper</string>
     <string name="developer_email" translatable="false">developer.sds100@gmail.com</string>
+    <string name="slogan">Unleash your keys!</string>
 
     <string name="no_action_chosen">No action chosen</string>
     <string name="accessibility_service_description">Key Mapper needs to use an accessibility service so it can listen to button/key presses and perform the actions you\'ve chosen.
@@ -118,6 +119,7 @@
     <string name="home_error_logging_enabled">Extra logging is turned on! Turn this off if you aren\'t trying to fix an issue.</string>
     <string name="home_error_logging_enabled_button">Turn off</string>
 
+    <string name="title_about">About</string>
     <!--  Action descriptions  -->
     <string name="description_open_app">Open %s</string>
     <string name="description_key">Press \'%s\' key</string>
@@ -293,7 +295,7 @@
     <string name="url_license" translatable="false">https://github.com/sds100/KeyMapper/blob/master/LICENSE.md</string>
     <string name="url_changelog" translatable="false">https://github.com/sds100/KeyMapper/blob/master/CHANGELOG.md</string>
     <string name="url_credits" translatable="false">https://github.com/sds100/KeyMapper/blob/master/CREDITS.md</string>
-    <string name="url_translate" translatable="false">https://github.com/sds100/KeyMapper/wiki/Translate</string>
+    <string name="url_translate" translatable="false">https://sds100.github.io/KeyMapper/contributing/#translating</string>
     <string name="url_privacy_policy" translatable="false">https://github.com/sds100/KeyMapper/blob/master/PRIVACY_POLICY.md</string>
     <string name="url_xda_thread" translatable="false">https://forum.xda-developers.com/android/apps-games/app-keyboard-button-mapper-t3914005</string>
     <string name="url_discord_server_invite" translatable="false">https://discord.gg/Suj6nyw</string>
@@ -317,6 +319,9 @@
     <string name="url_settings_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/settings</string>
     <string name="url_report_issues_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/report-issues</string>
     <string name="url_intent_set_flags_help" translatable="false">https://developer.android.com/reference/android/content/Intent#setFlags(int)</string>
+    <string name="url_github_repo" translatable="false">https://github.com/sds100/KeyMapper</string>
+    <string name="url_rate" translatable="false">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper</string>
+    <string name="url_website" translatable="false">https://sds100.github.io/KeyMapper</string>
 
     <string name="url_play_store_keymapper_gui_keyboard" translatable="false">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper.inputmethod.latin</string>
     <string name="url_fdroid_keymapper_gui_keyboard" translatable="false">https://f-droid.org/en/packages/io.github.sds100.keymapper.inputmethod.latin</string>
@@ -1149,4 +1154,27 @@
     <string name="tap_target_quick_start_guide_secondary">Check out the Quick Start Guide if you are stuck.</string>
     <!--  Tap targets  -->
 
+    <string name="about_link_github">GitHub</string>
+    <string name="about_link_website">Website</string>
+    <string name="about_link_translations">Translations</string>
+    <string name="about_version">Version %s</string>
+    <string name="about_link_rate">Rate</string>
+    <string name="about_link_changelog">Changelog</string>
+    <string name="about_link_discord">Discord</string>
+
+    <string name="about_header_boring_stuff">Boring stuff</string>
+    <string name="about_license_title">License</string>
+    <string name="about_license_subtitle">The open source license for this app.</string>
+
+    <string name="about_privacy_policy_title">Privacy Policy</string>
+    <string name="about_privacy_policy_subtitle">We don\'t collect any personal information but here is a privacy policy saying this.</string>
+
+    <string name="about_header_our_team">Our team</string>
+    <string name="about_team_sds100_name" translatable="false">Seth Schroeder (sds100)</string>
+    <string name="about_team_sds100_role">Developer</string>
+    <string name="about_team_sds100_url" translatable="false">https://github.com/sds100</string>
+
+    <string name="about_team_jambl3r_name" translatable="false">Jambl3r</string>
+    <string name="about_team_jambl3r_role">Community moderator/support</string>
+    <string name="about_team_jambl3r_url" translatable="false">https://gitlab.com/jambl3r</string>
 </resources>

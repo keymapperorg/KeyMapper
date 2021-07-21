@@ -176,6 +176,20 @@
         <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
+    <style name="LinkChipButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="textAllCaps">true</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAppearance">@style/TextAppearance.MaterialComponents.Subtitle1
+        </item>
+        <item name="android:checkable">false</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:enabled">true</item>
+        <item name="iconSize">24dp</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
     <style name="ErrorChipButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
         <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.MaterialComponents.Chip
         </item>
