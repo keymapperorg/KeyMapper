@@ -38,5 +38,7 @@
     <color name="cardview_stroke">@color/mtrl_btn_stroke_color_selector</color>
     <color name="coordinate_line">#FF00FB</color>
 
+    <color name="yellow">#FFC107</color>
+
     <color name="colorError">?attr/colorError</color>
 </resources>

@@ -65,7 +65,7 @@
                     tools:text="Increase Volume" />
 
                 <TextView
-                    android:id="@+id/textViewError"
+                    android:id="@+id/textViewSubtitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@{model.errorMessage}"

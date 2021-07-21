@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.text.TextWatcher
 import android.view.View
-import android.widget.Button
 import android.widget.EditText
 import androidx.annotation.ColorInt
 import androidx.appcompat.widget.AppCompatImageView
@@ -77,7 +76,7 @@ fun View.backgroundTint(@ColorInt color: Int) {
 }
 
 @BindingAdapter("app:openUrlOnClick")
-fun Button.openUrlOnClick(url: String?) {
+fun View.openUrlOnClick(url: String?) {
     url ?: return
 
     setOnClickListener {

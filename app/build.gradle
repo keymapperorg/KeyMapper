@@ -144,7 +144,8 @@ dependencies {
     implementation 'net.lingala.zip4j:zip4j:2.8.0'
     implementation "com.anggrayudi:storage:0.8.1"
     implementation 'com.github.MFlisar:DragSelectRecyclerView:0.3'
-
+    implementation 'com.google.android.flexbox:flexbox:3.0.0'
+    
     // splitties
     implementation "com.louiscad.splitties:splitties-bitflags:$splitties_version"
     implementation "com.louiscad.splitties:splitties-alertdialog-appcompat-coroutines:$splitties_version"
