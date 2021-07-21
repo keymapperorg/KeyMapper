@@ -42,7 +42,7 @@
     <string name="show_hidden_apps">Pokaż ukryte aplikacje</string>
     <string name="modifiers">Modyfikatory</string>
     <string name="toggle">Włącz/wyłącz</string>
-    <string name="tap_coordinate_screenshot_message">UWAGA!!! Te współrzędne są poprawne tylko wtedy, gdy urządzenie i zrzut ekranu są w tej samej orientacji! To działanie spowoduje anulowanie wszelkich dotknięć lub gestów, które wykonujesz na ekranie.\n\nJeśli potrzebujesz pomocy w znalezieniu współrzędnych punktu na ekranie, zrób zrzut ekranu, a następnie dotknij go w miejscu, w którym ma zostać wykonane to działanie.</string>
+    <string name="tap_coordinate_screenshot_message">UWAGA!!! Te współrzędne są poprawne tylko wtedy, gdy urządzenie i zrzut ekranu są w tej samej orientacji! To działanie spowoduje anulowanie wszelkich kliknięć lub gestów, które wykonujesz na ekranie.\n\nJeśli potrzebujesz pomocy w znalezieniu współrzędnych punktu na ekranie, zrób zrzut ekranu, a następnie dotknij go w miejscu, w którym ma zostać wykonane to działanie.</string>
     <string name="dont_know_device_name">Nie znam nazwy urządzenia!</string>
     <string name="tap_actions_to_fix">Kliknij działania, aby naprawić!</string>
     <string name="tap_constraints_to_fix">Kliknij ograniczenia, aby naprawić!</string>
@@ -138,7 +138,7 @@
     <string name="radio_button_and">ORAZ</string>
     <string name="radio_button_or">LUB</string>
     <string name="radio_button_short_press">Krótkie naciśnięcie</string>
-    <string name="radio_button_long_press">Długie naciśnięcie</string>
+    <string name="radio_button_long_press">Przytrzymanie</string>
     <string name="radio_button_double_press">Podwójne naciśnięcie</string>
     <string name="radio_button_intent_extra_value_true">Prawda</string>
     <string name="radio_button_intent_extra_value_false">Fałsz</string>
@@ -200,7 +200,7 @@
     <string name="constraint_bt_device_disconnected_description">%s jest odłączone</string>
     <string name="constraint_screen_on_description">Ekran jest włączony</string>
     <string name="constraint_screen_off_description">Ekran jest wyłączony</string>
-    <string name="constraint_flashlight_off_description">%s latarka jest wyłączona</string>
+    <string name="constraint_flashlight_off_description">Latarka %s jest wyłączona</string>
     <string name="constraint_flashlight_on_description">%s latarka jest włączona</string>
     <string name="constraint_mode_and">oraz</string>
     <string name="constraint_mode_or">lub</string>
@@ -230,7 +230,7 @@
     <!-- Constraints -->
     <!-- Click types -->
     <string name="clicktype_short_press">Krótkie naciśnięcie</string>
-    <string name="clicktype_long_press">Długie naciśnięcie</string>
+    <string name="clicktype_long_press">Przytrzymanie</string>
     <string name="clicktype_double_press">Podwójne naciśnięcie</string>
     <!-- Click types -->
     <!-- URLs -->
@@ -278,7 +278,7 @@
     <string name="action_backup_everything">Utwórz kopię zapasową wszystkiego</string>
     <string name="action_backup_all">Utwórz kopię zapasową wszystkiego</string>
     <string name="action_tap_to_pause_keymaps">Kliknij aby zatrzymać</string>
-    <string name="action_tap_to_resume_keymaps">Dotknij aby wznowić</string>
+    <string name="action_tap_to_resume_keymaps">Kliknij aby wznowić</string>
     <string name="action_reset">Zresetuj</string>
     <string name="action_save_log">Zapisz</string>
     <string name="action_short_log_message">Przełącz krótkie wiadomości</string>
@@ -320,17 +320,19 @@
     <string name="dialog_message_root_prompt">Jeśli wiesz, że Twój telefon nie jest zrootowany lub nie wiesz, czym jest root, nie możesz korzystać z funkcji, które działają tylko na zrootowanych urządzeniach. Po kliknięciu \"OK\" zostaniesz przeniesiony do ustawień.
             W ustawieniach przewiń w dół i kliknij \"Key Mapper ma uprawnienia roota\", aby móc korzystać z funkcji/działań roota.</string>
     <string name="dialog_message_downloading">Pobieranie…</string>
-    <string name="dialog_message_describe_your_issue_in_the_email">Czy możesz opisać swój problem przez email? Bo inaczej nie mogę ci pomóc. Dzięki!</string>
+    <string name="dialog_message_describe_your_issue_in_the_email">Czy możesz opisać swój problem przez e-mail? Bo inaczej nie mogę Ci pomóc. Dzięki!</string>
     <string name="dialog_message_long_press_warning">Przytrzymanie działa tylko w przypadku fizycznych przycisków głośności i nawigacji. Jeśli jest włączone dla innych klawiszy, nie będą działać bez przytrzymania.</string>
     <string name="dialog_message_write_secure_settings">Aby nadać uprawnienia WRITE_SECURE_SETTINGS do Key Mapper, włącz \"funkcje roota\" w ustawieniach jeśli urządzenie jest zrootowane. Jeśli urządzenie nie jest zrootowane, postępuj zgodnie z przewodnikiem, aby nadać uprawnienie za pomocą komputera PC/Mac.</string>
     <string name="dialog_message_cant_find_accessibility_settings_page">Wygląda na to, że Twoje urządzenie nie ma strony usług ułatwień dostępu w ustawieniach. Nadal możesz włączyć usługę, nadając aplikacji uprawnienia WRITE_SECURE_SETTINGS. Po naciśnięciu \"OK\", wyskakujące okienko poprowadzi Cię jak to zrobić.</string>
     <string name="dialog_message_double_press_restricted_to_single_key">"Wielu klawiszy nie można jednocześnie nacisnąć dwukrotnie."</string>
     <string name="dialog_message_parallel_trigger_order">Klawisze muszą być ułożone od góry do dołu w kolejności, w jakiej będą przytrzymywane.</string>
-    <string name="dialog_message_sequence_trigger_explanation">Trigger \"kolejkowy\" ma limit czasu w przeciwieństwie do triggerów równoległych. Oznacza to, że po naciśnięciu pierwszego klawisza jest określony czas na wprowadzenie pozostałych. Wszystkie klawisze, które dodałeś do triggera, nie wykonają swojego zwykłego działania, dopóki nie zostanie osiągnięty limit czasu. Ten limit można zmienić na karcie \"Opcje\".</string>
+    <string name="dialog_message_sequence_trigger_explanation">Wyzwalacz \"kolejkowy\" ma limit czasu w przeciwieństwie do wyzwalaczy równoległych. Oznacza to, że po naciśnięciu pierwszego klawisza jest określony czas na wprowadzenie pozostałych. Wszystkie klawisze, które zostały dodane do wyzwalacza, nie będą wykonywać swojej zwykłej czynności, dopóki nie zostanie przekroczony limit czasu. Ten limit można zmienić na karcie \"Opcje\".</string>
     <string name="dialog_message_bt_constraint_limitation">Android nie pozwala aplikacjom na odczytywanie listy aktualnie połączonych (niesparowanych) urządzeń Bluetooth. Aplikacje mogą je wykrywać tylko w momencie, gdy się łączą i rozłączają. Dlatego jeśli urządzenie Bluetooth było już połączone z urządzeniem w momencie uruchomienia usługi ułatwień dostępu, konieczne będzie ponowne połączenie, aby aplikacja mogła je wykryć.</string>
     <string name="dialog_message_change_location_or_disable">Zmienić lokalizację lub wyłączyć automatyczną kopię zapasową?</string>
     <string name="dialog_message_screen_constraints_limitation">Ograniczenia \"Ekran jest włączony/wyłączony\" będą działać tylko wtedy, gdy jest włączona opcja mapy klawiszy \"Wykryj trigger gdy ekran jest wyłączony\". Ta opcja będzie wyświetlana tylko dla niektórych klawiszy (np. przycisków głośności) i jeśli masz uprawnienia root. Zobacz listę obsługiwanych klawiszy na stronie pomocy.</string>
+    <string name="dialog_message_password_screen_lock_warning">Jeśli masz wybrany inny ekran blokady, taki jak PIN lub Wzór, nie musisz się martwić. Ale jeśli masz ekran blokady z hasłem, *NIE* będziesz w stanie odblokować telefonu gdy używasz Podstawowej metody wprowadzania Key Mapper, ponieważ nie ma ta klawiatura interfejsu. Możesz nadać uprawnienie WRITE_SECURE_SETTINGS do Key Mapper, aby można było wyświetlać powiadomienie o przełączaniu się z i do tej klawiatury. Kliknij znak zapytania u dołu ekranu, aby wyświetlić przewodnik na ten temat.</string>
     <string name="dialog_message_select_compatible_ime">Wybierz metodę wprowadzania dla działań, które tego wymagają. Można to zmienić później za pomocą opcji \"Wybierz klawiaturę do działań\" w dolnym menu ekranu głównego.</string>
+    <string name="dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout">Musisz wybrać układ klawiatury \"Caps Lock otwiera Aparat\" dla swojej klawiatury, w przeciwnym razie klawisz Caps Lock będzie nadal włączał Caps Lock. Możesz znaleźć tę opcję w ustawieniach urządzenia -&gt; Języki i metody wprowadzanie -&gt; Klawiatura fizyczna -&gt; Wybierz swoją klawiaturę -&gt; Skonfiguruj układy klawiatury. Spowoduje to zmianę przypisania klawisza Caps Lock do KEYCODE_CAMERA, dzięki czemu Key Mapper będzie mógł go poprawnie zmienić.\n\nPo wykonaniu tej czynności musisz usunąć klawisz Caps Lock z działania i ponownie nacisnąć klawisz Caps Lock. Jeśli wykonałeś(-aś) wszystkie kroki, powinien on nazywać się \"Aparat\" zamiast \"Caps Lock\".</string>
     <string name="dialog_message_cant_record_trigger"><b>Uruchom ponownie</b> urządzenie, jeśli przycisk \"Nagraj wyzwalacz\" się odlicza, a przyciski, które naciskasz, nie są wyświetlane. Jeśli przyciski nadal nie są wyświetlane po ponownym uruchomieniu, Key Mapper nie obsługuje tych przycisków. Nie ma na to rozwiązania.</string>
     <string name="dialog_message_settings_no_external_devices_connected">Brak podłączonych urządzeń zewnętrznych.</string>
     <string name="dialog_title_install_gui_keyboard">Zainstaluj GUI klawiaturę Key Mapper</string>
@@ -338,6 +340,7 @@
     <string name="dialog_title_install_leanback_keyboard">Zainstaluj klawiaturę Key Mapper Leanback</string>
     <string name="dialog_message_install_leanback_keyboard">Jest to wysoce zalecane! To jest rzeczywista klawiatura dla Android TV, której możesz używać z Key Mapperem. Ta wbudowana w Key Mapper (Podstawowa metoda wprowadzania) nie ma klawiatury ekranowej. Wybierz, skąd chcesz ją zainstalować.</string>
     <string name="dialog_title_disable_battery_optimisation">Wyłącz optymalizację baterii</string>
+    <string name="dialog_message_disable_battery_optimisation"><b>MUSISZ</b> to <b>wszystko</b> przeczytać, w przeciwnym razie otrzymasz <b>frustrację</b> w przyszłości!\n\nKliknięcie \"Napraw częściowo\" <b>może</b> uniemożliwić Androidowi zatrzymanie aplikacji, gdy działa ona w tle.\n\n<b>To NIE WYSTARCZY</b>. Skórka producenta, taka jak MIUI lub Samsung Experience, może mieć inne funkcje zatrzymywania aplikacji, więc MUSISZ je wyłączyć dla Key Mapper, postępując zgodnie z przewodnikiem online na dontkillmyapp.com.</string>
     <string name="dialog_title_send_feedback">Prześlij opinię</string>
     <string name="dialog_message_send_feedback">Prosimy o zapoznanie się z poradnikiem jak zgłaszać problemy, na stronie internetowej.</string>
     <string name="dialog_message_enable_accessibility_service_to_record_trigger">Włącz usługę ułatwień dostępu aby nagrać wyzwalacz.</string>
@@ -348,6 +351,9 @@
     <string name="dialog_title_reset_fingerprint_maps">Zresetuj mapy gestów czytnika linii papilarnych</string>
     <string name="dialog_message_reset_fingerprint_maps">Czy na pewno chcesz zresetować mapy gestów czytnika linii papilarnych?</string>
     <string name="dialog_title_key_mapper_crashed">Key Mapper został zatrzymany lub uległ awarii</string>
+    <string name="dialog_message_key_mapper_crashed">Jest bardzo prawdopodobne, że Twoje urządzenie zatrzymało Key Mapper, gdy próbował działać w tle. <b>Nie jest</b> to wina programisty, więc nie zostawiaj złej recenzji 😃, ponieważ nie można nic zrobić z aplikacją, aby to naprawić.
+
+    \n\nCzy postępowałeś(-aś) już zgodnie z przewodnikiem na dontkillmyapp.com, aby uniemożliwić urządzeniu zatrzymanie Key Mapper?</string>
     <string name="dialog_button_read_dont_kill_my_app_yes">Tak</string>
     <string name="dialog_button_read_dont_kill_my_app_no">Nie</string>
     <string name="dialog_title_failed_to_create_bug_report">Nie udało się utworzyć zgłoszenie o błędzie</string>
@@ -411,6 +417,7 @@
     <string name="notification_feature_fingerprint_title">Zmień funkcje gestów czytnika linii papilarnych za pomocą Key Mapper!</string>
     <string name="notification_feature_fingerprint_text">Twoje urządzenie obsługuje zmianę funkcji gestów na czytniku linii papilarnych. Kliknij, aby rozpocząć!</string>
     <string name="notification_setup_chosen_devices_again_title">Musisz ponownie skonfigurować niektóre ustawienia!</string>
+    <string name="notification_setup_chosen_devices_again_text">Wygląda na to, że używasz ustawienia do automatycznej zmiany klawiatury lub wyświetlania selektora metody wprowadzania, gdy urządzenie Bluetooth się łączy i rozłącza. Key Mapper umożliwia teraz korzystanie z dowolnego urządzenia wejściowego, a nie tylko urządzeń Bluetooth. Nie ma sposobu na migrację starych ustawień w taki sposób, aby nowa funkcja działała, więc trzeba będzie ponownie wybrać urządzenia w ustawieniach Key Mapper. Kliknij, aby otworzyć Key Mapper.</string>
     <!-- Notification strings -->
     <!--Preference titles and summaries-->
     <string name="title_pref_long_press_delay">Domyślny czas przytrzymania (ms)</string>
@@ -424,7 +431,7 @@
     <string name="summary_pref_repeat_rate">Opóźnienie między każdym powtórzeniem czynności. Wartość domyślna to 50ms. Może zostać zastąpione w opcjach mapy klawiszy.</string>
     <string name="title_pref_repeat_rate">Domyślne opóźnienie między powtórzeniami (ms)</string>
     <string name="summary_pref_sequence_trigger_timeout">Czas potrzebny do zakończenia kolejkowego wyzwalacza. Wartość domyślna to 1000ms. Może zostać zastąpione w opcjach mapy klawiszy.</string>
-    <string name="title_pref_sequence_trigger_timeout">Domyślny limit czasu kolejkowego triggera (ms)</string>
+    <string name="title_pref_sequence_trigger_timeout">Domyślny limit czasu kolejkowego wyzwalacza (ms)</string>
     <string name="title_pref_reset_defaults">Zresetuj</string>
     <string name="summary_pref_force_vibrate">Wymuś wibracje wszystkich map klawiszy.</string>
     <string name="title_pref_force_vibrate">Wymuś wibracje</string>
@@ -440,6 +447,8 @@
     <string name="title_pref_auto_change_ime_on_connection">Automatycznie zmieniaj klawiaturę ekranową, gdy urządzenie (np. klawiatura) się łącza/rozłącza</string>
     <string name="summary_pref_auto_change_ime_on_connection">Ostatnio używana klawiatura Key Mapper zostanie automatycznie wybrana po podłączeniu wybranego urządzenia. Twoja normalna klawiatura zostanie automatycznie wybrana po rozłączeniu urządzenia.</string>
     <string name="title_pref_root_permission">Key Mapper ma uprawnienia roota</string>
+    <string name="summary_pref_root_permission">Włącz tę opcję, jeśli chcesz korzystać z funkcji/działań, które działają tylko na zrootowanych urządzeniach. Key Mapper musi mieć uprawnienia roota z aplikacji do zarządzania dostępem do roota (np. Magisk, SuperSU), aby te funkcje działały.
+            Włącz to tylko wtedy, gdy wiesz, że Twoje urządzenie jest zrootowane, a także uprawnienia roota zostały przyznane aplikacji Key Mapper.</string>
     <string name="title_pref_dark_theme">Ciemny motyw</string>
     <string name="title_pref_notification_settings">Ustawienia powiadomień</string>
     <string name="summary_pref_show_toggle_keyboard_notification">Przełącz między klawiaturą Key Mapper a Twoją klawiaturą domyślną po kliknięciu powiadomienia.</string>
@@ -454,6 +463,7 @@
     <string name="summary_pref_reroute_keyevents">To naprawia klawiatury, które nie działają po włączeniu jakiejkolwiek usługi ułatwień dostępu.</string>
     <string name="title_pref_devices_to_reroute_keyevents">Obejście błędu Androida 11, który ustawia identyfikator urządzenia dla zdarzeń wejściowych na -1</string>
     <string name="summary_pref_devices_to_reroute_keyevents">Obejście błędu Androida 11, który ustawia identyfikator urządzenia dla zdarzeń wejściowych na -1</string>
+    <string name="summary_pref_devices_to_reroute_keyevents_choose_devices">Wybierz urządzenia, z których Key Mapper powinien przechwycić wszystkie zdarzenia klawiszy, a następnie przekierować przez wybraną klawiaturę Key Mapper. Aby to zadziałało, MUSISZ używać GUI klawiatury Key Mapper lub Podstawowej metody wprowadzania Key Mapper. Jest to częściowe obejście błędu https://issuetracker.google.com/issues/163120692. To NIE będzie działać z kontrolerami gier.</string>
     <string name="title_pref_devices_to_reroute_keyevents_choose_devices">4. Wybierz urządzenia</string>
     <string name="title_pref_devices_to_reroute_keyevents_install_gui_keyboard">1. Zainstaluj GUI klawiaturę Key Mapper (opcjonalnie)</string>
     <string name="title_pref_devices_to_reroute_keyevents_install_leanback_keyboard">1. Zainstaluj klawiaturę Key Mapper Leanback (opcjonalnie)</string>
@@ -514,10 +524,10 @@
     <!--Action Types Titles-->
     <!--flags-->
     <string name="flag_show_volume_dialog">Pokaż wyskakujące okienko głośności</string>
-    <string name="flag_long_press">Długie naciśnięcie</string>
+    <string name="flag_long_press">Przytrzymanie</string>
     <string name="flag_vibrate">Wibruj</string>
     <string name="flag_show_toast">Pokaż komunikat na ekranie</string>
-    <string name="flag_long_press_double_vibration">Wibruj po pierwszym naciśnięciu klawiszy i ponownie po długim naciśnięciu.</string>
+    <string name="flag_long_press_double_vibration">Wibruj po pierwszym naciśnięciu klawiszy i ponownie po przytrzymaniu.</string>
     <string name="flag_detect_triggers_screen_off">Wykryj wyzwalacz, gdy ekran jest wyłączony</string>
     <string name="flag_repeat_build_description_start">Powtórz</string>
     <string name="flag_repeat_build_description_limit">%d razy</string>
@@ -544,8 +554,9 @@
     <string name="showcase_accessibility_service_title_disabled">Włącz usługę ułatwień dostępu</string>
     <string name="showcase_accessibility_service_description_disabled">Twoje mapy klawiszy będą działać dopiero po włączeniu usługi ułatwień dostępu. Musi być również włączony, aby utworzyć wyzwalacz.</string>
     <string name="showcase_record_trigger_title">Usługa ułatwień dostępu jest wyłączona</string>
-    <string name="showcase_record_trigger_description">Możesz rejestrować trigger tylko wtedy, gdy usługa ułatwień dostępu jest włączona.</string>
+    <string name="showcase_record_trigger_description">Możesz nagrać wyzwalacz tylko wtedy, gdy usługa ułatwień dostępu jest włączona.</string>
     <string name="showcase_note_from_the_developer_title">Uwaga od programisty</string>
+    <string name="showcase_note_from_the_developer_description">Nie ma gwarancji, że każda akcja będzie działać na Twoim urządzeniu i że każdy przycisk zostanie wykryty. Dzieje się tak, ponieważ istnieje wiele odmian Androida, a producenci mogą zepsuć funkcje przypadkowo lub celowo. Jeśli coś nie działa, powiadom programistę i powstrzymaj się od wystawiania aplikacji złej recenzji, ponieważ ten problem często jest poza kontrolą programisty. =)</string>
     <string name="showcase_disable_battery_optimisation_title">Key Mapper może nagle przestać działać!</string>
     <string name="showcase_disable_battery_optimisation_message_bad">CRITYCZNE!!! Kliknij \"Wyłącz\", aby uniemożliwić systemowi Android zatrzymywanie tej aplikacji, gdy działa ona w tle. Skórka twojego producenta, taka jak MIUI lub Samsung Experience, może mieć inne funkcje \"oszczędzania baterii\", więc MUSISZ je wyłączyć dla Key Mapper, postępując zgodnie z przewodnikiem na dontkillmyapp.com</string>
     <string name="showcase_disable_battery_optimisation_message_good">Optymalizacja baterii w systemie Android jest wyłączona. To nie jest wystarczająco dobre dla większości urządzeń, więc przejdź do dontkillmyapp.com, aby uzyskać przewodnik, który pokazuje, jak wyłączyć jeszcze więcej funkcji zatrzymywających aplikacji na Twoim urządzeniu.</string>
@@ -566,6 +577,7 @@
     <string name="showcase_fingerprint_gesture_support_message_not_supported">Twoje urządzenie nie pozwala aplikacjom innych firm na wykrywanie gestów czytnika linii papilarnych! Programista nie może nic z tym poradzić. Niektóre urządzenia mają ustawienie przesuwania w dół po czytniku, aby rozwinąć pasek powiadomień i nie zezwalają aplikacjom innych firm na wykrywanie na nim gestów.</string>
     <string name="showcase_fingerprint_gesture_support_button">Włącz</string>
     <string name="showcase_setup_chosen_devices_again_title">Musisz ponownie skonfigurować niektóre ustawienia</string>
+    <string name="showcase_setup_chosen_devices_again_message">Wygląda na to, że używasz ustawienia do automatycznej zmiany klawiatury lub wyświetlania selektora metody wprowadzania, gdy urządzenie Bluetooth się łączy i rozłącza. Key Mapper umożliwia teraz korzystanie z dowolnego urządzenia wejściowego, a nie tylko urządzeń Bluetooth. Nie ma sposobu na migrację starych ustawień w taki sposób, aby nowa funkcja działała, więc trzeba będzie ponownie wybrać urządzenia.</string>
     <!-- Showcase -->
     <!-- system action options -->
     <string name="stream_accessibility">Ułatwienia dostępu</string>
@@ -639,7 +651,7 @@
     <string name="error_cant_find_write_settings_page">Nie można znaleźć strony uprawnienia WRITE_SETTINGS!</string>
     <string name="error_opening_app_shortcut">Błąd podczas otwierania tego skrótu aplikacji</string>
     <string name="error_no_app_found_to_send_email">Nie ma zainstalowanej aplikacji, która może wysyłać wiadomości e-mail!</string>
-    <string name="dnd_access_granted">Uprawienie na zmianę trybu Nie przeszkadzać zostało udzielone!</string>
+    <string name="dnd_access_granted">Uprawnienie na zmianę trybu Nie przeszkadzać zostało przyznane!</string>
     <string name="error_cant_find_dnd_access_settings">Nie można znaleźć uprawnień dostępu do trybu Nie przeszkadzać!</string>
     <string name="error_need_write_secure_settings_permission">Key Mapper wymaga uprawnienia WRITE_SECURE_SETTINGS.</string>
     <string name="error_no_app_found_to_open_url">Nie znaleziono aplikacji do otwarcia tego adresu URL</string>
@@ -660,7 +672,7 @@
     <string name="error_accessibility_service_crashed">Należy ponownie uruchomić usługę ułatwień dostępu!</string>
     <string name="error_launcher_shortcuts_not_supported">Twój launcher nie obsługuje skrótów.</string>
     <string name="warning_need_write_secure_settings_permission">Niektóre funkcje wymagają uprawnienia WRITE_SECURE_SETTINGS.</string>
-    <string name="fixed_need_write_secure_settings_permission">Przyznano uprawnienie WRITE_SECURE_SETTINGS.</string>
+    <string name="fixed_need_write_secure_settings_permission">Uprawnienie WRITE_SECURE_SETTINGS zostało przyznane.</string>
     <string name="error_ime_service_disabled_status_layout">Wybrana metoda wprowadzania musi być włączona, aby działały \"Zdarzenie klawiszy\", \"Klawisz\", \"Tekst\" i niektóre inne czynności.</string>
     <string name="error_key_mapper_ime_service_disabled">Klawiatura Key Mapper musi być włączona!</string>
     <string name="error_ime_service_enabled">Klawiatura Key Mapper jest włączona!</string>
