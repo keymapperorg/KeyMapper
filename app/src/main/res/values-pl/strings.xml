@@ -28,7 +28,7 @@
     <string name="this_device">To urządzenie</string>
     <string name="any_device">Dowolne urządzenie</string>
     <string name="trigger_device_name_not_found">Nazwa tego urządzenia nie jest znana</string>
-    <string name="slider_default">Domyślny</string>
+    <string name="slider_default">Domyślne</string>
     <string name="button_enable_accessibility_service">Włącz usługę ułatwień dostępu</string>
     <string name="button_restart_accessibility_service">Uruchom ponownie usługę ułatwień dostępu</string>
     <string name="share_backup">Udostępnij</string>
@@ -261,7 +261,7 @@
     <string name="action_done">Gotowe</string>
     <string name="action_select_all">Zaznacz wszystko</string>
     <string name="action_about">Informacje</string>
-    <string name="action_search">Znajdź</string>
+    <string name="action_search">Szukaj</string>
     <string name="action_help_home">Przewodnik szybkiego startu</string>
     <string name="action_help">Pomoc</string>
     <string name="action_enable">Włącz</string>
@@ -272,7 +272,7 @@
     <string name="action_change_keyboard">Pokaż wybór metody wprowadzania</string>
     <string name="action_seed_database">Baza danych seedów</string>
     <string name="action_save">Zapisz</string>
-    <string name="action_duplicate_keymap">Duplikuj</string>
+    <string name="action_duplicate_keymap">Utwórz kopię</string>
     <string name="action_backup">Utwórz kopię zapasową</string>
     <string name="action_restore">Przywróć</string>
     <string name="action_backup_everything">Utwórz kopię zapasową wszystkiego</string>
@@ -359,11 +359,11 @@
     <string name="dialog_title_failed_to_create_bug_report">Nie udało się utworzyć zgłoszenie o błędzie</string>
     <string name="pos_yes">Tak</string>
     <string name="pos_done">Gotowe</string>
-    <string name="pos_opt_in">Akceptuj</string>
+    <string name="pos_opt_in">Zaakceptuj</string>
     <string name="pos_grant_write_secure_settings_guide">Przewodnik</string>
     <string name="pos_grant_report_issues_guide">Przewodnik</string>
     <string name="pos_enable_root_features">Włącz funkcje roota</string>
-    <string name="pos_grant">Nadawaj</string>
+    <string name="pos_grant">Przyznaj</string>
     <string name="pos_join">Dołącz</string>
     <string name="pos_change_location">Zmień</string>
     <string name="pos_turn_off_stock_battery_optimisation">Napraw częściowo</string>
@@ -582,7 +582,7 @@
     <!-- system action options -->
     <string name="stream_accessibility">Ułatwienia dostępu</string>
     <string name="stream_alarm">Alarm</string>
-    <string name="stream_dtmf">DTMF</string>
+    <string name="stream_dtmf">Wybieranie tonowe (DTMF)</string>
     <string name="stream_music">Muzyka</string>
     <string name="stream_notification">Powiadomienia</string>
     <string name="stream_ring">Dzwonek</string>
