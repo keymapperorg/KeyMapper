@@ -33,7 +33,6 @@ class SplashActivity : FragmentActivity() {
                     yield(AppIntroSlide.FINGERPRINT_GESTURE_SUPPORT)
                 }
 
-                yield(AppIntroSlide.DO_NOT_DISTURB)
                 yield(AppIntroSlide.CONTRIBUTING)
             }.toList()
         } else {

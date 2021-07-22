@@ -23,15 +23,13 @@ class AppIntroViewModel(
         private const val ID_BUTTON_RESTART_ACCESSIBILITY_SERVICE = "restart_accessibility_service"
         private const val ID_BUTTON_DISABLE_BATTERY_OPTIMISATION = "disable_battery_optimisation"
         private const val ID_BUTTON_DONT_KILL_MY_APP = "go_to_dont_kill_my_app"
-        private const val ID_BUTTON_GRANT_DND_ACCESS = "grant_dnd_access"
     }
 
     private val slideModels: Flow<List<AppIntroSlideUi>> = combine(
         useCase.serviceState,
         useCase.isBatteryOptimised,
-        useCase.hasDndAccessPermission,
         useCase.fingerprintGesturesSupported
-    ) { serviceState, isBatteryOptimised, hasDndAccess, fingerprintGesturesSupported ->
+    ) { serviceState, isBatteryOptimised, fingerprintGesturesSupported ->
 
         slidesToShow.map { slide ->
             when (slide) {
@@ -40,7 +38,6 @@ class AppIntroViewModel(
                 AppIntroSlide.BATTERY_OPTIMISATION -> batteryOptimisationSlide(isBatteryOptimised)
                 AppIntroSlide.FINGERPRINT_GESTURE_SUPPORT ->
                     fingerprintGestureSupportSlide(fingerprintGesturesSupported)
-                AppIntroSlide.DO_NOT_DISTURB -> dndAccessSlide(hasDndAccess)
                 AppIntroSlide.CONTRIBUTING -> contributingSlide()
                 AppIntroSlide.SETUP_CHOSEN_DEVICES_AGAIN -> setupChosenDevicesAgainSlide()
                 else -> throw Exception("Unknown slide $slide")
@@ -63,7 +60,6 @@ class AppIntroViewModel(
                 _openUrl.emit(getString(R.string.url_dont_kill_my_app))
             }
             ID_BUTTON_DISABLE_BATTERY_OPTIMISATION -> useCase.ignoreBatteryOptimisation()
-            ID_BUTTON_GRANT_DND_ACCESS -> useCase.requestDndAccess()
         }
     }
 
@@ -175,29 +171,6 @@ class AppIntroViewModel(
 
                 buttonId1 = ID_BUTTON_ENABLE_ACCESSIBILITY_SERVICE,
                 buttonText1 = getString(R.string.enable)
-            )
-        }
-    }
-
-    private fun dndAccessSlide(isDndAccessGranted: Boolean): AppIntroSlideUi {
-        if (isDndAccessGranted) {
-            return AppIntroSlideUi(
-                id = AppIntroSlide.DO_NOT_DISTURB,
-                image = getDrawable(R.drawable.ic_baseline_check_64),
-                title = getString(R.string.showcase_dnd_access_title_enabled),
-                description = getString(R.string.showcase_dnd_access_description_enabled),
-                backgroundColor = getColor(R.color.red)
-            )
-        } else {
-            return AppIntroSlideUi(
-                id = AppIntroSlide.DO_NOT_DISTURB,
-                image = getDrawable(R.drawable.ic_outline_dnd_circle_outline_64),
-                title = getString(R.string.showcase_dnd_access_title_disabled),
-                description = getString(R.string.showcase_dnd_access_description_disabled),
-                backgroundColor = getColor(R.color.red),
-
-                buttonId1 = ID_BUTTON_GRANT_DND_ACCESS,
-                buttonText1 = getString(R.string.pos_grant)
             )
         }
     }
