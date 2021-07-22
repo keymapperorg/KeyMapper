@@ -316,6 +316,7 @@
     <string name="url_fingerprint_action_options_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/fingerprint-action-options</string>
     <string name="url_trigger_key_options_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/trigger-key-options</string>
     <string name="url_android_11_bug_reset_id_work_around_setting_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/android-11-device-id-bug-work-around</string>
+    <string name="url_shizuku_setting_benefits" translatable="false">https://sds100.github.io/KeyMapper/redirects/shizuku-benefits</string>
     <string name="url_settings_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/settings</string>
     <string name="url_report_issues_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/report-issues</string>
     <string name="url_intent_set_flags_help" translatable="false">https://developer.android.com/reference/android/content/Intent#setFlags(int)</string>
@@ -428,7 +429,10 @@
     <string name="dialog_message_downloading">Downloading…</string>
     <string name="dialog_message_describe_your_issue_in_the_email">Can you please describe the issue you are having in the email, otherwise I can\'t help you. Thanks!</string>
     <string name="dialog_message_long_press_warning">Long pressing only works for physical volume and navigation buttons. If you enable it for other keys, the keys won\'t work when they aren\'t long pressed.</string>
-    <string name="dialog_message_write_secure_settings">To grant Key Mapper WRITE_SECURE_SETTINGS permission enable "root features" in the settings if your device is rooted. If your device isn\'t rooted, follow the guide on how to use a PC/Mac to grant permission.</string>
+
+    <string name="dialog_title_write_secure_settings">Grant WRITE_SECURE_SETTINGS permission</string>
+    <string name="dialog_message_write_secure_settings">A PC/Mac is required to grant this permission. Read the online guide.</string>
+
     <string name="dialog_message_cant_find_accessibility_settings_page">Your device doesn\'t seem to have an accessibility services settings page. You can enable the accessibility service by giving the app WRITE_SECURE_SETTINGS permission. After you tap \'okay\' a popup will guide you how to do it.</string>
     <string name="dialog_message_double_press_restricted_to_single_key">"Multiple keys can't be double pressed at the same time."</string>
     <string name="dialog_message_parallel_trigger_order">The keys need to be listed from top to bottom in the order that they will be held down.</string>
@@ -447,6 +451,30 @@
 
     <string name="dialog_title_install_leanback_keyboard">Install the Key Mapper Leanback Keyboard</string>
     <string name="dialog_message_install_leanback_keyboard">This is highly recommended! This is a proper keyboard for Android TV that you can use with Key Mapper. The one built-in to Key Mapper (the Basic Input Method) has no on-screen keyboard. Choose where you want to install it from.</string>
+
+    <string name="dialog_title_choose_download_gui_keyboard">Install the Key Mapper GUI Keyboard</string>
+    <string name="dialog_message_choose_download_gui_keyboard">Choose where you want to download it from.</string>
+
+    <string name="dialog_title_choose_download_leanback_keyboard">Install the Key Mapper Leanback Keyboard</string>
+    <string name="dialog_message_choose_download_leanback_keyboard">Choose where you want to download it from.</string>
+
+    <string name="dialog_title_install_shizuku_or_gui_keyboard">This action needs some extra setting up</string>
+    <string name="dialog_message_install_shizuku_or_gui_keyboard">There are 3 ways that you can set up your device to use this action. Here are the advantages and disadvantages of each.
+        
+        \n\n<b>1. Download Shizuku (recommended).</b> You do not have to use a different on-screen keyboard to the one that you are already using but it will require a minute of setting up every time you reboot your device.
+        
+        \n\n<b>2. Download the Key Mapper GUI Keyboard.</b> This is an on-screen keyboard that you can use with Key Mapper but you will not be able to use the keyboard that you are currently using, such as Gboard.
+        
+        \n\n<b>3. Do nothing and use the built-in Key Mapper keyboard.</b> This is not recommended since you will have <b>no</b> on-screen keyboard when you use Key Mapper! There are no advantages.</string>
+
+    <string name="dialog_title_install_shizuku_or_leanback_keyboard">This action needs some extra setting up</string>
+    <string name="dialog_message_install_shizuku_or_leanback_keyboard">There are 3 ways that you can set up your device to use this action. Here are the advantages and disadvantages of each.
+        
+        \n\n<b>1. Download Shizuku (recommended).</b> You do not have to use a different on-screen keyboard to the one that you are already using but it will require a minute of setting up every time you reboot your device.
+        
+        \n\n<b>2. Download the Key Mapper Leanback Keyboard.</b> This is an on-screen keyboard optimised for Android TV that you can use with Key Mapper but you will not be able to use the keyboard that you are currently using, such as Gboard.
+        
+        \n\n<b>3. Do nothing and use the built-in Key Mapper keyboard.</b> This is not recommended since you will have <b>no</b> on-screen keyboard when you use Key Mapper! There are no advantages.</string>
 
     <string name="dialog_title_disable_battery_optimisation">Disable battery optimisation</string>
     <string name="dialog_message_disable_battery_optimisation">You <b>MUST</b> read this <b>all</b> otherwise you will get <b>frustrated</b> in the future!\n\nTapping \"fix partially\" <b>might</b> prevent Android from stopping the app while it is in the background.\n\n<b>This is NOT ENOUGH</b>. Your OEM\'s skin such as MIUI or Samsung Experience may have other app killing features so you MUST turn them off for Key Mapper as well by following the online guide at dontkillmyapp.com.</string>
@@ -504,6 +532,11 @@
 
     <string name="dialog_button_restart_accessibility_service">Restart</string>
     <string name="dialog_button_open_guide_to_fix_optimisation">Go to guide</string>
+
+    <string name="dialog_button_install_shizuku">Shizuku</string>
+    <string name="dialog_button_install_gui_keyboard">Key Mapper GUI Keyboard</string>
+    <string name="dialog_button_install_leanback_keyboard">Key Mapper Leanback Keyboard</string>
+    <string name="dialog_button_install_nothing">Do nothing</string>
 
     <string name="snackbar_cancel">Cancel</string>
     <string name="snackbar_fix">Fix</string>
@@ -640,8 +673,18 @@
 
     <string name="title_pref_delete_sound_files">Delete sound files</string>
     <string name="summary_pref_delete_sound_files">Delete sound files that can be used for the Sound action.</string>
+
     <string name="title_pref_grant_write_secure_settings_not_granted">Grant permission</string>
     <string name="title_pref_grant_write_secure_settings_granted">Permission granted</string>
+
+    <string name="title_pref_grant_shizuku_install_app_not_installed">1. Shizuku is not installed! Tap to download the Shizku app.</string>
+    <string name="title_pref_grant_shizuku_install_app_installed">1. Shizuku is installed.</string>
+
+    <string name="title_pref_grant_shizuku_not_started">2. Shizuku is not started! Tap to open the Shizuku app and then read their instructions that explain how to start it.</string>
+    <string name="title_pref_grant_shizuku_started">2. Shizuku is started.</string>
+
+    <string name="title_pref_grant_shizuku_not_granted">3. Key Mapper does not have permission to use Shizuku. Tap to grant this permission.</string>
+    <string name="title_pref_grant_shizuku_granted">3. Key Mapper will automatically use Shizuku. Tap to read which Key Mapper features use Shizuku.</string>
 
     <string name="title_pref_default_options">Default mapping options</string>
     <string name="summary_pref_default_options">Change the default options for your mappings.</string>
@@ -660,6 +703,10 @@
 
     <string name="title_pref_category_write_secure_settings">Require WRITE_SECURE_SETTINGS permission</string>
     <string name="summary_pref_category_write_secure_settings">These options are only enabled if Key Mapper has WRITE_SECURE_SETTINGS permission. Click the button below to learn how to grant the permission.</string>
+
+    <string name="title_pref_category_shizuku">Shizuku support</string>
+    <string name="summary_pref_category_shizuku">Shizuku is an app that allows Key Mapper to do things that only system apps can do. You don\'t need to use the Key Mapper keyboard for example. Tap to learn how to set this up.</string>
+    <string name="summary_pref_category_shizuku_follow_steps">Follow these steps to set up Shizuku.</string>
 
     <string name="title_pref_category_write_secure_settings_view_settings">Go to the settings that require this permission.</string>
 
@@ -944,6 +991,8 @@
     <string name="error_storage_permission_denied">Storage permission denied!</string>
     <string name="error_matching_source_and_target_paths">The source and target can\'t be the same!</string>
     <string name="error_no_space_left_at_target">No space left at target! %s</string>
+    <string name="error_shizuku_permission_denied">Shizuku permission is denied!</string>
+    <string name="error_shizuku_not_started">Shizuku is not started!</string>
 
     <!-- Error messages -->
 
@@ -1066,7 +1115,7 @@
     <string name="action_consume_keyevent">Do nothing</string>
 
     <string name="action_move_to_end_of_text">Move cursor to the end</string>
-    <string name="action_move_to_end_of_text_message">The Key Mapper keyboard must be selected for this action to work and this action may not work as intended in some apps.</string>
+    <string name="action_move_to_end_of_text_message">This action may not work as intended in some apps.</string>
     <string name="action_toggle_keyboard">Toggle keyboard</string>
     <string name="action_toggle_keyboard_message">This action will only work if you have tapped on an input field where the keyboard is supposed to be shown.</string>
     <string name="action_show_keyboard">Show keyboard</string>

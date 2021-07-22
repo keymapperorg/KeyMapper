@@ -43,6 +43,13 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/to_shizukuSettingsFragment"
+            app:destination="@id/shizukuSettingsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -65,4 +72,8 @@
         android:id="@+id/logFragment"
         android:name="io.github.sds100.keymapper.logging.LogFragment"
         android:label="LogFragment" />
+    <fragment
+        android:id="@+id/shizukuSettingsFragment"
+        android:name="io.github.sds100.keymapper.settings.ShizukuSettingsFragment"
+        android:label="ShizukuSettingsFragment" />
 </navigation>

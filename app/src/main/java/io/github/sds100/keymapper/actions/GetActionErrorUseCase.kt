@@ -5,6 +5,7 @@ import io.github.sds100.keymapper.actions.sound.SoundsManager
 import io.github.sds100.keymapper.actions.system.IsSystemActionSupportedUseCaseImpl
 import io.github.sds100.keymapper.actions.system.SystemActionId
 import io.github.sds100.keymapper.actions.system.SystemActionUtils
+import io.github.sds100.keymapper.shizuku.ShizukuAdapter
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.camera.CameraLens
@@ -31,7 +32,8 @@ class GetActionErrorUseCaseImpl(
     private val permissionAdapter: PermissionAdapter,
     private val systemFeatureAdapter: SystemFeatureAdapter,
     private val cameraAdapter: CameraAdapter,
-    private val soundsManager: SoundsManager
+    private val soundsManager: SoundsManager,
+    private val shizukuAdapter: ShizukuAdapter
 ) : GetActionErrorUseCase {
 
     private val isSystemActionSupported = IsSystemActionSupportedUseCaseImpl(systemFeatureAdapter)
@@ -41,11 +43,21 @@ class GetActionErrorUseCaseImpl(
         inputMethodAdapter.chosenIme.drop(1).map { },
         inputMethodAdapter.inputMethods.drop(1).map { }, //invalidate when the input methods change
         permissionAdapter.onPermissionsUpdate,
-        soundsManager.soundFiles.drop(1).map { }
+        soundsManager.soundFiles.drop(1).map { },
+        shizukuAdapter.isStarted.drop(1).map { },
+        shizukuAdapter.isInstalled.drop(1).map { }
     )
 
     override fun getError(action: ActionData): Error? {
-        if (action.requiresImeToPerform()) {
+        if (action.canUseShizuku() && shizukuAdapter.isInstalled.value) {
+            when {
+                !shizukuAdapter.isStarted.value ->
+                    return Error.ShizukuNotStarted
+
+                !permissionAdapter.isGranted(Permission.SHIZUKU) ->
+                    return Error.PermissionDenied(Permission.SHIZUKU)
+            }
+        } else if (action.requiresImeToPerform()) {
             if (!keyMapperImeHelper.isCompatibleImeEnabled()) {
                 return Error.NoCompatibleImeEnabled
             }

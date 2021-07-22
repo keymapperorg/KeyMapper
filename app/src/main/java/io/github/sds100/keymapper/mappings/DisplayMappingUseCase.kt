@@ -5,6 +5,8 @@ import io.github.sds100.keymapper.actions.GetActionErrorUseCase
 import io.github.sds100.keymapper.constraints.GetConstraintErrorUseCase
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.shizuku.ShizukuAdapter
+import io.github.sds100.keymapper.shizuku.ShizukuUtils
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
@@ -24,6 +26,7 @@ class DisplaySimpleMappingUseCaseImpl(
     private val inputMethodAdapter: InputMethodAdapter,
     private val serviceAdapter: ServiceAdapter,
     private val preferenceRepository: PreferenceRepository,
+    private val shizukuAdapter: ShizukuAdapter,
     getActionError: GetActionErrorUseCase,
     getConstraintError: GetConstraintErrorUseCase
 ) : DisplaySimpleMappingUseCase, GetActionErrorUseCase by getActionError,
@@ -48,7 +51,7 @@ class DisplaySimpleMappingUseCaseImpl(
             Error.AccessibilityServiceDisabled -> serviceAdapter.enableService()
             Error.AccessibilityServiceCrashed -> serviceAdapter.restartService()
             is Error.AppDisabled -> packageManager.enableApp(error.packageName)
-            is Error.AppNotFound -> packageManager.installApp(error.packageName)
+            is Error.AppNotFound -> packageManager.downloadApp(error.packageName)
             Error.NoCompatibleImeChosen -> keyMapperImeHelper.chooseCompatibleInputMethod()
                 .otherwise {
                     inputMethodAdapter.showImePicker(fromForeground = true)
@@ -56,6 +59,7 @@ class DisplaySimpleMappingUseCaseImpl(
             Error.NoCompatibleImeEnabled -> keyMapperImeHelper.enableCompatibleInputMethods()
             is Error.ImeDisabled -> inputMethodAdapter.enableIme(error.ime.id)
             is Error.PermissionDenied -> permissionAdapter.request(error.permission)
+            is Error.ShizukuNotStarted -> packageManager.openApp(ShizukuUtils.SHIZUKU_PACKAGE)
         }
     }
 }

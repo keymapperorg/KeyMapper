@@ -3,8 +3,8 @@ package io.github.sds100.keymapper.settings
 import android.os.Bundle
 import android.view.View
 import androidx.activity.addCallback
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.navGraphViewModels
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.bottomappbar.BottomAppBar
 import io.github.sds100.keymapper.R
@@ -18,7 +18,7 @@ import io.github.sds100.keymapper.util.ui.showPopups
  */
 abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
 
-    val viewModel by navGraphViewModels<SettingsViewModel>(R.id.nav_settings) {
+    val viewModel by activityViewModels<SettingsViewModel> {
         Inject.settingsViewModel(requireContext())
     }
 

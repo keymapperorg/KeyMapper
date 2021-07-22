@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.actions
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.airbnb.epoxy.EpoxyController
@@ -15,13 +16,15 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.action
 import io.github.sds100.keymapper.databinding.FragmentActionListBinding
 import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.RecyclerViewFragment
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
 
 /**
  * Created by sds100 on 22/11/20.
  */
-abstract class ConfigActionsFragment< A : Action>
+abstract class ConfigActionsFragment<A : Action>
     : RecyclerViewFragment<ActionListItem, FragmentActionListBinding>() {
 
     companion object {
@@ -53,6 +56,12 @@ abstract class ConfigActionsFragment< A : Action>
             val direction =
                 NavAppDirections.actionGlobalChooseActionFragment(CHOOSE_ACTION_REQUEST_KEY)
             findNavController().navigate(direction)
+        }
+
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
+            configActionsViewModel.navigateToShizukuSetup.collectLatest {
+                findNavController().navigate(NavAppDirections.toShizukuSettingsFragment())
+            }
         }
     }
 

@@ -10,6 +10,7 @@ import io.github.sds100.keymapper.actions.system.SystemActionId
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.shizuku.InputEventInjector
 import io.github.sds100.keymapper.system.accessibility.AccessibilityNodeAction
 import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.airplanemode.AirplaneModeAdapter
@@ -31,6 +32,8 @@ import io.github.sds100.keymapper.system.media.MediaAdapter
 import io.github.sds100.keymapper.system.navigation.OpenMenuHelper
 import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.system.nfc.NfcAdapter
+import io.github.sds100.keymapper.system.permissions.Permission
+import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.phone.PhoneAdapter
 import io.github.sds100.keymapper.system.popup.PopupMessageAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
@@ -63,6 +66,7 @@ class PerformActionsUseCaseImpl(
     private val intentAdapter: IntentAdapter,
     private val getActionError: GetActionErrorUseCase,
     private val keyMapperImeMessenger: KeyMapperImeMessenger,
+    private val shizukuInputEventInjector: InputEventInjector,
     private val packageManagerAdapter: PackageManagerAdapter,
     private val appShortcutAdapter: AppShortcutAdapter,
     private val popupMessageAdapter: PopupMessageAdapter,
@@ -80,7 +84,8 @@ class PerformActionsUseCaseImpl(
     private val openUrlAdapter: OpenUrlAdapter,
     private val resourceProvider: ResourceProvider,
     private val preferenceRepository: PreferenceRepository,
-    private val soundsManager: SoundsManager
+    private val soundsManager: SoundsManager,
+    private val permissionAdapter: PermissionAdapter
 ) : PerformActionsUseCase {
 
     private val openMenuHelper by lazy { OpenMenuHelper(suAdapter, accessibilityService) }
@@ -88,7 +93,7 @@ class PerformActionsUseCaseImpl(
     override fun perform(
         action: ActionData,
         inputEventType: InputEventType,
-        keyMetaState: Int
+        keyMetaState: Int,
     ) {
         /**
          * Is null if the action is being performed asynchronously
@@ -107,22 +112,28 @@ class PerformActionsUseCaseImpl(
             }
 
             is KeyEventAction -> {
+                val deviceId: Int = getDeviceIdForKeyEventAction(action)
 
-                if (action.useShell) {
-                    result = suAdapter.execute("input keyevent ${action.keyCode}")
-                } else {
-                    val deviceId: Int = getDeviceIdForKeyEventAction(action)
+                val model = InputKeyModel(
+                    keyCode = action.keyCode,
+                    inputType = inputEventType,
+                    metaState = keyMetaState.withFlag(action.metaState),
+                    deviceId = deviceId
+                )
 
-                    keyMapperImeMessenger.inputKeyEvent(
-                        InputKeyModel(
-                            keyCode = action.keyCode,
-                            inputType = inputEventType,
-                            metaState = keyMetaState.withFlag(action.metaState),
-                            deviceId = deviceId
-                        )
-                    )
+                result = when {
+                    permissionAdapter.isGranted(Permission.SHIZUKU) -> {
+                        shizukuInputEventInjector.inputKeyEvent(model)
+                        Success(Unit)
+                    }
 
-                    result = Success(Unit)
+                    action.useShell -> suAdapter.execute("input keyevent ${model.keyCode}")
+
+                    else -> {
+                        keyMapperImeMessenger.inputKeyEvent(model)
+
+                        Success(Unit)
+                    }
                 }
             }
 
@@ -495,12 +506,16 @@ class PerformActionsUseCaseImpl(
                     }
 
                     SystemActionId.MOVE_CURSOR_TO_END -> {
-                        keyMapperImeMessenger.inputKeyEvent(
-                            InputKeyModel(
-                                keyCode = KeyEvent.KEYCODE_MOVE_END,
-                                metaState = KeyEvent.META_CTRL_ON,
-                            )
+                        val keyModel = InputKeyModel(
+                            keyCode = KeyEvent.KEYCODE_MOVE_END,
+                            metaState = KeyEvent.META_CTRL_ON,
                         )
+
+                        if (permissionAdapter.isGranted(Permission.SHIZUKU)) {
+                            shizukuInputEventInjector.inputKeyEvent(keyModel)
+                        } else {
+                            keyMapperImeMessenger.inputKeyEvent(keyModel)
+                        }
 
                         result = Success(Unit)
                     }

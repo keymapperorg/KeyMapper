@@ -3,16 +3,13 @@ package io.github.sds100.keymapper.util.ui
 import android.app.Dialog
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.*
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
-import io.github.sds100.keymapper.databinding.DialogChooseAppStoreBinding
 import io.github.sds100.keymapper.databinding.DialogEdittextNumberBinding
 import io.github.sds100.keymapper.databinding.DialogEdittextStringBinding
-import io.github.sds100.keymapper.home.ChooseAppStoreModel
-import io.github.sds100.keymapper.system.leanback.LeanbackUtils
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.flow.*
@@ -45,6 +42,45 @@ suspend fun Context.materialAlertDialog(
         setNegativeButton(model.negativeButtonText) { _, _ ->
             continuation.resume(DialogResponse.NEGATIVE)
         }
+
+        show().apply {
+            resumeNullOnDismiss(continuation)
+            dismissOnDestroy(lifecycleOwner)
+
+            continuation.invokeOnCancellation {
+                dismiss()
+            }
+        }
+    }
+}
+
+suspend fun Context.materialAlertDialogCustomView(
+    lifecycleOwner: LifecycleOwner,
+    title: CharSequence,
+    message: CharSequence,
+    positiveButtonText: CharSequence? = null,
+    neutralButtonText: CharSequence? = null,
+    negativeButtonText: CharSequence? = null,
+    view: View
+) = suspendCancellableCoroutine<DialogResponse?> { continuation ->
+
+    materialAlertDialog {
+        setTitle(title)
+        setMessage(message)
+
+        setPositiveButton(positiveButtonText) { _, _ ->
+            continuation.resume(DialogResponse.POSITIVE)
+        }
+
+        setNeutralButton(neutralButtonText) { _, _ ->
+            continuation.resume(DialogResponse.NEUTRAL)
+        }
+
+        setNegativeButton(negativeButtonText) { _, _ ->
+            continuation.resume(DialogResponse.NEGATIVE)
+        }
+
+        setView(view)
 
         show().apply {
             resumeNullOnDismiss(continuation)
@@ -97,6 +133,7 @@ suspend fun <ID> Context.singleChoiceDialog(
     items: List<Pair<ID, String>>
 ) = suspendCancellableCoroutine<PopupUi.SingleChoiceResponse<ID>?> { continuation ->
     materialAlertDialog {
+        //message isn't supported
         setItems(
             items.map { it.second }.toTypedArray(),
         ) { _, position ->
@@ -269,39 +306,6 @@ fun Dialog.dismissOnDestroy(lifecycleOwner: LifecycleOwner) {
 }
 
 object DialogUtils {
-
-    fun getCompatibleOnScreenKeyboardDialog(ctx: Context): MaterialAlertDialogBuilder {
-        return MaterialAlertDialogBuilder(ctx).apply {
-
-            val appStoreModel: ChooseAppStoreModel
-
-            if (LeanbackUtils.isTvDevice(ctx)) {
-                titleResource = R.string.dialog_title_install_leanback_keyboard
-                messageResource = R.string.dialog_message_install_leanback_keyboard
-
-                appStoreModel = ChooseAppStoreModel(
-                    githubLink = ctx.str(R.string.url_github_keymapper_leanback_keyboard),
-                )
-            } else {
-                titleResource = R.string.dialog_title_install_gui_keyboard
-                messageResource = R.string.dialog_message_install_gui_keyboard
-
-                appStoreModel = ChooseAppStoreModel(
-                    playStoreLink = ctx.str(R.string.url_play_store_keymapper_gui_keyboard),
-                    githubLink = ctx.str(R.string.url_github_keymapper_gui_keyboard),
-                    fdroidLink = ctx.str(R.string.url_fdroid_keymapper_gui_keyboard)
-                )
-            }
-
-            DialogChooseAppStoreBinding.inflate(LayoutInflater.from(ctx)).apply {
-                model = appStoreModel
-                setView(this.root)
-            }
-
-            negativeButton(R.string.neg_cancel) { it.cancel() }
-        }
-    }
-
     fun keyMapperCrashedDialog(resourceProvider: ResourceProvider): PopupUi.Dialog {
         return PopupUi.Dialog(
             title = resourceProvider.getString(R.string.dialog_title_key_mapper_crashed),

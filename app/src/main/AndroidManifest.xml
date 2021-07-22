@@ -32,9 +32,12 @@
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
+
     <uses-feature
         android:name="android.software.leanback"
         android:required="false" />
+
+    <uses-sdk tools:overrideLibrary="rikka.shizuku.provider, rikka.shizuku.api, rikka.shizuku.shared, rikka.shizuku.aidl" />
 
     <application
         android:name=".KeyMapperApp"
@@ -192,5 +195,13 @@
         <service
             android:name=".system.inputmethod.ObserveInputMethodsJob"
             android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <provider
+            android:name="rikka.shizuku.ShizukuProvider"
+            android:authorities="${applicationId}.shizuku"
+            android:enabled="true"
+            android:exported="true"
+            android:multiprocess="false"
+            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
     </application>
 </manifest>

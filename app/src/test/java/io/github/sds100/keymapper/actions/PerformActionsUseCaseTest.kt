@@ -65,7 +65,9 @@ class PerformActionsUseCaseTest {
             openUrlAdapter = mock(),
             resourceProvider = mock(),
             preferenceRepository = mock(),
-            soundsManager = mock()
+            soundsManager = mock(),
+            shizukuInputEventInjector = mock(),
+            permissionAdapter = mock()
         )
     }
 

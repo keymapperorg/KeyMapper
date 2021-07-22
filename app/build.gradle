@@ -122,7 +122,8 @@ dependencies {
     def splitties_version = "3.0.0-beta01"
     def markwonVersion = "4.3.1"
     def multidex_version = "2.0.1"
-
+    def shizuku_version = '11.0.3'
+    
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
     // kotlin stuff
@@ -145,6 +146,8 @@ dependencies {
     implementation "com.anggrayudi:storage:0.8.1"
     implementation 'com.github.MFlisar:DragSelectRecyclerView:0.3'
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
+    implementation "dev.rikka.shizuku:api:$shizuku_version"
+    implementation "dev.rikka.shizuku:provider:$shizuku_version"
     
     // splitties
     implementation "com.louiscad.splitties:splitties-bitflags:$splitties_version"

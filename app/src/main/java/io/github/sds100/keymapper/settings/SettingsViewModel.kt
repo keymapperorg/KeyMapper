@@ -27,6 +27,18 @@ class SettingsViewModel(
         useCase.isWriteSecureSettingsGranted
             .stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
+    val isShizukuInstalled: StateFlow<Boolean> =
+        useCase.isShizukuInstalled
+            .stateIn(viewModelScope, SharingStarted.Eagerly, true)
+
+    val isShizukuStarted: StateFlow<Boolean> =
+        useCase.isShizukuStarted
+            .stateIn(viewModelScope, SharingStarted.Eagerly, true)
+
+    val isShizukuPermissionGranted: StateFlow<Boolean> =
+        useCase.isShizukuPermissionGranted
+            .stateIn(viewModelScope, SharingStarted.Eagerly, true)
+
     val rerouteKeyEvents: StateFlow<Boolean> = useCase.rerouteKeyEvents
         .stateIn(viewModelScope, SharingStarted.Lazily, false)
 
@@ -92,6 +104,18 @@ class SettingsViewModel(
 
     fun requestWriteSecureSettingsPermission() {
         useCase.requestWriteSecureSettingsPermission()
+    }
+
+    fun requestShizukuPermission() {
+        useCase.requestShizukuPermission()
+    }
+
+    fun downloadShizuku() {
+        useCase.downloadShizuku()
+    }
+
+    fun openShizukuApp() {
+        useCase.openShizukuApp()
     }
 
     fun onEnableCompatibleImeClick() {

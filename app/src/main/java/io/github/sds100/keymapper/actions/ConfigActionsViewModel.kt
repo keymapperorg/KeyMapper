@@ -1,11 +1,13 @@
 package io.github.sds100.keymapper.actions
 
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.home.ChooseAppStoreModel
 import io.github.sds100.keymapper.mappings.ConfigMappingUseCase
 import io.github.sds100.keymapper.mappings.DisplayActionUseCase
 import io.github.sds100.keymapper.mappings.Mapping
 import io.github.sds100.keymapper.mappings.isDelayBeforeNextActionAllowed
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
+import io.github.sds100.keymapper.shizuku.ShizukuUtils
 import io.github.sds100.keymapper.ui.*
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.*
@@ -35,6 +37,9 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
      * value is the uid of the action
      */
     val openEditOptions = _openEditOptions.asSharedFlow()
+
+    private val _navigateToShizukuSetup = MutableSharedFlow<Unit>()
+    val navigateToShizukuSetup = _navigateToShizukuSetup.asSharedFlow()
 
     init {
         val rebuildUiState = MutableSharedFlow<State<M>>()
@@ -109,16 +114,10 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
 
     fun addAction(data: ActionData) {
         coroutineScope.launch {
-            if (!onboardingUseCase.showGuiKeyboardPrompt.first()) {
-                return@launch
-            }
-
-            if (data is KeyEventAction || data is TextAction) {
-                val response = showPopup("install_gui_keyboard", PopupUi.InstallCompatibleOnScreenKeyboard)
-
-                if (response == DialogResponse.POSITIVE) {
-                    onboardingUseCase.neverShowGuiKeyboardPromptsAgain()
-                }
+            if (data is KeyEventAction && ShizukuUtils.isSdkRecommended()) {
+                promptToInstallShizukuOrGuiKeyboard()
+            } else if (data is KeyEventAction || data is TextAction) {
+                promptToInstallGuiKeyboard()
             }
         }
 
@@ -135,6 +134,154 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
 
     fun editOptions(actionUid: String) {
         runBlocking { _openEditOptions.emit(actionUid) }
+    }
+
+    private suspend fun promptToInstallGuiKeyboard() {
+        if (!onboardingUseCase.showGuiKeyboardPrompt.first()) {
+            return
+        }
+
+        if (onboardingUseCase.isTvDevice()) {
+
+            val appStoreModel = ChooseAppStoreModel(
+                githubLink = getString(R.string.url_github_keymapper_leanback_keyboard),
+            )
+
+            val dialog = PopupUi.ChooseAppStore(
+                title = getString(R.string.dialog_title_install_leanback_keyboard),
+                message = getString(R.string.dialog_message_install_leanback_keyboard),
+                appStoreModel,
+                positiveButtonText = getString(R.string.pos_never_show_again),
+                negativeButtonText = getString(R.string.neg_cancel)
+            )
+
+            val response = showPopup("download_leanback_ime", dialog) ?: return
+
+            if (response == DialogResponse.POSITIVE) {
+                onboardingUseCase.neverShowGuiKeyboardPromptsAgain()
+            }
+
+        } else {
+            val appStoreModel = ChooseAppStoreModel(
+                playStoreLink = getString(R.string.url_play_store_keymapper_gui_keyboard),
+                fdroidLink = getString(R.string.url_fdroid_keymapper_gui_keyboard),
+                githubLink = getString(R.string.url_github_keymapper_gui_keyboard)
+            )
+
+            val dialog = PopupUi.ChooseAppStore(
+                title = getString(R.string.dialog_title_install_gui_keyboard),
+                message = getString(R.string.dialog_message_install_gui_keyboard),
+                appStoreModel,
+                positiveButtonText = getString(R.string.pos_never_show_again),
+                negativeButtonText = getString(R.string.neg_cancel)
+            )
+
+            val response = showPopup("download_gui_keyboard", dialog) ?: return
+
+            if (response == DialogResponse.POSITIVE) {
+                onboardingUseCase.neverShowGuiKeyboardPromptsAgain()
+            }
+        }
+    }
+
+    private suspend fun promptToInstallShizukuOrGuiKeyboard() {
+        if (!onboardingUseCase.showGuiKeyboardPrompt.first()) {
+            return
+        }
+
+        if (onboardingUseCase.isTvDevice()) {
+            val chooseSolutionDialog = PopupUi.Dialog(
+                title = getText(R.string.dialog_title_install_shizuku_or_leanback_keyboard),
+                message = getText(R.string.dialog_message_install_shizuku_or_leanback_keyboard),
+                positiveButtonText = getString(R.string.dialog_button_install_shizuku),
+                negativeButtonText = getString(R.string.dialog_button_install_leanback_keyboard),
+                neutralButtonText = getString(R.string.dialog_button_install_nothing),
+            )
+
+            val chooseSolutionResponse =
+                showPopup("choose_solution", chooseSolutionDialog) ?: return
+
+            when (chooseSolutionResponse) {
+                //install shizuku
+                DialogResponse.POSITIVE -> {
+                    _navigateToShizukuSetup.emit(Unit)
+                    onboardingUseCase.neverShowGuiKeyboardPromptsAgain()
+
+                    return
+                }
+                //do nothing
+                DialogResponse.NEUTRAL -> {
+                    onboardingUseCase.neverShowGuiKeyboardPromptsAgain()
+                    return
+                }
+
+                //download leanback keyboard
+                DialogResponse.NEGATIVE -> {
+                    val chooseAppStoreDialog = PopupUi.ChooseAppStore(
+                        title = getString(R.string.dialog_title_choose_download_leanback_keyboard),
+                        message = getString(R.string.dialog_message_choose_download_leanback_keyboard),
+                        model = ChooseAppStoreModel(
+                            githubLink = getString(R.string.url_github_keymapper_leanback_keyboard),
+                        ),
+                        positiveButtonText = getString(R.string.pos_never_show_again),
+                        negativeButtonText = getString(R.string.neg_cancel)
+                    )
+
+                    val response = showPopup("install_leanback_keyboard", chooseAppStoreDialog)
+
+                    if (response == DialogResponse.POSITIVE) {
+                        onboardingUseCase.neverShowGuiKeyboardPromptsAgain()
+                    }
+                }
+            }
+        } else {
+            val chooseSolutionDialog = PopupUi.Dialog(
+                title = getText(R.string.dialog_title_install_shizuku_or_gui_keyboard),
+                message = getText(R.string.dialog_message_install_shizuku_or_gui_keyboard),
+                positiveButtonText = getString(R.string.dialog_button_install_shizuku),
+                negativeButtonText = getString(R.string.dialog_button_install_gui_keyboard),
+                neutralButtonText = getString(R.string.dialog_button_install_nothing),
+            )
+
+            val chooseSolutionResponse =
+                showPopup("choose_solution", chooseSolutionDialog) ?: return
+
+            when (chooseSolutionResponse) {
+                //install shizuku
+                DialogResponse.POSITIVE -> {
+                    _navigateToShizukuSetup.emit(Unit)
+                    onboardingUseCase.neverShowGuiKeyboardPromptsAgain()
+
+                    return
+                }
+                //do nothing
+                DialogResponse.NEUTRAL -> {
+                    onboardingUseCase.neverShowGuiKeyboardPromptsAgain()
+                    return
+                }
+
+                //download gui keyboard
+                DialogResponse.NEGATIVE -> {
+                    val chooseAppStoreDialog = PopupUi.ChooseAppStore(
+                        title = getString(R.string.dialog_title_choose_download_gui_keyboard),
+                        message = getString(R.string.dialog_message_choose_download_gui_keyboard),
+                        model = ChooseAppStoreModel(
+                            playStoreLink = getString(R.string.url_play_store_keymapper_gui_keyboard),
+                            fdroidLink = getString(R.string.url_fdroid_keymapper_gui_keyboard),
+                            githubLink = getString(R.string.url_github_keymapper_gui_keyboard),
+                        ),
+                        positiveButtonText = getString(R.string.pos_never_show_again),
+                        negativeButtonText = getString(R.string.neg_cancel)
+                    )
+
+                    val response = showPopup("install_gui_keyboard", chooseAppStoreDialog)
+
+                    if (response == DialogResponse.POSITIVE) {
+                        onboardingUseCase.neverShowGuiKeyboardPromptsAgain()
+                    }
+                }
+            }
+        }
     }
 
     private fun createListItems(mapping: M, showDeviceDescriptors: Boolean): List<ActionListItem> {

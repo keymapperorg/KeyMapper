@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.util.ui
 
+import android.view.LayoutInflater
 import android.view.View
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
@@ -7,13 +8,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.databinding.DialogChooseAppStoreBinding
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.suspendCancellableCoroutine
-import splitties.alertdialog.appcompat.positiveButton
 import splitties.toast.toast
-import kotlin.coroutines.resume
 
 /**
  * Created by sds100 on 23/03/2021.
@@ -124,28 +123,24 @@ fun PopupViewModel.showPopups(
 
                 is PopupUi.Dialog -> ctx.materialAlertDialog(lifecycleOwner, event.ui)
 
-                is PopupUi.InstallCompatibleOnScreenKeyboard -> {
-                    suspendCancellableCoroutine { continuation ->
-                        val dialogBuilder = DialogUtils.getCompatibleOnScreenKeyboardDialog(ctx)
-
-                        dialogBuilder.positiveButton(R.string.pos_never_show_again) {
-                            continuation.resume(DialogResponse.POSITIVE)
-                        }
-
-                        dialogBuilder.show().apply {
-                            resumeNullOnDismiss(continuation)
-                            dismissOnDestroy(lifecycleOwner)
-
-                            continuation.invokeOnCancellation {
-                                dismiss()
-                            }
-                        }
-                    }
-                }
-
                 is PopupUi.Toast -> {
                     ctx.toast(event.ui.text)
                     object : PopupResponse {}
+                }
+
+                is PopupUi.ChooseAppStore -> {
+                    val view = DialogChooseAppStoreBinding.inflate(LayoutInflater.from(ctx)).apply {
+                        model = event.ui.model
+                    }.root
+
+                    ctx.materialAlertDialogCustomView(
+                        lifecycleOwner,
+                        event.ui.title,
+                        event.ui.message,
+                        positiveButtonText = event.ui.positiveButtonText,
+                        negativeButtonText = event.ui.negativeButtonText,
+                        view = view
+                    )
                 }
             }
 

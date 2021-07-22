@@ -12,6 +12,7 @@ import io.github.sds100.keymapper.data.entities.LogEntryEntity
 import io.github.sds100.keymapper.logging.KeyMapperLoggingTree
 import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerController
 import io.github.sds100.keymapper.settings.ThemeUtils
+import io.github.sds100.keymapper.shizuku.ShizukuAdapterImpl
 import io.github.sds100.keymapper.system.AndroidSystemFeatureAdapter
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.airplanemode.AndroidAirplaneModeAdapter
@@ -27,6 +28,7 @@ import io.github.sds100.keymapper.system.inputmethod.AndroidInputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.AutoSwitchImeController
 import io.github.sds100.keymapper.system.inputmethod.ShowHideInputMethodUseCaseImpl
 import io.github.sds100.keymapper.system.intents.IntentAdapterImpl
+import io.github.sds100.keymapper.system.leanback.LeanbackAdapterImpl
 import io.github.sds100.keymapper.system.lock.AndroidLockScreenAdapter
 import io.github.sds100.keymapper.system.media.AndroidMediaAdapter
 import io.github.sds100.keymapper.system.network.AndroidNetworkAdapter
@@ -71,7 +73,9 @@ class KeyMapperApp : MultiDexApplication() {
     val packageManagerAdapter by lazy {
         AndroidPackageManagerAdapter(
             this,
-            appCoroutineScope
+            appCoroutineScope,
+            permissionAdapter,
+            suAdapter
         )
     }
 
@@ -116,6 +120,8 @@ class KeyMapperApp : MultiDexApplication() {
     val nfcAdapter by lazy { AndroidNfcAdapter(this, suAdapter) }
     val openUrlAdapter by lazy { AndroidOpenUrlAdapter(this) }
     val clipboardAdapter by lazy { AndroidClipboardAdapter(this) }
+    val shizukuAdapter by lazy { ShizukuAdapterImpl(appCoroutineScope, packageManagerAdapter) }
+    val leanbackAdapter by lazy { LeanbackAdapterImpl(this) }
 
     val recordTriggerController by lazy {
         RecordTriggerController(appCoroutineScope, serviceAdapter)

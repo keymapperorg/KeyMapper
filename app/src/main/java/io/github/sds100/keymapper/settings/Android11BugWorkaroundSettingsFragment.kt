@@ -8,12 +8,14 @@ import androidx.preference.SwitchPreference
 import androidx.preference.isEmpty
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.Keys
+import io.github.sds100.keymapper.home.ChooseAppStoreModel
 import io.github.sds100.keymapper.system.leanback.LeanbackUtils
 import io.github.sds100.keymapper.system.url.UrlUtils
 import io.github.sds100.keymapper.util.drawable
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.str
-import io.github.sds100.keymapper.util.ui.DialogUtils
+import io.github.sds100.keymapper.util.ui.PopupUi
+import io.github.sds100.keymapper.util.ui.showPopup
 import io.github.sds100.keymapper.util.viewLifecycleScope
 import kotlinx.coroutines.flow.collectLatest
 
@@ -80,7 +82,33 @@ class Android11BugWorkaroundSettingsFragment : BaseSettingsFragment() {
             isSingleLineTitle = false
 
             setOnPreferenceClickListener {
-                DialogUtils.getCompatibleOnScreenKeyboardDialog(requireContext()).show()
+                viewLifecycleScope.launchWhenResumed {
+                    if (isTvDevice) {
+                        val chooseAppStoreDialog = PopupUi.ChooseAppStore(
+                            title = getString(R.string.dialog_title_choose_download_leanback_keyboard),
+                            message = getString(R.string.dialog_message_choose_download_leanback_keyboard),
+                            model = ChooseAppStoreModel(
+                                githubLink = getString(R.string.url_github_keymapper_leanback_keyboard),
+                            ),
+                            negativeButtonText = str(R.string.neg_cancel)
+                        )
+
+                        viewModel.showPopup("download_leanback_ime", chooseAppStoreDialog)
+                    } else {
+                        val chooseAppStoreDialog = PopupUi.ChooseAppStore(
+                            title = getString(R.string.dialog_title_choose_download_gui_keyboard),
+                            message = getString(R.string.dialog_message_choose_download_gui_keyboard),
+                            model = ChooseAppStoreModel(
+                                playStoreLink = getString(R.string.url_play_store_keymapper_gui_keyboard),
+                                fdroidLink = getString(R.string.url_fdroid_keymapper_gui_keyboard),
+                                githubLink = getString(R.string.url_github_keymapper_gui_keyboard),
+                            ),
+                            negativeButtonText = str(R.string.neg_cancel)
+                        )
+
+                        viewModel.showPopup("download_gui_keyboard", chooseAppStoreDialog)
+                    }
+                }
 
                 true
             }

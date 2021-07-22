@@ -74,6 +74,7 @@ sealed class Error : Result<Nothing>() {
                     Permission.CALL_PHONE -> R.string.error_denied_call_phone_permission
                     Permission.ROOT -> R.string.error_requires_root
                     Permission.IGNORE_BATTERY_OPTIMISATION -> R.string.error_battery_optimisation_enabled
+                    Permission.SHIZUKU -> R.string.error_shizuku_permission_denied
                 }
 
                 return resourceProvider.getString(resId)
@@ -111,6 +112,8 @@ sealed class Error : Result<Nothing>() {
     object EmptyJson : Error()
     object CantFindSoundFile : Error()
     data class CorruptJsonFile(val reason: String) : Error()
+
+    object ShizukuNotStarted : Error()
 }
 
 inline fun <T> Result<T>.onSuccess(f: (T) -> Unit): Result<T> {
@@ -173,16 +176,6 @@ fun <T, U> Result<T>.handle(onSuccess: (value: T) -> U, onError: (error: Error) 
     return when (this) {
         is Success -> onSuccess(value)
         is Error -> onError(this)
-    }
-}
-
-suspend fun <T, U> Result<T>.handleAsync(
-    onSuccess: suspend (value: T) -> U,
-    onFailure: suspend (error: Error) -> U
-): U {
-    return when (this) {
-        is Success -> onSuccess(value)
-        is Error -> onFailure(this)
     }
 }
 

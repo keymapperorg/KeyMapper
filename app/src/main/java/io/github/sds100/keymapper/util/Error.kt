@@ -18,7 +18,10 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider) = when (this) {
         R.string.error_app_isnt_installed,
         packageName
     )
-    is Error.AppDisabled -> resourceProvider.getString(R.string.error_app_is_disabled_package_name, this.packageName)
+    is Error.AppDisabled -> resourceProvider.getString(
+        R.string.error_app_is_disabled_package_name,
+        this.packageName
+    )
     is Error.NoCompatibleImeEnabled -> resourceProvider.getString(R.string.error_key_mapper_ime_service_disabled)
     is Error.NoCompatibleImeChosen -> resourceProvider.getString(R.string.error_ime_must_be_chosen)
     is Error.SystemFeatureNotSupported -> resourceProvider.getString(
@@ -88,17 +91,33 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider) = when (this) {
     Error.CantFindSoundFile -> resourceProvider.getString(R.string.error_cant_find_sound_file)
     is Error.CorruptJsonFile -> reason
 
-    is Error.CannotCreateFileInTarget -> resourceProvider.getString(R.string.error_file_access_denied, uri)
+    is Error.CannotCreateFileInTarget -> resourceProvider.getString(
+        R.string.error_file_access_denied,
+        uri
+    )
     Error.FileOperationCancelled -> resourceProvider.getString(R.string.error_file_operation_cancelled)
-    is Error.NoSpaceLeftOnTarget -> resourceProvider.getString(R.string.error_no_space_left_at_target, uri)
+    is Error.NoSpaceLeftOnTarget -> resourceProvider.getString(
+        R.string.error_no_space_left_at_target,
+        uri
+    )
     is Error.NotADirectory -> resourceProvider.getString(R.string.error_not_a_directory, uri)
     is Error.NotAFile -> resourceProvider.getString(R.string.error_not_a_file, uri)
-    is Error.SourceFileNotFound -> resourceProvider.getString(R.string.error_source_file_not_found, uri)
+    is Error.SourceFileNotFound -> resourceProvider.getString(
+        R.string.error_source_file_not_found,
+        uri
+    )
     Error.StoragePermissionDenied -> resourceProvider.getString(R.string.error_storage_permission_denied)
     Error.TargetDirectoryMatchesSourceDirectory -> resourceProvider.getString(R.string.error_matching_source_and_target_paths)
-    is Error.TargetDirectoryNotFound -> resourceProvider.getString(R.string.error_directory_not_found, uri)
-    is Error.TargetFileNotFound -> resourceProvider.getString(R.string.error_target_file_not_found, uri)
+    is Error.TargetDirectoryNotFound -> resourceProvider.getString(
+        R.string.error_directory_not_found,
+        uri
+    )
+    is Error.TargetFileNotFound -> resourceProvider.getString(
+        R.string.error_target_file_not_found,
+        uri
+    )
     Error.UnknownIOError -> resourceProvider.getString(R.string.error_io_error)
+    Error.ShizukuNotStarted -> resourceProvider.getString(R.string.error_shizuku_not_started)
 }
 
 val Error.isFixable: Boolean
@@ -110,7 +129,8 @@ val Error.isFixable: Boolean
         is Error.ImeDisabled,
         Error.AccessibilityServiceDisabled,
         Error.AccessibilityServiceCrashed,
-        is Error.PermissionDenied
+        is Error.PermissionDenied,
+        is Error.ShizukuNotStarted
         -> true
 
         else -> false

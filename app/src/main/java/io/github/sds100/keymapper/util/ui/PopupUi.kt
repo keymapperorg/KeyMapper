@@ -1,5 +1,7 @@
 package io.github.sds100.keymapper.util.ui
 
+import io.github.sds100.keymapper.home.ChooseAppStoreModel
+
 /**
  * Created by sds100 on 23/03/2021.
  */
@@ -23,7 +25,9 @@ sealed class PopupUi<RESPONSE : PopupResponse> {
         val negativeButtonText: CharSequence? = null
     ) : PopupUi<DialogResponse>()
 
-    data class Text(val hint: String, val allowEmpty: Boolean, val text: String = "") : PopupUi<TextResponse>()
+    data class Text(val hint: String, val allowEmpty: Boolean, val text: String = "") :
+        PopupUi<TextResponse>()
+
     data class TextResponse(val text: String) : PopupResponse
 
     data class SingleChoice<ID>(
@@ -39,7 +43,13 @@ sealed class PopupUi<RESPONSE : PopupResponse> {
 
     data class Toast(val text: String) : PopupUi<PopupResponse>()
 
-    object InstallCompatibleOnScreenKeyboard : PopupUi<DialogResponse>()
+    data class ChooseAppStore(
+        val title: CharSequence,
+        val message: CharSequence,
+        val model: ChooseAppStoreModel,
+        val positiveButtonText: CharSequence? = null,
+        val negativeButtonText: CharSequence? = null
+    ) : PopupUi<DialogResponse>()
 }
 
 interface PopupResponse

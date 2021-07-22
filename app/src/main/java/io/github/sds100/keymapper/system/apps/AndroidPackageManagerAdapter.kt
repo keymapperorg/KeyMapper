@@ -1,17 +1,25 @@
 package io.github.sds100.keymapper.system.apps
 
 import android.content.*
+import android.content.pm.IPackageManager
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.os.Process
 import android.os.TransactionTooLargeException
 import android.provider.MediaStore
 import android.provider.Settings
+import io.github.sds100.keymapper.Constants
+import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
+import io.github.sds100.keymapper.system.permissions.Permission
+import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import rikka.shizuku.ShizukuBinderWrapper
+import rikka.shizuku.SystemServiceHelper
 import splitties.bitflags.withFlag
 
 /**
@@ -19,12 +27,19 @@ import splitties.bitflags.withFlag
  */
 class AndroidPackageManagerAdapter(
     context: Context,
-    coroutineScope: CoroutineScope
+    coroutineScope: CoroutineScope,
+    private val permissionAdapter: AndroidPermissionAdapter,
+    private val suAdapter: SuAdapter
 ) : PackageManagerAdapter {
-    private val ctx = context.applicationContext
-    private val packageManager = ctx.packageManager
+    private val ctx: Context = context.applicationContext
+    private val packageManager: PackageManager = ctx.packageManager
 
     override val installedPackages = MutableStateFlow<State<List<PackageInfo>>>(State.Loading)
+
+    private val iPackageManager: IPackageManager by lazy {
+        val binder = ShizukuBinderWrapper(SystemServiceHelper.getSystemService("package"))
+        IPackageManager.Stub.asInterface(binder)
+    }
 
     private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -73,7 +88,7 @@ class AndroidPackageManagerAdapter(
         }
     }
 
-    override fun installApp(packageName: String) {
+    override fun downloadApp(packageName: String) {
         try {
             val intent = Intent(Intent.ACTION_VIEW)
             intent.data = Uri.parse("market://details?id=$packageName")
@@ -200,6 +215,23 @@ class AndroidPackageManagerAdapter(
             Intent(Intent.ACTION_VOICE_COMMAND).resolveActivityInfo(ctx.packageManager, 0) != null
 
         return activityExists
+    }
+
+    override fun grantPermission(permissionName: String) {
+        if (permissionAdapter.isGranted(Permission.SHIZUKU)) {
+            val userId = Process.myUserHandle()!!.getIdentifier()
+
+            iPackageManager.grantRuntimePermission(
+                Constants.PACKAGE_NAME,
+                permissionName,
+                userId
+            )
+
+        } else if (permissionAdapter.isGranted(Permission.ROOT)) {
+            suAdapter.execute("pm grant ${Constants.PACKAGE_NAME} $permissionName", block = true)
+        }
+
+        permissionAdapter.onPermissionsChanged()
     }
 
     override fun launchCameraApp(): Result<*> {

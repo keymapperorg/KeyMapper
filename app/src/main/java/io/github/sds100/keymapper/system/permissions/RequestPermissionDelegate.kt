@@ -15,10 +15,12 @@ import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
+import io.github.sds100.keymapper.shizuku.ShizukuUtils
 import io.github.sds100.keymapper.system.DeviceAdmin
-import io.github.sds100.keymapper.system.Shell
+import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.url.UrlUtils
 import io.github.sds100.keymapper.util.str
+import rikka.shizuku.Shizuku
 import splitties.alertdialog.appcompat.*
 import splitties.alertdialog.material.materialAlertDialog
 import splitties.toast.longToast
@@ -48,6 +50,14 @@ class RequestPermissionDelegate(
         ) {
             ServiceLocator.permissionAdapter(activity).onPermissionsChanged()
         }
+
+    private val permissionAdapter: PermissionAdapter by lazy {
+        ServiceLocator.permissionAdapter(activity)
+    }
+
+    private val packageManagerAdapter: PackageManagerAdapter by lazy {
+        ServiceLocator.packageManagerAdapter(activity)
+    }
 
     fun requestPermission(permission: Permission, navController: NavController?) {
         when (permission) {
@@ -109,8 +119,17 @@ class RequestPermissionDelegate(
                 }
 
             Permission.WRITE_SECURE_SETTINGS -> {
+                if (permissionAdapter.isGranted(Permission.SHIZUKU)
+                    || permissionAdapter.isGranted(Permission.ROOT)
+                ) {
+                    packageManagerAdapter.grantPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
+
+                    return
+                }
+
                 require(navController != null) { "nav controller can't be null!" }
                 activity.materialAlertDialog {
+                    titleResource = R.string.dialog_title_write_secure_settings
                     messageResource = R.string.dialog_message_write_secure_settings
 
                     positiveButton(R.string.pos_grant_write_secure_settings_guide) {
@@ -120,12 +139,8 @@ class RequestPermissionDelegate(
                         )
                     }
 
-                    negativeButton(R.string.pos_enable_root_features) {
-                        val successful = ServiceLocator.suAdapter(context).requestPermission()
-
-                        if (successful){
-                            context.toast(R.string.toast_root_features_turned_on)
-                        }
+                    negativeButton(R.string.neg_cancel) {
+                        it.cancel()
                     }
 
                     show()
@@ -157,7 +172,6 @@ class RequestPermissionDelegate(
 
                         okButton {
                             navController.navigate(NavAppDirections.toSettingsFragment())
-                            Shell.run("su")
                         }
 
                         negativeButton(R.string.neg_cancel) { it.cancel() }
@@ -166,7 +180,6 @@ class RequestPermissionDelegate(
                     }
                 } else {
                     navController.navigate(NavAppDirections.toSettingsFragment())
-                    Shell.run("su")
                 }
             }
 
@@ -210,6 +223,14 @@ class RequestPermissionDelegate(
                         }
                     }
                 }
+
+            Permission.SHIZUKU -> {
+                if (ShizukuUtils.isSdkSupported()) {
+                    if (Shizuku.getBinder() != null) {
+                        Shizuku.requestPermission(AndroidPermissionAdapter.REQUEST_SHIZUKU_PERMISSION)
+                    }
+                }
+            }
         }
     }
 }

@@ -13,13 +13,13 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import io.github.sds100.keymapper.Constants
+import io.github.sds100.keymapper.shizuku.ShizukuUtils
 import io.github.sds100.keymapper.system.DeviceAdmin
 import io.github.sds100.keymapper.system.root.SuAdapter
-import io.github.sds100.keymapper.util.firstBlocking
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import rikka.shizuku.Shizuku
 import timber.log.Timber
 
 /**
@@ -30,27 +30,29 @@ class AndroidPermissionAdapter(
     private val coroutineScope: CoroutineScope,
     private val suAdapter: SuAdapter
 ) : PermissionAdapter {
+    companion object {
+        const val REQUEST_SHIZUKU_PERMISSION = 1
+    }
+
     private val ctx = context.applicationContext
 
-    override val onPermissionsUpdate = MutableSharedFlow<Unit>()
+    override val onPermissionsUpdate: MutableSharedFlow<Unit> = MutableSharedFlow()
 
     private val _request = MutableSharedFlow<Permission>()
     val request = _request.asSharedFlow()
 
     init {
-        coroutineScope.launch {
-            suAdapter.isGranted
-                .onEach { hasRootPermission ->
-                    if (hasRootPermission && !isGranted(Permission.WRITE_SECURE_SETTINGS)) {
-                        suAdapter.execute("pm grant ${Constants.PACKAGE_NAME} ${Manifest.permission.WRITE_SECURE_SETTINGS}")
-                        delay(1000)
-                        onPermissionsChanged()
-                    }
-                }
-                .drop(1) //drop the first value when collecting initially
-                .collectLatest {
+        suAdapter.isGranted
+            .drop(1)
+            .onEach { onPermissionsChanged() }
+            .launchIn(coroutineScope)
+
+        Shizuku.addRequestPermissionResultListener { requestCode, grantResult ->
+            coroutineScope.launch {
+                if (requestCode == REQUEST_SHIZUKU_PERMISSION) {
                     onPermissionsUpdate.emit(Unit)
                 }
+            }
         }
     }
 
@@ -93,10 +95,6 @@ class AndroidPermissionAdapter(
                 }
 
             Permission.WRITE_SECURE_SETTINGS -> {
-                if (isGranted(Permission.ROOT)) {
-                    suAdapter.execute("pm grant ${Constants.PACKAGE_NAME} ${Manifest.permission.WRITE_SECURE_SETTINGS}")
-                }
-
                 ContextCompat.checkSelfPermission(
                     ctx,
                     Manifest.permission.WRITE_SECURE_SETTINGS
@@ -113,13 +111,14 @@ class AndroidPermissionAdapter(
                     Manifest.permission.CALL_PHONE
                 ) == PERMISSION_GRANTED
 
-            Permission.ROOT -> suAdapter.isGranted.firstBlocking()
+            Permission.ROOT -> suAdapter.isGranted.value
 
             Permission.IGNORE_BATTERY_OPTIMISATION ->
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     val powerManager = ctx.getSystemService<PowerManager>()
 
-                    val ignoringOptimisations = powerManager?.isIgnoringBatteryOptimizations(Constants.PACKAGE_NAME)
+                    val ignoringOptimisations =
+                        powerManager?.isIgnoringBatteryOptimizations(Constants.PACKAGE_NAME)
 
                     when {
                         powerManager == null -> Timber.i("Power manager is null")
@@ -131,6 +130,15 @@ class AndroidPermissionAdapter(
                 } else {
                     true
                 }
+
+            //this check is super quick (~0ms) so this doesn't need to be cached.
+            Permission.SHIZUKU -> {
+                if (ShizukuUtils.isSdkSupported() && Shizuku.getBinder() != null) {
+                    Shizuku.checkSelfPermission() == PERMISSION_GRANTED
+                } else {
+                    false
+                }
+            }
         }
     }
 

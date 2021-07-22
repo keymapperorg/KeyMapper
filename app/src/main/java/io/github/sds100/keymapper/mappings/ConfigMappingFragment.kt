@@ -10,7 +10,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Lifecycle
-import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
@@ -24,6 +23,7 @@ import io.github.sds100.keymapper.ui.utils.getJsonSerializable
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.showPopups
 import splitties.alertdialog.appcompat.*
+import splitties.alertdialog.material.materialAlertDialog
 
 /**
  * Created by sds100 on 17/01/21.
@@ -169,7 +169,7 @@ abstract class ConfigMappingFragment : Fragment() {
     }
 
     private fun showOnBackPressedWarning() {
-        onBackPressedDialog = requireContext().alertDialog {
+        onBackPressedDialog = requireContext().materialAlertDialog {
             messageResource = R.string.dialog_message_are_you_sure_want_to_leave_without_saving
 
             positiveButton(R.string.pos_yes) {

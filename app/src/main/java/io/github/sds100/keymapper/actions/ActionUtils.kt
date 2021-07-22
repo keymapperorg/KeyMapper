@@ -18,3 +18,9 @@ fun ActionData.requiresImeToPerform() = when (this) {
     is SystemAction -> id == SystemActionId.MOVE_CURSOR_TO_END
     else -> false
 }
+
+fun ActionData.canUseShizuku() = when (this) {
+    is KeyEventAction -> true
+    is SystemAction -> id == SystemActionId.MOVE_CURSOR_TO_END
+    else -> false
+}

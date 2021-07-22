@@ -16,6 +16,7 @@ import io.github.sds100.keymapper.mappings.keymaps.*
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCaseImpl
 import io.github.sds100.keymapper.onboarding.OnboardingUseCaseImpl
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsUseCaseImpl
+import io.github.sds100.keymapper.shizuku.ShizukuInputEventInjector
 import io.github.sds100.keymapper.system.Shell
 import io.github.sds100.keymapper.system.accessibility.ControlAccessibilityServiceUseCase
 import io.github.sds100.keymapper.system.accessibility.ControlAccessibilityServiceUseCaseImpl
@@ -60,6 +61,7 @@ object UseCases {
             ServiceLocator.inputMethodAdapter(ctx),
             ServiceLocator.serviceAdapter(ctx),
             ServiceLocator.settingsRepository(ctx),
+            ServiceLocator.shizukuAdapter(ctx),
             getActionError(ctx),
             getConstraintError(ctx)
         )
@@ -71,7 +73,8 @@ object UseCases {
         ServiceLocator.permissionAdapter(ctx),
         ServiceLocator.systemFeatureAdapter(ctx),
         ServiceLocator.cameraAdapter(ctx),
-        ServiceLocator.soundsManager(ctx)
+        ServiceLocator.soundsManager(ctx),
+        ServiceLocator.shizukuAdapter(ctx)
     )
 
 
@@ -83,8 +86,8 @@ object UseCases {
 
     fun onboarding(ctx: Context) = OnboardingUseCaseImpl(
         ServiceLocator.settingsRepository(ctx),
-        ServiceLocator.packageManagerAdapter(ctx),
-        ServiceLocator.fileAdapter(ctx)
+        ServiceLocator.fileAdapter(ctx),
+        ServiceLocator.leanbackAdapter(ctx)
     )
 
     fun createKeymapShortcut(ctx: Context) = CreateKeyMapShortcutUseCaseImpl(
@@ -141,6 +144,7 @@ object UseCases {
             ServiceLocator.intentAdapter(ctx),
             getActionError(ctx),
             keyMapperImeMessenger(ctx),
+            ShizukuInputEventInjector(),
             ServiceLocator.packageManagerAdapter(ctx),
             ServiceLocator.appShortcutAdapter(ctx),
             ServiceLocator.popupMessageAdapter(ctx),
@@ -158,7 +162,8 @@ object UseCases {
             ServiceLocator.openUrlAdapter(ctx),
             ServiceLocator.resourceProvider(ctx),
             ServiceLocator.settingsRepository(ctx),
-            ServiceLocator.soundsManager(ctx)
+            ServiceLocator.soundsManager(ctx),
+            ServiceLocator.permissionAdapter(ctx)
         )
 
     fun detectMappings(ctx: Context) = DetectMappingUseCaseImpl(

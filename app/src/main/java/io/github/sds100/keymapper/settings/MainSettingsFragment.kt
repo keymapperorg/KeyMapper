@@ -14,6 +14,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.backup.BackupUtils
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
+import io.github.sds100.keymapper.shizuku.ShizukuUtils
 import io.github.sds100.keymapper.system.notifications.NotificationController
 import io.github.sds100.keymapper.system.notifications.NotificationUtils
 import io.github.sds100.keymapper.util.*
@@ -30,6 +31,7 @@ class MainSettingsFragment : BaseSettingsFragment() {
 
     companion object {
         private const val KEY_GRANT_WRITE_SECURE_SETTINGS = "pref_key_grant_write_secure_settings"
+        private const val KEY_GRANT_SHIZUKU = "pref_key_grant_shizuku"
         private const val KEY_VIEW_WRITE_SECURE_SETTINGS_SETTINGS =
             "pref_view_write_secure_settings_settings"
     }
@@ -89,6 +91,20 @@ class MainSettingsFragment : BaseSettingsFragment() {
 
                 findPreference<Preference>(KEY_VIEW_WRITE_SECURE_SETTINGS_SETTINGS)?.apply {
                     isEnabled = isGranted
+                }
+            }
+        }
+
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
+            viewModel.isShizukuPermissionGranted.collectLatest { isGranted ->
+                findPreference<Preference>(KEY_GRANT_SHIZUKU)?.apply {
+                    if (isGranted) {
+                        setTitle(R.string.title_pref_grant_shizuku_granted)
+                        setIcon(R.drawable.ic_outline_check_circle_outline_24)
+                    } else {
+                        setTitle(R.string.title_pref_grant_shizuku_not_granted)
+                        setIcon(R.drawable.ic_baseline_error_outline_24)
+                    }
                 }
             }
         }
@@ -274,6 +290,26 @@ class MainSettingsFragment : BaseSettingsFragment() {
                 setOnPreferenceClickListener {
                     val direction =
                         MainSettingsFragmentDirections.toAndroid11BugWorkaroundSettingsFragment()
+                    findNavController().navigate(direction)
+
+                    true
+                }
+
+                addPreference(this)
+            }
+        }
+
+        //Shizuku
+        //shizuku is only supported on Marhsmallow+
+        if (ShizukuUtils.isSdkSupported()) {
+            Preference(requireContext()).apply {
+                setTitle(R.string.title_pref_category_shizuku)
+                setSummary(R.string.summary_pref_category_shizuku)
+                isSingleLineTitle = false
+
+                setOnPreferenceClickListener {
+                    val direction =
+                        MainSettingsFragmentDirections.toShizukuSettingsFragment()
                     findNavController().navigate(direction)
 
                     true
