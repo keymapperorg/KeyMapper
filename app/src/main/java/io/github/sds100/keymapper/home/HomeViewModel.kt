@@ -433,7 +433,15 @@ class HomeViewModel(
 
         when (response) {
             DialogResponse.POSITIVE -> _fixAppKilling.emit(Unit)
-            DialogResponse.NEUTRAL -> _reportBug.emit(Unit)
+            DialogResponse.NEUTRAL -> {
+                val restartServiceDialog = PopupUi.Ok(
+                    message = getString(R.string.dialog_message_restart_accessibility_service)
+                )
+
+                if (showPopup("restart_service", restartServiceDialog) != null) {
+                    showAlertsUseCase.restartAccessibilityService()
+                }
+            }
         }
     }
 
