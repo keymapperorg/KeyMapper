@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="slogan">Uwolnij swoje przyciski!</string>
     <string name="no_action_chosen">Nie wybrano działania</string>
     <string name="accessibility_service_description">Key Mapper musi korzystać z usługi ułatwień dostępu, aby móc czytać naciśnięć przycisków/klawiszy i wykonywać wybrane działania.
     Usługa ułatwień dostępu czyta tylko zdarzeń związanych z klawiszami i wykrywa, w której aplikacji się znajdujesz. Aby to sprawdzić, możesz spojrzeć na kod źródłowy, do którego link znajduje się na ekranie Informacje.</string>
@@ -91,6 +92,7 @@
     <string name="home_success_accessibility_service_is_enabled">Usługa ułatwień dostępu jest właczona! Twoje mapy klawiszy powinny działać.</string>
     <string name="home_error_logging_enabled">Dodatkowe logowanie jest włączone! Wyłącz to, jeśli nie ma potrzeby naprawiania problemu.</string>
     <string name="home_error_logging_enabled_button">Wyłącz</string>
+    <string name="title_about">Informacje</string>
     <!--  Action descriptions  -->
     <string name="description_open_app">Otwórz %s</string>
     <string name="description_key">Naciśnij klawisz \'%s\'</string>
@@ -905,4 +907,14 @@
     <string name="tap_target_quick_start_guide_primary">Przewodnik szybkiego startu</string>
     <string name="tap_target_quick_start_guide_secondary">Sprawdź Przewodnik szybkiego startu, jeśli nie wiesz, co robić.</string>
     <!--  Tap targets  -->
+    <string name="about_link_github">GitHub</string>
+    <string name="about_link_website">Strona internetowa</string>
+    <string name="about_link_translations">Tłumaczenia</string>
+    <string name="about_version">Wersja %s</string>
+    <string name="about_link_rate">Oceń</string>
+    <string name="about_link_changelog">Informacje o wydaniu</string>
+    <string name="about_link_discord">Discord</string>
+    <string name="about_license_title">Licencja</string>
+    <string name="about_license_subtitle">Licencja open source tej aplikacji.</string>
+    <string name="about_privacy_policy_title">Polityka prywatności</string>
 </resources>
