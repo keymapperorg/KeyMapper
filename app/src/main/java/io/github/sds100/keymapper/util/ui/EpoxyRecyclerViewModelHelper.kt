@@ -6,11 +6,7 @@ import com.airbnb.epoxy.EpoxyController
 import com.google.android.material.slider.Slider
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.util.Defaultable
-import io.github.sds100.keymapper.util.ui.CheckBoxListItem
-import io.github.sds100.keymapper.util.ui.RadioButtonPairListItem
-import io.github.sds100.keymapper.util.ui.RadioButtonTripleListItem
-import io.github.sds100.keymapper.util.ui.SliderListItem
-import io.github.sds100.keymapper.util.ui.editTextNumberAlertDialog
+import io.github.sds100.keymapper.util.ui.*
 import io.github.sds100.keymapper.util.viewLifecycleScope
 
 /**
