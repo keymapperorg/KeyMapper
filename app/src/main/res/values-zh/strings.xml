@@ -602,7 +602,6 @@
     <string name="action_power_on_off_device_message">你必须打开这个选择，才能在屏幕关闭时检测触发器！</string>
     <string name="action_consume_keyevent">什么也不做</string>
     <string name="action_move_to_end_of_text">移动光标到末尾</string>
-    <string name="action_move_to_end_of_text_message">必须选择 Key Mapper 键盘才能使这个动作正常工作，而这个动作在某些应用中可能无法正常工作。</string>
     <string name="action_toggle_keyboard">切换键盘</string>
     <string name="action_toggle_keyboard_message">这个动作只有在您点击了键盘应该显示的输入字段时才能起作用。</string>
     <string name="action_show_keyboard">显示键盘</string>
