@@ -320,7 +320,6 @@
     <string name="dialog_message_downloading">Загрузка…</string>
     <string name="dialog_message_describe_your_issue_in_the_email">Просьба описать в письме проблему, с которой вы столкнулись. В противном случае я не могу вам помочь. Спасибо!</string>
     <string name="dialog_message_long_press_warning">Длительное нажатие работает только для кнопок громкости и навигации. Если вы включите его для других клавиш, клавиши не будут работать, если они не будут длительно нажаты.</string>
-    <string name="dialog_message_write_secure_settings">Чтобы предоставить Key Mapper WRITE_SECURE_SETTINGS разрешение, включите «корневые объекты» в настройках, если ваше устройство рутировано. Если ваше устройство не рутировано, следуйте руководству по использованию ПК или Mac для предоставления разрешения.</string>
     <string name="dialog_message_cant_find_accessibility_settings_page">Кажется на вашем устройстве нет страницы настроек спец.возможностей. Вы можете включить службу спец.возможностей, предоставив приложению разрешение WRITE_SECURE_SETTINGS. После нажатия \'ОК\' следуйте руководству.</string>
     <string name="dialog_message_double_press_restricted_to_single_key">"Нельзя обработать одновременное двойное нажатие нескольких клавиш."</string>
     <string name="dialog_message_parallel_trigger_order">Клавиши должны быть перечислены сверху вниз в том порядке в котором они должны быть нажаты.</string>
@@ -746,7 +745,6 @@
     <string name="action_power_on_off_device_message">Не забудьте включить настройку позволяющую определить событие при выключенном экране!</string>
     <string name="action_consume_keyevent">Ничего не делать</string>
     <string name="action_move_to_end_of_text">Переместить курсор в конец</string>
-    <string name="action_move_to_end_of_text_message">Для этого действия должны быть выбрана клавиатура Key Mapper, однако в некоторых приложениях это действие может работать не так, как запланировано.</string>
     <string name="action_toggle_keyboard">Переключить клавиатуру</string>
     <string name="action_toggle_keyboard_message">Это действие будет работать только если вы коснулись пальцем поля ввода, и при этом должна отобразиться клавиатура.</string>
     <string name="action_show_keyboard">Показать клавиатуру</string>
