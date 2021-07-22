@@ -324,7 +324,6 @@
     <string name="dialog_message_downloading">Pobieranie…</string>
     <string name="dialog_message_describe_your_issue_in_the_email">Czy możesz opisać swój problem przez e-mail? Bo inaczej nie mogę Ci pomóc. Dzięki!</string>
     <string name="dialog_message_long_press_warning">Przytrzymanie działa tylko w przypadku fizycznych przycisków głośności i nawigacji. Jeśli jest włączone dla innych klawiszy, nie będą działać bez przytrzymania.</string>
-    <string name="dialog_message_write_secure_settings">Aby nadać uprawnienia WRITE_SECURE_SETTINGS do Key Mapper, włącz \"funkcje roota\" w ustawieniach jeśli urządzenie jest zrootowane. Jeśli urządzenie nie jest zrootowane, postępuj zgodnie z przewodnikiem, aby nadać uprawnienie za pomocą komputera PC/Mac.</string>
     <string name="dialog_message_cant_find_accessibility_settings_page">Wygląda na to, że Twoje urządzenie nie ma strony usług ułatwień dostępu w ustawieniach. Nadal możesz włączyć usługę, nadając aplikacji uprawnienia WRITE_SECURE_SETTINGS. Po naciśnięciu \"OK\", wyskakujące okienko poprowadzi Cię jak to zrobić.</string>
     <string name="dialog_message_double_press_restricted_to_single_key">"Wielu klawiszy nie można jednocześnie nacisnąć dwukrotnie."</string>
     <string name="dialog_message_parallel_trigger_order">Klawisze muszą być ułożone od góry do dołu w kolejności, w jakiej będą przytrzymywane.</string>
@@ -829,7 +828,6 @@
     <string name="action_power_on_off_device_message">Musisz włączyć opcję wykrywania wyzwalacza gdy ekran jest wyłączony!</string>
     <string name="action_consume_keyevent">Nic nie rób</string>
     <string name="action_move_to_end_of_text">Przenieś kursor na koniec pliku</string>
-    <string name="action_move_to_end_of_text_message">Klawiatura Key Mapper musi być wybrana, aby ta mapa klawiszy działała, a jej czynności mogą nie działać zgodnie z przeznaczeniem w niektórych aplikacjach.</string>
     <string name="action_toggle_keyboard">Pokaż/ukryj klawiaturę</string>
     <string name="action_toggle_keyboard_message">Ta czynność zadziała tylko wtedy, gdy klikniesz pola wprowadzania, w którym ma być wyświetlana klawiatura.</string>
     <string name="action_show_keyboard">Pokaż klawiaturę</string>
