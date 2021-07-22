@@ -914,7 +914,12 @@
     <string name="about_link_rate">Oceń</string>
     <string name="about_link_changelog">Informacje o wydaniu</string>
     <string name="about_link_discord">Discord</string>
+    <string name="about_header_boring_stuff">Nudne rzeczy</string>
     <string name="about_license_title">Licencja</string>
     <string name="about_license_subtitle">Licencja open source tej aplikacji.</string>
     <string name="about_privacy_policy_title">Polityka prywatności</string>
+    <string name="about_privacy_policy_subtitle">Nie zbieramy żadnych danych osobowych, ale oto polityka prywatności, która mówi właśnie o tym.</string>
+    <string name="about_header_our_team">Nasz zespół</string>
+    <string name="about_team_sds100_role">Programista</string>
+    <string name="about_team_jambl3r_role">Moderator społeczności/wsparcie</string>
 </resources>
