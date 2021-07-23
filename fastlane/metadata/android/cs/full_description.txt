@@ -1,15 +1,15 @@
-What can be remapped?
+Co lze přemapovat?
 
- * Fingerprint gestures on supported devices.
- * Volume buttons.
- * Navigation buttons.
- * Bluetooth/wired keyboards.
- * Buttons on other connected devices should also work.
+ * Gesta otisků prstů na podporovaných zařízeních.
+ * Tlačítka hlasitosti.
+ * Navigační tlačítka.
+ * Bluetooth/kabelová klávesnice.
+ * Tlačítka na ostatních připojených zařízeních by měla také fungovat.
 
-ONLY HARDWARE buttons can be remapped.
-There is NO GUARANTEE any of these buttons will work and this app is NOT designed to control games. Your device's OEM/vendor can prevent them from being remapped.
+POUZE HARDWARE tlačítka mohou být znovu mapována.
+Žádné z těchto tlačítek nebude fungovat a tato aplikace NENÍ navržena pro kontrolu her. OEM/dodavatel vašeho zařízení může zabránit jejich přemapování.
 
-You can combine multiple keys from a specific device or any device to form a "trigger". Each trigger can have multiple actions. The keys can be set to be pressed at the same time or one after another in a sequence. Keys can be remapped when they are short pressed, long pressed or double pressed. A keymap can have a set of "constraints" so it only has an effect in certain situations.
+Můžete kombinovat více klíčů z konkrétního zařízení nebo jakéhokoli zařízení a vytvořit "trigger". Each trigger can have multiple actions. The keys can be set to be pressed at the same time or one after another in a sequence. Keys can be remapped when they are short pressed, long pressed or double pressed. A keymap can have a set of "constraints" so it only has an effect in certain situations.
 
 What can’t be remapped?
  * Power button
@@ -57,37 +57,37 @@ What can I remap my keys to do?
  * Open the Voice Assistant
  * Open the Device Assistant
  * Open camera
- * Consume key event. (Do nothing)
- * Lock the device
- * Show the power dialog (Android 5.0+)
- * Move the cursor to the end of a file
+ * Consume key event. (Nic nedělat)
+ * Zamknout zařízení
+ * Zobrazit dialogové okno napájení (Android 5.0+)
+ * Přesunout kurzor na konec souboru
 
-And more...
+A další...
 
-A Key Mapper keyboard needs to be selected for these to work:
+Klávesová mapa musí být vybrána, aby fungovala:
 
-** It is recommended to install the Key Mapper GUI Keyboard app because this is a proper keyboard unlike the one built-in to Key Mapper **
+** Doporučujeme nainstalovat klávesovou Mapper GUI klávesnici, protože se jedná o správnou klávesnici na rozdíl od jedné vestavěné mapy klíčů **
 
- * Input a specific keycode
+ * Vložte specifický klíčový kód
  * Input a key
- * Input a Key Event
- * Insert a block of text
+ * Vložit klíčovou událost
+ * Vložte blok textu
 
-What other things can the app do?
- * Option to show a persistent notification which can pause/resume your keymaps.
- * Automatically change the keyboard to the Key Mapper one and/or show the keyboard picker when a chosen Bluetooth device is connected and switch back to the old one when it is disconnected.
- * Quick settings to pause/resume keymaps and toggle the Key Mapper keyboard.
- * Create home screen widget to perform the actions mentioned above.
+Co ostatní věci může aplikace dělat?
+ * Možnost zobrazit trvalé oznámení, které může pozastavit/obnovit vaše klíčové mapy.
+ * Automaticky změnit klávesnici na mapu kláves a/nebo zobrazit výběr klávesnice, když je vybrané zařízení Bluetooth připojeno a přepnout zpět na staré zařízení po odpojení.
+ * Rychlé nastavení pro pozastavení/obnovení klíčových map a přepnutí klávesové mapy.
+ * Vytvořte widget domovské obrazovky pro provedení výše uvedených akcí.
 
-Permissions
-You don't have to grant all the permissions for the app to work. The app will tell you if a permission needs to be granted for a feature to work.
+Skupiny uživatelů a dokumentů
+Není nutné udělovat všechna oprávnění pro fungování aplikace. Aplikace vám řekne, zda má být uděleno oprávnění pro funkčnost funkce.
 
- * Accessibility Service: Basic requirement for remapping to work. It is needed so the app can listen to and block keyevents.
- * Device Admin: To turn the screen off when using the action to turn off the screen.
- * Modify System Settings: To change the brightness and rotation settings.
- * Camera: To control the flashlight.
+ * Služba přístupu: Základní požadavek pro přemapování do práce. Je to potřeba, aby aplikace mohla poslouchat a blokovat klíčové události.
+ * Admin zařízení: Při použití akce vypněte obrazovku.
+ * Upravit nastavení systému: Chcete-li změnit nastavení jasu a rotace.
+ * Fotoaparát: Pro ovládání svítilny.
 
- On some devices, enabling the accessibility service will disable "enhanced data encryption".
+ Na některých zařízeních zakáže povolení služby usnadnění přístupu "rozšířené šifrování dat".
 
 Discord: https://discord.gg/Suj6nyw
-Website: https://docs.keymapper.club
+Web site: https://docs.keymapper.club
