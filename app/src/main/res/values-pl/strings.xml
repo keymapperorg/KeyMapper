@@ -347,7 +347,21 @@
     <string name="dialog_title_choose_download_leanback_keyboard">Zainstaluj klawiaturę Key Mapper Leanback</string>
     <string name="dialog_message_choose_download_leanback_keyboard">Wybierz, skąd chcesz ją pobrać.</string>
     <string name="dialog_title_install_shizuku_or_gui_keyboard">To działanie wymaga dodatkowej konfiguracji</string>
+    <string name="dialog_message_install_shizuku_or_gui_keyboard">Istnieją 3 sposoby skonfigurowania urządzenia do korzystania z tej czynności. Oto zalety i wady każdego z nich.
+        
+        \n\n<b>1. Pobierz Shizuku (zalecane).</b> Nie musisz używać innej klawiatury ekranowej niż ta, z której już korzystasz, ale po każdym ponownym uruchomieniu urządzenia będzie to wymagało minuty konfiguracji.
+        
+        \n\n<b>2. Pobierz GUI klawiaturę Key Mapper.</b> To jest klawiatura ekranowa, której możesz używać z Key Mapperem, ale nie będziesz w stanie korzystać z klawiatury, której obecnie używasz, na przykład Gboard.
+        
+        \n\n<b>3. Nic nie rób i używaj wbudowanej klawiatury Key Mapper.</b> Nie jest to zalecane, ponieważ podczas korzystania z Key Mapper nie będziesz mieć <b>żadnej</b> klawiatury ekranowej! Nie ma żadnych zalet.</string>
     <string name="dialog_title_install_shizuku_or_leanback_keyboard">To działanie wymaga dodatkowej konfiguracji</string>
+    <string name="dialog_message_install_shizuku_or_leanback_keyboard">Istnieją 3 sposoby skonfigurowania urządzenia do korzystania z tej czynności. Oto zalety i wady każdego z nich.
+        
+        \n\n<b>1. Pobierz Shizuku (zalecane).</b> Nie musisz używać innej klawiatury ekranowej niż ta, z której już korzystasz, ale po każdym ponownym uruchomieniu urządzenia będzie to wymagało minuty konfiguracji.
+        
+        \n\n<b>2. Pobierz klawiaturę Key Mapper Leanback.</b> To jest klawiatura ekranowa zoptymalizowana pod kątem Android TV, której możesz używać z Key Mapperem, ale nie będziesz w stanie korzystać z klawiatury, której obecnie używasz, na przykład Gboard.
+        
+        \n\n<b>3. Nic nie rób i używaj wbudowanej klawiatury Key Mapper.</b> Nie jest to zalecane, ponieważ podczas korzystania z Key Mapper nie będziesz mieć <b>żadnej</b> klawiatury ekranowej! Nie ma żadnych zalet.</string>
     <string name="dialog_title_disable_battery_optimisation">Wyłącz optymalizację baterii</string>
     <string name="dialog_message_disable_battery_optimisation"><b>MUSISZ</b> to <b>wszystko</b> przeczytać, w przeciwnym razie otrzymasz <b>frustrację</b> w przyszłości!\n\nKliknięcie \"Napraw częściowo\" <b>może</b> uniemożliwić Androidowi zatrzymanie aplikacji, gdy działa ona w tle.\n\n<b>To NIE WYSTARCZY</b>. Skórka producenta, taka jak MIUI lub Samsung Experience, może mieć inne funkcje zatrzymywania aplikacji, więc MUSISZ je wyłączyć dla Key Mapper, postępując zgodnie z przewodnikiem online na dontkillmyapp.com.</string>
     <string name="dialog_title_send_feedback">Prześlij opinię</string>
@@ -497,6 +511,7 @@
     <string name="title_pref_grant_shizuku_not_started">2. Aplikacja Shizuku nie jest uruchomiona! Kliknij, aby otworzyć aplikację Shizuku, a następnie przeczytaj znajdujące się tam instrukcje, jak ją uruchomić.</string>
     <string name="title_pref_grant_shizuku_started">2. Aplikacja Shizuku jest uruchomiona.</string>
     <string name="title_pref_grant_shizuku_not_granted">3. Key Mapper nie ma uprawnień do używania Shizuku. Kliknij, aby udzielić to uprawnienie.</string>
+    <string name="title_pref_grant_shizuku_granted">3. Key Mapper będzie automatycznie używać Shizuku. Kliknij, aby dowiedzieć się więcej o funkcjach Key Mapper korzystających z Shizuku.</string>
     <string name="title_pref_default_options">Domyślne opcje map klawiszy</string>
     <string name="summary_pref_default_options">Zmień domyślne opcje mapowania klawiszy.</string>
     <!--Preference titles and summaries-->
@@ -509,6 +524,9 @@
     <string name="summary_pref_category_root">Te opcje będą działać tylko na zrootowanych urządzeniach! Jeśli nie wiesz, czym jest root lub czy Twoje urządzenie jest zrootowane, nie zostawiaj złej recenzji, że te opcje nie działają. :)</string>
     <string name="title_pref_category_write_secure_settings">Wymóg uprawnienia WRITE_SECURE_SETTINGS</string>
     <string name="summary_pref_category_write_secure_settings">Te opcje są włączone tylko wtedy, gdy Key Mapper ma uprawnienie WRITE_SECURE_SETTINGS. Kliknij poniższy przycisk, aby dowiedzieć się, jak udzielić to uprawnienie.</string>
+    <string name="title_pref_category_shizuku">Obsługa Shizuku</string>
+    <string name="summary_pref_category_shizuku">Shizuku jest aplikacją, która pozwala aplikacji Key Mapper wykonywać funkcje, dostęp do których mają tylko aplikacje systemowe. Nie musisz używać klawiatury Key Mapper, na przykład. Kliknij, aby dowiedzieć się, jak to skonfigurować.</string>
+    <string name="summary_pref_category_shizuku_follow_steps">Postępuj według tych instrukcji by skonfigurować Shizuku.</string>
     <string name="title_pref_category_write_secure_settings_view_settings">Przejdź do ustawień, które wymagają tego uprawnienia.</string>
     <string name="title_pref_category_log">Logowanie</string>
     <string name="summary_pref_category_log">Może to zwiększyć opóźnienie map klawiszy, więc włączaj to tylko wtedy, gdy próbujesz debugować aplikację lub programista poprosi Cię o to.</string>
@@ -749,6 +767,8 @@
     <string name="error_storage_permission_denied">Odmowa dostępu do pamięci!</string>
     <string name="error_matching_source_and_target_paths">Ścieżka źródłowa i docelowa nie mogą być takie same!</string>
     <string name="error_no_space_left_at_target">Brak miejsca na cel! %s</string>
+    <string name="error_shizuku_permission_denied">Odmowa dostępu do Shizuku!</string>
+    <string name="error_shizuku_not_started">Aplikacja Shizuku nie jest uruchomiona!</string>
     <!-- Error messages -->
     <!-- System action labels -->
     <string name="action_toggle_wifi">Włącz/wyłącz Wi-Fi</string>
@@ -846,6 +866,7 @@
     <string name="action_power_on_off_device_message">Musisz włączyć opcję wykrywania wyzwalacza gdy ekran jest wyłączony!</string>
     <string name="action_consume_keyevent">Nic nie rób</string>
     <string name="action_move_to_end_of_text">Przenieś kursor na koniec pliku</string>
+    <string name="action_move_to_end_of_text_message">Ta czynność może nie działać zgodnie z przeznaczeniem w niektórych aplikacjach.</string>
     <string name="action_toggle_keyboard">Pokaż/ukryj klawiaturę</string>
     <string name="action_toggle_keyboard_message">Ta czynność zadziała tylko wtedy, gdy klikniesz pola wprowadzania, w którym ma być wyświetlana klawiatura.</string>
     <string name="action_show_keyboard">Pokaż klawiaturę</string>
