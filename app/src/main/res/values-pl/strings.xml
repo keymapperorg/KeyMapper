@@ -324,6 +324,8 @@
     <string name="dialog_message_downloading">Pobieranie…</string>
     <string name="dialog_message_describe_your_issue_in_the_email">Czy możesz opisać swój problem przez e-mail? Bo inaczej nie mogę Ci pomóc. Dzięki!</string>
     <string name="dialog_message_long_press_warning">Przytrzymanie działa tylko w przypadku fizycznych przycisków głośności i nawigacji. Jeśli jest włączone dla innych klawiszy, nie będą działać bez przytrzymania.</string>
+    <string name="dialog_title_write_secure_settings">Udziel uprawnienie WRITE_SECURE_SETTINGS</string>
+    <string name="dialog_message_write_secure_settings">Do udzielenia tego uprawnienia wymagany jest komputer PC/Mac. Przeczytaj o tym przewodnik online.</string>
     <string name="dialog_message_cant_find_accessibility_settings_page">Wygląda na to, że Twoje urządzenie nie ma strony usług ułatwień dostępu w ustawieniach. Nadal możesz włączyć usługę, nadając aplikacji uprawnienia WRITE_SECURE_SETTINGS. Po naciśnięciu \"OK\", wyskakujące okienko poprowadzi Cię jak to zrobić.</string>
     <string name="dialog_message_double_press_restricted_to_single_key">"Wielu klawiszy nie można jednocześnie nacisnąć dwukrotnie."</string>
     <string name="dialog_message_parallel_trigger_order">Klawisze muszą być ułożone od góry do dołu w kolejności, w jakiej będą przytrzymywane.</string>
@@ -331,7 +333,7 @@
     <string name="dialog_message_bt_constraint_limitation">Android nie pozwala aplikacjom na odczytywanie listy aktualnie połączonych (niesparowanych) urządzeń Bluetooth. Aplikacje mogą je wykrywać tylko w momencie, gdy się łączą i rozłączają. Dlatego jeśli urządzenie Bluetooth było już połączone z urządzeniem w momencie uruchomienia usługi ułatwień dostępu, konieczne będzie ponowne połączenie, aby aplikacja mogła je wykryć.</string>
     <string name="dialog_message_change_location_or_disable">Zmienić lokalizację lub wyłączyć automatyczną kopię zapasową?</string>
     <string name="dialog_message_screen_constraints_limitation">Ograniczenia \"Ekran jest włączony/wyłączony\" będą działać tylko wtedy, gdy jest włączona opcja mapy klawiszy \"Wykryj trigger gdy ekran jest wyłączony\". Ta opcja będzie wyświetlana tylko dla niektórych klawiszy (np. przycisków głośności) i jeśli masz uprawnienia root. Zobacz listę obsługiwanych klawiszy na stronie pomocy.</string>
-    <string name="dialog_message_password_screen_lock_warning">Jeśli masz wybrany inny ekran blokady, taki jak PIN lub Wzór, nie musisz się martwić. Ale jeśli masz ekran blokady z hasłem, *NIE* będziesz w stanie odblokować telefonu gdy używasz Podstawowej metody wprowadzania Key Mapper, ponieważ nie ma ta klawiatura interfejsu. Możesz nadać uprawnienie WRITE_SECURE_SETTINGS do Key Mapper, aby można było wyświetlać powiadomienie o przełączaniu się z i do tej klawiatury. Kliknij znak zapytania u dołu ekranu, aby wyświetlić przewodnik na ten temat.</string>
+    <string name="dialog_message_password_screen_lock_warning">Jeśli masz wybrany inny ekran blokady, taki jak PIN lub Wzór, nie musisz się martwić. Ale jeśli masz ekran blokady z hasłem, *NIE* będziesz w stanie odblokować telefonu gdy używasz Podstawowej metody wprowadzania Key Mapper, ponieważ nie ma ta klawiatura interfejsu. Możesz udzielić uprawnienie WRITE_SECURE_SETTINGS do Key Mapper, aby można było wyświetlać powiadomienie o przełączaniu się z i do tej klawiatury. Kliknij znak zapytania u dołu ekranu, aby wyświetlić przewodnik na ten temat.</string>
     <string name="dialog_message_select_compatible_ime">Wybierz metodę wprowadzania dla działań, które tego wymagają. Można to zmienić później za pomocą opcji \"Wybierz klawiaturę do działań\" w dolnym menu ekranu głównego.</string>
     <string name="dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout">Musisz wybrać układ klawiatury \"Caps Lock otwiera Aparat\" dla swojej klawiatury, w przeciwnym razie klawisz Caps Lock będzie nadal włączał Caps Lock. Możesz znaleźć tę opcję w ustawieniach urządzenia -&gt; Języki i metody wprowadzanie -&gt; Klawiatura fizyczna -&gt; Wybierz swoją klawiaturę -&gt; Skonfiguruj układy klawiatury. Spowoduje to zmianę przypisania klawisza Caps Lock do KEYCODE_CAMERA, dzięki czemu Key Mapper będzie mógł go poprawnie zmienić.\n\nPo wykonaniu tej czynności musisz usunąć klawisz Caps Lock z działania i ponownie nacisnąć klawisz Caps Lock. Jeśli wykonałeś(-aś) wszystkie kroki, powinien on nazywać się \"Aparat\" zamiast \"Caps Lock\".</string>
     <string name="dialog_message_cant_record_trigger"><b>Uruchom ponownie</b> urządzenie, jeśli przycisk \"Nagraj wyzwalacz\" się odlicza, a przyciski, które naciskasz, nie są wyświetlane. Jeśli przyciski nadal nie są wyświetlane po ponownym uruchomieniu, Key Mapper nie obsługuje tych przycisków. Nie ma na to rozwiązania.</string>
@@ -340,6 +342,12 @@
     <string name="dialog_message_install_gui_keyboard">Jest to wysoce zalecane! To jest rzeczywista klawiatura, której możesz używać z Key Mapperem. Ta wbudowana w Key Mapper (Podstawowa metoda wprowadzania) nie ma klawiatury ekranowej. Wybierz, skąd chcesz ją zainstalować.</string>
     <string name="dialog_title_install_leanback_keyboard">Zainstaluj klawiaturę Key Mapper Leanback</string>
     <string name="dialog_message_install_leanback_keyboard">Jest to wysoce zalecane! To jest rzeczywista klawiatura dla Android TV, której możesz używać z Key Mapperem. Ta wbudowana w Key Mapper (Podstawowa metoda wprowadzania) nie ma klawiatury ekranowej. Wybierz, skąd chcesz ją zainstalować.</string>
+    <string name="dialog_title_choose_download_gui_keyboard">Zainstaluj GUI klawiaturę Key Mapper</string>
+    <string name="dialog_message_choose_download_gui_keyboard">Wybierz, skąd chcesz ją pobrać.</string>
+    <string name="dialog_title_choose_download_leanback_keyboard">Zainstaluj klawiaturę Key Mapper Leanback</string>
+    <string name="dialog_message_choose_download_leanback_keyboard">Wybierz, skąd chcesz ją pobrać.</string>
+    <string name="dialog_title_install_shizuku_or_gui_keyboard">To działanie wymaga dodatkowej konfiguracji</string>
+    <string name="dialog_title_install_shizuku_or_leanback_keyboard">To działanie wymaga dodatkowej konfiguracji</string>
     <string name="dialog_title_disable_battery_optimisation">Wyłącz optymalizację baterii</string>
     <string name="dialog_message_disable_battery_optimisation"><b>MUSISZ</b> to <b>wszystko</b> przeczytać, w przeciwnym razie otrzymasz <b>frustrację</b> w przyszłości!\n\nKliknięcie \"Napraw częściowo\" <b>może</b> uniemożliwić Androidowi zatrzymanie aplikacji, gdy działa ona w tle.\n\n<b>To NIE WYSTARCZY</b>. Skórka producenta, taka jak MIUI lub Samsung Experience, może mieć inne funkcje zatrzymywania aplikacji, więc MUSISZ je wyłączyć dla Key Mapper, postępując zgodnie z przewodnikiem online na dontkillmyapp.com.</string>
     <string name="dialog_title_send_feedback">Prześlij opinię</string>
@@ -348,6 +356,7 @@
     <string name="dialog_message_restart_accessibility_service_to_record_trigger">Uruchom ponownie usługę ułatwień dostępu, <i>wyłączając</i> ją i <i>włączając</i> ponownie, aby móc nagrać wyzwalacz.</string>
     <string name="dialog_message_enable_accessibility_service_to_test_action">Włącz usługę ułatwień dostępu, aby przetestować czynność.</string>
     <string name="dialog_message_restart_accessibility_service_to_test_action">Uruchom ponownie usługę ułatwień dostępu, <i>wyłączając</i> ją i <i>włączając</i> ponownie, aby móc przetestować czynność.</string>
+    <string name="dialog_message_restart_accessibility_service">Uruchom ponownie usługę ułatwień dostępu, <i>wyłączając</i> ją i <i>włączając</i> ponownie.</string>
     <string name="dialog_message_screen_pinning_warning">Użycie tego wyzwalacza może spowodować czarny ekran po odblokowaniu urządzenia po użyciu fukcji przypinania ekranu w ustawieniach urządzenia. Można to naprawić przez ponowne uruchomienie urządzenia. Nie dzieje się tak na wszystkich urządzeniach, więc uważaj i wyłącz to ustawienie, jeśli tak się stanie!</string>
     <string name="dialog_title_reset_fingerprint_maps">Zresetuj mapy gestów czytnika linii papilarnych</string>
     <string name="dialog_message_reset_fingerprint_maps">Czy na pewno chcesz zresetować mapy gestów czytnika linii papilarnych?</string>
@@ -364,7 +373,7 @@
     <string name="pos_grant_write_secure_settings_guide">Przewodnik</string>
     <string name="pos_grant_report_issues_guide">Przewodnik</string>
     <string name="pos_enable_root_features">Włącz funkcje roota</string>
-    <string name="pos_grant">Przyznaj</string>
+    <string name="pos_grant">Udziel</string>
     <string name="pos_join">Dołącz</string>
     <string name="pos_change_location">Zmień</string>
     <string name="pos_turn_off_stock_battery_optimisation">Napraw częściowo</string>
@@ -385,6 +394,10 @@
     <string name="neutral_report_bug">Zgłoś błąd</string>
     <string name="dialog_button_restart_accessibility_service">Uruchom ponownie</string>
     <string name="dialog_button_open_guide_to_fix_optimisation">Przejdź do przewodnika</string>
+    <string name="dialog_button_install_shizuku">Shizuku</string>
+    <string name="dialog_button_install_gui_keyboard">GUI klawiatura Key Mapper</string>
+    <string name="dialog_button_install_leanback_keyboard">Klawiatura Key Mapper Leanback</string>
+    <string name="dialog_button_install_nothing">Nic nie rób</string>
     <string name="snackbar_cancel">Anuluj</string>
     <string name="snackbar_fix">Napraw</string>
     <!-- Dialog stuff -->
@@ -477,8 +490,13 @@
     <string name="title_pref_report_issue">Zgłoś problem</string>
     <string name="title_pref_delete_sound_files">Usuń pliki dźwiękowe</string>
     <string name="summary_pref_delete_sound_files">Usuń pliki dźwiękowe, które mogą być używane do czynności z dźwiękiem.</string>
-    <string name="title_pref_grant_write_secure_settings_not_granted">Przyznaj uprawnienie</string>
-    <string name="title_pref_grant_write_secure_settings_granted">Uprawnienia przyznane</string>
+    <string name="title_pref_grant_write_secure_settings_not_granted">Udziel uprawnienie</string>
+    <string name="title_pref_grant_write_secure_settings_granted">Uprawnienie zostało udzielone</string>
+    <string name="title_pref_grant_shizuku_install_app_not_installed">1. Aplikacja Shizuku nie jest zainstalowana! Kliknij, aby pobrać aplikację Shizuku.</string>
+    <string name="title_pref_grant_shizuku_install_app_installed">1. Aplikacja Shizuku jest zainstalowana.</string>
+    <string name="title_pref_grant_shizuku_not_started">2. Aplikacja Shizuku nie jest uruchomiona! Kliknij, aby otworzyć aplikację Shizuku, a następnie przeczytaj znajdujące się tam instrukcje, jak ją uruchomić.</string>
+    <string name="title_pref_grant_shizuku_started">2. Aplikacja Shizuku jest uruchomiona.</string>
+    <string name="title_pref_grant_shizuku_not_granted">3. Key Mapper nie ma uprawnień do używania Shizuku. Kliknij, aby udzielić to uprawnienie.</string>
     <string name="title_pref_default_options">Domyślne opcje map klawiszy</string>
     <string name="summary_pref_default_options">Zmień domyślne opcje mapowania klawiszy.</string>
     <!--Preference titles and summaries-->
@@ -490,7 +508,7 @@
     <string name="title_pref_category_root">Ustawienia roota</string>
     <string name="summary_pref_category_root">Te opcje będą działać tylko na zrootowanych urządzeniach! Jeśli nie wiesz, czym jest root lub czy Twoje urządzenie jest zrootowane, nie zostawiaj złej recenzji, że te opcje nie działają. :)</string>
     <string name="title_pref_category_write_secure_settings">Wymóg uprawnienia WRITE_SECURE_SETTINGS</string>
-    <string name="summary_pref_category_write_secure_settings">Te opcje są włączone tylko wtedy, gdy Key Mapper ma uprawnienie WRITE_SECURE_SETTINGS. Kliknij poniższy przycisk, aby dowiedzieć się, jak przyznać to uprawnienie.</string>
+    <string name="summary_pref_category_write_secure_settings">Te opcje są włączone tylko wtedy, gdy Key Mapper ma uprawnienie WRITE_SECURE_SETTINGS. Kliknij poniższy przycisk, aby dowiedzieć się, jak udzielić to uprawnienie.</string>
     <string name="title_pref_category_write_secure_settings_view_settings">Przejdź do ustawień, które wymagają tego uprawnienia.</string>
     <string name="title_pref_category_log">Logowanie</string>
     <string name="summary_pref_category_log">Może to zwiększyć opóźnienie map klawiszy, więc włączaj to tylko wtedy, gdy próbujesz debugować aplikację lub programista poprosi Cię o to.</string>
@@ -636,7 +654,7 @@
     <string name="error_app_isnt_installed_brief">Aplikacja nie jest zainstalowana!</string>
     <string name="error_app_is_disabled">Aplikacja jest wyłączona!</string>
     <string name="error_app_is_disabled_package_name">Aplikacja %s jest wyłączona!</string>
-    <string name="error_action_requires_write_settings_permission">Musisz przyznać aplikacji Key Mapper uprawnienia do modyfikowania ustawień systemowych.</string>
+    <string name="error_action_requires_write_settings_permission">Musisz udzielić aplikacji Key Mapper uprawnienia do modyfikowania ustawień systemowych.</string>
     <string name="error_requires_root">To wymaga uprawnień roota!</string>
     <string name="error_action_requires_camera_permission">Ta czynność wymaga uprawnień do aparatu!</string>
     <string name="error_sdk_version_too_low">To wymaga Androida %s</string>
@@ -652,7 +670,7 @@
     <string name="error_cant_find_write_settings_page">Nie można znaleźć strony uprawnienia WRITE_SETTINGS!</string>
     <string name="error_opening_app_shortcut">Błąd podczas otwierania tego skrótu aplikacji</string>
     <string name="error_no_app_found_to_send_email">Nie ma zainstalowanej aplikacji, która może wysyłać wiadomości e-mail!</string>
-    <string name="dnd_access_granted">Uprawnienie na zmianę trybu Nie przeszkadzać zostało przyznane!</string>
+    <string name="dnd_access_granted">Uprawnienie na zmianę trybu Nie przeszkadzać zostało udzielone!</string>
     <string name="error_cant_find_dnd_access_settings">Nie można znaleźć uprawnień dostępu do trybu Nie przeszkadzać!</string>
     <string name="error_need_write_secure_settings_permission">Key Mapper wymaga uprawnienia WRITE_SECURE_SETTINGS.</string>
     <string name="error_no_app_found_to_open_url">Nie znaleziono aplikacji do otwarcia tego adresu URL</string>
@@ -673,7 +691,7 @@
     <string name="error_accessibility_service_crashed">Należy ponownie uruchomić usługę ułatwień dostępu!</string>
     <string name="error_launcher_shortcuts_not_supported">Twój launcher nie obsługuje skrótów.</string>
     <string name="warning_need_write_secure_settings_permission">Niektóre funkcje wymagają uprawnienia WRITE_SECURE_SETTINGS.</string>
-    <string name="fixed_need_write_secure_settings_permission">Uprawnienie WRITE_SECURE_SETTINGS zostało przyznane.</string>
+    <string name="fixed_need_write_secure_settings_permission">Uprawnienie WRITE_SECURE_SETTINGS zostało udzielone.</string>
     <string name="error_ime_service_disabled_status_layout">Wybrana metoda wprowadzania musi być włączona, aby działały \"Zdarzenie klawiszy\", \"Klawisz\", \"Tekst\" i niektóre inne czynności.</string>
     <string name="error_key_mapper_ime_service_disabled">Klawiatura Key Mapper musi być włączona!</string>
     <string name="error_ime_service_enabled">Klawiatura Key Mapper jest włączona!</string>
