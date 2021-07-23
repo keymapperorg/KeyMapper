@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="slogan">Uvolněte své klíče!</string>
     <string name="no_action_chosen">Žádná akce nebyla vybrána</string>
     <string name="accessibility_service_description">Key Mapper musí používat službu usnadnění přístupu, aby mohl poslouchat stisknutí tlačítek / kláves a provádět akce, které jste vybrali. Služba přístupnosti poslouchá pouze klíčové události a zjišťuje, ve které aplikaci se nacházíte. Můžete se podívat na zdrojový kód, který je propojen na obrazovce O aplikaci, abyste to ověřili.</string>
     <string name="selection_count">%d vybráno</string>
@@ -20,6 +21,7 @@
     <string name="no_actions">Žádné akce</string>
     <string name="no_trigger">Žádný spouštěč</string>
     <string name="unknown_keycode">Neznámý kód klíče: %s</string>
+    <string name="unknown_device_name">Neznámý název zařízení</string>
     <string name="on">Zapnuto</string>
     <string name="off">Vypnuto</string>
     <string name="follow_system">Sledovat systém</string>
@@ -28,23 +30,37 @@
     <string name="trigger_device_name_not_found">Název tohoto zařízení není znám</string>
     <string name="slider_default">Výchozí</string>
     <string name="button_enable_accessibility_service">Povolit službu usnadnění přístupu</string>
+    <string name="button_restart_accessibility_service">Restartovat službu usnadnění přístupu</string>
+    <string name="share_backup">Sdílet</string>
+    <string name="stop_repeating_dot_dot_dot">Přestat se opakovat, když…</string>
+    <string name="stop_repeating_when_trigger_released">Spouštěč je uvolněn</string>
+    <string name="stop_repeating_trigger_pressed_again">Spouštěč je znovu stisknut</string>
+    <string name="stop_repeating_limit_reached">Dosažen limit</string>
+    <string name="stop_repeating_when_swiped_again">Přejeďte znovu</string>
+    <string name="stop_holding_down_when_trigger_released">Spouštěč je uvolněn</string>
+    <string name="stop_holding_down_trigger_pressed_again">Spouštěč je znovu stisknut</string>
     <string name="show_hidden_apps">Zobrazit skryté aplikace</string>
     <string name="modifiers">Modifikátory</string>
     <string name="toggle">Přepnout</string>
     <string name="tap_coordinate_screenshot_message">DŮLEŽITÉ!!! Tyto souřadnice jsou správné pouze tehdy, když je obrazovka ve stejné orientaci jako snímek obrazovky! Tato akce zruší všechna gesta, která na obrazovce děláte.\n\nPokud potřebujete pomoci najít souřadnice bodu na obrazovce, pořídí snímek obrazovky a klepněte na snímek obrazovky, kde chcete tuto akci stisknout.</string>
     <string name="dont_know_device_name">Neznám jméno zařízení!</string>
     <string name="tap_actions_to_fix">Klepnutím na akce opravíte!</string>
+    <string name="tap_constraints_to_fix">Klepnutím na vazby opravíte!</string>
     <string name="shortcut_label_action">Provést akce</string>
     <string name="hold_down_until_trigger_is_dot_dot_dot">Podržte dokud není spouštěč…</string>
     <string name="from_no_device">Žádné zařízení</string>
     <string name="intent_extras_recycler_view_placeholder">&lt;unk&gt; \\_(&lt;unk&gt;)_/ &lt;unk&gt;\n\nŽádné extrakce!</string>
     <string name="content_description_fab_new_keymap">Vytvořit novou mapu klíče</string>
+    <string name="clip_key_mapper_log">Protokol Mapperu klíče</string>
+    <string name="sharesheet_title">Poslat do</string>
     <string name="whats_new">Co je nového</string>
     <string name="caption_action_type_key">Klikněte na klávesu na zařízení, kterou chcete vložit.
             \n\nDŮLEŽITÉ!
             Přidání tohoto klíče jako akce bude fungovat pouze v případě, že používáte klávesovou mapu kompatibilní s klávesou.</string>
     <string name="caption_action_type_keycode">DŮLEŽITÉ!
             Vložením tohoto klíče jako akce bude fungovat pouze v případě, že používáte kompatibilní klávesnici klávesové mapy.</string>
+    <string name="caption_action_type_sound">Zvukový soubor bude zkopírován do složky soukromých dat klíče Mapper, což znamená, že vaše akce budou stále fungovat, i když je soubor přesunut nebo odstraněn. Bude také zálohován s vašimi klíčovými mapami ve složce zip.
+    Uložené zvukové soubory můžete odstranit v nastavení.</string>
     <string name="caption_action_type_text">Zadejte text, který chcete vložit, když provedete tuto akci.</string>
     <string name="caption_action_type_phone_call">Zadejte telefonní číslo.</string>
     <string name="caption_action_type_url">Zadejte URL, kterou chcete otevřít. Není vyžadováno http://, https://, https://// nebo www.</string>
@@ -53,19 +69,39 @@
     <string name="switch_enabled">Povoleno</string>
     <string name="disabled">Zakázáno</string>
     <string name="reset">Reset</string>
+    <string name="enable_device_admin_message">Jakmile povolíte administrátora zařízení, musíte jej DEAKTIVOVAT pokud chcete odinstalovat Mapper.</string>
+    <string name="constraints_recyclerview_placeholder">Přidat vazbu!</string>
     <string name="action_title_wait">Počkejte %sms</string>
+    <string name="email_subject">Klíčová zpráva o chybě Mapperu</string>
+    <string name="email_default_message">Popište prosím problém, který máte...</string>
     <string name="action_title_intent_start_activity">Počáteční aktivita: %s</string>
     <string name="action_title_intent_start_service">Spustit službu: %s</string>
     <string name="action_title_intent_send_broadcast">Odeslat všesměrové vysílání: %s</string>
     <string name="clipboard_label_keymap_uid">Klíčová mapa UUID</string>
     <string name="check_box_key_event_option_use_shell">Použít shell (pouze ROOT)</string>
+    <string name="trigger_error_dnd_access_denied">Klávesová mapa vyžaduje oprávnění ke změně režimu Nerušit, pokud chcete, aby tlačítka fungovala dle očekávání v režimu Nerušit!</string>
+    <string name="trigger_error_dnd_access_denied_short">Tento spouštěč nebude fungovat podle očekávání v režimu Nerušit!</string>
+    <string name="trigger_error_screen_off_root_permission_denied">Možnost spustit, když je obrazovka vypnutá, vyžaduje oprávnění root!</string>
+    <string name="trigger_error_screen_off_root_permission_denied_short">Možnost spuštění při vypnuté obrazovce nebude fungovat!</string>
+    <string name="home_error_is_battery_optimised">Vaše mapování přestane fungovat náhodně!</string>
+    <string name="home_error_key_maps_paused">Vaše mapování je pozastaveno!</string>
+    <string name="home_error_key_maps_paused_button">Unpause</string>
+    <string name="home_error_accessibility_service_is_disabled">Aby mapování fungovalo, je třeba zapnout službu přístupu!</string>
+    <string name="home_error_accessibility_service_is_crashed">Tvůj telefon zabil klávesovou mapper, když byl na pozadí, nebo se zhroutil!</string>
+    <string name="home_success_accessibility_service_is_enabled">Služba přístupnosti je povolena! Vaše mapování by mělo fungovat.</string>
+    <string name="home_error_logging_enabled">Extra logování je zapnuto! Vypněte tuto možnost, pokud se nesnažíte vyřešit problém.</string>
+    <string name="home_error_logging_enabled_button">Vypnout</string>
+    <string name="title_about">O aplikaci</string>
     <!--  Action descriptions  -->
     <string name="description_open_app">Otevřít %s</string>
     <string name="description_key">Stiskněte klávesu %s</string>
     <string name="description_text_block">Zadejte %s</string>
     <string name="description_keyevent">Vstup %s%s</string>
+    <string name="description_keyevent_through_shell">Vstup %s přes shell</string>
     <string name="description_keyevent_from_device">Vstup %s%s z %s</string>
     <string name="description_url">Otevřít %s</string>
+    <string name="description_tap_coordinate_default">Klepněte na souřadnice %d, %d</string>
+    <string name="description_tap_coordinate_with_description">Klepněte na souřadnice %d, %d (%s)</string>
     <string name="description_phone_call">Volání %s</string>
     <!--  Action descriptions  -->
     <!--  Headers  -->
