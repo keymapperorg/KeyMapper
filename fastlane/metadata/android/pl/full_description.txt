@@ -35,8 +35,8 @@ Jakie funkcje można przypisać do przycisków?
  * Zwiń pasek stanu
  * Przełącz/włącz/wyłącz Wi-Fi (tylko na zrootowanych urządzeniach z Androidem 10+)
  * Przełącz/włącz/wyłącz Bluetooth
- * Przełącz/włącz/wyłącz komórkową transmisję danych (tylko na zrootowanych urządzeniach)
- * Przełącz między odtwarzaniem a pauzą / tylko odtwórz / tylko spauzuj
+ * Przełącz/włącz/wyłącz mobilną transmisję danych (tylko na zrootowanych urządzeniach)
+ * Przełącz między odtwarzaniem a pauzą / tylko odtwórz / tylko spauzuj multimedia
  * Przewiń do przodu/do tyłu
  * Następny/poprzedni utwór
  * Zwiększ/zmniejsz głośność
