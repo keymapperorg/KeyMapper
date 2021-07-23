@@ -678,7 +678,7 @@
     <string name="title_pref_grant_write_secure_settings_not_granted">Grant permission</string>
     <string name="title_pref_grant_write_secure_settings_granted">Permission granted</string>
 
-    <string name="title_pref_grant_shizuku_install_app_not_installed">1. Shizuku is not installed! Tap to download the Shizku app.</string>
+    <string name="title_pref_grant_shizuku_install_app_not_installed">1. Shizuku is not installed! Tap to download the Shizuku app.</string>
     <string name="title_pref_grant_shizuku_install_app_installed">1. Shizuku is installed.</string>
 
     <string name="title_pref_grant_shizuku_not_started">2. Shizuku is not started! Tap to open the Shizuku app and then read their instructions that explain how to start it.</string>
