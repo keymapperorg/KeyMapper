@@ -506,7 +506,6 @@
     <string name="summary_pref_delete_sound_files">Odstranit zvukové soubory, které mohou být použity pro akci zvuku.</string>
     <string name="title_pref_grant_write_secure_settings_not_granted">Udělit oprávnění</string>
     <string name="title_pref_grant_write_secure_settings_granted">Oprávnění uděleno</string>
-    <string name="title_pref_grant_shizuku_install_app_not_installed">1. Shizuku není nainstalován! Klepnutím stáhnete aplikaci Shizku.</string>
     <string name="title_pref_grant_shizuku_install_app_installed">1. Šizuku je nainstalován.</string>
     <string name="title_pref_grant_shizuku_not_started">2. Šizuku není spuštěno! Klepnutím otevřete aplikaci Shizuku a pak si přečtěte jejich pokyny, které vysvětlují, jak ji spustit.</string>
     <!--Preference titles and summaries-->
