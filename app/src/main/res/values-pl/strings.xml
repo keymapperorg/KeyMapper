@@ -506,7 +506,6 @@
     <string name="summary_pref_delete_sound_files">Usuń pliki dźwiękowe, które mogą być używane do czynności z dźwiękiem.</string>
     <string name="title_pref_grant_write_secure_settings_not_granted">Udziel uprawnienie</string>
     <string name="title_pref_grant_write_secure_settings_granted">Uprawnienie zostało udzielone</string>
-    <string name="title_pref_grant_shizuku_install_app_not_installed">1. Aplikacja Shizuku nie jest zainstalowana! Kliknij, aby pobrać aplikację Shizuku.</string>
     <string name="title_pref_grant_shizuku_install_app_installed">1. Aplikacja Shizuku jest zainstalowana.</string>
     <string name="title_pref_grant_shizuku_not_started">2. Aplikacja Shizuku nie jest uruchomiona! Kliknij, aby otworzyć aplikację Shizuku, a następnie przeczytaj znajdujące się tam instrukcje, jak ją uruchomić.</string>
     <string name="title_pref_grant_shizuku_started">2. Aplikacja Shizuku jest uruchomiona.</string>
