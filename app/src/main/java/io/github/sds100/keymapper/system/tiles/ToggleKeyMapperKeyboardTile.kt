@@ -32,22 +32,24 @@ class ToggleKeyMapperKeyboardTile : TileService(), LifecycleOwner {
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
 
         launchRepeatOnLifecycle(Lifecycle.State.STARTED) {
-            qsTile.icon = Icon.createWithResource(
-                this@ToggleKeyMapperKeyboardTile,
-                R.drawable.ic_tile_keyboard
-            )
-            qsTile.label = str(R.string.tile_toggle_keymapper_keyboard)
-            qsTile.contentDescription = str(R.string.tile_toggle_keymapper_keyboard)
-            qsTile.state = Tile.STATE_INACTIVE
+            qsTile?.let { tile ->
+                tile.icon = Icon.createWithResource(
+                    this@ToggleKeyMapperKeyboardTile,
+                    R.drawable.ic_tile_keyboard
+                )
+                tile.label = str(R.string.tile_toggle_keymapper_keyboard)
+                tile.contentDescription = str(R.string.tile_toggle_keymapper_keyboard)
+                tile.state = Tile.STATE_INACTIVE
 
-            qsTile?.updateTile()
+                tile.updateTile()
+            }
         }
     }
 
     override fun onStartListening() {
+        super.onStartListening()
 
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
-        super.onStartListening()
     }
 
     override fun onStopListening() {
