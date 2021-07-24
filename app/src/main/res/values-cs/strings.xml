@@ -6,12 +6,12 @@
     Služba přístupnosti poslouchá pouze klíčové události a detekuje aplikaci, ve které se nacházíte. Můžete se podívat na zdrojový kód, který je propojen na obrazovce O zobrazení, a ověřit to.</string>
     <string name="selection_count">%d vybrán</string>
     <string name="enable">Povolit</string>
-    <string name="open">otevřít</string>
-    <string name="recyclerview_placeholder">&lt;unk&gt; \\_(&lt;unk&gt; )_/ &lt;unk&gt;\n\nNic tady není!</string>
-    <string name="triggers_recyclerview_placeholder">Nahrajte trigger!</string>
+    <string name="open">Otevřít</string>
+    <string name="recyclerview_placeholder">¯\\_(ツ)_/¯\n\nTady nic není!</string>
+    <string name="triggers_recyclerview_placeholder">Nahrajte spoušť!</string>
     <string name="actions_recyclerview_placeholder">Přidat akci!</string>
-    <string name="keymap_recyclerview_placeholder">&lt;unk&gt; \\_(&lt;unk&gt; )_/ &lt;unk&gt;\n\nVytvořte klíčovou mapu!</string>
-    <string name="action_shortcut_list_recyclerview_placeholder">&lt;unk&gt; \\_(&lt;unk&gt; )_/ &lt;unk&gt;\n\nNevybrali jste žádné akce pro tohoto zástupce!</string>
+    <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nVytvořte klíčovou mapu!</string>
+    <string name="action_shortcut_list_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nNevybrali jste žádné akce pro tohoto zástupce!</string>
     <string name="no_key_maps">Nevytvořili jste žádnou klíčovou mapu!</string>
     <string name="everything_looks_good">Všechno vypadá dobře!</string>
     <string name="warning_the_app_will_work">Aplikace bude fungovat, ale některé věci budou muset být opraveny v závislosti na tom, co děláte.</string>
