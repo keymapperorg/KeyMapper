@@ -1,12 +1,15 @@
 package io.github.sds100.keymapper.util.ui
 
 import android.graphics.drawable.Drawable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 
 /**
  * Created by sds100 on 26/04/2021.
  */
 class FakeResourceProvider : ResourceProvider {
     var stringResourceMap: Map<Int, String> = emptyMap()
+    override val onThemeChange: Flow<Unit> = MutableSharedFlow()
 
     override fun getString(resId: Int, args: Array<Any>): String {
         return stringResourceMap[resId] ?: ""

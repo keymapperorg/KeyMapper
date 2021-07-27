@@ -69,7 +69,7 @@ class KeyMapControllerTest {
         private const val HOLD_DOWN_DURATION = 1000L
 
         private val TEST_ACTION: KeyMapAction = KeyMapAction(
-            data = FlashlightAction.Toggle()
+            data = FlashlightAction.Toggle(CameraLens.BACK)
         )
 
         private val TEST_ACTION_2: KeyMapAction = KeyMapAction(
