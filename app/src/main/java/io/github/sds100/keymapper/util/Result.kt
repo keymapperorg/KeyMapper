@@ -18,46 +18,33 @@ sealed class Result<out T>
 data class Success<T>(val value: T) : Result<T>()
 
 sealed class Error : Result<Nothing>() {
-    object FileAccessDenied : Error()
     data class Exception(val exception: java.lang.Exception) : Error()
-    object EmptyJson : Error()
     data class SystemFeatureNotSupported(val feature: String) : Error()
     data class ExtraNotFound(val extraId: String) : Error()
     data class SdkVersionTooLow(val minSdk: Int) : Error()
     data class SdkVersionTooHigh(val maxSdk: Int) : Error()
-    data class FeatureUnavailable(val feature: String) : Error()
-    object KeyMapperImeNotFound : Error()
     data class InputMethodNotFound(val id: String) : Error()
-    object NoEnabledInputMethods : Error()
     object NoVoiceAssistant : Error()
     object NoDeviceAssistant : Error()
     object NoCameraApp : Error()
     object NoSettingsApp : Error()
     object FrontFlashNotFound : Error()
     object BackFlashNotFound : Error()
-   data class ImeDisabled(val ime: ImeInfo) : Error()
-    object DownloadFailed : Error()
-    object FileNotCached : Error()
-    object SSLHandshakeError : Error()
+    data class ImeDisabled(val ime: ImeInfo) : Error()
     data class DeviceNotFound(val descriptor: String) : Error()
-    data class FailedToSplitString(val string: String) : Error()
     object InvalidNumber : Error()
     data class NumberTooBig(val max: Int) : Error()
     data class NumberTooSmall(val min: Int) : Error()
-    object CantBeEmpty : Error()
+    object EmptyText : Error()
     object NoIncompatibleKeyboardsInstalled : Error()
     object NoMediaSessions : Error()
-    data class UnknownFileLocation(val path: String) : Error()
     object BackupVersionTooNew : Error()
-    data class CorruptJsonFile(val reason: String) : Error()
-    object CorruptActionError : Error()
-    object Duplicate : Error()
     object LauncherShortcutsNotSupported : Error()
 
     data class AppNotFound(val packageName: String) : Error()
     data class AppDisabled(val packageName: String) : Error()
     object AppShortcutCantBeOpened : Error()
-    object InsufficientPermissionsToOpenAppShortcut: Error()
+    object InsufficientPermissionsToOpenAppShortcut : Error()
     object NoCompatibleImeEnabled : Error()
     object NoCompatibleImeChosen : Error()
 
@@ -66,8 +53,6 @@ sealed class Error : Result<Nothing>() {
 
     object CantShowImePickerInBackground : Error()
     object CantFindImeSettings : Error()
-
-    object NoAppToPhoneCall: Error()
 
     data class PermissionDenied(val permission: Permission) : Error() {
         companion object {
@@ -87,6 +72,8 @@ sealed class Error : Result<Nothing>() {
                     Permission.CALL_PHONE -> R.string.error_denied_call_phone_permission
                     Permission.ROOT -> R.string.error_requires_root
                     Permission.IGNORE_BATTERY_OPTIMISATION -> R.string.error_battery_optimisation_enabled
+                    Permission.SHIZUKU -> R.string.error_shizuku_permission_denied
+                    Permission.ACCESS_FINE_LOCATION -> R.string.error_access_fine_location_permission_denied
                 }
 
                 return resourceProvider.getString(resId)
@@ -98,15 +85,34 @@ sealed class Error : Result<Nothing>() {
     data class FailedToPerformAccessibilityGlobalAction(val action: Int) : Error()
     object FailedToDispatchGesture : Error()
 
-    object CameraInUse: Error()
-    object CameraDisconnected: Error()
-    object CameraDisabled: Error()
-    object MaxCamerasInUse: Error()
-    object CameraError: Error()
+    object CameraInUse : Error()
+    object CameraDisconnected : Error()
+    object CameraDisabled : Error()
+    object MaxCamerasInUse : Error()
+    object CameraError : Error()
 
-    data class FailedToModifySystemSetting(val setting: String):Error()
-    object FailedToChangeIme:Error()
-    object NoAppToOpenUrl: Error()
+    data class FailedToModifySystemSetting(val setting: String) : Error()
+    object FailedToChangeIme : Error()
+    object NoAppToOpenUrl : Error()
+    object NoAppToPhoneCall : Error()
+
+    data class NotAFile(val uri: String) : Error()
+    data class NotADirectory(val uri: String) : Error()
+    object StoragePermissionDenied : Error()
+    data class CannotCreateFileInTarget(val uri: String) : Error()
+    data class SourceFileNotFound(val uri: String) : Error()
+    data class TargetFileNotFound(val uri: String) : Error()
+    data class TargetDirectoryNotFound(val uri: String) : Error()
+    object UnknownIOError : Error()
+    object FileOperationCancelled : Error()
+    object TargetDirectoryMatchesSourceDirectory : Error()
+    data class NoSpaceLeftOnTarget(val uri: String) : Error()
+
+    object EmptyJson : Error()
+    object CantFindSoundFile : Error()
+    data class CorruptJsonFile(val reason: String) : Error()
+
+    object ShizukuNotStarted : Error()
 }
 
 inline fun <T> Result<T>.onSuccess(f: (T) -> Unit): Result<T> {
@@ -137,7 +143,7 @@ suspend infix fun <T, U> Result<T>.suspendThen(f: suspend (T) -> Result<U>) =
         is Error -> this
     }
 
-infix fun <T> Result<T>.otherwise(f: (error: Error) -> Result<T>) =
+inline infix fun <T> Result<T>.otherwise(f: (error: Error) -> Result<T>) =
     when (this) {
         is Success -> this
         is Error -> f(this)
@@ -169,16 +175,6 @@ fun <T, U> Result<T>.handle(onSuccess: (value: T) -> U, onError: (error: Error) 
     return when (this) {
         is Success -> onSuccess(value)
         is Error -> onError(this)
-    }
-}
-
-suspend fun <T, U> Result<T>.handleAsync(
-    onSuccess: suspend (value: T) -> U,
-    onFailure: suspend (error: Error) -> U
-): U {
-    return when (this) {
-        is Success -> onSuccess(value)
-        is Error -> onFailure(this)
     }
 }
 

@@ -1,9 +1,9 @@
 package io.github.sds100.keymapper.system.accessibility
 
 import android.accessibilityservice.AccessibilityService
-import android.accessibilityservice.AccessibilityServiceInfo
 import android.accessibilityservice.FingerprintGestureController
 import android.accessibilityservice.GestureDescription
+import android.app.ActivityManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -12,6 +12,7 @@ import android.graphics.Path
 import android.os.Build
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
+import androidx.core.content.getSystemService
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.core.os.bundleOf
 import androidx.lifecycle.Lifecycle
@@ -26,8 +27,6 @@ import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import splitties.bitflags.minusFlag
-import splitties.bitflags.withFlag
 import timber.log.Timber
 
 /**
@@ -58,11 +57,10 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
 
     override val rootNode: AccessibilityNodeModel?
         get() {
-            val root = rootInActiveWindow ?: return null
-            return root.toModel()
+            return rootInActiveWindow?.toModel()
         }
 
-    override val isGestureDetectionAvailable: Boolean
+    override val isFingerprintGestureDetectionAvailable: Boolean
         get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             fingerprintGestureController.isGestureDetectionAvailable
         } else {
@@ -80,17 +78,37 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
     override val isKeyboardHidden: Flow<Boolean>
         get() = _isKeyboardHidden
 
-    private lateinit var controller: AccessibilityServiceController
+    override var serviceFlags: Int?
+        get() = serviceInfo?.flags
+        set(value) {
+            if (serviceInfo != null && value != null) {
+                serviceInfo = serviceInfo.apply {
+                    flags = value
+                }
+            }
+        }
 
+    override var serviceFeedbackType: Int?
+        get() = serviceInfo?.feedbackType
+        set(value) {
+            if (serviceInfo != null && value != null) {
+                serviceInfo = serviceInfo.apply {
+                    feedbackType = value
+                }
+            }
+        }
+    private lateinit var controller: AccessibilityServiceController
+    
     private var isFocussed = false
 
-    override fun onServiceConnected() {
-        super.onServiceConnected()
-
-        Timber.i("Accessibility service started")
+    override fun onCreate() {
+        super.onCreate()
+        Timber.i("Accessibility service: onCreate")
 
         lifecycleRegistry = LifecycleRegistry(this)
-        lifecycleRegistry.currentState = Lifecycle.State.STARTED
+        lifecycleRegistry.currentState = Lifecycle.State.CREATED
+
+        controller = Inject.accessibilityServiceController(this)
 
         IntentFilter().apply {
             addAction(Api.ACTION_TRIGGER_KEYMAP_BY_UID)
@@ -98,6 +116,21 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
 
             registerReceiver(broadcastReceiver, this)
         }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            softKeyboardController.addOnShowModeChangedListener { _, showMode ->
+                when (showMode) {
+                    SHOW_MODE_AUTO -> _isKeyboardHidden.value = false
+                    SHOW_MODE_HIDDEN -> _isKeyboardHidden.value = true
+                }
+            }
+        }
+    }
+
+    override fun onServiceConnected() {
+        super.onServiceConnected()
+
+        Timber.i("Accessibility service: onServiceConnected")
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
@@ -131,18 +164,12 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
             }
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            softKeyboardController.addOnShowModeChangedListener { _, showMode ->
-                lifecycleScope.launchWhenStarted {
-                    when (showMode) {
-                        SHOW_MODE_AUTO -> _isKeyboardHidden.value = false
-                        SHOW_MODE_HIDDEN -> _isKeyboardHidden.value = true
-                    }
-                }
-            }
-        }
+        controller.onServiceConnected()
+    }
 
-        controller = Inject.accessibilityServiceController(this)
+    override fun onUnbind(intent: Intent?): Boolean {
+        Timber.i("Accessibility service: onUnbind")
+        return super.onUnbind(intent)
     }
 
     override fun onInterrupt() {}
@@ -160,13 +187,17 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
                 .unregisterFingerprintGestureCallback(fingerprintGestureCallback)
         }
 
-        Timber.i("Accessibility service destroyed")
+        Timber.i("Accessibility service: onDestroy")
 
         super.onDestroy()
     }
 
     override fun onLowMemory() {
-        Timber.e("Accessibility service on low memory")
+
+        val memoryInfo = ActivityManager.MemoryInfo()
+        getSystemService<ActivityManager>()?.getMemoryInfo(memoryInfo)
+
+        Timber.i("Accessibility service: onLowMemory, total: ${memoryInfo.totalMem}, available: ${memoryInfo.availMem}, is low memory: ${memoryInfo.lowMemory}, threshold: ${memoryInfo.threshold}")
 
         super.onLowMemory()
     }
@@ -214,29 +245,12 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
             event.device.isExternalCompat,
             event.metaState,
             event.deviceId,
-            event.scanCode
+            event.scanCode,
+            event.eventTime
         )
     }
 
     override fun getLifecycle() = lifecycleRegistry
-
-    override fun requestFingerprintGestureDetection() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Timber.i("Accessibility service: request fingerprint gesture detection")
-            serviceInfo = serviceInfo.apply {
-                flags = flags.withFlag(AccessibilityServiceInfo.FLAG_REQUEST_FINGERPRINT_GESTURES)
-            }
-        }
-    }
-
-    override fun denyFingerprintGestureDetection() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Timber.i("Accessibility service: deny fingerprint gesture detection")
-            serviceInfo = serviceInfo?.apply {
-                flags = flags.minusFlag(AccessibilityServiceInfo.FLAG_REQUEST_FINGERPRINT_GESTURES)
-            }
-        }
-    }
 
     override fun hideKeyboard() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {

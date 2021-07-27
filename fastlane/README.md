@@ -21,16 +21,16 @@ or alternatively using `brew install fastlane`
 fastlane android ci_alpha_apk
 ```
 
+### android testing
+```
+fastlane android testing
+```
+
 ### android beta
 ```
 fastlane android beta
 ```
 Create and deploy beta release
-### android deploy
-```
-fastlane android deploy
-```
-Deploy a new version to the Google Play
 
 ----
 

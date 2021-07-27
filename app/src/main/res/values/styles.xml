@@ -13,6 +13,7 @@
         <item name="normalChipButtonStyle">@style/NormalChipButton</item>
         <item name="errorChipButtonStyle">@style/ErrorChipButton</item>
         <item name="transparentChipButtonStyle">@style/TransparentChipButton</item>
+        <item name="preferenceFragmentCompatStyle">@style/MyPreferenceFragmentStyle</item>
     </style>
 
     <style name="Base.Splash" parent="Theme.MaterialComponents.DayNight" />
@@ -175,6 +176,20 @@
         <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
+    <style name="LinkChipButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="textAllCaps">true</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAppearance">@style/TextAppearance.MaterialComponents.Subtitle1
+        </item>
+        <item name="android:checkable">false</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:enabled">true</item>
+        <item name="iconSize">24dp</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
     <style name="ErrorChipButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
         <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.MaterialComponents.Chip
         </item>
@@ -185,6 +200,10 @@
         <item name="android:textAppearance">@style/TextAppearance.MaterialComponents.Body2</item>
         <item name="iconSize">@dimen/button_chip_icon_size</item>
         <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="MyPreferenceFragmentStyle" parent="@style/PreferenceFragment.Material">
+        <item name="android:layout">@layout/fragment_preferences_with_appbar</item>
     </style>
 
 </resources>

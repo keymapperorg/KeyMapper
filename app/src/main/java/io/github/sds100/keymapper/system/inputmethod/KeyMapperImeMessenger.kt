@@ -4,7 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.SystemClock
 import android.view.KeyEvent
+import io.github.sds100.keymapper.shizuku.InputEventInjector
 import io.github.sds100.keymapper.util.InputEventType
+import timber.log.Timber
 
 /**
  * Created by sds100 on 21/04/2021.
@@ -35,8 +37,14 @@ class KeyMapperImeMessengerImpl(
     private val ctx = context.applicationContext
 
     override fun inputKeyEvent(model: InputKeyModel) {
+        Timber.d("Inject key event with input method ${KeyEvent.keyCodeToString(model.keyCode)}, $model")
 
-        val imePackageName = inputMethodAdapter.chosenIme.value.packageName
+        val imePackageName = inputMethodAdapter.chosenIme.value?.packageName
+
+        if (imePackageName == null) {
+            Timber.e("Can't input key event action because no ime is chosen.")
+            return
+        }
 
         val intentAction = when (model.inputType) {
             InputEventType.DOWN -> KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN
@@ -72,7 +80,14 @@ class KeyMapperImeMessengerImpl(
     }
 
     override fun inputText(text: String) {
-        val imePackageName = inputMethodAdapter.chosenIme.value.packageName
+        Timber.d("Input text through IME $text")
+
+        val imePackageName = inputMethodAdapter.chosenIme.value?.packageName
+
+        if (imePackageName == null) {
+            Timber.e("Can't input text action because no ime is chosen.")
+            return
+        }
 
         Intent(KEY_MAPPER_INPUT_METHOD_ACTION_TEXT).apply {
             setPackage(imePackageName)
@@ -83,7 +98,6 @@ class KeyMapperImeMessengerImpl(
     }
 }
 
-interface KeyMapperImeMessenger {
-    fun inputKeyEvent(model: InputKeyModel)
+interface KeyMapperImeMessenger : InputEventInjector {
     fun inputText(text: String)
 }

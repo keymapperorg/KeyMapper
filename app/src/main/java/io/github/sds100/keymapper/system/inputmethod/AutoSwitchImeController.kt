@@ -46,9 +46,13 @@ class AutoSwitchImeController(
             if (!toggleKeyboardOnToggleKeymaps) return@onEach
 
             if (isPaused) {
-                imeHelper.chooseLastUsedIncompatibleInputMethod(fromForeground = false)
+                imeHelper.chooseLastUsedIncompatibleInputMethod().otherwise {
+                    inputMethodAdapter.showImePicker(fromForeground = false)
+                }
             } else {
-                imeHelper.chooseCompatibleInputMethod(fromForeground = false)
+                imeHelper.chooseCompatibleInputMethod().otherwise {
+                    inputMethodAdapter.showImePicker(fromForeground = false)
+                }
             }
         }.launchIn(coroutineScope)
 
@@ -58,14 +62,18 @@ class AutoSwitchImeController(
             }
 
             if (changeImeOnDeviceConnect && devicesThatToggleKeyboard.contains(device.descriptor)) {
-                val result = imeHelper.chooseCompatibleInputMethod(fromForeground = false)
-
-                result.onSuccess { ime ->
-                    val message = resourceProvider.getString(R.string.toast_chose_keyboard, ime.label)
-                    popupMessageAdapter.showPopupMessage(message)
-                }.onFailure { error ->
-                    popupMessageAdapter.showPopupMessage(error.getFullMessage(resourceProvider))
-                }
+                imeHelper.chooseCompatibleInputMethod()
+                    .onSuccess { ime ->
+                        val message =
+                            resourceProvider.getString(R.string.toast_chose_keyboard, ime.label)
+                        popupMessageAdapter.showPopupMessage(message)
+                    }
+                    .otherwise {
+                        inputMethodAdapter.showImePicker(fromForeground = false)
+                    }
+                    .onFailure { error ->
+                        popupMessageAdapter.showPopupMessage(error.getFullMessage(resourceProvider))
+                    }
             }
         }.launchIn(coroutineScope)
 
@@ -75,14 +83,18 @@ class AutoSwitchImeController(
             }
 
             if (changeImeOnDeviceConnect && devicesThatToggleKeyboard.contains(device.descriptor)) {
-                val result = imeHelper.chooseLastUsedIncompatibleInputMethod(fromForeground = false)
-
-                result.onSuccess { ime ->
-                    val message = resourceProvider.getString(R.string.toast_chose_keyboard, ime.label)
-                    popupMessageAdapter.showPopupMessage(message)
-                }.onFailure { error ->
-                    popupMessageAdapter.showPopupMessage(error.getFullMessage(resourceProvider))
-                }
+                imeHelper.chooseLastUsedIncompatibleInputMethod()
+                    .onSuccess { ime ->
+                        val message =
+                            resourceProvider.getString(R.string.toast_chose_keyboard, ime.label)
+                        popupMessageAdapter.showPopupMessage(message)
+                    }
+                    .otherwise {
+                        inputMethodAdapter.showImePicker(fromForeground = false)
+                    }
+                    .onFailure { error ->
+                        popupMessageAdapter.showPopupMessage(error.getFullMessage(resourceProvider))
+                    }
             }
         }.launchIn(coroutineScope)
     }

@@ -21,6 +21,7 @@ import io.github.sds100.keymapper.util.InputEventType
 import io.github.sds100.keymapper.util.State
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
+import timber.log.Timber
 
 /**
  * Created by sds100 on 17/04/2021.
@@ -89,6 +90,8 @@ class DetectKeyMapsUseCaseImpl(
         keyEventAction: InputEventType,
         scanCode: Int
     ) {
+        Timber.d("Imitate button press ${KeyEvent.keyCodeToString(keyCode)}, key code: $keyCode, device id: $deviceId, meta state: $metaState, scan code: $scanCode")
+
         when (keyCode) {
             KeyEvent.KEYCODE_VOLUME_UP -> volumeAdapter.raiseVolume(showVolumeUi = true)
 

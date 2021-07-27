@@ -23,12 +23,13 @@ import kotlinx.coroutines.flow.combine
 @RequiresApi(Build.VERSION_CODES.N)
 class ToggleMappingsTile : TileService(), LifecycleOwner {
 
-    private val serviceAdapter  by lazy{ServiceLocator.serviceAdapter(this)}
-    private val useCase by lazy{ UseCases.pauseMappings(this)}
+    private val serviceAdapter by lazy { ServiceLocator.accessibilityServiceAdapter(this) }
+    private val useCase by lazy { UseCases.pauseMappings(this) }
 
     private lateinit var lifecycleRegistry: LifecycleRegistry
 
     override fun onCreate() {
+        super.onCreate()
 
         lifecycleRegistry = LifecycleRegistry(this)
 
@@ -67,8 +68,6 @@ class ToggleMappingsTile : TileService(), LifecycleOwner {
                 qsTile.updateTile()
             }.collect()
         }
-
-        super.onCreate()
     }
 
     override fun onStartListening() {

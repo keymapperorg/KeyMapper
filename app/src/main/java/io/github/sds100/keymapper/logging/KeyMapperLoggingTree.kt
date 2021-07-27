@@ -19,7 +19,7 @@ class KeyMapperLoggingTree(
     preferenceRepository: PreferenceRepository,
     private val logRepository: LogRepository
 ) : Timber.Tree() {
-    private val log: StateFlow<Boolean> = preferenceRepository.get(Keys.log)
+    private val logEverything: StateFlow<Boolean> = preferenceRepository.get(Keys.log)
         .map { it ?: false }
         .stateIn(coroutineScope, SharingStarted.Eagerly, false)
 
@@ -39,7 +39,7 @@ class KeyMapperLoggingTree(
 
     override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
         //error and info logs should always log even if the user setting is turned off
-        if (!log.value && priority != Log.ERROR && priority != Log.INFO) {
+        if (!logEverything.value && priority != Log.ERROR && priority != Log.INFO) {
             return
         }
 

@@ -1,21 +1,15 @@
 package io.github.sds100.keymapper.util.ui
 
 import android.app.Dialog
-import android.app.UiModeManager
 import android.content.Context
-import android.content.res.Configuration
 import android.view.LayoutInflater
+import android.view.View
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.getSystemService
 import androidx.lifecycle.*
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
-import io.github.sds100.keymapper.databinding.DialogChooseAppStoreBinding
 import io.github.sds100.keymapper.databinding.DialogEdittextNumberBinding
 import io.github.sds100.keymapper.databinding.DialogEdittextStringBinding
-import io.github.sds100.keymapper.home.ChooseAppStoreModel
-import io.github.sds100.keymapper.system.leanback.LeanbackUtils
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.flow.*
@@ -35,7 +29,7 @@ suspend fun Context.materialAlertDialog(
 
     materialAlertDialog {
         title = model.title
-        message = model.message
+        setMessage(model.message)
 
         setPositiveButton(model.positiveButtonText) { _, _ ->
             continuation.resume(DialogResponse.POSITIVE)
@@ -60,15 +54,56 @@ suspend fun Context.materialAlertDialog(
     }
 }
 
-suspend fun <ID> Context.multiChoiceDialog(
+suspend fun Context.materialAlertDialogCustomView(
     lifecycleOwner: LifecycleOwner,
-    items: List<Pair<ID, String>>
-) = suspendCancellableCoroutine<PopupUi.MultiChoiceResponse<ID>?> { continuation ->
+    title: CharSequence,
+    message: CharSequence,
+    positiveButtonText: CharSequence? = null,
+    neutralButtonText: CharSequence? = null,
+    negativeButtonText: CharSequence? = null,
+    view: View
+) = suspendCancellableCoroutine<DialogResponse?> { continuation ->
+
     materialAlertDialog {
-        val checkedItems = BooleanArray(items.size) { false }
+        setTitle(title)
+        setMessage(message)
+
+        setPositiveButton(positiveButtonText) { _, _ ->
+            continuation.resume(DialogResponse.POSITIVE)
+        }
+
+        setNeutralButton(neutralButtonText) { _, _ ->
+            continuation.resume(DialogResponse.NEUTRAL)
+        }
+
+        setNegativeButton(negativeButtonText) { _, _ ->
+            continuation.resume(DialogResponse.NEGATIVE)
+        }
+
+        setView(view)
+
+        show().apply {
+            resumeNullOnDismiss(continuation)
+            dismissOnDestroy(lifecycleOwner)
+
+            continuation.invokeOnCancellation {
+                dismiss()
+            }
+        }
+    }
+}
+
+suspend fun Context.multiChoiceDialog(
+    lifecycleOwner: LifecycleOwner,
+    items: List<MultiChoiceItem<*>>
+) = suspendCancellableCoroutine<List<*>?> { continuation ->
+    materialAlertDialog {
+        val checkedItems = items
+            .map { it.isChecked }
+            .toBooleanArray()
 
         setMultiChoiceItems(
-            items.map { it.second }.toTypedArray(),
+            items.map { it.label }.toTypedArray(),
             checkedItems
         ) { _, which, checked ->
             checkedItems[which] = checked
@@ -80,12 +115,12 @@ suspend fun <ID> Context.multiChoiceDialog(
             val checkedItemIds = sequence {
                 checkedItems.forEachIndexed { index, checked ->
                     if (checked) {
-                        yield(items[index].first)
+                        yield(items[index].id)
                     }
                 }
             }.toList()
 
-            continuation.resume(PopupUi.MultiChoiceResponse(checkedItemIds))
+            continuation.resume(checkedItemIds)
         }
 
         show().apply {
@@ -98,12 +133,13 @@ suspend fun <ID> Context.multiChoiceDialog(
 suspend fun <ID> Context.singleChoiceDialog(
     lifecycleOwner: LifecycleOwner,
     items: List<Pair<ID, String>>
-) = suspendCancellableCoroutine<PopupUi.SingleChoiceResponse<ID>?> { continuation ->
+) = suspendCancellableCoroutine<ID?> { continuation ->
     materialAlertDialog {
+        //message isn't supported
         setItems(
             items.map { it.second }.toTypedArray(),
         ) { _, position ->
-            continuation.resume(PopupUi.SingleChoiceResponse(items[position].first))
+            continuation.resume(items[position].first)
         }
 
         show().apply {
@@ -116,10 +152,13 @@ suspend fun <ID> Context.singleChoiceDialog(
 suspend fun Context.editTextStringAlertDialog(
     lifecycleOwner: LifecycleOwner,
     hint: String,
-    allowEmpty: Boolean = false
-) = suspendCancellableCoroutine<PopupUi.TextResponse?> { continuation ->
+    allowEmpty: Boolean = false,
+    initialText: String = "",
+    inputType: Int? = null,
+    message: CharSequence? = null,
+) = suspendCancellableCoroutine<String?> { continuation ->
 
-    val text = MutableStateFlow("")
+    val text = MutableStateFlow(initialText)
 
     val alertDialog = materialAlertDialog {
         val inflater = LayoutInflater.from(this@editTextStringAlertDialog)
@@ -129,19 +168,33 @@ suspend fun Context.editTextStringAlertDialog(
             setText(text)
             setAllowEmpty(allowEmpty)
 
+            if (inputType != null) {
+                editText.inputType = inputType
+            }
+
             setView(this.root)
         }
 
-        okButton {
-            continuation.resume(PopupUi.TextResponse(text.value))
+        if (message != null) {
+            this.message = message
         }
 
-        negativeButton(R.string.neg_cancel) { it.cancel() }
+        okButton {
+            continuation.resume(text.value)
+        }
+
+        negativeButton(R.string.neg_cancel) {
+            it.cancel()
+        }
     }
+
+    //this prevents window leak
+    alertDialog.resumeNullOnDismiss(continuation)
+    alertDialog.dismissOnDestroy(lifecycleOwner)
 
     alertDialog.show()
 
-    lifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
+    lifecycleOwner.lifecycleScope.launchWhenResumed {
         text.collectLatest {
             alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled =
                 if (allowEmpty) {
@@ -151,17 +204,13 @@ suspend fun Context.editTextStringAlertDialog(
                 }
         }
     }
-
-    //this prevents window leak
-    alertDialog.resumeNullOnDismiss(continuation)
-    alertDialog.dismissOnDestroy(lifecycleOwner)
 }
 
 suspend fun Context.editTextNumberAlertDialog(
     lifecycleOwner: LifecycleOwner,
     hint: String,
     min: Int? = null,
-    max: Int? = null
+    max: Int? = null,
 ) = suspendCancellableCoroutine<Int?> { continuation ->
 
     fun isValid(text: String?): Result<Int> {
@@ -193,38 +242,37 @@ suspend fun Context.editTextNumberAlertDialog(
     val resourceProvider = ServiceLocator.resourceProvider(this)
     val text = MutableStateFlow("")
 
-    materialAlertDialog {
-        val inflater = LayoutInflater.from(this@editTextNumberAlertDialog)
-        DialogEdittextNumberBinding.inflate(inflater).apply {
+    val inflater = LayoutInflater.from(this@editTextNumberAlertDialog)
+    val binding = DialogEdittextNumberBinding.inflate(inflater).apply {
+        setHint(hint)
+        setText(text)
+    }
 
-            setHint(hint)
-            setText(text)
-
-            setView(this.root)
-
-            okButton {
-                isValid(text.value).onSuccess { num ->
-                    continuation.resume(num)
-                }
-            }
-
-            negativeButton(R.string.neg_cancel) { it.cancel() }
-
-            val alertDialog = show()
-
-            alertDialog.resumeNullOnDismiss(continuation)
-            alertDialog.dismissOnDestroy(lifecycleOwner)
-
-            lifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
-                text.map { isValid(it) }
-                    .collectLatest { isValid ->
-                        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled =
-                            isValid.isSuccess
-                        textInputLayout.error =
-                            isValid.errorOrNull()?.getFullMessage(resourceProvider)
-                    }
+    val alertDialog = materialAlertDialog {
+        okButton {
+            isValid(text.value).onSuccess { num ->
+                continuation.resume(num)
             }
         }
+
+        negativeButton(R.string.neg_cancel) { it.cancel() }
+
+        setView(binding.root)
+    }
+
+    alertDialog.show()
+    alertDialog.resumeNullOnDismiss(continuation)
+    alertDialog.dismissOnDestroy(lifecycleOwner)
+
+    lifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
+        text.map { isValid(it) }
+            .collectLatest { isValid ->
+                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled =
+                    isValid.isSuccess
+
+                binding.textInputLayout.error =
+                    isValid.errorOrNull()?.getFullMessage(resourceProvider)
+            }
     }
 }
 
@@ -232,7 +280,7 @@ suspend fun Context.okDialog(
     lifecycleOwner: LifecycleOwner,
     message: String,
     title: String? = null,
-) = suspendCancellableCoroutine<PopupUi.OkResponse?> { continuation ->
+) = suspendCancellableCoroutine<Unit?> { continuation ->
 
     val alertDialog = materialAlertDialog {
 
@@ -240,7 +288,7 @@ suspend fun Context.okDialog(
         setMessage(message)
 
         okButton {
-            continuation.resume(PopupUi.OkResponse)
+            continuation.resume(Unit)
         }
     }
 
@@ -263,42 +311,20 @@ fun Dialog.dismissOnDestroy(lifecycleOwner: LifecycleOwner) {
     lifecycleOwner.lifecycle.addObserver(object : LifecycleObserver {
         @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
         fun onDestroy() {
-            dismiss()
+            this@dismissOnDestroy.dismiss()
+            lifecycleOwner.lifecycle.removeObserver(this)
         }
     })
 }
 
 object DialogUtils {
-
-    fun getCompatibleOnScreenKeyboardDialog(ctx: Context): MaterialAlertDialogBuilder {
-        return MaterialAlertDialogBuilder(ctx).apply {
-
-            val appStoreModel: ChooseAppStoreModel
-
-            if (LeanbackUtils.isTvDevice(ctx)) {
-                titleResource = R.string.dialog_title_install_leanback_keyboard
-                messageResource = R.string.dialog_message_install_leanback_keyboard
-
-                appStoreModel = ChooseAppStoreModel(
-                    githubLink = ctx.str(R.string.url_github_keymapper_leanback_keyboard),
-                )
-            } else {
-                titleResource = R.string.dialog_title_install_gui_keyboard
-                messageResource = R.string.dialog_message_install_gui_keyboard
-
-                appStoreModel = ChooseAppStoreModel(
-                    playStoreLink = ctx.str(R.string.url_play_store_keymapper_gui_keyboard),
-                    githubLink = ctx.str(R.string.url_github_keymapper_gui_keyboard),
-                    fdroidLink = ctx.str(R.string.url_fdroid_keymapper_gui_keyboard)
-                )
-            }
-
-            DialogChooseAppStoreBinding.inflate(LayoutInflater.from(ctx)).apply {
-                model = appStoreModel
-                setView(this.root)
-            }
-
-            negativeButton(R.string.neg_cancel) { it.cancel() }
-        }
+    fun keyMapperCrashedDialog(resourceProvider: ResourceProvider): PopupUi.Dialog {
+        return PopupUi.Dialog(
+            title = resourceProvider.getString(R.string.dialog_title_key_mapper_crashed),
+            message = resourceProvider.getText(R.string.dialog_message_key_mapper_crashed),
+            positiveButtonText = resourceProvider.getString(R.string.dialog_button_read_dont_kill_my_app_no),
+            negativeButtonText = resourceProvider.getString(R.string.neg_cancel),
+            neutralButtonText = resourceProvider.getString(R.string.dialog_button_read_dont_kill_my_app_yes)
+        )
     }
 }

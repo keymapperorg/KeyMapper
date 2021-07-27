@@ -12,13 +12,17 @@ class KeyMapperImeHelper(private val imeAdapter: InputMethodAdapter) {
         const val KEY_MAPPER_GUI_IME_PACKAGE =
             "io.github.sds100.keymapper.inputmethod.latin"
 
-        const val KEY_MAPPER_LEANBACK_IME_PACKAGE =
+        private const val KEY_MAPPER_LEANBACK_IME_PACKAGE =
             "io.github.sds100.keymapper.inputmethod.leanback"
+
+        private const val KEY_MAPPER_HACKERS_KEYBOARD_PACKAGE =
+            "io.github.sds100.keymapper.inputmethod.hackers"
 
         val KEY_MAPPER_IME_PACKAGE_LIST = arrayOf(
             Constants.PACKAGE_NAME,
             KEY_MAPPER_GUI_IME_PACKAGE,
-            KEY_MAPPER_LEANBACK_IME_PACKAGE
+            KEY_MAPPER_LEANBACK_IME_PACKAGE,
+            KEY_MAPPER_HACKERS_KEYBOARD_PACKAGE
         )
     }
 
@@ -30,28 +34,28 @@ class KeyMapperImeHelper(private val imeAdapter: InputMethodAdapter) {
         }
     }
 
-    suspend fun chooseCompatibleInputMethod(fromForeground: Boolean): Result<ImeInfo> {
+    suspend fun chooseCompatibleInputMethod(): Result<ImeInfo> {
         return getLastUsedCompatibleImeId().suspendThen {
-            imeAdapter.chooseIme(it, fromForeground)
+            imeAdapter.chooseImeWithoutUserInput(it)
         }
     }
 
-    suspend fun chooseLastUsedIncompatibleInputMethod(fromForeground: Boolean): Result<ImeInfo> {
+    suspend fun chooseLastUsedIncompatibleInputMethod(): Result<ImeInfo> {
         return getLastUsedIncompatibleImeId().then {
-            imeAdapter.chooseIme(it, fromForeground)
+            imeAdapter.chooseImeWithoutUserInput(it)
         }
     }
 
-    suspend fun toggleCompatibleInputMethod(fromForeground: Boolean): Result<ImeInfo> {
+    suspend fun toggleCompatibleInputMethod(): Result<ImeInfo> {
         return if (isCompatibleImeChosen()) {
-            chooseLastUsedIncompatibleInputMethod(fromForeground)
+            chooseLastUsedIncompatibleInputMethod()
         } else {
-            chooseCompatibleInputMethod(fromForeground)
+            chooseCompatibleInputMethod()
         }
     }
 
     fun isCompatibleImeChosen(): Boolean {
-        return imeAdapter.chosenIme.value.packageName in KEY_MAPPER_IME_PACKAGE_LIST
+        return imeAdapter.chosenIme.value?.packageName in KEY_MAPPER_IME_PACKAGE_LIST
     }
 
     fun isCompatibleImeEnabled(): Boolean {

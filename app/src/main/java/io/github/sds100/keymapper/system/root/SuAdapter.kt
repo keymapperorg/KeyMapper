@@ -9,10 +9,11 @@ import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.firstBlocking
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import java.io.IOException
 import java.io.InputStream
 
 /**
@@ -20,17 +21,21 @@ import java.io.InputStream
  */
 
 class SuAdapterImpl(
-    coroutineScope: CoroutineScope,
-    private val preferenceRepository: PreferenceRepository
+        coroutineScope: CoroutineScope,
+        private val preferenceRepository: PreferenceRepository
 ) : SuAdapter {
     private var process: Process? = null
 
-    override val isGranted: Flow<Boolean> = preferenceRepository.get(Keys.hasRootPermission).map {
-        it ?: false
-    }.stateIn(coroutineScope, SharingStarted.Eagerly, false)
+    override val isGranted: StateFlow<Boolean> = preferenceRepository.get(Keys.hasRootPermission)
+        .map { it ?: false }
+        .stateIn(coroutineScope, SharingStarted.Eagerly, false)
 
     override fun requestPermission(): Boolean {
         preferenceRepository.set(Keys.hasRootPermission, true)
+
+        //show the su prompt
+        Shell.run("su")
+
         return true
     }
 
@@ -66,13 +71,17 @@ class SuAdapterImpl(
             return Error.PermissionDenied(Permission.ROOT)
         }
 
-        val inputStream = Shell.getShellCommandStdOut("su", "-c", command)
-        return Success(inputStream)
+        try {
+            val inputStream = Shell.getShellCommandStdOut("su", "-c", command)
+            return Success(inputStream)
+        } catch (e: IOException) {
+            return Error.UnknownIOError
+        }
     }
 }
 
 interface SuAdapter {
-    val isGranted: Flow<Boolean>
+    val isGranted: StateFlow<Boolean>
 
     /**
      * @return whether root permission was granted successfully

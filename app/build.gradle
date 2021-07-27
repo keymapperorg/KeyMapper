@@ -9,15 +9,15 @@ android {
     compileSdkVersion 30
     buildToolsVersion = '30.0.3'
 
-    def props = new Properties()
-    file("version.properties").withInputStream { props.load(it) }
+    def versionProperties = new Properties()
+    file("version.properties").withInputStream { versionProperties.load(it) }
 
     defaultConfig {
         applicationId "io.github.sds100.keymapper"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode props.getProperty("VERSION_CODE").toInteger()
-        versionName props.getProperty("VERSION_NAME")
+        versionCode versionProperties.getProperty("VERSION_CODE").toInteger()
+        versionName versionProperties.getProperty("VERSION_NAME")
         multiDexEnabled true
 
         vectorDrawables.useSupportLibrary = true
@@ -30,16 +30,28 @@ android {
         }
     }
 
+    signingConfigs {
+        release {
+            storeFile file("keystore.jks")
+            storePassword System.getenv("KEYSTORE_PASSWORD")
+            keyAlias "keymapper"
+            keyPassword System.getenv("KEY_PASSWORD")
+        }
+    }
+
     buildTypes {
 
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
+
         debug {
             applicationIdSuffix ".debug"
             versionNameSuffix "-debug"
         }
+
         ci {
             debuggable = true
 
@@ -57,7 +69,7 @@ android {
             matchingFallbacks = ['debug']
 
             applicationIdSuffix ".ci"
-            versionNameSuffix "-ci." + props.getProperty("VERSION_NUM")
+            versionNameSuffix "-ci." + versionProperties.getProperty("VERSION_NUM")
             signingConfig signingConfigs.debug
         }
     }
@@ -106,11 +118,11 @@ dependencies {
     def coroutinesVersion = "1.4.1"
     def nav_version = '2.3.5'
     def work_version = "2.5.0"
-    def epoxy_version = "4.4.4"
-    def splitties_version = "3.0.0-beta01"
-    def markwonVersion = "4.3.1"
+    def epoxy_version = "4.6.2"
+    def splitties_version = "3.0.0-beta03"
     def multidex_version = "2.0.1"
-
+    def shizuku_version = '11.0.3'
+    
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
     // kotlin stuff
@@ -122,14 +134,19 @@ dependencies {
     implementation 'com.google.android.material:material:1.3.0'
     implementation 'com.github.salomonbrys.kotson:kotson:2.5.0'
     implementation "com.airbnb.android:epoxy:$epoxy_version"
-    implementation 'com.github.AppIntro:AppIntro:6.0.0'
+    implementation 'com.github.AppIntro:AppIntro:6.1.0'
     implementation "com.airbnb.android:epoxy-databinding:$epoxy_version"
     kapt "com.airbnb.android:epoxy-processor:$epoxy_version"
-    implementation "io.noties.markwon:core:$markwonVersion"
     implementation 'com.android.volley:volley:1.2.0'
     implementation 'com.jakewharton.timber:timber:4.7.1'
     implementation 'uk.co.samuelwall:material-tap-target-prompt:3.1.0'
-
+    implementation 'net.lingala.zip4j:zip4j:2.8.0'
+    implementation "com.anggrayudi:storage:0.8.1"
+    implementation 'com.github.MFlisar:DragSelectRecyclerView:0.3'
+    implementation 'com.google.android.flexbox:flexbox:3.0.0'
+    implementation "dev.rikka.shizuku:api:$shizuku_version"
+    implementation "dev.rikka.shizuku:provider:$shizuku_version"
+    
     // splitties
     implementation "com.louiscad.splitties:splitties-bitflags:$splitties_version"
     implementation "com.louiscad.splitties:splitties-alertdialog-appcompat-coroutines:$splitties_version"
@@ -137,6 +154,7 @@ dependencies {
     implementation "com.louiscad.splitties:splitties-snackbar:$splitties_version"
     implementation "com.louiscad.splitties:splitties-toast:$splitties_version"
     implementation "com.louiscad.splitties:splitties-mainthread:$splitties_version"
+    implementation "com.louiscad.splitties:splitties-dimensions:$splitties_version"
 
     // androidx
     implementation 'androidx.legacy:legacy-support-core-ui:1.0.0'
@@ -189,7 +207,6 @@ dependencies {
     androidTestImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.navigation:navigation-testing:$nav_version"
     androidTestImplementation 'android.arch.persistence.room:testing:1.1.1'
-    androidTestImplementation "org.mockito.kotlin:mockito-kotlin:3.1.0"
     androidTestImplementation "org.mockito:mockito-android:3.1.0"
     debugImplementation "androidx.fragment:fragment-testing:1.3.5"
     implementation "androidx.test:core:$androidXTestCoreVersion"

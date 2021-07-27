@@ -4,7 +4,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -21,7 +20,7 @@ fun LifecycleOwner.launchRepeatOnLifecycle(
     block: suspend CoroutineScope.() -> Unit
 ) {
     lifecycleScope.launch {
-        repeatOnLifecycle(state, block)
+        this@launchRepeatOnLifecycle.repeatOnLifecycle(state, block)
     }
 }
 

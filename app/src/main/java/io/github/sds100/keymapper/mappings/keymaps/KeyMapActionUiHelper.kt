@@ -20,9 +20,15 @@ class KeyMapActionUiHelper(
             val repeatDescription = buildString {
                 append(getString(R.string.flag_repeat_build_description_start))
 
-                if (action.repeatLimit != null) {
+                val repeatLimit = when {
+                    action.repeatLimit != null -> action.repeatLimit
+                    action.repeatMode == RepeatMode.LIMIT_REACHED -> 1 // and is null
+                    else -> null
+                }
+
+                if (repeatLimit != null) {
                     append(" ")
-                    append(getString(R.string.flag_repeat_build_description_limit, action.repeatLimit))
+                    append(getString(R.string.flag_repeat_build_description_limit, repeatLimit))
                 }
 
                 if (action.repeatRate != null) {
@@ -53,13 +59,15 @@ class KeyMapActionUiHelper(
 
         if (mapping.isHoldingDownActionAllowed(action)
             && action.holdDown
-            && !action.stopHoldDownWhenTriggerPressedAgain) {
+            && !action.stopHoldDownWhenTriggerPressedAgain
+        ) {
             yield(getString(R.string.flag_hold_down))
         }
 
         if (mapping.isHoldingDownActionAllowed(action)
             && action.holdDown
-            && action.stopHoldDownWhenTriggerPressedAgain) {
+            && action.stopHoldDownWhenTriggerPressedAgain
+        ) {
             yield(getString(R.string.flag_hold_down_until_pressed_again))
         }
 

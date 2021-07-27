@@ -11,11 +11,17 @@ interface IAccessibilityService {
     fun doGlobalAction(action: Int): Result<*>
 
     fun tapScreen(x: Int, y: Int, inputEventType: InputEventType): Result<*>
-    val isGestureDetectionAvailable: Boolean
-    fun requestFingerprintGestureDetection()
-    fun denyFingerprintGestureDetection()
 
-    fun performActionOnNode(findNode: (node: AccessibilityNodeModel) -> Boolean, performAction: (node: AccessibilityNodeModel) -> AccessibilityNodeAction?): Result<*>
+    val isFingerprintGestureDetectionAvailable: Boolean
+
+    var serviceFlags: Int?
+    var serviceFeedbackType: Int?
+    
+    fun performActionOnNode(
+        findNode: (node: AccessibilityNodeModel) -> Boolean,
+        performAction: (node: AccessibilityNodeModel) -> AccessibilityNodeAction?
+    ): Result<*>
+
     val rootNode: AccessibilityNodeModel?
 
     fun hideKeyboard()
@@ -23,4 +29,6 @@ interface IAccessibilityService {
     val isKeyboardHidden: Flow<Boolean>
 
     fun switchIme(imeId: String)
+
+    fun disableSelf()
 }

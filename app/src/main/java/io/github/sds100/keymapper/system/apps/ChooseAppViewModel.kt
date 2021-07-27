@@ -6,9 +6,13 @@ import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.filterByQuery
 import io.github.sds100.keymapper.util.mapData
+import io.github.sds100.keymapper.util.ui.DefaultSimpleListItem
+import io.github.sds100.keymapper.util.ui.IconInfo
+import io.github.sds100.keymapper.util.ui.SimpleListItem
 import io.github.sds100.keymapper.util.valueOrNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import java.util.*
 
 /**
@@ -41,6 +45,9 @@ class ChooseAppViewModel constructor(
             packageInfoList.filter { it.canBeLaunched }.buildListItems()
         }
     }.flowOn(Dispatchers.Default)
+
+    private val _returnResult = MutableSharedFlow<String>()
+    val returnResult = _returnResult.asSharedFlow()
 
     init {
 
@@ -82,22 +89,30 @@ class ChooseAppViewModel constructor(
         showHiddenApps.value = checked
     }
 
-    private suspend fun List<PackageInfo>.buildListItems(): List<AppListItem> = flow {
-        forEach {
-            val name = useCase.getAppName(it.packageName).valueOrNull() ?: return@forEach
-            val icon = useCase.getAppIcon(it.packageName).valueOrNull() ?: return@forEach
+    fun onListItemClick(id: String) {
+        viewModelScope.launch {
+            val packageName = id
 
-            val listItem = AppListItem(
-                packageName = it.packageName,
-                appName = name,
-                icon = icon
+            _returnResult.emit(packageName)
+        }
+    }
+
+    private suspend fun List<PackageInfo>.buildListItems(): List<SimpleListItem> = flow {
+        forEach { packageInfo ->
+            val name = useCase.getAppName(packageInfo.packageName).valueOrNull() ?: return@forEach
+            val icon = useCase.getAppIcon(packageInfo.packageName).valueOrNull() ?: return@forEach
+
+            val listItem = DefaultSimpleListItem(
+                id = packageInfo.packageName,
+                title = name,
+                icon = IconInfo(icon)
             )
 
             emit(listItem)
         }
     }.flowOn(Dispatchers.Default)
         .toList()
-        .sortedBy { it.appName.toLowerCase(Locale.getDefault()) }
+        .sortedBy { it.title.toLowerCase(Locale.getDefault()) }
 
     class Factory(
         private val useCase: DisplayAppsUseCase
@@ -110,7 +125,7 @@ class ChooseAppViewModel constructor(
 }
 
 data class AppListState(
-    val listItems: State<List<AppListItem>>,
+    val listItems: State<List<SimpleListItem>>,
     val showHiddenAppsButton: Boolean,
     val isHiddenAppsChecked: Boolean
 )

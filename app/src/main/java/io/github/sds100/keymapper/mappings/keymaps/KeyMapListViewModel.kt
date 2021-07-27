@@ -9,13 +9,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 open class KeyMapListViewModel constructor(
     private val coroutineScope: CoroutineScope,
     private val useCase: ListKeyMapsUseCase,
     resourceProvider: ResourceProvider,
-    private val multiSelectProvider: MultiSelectProvider
+    private val multiSelectProvider: MultiSelectProvider<String>
 ) : ViewModel(), PopupViewModel by PopupViewModelImpl(), ResourceProvider by resourceProvider {
 
     private val listItemCreator = KeyMapListItemCreator(useCase, resourceProvider)
@@ -37,7 +36,6 @@ open class KeyMapListViewModel constructor(
             useCase.showDeviceDescriptors
         ) { keyMapListState, showDeviceDescriptors ->
             keyMapStateListFlow.value = State.Loading
-
 
             keyMapStateListFlow.value = keyMapListState.mapData { keyMapList ->
                 keyMapList.map { keyMap ->
@@ -64,7 +62,7 @@ open class KeyMapListViewModel constructor(
             }
         }
 
-        coroutineScope.launch {
+        coroutineScope.launch(Dispatchers.Default) {
             combine(
                 keyMapStateListFlow,
                 multiSelectProvider.state
@@ -74,21 +72,19 @@ open class KeyMapListViewModel constructor(
                 val (keyMapUiListState, selectionState) = pair
 
                 _state.value = keyMapUiListState.mapData { keyMapUiList ->
-                    val isSelectable = selectionState is SelectionState.Selecting
+                    val isSelectable = selectionState is SelectionState.Selecting<*>
 
-                    withContext(Dispatchers.Default) {
-                        keyMapUiList.map { keymapUiState ->
-                            val isSelected = if (selectionState is SelectionState.Selecting) {
-                                selectionState.selectedIds.contains(keymapUiState.uid)
-                            } else {
-                                false
-                            }
-
-                            KeyMapListItem(
-                                keymapUiState,
-                                KeyMapListItem.SelectionUiState(isSelected, isSelectable)
-                            )
+                    keyMapUiList.map { keymapUiState ->
+                        val isSelected = if (selectionState is SelectionState.Selecting<*>) {
+                            selectionState.selectedIds.contains(keymapUiState.uid)
+                        } else {
+                            false
                         }
+
+                        KeyMapListItem(
+                            keymapUiState,
+                            KeyMapListItem.SelectionUiState(isSelected, isSelectable)
+                        )
                     }
                 }
             }
@@ -96,7 +92,7 @@ open class KeyMapListViewModel constructor(
     }
 
     fun onKeymapCardClick(uid: String) {
-        if (multiSelectProvider.state.value is SelectionState.Selecting) {
+        if (multiSelectProvider.state.value is SelectionState.Selecting<*>) {
             multiSelectProvider.toggleSelection(uid)
         } else {
             coroutineScope.launch {

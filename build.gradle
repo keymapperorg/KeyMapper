@@ -12,7 +12,7 @@ buildscript {
         def nav_version = "2.3.1"
 
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
-        classpath 'com.android.tools.build:gradle:7.0.0-beta03'
+        classpath 'com.android.tools.build:gradle:7.0.0-rc01'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
 
@@ -27,6 +27,7 @@ allprojects {
         jcenter()
         maven { url "https://jitpack.io" }
         maven { url 'https://maven.google.com/' }
+        maven { url 'https://dl.bintray.com/rikkaw/Shizuku' }
     }
 }
 

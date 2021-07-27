@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="io.github.sds100.keymapper">
 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -32,9 +33,12 @@
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
+
     <uses-feature
         android:name="android.software.leanback"
         android:required="false" />
+
+    <uses-sdk tools:overrideLibrary="rikka.shizuku.provider, rikka.shizuku.api, rikka.shizuku.shared, rikka.shizuku.aidl" />
 
     <application
         android:name=".KeyMapperApp"
@@ -62,6 +66,8 @@
 
         <activity android:name=".onboarding.AppIntroActivity" />
         <activity android:name=".MainActivity" />
+        <activity android:name=".reportbug.ReportBugActivity" />
+        <activity android:name=".home.FixAppKillingActivity" />
 
         <!-- Use a different task affinity so this activity doesn't close other activities -->
         <activity
@@ -190,5 +196,17 @@
         <service
             android:name=".system.inputmethod.ObserveInputMethodsJob"
             android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <service
+            android:name=".system.notifications.ObserveNotificationListenersJob"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <provider
+            android:name="rikka.shizuku.ShizukuProvider"
+            android:authorities="${applicationId}.shizuku"
+            android:enabled="true"
+            android:exported="true"
+            android:multiprocess="false"
+            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
     </application>
 </manifest>

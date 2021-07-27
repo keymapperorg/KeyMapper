@@ -1,9 +1,14 @@
 package io.github.sds100.keymapper.settings
 
 import androidx.datastore.preferences.core.Preferences
+import io.github.sds100.keymapper.actions.sound.SoundFileInfo
+import io.github.sds100.keymapper.actions.sound.SoundsManager
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.shizuku.ShizukuAdapter
+import io.github.sds100.keymapper.shizuku.ShizukuUtils
+import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
@@ -23,7 +28,10 @@ class ConfigSettingsUseCaseImpl(
     private val preferenceRepository: PreferenceRepository,
     private val permissionAdapter: PermissionAdapter,
     private val inputMethodAdapter: InputMethodAdapter,
-    suAdapter: SuAdapter
+    private val soundsManager: SoundsManager,
+    private val suAdapter: SuAdapter,
+    private val packageManagerAdapter: PackageManagerAdapter,
+    private val shizukuAdapter: ShizukuAdapter
 ) : ConfigSettingsUseCase {
 
     private val imeHelper by lazy { KeyMapperImeHelper(inputMethodAdapter) }
@@ -35,6 +43,22 @@ class ConfigSettingsUseCaseImpl(
 
         permissionAdapter.onPermissionsUpdate.collectLatest {
             send(permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS))
+        }
+    }
+
+    override val isShizukuInstalled: Flow<Boolean> by lazy {
+        shizukuAdapter.isInstalled
+    }
+
+    override val isShizukuStarted: Flow<Boolean> by lazy {
+        shizukuAdapter.isStarted
+    }
+
+    override val isShizukuPermissionGranted: Flow<Boolean> = channelFlow {
+        send(permissionAdapter.isGranted(Permission.SHIZUKU))
+
+        permissionAdapter.onPermissionsUpdate.collectLatest {
+            send(permissionAdapter.isGranted(Permission.SHIZUKU))
         }
     }
 
@@ -54,7 +78,11 @@ class ConfigSettingsUseCaseImpl(
     }
 
     override suspend fun chooseCompatibleIme(): Result<ImeInfo> {
-        return imeHelper.chooseCompatibleInputMethod(fromForeground = true)
+        return imeHelper.chooseCompatibleInputMethod()
+    }
+
+    override suspend fun showImePicker(): Result<*> {
+        return inputMethodAdapter.showImePicker(fromForeground = true)
     }
 
     override fun <T> getPreference(key: Preferences.Key<T>) =
@@ -110,6 +138,28 @@ class ConfigSettingsUseCaseImpl(
     override fun requestWriteSecureSettingsPermission() {
         permissionAdapter.request(Permission.WRITE_SECURE_SETTINGS)
     }
+
+    override fun requestShizukuPermission() {
+        permissionAdapter.request(Permission.SHIZUKU)
+    }
+
+    override fun downloadShizuku() {
+        packageManagerAdapter.downloadApp(ShizukuUtils.SHIZUKU_PACKAGE)
+    }
+
+    override fun openShizukuApp() {
+        packageManagerAdapter.openApp(ShizukuUtils.SHIZUKU_PACKAGE)
+    }
+
+    override fun getSoundFiles(): List<SoundFileInfo> {
+        return soundsManager.soundFiles.value
+    }
+
+    override fun deleteSoundFiles(uid: List<String>) {
+        uid.forEach {
+            soundsManager.deleteSound(it)
+        }
+    }
 }
 
 interface ConfigSettingsUseCase {
@@ -120,12 +170,19 @@ interface ConfigSettingsUseCase {
     fun disableAutomaticBackup()
     val isRootGranted: Flow<Boolean>
     val isWriteSecureSettingsGranted: Flow<Boolean>
+
+    val isShizukuInstalled: Flow<Boolean>
+    val isShizukuStarted: Flow<Boolean>
+    val isShizukuPermissionGranted: Flow<Boolean>
+    fun downloadShizuku()
+    fun openShizukuApp()
+
     val rerouteKeyEvents: Flow<Boolean>
     val isCompatibleImeChosen: Flow<Boolean>
     val isCompatibleImeEnabled: Flow<Boolean>
-
     fun enableCompatibleIme()
     suspend fun chooseCompatibleIme(): Result<ImeInfo>
+    suspend fun showImePicker(): Result<*>
 
     val defaultLongPressDelay: Flow<Int>
     val defaultDoublePressDelay: Flow<Int>
@@ -134,6 +191,9 @@ interface ConfigSettingsUseCase {
     val defaultVibrateDuration: Flow<Int>
     val defaultRepeatRate: Flow<Int>
 
+    fun getSoundFiles(): List<SoundFileInfo>
+    fun deleteSoundFiles(uid: List<String>)
     fun resetDefaultMappingOptions()
     fun requestWriteSecureSettingsPermission()
+    fun requestShizukuPermission()
 }

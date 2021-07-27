@@ -6,4 +6,6 @@
     <dimen name="cardview_header_bottom_padding">8dp</dimen>
     <dimen name="cardview_separation">8dp</dimen>
     <dimen name="button_chip_icon_size">20dp</dimen>
+    <dimen name="grid_item_min_width">300dp</dimen>
+    <dimen name="grid_padding">4dp</dimen>
 </resources>

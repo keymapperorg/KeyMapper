@@ -291,6 +291,22 @@ class ConfigKeyMapUseCaseImpl(
         editKeyMap { it.copy(isEnabled = enabled) }
     }
 
+    override fun setActionData(uid: String, data: ActionData) {
+        editKeyMap { keyMap ->
+            val newActionList = keyMap.actionList.map { action ->
+                if (action.uid == uid) {
+                    action.copy(data = data)
+                } else {
+                    action
+                }
+            }
+
+            keyMap.copy(
+                actionList = newActionList
+            )
+        }
+    }
+
     override fun setActionRepeatEnabled(uid: String, repeat: Boolean) =
         setActionOption(uid) { it.copy(repeat = repeat) }
 
@@ -466,8 +482,6 @@ interface ConfigKeyMapUseCase : ConfigMappingUseCase<KeyMapAction, KeyMap> {
     fun setActionHoldDownEnabled(uid: String, holdDown: Boolean)
     fun setActionHoldDownDuration(uid: String, holdDownDuration: Int?)
     fun setActionStopRepeatingWhenTriggerReleased(uid: String)
-    fun setActionStopRepeatingWhenTriggerPressedAgain(uid: String)
-    fun setActionStopRepeatingWhenLimitReached(uid: String)
 
     fun setActionStopHoldingDownWhenTriggerPressedAgain(uid: String, enabled: Boolean)
 }

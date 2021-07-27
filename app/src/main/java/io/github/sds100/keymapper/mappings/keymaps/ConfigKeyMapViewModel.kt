@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.actions.ConfigActionsViewModel
+import io.github.sds100.keymapper.actions.CreateActionUseCase
 import io.github.sds100.keymapper.actions.TestActionUseCase
 import io.github.sds100.keymapper.constraints.ConfigConstraintsViewModel
 import io.github.sds100.keymapper.constraints.ConstraintUtils
@@ -34,6 +35,7 @@ class ConfigKeyMapViewModel(
     private val recordTrigger: RecordTriggerUseCase,
     private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
     private val displayMapping: DisplayKeyMapUseCase,
+    createActionUseCase: CreateActionUseCase,
     resourceProvider: ResourceProvider
 ) : ViewModel(), ConfigMappingViewModel, ResourceProvider by resourceProvider {
 
@@ -41,8 +43,8 @@ class ConfigKeyMapViewModel(
         private const val STATE_KEY = "config_keymap"
     }
 
-    val configActionOptionsViewModel =
-        ConfigKeyMapActionOptionsViewModel(viewModelScope, config, resourceProvider)
+    override val editActionViewModel =
+        EditKeyMapActionViewModel(viewModelScope, config, resourceProvider, createActionUseCase)
 
     val configTriggerKeyViewModel =
         ConfigTriggerKeyViewModel(viewModelScope, config, resourceProvider)
@@ -125,6 +127,7 @@ class ConfigKeyMapViewModel(
         private val recordTrigger: RecordTriggerUseCase,
         private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
         private val displayMapping: DisplayKeyMapUseCase,
+        private val createActionUseCase: CreateActionUseCase,
         private val resourceProvider: ResourceProvider
     ) : ViewModelProvider.Factory {
 
@@ -137,6 +140,7 @@ class ConfigKeyMapViewModel(
                 recordTrigger,
                 createKeyMapShortcut,
                 displayMapping,
+                createActionUseCase,
                 resourceProvider
             ) as T
     }

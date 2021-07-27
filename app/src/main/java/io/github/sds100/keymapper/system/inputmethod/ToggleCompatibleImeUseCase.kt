@@ -16,7 +16,7 @@ class ToggleCompatibleImeUseCaseImpl(
         inputMethodAdapter.isUserInputRequiredToChangeIme
 
     override suspend fun toggle(): Result<ImeInfo> {
-       return keyMapperImeHelper.toggleCompatibleInputMethod(fromForeground = false)
+       return keyMapperImeHelper.toggleCompatibleInputMethod()
     }
 }
 

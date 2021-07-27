@@ -2,18 +2,19 @@ package io.github.sds100.keymapper.mappings.keymaps
 
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.airbnb.epoxy.EpoxyRecyclerView
-import io.github.sds100.keymapper.home.HomeViewModel
+import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
 import io.github.sds100.keymapper.home.HomeFragmentDirections
+import io.github.sds100.keymapper.home.HomeViewModel
 import io.github.sds100.keymapper.keymap
-import io.github.sds100.keymapper.util.ui.ChipUi
+import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
+import io.github.sds100.keymapper.util.ui.ChipUi
 import io.github.sds100.keymapper.util.ui.OnChipClickCallback
 import io.github.sds100.keymapper.util.ui.SimpleRecyclerViewFragment
-import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 
@@ -32,7 +33,10 @@ class KeyMapListFragment : SimpleRecyclerViewFragment<KeyMapListItem>() {
     override val listItems: Flow<State<List<KeyMapListItem>>>
         get() = viewModel.state
 
+    override val emptyListPlaceholder: Int = R.string.keymap_recyclerview_placeholder
+
     override fun subscribeUi(binding: FragmentSimpleRecyclerviewBinding) {
+        super.subscribeUi(binding)
 
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.launchConfigKeymap.collectLatest {
@@ -56,7 +60,7 @@ class KeyMapListFragment : SimpleRecyclerViewFragment<KeyMapListItem>() {
 
                     onTriggerErrorClick(object : OnChipClickCallback {
                         override fun onChipClick(chipModel: ChipUi) {
-                           viewModel.onTriggerErrorChipClick(chipModel)
+                            viewModel.onTriggerErrorChipClick(chipModel)
                         }
                     })
 

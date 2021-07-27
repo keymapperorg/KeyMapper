@@ -4,10 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.util.SharedPrefsDataStoreWrapper
-import io.github.sds100.keymapper.util.getFullMessage
-import io.github.sds100.keymapper.util.onFailure
-import io.github.sds100.keymapper.util.onSuccess
+import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -22,13 +19,24 @@ class SettingsViewModel(
     val sharedPrefsDataStoreWrapper = SharedPrefsDataStoreWrapper(useCase)
 
     val automaticBackupLocation = useCase.automaticBackupLocation
-    val hasRootPermission = useCase.isRootGranted
+
     val showWriteSecureSettingsSection: StateFlow<Boolean> =
         useCase.isWriteSecureSettingsGranted.stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
-    val showButtonToGrantWriteSecureSettings: StateFlow<Boolean> =
+    val isWriteSecureSettingsPermissionGranted: StateFlow<Boolean> =
         useCase.isWriteSecureSettingsGranted
-            .map { !it }
+            .stateIn(viewModelScope, SharingStarted.Eagerly, true)
+
+    val isShizukuInstalled: StateFlow<Boolean> =
+        useCase.isShizukuInstalled
+            .stateIn(viewModelScope, SharingStarted.Eagerly, true)
+
+    val isShizukuStarted: StateFlow<Boolean> =
+        useCase.isShizukuStarted
+            .stateIn(viewModelScope, SharingStarted.Eagerly, true)
+
+    val isShizukuPermissionGranted: StateFlow<Boolean> =
+        useCase.isShizukuPermissionGranted
             .stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
     val rerouteKeyEvents: StateFlow<Boolean> = useCase.rerouteKeyEvents
@@ -52,20 +60,62 @@ class SettingsViewModel(
 
     fun onChooseCompatibleImeClick() {
         viewModelScope.launch {
-            useCase.chooseCompatibleIme().onSuccess { ime ->
-                val snackBar =
-                    PopupUi.SnackBar(message = getString(R.string.toast_chose_keyboard, ime.label))
-                showPopup("chose_ime_success", snackBar)
-            }.onFailure { error ->
-                val snackBar =
-                    PopupUi.SnackBar(message = error.getFullMessage(this@SettingsViewModel))
-                showPopup("chose_ime_error", snackBar)
-            }
+            useCase
+                .chooseCompatibleIme()
+                .onSuccess { ime ->
+                    val snackBar =
+                        PopupUi.SnackBar(
+                            message = getString(
+                                R.string.toast_chose_keyboard,
+                                ime.label
+                            )
+                        )
+                    showPopup("chose_ime_success", snackBar)
+                }
+                .otherwise {
+                    useCase.showImePicker()
+                }
+                .onFailure { error ->
+                    val snackBar =
+                        PopupUi.SnackBar(message = error.getFullMessage(this@SettingsViewModel))
+                    showPopup("chose_ime_error", snackBar)
+                }
         }
     }
 
-    fun requestWriteSecureSettingsPermission(){
+    fun onDeleteSoundFilesClick() {
+        viewModelScope.launch {
+            val soundFiles = useCase.getSoundFiles()
+
+            if (soundFiles.isEmpty()) {
+                showPopup("no sound files", PopupUi.Toast(getString(R.string.toast_no_sound_files)))
+                return@launch
+            }
+
+            val dialog = PopupUi.MultiChoice(
+                items = soundFiles.map { MultiChoiceItem(it.uid, it.name) }
+            )
+
+            val selectedFiles = showPopup("select_sound_files_to_delete", dialog) ?: return@launch
+
+            useCase.deleteSoundFiles(selectedFiles)
+        }
+    }
+
+    fun requestWriteSecureSettingsPermission() {
         useCase.requestWriteSecureSettingsPermission()
+    }
+
+    fun requestShizukuPermission() {
+        useCase.requestShizukuPermission()
+    }
+
+    fun downloadShizuku() {
+        useCase.downloadShizuku()
+    }
+
+    fun openShizukuApp() {
+        useCase.openShizukuApp()
     }
 
     fun onEnableCompatibleImeClick() {
@@ -74,6 +124,17 @@ class SettingsViewModel(
 
     fun resetDefaultMappingOptions() {
         useCase.resetDefaultMappingOptions()
+    }
+
+    fun showNoPairedDevicesDialog() {
+        viewModelScope.launch {
+            val dialog = PopupUi.Dialog(
+                message = getString(R.string.dialog_message_settings_no_external_devices_connected),
+                positiveButtonText = getString(R.string.pos_ok)
+            )
+
+            showPopup("no_external_devices", dialog)
+        }
     }
 
     @Suppress("UNCHECKED_CAST")

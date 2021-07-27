@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.mappings.fingerprintmaps
 
-import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.actions.canBeHeldDown
 import io.github.sds100.keymapper.constraints.ConstraintEntityMapper
 import io.github.sds100.keymapper.constraints.ConstraintModeEntityMapper
@@ -8,7 +7,6 @@ import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.data.entities.Extra
 import io.github.sds100.keymapper.data.entities.getData
 import io.github.sds100.keymapper.mappings.Mapping
-import io.github.sds100.keymapper.mappings.keymaps.KeyMapAction
 import io.github.sds100.keymapper.util.valueOrNull
 import kotlinx.serialization.Serializable
 import splitties.bitflags.hasFlag
@@ -31,6 +29,10 @@ data class FingerprintMap(
 
     fun isRepeatingActionsAllowed(): Boolean {
         return true
+    }
+
+    fun isChangingRepeatModeAllowed(action: FingerprintMapAction): Boolean {
+        return action.repeat && isRepeatingActionsAllowed()
     }
 
     fun isChangingRepeatLimitAllowed(action: FingerprintMapAction): Boolean {

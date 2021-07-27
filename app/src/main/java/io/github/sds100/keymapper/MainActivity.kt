@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper
 
+import android.content.res.Configuration
 import android.os.Bundle
-import android.view.KeyEvent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -12,7 +12,6 @@ import androidx.navigation.findNavController
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.databinding.ActivityMainBinding
-import io.github.sds100.keymapper.system.keyevents.ChooseKeyViewModel
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.RequestPermissionDelegate
 import io.github.sds100.keymapper.util.*
@@ -20,6 +19,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import splitties.alertdialog.appcompat.*
+import timber.log.Timber
 
 /**
  * Created by sds100 on 19/02/2020.
@@ -32,14 +32,21 @@ class MainActivity : AppCompatActivity() {
             "$PACKAGE_NAME.show_accessibility_settings_not_found_dialog"
     }
 
-    private val chooseKeyViewModel: ChooseKeyViewModel by viewModels {
-        Inject.keyActionTypeViewModel()
+    private val viewModel by viewModels<ActivityViewModel> {
+        ActivityViewModel.Factory()
     }
+
+    private val currentNightMode: Int
+        get() = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
 
     private lateinit var requestPermissionDelegate: RequestPermissionDelegate
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (viewModel.previousNightMode != currentNightMode) {
+            ServiceLocator.resourceProvider(this).onThemeChange()
+        }
 
         DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
 
@@ -70,9 +77,14 @@ class MainActivity : AppCompatActivity() {
             .launchIn(lifecycleScope)
     }
 
-    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
-        event?.let { chooseKeyViewModel.onKeyDown(it.keyCode) }
+    override fun onResume() {
+        super.onResume()
 
-        return super.onKeyUp(keyCode, event)
+        Timber.i("MainActivity: onResume. Version: ${Constants.VERSION}")
+    }
+
+    override fun onDestroy() {
+        viewModel.previousNightMode = currentNightMode
+        super.onDestroy()
     }
 }

@@ -7,4 +7,17 @@
     <color name="colorSecondary">@color/colorAccent</color>
     <color name="iconTintTriggerKeySeparator">#cccccc</color>
     <color name="divider">#1FFFFFFF</color>
+    <color name="backgroundSelected">#3D00E676</color>
+
+    <!--  Make these colors lighter in dark mode  -->
+    <color name="red">#ff7961</color>
+
+    <color name="blue">#6ec6ff</color>
+
+    <color name="orange">#ffc947</color>
+
+    <color name="purple">#9a67ea</color>
+
+    <color name="green">#80e27e</color>
+
 </resources>

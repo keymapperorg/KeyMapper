@@ -35,7 +35,7 @@ class AccessibilityServiceAdapter(
     private val ctx = context.applicationContext
     override val eventReceiver = MutableSharedFlow<Event>()
 
-    val serviceOutputEvents = MutableSharedFlow<Event>()
+    val eventsToService = MutableSharedFlow<Event>()
 
     override val state = MutableStateFlow(ServiceState.DISABLED)
 
@@ -65,7 +65,7 @@ class AccessibilityServiceAdapter(
         }
 
         eventReceiver.onEach {
-            Timber.i("Received event from accessibility service: $it")
+            Timber.d("Received event from service: $it")
         }.launchIn(coroutineScope)
     }
 
@@ -84,15 +84,13 @@ class AccessibilityServiceAdapter(
         }
 
         coroutineScope.launch {
-            serviceOutputEvents.emit(event)
-            Timber.i("Successfully sent event to accessibility service: $event")
+            eventsToService.emit(event)
         }
 
         return Success(Unit)
     }
 
     override fun enableService() {
-        Timber.i("Enable service")
         if (permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)) {
 
             enableWithWriteSecureSettings()
@@ -100,17 +98,19 @@ class AccessibilityServiceAdapter(
             /*
             Turning on the accessibility service doesn't necessarily mean that it is running so
             this will check if it is indeed running and then turn it off and on so that it
-            is running.
+            is running again.
              */
             coroutineScope.launch {
                 delay(200)
 
-                val key = "ping_accessibility_service"
+                val key = "check_is_crashed_then_restart"
 
                 //wait to start collecting
                 coroutineScope.launch {
                     delay(100)
-                    serviceOutputEvents.emit(Ping(key))
+
+                    Timber.d("Ping service to check if crashed")
+                    eventsToService.emit(Ping(key))
                 }
 
                 val pong: Pong? = withTimeoutOrNull(2000L) {
@@ -118,32 +118,53 @@ class AccessibilityServiceAdapter(
                 }
 
                 if (pong == null) {
-                    disableService()
+                    Timber.e("Service crashed so restarting")
+                    disableServiceSuspend()
                     delay(200)
                     enableWithWriteSecureSettings()
                 }
             }
         } else {
+            Timber.i("Enable service by opening accessibility settings")
+
             openAccessibilitySettings()
         }
     }
 
     override fun restartService() {
-        Timber.i("Restart service")
         if (permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)) {
+            Timber.i("Restarting service with WRITE_SECURE_SETTINGS")
+
             coroutineScope.launch {
-                disableService()
+                disableServiceSuspend()
                 delay(200)
                 enableWithWriteSecureSettings()
             }
         } else {
+            Timber.i("Restarting service by opening accessibility settings")
+
             openAccessibilitySettings()
         }
     }
 
     override fun disableService() {
-        Timber.i("Disable service")
+        coroutineScope.launch {
+            disableServiceSuspend()
+        }
+    }
+
+    private suspend fun disableServiceSuspend() {
+        send(DisableService).onSuccess {
+            Timber.i("Disabling service by calling disableSelf()")
+
+            return
+        }.onFailure {
+            Timber.i("Failed to disable service by calling disableSelf()")
+        }
+
         if (permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)) {
+            Timber.i("Disabling service with WRITE_SECURE_SETTINGS")
+
             val enabledServices = SettingsUtils.getSecureSetting<String>(
                 ctx,
                 Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
@@ -170,20 +191,27 @@ class AccessibilityServiceAdapter(
                 newEnabledServices
             )
         } else {
+            Timber.i("Disabling service by opening accessibility settings")
+
             openAccessibilitySettings()
         }
     }
 
     override suspend fun isCrashed(): Boolean {
-        val key = "ping_service"
+        Timber.i("Accessibility service: checking if it is crashed")
+        val key = "check_is_crashed"
 
         coroutineScope.launch {
             delay(100)
-            serviceOutputEvents.emit(Ping(key))
+            eventsToService.emit(Ping(key))
         }
 
         val pong: Pong? = withTimeoutOrNull(2000L) {
             eventReceiver.first { it == Pong(key) } as Pong?
+        }
+
+        if (pong == null) {
+            Timber.e("Accessibility service: is crashed")
         }
 
         return pong == null
@@ -196,8 +224,9 @@ class AccessibilityServiceAdapter(
     }
 
     private fun enableWithWriteSecureSettings() {
-        Timber.i("Enable service with WRITE_SECURE_SETTINGS")
         if (permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)) {
+            Timber.i("Enable service with WRITE_SECURE_SETTINGS")
+
             val enabledServices = SettingsUtils.getSecureSetting<String>(
                 ctx,
                 Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES

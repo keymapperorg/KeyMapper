@@ -1,24 +1,59 @@
 package io.github.sds100.keymapper.constraints
 
+import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
+import io.github.sds100.keymapper.system.camera.CameraAdapter
+import io.github.sds100.keymapper.system.devices.DevicesAdapter
+import io.github.sds100.keymapper.system.display.DisplayAdapter
 import io.github.sds100.keymapper.system.display.Orientation
+import io.github.sds100.keymapper.system.media.MediaAdapter
+import io.github.sds100.keymapper.system.network.NetworkAdapter
+import io.github.sds100.keymapper.util.firstBlocking
 
 /**
  * Created by sds100 on 08/05/2021.
  */
-data class ConstraintSnapshot(
-    val appInForeground: String?,
-    val connectedBluetoothDevices: Set<BluetoothDeviceInfo>,
-    val orientation: Orientation,
-    val isScreenOn: Boolean,
-    val appsPlayingMedia: List<String>
-) {
-    fun isSatisfied(constraint: Constraint): Boolean {
+
+/**
+ * This allows constraints to be checked lazily because some system calls take a significant amount of time.
+ */
+class ConstraintSnapshotImpl(
+    accessibilityService: IAccessibilityService,
+    mediaAdapter: MediaAdapter,
+    devicesAdapter: DevicesAdapter,
+    displayAdapter: DisplayAdapter,
+    networkAdapter: NetworkAdapter,
+    private val cameraAdapter: CameraAdapter
+) : ConstraintSnapshot {
+    private val appInForeground: String? by lazy { accessibilityService.rootNode?.packageName }
+    private val connectedBluetoothDevices: Set<BluetoothDeviceInfo> by lazy { devicesAdapter.connectedBluetoothDevices.value }
+    private val orientation: Orientation by lazy { displayAdapter.orientation }
+    private val isScreenOn: Boolean by lazy { displayAdapter.isScreenOn.firstBlocking() }
+    private val appsPlayingMedia: List<String> by lazy { mediaAdapter.getPackagesPlayingMedia() }
+    private val isWifiEnabled: Boolean by lazy { networkAdapter.isWifiEnabled() }
+    private val connectedWifiSSID: String? by lazy { networkAdapter.connectedWifiSSID }
+
+    override fun isSatisfied(constraintState: ConstraintState): Boolean {
+        return when (constraintState.mode) {
+            ConstraintMode.AND -> {
+                constraintState.constraints.all { isSatisfied(it) }
+            }
+            ConstraintMode.OR -> {
+                constraintState.constraints.any { isSatisfied(it) }
+            }
+        }
+    }
+
+    private fun isSatisfied(constraint: Constraint): Boolean {
         return when (constraint) {
             is Constraint.AppInForeground -> appInForeground == constraint.packageName
             is Constraint.AppNotInForeground -> appInForeground != constraint.packageName
             is Constraint.AppPlayingMedia ->
                 appsPlayingMedia.contains(constraint.packageName)
+            is Constraint.AppNotPlayingMedia ->
+                appsPlayingMedia.none { it == constraint.packageName }
+            Constraint.MediaPlaying -> appsPlayingMedia.isNotEmpty()
+            Constraint.NoMediaPlaying -> appsPlayingMedia.isEmpty()
             is Constraint.BtDeviceConnected -> {
                 connectedBluetoothDevices.any { it.address == constraint.bluetoothAddress }
             }
@@ -32,17 +67,29 @@ data class ConstraintSnapshot(
                 orientation == Orientation.ORIENTATION_0 || orientation == Orientation.ORIENTATION_180
             Constraint.ScreenOff -> !isScreenOn
             Constraint.ScreenOn -> isScreenOn
-        }
-    }
+            is Constraint.FlashlightOff -> !cameraAdapter.isFlashlightOn(constraint.lens)
+            is Constraint.FlashlightOn -> cameraAdapter.isFlashlightOn(constraint.lens)
+            is Constraint.WifiConnected ->
+                if (constraint.ssid == null) {
+                    //connected to any network
+                    connectedWifiSSID != null
+                } else {
+                    connectedWifiSSID == constraint.ssid
+                }
+            is Constraint.WifiDisconnected ->
+                if (constraint.ssid == null) {
+                    //connected to no network
+                    connectedWifiSSID == null
+                } else {
+                    connectedWifiSSID != constraint.ssid
+                }
 
-    fun isSatisfied(constraintState: ConstraintState): Boolean {
-        return when (constraintState.mode) {
-            ConstraintMode.AND -> {
-                constraintState.constraints.all { isSatisfied(it) }
-            }
-            ConstraintMode.OR -> {
-                constraintState.constraints.any { isSatisfied(it) }
-            }
+            Constraint.WifiOff -> !isWifiEnabled
+            Constraint.WifiOn -> isWifiEnabled
         }
     }
+}
+
+interface ConstraintSnapshot {
+    fun isSatisfied(constraintState: ConstraintState): Boolean
 }

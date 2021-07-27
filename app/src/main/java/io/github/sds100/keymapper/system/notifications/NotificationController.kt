@@ -8,8 +8,8 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
 import io.github.sds100.keymapper.mappings.fingerprintmaps.AreFingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
-import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.accessibility.ControlAccessibilityServiceUseCase
+import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.inputmethod.ShowHideInputMethodUseCase
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
 import io.github.sds100.keymapper.system.inputmethod.ToggleCompatibleImeUseCase
@@ -18,6 +18,7 @@ import io.github.sds100.keymapper.util.onFailure
 import io.github.sds100.keymapper.util.onSuccess
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -109,7 +110,7 @@ class NotificationController(
             pauseMappings.isPaused
         ) { show, serviceState, areMappingsPaused ->
             invalidateToggleMappingsNotification(show, serviceState, areMappingsPaused)
-        }.launchIn(coroutineScope)
+        }.flowOn(Dispatchers.Default).launchIn(coroutineScope)
 
         manageNotifications.showImePickerNotification.onEach { show ->
             if (show) {
@@ -126,7 +127,7 @@ class NotificationController(
                 //don't delete the channel because then the user's notification config is lost
                 manageNotifications.dismiss(ID_IME_PICKER)
             }
-        }.launchIn(coroutineScope)
+        }.flowOn(Dispatchers.Default).launchIn(coroutineScope)
 
         toggleCompatibleIme.sufficientPermissions.onEach { canToggleIme ->
             if (canToggleIme) {
@@ -143,9 +144,9 @@ class NotificationController(
                 //don't delete the channel because then the user's notification config is lost
                 manageNotifications.dismiss(ID_TOGGLE_KEYBOARD)
             }
-        }.launchIn(coroutineScope)
+        }.flowOn(Dispatchers.Default).launchIn(coroutineScope)
 
-        coroutineScope.launch {
+        coroutineScope.launch(Dispatchers.Default) {
             combine(
                 onboardingUseCase.showFingerprintFeatureNotificationIfAvailable,
                 areFingerprintGesturesSupported.isSupported.map { it ?: false }
@@ -171,7 +172,7 @@ class NotificationController(
             } else {
                 manageNotifications.dismiss(ID_SETUP_CHOSEN_DEVICES_AGAIN)
             }
-        }.launchIn(coroutineScope)
+        }.flowOn(Dispatchers.Default).launchIn(coroutineScope)
 
         hideInputMethod.onHiddenChange.onEach { isHidden ->
             manageNotifications.createChannel(
@@ -187,7 +188,7 @@ class NotificationController(
             } else {
                 manageNotifications.dismiss(ID_KEYBOARD_HIDDEN)
             }
-        }.launchIn(coroutineScope)
+        }.flowOn(Dispatchers.Default).launchIn(coroutineScope)
 
         manageNotifications.onActionClick.onEach { actionId ->
             when (actionId) {
@@ -214,7 +215,7 @@ class NotificationController(
                     _openApp.emit(Unit)
                 }
             }
-        }.launchIn(coroutineScope)
+        }.flowOn(Dispatchers.Default).launchIn(coroutineScope)
     }
 
     fun onOpenApp() {

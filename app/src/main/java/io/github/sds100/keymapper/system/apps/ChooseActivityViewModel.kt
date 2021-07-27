@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.filterByQuery
+import io.github.sds100.keymapper.util.ui.IconInfo
+import io.github.sds100.keymapper.util.ui.TintType
 import io.github.sds100.keymapper.util.valueOrNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -37,7 +39,7 @@ class ChooseActivityViewModel(private val useCase: DisplayAppsUseCase) : ViewMod
                             ActivityListItem(
                                 appName = appName,
                                 activityInfo = activityInfo,
-                                icon = appIcon
+                                icon = appIcon?.let { IconInfo(it, TintType.None) }
                             )
                         )
                     }

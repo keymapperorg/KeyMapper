@@ -4,22 +4,19 @@ import androidx.datastore.preferences.core.stringSetPreferencesKey
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.files.FileAdapter
-import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
+import io.github.sds100.keymapper.system.leanback.LeanbackAdapter
 import io.github.sds100.keymapper.util.PrefDelegate
-import io.github.sds100.keymapper.util.VersionUtils
-import io.github.sds100.keymapper.util.ifIsData
+import io.github.sds100.keymapper.util.VersionHelper
 import kotlinx.coroutines.flow.*
-import timber.log.Timber
 
 /**
  * Created by sds100 on 14/02/21.
  */
 class OnboardingUseCaseImpl(
     private val preferenceRepository: PreferenceRepository,
-    private val packageManagerAdapter: PackageManagerAdapter,
-    private val fileAdapter: FileAdapter
+    private val fileAdapter: FileAdapter,
+    private val leanbackAdapter: LeanbackAdapter
 ) : PreferenceRepository by preferenceRepository, OnboardingUseCase {
 
     override var shownAppIntro by PrefDelegate(Keys.shownAppIntro, false)
@@ -27,18 +24,6 @@ class OnboardingUseCaseImpl(
     override val showGuiKeyboardPrompt: Flow<Boolean> =
         preferenceRepository.get(Keys.acknowledgedGuiKeyboard)
             .map { acknowledged -> acknowledged == null || !acknowledged }
-            .map { show ->
-                if (show) {
-                    packageManagerAdapter.installedPackages.value.ifIsData { installedPackages ->
-                        if (installedPackages.any { it.packageName == KeyMapperImeHelper.KEY_MAPPER_GUI_IME_PACKAGE }) {
-                            neverShowGuiKeyboardPromptsAgain()
-                            return@map false
-                        }
-                    }
-                }
-
-                return@map show
-            }
 
     override fun neverShowGuiKeyboardPromptsAgain() {
         preferenceRepository.set(Keys.acknowledgedGuiKeyboard, true)
@@ -74,12 +59,17 @@ class OnboardingUseCaseImpl(
     override val showFingerprintFeatureNotificationIfAvailable: Flow<Boolean> by lazy {
         combine(
             get(Keys.lastInstalledVersionCodeBackground).map { it ?: -1 },
-            showWhatsNew
-        ) { oldVersionCode, showWhatsNew ->
+            showWhatsNew,
+            get(Keys.approvedFingerprintFeaturePrompt).map { it ?: false },
+            get(Keys.shownAppIntro).map { it ?: false }
+        ) { oldVersionCode, showWhatsNew, approvedPrompt, shownAppIntro ->
             //has the user opened the app and will have already seen that they can remap fingerprint gestures
             val handledUpdateInHomeScreen = !showWhatsNew
 
-            oldVersionCode < VersionUtils.FINGERPRINT_GESTURES_MIN_VERSION && !handledUpdateInHomeScreen
+            oldVersionCode < VersionHelper.FINGERPRINT_GESTURES_MIN_VERSION
+                && !handledUpdateInHomeScreen
+                && !approvedPrompt
+                && shownAppIntro
         }
     }
 
@@ -138,12 +128,17 @@ class OnboardingUseCaseImpl(
     override fun shownQuickStartGuideHint() {
         preferenceRepository.set(Keys.shownQuickStartGuideHint, true)
     }
+
+    override fun isTvDevice(): Boolean {
+        return leanbackAdapter.isTvDevice()
+    }
 }
 
 interface OnboardingUseCase {
     var shownAppIntro: Boolean
 
     val showGuiKeyboardPrompt: Flow<Boolean>
+    fun isTvDevice(): Boolean
     fun neverShowGuiKeyboardPromptsAgain()
 
     var approvedFingerprintFeaturePrompt: Boolean

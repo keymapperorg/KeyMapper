@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.StateFlow
  * Created by sds100 on 11/02/2020.
  */
 
-interface MultiSelectProvider {
+interface MultiSelectProvider<T> {
     val state: StateFlow<SelectionState>
 
     /**
@@ -16,12 +16,14 @@ interface MultiSelectProvider {
 
     fun stopSelecting()
 
-    fun toggleSelection(id: String)
+    fun toggleSelection(id: T)
 
-    fun select(vararg id: String)
-    fun deselect(vararg id: String)
+    fun select(vararg id: T)
+    fun deselect(vararg id: T)
 
-    fun isSelected(id: String): Boolean
+    fun isSelected(id: T): Boolean
+    fun getSelectedIds(): Set<T>
+    fun isSelecting(): Boolean
 
     fun reset()
 }

@@ -3,7 +3,9 @@ package io.github.sds100.keymapper.constraints
 import io.github.sds100.keymapper.data.entities.ConstraintEntity
 import io.github.sds100.keymapper.data.entities.Extra
 import io.github.sds100.keymapper.data.entities.getData
+import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.display.Orientation
+import io.github.sds100.keymapper.util.getKey
 import io.github.sds100.keymapper.util.valueOrNull
 import kotlinx.serialization.Serializable
 import java.util.*
@@ -24,6 +26,15 @@ sealed class Constraint {
 
     @Serializable
     data class AppPlayingMedia(val packageName: String) : Constraint()
+
+    @Serializable
+    data class AppNotPlayingMedia(val packageName: String) : Constraint()
+
+    @Serializable
+    object MediaPlaying : Constraint()
+
+    @Serializable
+    object NoMediaPlaying : Constraint()
 
     @Serializable
     data class BtDeviceConnected(val bluetoothAddress: String, val deviceName: String) :
@@ -47,6 +58,34 @@ sealed class Constraint {
 
     @Serializable
     data class OrientationCustom(val orientation: Orientation) : Constraint()
+
+    @Serializable
+    data class FlashlightOn(val lens: CameraLens) : Constraint()
+
+    @Serializable
+    data class FlashlightOff(val lens: CameraLens) : Constraint()
+
+    @Serializable
+    object WifiOn : Constraint()
+
+    @Serializable
+    object WifiOff : Constraint()
+
+    @Serializable
+    data class WifiConnected(
+        /**
+         * Null if connected to any wifi network.
+         */
+        val ssid: String?
+    ) : Constraint()
+
+    @Serializable
+    data class WifiDisconnected(
+        /**
+         * Null if disconnected from any wifi network.
+         */
+        val ssid: String?
+    ) : Constraint()
 }
 
 object ConstraintModeEntityMapper {
@@ -63,6 +102,12 @@ object ConstraintModeEntityMapper {
 }
 
 object ConstraintEntityMapper {
+
+    private val LENS_MAP = mapOf(
+        CameraLens.BACK to "option_lens_back",
+        CameraLens.FRONT to "option_lens_front"
+    )
+
     fun fromEntity(entity: ConstraintEntity): Constraint {
         fun getPackageName(): String {
             return entity.extras.getData(ConstraintEntity.EXTRA_PACKAGE_NAME).valueOrNull()!!
@@ -76,10 +121,25 @@ object ConstraintEntityMapper {
             return entity.extras.getData(ConstraintEntity.EXTRA_BT_NAME).valueOrNull()!!
         }
 
+        fun getCameraLens(): CameraLens {
+            val extraValue =
+                entity.extras.getData(ConstraintEntity.EXTRA_FLASHLIGHT_CAMERA_LENS).valueOrNull()!!
+            return LENS_MAP.getKey(extraValue)!!
+        }
+
+        fun getSsid(): String? {
+            val extraValue =
+                entity.extras.getData(ConstraintEntity.EXTRA_SSID).valueOrNull()
+            return extraValue
+        }
+
         return when (entity.type) {
             ConstraintEntity.APP_FOREGROUND -> Constraint.AppInForeground(getPackageName())
             ConstraintEntity.APP_NOT_FOREGROUND -> Constraint.AppNotInForeground(getPackageName())
             ConstraintEntity.APP_PLAYING_MEDIA -> Constraint.AppPlayingMedia(getPackageName())
+            ConstraintEntity.APP_NOT_PLAYING_MEDIA -> Constraint.AppNotPlayingMedia(getPackageName())
+            ConstraintEntity.MEDIA_PLAYING -> Constraint.MediaPlaying
+            ConstraintEntity.NO_MEDIA_PLAYING -> Constraint.NoMediaPlaying
 
             ConstraintEntity.BT_DEVICE_CONNECTED ->
                 Constraint.BtDeviceConnected(getBluetoothAddress(), getBluetoothDeviceName())
@@ -97,6 +157,14 @@ object ConstraintEntityMapper {
 
             ConstraintEntity.SCREEN_OFF -> Constraint.ScreenOff
             ConstraintEntity.SCREEN_ON -> Constraint.ScreenOn
+
+            ConstraintEntity.FLASHLIGHT_ON -> Constraint.FlashlightOn(getCameraLens())
+            ConstraintEntity.FLASHLIGHT_OFF -> Constraint.FlashlightOff(getCameraLens())
+
+            ConstraintEntity.WIFI_ON -> Constraint.WifiOn
+            ConstraintEntity.WIFI_OFF -> Constraint.WifiOff
+            ConstraintEntity.WIFI_CONNECTED -> Constraint.WifiConnected(getSsid())
+            ConstraintEntity.WIFI_DISCONNECTED -> Constraint.WifiDisconnected(getSsid())
 
             else -> throw Exception("don't know how to convert constraint entity with type ${entity.type}")
         }
@@ -117,6 +185,14 @@ object ConstraintEntityMapper {
             type = ConstraintEntity.APP_PLAYING_MEDIA,
             extras = listOf(Extra(ConstraintEntity.EXTRA_PACKAGE_NAME, constraint.packageName))
         )
+
+        is Constraint.AppNotPlayingMedia -> ConstraintEntity(
+            type = ConstraintEntity.APP_PLAYING_MEDIA,
+            extras = listOf(Extra(ConstraintEntity.EXTRA_PACKAGE_NAME, constraint.packageName))
+        )
+
+        Constraint.MediaPlaying -> ConstraintEntity(ConstraintEntity.MEDIA_PLAYING)
+        Constraint.NoMediaPlaying -> ConstraintEntity(ConstraintEntity.NO_MEDIA_PLAYING)
 
         is Constraint.BtDeviceConnected -> ConstraintEntity(
             type = ConstraintEntity.BT_DEVICE_CONNECTED,
@@ -145,5 +221,37 @@ object ConstraintEntityMapper {
         Constraint.OrientationPortrait -> ConstraintEntity(ConstraintEntity.ORIENTATION_PORTRAIT)
         Constraint.ScreenOff -> ConstraintEntity(ConstraintEntity.SCREEN_OFF)
         Constraint.ScreenOn -> ConstraintEntity(ConstraintEntity.SCREEN_ON)
+
+        is Constraint.FlashlightOff -> ConstraintEntity(
+            ConstraintEntity.FLASHLIGHT_OFF,
+            Extra(ConstraintEntity.EXTRA_FLASHLIGHT_CAMERA_LENS, LENS_MAP[constraint.lens]!!)
+        )
+        is Constraint.FlashlightOn -> ConstraintEntity(
+            ConstraintEntity.FLASHLIGHT_ON,
+            Extra(ConstraintEntity.EXTRA_FLASHLIGHT_CAMERA_LENS, LENS_MAP[constraint.lens]!!)
+        )
+
+        is Constraint.WifiConnected -> {
+            val extras = mutableListOf<Extra>()
+
+            if (constraint.ssid != null) {
+                extras.add(Extra(ConstraintEntity.EXTRA_SSID, constraint.ssid))
+            }
+
+            ConstraintEntity(ConstraintEntity.WIFI_CONNECTED, extras)
+        }
+
+        is Constraint.WifiDisconnected -> {
+            val extras = mutableListOf<Extra>()
+
+            if (constraint.ssid != null) {
+                extras.add(Extra(ConstraintEntity.EXTRA_SSID, constraint.ssid))
+            }
+
+            ConstraintEntity(ConstraintEntity.WIFI_DISCONNECTED, extras)
+        }
+
+        Constraint.WifiOff -> ConstraintEntity(ConstraintEntity.WIFI_OFF)
+        Constraint.WifiOn -> ConstraintEntity(ConstraintEntity.WIFI_ON)
     }
 }

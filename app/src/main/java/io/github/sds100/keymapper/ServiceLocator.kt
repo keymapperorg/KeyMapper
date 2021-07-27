@@ -1,15 +1,17 @@
 package io.github.sds100.keymapper
 
-import android.content.ClipboardManager
 import android.content.Context
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
+import io.github.sds100.keymapper.actions.sound.SoundsManager
+import io.github.sds100.keymapper.actions.sound.SoundsManagerImpl
 import io.github.sds100.keymapper.backup.BackupManager
 import io.github.sds100.keymapper.backup.BackupManagerImpl
 import io.github.sds100.keymapper.data.db.AppDatabase
 import io.github.sds100.keymapper.data.repositories.*
 import io.github.sds100.keymapper.logging.LogRepository
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapRepository
+import io.github.sds100.keymapper.shizuku.ShizukuAdapter
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.airplanemode.AirplaneModeAdapter
 import io.github.sds100.keymapper.system.apps.AppShortcutAdapter
@@ -22,12 +24,14 @@ import io.github.sds100.keymapper.system.display.DisplayAdapter
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.intents.IntentAdapter
+import io.github.sds100.keymapper.system.leanback.LeanbackAdapter
 import io.github.sds100.keymapper.system.lock.LockScreenAdapter
-import io.github.sds100.keymapper.system.media.MediaAdapter
+import io.github.sds100.keymapper.system.media.AndroidMediaAdapter
 import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.system.nfc.NfcAdapter
 import io.github.sds100.keymapper.system.notifications.AndroidNotificationAdapter
 import io.github.sds100.keymapper.system.notifications.NotificationController
+import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapter
 import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
 import io.github.sds100.keymapper.system.permissions.SystemFeatureAdapter
 import io.github.sds100.keymapper.system.phone.PhoneAdapter
@@ -36,7 +40,7 @@ import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.url.OpenUrlAdapter
 import io.github.sds100.keymapper.system.vibrator.VibratorAdapter
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
-import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.util.ui.ResourceProviderImpl
 
 /**
  * Created by sds100 on 17/05/2020.
@@ -86,11 +90,16 @@ object ServiceLocator {
     }
 
     @Volatile
-    private var preferenceRepository: PreferenceRepository? = null
+    private var settingsRepository: PreferenceRepository? = null
 
-    fun preferenceRepository(context: Context): PreferenceRepository {
+    fun settingsRepository(context: Context): PreferenceRepository {
         synchronized(this) {
-            return preferenceRepository ?: createPreferenceRepository(context)
+            return settingsRepository ?: SettingsPreferenceRepository(
+                context.applicationContext,
+                (context.applicationContext as KeyMapperApp).appCoroutineScope
+            ).also {
+                this.settingsRepository = it
+            }
         }
     }
 
@@ -108,17 +117,6 @@ object ServiceLocator {
         }
     }
 
-    private fun createPreferenceRepository(context: Context): PreferenceRepository {
-
-        return preferenceRepository
-            ?: DataStorePreferenceRepository(
-                context.applicationContext,
-                (context.applicationContext as KeyMapperApp).appCoroutineScope
-            ).also {
-                this.preferenceRepository = it
-            }
-    }
-
     @Volatile
     private var backupManager: BackupManager? = null
 
@@ -133,10 +131,25 @@ object ServiceLocator {
             (context.applicationContext as KeyMapperApp).appCoroutineScope,
             fileAdapter(context),
             roomKeymapRepository(context),
-            preferenceRepository(context),
-            fingerprintMapRepository(context)
+            settingsRepository(context),
+            fingerprintMapRepository(context),
+            soundsManager(context)
         ).also {
             this.backupManager = it
+        }
+    }
+
+    @Volatile
+    private var soundsManager: SoundsManager? = null
+
+    fun soundsManager(context: Context): SoundsManager {
+        synchronized(this) {
+            return soundsManager ?: SoundsManagerImpl(
+                (context.applicationContext as KeyMapperApp).appCoroutineScope,
+                fileAdapter(context),
+            ).also {
+                this.soundsManager = it
+            }
         }
     }
 
@@ -160,7 +173,7 @@ object ServiceLocator {
         return (context.applicationContext as KeyMapperApp).notificationController
     }
 
-    fun resourceProvider(context: Context): ResourceProvider {
+    fun resourceProvider(context: Context): ResourceProviderImpl {
         return (context.applicationContext as KeyMapperApp).resourceProvider
     }
 
@@ -180,8 +193,12 @@ object ServiceLocator {
         return (context.applicationContext as KeyMapperApp).systemFeatureAdapter
     }
 
-    fun serviceAdapter(context: Context): AccessibilityServiceAdapter {
-        return (context.applicationContext as KeyMapperApp).serviceAdapter
+    fun accessibilityServiceAdapter(context: Context): AccessibilityServiceAdapter {
+        return (context.applicationContext as KeyMapperApp).accessibilityServiceAdapter
+    }
+
+    fun notificationReceiverAdapter(context: Context): NotificationReceiverAdapter {
+        return (context.applicationContext as KeyMapperApp).notificationReceiverAdapter
     }
 
     fun appShortcutAdapter(context: Context): AppShortcutAdapter {
@@ -220,7 +237,7 @@ object ServiceLocator {
         return (context.applicationContext as KeyMapperApp).phoneAdapter
     }
 
-    fun mediaAdapter(context: Context): MediaAdapter {
+    fun mediaAdapter(context: Context): AndroidMediaAdapter {
         return (context.applicationContext as KeyMapperApp).mediaAdapter
     }
 
@@ -246,6 +263,14 @@ object ServiceLocator {
 
     fun clipboardAdapter(context: Context): ClipboardAdapter {
         return (context.applicationContext as KeyMapperApp).clipboardAdapter
+    }
+
+    fun shizukuAdapter(context: Context): ShizukuAdapter {
+        return (context.applicationContext as KeyMapperApp).shizukuAdapter
+    }
+
+    fun leanbackAdapter(context: Context): LeanbackAdapter {
+        return (context.applicationContext as KeyMapperApp).leanbackAdapter
     }
 
     private fun createDatabase(context: Context): AppDatabase {

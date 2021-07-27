@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
-    android:accessibilityFlags="flagRequestFilterKeyEvents|flagReportViewIds|flagDefault|flagIncludeNotImportantViews"
     android:canPerformGestures="true"
     android:canRequestFilterKeyEvents="true"
     android:canRequestFingerprintGestures="true"
     android:canRetrieveWindowContent="true"
     android:accessibilityFeedbackType="feedbackGeneric"
     android:accessibilityEventTypes="typeViewFocused|typeViewClicked"
-    android:description="@string/accessibility_service_description"
     android:notificationTimeout="0"
-    android:settingsActivity="io.github.sds100.keymapper.activity.MainActivity" />
+    android:description="@string/accessibility_service_description" />

@@ -19,6 +19,10 @@
         <variable
             name="onButton2ClickListener"
             type="View.OnClickListener" />
+
+        <variable
+            name="onButton3ClickListener"
+            type="View.OnClickListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -105,9 +109,24 @@
             app:backgroundTint="@color/appintro_default_fab_background_color"
             app:elevation="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/button3"
             app:layout_constraintStart_toEndOf="@id/button1"
             tools:text="Button 2" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button3"
+            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{onButton3ClickListener}"
+            android:text="@{model.buttonText3}"
+            android:visibility="@{model.buttonText3 == null ? View.GONE : View.VISIBLE}"
+            app:backgroundTint="@color/appintro_default_fab_background_color"
+            app:elevation="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/button2"
+            tools:text="Button 3" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

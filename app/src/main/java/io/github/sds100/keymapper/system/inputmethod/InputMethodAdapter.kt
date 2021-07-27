@@ -13,7 +13,7 @@ interface InputMethodAdapter {
     fun showImePicker(fromForeground: Boolean): Result<*>
     fun enableIme(imeId: String): Result<*>
 
-    suspend fun chooseIme(imeId: String, fromForeground: Boolean): Result<ImeInfo>
+    suspend fun chooseImeWithoutUserInput(imeId: String): Result<ImeInfo>
 
     fun getInfoById(imeId: String): Result<ImeInfo>
     fun getInfoByPackageName(packageName: String): Result<ImeInfo>
@@ -23,5 +23,5 @@ interface InputMethodAdapter {
      */
     val inputMethodHistory: StateFlow<List<ImeInfo>>
     val inputMethods: StateFlow<List<ImeInfo>>
-    val chosenIme: StateFlow<ImeInfo>
+    val chosenIme: StateFlow<ImeInfo?>
 }

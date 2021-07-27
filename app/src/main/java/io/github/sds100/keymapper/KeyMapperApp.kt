@@ -12,6 +12,7 @@ import io.github.sds100.keymapper.data.entities.LogEntryEntity
 import io.github.sds100.keymapper.logging.KeyMapperLoggingTree
 import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerController
 import io.github.sds100.keymapper.settings.ThemeUtils
+import io.github.sds100.keymapper.shizuku.ShizukuAdapterImpl
 import io.github.sds100.keymapper.system.AndroidSystemFeatureAdapter
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.airplanemode.AndroidAirplaneModeAdapter
@@ -27,6 +28,7 @@ import io.github.sds100.keymapper.system.inputmethod.AndroidInputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.AutoSwitchImeController
 import io.github.sds100.keymapper.system.inputmethod.ShowHideInputMethodUseCaseImpl
 import io.github.sds100.keymapper.system.intents.IntentAdapterImpl
+import io.github.sds100.keymapper.system.leanback.LeanbackAdapterImpl
 import io.github.sds100.keymapper.system.lock.AndroidLockScreenAdapter
 import io.github.sds100.keymapper.system.media.AndroidMediaAdapter
 import io.github.sds100.keymapper.system.network.AndroidNetworkAdapter
@@ -34,6 +36,7 @@ import io.github.sds100.keymapper.system.nfc.AndroidNfcAdapter
 import io.github.sds100.keymapper.system.notifications.AndroidNotificationAdapter
 import io.github.sds100.keymapper.system.notifications.ManageNotificationsUseCaseImpl
 import io.github.sds100.keymapper.system.notifications.NotificationController
+import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapter
 import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.phone.AndroidPhoneAdapter
@@ -64,21 +67,24 @@ class KeyMapperApp : MultiDexApplication() {
 
     lateinit var autoSwitchImeController: AutoSwitchImeController
 
-    val resourceProvider by lazy { ResourceProviderImpl(this) }
+    val resourceProvider by lazy { ResourceProviderImpl(this, appCoroutineScope) }
 
     val bluetoothMonitor by lazy { AndroidBluetoothAdapter(this, appCoroutineScope) }
 
     val packageManagerAdapter by lazy {
         AndroidPackageManagerAdapter(
             this,
-            appCoroutineScope
+            appCoroutineScope,
+            permissionAdapter,
+            suAdapter
         )
     }
 
     val inputMethodAdapter by lazy {
         AndroidInputMethodAdapter(
             this,
-            serviceAdapter,
+            appCoroutineScope,
+            accessibilityServiceAdapter,
             permissionAdapter,
             suAdapter
         )
@@ -91,9 +97,17 @@ class KeyMapperApp : MultiDexApplication() {
         )
     }
     val cameraAdapter by lazy { AndroidCameraAdapter(this) }
-    val permissionAdapter by lazy { AndroidPermissionAdapter(this, appCoroutineScope, suAdapter) }
+    val permissionAdapter by lazy {
+        AndroidPermissionAdapter(
+            this,
+            appCoroutineScope,
+            suAdapter,
+            notificationReceiverAdapter
+        )
+    }
     val systemFeatureAdapter by lazy { AndroidSystemFeatureAdapter(this) }
-    val serviceAdapter by lazy { AccessibilityServiceAdapter(this, appCoroutineScope) }
+    val accessibilityServiceAdapter by lazy { AccessibilityServiceAdapter(this, appCoroutineScope) }
+    val notificationReceiverAdapter by lazy { NotificationReceiverAdapter(this, appCoroutineScope) }
     val appShortcutAdapter by lazy { AndroidAppShortcutAdapter(this) }
     val fileAdapter by lazy { AndroidFileAdapter(this) }
     val popupMessageAdapter by lazy { AndroidToastAdapter(this) }
@@ -103,27 +117,29 @@ class KeyMapperApp : MultiDexApplication() {
     val suAdapter by lazy {
         SuAdapterImpl(
             appCoroutineScope,
-            ServiceLocator.preferenceRepository(this)
+            ServiceLocator.settingsRepository(this)
         )
     }
     val phoneAdapter by lazy { AndroidPhoneAdapter(this) }
     val intentAdapter by lazy { IntentAdapterImpl(this) }
-    val mediaAdapter by lazy { AndroidMediaAdapter(this, permissionAdapter) }
+    val mediaAdapter by lazy { AndroidMediaAdapter(this) }
     val lockScreenAdapter by lazy { AndroidLockScreenAdapter(this) }
     val airplaneModeAdapter by lazy { AndroidAirplaneModeAdapter(this, suAdapter) }
     val networkAdapter by lazy { AndroidNetworkAdapter(this, suAdapter) }
     val nfcAdapter by lazy { AndroidNfcAdapter(this, suAdapter) }
     val openUrlAdapter by lazy { AndroidOpenUrlAdapter(this) }
     val clipboardAdapter by lazy { AndroidClipboardAdapter(this) }
+    val shizukuAdapter by lazy { ShizukuAdapterImpl(appCoroutineScope, packageManagerAdapter) }
+    val leanbackAdapter by lazy { LeanbackAdapterImpl(this) }
 
     val recordTriggerController by lazy {
-        RecordTriggerController(appCoroutineScope, serviceAdapter)
+        RecordTriggerController(appCoroutineScope, accessibilityServiceAdapter)
     }
 
     private val loggingTree by lazy {
         KeyMapperLoggingTree(
             appCoroutineScope,
-            ServiceLocator.preferenceRepository(this),
+            ServiceLocator.settingsRepository(this),
             ServiceLocator.logRepository(this)
         )
     }
@@ -132,7 +148,7 @@ class KeyMapperApp : MultiDexApplication() {
 
     override fun onCreate() {
 
-        val priorExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
+        val priorExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
 
         Thread.setDefaultUncaughtExceptionHandler { thread, exception ->
             //log in a blocking manner and always log regardless of whether the setting is turned on
@@ -150,7 +166,7 @@ class KeyMapperApp : MultiDexApplication() {
             priorExceptionHandler?.uncaughtException(thread, exception)
         }
 
-        ServiceLocator.preferenceRepository(this).get(Keys.darkTheme)
+        ServiceLocator.settingsRepository(this).get(Keys.darkTheme)
             .map { it?.toIntOrNull() }
             .map {
                 when (it) {
@@ -173,7 +189,7 @@ class KeyMapperApp : MultiDexApplication() {
         notificationController = NotificationController(
             appCoroutineScope,
             ManageNotificationsUseCaseImpl(
-                ServiceLocator.preferenceRepository(this),
+                ServiceLocator.settingsRepository(this),
                 notificationAdapter,
                 suAdapter
             ),
@@ -181,7 +197,7 @@ class KeyMapperApp : MultiDexApplication() {
             UseCases.showImePicker(this),
             UseCases.controlAccessibilityService(this),
             UseCases.toggleCompatibleIme(this),
-            ShowHideInputMethodUseCaseImpl(ServiceLocator.serviceAdapter(this)),
+            ShowHideInputMethodUseCaseImpl(ServiceLocator.accessibilityServiceAdapter(this)),
             UseCases.fingerprintGesturesSupported(this),
             UseCases.onboarding(this),
             ServiceLocator.resourceProvider(this)
@@ -189,7 +205,7 @@ class KeyMapperApp : MultiDexApplication() {
 
         autoSwitchImeController = AutoSwitchImeController(
             appCoroutineScope,
-            ServiceLocator.preferenceRepository(this),
+            ServiceLocator.settingsRepository(this),
             ServiceLocator.inputMethodAdapter(this),
             UseCases.pauseMappings(this),
             devicesAdapter,
@@ -202,11 +218,11 @@ class KeyMapperApp : MultiDexApplication() {
             fun onResume() {
                 //when the user returns to the app let everything know that the permissions could have changed
                 permissionAdapter.onPermissionsChanged()
-                serviceAdapter.updateWhetherServiceIsEnabled()
+                accessibilityServiceAdapter.updateWhetherServiceIsEnabled()
                 notificationController.onOpenApp()
 
                 if (BuildConfig.DEBUG && permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)) {
-                    serviceAdapter.enableService()
+                    accessibilityServiceAdapter.enableService()
                 }
             }
         })

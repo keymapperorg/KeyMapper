@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.home
 
 import android.content.*
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +12,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import androidx.work.OneTimeWorkRequestBuilder
@@ -26,9 +26,7 @@ import io.github.sds100.keymapper.databinding.FragmentHomeBinding
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.system.url.UrlUtils
 import io.github.sds100.keymapper.util.*
-import io.github.sds100.keymapper.util.ui.DialogUtils
-import io.github.sds100.keymapper.util.ui.TextListItem
-import io.github.sds100.keymapper.util.ui.showPopups
+import io.github.sds100.keymapper.util.ui.*
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.flow.collectLatest
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt
@@ -51,7 +49,7 @@ class HomeFragment : Fragment() {
         registerForActivityResult(ActivityResultContracts.CreateDocument()) {
             it ?: return@registerForActivityResult
 
-            homeViewModel.menuViewModel.onChoseBackupFile(it.toString())
+            homeViewModel.onChoseBackupFile(it.toString())
         }
 
     private val backupFingerprintMapsLauncher =
@@ -72,7 +70,7 @@ class HomeFragment : Fragment() {
         registerForActivityResult(ActivityResultContracts.GetContent()) {
             it ?: return@registerForActivityResult
 
-            homeViewModel.menuViewModel.onChoseRestoreFile(it.toString())
+            homeViewModel.onChoseRestoreFile(it.toString())
         }
 
     private val onPageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
@@ -91,7 +89,6 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         FragmentHomeBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
             _binding = this
@@ -211,6 +208,18 @@ class HomeFragment : Fragment() {
         }
 
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
+            homeViewModel.reportBug.collectLatest {
+                findNavController().navigate(NavAppDirections.goToReportBugActivity())
+            }
+        }
+
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
+            homeViewModel.fixAppKilling.collectLatest {
+                findNavController().navigate(NavAppDirections.goToFixAppKillingActivity())
+            }
+        }
+
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             homeViewModel.tabsState.collectLatest { state ->
                 pagerAdapter.invalidateFragments(state.tabs)
                 binding.viewPager.isUserInputEnabled = state.enableViewPagerSwiping
@@ -249,8 +258,21 @@ class HomeFragment : Fragment() {
         }
 
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
+            homeViewModel.shareBackup.collectLatest { uri ->
+                Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_STREAM, Uri.parse(uri))
+
+                    type = FileUtils.MIME_TYPE_ZIP
+
+                    startActivity(Intent.createChooser(this, getText(R.string.sharesheet_title)))
+                }
+            }
+        }
+
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             homeViewModel.errorListState.collectLatest { state ->
-                binding.recyclerViewError.isVisible = state.isVisible
+                binding.cardViewRecyclerViewErrors.isVisible = state.isVisible
 
                 binding.recyclerViewError.withModels {
                     state.listItems.forEach { listItem ->
@@ -286,7 +308,7 @@ class HomeFragment : Fragment() {
 
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             homeViewModel.openSettings.collectLatest {
-                findNavController().navigate(NavAppDirections.actionGlobalSettingsFragment())
+                findNavController().navigate(NavAppDirections.toSettingsFragment())
             }
         }
     }

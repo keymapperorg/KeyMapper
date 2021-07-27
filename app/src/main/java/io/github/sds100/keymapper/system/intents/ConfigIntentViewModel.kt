@@ -18,7 +18,9 @@ import splitties.bitflags.withFlag
  */
 
 class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
-    ResourceProvider by resourceProvider, PopupViewModel by PopupViewModelImpl() {
+    ResourceProvider by resourceProvider,
+    PopupViewModel by PopupViewModelImpl(),
+    NavigationViewModel by NavigationViewModelImpl() {
 
     companion object {
         private val EXTRA_TYPES = arrayOf(
@@ -166,9 +168,6 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
     private val _returnResult = MutableSharedFlow<ConfigIntentResult>()
     val returnResult = _returnResult.asSharedFlow()
 
-    private val _chooseActivity = MutableSharedFlow<Unit>()
-    val chooseActivity = _chooseActivity.asSharedFlow()
-
     private val _openUrl = MutableSharedFlow<String>()
     val openUrl = _openUrl.asSharedFlow()
 
@@ -192,7 +191,10 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
 
     fun onChooseActivityClick() {
         viewModelScope.launch {
-            _chooseActivity.emit(Unit)
+            val activityInfo = navigate("choose_activity_for_intent", NavDestination.ChooseActivity)
+                ?: return@launch
+
+            setActivity(activityInfo)
         }
     }
 
@@ -275,9 +277,9 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
 
             val dialog = PopupUi.SingleChoice(items)
 
-            val response = showPopup("add_extra", dialog) ?: return@launch
+            val extraType = showPopup("add_extra", dialog) ?: return@launch
 
-            val model = IntentExtraModel(response.item)
+            val model = IntentExtraModel(extraType)
 
             extras.value = extras.value.toMutableList().apply {
                 add(model)
@@ -304,17 +306,71 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
     fun showFlagsDialog() {
         viewModelScope.launch {
 
-            val dialog = PopupUi.MultiChoice(items = availableIntentFlags)
+            val dialogItems = availableIntentFlags.map { MultiChoiceItem(it.first, it.second) }
+            val dialog = PopupUi.MultiChoice(items = dialogItems)
 
-            val response = showPopup("set_flags", dialog) ?: return@launch
+            val selectedFlags = showPopup("set_flags", dialog) ?: return@launch
 
             var newFlags = 0
 
-            response.items.forEach {
+            selectedFlags.forEach {
                 newFlags = newFlags.withFlag(it)
             }
 
             flagsString.value = newFlags.toString()
+        }
+    }
+
+    fun loadResult(result: ConfigIntentResult) {
+        val intent = Intent.parseUri(result.uri, 0)
+
+        description.value = result.description
+        target.value = result.target
+        action.value = intent.action.toString()
+        categoriesString.value = intent.categories.joinToString()
+        data.value = intent.dataString ?: ""
+        targetPackage.value = intent.`package` ?: ""
+        targetClass.value = intent.component?.className ?: ""
+
+        if (intent.flags != 0) {
+            flagsString.value = intent.flags.toString()
+        }
+
+        val extrasBundle = intent.extras
+
+        if (extrasBundle != null) {
+            extras.value = extrasBundle.keySet().mapNotNull { key ->
+                val value = extrasBundle.get(key)
+
+                if (value == null) {
+                    return@mapNotNull null
+                }
+
+                val extraType = when (value) {
+                    is Boolean -> BoolExtraType()
+                    is BooleanArray -> BoolArrayExtraType()
+                    is Int -> IntExtraType()
+                    is IntArray -> IntArrayExtraType()
+                    is Long -> LongExtraType()
+                    is LongArrayExtraType -> LongArrayExtraType()
+                    is Byte -> ByteExtraType()
+                    is ByteArrayExtraType -> ByteArrayExtraType()
+                    is Double -> DoubleExtraType()
+                    is DoubleArray -> DoubleArrayExtraType()
+                    is Float -> FloatExtraType()
+                    is FloatArray -> FloatArrayExtraType()
+                    is Short -> ShortExtraType()
+                    is ShortArray -> ShortArrayExtraType()
+                    is String -> StringExtraType()
+                    else -> throw IllegalArgumentException("Don't know how to conver this extra (${value.javaClass.name}) to an IntentExtraType")
+                }
+
+                IntentExtraModel(
+                    type = extraType,
+                    name = key,
+                    value = value.toString()
+                )
+            }
         }
     }
 

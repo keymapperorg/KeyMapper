@@ -10,6 +10,7 @@ import androidx.core.content.getSystemService
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
+import timber.log.Timber
 import kotlin.collections.set
 
 /**
@@ -18,7 +19,7 @@ import kotlin.collections.set
 class AndroidCameraAdapter(context: Context) : CameraAdapter {
     private val ctx = context.applicationContext
 
-    private val cameraManager: CameraManager = ctx.getSystemService()!!
+    private val cameraManager: CameraManager by lazy { ctx.getSystemService()!! }
 
     private val isFlashEnabledMap = mutableMapOf<CameraLens, Boolean>()
 
@@ -40,6 +41,7 @@ class AndroidCameraAdapter(context: Context) : CameraAdapter {
                                 enabled
                         }
                     } catch (e: Exception) {
+                        Timber.e(e)
                     }
                 }
             }
@@ -56,22 +58,18 @@ class AndroidCameraAdapter(context: Context) : CameraAdapter {
     }
 
     override fun hasFlashFacing(lens: CameraLens): Boolean {
-        ctx.getSystemService<CameraManager>()?.apply {
-            return cameraIdList.toList().any { cameraId ->
-                val camera = getCameraCharacteristics(cameraId)
-                val hasFlash =
-                    camera.get(CameraCharacteristics.FLASH_INFO_AVAILABLE) ?: return false
+        return cameraManager.cameraIdList.any { cameraId ->
+            val camera = cameraManager.getCameraCharacteristics(cameraId)
+            val hasFlash =
+                camera.get(CameraCharacteristics.FLASH_INFO_AVAILABLE) ?: return false
 
-                val lensToCompareSdkValue = when (lens) {
-                    CameraLens.FRONT -> CameraCharacteristics.LENS_FACING_FRONT
-                    CameraLens.BACK -> CameraCharacteristics.LENS_FACING_BACK
-                }
-
-                return hasFlash && camera.get(CameraCharacteristics.LENS_FACING) == lensToCompareSdkValue
+            val lensToCompareSdkValue = when (lens) {
+                CameraLens.FRONT -> CameraCharacteristics.LENS_FACING_FRONT
+                CameraLens.BACK -> CameraCharacteristics.LENS_FACING_BACK
             }
-        }
 
-        return false
+            return hasFlash && camera.get(CameraCharacteristics.LENS_FACING) == lensToCompareSdkValue
+        }
     }
 
     override fun enableFlashlight(lens: CameraLens): Result<*> {
@@ -84,6 +82,10 @@ class AndroidCameraAdapter(context: Context) : CameraAdapter {
 
     override fun toggleFlashlight(lens: CameraLens): Result<*> {
         return setFlashlightMode(!isFlashEnabledMap[lens]!!, lens)
+    }
+
+    override fun isFlashlightOn(lens: CameraLens): Boolean {
+        return isFlashEnabledMap[lens] ?: false
     }
 
     private fun setFlashlightMode(

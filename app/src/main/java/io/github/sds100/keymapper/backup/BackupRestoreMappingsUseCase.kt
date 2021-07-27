@@ -9,25 +9,21 @@ import kotlinx.coroutines.flow.Flow
 
 class BackupRestoreMappingsUseCaseImpl(
     private val backupManager: BackupManager,
-): BackupRestoreMappingsUseCase{
+) : BackupRestoreMappingsUseCase {
 
-    override val onBackupResult: Flow<Result<*>> = backupManager.onBackupResult
-    override val onRestoreResult: Flow<Result<*>> = backupManager.onRestoreResult
     override val onAutomaticBackupResult: Flow<Result<*>> = backupManager.onAutomaticBackupResult
 
-    override fun backupAllMappings(uri: String) {
-        backupManager.backupMappings(uri)
+    override suspend fun backupAllMappings(uri: String): Result<String> {
+        return backupManager.backupMappings(uri)
     }
 
-    override fun restoreMappings(uri: String) {
-        backupManager.restoreMappings(uri)
+    override suspend fun restoreMappings(uri: String): Result<*> {
+        return backupManager.restoreMappings(uri)
     }
 }
 
 interface BackupRestoreMappingsUseCase {
-    val onBackupResult: Flow<Result<*>>
-    val onRestoreResult: Flow<Result<*>>
     val onAutomaticBackupResult: Flow<Result<*>>
-    fun backupAllMappings(uri: String)
-    fun restoreMappings(uri: String)
+    suspend fun backupAllMappings(uri: String): Result<String>
+    suspend fun restoreMappings(uri: String): Result<*>
 }

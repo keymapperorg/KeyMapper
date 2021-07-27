@@ -16,6 +16,7 @@ import io.github.sds100.keymapper.util.dataOrNull
 import io.github.sds100.keymapper.util.mapData
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -56,14 +57,14 @@ class ConfigKeyMapTriggerViewModel(
             )
             RecordTriggerState.Stopped -> getString(R.string.button_record_trigger)
         }
-    }.stateIn(coroutineScope, SharingStarted.Eagerly, "")
+    }.flowOn(Dispatchers.Default).stateIn(coroutineScope, SharingStarted.Lazily, "")
 
     val triggerModeButtonsEnabled: StateFlow<Boolean> = config.mapping.map { state ->
         when (state) {
             is State.Data -> state.data.trigger.keys.size > 1
             State.Loading -> false
         }
-    }.stateIn(coroutineScope, SharingStarted.Eagerly, false)
+    }.flowOn(Dispatchers.Default).stateIn(coroutineScope, SharingStarted.Eagerly, false)
 
     val checkedTriggerModeRadioButton: StateFlow<Int> = config.mapping.map { state ->
         when (state) {
@@ -75,7 +76,8 @@ class ConfigKeyMapTriggerViewModel(
 
             State.Loading -> R.id.radioButtonUndefined
         }
-    }.stateIn(coroutineScope, SharingStarted.Eagerly, R.id.radioButtonUndefined)
+    }.flowOn(Dispatchers.Default)
+        .stateIn(coroutineScope, SharingStarted.Eagerly, R.id.radioButtonUndefined)
 
     val triggerKeyListItems: StateFlow<State<List<TriggerKeyListItem>>> =
         combine(
@@ -87,7 +89,7 @@ class ConfigKeyMapTriggerViewModel(
                 createListItems(keyMap.trigger, showDeviceDescriptors)
             }
 
-        }.stateIn(coroutineScope, SharingStarted.Eagerly, State.Loading)
+        }.flowOn(Dispatchers.Default).stateIn(coroutineScope, SharingStarted.Eagerly, State.Loading)
 
     val clickTypeRadioButtonsVisible: StateFlow<Boolean> = config.mapping.map { state ->
         when (state) {
@@ -98,14 +100,14 @@ class ConfigKeyMapTriggerViewModel(
             }
             State.Loading -> false
         }
-    }.stateIn(coroutineScope, SharingStarted.Eagerly, false)
+    }.flowOn(Dispatchers.Default).stateIn(coroutineScope, SharingStarted.Eagerly, false)
 
     val doublePressButtonVisible: StateFlow<Boolean> = config.mapping.map { state ->
         when (state) {
             is State.Data -> state.data.trigger.keys.size == 1
             State.Loading -> false
         }
-    }.stateIn(coroutineScope, SharingStarted.Eagerly, false)
+    }.flowOn(Dispatchers.Default).stateIn(coroutineScope, SharingStarted.Eagerly, false)
 
     val checkedClickTypeRadioButton: StateFlow<Int> = config.mapping.map { state ->
         when (state) {
@@ -127,15 +129,22 @@ class ConfigKeyMapTriggerViewModel(
             }
             State.Loading -> R.id.radioButtonShortPress
         }
-    }.stateIn(coroutineScope, SharingStarted.Eagerly, R.id.radioButtonShortPress)
+    }.flowOn(Dispatchers.Default)
+        .stateIn(coroutineScope, SharingStarted.Eagerly, R.id.radioButtonShortPress)
 
     private val _errorListItems = MutableStateFlow<List<TextListItem.Error>>(emptyList())
     val errorListItems = _errorListItems.asStateFlow()
 
+    private val _reportBug = MutableSharedFlow<Unit>()
+    val reportBug = _reportBug.asSharedFlow()
+
+    private val _fixAppKilling = MutableSharedFlow<Unit>()
+    val fixAppKilling = _fixAppKilling.asSharedFlow()
+
     init {
         val rebuildErrorList = MutableSharedFlow<State<KeyMapTrigger>>(replay = 1)
 
-        coroutineScope.launch {
+        coroutineScope.launch(Dispatchers.Default) {
             rebuildErrorList.collectLatest { triggerState ->
                 if (triggerState !is State.Data) {
                     _errorListItems.value = emptyList()
@@ -278,15 +287,15 @@ class ConfigKeyMapTriggerViewModel(
                 }
             }
 
-            val response = showPopup(
+            val triggerKeyDeviceId = showPopup(
                 "pick_trigger_key_device",
                 PopupUi.SingleChoice(listItems)
             ) ?: return@launch
 
-            val selectedTriggerKeyDevice = when (response.item) {
+            val selectedTriggerKeyDevice = when (triggerKeyDeviceId) {
                 idAny -> TriggerKeyDevice.Any
                 idInternal -> TriggerKeyDevice.Internal
-                else -> devices.single { it is TriggerKeyDevice.External && it.descriptor == response.item }
+                else -> devices.single { it is TriggerKeyDevice.External && it.descriptor == triggerKeyDeviceId }
             }
 
             config.setTriggerKeyDevice(keyUid, selectedTriggerKeyDevice)
@@ -318,15 +327,13 @@ class ConfigKeyMapTriggerViewModel(
 
             if (result is Error.AccessibilityServiceCrashed) {
 
-                val snackBar = PopupUi.SnackBar(
-                    message = getString(R.string.dialog_message_restart_accessibility_service_to_record_trigger),
-                    actionText = getString(R.string.pos_restart)
-                )
+                val dialog = DialogUtils.keyMapperCrashedDialog(this@ConfigKeyMapTriggerViewModel)
 
-                val response = showPopup("restart_service", snackBar)
+                val response = showPopup("restart_service", dialog)
 
-                if (response != null) {
-                    displayKeyMap.fixError(Error.AccessibilityServiceCrashed)
+                when (response) {
+                    DialogResponse.POSITIVE -> _fixAppKilling.emit(Unit)
+                    DialogResponse.NEUTRAL -> _reportBug.emit(Unit)
                 }
             }
         }

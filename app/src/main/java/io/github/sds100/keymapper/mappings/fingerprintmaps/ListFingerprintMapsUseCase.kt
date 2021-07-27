@@ -5,6 +5,7 @@ import io.github.sds100.keymapper.backup.BackupManager
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.DisplaySimpleMappingUseCase
+import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.State
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -56,8 +57,8 @@ class ListFingerprintMapsUseCaseImpl(
         fingerprintMapRepository.disableFingerprintMap(entityId)
     }
 
-    override fun backupFingerprintMaps(uri: String) {
-        backupManager.backupFingerprintMaps(uri)
+    override suspend fun backupFingerprintMaps(uri: String): Result<String> {
+        return backupManager.backupFingerprintMaps(uri)
     }
 }
 
@@ -68,5 +69,5 @@ interface ListFingerprintMapsUseCase : DisplaySimpleMappingUseCase {
     fun enableFingerprintMap(id: FingerprintMapId)
     fun disableFingerprintMap(id: FingerprintMapId)
     fun resetFingerprintMaps()
-    fun backupFingerprintMaps(uri: String)
+    suspend fun backupFingerprintMaps(uri: String): Result<String>
 }

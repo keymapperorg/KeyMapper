@@ -1,8 +1,8 @@
 package io.github.sds100.keymapper.system.apps
 
 import android.graphics.drawable.Drawable
-import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.util.State
 import kotlinx.coroutines.flow.StateFlow
 
 /**
@@ -18,11 +18,16 @@ interface PackageManagerAdapter {
 
     fun openApp(packageName: String): Result<*>
     fun enableApp(packageName: String)
-    fun installApp(packageName: String)
+    fun downloadApp(packageName: String)
 
     fun launchVoiceAssistant(): Result<*>
     fun launchDeviceAssistant(): Result<*>
     fun isVoiceAssistantInstalled(): Boolean
+
+    /**
+     * Requires root or Shizuku permission.
+     */
+    fun grantPermission(permissionName: String)
 
     fun launchCameraApp(): Result<*>
     fun launchSettingsApp(): Result<*>

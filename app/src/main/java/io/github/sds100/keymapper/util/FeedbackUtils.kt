@@ -12,20 +12,20 @@ import splitties.toast.toast
  */
 
 object FeedbackUtils {
-    fun emailDeveloper(ctx: Context) {
-        Intent(Intent.ACTION_SENDTO).apply {
-            data = Uri.parse("mailto:")
-
+    fun emailBugReport(ctx: Context, bugReportUri: String) {
+        Intent(Intent.ACTION_SEND).apply {
+            type = "*/*"
             putExtra(Intent.EXTRA_EMAIL, arrayOf(ctx.str(R.string.developer_email)))
             putExtra(Intent.EXTRA_SUBJECT, ctx.str(R.string.email_subject))
-            putExtra(Intent.EXTRA_TEXT, ctx.str(R.string.email_default_message))
+            putExtra(Intent.EXTRA_BUG_REPORT, ctx.str(R.string.email_default_message))
+            putExtra(Intent.EXTRA_STREAM, Uri.parse(bugReportUri))
 
             addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_ACTIVITY_NEW_TASK)
 
             try {
                 ctx.startActivity(this)
             } catch (e: ActivityNotFoundException) {
-                ctx.toast(R.string.error_no_app_found_to_send_feedback)
+                ctx.toast(R.string.error_no_app_found_to_send_email)
             }
         }
     }
