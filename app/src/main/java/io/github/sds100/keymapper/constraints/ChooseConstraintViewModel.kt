@@ -29,6 +29,9 @@ class ChooseConstraintViewModel(
             ChooseConstraintType.APP_IN_FOREGROUND,
             ChooseConstraintType.APP_NOT_IN_FOREGROUND,
             ChooseConstraintType.APP_PLAYING_MEDIA,
+            ChooseConstraintType.APP_NOT_PLAYING_MEDIA,
+            ChooseConstraintType.MEDIA_PLAYING,
+            ChooseConstraintType.MEDIA_NOT_PLAYING,
 
             ChooseConstraintType.BT_DEVICE_CONNECTED,
             ChooseConstraintType.BT_DEVICE_DISCONNECTED,
@@ -83,7 +86,8 @@ class ChooseConstraintViewModel(
             when (constraintType) {
                 ChooseConstraintType.APP_IN_FOREGROUND,
                 ChooseConstraintType.APP_NOT_IN_FOREGROUND,
-                ChooseConstraintType.APP_PLAYING_MEDIA -> {
+                ChooseConstraintType.APP_PLAYING_MEDIA,
+                ChooseConstraintType.APP_NOT_PLAYING_MEDIA -> {
                     val packageName =
                         navigate("choose_package_for_constraint", NavDestination.ChooseApp)
                             ?: return@launch
@@ -98,11 +102,17 @@ class ChooseConstraintViewModel(
                         ChooseConstraintType.APP_PLAYING_MEDIA -> Constraint.AppPlayingMedia(
                             packageName
                         )
+                        ChooseConstraintType.APP_NOT_PLAYING_MEDIA -> Constraint.AppNotPlayingMedia(
+                            packageName
+                        )
                         else -> throw Exception("Don't know how to create $constraintType constraint after choosing app")
                     }
 
                     _returnResult.emit(constraint)
                 }
+
+                ChooseConstraintType.MEDIA_PLAYING -> _returnResult.emit(Constraint.MediaPlaying)
+                ChooseConstraintType.MEDIA_NOT_PLAYING -> _returnResult.emit(Constraint.NoMediaPlaying)
 
                 ChooseConstraintType.BT_DEVICE_CONNECTED,
                 ChooseConstraintType.BT_DEVICE_DISCONNECTED -> {
@@ -261,6 +271,9 @@ class ChooseConstraintViewModel(
                 ChooseConstraintType.APP_IN_FOREGROUND -> getString(R.string.constraint_choose_app_foreground)
                 ChooseConstraintType.APP_NOT_IN_FOREGROUND -> getString(R.string.constraint_choose_app_not_foreground)
                 ChooseConstraintType.APP_PLAYING_MEDIA -> getString(R.string.constraint_choose_app_playing_media)
+                ChooseConstraintType.APP_NOT_PLAYING_MEDIA -> getString(R.string.constraint_choose_app_not_playing_media)
+                ChooseConstraintType.MEDIA_NOT_PLAYING -> getString(R.string.constraint_choose_media_not_playing)
+                ChooseConstraintType.MEDIA_PLAYING -> getString(R.string.constraint_choose_media_playing)
                 ChooseConstraintType.BT_DEVICE_CONNECTED -> getString(R.string.constraint_choose_bluetooth_device_connected)
                 ChooseConstraintType.BT_DEVICE_DISCONNECTED -> getString(R.string.constraint_choose_bluetooth_device_disconnected)
                 ChooseConstraintType.SCREEN_ON -> getString(R.string.constraint_choose_screen_on_description)

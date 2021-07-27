@@ -36,6 +36,20 @@ class GetConstraintErrorUseCaseImpl(
                 return getAppError(constraint.packageName)
             }
 
+            is Constraint.AppNotPlayingMedia -> {
+                if (!permissionAdapter.isGranted(Permission.NOTIFICATION_LISTENER)) {
+                    return Error.PermissionDenied(Permission.NOTIFICATION_LISTENER)
+                }
+
+                return getAppError(constraint.packageName)
+            }
+
+            Constraint.MediaPlaying, Constraint.NoMediaPlaying -> {
+                if (!permissionAdapter.isGranted(Permission.NOTIFICATION_LISTENER)) {
+                    return Error.PermissionDenied(Permission.NOTIFICATION_LISTENER)
+                }
+            }
+
             is Constraint.BtDeviceConnected,
             is Constraint.BtDeviceDisconnected ->
                 if (!systemFeatureAdapter.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)) {

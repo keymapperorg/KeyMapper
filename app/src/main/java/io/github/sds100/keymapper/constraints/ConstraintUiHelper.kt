@@ -37,6 +37,20 @@ class ConstraintUiHelper(
                 onError = { getString(R.string.constraint_choose_app_playing_media) }
             )
 
+        is Constraint.AppNotPlayingMedia ->
+            getAppName(constraint.packageName).handle(
+                onSuccess = {
+                    getString(
+                        R.string.constraint_app_not_playing_media_description,
+                        it
+                    )
+                },
+                onError = { getString(R.string.constraint_choose_app_playing_media) }
+            )
+
+        Constraint.MediaPlaying -> getString(R.string.constraint_choose_media_playing)
+        Constraint.NoMediaPlaying -> getString(R.string.constraint_choose_media_not_playing)
+
         is Constraint.BtDeviceConnected ->
             getString(
                 R.string.constraint_bt_device_connected_description,
@@ -104,6 +118,17 @@ class ConstraintUiHelper(
         is Constraint.AppInForeground -> getAppIconInfo(constraint.packageName)
         is Constraint.AppNotInForeground -> getAppIconInfo(constraint.packageName)
         is Constraint.AppPlayingMedia -> getAppIconInfo(constraint.packageName)
+        is Constraint.AppNotPlayingMedia -> getAppIconInfo(constraint.packageName)
+        Constraint.MediaPlaying -> IconInfo(
+            getDrawable(R.drawable.ic_outline_play_arrow_24),
+            TintType.OnSurface
+        )
+
+        Constraint.NoMediaPlaying -> IconInfo(
+            getDrawable(R.drawable.ic_outline_stop_circle_24),
+            TintType.OnSurface
+        )
+
         is Constraint.BtDeviceConnected -> IconInfo(
             drawable = getDrawable(R.drawable.ic_outline_bluetooth_connected_24),
             tintType = TintType.OnSurface

@@ -32,6 +32,9 @@ data class ConstraintEntity(
         const val APP_FOREGROUND = "constraint_app_foreground"
         const val APP_NOT_FOREGROUND = "constraint_app_not_foreground"
         const val APP_PLAYING_MEDIA = "constraint_app_playing_media"
+        const val APP_NOT_PLAYING_MEDIA = "constraint_app_not_playing_media"
+        const val MEDIA_PLAYING = "constraint_media_playing"
+        const val NO_MEDIA_PLAYING = "constraint_no_media_playing"
 
         const val BT_DEVICE_CONNECTED = "constraint_bt_device_connected"
         const val BT_DEVICE_DISCONNECTED = "constraint_bt_device_disconnected"

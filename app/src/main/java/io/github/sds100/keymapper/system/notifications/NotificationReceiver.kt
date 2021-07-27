@@ -29,9 +29,11 @@ class NotificationReceiver : NotificationListenerService(), LifecycleOwner {
         )
     }
 
+    private val mediaAdapter by lazy { ServiceLocator.mediaAdapter(this) }
+
     private val activeSessionsChangeListener =
         MediaSessionManager.OnActiveSessionsChangedListener { controllers ->
-            ServiceLocator.mediaAdapter(this).onActiveMediaSessionChange(controllers ?: emptyList())
+            mediaAdapter.onActiveMediaSessionChange(controllers ?: emptyList())
         }
 
     private var lastNotificationKey: String? = null
@@ -87,12 +89,15 @@ class NotificationReceiver : NotificationListenerService(), LifecycleOwner {
             activeSessionsChangeListener,
             notificationListenerComponent
         )
+
+        val activeSessions = mediaSessionManager.getActiveSessions(notificationListenerComponent)
+        mediaAdapter.onActiveMediaSessionChange(activeSessions)
     }
 
     override fun onListenerDisconnected() {
         mediaSessionManager.removeOnActiveSessionsChangedListener(activeSessionsChangeListener)
 
-        ServiceLocator.mediaAdapter(this).onActiveMediaSessionChange(emptyList())
+        mediaAdapter.onActiveMediaSessionChange(emptyList())
 
         super.onListenerDisconnected()
     }

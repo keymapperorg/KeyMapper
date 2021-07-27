@@ -9,6 +9,7 @@ import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.system.media.MediaAdapter
 import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.util.firstBlocking
+import timber.log.Timber
 
 /**
  * Created by sds100 on 08/05/2021.
@@ -45,11 +46,16 @@ class ConstraintSnapshotImpl(
     }
 
     private fun isSatisfied(constraint: Constraint): Boolean {
+        Timber.e(appsPlayingMedia.joinToString())
         return when (constraint) {
             is Constraint.AppInForeground -> appInForeground == constraint.packageName
             is Constraint.AppNotInForeground -> appInForeground != constraint.packageName
             is Constraint.AppPlayingMedia ->
                 appsPlayingMedia.contains(constraint.packageName)
+            is Constraint.AppNotPlayingMedia ->
+                appsPlayingMedia.none { it == constraint.packageName }
+            Constraint.MediaPlaying -> appsPlayingMedia.isNotEmpty()
+            Constraint.NoMediaPlaying -> appsPlayingMedia.isEmpty()
             is Constraint.BtDeviceConnected -> {
                 connectedBluetoothDevices.any { it.address == constraint.bluetoothAddress }
             }

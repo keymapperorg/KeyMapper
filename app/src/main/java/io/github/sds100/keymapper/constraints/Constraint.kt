@@ -28,6 +28,15 @@ sealed class Constraint {
     data class AppPlayingMedia(val packageName: String) : Constraint()
 
     @Serializable
+    data class AppNotPlayingMedia(val packageName: String) : Constraint()
+
+    @Serializable
+    object MediaPlaying : Constraint()
+
+    @Serializable
+    object NoMediaPlaying : Constraint()
+
+    @Serializable
     data class BtDeviceConnected(val bluetoothAddress: String, val deviceName: String) :
         Constraint()
 
@@ -128,6 +137,9 @@ object ConstraintEntityMapper {
             ConstraintEntity.APP_FOREGROUND -> Constraint.AppInForeground(getPackageName())
             ConstraintEntity.APP_NOT_FOREGROUND -> Constraint.AppNotInForeground(getPackageName())
             ConstraintEntity.APP_PLAYING_MEDIA -> Constraint.AppPlayingMedia(getPackageName())
+            ConstraintEntity.APP_NOT_PLAYING_MEDIA -> Constraint.AppNotPlayingMedia(getPackageName())
+            ConstraintEntity.MEDIA_PLAYING -> Constraint.MediaPlaying
+            ConstraintEntity.NO_MEDIA_PLAYING -> Constraint.NoMediaPlaying
 
             ConstraintEntity.BT_DEVICE_CONNECTED ->
                 Constraint.BtDeviceConnected(getBluetoothAddress(), getBluetoothDeviceName())
@@ -173,6 +185,14 @@ object ConstraintEntityMapper {
             type = ConstraintEntity.APP_PLAYING_MEDIA,
             extras = listOf(Extra(ConstraintEntity.EXTRA_PACKAGE_NAME, constraint.packageName))
         )
+
+        is Constraint.AppNotPlayingMedia -> ConstraintEntity(
+            type = ConstraintEntity.APP_PLAYING_MEDIA,
+            extras = listOf(Extra(ConstraintEntity.EXTRA_PACKAGE_NAME, constraint.packageName))
+        )
+
+        Constraint.MediaPlaying -> ConstraintEntity(ConstraintEntity.MEDIA_PLAYING)
+        Constraint.NoMediaPlaying -> ConstraintEntity(ConstraintEntity.NO_MEDIA_PLAYING)
 
         is Constraint.BtDeviceConnected -> ConstraintEntity(
             type = ConstraintEntity.BT_DEVICE_CONNECTED,
