@@ -18,6 +18,10 @@ object ConstraintUtils {
         ChooseConstraintType.ORIENTATION_270,
         ChooseConstraintType.FLASHLIGHT_ON,
         ChooseConstraintType.FLASHLIGHT_OFF,
+        ChooseConstraintType.WIFI_ON,
+        ChooseConstraintType.WIFI_OFF,
+        ChooseConstraintType.WIFI_CONNECTED,
+        ChooseConstraintType.WIFI_DISCONNECTED
     )
 
     val KEY_MAP_ALLOWED_CONSTRAINTS = listOf(

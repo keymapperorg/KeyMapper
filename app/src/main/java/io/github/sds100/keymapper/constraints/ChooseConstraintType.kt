@@ -26,5 +26,10 @@ enum class ChooseConstraintType {
     ORIENTATION_270,
 
     FLASHLIGHT_ON,
-    FLASHLIGHT_OFF
+    FLASHLIGHT_OFF,
+
+    WIFI_ON,
+    WIFI_OFF,
+    WIFI_CONNECTED,
+    WIFI_DISCONNECTED
 }

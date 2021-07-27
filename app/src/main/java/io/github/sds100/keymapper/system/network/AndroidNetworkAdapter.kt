@@ -21,6 +21,15 @@ class AndroidNetworkAdapter(
     private val wifiManager: WifiManager by lazy { ctx.getSystemService()!! }
     private val telephonyManager: TelephonyManager by lazy { ctx.getSystemService()!! }
 
+    override val connectedWifiSSID: String?
+        get() = wifiManager.connectionInfo?.ssid?.let { ssid ->
+            if (ssid == WifiManager.UNKNOWN_SSID) {
+                null
+            } else {
+                ssid.removeSurrounding("\"")
+            }
+        }
+
     override fun isWifiEnabled(): Boolean {
         return wifiManager.isWifiEnabled
     }
@@ -59,4 +68,16 @@ class AndroidNetworkAdapter(
         return suAdapter.execute("svc data disable")
     }
 
+    /**
+     * @return Null on Android 10+ because there is no API to do this anymore.
+     */
+    override fun getKnownWifiSSIDs(): List<String>? {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            return null
+        } else {
+            return wifiManager.configuredNetworks?.map {
+                it.SSID.removeSurrounding("\"")
+            } ?: emptyList()
+        }
+    }
 }

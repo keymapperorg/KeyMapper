@@ -121,7 +121,8 @@ fun PopupViewModel.showPopups(
                     event.ui.hint,
                     event.ui.allowEmpty,
                     event.ui.text,
-                    event.ui.inputType
+                    event.ui.inputType,
+                    event.ui.message
                 )
 
                 is PopupUi.Dialog -> ctx.materialAlertDialog(lifecycleOwner, event.ui)

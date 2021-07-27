@@ -5,6 +5,7 @@ import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.display.DisplayAdapter
 import io.github.sds100.keymapper.system.media.MediaAdapter
+import io.github.sds100.keymapper.system.network.NetworkAdapter
 
 /**
  * Created by sds100 on 17/04/2021.
@@ -15,11 +16,19 @@ class DetectConstraintsUseCaseImpl(
     private val mediaAdapter: MediaAdapter,
     private val devicesAdapter: DevicesAdapter,
     private val displayAdapter: DisplayAdapter,
-    private val cameraAdapter: CameraAdapter
+    private val cameraAdapter: CameraAdapter,
+    private val networkAdapter: NetworkAdapter
 ) : DetectConstraintsUseCase {
 
     override fun getSnapshot(): ConstraintSnapshotImpl {
-        return ConstraintSnapshotImpl(accessibilityService, mediaAdapter, devicesAdapter, displayAdapter, cameraAdapter)
+        return ConstraintSnapshotImpl(
+            accessibilityService,
+            mediaAdapter,
+            devicesAdapter,
+            displayAdapter,
+            networkAdapter,
+            cameraAdapter
+        )
     }
 }
 

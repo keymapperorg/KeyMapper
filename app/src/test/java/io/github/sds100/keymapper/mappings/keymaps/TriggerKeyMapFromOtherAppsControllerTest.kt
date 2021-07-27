@@ -83,7 +83,8 @@ class TriggerKeyMapFromOtherAppsControllerTest {
                 mediaAdapter = mock(),
                 devicesAdapter = mock(),
                 displayAdapter = mock(),
-                cameraAdapter = mock()
+                cameraAdapter = mock(),
+                networkAdapter = mock()
             )
         }
 

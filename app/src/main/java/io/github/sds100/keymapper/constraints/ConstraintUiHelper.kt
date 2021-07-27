@@ -81,6 +81,23 @@ class ConstraintUiHelper(
             R.string.constraint_flashlight_on_description,
             getString(CameraLensUtils.getLabel(constraint.lens))
         )
+
+        is Constraint.WifiConnected -> {
+            if (constraint.ssid == null) {
+                getString(R.string.constraint_wifi_connected_any_description)
+            } else {
+                getString(R.string.constraint_wifi_connected_description, constraint.ssid)
+            }
+        }
+        is Constraint.WifiDisconnected -> {
+            if (constraint.ssid == null) {
+                getString(R.string.constraint_wifi_disconnected_any_description)
+            } else {
+                getString(R.string.constraint_wifi_disconnected_description, constraint.ssid)
+            }
+        }
+        Constraint.WifiOff -> getString(R.string.constraint_wifi_off)
+        Constraint.WifiOn -> getString(R.string.constraint_wifi_on)
     }
 
     fun getIcon(constraint: Constraint): IconInfo? = when (constraint) {
@@ -138,6 +155,23 @@ class ConstraintUiHelper(
 
         is Constraint.FlashlightOn -> IconInfo(
             drawable = getDrawable(R.drawable.ic_flashlight),
+            tintType = TintType.OnSurface
+        )
+
+        is Constraint.WifiConnected -> IconInfo(
+            drawable = getDrawable(R.drawable.ic_outline_wifi_24),
+            tintType = TintType.OnSurface
+        )
+        is Constraint.WifiDisconnected -> IconInfo(
+            drawable = getDrawable(R.drawable.ic_outline_signal_wifi_statusbar_null_24),
+            tintType = TintType.OnSurface
+        )
+        Constraint.WifiOff -> IconInfo(
+            drawable = getDrawable(R.drawable.ic_outline_wifi_off_24),
+            tintType = TintType.OnSurface
+        )
+        Constraint.WifiOn -> IconInfo(
+            drawable = getDrawable(R.drawable.ic_outline_wifi_24),
             tintType = TintType.OnSurface
         )
     }

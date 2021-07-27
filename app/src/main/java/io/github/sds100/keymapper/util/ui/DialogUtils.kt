@@ -154,7 +154,8 @@ suspend fun Context.editTextStringAlertDialog(
     hint: String,
     allowEmpty: Boolean = false,
     initialText: String = "",
-    inputType: Int? = null
+    inputType: Int? = null,
+    message: CharSequence? = null,
 ) = suspendCancellableCoroutine<String?> { continuation ->
 
     val text = MutableStateFlow(initialText)
@@ -172,6 +173,10 @@ suspend fun Context.editTextStringAlertDialog(
             }
 
             setView(this.root)
+        }
+
+        if (message != null) {
+            this.message = message
         }
 
         okButton {

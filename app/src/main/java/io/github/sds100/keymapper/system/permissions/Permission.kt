@@ -14,5 +14,6 @@ enum class Permission {
     CALL_PHONE,
     ROOT,
     IGNORE_BATTERY_OPTIMISATION,
-    SHIZUKU
+    SHIZUKU,
+    ACCESS_FINE_LOCATION
 }

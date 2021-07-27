@@ -131,7 +131,8 @@ object UseCases {
         ServiceLocator.mediaAdapter(service),
         ServiceLocator.devicesAdapter(service),
         ServiceLocator.displayAdapter(service),
-        ServiceLocator.cameraAdapter(service)
+        ServiceLocator.cameraAdapter(service),
+        ServiceLocator.networkAdapter(service)
     )
 
     fun performActions(ctx: Context, service: IAccessibilityService) =

@@ -26,7 +26,8 @@ sealed class PopupUi<R> {
         val hint: String,
         val allowEmpty: Boolean,
         val text: String = "",
-        val inputType: Int? = null
+        val inputType: Int? = null,
+        val message: CharSequence? = null,
     ) : PopupUi<String>()
 
     data class SingleChoice<ID>(

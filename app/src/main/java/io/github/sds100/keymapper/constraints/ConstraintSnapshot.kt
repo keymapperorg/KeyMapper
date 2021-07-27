@@ -7,6 +7,7 @@ import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.display.DisplayAdapter
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.system.media.MediaAdapter
+import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.util.firstBlocking
 
 /**
@@ -21,6 +22,7 @@ class ConstraintSnapshotImpl(
     mediaAdapter: MediaAdapter,
     devicesAdapter: DevicesAdapter,
     displayAdapter: DisplayAdapter,
+    networkAdapter: NetworkAdapter,
     private val cameraAdapter: CameraAdapter
 ) : ConstraintSnapshot {
     private val appInForeground: String? by lazy { accessibilityService.rootNode?.packageName }
@@ -28,6 +30,8 @@ class ConstraintSnapshotImpl(
     private val orientation: Orientation by lazy { displayAdapter.orientation }
     private val isScreenOn: Boolean by lazy { displayAdapter.isScreenOn.firstBlocking() }
     private val appsPlayingMedia: List<String> by lazy { mediaAdapter.getPackagesPlayingMedia() }
+    private val isWifiEnabled: Boolean by lazy { networkAdapter.isWifiEnabled() }
+    private val connectedWifiSSID: String? by lazy { networkAdapter.connectedWifiSSID }
 
     override fun isSatisfied(constraintState: ConstraintState): Boolean {
         return when (constraintState.mode) {
@@ -61,6 +65,23 @@ class ConstraintSnapshotImpl(
             Constraint.ScreenOn -> isScreenOn
             is Constraint.FlashlightOff -> !cameraAdapter.isFlashlightOn(constraint.lens)
             is Constraint.FlashlightOn -> cameraAdapter.isFlashlightOn(constraint.lens)
+            is Constraint.WifiConnected ->
+                if (constraint.ssid == null) {
+                    //connected to any network
+                    connectedWifiSSID != null
+                } else {
+                    connectedWifiSSID == constraint.ssid
+                }
+            is Constraint.WifiDisconnected ->
+                if (constraint.ssid == null) {
+                    //connected to no network
+                    connectedWifiSSID == null
+                } else {
+                    connectedWifiSSID != constraint.ssid
+                }
+
+            Constraint.WifiOff -> !isWifiEnabled
+            Constraint.WifiOn -> isWifiEnabled
         }
     }
 }

@@ -170,6 +170,7 @@
     <string name="hint_intent_description">Description for Key Mapper (required)</string>
     <string name="hint_intent_flags">Flags</string>
     <string name="hint_sound_file_description">Sound file description</string>
+    <string name="hint_wifi_ssid">WiFi network SSID</string>
     <!--  Hints  -->
 
     <!--  Radio buttons  -->
@@ -280,6 +281,19 @@
     <string name="constraint_choose_app_playing_media">Specific app playing media</string>
     <string name="constraint_flashlight_on">Flashlight is on</string>
     <string name="constraint_flashlight_off">Flashlight is off</string>
+
+    <string name="constraint_wifi_on">WiFi is on</string>
+    <string name="constraint_wifi_off">WiFi is off</string>
+    <string name="constraint_wifi_connected">Connected to a WiFi network</string>
+    <string name="constraint_wifi_disconnected">Disconnected from a WiFi network</string>
+    <string name="constraint_wifi_message_cant_list_networks">You will have to type the SSID manually because apps aren\'t allowed to query the list of known WiFi networks on Android 10 and newer.
+    
+    Leave it empty if any WiFi network should be matched.</string>
+    <string name="constraint_wifi_pick_network_any">Any</string>
+    <string name="constraint_wifi_connected_description">Connected to %s WiFi</string>
+    <string name="constraint_wifi_disconnected_description">Disonnected from %s WiFi</string>
+    <string name="constraint_wifi_connected_any_description">Connected to any WiFi</string>
+    <string name="constraint_wifi_disconnected_any_description">Disonnected to no Wifi</string>
 
     <string name="orientation_0">Portrait (0°)</string>
     <string name="orientation_90">Landscape (90°)</string>
@@ -992,6 +1006,7 @@
     <string name="error_shizuku_permission_denied">Shizuku permission is denied!</string>
     <string name="error_shizuku_not_started">Shizuku is not started!</string>
 
+    <string name="error_access_fine_location_permission_denied">Denied permission to read fine location!</string>
     <!-- Error messages -->
 
     <!-- action labels -->

@@ -139,6 +139,12 @@ class AndroidPermissionAdapter(
                     false
                 }
             }
+
+            Permission.ACCESS_FINE_LOCATION ->
+                ContextCompat.checkSelfPermission(
+                    ctx,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) == PERMISSION_GRANTED
         }
     }
 

@@ -17,7 +17,7 @@ import kotlinx.coroutines.withContext
  */
 
 class ChooseConstraintViewModel(
-    private val isSupported: IsConstraintSupportedUseCase,
+    private val useCase: CreateConstraintUseCase,
     resourceProvider: ResourceProvider
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
@@ -44,7 +44,12 @@ class ChooseConstraintViewModel(
             ChooseConstraintType.ORIENTATION_270,
 
             ChooseConstraintType.FLASHLIGHT_ON,
-            ChooseConstraintType.FLASHLIGHT_OFF
+            ChooseConstraintType.FLASHLIGHT_OFF,
+
+            ChooseConstraintType.WIFI_ON,
+            ChooseConstraintType.WIFI_OFF,
+            ChooseConstraintType.WIFI_CONNECTED,
+            ChooseConstraintType.WIFI_DISCONNECTED
         )
     }
 
@@ -177,6 +182,60 @@ class ChooseConstraintViewModel(
                     val lens = chooseFlashlightLens() ?: return@launch
                     _returnResult.emit(Constraint.FlashlightOff(lens))
                 }
+
+                ChooseConstraintType.WIFI_ON -> {
+                    _returnResult.emit(Constraint.WifiOn)
+                }
+
+                ChooseConstraintType.WIFI_OFF -> {
+                    _returnResult.emit(Constraint.WifiOff)
+                }
+
+                ChooseConstraintType.WIFI_CONNECTED, ChooseConstraintType.WIFI_DISCONNECTED -> {
+                    val knownSSIDs = useCase.getKnownWiFiSSIDs()
+
+                    val chosenSSID: String?
+
+                    if (knownSSIDs == null) {
+                        val dialog = PopupUi.Text(
+                            hint = getString(R.string.hint_wifi_ssid),
+                            allowEmpty = true,
+                            message = getString(R.string.constraint_wifi_message_cant_list_networks)
+                        )
+
+                        val ssidText = showPopup("type_ssid", dialog) ?: return@launch
+
+                        if (ssidText.isBlank()) {
+                            chosenSSID = null
+                        } else {
+                            chosenSSID = ssidText
+                        }
+                    } else {
+                        val anySSIDItem =
+                            "any" to getString(R.string.constraint_wifi_pick_network_any)
+
+                        val ssidItems = knownSSIDs.map { "ssid_$it" to it }
+
+                        val items = listOf(anySSIDItem).plus(ssidItems)
+
+                        val chosenItem =
+                            showPopup("choose_ssid", PopupUi.SingleChoice(items)) ?: return@launch
+
+                        if (chosenItem == anySSIDItem.first) {
+                            chosenSSID = null
+                        } else {
+                            chosenSSID = items.single { it.first == chosenItem }.second
+                        }
+                    }
+
+                    when (constraintType) {
+                        ChooseConstraintType.WIFI_CONNECTED ->
+                            _returnResult.emit(Constraint.WifiConnected(chosenSSID))
+
+                        ChooseConstraintType.WIFI_DISCONNECTED ->
+                            _returnResult.emit(Constraint.WifiDisconnected(chosenSSID))
+                    }
+                }
             }
         }
     }
@@ -214,9 +273,13 @@ class ChooseConstraintViewModel(
                 ChooseConstraintType.ORIENTATION_270 -> getString(R.string.constraint_choose_orientation_270)
                 ChooseConstraintType.FLASHLIGHT_ON -> getString(R.string.constraint_flashlight_on)
                 ChooseConstraintType.FLASHLIGHT_OFF -> getString(R.string.constraint_flashlight_off)
+                ChooseConstraintType.WIFI_ON -> getString(R.string.constraint_wifi_on)
+                ChooseConstraintType.WIFI_OFF -> getString(R.string.constraint_wifi_off)
+                ChooseConstraintType.WIFI_CONNECTED -> getString(R.string.constraint_wifi_connected)
+                ChooseConstraintType.WIFI_DISCONNECTED -> getString(R.string.constraint_wifi_disconnected)
             }
 
-            val error = isSupported.invoke(type)
+            val error = useCase.isSupported(type)
 
             val listItem = DefaultSimpleListItem(
                 id = type.toString(),
@@ -233,7 +296,7 @@ class ChooseConstraintViewModel(
 
     @Suppress("UNCHECKED_CAST")
     class Factory(
-        private val isSupported: IsConstraintSupportedUseCase,
+        private val isSupported: CreateConstraintUseCase,
         private val resourceProvider: ResourceProvider
     ) : ViewModelProvider.NewInstanceFactory() {
 

@@ -15,7 +15,7 @@ import io.github.sds100.keymapper.actions.sound.ChooseSoundFileViewModel
 import io.github.sds100.keymapper.actions.tapscreen.PickDisplayCoordinateViewModel
 import io.github.sds100.keymapper.backup.BackupRestoreMappingsUseCaseImpl
 import io.github.sds100.keymapper.constraints.ChooseConstraintViewModel
-import io.github.sds100.keymapper.constraints.IsConstraintSupportedUseCaseImpl
+import io.github.sds100.keymapper.constraints.CreateConstraintUseCaseImpl
 import io.github.sds100.keymapper.home.FixAppKillingViewModel
 import io.github.sds100.keymapper.home.HomeViewModel
 import io.github.sds100.keymapper.home.ShowHomeScreenAlertsUseCaseImpl
@@ -80,7 +80,9 @@ object Inject {
 
     fun chooseConstraintListViewModel(ctx: Context): ChooseConstraintViewModel.Factory {
         return ChooseConstraintViewModel.Factory(
-            IsConstraintSupportedUseCaseImpl(),
+            CreateConstraintUseCaseImpl(
+                ServiceLocator.networkAdapter(ctx)
+            ),
             ServiceLocator.resourceProvider(ctx)
         )
     }

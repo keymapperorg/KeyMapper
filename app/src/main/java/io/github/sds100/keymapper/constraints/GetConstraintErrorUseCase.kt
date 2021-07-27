@@ -61,6 +61,12 @@ class GetConstraintErrorUseCaseImpl(
                     return Error.SdkVersionTooLow(minSdk = Build.VERSION_CODES.M)
                 }
             }
+
+            is Constraint.WifiConnected, is Constraint.WifiDisconnected -> {
+                if (!permissionAdapter.isGranted(Permission.ACCESS_FINE_LOCATION)) {
+                    return Error.PermissionDenied(Permission.ACCESS_FINE_LOCATION)
+                }
+            }
         }
 
         return null

@@ -231,6 +231,9 @@ class RequestPermissionDelegate(
                     }
                 }
             }
+
+            Permission.ACCESS_FINE_LOCATION ->
+                requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
     }
 }
