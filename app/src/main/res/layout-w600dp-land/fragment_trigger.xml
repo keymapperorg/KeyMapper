@@ -178,7 +178,7 @@
             android:layout_marginBottom="4dp"
             android:onClick="@{() -> viewModel.onRecordTriggerButtonClick()}"
             android:text="@{viewModel.recordTriggerButtonText}"
-            app:backgroundTint="@color/red"
+            app:backgroundTint="@color/slideRed"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/recyclerViewError"

@@ -93,15 +93,17 @@ suspend fun Context.materialAlertDialogCustomView(
     }
 }
 
-suspend fun <ID> Context.multiChoiceDialog(
+suspend fun Context.multiChoiceDialog(
     lifecycleOwner: LifecycleOwner,
-    items: List<Pair<ID, String>>
-) = suspendCancellableCoroutine<PopupUi.MultiChoiceResponse<ID>?> { continuation ->
+    items: List<MultiChoiceItem<*>>
+) = suspendCancellableCoroutine<List<*>?> { continuation ->
     materialAlertDialog {
-        val checkedItems = BooleanArray(items.size) { false }
+        val checkedItems = items
+            .map { it.isChecked }
+            .toBooleanArray()
 
         setMultiChoiceItems(
-            items.map { it.second }.toTypedArray(),
+            items.map { it.label }.toTypedArray(),
             checkedItems
         ) { _, which, checked ->
             checkedItems[which] = checked
@@ -113,12 +115,12 @@ suspend fun <ID> Context.multiChoiceDialog(
             val checkedItemIds = sequence {
                 checkedItems.forEachIndexed { index, checked ->
                     if (checked) {
-                        yield(items[index].first)
+                        yield(items[index].id)
                     }
                 }
             }.toList()
 
-            continuation.resume(PopupUi.MultiChoiceResponse(checkedItemIds))
+            continuation.resume(checkedItemIds)
         }
 
         show().apply {
@@ -131,13 +133,13 @@ suspend fun <ID> Context.multiChoiceDialog(
 suspend fun <ID> Context.singleChoiceDialog(
     lifecycleOwner: LifecycleOwner,
     items: List<Pair<ID, String>>
-) = suspendCancellableCoroutine<PopupUi.SingleChoiceResponse<ID>?> { continuation ->
+) = suspendCancellableCoroutine<ID?> { continuation ->
     materialAlertDialog {
         //message isn't supported
         setItems(
             items.map { it.second }.toTypedArray(),
         ) { _, position ->
-            continuation.resume(PopupUi.SingleChoiceResponse(items[position].first))
+            continuation.resume(items[position].first)
         }
 
         show().apply {
@@ -151,8 +153,9 @@ suspend fun Context.editTextStringAlertDialog(
     lifecycleOwner: LifecycleOwner,
     hint: String,
     allowEmpty: Boolean = false,
-    initialText: String = ""
-) = suspendCancellableCoroutine<PopupUi.TextResponse?> { continuation ->
+    initialText: String = "",
+    inputType: Int? = null
+) = suspendCancellableCoroutine<String?> { continuation ->
 
     val text = MutableStateFlow(initialText)
 
@@ -164,11 +167,15 @@ suspend fun Context.editTextStringAlertDialog(
             setText(text)
             setAllowEmpty(allowEmpty)
 
+            if (inputType != null) {
+                editText.inputType = inputType
+            }
+
             setView(this.root)
         }
 
         okButton {
-            continuation.resume(PopupUi.TextResponse(text.value))
+            continuation.resume(text.value)
         }
 
         negativeButton(R.string.neg_cancel) {
@@ -268,7 +275,7 @@ suspend fun Context.okDialog(
     lifecycleOwner: LifecycleOwner,
     message: String,
     title: String? = null,
-) = suspendCancellableCoroutine<PopupUi.OkResponse?> { continuation ->
+) = suspendCancellableCoroutine<Unit?> { continuation ->
 
     val alertDialog = materialAlertDialog {
 
@@ -276,7 +283,7 @@ suspend fun Context.okDialog(
         setMessage(message)
 
         okButton {
-            continuation.resume(PopupUi.OkResponse)
+            continuation.resume(Unit)
         }
     }
 

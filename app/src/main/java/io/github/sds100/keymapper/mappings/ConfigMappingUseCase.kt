@@ -1,13 +1,13 @@
 package io.github.sds100.keymapper.mappings
 
-import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.actions.Action
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.constraints.ConstraintMode
-import io.github.sds100.keymapper.util.moveElement
+import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ifIsData
+import io.github.sds100.keymapper.util.moveElement
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -98,6 +98,7 @@ interface ConfigMappingUseCase<ACTION : Action, T : Mapping<ACTION>> {
     fun moveAction(fromIndex: Int, toIndex: Int)
     fun removeAction(uid: String)
 
+    fun setActionData(uid: String, data: ActionData)
     fun setActionMultiplier(uid: String, multiplier: Int?)
     fun setDelayBeforeNextAction(uid: String, delay: Int?)
     fun setActionRepeatRate(uid: String, repeatRate: Int?)

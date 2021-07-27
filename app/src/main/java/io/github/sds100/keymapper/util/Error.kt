@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.util
 
+import android.content.pm.PackageManager
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.system.BuildUtils
 import io.github.sds100.keymapper.util.ui.ResourceProvider
@@ -24,10 +25,16 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider) = when (this) {
     )
     is Error.NoCompatibleImeEnabled -> resourceProvider.getString(R.string.error_key_mapper_ime_service_disabled)
     is Error.NoCompatibleImeChosen -> resourceProvider.getString(R.string.error_ime_must_be_chosen)
-    is Error.SystemFeatureNotSupported -> resourceProvider.getString(
-        R.string.error_feature_not_available,
-        feature
-    )
+    is Error.SystemFeatureNotSupported -> when (this.feature) {
+        PackageManager.FEATURE_NFC -> resourceProvider.getString(R.string.error_system_feature_nfc_unsupported)
+        PackageManager.FEATURE_CAMERA -> resourceProvider.getString(R.string.error_system_feature_camera_unsupported)
+        PackageManager.FEATURE_FINGERPRINT -> resourceProvider.getString(R.string.error_system_feature_fingerprint_unsupported)
+        PackageManager.FEATURE_WIFI -> resourceProvider.getString(R.string.error_system_feature_wifi_unsupported)
+        PackageManager.FEATURE_BLUETOOTH -> resourceProvider.getString(R.string.error_system_feature_bluetooth_unsupported)
+        PackageManager.FEATURE_DEVICE_ADMIN -> resourceProvider.getString(R.string.error_system_feature_device_admin_unsupported)
+        PackageManager.FEATURE_CAMERA_FLASH -> resourceProvider.getString(R.string.error_system_feature_camera_flash_unsupported)
+        else -> throw Exception("Don't know how to get error message for this system feature ${this.feature}")
+    }
     is Error.ExtraNotFound -> resourceProvider.getString(R.string.error_extra_not_found, extraId)
     is Error.SdkVersionTooLow -> resourceProvider.getString(
         R.string.error_sdk_version_too_low,
@@ -36,10 +43,6 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider) = when (this) {
     is Error.SdkVersionTooHigh -> resourceProvider.getString(
         R.string.error_sdk_version_too_high,
         BuildUtils.getSdkVersionName(maxSdk)
-    )
-    is Error.FeatureUnavailable -> resourceProvider.getString(
-        R.string.error_feature_not_available,
-        feature
     )
     is Error.InputMethodNotFound -> resourceProvider.getString(R.string.error_ime_not_found, id)
     is Error.FrontFlashNotFound -> resourceProvider.getString(R.string.error_front_flash_not_found)
@@ -52,7 +55,6 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider) = when (this) {
     is Error.NumberTooBig -> resourceProvider.getString(R.string.error_number_too_big, max)
     is Error.EmptyText -> resourceProvider.getString(R.string.error_cant_be_empty)
     Error.BackupVersionTooNew -> resourceProvider.getString(R.string.error_backup_version_too_new)
-    Error.CorruptActionError -> resourceProvider.getString(R.string.error_corrupt_action)
     Error.NoIncompatibleKeyboardsInstalled -> resourceProvider.getString(R.string.error_no_incompatible_input_methods_installed)
     Error.NoMediaSessions -> resourceProvider.getString(R.string.error_no_media_sessions)
     Error.NoVoiceAssistant -> resourceProvider.getString(R.string.error_voice_assistant_not_found)

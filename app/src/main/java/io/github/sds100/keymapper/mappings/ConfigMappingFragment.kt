@@ -8,19 +8,15 @@ import androidx.activity.addCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.actions.ActionData
-import io.github.sds100.keymapper.actions.ChooseActionFragment
-import io.github.sds100.keymapper.actions.ConfigActionsFragment
 import io.github.sds100.keymapper.databinding.FragmentConfigMappingBinding
 import io.github.sds100.keymapper.system.url.UrlUtils
-import io.github.sds100.keymapper.ui.utils.getJsonSerializable
 import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.ui.setupNavigation
 import io.github.sds100.keymapper.util.ui.showPopups
 import splitties.alertdialog.appcompat.*
 import splitties.alertdialog.material.materialAlertDialog
@@ -44,11 +40,9 @@ abstract class ConfigMappingFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setFragmentResultListener(ConfigActionsFragment.CHOOSE_ACTION_REQUEST_KEY) { _, result ->
-            result.getJsonSerializable<ActionData>(ChooseActionFragment.EXTRA_ACTION)?.let {
-                viewModel.configActionsViewModel.addAction(it)
-            }
-        }
+        viewModel.configActionsViewModel.setupNavigation(this)
+        viewModel.configActionOptionsViewModel.setupNavigation(this)
+        viewModel.configConstraintsViewModel.setupNavigation(this)
     }
 
     override fun onCreateView(
@@ -68,6 +62,8 @@ abstract class ConfigMappingFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        viewModel.configActionOptionsViewModel.showPopups(this, binding)
 
         val fragmentInfoList = getFragmentInfoList()
 

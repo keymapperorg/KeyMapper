@@ -62,7 +62,7 @@ class FixAppKillingViewModel(
     private fun goToDontKillMyAppSlide() = AppIntroSlideUi(
         id = FixAppKillingSlide.GO_TO_DONT_KILL_MY_APP,
         image = getDrawable(R.drawable.ic_baseline_cross_64),
-        backgroundColor = getColor(R.color.red),
+        backgroundColor = getColor(R.color.slideRed),
         title = getString(R.string.slide_title_read_dont_kill_my_app),
         description = getString(R.string.slide_description_read_dont_kill_my_app),
         buttonText1 = getString(R.string.slide_button_read_dont_kill_my_app),
@@ -73,7 +73,7 @@ class FixAppKillingViewModel(
     private fun restartServiceSlide() = AppIntroSlideUi(
         id = FixAppKillingSlide.RESTART_ACCESSIBILITY_SERVICE,
         image = getDrawable(R.drawable.ic_outline_error_outline_64),
-        backgroundColor = getColor(R.color.orange),
+        backgroundColor = getColor(R.color.slideOrange),
         title = getString(R.string.slide_title_restart_accessibility_service),
         description = getString(R.string.slide_description_restart_accessibility_service),
         buttonText1 = getString(R.string.button_restart_accessibility_service),

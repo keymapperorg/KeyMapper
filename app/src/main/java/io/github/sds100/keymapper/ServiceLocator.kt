@@ -39,7 +39,7 @@ import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.url.OpenUrlAdapter
 import io.github.sds100.keymapper.system.vibrator.VibratorAdapter
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
-import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.util.ui.ResourceProviderImpl
 
 /**
  * Created by sds100 on 17/05/2020.
@@ -172,7 +172,7 @@ object ServiceLocator {
         return (context.applicationContext as KeyMapperApp).notificationController
     }
 
-    fun resourceProvider(context: Context): ResourceProvider {
+    fun resourceProvider(context: Context): ResourceProviderImpl {
         return (context.applicationContext as KeyMapperApp).resourceProvider
     }
 

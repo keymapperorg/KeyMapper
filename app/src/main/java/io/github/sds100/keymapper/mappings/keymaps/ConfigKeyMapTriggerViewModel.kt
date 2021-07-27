@@ -284,15 +284,15 @@ class ConfigKeyMapTriggerViewModel(
                 }
             }
 
-            val response = showPopup(
+            val triggerKeyDeviceId = showPopup(
                 "pick_trigger_key_device",
                 PopupUi.SingleChoice(listItems)
             ) ?: return@launch
 
-            val selectedTriggerKeyDevice = when (response.item) {
+            val selectedTriggerKeyDevice = when (triggerKeyDeviceId) {
                 idAny -> TriggerKeyDevice.Any
                 idInternal -> TriggerKeyDevice.Internal
-                else -> devices.single { it is TriggerKeyDevice.External && it.descriptor == response.item }
+                else -> devices.single { it is TriggerKeyDevice.External && it.descriptor == triggerKeyDeviceId }
             }
 
             config.setTriggerKeyDevice(keyUid, selectedTriggerKeyDevice)

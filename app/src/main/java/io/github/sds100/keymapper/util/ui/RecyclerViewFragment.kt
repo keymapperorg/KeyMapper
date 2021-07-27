@@ -12,13 +12,13 @@ import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.Lifecycle
-import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.savedstate.SavedStateRegistry
 import com.airbnb.epoxy.EpoxyRecyclerView
 import com.google.android.material.bottomappbar.BottomAppBar
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 
@@ -38,7 +38,6 @@ abstract class RecyclerViewFragment<T, BINDING : ViewDataBinding> : Fragment() {
     abstract val listItems: Flow<State<List<T>>>
 
     open var isAppBarVisible = true
-    open var requestKey: String? = null
     open var searchStateKey: String? = null
 
     /**
@@ -51,7 +50,6 @@ abstract class RecyclerViewFragment<T, BINDING : ViewDataBinding> : Fragment() {
     private val savedStateProvider = SavedStateRegistry.SavedStateProvider {
         Bundle().apply {
             putBoolean(KEY_IS_APPBAR_VISIBLE, isAppBarVisible)
-            putString(KEY_REQUEST_KEY, requestKey)
             putString(KEY_SEARCH_STATE_KEY, searchStateKey)
         }
     }
@@ -66,7 +64,6 @@ abstract class RecyclerViewFragment<T, BINDING : ViewDataBinding> : Fragment() {
 
         savedStateRegistry.consumeRestoredStateForKey(KEY_SAVED_STATE)?.apply {
             isAppBarVisible = getBoolean(KEY_IS_APPBAR_VISIBLE)
-            requestKey = getString(KEY_REQUEST_KEY)
             searchStateKey = getString(KEY_SEARCH_STATE_KEY)
         }
     }
@@ -125,14 +122,14 @@ abstract class RecyclerViewFragment<T, BINDING : ViewDataBinding> : Fragment() {
                 when (state) {
                     is State.Data -> {
                         if (state.data.isEmpty()) {
-                            getProgressBar(binding).isVisible = false
+                            getProgressBar(binding).visibility = View.INVISIBLE
 
                             /*
                             Use INVISIBLE rather than GONE so that the previous list items don't flash briefly before
                             the new items are populated
                              */
                             getRecyclerView(binding).visibility = View.INVISIBLE
-                            getEmptyListPlaceHolderTextView(binding).isVisible = true
+                            getEmptyListPlaceHolderTextView(binding).visibility = View.VISIBLE
 
                             /*
                              Don't clear the recyclerview here because if a custom epoxy controller is set then
@@ -141,42 +138,34 @@ abstract class RecyclerViewFragment<T, BINDING : ViewDataBinding> : Fragment() {
                               */
                             populateList(getRecyclerView(binding), emptyList())
                         } else {
-                            getProgressBar(binding).isVisible = true
-                            getEmptyListPlaceHolderTextView(binding).isVisible = false
+                            //The recyclerview needs to be drawn before getting the height and width of it.
+                            getRecyclerView(binding).post {
+                                getProgressBar(binding).visibility = View.VISIBLE
+                                getEmptyListPlaceHolderTextView(binding).visibility = View.INVISIBLE
 
-                            /*
+                                /*
                             Don't hide the recyclerview here because if the state changes in response to
                             an onclick event in the recyclerview then there isn't a smooth transition
                             between the states. E.g the ripple effect on a button or card doesn't complete
                              */
-                            populateList(getRecyclerView(binding), state.data)
+                                populateList(getRecyclerView(binding), state.data)
 
-                            getProgressBar(binding).isVisible = false
+                                getProgressBar(binding).visibility = View.INVISIBLE
 
-                            //show the recyclerview once it has been populated
-                            getRecyclerView(binding).isVisible = true
+                                //show the recyclerview once it has been populated
+                                getRecyclerView(binding).visibility = View.VISIBLE
+                            }
                         }
                     }
 
                     is State.Loading -> {
-                        getProgressBar(binding).isVisible = true
-                        getRecyclerView(binding).isVisible = false
-                        getEmptyListPlaceHolderTextView(binding).isVisible = false
+                        getProgressBar(binding).visibility = View.VISIBLE
+                        getRecyclerView(binding).visibility = View.INVISIBLE
+                        getEmptyListPlaceHolderTextView(binding).visibility = View.INVISIBLE
                     }
                 }
             }
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        /*
-        Don't rebuild UI state in onResume because then EVERY time the fragment is resumed the UI could be updated
-        twice. 1st when the state is collected and a 2nd time after the view model has updated it the state
-        from the call in onResume even if no configuration has changed. Doing this here
-        can cause jank if a list item is complicated.
-         */
     }
 
     override fun onDestroyView() {
@@ -186,10 +175,8 @@ abstract class RecyclerViewFragment<T, BINDING : ViewDataBinding> : Fragment() {
     }
 
     fun returnResult(vararg extras: Pair<String, Any?>) {
-        requestKey?.let {
-            setFragmentResult(it, bundleOf(*extras))
-            findNavController().navigateUp()
-        }
+        setFragmentResult(getRequestKey(), bundleOf(*extras))
+        findNavController().navigateUp()
     }
 
     private fun setupSearchView(binding: BINDING) {
@@ -222,6 +209,10 @@ abstract class RecyclerViewFragment<T, BINDING : ViewDataBinding> : Fragment() {
 
     open fun onBackPressed() {
         findNavController().navigateUp()
+    }
+
+    open fun getRequestKey(): String {
+        throw IllegalStateException("No request key is set")
     }
 
     abstract fun getRecyclerView(binding: BINDING): EpoxyRecyclerView

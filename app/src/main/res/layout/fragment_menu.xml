@@ -85,7 +85,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                tools:backgroundTint="@color/red"
+                tools:backgroundTint="@color/slideRed"
                 tools:text="Resume Keymaps" />
 
             <com.google.android.material.button.MaterialButton

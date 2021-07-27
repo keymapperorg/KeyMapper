@@ -75,19 +75,19 @@ class AppIntroViewModel(
         image = getDrawable(R.mipmap.ic_launcher_round),
         title = getString(R.string.showcase_note_from_the_developer_title),
         description = getString(R.string.showcase_note_from_the_developer_description),
-        backgroundColor = getColor(R.color.red)
+        backgroundColor = getColor(R.color.slideRed)
     )
 
     private fun accessibilityServiceSlide(serviceState: ServiceState): AppIntroSlideUi {
       return  when(serviceState){
             ServiceState.ENABLED ->
                 AppIntroSlideUi(
-                id = AppIntroSlide.ACCESSIBILITY_SERVICE,
-                image = getDrawable(R.drawable.ic_baseline_check_64),
-                title = getString(R.string.showcase_accessibility_service_title_enabled),
-                description = getString(R.string.showcase_accessibility_service_description_enabled),
-                backgroundColor = getColor(R.color.purple),
-            )
+                    id = AppIntroSlide.ACCESSIBILITY_SERVICE,
+                    image = getDrawable(R.drawable.ic_baseline_check_64),
+                    title = getString(R.string.showcase_accessibility_service_title_enabled),
+                    description = getString(R.string.showcase_accessibility_service_description_enabled),
+                    backgroundColor = getColor(R.color.slidePurple),
+                )
 
             ServiceState.CRASHED ->
                 AppIntroSlideUi(
@@ -95,7 +95,7 @@ class AppIntroViewModel(
                     image = getDrawable(R.drawable.ic_outline_error_outline_64),
                     title = getString(R.string.showcase_accessibility_service_title_crashed),
                     description = getString(R.string.showcase_accessibility_service_description_crashed),
-                    backgroundColor = getColor(R.color.purple),
+                    backgroundColor = getColor(R.color.slidePurple),
 
                     buttonId1 = ID_BUTTON_RESTART_ACCESSIBILITY_SERVICE,
                     buttonText1 = getString(R.string.showcase_accessibility_service_button_restart)
@@ -107,7 +107,7 @@ class AppIntroViewModel(
                     image = getDrawable(R.drawable.ic_outline_error_outline_64),
                     title = getString(R.string.showcase_accessibility_service_title_disabled),
                     description = getString(R.string.showcase_accessibility_service_description_disabled),
-                    backgroundColor = getColor(R.color.purple),
+                    backgroundColor = getColor(R.color.slidePurple),
 
                     buttonId1 = ID_BUTTON_ENABLE_ACCESSIBILITY_SERVICE,
                     buttonText1 = getString(R.string.enable)
@@ -122,7 +122,7 @@ class AppIntroViewModel(
                 image = getDrawable(R.drawable.ic_battery_std_white_64dp),
                 title = getString(R.string.showcase_disable_battery_optimisation_title),
                 description = getString(R.string.showcase_disable_battery_optimisation_message_bad),
-                backgroundColor = getColor(R.color.blue),
+                backgroundColor = getColor(R.color.slideBlue),
 
                 buttonId1 = ID_BUTTON_DONT_KILL_MY_APP,
                 buttonText1 = getString(R.string.showcase_disable_battery_optimisation_button_dont_kill_my_app),
@@ -136,7 +136,7 @@ class AppIntroViewModel(
                 image = getDrawable(R.drawable.ic_battery_std_white_64dp),
                 title = getString(R.string.showcase_disable_battery_optimisation_title),
                 description = getString(R.string.showcase_disable_battery_optimisation_message_good),
-                backgroundColor = getColor(R.color.blue),
+                backgroundColor = getColor(R.color.slideBlue),
 
                 buttonId1 = ID_BUTTON_DONT_KILL_MY_APP,
                 buttonText1 = getString(R.string.showcase_disable_battery_optimisation_button_dont_kill_my_app),
@@ -151,7 +151,7 @@ class AppIntroViewModel(
                 image = getDrawable(R.drawable.ic_baseline_check_64),
                 title = getString(R.string.showcase_fingerprint_gesture_support_title_supported),
                 description = getString(R.string.showcase_fingerprint_gesture_support_message_supported),
-                backgroundColor = getColor(R.color.orange),
+                backgroundColor = getColor(R.color.slideOrange),
             )
 
             false -> return AppIntroSlideUi(
@@ -159,7 +159,7 @@ class AppIntroViewModel(
                 image = getDrawable(R.drawable.ic_baseline_cross_64),
                 title = getString(R.string.showcase_fingerprint_gesture_support_title_not_supported),
                 description = getString(R.string.showcase_fingerprint_gesture_support_message_not_supported),
-                backgroundColor = getColor(R.color.orange),
+                backgroundColor = getColor(R.color.slideOrange),
             )
 
             null -> return AppIntroSlideUi(
@@ -167,7 +167,7 @@ class AppIntroViewModel(
                 image = getDrawable(R.drawable.ic_baseline_fingerprint_64),
                 title = getString(R.string.showcase_fingerprint_gesture_support_title_supported_unknown),
                 description = getString(R.string.showcase_fingerprint_gesture_support_message_supported_unknown),
-                backgroundColor = getColor(R.color.orange),
+                backgroundColor = getColor(R.color.slideOrange),
 
                 buttonId1 = ID_BUTTON_ENABLE_ACCESSIBILITY_SERVICE,
                 buttonText1 = getString(R.string.enable)
@@ -180,7 +180,7 @@ class AppIntroViewModel(
         image = getDrawable(R.drawable.ic_outline_feedback_64),
         title = getString(R.string.showcase_contributing_title),
         description = getString(R.string.showcase_contributing_description),
-        backgroundColor = getColor(R.color.green)
+        backgroundColor = getColor(R.color.slideGreen)
     )
 
     private fun setupChosenDevicesAgainSlide() = AppIntroSlideUi(
@@ -188,7 +188,7 @@ class AppIntroViewModel(
         image = getDrawable(R.drawable.ic_outline_devices_other_64),
         title = getString(R.string.showcase_setup_chosen_devices_again_title),
         description = getString(R.string.showcase_setup_chosen_devices_again_message),
-        backgroundColor = getColor(R.color.blue)
+        backgroundColor = getColor(R.color.slideBlue)
     )
 
     @Suppress("UNCHECKED_CAST")

@@ -26,7 +26,9 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
     private val uiHelper: ActionUiHelper<M, A>,
     private val onboardingUseCase: OnboardingUseCase,
     resourceProvider: ResourceProvider
-) : ResourceProvider by resourceProvider, PopupViewModel by PopupViewModelImpl() {
+) : ResourceProvider by resourceProvider,
+    PopupViewModel by PopupViewModelImpl(),
+    NavigationViewModel by NavigationViewModelImpl() {
 
     private val _state = MutableStateFlow<State<List<ActionListItem>>>(State.Loading)
     val state = _state.asStateFlow()
@@ -112,16 +114,18 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
         }
     }
 
-    fun addAction(data: ActionData) {
+    fun onAddActionClick() {
         coroutineScope.launch {
-            if (data is KeyEventAction && ShizukuUtils.isSdkRecommended()) {
+            val actionData = navigate("add_action", NavDestination.ChooseAction) ?: return@launch
+
+            if (actionData is KeyEventAction && ShizukuUtils.isSdkRecommended()) {
                 promptToInstallShizukuOrGuiKeyboard()
-            } else if (data is KeyEventAction || data is TextAction) {
+            } else if (actionData is KeyEventAction || actionData is TextAction) {
                 promptToInstallGuiKeyboard()
             }
-        }
 
-        config.addAction(data)
+            config.addAction(actionData)
+        }
     }
 
     fun moveAction(fromIndex: Int, toIndex: Int) {
@@ -132,7 +136,7 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
         config.removeAction(actionUid)
     }
 
-    fun editOptions(actionUid: String) {
+    fun editAction(actionUid: String) {
         runBlocking { _openEditOptions.emit(actionUid) }
     }
 
@@ -329,9 +333,9 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
             ActionListItem(
                 id = action.uid,
                 tintType = if (error != null) {
-                    TintType.ERROR
+                    TintType.Error
                 } else {
-                    icon?.tintType ?: TintType.NONE
+                    icon?.tintType ?: TintType.None
                 },
                 icon = if (error != null) {
                     getDrawable(R.drawable.ic_baseline_error_outline_24)

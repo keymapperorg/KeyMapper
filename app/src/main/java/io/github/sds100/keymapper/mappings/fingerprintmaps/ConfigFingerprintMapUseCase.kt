@@ -41,6 +41,22 @@ class ConfigFingerprintMapUseCaseImpl(
         editFingerprintMap { it.copy(showToast = enabled) }
     }
 
+    override fun setActionData(uid: String, data: ActionData) {
+        editFingerprintMap { keyMap ->
+            val newActionList = keyMap.actionList.map { action ->
+                if (action.uid == uid) {
+                    action.copy(data = data)
+                } else {
+                    action
+                }
+            }
+
+            keyMap.copy(
+                actionList = newActionList
+            )
+        }
+    }
+
     override fun setActionMultiplier(uid: String, multiplier: Int?) {
         setActionOption(uid) { it.copy(multiplier = multiplier) }
     }

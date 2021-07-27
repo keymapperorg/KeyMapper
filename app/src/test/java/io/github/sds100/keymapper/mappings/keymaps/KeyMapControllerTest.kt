@@ -3,7 +3,6 @@ package io.github.sds100.keymapper.mappings.keymaps
 import android.view.KeyEvent
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.github.sds100.keymapper.actions.*
-import io.github.sds100.keymapper.actions.system.SystemActionId
 import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.constraints.ConstraintSnapshot
 import io.github.sds100.keymapper.constraints.ConstraintState
@@ -70,7 +69,7 @@ class KeyMapControllerTest {
         private const val HOLD_DOWN_DURATION = 1000L
 
         private val TEST_ACTION: KeyMapAction = KeyMapAction(
-            data = SimpleSystemAction(SystemActionId.TOGGLE_FLASHLIGHT)
+            data = FlashlightAction.Toggle()
         )
 
         private val TEST_ACTION_2: KeyMapAction = KeyMapAction(
@@ -205,7 +204,7 @@ class KeyMapControllerTest {
     fun `Long press trigger shouldn't be triggered if the constraints are changed by the actions`() =
         coroutineScope.runBlockingTest {
             //GIVEN
-            val actionData = FlashlightSystemAction.Toggle(CameraLens.BACK)
+            val actionData = FlashlightAction.Toggle(CameraLens.BACK)
 
             val keyMap = KeyMap(
                 trigger = singleKeyTrigger(
@@ -1830,7 +1829,7 @@ class KeyMapControllerTest {
         coroutineScope.runBlockingTest {
             //given
             val action = KeyMapAction(
-                data = VolumeSystemAction.Up(showVolumeUi = false),
+                data = VolumeAction.Up(showVolumeUi = false),
                 repeat = true
             )
 

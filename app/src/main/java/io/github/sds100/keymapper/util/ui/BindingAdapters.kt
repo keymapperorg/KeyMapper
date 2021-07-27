@@ -19,6 +19,7 @@ import io.github.sds100.keymapper.system.url.UrlUtils
 import io.github.sds100.keymapper.util.str
 import io.github.sds100.keymapper.util.styledColor
 import io.github.sds100.keymapper.util.styledColorSL
+import io.github.sds100.keymapper.util.styledFloat
 
 /**
  * Created by sds100 on 25/01/2020.
@@ -125,9 +126,10 @@ fun ChipGroup.setChipUiModels(
 
                     if (model.icon != null) {
                         this.iconTint = when (model.icon.tintType) {
-                            TintType.NONE -> null
-                            TintType.ON_SURFACE -> colorOnSurface
-                            TintType.ERROR -> colorTintError
+                            TintType.None -> null
+                            TintType.OnSurface -> colorOnSurface
+                            TintType.Error -> colorTintError
+                            is TintType.Color -> ColorStateList.valueOf(model.icon.tintType.color)
                         }
                     }
 
@@ -147,9 +149,21 @@ fun ChipGroup.setChipUiModels(
     }
 }
 
+@BindingAdapter("app:enabled")
+fun View.enabled(isEnabled: Boolean) {
+    if (isEnabled) {
+        setEnabled(true)
+        alpha = 1.0f
+    } else {
+        setEnabled(false)
+        alpha = styledFloat(android.R.attr.disabledAlpha)
+    }
+}
+
 fun TintType.toColor(ctx: Context): Int? =
     when (this) {
-        TintType.NONE -> null
-        TintType.ON_SURFACE -> ctx.styledColor(R.attr.colorOnSurface)
-        TintType.ERROR -> ctx.styledColor(R.attr.colorError)
+        TintType.None -> null
+        TintType.OnSurface -> ctx.styledColor(R.attr.colorOnSurface)
+        TintType.Error -> ctx.styledColor(R.attr.colorError)
+        is TintType.Color -> this.color
     }

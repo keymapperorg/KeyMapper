@@ -1,9 +1,10 @@
 package io.github.sds100.keymapper
 
 import android.content.Context
+import io.github.sds100.keymapper.actions.CreateActionUseCaseImpl
 import io.github.sds100.keymapper.actions.GetActionErrorUseCaseImpl
+import io.github.sds100.keymapper.actions.IsActionSupportedUseCaseImpl
 import io.github.sds100.keymapper.actions.PerformActionsUseCaseImpl
-import io.github.sds100.keymapper.actions.system.IsSystemActionSupportedUseCaseImpl
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCaseImpl
 import io.github.sds100.keymapper.constraints.GetConstraintErrorUseCaseImpl
 import io.github.sds100.keymapper.mappings.DetectMappingUseCaseImpl
@@ -96,8 +97,8 @@ object UseCases {
         ServiceLocator.resourceProvider(ctx)
     )
 
-    fun isSystemActionSupported(ctx: Context) =
-        IsSystemActionSupportedUseCaseImpl(ServiceLocator.systemFeatureAdapter(ctx))
+    fun isActionSupported(ctx: Context) =
+        IsActionSupportedUseCaseImpl(ServiceLocator.systemFeatureAdapter(ctx))
 
     fun fingerprintGesturesSupported(ctx: Context) =
         AreFingerprintGesturesSupportedUseCaseImpl(ServiceLocator.settingsRepository(ctx))
@@ -194,6 +195,10 @@ object UseCases {
         ServiceLocator.inputMethodAdapter(ctx),
         keyMapperImeMessenger(ctx),
         ServiceLocator.settingsRepository(ctx)
+    )
+
+    fun createAction(ctx: Context) = CreateActionUseCaseImpl(
+        ServiceLocator.inputMethodAdapter(ctx)
     )
 
     private fun keyMapperImeMessenger(ctx: Context) = KeyMapperImeMessengerImpl(

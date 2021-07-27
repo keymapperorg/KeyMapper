@@ -53,9 +53,7 @@ abstract class ConfigActionsFragment<A : Action>
         binding.epoxyRecyclerView.adapter = actionListController.adapter
 
         binding.setOnAddActionClick {
-            val direction =
-                NavAppDirections.actionGlobalChooseActionFragment(CHOOSE_ACTION_REQUEST_KEY)
-            findNavController().navigate(direction)
+            configActionsViewModel.onAddActionClick()
         }
 
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
@@ -125,8 +123,8 @@ abstract class ConfigActionsFragment<A : Action>
                         configActionsViewModel.onRemoveClick(it.id)
                     }
 
-                    onMoreClick { _ ->
-                        configActionsViewModel.editOptions(it.id)
+                    onEditClick { _ ->
+                        configActionsViewModel.editAction(it.id)
                     }
 
                     onClick { _ ->

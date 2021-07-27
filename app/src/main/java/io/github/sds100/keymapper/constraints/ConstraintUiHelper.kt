@@ -89,12 +89,12 @@ class ConstraintUiHelper(
         is Constraint.AppPlayingMedia -> getAppIconInfo(constraint.packageName)
         is Constraint.BtDeviceConnected -> IconInfo(
             drawable = getDrawable(R.drawable.ic_outline_bluetooth_connected_24),
-            tintType = TintType.ON_SURFACE
+            tintType = TintType.OnSurface
         )
 
         is Constraint.BtDeviceDisconnected -> IconInfo(
             drawable = getDrawable(R.drawable.ic_outline_bluetooth_disabled_24),
-            tintType = TintType.ON_SURFACE
+            tintType = TintType.OnSurface
         )
 
         is Constraint.OrientationCustom -> {
@@ -107,44 +107,44 @@ class ConstraintUiHelper(
 
             IconInfo(
                 drawable = getDrawable(resId),
-                tintType = TintType.ON_SURFACE
+                tintType = TintType.OnSurface
             )
         }
 
         Constraint.OrientationLandscape -> IconInfo(
             drawable = getDrawable(R.drawable.ic_outline_stay_current_landscape_24),
-            tintType = TintType.ON_SURFACE
+            tintType = TintType.OnSurface
         )
 
         Constraint.OrientationPortrait -> IconInfo(
             drawable = getDrawable(R.drawable.ic_outline_stay_current_portrait_24),
-            tintType = TintType.ON_SURFACE
+            tintType = TintType.OnSurface
         )
 
         Constraint.ScreenOff -> IconInfo(
             drawable = getDrawable(R.drawable.ic_outline_stay_current_portrait_24),
-            tintType = TintType.ON_SURFACE
+            tintType = TintType.OnSurface
         )
 
         Constraint.ScreenOn -> IconInfo(
             drawable = getDrawable(R.drawable.ic_baseline_mobile_off_24),
-            tintType = TintType.ON_SURFACE
+            tintType = TintType.OnSurface
         )
 
         is Constraint.FlashlightOff -> IconInfo(
             drawable = getDrawable(R.drawable.ic_flashlight_off),
-            tintType = TintType.ON_SURFACE
+            tintType = TintType.OnSurface
         )
 
         is Constraint.FlashlightOn -> IconInfo(
             drawable = getDrawable(R.drawable.ic_flashlight),
-            tintType = TintType.ON_SURFACE
+            tintType = TintType.OnSurface
         )
     }
 
     private fun getAppIconInfo(packageName: String): IconInfo? {
         return getAppIcon(packageName).handle(
-            onSuccess = { IconInfo(it, TintType.NONE) },
+            onSuccess = { IconInfo(it, TintType.None) },
             onError = { null }
         )
     }

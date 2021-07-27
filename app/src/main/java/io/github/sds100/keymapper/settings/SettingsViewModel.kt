@@ -93,12 +93,12 @@ class SettingsViewModel(
             }
 
             val dialog = PopupUi.MultiChoice(
-                items = soundFiles.map { it.uid to it.name }
+                items = soundFiles.map { MultiChoiceItem(it.uid, it.name) }
             )
 
-            val response = showPopup("select_sound_files_to_delete", dialog) ?: return@launch
+            val selectedFiles = showPopup("select_sound_files_to_delete", dialog) ?: return@launch
 
-            useCase.deleteSoundFiles(response.items)
+            useCase.deleteSoundFiles(selectedFiles)
         }
     }
 

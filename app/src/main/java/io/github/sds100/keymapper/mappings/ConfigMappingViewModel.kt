@@ -14,6 +14,7 @@ interface ConfigMappingViewModel {
     fun setEnabled(enabled: Boolean)
 
     val configActionsViewModel: ConfigActionsViewModel<*, *>
+    val configActionOptionsViewModel: EditActionViewModel<*, *>
     val configConstraintsViewModel: ConfigConstraintsViewModel
 
     fun save()

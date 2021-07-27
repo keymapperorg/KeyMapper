@@ -154,9 +154,9 @@ class LogViewModel(
 
     private fun createListItem(logEntry: LogEntry, shortMessage: Boolean, isSelected: Boolean): LogEntryListItem {
         val textTint = if (logEntry.severity == LogSeverity.ERROR) {
-            TintType.ERROR
+            TintType.Error
         } else {
-            TintType.ON_SURFACE
+            TintType.OnSurface
         }
 
         val message: String = if (shortMessage) {

@@ -4,11 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
+import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.Lifecycle
+import com.airbnb.epoxy.EpoxyRecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import io.github.sds100.keymapper.databinding.FragmentOptionsBinding
 import io.github.sds100.keymapper.divider
 import io.github.sds100.keymapper.system.url.UrlUtils
 import io.github.sds100.keymapper.ui.*
@@ -23,16 +25,16 @@ import kotlinx.coroutines.flow.collectLatest
 /**
  * Created by sds100 on 12/04/2021.
  */
-abstract class OptionsBottomSheetFragment : BottomSheetDialogFragment() {
+abstract class OptionsBottomSheetFragment<BINDING : ViewDataBinding> : BottomSheetDialogFragment() {
 
-    abstract val url: String
+    abstract val helpUrl: String
     abstract val viewModel: OptionsViewModel
 
     /**
      * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
      */
-    private var _binding: FragmentOptionsBinding? = null
-    private val binding: FragmentOptionsBinding
+    private var _binding: BINDING? = null
+    val binding: BINDING
         get() = _binding!!
 
     override fun onCreateView(
@@ -40,12 +42,8 @@ abstract class OptionsBottomSheetFragment : BottomSheetDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        FragmentOptionsBinding.inflate(inflater).apply {
-            lifecycleOwner = viewLifecycleOwner
-            _binding = this
-
-            return this.root
-        }
+        _binding = bind(inflater, container)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -56,16 +54,16 @@ abstract class OptionsBottomSheetFragment : BottomSheetDialogFragment() {
 
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.state.collectLatest { state ->
-                binding.showProgressBar = state.showProgressBar
+                getProgressBar(binding).isVisible = state.showProgressBar
                 populateList(state.listItems)
             }
         }
 
-        binding.setOnHelpClick {
-            UrlUtils.openUrl(requireContext(), url)
+        getHelpButton(binding).setOnClickListener {
+            UrlUtils.openUrl(requireContext(), helpUrl)
         }
 
-        binding.setOnDoneClick {
+        getDoneButton(binding).setOnClickListener {
             dismiss()
         }
     }
@@ -76,9 +74,9 @@ abstract class OptionsBottomSheetFragment : BottomSheetDialogFragment() {
     }
 
     private fun populateList(listItems: List<ListItem>) {
-        binding.epoxyRecyclerView.recycledViewPool.clear()
-        
-        binding.epoxyRecyclerView.withModels {
+        getRecyclerView(binding).recycledViewPool.clear()
+
+        getRecyclerView(binding).withModels {
             listItems.forEach { model ->
                 if (model is RadioButtonPairListItem) {
                     configuredRadioButtonPair(model) { id, isChecked ->
@@ -93,7 +91,7 @@ abstract class OptionsBottomSheetFragment : BottomSheetDialogFragment() {
                 }
 
                 if (model is CheckBoxListItem) {
-                    configuredCheckBox( model) {
+                    configuredCheckBox(model) {
                         viewModel.setCheckboxValue(model.id, it)
                     }
                 }
@@ -110,4 +108,11 @@ abstract class OptionsBottomSheetFragment : BottomSheetDialogFragment() {
             }
         }
     }
+
+    abstract fun getRecyclerView(binding: BINDING): EpoxyRecyclerView
+    abstract fun getProgressBar(binding: BINDING): View
+    abstract fun getDoneButton(binding: BINDING): View
+    abstract fun getHelpButton(binding: BINDING): View
+
+    abstract fun bind(inflater: LayoutInflater, container: ViewGroup?): BINDING
 }

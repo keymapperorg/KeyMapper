@@ -3,9 +3,9 @@
     <color name="colorPrimary">#1565c0</color>
     <color name="colorPrimaryDark">#003c8f</color>
     <color name="colorOnPrimary">#ffffff</color>
-    <color name="colorAccent">@color/red</color>
+    <color name="colorAccent">#d32f2f</color>
     <color name="colorPrimaryVariant">@color/colorAccent</color>
-    <color name="colorSecondary">@color/red</color>
+    <color name="colorSecondary">@color/colorAccent</color>
     <color name="colorOnSecondary">#ffffff</color>
     <color name="colorIconDark">#424242</color>
     <color name="cardTintGreen">#2C00C853</color>
@@ -18,9 +18,11 @@
     <color name="actionModeBackground">#424242</color>
     <color name="actionModeStatusBar">#212121</color>
 
-    <color name="greenVibrant">#00C853</color>
-    <color name="green">#4CAF50</color>
-    <color name="greenDark">#087f23</color>
+    <color name="slideRed">#d32f2f</color>
+    <color name="slideBlue">#2196f3</color>
+    <color name="slideGreen">#4CAF50</color>
+    <color name="slideOrange">#ef6c00</color>
+    <color name="slidePurple">#9C27B0</color>
 
     <color name="red">#d32f2f</color>
     <color name="redDark">#9a0007</color>
@@ -34,11 +36,16 @@
     <color name="purple">#9C27B0</color>
     <color name="purpleDark">#4A148C</color>
 
+    <color name="green">#4CAF50</color>
+    <color name="greenDark">#087f23</color>
+    <color name="greenVibrant">#00C853</color>
+
+    <color name="yellow">#FFC107</color>
+
     <color name="ic_launcher_background">#ffffff</color>
     <color name="cardview_stroke">@color/mtrl_btn_stroke_color_selector</color>
     <color name="coordinate_line">#FF00FB</color>
 
-    <color name="yellow">#FFC107</color>
 
     <color name="colorError">?attr/colorError</color>
 </resources>

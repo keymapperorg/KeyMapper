@@ -4,7 +4,7 @@ package io.github.sds100.keymapper.constraints
  * Created by sds100 on 05/04/2021.
  */
 object ConstraintUtils {
-    private val COMMON_SUPPORTED_CONSTRAINTS = arrayOf(
+    private val COMMON_SUPPORTED_CONSTRAINTS = listOf(
         ChooseConstraintType.APP_IN_FOREGROUND,
         ChooseConstraintType.APP_NOT_IN_FOREGROUND,
         ChooseConstraintType.APP_PLAYING_MEDIA,
@@ -20,7 +20,7 @@ object ConstraintUtils {
         ChooseConstraintType.FLASHLIGHT_OFF,
     )
 
-    val KEY_MAP_ALLOWED_CONSTRAINTS = arrayOf(
+    val KEY_MAP_ALLOWED_CONSTRAINTS = listOf(
         ChooseConstraintType.SCREEN_ON,
         ChooseConstraintType.SCREEN_OFF
     ).plus(COMMON_SUPPORTED_CONSTRAINTS)

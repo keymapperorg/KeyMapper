@@ -23,7 +23,6 @@ sealed class Error : Result<Nothing>() {
     data class ExtraNotFound(val extraId: String) : Error()
     data class SdkVersionTooLow(val minSdk: Int) : Error()
     data class SdkVersionTooHigh(val maxSdk: Int) : Error()
-    data class FeatureUnavailable(val feature: String) : Error()
     data class InputMethodNotFound(val id: String) : Error()
     object NoVoiceAssistant : Error()
     object NoDeviceAssistant : Error()
@@ -40,7 +39,6 @@ sealed class Error : Result<Nothing>() {
     object NoIncompatibleKeyboardsInstalled : Error()
     object NoMediaSessions : Error()
     object BackupVersionTooNew : Error()
-    object CorruptActionError : Error()
     object LauncherShortcutsNotSupported : Error()
 
     data class AppNotFound(val packageName: String) : Error()

@@ -66,7 +66,7 @@ class KeyMapperApp : MultiDexApplication() {
 
     lateinit var autoSwitchImeController: AutoSwitchImeController
 
-    val resourceProvider by lazy { ResourceProviderImpl(this) }
+    val resourceProvider by lazy { ResourceProviderImpl(this, appCoroutineScope) }
 
     val bluetoothMonitor by lazy { AndroidBluetoothAdapter(this, appCoroutineScope) }
 

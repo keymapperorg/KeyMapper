@@ -18,9 +18,11 @@ class ConfigConstraintsViewModel(
     private val coroutineScope: CoroutineScope,
     private val display: DisplayConstraintUseCase,
     private val config: ConfigMappingUseCase<*, *>,
-    val allowedConstraints: Array<ChooseConstraintType>,
+    private val allowedConstraints: List<ChooseConstraintType>,
     resourceProvider: ResourceProvider
-) : ResourceProvider by resourceProvider, PopupViewModel by PopupViewModelImpl() {
+) : ResourceProvider by resourceProvider,
+    PopupViewModel by PopupViewModelImpl(),
+    NavigationViewModel by NavigationViewModelImpl() {
 
     private val uiHelper = ConstraintUiHelper(display, resourceProvider)
 
@@ -83,12 +85,22 @@ class ConfigConstraintsViewModel(
                 val constraint = mapping.constraintState.constraints.singleOrNull { it.uid == id }
                     ?: return@launch
 
-                val error = display.getConstraintError(constraint)?:return@launch
+                val error = display.getConstraintError(constraint) ?: return@launch
 
                 if (error.isFixable) {
-                   display.fixError(error)
+                    display.fixError(error)
                 }
             }
+        }
+    }
+
+    fun onAddConstraintClick() {
+        coroutineScope.launch {
+            val constraint =
+                navigate("add_constraint", NavDestination.ChooseConstraint(allowedConstraints))
+                    ?: return@launch
+
+            config.addConstraint(constraint)
         }
     }
 
@@ -99,7 +111,7 @@ class ConfigConstraintsViewModel(
 
         return ConstraintListItem(
             id = constraint.uid,
-            tintType = icon?.tintType ?: TintType.ERROR,
+            tintType = icon?.tintType ?: TintType.Error,
             icon = icon?.drawable ?: getDrawable(R.drawable.ic_baseline_error_outline_24),
             title = title,
             errorMessage = error?.getFullMessage(this)

@@ -86,7 +86,7 @@ class CreateKeyMapShortcutViewModel(
             } else {
 
                 val key = "create_launcher_shortcut"
-                val response = showPopup(
+                val shortcutName = showPopup(
                     key,
                     PopupUi.Text(
                         getString(R.string.hint_shortcut_name),
@@ -96,7 +96,7 @@ class CreateKeyMapShortcutViewModel(
 
                 createShortcutUseCase.createIntentForMultipleActions(
                     keyMapUid = keyMap.uid,
-                    shortcutLabel = response.text
+                    shortcutLabel = shortcutName
                 )
             }
 

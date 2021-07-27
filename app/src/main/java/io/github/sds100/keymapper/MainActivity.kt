@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper
 
+import android.content.res.Configuration
 import android.os.Bundle
-import android.view.KeyEvent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -11,7 +11,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
-import io.github.sds100.keymapper.actions.keyevent.ChooseKeyViewModel
 import io.github.sds100.keymapper.databinding.ActivityMainBinding
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.RequestPermissionDelegate
@@ -33,14 +32,21 @@ class MainActivity : AppCompatActivity() {
             "$PACKAGE_NAME.show_accessibility_settings_not_found_dialog"
     }
 
-    private val chooseKeyViewModel: ChooseKeyViewModel by viewModels {
-        Inject.keyActionTypeViewModel()
+    private val viewModel by viewModels<ActivityViewModel> {
+        ActivityViewModel.Factory()
     }
+
+    private val currentNightMode: Int
+        get() = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
 
     private lateinit var requestPermissionDelegate: RequestPermissionDelegate
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (viewModel.previousNightMode != currentNightMode) {
+            ServiceLocator.resourceProvider(this).onThemeChange()
+        }
 
         DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
 
@@ -77,9 +83,8 @@ class MainActivity : AppCompatActivity() {
         Timber.i("MainActivity: onResume. Version: ${Constants.VERSION}")
     }
 
-    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
-        event?.let { chooseKeyViewModel.onKeyDown(it.keyCode) }
-
-        return super.onKeyUp(keyCode, event)
+    override fun onDestroy() {
+        viewModel.previousNightMode = currentNightMode
+        super.onDestroy()
     }
 }

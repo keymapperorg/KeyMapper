@@ -40,8 +40,8 @@ class HomeMenuViewModel(
             }
 
             val tint = when {
-                serviceState != ServiceState.ENABLED || !isPaused -> getColor(R.color.red)
-                else -> getColor(R.color.green)
+                serviceState != ServiceState.ENABLED || !isPaused -> getColor(R.color.slideRed)
+                else -> getColor(R.color.slideGreen)
             }
 
             ToggleMappingsButtonState(text, tint)

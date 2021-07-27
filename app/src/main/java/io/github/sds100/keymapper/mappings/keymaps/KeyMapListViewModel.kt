@@ -38,7 +38,6 @@ open class KeyMapListViewModel constructor(
         ) { keyMapListState, showDeviceDescriptors ->
             keyMapStateListFlow.value = State.Loading
 
-
             keyMapStateListFlow.value = keyMapListState.mapData { keyMapList ->
                 keyMapList.map { keyMap ->
                     listItemCreator.create(keyMap, showDeviceDescriptors)

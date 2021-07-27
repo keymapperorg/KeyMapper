@@ -4,23 +4,16 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Lifecycle
-import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.actions.ActionData
-import io.github.sds100.keymapper.actions.ChooseActionFragment
 import io.github.sds100.keymapper.constraints.ChooseConstraintFragment
-import io.github.sds100.keymapper.actions.ConfigActionsFragment
 import io.github.sds100.keymapper.constraints.ConfigConstraintsFragment
 import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.mappings.ConfigMappingFragment
 import io.github.sds100.keymapper.ui.utils.getJsonSerializable
-import io.github.sds100.keymapper.util.FragmentInfo
-import io.github.sds100.keymapper.util.Inject
-import io.github.sds100.keymapper.util.int
-import io.github.sds100.keymapper.util.intArray
+import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.TwoFragments
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.decodeFromString
@@ -43,12 +36,6 @@ class ConfigFingerprintMapFragment : ConfigMappingFragment() {
         //only load the fingerprint map if opening this fragment for the first time
         if (savedInstanceState == null) {
             viewModel.loadFingerprintMap(Json.decodeFromString(args.gestureId))
-        }
-
-        setFragmentResultListener(ConfigActionsFragment.CHOOSE_ACTION_REQUEST_KEY) { _, result ->
-            result.getJsonSerializable<ActionData>(ChooseActionFragment.EXTRA_ACTION)?.let {
-                viewModel.configActionsViewModel.addAction(it)
-            }
         }
 
         setFragmentResultListener(ConfigConstraintsFragment.CHOOSE_CONSTRAINT_REQUEST_KEY) { _, result ->

@@ -111,7 +111,7 @@ class ReportBugViewModel(
     private fun createBugReportSlide() = AppIntroSlideUi(
         id = ReportBugSlide.CREATE_BUG_REPORT,
         image = getDrawable(R.drawable.ic_outline_bug_report_64),
-        backgroundColor = getColor(R.color.red),
+        backgroundColor = getColor(R.color.slideRed),
         title = getString(R.string.slide_title_create_bug_report),
         description = getString(R.string.slide_description_create_bug_report),
         buttonText1 = getString(R.string.slide_button_create_bug_report),
@@ -121,7 +121,7 @@ class ReportBugViewModel(
     private fun shareBugReportSlide() = AppIntroSlideUi(
         id = ReportBugSlide.SHARE_BUG_REPORT,
         image = getDrawable(R.drawable.ic_outline_share_64),
-        backgroundColor = getColor(R.color.orange),
+        backgroundColor = getColor(R.color.slideOrange),
         title = getString(R.string.slide_title_share_bug_report),
         description = getString(R.string.slide_description_share_bug_report),
         buttonText1 = getString(R.string.slide_button_share_discord),
@@ -135,7 +135,7 @@ class ReportBugViewModel(
     private fun restartServiceSlide() = AppIntroSlideUi(
         id = FixAppKillingSlide.RESTART_ACCESSIBILITY_SERVICE,
         image = getDrawable(R.drawable.ic_outline_error_outline_64),
-        backgroundColor = getColor(R.color.green),
+        backgroundColor = getColor(R.color.slideGreen),
         title = getString(R.string.slide_title_restart_accessibility_service),
         description = getString(R.string.slide_description_restart_accessibility_service),
         buttonText1 = getString(R.string.button_restart_accessibility_service),

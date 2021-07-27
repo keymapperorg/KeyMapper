@@ -16,7 +16,12 @@ interface OptionsViewModel {
     fun setCheckboxValue(id: String, value: Boolean)
 }
 
-data class OptionsUiState(
-    val showProgressBar: Boolean = false,
-    val listItems: List<ListItem> = emptyList(),
-)
+interface OptionsUiState {
+    val showProgressBar: Boolean
+    val listItems: List<ListItem>
+}
+
+data class DefaultOptionsUiState(
+    override val showProgressBar: Boolean = false,
+    override val listItems: List<ListItem> = emptyList(),
+) : OptionsUiState

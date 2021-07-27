@@ -46,11 +46,11 @@ interface PopupViewModel {
     fun onUserResponse(event: OnPopupResponseEvent)
 }
 
-fun PopupViewModel.onUserResponse(key: String, response: PopupResponse?) {
+fun PopupViewModel.onUserResponse(key: String, response: Any?) {
     onUserResponse(OnPopupResponseEvent(key, response))
 }
 
-suspend inline fun <reified R : PopupResponse> PopupViewModel.showPopup(
+suspend inline fun <reified R> PopupViewModel.showPopup(
     key: String,
     ui: PopupUi<R>
 ): R? {
@@ -85,7 +85,7 @@ fun PopupViewModel.showPopups(
         showPopup.onEach { event ->
             var responded = false
 
-            lifecycleOwner.lifecycle.addObserver(object : LifecycleObserver {
+            val observer = object : LifecycleObserver {
                 @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
                 fun onDestroy() {
                     if (!responded) {
@@ -94,7 +94,9 @@ fun PopupViewModel.showPopups(
                         lifecycleOwner.lifecycle.removeObserver(this)
                     }
                 }
-            })
+            }
+
+            lifecycleOwner.lifecycle.addObserver(observer)
 
             val response = when (event.ui) {
                 is PopupUi.Ok ->
@@ -118,14 +120,14 @@ fun PopupViewModel.showPopups(
                     lifecycleOwner,
                     event.ui.hint,
                     event.ui.allowEmpty,
-                    event.ui.text
+                    event.ui.text,
+                    event.ui.inputType
                 )
 
                 is PopupUi.Dialog -> ctx.materialAlertDialog(lifecycleOwner, event.ui)
 
                 is PopupUi.Toast -> {
                     ctx.toast(event.ui.text)
-                    object : PopupResponse {}
                 }
 
                 is PopupUi.ChooseAppStore -> {
@@ -148,6 +150,8 @@ fun PopupViewModel.showPopups(
                 onUserResponse(event.key, response)
                 responded = true
             }
+
+            lifecycleOwner.lifecycle.removeObserver(observer)
         }.launchIn(this)
     }
 }

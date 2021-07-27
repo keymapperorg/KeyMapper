@@ -136,6 +136,9 @@ fun Fragment.styledColor(@AttrRes attr: Int) = requireContext().styledColor(attr
 @ColorInt
 fun View.styledColor(@AttrRes attr: Int) = context.styledColor(attr)
 
+fun View.styledFloat(@AttrRes attr: Int): Float = context.styledFloat(attr)
+fun Context.styledFloat(@AttrRes attr: Int): Float = withStyledAttributes(attr) { getFloat(it, 1f) }
+
 fun Context.int(@IntegerRes resId: Int) = resources.getInteger(resId)
 fun Fragment.int(@IntegerRes resId: Int) = requireContext().int(resId)
 
