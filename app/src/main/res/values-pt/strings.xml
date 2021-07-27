@@ -41,8 +41,6 @@
     <!--Preference categories-->
     <!-- About activity-->
     <!-- About activity-->
-    <!--Action Types Titles-->
-    <!--Action Types Titles-->
     <!--flags-->
     <!--flags-->
     <!-- Showcase -->
@@ -55,12 +53,14 @@
     <!-- Meta States -->
     <!-- Error messages -->
     <!-- Error messages -->
-    <!-- System action labels -->
-    <!-- System action labels -->
-    <!-- System action category labels -->
-    <!-- System action category labels -->
+    <!-- action labels -->
+    <!-- action labels -->
+    <!-- action category labels -->
+    <!-- action category labels -->
     <!--  Intent action type strings  -->
     <!--  Intent action type strings  -->
     <!--  Tap targets  -->
     <!--  Tap targets  -->
+    <!--  About  -->
+    <!--  About  -->
 </resources>
