@@ -16,7 +16,6 @@
     <string name="warning_the_app_will_work">Uygulama çalışacaktır ancak ne yaptığınıza bağlı olarak bazı şeylerin düzeltilmesi gerekebilir.</string>
     <string name="your_device_doesnt_support_some_actions">Cihaz bazı fonksiyonları desteklemiyor.</string>
     <string name="tab_unsupported_actions">Desteklenmeyen işlemler</string>
-    <string name="requires_root">KÖK ERİŞİMİNE İHTİYACI VAR</string>
     <string name="press_dot_dot_dot">Bura basın…</string>
     <string name="no_actions">Eylem yok</string>
     <string name="no_trigger">Etkileyici yok</string>
@@ -313,19 +312,6 @@
     <string name="pref_title_discord">Discord sunucusu</string>
     <string name="pref_title_youtube_channel">YouTube kanalı (Öğreticiler)</string>
     <!-- About activity-->
-    <!--Action Types Titles-->
-    <string name="action_type_title_application">Uygulama</string>
-    <string name="action_type_title_application_shortcut">Uygulama kısayolu</string>
-    <string name="action_type_title_key">Tuş</string>
-    <string name="action_type_title_key_code">Tuş kodu</string>
-    <string name="action_type_title_keyevent">Tuş eylemi</string>
-    <string name="action_type_title_system_action">Sistem</string>
-    <string name="action_type_title_text_block">Metin</string>
-    <string name="action_type_url">Bağlantı</string>
-    <string name="action_type_tap_coordinate">Ekrana dokun</string>
-    <string name="action_type_intent">Maksat</string>
-    <string name="action_type_phone_call">Telefon görüşmesi</string>
-    <!--Action Types Titles-->
     <!--flags-->
     <string name="flag_show_volume_dialog">Ses diyaloğunu göster</string>
     <string name="flag_long_press">Uzun basma</string>
@@ -351,24 +337,10 @@
     <!-- Meta States -->
     <!-- Error messages -->
     <!-- Error messages -->
-    <!-- System action labels -->
-    <!-- System action labels -->
-    <!-- System action category labels -->
-    <string name="system_action_cat_wifi">Kablosuz</string>
-    <string name="system_action_cat_bluetooth">Bluetooth</string>
-    <string name="system_action_cat_mobile_data">Mobil veri</string>
-    <string name="system_action_cat_navigation">Navigasyon</string>
-    <string name="system_action_cat_volume">Ses</string>
-    <string name="system_action_cat_screen_rotation">Ekran döndürme</string>
-    <string name="system_action_cat_brightness">Parlaklık</string>
-    <string name="system_action_cat_status_bar">Durum çubuğu</string>
-    <string name="system_action_cat_media">Medya</string>
-    <string name="system_action_cat_flashlight">Fener</string>
-    <string name="system_action_cat_nfc">NFC (Yakın Alan İletişimi)</string>
-    <string name="system_action_cat_other">Diğer</string>
-    <string name="system_action_cat_keyboard">Klavye</string>
-    <string name="system_action_cat_airplane_mode">Uçak modu</string>
-    <!-- System action category labels -->
+    <!-- action labels -->
+    <!-- action labels -->
+    <!-- action category labels -->
+    <!-- action category labels -->
     <!--  Intent action type strings  -->
     <string name="intent_type_bool_header">Boole</string>
     <string name="intent_type_bool_array_header">Boole dizisi</string>
@@ -386,4 +358,6 @@
     <string name="tap_target_quick_start_guide_primary">Basit Başlangıç Kılavuzı</string>
     <string name="tap_target_quick_start_guide_secondary">Takılırsanız Hızlı Başlangıç ​​Kılavuzuna bakın.</string>
     <!--  Tap targets  -->
+    <!--  About  -->
+    <!--  About  -->
 </resources>
