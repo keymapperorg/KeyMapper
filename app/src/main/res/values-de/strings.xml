@@ -140,10 +140,6 @@
     <string name="pref_title_version">Version</string>
     <string name="pref_title_translate">Übersetze</string>
     <!-- About activity-->
-    <!--Action Types Titles-->
-    <string name="action_type_title_application">App</string>
-    <string name="action_type_title_application_shortcut">App-Verknüpfung</string>
-    <!--Action Types Titles-->
     <!--flags-->
     <!--flags-->
     <!-- Showcase -->
@@ -161,12 +157,14 @@
     <string name="error_duplicate_constraint">Du kannst keine doppelten Bedingungen haben!</string>
     <string name="error_fingerprint_gesture_map_constraint_exists">Diese Geste hat bereits diese Bedingung!</string>
     <!-- Error messages -->
-    <!-- System action labels -->
-    <!-- System action labels -->
-    <!-- System action category labels -->
-    <!-- System action category labels -->
+    <!-- action labels -->
+    <!-- action labels -->
+    <!-- action category labels -->
+    <!-- action category labels -->
     <!--  Intent action type strings  -->
     <!--  Intent action type strings  -->
     <!--  Tap targets  -->
     <!--  Tap targets  -->
+    <!--  About  -->
+    <!--  About  -->
 </resources>
