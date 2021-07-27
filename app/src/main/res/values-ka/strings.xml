@@ -14,7 +14,6 @@
     <string name="warning_the_app_will_work">აპლიკაცია იმუშავებს, თუმცა ზოგ რამეს შესაძლოა შესწორება დასჭირდეს, იმის მიხედვით, თუ რას აკეთებთ.</string>
     <string name="your_device_doesnt_support_some_actions">თქვენს მოწყობილობას არ აქვს ზოგი მოქმედების მხარდაჭერა.</string>
     <string name="tab_unsupported_actions">მხარდაჭერის არმქონე მოქმედებები</string>
-    <string name="requires_root">საჭიროა ROOT წვდომა</string>
     <string name="press_dot_dot_dot">დააჭირეთ…</string>
     <string name="no_actions">მოქმედების გარეშე</string>
     <string name="no_trigger">არ არის ტრიგერი</string>
@@ -122,8 +121,6 @@
     <!--Preference categories-->
     <!-- About activity-->
     <!-- About activity-->
-    <!--Action Types Titles-->
-    <!--Action Types Titles-->
     <!--flags-->
     <!--flags-->
     <!-- Showcase -->
@@ -136,12 +133,14 @@
     <!-- Meta States -->
     <!-- Error messages -->
     <!-- Error messages -->
-    <!-- System action labels -->
-    <!-- System action labels -->
-    <!-- System action category labels -->
-    <!-- System action category labels -->
+    <!-- action labels -->
+    <!-- action labels -->
+    <!-- action category labels -->
+    <!-- action category labels -->
     <!--  Intent action type strings  -->
     <!--  Intent action type strings  -->
     <!--  Tap targets  -->
     <!--  Tap targets  -->
+    <!--  About  -->
+    <!--  About  -->
 </resources>
