@@ -17,7 +17,7 @@ class EditKeyMapActionFragment : BaseEditActionFragment<KeyMap, KeyMapAction>() 
     }
 
     override val viewModel: EditActionViewModel<KeyMap, KeyMapAction>
-        get() = configKeyMapViewModel.configActionOptionsViewModel
+        get() = configKeyMapViewModel.editActionViewModel
 
     override val helpUrl: String
         get() = str(R.string.url_keymap_action_options_guide)

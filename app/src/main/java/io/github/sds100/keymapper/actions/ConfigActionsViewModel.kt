@@ -53,7 +53,7 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
             _state.value = mappingState.mapData { mapping ->
                 createListItems(mapping, showDeviceDescriptors)
             }
-        }.launchIn(coroutineScope)
+        }.flowOn(Dispatchers.Default).launchIn(coroutineScope)
 
         coroutineScope.launch {
             config.mapping.collectLatest {

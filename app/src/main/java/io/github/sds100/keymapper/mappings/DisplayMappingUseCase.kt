@@ -35,7 +35,7 @@ class DisplaySimpleMappingUseCaseImpl(
     override val showDeviceDescriptors: Flow<Boolean> =
         preferenceRepository.get(Keys.showDeviceDescriptors).map { it ?: false }
 
-    private val keyMapperImeHelper = KeyMapperImeHelper(inputMethodAdapter)
+    private val keyMapperImeHelper by lazy { KeyMapperImeHelper(inputMethodAdapter) }
 
     override fun getAppName(packageName: String): Result<String> =
         packageManager.getAppName(packageName)

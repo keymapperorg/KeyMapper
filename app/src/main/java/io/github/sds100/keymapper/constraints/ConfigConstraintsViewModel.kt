@@ -7,6 +7,7 @@ import io.github.sds100.keymapper.mappings.Mapping
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -26,13 +27,13 @@ class ConfigConstraintsViewModel(
 
     private val uiHelper = ConstraintUiHelper(display, resourceProvider)
 
-    private val _state = MutableStateFlow(buildState(State.Loading))
-    val state = _state.asStateFlow()
+    private val _state by lazy { MutableStateFlow(buildState(State.Loading)) }
+    val state by lazy { _state.asStateFlow() }
 
     init {
         val rebuildUiState = MutableSharedFlow<State<Mapping<*>>>()
 
-        coroutineScope.launch {
+        coroutineScope.launch(Dispatchers.Default) {
             rebuildUiState.collectLatest { mapping ->
                 _state.value = buildState(mapping.mapData { it.constraintState })
             }

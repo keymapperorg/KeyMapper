@@ -9,7 +9,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 open class KeyMapListViewModel constructor(
     private val coroutineScope: CoroutineScope,
@@ -63,7 +62,7 @@ open class KeyMapListViewModel constructor(
             }
         }
 
-        coroutineScope.launch {
+        coroutineScope.launch(Dispatchers.Default) {
             combine(
                 keyMapStateListFlow,
                 multiSelectProvider.state
@@ -75,19 +74,17 @@ open class KeyMapListViewModel constructor(
                 _state.value = keyMapUiListState.mapData { keyMapUiList ->
                     val isSelectable = selectionState is SelectionState.Selecting<*>
 
-                    withContext(Dispatchers.Default) {
-                        keyMapUiList.map { keymapUiState ->
-                            val isSelected = if (selectionState is SelectionState.Selecting<*>) {
-                                selectionState.selectedIds.contains(keymapUiState.uid)
-                            } else {
-                                false
-                            }
-
-                            KeyMapListItem(
-                                keymapUiState,
-                                KeyMapListItem.SelectionUiState(isSelected, isSelectable)
-                            )
+                    keyMapUiList.map { keymapUiState ->
+                        val isSelected = if (selectionState is SelectionState.Selecting<*>) {
+                            selectionState.selectedIds.contains(keymapUiState.uid)
+                        } else {
+                            false
                         }
+
+                        KeyMapListItem(
+                            keymapUiState,
+                            KeyMapListItem.SelectionUiState(isSelected, isSelectable)
+                        )
                     }
                 }
             }

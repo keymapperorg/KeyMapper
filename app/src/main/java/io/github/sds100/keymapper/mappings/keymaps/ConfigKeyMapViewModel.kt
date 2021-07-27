@@ -43,7 +43,7 @@ class ConfigKeyMapViewModel(
         private const val STATE_KEY = "config_keymap"
     }
 
-    override val configActionOptionsViewModel =
+    override val editActionViewModel =
         EditKeyMapActionViewModel(viewModelScope, config, resourceProvider, createActionUseCase)
 
     val configTriggerKeyViewModel =

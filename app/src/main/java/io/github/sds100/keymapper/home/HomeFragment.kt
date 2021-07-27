@@ -89,7 +89,6 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         FragmentHomeBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
             _binding = this

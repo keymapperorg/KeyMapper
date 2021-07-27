@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.shizuku
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.util.State
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import rikka.shizuku.Shizuku
 
@@ -13,7 +14,7 @@ class ShizukuAdapterImpl(
     private val coroutineScope: CoroutineScope,
     private val packageManagerAdapter: PackageManagerAdapter
 ) : ShizukuAdapter {
-    override val isStarted = MutableStateFlow(Shizuku.getBinder() != null)
+    override val isStarted by lazy { MutableStateFlow(Shizuku.getBinder() != null) }
 
     override val isInstalled: StateFlow<Boolean> =
         packageManagerAdapter.installedPackages
@@ -23,6 +24,7 @@ class ShizukuAdapterImpl(
 
                 state.data.any { it.packageName == ShizukuUtils.SHIZUKU_PACKAGE }
             }
+            .flowOn(Dispatchers.Default)
             .stateIn(
                 coroutineScope,
                 SharingStarted.WhileSubscribed(),

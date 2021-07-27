@@ -18,7 +18,7 @@ class EditFingerprintMapActionFragment :
     }
 
     override val viewModel: EditActionViewModel<FingerprintMap, FingerprintMapAction>
-        get() = configFingerprintMapViewModel.configActionOptionsViewModel
+        get() = configFingerprintMapViewModel.editActionViewModel
 
     override val helpUrl: String
         get() = str(R.string.url_fingerprint_action_options_guide)

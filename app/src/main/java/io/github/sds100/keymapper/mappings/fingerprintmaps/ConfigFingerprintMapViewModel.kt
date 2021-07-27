@@ -45,7 +45,7 @@ class ConfigFingerprintMapViewModel(
         private const val STATE_FINGERPRINT_MAP = "config_fingerprint_map"
     }
 
-    override val configActionOptionsViewModel =
+    override val editActionViewModel =
         EditFingerprintMapActionViewModel(
             viewModelScope,
             config,

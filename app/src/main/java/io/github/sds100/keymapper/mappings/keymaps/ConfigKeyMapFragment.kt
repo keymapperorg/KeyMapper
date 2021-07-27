@@ -60,7 +60,7 @@ class ConfigKeyMapFragment : ConfigMappingFragment() {
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.configActionsViewModel.openEditOptions.collectLatest { actionUid ->
                 if (findNavController().currentDestination?.id == R.id.config_key_map_fragment) {
-                    viewModel.configActionOptionsViewModel.setActionToConfigure(actionUid)
+                    viewModel.editActionViewModel.setActionToConfigure(actionUid)
                     findNavController().navigate(ConfigKeyMapFragmentDirections.actionConfigKeymapFragmentToActionOptionsFragment())
                 }
             }

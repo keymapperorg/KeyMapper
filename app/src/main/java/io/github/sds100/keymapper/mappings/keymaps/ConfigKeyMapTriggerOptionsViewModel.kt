@@ -31,8 +31,8 @@ class ConfigKeyMapTriggerOptionsViewModel(
         private const val ID_SHOW_TOAST = "show_toast"
     }
 
-    private val _state = MutableStateFlow(buildUiState(State.Loading))
-    val state = _state.asStateFlow()
+    private val _state by lazy { MutableStateFlow(buildUiState(State.Loading)) }
+    val state by lazy { _state.asStateFlow() }
 
     init {
         coroutineScope.launch {

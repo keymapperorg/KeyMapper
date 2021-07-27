@@ -10,7 +10,6 @@ import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 /**
  * Created by sds100 on 21/03/2020.
@@ -56,8 +55,7 @@ class ChooseConstraintViewModel(
         )
     }
 
-    private val _listItems =
-        MutableStateFlow<State<List<SimpleListItem>>>(State.Loading)
+    private val _listItems = MutableStateFlow<State<List<SimpleListItem>>>(State.Loading)
     val listItems = _listItems.asStateFlow()
 
     private val _returnResult = MutableSharedFlow<Constraint>()
@@ -66,11 +64,9 @@ class ChooseConstraintViewModel(
     private var supportedConstraints = MutableStateFlow<Array<ChooseConstraintType>>(emptyArray())
 
     init {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             supportedConstraints.collectLatest {
-                _listItems.value = withContext(Dispatchers.Default) {
-                    State.Data(buildListItems())
-                }
+                _listItems.value = State.Data(buildListItems())
             }
         }
     }

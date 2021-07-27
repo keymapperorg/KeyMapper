@@ -47,26 +47,32 @@ class HomeViewModel(
 
     private val multiSelectProvider: MultiSelectProvider<String> = MultiSelectProviderImpl()
 
-    val menuViewModel = HomeMenuViewModel(
-        viewModelScope,
-        showAlertsUseCase,
-        pauseMappings,
-        showImePicker,
-        resourceProvider
-    )
+    val menuViewModel by lazy {
+        HomeMenuViewModel(
+            viewModelScope,
+            showAlertsUseCase,
+            pauseMappings,
+            showImePicker,
+            resourceProvider
+        )
+    }
 
-    val keymapListViewModel = KeyMapListViewModel(
-        viewModelScope,
-        listKeyMaps,
-        resourceProvider,
-        multiSelectProvider
-    )
+    val keymapListViewModel by lazy {
+        KeyMapListViewModel(
+            viewModelScope,
+            listKeyMaps,
+            resourceProvider,
+            multiSelectProvider
+        )
+    }
 
-    val fingerprintMapListViewModel = FingerprintMapListViewModel(
-        viewModelScope,
-        listFingerprintMaps,
-        resourceProvider
-    )
+    val fingerprintMapListViewModel by lazy {
+        FingerprintMapListViewModel(
+            viewModelScope,
+            listFingerprintMaps,
+            resourceProvider
+        )
+    }
 
     private val _openUrl = MutableSharedFlow<String>()
     val openUrl = _openUrl.asSharedFlow()
@@ -97,14 +103,16 @@ class HomeViewModel(
                 text = getString(R.string.selection_count, it.selectedIds.size)
             )
         }
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.Eagerly,
-        SelectionCountViewState(
-            isVisible = false,
-            text = ""
+    }
+        .flowOn(Dispatchers.Default)
+        .stateIn(
+            viewModelScope,
+            SharingStarted.Lazily,
+            SelectionCountViewState(
+                isVisible = false,
+                text = ""
+            )
         )
-    )
 
     val tabsState =
         combine(
@@ -132,26 +140,30 @@ class HomeViewModel(
                 tabs = tabs
             )
 
-        }.stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            HomeTabsState(
-                enableViewPagerSwiping = false,
-                showTabs = false,
-                emptySet()
+        }
+            .flowOn(Dispatchers.Default)
+            .stateIn(
+                viewModelScope,
+                SharingStarted.Lazily,
+                HomeTabsState(
+                    enableViewPagerSwiping = false,
+                    showTabs = false,
+                    emptySet()
+                )
             )
-        )
 
     val appBarState = multiSelectProvider.state.map {
         when (it) {
             SelectionState.NotSelecting -> HomeAppBarState.NORMAL
             is SelectionState.Selecting<*> -> HomeAppBarState.MULTI_SELECTING
         }
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.Eagerly,
-        HomeAppBarState.NORMAL
-    )
+    }
+        .flowOn(Dispatchers.Default)
+        .stateIn(
+            viewModelScope,
+            SharingStarted.Lazily,
+            HomeAppBarState.NORMAL
+        )
 
     val errorListState = combine(
         showAlertsUseCase.isBatteryOptimised,
@@ -217,7 +229,7 @@ class HomeViewModel(
         }.toList()
         HomeErrorListState(listItems, !isHidden)
     }.flowOn(Dispatchers.Default)
-        .stateIn(viewModelScope, SharingStarted.Eagerly, HomeErrorListState(emptyList(), false))
+        .stateIn(viewModelScope, SharingStarted.Lazily, HomeErrorListState(emptyList(), false))
 
     private val _showMenu = MutableSharedFlow<Unit>()
     val showMenu = _showMenu.asSharedFlow()
@@ -229,7 +241,7 @@ class HomeViewModel(
     val closeKeyMapper = _closeKeyMapper.asSharedFlow()
 
     init {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             backupRestore.onAutomaticBackupResult.collectLatest { result ->
                 when (result) {
                     is Success -> {
@@ -283,7 +295,7 @@ class HomeViewModel(
 
             _showQuickStartGuideHint.value = showQuickStartGuideHint
 
-        }.launchIn(viewModelScope)
+        }.flowOn(Dispatchers.Default).launchIn(viewModelScope)
     }
 
     fun approvedQuickStartGuideTapTarget() {

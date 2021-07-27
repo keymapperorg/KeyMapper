@@ -42,7 +42,7 @@ abstract class EditActionViewModel<M : Mapping<A>, A : Action>(
         .flowOn(Dispatchers.Default)
         .stateIn(
             coroutineScope,
-            SharingStarted.Eagerly,
+            SharingStarted.Lazily,
             EditActionUiState(showProgressBar = true)
         )
 

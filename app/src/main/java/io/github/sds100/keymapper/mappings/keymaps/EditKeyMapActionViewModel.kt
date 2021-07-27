@@ -103,7 +103,6 @@ class EditKeyMapActionViewModel(
         }
     }
 
-
     override fun createListItems(keyMap: KeyMap, action: KeyMapAction): List<ListItem> {
         return sequence {
 

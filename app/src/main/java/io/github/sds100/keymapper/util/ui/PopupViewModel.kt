@@ -20,11 +20,11 @@ import splitties.toast.toast
 
 class PopupViewModelImpl : PopupViewModel {
 
-    private val _onUserResponse = MutableSharedFlow<OnPopupResponseEvent>()
-    override val onUserResponse = _onUserResponse.asSharedFlow()
+    private val _onUserResponse by lazy { MutableSharedFlow<OnPopupResponseEvent>() }
+    override val onUserResponse by lazy { _onUserResponse.asSharedFlow() }
 
-    private val _getUserResponse = MutableSharedFlow<ShowPopupEvent>()
-    override val showPopup = _getUserResponse.asSharedFlow()
+    private val _getUserResponse by lazy { MutableSharedFlow<ShowPopupEvent>() }
+    override val showPopup by lazy { _getUserResponse.asSharedFlow() }
 
     override suspend fun showPopup(event: ShowPopupEvent) {
         //wait for the view to collect so no dialogs are missed

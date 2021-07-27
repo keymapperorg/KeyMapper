@@ -12,10 +12,8 @@ import io.github.sds100.keymapper.util.ui.ListItem
 import io.github.sds100.keymapper.util.ui.RadioButtonTripleListItem
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
 
 /**
  * Created by sds100 on 12/04/2021.
@@ -48,7 +46,13 @@ class ConfigTriggerKeyViewModel(
 
             else -> DefaultOptionsUiState(showProgressBar = true)
         }
-    }.stateIn(coroutineScope, SharingStarted.Eagerly, DefaultOptionsUiState(showProgressBar = true))
+    }
+        .flowOn(Dispatchers.Default)
+        .stateIn(
+            coroutineScope,
+            SharingStarted.Lazily,
+            DefaultOptionsUiState(showProgressBar = true)
+        )
 
     override fun setRadioButtonValue(id: String, value: Boolean) {
         val keyUid = triggerKeyUid.value ?: return

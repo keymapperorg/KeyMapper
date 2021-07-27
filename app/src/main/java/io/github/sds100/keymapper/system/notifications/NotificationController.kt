@@ -127,7 +127,7 @@ class NotificationController(
                 //don't delete the channel because then the user's notification config is lost
                 manageNotifications.dismiss(ID_IME_PICKER)
             }
-        }.launchIn(coroutineScope)
+        }.flowOn(Dispatchers.Default).launchIn(coroutineScope)
 
         toggleCompatibleIme.sufficientPermissions.onEach { canToggleIme ->
             if (canToggleIme) {
@@ -144,9 +144,9 @@ class NotificationController(
                 //don't delete the channel because then the user's notification config is lost
                 manageNotifications.dismiss(ID_TOGGLE_KEYBOARD)
             }
-        }.launchIn(coroutineScope)
+        }.flowOn(Dispatchers.Default).launchIn(coroutineScope)
 
-        coroutineScope.launch {
+        coroutineScope.launch(Dispatchers.Default) {
             combine(
                 onboardingUseCase.showFingerprintFeatureNotificationIfAvailable,
                 areFingerprintGesturesSupported.isSupported.map { it ?: false }
@@ -172,7 +172,7 @@ class NotificationController(
             } else {
                 manageNotifications.dismiss(ID_SETUP_CHOSEN_DEVICES_AGAIN)
             }
-        }.launchIn(coroutineScope)
+        }.flowOn(Dispatchers.Default).launchIn(coroutineScope)
 
         hideInputMethod.onHiddenChange.onEach { isHidden ->
             manageNotifications.createChannel(
@@ -188,7 +188,7 @@ class NotificationController(
             } else {
                 manageNotifications.dismiss(ID_KEYBOARD_HIDDEN)
             }
-        }.launchIn(coroutineScope)
+        }.flowOn(Dispatchers.Default).launchIn(coroutineScope)
 
         manageNotifications.onActionClick.onEach { actionId ->
             when (actionId) {
@@ -215,7 +215,7 @@ class NotificationController(
                     _openApp.emit(Unit)
                 }
             }
-        }.launchIn(coroutineScope)
+        }.flowOn(Dispatchers.Default).launchIn(coroutineScope)
     }
 
     fun onOpenApp() {

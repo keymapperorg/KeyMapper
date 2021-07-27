@@ -37,8 +37,8 @@ import kotlinx.serialization.json.Json
  */
 
 class NavigationViewModelImpl : NavigationViewModel {
-    private val _onNavResult = MutableSharedFlow<NavResult>()
-    override val onNavResult = _onNavResult.asSharedFlow()
+    private val _onNavResult by lazy { MutableSharedFlow<NavResult>() }
+    override val onNavResult by lazy { _onNavResult.asSharedFlow() }
 
     private val _navigate = MutableSharedFlow<NavigateEvent>()
     override val navigate = _navigate.asSharedFlow()

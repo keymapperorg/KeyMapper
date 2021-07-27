@@ -51,7 +51,7 @@ class ConfigFingerprintMapFragment : ConfigMappingFragment() {
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.configActionsViewModel.openEditOptions.collectLatest { actionUid ->
                 if (findNavController().currentDestination?.id == R.id.config_fingerprint_map_fragment) {
-                    viewModel.configActionOptionsViewModel.setActionToConfigure(actionUid)
+                    viewModel.editActionViewModel.setActionToConfigure(actionUid)
                     findNavController().navigate(ConfigFingerprintMapFragmentDirections.configActionFragment())
                 }
             }

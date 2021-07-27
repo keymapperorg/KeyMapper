@@ -41,7 +41,7 @@ abstract class ConfigMappingFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         viewModel.configActionsViewModel.setupNavigation(this)
-        viewModel.configActionOptionsViewModel.setupNavigation(this)
+        viewModel.editActionViewModel.setupNavigation(this)
         viewModel.configConstraintsViewModel.setupNavigation(this)
     }
 
@@ -63,7 +63,7 @@ abstract class ConfigMappingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.configActionOptionsViewModel.showPopups(this, binding)
+        viewModel.editActionViewModel.showPopups(this, binding)
 
         val fragmentInfoList = getFragmentInfoList()
 
