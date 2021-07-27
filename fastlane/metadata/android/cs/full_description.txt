@@ -9,55 +9,55 @@ Co lze přemapovat?
 POUZE HARDWARE tlačítka mohou být znovu mapována.
 Žádné z těchto tlačítek nebude fungovat a tato aplikace NENÍ navržena pro kontrolu her. OEM/dodavatel vašeho zařízení může zabránit jejich přemapování.
 
-Můžete kombinovat více klíčů z konkrétního zařízení nebo jakéhokoli zařízení a vytvořit "trigger". Each trigger can have multiple actions. The keys can be set to be pressed at the same time or one after another in a sequence. Keys can be remapped when they are short pressed, long pressed or double pressed. A keymap can have a set of "constraints" so it only has an effect in certain situations.
+Můžete kombinovat více klíčů z konkrétního zařízení nebo jakéhokoli zařízení a vytvořit "trigger". Každý spouštěč může mít více akcí. Klávesy lze nastavit tak, aby byly stisknuty současně nebo jednou za sebou. Tlačítka mohou být zmapována po krátkém stisknutí, dlouhém stisknutí nebo dvojitém stisknutí. Klíčová mapa může mít sadu "vazeb", takže má vliv pouze v určitých situacích.
 
-What can’t be remapped?
- * Power button
- * Bixby button
- * Mouse buttons
- * Dpad, thumb sticks or triggers on game controllers
+Co nelze přemapovat?
+ * Tlačítko napájení
+ * Tlačítko Bixby
+ * Tlačítka myši
+ * Dpad, paličky nebo spouštěče na herních ovladačích
 
-Your key maps don't work if the screen is OFF. This is a limitation in Android. There is nothing the dev can do.
+Vaše klíčové mapy nefungují, pokud je obrazovka vypnutá. Toto je omezení v Android. Není nic, co by vývojář nemohl udělat.
 
-What can I remap my keys to do?
- Some actions will only work on rooted devices and specific Android versions.
+Co mohu přemapovat své klíče?
+ Některé akce budou fungovat pouze na rootovaných zařízeních a konkrétních verzích Androidu.
 
- * Open an app
- * Open an app shortcut.
- * Open a URL
- * Create Intents
- * Go back
- * Go home
+ * Otevřete aplikaci
+ * Otevřete zástupce aplikace.
+ * Otevřít URL
+ * Vytvořit Intent
+ * Vraťte se zpět
+ * Návrat domů
  * Open recents
- * Open menu
- * Expand notification drawer
- * Expand quick settings
- * Collapse status bar
- * Toggle/enable/disable WiFi (ROOT only for Android 10+)
- * Toggle/enable/disable Bluetooth
- * Toggle/enable/disable mobile data (ROOT only)
- * Toggle between play and pause/just play/just pause media
+ * Otevřít nabídku
+ * Rozbalit oznamovací lištu
+ * Rozbalit rychlá nastavení
+ * Sbalit stavovou lištu
+ * Přepnout/zapnout/vypnout WiFi (ROOT pouze pro Android 10+)
+ * Přepnout/zapnout/vypnout Bluetooth
+ * Přepnout/zapnout/vypnout mobilní data (pouze ROOT)
+ * Přepínání mezi přehráváním a pozastavením/pouze přehrávání/pozastavením médií
  * Fast forward/rewind
- * Next/previous track
- * Volume up/down
- * Increase/decrease a specific volume stream
- * Show the volume dialog
- * Cycle through and change the ringer mode
- * Mute/unmute/toggle mute (Android 6.0+)
- * Toggle/enable/disable auto-rotate
- * Switch between portrait and landscape mode
- * Force portrait/landscape mode
- * Toggle/enable/disable auto-brightness
- * Increase/decrease brightness
- * Toggle/enable/disable flashlight (Android 6.0+)
- * Toggle/enable/disable airplane mode (ROOT only)
- * Toggle/enable/disable a dnd mode (Android 6.0+)
- * Switch between vibrate and ring
- * Take a screenshot (Android 9.0+)
- * Open the Voice Assistant
- * Open the Device Assistant
- * Open camera
- * Consume key event. (Nic nedělat)
+ * Další/předchozí skladba
+ * Hlasitost nahoru/dolů
+ * Zvýšit/snížit určitý objemový tok
+ * Zobrazit dialog hlasitosti
+ * Prohlédnout a změnit režim vyzvánění
+ * Ztlumení/vypnutí zvuku/vypnutí (Android 6.0+)
+ * Přepnout/zapnout/vypnout automatické otáčení
+ * Přepínání mezi režimem na výšku a na šířku
+ * Vynutit režim na výšku/na šířku
+ * Zapnout/zapnout/vypnout automatický jas
+ * Zvýšení/snížení jasu
+ * Zapnout/zapnout/vypnout svítilnu (Android 6.0+)
+ * Zapnout/zapnout/vypnout režim letadlo (pouze ROOT)
+ * Přepnout/zapnout/vypnout režim Dnd (Android 6.0+)
+ * Přepínání mezi vibrací a vyzváněním
+ * Pořídit snímek obrazovky (Android 9.0 + )
+ * Otevřete hlasového asistenta
+ * Otevře zástupce zařízení
+ * Otevřít fotoaparát
+ * Spustit klíčovou událost. (Nic nedělat)
  * Zamknout zařízení
  * Zobrazit dialogové okno napájení (Android 5.0+)
  * Přesunout kurzor na konec souboru
