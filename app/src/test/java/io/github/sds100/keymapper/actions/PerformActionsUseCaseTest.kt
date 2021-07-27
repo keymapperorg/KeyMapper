@@ -67,7 +67,8 @@ class PerformActionsUseCaseTest {
             preferenceRepository = mock(),
             soundsManager = mock(),
             shizukuInputEventInjector = mock(),
-            permissionAdapter = mock()
+            permissionAdapter = mock(),
+            notificationReceiverAdapter = mock()
         )
     }
 

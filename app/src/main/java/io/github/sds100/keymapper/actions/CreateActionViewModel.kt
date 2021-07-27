@@ -482,6 +482,8 @@ class CreateActionViewModelImpl(
             ActionId.OPEN_SETTINGS -> return OpenSettingsAction
             ActionId.SHOW_POWER_MENU -> return ShowPowerMenuAction
             ActionId.DISABLE_DND_MODE -> return DndModeAction.Disable
+            ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> return DismissLastNotificationAction
+            ActionId.DISMISS_ALL_NOTIFICATIONS -> return DismissAllNotificationsAction
         }
     }
 }

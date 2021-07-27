@@ -36,6 +36,7 @@ import io.github.sds100.keymapper.system.nfc.AndroidNfcAdapter
 import io.github.sds100.keymapper.system.notifications.AndroidNotificationAdapter
 import io.github.sds100.keymapper.system.notifications.ManageNotificationsUseCaseImpl
 import io.github.sds100.keymapper.system.notifications.NotificationController
+import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapter
 import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.phone.AndroidPhoneAdapter
@@ -83,7 +84,7 @@ class KeyMapperApp : MultiDexApplication() {
         AndroidInputMethodAdapter(
             this,
             appCoroutineScope,
-            serviceAdapter,
+            accessibilityServiceAdapter,
             permissionAdapter,
             suAdapter
         )
@@ -96,9 +97,17 @@ class KeyMapperApp : MultiDexApplication() {
         )
     }
     val cameraAdapter by lazy { AndroidCameraAdapter(this) }
-    val permissionAdapter by lazy { AndroidPermissionAdapter(this, appCoroutineScope, suAdapter) }
+    val permissionAdapter by lazy {
+        AndroidPermissionAdapter(
+            this,
+            appCoroutineScope,
+            suAdapter,
+            notificationReceiverAdapter
+        )
+    }
     val systemFeatureAdapter by lazy { AndroidSystemFeatureAdapter(this) }
-    val serviceAdapter by lazy { AccessibilityServiceAdapter(this, appCoroutineScope) }
+    val accessibilityServiceAdapter by lazy { AccessibilityServiceAdapter(this, appCoroutineScope) }
+    val notificationReceiverAdapter by lazy { NotificationReceiverAdapter(this, appCoroutineScope) }
     val appShortcutAdapter by lazy { AndroidAppShortcutAdapter(this) }
     val fileAdapter by lazy { AndroidFileAdapter(this) }
     val popupMessageAdapter by lazy { AndroidToastAdapter(this) }
@@ -124,7 +133,7 @@ class KeyMapperApp : MultiDexApplication() {
     val leanbackAdapter by lazy { LeanbackAdapterImpl(this) }
 
     val recordTriggerController by lazy {
-        RecordTriggerController(appCoroutineScope, serviceAdapter)
+        RecordTriggerController(appCoroutineScope, accessibilityServiceAdapter)
     }
 
     private val loggingTree by lazy {
@@ -188,7 +197,7 @@ class KeyMapperApp : MultiDexApplication() {
             UseCases.showImePicker(this),
             UseCases.controlAccessibilityService(this),
             UseCases.toggleCompatibleIme(this),
-            ShowHideInputMethodUseCaseImpl(ServiceLocator.serviceAdapter(this)),
+            ShowHideInputMethodUseCaseImpl(ServiceLocator.accessibilityServiceAdapter(this)),
             UseCases.fingerprintGesturesSupported(this),
             UseCases.onboarding(this),
             ServiceLocator.resourceProvider(this)
@@ -209,11 +218,11 @@ class KeyMapperApp : MultiDexApplication() {
             fun onResume() {
                 //when the user returns to the app let everything know that the permissions could have changed
                 permissionAdapter.onPermissionsChanged()
-                serviceAdapter.updateWhetherServiceIsEnabled()
+                accessibilityServiceAdapter.updateWhetherServiceIsEnabled()
                 notificationController.onOpenApp()
 
                 if (BuildConfig.DEBUG && permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)) {
-                    serviceAdapter.enableService()
+                    accessibilityServiceAdapter.enableService()
                 }
             }
         })

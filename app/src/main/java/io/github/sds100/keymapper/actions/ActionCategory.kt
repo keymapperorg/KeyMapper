@@ -15,5 +15,6 @@ enum class ActionCategory {
     MEDIA,
     KEYBOARD,
     INTERFACE,
-    TELEPHONY
+    TELEPHONY,
+    NOTIFICATIONS
 }

@@ -17,6 +17,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.shizuku.ShizukuUtils
 import io.github.sds100.keymapper.system.DeviceAdmin
+import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.url.UrlUtils
 import io.github.sds100.keymapper.util.str
@@ -57,6 +58,10 @@ class RequestPermissionDelegate(
 
     private val packageManagerAdapter: PackageManagerAdapter by lazy {
         ServiceLocator.packageManagerAdapter(activity)
+    }
+
+    private val notificationReceiverAdapter: ServiceAdapter by lazy {
+        ServiceLocator.notificationReceiverAdapter(activity)
     }
 
     fun requestPermission(permission: Permission, navController: NavController?) {
@@ -148,15 +153,7 @@ class RequestPermissionDelegate(
             }
 
             Permission.NOTIFICATION_LISTENER ->
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                    Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS).apply {
-                        try {
-                            startActivityForResultLauncher.launch(this)
-                        } catch (e: Exception) {
-                            toast(R.string.error_cant_find_notification_listener_settings)
-                        }
-                    }
-                }
+                notificationReceiverAdapter.enableService()
 
             Permission.CALL_PHONE ->
                 requestPermissionLauncher.launch(Manifest.permission.CALL_PHONE)

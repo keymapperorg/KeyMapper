@@ -35,7 +35,7 @@ class AccessibilityServiceAdapter(
     private val ctx = context.applicationContext
     override val eventReceiver = MutableSharedFlow<Event>()
 
-    val serviceOutputEvents = MutableSharedFlow<Event>()
+    val eventsToService = MutableSharedFlow<Event>()
 
     override val state = MutableStateFlow(ServiceState.DISABLED)
 
@@ -84,7 +84,7 @@ class AccessibilityServiceAdapter(
         }
 
         coroutineScope.launch {
-            serviceOutputEvents.emit(event)
+            eventsToService.emit(event)
         }
 
         return Success(Unit)
@@ -110,7 +110,7 @@ class AccessibilityServiceAdapter(
                     delay(100)
 
                     Timber.d("Ping service to check if crashed")
-                    serviceOutputEvents.emit(Ping(key))
+                    eventsToService.emit(Ping(key))
                 }
 
                 val pong: Pong? = withTimeoutOrNull(2000L) {
@@ -203,7 +203,7 @@ class AccessibilityServiceAdapter(
 
         coroutineScope.launch {
             delay(100)
-            serviceOutputEvents.emit(Ping(key))
+            eventsToService.emit(Ping(key))
         }
 
         val pong: Pong? = withTimeoutOrNull(2000L) {

@@ -70,3 +70,9 @@ data class ChangeIme(val imeId: String) : Event()
 
 @Serializable
 object DisableService : Event()
+
+@Serializable
+object DismissLastNotification : Event()
+
+@Serializable
+object DismissAllNotifications : Event()

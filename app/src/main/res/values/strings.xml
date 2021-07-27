@@ -1161,6 +1161,8 @@
     <string name="action_send_intent">Send intent</string>
     <string name="action_phone_call">Start phone call</string>
     <string name="action_play_sound">Play sound</string>
+    <string name="action_dismiss_most_recent_notification">Dismiss most recent notification</string>
+    <string name="action_dismiss_all_notifications">Dismiss all notifications</string>
     <!-- action labels -->
 
     <!-- action category labels -->
@@ -1176,6 +1178,7 @@
     <string name="action_cat_interface">Interface</string>
     <string name="action_cat_telephony">Phone</string>
     <string name="action_cat_display">Display</string>
+    <string name="action_cat_notifications">Notifications</string>
     <!-- action category labels -->
 
     <!--  Intent action type strings  -->

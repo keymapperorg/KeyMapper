@@ -12,6 +12,7 @@ import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.shizuku.InputEventInjector
 import io.github.sds100.keymapper.system.accessibility.AccessibilityNodeAction
 import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
+import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.airplanemode.AirplaneModeAdapter
 import io.github.sds100.keymapper.system.apps.AppShortcutAdapter
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
@@ -84,7 +85,8 @@ class PerformActionsUseCaseImpl(
     private val resourceProvider: ResourceProvider,
     private val preferenceRepository: PreferenceRepository,
     private val soundsManager: SoundsManager,
-    private val permissionAdapter: PermissionAdapter
+    private val permissionAdapter: PermissionAdapter,
+    private val notificationReceiverAdapter: ServiceAdapter
 ) : PerformActionsUseCase {
 
     private val openMenuHelper by lazy { OpenMenuHelper(suAdapter, accessibilityService) }
@@ -685,6 +687,22 @@ class PerformActionsUseCaseImpl(
 
             is VolumeAction.ShowDialog -> {
                 result = volumeAdapter.showVolumeUi()
+            }
+
+            DismissAllNotificationsAction -> {
+                coroutineScope.launch {
+                    notificationReceiverAdapter.send(DismissAllNotifications)
+                }
+
+                result = null
+            }
+
+            DismissLastNotificationAction -> {
+                coroutineScope.launch {
+                    notificationReceiverAdapter.send(DismissLastNotification)
+                }
+
+                result = null
             }
         }
 

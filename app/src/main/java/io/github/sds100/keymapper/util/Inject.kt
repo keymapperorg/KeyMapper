@@ -129,7 +129,7 @@ object Inject {
     ): ConfigKeyMapViewModel.Factory {
         return ConfigKeyMapViewModel.Factory(
             UseCases.configKeyMap(ctx),
-            TestActionUseCaseImpl(ServiceLocator.serviceAdapter(ctx)),
+            TestActionUseCaseImpl(ServiceLocator.accessibilityServiceAdapter(ctx)),
             UseCases.onboarding(ctx),
             (ctx.applicationContext as KeyMapperApp).recordTriggerController,
             UseCases.createKeymapShortcut(ctx),
@@ -144,7 +144,7 @@ object Inject {
     ): ConfigFingerprintMapViewModel.Factory {
         return ConfigFingerprintMapViewModel.Factory(
             ConfigFingerprintMapUseCaseImpl(ServiceLocator.fingerprintMapRepository(ctx)),
-            TestActionUseCaseImpl(ServiceLocator.serviceAdapter(ctx)),
+            TestActionUseCaseImpl(ServiceLocator.accessibilityServiceAdapter(ctx)),
             UseCases.displaySimpleMapping(ctx),
             UseCases.onboarding(ctx),
             UseCases.createAction(ctx),
@@ -216,7 +216,7 @@ object Inject {
         return AppIntroViewModel.Factory(
             AppIntroUseCaseImpl(
                 ServiceLocator.permissionAdapter(context),
-                ServiceLocator.serviceAdapter(context),
+                ServiceLocator.accessibilityServiceAdapter(context),
                 ServiceLocator.settingsRepository(context),
                 UseCases.fingerprintGesturesSupported(context)
             ),
@@ -252,8 +252,8 @@ object Inject {
         return AccessibilityServiceController(
             coroutineScope = service.lifecycleScope,
             accessibilityService = service,
-            inputEvents = ServiceLocator.serviceAdapter(service).serviceOutputEvents,
-            outputEvents = ServiceLocator.serviceAdapter(service).eventReceiver,
+            inputEvents = ServiceLocator.accessibilityServiceAdapter(service).eventsToService,
+            outputEvents = ServiceLocator.accessibilityServiceAdapter(service).eventReceiver,
             detectConstraintsUseCase = UseCases.detectConstraints(service),
             performActionsUseCase = UseCases.performActions(service, service),
             detectKeyMapsUseCase = UseCases.detectKeyMaps(service),

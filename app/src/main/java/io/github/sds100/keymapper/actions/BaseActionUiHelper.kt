@@ -392,6 +392,8 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
             WifiAction.Disable -> getString(R.string.action_disable_wifi)
             WifiAction.Enable -> getString(R.string.action_enable_wifi)
             WifiAction.Toggle -> getString(R.string.action_toggle_wifi)
+            DismissAllNotificationsAction -> getString(R.string.action_dismiss_all_notifications)
+            DismissLastNotificationAction -> getString(R.string.action_dismiss_most_recent_notification)
         }
 
     override fun getIcon(action: ActionData): IconInfo? = when (action) {

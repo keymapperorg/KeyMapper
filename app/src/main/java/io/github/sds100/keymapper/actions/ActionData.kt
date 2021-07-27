@@ -601,3 +601,13 @@ object OpenSettingsAction : ActionData() {
 object ShowPowerMenuAction : ActionData() {
     override val id = ActionId.SHOW_POWER_MENU
 }
+
+@Serializable
+object DismissLastNotificationAction : ActionData() {
+    override val id: ActionId = ActionId.DISMISS_MOST_RECENT_NOTIFICATION
+}
+
+@Serializable
+object DismissAllNotificationsAction : ActionData() {
+    override val id: ActionId = ActionId.DISMISS_ALL_NOTIFICATIONS
+}

@@ -31,6 +31,7 @@ import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.system.nfc.NfcAdapter
 import io.github.sds100.keymapper.system.notifications.AndroidNotificationAdapter
 import io.github.sds100.keymapper.system.notifications.NotificationController
+import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapter
 import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
 import io.github.sds100.keymapper.system.permissions.SystemFeatureAdapter
 import io.github.sds100.keymapper.system.phone.PhoneAdapter
@@ -192,8 +193,12 @@ object ServiceLocator {
         return (context.applicationContext as KeyMapperApp).systemFeatureAdapter
     }
 
-    fun serviceAdapter(context: Context): AccessibilityServiceAdapter {
-        return (context.applicationContext as KeyMapperApp).serviceAdapter
+    fun accessibilityServiceAdapter(context: Context): AccessibilityServiceAdapter {
+        return (context.applicationContext as KeyMapperApp).accessibilityServiceAdapter
+    }
+
+    fun notificationReceiverAdapter(context: Context): NotificationReceiverAdapter {
+        return (context.applicationContext as KeyMapperApp).notificationReceiverAdapter
     }
 
     fun appShortcutAdapter(context: Context): AppShortcutAdapter {

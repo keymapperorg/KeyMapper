@@ -15,6 +15,7 @@ import androidx.core.content.getSystemService
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.shizuku.ShizukuUtils
 import io.github.sds100.keymapper.system.DeviceAdmin
+import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
@@ -28,7 +29,8 @@ import timber.log.Timber
 class AndroidPermissionAdapter(
     context: Context,
     private val coroutineScope: CoroutineScope,
-    private val suAdapter: SuAdapter
+    private val suAdapter: SuAdapter,
+    private val notificationReceiverAdapter: ServiceAdapter
 ) : PermissionAdapter {
     companion object {
         const val REQUEST_SHIZUKU_PERMISSION = 1
@@ -54,6 +56,11 @@ class AndroidPermissionAdapter(
                 }
             }
         }
+
+        notificationReceiverAdapter.state
+            .drop(1)
+            .onEach { onPermissionsChanged() }
+            .launchIn(coroutineScope)
     }
 
     override fun request(permission: Permission) {

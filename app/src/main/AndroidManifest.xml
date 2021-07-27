@@ -197,6 +197,10 @@
             android:name=".system.inputmethod.ObserveInputMethodsJob"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
+        <service
+            android:name=".system.notifications.ObserveNotificationListenersJob"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
         <provider
             android:name="rikka.shizuku.ShizukuProvider"
             android:authorities="${applicationId}.shizuku"

@@ -351,6 +351,8 @@ object ActionDataEntityMapper {
             ActionId.CONSUME_KEY_EVENT -> ConsumeKeyEventAction
             ActionId.OPEN_SETTINGS -> OpenSettingsAction
             ActionId.SHOW_POWER_MENU -> ShowPowerMenuAction
+            ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> DismissLastNotificationAction
+            ActionId.DISMISS_ALL_NOTIFICATIONS -> DismissAllNotificationsAction
         }
     }
 
@@ -650,5 +652,8 @@ object ActionDataEntityMapper {
         ActionId.CONSUME_KEY_EVENT to "consume_key_event",
         ActionId.OPEN_SETTINGS to "open_settings",
         ActionId.SHOW_POWER_MENU to "show_power_menu",
+
+        ActionId.DISMISS_MOST_RECENT_NOTIFICATION to "dismiss_most_recent_notification",
+        ActionId.DISMISS_ALL_NOTIFICATIONS to "dismiss_all_notifications"
     )
 }

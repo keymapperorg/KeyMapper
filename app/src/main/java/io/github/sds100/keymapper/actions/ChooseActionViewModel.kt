@@ -40,6 +40,7 @@ class ChooseActionViewModel(
             ActionCategory.CONNECTIVITY,
             ActionCategory.TELEPHONY,
             ActionCategory.CAMERA_SOUND,
+            ActionCategory.NOTIFICATIONS
         )
     }
 

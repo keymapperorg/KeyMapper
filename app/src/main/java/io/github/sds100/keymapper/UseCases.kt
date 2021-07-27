@@ -60,7 +60,7 @@ object UseCases {
             ServiceLocator.packageManagerAdapter(ctx),
             ServiceLocator.permissionAdapter(ctx),
             ServiceLocator.inputMethodAdapter(ctx),
-            ServiceLocator.serviceAdapter(ctx),
+            ServiceLocator.accessibilityServiceAdapter(ctx),
             ServiceLocator.settingsRepository(ctx),
             ServiceLocator.shizukuAdapter(ctx),
             getActionError(ctx),
@@ -117,7 +117,7 @@ object UseCases {
 
     fun controlAccessibilityService(ctx: Context): ControlAccessibilityServiceUseCase {
         return ControlAccessibilityServiceUseCaseImpl(
-            ServiceLocator.serviceAdapter(ctx)
+            ServiceLocator.accessibilityServiceAdapter(ctx)
         )
     }
 
@@ -165,7 +165,8 @@ object UseCases {
             ServiceLocator.resourceProvider(ctx),
             ServiceLocator.settingsRepository(ctx),
             ServiceLocator.soundsManager(ctx),
-            ServiceLocator.permissionAdapter(ctx)
+            ServiceLocator.permissionAdapter(ctx),
+            ServiceLocator.notificationReceiverAdapter(ctx)
         )
 
     fun detectMappings(ctx: Context) = DetectMappingUseCaseImpl(

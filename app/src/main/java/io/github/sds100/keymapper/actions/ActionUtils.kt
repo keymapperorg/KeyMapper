@@ -30,6 +30,7 @@ object ActionUtils {
             ActionCategory.INTERFACE -> R.string.action_cat_interface
             ActionCategory.TELEPHONY -> R.string.action_cat_telephony
             ActionCategory.DISPLAY -> R.string.action_cat_display
+            ActionCategory.NOTIFICATIONS -> R.string.action_cat_notifications
         }
 
     fun getCategory(id: ActionId): ActionCategory =
@@ -150,6 +151,8 @@ object ActionUtils {
             ActionId.URL -> ActionCategory.CONTENT
 
             ActionId.PHONE_CALL -> ActionCategory.TELEPHONY
+            ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> ActionCategory.NOTIFICATIONS
+            ActionId.DISMISS_ALL_NOTIFICATIONS -> ActionCategory.NOTIFICATIONS
         }
 
     @StringRes
@@ -254,6 +257,8 @@ object ActionUtils {
             ActionId.INTENT -> R.string.action_send_intent
             ActionId.PHONE_CALL -> R.string.action_phone_call
             ActionId.SOUND -> R.string.action_play_sound
+            ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> R.string.action_dismiss_most_recent_notification
+            ActionId.DISMISS_ALL_NOTIFICATIONS -> R.string.action_dismiss_all_notifications
         }
 
     @DrawableRes
@@ -359,6 +364,8 @@ object ActionUtils {
             ActionId.INTENT -> null
             ActionId.PHONE_CALL -> R.drawable.ic_outline_call_24
             ActionId.SOUND -> R.drawable.ic_outline_volume_up_24
+            ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> R.drawable.ic_baseline_clear_all_24
+            ActionId.DISMISS_ALL_NOTIFICATIONS -> R.drawable.ic_baseline_clear_all_24
         }
 
     fun getMinApi(id: ActionId): Int {
@@ -522,6 +529,10 @@ object ActionUtils {
 
             ActionId.SECURE_LOCK_DEVICE -> return listOf(Permission.DEVICE_ADMIN)
             ActionId.POWER_ON_OFF_DEVICE -> return listOf(Permission.ROOT)
+
+            ActionId.DISMISS_ALL_NOTIFICATIONS,
+            ActionId.DISMISS_MOST_RECENT_NOTIFICATION ->
+                return listOf(Permission.NOTIFICATION_LISTENER)
         }
 
         return emptyList()
