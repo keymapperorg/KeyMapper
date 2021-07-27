@@ -16,7 +16,6 @@ Los servicios de accesibilidad solo detectan las teclas y eventos de las aplicac
     <string name="warning_the_app_will_work">La aplicación funcionará, pero algunas cosas necesitan repararse dependiendo de qué estás haciendo.</string>
     <string name="your_device_doesnt_support_some_actions">Tu dispositivo no soporta algunas acciones.</string>
     <string name="tab_unsupported_actions">Acciones no soportadas</string>
-    <string name="requires_root">REQUIERE ROOT</string>
     <string name="press_dot_dot_dot">Presiona…</string>
     <string name="no_actions">Sin acciones</string>
     <string name="no_trigger">Sin disparadores</string>
@@ -156,8 +155,6 @@ Los servicios de accesibilidad solo detectan las teclas y eventos de las aplicac
     <!--Preference categories-->
     <!-- About activity-->
     <!-- About activity-->
-    <!--Action Types Titles-->
-    <!--Action Types Titles-->
     <!--flags-->
     <!--flags-->
     <!-- Showcase -->
@@ -170,12 +167,14 @@ Los servicios de accesibilidad solo detectan las teclas y eventos de las aplicac
     <!-- Meta States -->
     <!-- Error messages -->
     <!-- Error messages -->
-    <!-- System action labels -->
-    <!-- System action labels -->
-    <!-- System action category labels -->
-    <!-- System action category labels -->
+    <!-- action labels -->
+    <!-- action labels -->
+    <!-- action category labels -->
+    <!-- action category labels -->
     <!--  Intent action type strings  -->
     <!--  Intent action type strings  -->
     <!--  Tap targets  -->
     <!--  Tap targets  -->
+    <!--  About  -->
+    <!--  About  -->
 </resources>
