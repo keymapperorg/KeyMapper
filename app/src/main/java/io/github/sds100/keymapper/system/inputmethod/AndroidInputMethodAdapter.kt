@@ -242,6 +242,7 @@ class AndroidInputMethodAdapter(
     fun onInputMethodsUpdate() {
         inputMethods.value = getInputMethods()
         inputMethodHistory.value = getImeHistory().mapNotNull { getInfoById(it).valueOrNull() }
+        Timber.i("On input method update, chosen IME = ${chosenIme.value.toString()}")
     }
 
     private fun getInputMethods(): List<ImeInfo> {
