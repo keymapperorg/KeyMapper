@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.core.view.isVisible
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.Lifecycle
@@ -111,8 +112,8 @@ abstract class OptionsBottomSheetFragment<BINDING : ViewDataBinding> : BottomShe
 
     abstract fun getRecyclerView(binding: BINDING): EpoxyRecyclerView
     abstract fun getProgressBar(binding: BINDING): View
-    abstract fun getDoneButton(binding: BINDING): View
-    abstract fun getHelpButton(binding: BINDING): View
+    abstract fun getDoneButton(binding: BINDING): Button
+    abstract fun getHelpButton(binding: BINDING): Button
 
     abstract fun bind(inflater: LayoutInflater, container: ViewGroup?): BINDING
 }
