@@ -12,8 +12,8 @@ import android.graphics.Path
 import android.os.Build
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
-import androidx.core.content.getSystemService
 import android.view.accessibility.AccessibilityNodeInfo
+import androidx.core.content.getSystemService
 import androidx.core.os.bundleOf
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
@@ -97,6 +97,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
                 }
             }
         }
+    
     private lateinit var controller: AccessibilityServiceController
     
     private var isFocussed = false
@@ -214,7 +215,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
             lifecycleScope.launchWhenStarted {
                 if (keyboardHelper.isCompatibleImeChosen()) {
                     Timber.d("Choose incompatible ime because got input focus.")
-                    keyboardHelper.chooseLastUsedIncompatibleInputMethod(fromForeground = false)
+                    keyboardHelper.chooseLastUsedIncompatibleInputMethod()
                 }
             }
         } else {
@@ -224,7 +225,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
                 if (!keyboardHelper.isCompatibleImeChosen()) {
                     Timber.d("Choose compatible ime because lost input focus.")
 
-                    keyboardHelper.chooseCompatibleInputMethod(fromForeground = false)
+                    keyboardHelper.chooseCompatibleInputMethod()
                 }
             }
         }

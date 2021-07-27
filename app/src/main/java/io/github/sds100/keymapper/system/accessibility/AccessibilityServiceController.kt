@@ -113,6 +113,7 @@ class AccessibilityServiceController(
         var flags = AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS
             .withFlag(AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS)
             .withFlag(AccessibilityServiceInfo.DEFAULT)
+            .withFlag(AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             flags = flags.withFlag(AccessibilityServiceInfo.FLAG_ENABLE_ACCESSIBILITY_VOLUME)
