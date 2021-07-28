@@ -13,12 +13,9 @@ import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.inputmethod.ShowHideInputMethodUseCase
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
 import io.github.sds100.keymapper.system.inputmethod.ToggleCompatibleImeUseCase
-import io.github.sds100.keymapper.util.getFullMessage
-import io.github.sds100.keymapper.util.onFailure
-import io.github.sds100.keymapper.util.onSuccess
+import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -36,7 +33,8 @@ class NotificationController(
     private val hideInputMethod: ShowHideInputMethodUseCase,
     private val areFingerprintGesturesSupported: AreFingerprintGesturesSupportedUseCase,
     private val onboardingUseCase: OnboardingUseCase,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    private val dispatchers: DispatcherProvider = DefaultDispatcherProvider()
 ) : ResourceProvider by resourceProvider {
 
     companion object {
@@ -110,7 +108,7 @@ class NotificationController(
             pauseMappings.isPaused
         ) { show, serviceState, areMappingsPaused ->
             invalidateToggleMappingsNotification(show, serviceState, areMappingsPaused)
-        }.flowOn(Dispatchers.Default).launchIn(coroutineScope)
+        }.flowOn(dispatchers.default()).launchIn(coroutineScope)
 
         manageNotifications.showImePickerNotification.onEach { show ->
             if (show) {
@@ -127,7 +125,7 @@ class NotificationController(
                 //don't delete the channel because then the user's notification config is lost
                 manageNotifications.dismiss(ID_IME_PICKER)
             }
-        }.flowOn(Dispatchers.Default).launchIn(coroutineScope)
+        }.flowOn(dispatchers.default()).launchIn(coroutineScope)
 
         toggleCompatibleIme.sufficientPermissions.onEach { canToggleIme ->
             if (canToggleIme) {
@@ -144,9 +142,9 @@ class NotificationController(
                 //don't delete the channel because then the user's notification config is lost
                 manageNotifications.dismiss(ID_TOGGLE_KEYBOARD)
             }
-        }.flowOn(Dispatchers.Default).launchIn(coroutineScope)
+        }.flowOn(dispatchers.default()).launchIn(coroutineScope)
 
-        coroutineScope.launch(Dispatchers.Default) {
+        coroutineScope.launch(dispatchers.default()) {
             combine(
                 onboardingUseCase.showFingerprintFeatureNotificationIfAvailable,
                 areFingerprintGesturesSupported.isSupported.map { it ?: false }
@@ -172,7 +170,7 @@ class NotificationController(
             } else {
                 manageNotifications.dismiss(ID_SETUP_CHOSEN_DEVICES_AGAIN)
             }
-        }.flowOn(Dispatchers.Default).launchIn(coroutineScope)
+        }.flowOn(dispatchers.default()).launchIn(coroutineScope)
 
         hideInputMethod.onHiddenChange.onEach { isHidden ->
             manageNotifications.createChannel(
@@ -188,7 +186,7 @@ class NotificationController(
             } else {
                 manageNotifications.dismiss(ID_KEYBOARD_HIDDEN)
             }
-        }.flowOn(Dispatchers.Default).launchIn(coroutineScope)
+        }.flowOn(dispatchers.default()).launchIn(coroutineScope)
 
         manageNotifications.onActionClick.onEach { actionId ->
             when (actionId) {
@@ -215,7 +213,7 @@ class NotificationController(
                     _openApp.emit(Unit)
                 }
             }
-        }.flowOn(Dispatchers.Default).launchIn(coroutineScope)
+        }.flowOn(dispatchers.default()).launchIn(coroutineScope)
     }
 
     fun onOpenApp() {
