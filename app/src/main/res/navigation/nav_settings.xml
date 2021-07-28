@@ -23,8 +23,8 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
         <action
-            android:id="@+id/to_writeSecureSettingsFragment"
-            app:destination="@id/writeSecureSettingsFragment"
+            android:id="@+id/toAutomaticallyChangeImeSettings"
+            app:destination="@id/automaticallyChangeImeSettings"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
@@ -61,9 +61,8 @@
         android:name="io.github.sds100.keymapper.settings.Android11BugWorkaroundSettingsFragment"
         android:label="Android11BugWorkaroundSettingsFragment" />
     <fragment
-        android:id="@+id/writeSecureSettingsFragment"
-        android:name="io.github.sds100.keymapper.settings.WriteSecureSettingsFragment"
-        android:label="WriteSecureSettingsFragment" />
+        android:id="@+id/automaticallyChangeImeSettings"
+        android:name="io.github.sds100.keymapper.settings.AutomaticallyChangeImeSettings" />
     <fragment
         android:id="@+id/imePickerSettingsFragment"
         android:name="io.github.sds100.keymapper.settings.ImePickerSettingsFragment"

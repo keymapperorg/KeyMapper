@@ -18,7 +18,11 @@ object Keys {
         booleanPreferencesKey("pref_toggle_key_mapper_keyboard_notification")
 
     val devicesThatChangeIme = stringSetPreferencesKey("pref_devices_that_change_ime")
-    val changeImeOnDeviceConnect = booleanPreferencesKey("pref_auto_change_ime_on_connect_disconnect")
+    val changeImeOnDeviceConnect =
+        booleanPreferencesKey("pref_auto_change_ime_on_connect_disconnect")
+    val changeImeOnInputFocus = booleanPreferencesKey("pref_change_ime_on_input_focus")
+    val showToastWhenAutoChangingIme =
+        booleanPreferencesKey("pref_show_toast_when_auto_changing_ime")
 
     val devicesThatShowImePicker = stringSetPreferencesKey("pref_devices_show_ime_picker")
     val showImePickerOnDeviceConnect = booleanPreferencesKey("pref_auto_show_ime_picker")

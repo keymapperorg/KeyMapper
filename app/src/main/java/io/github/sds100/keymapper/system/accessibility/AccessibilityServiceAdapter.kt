@@ -110,11 +110,11 @@ class AccessibilityServiceAdapter(
                     delay(100)
 
                     Timber.d("Ping service to check if crashed")
-                    eventsToService.emit(Ping(key))
+                    eventsToService.emit(Event.Ping(key))
                 }
 
-                val pong: Pong? = withTimeoutOrNull(2000L) {
-                    eventReceiver.first { it == Pong(key) } as Pong?
+                val pong: Event.Pong? = withTimeoutOrNull(2000L) {
+                    eventReceiver.first { it == Event.Pong(key) } as Event.Pong?
                 }
 
                 if (pong == null) {
@@ -154,7 +154,7 @@ class AccessibilityServiceAdapter(
     }
 
     private suspend fun disableServiceSuspend() {
-        send(DisableService).onSuccess {
+        send(Event.DisableService).onSuccess {
             Timber.i("Disabling service by calling disableSelf()")
 
             return
@@ -203,11 +203,11 @@ class AccessibilityServiceAdapter(
 
         coroutineScope.launch {
             delay(100)
-            eventsToService.emit(Ping(key))
+            eventsToService.emit(Event.Ping(key))
         }
 
-        val pong: Pong? = withTimeoutOrNull(2000L) {
-            eventReceiver.first { it == Pong(key) } as Pong?
+        val pong: Event.Pong? = withTimeoutOrNull(2000L) {
+            eventReceiver.first { it == Event.Pong(key) } as Event.Pong?
         }
 
         if (pong == null) {

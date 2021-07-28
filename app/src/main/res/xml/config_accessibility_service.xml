@@ -4,4 +4,5 @@
     android:canRequestFilterKeyEvents="true"
     android:canRequestFingerprintGestures="true"
     android:canRetrieveWindowContent="true"
+    android:notificationTimeout="0"
     android:description="@string/accessibility_service_description" />

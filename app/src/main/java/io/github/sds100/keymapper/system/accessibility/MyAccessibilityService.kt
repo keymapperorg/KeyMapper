@@ -93,6 +93,17 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
                 }
             }
         }
+
+    override var serviceEventTypes: Int?
+        get() = serviceInfo?.eventTypes
+        set(value) {
+            if (serviceInfo != null && value != null) {
+                serviceInfo = serviceInfo.apply {
+                    eventTypes = value
+                }
+            }
+        }
+
     private lateinit var controller: AccessibilityServiceController
 
     override fun onCreate() {
@@ -196,7 +207,9 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
         super.onLowMemory()
     }
 
-    override fun onAccessibilityEvent(event: AccessibilityEvent?) {}
+    override fun onAccessibilityEvent(event: AccessibilityEvent?) {
+        controller.onAccessibilityEvent(event?.toModel())
+    }
 
     override fun onKeyEvent(event: KeyEvent?): Boolean {
         event ?: return super.onKeyEvent(event)
@@ -310,5 +323,9 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
         }
 
         return Error.SdkVersionTooLow(Build.VERSION_CODES.N)
+    }
+
+    override fun findFocussedNode(focus: Int): AccessibilityNodeModel? {
+        return findFocus(focus)?.toModel()
     }
 }

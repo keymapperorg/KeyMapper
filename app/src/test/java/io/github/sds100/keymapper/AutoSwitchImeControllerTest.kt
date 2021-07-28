@@ -124,7 +124,8 @@ class AutoSwitchImeControllerTest {
             mockPauseMappingsUseCase,
             fakeDevicesAdapter,
             mockPopupMessageAdapter,
-            mockResourceProvider
+            mockResourceProvider,
+            accessibilityServiceAdapter = mock()
         )
     }
 

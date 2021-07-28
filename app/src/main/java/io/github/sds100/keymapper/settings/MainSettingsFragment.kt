@@ -31,9 +31,11 @@ class MainSettingsFragment : BaseSettingsFragment() {
 
     companion object {
         private const val KEY_GRANT_WRITE_SECURE_SETTINGS = "pref_key_grant_write_secure_settings"
+        private const val CATEGORY_KEY_GRANT_WRITE_SECURE_SETTINGS =
+            "category_key_grant_write_secure_settings"
         private const val KEY_GRANT_SHIZUKU = "pref_key_grant_shizuku"
-        private const val KEY_VIEW_WRITE_SECURE_SETTINGS_SETTINGS =
-            "pref_view_write_secure_settings_settings"
+        private const val KEY_AUTOMATICALLY_CHANGE_IME_LINK =
+            "pref_automatically_change_ime_link"
     }
 
     private val chooseAutomaticBackupLocationLauncher =
@@ -77,6 +79,9 @@ class MainSettingsFragment : BaseSettingsFragment() {
 
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.isWriteSecureSettingsPermissionGranted.collectLatest { isGranted ->
+                val writeSecureSettingsCategory =
+                    findPreference<PreferenceCategory>(CATEGORY_KEY_GRANT_WRITE_SECURE_SETTINGS)
+
                 findPreference<Preference>(KEY_GRANT_WRITE_SECURE_SETTINGS)?.apply {
                     isEnabled = !isGranted
 
@@ -89,9 +94,10 @@ class MainSettingsFragment : BaseSettingsFragment() {
                     }
                 }
 
-                findPreference<Preference>(KEY_VIEW_WRITE_SECURE_SETTINGS_SETTINGS)?.apply {
-                    isEnabled = isGranted
-                }
+                writeSecureSettingsCategory
+                    ?.findPreference<Preference>(KEY_AUTOMATICALLY_CHANGE_IME_LINK)?.apply {
+                        isEnabled = isGranted
+                    }
             }
         }
 
@@ -280,6 +286,11 @@ class MainSettingsFragment : BaseSettingsFragment() {
             addPreference(this)
         }
 
+        //link to settings to automatically change the ime
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            addPreference(automaticallyChangeImeSettingsLink())
+        }
+
         //android 11 device id reset work around
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             Preference(requireContext()).apply {
@@ -321,6 +332,7 @@ class MainSettingsFragment : BaseSettingsFragment() {
 
         //write secure settings
         PreferenceCategory(requireContext()).apply {
+            key = CATEGORY_KEY_GRANT_WRITE_SECURE_SETTINGS
             setTitle(R.string.title_pref_category_write_secure_settings)
 
             preferenceScreen.addPreference(this)
@@ -351,20 +363,9 @@ class MainSettingsFragment : BaseSettingsFragment() {
                 addPreference(this)
             }
 
-            Preference(requireContext()).apply {
-                key = KEY_VIEW_WRITE_SECURE_SETTINGS_SETTINGS
-
-                setTitle(R.string.title_pref_category_write_secure_settings_view_settings)
-                isSingleLineTitle = false
-
-                setOnPreferenceClickListener {
-                    val direction = MainSettingsFragmentDirections.toWriteSecureSettingsFragment()
-                    findNavController().navigate(direction)
-
-                    true
-                }
-
-                addPreference(this)
+            //accessibility services can change the ime on Android 11+
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+                addPreference(automaticallyChangeImeSettingsLink())
             }
         }
 
@@ -373,6 +374,21 @@ class MainSettingsFragment : BaseSettingsFragment() {
 
         //log
         createLogCategory()
+    }
+
+    private fun automaticallyChangeImeSettingsLink() = Preference(requireContext()).apply {
+        key = KEY_AUTOMATICALLY_CHANGE_IME_LINK
+
+        setTitle(R.string.title_pref_automatically_change_ime)
+        setSummary(R.string.summary_pref_automatically_change_ime)
+        isSingleLineTitle = false
+
+        setOnPreferenceClickListener {
+            val direction = MainSettingsFragmentDirections.toAutomaticallyChangeImeSettings()
+            findNavController().navigate(direction)
+
+            true
+        }
     }
 
     private fun createLogCategory() = PreferenceCategory(requireContext()).apply {

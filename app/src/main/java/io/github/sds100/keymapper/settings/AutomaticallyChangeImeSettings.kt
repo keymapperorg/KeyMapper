@@ -3,31 +3,20 @@ package io.github.sds100.keymapper.settings
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.Lifecycle
 import androidx.preference.Preference
 import androidx.preference.SwitchPreferenceCompat
 import androidx.preference.isEmpty
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.Keys
+import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.system.notifications.NotificationController
 import io.github.sds100.keymapper.system.notifications.NotificationUtils
-import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.viewLifecycleScope
-import kotlinx.coroutines.flow.collectLatest
 
 /**
  * Created by sds100 on 19/07/2021.
  */
-class WriteSecureSettingsFragment : BaseSettingsFragment() {
-
-    companion object {
-        private val KEYS_REQUIRING_WRITE_SECURE_SETTINGS = arrayOf(
-            Keys.changeImeOnDeviceConnect,
-            Keys.toggleKeyboardOnToggleKeymaps,
-            Keys.showToggleKeyboardNotification,
-            Keys.devicesThatChangeIme
-        )
-    }
+class AutomaticallyChangeImeSettings : BaseSettingsFragment() {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         preferenceManager.preferenceDataStore = viewModel.sharedPrefsDataStoreWrapper
@@ -42,17 +31,32 @@ class WriteSecureSettingsFragment : BaseSettingsFragment() {
                 populatePreferenceScreen()
             }
         }
-
-        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
-            viewModel.showWriteSecureSettingsSection.collectLatest { show ->
-                KEYS_REQUIRING_WRITE_SECURE_SETTINGS.forEach {
-                    findPreference<Preference>(it.name)?.isEnabled = show
-                }
-            }
-        }
     }
 
     private fun populatePreferenceScreen() = preferenceScreen.apply {
+
+        //show on-screen messages when changing keyboards
+        SwitchPreferenceCompat(requireContext()).apply {
+            key = Keys.showToastWhenAutoChangingIme.name
+
+            setDefaultValue(PreferenceDefaults.SHOW_TOAST_WHEN_AUTO_CHANGE_IME)
+            isSingleLineTitle = false
+            setTitle(R.string.title_pref_show_toast_when_auto_changing_ime)
+
+            addPreference(this)
+        }
+
+        //automatically change ime on input focus
+        SwitchPreferenceCompat(requireContext()).apply {
+            key = Keys.changeImeOnInputFocus.name
+
+            setDefaultValue(false)
+            isSingleLineTitle = false
+            setTitle(R.string.title_pref_auto_change_ime_on_input_focus)
+            setSummary(R.string.summary_pref_auto_change_ime_on_input_focus)
+
+            addPreference(this)
+        }
 
         //automatically change the keyboard when a bluetooth device (dis)connects
         SwitchPreferenceCompat(requireContext()).apply {
@@ -120,6 +124,5 @@ class WriteSecureSettingsFragment : BaseSettingsFragment() {
                 addPreference(this)
             }
         }
-
     }
 }
