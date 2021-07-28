@@ -23,7 +23,6 @@ import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsController
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsUseCase
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
-import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.*
@@ -141,8 +140,6 @@ class AccessibilityServiceController(
     private var serviceFeedbackType: MutableStateFlow<Int> = MutableStateFlow(0)
     private var serviceEventTypes: MutableStateFlow<Int> = MutableStateFlow(0)
 
-    private val keyMapperImeHelper = KeyMapperImeHelper(inputMethodAdapter)
-
     init {
         serviceFlags.onEach { flags ->
             //check that it isn't null because this can only be called once the service is bound
@@ -215,7 +212,7 @@ class AccessibilityServiceController(
             pauseMappingsUseCase.isPaused,
             merge(detectKeyMapsUseCase.allKeyMapList, detectFingerprintMapsUseCase.fingerprintMaps)
         ) { isPaused, mappings ->
-            var enableAccessibilityVolumeStream: Boolean
+            val enableAccessibilityVolumeStream: Boolean
 
             if (isPaused) {
                 enableAccessibilityVolumeStream = false
@@ -234,12 +231,20 @@ class AccessibilityServiceController(
 
         settingsRepository.get(Keys.changeImeOnInputFocus).onEach { changeImeOnInputFocus ->
             if (changeImeOnInputFocus == true) {
+                serviceFeedbackType.value = serviceFeedbackType.value
+                    .withFlag(AccessibilityServiceInfo.FEEDBACK_GENERIC)
+
                 serviceEventTypes.value = serviceEventTypes.value
                     .withFlag(AccessibilityEvent.TYPE_VIEW_FOCUSED)
+                    .withFlag(AccessibilityEvent.TYPE_WINDOWS_CHANGED)
                     .withFlag(AccessibilityEvent.TYPE_VIEW_CLICKED)
             } else {
+                serviceFeedbackType.value = serviceFeedbackType.value
+                    .minusFlag(AccessibilityServiceInfo.FEEDBACK_GENERIC)
+
                 serviceEventTypes.value = serviceEventTypes.value
                     .minusFlag(AccessibilityEvent.TYPE_VIEW_FOCUSED)
+                    .minusFlag(AccessibilityEvent.TYPE_WINDOWS_CHANGED)
                     .minusFlag(AccessibilityEvent.TYPE_VIEW_CLICKED)
             }
         }.launchIn(coroutineScope)
@@ -355,13 +360,13 @@ class AccessibilityServiceController(
     }
 
     fun onAccessibilityEvent(event: AccessibilityEventModel?) {
+        Timber.d("OnAccessibilityEvent $event")
         val focussedNode = accessibilityService.findFocussedNode(AccessibilityNodeInfo.FOCUS_INPUT)
 
         if (focussedNode?.isEditable == true && focussedNode.isFocused) {
             Timber.d("Got input focus")
             coroutineScope.launch {
                 outputEvents.emit(Event.OnInputFocusChange(isFocussed = true))
-
             }
         } else {
             Timber.d("Lost input focus")

@@ -43,7 +43,8 @@ class AutoSwitchImeController(
         false
     )
 
-    private var changeImeOnInputFocus: Boolean = false
+    private var changeImeOnInputFocus: Boolean =
+        preferenceRepository.get(Keys.changeImeOnInputFocus).firstBlocking() ?: false
 
     init {
         pauseMappingsUseCase.isPaused.onEach { isPaused ->
@@ -51,13 +52,9 @@ class AutoSwitchImeController(
             if (!toggleKeyboardOnToggleKeymaps) return@onEach
 
             if (isPaused) {
-                imeHelper.chooseLastUsedIncompatibleInputMethod().otherwise {
-                    inputMethodAdapter.showImePicker(fromForeground = false)
-                }
+                chooseIncompatibleIme(imePickerAllowed = true)
             } else {
-                imeHelper.chooseCompatibleInputMethod().otherwise {
-                    inputMethodAdapter.showImePicker(fromForeground = false)
-                }
+                chooseCompatibleIme(imePickerAllowed = true)
             }
         }.launchIn(coroutineScope)
 
@@ -67,18 +64,7 @@ class AutoSwitchImeController(
             }
 
             if (changeImeOnDeviceConnect && devicesThatToggleKeyboard.contains(device.descriptor)) {
-                imeHelper.chooseCompatibleInputMethod()
-                    .onSuccess { ime ->
-                        val message =
-                            resourceProvider.getString(R.string.toast_chose_keyboard, ime.label)
-                        popupMessageAdapter.showPopupMessage(message)
-                    }
-                    .otherwise {
-                        inputMethodAdapter.showImePicker(fromForeground = false)
-                    }
-                    .onFailure { error ->
-                        popupMessageAdapter.showPopupMessage(error.getFullMessage(resourceProvider))
-                    }
+                chooseCompatibleIme(imePickerAllowed = true)
             }
         }.launchIn(coroutineScope)
 
@@ -88,18 +74,7 @@ class AutoSwitchImeController(
             }
 
             if (changeImeOnDeviceConnect && devicesThatToggleKeyboard.contains(device.descriptor)) {
-                imeHelper.chooseLastUsedIncompatibleInputMethod()
-                    .onSuccess { ime ->
-                        val message =
-                            resourceProvider.getString(R.string.toast_chose_keyboard, ime.label)
-                        popupMessageAdapter.showPopupMessage(message)
-                    }
-                    .otherwise {
-                        inputMethodAdapter.showImePicker(fromForeground = false)
-                    }
-                    .onFailure { error ->
-                        popupMessageAdapter.showPopupMessage(error.getFullMessage(resourceProvider))
-                    }
+                chooseIncompatibleIme(imePickerAllowed = true)
             }
         }.launchIn(coroutineScope)
 
@@ -115,18 +90,62 @@ class AutoSwitchImeController(
                     }
 
                     if (event.isFocussed) {
-                        if (imeHelper.isCompatibleImeChosen()) {
-                            Timber.d("Choose normal keyboard because got input focus")
-                            imeHelper.chooseLastUsedIncompatibleInputMethod()
-                        }
+                        Timber.d("Choose normal keyboard because got input focus")
+                        chooseIncompatibleIme(imePickerAllowed = false)
                     } else {
-                        if (!imeHelper.isCompatibleImeChosen()) {
-                            Timber.d("Choose key mapper keyboard because lost input focus")
-                            imeHelper.chooseCompatibleInputMethod()
-                        }
+                        Timber.d("Choose key mapper keyboard because lost input focus")
+                        chooseCompatibleIme(imePickerAllowed = false)
                     }
                 }
             }
         }.launchIn(coroutineScope)
+    }
+
+    private suspend fun chooseIncompatibleIme(imePickerAllowed: Boolean) {
+        //only choose the keyboard if the correct one isn't already chosen
+        if (!imeHelper.isCompatibleImeChosen()) {
+            return
+        }
+
+        imeHelper.chooseLastUsedIncompatibleInputMethod()
+            .onSuccess { ime ->
+                val message =
+                    resourceProvider.getString(R.string.toast_chose_keyboard, ime.label)
+                popupMessageAdapter.showPopupMessage(message)
+            }
+            .otherwise {
+                if (imePickerAllowed) {
+                    inputMethodAdapter.showImePicker(fromForeground = false)
+                } else {
+                    Success(Unit)
+                }
+            }
+            .onFailure { error ->
+                popupMessageAdapter.showPopupMessage(error.getFullMessage(resourceProvider))
+            }
+    }
+
+    private suspend fun chooseCompatibleIme(imePickerAllowed: Boolean) {
+        //only choose the keyboard if the correct one isn't already chosen
+        if (imeHelper.isCompatibleImeChosen()) {
+            return
+        }
+
+        imeHelper.chooseCompatibleInputMethod()
+            .onSuccess { ime ->
+                val message =
+                    resourceProvider.getString(R.string.toast_chose_keyboard, ime.label)
+                popupMessageAdapter.showPopupMessage(message)
+            }
+            .otherwise {
+                if (imePickerAllowed) {
+                    inputMethodAdapter.showImePicker(fromForeground = false)
+                } else {
+                    Success(Unit)
+                }
+            }
+            .onFailure { error ->
+                popupMessageAdapter.showPopupMessage(error.getFullMessage(resourceProvider))
+            }
     }
 }

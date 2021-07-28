@@ -679,7 +679,7 @@
     <string name="summary_pref_show_device_descriptors">This is useful to differentiate between devices that have the same name.</string>
 
     <string name="title_pref_reroute_keyevents">Workaround for Android 11 bug</string>
-    <string name="summary_pref_reroute_keyevents">This fixes keyboards that don\'t work when any accessibility service is enabled.</string>
+    <string name="summary_pref_reroute_keyevents">This fixes keyboards that don\'t work when any accessibility services are enabled.</string>
 
     <string name="title_pref_devices_to_reroute_keyevents">Workaround for Android 11 bug that sets the device id for input events to -1</string>
     <string name="summary_pref_devices_to_reroute_keyevents">Workaround for Android 11 bug that sets the device id for input events to -1</string>
@@ -737,7 +737,8 @@
     <string name="summary_pref_category_shizuku">Shizuku is an app that allows Key Mapper to do things that only system apps can do. You don\'t need to use the Key Mapper keyboard for example. Tap to learn how to set this up.</string>
     <string name="summary_pref_category_shizuku_follow_steps">Follow these steps to set up Shizuku.</string>
 
-    <string name="title_pref_category_write_secure_settings_view_settings">Go to the settings that require this permission.</string>
+    <string name="title_pref_automatically_change_ime">Automatically change the keyboard</string>
+    <string name="summary_pref_automatically_change_ime">These are really useful settings and you are recommended to check them out!</string>
 
     <string name="title_pref_category_log">Logging</string>
     <string name="summary_pref_category_log">This may add latency to your key maps so only turn this on if you are trying to debug the app or have been asked to by the developer.</string>

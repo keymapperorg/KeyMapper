@@ -3,7 +3,6 @@ package io.github.sds100.keymapper.settings
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.Lifecycle
 import androidx.preference.Preference
 import androidx.preference.SwitchPreferenceCompat
 import androidx.preference.isEmpty
@@ -11,23 +10,12 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.system.notifications.NotificationController
 import io.github.sds100.keymapper.system.notifications.NotificationUtils
-import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.viewLifecycleScope
-import kotlinx.coroutines.flow.collectLatest
 
 /**
  * Created by sds100 on 19/07/2021.
  */
-class WriteSecureSettingsFragment : BaseSettingsFragment() {
-
-    companion object {
-        private val KEYS_REQUIRING_WRITE_SECURE_SETTINGS = arrayOf(
-            Keys.changeImeOnDeviceConnect,
-            Keys.toggleKeyboardOnToggleKeymaps,
-            Keys.showToggleKeyboardNotification,
-            Keys.devicesThatChangeIme
-        )
-    }
+class AutomaticallyChangeImeSettings : BaseSettingsFragment() {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         preferenceManager.preferenceDataStore = viewModel.sharedPrefsDataStoreWrapper
@@ -42,18 +30,11 @@ class WriteSecureSettingsFragment : BaseSettingsFragment() {
                 populatePreferenceScreen()
             }
         }
-
-        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
-            viewModel.showWriteSecureSettingsSection.collectLatest { show ->
-                KEYS_REQUIRING_WRITE_SECURE_SETTINGS.forEach {
-                    findPreference<Preference>(it.name)?.isEnabled = show
-                }
-            }
-        }
     }
 
     private fun populatePreferenceScreen() = preferenceScreen.apply {
 
+        //automatically change ime on input focus
         SwitchPreferenceCompat(requireContext()).apply {
             key = Keys.changeImeOnInputFocus.name
 
@@ -131,6 +112,5 @@ class WriteSecureSettingsFragment : BaseSettingsFragment() {
                 addPreference(this)
             }
         }
-
     }
 }
