@@ -58,6 +58,7 @@ class AndroidBluetoothAdapter(
                     intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
                         ?: return
 
+                device.address ?: return
                 device.name ?: return
 
                 coroutineScope.launch {
@@ -75,6 +76,7 @@ class AndroidBluetoothAdapter(
                     intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
                         ?: return
 
+                device.address ?: return
                 device.name ?: return
 
                 coroutineScope.launch {
@@ -92,6 +94,7 @@ class AndroidBluetoothAdapter(
                     intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
                         ?: return
 
+                device.address ?: return
                 device.name ?: return
 
                 coroutineScope.launch {
