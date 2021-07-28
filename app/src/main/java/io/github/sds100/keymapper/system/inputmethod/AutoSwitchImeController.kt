@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.system.inputmethod
 
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.Keys
+import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
@@ -43,8 +44,9 @@ class AutoSwitchImeController(
         false
     )
 
-    private var changeImeOnInputFocus: Boolean =
-        preferenceRepository.get(Keys.changeImeOnInputFocus).firstBlocking() ?: false
+    private var changeImeOnInputFocus: Boolean = false
+
+    private var showToast: Boolean = PreferenceDefaults.SHOW_TOAST_WHEN_AUTO_CHANGE_IME
 
     init {
         pauseMappingsUseCase.isPaused.onEach { isPaused ->
@@ -79,7 +81,11 @@ class AutoSwitchImeController(
         }.launchIn(coroutineScope)
 
         preferenceRepository.get(Keys.changeImeOnInputFocus).onEach {
-            changeImeOnInputFocus = it ?: false
+            changeImeOnInputFocus = it ?: PreferenceDefaults.SHOW_TOAST_WHEN_AUTO_CHANGE_IME
+        }.launchIn(coroutineScope)
+
+        preferenceRepository.get(Keys.showToastWhenAutoChangingIme).onEach {
+            showToast = it ?: false
         }.launchIn(coroutineScope)
 
         accessibilityServiceAdapter.eventReceiver.onEach { event ->
@@ -109,9 +115,11 @@ class AutoSwitchImeController(
 
         imeHelper.chooseLastUsedIncompatibleInputMethod()
             .onSuccess { ime ->
-                val message =
-                    resourceProvider.getString(R.string.toast_chose_keyboard, ime.label)
-                popupMessageAdapter.showPopupMessage(message)
+                if (showToast) {
+                    val message =
+                        resourceProvider.getString(R.string.toast_chose_keyboard, ime.label)
+                    popupMessageAdapter.showPopupMessage(message)
+                }
             }
             .otherwise {
                 if (imePickerAllowed) {
@@ -133,9 +141,11 @@ class AutoSwitchImeController(
 
         imeHelper.chooseCompatibleInputMethod()
             .onSuccess { ime ->
-                val message =
-                    resourceProvider.getString(R.string.toast_chose_keyboard, ime.label)
-                popupMessageAdapter.showPopupMessage(message)
+                if (showToast) {
+                    val message =
+                        resourceProvider.getString(R.string.toast_chose_keyboard, ime.label)
+                    popupMessageAdapter.showPopupMessage(message)
+                }
             }
             .otherwise {
                 if (imePickerAllowed) {

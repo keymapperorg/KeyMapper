@@ -8,6 +8,7 @@ import androidx.preference.SwitchPreferenceCompat
 import androidx.preference.isEmpty
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.Keys
+import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.system.notifications.NotificationController
 import io.github.sds100.keymapper.system.notifications.NotificationUtils
 import io.github.sds100.keymapper.util.viewLifecycleScope
@@ -33,6 +34,17 @@ class AutomaticallyChangeImeSettings : BaseSettingsFragment() {
     }
 
     private fun populatePreferenceScreen() = preferenceScreen.apply {
+
+        //show on-screen messages when changing keyboards
+        SwitchPreferenceCompat(requireContext()).apply {
+            key = Keys.showToastWhenAutoChangingIme.name
+
+            setDefaultValue(PreferenceDefaults.SHOW_TOAST_WHEN_AUTO_CHANGE_IME)
+            isSingleLineTitle = false
+            setTitle(R.string.title_pref_show_toast_when_auto_changing_ime)
+
+            addPreference(this)
+        }
 
         //automatically change ime on input focus
         SwitchPreferenceCompat(requireContext()).apply {

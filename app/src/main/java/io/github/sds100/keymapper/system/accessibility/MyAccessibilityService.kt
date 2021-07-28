@@ -99,7 +99,6 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
         set(value) {
             if (serviceInfo != null && value != null) {
                 serviceInfo = serviceInfo.apply {
-                    Timber.e("set event types $value")
                     eventTypes = value
                 }
             }
