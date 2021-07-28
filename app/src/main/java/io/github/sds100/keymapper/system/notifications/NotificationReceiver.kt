@@ -11,8 +11,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.lifecycleScope
 import io.github.sds100.keymapper.ServiceLocator
-import io.github.sds100.keymapper.util.DismissAllNotifications
-import io.github.sds100.keymapper.util.DismissLastNotification
+import io.github.sds100.keymapper.util.Event
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -53,8 +52,8 @@ class NotificationReceiver : NotificationListenerService(), LifecycleOwner {
         serviceAdapter.eventsToService
             .onEach { event ->
                 when (event) {
-                    DismissLastNotification -> cancelNotification(lastNotificationKey)
-                    DismissAllNotifications -> cancelAllNotifications()
+                    Event.DismissLastNotification -> cancelNotification(lastNotificationKey)
+                    Event.DismissAllNotifications -> cancelAllNotifications()
                 }
             }.launchIn(lifecycleScope)
     }

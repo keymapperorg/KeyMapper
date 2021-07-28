@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.system.accessibility
 
+import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 
 /**
@@ -36,6 +37,11 @@ fun AccessibilityNodeInfo.toModel(): AccessibilityNodeModel {
         isFocused = isFocused,
         textSelectionStart = textSelectionStart,
         textSelectionEnd = textSelectionEnd,
-        text = text?.toString()
+        text = text?.toString(),
+        isEditable = isEditable
     )
+}
+
+fun AccessibilityEvent.toModel(): AccessibilityEventModel {
+    return AccessibilityEventModel(eventTime)
 }

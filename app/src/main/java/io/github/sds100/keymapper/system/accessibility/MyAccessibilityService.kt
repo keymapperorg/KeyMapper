@@ -12,18 +12,14 @@ import android.graphics.Path
 import android.os.Build
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
-import android.view.accessibility.AccessibilityNodeInfo
 import androidx.core.content.getSystemService
 import androidx.core.os.bundleOf
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
-import androidx.lifecycle.lifecycleScope
-import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.api.Api
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapId
 import io.github.sds100.keymapper.system.devices.isExternalCompat
-import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -97,10 +93,18 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
                 }
             }
         }
-    
+
+    override var serviceEventTypes: Int?
+        get() = serviceInfo?.eventTypes
+        set(value) {
+            if (serviceInfo != null && value != null) {
+                serviceInfo = serviceInfo.apply {
+                    eventTypes = value
+                }
+            }
+        }
+
     private lateinit var controller: AccessibilityServiceController
-    
-    private var isFocussed = false
 
     override fun onCreate() {
         super.onCreate()
@@ -204,39 +208,11 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-
-        val focussedNode = findFocus(AccessibilityNodeInfo.FOCUS_INPUT)
-
-        val keyboardHelper = KeyMapperImeHelper(ServiceLocator.inputMethodAdapter(this))
-
-        if (focussedNode?.isEditable == true && focussedNode.isFocused) {
-            Timber.d("Got input focus")
-            isFocussed = true
-            lifecycleScope.launchWhenStarted {
-                if (keyboardHelper.isCompatibleImeChosen()) {
-                    Timber.d("Choose incompatible ime because got input focus.")
-                    keyboardHelper.chooseLastUsedIncompatibleInputMethod()
-                }
-            }
-        } else {
-            Timber.d("Lost input focus")
-            isFocussed = false
-            lifecycleScope.launchWhenStarted {
-                if (!keyboardHelper.isCompatibleImeChosen()) {
-                    Timber.d("Choose compatible ime because lost input focus.")
-
-                    keyboardHelper.chooseCompatibleInputMethod()
-                }
-            }
-        }
+        controller.onAccessibilityEvent(event?.toModel())
     }
 
     override fun onKeyEvent(event: KeyEvent?): Boolean {
         event ?: return super.onKeyEvent(event)
-
-        if (isFocussed) {
-            return false
-        }
 
         return controller.onKeyEvent(
             event.keyCode,
@@ -347,5 +323,9 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
         }
 
         return Error.SdkVersionTooLow(Build.VERSION_CODES.N)
+    }
+
+    override fun findFocussedNode(focus: Int): AccessibilityNodeModel? {
+        return findFocus(focus)?.toModel()
     }
 }

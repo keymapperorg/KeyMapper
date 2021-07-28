@@ -54,6 +54,17 @@ class WriteSecureSettingsFragment : BaseSettingsFragment() {
 
     private fun populatePreferenceScreen() = preferenceScreen.apply {
 
+        SwitchPreferenceCompat(requireContext()).apply {
+            key = Keys.changeImeOnInputFocus.name
+
+            setDefaultValue(false)
+            isSingleLineTitle = false
+            setTitle(R.string.title_pref_auto_change_ime_on_input_focus)
+            setSummary(R.string.summary_pref_auto_change_ime_on_input_focus)
+
+            addPreference(this)
+        }
+
         //automatically change the keyboard when a bluetooth device (dis)connects
         SwitchPreferenceCompat(requireContext()).apply {
             key = Keys.changeImeOnDeviceConnect.name

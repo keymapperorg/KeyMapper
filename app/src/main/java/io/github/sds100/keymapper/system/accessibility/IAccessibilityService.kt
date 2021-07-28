@@ -16,6 +16,7 @@ interface IAccessibilityService {
 
     var serviceFlags: Int?
     var serviceFeedbackType: Int?
+    var serviceEventTypes: Int?
     
     fun performActionOnNode(
         findNode: (node: AccessibilityNodeModel) -> Boolean,
@@ -31,4 +32,6 @@ interface IAccessibilityService {
     fun switchIme(imeId: String)
 
     fun disableSelf()
+
+    fun findFocussedNode(focus: Int): AccessibilityNodeModel?
 }

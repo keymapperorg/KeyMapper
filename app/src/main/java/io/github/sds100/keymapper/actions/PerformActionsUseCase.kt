@@ -691,7 +691,7 @@ class PerformActionsUseCaseImpl(
 
             DismissAllNotificationsAction -> {
                 coroutineScope.launch {
-                    notificationReceiverAdapter.send(DismissAllNotifications)
+                    notificationReceiverAdapter.send(Event.DismissAllNotifications)
                 }
 
                 result = null
@@ -699,7 +699,7 @@ class PerformActionsUseCaseImpl(
 
             DismissLastNotificationAction -> {
                 coroutineScope.launch {
-                    notificationReceiverAdapter.send(DismissLastNotification)
+                    notificationReceiverAdapter.send(Event.DismissLastNotification)
                 }
 
                 result = null

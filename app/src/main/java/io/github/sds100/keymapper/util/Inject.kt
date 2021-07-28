@@ -261,7 +261,9 @@ object Inject {
             pauseMappingsUseCase = UseCases.pauseMappings(service),
             devicesAdapter = ServiceLocator.devicesAdapter(service),
             suAdapter = ServiceLocator.suAdapter(service),
-            rerouteKeyEventsUseCase = UseCases.rerouteKeyEvents(service)
+            rerouteKeyEventsUseCase = UseCases.rerouteKeyEvents(service),
+            inputMethodAdapter = ServiceLocator.inputMethodAdapter(service),
+            settingsRepository = ServiceLocator.settingsRepository(service)
         )
     }
 

@@ -64,7 +64,6 @@ class KeyMapperApp : MultiDexApplication() {
     val notificationAdapter by lazy { AndroidNotificationAdapter(this, appCoroutineScope) }
 
     lateinit var notificationController: NotificationController
-
     lateinit var autoSwitchImeController: AutoSwitchImeController
 
     val resourceProvider by lazy { ResourceProviderImpl(this, appCoroutineScope) }
@@ -210,7 +209,8 @@ class KeyMapperApp : MultiDexApplication() {
             UseCases.pauseMappings(this),
             devicesAdapter,
             popupMessageAdapter,
-            resourceProvider
+            resourceProvider,
+            ServiceLocator.accessibilityServiceAdapter(this)
         )
 
         processLifecycleOwner.lifecycle.addObserver(object : LifecycleObserver {
