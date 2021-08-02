@@ -295,9 +295,9 @@
     Leave it empty if any WiFi network should be matched.</string>
     <string name="constraint_wifi_pick_network_any">Any</string>
     <string name="constraint_wifi_connected_description">Connected to %s WiFi</string>
-    <string name="constraint_wifi_disconnected_description">Disonnected from %s WiFi</string>
+    <string name="constraint_wifi_disconnected_description">Disconnected from %s WiFi</string>
     <string name="constraint_wifi_connected_any_description">Connected to any WiFi</string>
-    <string name="constraint_wifi_disconnected_any_description">Disonnected to no Wifi</string>
+    <string name="constraint_wifi_disconnected_any_description">Disconnected to no WiFi</string>
 
     <string name="orientation_0">Portrait (0°)</string>
     <string name="orientation_90">Landscape (90°)</string>
