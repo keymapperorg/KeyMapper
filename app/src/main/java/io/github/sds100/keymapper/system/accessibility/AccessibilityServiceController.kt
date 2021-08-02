@@ -18,6 +18,7 @@ import io.github.sds100.keymapper.mappings.keymaps.detection.DetectScreenOffKeyE
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsController
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsUseCase
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
+import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.*
@@ -93,17 +94,15 @@ class AccessibilityServiceController(
         DetectScreenOffKeyEventsController(
             suAdapter,
             devicesAdapter
-        ) { keyCode, action, deviceDescriptor, isExternal, deviceId ->
+        ) { keyCode, action, device ->
 
             if (!isPaused.value) {
                 withContext(Dispatchers.Main.immediate) {
                     keymapDetectionDelegate.onKeyEvent(
                         keyCode,
                         action,
-                        deviceDescriptor,
-                        isExternal,
-                        0,
-                        deviceId
+                        metaState = 0,
+                        device = device
                     )
                 }
             }
@@ -242,16 +241,13 @@ class AccessibilityServiceController(
     fun onKeyEvent(
         keyCode: Int,
         action: Int,
-        deviceName: String,
-        descriptor: String,
-        isExternal: Boolean,
+        device: InputDeviceInfo?,
         metaState: Int,
-        deviceId: Int,
         scanCode: Int = 0,
         eventTime: Long
     ): Boolean {
         val detailedLogInfo =
-            "key code: $keyCode, time since event: ${SystemClock.uptimeMillis() - eventTime}ms, device name: $deviceName, descriptor: $descriptor, device id: $deviceId, is external: $isExternal, meta state: $metaState, scan code: $scanCode"
+            "key code: $keyCode, time since event: ${SystemClock.uptimeMillis() - eventTime}ms, device name: ${device?.name}, descriptor: ${device?.descriptor}, device id: ${device?.id}, is external: ${device?.isExternal}, meta state: $metaState, scan code: $scanCode"
 
         when (action) {
             KeyEvent.ACTION_DOWN -> Timber.d("Down ${KeyEvent.keyCodeToString(keyCode)}, $detailedLogInfo")
@@ -265,9 +261,7 @@ class AccessibilityServiceController(
                     outputEvents.emit(
                         RecordedTriggerKeyEvent(
                             keyCode,
-                            deviceName,
-                            descriptor,
-                            isExternal
+                            device
                         )
                     )
                 }
@@ -283,22 +277,18 @@ class AccessibilityServiceController(
                 consume = keymapDetectionDelegate.onKeyEvent(
                     keyCode,
                     action,
-                    descriptor,
-                    isExternal,
                     metaState,
-                    deviceId,
-                    scanCode
+                    scanCode,
+                    device
                 )
 
                 if (!consume) {
                     consume = rerouteKeyEventsController.onKeyEvent(
                         keyCode,
                         action,
-                        descriptor,
-                        isExternal,
                         metaState,
-                        deviceId,
-                        scanCode
+                        scanCode,
+                        device
                     )
                 }
 

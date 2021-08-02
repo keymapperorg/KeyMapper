@@ -17,8 +17,8 @@ class RecordTriggerController(
     override val onRecordKey = serviceAdapter.eventReceiver.mapNotNull { event ->
         when (event) {
             is RecordedTriggerKeyEvent -> {
-                val device = if (event.isExternal) {
-                    TriggerKeyDevice.External(event.deviceDescriptor, event.deviceName)
+                val device = if (event.device != null && event.device.isExternal) {
+                    TriggerKeyDevice.External(event.device.descriptor, event.device.name)
                 } else {
                     TriggerKeyDevice.Internal
                 }

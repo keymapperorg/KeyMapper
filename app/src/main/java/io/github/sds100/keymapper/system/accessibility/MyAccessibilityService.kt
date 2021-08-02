@@ -19,6 +19,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import io.github.sds100.keymapper.api.Api
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapId
+import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.system.devices.isExternalCompat
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.flow.Flow
@@ -201,14 +202,22 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
     override fun onKeyEvent(event: KeyEvent?): Boolean {
         event ?: return super.onKeyEvent(event)
 
+        val device = if (event.device == null) {
+            null
+        } else {
+            InputDeviceInfo(
+                descriptor = event.device.descriptor,
+                name = event.device.name,
+                id = event.deviceId,
+                isExternal = event.device.isExternalCompat
+            )
+        }
+
         return controller.onKeyEvent(
             event.keyCode,
             event.action,
-            event.device.name,
-            event.device.descriptor,
-            event.device.isExternalCompat,
+            device,
             event.metaState,
-            event.deviceId,
             event.scanCode,
             event.eventTime
         )

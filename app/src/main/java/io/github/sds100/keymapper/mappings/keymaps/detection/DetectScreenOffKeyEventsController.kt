@@ -20,9 +20,7 @@ class DetectScreenOffKeyEventsController(
     private val onKeyEvent: suspend (
         keyCode: Int,
         action: Int,
-        deviceDescriptor: String,
-        isExternal: Boolean,
-        deviceId: Int
+        device: InputDeviceInfo
     ) -> Unit
 ) {
 
@@ -95,9 +93,7 @@ class DetectScreenOffKeyEventsController(
                                     onKeyEvent.invoke(
                                         keyCode,
                                         KeyEvent.ACTION_UP,
-                                        device.descriptor,
-                                        device.isExternal,
-                                        0
+                                        device
                                     )
                                 }
 
@@ -105,9 +101,7 @@ class DetectScreenOffKeyEventsController(
                                     onKeyEvent.invoke(
                                         keyCode,
                                         KeyEvent.ACTION_DOWN,
-                                        device.descriptor,
-                                        device.isExternal,
-                                        0
+                                        device
                                     )
                                 }
                             }

@@ -17,6 +17,7 @@ import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTrigger
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
+import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.*
@@ -542,16 +543,16 @@ class KeyMapController(
     fun onKeyEvent(
         keyCode: Int,
         action: Int,
-        descriptor: String,
-        isExternal: Boolean,
         metaState: Int,
-        deviceId: Int,
-        scanCode: Int = 0
+        scanCode: Int = 0,
+        device: InputDeviceInfo?
     ): Boolean {
         if (!detectKeyMaps) return false
 
-        if ((isExternal && !detectExternalEvents) || (!isExternal && !detectInternalEvents)) {
-            return false
+        if (device != null) {
+            if ((device.isExternal && !detectExternalEvents) || (!device.isExternal && !detectInternalEvents)) {
+                return false
+            }
         }
 
         metaStateFromKeyEvent = metaState
@@ -569,8 +570,8 @@ class KeyMapController(
         }
 
         val event =
-            if (isExternal) {
-                Event(keyCode, null, descriptor)
+            if (device != null && device.isExternal) {
+                Event(keyCode, null, device.descriptor)
             } else {
                 Event(
                     keyCode,
@@ -580,8 +581,8 @@ class KeyMapController(
             }
 
         when (action) {
-            KeyEvent.ACTION_DOWN -> return onKeyDown(event, deviceId, scanCode)
-            KeyEvent.ACTION_UP -> return onKeyUp(event, deviceId, scanCode)
+            KeyEvent.ACTION_DOWN -> return onKeyDown(event, device?.id ?: 0, scanCode)
+            KeyEvent.ACTION_UP -> return onKeyUp(event, device?.id ?: 0, scanCode)
         }
 
         return false

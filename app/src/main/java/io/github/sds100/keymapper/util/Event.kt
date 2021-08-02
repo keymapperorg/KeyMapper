@@ -17,6 +17,7 @@ package io.github.sds100.keymapper.util
 
 import android.os.Parcelable
 import io.github.sds100.keymapper.actions.ActionData
+import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import kotlinx.android.parcel.Parcelize
 import kotlinx.serialization.Serializable
 
@@ -32,9 +33,7 @@ data class Pong(val key: String) : Event()
 @Serializable
 data class RecordedTriggerKeyEvent(
     val keyCode: Int,
-    val deviceName: String,
-    val deviceDescriptor: String,
-    val isExternal: Boolean
+    val device: InputDeviceInfo?
 ) : Event(), Parcelable
 
 @Serializable
