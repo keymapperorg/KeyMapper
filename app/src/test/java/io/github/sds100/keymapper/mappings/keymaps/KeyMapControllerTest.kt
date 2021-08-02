@@ -15,6 +15,7 @@ import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
 import io.github.sds100.keymapper.system.camera.CameraLens
+import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.util.*
 import junitparams.JUnitParamsRunner
 import junitparams.Parameters
@@ -1341,32 +1342,28 @@ class KeyMapControllerTest {
             inputKeyEvent(
                 KeyEvent.KEYCODE_META_LEFT,
                 KeyEvent.ACTION_DOWN,
-                FAKE_KEYBOARD_DESCRIPTOR,
+                triggerKeyDeviceToInputDevice(FAKE_KEYBOARD_TRIGGER_KEY_DEVICE, FAKE_KEYBOARD_DEVICE_ID),
                 metaState,
-                FAKE_KEYBOARD_DEVICE_ID,
                 scanCode = 117
             )
             inputKeyEvent(
                 KeyEvent.KEYCODE_E,
                 KeyEvent.ACTION_DOWN,
-                FAKE_KEYBOARD_DESCRIPTOR,
+                triggerKeyDeviceToInputDevice(FAKE_KEYBOARD_TRIGGER_KEY_DEVICE, FAKE_KEYBOARD_DEVICE_ID),
                 metaState,
-                FAKE_KEYBOARD_DEVICE_ID,
                 scanCode = 33
             )
             inputKeyEvent(
                 KeyEvent.KEYCODE_META_LEFT,
                 KeyEvent.ACTION_UP,
-                FAKE_KEYBOARD_DESCRIPTOR,
+                triggerKeyDeviceToInputDevice(FAKE_KEYBOARD_TRIGGER_KEY_DEVICE, FAKE_KEYBOARD_DEVICE_ID),
                 metaState,
-                deviceId = FAKE_KEYBOARD_DEVICE_ID,
                 scanCode = 117
             )
             inputKeyEvent(
                 KeyEvent.KEYCODE_E,
                 KeyEvent.ACTION_UP,
-                FAKE_KEYBOARD_DESCRIPTOR,
-                deviceId = FAKE_KEYBOARD_DEVICE_ID,
+                triggerKeyDeviceToInputDevice(FAKE_KEYBOARD_TRIGGER_KEY_DEVICE, FAKE_KEYBOARD_DEVICE_ID),
                 scanCode = 33
             )
 
@@ -1390,7 +1387,6 @@ class KeyMapControllerTest {
                 0
             )
 
-
             verify(detectKeyMapsUseCase, times(1)).imitateButtonPress(
                 KeyEvent.KEYCODE_E,
                 0,
@@ -1402,36 +1398,31 @@ class KeyMapControllerTest {
             inputKeyEvent(
                 KeyEvent.KEYCODE_META_LEFT,
                 KeyEvent.ACTION_DOWN,
-                FAKE_KEYBOARD_DESCRIPTOR,
+                triggerKeyDeviceToInputDevice(FAKE_KEYBOARD_TRIGGER_KEY_DEVICE, FAKE_KEYBOARD_DEVICE_ID),
                 metaState,
-                FAKE_KEYBOARD_DEVICE_ID,
                 scanCode = 117
             )
             inputKeyEvent(
                 KeyEvent.KEYCODE_E,
                 KeyEvent.ACTION_DOWN,
-                FAKE_KEYBOARD_DESCRIPTOR,
+                triggerKeyDeviceToInputDevice(FAKE_KEYBOARD_TRIGGER_KEY_DEVICE, FAKE_KEYBOARD_DEVICE_ID),
                 metaState,
-                FAKE_KEYBOARD_DEVICE_ID,
                 scanCode = 33
             )
             inputKeyEvent(
                 KeyEvent.KEYCODE_E,
                 KeyEvent.ACTION_UP,
-                FAKE_KEYBOARD_DESCRIPTOR,
+                triggerKeyDeviceToInputDevice(FAKE_KEYBOARD_TRIGGER_KEY_DEVICE, FAKE_KEYBOARD_DEVICE_ID),
                 metaState,
-                FAKE_KEYBOARD_DEVICE_ID,
                 scanCode = 33
             )
             inputKeyEvent(
                 KeyEvent.KEYCODE_META_LEFT,
                 KeyEvent.ACTION_UP,
-                FAKE_KEYBOARD_DESCRIPTOR,
+                triggerKeyDeviceToInputDevice(FAKE_KEYBOARD_TRIGGER_KEY_DEVICE, FAKE_KEYBOARD_DEVICE_ID),
                 metaState = 0,
-                FAKE_KEYBOARD_DEVICE_ID,
                 scanCode = 117
             )
-
 
             verify(performActionsUseCase, times(1)).perform(
                 action.data,
@@ -1846,25 +1837,25 @@ class KeyMapControllerTest {
     fun params_repeatAction() = listOf(
         arrayOf(
             "long press multiple keys", parallelTrigger(
-                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
-                triggerKey(KeyEvent.KEYCODE_VOLUME_UP, clickType = ClickType.LONG_PRESS)
-            )
+            triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
+            triggerKey(KeyEvent.KEYCODE_VOLUME_UP, clickType = ClickType.LONG_PRESS)
+        )
         ),
         arrayOf(
             "long press single key", singleKeyTrigger(
-                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS)
-            )
+            triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS)
+        )
         ),
         arrayOf(
             "short press multiple keys", parallelTrigger(
-                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
-                triggerKey(KeyEvent.KEYCODE_VOLUME_UP)
-            )
+            triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
+            triggerKey(KeyEvent.KEYCODE_VOLUME_UP)
+        )
         ),
         arrayOf(
             "short press single key", singleKeyTrigger(
-                triggerKey(KeyEvent.KEYCODE_VOLUME_UP)
-            )
+            triggerKey(KeyEvent.KEYCODE_VOLUME_UP)
+        )
         )
     )
 
@@ -1881,7 +1872,7 @@ class KeyMapControllerTest {
                 inputKeyEvent(
                     it.keyCode,
                     KeyEvent.ACTION_DOWN,
-                    triggerKeyDeviceToDescriptor(it.device)
+                    triggerKeyDeviceToInputDevice(it.device)
                 )
             }
 
@@ -1889,7 +1880,7 @@ class KeyMapControllerTest {
                 val consumed = inputKeyEvent(
                     it.keyCode,
                     KeyEvent.ACTION_UP,
-                    triggerKeyDeviceToDescriptor(it.device)
+                    triggerKeyDeviceToInputDevice(it.device)
                 )
 
                 //then
@@ -1900,16 +1891,16 @@ class KeyMapControllerTest {
     fun params_dualParallelTrigger_input2ndKey_dontConsumeUp() = listOf(
         arrayOf(
             "long press", parallelTrigger(
-                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
-                triggerKey(KeyEvent.KEYCODE_VOLUME_UP, clickType = ClickType.LONG_PRESS)
-            )
+            triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
+            triggerKey(KeyEvent.KEYCODE_VOLUME_UP, clickType = ClickType.LONG_PRESS)
+        )
         ),
 
         arrayOf(
             "short press", parallelTrigger(
-                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
-                triggerKey(KeyEvent.KEYCODE_VOLUME_UP)
-            )
+            triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
+            triggerKey(KeyEvent.KEYCODE_VOLUME_UP)
+        )
         )
     )
 
@@ -1926,7 +1917,7 @@ class KeyMapControllerTest {
 
         //when
         trigger.keys.forEach {
-            inputKeyEvent(it.keyCode, KeyEvent.ACTION_DOWN, triggerKeyDeviceToDescriptor(it.device))
+            inputKeyEvent(it.keyCode, KeyEvent.ACTION_DOWN, triggerKeyDeviceToInputDevice(it.device))
         }
 
         var consumedUpCount = 0
@@ -1936,7 +1927,7 @@ class KeyMapControllerTest {
                 inputKeyEvent(
                     it.keyCode,
                     KeyEvent.ACTION_UP,
-                    triggerKeyDeviceToDescriptor(it.device)
+                    triggerKeyDeviceToInputDevice(it.device)
                 )
 
             if (consumed) {
@@ -1961,7 +1952,7 @@ class KeyMapControllerTest {
 
         //when
         trigger.keys.forEach {
-            inputKeyEvent(it.keyCode, KeyEvent.ACTION_DOWN, triggerKeyDeviceToDescriptor(it.device))
+            inputKeyEvent(it.keyCode, KeyEvent.ACTION_DOWN, triggerKeyDeviceToInputDevice(it.device))
         }
 
         advanceUntilIdle()
@@ -1973,7 +1964,7 @@ class KeyMapControllerTest {
                 inputKeyEvent(
                     it.keyCode,
                     KeyEvent.ACTION_UP,
-                    triggerKeyDeviceToDescriptor(it.device)
+                    triggerKeyDeviceToInputDevice(it.device)
                 )
 
             if (consumed) {
@@ -2128,7 +2119,6 @@ class KeyMapControllerTest {
         ).imitateButtonPress(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN)
     }
 
-
     @Test
     @Parameters(method = "params_multipleActionsPerformed")
     fun validInput_multipleActionsPerformed(description: String, trigger: KeyMapTrigger) =
@@ -2176,9 +2166,9 @@ class KeyMapControllerTest {
         ),
         arrayOf(
             "parallel", parallelTrigger(
-                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
-                triggerKey(KeyEvent.KEYCODE_VOLUME_UP)
-            )
+            triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
+            triggerKey(KeyEvent.KEYCODE_VOLUME_UP)
+        )
         )
     )
 
@@ -2198,7 +2188,7 @@ class KeyMapControllerTest {
                     inputKeyEvent(
                         999,
                         KeyEvent.ACTION_DOWN,
-                        triggerKeyDeviceToDescriptor(it.device)
+                        triggerKeyDeviceToInputDevice(it.device)
                     )
 
                 if (consumed) {
@@ -2225,7 +2215,7 @@ class KeyMapControllerTest {
                     inputKeyEvent(
                         it.keyCode,
                         KeyEvent.ACTION_DOWN,
-                        triggerKeyDeviceToDescriptor(it.device)
+                        triggerKeyDeviceToInputDevice(it.device)
                     )
 
                 if (consumed) {
@@ -2250,7 +2240,7 @@ class KeyMapControllerTest {
                     inputKeyEvent(
                         it.keyCode,
                         KeyEvent.ACTION_DOWN,
-                        triggerKeyDeviceToDescriptor(it.device)
+                        triggerKeyDeviceToInputDevice(it.device)
                     )
 
                 if (consumed) {
@@ -3041,7 +3031,7 @@ class KeyMapControllerTest {
         }
 
     private suspend fun mockTriggerKeyInput(key: TriggerKey, delay: Long? = null) {
-        val deviceDescriptor = triggerKeyDeviceToDescriptor(key.device)
+        val deviceDescriptor = triggerKeyDeviceToInputDevice(key.device)
         val pressDuration: Long = delay ?: when (key.clickType) {
             ClickType.LONG_PRESS -> LONG_PRESS_DELAY + 100L
             else -> 50L
@@ -3075,19 +3065,18 @@ class KeyMapControllerTest {
     private fun inputKeyEvent(
         keyCode: Int,
         action: Int,
-        deviceDescriptor: String? = null,
+        device: InputDeviceInfo? = null,
         metaState: Int? = null,
-        deviceId: Int = 0,
-        scanCode: Int = 0
-    ) = controller.onKeyEvent(
-        keyCode,
-        action,
-        deviceDescriptor ?: "",
-        isExternal = deviceDescriptor != null,
-        metaState = metaState ?: 0,
-        deviceId,
-        scanCode
-    )
+        scanCode: Int = 0,
+    ): Boolean {
+        return controller.onKeyEvent(
+            keyCode = keyCode,
+            action = action,
+            metaState = metaState ?: 0,
+            scanCode = scanCode,
+            device = device
+        )
+    }
 
     private suspend fun mockParallelTrigger(
         trigger: KeyMapTrigger,
@@ -3096,7 +3085,7 @@ class KeyMapControllerTest {
         require(trigger.mode is TriggerMode.Parallel)
 
         trigger.keys.forEach {
-            val deviceDescriptor = triggerKeyDeviceToDescriptor(it.device)
+            val deviceDescriptor = triggerKeyDeviceToInputDevice(it.device)
 
             inputKeyEvent(it.keyCode, KeyEvent.ACTION_DOWN, deviceDescriptor)
         }
@@ -3111,17 +3100,32 @@ class KeyMapControllerTest {
         }
 
         trigger.keys.forEach {
-            val deviceDescriptor = triggerKeyDeviceToDescriptor(it.device)
+            val deviceDescriptor = triggerKeyDeviceToInputDevice(it.device)
 
             inputKeyEvent(it.keyCode, KeyEvent.ACTION_UP, deviceDescriptor)
         }
     }
 
-    private fun triggerKeyDeviceToDescriptor(device: TriggerKeyDevice): String? {
+    private fun triggerKeyDeviceToInputDevice(device: TriggerKeyDevice, deviceId: Int = 0): InputDeviceInfo {
         return when (device) {
-            TriggerKeyDevice.Any -> "any_device_descriptor"
-            is TriggerKeyDevice.External -> device.descriptor
-            TriggerKeyDevice.Internal -> null
+            TriggerKeyDevice.Any -> InputDeviceInfo(
+                descriptor = "any_device",
+                name = "any_device_name",
+                isExternal = false,
+                id = deviceId
+            )
+            is TriggerKeyDevice.External -> InputDeviceInfo(
+                descriptor = device.descriptor,
+                name = "device_name",
+                isExternal = true,
+                id = deviceId
+            )
+            TriggerKeyDevice.Internal -> InputDeviceInfo(
+                descriptor = "internal_device",
+                name = "internal_device_name",
+                isExternal = false,
+                id = deviceId
+            )
         }
     }
 }

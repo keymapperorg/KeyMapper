@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.reroutekeyevents
 
 import android.view.KeyEvent
+import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.util.InputEventType
 import kotlinx.coroutines.*
@@ -23,29 +24,23 @@ class RerouteKeyEventsController(
     fun onKeyEvent(
         keyCode: Int,
         action: Int,
-        descriptor: String,
-        isExternal: Boolean,
         metaState: Int,
-        deviceId: Int,
-        scanCode: Int = 0
+        scanCode: Int = 0,
+        device: InputDeviceInfo?
     ): Boolean {
 
         return when (action) {
             KeyEvent.ACTION_DOWN -> onKeyDown(
                 keyCode,
-                descriptor,
-                isExternal,
+                device,
                 metaState,
-                deviceId,
                 scanCode
             )
 
             KeyEvent.ACTION_UP -> onKeyUp(
                 keyCode,
-                descriptor,
-                isExternal,
+                device,
                 metaState,
-                deviceId,
                 scanCode
             )
 
@@ -58,14 +53,12 @@ class RerouteKeyEventsController(
      */
     private fun onKeyDown(
         keyCode: Int,
-        descriptor: String,
-        isExternal: Boolean,
+        device: InputDeviceInfo?,
         metaState: Int,
-        deviceId: Int,
         scanCode: Int = 0
     ): Boolean {
 
-        if (!useCase.shouldRerouteKeyEvent(descriptor)) {
+        if (device != null && !useCase.shouldRerouteKeyEvent(device.descriptor)) {
             return false
         }
 
@@ -73,7 +66,7 @@ class RerouteKeyEventsController(
             keyCode = keyCode,
             inputType = InputEventType.DOWN,
             metaState = metaState,
-            deviceId = deviceId,
+            deviceId = device?.id ?: 0,
             scanCode = scanCode,
             repeat = 0
         )
@@ -99,14 +92,12 @@ class RerouteKeyEventsController(
 
     private fun onKeyUp(
         keyCode: Int,
-        descriptor: String,
-        isExternal: Boolean,
+        device: InputDeviceInfo?,
         metaState: Int,
-        deviceId: Int,
         scanCode: Int = 0
     ): Boolean {
 
-        if (!useCase.shouldRerouteKeyEvent(descriptor)) {
+        if (device != null && !useCase.shouldRerouteKeyEvent(device.descriptor)) {
             return false
         }
 
@@ -116,7 +107,7 @@ class RerouteKeyEventsController(
             keyCode = keyCode,
             inputType = InputEventType.UP,
             metaState = metaState,
-            deviceId = deviceId,
+            deviceId = device?.id ?: 0,
             scanCode = scanCode,
             repeat = 0
         )
