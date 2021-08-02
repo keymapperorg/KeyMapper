@@ -913,10 +913,10 @@
     <string name="error_sdk_version_too_low">Requires Android %s or newer</string>
     <string name="error_sdk_version_too_high">Requires Android %s or older</string>
     <string name="error_system_feature_camera_unsupported">Your device doesn\'t have a camera.</string>
-    <string name="error_system_feature_nfc_unsupported">Your device doesn\'t have NFC.</string>
+    <string name="error_system_feature_nfc_unsupported">Your device doesn\'t support NFC.</string>
     <string name="error_system_feature_fingerprint_unsupported">Your device doesn\'t have a fingerprint reader.</string>
-    <string name="error_system_feature_wifi_unsupported">Your device doesn\'t have WiFi.</string>
-    <string name="error_system_feature_bluetooth_unsupported">Your device doesn\'t have Bluetooth.</string>
+    <string name="error_system_feature_wifi_unsupported">Your device doesn\'t support WiFi.</string>
+    <string name="error_system_feature_bluetooth_unsupported">Your device doesn\'t support Bluetooth.</string>
     <string name="error_system_feature_device_admin_unsupported">Your device doesn\'t support device policy enforcement.</string>
     <string name="error_system_feature_camera_flash_unsupported">Your device doesn\'t have a camera flash.</string>
     <string name="error_flag_not_found">Flag "%s" not found!</string>
