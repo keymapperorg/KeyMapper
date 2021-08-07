@@ -18,7 +18,9 @@ import io.github.sds100.keymapper.system.url.UrlUtils
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.setupNavigation
 import io.github.sds100.keymapper.util.ui.showPopups
-import splitties.alertdialog.appcompat.*
+import splitties.alertdialog.appcompat.messageResource
+import splitties.alertdialog.appcompat.negativeButton
+import splitties.alertdialog.appcompat.positiveButton
 import splitties.alertdialog.material.materialAlertDialog
 
 /**
@@ -165,17 +167,19 @@ abstract class ConfigMappingFragment : Fragment() {
     }
 
     private fun showOnBackPressedWarning() {
-        onBackPressedDialog = requireContext().materialAlertDialog {
-            messageResource = R.string.dialog_message_are_you_sure_want_to_leave_without_saving
+        viewLifecycleScope.launchWhenResumed {
+            onBackPressedDialog = requireContext().materialAlertDialog {
+                messageResource = R.string.dialog_message_are_you_sure_want_to_leave_without_saving
 
-            positiveButton(R.string.pos_yes) {
-                findNavController().navigateUp()
+                positiveButton(R.string.pos_yes) {
+                    findNavController().navigateUp()
+                }
+
+                negativeButton(R.string.neg_cancel) { it.cancel() }
             }
 
-            negativeButton(R.string.neg_cancel) { it.cancel() }
+            onBackPressedDialog?.show()
         }
-
-        onBackPressedDialog?.show()
     }
 
     abstract fun getFragmentInfoList(): List<Pair<Int, FragmentInfo>>
