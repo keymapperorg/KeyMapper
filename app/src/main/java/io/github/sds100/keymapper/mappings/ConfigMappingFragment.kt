@@ -24,6 +24,7 @@ import io.github.sds100.keymapper.ui.utils.getJsonSerializable
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.showPopups
 import splitties.alertdialog.appcompat.*
+import splitties.alertdialog.material.materialAlertDialog
 
 /**
  * Created by sds100 on 17/01/21.
@@ -169,17 +170,19 @@ abstract class ConfigMappingFragment : Fragment() {
     }
 
     private fun showOnBackPressedWarning() {
-        onBackPressedDialog = requireContext().alertDialog {
-            messageResource = R.string.dialog_message_are_you_sure_want_to_leave_without_saving
+        viewLifecycleScope.launchWhenResumed {
+            onBackPressedDialog = requireContext().materialAlertDialog {
+                messageResource = R.string.dialog_message_are_you_sure_want_to_leave_without_saving
 
-            positiveButton(R.string.pos_yes) {
-                findNavController().navigateUp()
+                positiveButton(R.string.pos_yes) {
+                    findNavController().navigateUp()
+                }
+
+                negativeButton(R.string.neg_cancel) { it.cancel() }
             }
 
-            negativeButton(R.string.neg_cancel) { it.cancel() }
+            onBackPressedDialog?.show()
         }
-
-        onBackPressedDialog?.show()
     }
 
     abstract fun getFragmentInfoList(): List<Pair<Int, FragmentInfo>>
