@@ -27,9 +27,9 @@
                 android:indeterminate="true"
                 android:indeterminateBehavior="repeat"
                 android:visibility="@{showProgressBar ? View.VISIBLE : View.GONE}"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/epoxyRecyclerView"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toTopOf="@+id/epoxyRecyclerView"/>
+                app:layout_constraintStart_toStartOf="parent" />
 
             <com.airbnb.epoxy.EpoxyRecyclerView
                 android:id="@+id/epoxyRecyclerView"
@@ -55,6 +55,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonDone"
+                style="@style/Widget.MaterialComponents.Button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
