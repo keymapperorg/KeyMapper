@@ -119,7 +119,7 @@ dependencies {
     def nav_version = '2.3.5'
     def work_version = "2.5.0"
     def epoxy_version = "4.6.2"
-    def splitties_version = "3.0.0-rc03"
+    def splitties_version = "3.0.0-beta01"
     def multidex_version = "2.0.1"
     def shizuku_version = '11.0.3'
 
@@ -131,7 +131,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.0"
 
     // random stuff
-    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'com.google.android.material:material:1.3.0'
     implementation 'com.github.salomonbrys.kotson:kotson:2.5.0'
     implementation "com.airbnb.android:epoxy:$epoxy_version"
     implementation 'com.github.AppIntro:AppIntro:6.1.0'
@@ -154,7 +154,6 @@ dependencies {
     implementation "com.louiscad.splitties:splitties-snackbar:$splitties_version"
     implementation "com.louiscad.splitties:splitties-toast:$splitties_version"
     implementation "com.louiscad.splitties:splitties-mainthread:$splitties_version"
-    implementation "com.louiscad.splitties:splitties-dimensions:$splitties_version"
 
     // androidx
     implementation 'androidx.legacy:legacy-support-core-ui:1.0.0'
