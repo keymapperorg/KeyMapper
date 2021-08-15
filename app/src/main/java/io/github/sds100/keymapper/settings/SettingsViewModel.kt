@@ -6,7 +6,10 @@ import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 /**
@@ -19,9 +22,6 @@ class SettingsViewModel(
     val sharedPrefsDataStoreWrapper = SharedPrefsDataStoreWrapper(useCase)
 
     val automaticBackupLocation = useCase.automaticBackupLocation
-
-    val showWriteSecureSettingsSection: StateFlow<Boolean> =
-        useCase.isWriteSecureSettingsGranted.stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     val isWriteSecureSettingsPermissionGranted: StateFlow<Boolean> =
         useCase.isWriteSecureSettingsGranted
