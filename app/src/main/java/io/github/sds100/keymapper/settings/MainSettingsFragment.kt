@@ -504,7 +504,7 @@ class MainSettingsFragment : BaseSettingsFragment() {
                 SettingsUtils.createChooseDevicesPreference(
                     requireContext(),
                     viewModel,
-                    Keys.devicesThatShowImePicker.name
+                    Keys.devicesThatShowImePicker
                 )
             )
         }

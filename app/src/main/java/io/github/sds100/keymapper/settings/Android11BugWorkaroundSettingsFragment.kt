@@ -173,7 +173,7 @@ class Android11BugWorkaroundSettingsFragment : BaseSettingsFragment() {
             SettingsUtils.createChooseDevicesPreference(
                 requireContext(),
                 viewModel,
-                Keys.devicesToRerouteKeyEvents.name,
+                Keys.devicesToRerouteKeyEvents,
                 R.string.title_pref_devices_to_reroute_keyevents_choose_devices
             )
         )

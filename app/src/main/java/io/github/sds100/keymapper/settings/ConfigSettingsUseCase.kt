@@ -9,6 +9,8 @@ import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.shizuku.ShizukuAdapter
 import io.github.sds100.keymapper.shizuku.ShizukuUtils
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
+import io.github.sds100.keymapper.system.devices.DevicesAdapter
+import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
@@ -16,10 +18,8 @@ import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.util.Result
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.map
+import io.github.sds100.keymapper.util.State
+import kotlinx.coroutines.flow.*
 
 /**
  * Created by sds100 on 14/02/2021.
@@ -31,7 +31,8 @@ class ConfigSettingsUseCaseImpl(
     private val soundsManager: SoundsManager,
     private val suAdapter: SuAdapter,
     private val packageManagerAdapter: PackageManagerAdapter,
-    private val shizukuAdapter: ShizukuAdapter
+    private val shizukuAdapter: ShizukuAdapter,
+    private val devicesAdapter: DevicesAdapter
 ) : ConfigSettingsUseCase {
 
     private val imeHelper by lazy { KeyMapperImeHelper(inputMethodAdapter) }
@@ -72,6 +73,9 @@ class ConfigSettingsUseCaseImpl(
     override val isCompatibleImeEnabled: Flow<Boolean> = inputMethodAdapter.inputMethods.map {
         imeHelper.isCompatibleImeEnabled()
     }
+
+    override val connectedInputDevices: StateFlow<State<List<InputDeviceInfo>>>
+        get() = devicesAdapter.connectedInputDevices
 
     override fun enableCompatibleIme() {
         imeHelper.enableCompatibleInputMethods()
@@ -196,4 +200,6 @@ interface ConfigSettingsUseCase {
     fun resetDefaultMappingOptions()
     fun requestWriteSecureSettingsPermission()
     fun requestShizukuPermission()
+
+    val connectedInputDevices: StateFlow<State<List<InputDeviceInfo>>>
 }

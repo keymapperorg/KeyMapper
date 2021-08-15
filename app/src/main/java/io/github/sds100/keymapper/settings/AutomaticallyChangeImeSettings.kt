@@ -74,7 +74,7 @@ class AutomaticallyChangeImeSettings : BaseSettingsFragment() {
             SettingsUtils.createChooseDevicesPreference(
                 requireContext(),
                 viewModel,
-                Keys.devicesThatChangeIme.name
+                Keys.devicesThatChangeIme
             )
         )
 

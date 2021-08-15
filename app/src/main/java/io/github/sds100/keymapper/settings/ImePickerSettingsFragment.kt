@@ -83,7 +83,7 @@ class ImePickerSettingsFragment : BaseSettingsFragment() {
             SettingsUtils.createChooseDevicesPreference(
                 requireContext(),
                 viewModel,
-                Keys.devicesThatShowImePicker.name
+                Keys.devicesThatShowImePicker
             )
         )
     }

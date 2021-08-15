@@ -203,7 +203,8 @@ object Inject {
                 ServiceLocator.soundsManager(context),
                 ServiceLocator.suAdapter(context),
                 ServiceLocator.packageManagerAdapter(context),
-                ServiceLocator.shizukuAdapter(context)
+                ServiceLocator.shizukuAdapter(context),
+                ServiceLocator.devicesAdapter(context)
             ),
             ServiceLocator.resourceProvider(context)
         )

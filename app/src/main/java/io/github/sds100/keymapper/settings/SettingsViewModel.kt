@@ -1,15 +1,13 @@
 package io.github.sds100.keymapper.settings
 
+import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.*
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 /**
@@ -126,14 +124,37 @@ class SettingsViewModel(
         useCase.resetDefaultMappingOptions()
     }
 
-    fun showNoPairedDevicesDialog() {
+    fun chooseDevicesForPreference(prefKey: Preferences.Key<Set<String>>) {
         viewModelScope.launch {
-            val dialog = PopupUi.Dialog(
-                message = getString(R.string.dialog_message_settings_no_external_devices_connected),
-                positiveButtonText = getString(R.string.pos_ok)
-            )
+            val externalDevices = useCase.connectedInputDevices
+                .first { it is State.Data<*> }
+                .let { (it as State.Data).data }
+                .filter { it.isExternal }
 
-            showPopup("no_external_devices", dialog)
+            if (externalDevices.isEmpty()) {
+                val dialog = PopupUi.Dialog(
+                    message = getString(R.string.dialog_message_settings_no_external_devices_connected),
+                    positiveButtonText = getString(R.string.pos_ok)
+                )
+
+                showPopup("no_external_devices", dialog)
+            } else {
+                val checkedDevices = useCase.getPreference(prefKey).first() ?: emptySet()
+
+                val dialog = PopupUi.MultiChoice(
+                    items = externalDevices.map { device ->
+                        MultiChoiceItem(
+                            id = device.descriptor,
+                            label = device.name,
+                            isChecked = checkedDevices.contains(device.descriptor)
+                        )
+                    }
+                )
+
+                val newCheckedDevices = showPopup("choose_device", dialog) ?: return@launch
+
+                useCase.setPreference(prefKey, newCheckedDevices.toSet())
+            }
         }
     }
 
