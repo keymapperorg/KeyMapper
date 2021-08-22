@@ -18,9 +18,9 @@ import splitties.mainthread.mainLooper
  * Created by sds100 on 13/03/2021.
  */
 class AndroidDevicesAdapter(
-        context: Context,
-        private val bluetoothAdapter: io.github.sds100.keymapper.system.bluetooth.BluetoothAdapter,
-        private val coroutineScope: CoroutineScope
+    context: Context,
+    private val bluetoothAdapter: io.github.sds100.keymapper.system.bluetooth.BluetoothAdapter,
+    private val coroutineScope: CoroutineScope
 ) : DevicesAdapter {
     private val ctx = context.applicationContext
     private val inputManager = ctx.getSystemService<InputManager>()
@@ -28,7 +28,7 @@ class AndroidDevicesAdapter(
     override val onInputDeviceConnect = MutableSharedFlow<InputDeviceInfo>()
     override val onInputDeviceDisconnect = MutableSharedFlow<InputDeviceInfo>()
     override val connectedInputDevices =
-            MutableStateFlow<State<List<InputDeviceInfo>>>(State.Loading)
+        MutableStateFlow<State<List<InputDeviceInfo>>>(State.Loading)
 
     override val pairedBluetoothDevices = MutableStateFlow<List<BluetoothDeviceInfo>>(emptyList())
 
@@ -42,8 +42,8 @@ class AndroidDevicesAdapter(
 
         coroutineScope.launch {
             merge(
-                    bluetoothAdapter.onDevicePairedChange,
-                    bluetoothAdapter.isBluetoothEnabled
+                bluetoothAdapter.onDevicePairedChange,
+                bluetoothAdapter.isBluetoothEnabled
             ).collectLatest {
                 updatePairedBluetoothDevices()
             }
@@ -63,7 +63,8 @@ class AndroidDevicesAdapter(
                 override fun onInputDeviceRemoved(deviceId: Int) {
                     coroutineScope.launch {
                         connectedInputDevices.value.ifIsData { connectedInputDevices ->
-                            val device = connectedInputDevices.find { it.id == deviceId } ?: return@ifIsData
+                            val device = connectedInputDevices.find { it.id == deviceId }
+                                ?: return@ifIsData
 
                             onInputDeviceDisconnect.emit(device)
                         }
@@ -133,6 +134,10 @@ class AndroidDevicesAdapter(
                 return@mapNotNull null
             }
 
+            if (device.address == null || device.name == null) {
+                return@mapNotNull null
+            }
+
             BluetoothDeviceInfo(device.address, device.name)
         }
 
@@ -141,10 +146,10 @@ class AndroidDevicesAdapter(
 
     private fun InputDevice.createModel(): InputDeviceInfo {
         return InputDeviceInfo(
-                this.descriptor,
-                this.name,
-                this.id,
-                this.isExternalCompat
+            this.descriptor,
+            this.name,
+            this.id,
+            this.isExternalCompat
         )
     }
 }
