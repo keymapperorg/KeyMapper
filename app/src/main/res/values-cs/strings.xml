@@ -17,6 +17,7 @@
     <string name="warning_the_app_will_work">Aplikace bude fungovat, ale některé věci budou muset být opraveny v závislosti na tom, co děláte.</string>
     <string name="your_device_doesnt_support_some_actions">Vaše zařízení nepodporuje tyto akce.</string>
     <string name="tab_unsupported_actions">Nepodporované akce</string>
+    <string name="choose_action_warning_requires_root">Vyžaduje kořen</string>
     <string name="press_dot_dot_dot">Stiskněte…</string>
     <string name="no_actions">Žádné akce</string>
     <string name="no_trigger">Žádný spouštěč</string>
@@ -36,8 +37,8 @@
     <string name="stop_repeating_when_trigger_released">Spouštěč byl uvolněn</string>
     <string name="stop_repeating_trigger_pressed_again">Spouštěč je znovu stisknuty</string>
     <string name="stop_repeating_limit_reached">Dosažen koniec</string>
-    <string name="stop_repeating_when_swiped_again">Přejeďte zase </string>
-    <string name="stop_holding_down_when_trigger_released">Spouštěč je povolený </string>
+    <string name="stop_repeating_when_swiped_again">Přejeďte zase</string>
+    <string name="stop_holding_down_when_trigger_released">Spouštěč je povolený</string>
     <string name="stop_holding_down_trigger_pressed_again">Spouštěč je znovu stlačen</string>
     <string name="show_hidden_apps">Zobrazit schované aplikace</string>
     <string name="modifiers">Modifikátory</string>
@@ -51,6 +52,8 @@
     <string name="from_no_device">Žádné zařízení</string>
     <string name="intent_extras_recycler_view_placeholder">&lt;unk&gt; \\_(&lt;unk&gt;)_/ &lt;unk&gt;\n\nŽádné extrakce!</string>
     <string name="content_description_fab_new_keymap">Vytvořit novou mapu klíče</string>
+    <string name="content_description_done_configuring_key_event">Byla provedena konfigurace klíčové akce události</string>
+    <string name="content_description_done_configuring_coordinate">Hotovo vyskladnění souřadnice</string>
     <string name="clip_key_mapper_log">Protokol Mapperu klíče</string>
     <string name="sharesheet_title">Poslat do</string>
     <string name="whats_new">Co je nového</string>
@@ -122,6 +125,9 @@
     <string name="hint_from_device">Ze zařízení</string>
     <string name="hint_shortcut_name">Název zástupce</string>
     <string name="hint_tap_coordinate_title">Popis souřadnic (nepovinné)</string>
+    <string name="hint_create_text_action">Text k zadání</string>
+    <string name="hint_create_url_action">Adresa URL, kterou chcete otevřít</string>
+    <string name="hint_create_phone_call_action">Telefonní číslo, na které chcete zavolat</string>
     <string name="hint_intent_action">Akce</string>
     <string name="hint_intent_categories">Kategorie</string>
     <string name="hint_intent_data">Údaje</string>
@@ -132,6 +138,7 @@
     <string name="hint_intent_description">Popis pro hlavní mapu (povinné)</string>
     <string name="hint_intent_flags">Vlajky</string>
     <string name="hint_sound_file_description">Popis zvukového souboru</string>
+    <string name="hint_wifi_ssid">WiFi síť SSID</string>
     <!--  Hints  -->
     <!--  Radio buttons  -->
     <string name="radio_button_parallel">Současně</string>
@@ -197,6 +204,7 @@
     <string name="constraint_app_foreground_description">%s je v popředí</string>
     <string name="constraint_app_not_foreground_description">%s není v popředí</string>
     <string name="constraint_app_playing_media_description">%s přehrává média</string>
+    <string name="constraint_app_not_playing_media_description">%s nepřehrává média.</string>
     <string name="constraint_bt_device_connected_description">%s je připojen</string>
     <string name="constraint_bt_device_disconnected_description">%s je odpojen</string>
     <string name="constraint_screen_on_description">Obrazovka je zapnutá</string>
@@ -221,9 +229,24 @@
     <string name="constraint_choose_orientation_270">Na šířku (270°)</string>
     <string name="constraint_choose_orientation_portrait">Portrét (libovolný)</string>
     <string name="constraint_choose_orientation_landscape">Na šířku (libovolné)</string>
-    <string name="constraint_choose_app_playing_media">Konkrétní aplikace přehrávající média</string>
+    <string name="constraint_choose_app_playing_media">Přehrání médií aplikací</string>
+    <string name="constraint_choose_app_not_playing_media">Aplikace, která přehrává média</string>
+    <string name="constraint_choose_media_playing">Přehrává se médium</string>
+    <string name="constraint_choose_media_not_playing">Není přehrává se žádné médium</string>
     <string name="constraint_flashlight_on">Svítilna je zapnuta</string>
     <string name="constraint_flashlight_off">Svítilna je vypnuta</string>
+    <string name="constraint_wifi_on">WiFi je za posuvné</string>
+    <string name="constraint_wifi_off">WiFi je vypnuté</string>
+    <string name="constraint_wifi_connected">Připojeno k WiFi síti</string>
+    <string name="constraint_wifi_disconnected">Odpojeno od WiFi sítě</string>
+    <string name="constraint_wifi_message_cant_list_networks">SSID budete muset zadat ručně, protože aplikace se nesmí dotazovat na seznam známých WiFi sítí v systému Android 10 a novějším.
+    
+Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</string>
+    <string name="constraint_wifi_pick_network_any">Libovolný</string>
+    <string name="constraint_wifi_connected_description">Připojeno k %s WiFi</string>
+    <string name="constraint_wifi_disconnected_description">Odpojeno od %s WiFi</string>
+    <string name="constraint_wifi_connected_any_description">Připojeno k libovolnému WiFi</string>
+    <string name="constraint_wifi_disconnected_any_description">Odpojeno od žádného WiFi</string>
     <string name="orientation_0">Na výšku (0°)</string>
     <string name="orientation_90">Na šířku (90°)</string>
     <string name="orientation_180">Na výšku (180°)</string>
@@ -307,6 +330,8 @@
     <string name="button_copy_log">Kopírovat</string>
     <string name="button_slider_repeat_no_limit">Bez omezení</string>
     <string name="button_choose_sound_file">Vyberte zvukový soubor</string>
+    <string name="button_edit_action">Upravit akci</string>
+    <string name="button_replace_action">Nahradit akci</string>
     <!-- Button titles -->
     <!-- Dialog stuff -->
     <string name="dialog_title_are_you_sure">Jste si jisti?</string>
@@ -473,6 +498,9 @@
     <string name="summary_pref_auto_show_ime_picker">Když jste vybrali zařízení, které se připojí nebo odpojí, bude se automaticky zobrazovat výběr klávesnice. Vyberte zařízení níže.</string>
     <string name="title_pref_auto_change_ime_on_connection">Automaticky změnit klávesnici na obrazovce při připojení/odpojení zařízení (např. klávesnice)</string>
     <string name="summary_pref_auto_change_ime_on_connection">Po připojení vybraného zařízení bude automaticky vybrána poslední použitá klávesová mapa. Vaše normální klávesnice bude automaticky vybrána po odpojení zařízení.</string>
+    <string name="title_pref_auto_change_ime_on_input_focus">Automatická změna klávesnice na obrazovce při zahájení zadávání textu</string>
+    <string name="summary_pref_auto_change_ime_on_input_focus">Při pokusu o otevření klávesnice bude automaticky vybrána naposledy použitá klávesnice bez mapovací klávesnice. Klávesnice mapovací klávesy bude automaticky vybrána, jakmile přestanete klávesnici používat.</string>
+    <string name="title_pref_show_toast_when_auto_changing_ime">Zobrazení zprávy na obrazovce při automatické změně klávesnice</string>
     <string name="title_pref_root_permission">Mapper klíče má root oprávnění</string>
     <string name="summary_pref_root_permission">Povolte tuto možnost, pokud chcete používat funkce/akce, které fungují pouze na rootovaných zařízeních. Mapa klíče musí mít oprávnění root z vaší aplikace root-access-management (např. Magisk, SuperSU) pro fungování těchto funkcí.
             Zapněte pouze pokud víte, že vaše zařízení je rootnuté a že jste udělili oprávnění Mapper (root) klíče.</string>
@@ -487,7 +515,7 @@
     <string name="title_pref_show_device_descriptors">Zobrazit prvních 5 znaků ID zařízení pro specifické spouštěče zařízení</string>
     <string name="summary_pref_show_device_descriptors">Toto je užitečné pro rozlišení mezi zařízeními, která mají stejný název.</string>
     <string name="title_pref_reroute_keyevents">Řešení chyby Android 11</string>
-    <string name="summary_pref_reroute_keyevents">Toto opravuje klávesnice, které nefungují, když je povolena jakákoli služba přístupu.</string>
+    <string name="summary_pref_reroute_keyevents">Tím se opraví klávesnice, které nefungují, když jsou povoleny nějaké služby usnadnění.</string>
     <string name="title_pref_devices_to_reroute_keyevents">Řešení pro chybu v Androidu 11, která nastaví id zařízení pro vstupní události na -1</string>
     <string name="summary_pref_devices_to_reroute_keyevents">Řešení pro chybu v Androidu 11, která nastaví id zařízení pro vstupní události na -1</string>
     <string name="summary_pref_devices_to_reroute_keyevents_choose_devices">Vyberte zařízení, která klíčová mapa by měla zachytit všechny klíčové události a poté přesměrovat zvolenou klávesovou mapu. MUSÍTE používat klávesovou mapu GUI nebo základní vstupní metodu klávesové mapy, aby to fungovalo. Toto je částečné řešení pro https://issuetracker.google.com/issues/163120692. Toto nebude fungovat s herními ovladači.</string>
@@ -526,7 +554,8 @@
     <string name="title_pref_category_shizuku">Podpora Shizuku</string>
     <string name="summary_pref_category_shizuku">Shizuku je aplikace, která umožňuje klávesovým maperům dělat věci, které mohou dělat pouze systémové aplikace. Nepotřebujete například použít klávesovou mapu klávesy. Klepnutím se naučíte, jak ji nastavit.</string>
     <string name="summary_pref_category_shizuku_follow_steps">Postupujte podle těchto kroků pro nastavení Šizuku.</string>
-    <string name="title_pref_category_write_secure_settings_view_settings">Přejděte do nastavení, které vyžaduje toto oprávnění.</string>
+    <string name="title_pref_automatically_change_ime">Automatická změna klávesnice</string>
+    <string name="summary_pref_automatically_change_ime">Jedná se o opravdu užitečná nastavení a doporučujeme je zkontrolovat!</string>
     <string name="title_pref_category_log">Logování</string>
     <string name="summary_pref_category_log">Toto může přidat latenci do Vašich klíčových map, takže to zapněte pouze v případě, že se pokoušíte aplikaci ladit nebo jste o ni vývojář požádal.</string>
     <!--Preference categories-->
@@ -660,6 +689,15 @@
     <string name="error_action_requires_write_settings_permission">Pro změnu nastavení systému musíte udělit oprávnění Mapperu klíče.</string>
     <string name="error_requires_root">To vyžaduje oprávnění root!</string>
     <string name="error_action_requires_camera_permission">Tato akce vyžaduje oprávnění k fotoaparátu!</string>
+    <string name="error_sdk_version_too_low">Vyžaduje Android %s nebo novější</string>
+    <string name="error_sdk_version_too_high">Vyžaduje Android %s nebo starší</string>
+    <string name="error_system_feature_camera_unsupported">Zařízení nemá fotoaparát.</string>
+    <string name="error_system_feature_nfc_unsupported">Vaše zařízení nepodporuje NFC.</string>
+    <string name="error_system_feature_fingerprint_unsupported">Zařízení nemá čtečku otisků prstů.</string>
+    <string name="error_system_feature_wifi_unsupported">Vaše zařízení nepodporuje WiFi.</string>
+    <string name="error_system_feature_bluetooth_unsupported">Vaše zařízení bluetooth nepodporuje.</string>
+    <string name="error_system_feature_device_admin_unsupported">Vaše zařízení nepodporuje vynucení zásad zařízení.</string>
+    <string name="error_system_feature_camera_flash_unsupported">Zařízení nemá blesk fotoaparátu.</string>
     <string name="error_flag_not_found">Označit \"%s\" nenalezeno!</string>
     <string name="error_cant_find_ime_settings">Nelze najít stránku nastavení klávesnice!</string>
     <string name="error_need_to_enable_device_admin">Klíčová mapa musí být správcem zařízení!</string>
@@ -750,6 +788,7 @@
     <string name="error_no_space_left_at_target">Na cíli není žádné místo! %s</string>
     <string name="error_shizuku_permission_denied">Oprávnění Shizuku je odepřeno!</string>
     <string name="error_shizuku_not_started">Šizuku není spuštěna!</string>
+    <string name="error_access_fine_location_permission_denied">Bylo odepřeno oprávnění ke čtení pěkné polohy!</string>
     <!-- Error messages -->
     <!-- action labels -->
     <string name="action_toggle_wifi">Přepnout WiFi</string>
@@ -864,8 +903,33 @@
     <string name="action_toggle_airplane_mode">Zapnout/Zapnout režim Letadlo</string>
     <string name="action_enable_airplane_mode">Povolit režim Letadlo</string>
     <string name="action_disable_airplane_mode">Zakázat režim Letadlo</string>
+    <string name="action_open_app">Spustit aplikaci</string>
+    <string name="action_open_app_shortcut">Spuštění zástupce aplikace</string>
+    <string name="action_input_key_code">Kód vstupního klíče</string>
+    <string name="action_input_key_event">Událost vstupního klíče</string>
+    <string name="action_tap_screen">Klepnout na obrazovku</string>
+    <string name="action_input_text">Vstupní text</string>
+    <string name="action_open_url">Otevřít adresu URL</string>
+    <string name="action_send_intent">Odeslat záměr</string>
+    <string name="action_phone_call">Zahájit telefonní hovor</string>
+    <string name="action_play_sound">Přehrávání zvuku</string>
+    <string name="action_dismiss_most_recent_notification">Zavření posledního oznámení</string>
+    <string name="action_dismiss_all_notifications">Zrušit všechna Halo upozornění</string>
     <!-- action labels -->
     <!-- action category labels -->
+    <string name="action_cat_navigation">Navigace</string>
+    <string name="action_cat_volume">Hlasitost</string>
+    <string name="action_cat_media">Média</string>
+    <string name="action_cat_keyboard">Klávesnice</string>
+    <string name="action_cat_apps">aplikací</string>
+    <string name="action_cat_input">Vstup</string>
+    <string name="action_cat_camera_sound">Kamera a zvuk</string>
+    <string name="action_cat_connectivity">Připojení</string>
+    <string name="action_cat_content">Obsah</string>
+    <string name="action_cat_interface">Prostředí</string>
+    <string name="action_cat_telephony">Telefon</string>
+    <string name="action_cat_display">Displej</string>
+    <string name="action_cat_notifications">Oznámení</string>
     <!-- action category labels -->
     <!--  Intent action type strings  -->
     <string name="intent_type_bool_header">Boolean</string>
