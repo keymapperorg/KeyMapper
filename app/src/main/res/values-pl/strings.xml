@@ -3,12 +3,12 @@
     <string name="slogan">Uwolnij swoje przyciski!</string>
     <string name="no_action_chosen">Nie wybrano działania</string>
     <string name="accessibility_service_description">Key Mapper musi korzystać z usługi ułatwień dostępu, aby móc czytać naciśnięć przycisków/klawiszy i wykonywać wybrane działania.
-    Usługa ułatwień dostępu czyta tylko zdarzeń związanych z klawiszami i wykrywa, w której aplikacji się znajdujesz. Aby to sprawdzić, możesz spojrzeć na kod źródłowy, do którego link znajduje się na ekranie Informacje.</string>
+    Usługa ułatwień dostępu czyta tylko zdarzeń związanych z klawiszami i wykrywa, w której aplikacji się znajdujesz. Dla pewności możesz przeczytać kod źródłowy, do którego link znajduje się na ekranie Informacje.</string>
     <string name="selection_count">%d elementy</string>
     <string name="enable">Włącz</string>
     <string name="open">Otwórz</string>
     <string name="recyclerview_placeholder">¯\\_(ツ)_/¯\n\nNic tu nie ma!</string>
-    <string name="triggers_recyclerview_placeholder">Nagraj wyzwalacz!</string>
+    <string name="triggers_recyclerview_placeholder">Wprowadź wyzwalacz!</string>
     <string name="actions_recyclerview_placeholder">Dodaj działanie!</string>
     <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nUtwórz mapę klawiszy!</string>
     <string name="action_shortcut_list_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nNie wybrano żadnych działań dla tego skrótu!</string>
@@ -17,6 +17,7 @@
     <string name="warning_the_app_will_work">Aplikacja będzie działać, ale niektóre rzeczy mogą wymagać naprawienia w zależności od tego, co robisz.</string>
     <string name="your_device_doesnt_support_some_actions">Twoje urządzenie nie obsługuje niektórych działań.</string>
     <string name="tab_unsupported_actions">Nieobsługiwane działania</string>
+    <string name="choose_action_warning_requires_root">Wymaga root</string>
     <string name="press_dot_dot_dot">Naciśnij…</string>
     <string name="no_actions">Brak działań</string>
     <string name="no_trigger">Brak wyzwalacza</string>
@@ -51,6 +52,8 @@
     <string name="from_no_device">Brak urządzenia</string>
     <string name="intent_extras_recycler_view_placeholder">¯\\_(ツ)_/¯\n\nBrak dodatków!</string>
     <string name="content_description_fab_new_keymap">Utwórz nową mapę klawiszy</string>
+    <string name="content_description_done_configuring_key_event">Konfiguracja funkcji zdarzenia klawiszy została zakończona</string>
+    <string name="content_description_done_configuring_coordinate">Wybór współrzędnych został zakończony</string>
     <string name="clip_key_mapper_log">Dziennik Key Mapper</string>
     <string name="sharesheet_title">Wyślij do</string>
     <string name="whats_new">Co nowego</string>
@@ -122,6 +125,9 @@
     <string name="hint_from_device">Z urządzenia</string>
     <string name="hint_shortcut_name">Nazwa skrótu</string>
     <string name="hint_tap_coordinate_title">Opis współrzędnych (opcjonalnie)</string>
+    <string name="hint_create_text_action">Tekst do wprowadzenia</string>
+    <string name="hint_create_url_action">URL do otwarcia</string>
+    <string name="hint_create_phone_call_action">Numer telefonu, pod który należy zadzwonić</string>
     <string name="hint_intent_action">Działanie</string>
     <string name="hint_intent_categories">Kategorie</string>
     <string name="hint_intent_data">Dane</string>
@@ -132,6 +138,7 @@
     <string name="hint_intent_description">Opis dla Key Mapper (wymagane)</string>
     <string name="hint_intent_flags">Flagi</string>
     <string name="hint_sound_file_description">Opis pliku dźwiękowego</string>
+    <string name="hint_wifi_ssid">SSID sieci Wi-Fi</string>
     <!--  Hints  -->
     <!--  Radio buttons  -->
     <string name="radio_button_parallel">Jednocześnie</string>
@@ -197,6 +204,7 @@
     <string name="constraint_app_foreground_description">%s jest na pierwszym planie</string>
     <string name="constraint_app_not_foreground_description">%s jest w tle</string>
     <string name="constraint_app_playing_media_description">%s odtwarza multimedia</string>
+    <string name="constraint_app_not_playing_media_description">%s nie odtwarza multimediów</string>
     <string name="constraint_bt_device_connected_description">%s jest połączone</string>
     <string name="constraint_bt_device_disconnected_description">%s jest odłączone</string>
     <string name="constraint_screen_on_description">Ekran jest włączony</string>
@@ -221,9 +229,24 @@
     <string name="constraint_choose_orientation_270">Poziomo (270°)</string>
     <string name="constraint_choose_orientation_portrait">Pionowo (dowolne)</string>
     <string name="constraint_choose_orientation_landscape">Poziomo (dowolne)</string>
-    <string name="constraint_choose_app_playing_media">Konkretna aplikacja odtwarza multimedia</string>
+    <string name="constraint_choose_app_playing_media">Aplikacja odtwarzająca multimedia</string>
+    <string name="constraint_choose_app_not_playing_media">Aplikacja nie odtwarzająca multimediów</string>
+    <string name="constraint_choose_media_playing">Multimedia są odtwarzane</string>
+    <string name="constraint_choose_media_not_playing">Brak odtwarzanych multimediów</string>
     <string name="constraint_flashlight_on">Latarka jest włączona</string>
     <string name="constraint_flashlight_off">Latarka jest wyłączona</string>
+    <string name="constraint_wifi_on">Wi-Fi jest włączone</string>
+    <string name="constraint_wifi_off">Wi-Fi jest wyłączone</string>
+    <string name="constraint_wifi_connected">Połączono z siecią Wi-Fi</string>
+    <string name="constraint_wifi_disconnected">Odłączono od sieci Wi-Fi</string>
+    <string name="constraint_wifi_message_cant_list_networks">Identyfikator SSID należy wpisać ręcznie, ponieważ aplikacje nie mogą sprawdzać listy znanych sieci Wi-Fi w systemie Android w wersji 10 i nowszych.
+    
+    Pozostaw to pole puste, jeśli można dopasować dowolną sieć Wi-Fi.</string>
+    <string name="constraint_wifi_pick_network_any">Dowolna sieć</string>
+    <string name="constraint_wifi_connected_description">Połączono z siecią Wi-Fi %s</string>
+    <string name="constraint_wifi_disconnected_description">Odłączono od sieci Wi-Fi %s</string>
+    <string name="constraint_wifi_connected_any_description">Połączono z dowolną siecią Wi-Fi</string>
+    <string name="constraint_wifi_disconnected_any_description">Odłączono od dowolnej sieci Wi-Fi</string>
     <string name="orientation_0">Pionowo (0°)</string>
     <string name="orientation_90">Poziomo (90°)</string>
     <string name="orientation_180">Pionowo (180°)</string>
@@ -288,7 +311,7 @@
     <!-- Menu action titles-->
     <!-- Button titles -->
     <string name="button_add_action">Dodaj działanie</string>
-    <string name="button_record_trigger">Nagraj wyzwalacz</string>
+    <string name="button_record_trigger">Wprowadź wyzwalacz</string>
     <string name="button_done">Gotowe</string>
     <string name="button_save">Zapisz</string>
     <string name="button_fix">Napraw</string>
@@ -307,6 +330,8 @@
     <string name="button_copy_log">Kopiuj</string>
     <string name="button_slider_repeat_no_limit">Bez ograniczeń</string>
     <string name="button_choose_sound_file">Wybierz plik dźwiękowy</string>
+    <string name="button_edit_action">Edytuj działanie</string>
+    <string name="button_replace_action">Zastąp działanie</string>
     <!-- Button titles -->
     <!-- Dialog stuff -->
     <string name="dialog_title_are_you_sure">Na pewno?</string>
@@ -316,7 +341,7 @@
     <string name="dialog_title_pick_stream">Wybierz strumień</string>
     <string name="dialog_title_choose_flash">Wybierz lampę błyskową</string>
     <string name="dialog_title_cant_find_accessibility_settings_page">Nie można wykryć strony ustawień ułatwień dostępu</string>
-    <string name="dialog_title_cant_record_trigger">Nie możesz nagrać wyzwalacza?</string>
+    <string name="dialog_title_cant_record_trigger">Nie możesz wprowadzić wyzwalacza?</string>
     <string name="dialog_message_are_you_sure_want_to_leave_without_saving">Czy na pewno chcesz wrócić bez zapisywania?</string>
     <string name="dialog_message_root_prompt">Jeśli wiesz, że Twój telefon nie jest zrootowany lub nie wiesz, czym jest root, nie możesz korzystać z funkcji, które działają tylko na zrootowanych urządzeniach. Po kliknięciu \"OK\" zostaniesz przeniesiony do ustawień.
             W ustawieniach przewiń w dół i kliknij \"Key Mapper ma uprawnienia roota\", aby móc korzystać z funkcji/działań roota.</string>
@@ -334,8 +359,8 @@
     <string name="dialog_message_screen_constraints_limitation">Ograniczenia \"Ekran jest włączony/wyłączony\" będą działać tylko wtedy, gdy jest włączona opcja mapy klawiszy \"Wykryj trigger gdy ekran jest wyłączony\". Ta opcja będzie wyświetlana tylko dla niektórych klawiszy (np. przycisków głośności) i jeśli masz uprawnienia root. Zobacz listę obsługiwanych klawiszy na stronie pomocy.</string>
     <string name="dialog_message_password_screen_lock_warning">Jeśli masz wybrany inny ekran blokady, taki jak PIN lub Wzór, nie musisz się martwić. Ale jeśli masz ekran blokady z hasłem, *NIE* będziesz w stanie odblokować telefonu gdy używasz Podstawowej metody wprowadzania Key Mapper, ponieważ nie ma ta klawiatura interfejsu. Możesz udzielić uprawnienie WRITE_SECURE_SETTINGS do Key Mapper, aby można było wyświetlać powiadomienie o przełączaniu się z i do tej klawiatury. Kliknij znak zapytania u dołu ekranu, aby wyświetlić przewodnik na ten temat.</string>
     <string name="dialog_message_select_compatible_ime">Wybierz metodę wprowadzania dla działań, które tego wymagają. Można to zmienić później za pomocą opcji \"Wybierz klawiaturę do działań\" w dolnym menu ekranu głównego.</string>
-    <string name="dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout">Musisz wybrać układ klawiatury \"Caps Lock otwiera Aparat\" dla swojej klawiatury, w przeciwnym razie klawisz Caps Lock będzie nadal włączał Caps Lock. Możesz znaleźć tę opcję w ustawieniach urządzenia -&gt; Języki i metody wprowadzanie -&gt; Klawiatura fizyczna -&gt; Wybierz swoją klawiaturę -&gt; Skonfiguruj układy klawiatury. Spowoduje to zmianę przypisania klawisza Caps Lock do KEYCODE_CAMERA, dzięki czemu Key Mapper będzie mógł go poprawnie zmienić.\n\nPo wykonaniu tej czynności musisz usunąć klawisz Caps Lock z działania i ponownie nacisnąć klawisz Caps Lock. Jeśli wykonałeś(-aś) wszystkie kroki, powinien on nazywać się \"Aparat\" zamiast \"Caps Lock\".</string>
-    <string name="dialog_message_cant_record_trigger"><b>Uruchom ponownie</b> urządzenie, jeśli przycisk \"Nagraj wyzwalacz\" się odlicza, a przyciski, które naciskasz, nie są wyświetlane. Jeśli przyciski nadal nie są wyświetlane po ponownym uruchomieniu, Key Mapper nie obsługuje tych przycisków. Nie ma na to rozwiązania.</string>
+    <string name="dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout">Musisz wybrać układ klawiatury \"Caps Lock otwiera Aparat\" dla swojej klawiatury, w przeciwnym razie klawisz Caps Lock będzie nadal włączać Caps Lock. Możesz znaleźć tę opcję w ustawieniach urządzenia -&gt; Języki i metody wprowadzania -&gt; Klawiatura fizyczna -&gt; Wybierz swoją klawiaturę -&gt; Skonfiguruj układy klawiatury. Spowoduje to zmianę przypisania klawisza Caps Lock do KEYCODE_CAMERA, dzięki czemu Key Mapper będzie mógł go poprawnie zmienić.\n\nPo wykonaniu tej czynności musisz usunąć klawisz Caps Lock z działania i ponownie nacisnąć klawisz Caps Lock. Jeśli wszystkie kroki zostały wykonane poprawnie, klawisz powinien mieć nazwę \"Aparat\" zamiast \"Caps Lock\".</string>
+    <string name="dialog_message_cant_record_trigger"><b>Uruchom ponownie</b> urządzenie, jeśli przycisk \"Wprowadź wyzwalacz\" się odlicza, a przyciski, które naciskasz, nie są wyświetlane. Jeśli przyciski nadal nie są wyświetlane po ponownym uruchomieniu, Key Mapper nie obsługuje tych przycisków. Nie ma na to rozwiązania.</string>
     <string name="dialog_message_settings_no_external_devices_connected">Brak podłączonych urządzeń zewnętrznych.</string>
     <string name="dialog_title_install_gui_keyboard">Zainstaluj GUI klawiaturę Key Mapper</string>
     <string name="dialog_message_install_gui_keyboard">Jest to wysoce zalecane! To jest rzeczywista klawiatura, której możesz używać z Key Mapperem. Ta wbudowana w Key Mapper (Podstawowa metoda wprowadzania) nie ma klawiatury ekranowej. Wybierz, skąd chcesz ją zainstalować.</string>
@@ -365,8 +390,8 @@
     <string name="dialog_message_disable_battery_optimisation"><b>MUSISZ</b> to <b>wszystko</b> przeczytać, w przeciwnym razie otrzymasz <b>frustrację</b> w przyszłości!\n\nKliknięcie \"Napraw częściowo\" <b>może</b> uniemożliwić Androidowi zatrzymanie aplikacji, gdy działa ona w tle.\n\n<b>To NIE WYSTARCZY</b>. Skórka producenta, taka jak MIUI lub Samsung Experience, może mieć inne funkcje zatrzymywania aplikacji, więc MUSISZ je wyłączyć dla Key Mapper, postępując zgodnie z przewodnikiem online na dontkillmyapp.com.</string>
     <string name="dialog_title_send_feedback">Prześlij opinię</string>
     <string name="dialog_message_send_feedback">Prosimy o zapoznanie się z poradnikiem jak zgłaszać problemy, na stronie internetowej.</string>
-    <string name="dialog_message_enable_accessibility_service_to_record_trigger">Włącz usługę ułatwień dostępu aby nagrać wyzwalacz.</string>
-    <string name="dialog_message_restart_accessibility_service_to_record_trigger">Uruchom ponownie usługę ułatwień dostępu, <i>wyłączając</i> ją i <i>włączając</i> ponownie, aby móc nagrać wyzwalacz.</string>
+    <string name="dialog_message_enable_accessibility_service_to_record_trigger">Włącz usługę ułatwień dostępu, aby wprowadzić wyzwalacz.</string>
+    <string name="dialog_message_restart_accessibility_service_to_record_trigger">Uruchom ponownie usługę ułatwień dostępu, <i>wyłączając</i> ją i <i>włączając</i> ponownie, zanim będzie można wprowadzić wyzwalacz.</string>
     <string name="dialog_message_enable_accessibility_service_to_test_action">Włącz usługę ułatwień dostępu, aby przetestować czynność.</string>
     <string name="dialog_message_restart_accessibility_service_to_test_action">Uruchom ponownie usługę ułatwień dostępu, <i>wyłączając</i> ją i <i>włączając</i> ponownie, aby móc przetestować czynność.</string>
     <string name="dialog_message_restart_accessibility_service">Uruchom ponownie usługę ułatwień dostępu, <i>wyłączając</i> ją i <i>włączając</i> ponownie.</string>
@@ -473,6 +498,9 @@
     <string name="summary_pref_auto_show_ime_picker">Gdy wybrane urządzenie połączy się lub rozłączy, wybór klawiatury automatycznie się pojawi. Wybierz swoje urządzenia poniżej.</string>
     <string name="title_pref_auto_change_ime_on_connection">Automatycznie zmieniaj klawiaturę ekranową, gdy urządzenie (np. klawiatura) się łącza/rozłącza</string>
     <string name="summary_pref_auto_change_ime_on_connection">Ostatnio używana klawiatura Key Mapper zostanie automatycznie wybrana po podłączeniu wybranego urządzenia. Twoja normalna klawiatura zostanie automatycznie wybrana po rozłączeniu urządzenia.</string>
+    <string name="title_pref_auto_change_ime_on_input_focus">Automatycznie zmieniaj klawiaturę ekranową po rozpoczęciu wprowadzania tekstu</string>
+    <string name="summary_pref_auto_change_ime_on_input_focus">Ostatnio używana klawiatura niebędąca klawiaturą Key Mapper zostanie automatycznie wybrana po otwarciu klawiatury w celu wpisania tekstu. Klawiatura Key Mapper zostanie automatycznie wybrana, gdy przestaniesz używać swojej klawiatury.</string>
+    <string name="title_pref_show_toast_when_auto_changing_ime">Pokaż komunikat po automatycznej zmianie klawiatury</string>
     <string name="title_pref_root_permission">Key Mapper ma uprawnienia roota</string>
     <string name="summary_pref_root_permission">Włącz tę opcję, jeśli chcesz korzystać z funkcji/działań, które działają tylko na zrootowanych urządzeniach. Key Mapper musi mieć uprawnienia roota z aplikacji do zarządzania dostępem do roota (np. Magisk, SuperSU), aby te funkcje działały.
             Włącz to tylko wtedy, gdy wiesz, że Twoje urządzenie jest zrootowane, a także uprawnienia roota zostały przyznane aplikacji Key Mapper.</string>
@@ -526,7 +554,8 @@
     <string name="title_pref_category_shizuku">Obsługa Shizuku</string>
     <string name="summary_pref_category_shizuku">Shizuku jest aplikacją, która pozwala aplikacji Key Mapper wykonywać funkcje, dostęp do których mają tylko aplikacje systemowe. Nie musisz używać klawiatury Key Mapper, na przykład. Kliknij, aby dowiedzieć się, jak to skonfigurować.</string>
     <string name="summary_pref_category_shizuku_follow_steps">Postępuj według tych instrukcji by skonfigurować Shizuku.</string>
-    <string name="title_pref_category_write_secure_settings_view_settings">Przejdź do ustawień, które wymagają tego uprawnienia.</string>
+    <string name="title_pref_automatically_change_ime">Automatycznie zmień klawiaturę</string>
+    <string name="summary_pref_automatically_change_ime">Te ustawienia są naprawdę przydatne więc zalecamy je sprawdzić!</string>
     <string name="title_pref_category_log">Logowanie</string>
     <string name="summary_pref_category_log">Może to zwiększyć opóźnienie map klawiszy, więc włączaj to tylko wtedy, gdy próbujesz debugować aplikację lub programista poprosi Cię o to.</string>
     <!--Preference categories-->
@@ -576,7 +605,7 @@
     <string name="showcase_accessibility_service_title_disabled">Włącz usługę ułatwień dostępu</string>
     <string name="showcase_accessibility_service_description_disabled">Twoje mapy klawiszy będą działać dopiero po włączeniu usługi ułatwień dostępu. Musi być również włączony, aby utworzyć wyzwalacz.</string>
     <string name="showcase_record_trigger_title">Usługa ułatwień dostępu jest wyłączona</string>
-    <string name="showcase_record_trigger_description">Możesz nagrać wyzwalacz tylko wtedy, gdy usługa ułatwień dostępu jest włączona.</string>
+    <string name="showcase_record_trigger_description">Możesz wprowadzić wyzwalacz tylko wtedy, gdy usługa ułatwień dostępu jest włączona.</string>
     <string name="showcase_note_from_the_developer_title">Uwaga od programisty</string>
     <string name="showcase_note_from_the_developer_description">Nie ma gwarancji, że każda akcja będzie działać na Twoim urządzeniu i że każdy przycisk zostanie wykryty. Dzieje się tak, ponieważ istnieje wiele odmian Androida, a producenci mogą zepsuć funkcje przypadkowo lub celowo. Jeśli coś nie działa, powiadom programistę i powstrzymaj się od wystawiania aplikacji złej recenzji, ponieważ ten problem często jest poza kontrolą programisty. =)</string>
     <string name="showcase_disable_battery_optimisation_title">Key Mapper może nagle przestać działać!</string>
@@ -660,6 +689,15 @@
     <string name="error_action_requires_write_settings_permission">Musisz udzielić aplikacji Key Mapper uprawnienia do modyfikowania ustawień systemowych.</string>
     <string name="error_requires_root">To wymaga uprawnień roota!</string>
     <string name="error_action_requires_camera_permission">Ta czynność wymaga uprawnień do aparatu!</string>
+    <string name="error_sdk_version_too_low">Wymagana wersja Androida %s lub wyższa</string>
+    <string name="error_sdk_version_too_high">Wymagana wersja Androida %s lub niższa</string>
+    <string name="error_system_feature_camera_unsupported">Twoje urządzenie nie ma aparatu.</string>
+    <string name="error_system_feature_nfc_unsupported">Twoje urządzenie nie posiada obsługi NFC.</string>
+    <string name="error_system_feature_fingerprint_unsupported">Twoje urządzenie nie posiada czytnika linii papilarnych.</string>
+    <string name="error_system_feature_wifi_unsupported">Twoje urządzenie nie posiada obsługi Wi-Fi.</string>
+    <string name="error_system_feature_bluetooth_unsupported">Twoje urządzenie nie posiada obsługi Bluetooth.</string>
+    <string name="error_system_feature_device_admin_unsupported">Twoje urządzenie nie obsługuje egzekwowania zasad.</string>
+    <string name="error_system_feature_camera_flash_unsupported">Twoje urządzenie nie ma lampy błyskowej aparatu.</string>
     <string name="error_flag_not_found">Nie znaleziono flagi \"%s\"!</string>
     <string name="error_cant_find_ime_settings">Nie można wykryć strony ustawień klawiatury!</string>
     <string name="error_need_to_enable_device_admin">Key Mapper potrzebuje uprawnień administratora urządzenia!</string>
@@ -750,6 +788,7 @@
     <string name="error_no_space_left_at_target">Brak miejsca na cel! %s</string>
     <string name="error_shizuku_permission_denied">Odmowa dostępu do Shizuku!</string>
     <string name="error_shizuku_not_started">Aplikacja Shizuku nie jest uruchomiona!</string>
+    <string name="error_access_fine_location_permission_denied">Odmówiono dostępu do dokładnej lokalizacji!</string>
     <!-- Error messages -->
     <!-- action labels -->
     <string name="action_toggle_wifi">Włącz/wyłącz Wi-Fi</string>
@@ -864,8 +903,33 @@
     <string name="action_toggle_airplane_mode">Włącz/wyłącz tryb samolotowy</string>
     <string name="action_enable_airplane_mode">Włącz tryb samolotowy</string>
     <string name="action_disable_airplane_mode">Wyłącz tryb samolotowy</string>
+    <string name="action_open_app">Uruchom aplikację</string>
+    <string name="action_open_app_shortcut">Uruchom skrót aplikacji</string>
+    <string name="action_input_key_code">Wprowadź kod klawisza</string>
+    <string name="action_input_key_event">Wprowadź klawiszowe wydarzenie</string>
+    <string name="action_tap_screen">Kliknij ekran</string>
+    <string name="action_input_text">Wprowadź tekst</string>
+    <string name="action_open_url">Otwórz adres URL</string>
+    <string name="action_send_intent">Wyślij Intencję</string>
+    <string name="action_phone_call">Rozpocznij rozmowę telefoniczną</string>
+    <string name="action_play_sound">Odtwórz dźwięk</string>
+    <string name="action_dismiss_most_recent_notification">Odrzuć ostatnie powiadomienie</string>
+    <string name="action_dismiss_all_notifications">Odrzuć wszystkie powiadomienia</string>
     <!-- action labels -->
     <!-- action category labels -->
+    <string name="action_cat_navigation">Nawigacja</string>
+    <string name="action_cat_volume">Głośność</string>
+    <string name="action_cat_media">Multimedia</string>
+    <string name="action_cat_keyboard">Klawiatura</string>
+    <string name="action_cat_apps">Aplikacje</string>
+    <string name="action_cat_input">Wejście</string>
+    <string name="action_cat_camera_sound">Aparat i dźwięk</string>
+    <string name="action_cat_connectivity">Połączenie</string>
+    <string name="action_cat_content">Treść</string>
+    <string name="action_cat_interface">Interfejs</string>
+    <string name="action_cat_telephony">Telefon</string>
+    <string name="action_cat_display">Ekran</string>
+    <string name="action_cat_notifications">Powiadomienia</string>
     <!-- action category labels -->
     <!--  Intent action type strings  -->
     <string name="intent_type_bool_header">Wartość logiczna</string>
