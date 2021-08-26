@@ -10,6 +10,7 @@ import io.github.sds100.keymapper.actions.TestActionUseCaseImpl
 import io.github.sds100.keymapper.actions.keyevent.ChooseKeyCodeViewModel
 import io.github.sds100.keymapper.actions.keyevent.ConfigKeyEventActionViewModel
 import io.github.sds100.keymapper.actions.keyevent.ConfigKeyEventUseCaseImpl
+import io.github.sds100.keymapper.actions.selectscreenshot.SelectScreenshotViewModel
 import io.github.sds100.keymapper.actions.sound.ChooseSoundFileUseCaseImpl
 import io.github.sds100.keymapper.actions.sound.ChooseSoundFileViewModel
 import io.github.sds100.keymapper.actions.tapscreen.PickDisplayCoordinateViewModel
@@ -120,6 +121,12 @@ object Inject {
 
     fun tapCoordinateActionTypeViewModel(context: Context): PickDisplayCoordinateViewModel.Factory {
         return PickDisplayCoordinateViewModel.Factory(
+            ServiceLocator.resourceProvider(context)
+        )
+    }
+
+    fun selectScreenshotViewModel(context: Context): SelectScreenshotViewModel.Factory {
+        return SelectScreenshotViewModel.Factory(
             ServiceLocator.resourceProvider(context)
         )
     }

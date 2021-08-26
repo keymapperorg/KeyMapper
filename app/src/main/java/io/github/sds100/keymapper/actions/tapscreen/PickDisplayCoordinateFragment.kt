@@ -16,11 +16,13 @@ import androidx.core.content.getSystemService
 import androidx.core.graphics.decodeBitmap
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import io.github.sds100.keymapper.actions.selectscreenshot.SelectScreenshotViewModel
 import io.github.sds100.keymapper.databinding.FragmentPickCoordinateBinding
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.util.*
@@ -46,24 +48,7 @@ class PickDisplayCoordinateFragment : Fragment() {
         Inject.tapCoordinateActionTypeViewModel(requireContext())
     }
 
-    private val screenshotLauncher =
-        registerForActivityResult(ActivityResultContracts.GetContent()) {
-            it ?: return@registerForActivityResult
-
-            val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                ImageDecoder.createSource(requireContext().contentResolver, it)
-                    .decodeBitmap { _, _ -> }
-            } else {
-                MediaStore.Images.Media.getBitmap(requireContext().contentResolver, it)
-            }
-
-            val displaySize = Point().apply {
-                val windowManager: WindowManager = requireContext().getSystemService()!!
-                windowManager.defaultDisplay.getRealSize(this)
-            }
-
-            viewModel.selectedScreenshot(bitmap, displaySize)
-        }
+    private lateinit var screenshotViewModel: SelectScreenshotViewModel
 
     /**
      * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
@@ -74,6 +59,10 @@ class PickDisplayCoordinateFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        screenshotViewModel = ViewModelProvider(this,
+            Inject.selectScreenshotViewModel(requireContext()))
+            .get(SelectScreenshotViewModel::class.java)
 
         args.result?.let {
             viewModel.loadResult(Json.decodeFromString(it))
@@ -110,7 +99,7 @@ class PickDisplayCoordinateFragment : Fragment() {
         }
 
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
-            viewModel.bitmap.collectLatest { bitmap ->
+            screenshotViewModel.bitmap.collectLatest { bitmap ->
                 if (bitmap == null) {
                     binding.imageViewScreenshot.setImageDrawable(null)
                 } else {
@@ -122,7 +111,7 @@ class PickDisplayCoordinateFragment : Fragment() {
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             binding.imageViewScreenshot.pointCoordinates.collectLatest { point ->
                 if (point != null) {
-                    viewModel.onScreenshotTouch(
+                    viewModel.onScreenshotTouch(screenshotViewModel.displaySize,
                         point.x.toFloat() / binding.imageViewScreenshot.width,
                         point.y.toFloat() / binding.imageViewScreenshot.height
                     )
@@ -141,9 +130,6 @@ class PickDisplayCoordinateFragment : Fragment() {
             }
         }
 
-        binding.setOnSelectScreenshotClick {
-            screenshotLauncher.launch(FileUtils.MIME_TYPE_IMAGES)
-        }
     }
 
     override fun onDestroyView() {
