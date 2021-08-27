@@ -1,6 +1,6 @@
 files:
   - source: /app/src/main/res/values/strings.xml
-    translation: /app/src/main/res/values-%locale_with_underscore%/strings.xml
+    translation: /app/src/main/res/values-%two_letters_code%/strings.xml
   - source: /fastlane/metadata/android/en-US/full_description.txt
     translation: /fastlane/metadata/android/%locale_with_underscore%/full_description.txt
   - source: /fastlane/metadata/android/en-US/short_description.txt
