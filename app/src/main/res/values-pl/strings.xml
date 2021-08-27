@@ -2,12 +2,12 @@
 <resources>
     <string name="no_action_chosen">Nie wybrano działania</string>
     <string name="accessibility_service_description">Key Mapper musi korzystać z usługi ułatwień dostępu, aby móc czytać naciśnięć przycisków/klawiszy i wykonywać wybrane działania.
-    Usługa ułatwień dostępu czyta tylko zdarzeń związanych z klawiszami i wykrywa, w której aplikacji się znajdujesz. Dla pewności możesz przeczytać kod źródłowy, do którego link znajduje się na ekranie Informacje.</string>
+    Usługa ułatwień dostępu czyta tylko zdarzeń związanych z klawiszami i wykrywa, w której aplikacji się znajdujesz. Aby to sprawdzić, możesz spojrzeć na kod źródłowy, do którego link znajduje się na ekranie Informacje.</string>
     <string name="selection_count">%d elementy</string>
     <string name="enable">Włącz</string>
     <string name="open">Otwórz</string>
     <string name="recyclerview_placeholder">¯\\_(ツ)_/¯\n\nNic tu nie ma!</string>
-    <string name="triggers_recyclerview_placeholder">Wprowadź wyzwalacz!</string>
+    <string name="triggers_recyclerview_placeholder">Nagraj wyzwalacz!</string>
     <string name="actions_recyclerview_placeholder">Dodaj działanie!</string>
     <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nUtwórz mapę klawiszy!</string>
     <string name="action_shortcut_list_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nNie wybrano żadnych działań dla tego skrótu!</string>
@@ -281,7 +281,7 @@
     <!-- Menu action titles-->
     <!-- Button titles -->
     <string name="button_add_action">Dodaj działanie</string>
-    <string name="button_record_trigger">Wprowadź wyzwalacz</string>
+    <string name="button_record_trigger">Nagraj wyzwalacz</string>
     <string name="button_done">Gotowe</string>
     <string name="button_save">Zapisz</string>
     <string name="button_fix">Napraw</string>
@@ -309,7 +309,7 @@
     <string name="dialog_title_pick_stream">Wybierz strumień</string>
     <string name="dialog_title_choose_flash">Wybierz lampę błyskową</string>
     <string name="dialog_title_cant_find_accessibility_settings_page">Nie można wykryć strony ustawień ułatwień dostępu</string>
-    <string name="dialog_title_cant_record_trigger">Nie możesz wprowadzić wyzwalacza?</string>
+    <string name="dialog_title_cant_record_trigger">Nie możesz nagrać wyzwalacza?</string>
     <string name="dialog_message_are_you_sure_want_to_leave_without_saving">Czy na pewno chcesz wrócić bez zapisywania?</string>
     <string name="dialog_message_root_prompt">Jeśli wiesz, że Twój telefon nie jest zrootowany lub nie wiesz, czym jest root, nie możesz korzystać z funkcji, które działają tylko na zrootowanych urządzeniach. Po kliknięciu \"OK\" zostaniesz przeniesiony do ustawień.
             W ustawieniach przewiń w dół i kliknij \"Key Mapper ma uprawnienia roota\", aby móc korzystać z funkcji/działań roota.</string>
@@ -326,8 +326,8 @@
     <string name="dialog_message_screen_constraints_limitation">Ograniczenia \"Ekran jest włączony/wyłączony\" będą działać tylko wtedy, gdy jest włączona opcja mapy klawiszy \"Wykryj trigger gdy ekran jest wyłączony\". Ta opcja będzie wyświetlana tylko dla niektórych klawiszy (np. przycisków głośności) i jeśli masz uprawnienia root. Zobacz listę obsługiwanych klawiszy na stronie pomocy.</string>
     <string name="dialog_message_password_screen_lock_warning">Jeśli masz wybrany inny ekran blokady, taki jak PIN lub Wzór, nie musisz się martwić. Ale jeśli masz ekran blokady z hasłem, *NIE* będziesz w stanie odblokować telefonu gdy używasz Podstawowej metody wprowadzania Key Mapper, ponieważ nie ma ta klawiatura interfejsu. Możesz udzielić uprawnienie WRITE_SECURE_SETTINGS do Key Mapper, aby można było wyświetlać powiadomienie o przełączaniu się z i do tej klawiatury. Kliknij znak zapytania u dołu ekranu, aby wyświetlić przewodnik na ten temat.</string>
     <string name="dialog_message_select_compatible_ime">Wybierz metodę wprowadzania dla działań, które tego wymagają. Można to zmienić później za pomocą opcji \"Wybierz klawiaturę do działań\" w dolnym menu ekranu głównego.</string>
-    <string name="dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout">Musisz wybrać układ klawiatury \"Caps Lock otwiera Aparat\" dla swojej klawiatury, w przeciwnym razie klawisz Caps Lock będzie nadal włączać Caps Lock. Możesz znaleźć tę opcję w ustawieniach urządzenia -&gt; Języki i metody wprowadzania -&gt; Klawiatura fizyczna -&gt; Wybierz swoją klawiaturę -&gt; Skonfiguruj układy klawiatury. Spowoduje to zmianę przypisania klawisza Caps Lock do KEYCODE_CAMERA, dzięki czemu Key Mapper będzie mógł go poprawnie zmienić.\n\nPo wykonaniu tej czynności musisz usunąć klawisz Caps Lock z działania i ponownie nacisnąć klawisz Caps Lock. Jeśli wszystkie kroki zostały wykonane poprawnie, klawisz powinien mieć nazwę \"Aparat\" zamiast \"Caps Lock\".</string>
-    <string name="dialog_message_cant_record_trigger"><b>Uruchom ponownie</b> urządzenie, jeśli przycisk \"Wprowadź wyzwalacz\" się odlicza, a przyciski, które naciskasz, nie są wyświetlane. Jeśli przyciski nadal nie są wyświetlane po ponownym uruchomieniu, Key Mapper nie obsługuje tych przycisków. Nie ma na to rozwiązania.</string>
+    <string name="dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout">Musisz wybrać układ klawiatury \"Caps Lock otwiera Aparat\" dla swojej klawiatury, w przeciwnym razie klawisz Caps Lock będzie nadal włączał Caps Lock. Możesz znaleźć tę opcję w ustawieniach urządzenia -&gt; Języki i metody wprowadzanie -&gt; Klawiatura fizyczna -&gt; Wybierz swoją klawiaturę -&gt; Skonfiguruj układy klawiatury. Spowoduje to zmianę przypisania klawisza Caps Lock do KEYCODE_CAMERA, dzięki czemu Key Mapper będzie mógł go poprawnie zmienić.\n\nPo wykonaniu tej czynności musisz usunąć klawisz Caps Lock z działania i ponownie nacisnąć klawisz Caps Lock. Jeśli wykonałeś(-aś) wszystkie kroki, powinien on nazywać się \"Aparat\" zamiast \"Caps Lock\".</string>
+    <string name="dialog_message_cant_record_trigger"><b>Uruchom ponownie</b> urządzenie, jeśli przycisk \"Nagraj wyzwalacz\" się odlicza, a przyciski, które naciskasz, nie są wyświetlane. Jeśli przyciski nadal nie są wyświetlane po ponownym uruchomieniu, Key Mapper nie obsługuje tych przycisków. Nie ma na to rozwiązania.</string>
     <string name="dialog_message_settings_no_external_devices_connected">Brak podłączonych urządzeń zewnętrznych.</string>
     <string name="dialog_title_install_gui_keyboard">Zainstaluj GUI klawiaturę Key Mapper</string>
     <string name="dialog_message_install_gui_keyboard">Jest to wysoce zalecane! To jest rzeczywista klawiatura, której możesz używać z Key Mapperem. Ta wbudowana w Key Mapper (Podstawowa metoda wprowadzania) nie ma klawiatury ekranowej. Wybierz, skąd chcesz ją zainstalować.</string>
@@ -337,8 +337,8 @@
     <string name="dialog_message_disable_battery_optimisation"><b>MUSISZ</b> to <b>wszystko</b> przeczytać, w przeciwnym razie otrzymasz <b>frustrację</b> w przyszłości!\n\nKliknięcie \"Napraw częściowo\" <b>może</b> uniemożliwić Androidowi zatrzymanie aplikacji, gdy działa ona w tle.\n\n<b>To NIE WYSTARCZY</b>. Skórka producenta, taka jak MIUI lub Samsung Experience, może mieć inne funkcje zatrzymywania aplikacji, więc MUSISZ je wyłączyć dla Key Mapper, postępując zgodnie z przewodnikiem online na dontkillmyapp.com.</string>
     <string name="dialog_title_send_feedback">Prześlij opinię</string>
     <string name="dialog_message_send_feedback">Prosimy o zapoznanie się z poradnikiem jak zgłaszać problemy, na stronie internetowej.</string>
-    <string name="dialog_message_enable_accessibility_service_to_record_trigger">Włącz usługę ułatwień dostępu, aby wprowadzić wyzwalacz.</string>
-    <string name="dialog_message_restart_accessibility_service_to_record_trigger">Uruchom ponownie usługę ułatwień dostępu, <i>wyłączając</i> ją i <i>włączając</i> ponownie, zanim będzie można wprowadzić wyzwalacz.</string>
+    <string name="dialog_message_enable_accessibility_service_to_record_trigger">Włącz usługę ułatwień dostępu aby nagrać wyzwalacz.</string>
+    <string name="dialog_message_restart_accessibility_service_to_record_trigger">Uruchom ponownie usługę ułatwień dostępu, <i>wyłączając</i> ją i <i>włączając</i> ponownie, aby móc nagrać wyzwalacz.</string>
     <string name="dialog_message_enable_accessibility_service_to_test_action">Włącz usługę ułatwień dostępu, aby przetestować czynność.</string>
     <string name="dialog_message_restart_accessibility_service_to_test_action">Uruchom ponownie usługę ułatwień dostępu, <i>wyłączając</i> ją i <i>włączając</i> ponownie, aby móc przetestować czynność.</string>
     <string name="dialog_message_restart_accessibility_service">Uruchom ponownie usługę ułatwień dostępu, <i>wyłączając</i> ją i <i>włączając</i> ponownie.</string>
@@ -455,7 +455,7 @@
     <string name="title_pref_show_device_descriptors">Pokaż pierwsze 5 znaków identyfikatora urządzenia dla wyzwalaczy specyficznych dla urządzenia</string>
     <string name="summary_pref_show_device_descriptors">Jest to przydatne do rozróżnienia między urządzeniami o tej samej nazwie.</string>
     <string name="title_pref_devices_to_reroute_keyevents">Obejście błędu Androida 11, który ustawia identyfikator urządzenia dla zdarzeń wejściowych na -1</string>
-    <string name="summary_pref_devices_to_reroute_keyevents">Wybierz urządzenia, z których Key Mapper powinien przechwycić wszystkie zdarzenia klawiszy, a następnie przekierować przez wybraną klawiaturę Key Mapper. Aby to zadziałało, MUSISZ używać GUI klawiatury Key Mapper lub Podstawowej metody wprowadzania Key Mapper. Jest to częściowe obejście błędu https://issuetracker.google.com/issues/163120692. To NIE będzie działać z kontrolerami gier.</string>
+    <string name="summary_pref_devices_to_reroute_keyevents">Obejście błędu Androida 11, który ustawia identyfikator urządzenia dla zdarzeń wejściowych na -1</string>
     <string name="title_pref_devices_to_reroute_keyevents_choose_devices">4. Wybierz urządzenia</string>
     <string name="title_pref_devices_to_reroute_keyevents_install_gui_keyboard">1. Zainstaluj GUI klawiaturę Key Mapper (opcjonalnie)</string>
     <string name="title_pref_devices_to_reroute_keyevents_install_leanback_keyboard">1. Zainstaluj klawiaturę Key Mapper Leanback (opcjonalnie)</string>
@@ -471,7 +471,7 @@
     <string name="title_pref_grant_write_secure_settings_granted">Uprawnienie zostało udzielone</string>
     <!--Preference titles and summaries-->
     <!--Preference categories-->
-    <string name="title_pref_category_ime_picker">Wybór klawiatury</string>
+    <string name="title_pref_category_ime_picker">Automatycznie pokazuj wybór klawiatury</string>
     <string name="title_pref_category_notifications">Powiadomienia</string>
     <string name="title_pref_category_defaults">Domyślne ustawienia</string>
     <string name="title_pref_category_root">Ustawienia roota</string>
@@ -541,7 +541,7 @@
     <string name="showcase_accessibility_service_title_disabled">Włącz usługę ułatwień dostępu</string>
     <string name="showcase_accessibility_service_description_disabled">Twoje mapy klawiszy będą działać dopiero po włączeniu usługi ułatwień dostępu. Musi być również włączony, aby utworzyć wyzwalacz.</string>
     <string name="showcase_record_trigger_title">Usługa ułatwień dostępu jest wyłączona</string>
-    <string name="showcase_record_trigger_description">Możesz wprowadzić wyzwalacz tylko wtedy, gdy usługa ułatwień dostępu jest włączona.</string>
+    <string name="showcase_record_trigger_description">Możesz nagrać wyzwalacz tylko wtedy, gdy usługa ułatwień dostępu jest włączona.</string>
     <string name="showcase_note_from_the_developer_title">Uwaga od programisty</string>
     <string name="showcase_note_from_the_developer_description">Nie ma gwarancji, że każda akcja będzie działać na Twoim urządzeniu i że każdy przycisk zostanie wykryty. Dzieje się tak, ponieważ istnieje wiele odmian Androida, a producenci mogą zepsuć funkcje przypadkowo lub celowo. Jeśli coś nie działa, powiadom programistę i powstrzymaj się od wystawiania aplikacji złej recenzji, ponieważ ten problem często jest poza kontrolą programisty. =)</string>
     <string name="showcase_disable_battery_optimisation_title">Key Mapper może nagle przestać działać!</string>
