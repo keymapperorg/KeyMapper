@@ -206,7 +206,7 @@ platform :android do
 
     supply(
         aab: "./app/build/outputs/bundle/release/app-release.aab",
-        track: "production",
+        track: "beta",
         release_status: "draft",
         skip_upload_apk: true
     )
