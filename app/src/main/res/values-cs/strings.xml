@@ -247,7 +247,6 @@
     <string name="slide_title_share_bug_report">Sdílet zprávu</string>
     <string name="slide_description_share_bug_report">Existují tři způsoby, jak sdílet hlášení o chybě vývojáři. Buď se připojte na Discord server, vytvořte GitHub, nebo (alespoň pokud možno) pošlete e-mail. Ujistěte se, že připojíte zprávu o chybě k vaší zprávě!</string>
     <string name="slide_button_share_discord">Discord</string>
-    <string name="slide_button_share_github">GitHub</string>
     <string name="slide_button_share_email">E-mailová adresa</string>
     <!--  Bug report slides-->
     <!-- Menu action titles-->
@@ -341,12 +340,12 @@
     <string name="dialog_message_restart_accessibility_service_to_record_trigger">Restartujte službu přístupnosti vypnutím <i>vypněte</i> a <i>zapněte</i> , abyste mohli zaznamenat spouštěč.</string>
     <string name="dialog_message_enable_accessibility_service_to_test_action">Zapněte službu usnadnění přístupu, abyste mohli vyzkoušet akci.</string>
     <string name="dialog_message_restart_accessibility_service_to_test_action">Restartujte službu přístupnosti vypnutím <i>vypněte</i> a <i>dne</i> , abyste mohli vyzkoušet akci.</string>
-    <string name="dialog_message_restart_accessibility_service">Restartujte službu přístupnosti vypnutím <i></i> a <i>dne</i>.</string>
+    <string name="dialog_message_restart_accessibility_service">Restartujte službu přístupnosti vypnutím <i/> a <i>dne</i>.</string>
     <string name="dialog_message_screen_pinning_warning">Použití tohoto spouštěče může způsobit černou obrazovku, když odemknete zařízení po použití nastavení připnutí obrazovky v nastavení zařízení. To lze opravit restartem. To se neděje na všech zařízeních, takže beware a vypněte nastavení, pokud tak učiní!</string>
     <string name="dialog_title_reset_fingerprint_maps">Obnovit mapy gesta otisků prstů</string>
     <string name="dialog_message_reset_fingerprint_maps">Jste si jisti, že chcete obnovit mapy gesta otisků prstů?</string>
     <string name="dialog_title_key_mapper_crashed">Mapa klíče byla ukončena nebo havarována</string>
-    <string name="dialog_message_key_mapper_crashed">Je velmi pravděpodobné, že váš telefon ukončil klávesovou mapu, zatímco se pokoušel běžet na pozadí. Tohle není <b></b> chyba vývojáře a není nic, co by mohli udělat pro opravu, proto prosím neponechejte špatnou recenzi 😃.
+    <string name="dialog_message_key_mapper_crashed">Je velmi pravděpodobné, že váš telefon ukončil klávesovou mapu, zatímco se pokoušel běžet na pozadí. Tohle není <b/> chyba vývojáře a není nic, co by mohli udělat pro opravu, proto prosím neponechejte špatnou recenzi 😃.
 
     \n\nSledujete průvodce dontkillmyapp.com před tím, aby váš telefon zastavil zabíjení Mapper?</string>
     <string name="dialog_button_read_dont_kill_my_app_yes">Ano</string>
@@ -571,7 +570,7 @@
     <string name="stream_alarm">Alarm</string>
     <string name="stream_dtmf">DTMF</string>
     <string name="stream_music">Hudba</string>
-    <string name="stream_notification">Notifications</string>
+    <string name="stream_notification">Oznámení</string>
     <string name="stream_ring">Vyzvánění</string>
     <string name="stream_system">Systém</string>
     <string name="stream_voice_call">Hlasový hovor</string>

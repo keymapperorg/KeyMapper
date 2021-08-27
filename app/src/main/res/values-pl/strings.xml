@@ -503,7 +503,7 @@
     <string name="action_type_title_keyevent">Zdarzenie klawisza</string>
     <string name="action_type_title_system_action">System</string>
     <string name="action_type_title_text_block">Tekst</string>
-    <string name="action_type_url">URL</string>
+    <string name="action_type_url">Adres URL</string>
     <string name="action_type_tap_coordinate">Kliknij ekran</string>
     <string name="action_type_intent">Intencja</string>
     <string name="action_type_phone_call">Połączenie telefoniczne</string>
