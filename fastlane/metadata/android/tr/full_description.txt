@@ -1,0 +1,94 @@
+Nelere yeni tuş atanabilir. 
+
+ *Desteklenen cihazlarda parmak hareketleri. 
+ *Ses tuşları. 
+ *Gezinme tuşları. 
+ *Bluetooth/kablolu klavyeler. 
+ *Diğer eşleştirilen cihazlardaki tuşlar da çalışır.
+
+Sadece DONANIM tuşları yeniden atanabilir.
+Bu düğmelerden herhangi birinin çalışacağından HİÇBİR GARANTİ yoktur ve bu uygulama oyunları kontrol etmek için TASARLANMAMIŞTIR. Cihazınızın OEM/satıcısı tuş atamanızı engelleyebilir.
+
+Bir "tetikleyici" oluşturmak için belirli bir cihazdan veya herhangi bir cihazdan birden fazla anahtarı birleştirebilirsiniz. 1 tetikleyici bir kaç hesapta kullanılabilir. Tuşlar aynı anda veya sırayla birbiri ardına basılacak şekilde ayarlanabilir. Tuşlar kısa tıklama, çift tıklama ya da uzun tıklama olarak atanabilir. Bir anahtar eşleme bir dizi "kısıtlamaya" sahip olabilir, bu nedenle yalnızca belirli durumlarda bir etkiye sahiptir.
+
+Neler atanamaz?
+ *Güç Tuşu
+ *Bixby Tuşu
+ *Fare Tuşları
+ *Dpad, Başparmak Çubukları ya da Oyun Kumandası Tuşları
+
+Ekran kapalıyken atadığın tuşlar çalışmaz. Bu Android'in kısıtlamasıdır. Geliştiricinin yapabileceği bir şey yok. 
+
+Anahtarlarımı ne yapmak için atayabilirim?
+ Bazı şeyler sadece kök erişimi olan vihazlar ve özel Android sürümlerimde çalışır.
+
+ *Uygulama açmak
+ *Uygulama kısayolu açmak
+ *Linkleri açmak
+ *Amaçlar oluşturmak
+ *Geri gitme
+ *Ana ekrana gitme
+ *Son aramaları aç
+ *Menüyü aç
+ *Bildirim çekmecesini aç
+ *Basit ayarları aç
+ *Durum çubuğunu daraltma
+ *Wi-Fi'yi aç/kapa/değiştir (Android 10 ve üstü)
+ *Bluetooth'u aç/kapa/değiştir
+ *Mobil veriyi aç/kapa/değiştir (KÖK ERİŞİMİ GEREKİR)
+ * Toggle between play and pause/just play/just pause media
+ *İleri/Geri sar
+ *Önceki/Sonraki parçayı aç
+ *Sesi aç/kapa
+ *Ses akışını arttıtın/azaltın
+ *Ses diyaloğunu göster
+ * Zil modu arasında geçiş yapın ve zil modunu değiştirin
+ * Sesi kapat / sesi aç / sessize al (Android 6.0+)
+ *Otomatik döndürmeyi aç/kapa
+ * Dikey ve yatay mod arasında geçiş yapın
+ * Portre / manzara modunu zorla
+ *Oto parlaklığı aç/kapa
+ *Parlaklığı arttır/azalt
+ *El fenerini aç/kapa 
+ *Uçak modunu aç/kapa/değiştir (KÖK ERİŞİMİ GEREKİR)
+ *Dnd modunu aç/kapa 
+ * Titreşim ve zil arasında geçiş yapın
+ * Ekran görüntüsü alın (Android 9.0+)
+ * Sesli Asistanı açın
+ * Cihaz Asistanını açın
+ *Kamerayı aç
+ * Anahtar olayı tüketin. (Hiçbir şey yapmaz) 
+ *Cihazı kapa
+ * Güç iletişim kutusunu göster (Android 5.0+)
+ * İmleci bir dosyanın sonuna taşıyın
+
+And more...
+
+Bunların çalışması için Keymapper klavyesinin seçilmesi gerekir:
+
+** Key Mapper GUI Keyboard uygulamasını kurmanız önerilir çünkü bu, Key Mapper'da yerleşik olandan farklı olarak uygun bir klavyedir **
+
+ *Özel tuş kodu gir
+ *Tuş gir
+ *Tuş olayı gir
+ *Metin bloğu ekle
+
+Uygulama başka neler yapabilir?
+ * Tuş eşlemelerinizi duraklatabilecek / devam ettirebilecek kalıcı bir bildirim gösterme seçeneği.
+ * Klavyeyi otomatik olarak Anahtar Eşleştiriciye değiştirin ve / veya seçilen bir Bluetooth cihazı bağlandığında klavye seçiciyi gösterin ve bağlantısı kesildiğinde eskisine geri dönün.
+ * Tuş eşlemelerini durdurma/devam ettirme ya da Keymapper klavyesini değiştirmek için kolay ayarlar.
+ Yukarıda belirtilen eylemleri gerçekleştirmek için ana ekran widget'ı oluşturun.
+
+İzinler
+İzinlerin hepsini vermek zorunda değilsin. Uygulama vermen gereken izinleri belirtecektir.
+
+ * Erişilebilirlik Hizmeti: Çalışmak üzere yeniden eşleme için temel gereksinim. Uygulamanın tuş olaylarını dinleyebilmesi ve engelleyebilmesi için gereklidir.
+ * Aygıt Yöneticisi: Ekranı kapatma eylemini kullanırken ekranı kapatmak için.
+ * Sistem Ayarlarını Değiştirme: Parlaklık ve döndürme ayarlarını değiştirmek için.
+ Kamera: El fenerini kontrol etmek için.
+
+ Bazı cihazlarda erişilebilirlik hizmetini etkinleştirmek "gelişmiş veri şifrelemeyi" devre dışı bırakır.
+
+Discord: https://discord.gg/Suj6nyw
+Çeviren:Ali Efe Çolak
+Website: https://docs.keymapper.club
