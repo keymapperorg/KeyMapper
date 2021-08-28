@@ -1,0 +1,94 @@
+site_name: Key Mapper Documentation
+site_author: sds100
+repo_url: https://github.com/sds100/KeyMapper
+site_description: Documentation website for the Key Mapper Android app.
+site_url: https://docs.keymapper.club/
+use_directory_urls: true
+nav:
+  - Home: index.md
+  - Quick Start Guide: quick-start.md
+  - FAQ: faq.md
+  - User Guide:
+      - Key Maps: user-guide/keymaps.md
+      - Fingerprint Gesture Maps (2.2.0+, Android 8.0+): user-guide/fingerprint-gestures.md
+      - Actions: user-guide/actions.md
+      - Constraints: user-guide/constraints.md
+      - Settings: user-guide/settings.md
+      - Back up and Restore (2.1.0+): user-guide/backup-restore.md
+      - ADB Permissions: user-guide/adb-permissions.md
+      - Setup a Key Mapper keyboard: user-guide/key-mapper-keyboard.md
+      - Controlling your mappings: user-guide/controlling-mappings.md
+      - Shizuku support (2.4.0+, Android 6.0+): user-guide/shizuku.md
+      - API: user-guide/api.md
+  - Contributing: contributing.md
+  - Report Issues: report-issues.md
+  - Known Issues: known-issues.md
+
+theme:
+  name: material
+  palette:
+    accent: red
+  favicon: images/favicon.ico
+  logo: images/logo.png
+  custom_dir: docs/overrides
+  features:
+    - navigation.instant
+
+extra_css:
+  - stylesheets/extra.css
+
+extra:
+  social:
+    - icon: fontawesome/brands/discord
+      link: https://keymapper.club
+    - icon: fontawesome/solid/envelope
+      link: mailto:developer.sds100@gmail.com
+    - icon: fontawesome/brands/google-play
+      link: https://play.google.com/store/apps/developer?id=sds100
+    - icon: fontawesome/brands/github
+      link: https://github.com/sds100/KeyMapper
+    - icon: fdroid
+      link: https://www.f-droid.org/en/packages/io.github.sds100.keymapper/
+    - icon: kofi
+      link: https://ko-fi.com/sethschroeder
+
+markdown_extensions:
+  - attr_list
+  - admonition
+  - pymdownx.superfences
+  - pymdownx.details
+  - pymdownx.snippets:
+      base_path: docs/includes
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+      options:
+        custom_icons:
+          - docs/overrides/.icons
+  - toc:
+      permalink: true
+      toc_depth: 4
+
+plugins:
+  - redirects:
+      redirect_maps:
+        'redirects/trigger-by-intent.md': 'https://sds100.github.io/KeyMapper/user-guide/keymaps#trigger-from-other-apps-230'
+        'redirects/grant-write-secure-settings.md': 'https://sds100.github.io/KeyMapper/user-guide/adb-permissions#write_secure_settings'
+        'redirects/faq.md': 'https://sds100.github.io/KeyMapper/faq'
+        'redirects/quick-start.md': 'https://sds100.github.io/KeyMapper/quick-start'
+        'redirects/fingerprint-map-options.md': 'https://sds100.github.io/KeyMapper/user-guide/fingerprint-gestures'
+        'redirects/constraints.md': 'https://sds100.github.io/KeyMapper/user-guide/constraints'
+        'redirects/action.md': 'https://sds100.github.io/KeyMapper/user-guide/actions'
+        'redirects/trigger.md': 'https://sds100.github.io/KeyMapper/user-guide/keymaps#trigger'
+        'redirects/trigger-options.md': 'https://sds100.github.io/KeyMapper/user-guide/keymaps#special-options'
+        'redirects/keymap-action-options.md': 'https://sds100.github.io/KeyMapper/user-guide/keymaps#customising-actions'
+        'redirects/fingerprint-action-options.md': 'https://sds100.github.io/KeyMapper/user-guide/fingerprint-gestures#customising-fingerprint-gesture-maps'
+        'redirects/trigger-key-options.md': 'https://sds100.github.io/KeyMapper/user-guide/keymaps#key-options'
+        'redirects/android-11-device-id-bug-work-around.md': 'https://sds100.github.io/KeyMapper/user-guide/settings#workaround-for-android-11-bug-that-sets-the-device-id-for-input-events-to-1-230-android-11'
+        'redirects/settings.md': 'https://sds100.github.io/KeyMapper/user-guide/settings'
+        'redirects/report-issues.md': 'https://sds100.github.io/KeyMapper/report-issues'
+        'redirects/fix-optimisation.md': 'https://sds100.github.io/KeyMapper/known-issues.html#key-mapper-randomly-stops'
+        'redirects/shizuku-benefits.md': 'https://sds100.github.io/KeyMapper/user-guide/shizuku#benefits'
+  - search:
+      lang:
+        - en
