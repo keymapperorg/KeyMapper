@@ -38,16 +38,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - uses: christian-draeger/write-properties@1.0.1
-        with:
-          path: app/version.properties
-          property: VERSION_NUM
-          value: ${{ github.run_number }}
-
-      - name: set up JDK 1.11
+      - name: set up JDK 1.8
         uses: actions/setup-java@v1
         with:
-          java-version: 1.11
+          java-version: 1.8
 
       - name: set up Ruby for fastlane
         uses: actions/setup-ruby@v1
@@ -95,3 +89,32 @@ jobs:
         with:
           title: "Build apk"
           webhook: ${{ secrets.DISCORD_BUILD_STATUS_WEBHOOK }}
+
+#  release-instrumentation-tests:
+#    name: Run instrumentation tests
+#    runs-on: macOS-latest
+#    steps:
+#      - name: checkout
+#        uses: actions/checkout@v2
+#
+#      - uses: actions/cache@v2
+#        with:
+#          path: |
+#            ~/.gradle/caches
+#            ~/.gradle/wrapper
+#          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+#          restore-keys: |
+#            ${{ runner.os }}-gradle-
+#
+#      - name: run tests
+#        uses: reactivecircus/android-emulator-runner@v2
+#        with:
+#          api-level: 29
+#          script: ./gradlew connectedCheck
+#
+#      - name: Report build status to Discord
+#        uses: sarisia/actions-status-discord@v1
+#        if: failure()
+#        with:
+#          title: "Instrumentation tests"
+#          webhook: ${{ secrets.DISCORD_BUILD_STATUS_WEBHOOK }}
