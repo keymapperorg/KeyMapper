@@ -1256,6 +1256,7 @@
     <string name="about_privacy_policy_subtitle">We don\'t collect any personal information but here is a privacy policy saying this.</string>
 
     <string name="about_header_our_team">Our team</string>
+
     <string name="about_team_sds100_name" translatable="false">Seth Schroeder (sds100)</string>
     <string name="about_team_sds100_role">Developer</string>
     <string name="about_team_sds100_url" translatable="false">https://github.com/sds100</string>
@@ -1263,5 +1264,16 @@
     <string name="about_team_jambl3r_name" translatable="false">Jambl3r</string>
     <string name="about_team_jambl3r_role">Community moderator/support</string>
     <string name="about_team_jambl3r_url" translatable="false">https://gitlab.com/jambl3r</string>
+
+    <string name="about_team_gl513_name" translatable="false">GL513</string>
+    <string name="about_team_gl513_role">Community moderator/support</string>
+    <string name="about_team_gl513_url" translatable="false">https://gl513.github.io/</string>
+
+    <string name="about_team_kekero_name" translatable="false">Katie (kekero)</string>
+    <string name="about_team_kekero_role">Translator (Polish)</string>
+    <string name="about_team_kekero_url" translatable="false">https://github.com/LoveEevee</string>
+    
+    <string name="about_team_trollserver_name" translatable="false">Trollserver</string>
+    <string name="about_team_trollserver_role">Translator (Czech)</string>
     <!--  About  -->
 </resources>
