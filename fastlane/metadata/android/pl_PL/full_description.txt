@@ -20,64 +20,9 @@ Funkcje jakich przycisków nie można zmieniać?
 Twoje zmiany funkcji nie będą działać, gdy ekran jest WYŁĄCZONY. To jest ograniczenie w systemie Android. Programista nic nie może na to poradzić.
 
 Jakie funkcje można przypisać do przycisków?
- Niektóre czynności będą działać tylko na zrootowanych urządzeniach i określonych wersjach Androida.
+Niektóre czynności będą działać tylko na zrootowanych urządzeniach i określonych wersjach Androida.
 
- * Otwórz aplikację
- * Otwórz skrót aplikacji
- * Otwórz adres URL
- * Twórz intencje (aktywności)
- * Naciśnij Wstecz
- * Naciśnij przycisk ekranu głównego
- * Naciśnij Przegląd
- * Otwórz menu
- * Rozwiń pasek powiadomień
- * Rozwiń szybkie ustawienia
- * Zwiń pasek stanu
- * Przełącz/włącz/wyłącz Wi-Fi (tylko na zrootowanych urządzeniach z Androidem 10+)
- * Przełącz/włącz/wyłącz Bluetooth
- * Przełącz/włącz/wyłącz mobilną transmisję danych (tylko na zrootowanych urządzeniach)
- * Przełącz między odtwarzaniem a pauzą / tylko odtwórz / tylko spauzuj multimedia
- * Przewiń do przodu/do tyłu
- * Następny/poprzedni utwór
- * Zwiększ/zmniejsz głośność
- * Zwiększ/zmniejsz określony strumień głośności
- * Pokaż wyskakujące okienko głośności
- * Przełącz pomiędzy trybami dzwonka i zmieniaj je
- * Wycisz/wyłącz wyciszenie/przełącz wyciszenie (Android 6.0+)
- * Przełącz/włącz/wyłącz autoobracanie ekranu
- * Przełącz między trybem pionowym i poziomym
- * Wymuś pionowy/poziomy tryb ekranu
- * Przełącz/włącz/wyłącz automatyczną jasność
- * Zwiększ/zmniejsz jasność
- * Przełącz/włącz/wyłącz latarkę (Android 6.0+)
- * Przełącz/włącz/wyłącz tryb samolotowy (tylko na zrootowanych urządzeniach)
- * Przełącz/włącz/wyłącz tryb Nie przeszkadzać (Android 6.0+)
- * Przełącz między wibracją a dzwonkiem
- * Zrób zrzut ekranu (Android 9.0+)
- * Otwórz aplikację asystującą
- * Otwórz asystenta urządzenia
- * Uruchom aplikację aparatu
- * Zużyj zdarzenie przycisku (nic nie rób)
- * Zablokuj urządzenie
- * Pokaż okno dialogowe zasilania (Android 5.0+)
- * Przenieś kursor na koniec pliku
-
-I wiele innych...
-
-Klawiatura Key Mappera musi być wybrana, aby działały poniższe funkcje:
-
-** Zalecane jest zainstalowanie aplikacji Key Mapper GUI Keyboard, ponieważ jest to rzeczywista klawiatura w przeciwieństwie do tej wbudowanej w Key Mapper **
-
- * Wprowadź określony kod klawiszy
- * Wprowadź klawisz
- * Wprowadź klawiszowe wydarzenie
- * Wstaw blok tekstu
-
-Co jeszcze może ta aplikacja?
- * Opcja pokazywania trwałego powiadomienia, które może wstrzymać lub wznowić Twoje zmiany funkcji przycisków.
- * Automatycznie zmień klawiaturę na klawiaturę Key Mapper i/lub pokaż wybór klawiatury, gdy wybrane urządzenie Bluetooth jest podłączone, i przełącz się z powrotem na stare, gdy jest odłączone.
- * Szybkie ustawienia do wstrzymania/wznowienia zmiany funkcji przycisków i przełączania klawiatury Key Mapper.
- * Utwórz widżet na ekranie głównym, aby wykonać funkcje wymienione powyżej.
+Mamy zbyt wiele funkcji, aby wszystko się tu zmieściło, więc zapoznaj się z pełną listą na tej stronie: https://docs.keymapper.club/user-guide/actions
 
 Uprawnienia
 Nie musisz przyznawać wszystkich uprawnień, aby aplikacja działała. Aplikacja poinformuje Cię, czy do działania funkcji wymagane jest określone uprawnienie.
