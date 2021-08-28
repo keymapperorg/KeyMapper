@@ -31,6 +31,11 @@ fastlane android testing
 fastlane android beta
 ```
 Create and deploy beta release
+### android prod
+```
+fastlane android prod
+```
+Create and deploy production release
 
 ----
 
