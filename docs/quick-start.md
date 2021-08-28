@@ -81,9 +81,7 @@ Next, it's time to choose an action. If you have a large screen, you will see th
 
 ![](images/config-keymap-actions-tab.png)
 
-Tap the 'Add action' button at the bottom of this screen. The action selection screen will open. Here you can choose from a wide variety of actions. Swipe left and right to change category, and scroll up and down the list until you find the action you want to add. Below is a table of the different kinds of actions you can choose from in each tab.
-
---8<-- "action-type-list.md"
+Tap the 'Add action' button at the bottom of this screen. The action selection screen will open. Here you can choose from a long list of actions. There is also a list of all the actions [here](user-guide/actions.md). 
 
 For this simple demonstration I will choose KEYCODE_0 from the Keycode tab. This action will emulate pressing the 0 key on a keyboard. Key Mapper will let you know if you need to do any extra steps so that an action can work. In the picture there is an error message in the action telling you to 'enable' a Key Mapper keyboard. Tapping the action will take you to the correct place so that you can fix the error. I will walk through how to set up a key code action since these are the most used.
 
