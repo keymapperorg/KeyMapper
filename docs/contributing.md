@@ -105,6 +105,29 @@ Additional labels can be used as a suffix. e.g "alpha".
 
 The version code in the develop branch should always be the highest. Therefore, when a new version is released in the release branch, it should be incremented as well.
 
+### Releasing
+
+Fastlane is used to partially automate the releasing process. Follow the [guide](https://docs.fastlane.tools/) on the Fastlane website to set it up.
+
+#### Beta releases
+
+##### Only for the first beta release
+1. Branch off develop into a new release branch (e.g release/2.3.0).
+2. Change the version name and version code in `version.properties` in the release branch.
+3. Change the version name and version code in `version.properties` in the develop branch to be one version ahead of the release branch.
+
+##### For every release
+1. Manually edit CHANGELOG.md in the develop branch with *all* changes.
+2. Open the KeyMapper folder in a terminal and run `fastlane beta`.
+
+#### Production releases
+
+1. Check that all translations are >90% complete in CrowdIn.
+2. Credit the translators in the About screen in the app and in the index.md on the documentation website.
+3. Manually edit CHANGELOG.md with the *all* changes.
+4. Open the KeyMapper folder in a terminal and run `fastlane prod`. This will release the production build to the open-testing track on Google Play. Once it is approved by Google Play you must promote the release from open testing to the production track in Google Play.
+5. Squash and merge the release branch into master. Then delete the release branch.
+
 ### Code Style
 
 Follow Google's Kotlin style guide. [https://developer.android.com/kotlin/style-guide](https://developer.android.com/kotlin/style-guide)
