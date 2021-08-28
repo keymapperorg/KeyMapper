@@ -58,6 +58,7 @@
     <string name="chip_fdroid" translatable="false">F-Droid</string>
     <string name="chip_github" translatable="false">GitHub</string>
     <string name="tap_coordinate_screenshot_message">IMPORTANT!!! These coordinates are only correct when your display is in the same orientation as the screenshot! This action will cancel any touches or gestures you are doing on the screen.\n\nIf you need help finding the coordinates of a point on your screen take a screenshot and then tap on the screenshot where you want this action to press.</string>
+    <string name="swipe_gesture_screenshot_message">Draw your swipe in the space below. IMPORTANT!!! This swipe is only correct when your display is in the same orientation as the screenshot! This action will cancel any touches or gestures you are doing on the screen.\n\nIf you need help finding where to swipe on your screen take a screenshot to put into the space.</string>
     <string name="dont_know_device_name">Don\'t know device name!</string>
     <string name="tap_actions_to_fix">Tap actions to fix!</string>
     <string name="tap_constraints_to_fix">Tap constraints to fix!</string>
@@ -132,6 +133,8 @@
     <string name="description_url">Open %s</string>
     <string name="description_tap_coordinate_default">Tap coordinates %d, %d</string>
     <string name="description_tap_coordinate_with_description">Tap coordinates %d, %d (%s)</string>
+    <string name="description_swipe_gesture_default">Swipe screen</string>
+    <string name="description_swipe_gesture_with_description">Swipe screen (%s)</string>
     <string name="description_phone_call">Call %s</string>
     <string name="description_sound">Play sound: %s</string>
     <!--  Action descriptions  -->
@@ -156,6 +159,7 @@
     <string name="hint_from_device">From device</string>
     <string name="hint_shortcut_name">Shortcut name</string>
     <string name="hint_tap_coordinate_title">Coordinate description (optional)</string>
+    <string name="hint_swipe_gesture_title">Swipe description (optional)</string>
     <string name="hint_create_text_action">Text to input</string>
     <string name="hint_create_url_action">Url to open</string>
     <string name="hint_create_phone_call_action">Phone number to call</string>
@@ -1166,6 +1170,7 @@
     <string name="action_input_key_event">Input key event</string>
 
     <string name="action_tap_screen">Tap screen</string>
+    <string name="action_swipe_screen">Swipe screen</string>
     <string name="action_input_text">Input text</string>
     <string name="action_open_url">Open URL</string>
     <string name="action_send_intent">Send intent</string>

@@ -17,6 +17,7 @@ import androidx.core.os.bundleOf
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
+import io.github.sds100.keymapper.actions.swipegesture.SerializablePath
 import io.github.sds100.keymapper.api.Api
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapId
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
@@ -25,6 +26,7 @@ import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import timber.log.Timber
+
 
 /**
  * Created by sds100 on 05/04/2020.
@@ -286,15 +288,8 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
         }
     }
 
-    override fun tapScreen(x: Int, y: Int, inputEventType: InputEventType): Result<*> {
+    private fun dispatchPath(path: Path, duration: Long, inputEventType: InputEventType): Result<*> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-
-            val duration = 1L //ms
-
-            val path = Path().apply {
-                moveTo(x.toFloat(), y.toFloat())
-            }
-
             val strokeDescription =
                 when {
                     inputEventType == InputEventType.DOWN && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ->
@@ -332,6 +327,20 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
         }
 
         return Error.SdkVersionTooLow(Build.VERSION_CODES.N)
+    }
+
+    override fun tapScreen(x: Int, y: Int, inputEventType: InputEventType): Result<*> {
+        val duration = 1L //ms
+        val path = Path().apply {
+            moveTo(x.toFloat(), y.toFloat())
+        }
+        return dispatchPath(path, duration, inputEventType)
+    }
+
+    override fun swipeScreen(path: SerializablePath, inputEventType: InputEventType): Result<*> {
+        val duration = 200L //ms
+
+        return dispatchPath(path, duration, inputEventType)
     }
 
     override fun findFocussedNode(focus: Int): AccessibilityNodeModel? {

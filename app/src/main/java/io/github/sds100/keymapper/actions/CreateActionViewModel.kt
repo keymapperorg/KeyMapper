@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.actions
 
 import android.text.InputType
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.actions.swipegesture.PickSwipeResult
 import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.camera.CameraLensUtils
@@ -294,8 +295,8 @@ class CreateActionViewModelImpl(
                 }
 
                 val result = navigate(
-                    "pick_display_coordinate_for_action",
-                    NavDestination.PickCoordinate(oldResult)
+                    "pick_display_coordinate_for_tap",
+                    NavDestination.PickTapCoordinate(oldResult)
                 ) ?: return null
 
                 val description = if (result.description.isEmpty()) {
@@ -308,6 +309,33 @@ class CreateActionViewModelImpl(
                     result.x,
                     result.y,
                     description
+                )
+            }
+
+            ActionId.SWIPE_SCREEN -> {
+                val oldResult = if (oldData is SwipeGestureAction) {
+                    PickSwipeResult(
+                            oldData.path,
+                            oldData.description ?: ""
+                    )
+                } else {
+                    null
+                }
+
+                val result = navigate(
+                        "pick_gesture_for_swipe",
+                        NavDestination.PickSwipeGesture(oldResult)
+                ) ?: return null
+
+                val description = if (result.description.isEmpty()) {
+                    null
+                } else {
+                    result.description
+                }
+
+                return SwipeGestureAction(
+                        result.path,
+                        description
                 )
             }
 

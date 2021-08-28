@@ -11,7 +11,6 @@ import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class SelectScreenshotViewModel (
     resourceProvider: ResourceProvider
@@ -42,7 +41,6 @@ class SelectScreenshotViewModel (
 
             return
         }
-        Timber.d("Setting bitmap!")
         _bitmap.value = newBitmap
     }
 

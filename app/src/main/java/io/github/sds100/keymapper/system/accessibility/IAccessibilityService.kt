@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.system.accessibility
 
+import io.github.sds100.keymapper.actions.swipegesture.SerializablePath
 import io.github.sds100.keymapper.util.InputEventType
 import io.github.sds100.keymapper.util.Result
 import kotlinx.coroutines.flow.Flow
@@ -11,6 +12,8 @@ interface IAccessibilityService {
     fun doGlobalAction(action: Int): Result<*>
 
     fun tapScreen(x: Int, y: Int, inputEventType: InputEventType): Result<*>
+
+    fun swipeScreen(path: SerializablePath, inputEventType: InputEventType): Result<*>
 
     val isFingerprintGestureDetectionAvailable: Boolean
 

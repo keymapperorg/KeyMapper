@@ -97,6 +97,11 @@ class GetActionErrorUseCaseImpl(
                     return Error.SdkVersionTooLow(Build.VERSION_CODES.N)
                 }
 
+            is SwipeGestureAction ->
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                    return Error.SdkVersionTooLow(Build.VERSION_CODES.N)
+                }
+
             is PhoneCallAction ->
                 if (!permissionAdapter.isGranted(Permission.CALL_PHONE)) {
                     return Error.PermissionDenied(Permission.CALL_PHONE)

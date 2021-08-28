@@ -298,6 +298,13 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
                 )
             }
 
+            is SwipeGestureAction -> if (action.description.isNullOrBlank()) {
+                getString(R.string.description_swipe_gesture_default)
+            } else {
+                getString(R.string.description_swipe_gesture_with_description,
+                    action.description)
+            }
+
             is TextAction -> getString(R.string.description_text_block, action.text)
             is UrlAction -> getString(R.string.description_url, action.url)
             is SoundAction -> getString(R.string.description_sound, action.soundDescription)
@@ -426,6 +433,11 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
 
         is TapCoordinateAction -> IconInfo(
             getDrawable(R.drawable.ic_outline_touch_app_24),
+            TintType.OnSurface
+        )
+
+        is SwipeGestureAction -> IconInfo(
+            getDrawable(R.drawable.ic_outline_swipe_app_24),
             TintType.OnSurface
         )
 

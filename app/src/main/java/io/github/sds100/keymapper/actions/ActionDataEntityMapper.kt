@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.actions
 
+import io.github.sds100.keymapper.actions.swipegesture.SerializablePath
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.Extra
 import io.github.sds100.keymapper.data.entities.getData
@@ -29,6 +30,7 @@ object ActionDataEntityMapper {
             ActionEntity.Type.TEXT_BLOCK -> ActionId.TEXT
             ActionEntity.Type.URL -> ActionId.URL
             ActionEntity.Type.TAP_COORDINATE -> ActionId.TAP_SCREEN
+            ActionEntity.Type.SWIPE_GESTURE -> ActionId.SWIPE_SCREEN
             ActionEntity.Type.INTENT -> ActionId.INTENT
             ActionEntity.Type.PHONE_CALL -> ActionId.PHONE_CALL
             ActionEntity.Type.SOUND -> ActionId.SOUND
@@ -97,6 +99,13 @@ object ActionDataEntityMapper {
                     .valueOrNull()
 
                 TapCoordinateAction(x = x, y = y, description = description)
+            }
+            ActionId.SWIPE_SCREEN -> {
+                val path = SerializablePath(entity.data)
+                val description = entity.extras.getData(ActionEntity.EXTRA_SWIPE_DESCRIPTION)
+                        .valueOrNull()
+
+                SwipeGestureAction(path = path, description = description)
             }
 
             ActionId.INTENT -> {
@@ -364,6 +373,7 @@ object ActionDataEntityMapper {
             is OpenAppShortcutAction -> ActionEntity.Type.APP_SHORTCUT
             is PhoneCallAction -> ActionEntity.Type.PHONE_CALL
             is TapCoordinateAction -> ActionEntity.Type.TAP_COORDINATE
+            is SwipeGestureAction -> ActionEntity.Type.SWIPE_GESTURE
             is TextAction -> ActionEntity.Type.TEXT_BLOCK
             is UrlAction -> ActionEntity.Type.URL
             is SoundAction -> ActionEntity.Type.SOUND
@@ -403,6 +413,7 @@ object ActionDataEntityMapper {
         is OpenAppShortcutAction -> data.uri
         is PhoneCallAction -> data.number
         is TapCoordinateAction -> "${data.x},${data.y}"
+        is SwipeGestureAction -> data.path.toSerializedString()
         is TextAction -> data.text
         is UrlAction -> data.url
         is SoundAction -> data.soundUid
@@ -491,6 +502,12 @@ object ActionDataEntityMapper {
         is TapCoordinateAction -> sequence {
             if (!data.description.isNullOrBlank()) {
                 yield(Extra(ActionEntity.EXTRA_COORDINATE_DESCRIPTION, data.description))
+            }
+        }.toList()
+
+        is SwipeGestureAction -> sequence {
+            if (!data.description.isNullOrBlank()) {
+                yield(Extra(ActionEntity.EXTRA_SWIPE_DESCRIPTION, data.description))
             }
         }.toList()
 

@@ -13,6 +13,7 @@ import io.github.sds100.keymapper.actions.keyevent.ConfigKeyEventUseCaseImpl
 import io.github.sds100.keymapper.actions.selectscreenshot.SelectScreenshotViewModel
 import io.github.sds100.keymapper.actions.sound.ChooseSoundFileUseCaseImpl
 import io.github.sds100.keymapper.actions.sound.ChooseSoundFileViewModel
+import io.github.sds100.keymapper.actions.swipegesture.PickSwipeViewModel
 import io.github.sds100.keymapper.actions.tapscreen.PickDisplayCoordinateViewModel
 import io.github.sds100.keymapper.backup.BackupRestoreMappingsUseCaseImpl
 import io.github.sds100.keymapper.constraints.ChooseConstraintViewModel
@@ -121,6 +122,12 @@ object Inject {
 
     fun tapCoordinateActionTypeViewModel(context: Context): PickDisplayCoordinateViewModel.Factory {
         return PickDisplayCoordinateViewModel.Factory(
+            ServiceLocator.resourceProvider(context)
+        )
+    }
+
+    fun pickSwipeViewModel(context: Context): PickSwipeViewModel.Factory {
+        return PickSwipeViewModel.Factory(
             ServiceLocator.resourceProvider(context)
         )
     }

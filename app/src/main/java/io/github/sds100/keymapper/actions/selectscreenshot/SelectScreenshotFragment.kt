@@ -8,7 +8,6 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,13 +15,10 @@ import android.view.WindowManager
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.getSystemService
 import androidx.core.graphics.decodeBitmap
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import io.github.sds100.keymapper.actions.tapscreen.PickDisplayCoordinateViewModel
-import io.github.sds100.keymapper.databinding.FragmentPickCoordinateBinding
 import io.github.sds100.keymapper.databinding.FragmentSelectscreenshotBinding
 import io.github.sds100.keymapper.system.files.FileUtils
-import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.ui.showPopups
 
 class SelectScreenshotFragment : Fragment() {
@@ -63,7 +59,6 @@ class SelectScreenshotFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.showPopups(this, binding)
-
         viewModel.displaySize = Point().apply {
             val windowManager: WindowManager = requireContext().getSystemService()!!
             windowManager.defaultDisplay.getRealSize(this) }

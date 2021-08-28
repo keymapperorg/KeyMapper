@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.util.ui
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.KeyEventAction
 import io.github.sds100.keymapper.actions.sound.ChooseSoundFileResult
+import io.github.sds100.keymapper.actions.swipegesture.PickSwipeResult
 import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.constraints.ChooseConstraintType
 import io.github.sds100.keymapper.constraints.Constraint
@@ -20,7 +21,8 @@ sealed class NavDestination<R> {
         const val ID_CHOOSE_APP_SHORTCUT = "choose_app_shortcut"
         const val ID_KEY_CODE = "key_code"
         const val ID_KEY_EVENT = "key_event"
-        const val ID_PICK_COORDINATE = "pick_coordinate"
+        const val ID_PICK_TAP_COORDINATE = "pick_tap_coordinate"
+        const val ID_PICK_SWIPE_GESTURE = "pick_swipe_gesture"
         const val ID_CONFIG_INTENT = "config_intent"
         const val ID_CHOOSE_ACTIVITY = "choose_activity"
         const val ID_CHOOSE_SOUND = "choose_sound"
@@ -34,7 +36,8 @@ sealed class NavDestination<R> {
                 ChooseAppShortcut -> ID_CHOOSE_APP_SHORTCUT
                 ChooseKeyCode -> ID_KEY_CODE
                 is ConfigKeyEventAction -> ID_KEY_EVENT
-                is PickCoordinate -> ID_PICK_COORDINATE
+                is PickTapCoordinate -> ID_PICK_TAP_COORDINATE
+                is PickSwipeGesture -> ID_PICK_SWIPE_GESTURE
                 is ConfigIntent -> ID_CONFIG_INTENT
                 ChooseActivity -> ID_CHOOSE_ACTIVITY
                 ChooseSound -> ID_CHOOSE_SOUND
@@ -51,8 +54,11 @@ sealed class NavDestination<R> {
     data class ConfigKeyEventAction(val action: KeyEventAction? = null) :
         NavDestination<KeyEventAction>()
 
-    data class PickCoordinate(val result: PickCoordinateResult? = null) :
+    data class PickTapCoordinate(val result: PickCoordinateResult? = null) :
         NavDestination<PickCoordinateResult>()
+
+    data class PickSwipeGesture(val result: PickSwipeResult? = null) :
+        NavDestination<PickSwipeResult>()
 
     data class ConfigIntent(val result: ConfigIntentResult? = null) :
         NavDestination<ConfigIntentResult>()

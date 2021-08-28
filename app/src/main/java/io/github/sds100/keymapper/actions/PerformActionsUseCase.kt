@@ -261,6 +261,10 @@ class PerformActionsUseCaseImpl(
                 result = accessibilityService.tapScreen(action.x, action.y, inputEventType)
             }
 
+            is SwipeGestureAction -> {
+                result = accessibilityService.swipeScreen(action.path, inputEventType)
+            }
+
             is TextAction -> {
                 keyMapperImeMessenger.inputText(action.text)
                 result = Success(Unit)

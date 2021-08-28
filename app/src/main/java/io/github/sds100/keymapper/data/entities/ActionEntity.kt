@@ -37,6 +37,7 @@ data class ActionEntity(
      * - Block of text: text to insert
      * - System action: the system action id
      * - Tap coordinate: comma separated x and y values
+     * - Swipe coordinates: string containing SerializablePath.toString() base64 encoded path points
      * - Intent: the Intent parsed as a URI
      */
     @SerializedName(NAME_DATA)
@@ -75,6 +76,7 @@ data class ActionEntity(
         const val EXTRA_DND_MODE = "extra_do_not_disturb_mode"
         const val EXTRA_ORIENTATIONS = "extra_orientations"
         const val EXTRA_COORDINATE_DESCRIPTION = "extra_coordinate_description"
+        const val EXTRA_SWIPE_DESCRIPTION = "extra_swipe_description"
         const val EXTRA_INTENT_TARGET = "extra_intent_target"
         const val EXTRA_INTENT_DESCRIPTION = "extra_intent_description"
         const val EXTRA_SOUND_FILE_DESCRIPTION = "extra_sound_file_description"
@@ -126,7 +128,7 @@ data class ActionEntity(
 
     enum class Type {
         //DONT CHANGE THESE
-        APP, APP_SHORTCUT, KEY_EVENT, TEXT_BLOCK, URL, SYSTEM_ACTION, TAP_COORDINATE, INTENT, PHONE_CALL, SOUND
+        APP, APP_SHORTCUT, KEY_EVENT, TEXT_BLOCK, URL, SYSTEM_ACTION, TAP_COORDINATE, SWIPE_GESTURE, INTENT, PHONE_CALL, SOUND
     }
 
     constructor(

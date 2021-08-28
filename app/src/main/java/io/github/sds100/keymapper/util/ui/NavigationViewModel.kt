@@ -15,6 +15,8 @@ import io.github.sds100.keymapper.actions.keyevent.ChooseKeyCodeFragment
 import io.github.sds100.keymapper.actions.keyevent.ConfigKeyEventActionFragment
 import io.github.sds100.keymapper.actions.sound.ChooseSoundFileFragment
 import io.github.sds100.keymapper.actions.sound.ChooseSoundFileResult
+import io.github.sds100.keymapper.actions.swipegesture.PickSwipeFragment
+import io.github.sds100.keymapper.actions.swipegesture.PickSwipeResult
 import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.actions.tapscreen.PickDisplayCoordinateFragment
 import io.github.sds100.keymapper.constraints.ChooseConstraintFragment
@@ -142,12 +144,19 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
 
                 NavAppDirections.configKeyEvent(requestKey, json)
             }
-            is NavDestination.PickCoordinate -> {
+            is NavDestination.PickTapCoordinate -> {
                 val json = destination.result?.let {
                     Json.encodeToString(it)
                 }
 
-                NavAppDirections.pickDisplayCoordinate(requestKey, json)
+                NavAppDirections.pickTapCoordinate(requestKey, json)
+            }
+            is NavDestination.PickSwipeGesture -> {
+                val json = destination.result?.let {
+                    Json.encodeToString(it)
+                }
+
+                NavAppDirections.pickSwipeGesture(requestKey, json)
             }
             is NavDestination.ConfigIntent -> {
                 val json = destination.result?.let {
@@ -205,9 +214,16 @@ fun NavigationViewModel.sendNavResultFromBundle(
             onNavResult(NavResult(requestKey, keyEventAction))
         }
 
-        NavDestination.ID_PICK_COORDINATE -> {
+        NavDestination.ID_PICK_TAP_COORDINATE -> {
             val json = bundle.getString(PickDisplayCoordinateFragment.EXTRA_RESULT)!!
             val result = Json.decodeFromString<PickCoordinateResult>(json)
+
+            onNavResult(NavResult(requestKey, result))
+        }
+
+        NavDestination.ID_PICK_SWIPE_GESTURE -> {
+            val json = bundle.getString(PickSwipeFragment.EXTRA_RESULT)!!
+            val result = Json.decodeFromString<PickSwipeResult>(json)
 
             onNavResult(NavResult(requestKey, result))
         }

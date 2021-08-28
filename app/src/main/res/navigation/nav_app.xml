@@ -185,16 +185,39 @@
     </fragment>
 
     <action
-        android:id="@+id/pickDisplayCoordinate"
-        app:destination="@id/pickDisplayCoordinateFragment"
+        android:id="@+id/pickTapCoordinate"
+        app:destination="@id/PickDisplayCoordinateFragment"
         app:enterAnim="@anim/slide_in_right"
         app:exitAnim="@anim/slide_out_left"
         app:popEnterAnim="@anim/slide_in_left"
         app:popExitAnim="@anim/slide_out_right" />
 
     <fragment
-        android:id="@+id/pickDisplayCoordinateFragment"
+        android:id="@+id/PickDisplayCoordinateFragment"
         android:name="io.github.sds100.keymapper.actions.tapscreen.PickDisplayCoordinateFragment"
+        tools:layout="@layout/fragment_simple_recyclerview">
+
+        <argument
+            android:name="requestKey"
+            app:argType="string" />
+
+        <argument
+            android:name="result"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+
+    <action
+        android:id="@+id/pickSwipeGesture"
+        app:destination="@id/SwipeGestureFragment"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right" />
+
+    <fragment
+        android:id="@+id/SwipeGestureFragment"
+        android:name="io.github.sds100.keymapper.actions.swipegesture.PickSwipeFragment"
         tools:layout="@layout/fragment_simple_recyclerview">
 
         <argument

@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.actions
 
+import io.github.sds100.keymapper.actions.swipegesture.SerializablePath
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.system.intents.IntentTarget
@@ -307,6 +308,14 @@ data class TapCoordinateAction(
     val description: String?
 ) : ActionData() {
     override val id = ActionId.TAP_SCREEN
+}
+
+@Serializable
+data class SwipeGestureAction(
+    val path: SerializablePath,
+    val description: String?
+) : ActionData() {
+    override val id = ActionId.SWIPE_SCREEN
 }
 
 @Serializable
