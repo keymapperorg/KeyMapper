@@ -159,6 +159,7 @@
     <string name="hint_create_text_action">Text to input</string>
     <string name="hint_create_url_action">Url to open</string>
     <string name="hint_create_phone_call_action">Phone number to call</string>
+    <string name="hint_bug_report_description_email">Bug description</string>
 
     <string name="hint_intent_action">Action</string>
     <string name="hint_intent_categories">Categories</string>
@@ -532,6 +533,8 @@
     <string name="dialog_button_read_dont_kill_my_app_no">No</string>
 
     <string name="dialog_title_failed_to_create_bug_report">Failed to create bug report</string>
+
+    <string name="dialog_message_bug_report_description_email">You must describe the issue in detail otherwise the developer will IGNORE your email.</string>
 
     <string name="pos_yes">Yes</string>
     <string name="pos_done">Done</string>
