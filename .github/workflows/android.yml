@@ -1,4 +1,4 @@
-name: Android CI
+name: Build and test app (develop branch)
 
 on:
   push:
@@ -45,6 +45,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      - uses: christian-draeger/write-properties@1.0.1
+        with:
+          path: app/version.properties
+          property: VERSION_NUM
+          value: ${{ github.run_number }}
+
       - name: set up JDK 1.11
         uses: actions/setup-java@v1
         with:
@@ -57,11 +63,11 @@ jobs:
 
       - name: Make .android folder
         run: mkdir /home/runner/.android
-        
+
       - name: Create debug keystore
         run: |
-           echo "${{ secrets.CI_KEYSTORE }}" > debug.keystore.asc
-           gpg -d --passphrase "${{ secrets.CI_KEYSTORE_DECRYPT }}" --batch debug.keystore.asc > /home/runner/.android/debug.keystore
+          echo "${{ secrets.CI_KEYSTORE }}" > debug.keystore.asc
+          gpg -d --passphrase "${{ secrets.CI_KEYSTORE_DECRYPT }}" --batch debug.keystore.asc > /home/runner/.android/debug.keystore
 
       - name: Install bundle
         run: bundle install
@@ -70,6 +76,10 @@ jobs:
         run: |
           git config user.name "GitHub Actions"
           git config user.email noreply@github.com
+
+      - name: update fastlane
+        run: |
+          bundle update fastlane
 
       - name: Build apk with fastlane
         run: bundle exec fastlane ci_alpha_apk
