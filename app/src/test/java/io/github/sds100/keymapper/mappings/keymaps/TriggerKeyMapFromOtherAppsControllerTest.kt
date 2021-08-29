@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
-import io.github.sds100.keymapper.actions.KeyEventAction
+import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.constraints.ConstraintSnapshotImpl
@@ -110,7 +110,7 @@ class TriggerKeyMapFromOtherAppsControllerTest {
         //GIVEN
         val action =
             KeyMapAction(
-                data = KeyEventAction(keyCode = 1),
+                data = ActionData.InputKeyEvent(keyCode = 1),
                 repeat = true,
                 repeatMode = RepeatMode.TRIGGER_RELEASED
             )

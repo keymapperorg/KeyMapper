@@ -102,17 +102,17 @@ class PerformActionsUseCaseImpl(
         val result: Result<*>?
 
         when (action) {
-            is OpenAppAction -> {
+            is ActionData.App -> {
                 result = packageManagerAdapter.openApp(action.packageName)
             }
-            is OpenAppShortcutAction -> {
+            is ActionData.AppShortcut -> {
                 result = appShortcutAdapter.launchShortcut(action.uri)
             }
-            is IntentAction -> {
+            is ActionData.Intent -> {
                 result = intentAdapter.send(action.target, action.uri)
             }
 
-            is KeyEventAction -> {
+            is ActionData.InputKeyEvent -> {
                 val deviceId: Int = getDeviceIdForKeyEventAction(action)
 
                 val model = InputKeyModel(
@@ -138,14 +138,14 @@ class PerformActionsUseCaseImpl(
                 }
             }
 
-            is PhoneCallAction -> {
+            is ActionData.PhoneCall -> {
                 result = phoneAdapter.startCall(action.number)
             }
 
-            is DndModeAction.Enable -> {
+            is ActionData.DoNotDisturb.Enable -> {
                 result = volumeAdapter.enableDndMode(action.dndMode)
             }
-            is DndModeAction.Toggle -> {
+            is ActionData.DoNotDisturb.Toggle -> {
                 result = if (volumeAdapter.isDndEnabled()) {
                     volumeAdapter.disableDndMode()
                 } else {
@@ -153,33 +153,33 @@ class PerformActionsUseCaseImpl(
                 }
             }
 
-            is VolumeAction.SetRingerMode -> {
+            is ActionData.Volume.SetRingerMode -> {
                 result = volumeAdapter.setRingerMode(action.ringerMode)
             }
 
-            is ControlMediaForAppAction.FastForward -> {
+            is ActionData.ControlMediaForApp.FastForward -> {
                 result = mediaAdapter.fastForward(action.packageName)
             }
-            is ControlMediaForAppAction.NextTrack -> {
+            is ActionData.ControlMediaForApp.NextTrack -> {
                 result = mediaAdapter.nextTrack(action.packageName)
             }
-            is ControlMediaForAppAction.Pause -> {
+            is ActionData.ControlMediaForApp.Pause -> {
                 result = mediaAdapter.pause(action.packageName)
             }
-            is ControlMediaForAppAction.Play -> {
+            is ActionData.ControlMediaForApp.Play -> {
                 result = mediaAdapter.play(action.packageName)
             }
-            is ControlMediaForAppAction.PlayPause -> {
+            is ActionData.ControlMediaForApp.PlayPause -> {
                 result = mediaAdapter.playPause(action.packageName)
             }
-            is ControlMediaForAppAction.PreviousTrack -> {
+            is ActionData.ControlMediaForApp.PreviousTrack -> {
                 result = mediaAdapter.previousTrack(action.packageName)
             }
-            is ControlMediaForAppAction.Rewind -> {
+            is ActionData.ControlMediaForApp.Rewind -> {
                 result = mediaAdapter.rewind(action.packageName)
             }
 
-            is RotationAction.CycleRotations -> {
+            is ActionData.Rotation.CycleRotations -> {
                 result = displayAdapter.disableAutoRotate().then {
                     val currentOrientation = displayAdapter.orientation
 
@@ -195,19 +195,19 @@ class PerformActionsUseCaseImpl(
                 }
             }
 
-            is FlashlightAction.Disable -> {
+            is ActionData.Flashlight.Disable -> {
                 result = cameraAdapter.disableFlashlight(action.lens)
             }
 
-            is FlashlightAction.Enable -> {
+            is ActionData.Flashlight.Enable -> {
                 result = cameraAdapter.enableFlashlight(action.lens)
             }
 
-            is FlashlightAction.Toggle -> {
+            is ActionData.Flashlight.Toggle -> {
                 result = cameraAdapter.toggleFlashlight(action.lens)
             }
 
-            is SwitchKeyboardAction -> {
+            is ActionData.SwitchKeyboard -> {
                 coroutineScope.launch {
                     inputMethodAdapter
                         .chooseImeWithoutUserInput(action.imeId)
@@ -224,59 +224,59 @@ class PerformActionsUseCaseImpl(
                 result = null
             }
 
-            is VolumeAction.Down -> {
+            is ActionData.Volume.Down -> {
                 result = volumeAdapter.lowerVolume(showVolumeUi = action.showVolumeUi)
             }
-            is VolumeAction.Up -> {
+            is ActionData.Volume.Up -> {
                 result = volumeAdapter.raiseVolume(showVolumeUi = action.showVolumeUi)
             }
 
-            is VolumeAction.Mute -> {
+            is ActionData.Volume.Mute -> {
                 result = volumeAdapter.muteVolume(showVolumeUi = action.showVolumeUi)
             }
 
-            is VolumeAction.Stream.Decrease -> {
+            is ActionData.Volume.Stream.Decrease -> {
                 result = volumeAdapter.lowerVolume(
                     stream = action.volumeStream,
                     showVolumeUi = action.showVolumeUi
                 )
             }
 
-            is VolumeAction.Stream.Increase -> {
+            is ActionData.Volume.Stream.Increase -> {
                 result = volumeAdapter.raiseVolume(
                     stream = action.volumeStream,
                     showVolumeUi = action.showVolumeUi
                 )
             }
 
-            is VolumeAction.ToggleMute -> {
+            is ActionData.Volume.ToggleMute -> {
                 result = volumeAdapter.toggleMuteVolume(showVolumeUi = action.showVolumeUi)
             }
 
-            is VolumeAction.UnMute -> {
+            is ActionData.Volume.UnMute -> {
                 result = volumeAdapter.unmuteVolume(showVolumeUi = action.showVolumeUi)
             }
 
-            is TapCoordinateAction -> {
+            is ActionData.TapScreen -> {
                 result = accessibilityService.tapScreen(action.x, action.y, inputEventType)
             }
 
-            is TextAction -> {
+            is ActionData.Text -> {
                 keyMapperImeMessenger.inputText(action.text)
                 result = Success(Unit)
             }
 
-            is UrlAction -> {
+            is ActionData.Url -> {
                 result = openUrlAdapter.openUrl(action.url)
             }
 
-            is SoundAction -> {
+            is ActionData.Sound -> {
                 result = soundsManager.getSound(action.soundUid).then { file ->
                     mediaAdapter.playSoundFile(file.uri, VolumeStream.ACCESSIBILITY)
                 }
             }
 
-            is WifiAction.Toggle -> {
+            is ActionData.Wifi.Toggle -> {
                 result = if (networkAdapter.isWifiEnabled()) {
                     networkAdapter.disableWifi()
                 } else {
@@ -284,15 +284,15 @@ class PerformActionsUseCaseImpl(
                 }
             }
 
-            is WifiAction.Enable -> {
+            is ActionData.Wifi.Enable -> {
                 result = networkAdapter.enableWifi()
             }
 
-            is WifiAction.Disable -> {
+            is ActionData.Wifi.Disable -> {
                 result = networkAdapter.disableWifi()
             }
 
-            is BluetoothAction.Toggle -> {
+            is ActionData.Bluetooth.Toggle -> {
                 result = if (bluetoothAdapter.isBluetoothEnabled.firstBlocking()) {
                     bluetoothAdapter.disable()
                 } else {
@@ -300,15 +300,15 @@ class PerformActionsUseCaseImpl(
                 }
             }
 
-            is BluetoothAction.Enable -> {
+            is ActionData.Bluetooth.Enable -> {
                 result = bluetoothAdapter.enable()
             }
 
-            is BluetoothAction.Disable -> {
+            is ActionData.Bluetooth.Disable -> {
                 result = bluetoothAdapter.disable()
             }
 
-            is MobileDataAction.Toggle -> {
+            is ActionData.MobileData.Toggle -> {
                 result = if (networkAdapter.isMobileDataEnabled()) {
                     networkAdapter.disableMobileData()
                 } else {
@@ -316,15 +316,15 @@ class PerformActionsUseCaseImpl(
                 }
             }
 
-            is MobileDataAction.Enable -> {
+            is ActionData.MobileData.Enable -> {
                 result = networkAdapter.enableMobileData()
             }
 
-            is MobileDataAction.Disable -> {
+            is ActionData.MobileData.Disable -> {
                 result = networkAdapter.disableMobileData()
             }
 
-            is BrightnessAction.ToggleAuto -> {
+            is ActionData.Brightness.ToggleAuto -> {
                 result = if (displayAdapter.isAutoBrightnessEnabled()) {
                     displayAdapter.disableAutoBrightness()
                 } else {
@@ -332,21 +332,21 @@ class PerformActionsUseCaseImpl(
                 }
             }
 
-            is BrightnessAction.DisableAuto -> {
+            is ActionData.Brightness.DisableAuto -> {
                 result = displayAdapter.disableAutoBrightness()
             }
 
-            is BrightnessAction.EnableAuto -> {
+            is ActionData.Brightness.EnableAuto -> {
                 result = displayAdapter.enableAutoBrightness()
             }
-            is BrightnessAction.Increase -> {
+            is ActionData.Brightness.Increase -> {
                 result = displayAdapter.increaseBrightness()
             }
-            is BrightnessAction.Decrease -> {
+            is ActionData.Brightness.Decrease -> {
                 result = displayAdapter.decreaseBrightness()
             }
 
-            is RotationAction.ToggleAuto -> {
+            is ActionData.Rotation.ToggleAuto -> {
                 result = if (displayAdapter.isAutoRotateEnabled()) {
                     displayAdapter.disableAutoRotate()
                 } else {
@@ -354,25 +354,25 @@ class PerformActionsUseCaseImpl(
                 }
             }
 
-            is RotationAction.EnableAuto -> {
+            is ActionData.Rotation.EnableAuto -> {
                 result = displayAdapter.enableAutoRotate()
             }
 
-            is RotationAction.DisableAuto -> {
+            is ActionData.Rotation.DisableAuto -> {
                 result = displayAdapter.disableAutoRotate()
             }
 
-            is RotationAction.Portrait -> {
+            is ActionData.Rotation.Portrait -> {
                 displayAdapter.disableAutoRotate()
                 result = displayAdapter.setOrientation(Orientation.ORIENTATION_0)
             }
 
-            is RotationAction.Landscape -> {
+            is ActionData.Rotation.Landscape -> {
                 displayAdapter.disableAutoRotate()
                 result = displayAdapter.setOrientation(Orientation.ORIENTATION_90)
             }
 
-            is RotationAction.SwitchOrientation -> {
+            is ActionData.Rotation.SwitchOrientation -> {
                 if (displayAdapter.orientation == Orientation.ORIENTATION_180
                     || displayAdapter.orientation == Orientation.ORIENTATION_0
                 ) {
@@ -382,7 +382,7 @@ class PerformActionsUseCaseImpl(
                 }
             }
 
-            is VolumeAction.CycleRingerMode -> {
+            is ActionData.Volume.CycleRingerMode -> {
                 result = when (volumeAdapter.ringerMode) {
                     RingerMode.NORMAL -> volumeAdapter.setRingerMode(RingerMode.VIBRATE)
                     RingerMode.VIBRATE -> volumeAdapter.setRingerMode(RingerMode.SILENT)
@@ -390,7 +390,7 @@ class PerformActionsUseCaseImpl(
                 }
             }
 
-            is VolumeAction.CycleVibrateRing -> {
+            is ActionData.Volume.CycleVibrateRing -> {
                 result = when (volumeAdapter.ringerMode) {
                     RingerMode.NORMAL -> volumeAdapter.setRingerMode(RingerMode.VIBRATE)
                     RingerMode.VIBRATE -> volumeAdapter.setRingerMode(RingerMode.NORMAL)
@@ -398,11 +398,11 @@ class PerformActionsUseCaseImpl(
                 }
             }
 
-            is DndModeAction.Disable -> {
+            is ActionData.DoNotDisturb.Disable -> {
                 result = volumeAdapter.disableDndMode()
             }
 
-            is StatusBarAction.ExpandNotifications -> {
+            is ActionData.StatusBar.ExpandNotifications -> {
                 val globalAction = AccessibilityService.GLOBAL_ACTION_NOTIFICATIONS
 
                 result = accessibilityService.doGlobalAction(globalAction).otherwise {
@@ -410,7 +410,7 @@ class PerformActionsUseCaseImpl(
                 }
             }
 
-            is StatusBarAction.ToggleNotifications -> {
+            is ActionData.StatusBar.ToggleNotifications -> {
                 result =
                     if (accessibilityService.rootNode?.packageName == "com.android.systemui") {
                         shellAdapter.execute("cmd statusbar collapse")
@@ -423,7 +423,7 @@ class PerformActionsUseCaseImpl(
                     }
             }
 
-            is StatusBarAction.ExpandQuickSettings -> {
+            is ActionData.StatusBar.ExpandQuickSettings -> {
                 val globalAction = AccessibilityService.GLOBAL_ACTION_QUICK_SETTINGS
 
                 result =
@@ -432,7 +432,7 @@ class PerformActionsUseCaseImpl(
                     }
             }
 
-            is StatusBarAction.ToggleQuickSettings -> {
+            is ActionData.StatusBar.ToggleQuickSettings -> {
                 result =
                     if (accessibilityService.rootNode?.packageName == "com.android.systemui") {
                         shellAdapter.execute("cmd statusbar collapse")
@@ -445,47 +445,47 @@ class PerformActionsUseCaseImpl(
                     }
             }
 
-            is StatusBarAction.Collapse -> {
+            is ActionData.StatusBar.Collapse -> {
                 result = shellAdapter.execute("cmd statusbar collapse")
             }
 
-            is ControlMediaAction.Pause -> {
+            is ActionData.ControlMedia.Pause -> {
                 result = mediaAdapter.pause()
             }
-            is ControlMediaAction.Play -> {
+            is ActionData.ControlMedia.Play -> {
                 result = mediaAdapter.play()
             }
-            is ControlMediaAction.PlayPause -> {
+            is ActionData.ControlMedia.PlayPause -> {
                 result = mediaAdapter.playPause()
             }
-            is ControlMediaAction.NextTrack -> {
+            is ActionData.ControlMedia.NextTrack -> {
                 result = mediaAdapter.nextTrack()
             }
-            is ControlMediaAction.PreviousTrack -> {
+            is ActionData.ControlMedia.PreviousTrack -> {
                 result = mediaAdapter.previousTrack()
             }
-            is ControlMediaAction.FastForward -> {
+            is ActionData.ControlMedia.FastForward -> {
                 result = mediaAdapter.fastForward()
             }
-            is ControlMediaAction.Rewind -> {
+            is ActionData.ControlMedia.Rewind -> {
                 result = mediaAdapter.rewind()
             }
 
-            is GoBackAction -> {
+            is ActionData.GoBack -> {
                 result =
                     accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
             }
-            is GoHomeAction -> {
+            is ActionData.GoHome -> {
                 result =
                     accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME)
             }
 
-            is OpenRecentsAction -> {
+            is ActionData.OpenRecents -> {
                 result =
                     accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS)
             }
 
-            is ToggleSplitScreenAction -> {
+            is ActionData.ToggleSplitScreen -> {
                 result = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_TOGGLE_SPLIT_SCREEN)
                 } else {
@@ -493,7 +493,7 @@ class PerformActionsUseCaseImpl(
                 }
             }
 
-            is GoLastAppAction -> {
+            is ActionData.GoLastApp -> {
                 coroutineScope.launch {
                     accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS)
                     delay(100)
@@ -504,17 +504,17 @@ class PerformActionsUseCaseImpl(
                 result = null
             }
 
-            is OpenMenuAction -> {
+            is ActionData.OpenMenu -> {
                 result = openMenuHelper.openMenu()
             }
 
-            is NfcAction.Enable -> {
+            is ActionData.Nfc.Enable -> {
                 result = nfcAdapter.enable()
             }
-            is NfcAction.Disable -> {
+            is ActionData.Nfc.Disable -> {
                 result = nfcAdapter.disable()
             }
-            is NfcAction.Toggle -> {
+            is ActionData.Nfc.Toggle -> {
                 result = if (nfcAdapter.isEnabled()) {
                     nfcAdapter.disable()
                 } else {
@@ -522,7 +522,7 @@ class PerformActionsUseCaseImpl(
                 }
             }
 
-            is MoveCursorToEndAction -> {
+            is ActionData.MoveCursorToEnd -> {
                 val keyModel = InputKeyModel(
                     keyCode = KeyEvent.KEYCODE_MOVE_END,
                     metaState = KeyEvent.META_CTRL_ON,
@@ -537,7 +537,7 @@ class PerformActionsUseCaseImpl(
                 result = Success(Unit)
             }
 
-            is ToggleKeyboardAction -> {
+            is ActionData.ToggleKeyboard -> {
                 val isHidden = accessibilityService.isKeyboardHidden.firstBlocking()
                 if (isHidden) {
                     accessibilityService.showKeyboard()
@@ -549,38 +549,38 @@ class PerformActionsUseCaseImpl(
             }
 
 
-            is ShowKeyboardAction -> {
+            is ActionData.ShowKeyboard -> {
                 accessibilityService.showKeyboard()
                 result = Success(Unit)
             }
 
-            is HideKeyboardAction -> {
+            is ActionData.HideKeyboard -> {
                 accessibilityService.hideKeyboard()
                 result = Success(Unit)
             }
 
-            is ShowKeyboardPickerAction -> {
+            is ActionData.ShowKeyboardPicker -> {
                 result = inputMethodAdapter.showImePicker(fromForeground = false)
             }
 
-            is CutTextAction -> {
+            is ActionData.CutText -> {
                 result = accessibilityService.performActionOnNode({ it.isFocused }) {
                     AccessibilityNodeAction(AccessibilityNodeInfo.ACTION_CUT)
                 }
             }
 
-            is CopyTextAction -> {
+            is ActionData.CopyText -> {
                 result = accessibilityService.performActionOnNode({ it.isFocused }) {
                     AccessibilityNodeAction(AccessibilityNodeInfo.ACTION_COPY)
                 }
             }
-            is PasteTextAction -> {
+            is ActionData.PasteText -> {
                 result = accessibilityService.performActionOnNode({ it.isFocused }) {
                     AccessibilityNodeAction(AccessibilityNodeInfo.ACTION_PASTE)
                 }
             }
 
-            is SelectWordAtCursorAction -> {
+            is ActionData.SelectWordAtCursor -> {
                 result = accessibilityService.performActionOnNode({ it.isFocused }) {
                     //it is at the cursor position if they both return the same value
                     if (it.textSelectionStart == it.textSelectionEnd) {
@@ -608,21 +608,21 @@ class PerformActionsUseCaseImpl(
                 }
             }
 
-            is AirplaneModeAction.Toggle -> {
+            is ActionData.AirplaneMode.Toggle -> {
                 result = if (airplaneModeAdapter.isEnabled()) {
                     airplaneModeAdapter.disable()
                 } else {
                     airplaneModeAdapter.enable()
                 }
             }
-            is AirplaneModeAction.Enable -> {
+            is ActionData.AirplaneMode.Enable -> {
                 result = airplaneModeAdapter.enable()
             }
-            is AirplaneModeAction.Disable -> {
+            is ActionData.AirplaneMode.Disable -> {
                 result = airplaneModeAdapter.disable()
             }
 
-            is ScreenshotAction -> {
+            is ActionData.Screenshot -> {
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
                     coroutineScope.launch {
                         val picturesFolder = fileAdapter.getPicturesFolder()
@@ -646,17 +646,17 @@ class PerformActionsUseCaseImpl(
                 }
             }
 
-            is VoiceAssistantAction -> {
+            is ActionData.VoiceAssistant -> {
                 result = packageManagerAdapter.launchVoiceAssistant()
             }
-            is DeviceAssistantAction -> {
+            is ActionData.DeviceAssistant -> {
                 result = packageManagerAdapter.launchDeviceAssistant()
             }
-            is OpenCameraAction -> {
+            is ActionData.OpenCamera -> {
                 result = packageManagerAdapter.launchCameraApp()
             }
 
-            is LockDeviceAction -> {
+            is ActionData.LockDevice -> {
                 result = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
                     suAdapter.execute("input keyevent ${KeyEvent.KEYCODE_POWER}")
                 } else {
@@ -664,32 +664,32 @@ class PerformActionsUseCaseImpl(
                 }
             }
 
-            is ScreenOnOffAction -> {
+            is ActionData.ScreenOnOff -> {
                 result = suAdapter.execute("input keyevent ${KeyEvent.KEYCODE_POWER}")
             }
 
-            is SecureLockAction -> {
+            is ActionData.SecureLock -> {
                 result = lockScreenAdapter.secureLockDevice()
             }
 
-            is ConsumeKeyEventAction -> {
+            is ActionData.ConsumeKeyEvent -> {
                 result = Success(Unit)
             }
 
-            is OpenSettingsAction -> {
+            is ActionData.OpenSettings -> {
                 result = packageManagerAdapter.launchSettingsApp()
             }
 
-            is ShowPowerMenuAction -> {
+            is ActionData.ShowPowerMenu -> {
                 result =
                     accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_POWER_DIALOG)
             }
 
-            is VolumeAction.ShowDialog -> {
+            is ActionData.Volume.ShowDialog -> {
                 result = volumeAdapter.showVolumeUi()
             }
 
-            DismissAllNotificationsAction -> {
+            ActionData.DismissAllNotifications -> {
                 coroutineScope.launch {
                     notificationReceiverAdapter.send(Event.DismissAllNotifications)
                 }
@@ -697,7 +697,7 @@ class PerformActionsUseCaseImpl(
                 result = null
             }
 
-            DismissLastNotificationAction -> {
+            ActionData.DismissLastNotification -> {
                 coroutineScope.launch {
                     notificationReceiverAdapter.send(Event.DismissLastNotification)
                 }
@@ -735,7 +735,7 @@ class PerformActionsUseCaseImpl(
             .map { it ?: PreferenceDefaults.HOLD_DOWN_DURATION }
             .map { it.toLong() }
 
-    private fun getDeviceIdForKeyEventAction(action: KeyEventAction): Int {
+    private fun getDeviceIdForKeyEventAction(action: ActionData.InputKeyEvent): Int {
         if (action.device?.descriptor == null) {
             return -1
         }

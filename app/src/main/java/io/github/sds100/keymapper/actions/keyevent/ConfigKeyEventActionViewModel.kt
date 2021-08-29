@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.actions.KeyEventAction
+import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
@@ -41,7 +41,7 @@ class ConfigKeyEventActionViewModel(
     )
     val uiState = _uiState.asStateFlow()
 
-    private val _returnResult = MutableSharedFlow<KeyEventAction>()
+    private val _returnResult = MutableSharedFlow<ActionData.InputKeyEvent>()
     val returnResult = _returnResult.asSharedFlow()
 
     private val rebuildUiState = MutableSharedFlow<Unit>()
@@ -88,7 +88,7 @@ class ConfigKeyEventActionViewModel(
         keyEventState.value = keyEventState.value.copy(keyCode = Success(keyCode))
     }
 
-    fun loadAction(action: KeyEventAction) {
+    fun loadAction(action: ActionData.InputKeyEvent) {
         viewModelScope.launch {
             val inputDevice = useCase.inputDevices.first().find {
                 it.descriptor == action.device?.descriptor
@@ -142,14 +142,14 @@ class ConfigKeyEventActionViewModel(
             val keyCode = keyEventState.value.keyCode.valueOrNull() ?: return@launch
 
             val device = keyEventState.value.chosenDevice?.let {
-                KeyEventAction.Device(
+                ActionData.InputKeyEvent.Device(
                     descriptor = it.descriptor,
                     name = it.name
                 )
             }
 
             _returnResult.emit(
-                KeyEventAction(
+                ActionData.InputKeyEvent(
                     keyCode = keyCode,
                     metaState = keyEventState.value.metaState,
                     useShell = keyEventState.value.useShell,

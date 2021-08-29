@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.util.ui
 
 import io.github.sds100.keymapper.actions.ActionData
-import io.github.sds100.keymapper.actions.KeyEventAction
 import io.github.sds100.keymapper.actions.sound.ChooseSoundFileResult
 import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.constraints.ChooseConstraintType
@@ -48,8 +47,8 @@ sealed class NavDestination<R> {
     object ChooseApp : NavDestination<String>()
     object ChooseAppShortcut : NavDestination<ChooseAppShortcutResult>()
     object ChooseKeyCode : NavDestination<Int>()
-    data class ConfigKeyEventAction(val action: KeyEventAction? = null) :
-        NavDestination<KeyEventAction>()
+    data class ConfigKeyEventAction(val action: ActionData.InputKeyEvent? = null) :
+        NavDestination<ActionData.InputKeyEvent>()
 
     data class PickCoordinate(val result: PickCoordinateResult? = null) :
         NavDestination<PickCoordinateResult>()

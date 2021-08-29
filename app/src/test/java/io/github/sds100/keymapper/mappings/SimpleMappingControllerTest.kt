@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.mappings
 
+import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.FakeAction
-import io.github.sds100.keymapper.actions.KeyEventAction
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.constraints.ConstraintSnapshotImpl
@@ -101,7 +101,7 @@ class SimpleMappingControllerTest {
         coroutineScope.runBlockingTest {
             //GIVEN
             val action = FakeAction(
-                data = KeyEventAction(1),
+                data = ActionData.InputKeyEvent(1),
                 repeat = true,
                 repeatMode = RepeatMode.LIMIT_REACHED,
                 repeatLimit = 2
@@ -125,7 +125,7 @@ class SimpleMappingControllerTest {
         coroutineScope.runBlockingTest {
             //GIVEN
             val action = FakeAction(
-                data = KeyEventAction(keyCode = 1),
+                data = ActionData.InputKeyEvent(keyCode = 1),
                 repeat = true,
                 repeatLimit = 10,
                 repeatMode = RepeatMode.LIMIT_REACHED
@@ -147,7 +147,7 @@ class SimpleMappingControllerTest {
         coroutineScope.runBlockingTest {
             //GIVEN
             val action = FakeAction(
-                data = KeyEventAction(keyCode = 1),
+                data = ActionData.InputKeyEvent(keyCode = 1),
                 repeat = true,
                 repeatLimit = 10,
                 repeatRate = 100,
@@ -171,7 +171,7 @@ class SimpleMappingControllerTest {
         coroutineScope.runBlockingTest {
             //GIVEN
             val action = FakeAction(
-                data = KeyEventAction(keyCode = 1),
+                data = ActionData.InputKeyEvent(keyCode = 1),
                 repeat = true,
                 repeatLimit = 10,
                 repeatMode = RepeatMode.TRIGGER_PRESSED_AGAIN

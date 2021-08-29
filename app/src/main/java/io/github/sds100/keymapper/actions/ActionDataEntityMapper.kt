@@ -38,7 +38,7 @@ object ActionDataEntityMapper {
         }
 
         return when (actionId) {
-            ActionId.APP -> OpenAppAction(packageName = entity.data)
+            ActionId.APP -> ActionData.App(packageName = entity.data)
 
             ActionId.APP_SHORTCUT -> {
                 val packageName =
@@ -48,7 +48,7 @@ object ActionDataEntityMapper {
                     entity.extras.getData(ActionEntity.EXTRA_SHORTCUT_TITLE).valueOrNull()
                         ?: return null
 
-                OpenAppShortcutAction(
+                ActionData.AppShortcut(
                     packageName = packageName,
                     shortcutTitle = shortcutTitle,
                     uri = entity.data
@@ -75,12 +75,12 @@ object ActionDataEntityMapper {
                     }.valueOrNull() ?: false
 
                 val device = if (deviceDescriptor != null) {
-                    KeyEventAction.Device(deviceDescriptor, deviceName)
+                    ActionData.InputKeyEvent.Device(deviceDescriptor, deviceName)
                 } else {
                     null
                 }
 
-                KeyEventAction(
+                ActionData.InputKeyEvent(
                     keyCode = entity.data.toInt(),
                     metaState = metaState,
                     useShell = useShell,
@@ -88,15 +88,15 @@ object ActionDataEntityMapper {
                 )
             }
 
-            ActionId.TEXT -> TextAction(text = entity.data)
-            ActionId.URL -> UrlAction(url = entity.data)
+            ActionId.TEXT -> ActionData.Text(text = entity.data)
+            ActionId.URL -> ActionData.Url(url = entity.data)
             ActionId.TAP_SCREEN -> {
                 val x = entity.data.split(',')[0].toInt()
                 val y = entity.data.split(',')[1].toInt()
                 val description = entity.extras.getData(ActionEntity.EXTRA_COORDINATE_DESCRIPTION)
                     .valueOrNull()
 
-                TapCoordinateAction(x = x, y = y, description = description)
+                ActionData.TapScreen(x = x, y = y, description = description)
             }
 
             ActionId.INTENT -> {
@@ -108,21 +108,21 @@ object ActionDataEntityMapper {
                     entity.extras.getData(ActionEntity.EXTRA_INTENT_DESCRIPTION).valueOrNull()
                         ?: return null
 
-                return IntentAction(
+                return ActionData.Intent(
                     target = target,
                     description = description,
                     uri = entity.data
                 )
             }
 
-            ActionId.PHONE_CALL -> PhoneCallAction(number = entity.data)
+            ActionId.PHONE_CALL -> ActionData.PhoneCall(number = entity.data)
 
             ActionId.SOUND -> {
                 val soundFileDescription =
                     entity.extras.getData(ActionEntity.EXTRA_SOUND_FILE_DESCRIPTION)
                         .valueOrNull() ?: return null
 
-                SoundAction(soundUid = entity.data, soundDescription = soundFileDescription)
+                ActionData.Sound(soundUid = entity.data, soundDescription = soundFileDescription)
             }
 
             ActionId.VOLUME_INCREASE_STREAM,
@@ -137,10 +137,10 @@ object ActionDataEntityMapper {
 
                 when (actionId) {
                     ActionId.VOLUME_INCREASE_STREAM ->
-                        VolumeAction.Stream.Increase(showVolumeUi, stream)
+                        ActionData.Volume.Stream.Increase(showVolumeUi, stream)
 
                     ActionId.VOLUME_DECREASE_STREAM ->
-                        VolumeAction.Stream.Decrease(showVolumeUi, stream)
+                        ActionData.Volume.Stream.Decrease(showVolumeUi, stream)
 
                     else -> throw Exception("don't know how to create system action for $actionId")
                 }
@@ -155,13 +155,13 @@ object ActionDataEntityMapper {
                     entity.flags.hasFlag(ActionEntity.ACTION_FLAG_SHOW_VOLUME_UI)
 
                 when (actionId) {
-                    ActionId.VOLUME_UP -> VolumeAction.Up(showVolumeUi)
-                    ActionId.VOLUME_DOWN -> VolumeAction.Down(showVolumeUi)
-                    ActionId.VOLUME_TOGGLE_MUTE -> VolumeAction.ToggleMute(
+                    ActionId.VOLUME_UP -> ActionData.Volume.Up(showVolumeUi)
+                    ActionId.VOLUME_DOWN -> ActionData.Volume.Down(showVolumeUi)
+                    ActionId.VOLUME_TOGGLE_MUTE -> ActionData.Volume.ToggleMute(
                         showVolumeUi
                     )
-                    ActionId.VOLUME_UNMUTE -> VolumeAction.UnMute(showVolumeUi)
-                    ActionId.VOLUME_MUTE -> VolumeAction.Mute(showVolumeUi)
+                    ActionId.VOLUME_UNMUTE -> ActionData.Volume.UnMute(showVolumeUi)
+                    ActionId.VOLUME_MUTE -> ActionData.Volume.Mute(showVolumeUi)
 
                     else -> throw Exception("don't know how to create system action for $actionId")
                 }
@@ -176,13 +176,13 @@ object ActionDataEntityMapper {
 
                 when (actionId) {
                     ActionId.TOGGLE_FLASHLIGHT ->
-                        FlashlightAction.Toggle(lens)
+                        ActionData.Flashlight.Toggle(lens)
 
                     ActionId.ENABLE_FLASHLIGHT ->
-                        FlashlightAction.Enable(lens)
+                        ActionData.Flashlight.Enable(lens)
 
                     ActionId.DISABLE_FLASHLIGHT ->
-                        FlashlightAction.Disable(lens)
+                        ActionData.Flashlight.Disable(lens)
 
                     else -> throw Exception("don't know how to create system action for $actionId")
                 }
@@ -196,17 +196,17 @@ object ActionDataEntityMapper {
 
                 when (actionId) {
                     ActionId.TOGGLE_DND_MODE ->
-                        DndModeAction.Toggle(dndMode)
+                        ActionData.DoNotDisturb.Toggle(dndMode)
 
                     ActionId.ENABLE_DND_MODE ->
-                        DndModeAction.Enable(dndMode)
+                        ActionData.DoNotDisturb.Enable(dndMode)
 
                     else -> throw Exception("don't know how to create system action for $actionId")
                 }
             }
 
             ActionId.DISABLE_DND_MODE -> {
-                return DndModeAction.Disable
+                return ActionData.DoNotDisturb.Disable
             }
 
             ActionId.PAUSE_MEDIA_PACKAGE,
@@ -222,19 +222,19 @@ object ActionDataEntityMapper {
 
                 when (actionId) {
                     ActionId.PAUSE_MEDIA_PACKAGE ->
-                        ControlMediaForAppAction.Pause(packageName)
+                        ActionData.ControlMediaForApp.Pause(packageName)
                     ActionId.PLAY_MEDIA_PACKAGE ->
-                        ControlMediaForAppAction.Play(packageName)
+                        ActionData.ControlMediaForApp.Play(packageName)
                     ActionId.PLAY_PAUSE_MEDIA_PACKAGE ->
-                        ControlMediaForAppAction.PlayPause(packageName)
+                        ActionData.ControlMediaForApp.PlayPause(packageName)
                     ActionId.NEXT_TRACK_PACKAGE ->
-                        ControlMediaForAppAction.NextTrack(packageName)
+                        ActionData.ControlMediaForApp.NextTrack(packageName)
                     ActionId.PREVIOUS_TRACK_PACKAGE ->
-                        ControlMediaForAppAction.PreviousTrack(packageName)
+                        ActionData.ControlMediaForApp.PreviousTrack(packageName)
                     ActionId.FAST_FORWARD_PACKAGE ->
-                        ControlMediaForAppAction.FastForward(packageName)
+                        ActionData.ControlMediaForApp.FastForward(packageName)
                     ActionId.REWIND_PACKAGE ->
-                        ControlMediaForAppAction.Rewind(packageName)
+                        ActionData.ControlMediaForApp.Rewind(packageName)
 
                     else -> throw Exception("don't know how to create system action for $actionId")
                 }
@@ -246,7 +246,7 @@ object ActionDataEntityMapper {
                         RINGER_MODE_MAP.getKey(it)!!.success()
                     }.valueOrNull() ?: return null
 
-                VolumeAction.SetRingerMode(ringerMode)
+                ActionData.Volume.SetRingerMode(ringerMode)
             }
 
             ActionId.SWITCH_KEYBOARD -> {
@@ -256,7 +256,7 @@ object ActionDataEntityMapper {
                 val imeName = entity.extras.getData(ActionEntity.EXTRA_IME_NAME)
                     .valueOrNull() ?: return null
 
-                SwitchKeyboardAction(imeId, imeName)
+                ActionData.SwitchKeyboard(imeId, imeName)
             }
 
             ActionId.CYCLE_ROTATIONS -> {
@@ -269,104 +269,104 @@ object ActionDataEntityMapper {
                                 .success()
                         }.valueOrNull() ?: return null
 
-                RotationAction.CycleRotations(orientations)
+                ActionData.Rotation.CycleRotations(orientations)
             }
 
-            ActionId.TOGGLE_WIFI -> WifiAction.Toggle
-            ActionId.ENABLE_WIFI -> WifiAction.Enable
-            ActionId.DISABLE_WIFI -> WifiAction.Disable
+            ActionId.TOGGLE_WIFI -> ActionData.Wifi.Toggle
+            ActionId.ENABLE_WIFI -> ActionData.Wifi.Enable
+            ActionId.DISABLE_WIFI -> ActionData.Wifi.Disable
 
-            ActionId.TOGGLE_BLUETOOTH -> BluetoothAction.Toggle
-            ActionId.ENABLE_BLUETOOTH -> BluetoothAction.Enable
-            ActionId.DISABLE_BLUETOOTH -> BluetoothAction.Disable
+            ActionId.TOGGLE_BLUETOOTH -> ActionData.Bluetooth.Toggle
+            ActionId.ENABLE_BLUETOOTH -> ActionData.Bluetooth.Enable
+            ActionId.DISABLE_BLUETOOTH -> ActionData.Bluetooth.Disable
 
-            ActionId.TOGGLE_MOBILE_DATA -> MobileDataAction.Toggle
-            ActionId.ENABLE_MOBILE_DATA -> MobileDataAction.Enable
-            ActionId.DISABLE_MOBILE_DATA -> MobileDataAction.Disable
+            ActionId.TOGGLE_MOBILE_DATA -> ActionData.MobileData.Toggle
+            ActionId.ENABLE_MOBILE_DATA -> ActionData.MobileData.Enable
+            ActionId.DISABLE_MOBILE_DATA -> ActionData.MobileData.Disable
 
-            ActionId.TOGGLE_AUTO_BRIGHTNESS -> BrightnessAction.ToggleAuto
-            ActionId.DISABLE_AUTO_BRIGHTNESS -> BrightnessAction.DisableAuto
-            ActionId.ENABLE_AUTO_BRIGHTNESS -> BrightnessAction.EnableAuto
-            ActionId.INCREASE_BRIGHTNESS -> BrightnessAction.Increase
-            ActionId.DECREASE_BRIGHTNESS -> BrightnessAction.Decrease
+            ActionId.TOGGLE_AUTO_BRIGHTNESS -> ActionData.Brightness.ToggleAuto
+            ActionId.DISABLE_AUTO_BRIGHTNESS -> ActionData.Brightness.DisableAuto
+            ActionId.ENABLE_AUTO_BRIGHTNESS -> ActionData.Brightness.EnableAuto
+            ActionId.INCREASE_BRIGHTNESS -> ActionData.Brightness.Increase
+            ActionId.DECREASE_BRIGHTNESS -> ActionData.Brightness.Decrease
 
-            ActionId.TOGGLE_AUTO_ROTATE -> RotationAction.ToggleAuto
-            ActionId.ENABLE_AUTO_ROTATE -> RotationAction.EnableAuto
-            ActionId.DISABLE_AUTO_ROTATE -> RotationAction.DisableAuto
-            ActionId.PORTRAIT_MODE -> RotationAction.Portrait
-            ActionId.LANDSCAPE_MODE -> RotationAction.Landscape
-            ActionId.SWITCH_ORIENTATION -> RotationAction.SwitchOrientation
+            ActionId.TOGGLE_AUTO_ROTATE -> ActionData.Rotation.ToggleAuto
+            ActionId.ENABLE_AUTO_ROTATE -> ActionData.Rotation.EnableAuto
+            ActionId.DISABLE_AUTO_ROTATE -> ActionData.Rotation.DisableAuto
+            ActionId.PORTRAIT_MODE -> ActionData.Rotation.Portrait
+            ActionId.LANDSCAPE_MODE -> ActionData.Rotation.Landscape
+            ActionId.SWITCH_ORIENTATION -> ActionData.Rotation.SwitchOrientation
 
-            ActionId.VOLUME_SHOW_DIALOG -> VolumeAction.ShowDialog
-            ActionId.CYCLE_RINGER_MODE -> VolumeAction.CycleRingerMode
-            ActionId.CYCLE_VIBRATE_RING -> VolumeAction.CycleVibrateRing
+            ActionId.VOLUME_SHOW_DIALOG -> ActionData.Volume.ShowDialog
+            ActionId.CYCLE_RINGER_MODE -> ActionData.Volume.CycleRingerMode
+            ActionId.CYCLE_VIBRATE_RING -> ActionData.Volume.CycleVibrateRing
 
-            ActionId.EXPAND_NOTIFICATION_DRAWER -> StatusBarAction.ExpandNotifications
-            ActionId.TOGGLE_NOTIFICATION_DRAWER -> StatusBarAction.ToggleNotifications
-            ActionId.EXPAND_QUICK_SETTINGS -> StatusBarAction.ExpandQuickSettings
-            ActionId.TOGGLE_QUICK_SETTINGS -> StatusBarAction.ToggleQuickSettings
-            ActionId.COLLAPSE_STATUS_BAR -> StatusBarAction.Collapse
+            ActionId.EXPAND_NOTIFICATION_DRAWER -> ActionData.StatusBar.ExpandNotifications
+            ActionId.TOGGLE_NOTIFICATION_DRAWER -> ActionData.StatusBar.ToggleNotifications
+            ActionId.EXPAND_QUICK_SETTINGS -> ActionData.StatusBar.ExpandQuickSettings
+            ActionId.TOGGLE_QUICK_SETTINGS -> ActionData.StatusBar.ToggleQuickSettings
+            ActionId.COLLAPSE_STATUS_BAR -> ActionData.StatusBar.Collapse
 
-            ActionId.PAUSE_MEDIA -> ControlMediaAction.Pause
-            ActionId.PLAY_MEDIA -> ControlMediaAction.Play
-            ActionId.PLAY_PAUSE_MEDIA -> ControlMediaAction.PlayPause
-            ActionId.NEXT_TRACK -> ControlMediaAction.NextTrack
-            ActionId.PREVIOUS_TRACK -> ControlMediaAction.PreviousTrack
-            ActionId.FAST_FORWARD -> ControlMediaAction.FastForward
-            ActionId.REWIND -> ControlMediaAction.Rewind
+            ActionId.PAUSE_MEDIA -> ActionData.ControlMedia.Pause
+            ActionId.PLAY_MEDIA -> ActionData.ControlMedia.Play
+            ActionId.PLAY_PAUSE_MEDIA -> ActionData.ControlMedia.PlayPause
+            ActionId.NEXT_TRACK -> ActionData.ControlMedia.NextTrack
+            ActionId.PREVIOUS_TRACK -> ActionData.ControlMedia.PreviousTrack
+            ActionId.FAST_FORWARD -> ActionData.ControlMedia.FastForward
+            ActionId.REWIND -> ActionData.ControlMedia.Rewind
 
-            ActionId.GO_BACK -> GoBackAction
-            ActionId.GO_HOME -> GoHomeAction
-            ActionId.OPEN_RECENTS -> OpenRecentsAction
-            ActionId.TOGGLE_SPLIT_SCREEN -> ToggleSplitScreenAction
-            ActionId.GO_LAST_APP -> GoLastAppAction
-            ActionId.OPEN_MENU -> OpenMenuAction
+            ActionId.GO_BACK -> ActionData.GoBack
+            ActionId.GO_HOME -> ActionData.GoHome
+            ActionId.OPEN_RECENTS -> ActionData.OpenRecents
+            ActionId.TOGGLE_SPLIT_SCREEN -> ActionData.ToggleSplitScreen
+            ActionId.GO_LAST_APP -> ActionData.GoLastApp
+            ActionId.OPEN_MENU -> ActionData.OpenMenu
 
-            ActionId.ENABLE_NFC -> NfcAction.Enable
-            ActionId.DISABLE_NFC -> NfcAction.Disable
-            ActionId.TOGGLE_NFC -> NfcAction.Toggle
+            ActionId.ENABLE_NFC -> ActionData.Nfc.Enable
+            ActionId.DISABLE_NFC -> ActionData.Nfc.Disable
+            ActionId.TOGGLE_NFC -> ActionData.Nfc.Toggle
 
-            ActionId.MOVE_CURSOR_TO_END -> MoveCursorToEndAction
-            ActionId.TOGGLE_KEYBOARD -> ToggleKeyboardAction
-            ActionId.SHOW_KEYBOARD -> ShowKeyboardAction
-            ActionId.HIDE_KEYBOARD -> HideKeyboardAction
-            ActionId.SHOW_KEYBOARD_PICKER -> ShowKeyboardPickerAction
-            ActionId.TEXT_CUT -> CutTextAction
-            ActionId.TEXT_COPY -> CopyTextAction
-            ActionId.TEXT_PASTE -> PasteTextAction
-            ActionId.SELECT_WORD_AT_CURSOR -> SelectWordAtCursorAction
+            ActionId.MOVE_CURSOR_TO_END -> ActionData.MoveCursorToEnd
+            ActionId.TOGGLE_KEYBOARD -> ActionData.ToggleKeyboard
+            ActionId.SHOW_KEYBOARD -> ActionData.ShowKeyboard
+            ActionId.HIDE_KEYBOARD -> ActionData.HideKeyboard
+            ActionId.SHOW_KEYBOARD_PICKER -> ActionData.ShowKeyboardPicker
+            ActionId.TEXT_CUT -> ActionData.CutText
+            ActionId.TEXT_COPY -> ActionData.CopyText
+            ActionId.TEXT_PASTE -> ActionData.PasteText
+            ActionId.SELECT_WORD_AT_CURSOR -> ActionData.SelectWordAtCursor
 
-            ActionId.TOGGLE_AIRPLANE_MODE -> AirplaneModeAction.Toggle
-            ActionId.ENABLE_AIRPLANE_MODE -> AirplaneModeAction.Enable
-            ActionId.DISABLE_AIRPLANE_MODE -> AirplaneModeAction.Disable
+            ActionId.TOGGLE_AIRPLANE_MODE -> ActionData.AirplaneMode.Toggle
+            ActionId.ENABLE_AIRPLANE_MODE -> ActionData.AirplaneMode.Enable
+            ActionId.DISABLE_AIRPLANE_MODE -> ActionData.AirplaneMode.Disable
 
-            ActionId.SCREENSHOT -> ScreenshotAction
-            ActionId.OPEN_VOICE_ASSISTANT -> VoiceAssistantAction
-            ActionId.OPEN_DEVICE_ASSISTANT -> DeviceAssistantAction
+            ActionId.SCREENSHOT -> ActionData.Screenshot
+            ActionId.OPEN_VOICE_ASSISTANT -> ActionData.VoiceAssistant
+            ActionId.OPEN_DEVICE_ASSISTANT -> ActionData.DeviceAssistant
 
-            ActionId.OPEN_CAMERA -> OpenCameraAction
-            ActionId.LOCK_DEVICE -> LockDeviceAction
-            ActionId.POWER_ON_OFF_DEVICE -> ScreenOnOffAction
-            ActionId.SECURE_LOCK_DEVICE -> SecureLockAction
-            ActionId.CONSUME_KEY_EVENT -> ConsumeKeyEventAction
-            ActionId.OPEN_SETTINGS -> OpenSettingsAction
-            ActionId.SHOW_POWER_MENU -> ShowPowerMenuAction
-            ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> DismissLastNotificationAction
-            ActionId.DISMISS_ALL_NOTIFICATIONS -> DismissAllNotificationsAction
+            ActionId.OPEN_CAMERA -> ActionData.OpenCamera
+            ActionId.LOCK_DEVICE -> ActionData.LockDevice
+            ActionId.POWER_ON_OFF_DEVICE -> ActionData.ScreenOnOff
+            ActionId.SECURE_LOCK_DEVICE -> ActionData.SecureLock
+            ActionId.CONSUME_KEY_EVENT -> ActionData.ConsumeKeyEvent
+            ActionId.OPEN_SETTINGS -> ActionData.OpenSettings
+            ActionId.SHOW_POWER_MENU -> ActionData.ShowPowerMenu
+            ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> ActionData.DismissLastNotification
+            ActionId.DISMISS_ALL_NOTIFICATIONS -> ActionData.DismissAllNotifications
         }
     }
 
     fun toEntity(data: ActionData): ActionEntity {
         val type = when (data) {
-            is IntentAction -> ActionEntity.Type.INTENT
-            is KeyEventAction -> ActionEntity.Type.KEY_EVENT
-            is OpenAppAction -> ActionEntity.Type.APP
-            is OpenAppShortcutAction -> ActionEntity.Type.APP_SHORTCUT
-            is PhoneCallAction -> ActionEntity.Type.PHONE_CALL
-            is TapCoordinateAction -> ActionEntity.Type.TAP_COORDINATE
-            is TextAction -> ActionEntity.Type.TEXT_BLOCK
-            is UrlAction -> ActionEntity.Type.URL
-            is SoundAction -> ActionEntity.Type.SOUND
+            is ActionData.Intent -> ActionEntity.Type.INTENT
+            is ActionData.InputKeyEvent -> ActionEntity.Type.KEY_EVENT
+            is ActionData.App -> ActionEntity.Type.APP
+            is ActionData.AppShortcut -> ActionEntity.Type.APP_SHORTCUT
+            is ActionData.PhoneCall -> ActionEntity.Type.PHONE_CALL
+            is ActionData.TapScreen -> ActionEntity.Type.TAP_COORDINATE
+            is ActionData.Text -> ActionEntity.Type.TEXT_BLOCK
+            is ActionData.Url -> ActionEntity.Type.URL
+            is ActionData.Sound -> ActionEntity.Type.SOUND
             else -> ActionEntity.Type.SYSTEM_ACTION
         }
 
@@ -380,12 +380,12 @@ object ActionDataEntityMapper {
 
     private fun getFlags(data: ActionData): Int {
         val showVolumeUiFlag = when (data) {
-            is VolumeAction.Stream -> data.showVolumeUi
-            is VolumeAction.Up -> data.showVolumeUi
-            is VolumeAction.Down -> data.showVolumeUi
-            is VolumeAction.Mute -> data.showVolumeUi
-            is VolumeAction.UnMute -> data.showVolumeUi
-            is VolumeAction.ToggleMute -> data.showVolumeUi
+            is ActionData.Volume.Stream -> data.showVolumeUi
+            is ActionData.Volume.Up -> data.showVolumeUi
+            is ActionData.Volume.Down -> data.showVolumeUi
+            is ActionData.Volume.Mute -> data.showVolumeUi
+            is ActionData.Volume.UnMute -> data.showVolumeUi
+            is ActionData.Volume.ToggleMute -> data.showVolumeUi
             else -> false
         }
 
@@ -397,26 +397,26 @@ object ActionDataEntityMapper {
     }
 
     private fun getDataString(data: ActionData): String = when (data) {
-        is IntentAction -> data.uri
-        is KeyEventAction -> data.keyCode.toString()
-        is OpenAppAction -> data.packageName
-        is OpenAppShortcutAction -> data.uri
-        is PhoneCallAction -> data.number
-        is TapCoordinateAction -> "${data.x},${data.y}"
-        is TextAction -> data.text
-        is UrlAction -> data.url
-        is SoundAction -> data.soundUid
+        is ActionData.Intent -> data.uri
+        is ActionData.InputKeyEvent -> data.keyCode.toString()
+        is ActionData.App -> data.packageName
+        is ActionData.AppShortcut -> data.uri
+        is ActionData.PhoneCall -> data.number
+        is ActionData.TapScreen -> "${data.x},${data.y}"
+        is ActionData.Text -> data.text
+        is ActionData.Url -> data.url
+        is ActionData.Sound -> data.soundUid
         else -> SYSTEM_ACTION_ID_MAP[data.id]!!
     }
 
     private fun getExtras(data: ActionData): List<Extra> = when (data) {
-        is IntentAction ->
+        is ActionData.Intent ->
             listOf(
                 Extra(ActionEntity.EXTRA_INTENT_DESCRIPTION, data.description),
                 Extra(ActionEntity.EXTRA_INTENT_TARGET, INTENT_TARGET_MAP[data.target]!!)
             )
 
-        is KeyEventAction -> sequence {
+        is ActionData.InputKeyEvent -> sequence {
             if (data.useShell) {
                 val string = if (data.useShell) {
                     "true"
@@ -441,63 +441,63 @@ object ActionDataEntityMapper {
             }
         }.toList()
 
-        is OpenAppAction -> emptyList()
-        is OpenAppShortcutAction -> sequence {
+        is ActionData.App -> emptyList()
+        is ActionData.AppShortcut -> sequence {
             yield(Extra(ActionEntity.EXTRA_SHORTCUT_TITLE, data.shortcutTitle))
             data.packageName?.let { yield(Extra(ActionEntity.EXTRA_PACKAGE_NAME, it)) }
         }.toList()
 
-        is PhoneCallAction -> emptyList()
+        is ActionData.PhoneCall -> emptyList()
 
-        is DndModeAction.Enable -> listOf(
+        is ActionData.DoNotDisturb.Enable -> listOf(
             Extra(ActionEntity.EXTRA_DND_MODE, DND_MODE_MAP[data.dndMode]!!)
         )
 
-        is DndModeAction.Toggle -> listOf(
+        is ActionData.DoNotDisturb.Toggle -> listOf(
             Extra(ActionEntity.EXTRA_DND_MODE, DND_MODE_MAP[data.dndMode]!!)
         )
 
-        is VolumeAction.SetRingerMode -> listOf(
+        is ActionData.Volume.SetRingerMode -> listOf(
             Extra(ActionEntity.EXTRA_RINGER_MODE, RINGER_MODE_MAP[data.ringerMode]!!)
         )
 
-        is ControlMediaForAppAction -> listOf(
+        is ActionData.ControlMediaForApp -> listOf(
             Extra(ActionEntity.EXTRA_PACKAGE_NAME, data.packageName)
         )
 
-        is RotationAction.CycleRotations -> listOf(
+        is ActionData.Rotation.CycleRotations -> listOf(
             Extra(
                 ActionEntity.EXTRA_ORIENTATIONS,
                 data.orientations.joinToString(",") { ORIENTATION_MAP[it]!! })
         )
 
-        is FlashlightAction -> listOf(
+        is ActionData.Flashlight -> listOf(
             Extra(ActionEntity.EXTRA_LENS, LENS_MAP[data.lens]!!)
         )
 
-        is SwitchKeyboardAction -> listOf(
+        is ActionData.SwitchKeyboard -> listOf(
             Extra(ActionEntity.EXTRA_IME_ID, data.imeId),
             Extra(ActionEntity.EXTRA_IME_NAME, data.savedImeName)
         )
 
-        is VolumeAction ->
+        is ActionData.Volume ->
             when (data) {
-                is VolumeAction.Stream -> listOf(
+                is ActionData.Volume.Stream -> listOf(
                     Extra(ActionEntity.EXTRA_STREAM_TYPE, VOLUME_STREAM_MAP[data.volumeStream]!!)
                 )
 
                 else -> emptyList()
             }
-        is TapCoordinateAction -> sequence {
+        is ActionData.TapScreen -> sequence {
             if (!data.description.isNullOrBlank()) {
                 yield(Extra(ActionEntity.EXTRA_COORDINATE_DESCRIPTION, data.description))
             }
         }.toList()
 
-        is TextAction -> emptyList()
-        is UrlAction -> emptyList()
+        is ActionData.Text -> emptyList()
+        is ActionData.Url -> emptyList()
 
-        is SoundAction -> listOf(
+        is ActionData.Sound -> listOf(
             Extra(ActionEntity.EXTRA_SOUND_FILE_DESCRIPTION, data.soundDescription),
         )
 

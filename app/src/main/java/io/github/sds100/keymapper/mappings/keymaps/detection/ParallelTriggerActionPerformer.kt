@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.mappings.keymaps.detection
 
-import io.github.sds100.keymapper.actions.KeyEventAction
+import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.data.PreferenceDefaults
@@ -110,7 +110,7 @@ class ParallelTriggerActionPerformer(
                 return@forEachIndexed
             }
 
-            if (action.data is KeyEventAction && KeyEventUtils.isModifierKey(action.data.keyCode)) {
+            if (action.data is ActionData.InputKeyEvent && KeyEventUtils.isModifierKey(action.data.keyCode)) {
                 return@forEachIndexed
             }
 

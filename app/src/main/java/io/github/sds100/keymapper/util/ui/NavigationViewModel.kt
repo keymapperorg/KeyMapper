@@ -10,7 +10,6 @@ import androidx.navigation.fragment.findNavController
 import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.ChooseActionFragment
-import io.github.sds100.keymapper.actions.KeyEventAction
 import io.github.sds100.keymapper.actions.keyevent.ChooseKeyCodeFragment
 import io.github.sds100.keymapper.actions.keyevent.ConfigKeyEventActionFragment
 import io.github.sds100.keymapper.actions.sound.ChooseSoundFileFragment
@@ -200,7 +199,7 @@ fun NavigationViewModel.sendNavResultFromBundle(
 
         NavDestination.ID_KEY_EVENT -> {
             val json = bundle.getString(ConfigKeyEventActionFragment.EXTRA_RESULT)!!
-            val keyEventAction = Json.decodeFromString<KeyEventAction>(json)
+            val keyEventAction = Json.decodeFromString<ActionData.InputKeyEvent>(json)
 
             onNavResult(NavResult(requestKey, keyEventAction))
         }

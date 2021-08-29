@@ -1,8 +1,10 @@
 package io.github.sds100.keymapper.mappings.keymaps.detection
 
 import android.view.KeyEvent
-import androidx.collection.*
-import io.github.sds100.keymapper.actions.KeyEventAction
+import androidx.collection.SparseArrayCompat
+import androidx.collection.keyIterator
+import androidx.collection.valueIterator
+import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.constraints.ConstraintSnapshot
@@ -20,13 +22,40 @@ import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
 import io.github.sds100.keymapper.util.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import splitties.bitflags.minusFlag
 import splitties.bitflags.withFlag
+import kotlin.collections.List
+import kotlin.collections.MutableList
+import kotlin.collections.Set
+import kotlin.collections.all
+import kotlin.collections.any
+import kotlin.collections.flatMap
+import kotlin.collections.forEach
+import kotlin.collections.forEachIndexed
+import kotlin.collections.getOrNull
+import kotlin.collections.indices
+import kotlin.collections.isNotEmpty
+import kotlin.collections.last
+import kotlin.collections.lastIndex
+import kotlin.collections.listOf
+import kotlin.collections.map
+import kotlin.collections.maxOrNull
+import kotlin.collections.mutableListOf
+import kotlin.collections.mutableMapOf
+import kotlin.collections.mutableSetOf
+import kotlin.collections.set
+import kotlin.collections.toIntArray
+import kotlin.collections.toSet
+import kotlin.collections.toTypedArray
+import kotlin.collections.withIndex
 
 /**
  * Created by sds100 on 05/05/2020.
@@ -149,11 +178,11 @@ class KeyMapController(
 
                     val encodedActionList = encodeActionList(keyMap.actionList)
 
-                    if (keyMap.actionList.any { it.data is KeyEventAction && isModifierKey(it.data.keyCode) }) {
+                    if (keyMap.actionList.any { it.data is ActionData.InputKeyEvent && isModifierKey(it.data.keyCode) }) {
                         modifierKeyEventActions = true
                     }
 
-                    if (keyMap.actionList.any { it.data is KeyEventAction && !isModifierKey(it.data.keyCode) }) {
+                    if (keyMap.actionList.any { it.data is ActionData.InputKeyEvent && !isModifierKey(it.data.keyCode) }) {
                         notModifierKeyEventActions = true
                     }
 
@@ -742,7 +771,7 @@ class KeyMapController(
                         actionKeys.forEach { actionKey ->
                             val action = actionMap[actionKey] ?: return@forEach
 
-                            if (action.data is KeyEventAction) {
+                            if (action.data is ActionData.InputKeyEvent) {
                                 val actionKeyCode = action.data.keyCode
 
                                 if (isModifierKey(actionKeyCode)) {
@@ -1131,7 +1160,7 @@ class KeyMapController(
                             actionKeys.forEach { actionKey ->
 
                                 actionMap[actionKey]?.let { action ->
-                                    if (action.data is KeyEventAction && isModifierKey(action.data.keyCode)) {
+                                    if (action.data is ActionData.InputKeyEvent && isModifierKey(action.data.keyCode)) {
                                         val actionMetaState =
                                             KeyEventUtils.modifierKeycodeToMetaState(action.data.keyCode)
 
@@ -1283,7 +1312,7 @@ class KeyMapController(
 
                     useCase.imitateButtonPress(
                         keyCode,
-                        keyEventAction = InputEventType.DOWN_UP,
+                        inputEventType = InputEventType.DOWN_UP,
                         scanCode = scanCode
                     )
                 }

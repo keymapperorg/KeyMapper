@@ -82,11 +82,11 @@ class PerformActionsUseCaseTest {
             //GIVEN
             val descriptor = "fake_device_descriptor"
 
-            val action = KeyEventAction(
+            val action = ActionData.InputKeyEvent(
                 keyCode = 1,
                 metaState = 0,
                 useShell = false,
-                device = KeyEventAction.Device(descriptor = descriptor, name = "fake_name_2")
+                device = ActionData.InputKeyEvent.Device(descriptor = descriptor, name = "fake_name_2")
             )
 
             fakeDevicesAdapter.connectedInputDevices.value = State.Data(
@@ -134,11 +134,11 @@ class PerformActionsUseCaseTest {
             //GIVEN
             val descriptor = "fake_device_descriptor"
 
-            val action = KeyEventAction(
+            val action = ActionData.InputKeyEvent(
                 keyCode = 1,
                 metaState = 0,
                 useShell = false,
-                device = KeyEventAction.Device(descriptor = descriptor, name = "")
+                device = ActionData.InputKeyEvent.Device(descriptor = descriptor, name = "")
             )
 
             fakeDevicesAdapter.connectedInputDevices.value = State.Data(

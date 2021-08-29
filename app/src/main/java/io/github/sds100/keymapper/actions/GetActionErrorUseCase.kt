@@ -75,46 +75,46 @@ class GetActionErrorUseCaseImpl(
         }
 
         when (action) {
-            is OpenAppAction -> {
+            is ActionData.App -> {
                 return getAppError(action.packageName)
             }
 
-            is OpenAppShortcutAction -> {
+            is ActionData.AppShortcut -> {
                 action.packageName ?: return null
 
                 return getAppError(action.packageName)
             }
 
-            is KeyEventAction ->
+            is ActionData.InputKeyEvent ->
                 if (
                     action.useShell && !permissionAdapter.isGranted(Permission.ROOT)
                 ) {
                     return Error.PermissionDenied(Permission.ROOT)
                 }
 
-            is TapCoordinateAction ->
+            is ActionData.TapScreen ->
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
                     return Error.SdkVersionTooLow(Build.VERSION_CODES.N)
                 }
 
-            is PhoneCallAction ->
+            is ActionData.PhoneCall ->
                 if (!permissionAdapter.isGranted(Permission.CALL_PHONE)) {
                     return Error.PermissionDenied(Permission.CALL_PHONE)
                 }
 
-            is SoundAction -> {
+            is ActionData.Sound -> {
                 soundsManager.getSound(action.soundUid).onFailure { error ->
                     return error
                 }
             }
 
-            is VoiceAssistantAction -> {
+            is ActionData.VoiceAssistant -> {
                 if (!packageManager.isVoiceAssistantInstalled()) {
                     return Error.NoVoiceAssistant
                 }
             }
 
-            is FlashlightAction ->
+            is ActionData.Flashlight ->
                 if (!cameraAdapter.hasFlashFacing(action.lens)) {
                     return when (action.lens) {
                         CameraLens.FRONT -> Error.FrontFlashNotFound
@@ -122,7 +122,7 @@ class GetActionErrorUseCaseImpl(
                     }
                 }
 
-            is SwitchKeyboardAction ->
+            is ActionData.SwitchKeyboard ->
                 inputMethodAdapter.getInfoById(action.imeId).onFailure {
                     return it
                 }

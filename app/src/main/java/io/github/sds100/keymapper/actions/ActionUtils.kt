@@ -540,50 +540,50 @@ object ActionUtils {
 }
 
 fun ActionData.canBeHeldDown(): Boolean = when (this) {
-    is KeyEventAction -> !useShell
-    is TapCoordinateAction -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+    is ActionData.InputKeyEvent -> !useShell
+    is ActionData.TapScreen -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
     else -> false
 }
 
 fun ActionData.requiresImeToPerform(): Boolean = when (this) {
-    is KeyEventAction -> !useShell
-    is TextAction -> true
-    is MoveCursorToEndAction -> true
+    is ActionData.InputKeyEvent -> !useShell
+    is ActionData.Text -> true
+    is ActionData.MoveCursorToEnd -> true
     else -> false
 }
 
 fun ActionData.canUseShizuku(): Boolean = when (this) {
-    is KeyEventAction -> true
-    is MoveCursorToEndAction -> true
+    is ActionData.InputKeyEvent -> true
+    is ActionData.MoveCursorToEnd -> true
     else -> false
 }
 
 fun ActionData.isEditable(): Boolean = when (this) {
-    is OpenAppAction,
-    is OpenAppShortcutAction,
-    is KeyEventAction,
-    is IntentAction,
-    is SoundAction,
-    is SwitchKeyboardAction,
-    is ControlMediaForAppAction,
-    is VolumeAction.Up,
-    is VolumeAction.Down,
-    is VolumeAction.Mute,
-    is VolumeAction.UnMute,
-    is VolumeAction.ToggleMute,
-    is VolumeAction.Stream.Increase,
-    is VolumeAction.Stream.Decrease,
-    is VolumeAction.SetRingerMode,
-    is DndModeAction.Enable,
-    is DndModeAction.Toggle,
-    is RotationAction.CycleRotations,
-    is FlashlightAction.Toggle,
-    is FlashlightAction.Enable,
-    is FlashlightAction.Disable,
-    is TapCoordinateAction,
-    is TextAction,
-    is UrlAction,
-    is PhoneCallAction,
+    is ActionData.App,
+    is ActionData.AppShortcut,
+    is ActionData.InputKeyEvent,
+    is ActionData.Intent,
+    is ActionData.Sound,
+    is ActionData.SwitchKeyboard,
+    is ActionData.ControlMediaForApp,
+    is ActionData.Volume.Up,
+    is ActionData.Volume.Down,
+    is ActionData.Volume.Mute,
+    is ActionData.Volume.UnMute,
+    is ActionData.Volume.ToggleMute,
+    is ActionData.Volume.Stream.Increase,
+    is ActionData.Volume.Stream.Decrease,
+    is ActionData.Volume.SetRingerMode,
+    is ActionData.DoNotDisturb.Enable,
+    is ActionData.DoNotDisturb.Toggle,
+    is ActionData.Rotation.CycleRotations,
+    is ActionData.Flashlight.Toggle,
+    is ActionData.Flashlight.Enable,
+    is ActionData.Flashlight.Disable,
+    is ActionData.TapScreen,
+    is ActionData.Text,
+    is ActionData.Url,
+    is ActionData.PhoneCall,
     -> true
     else -> false
 }

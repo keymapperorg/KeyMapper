@@ -1,8 +1,7 @@
 package io.github.sds100.keymapper
 
 import android.view.KeyEvent
-import io.github.sds100.keymapper.actions.KeyEventAction
-import io.github.sds100.keymapper.actions.TapCoordinateAction
+import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapUseCaseImpl
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapAction
@@ -56,7 +55,7 @@ class ConfigKeyMapUseCaseTest {
         coroutineScope.runBlockingTest {
             //given
             val action = KeyMapAction(
-                data = TapCoordinateAction(100, 100, null),
+                data = ActionData.TapScreen(100, 100, null),
                 holdDown = true
             )
 
@@ -79,7 +78,7 @@ class ConfigKeyMapUseCaseTest {
             KeyEventUtils.MODIFIER_KEYCODES.forEach { keyCode ->
                 useCase.mapping.value = State.Data(KeyMap())
 
-                useCase.addAction(KeyEventAction(keyCode))
+                useCase.addAction(ActionData.InputKeyEvent(keyCode))
 
                 useCase.mapping.value.dataOrNull()!!.actionList
                     .single()

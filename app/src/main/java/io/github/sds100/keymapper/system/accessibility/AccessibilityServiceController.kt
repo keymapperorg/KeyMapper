@@ -6,8 +6,8 @@ import android.os.SystemClock
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
+import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
-import io.github.sds100.keymapper.actions.SoundAction
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
@@ -25,7 +25,8 @@ import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.Event
+import io.github.sds100.keymapper.util.firstBlocking
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import splitties.bitflags.hasFlag
@@ -217,7 +218,7 @@ class AccessibilityServiceController(
                 enableAccessibilityVolumeStream = false
             } else {
                 enableAccessibilityVolumeStream = mappings.any { mapping ->
-                    mapping.isEnabled && mapping.actionList.any { it.data is SoundAction }
+                    mapping.isEnabled && mapping.actionList.any { it.data is ActionData.Sound }
                 }
             }
 

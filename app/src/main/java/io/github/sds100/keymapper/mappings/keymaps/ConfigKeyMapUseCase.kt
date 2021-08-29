@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
 import io.github.sds100.keymapper.actions.ActionData
-import io.github.sds100.keymapper.actions.KeyEventAction
 import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.data.Keys
@@ -347,7 +346,7 @@ class ConfigKeyMapUseCaseImpl(
         var holdDown = false
         var repeat = false
 
-        if (data is KeyEventAction) {
+        if (data is ActionData.InputKeyEvent) {
             if (KeyEventUtils.isModifierKey(data.keyCode)) {
                 holdDown = true
                 repeat = false

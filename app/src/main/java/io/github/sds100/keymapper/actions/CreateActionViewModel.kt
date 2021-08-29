@@ -47,7 +47,7 @@ class CreateActionViewModelImpl(
                     showPopup("choose_ime", PopupUi.SingleChoice(items)) ?: return null
                 val imeName = inputMethods.single { it.id == imeId }.label
 
-                return SwitchKeyboardAction(imeId, imeName)
+                return ActionData.SwitchKeyboard(imeId, imeName)
             }
 
             ActionId.PLAY_PAUSE_MEDIA_PACKAGE,
@@ -64,19 +64,19 @@ class CreateActionViewModelImpl(
 
                 val action = when (actionId) {
                     ActionId.PAUSE_MEDIA_PACKAGE ->
-                        ControlMediaForAppAction.Pause(packageName)
+                        ActionData.ControlMediaForApp.Pause(packageName)
                     ActionId.PLAY_MEDIA_PACKAGE ->
-                        ControlMediaForAppAction.Play(packageName)
+                        ActionData.ControlMediaForApp.Play(packageName)
                     ActionId.PLAY_PAUSE_MEDIA_PACKAGE ->
-                        ControlMediaForAppAction.PlayPause(packageName)
+                        ActionData.ControlMediaForApp.PlayPause(packageName)
                     ActionId.NEXT_TRACK_PACKAGE ->
-                        ControlMediaForAppAction.NextTrack(packageName)
+                        ActionData.ControlMediaForApp.NextTrack(packageName)
                     ActionId.PREVIOUS_TRACK_PACKAGE ->
-                        ControlMediaForAppAction.PreviousTrack(packageName)
+                        ActionData.ControlMediaForApp.PreviousTrack(packageName)
                     ActionId.FAST_FORWARD_PACKAGE ->
-                        ControlMediaForAppAction.FastForward(packageName)
+                        ActionData.ControlMediaForApp.FastForward(packageName)
                     ActionId.REWIND_PACKAGE ->
-                        ControlMediaForAppAction.Rewind(packageName)
+                        ActionData.ControlMediaForApp.Rewind(packageName)
                     else -> throw Exception("don't know how to create action for $actionId")
                 }
 
@@ -92,11 +92,11 @@ class CreateActionViewModelImpl(
                 val showVolumeUiId = 0
                 val isVolumeUiChecked =
                     when (oldData) {
-                        is VolumeAction.Up -> oldData.showVolumeUi
-                        is VolumeAction.Down -> oldData.showVolumeUi
-                        is VolumeAction.Mute -> oldData.showVolumeUi
-                        is VolumeAction.UnMute -> oldData.showVolumeUi
-                        is VolumeAction.ToggleMute -> oldData.showVolumeUi
+                        is ActionData.Volume.Up -> oldData.showVolumeUi
+                        is ActionData.Volume.Down -> oldData.showVolumeUi
+                        is ActionData.Volume.Mute -> oldData.showVolumeUi
+                        is ActionData.Volume.UnMute -> oldData.showVolumeUi
+                        is ActionData.Volume.ToggleMute -> oldData.showVolumeUi
                         else -> false
                     }
 
@@ -115,11 +115,11 @@ class CreateActionViewModelImpl(
                 val showVolumeUi = chosenFlags.contains(showVolumeUiId)
 
                 val action = when (actionId) {
-                    ActionId.VOLUME_UP -> VolumeAction.Up(showVolumeUi)
-                    ActionId.VOLUME_DOWN -> VolumeAction.Down(showVolumeUi)
-                    ActionId.VOLUME_MUTE -> VolumeAction.Mute(showVolumeUi)
-                    ActionId.VOLUME_UNMUTE -> VolumeAction.UnMute(showVolumeUi)
-                    ActionId.VOLUME_TOGGLE_MUTE -> VolumeAction.ToggleMute(
+                    ActionId.VOLUME_UP -> ActionData.Volume.Up(showVolumeUi)
+                    ActionId.VOLUME_DOWN -> ActionData.Volume.Down(showVolumeUi)
+                    ActionId.VOLUME_MUTE -> ActionData.Volume.Mute(showVolumeUi)
+                    ActionId.VOLUME_UNMUTE -> ActionData.Volume.UnMute(showVolumeUi)
+                    ActionId.VOLUME_TOGGLE_MUTE -> ActionData.Volume.ToggleMute(
                         showVolumeUi
                     )
                     else -> throw Exception("don't know how to create action for $actionId")
@@ -132,7 +132,7 @@ class CreateActionViewModelImpl(
             ActionId.VOLUME_DECREASE_STREAM -> {
 
                 val showVolumeUiId = 0
-                val isVolumeUiChecked = if (oldData is VolumeAction.Stream) {
+                val isVolumeUiChecked = if (oldData is ActionData.Volume.Stream) {
                     oldData.showVolumeUi
                 } else {
                     false
@@ -161,10 +161,10 @@ class CreateActionViewModelImpl(
 
                 val action = when (actionId) {
                     ActionId.VOLUME_INCREASE_STREAM ->
-                        VolumeAction.Stream.Increase(showVolumeUi = showVolumeUi, stream)
+                        ActionData.Volume.Stream.Increase(showVolumeUi = showVolumeUi, stream)
 
                     ActionId.VOLUME_DECREASE_STREAM ->
-                        VolumeAction.Stream.Decrease(showVolumeUi = showVolumeUi, stream)
+                        ActionData.Volume.Stream.Decrease(showVolumeUi = showVolumeUi, stream)
 
                     else -> throw Exception("don't know how to create action for $actionId")
                 }
@@ -180,7 +180,7 @@ class CreateActionViewModelImpl(
                     showPopup("pick_ringer_mode", PopupUi.SingleChoice(items))
                         ?: return null
 
-                return VolumeAction.SetRingerMode(ringerMode)
+                return ActionData.Volume.SetRingerMode(ringerMode)
             }
 
             //don't need to show options for disabling do not disturb
@@ -194,9 +194,9 @@ class CreateActionViewModelImpl(
                         ?: return null
 
                 val action = when (actionId) {
-                    ActionId.TOGGLE_DND_MODE -> DndModeAction.Toggle(dndMode)
+                    ActionId.TOGGLE_DND_MODE -> ActionData.DoNotDisturb.Toggle(dndMode)
 
-                    ActionId.ENABLE_DND_MODE -> DndModeAction.Enable(dndMode)
+                    ActionId.ENABLE_DND_MODE -> ActionData.DoNotDisturb.Enable(dndMode)
 
                     else -> throw Exception("don't know how to create action for $actionId")
                 }
@@ -206,7 +206,7 @@ class CreateActionViewModelImpl(
 
             ActionId.CYCLE_ROTATIONS -> {
                 val items = Orientation.values().map { orientation ->
-                    val isChecked = if (oldData is RotationAction.CycleRotations) {
+                    val isChecked = if (oldData is ActionData.Rotation.CycleRotations) {
                         oldData.orientations.contains(orientation)
                     } else {
                         false
@@ -221,7 +221,7 @@ class CreateActionViewModelImpl(
                 val orientations =
                     showPopup("pick_orientations", PopupUi.MultiChoice(items)) ?: return null
 
-                return RotationAction.CycleRotations(orientations)
+                return ActionData.Rotation.CycleRotations(orientations)
             }
 
             ActionId.TOGGLE_FLASHLIGHT,
@@ -235,9 +235,9 @@ class CreateActionViewModelImpl(
                     ?: return null
 
                 val action = when (actionId) {
-                    ActionId.TOGGLE_FLASHLIGHT -> FlashlightAction.Toggle(lens)
-                    ActionId.ENABLE_FLASHLIGHT -> FlashlightAction.Enable(lens)
-                    ActionId.DISABLE_FLASHLIGHT -> FlashlightAction.Disable(lens)
+                    ActionId.TOGGLE_FLASHLIGHT -> ActionData.Flashlight.Toggle(lens)
+                    ActionId.ENABLE_FLASHLIGHT -> ActionData.Flashlight.Enable(lens)
+                    ActionId.DISABLE_FLASHLIGHT -> ActionData.Flashlight.Disable(lens)
                     else -> throw Exception("don't know how to create action for $actionId")
                 }
 
@@ -249,7 +249,7 @@ class CreateActionViewModelImpl(
                     navigate("choose_app_for_app_action", NavDestination.ChooseApp)
                         ?: return null
 
-                return OpenAppAction(packageName)
+                return ActionData.App(packageName)
             }
 
             ActionId.APP_SHORTCUT -> {
@@ -257,7 +257,7 @@ class CreateActionViewModelImpl(
                     navigate("choose_app_shortcut", NavDestination.ChooseAppShortcut)
                         ?: return null
 
-                return OpenAppShortcutAction(
+                return ActionData.AppShortcut(
                     appShortcutResult.packageName,
                     appShortcutResult.shortcutName,
                     appShortcutResult.uri
@@ -269,11 +269,11 @@ class CreateActionViewModelImpl(
                     navigate("choose_key_code", NavDestination.ChooseKeyCode)
                         ?: return null
 
-                return KeyEventAction(keyCode = keyCode)
+                return ActionData.InputKeyEvent(keyCode = keyCode)
             }
 
             ActionId.KEY_EVENT -> {
-                val keyEventAction = if (oldData is KeyEventAction) {
+                val keyEventAction = if (oldData is ActionData.InputKeyEvent) {
                     navigate("config_key_event", NavDestination.ConfigKeyEventAction(oldData))
                 } else {
                     navigate("config_key_event", NavDestination.ConfigKeyEventAction())
@@ -283,7 +283,7 @@ class CreateActionViewModelImpl(
             }
 
             ActionId.TAP_SCREEN -> {
-                val oldResult = if (oldData is TapCoordinateAction) {
+                val oldResult = if (oldData is ActionData.TapScreen) {
                     PickCoordinateResult(
                         oldData.x,
                         oldData.y,
@@ -304,7 +304,7 @@ class CreateActionViewModelImpl(
                     result.description
                 }
 
-                return TapCoordinateAction(
+                return ActionData.TapScreen(
                     result.x,
                     result.y,
                     description
@@ -312,7 +312,7 @@ class CreateActionViewModelImpl(
             }
 
             ActionId.TEXT -> {
-                val oldText = if (oldData is TextAction) {
+                val oldText = if (oldData is ActionData.Text) {
                     oldData.text
                 } else {
                     ""
@@ -326,11 +326,11 @@ class CreateActionViewModelImpl(
                     )
                 ) ?: return null
 
-                return TextAction(text)
+                return ActionData.Text(text)
             }
 
             ActionId.URL -> {
-                val oldUrl = if (oldData is UrlAction) {
+                val oldUrl = if (oldData is ActionData.Url) {
                     oldData.url
                 } else {
                     ""
@@ -345,11 +345,11 @@ class CreateActionViewModelImpl(
                     )
                 ) ?: return null
 
-                return UrlAction(text)
+                return ActionData.Url(text)
             }
 
             ActionId.INTENT -> {
-                val oldIntent = if (oldData is IntentAction) {
+                val oldIntent = if (oldData is ActionData.Intent) {
                     ConfigIntentResult(
                         oldData.uri,
                         oldData.target,
@@ -364,7 +364,7 @@ class CreateActionViewModelImpl(
                     NavDestination.ConfigIntent(oldIntent)
                 ) ?: return null
 
-                return IntentAction(
+                return ActionData.Intent(
                     description = result.description,
                     target = result.target,
                     uri = result.uri
@@ -372,7 +372,7 @@ class CreateActionViewModelImpl(
             }
 
             ActionId.PHONE_CALL -> {
-                val oldText = if (oldData is PhoneCallAction) {
+                val oldText = if (oldData is ActionData.PhoneCall) {
                     oldData.number
                 } else {
                     ""
@@ -387,7 +387,7 @@ class CreateActionViewModelImpl(
                     )
                 ) ?: return null
 
-                return PhoneCallAction(text)
+                return ActionData.PhoneCall(text)
             }
 
             ActionId.SOUND -> {
@@ -396,94 +396,94 @@ class CreateActionViewModelImpl(
                     NavDestination.ChooseSound
                 ) ?: return null
 
-                return SoundAction(
+                return ActionData.Sound(
                     soundUid = result.soundUid,
                     soundDescription = result.description
                 )
             }
 
-            ActionId.TOGGLE_WIFI -> return WifiAction.Toggle
-            ActionId.ENABLE_WIFI -> return WifiAction.Enable
-            ActionId.DISABLE_WIFI -> return WifiAction.Disable
+            ActionId.TOGGLE_WIFI -> return ActionData.Wifi.Toggle
+            ActionId.ENABLE_WIFI -> return ActionData.Wifi.Enable
+            ActionId.DISABLE_WIFI -> return ActionData.Wifi.Disable
 
-            ActionId.TOGGLE_BLUETOOTH -> return BluetoothAction.Toggle
-            ActionId.ENABLE_BLUETOOTH -> return BluetoothAction.Enable
-            ActionId.DISABLE_BLUETOOTH -> return BluetoothAction.Disable
+            ActionId.TOGGLE_BLUETOOTH -> return ActionData.Bluetooth.Toggle
+            ActionId.ENABLE_BLUETOOTH -> return ActionData.Bluetooth.Enable
+            ActionId.DISABLE_BLUETOOTH -> return ActionData.Bluetooth.Disable
 
-            ActionId.TOGGLE_MOBILE_DATA -> return MobileDataAction.Toggle
-            ActionId.ENABLE_MOBILE_DATA -> return MobileDataAction.Enable
-            ActionId.DISABLE_MOBILE_DATA -> return MobileDataAction.Disable
+            ActionId.TOGGLE_MOBILE_DATA -> return ActionData.MobileData.Toggle
+            ActionId.ENABLE_MOBILE_DATA -> return ActionData.MobileData.Enable
+            ActionId.DISABLE_MOBILE_DATA -> return ActionData.MobileData.Disable
 
-            ActionId.TOGGLE_AUTO_BRIGHTNESS -> return BrightnessAction.ToggleAuto
-            ActionId.DISABLE_AUTO_BRIGHTNESS -> return BrightnessAction.DisableAuto
-            ActionId.ENABLE_AUTO_BRIGHTNESS -> return BrightnessAction.EnableAuto
-            ActionId.INCREASE_BRIGHTNESS -> return BrightnessAction.Increase
-            ActionId.DECREASE_BRIGHTNESS -> return BrightnessAction.Decrease
+            ActionId.TOGGLE_AUTO_BRIGHTNESS -> return ActionData.Brightness.ToggleAuto
+            ActionId.DISABLE_AUTO_BRIGHTNESS -> return ActionData.Brightness.DisableAuto
+            ActionId.ENABLE_AUTO_BRIGHTNESS -> return ActionData.Brightness.EnableAuto
+            ActionId.INCREASE_BRIGHTNESS -> return ActionData.Brightness.Increase
+            ActionId.DECREASE_BRIGHTNESS -> return ActionData.Brightness.Decrease
 
-            ActionId.TOGGLE_AUTO_ROTATE -> return RotationAction.ToggleAuto
-            ActionId.ENABLE_AUTO_ROTATE -> return RotationAction.EnableAuto
-            ActionId.DISABLE_AUTO_ROTATE -> return RotationAction.DisableAuto
-            ActionId.PORTRAIT_MODE -> return RotationAction.Portrait
-            ActionId.LANDSCAPE_MODE -> return RotationAction.Landscape
-            ActionId.SWITCH_ORIENTATION -> return RotationAction.SwitchOrientation
+            ActionId.TOGGLE_AUTO_ROTATE -> return ActionData.Rotation.ToggleAuto
+            ActionId.ENABLE_AUTO_ROTATE -> return ActionData.Rotation.EnableAuto
+            ActionId.DISABLE_AUTO_ROTATE -> return ActionData.Rotation.DisableAuto
+            ActionId.PORTRAIT_MODE -> return ActionData.Rotation.Portrait
+            ActionId.LANDSCAPE_MODE -> return ActionData.Rotation.Landscape
+            ActionId.SWITCH_ORIENTATION -> return ActionData.Rotation.SwitchOrientation
 
-            ActionId.VOLUME_SHOW_DIALOG -> return VolumeAction.ShowDialog
-            ActionId.CYCLE_RINGER_MODE -> return VolumeAction.CycleRingerMode
-            ActionId.CYCLE_VIBRATE_RING -> return VolumeAction.CycleVibrateRing
+            ActionId.VOLUME_SHOW_DIALOG -> return ActionData.Volume.ShowDialog
+            ActionId.CYCLE_RINGER_MODE -> return ActionData.Volume.CycleRingerMode
+            ActionId.CYCLE_VIBRATE_RING -> return ActionData.Volume.CycleVibrateRing
 
-            ActionId.EXPAND_NOTIFICATION_DRAWER -> return StatusBarAction.ExpandNotifications
-            ActionId.TOGGLE_NOTIFICATION_DRAWER -> return StatusBarAction.ToggleNotifications
-            ActionId.EXPAND_QUICK_SETTINGS -> return StatusBarAction.ExpandQuickSettings
-            ActionId.TOGGLE_QUICK_SETTINGS -> return StatusBarAction.ToggleQuickSettings
-            ActionId.COLLAPSE_STATUS_BAR -> return StatusBarAction.Collapse
+            ActionId.EXPAND_NOTIFICATION_DRAWER -> return ActionData.StatusBar.ExpandNotifications
+            ActionId.TOGGLE_NOTIFICATION_DRAWER -> return ActionData.StatusBar.ToggleNotifications
+            ActionId.EXPAND_QUICK_SETTINGS -> return ActionData.StatusBar.ExpandQuickSettings
+            ActionId.TOGGLE_QUICK_SETTINGS -> return ActionData.StatusBar.ToggleQuickSettings
+            ActionId.COLLAPSE_STATUS_BAR -> return ActionData.StatusBar.Collapse
 
-            ActionId.PAUSE_MEDIA -> return ControlMediaAction.Pause
-            ActionId.PLAY_MEDIA -> return ControlMediaAction.Play
-            ActionId.PLAY_PAUSE_MEDIA -> return ControlMediaAction.PlayPause
-            ActionId.NEXT_TRACK -> return ControlMediaAction.NextTrack
-            ActionId.PREVIOUS_TRACK -> return ControlMediaAction.PreviousTrack
-            ActionId.FAST_FORWARD -> return ControlMediaAction.FastForward
-            ActionId.REWIND -> return ControlMediaAction.Rewind
+            ActionId.PAUSE_MEDIA -> return ActionData.ControlMedia.Pause
+            ActionId.PLAY_MEDIA -> return ActionData.ControlMedia.Play
+            ActionId.PLAY_PAUSE_MEDIA -> return ActionData.ControlMedia.PlayPause
+            ActionId.NEXT_TRACK -> return ActionData.ControlMedia.NextTrack
+            ActionId.PREVIOUS_TRACK -> return ActionData.ControlMedia.PreviousTrack
+            ActionId.FAST_FORWARD -> return ActionData.ControlMedia.FastForward
+            ActionId.REWIND -> return ActionData.ControlMedia.Rewind
 
-            ActionId.GO_BACK -> return GoBackAction
-            ActionId.GO_HOME -> return GoHomeAction
-            ActionId.OPEN_RECENTS -> return OpenRecentsAction
-            ActionId.TOGGLE_SPLIT_SCREEN -> return ToggleSplitScreenAction
-            ActionId.GO_LAST_APP -> return GoLastAppAction
-            ActionId.OPEN_MENU -> return OpenMenuAction
+            ActionId.GO_BACK -> return ActionData.GoBack
+            ActionId.GO_HOME -> return ActionData.GoHome
+            ActionId.OPEN_RECENTS -> return ActionData.OpenRecents
+            ActionId.TOGGLE_SPLIT_SCREEN -> return ActionData.ToggleSplitScreen
+            ActionId.GO_LAST_APP -> return ActionData.GoLastApp
+            ActionId.OPEN_MENU -> return ActionData.OpenMenu
 
-            ActionId.ENABLE_NFC -> return NfcAction.Enable
-            ActionId.DISABLE_NFC -> return NfcAction.Disable
-            ActionId.TOGGLE_NFC -> return NfcAction.Toggle
+            ActionId.ENABLE_NFC -> return ActionData.Nfc.Enable
+            ActionId.DISABLE_NFC -> return ActionData.Nfc.Disable
+            ActionId.TOGGLE_NFC -> return ActionData.Nfc.Toggle
 
-            ActionId.MOVE_CURSOR_TO_END -> return MoveCursorToEndAction
-            ActionId.TOGGLE_KEYBOARD -> return ToggleKeyboardAction
-            ActionId.SHOW_KEYBOARD -> return ShowKeyboardAction
-            ActionId.HIDE_KEYBOARD -> return HideKeyboardAction
-            ActionId.SHOW_KEYBOARD_PICKER -> return ShowKeyboardPickerAction
-            ActionId.TEXT_CUT -> return CutTextAction
-            ActionId.TEXT_COPY -> return CopyTextAction
-            ActionId.TEXT_PASTE -> return PasteTextAction
-            ActionId.SELECT_WORD_AT_CURSOR -> return SelectWordAtCursorAction
+            ActionId.MOVE_CURSOR_TO_END -> return ActionData.MoveCursorToEnd
+            ActionId.TOGGLE_KEYBOARD -> return ActionData.ToggleKeyboard
+            ActionId.SHOW_KEYBOARD -> return ActionData.ShowKeyboard
+            ActionId.HIDE_KEYBOARD -> return ActionData.HideKeyboard
+            ActionId.SHOW_KEYBOARD_PICKER -> return ActionData.ShowKeyboardPicker
+            ActionId.TEXT_CUT -> return ActionData.CutText
+            ActionId.TEXT_COPY -> return ActionData.CopyText
+            ActionId.TEXT_PASTE -> return ActionData.PasteText
+            ActionId.SELECT_WORD_AT_CURSOR -> return ActionData.SelectWordAtCursor
 
-            ActionId.TOGGLE_AIRPLANE_MODE -> return AirplaneModeAction.Toggle
-            ActionId.ENABLE_AIRPLANE_MODE -> return AirplaneModeAction.Enable
-            ActionId.DISABLE_AIRPLANE_MODE -> return AirplaneModeAction.Disable
+            ActionId.TOGGLE_AIRPLANE_MODE -> return ActionData.AirplaneMode.Toggle
+            ActionId.ENABLE_AIRPLANE_MODE -> return ActionData.AirplaneMode.Enable
+            ActionId.DISABLE_AIRPLANE_MODE -> return ActionData.AirplaneMode.Disable
 
-            ActionId.SCREENSHOT -> return ScreenshotAction
-            ActionId.OPEN_VOICE_ASSISTANT -> return VoiceAssistantAction
-            ActionId.OPEN_DEVICE_ASSISTANT -> return DeviceAssistantAction
+            ActionId.SCREENSHOT -> return ActionData.Screenshot
+            ActionId.OPEN_VOICE_ASSISTANT -> return ActionData.VoiceAssistant
+            ActionId.OPEN_DEVICE_ASSISTANT -> return ActionData.DeviceAssistant
 
-            ActionId.OPEN_CAMERA -> return OpenCameraAction
-            ActionId.LOCK_DEVICE -> return LockDeviceAction
-            ActionId.POWER_ON_OFF_DEVICE -> return ScreenOnOffAction
-            ActionId.SECURE_LOCK_DEVICE -> return SecureLockAction
-            ActionId.CONSUME_KEY_EVENT -> return ConsumeKeyEventAction
-            ActionId.OPEN_SETTINGS -> return OpenSettingsAction
-            ActionId.SHOW_POWER_MENU -> return ShowPowerMenuAction
-            ActionId.DISABLE_DND_MODE -> return DndModeAction.Disable
-            ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> return DismissLastNotificationAction
-            ActionId.DISMISS_ALL_NOTIFICATIONS -> return DismissAllNotificationsAction
+            ActionId.OPEN_CAMERA -> return ActionData.OpenCamera
+            ActionId.LOCK_DEVICE -> return ActionData.LockDevice
+            ActionId.POWER_ON_OFF_DEVICE -> return ActionData.ScreenOnOff
+            ActionId.SECURE_LOCK_DEVICE -> return ActionData.SecureLock
+            ActionId.CONSUME_KEY_EVENT -> return ActionData.ConsumeKeyEvent
+            ActionId.OPEN_SETTINGS -> return ActionData.OpenSettings
+            ActionId.SHOW_POWER_MENU -> return ActionData.ShowPowerMenu
+            ActionId.DISABLE_DND_MODE -> return ActionData.DoNotDisturb.Disable
+            ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> return ActionData.DismissLastNotification
+            ActionId.DISMISS_ALL_NOTIFICATIONS -> return ActionData.DismissAllNotifications
         }
     }
 }

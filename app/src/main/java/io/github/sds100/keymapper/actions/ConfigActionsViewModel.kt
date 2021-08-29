@@ -8,11 +8,13 @@ import io.github.sds100.keymapper.mappings.Mapping
 import io.github.sds100.keymapper.mappings.isDelayBeforeNextActionAllowed
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.shizuku.ShizukuUtils
-import io.github.sds100.keymapper.ui.*
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 /**
  * Created by sds100 on 22/11/20.
@@ -118,9 +120,9 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
         coroutineScope.launch {
             val actionData = navigate("add_action", NavDestination.ChooseAction) ?: return@launch
 
-            if (actionData is KeyEventAction && ShizukuUtils.isSdkRecommended()) {
+            if (actionData is ActionData.InputKeyEvent && ShizukuUtils.isSdkRecommended()) {
                 promptToInstallShizukuOrGuiKeyboard()
-            } else if (actionData is KeyEventAction || actionData is TextAction) {
+            } else if (actionData is ActionData.InputKeyEvent || actionData is ActionData.Text) {
                 promptToInstallGuiKeyboard()
             }
 

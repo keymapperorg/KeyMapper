@@ -11,603 +11,602 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed class ActionData {
     abstract val id: ActionId
-}
-
-@Serializable
-data class OpenAppAction(
-    val packageName: String
-) : ActionData() {
-    override val id: ActionId = ActionId.APP
-}
-
-@Serializable
-data class OpenAppShortcutAction(
-    val packageName: String?,
-    val shortcutTitle: String,
-    val uri: String
-) : ActionData() {
-    override val id: ActionId = ActionId.APP_SHORTCUT
-}
-
-@Serializable
-data class KeyEventAction(
-    val keyCode: Int,
-    val metaState: Int = 0,
-    val useShell: Boolean = false,
-    val device: Device? = null
-) : ActionData() {
-
-    override val id: ActionId = ActionId.KEY_EVENT
 
     @Serializable
-    data class Device(
-        val descriptor: String,
-        val name: String
-    )
-}
+    data class App(
+        val packageName: String
+    ) : ActionData() {
+        override val id: ActionId = ActionId.APP
+    }
 
-@Serializable
-data class SoundAction(
-    val soundUid: String,
-    val soundDescription: String
-) : ActionData() {
-    override val id = ActionId.SOUND
-}
+    @Serializable
+    data class AppShortcut(
+        val packageName: String?,
+        val shortcutTitle: String,
+        val uri: String
+    ) : ActionData() {
+        override val id: ActionId = ActionId.APP_SHORTCUT
+    }
 
-@Serializable
-sealed class VolumeAction : ActionData() {
-    sealed class Stream : VolumeAction() {
-        abstract val volumeStream: VolumeStream
-        abstract val showVolumeUi: Boolean
+    @Serializable
+    data class InputKeyEvent(
+        val keyCode: Int,
+        val metaState: Int = 0,
+        val useShell: Boolean = false,
+        val device: Device? = null
+    ) : ActionData() {
+
+        override val id: ActionId = ActionId.KEY_EVENT
 
         @Serializable
-        data class Increase(
-            override val showVolumeUi: Boolean,
-            override val volumeStream: VolumeStream
-        ) : Stream() {
-            override val id = ActionId.VOLUME_INCREASE_STREAM
+        data class Device(
+            val descriptor: String,
+            val name: String
+        )
+    }
+
+    @Serializable
+    data class Sound(
+        val soundUid: String,
+        val soundDescription: String
+    ) : ActionData() {
+        override val id = ActionId.SOUND
+    }
+
+    @Serializable
+    sealed class Volume : ActionData() {
+        sealed class Stream : Volume() {
+            abstract val volumeStream: VolumeStream
+            abstract val showVolumeUi: Boolean
+
+            @Serializable
+            data class Increase(
+                override val showVolumeUi: Boolean,
+                override val volumeStream: VolumeStream
+            ) : Stream() {
+                override val id = ActionId.VOLUME_INCREASE_STREAM
+            }
+
+            @Serializable
+            data class Decrease(
+                override val showVolumeUi: Boolean,
+                override val volumeStream: VolumeStream
+            ) : Stream() {
+                override val id = ActionId.VOLUME_DECREASE_STREAM
+            }
         }
 
         @Serializable
-        data class Decrease(
-            override val showVolumeUi: Boolean,
-            override val volumeStream: VolumeStream
-        ) : Stream() {
-            override val id = ActionId.VOLUME_DECREASE_STREAM
+        data class Up(val showVolumeUi: Boolean) : Volume() {
+            override val id = ActionId.VOLUME_UP
+        }
+
+        @Serializable
+        data class Down(val showVolumeUi: Boolean) : Volume() {
+            override val id = ActionId.VOLUME_DOWN
+        }
+
+        @Serializable
+        data class Mute(val showVolumeUi: Boolean) : Volume() {
+            override val id = ActionId.VOLUME_MUTE
+        }
+
+        @Serializable
+        data class UnMute(val showVolumeUi: Boolean) : Volume() {
+            override val id = ActionId.VOLUME_UNMUTE
+        }
+
+        @Serializable
+        data class ToggleMute(val showVolumeUi: Boolean) : Volume() {
+            override val id = ActionId.VOLUME_TOGGLE_MUTE
+        }
+
+        @Serializable
+        data class SetRingerMode(
+            val ringerMode: RingerMode
+        ) : Volume() {
+            override val id: ActionId = ActionId.CHANGE_RINGER_MODE
+        }
+
+        @Serializable
+        object ShowDialog : Volume() {
+            override val id = ActionId.VOLUME_SHOW_DIALOG
+        }
+
+        @Serializable
+        object CycleRingerMode : Volume() {
+            override val id = ActionId.CYCLE_RINGER_MODE
+        }
+
+        @Serializable
+        object CycleVibrateRing : Volume() {
+            override val id = ActionId.CYCLE_VIBRATE_RING
         }
     }
 
     @Serializable
-    data class Up(val showVolumeUi: Boolean) : VolumeAction() {
-        override val id = ActionId.VOLUME_UP
+    sealed class Flashlight : ActionData() {
+        abstract val lens: CameraLens
+
+        @Serializable
+        data class Toggle(override val lens: CameraLens) : Flashlight() {
+            override val id = ActionId.TOGGLE_FLASHLIGHT
+        }
+
+        @Serializable
+        data class Enable(override val lens: CameraLens) : Flashlight() {
+            override val id = ActionId.ENABLE_FLASHLIGHT
+        }
+
+        @Serializable
+        data class Disable(override val lens: CameraLens) : Flashlight() {
+            override val id = ActionId.DISABLE_FLASHLIGHT
+        }
     }
 
     @Serializable
-    data class Down(val showVolumeUi: Boolean) : VolumeAction() {
-        override val id = ActionId.VOLUME_DOWN
+    data class SwitchKeyboard(
+        val imeId: String,
+        val savedImeName: String
+    ) : ActionData() {
+        override val id = ActionId.SWITCH_KEYBOARD
     }
 
     @Serializable
-    data class Mute(val showVolumeUi: Boolean) : VolumeAction() {
-        override val id = ActionId.VOLUME_MUTE
+    sealed class DoNotDisturb : ActionData() {
+
+        @Serializable
+        data class Toggle(val dndMode: DndMode) : ActionData.DoNotDisturb() {
+            override val id: ActionId = ActionId.TOGGLE_DND_MODE
+        }
+
+        @Serializable
+        data class Enable(val dndMode: DndMode) : ActionData.DoNotDisturb() {
+            override val id: ActionId = ActionId.ENABLE_DND_MODE
+        }
+
+        @Serializable
+        object Disable : ActionData.DoNotDisturb() {
+            override val id = ActionId.DISABLE_DND_MODE
+        }
     }
 
     @Serializable
-    data class UnMute(val showVolumeUi: Boolean) : VolumeAction() {
-        override val id = ActionId.VOLUME_UNMUTE
+    sealed class Rotation : ActionData() {
+        @Serializable
+        object EnableAuto : Rotation() {
+            override val id = ActionId.ENABLE_AUTO_ROTATE
+        }
+
+        @Serializable
+        object DisableAuto : Rotation() {
+            override val id = ActionId.DISABLE_AUTO_ROTATE
+        }
+
+        @Serializable
+        object ToggleAuto : Rotation() {
+            override val id = ActionId.TOGGLE_AUTO_ROTATE
+        }
+
+        @Serializable
+        object Portrait : Rotation() {
+            override val id = ActionId.PORTRAIT_MODE
+        }
+
+        @Serializable
+        object Landscape : Rotation() {
+            override val id = ActionId.LANDSCAPE_MODE
+        }
+
+        @Serializable
+        object SwitchOrientation : Rotation() {
+            override val id = ActionId.SWITCH_ORIENTATION
+        }
+
+        @Serializable
+        data class CycleRotations(
+            val orientations: List<Orientation>
+        ) : Rotation() {
+            override val id = ActionId.CYCLE_ROTATIONS
+        }
     }
 
     @Serializable
-    data class ToggleMute(val showVolumeUi: Boolean) : VolumeAction() {
-        override val id = ActionId.VOLUME_TOGGLE_MUTE
+    sealed class ControlMediaForApp : ActionData() {
+        abstract val packageName: String
+
+        @Serializable
+        data class Pause(override val packageName: String) : ControlMediaForApp() {
+            override val id = ActionId.PAUSE_MEDIA_PACKAGE
+        }
+
+        @Serializable
+        data class Play(override val packageName: String) : ControlMediaForApp() {
+            override val id = ActionId.PLAY_MEDIA_PACKAGE
+        }
+
+        @Serializable
+        data class PlayPause(override val packageName: String) : ControlMediaForApp() {
+            override val id = ActionId.PLAY_PAUSE_MEDIA_PACKAGE
+        }
+
+        @Serializable
+        data class NextTrack(override val packageName: String) : ControlMediaForApp() {
+            override val id = ActionId.NEXT_TRACK_PACKAGE
+        }
+
+        @Serializable
+        data class PreviousTrack(override val packageName: String) : ControlMediaForApp() {
+            override val id = ActionId.PREVIOUS_TRACK_PACKAGE
+        }
+
+        @Serializable
+        data class FastForward(override val packageName: String) : ControlMediaForApp() {
+            override val id = ActionId.FAST_FORWARD_PACKAGE
+        }
+
+        @Serializable
+        data class Rewind(override val packageName: String) : ControlMediaForApp() {
+            override val id = ActionId.REWIND_PACKAGE
+        }
     }
 
     @Serializable
-    data class SetRingerMode(
-        val ringerMode: RingerMode
-    ) : VolumeAction() {
-        override val id: ActionId = ActionId.CHANGE_RINGER_MODE
+    sealed class ControlMedia : ActionData() {
+        @Serializable
+        object Pause : ActionData.ControlMedia() {
+            override val id = ActionId.PAUSE_MEDIA
+        }
+
+        @Serializable
+        object Play : ActionData.ControlMedia() {
+            override val id = ActionId.PLAY_MEDIA
+        }
+
+        @Serializable
+        object PlayPause : ActionData.ControlMedia() {
+            override val id = ActionId.PLAY_PAUSE_MEDIA
+        }
+
+        @Serializable
+        object NextTrack : ActionData.ControlMedia() {
+            override val id = ActionId.NEXT_TRACK
+        }
+
+        @Serializable
+        object PreviousTrack : ActionData.ControlMedia() {
+            override val id = ActionId.PREVIOUS_TRACK
+        }
+
+        @Serializable
+        object FastForward : ActionData.ControlMedia() {
+            override val id = ActionId.FAST_FORWARD
+        }
+
+        @Serializable
+        object Rewind : ActionData.ControlMedia() {
+            override val id = ActionId.REWIND
+        }
     }
 
     @Serializable
-    object ShowDialog : VolumeAction() {
-        override val id = ActionId.VOLUME_SHOW_DIALOG
+    data class Intent(
+        val description: String,
+        val target: IntentTarget,
+        val uri: String
+    ) : ActionData() {
+        override val id = ActionId.INTENT
     }
 
     @Serializable
-    object CycleRingerMode : VolumeAction() {
-        override val id = ActionId.CYCLE_RINGER_MODE
+    data class TapScreen(
+        val x: Int,
+        val y: Int,
+        val description: String?
+    ) : ActionData() {
+        override val id = ActionId.TAP_SCREEN
     }
 
     @Serializable
-    object CycleVibrateRing : VolumeAction() {
-        override val id = ActionId.CYCLE_VIBRATE_RING
-    }
-}
-
-@Serializable
-sealed class FlashlightAction : ActionData() {
-    abstract val lens: CameraLens
-
-    @Serializable
-    data class Toggle(override val lens: CameraLens) : FlashlightAction() {
-        override val id = ActionId.TOGGLE_FLASHLIGHT
+    data class PhoneCall(
+        val number: String
+    ) : ActionData() {
+        override val id = ActionId.PHONE_CALL
     }
 
     @Serializable
-    data class Enable(override val lens: CameraLens) : FlashlightAction() {
-        override val id = ActionId.ENABLE_FLASHLIGHT
+    data class Url(
+        val url: String
+    ) : ActionData() {
+        override val id = ActionId.URL
     }
 
     @Serializable
-    data class Disable(override val lens: CameraLens) : FlashlightAction() {
-        override val id = ActionId.DISABLE_FLASHLIGHT
-    }
-}
-
-@Serializable
-data class SwitchKeyboardAction(
-    val imeId: String,
-    val savedImeName: String
-) : ActionData() {
-    override val id = ActionId.SWITCH_KEYBOARD
-}
-
-@Serializable
-sealed class DndModeAction : ActionData() {
-
-    @Serializable
-    data class Toggle(val dndMode: DndMode) : DndModeAction() {
-        override val id: ActionId = ActionId.TOGGLE_DND_MODE
+    data class Text(
+        val text: String
+    ) : ActionData() {
+        override val id = ActionId.TEXT
     }
 
     @Serializable
-    data class Enable(val dndMode: DndMode) : DndModeAction() {
-        override val id: ActionId = ActionId.ENABLE_DND_MODE
+    sealed class Wifi : ActionData() {
+        @Serializable
+        object Enable : Wifi() {
+            override val id = ActionId.ENABLE_WIFI
+        }
+
+        @Serializable
+        object Disable : Wifi() {
+            override val id = ActionId.DISABLE_WIFI
+        }
+
+        @Serializable
+        object Toggle : Wifi() {
+            override val id = ActionId.TOGGLE_WIFI
+        }
     }
 
     @Serializable
-    object Disable : DndModeAction() {
-        override val id = ActionId.DISABLE_DND_MODE
-    }
-}
+    sealed class Bluetooth : ActionData() {
+        @Serializable
+        object Enable : Bluetooth() {
+            override val id = ActionId.ENABLE_BLUETOOTH
+        }
 
-@Serializable
-sealed class RotationAction : ActionData() {
-    @Serializable
-    object EnableAuto : RotationAction() {
-        override val id = ActionId.ENABLE_AUTO_ROTATE
-    }
+        @Serializable
+        object Disable : Bluetooth() {
+            override val id = ActionId.DISABLE_BLUETOOTH
+        }
 
-    @Serializable
-    object DisableAuto : RotationAction() {
-        override val id = ActionId.DISABLE_AUTO_ROTATE
-    }
-
-    @Serializable
-    object ToggleAuto : RotationAction() {
-        override val id = ActionId.TOGGLE_AUTO_ROTATE
+        @Serializable
+        object Toggle : Bluetooth() {
+            override val id = ActionId.TOGGLE_BLUETOOTH
+        }
     }
 
     @Serializable
-    object Portrait : RotationAction() {
-        override val id = ActionId.PORTRAIT_MODE
+    sealed class Nfc : ActionData() {
+        @Serializable
+        object Enable : Nfc() {
+            override val id = ActionId.ENABLE_NFC
+        }
+
+        @Serializable
+        object Disable : Nfc() {
+            override val id = ActionId.DISABLE_NFC
+        }
+
+        @Serializable
+        object Toggle : Nfc() {
+            override val id = ActionId.TOGGLE_NFC
+        }
     }
 
     @Serializable
-    object Landscape : RotationAction() {
-        override val id = ActionId.LANDSCAPE_MODE
+    sealed class AirplaneMode : ActionData() {
+        @Serializable
+        object Enable : AirplaneMode() {
+            override val id = ActionId.ENABLE_AIRPLANE_MODE
+        }
+
+        @Serializable
+        object Disable : AirplaneMode() {
+            override val id = ActionId.DISABLE_AIRPLANE_MODE
+        }
+
+        @Serializable
+        object Toggle : AirplaneMode() {
+            override val id = ActionId.TOGGLE_AIRPLANE_MODE
+        }
     }
 
     @Serializable
-    object SwitchOrientation : RotationAction() {
-        override val id = ActionId.SWITCH_ORIENTATION
+    sealed class MobileData : ActionData() {
+        @Serializable
+        object Enable : MobileData() {
+            override val id = ActionId.ENABLE_MOBILE_DATA
+        }
+
+        @Serializable
+        object Disable : MobileData() {
+            override val id = ActionId.DISABLE_MOBILE_DATA
+        }
+
+        @Serializable
+        object Toggle : MobileData() {
+            override val id = ActionId.TOGGLE_MOBILE_DATA
+        }
     }
 
     @Serializable
-    data class CycleRotations(
-        val orientations: List<Orientation>
-    ) : RotationAction() {
-        override val id = ActionId.CYCLE_ROTATIONS
-    }
-}
+    sealed class Brightness : ActionData() {
+        @Serializable
+        object EnableAuto : ActionData.Brightness() {
+            override val id = ActionId.ENABLE_AUTO_BRIGHTNESS
+        }
 
-@Serializable
-sealed class ControlMediaForAppAction : ActionData() {
-    abstract val packageName: String
+        @Serializable
+        object DisableAuto : ActionData.Brightness() {
+            override val id = ActionId.DISABLE_AUTO_BRIGHTNESS
+        }
 
-    @Serializable
-    data class Pause(override val packageName: String) : ControlMediaForAppAction() {
-        override val id = ActionId.PAUSE_MEDIA_PACKAGE
-    }
+        @Serializable
+        object ToggleAuto : ActionData.Brightness() {
+            override val id = ActionId.TOGGLE_AUTO_BRIGHTNESS
+        }
 
-    @Serializable
-    data class Play(override val packageName: String) : ControlMediaForAppAction() {
-        override val id = ActionId.PLAY_MEDIA_PACKAGE
-    }
+        @Serializable
+        object Increase : ActionData.Brightness() {
+            override val id = ActionId.INCREASE_BRIGHTNESS
+        }
 
-    @Serializable
-    data class PlayPause(override val packageName: String) : ControlMediaForAppAction() {
-        override val id = ActionId.PLAY_PAUSE_MEDIA_PACKAGE
-    }
-
-    @Serializable
-    data class NextTrack(override val packageName: String) : ControlMediaForAppAction() {
-        override val id = ActionId.NEXT_TRACK_PACKAGE
+        @Serializable
+        object Decrease : ActionData.Brightness() {
+            override val id = ActionId.DECREASE_BRIGHTNESS
+        }
     }
 
     @Serializable
-    data class PreviousTrack(override val packageName: String) : ControlMediaForAppAction() {
-        override val id = ActionId.PREVIOUS_TRACK_PACKAGE
+    sealed class StatusBar : ActionData() {
+        @Serializable
+        object ExpandNotifications : ActionData.StatusBar() {
+            override val id = ActionId.EXPAND_NOTIFICATION_DRAWER
+        }
+
+        @Serializable
+        object ToggleNotifications : ActionData.StatusBar() {
+            override val id = ActionId.TOGGLE_NOTIFICATION_DRAWER
+        }
+
+        @Serializable
+        object ExpandQuickSettings : ActionData.StatusBar() {
+            override val id = ActionId.EXPAND_QUICK_SETTINGS
+        }
+
+        @Serializable
+        object ToggleQuickSettings : ActionData.StatusBar() {
+            override val id = ActionId.TOGGLE_QUICK_SETTINGS
+        }
+
+        @Serializable
+        object Collapse : ActionData.StatusBar() {
+            override val id = ActionId.COLLAPSE_STATUS_BAR
+        }
     }
 
     @Serializable
-    data class FastForward(override val packageName: String) : ControlMediaForAppAction() {
-        override val id = ActionId.FAST_FORWARD_PACKAGE
+    object GoBack : ActionData() {
+        override val id = ActionId.GO_BACK
     }
 
     @Serializable
-    data class Rewind(override val packageName: String) : ControlMediaForAppAction() {
-        override val id = ActionId.REWIND_PACKAGE
-    }
-}
-
-
-@Serializable
-sealed class ControlMediaAction : ActionData() {
-    @Serializable
-    object Pause : ControlMediaAction() {
-        override val id = ActionId.PAUSE_MEDIA
+    object GoHome : ActionData() {
+        override val id = ActionId.GO_HOME
     }
 
     @Serializable
-    object Play : ControlMediaAction() {
-        override val id = ActionId.PLAY_MEDIA
+    object OpenRecents : ActionData() {
+        override val id = ActionId.OPEN_RECENTS
     }
 
     @Serializable
-    object PlayPause : ControlMediaAction() {
-        override val id = ActionId.PLAY_PAUSE_MEDIA
+    object GoLastApp : ActionData() {
+        override val id = ActionId.GO_LAST_APP
     }
 
     @Serializable
-    object NextTrack : ControlMediaAction() {
-        override val id = ActionId.NEXT_TRACK
+    object OpenMenu : ActionData() {
+        override val id = ActionId.OPEN_MENU
     }
 
     @Serializable
-    object PreviousTrack : ControlMediaAction() {
-        override val id = ActionId.PREVIOUS_TRACK
+    object ToggleSplitScreen : ActionData() {
+        override val id = ActionId.TOGGLE_SPLIT_SCREEN
     }
 
     @Serializable
-    object FastForward : ControlMediaAction() {
-        override val id = ActionId.FAST_FORWARD
+    object Screenshot : ActionData() {
+        override val id = ActionId.SCREENSHOT
     }
 
     @Serializable
-    object Rewind : ControlMediaAction() {
-        override val id = ActionId.REWIND
-    }
-}
-
-@Serializable
-data class IntentAction(
-    val description: String,
-    val target: IntentTarget,
-    val uri: String
-) : ActionData() {
-    override val id = ActionId.INTENT
-}
-
-@Serializable
-data class TapCoordinateAction(
-    val x: Int,
-    val y: Int,
-    val description: String?
-) : ActionData() {
-    override val id = ActionId.TAP_SCREEN
-}
-
-@Serializable
-data class PhoneCallAction(
-    val number: String
-) : ActionData() {
-    override val id = ActionId.PHONE_CALL
-}
-
-@Serializable
-data class UrlAction(
-    val url: String
-) : ActionData() {
-    override val id = ActionId.URL
-}
-
-@Serializable
-data class TextAction(
-    val text: String
-) : ActionData() {
-    override val id = ActionId.TEXT
-}
-
-@Serializable
-sealed class WifiAction : ActionData() {
-    @Serializable
-    object Enable : WifiAction() {
-        override val id = ActionId.ENABLE_WIFI
+    object MoveCursorToEnd : ActionData() {
+        override val id = ActionId.MOVE_CURSOR_TO_END
     }
 
     @Serializable
-    object Disable : WifiAction() {
-        override val id = ActionId.DISABLE_WIFI
+    object ToggleKeyboard : ActionData() {
+        override val id = ActionId.TOGGLE_KEYBOARD
     }
 
     @Serializable
-    object Toggle : WifiAction() {
-        override val id = ActionId.TOGGLE_WIFI
-    }
-}
-
-@Serializable
-sealed class BluetoothAction : ActionData() {
-    @Serializable
-    object Enable : BluetoothAction() {
-        override val id = ActionId.ENABLE_BLUETOOTH
+    object ShowKeyboard : ActionData() {
+        override val id = ActionId.SHOW_KEYBOARD
     }
 
     @Serializable
-    object Disable : BluetoothAction() {
-        override val id = ActionId.DISABLE_BLUETOOTH
+    object HideKeyboard : ActionData() {
+        override val id = ActionId.HIDE_KEYBOARD
     }
 
     @Serializable
-    object Toggle : BluetoothAction() {
-        override val id = ActionId.TOGGLE_BLUETOOTH
-    }
-}
-
-@Serializable
-sealed class NfcAction : ActionData() {
-    @Serializable
-    object Enable : NfcAction() {
-        override val id = ActionId.ENABLE_NFC
+    object ShowKeyboardPicker : ActionData() {
+        override val id = ActionId.SHOW_KEYBOARD_PICKER
     }
 
     @Serializable
-    object Disable : NfcAction() {
-        override val id = ActionId.DISABLE_NFC
+    object CopyText : ActionData() {
+        override val id = ActionId.TEXT_COPY
     }
 
     @Serializable
-    object Toggle : NfcAction() {
-        override val id = ActionId.TOGGLE_NFC
-    }
-}
-
-@Serializable
-sealed class AirplaneModeAction : ActionData() {
-    @Serializable
-    object Enable : AirplaneModeAction() {
-        override val id = ActionId.ENABLE_AIRPLANE_MODE
+    object PasteText : ActionData() {
+        override val id = ActionId.TEXT_PASTE
     }
 
     @Serializable
-    object Disable : AirplaneModeAction() {
-        override val id = ActionId.DISABLE_AIRPLANE_MODE
+    object CutText : ActionData() {
+        override val id = ActionId.TEXT_CUT
     }
 
     @Serializable
-    object Toggle : AirplaneModeAction() {
-        override val id = ActionId.TOGGLE_AIRPLANE_MODE
-    }
-}
-
-@Serializable
-sealed class MobileDataAction : ActionData() {
-    @Serializable
-    object Enable : MobileDataAction() {
-        override val id = ActionId.ENABLE_MOBILE_DATA
+    object SelectWordAtCursor : ActionData() {
+        override val id = ActionId.SELECT_WORD_AT_CURSOR
     }
 
     @Serializable
-    object Disable : MobileDataAction() {
-        override val id = ActionId.DISABLE_MOBILE_DATA
+    object VoiceAssistant : ActionData() {
+        override val id = ActionId.OPEN_VOICE_ASSISTANT
+    }
+
+
+    @Serializable
+    object DeviceAssistant : ActionData() {
+        override val id = ActionId.OPEN_DEVICE_ASSISTANT
     }
 
     @Serializable
-    object Toggle : MobileDataAction() {
-        override val id = ActionId.TOGGLE_MOBILE_DATA
-    }
-}
-
-@Serializable
-sealed class BrightnessAction : ActionData() {
-    @Serializable
-    object EnableAuto : BrightnessAction() {
-        override val id = ActionId.ENABLE_AUTO_BRIGHTNESS
+    object OpenCamera : ActionData() {
+        override val id = ActionId.OPEN_CAMERA
     }
 
     @Serializable
-    object DisableAuto : BrightnessAction() {
-        override val id = ActionId.DISABLE_AUTO_BRIGHTNESS
+    object LockDevice : ActionData() {
+        override val id = ActionId.LOCK_DEVICE
     }
 
     @Serializable
-    object ToggleAuto : BrightnessAction() {
-        override val id = ActionId.TOGGLE_AUTO_BRIGHTNESS
+    object ScreenOnOff : ActionData() {
+        override val id = ActionId.POWER_ON_OFF_DEVICE
     }
 
     @Serializable
-    object Increase : BrightnessAction() {
-        override val id = ActionId.INCREASE_BRIGHTNESS
+    object SecureLock : ActionData() {
+        override val id = ActionId.SECURE_LOCK_DEVICE
     }
 
     @Serializable
-    object Decrease : BrightnessAction() {
-        override val id = ActionId.DECREASE_BRIGHTNESS
-    }
-}
-
-@Serializable
-sealed class StatusBarAction : ActionData() {
-    @Serializable
-    object ExpandNotifications : StatusBarAction() {
-        override val id = ActionId.EXPAND_NOTIFICATION_DRAWER
+    object ConsumeKeyEvent : ActionData() {
+        override val id = ActionId.CONSUME_KEY_EVENT
     }
 
     @Serializable
-    object ToggleNotifications : StatusBarAction() {
-        override val id = ActionId.TOGGLE_NOTIFICATION_DRAWER
+    object OpenSettings : ActionData() {
+        override val id = ActionId.OPEN_SETTINGS
     }
 
     @Serializable
-    object ExpandQuickSettings : StatusBarAction() {
-        override val id = ActionId.EXPAND_QUICK_SETTINGS
+    object ShowPowerMenu : ActionData() {
+        override val id = ActionId.SHOW_POWER_MENU
     }
 
     @Serializable
-    object ToggleQuickSettings : StatusBarAction() {
-        override val id = ActionId.TOGGLE_QUICK_SETTINGS
+    object DismissLastNotification : ActionData() {
+        override val id: ActionId = ActionId.DISMISS_MOST_RECENT_NOTIFICATION
     }
 
     @Serializable
-    object Collapse : StatusBarAction() {
-        override val id = ActionId.COLLAPSE_STATUS_BAR
+    object DismissAllNotifications : ActionData() {
+        override val id: ActionId = ActionId.DISMISS_ALL_NOTIFICATIONS
     }
-}
-
-@Serializable
-object GoBackAction : ActionData() {
-    override val id = ActionId.GO_BACK
-}
-
-@Serializable
-object GoHomeAction : ActionData() {
-    override val id = ActionId.GO_HOME
-}
-
-@Serializable
-object OpenRecentsAction : ActionData() {
-    override val id = ActionId.OPEN_RECENTS
-}
-
-@Serializable
-object GoLastAppAction : ActionData() {
-    override val id = ActionId.GO_LAST_APP
-}
-
-@Serializable
-object OpenMenuAction : ActionData() {
-    override val id = ActionId.OPEN_MENU
-}
-
-@Serializable
-object ToggleSplitScreenAction : ActionData() {
-    override val id = ActionId.TOGGLE_SPLIT_SCREEN
-}
-
-@Serializable
-object ScreenshotAction : ActionData() {
-    override val id = ActionId.SCREENSHOT
-}
-
-@Serializable
-object MoveCursorToEndAction : ActionData() {
-    override val id = ActionId.MOVE_CURSOR_TO_END
-}
-
-@Serializable
-object ToggleKeyboardAction : ActionData() {
-    override val id = ActionId.TOGGLE_KEYBOARD
-}
-
-@Serializable
-object ShowKeyboardAction : ActionData() {
-    override val id = ActionId.SHOW_KEYBOARD
-}
-
-@Serializable
-object HideKeyboardAction : ActionData() {
-    override val id = ActionId.HIDE_KEYBOARD
-}
-
-@Serializable
-object ShowKeyboardPickerAction : ActionData() {
-    override val id = ActionId.SHOW_KEYBOARD_PICKER
-}
-
-@Serializable
-object CopyTextAction : ActionData() {
-    override val id = ActionId.TEXT_COPY
-}
-
-@Serializable
-object PasteTextAction : ActionData() {
-    override val id = ActionId.TEXT_PASTE
-}
-
-@Serializable
-object CutTextAction : ActionData() {
-    override val id = ActionId.TEXT_CUT
-}
-
-@Serializable
-object SelectWordAtCursorAction : ActionData() {
-    override val id = ActionId.SELECT_WORD_AT_CURSOR
-}
-
-@Serializable
-object VoiceAssistantAction : ActionData() {
-    override val id = ActionId.OPEN_VOICE_ASSISTANT
-}
-
-
-@Serializable
-object DeviceAssistantAction : ActionData() {
-    override val id = ActionId.OPEN_DEVICE_ASSISTANT
-}
-
-@Serializable
-object OpenCameraAction : ActionData() {
-    override val id = ActionId.OPEN_CAMERA
-}
-
-@Serializable
-object LockDeviceAction : ActionData() {
-    override val id = ActionId.LOCK_DEVICE
-}
-
-@Serializable
-object ScreenOnOffAction : ActionData() {
-    override val id = ActionId.POWER_ON_OFF_DEVICE
-}
-
-@Serializable
-object SecureLockAction : ActionData() {
-    override val id = ActionId.SECURE_LOCK_DEVICE
-}
-
-@Serializable
-object ConsumeKeyEventAction : ActionData() {
-    override val id = ActionId.CONSUME_KEY_EVENT
-}
-
-@Serializable
-object OpenSettingsAction : ActionData() {
-    override val id = ActionId.OPEN_SETTINGS
-}
-
-@Serializable
-object ShowPowerMenuAction : ActionData() {
-    override val id = ActionId.SHOW_POWER_MENU
-}
-
-@Serializable
-object DismissLastNotificationAction : ActionData() {
-    override val id: ActionId = ActionId.DISMISS_MOST_RECENT_NOTIFICATION
-}
-
-@Serializable
-object DismissAllNotificationsAction : ActionData() {
-    override val id: ActionId = ActionId.DISMISS_ALL_NOTIFICATIONS
 }

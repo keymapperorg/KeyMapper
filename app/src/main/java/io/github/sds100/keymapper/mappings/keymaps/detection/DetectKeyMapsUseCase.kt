@@ -87,7 +87,7 @@ class DetectKeyMapsUseCaseImpl(
         keyCode: Int,
         metaState: Int,
         deviceId: Int,
-        keyEventAction: InputEventType,
+        inputEventType: InputEventType,
         scanCode: Int
     ) {
         Timber.d("Imitate button press ${KeyEvent.keyCodeToString(keyCode)}, key code: $keyCode, device id: $deviceId, meta state: $metaState, scan code: $scanCode")
@@ -106,7 +106,7 @@ class DetectKeyMapsUseCaseImpl(
             else -> keyMapperImeMessenger.inputKeyEvent(
                 InputKeyModel(
                     keyCode,
-                    keyEventAction,
+                    inputEventType,
                     metaState,
                     deviceId,
                     scanCode
@@ -133,7 +133,7 @@ interface DetectKeyMapsUseCase : DetectMappingUseCase {
         keyCode: Int,
         metaState: Int = 0,
         deviceId: Int = 0,
-        keyEventAction: InputEventType = InputEventType.DOWN_UP,
+        inputEventType: InputEventType = InputEventType.DOWN_UP,
         scanCode: Int = 0
     )
 
