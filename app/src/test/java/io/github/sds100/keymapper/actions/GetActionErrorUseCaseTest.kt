@@ -4,7 +4,6 @@ import android.view.KeyEvent
 import io.github.sds100.keymapper.shizuku.ShizukuAdapter
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
-import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.util.Error
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -63,7 +62,6 @@ class GetActionErrorUseCaseTest {
     fun `dont show Shizuku errors if a compatible ime is selected`() = coroutineScope.runBlockingTest {
         //GIVEN
         whenever(mockShizukuAdapter.isInstalled).then { MutableStateFlow(true) }
-        whenever(mockShizukuAdapter.isStarted).then { MutableStateFlow(false) }
         whenever(mockInputMethodAdapter.chosenIme).then {
             MutableStateFlow(ImeInfo(
                 id = "ime_id",
@@ -91,7 +89,6 @@ class GetActionErrorUseCaseTest {
         //GIVEN
         whenever(mockShizukuAdapter.isInstalled).then { MutableStateFlow(true) }
         whenever(mockShizukuAdapter.isStarted).then { MutableStateFlow(false) }
-        whenever(mockPermissionAdapter.isGranted(Permission.SHIZUKU)).then { true }
 
         whenever(mockInputMethodAdapter.chosenIme).then {
             MutableStateFlow(ImeInfo(
