@@ -16,6 +16,19 @@ Here is how to fix it:
 
 4. In some **very rare** cases there is a bug in Key Mapper that causes it to crash while it is running in the background. You will need to send a bug report so that the developer can investigate the issue. Tap "Report bug" in Key Mapper's home screen menu.
 
+## I can't unlock my phone because there is no keyboard!
+
+You will need to reboot your device into "safe mode". The way to do this varies between devices so if these instructions don't work you will have to research how do to this for your device online.
+
+For most devices you must...
+
+1. Turn on your device.
+2. Hold down on the power button until the on-screen power menu pops up.
+3. Hold down on the "power off" (or sometimes "restart") button in the power menu.
+4. A popup should say whether you want to boot into safe mode. Do this.
+5. Unlock your device after it has rebooted into safe mode.
+6. Reboot your device into normal mode by pressing power off or restart in the power menu. You do **not** need to hold down on the "power off"/"restart" button to boot into safe mode.
+
 ## External keyboard language is set to English US when using Key Mapper (Android 11 only)
 
 This is a bug in Android 11 and should be fixed in Android 12. There is a setting in Key Mapper 2.3.0+ that helps you work around this issue. Read more [here](https://sds100.github.io/KeyMapper/redirects/android-11-device-id-bug-work-around).
