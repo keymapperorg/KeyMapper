@@ -12,7 +12,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.github.sds100.keymapper.databinding.FragmentOptionsBinding
 import io.github.sds100.keymapper.divider
 import io.github.sds100.keymapper.system.url.UrlUtils
-import io.github.sds100.keymapper.ui.*
 import io.github.sds100.keymapper.ui.utils.configuredCheckBox
 import io.github.sds100.keymapper.ui.utils.configuredRadioButtonPair
 import io.github.sds100.keymapper.ui.utils.configuredRadioButtonTriple
@@ -76,8 +75,6 @@ abstract class OptionsBottomSheetFragment : BottomSheetDialogFragment() {
     }
 
     private fun populateList(listItems: List<ListItem>) {
-        binding.epoxyRecyclerView.recycledViewPool.clear()
-        
         binding.epoxyRecyclerView.withModels {
             listItems.forEach { model ->
                 if (model is RadioButtonPairListItem) {
