@@ -20,7 +20,6 @@ import io.github.sds100.keymapper.ui.utils.configuredSlider
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.flow.collectLatest
-import timber.log.Timber
 
 /**
  * Created by sds100 on 12/04/2021.
@@ -74,7 +73,6 @@ abstract class OptionsBottomSheetFragment<BINDING : ViewDataBinding> : BottomShe
     }
 
     private fun populateList(listItems: List<ListItem>) {
-        Timber.e("populate list $listItems")
         getRecyclerView(binding).withModels {
             listItems.forEach { model ->
                 if (model is RadioButtonPairListItem) {
@@ -91,7 +89,6 @@ abstract class OptionsBottomSheetFragment<BINDING : ViewDataBinding> : BottomShe
 
                 if (model is CheckBoxListItem) {
                     configuredCheckBox(model) {
-                        Timber.e(("on checked change $model $it"))
                         viewModel.setCheckboxValue(model.id, it)
                     }
                 }
