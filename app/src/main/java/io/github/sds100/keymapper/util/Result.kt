@@ -23,7 +23,7 @@ sealed class Error : Result<Nothing>() {
     data class ExtraNotFound(val extraId: String) : Error()
     data class SdkVersionTooLow(val minSdk: Int) : Error()
     data class SdkVersionTooHigh(val maxSdk: Int) : Error()
-    data class InputMethodNotFound(val id: String) : Error()
+    data class InputMethodNotFound(val imeLabel: String) : Error()
     object NoVoiceAssistant : Error()
     object NoDeviceAssistant : Error()
     object NoCameraApp : Error()
@@ -146,6 +146,12 @@ suspend infix fun <T, U> Result<T>.suspendThen(f: suspend (T) -> Result<U>) =
 inline infix fun <T> Result<T>.otherwise(f: (error: Error) -> Result<T>) =
     when (this) {
         is Success -> this
+        is Error -> f(this)
+    }
+
+inline infix fun <T> Result<T>.valueIfFailure(f: (error: Error) -> T): T =
+    when (this) {
+        is Success -> this.value
         is Error -> f(this)
     }
 

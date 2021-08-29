@@ -57,11 +57,16 @@ data class ConstraintEntity(
         const val WIFI_CONNECTED = "wifi_connected"
         const val WIFI_DISCONNECTED = "wifi_disconnected"
 
+        const val IME_CHOSEN = "ime_chosen"
+        const val IME_NOT_CHOSEN = "ime_not_chosen"
+
         const val EXTRA_PACKAGE_NAME = "extra_package_name"
         const val EXTRA_BT_ADDRESS = "extra_bluetooth_device_address"
         const val EXTRA_BT_NAME = "extra_bluetooth_device_name"
         const val EXTRA_FLASHLIGHT_CAMERA_LENS = "extra_flashlight_camera_lens"
         const val EXTRA_SSID = "extra_ssid"
+        const val EXTRA_IME_ID = "extra_ime_id"
+        const val EXTRA_IME_LABEL = "extra_ime_label"
 
         val DESERIALIZER = jsonDeserializer {
             val type by it.json.byString(NAME_TYPE)

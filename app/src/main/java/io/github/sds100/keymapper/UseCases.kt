@@ -77,12 +77,12 @@ object UseCases {
         ServiceLocator.soundsManager(ctx),
         ServiceLocator.shizukuAdapter(ctx)
     )
-
-
+    
     fun getConstraintError(ctx: Context) = GetConstraintErrorUseCaseImpl(
         ServiceLocator.packageManagerAdapter(ctx),
         ServiceLocator.permissionAdapter(ctx),
         ServiceLocator.systemFeatureAdapter(ctx),
+        ServiceLocator.inputMethodAdapter(ctx)
     )
 
     fun onboarding(ctx: Context) = OnboardingUseCaseImpl(
@@ -132,7 +132,8 @@ object UseCases {
         ServiceLocator.devicesAdapter(service),
         ServiceLocator.displayAdapter(service),
         ServiceLocator.cameraAdapter(service),
-        ServiceLocator.networkAdapter(service)
+        ServiceLocator.networkAdapter(service),
+        ServiceLocator.inputMethodAdapter(service)
     )
 
     fun performActions(ctx: Context, service: IAccessibilityService) =

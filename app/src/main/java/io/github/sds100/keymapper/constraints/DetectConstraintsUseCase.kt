@@ -4,6 +4,7 @@ import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.display.DisplayAdapter
+import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.media.MediaAdapter
 import io.github.sds100.keymapper.system.network.NetworkAdapter
 
@@ -17,7 +18,8 @@ class DetectConstraintsUseCaseImpl(
     private val devicesAdapter: DevicesAdapter,
     private val displayAdapter: DisplayAdapter,
     private val cameraAdapter: CameraAdapter,
-    private val networkAdapter: NetworkAdapter
+    private val networkAdapter: NetworkAdapter,
+    private val inputMethodAdapter: InputMethodAdapter
 ) : DetectConstraintsUseCase {
 
     override fun getSnapshot(): ConstraintSnapshotImpl {
@@ -27,7 +29,8 @@ class DetectConstraintsUseCaseImpl(
             devicesAdapter,
             displayAdapter,
             networkAdapter,
-            cameraAdapter
+            cameraAdapter,
+            inputMethodAdapter
         )
     }
 }

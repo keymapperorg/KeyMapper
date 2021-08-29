@@ -1,6 +1,8 @@
 package io.github.sds100.keymapper.constraints
 
 import android.os.Build
+import io.github.sds100.keymapper.system.inputmethod.ImeInfo
+import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.util.Error
 
@@ -9,7 +11,8 @@ import io.github.sds100.keymapper.util.Error
  */
 
 class CreateConstraintUseCaseImpl(
-    private val networkAdapter: NetworkAdapter
+    private val networkAdapter: NetworkAdapter,
+    private val inputMethodAdapter: InputMethodAdapter
 ) : CreateConstraintUseCase {
 
     override fun isSupported(constraint: ChooseConstraintType): Error? {
@@ -26,9 +29,14 @@ class CreateConstraintUseCaseImpl(
     override fun getKnownWiFiSSIDs(): List<String>? {
         return networkAdapter.getKnownWifiSSIDs()
     }
+
+    override fun getEnabledInputMethods(): List<ImeInfo> {
+        return inputMethodAdapter.inputMethods.value
+    }
 }
 
 interface CreateConstraintUseCase {
     fun isSupported(constraint: ChooseConstraintType): Error?
     fun getKnownWiFiSSIDs(): List<String>?
+    fun getEnabledInputMethods(): List<ImeInfo>
 }

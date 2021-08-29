@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.util.handle
 import io.github.sds100.keymapper.util.ui.IconInfo
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.TintType
+import io.github.sds100.keymapper.util.valueIfFailure
 
 /**
  * Created by sds100 on 18/03/2021.
@@ -112,6 +113,22 @@ class ConstraintUiHelper(
         }
         Constraint.WifiOff -> getString(R.string.constraint_wifi_off)
         Constraint.WifiOn -> getString(R.string.constraint_wifi_on)
+
+        is Constraint.ImeChosen -> {
+            val label = getInputMethodLabel(constraint.imeId).valueIfFailure {
+                constraint.imeLabel
+            }
+
+            getString(R.string.constraint_ime_chosen_description, label)
+        }
+
+        is Constraint.ImeNotChosen -> {
+            val label = getInputMethodLabel(constraint.imeId).valueIfFailure {
+                constraint.imeLabel
+            }
+
+            getString(R.string.constraint_ime_not_chosen_description, label)
+        }
     }
 
     fun getIcon(constraint: Constraint): IconInfo? = when (constraint) {
@@ -197,6 +214,16 @@ class ConstraintUiHelper(
         )
         Constraint.WifiOn -> IconInfo(
             drawable = getDrawable(R.drawable.ic_outline_wifi_24),
+            tintType = TintType.OnSurface
+        )
+
+        is Constraint.ImeChosen -> IconInfo(
+            drawable = getDrawable(R.drawable.ic_outline_keyboard_24),
+            tintType = TintType.OnSurface
+        )
+
+        is Constraint.ImeNotChosen -> IconInfo(
+            drawable = getDrawable(R.drawable.ic_outline_keyboard_24),
             tintType = TintType.OnSurface
         )
     }

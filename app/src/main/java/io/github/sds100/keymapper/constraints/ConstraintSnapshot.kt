@@ -6,6 +6,7 @@ import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.display.DisplayAdapter
 import io.github.sds100.keymapper.system.display.Orientation
+import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.media.MediaAdapter
 import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.util.firstBlocking
@@ -23,7 +24,8 @@ class ConstraintSnapshotImpl(
     devicesAdapter: DevicesAdapter,
     displayAdapter: DisplayAdapter,
     networkAdapter: NetworkAdapter,
-    private val cameraAdapter: CameraAdapter
+    private val cameraAdapter: CameraAdapter,
+    inputMethodAdapter: InputMethodAdapter
 ) : ConstraintSnapshot {
     private val appInForeground: String? by lazy { accessibilityService.rootNode?.packageName }
     private val connectedBluetoothDevices: Set<BluetoothDeviceInfo> by lazy { devicesAdapter.connectedBluetoothDevices.value }
@@ -32,6 +34,7 @@ class ConstraintSnapshotImpl(
     private val appsPlayingMedia: List<String> by lazy { mediaAdapter.getPackagesPlayingMedia() }
     private val isWifiEnabled: Boolean by lazy { networkAdapter.isWifiEnabled() }
     private val connectedWifiSSID: String? by lazy { networkAdapter.connectedWifiSSID }
+    private val chosenImeId: String? by lazy { inputMethodAdapter.chosenIme.value?.id }
 
     override fun isSatisfied(constraintState: ConstraintState): Boolean {
         return when (constraintState.mode) {
@@ -86,6 +89,8 @@ class ConstraintSnapshotImpl(
 
             Constraint.WifiOff -> !isWifiEnabled
             Constraint.WifiOn -> isWifiEnabled
+            is Constraint.ImeChosen -> chosenImeId == constraint.imeId
+            is Constraint.ImeNotChosen -> chosenImeId != constraint.imeId
         }
     }
 }

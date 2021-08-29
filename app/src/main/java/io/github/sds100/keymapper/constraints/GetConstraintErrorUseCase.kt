@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.constraints
 import android.content.pm.PackageManager
 import android.os.Build
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
+import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.permissions.SystemFeatureAdapter
@@ -18,6 +19,7 @@ class GetConstraintErrorUseCaseImpl(
     private val packageManager: PackageManagerAdapter,
     private val permissionAdapter: PermissionAdapter,
     private val systemFeatureAdapter: SystemFeatureAdapter,
+    private val inputMethodAdapter: InputMethodAdapter
 ) : GetConstraintErrorUseCase {
 
     override val invalidateConstraintErrors: Flow<Unit> = permissionAdapter.onPermissionsUpdate
@@ -79,6 +81,12 @@ class GetConstraintErrorUseCaseImpl(
             is Constraint.WifiConnected, is Constraint.WifiDisconnected -> {
                 if (!permissionAdapter.isGranted(Permission.ACCESS_FINE_LOCATION)) {
                     return Error.PermissionDenied(Permission.ACCESS_FINE_LOCATION)
+                }
+            }
+
+            is Constraint.ImeChosen -> {
+                if (inputMethodAdapter.inputMethods.value.none { it.id == constraint.imeId }) {
+                    return Error.InputMethodNotFound(constraint.imeLabel)
                 }
             }
         }

@@ -1,11 +1,13 @@
 package io.github.sds100.keymapper.constraints
 
-import androidx.lifecycle.*
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.display.Orientation
-import io.github.sds100.keymapper.ui.*
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.getFullMessage
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -51,7 +53,10 @@ class ChooseConstraintViewModel(
             ChooseConstraintType.WIFI_ON,
             ChooseConstraintType.WIFI_OFF,
             ChooseConstraintType.WIFI_CONNECTED,
-            ChooseConstraintType.WIFI_DISCONNECTED
+            ChooseConstraintType.WIFI_DISCONNECTED,
+
+            ChooseConstraintType.IME_CHOSEN,
+            ChooseConstraintType.IME_NOT_CHOSEN
         )
     }
 
@@ -242,6 +247,24 @@ class ChooseConstraintViewModel(
                             _returnResult.emit(Constraint.WifiDisconnected(chosenSSID))
                     }
                 }
+
+                ChooseConstraintType.IME_CHOSEN, ChooseConstraintType.IME_NOT_CHOSEN -> {
+                    val inputMethods = useCase.getEnabledInputMethods()
+                    val items = inputMethods.map { it.id to it.label }
+                    val dialog = PopupUi.SingleChoice(items = items)
+
+                    val result = showPopup("choose_input_method", dialog) ?: return@launch
+
+                    val imeInfo = inputMethods.single { it.id == result }
+
+                    when (constraintType) {
+                        ChooseConstraintType.IME_CHOSEN ->
+                            _returnResult.emit(Constraint.ImeChosen(imeInfo.id, imeInfo.label))
+
+                        ChooseConstraintType.IME_NOT_CHOSEN ->
+                            _returnResult.emit(Constraint.ImeNotChosen(imeInfo.id, imeInfo.label))
+                    }
+                }
             }
         }
     }
@@ -286,6 +309,8 @@ class ChooseConstraintViewModel(
                 ChooseConstraintType.WIFI_OFF -> getString(R.string.constraint_wifi_off)
                 ChooseConstraintType.WIFI_CONNECTED -> getString(R.string.constraint_wifi_connected)
                 ChooseConstraintType.WIFI_DISCONNECTED -> getString(R.string.constraint_wifi_disconnected)
+                ChooseConstraintType.IME_CHOSEN -> getString(R.string.constraint_ime_chosen)
+                ChooseConstraintType.IME_NOT_CHOSEN -> getString(R.string.constraint_ime_not_chosen)
             }
 
             val error = useCase.isSupported(type)

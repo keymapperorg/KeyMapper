@@ -44,7 +44,7 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider) = when (this) {
         R.string.error_sdk_version_too_high,
         BuildUtils.getSdkVersionName(maxSdk)
     )
-    is Error.InputMethodNotFound -> resourceProvider.getString(R.string.error_ime_not_found, id)
+    is Error.InputMethodNotFound -> resourceProvider.getString(R.string.error_ime_not_found, imeLabel)
     is Error.FrontFlashNotFound -> resourceProvider.getString(R.string.error_front_flash_not_found)
     is Error.BackFlashNotFound -> resourceProvider.getString(R.string.error_back_flash_not_found)
     is Error.DeviceNotFound -> resourceProvider.getString(R.string.error_device_not_found)

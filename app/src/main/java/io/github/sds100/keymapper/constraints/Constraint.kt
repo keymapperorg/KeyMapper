@@ -86,6 +86,18 @@ sealed class Constraint {
          */
         val ssid: String?
     ) : Constraint()
+
+    @Serializable
+    data class ImeChosen(
+        val imeId: String,
+        val imeLabel: String
+    ) : Constraint()
+
+    @Serializable
+    data class ImeNotChosen(
+        val imeId: String,
+        val imeLabel: String
+    ) : Constraint()
 }
 
 object ConstraintModeEntityMapper {
@@ -133,6 +145,18 @@ object ConstraintEntityMapper {
             return extraValue
         }
 
+        fun getImeId(): String {
+            val extraValue =
+                entity.extras.getData(ConstraintEntity.EXTRA_IME_ID).valueOrNull()!!
+            return extraValue
+        }
+
+        fun getImeLabel(): String {
+            val extraValue =
+                entity.extras.getData(ConstraintEntity.EXTRA_IME_LABEL).valueOrNull()!!
+            return extraValue
+        }
+
         return when (entity.type) {
             ConstraintEntity.APP_FOREGROUND -> Constraint.AppInForeground(getPackageName())
             ConstraintEntity.APP_NOT_FOREGROUND -> Constraint.AppNotInForeground(getPackageName())
@@ -165,6 +189,9 @@ object ConstraintEntityMapper {
             ConstraintEntity.WIFI_OFF -> Constraint.WifiOff
             ConstraintEntity.WIFI_CONNECTED -> Constraint.WifiConnected(getSsid())
             ConstraintEntity.WIFI_DISCONNECTED -> Constraint.WifiDisconnected(getSsid())
+
+            ConstraintEntity.IME_CHOSEN -> Constraint.ImeChosen(getImeId(), getImeLabel())
+            ConstraintEntity.IME_NOT_CHOSEN -> Constraint.ImeNotChosen(getImeId(), getImeLabel())
 
             else -> throw Exception("don't know how to convert constraint entity with type ${entity.type}")
         }
@@ -253,5 +280,17 @@ object ConstraintEntityMapper {
 
         Constraint.WifiOff -> ConstraintEntity(ConstraintEntity.WIFI_OFF)
         Constraint.WifiOn -> ConstraintEntity(ConstraintEntity.WIFI_ON)
+
+        is Constraint.ImeChosen -> {
+            ConstraintEntity(ConstraintEntity.IME_CHOSEN,
+                Extra(ConstraintEntity.EXTRA_IME_ID, constraint.imeId),
+                Extra(ConstraintEntity.EXTRA_IME_LABEL, constraint.imeLabel))
+        }
+
+        is Constraint.ImeNotChosen -> {
+            ConstraintEntity(ConstraintEntity.IME_NOT_CHOSEN,
+                Extra(ConstraintEntity.EXTRA_IME_ID, constraint.imeId),
+                Extra(ConstraintEntity.EXTRA_IME_LABEL, constraint.imeLabel))
+        }
     }
 }

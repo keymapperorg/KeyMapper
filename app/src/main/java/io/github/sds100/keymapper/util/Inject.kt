@@ -81,7 +81,8 @@ object Inject {
     fun chooseConstraintListViewModel(ctx: Context): ChooseConstraintViewModel.Factory {
         return ChooseConstraintViewModel.Factory(
             CreateConstraintUseCaseImpl(
-                ServiceLocator.networkAdapter(ctx)
+                ServiceLocator.networkAdapter(ctx),
+                ServiceLocator.inputMethodAdapter(ctx)
             ),
             ServiceLocator.resourceProvider(ctx)
         )
