@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.actions
 
+import android.view.KeyEvent
 import io.github.sds100.keymapper.actions.system.SystemActionId
 import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.devices.FakeDevicesAdapter
@@ -77,7 +78,7 @@ class PerformActionsUseCaseTest {
             soundsManager = mock()
         )
     }
-
+    
     /**
      * issue #771
      */
@@ -93,6 +94,120 @@ class PerformActionsUseCaseTest {
 
         //THEN
         verify(mockToastAdapter, never()).showPopupMessage(anyOrNull())
+    }
+
+    /**
+     * issue #772
+     */
+    @Test
+    fun `set the device id of key event actions to a connected game controller if is a game pad key code`() = coroutineScope.runBlockingTest {
+        //GIVEN
+        val fakeGamePad = InputDeviceInfo(
+            descriptor = "game_pad",
+            name = "Game pad",
+            id = 1,
+            isExternal = true,
+            isGameController = true
+        )
+
+        fakeDevicesAdapter.connectedInputDevices.value = State.Data(listOf(fakeGamePad))
+
+        val action = KeyEventAction(
+            keyCode = KeyEvent.KEYCODE_BUTTON_A,
+            device = null
+        )
+
+        //WHEN
+        useCase.perform(action)
+
+        //THEN
+        val expectedInputKeyModel = InputKeyModel(
+            keyCode = KeyEvent.KEYCODE_BUTTON_A,
+            inputType = InputEventType.DOWN_UP,
+            metaState = 0,
+            deviceId = fakeGamePad.id,
+            scanCode = 0,
+            repeat = 0
+        )
+
+        verify(mockKeyMapperImeMessenger, times(1)).inputKeyEvent(expectedInputKeyModel)
+    }
+
+    /**
+     * issue #772
+     */
+    @Test
+    fun `don't set the device id of key event actions to a connected game controller if there are no connected game controllers`() = coroutineScope.runBlockingTest {
+        //GIVEN
+        fakeDevicesAdapter.connectedInputDevices.value = State.Data(emptyList())
+
+        val action = KeyEventAction(
+            keyCode = KeyEvent.KEYCODE_BUTTON_A,
+            device = null
+        )
+
+        //WHEN
+        useCase.perform(action)
+
+        //THEN
+        val expectedInputKeyModel = InputKeyModel(
+            keyCode = KeyEvent.KEYCODE_BUTTON_A,
+            inputType = InputEventType.DOWN_UP,
+            metaState = 0,
+            deviceId = 0,
+            scanCode = 0,
+            repeat = 0
+        )
+
+        verify(mockKeyMapperImeMessenger, times(1)).inputKeyEvent(expectedInputKeyModel)
+    }
+
+    /**
+     * issue #772
+     */
+    @Test
+    fun `don't set the device id of key event actions to a connected game controller if the action has a custom device set`() = coroutineScope.runBlockingTest {
+        //GIVEN
+        val fakeGamePad = InputDeviceInfo(
+            descriptor = "game_pad",
+            name = "Game pad",
+            id = 1,
+            isExternal = true,
+            isGameController = true
+        )
+
+        val fakeKeyboard = InputDeviceInfo(
+            descriptor = "keyboard",
+            name = "Keyboard",
+            id = 2,
+            isExternal = true,
+            isGameController = false
+        )
+
+        fakeDevicesAdapter.connectedInputDevices.value = State.Data(listOf(fakeGamePad, fakeKeyboard))
+
+        val action = KeyEventAction(
+            keyCode = KeyEvent.KEYCODE_BUTTON_A,
+            device = KeyEventAction.Device(
+                descriptor = "keyboard",
+                name = "Keyboard"
+            )
+        )
+
+        //WHEN
+        useCase.perform(action)
+
+        //THEN
+        val expectedInputKeyModel = InputKeyModel(
+            keyCode = KeyEvent.KEYCODE_BUTTON_A,
+            inputType = InputEventType.DOWN_UP,
+            metaState = 0,
+            deviceId = fakeKeyboard.id,
+            scanCode = 0,
+            repeat = 0
+        )
+
+        verify(mockKeyMapperImeMessenger, times(1)).inputKeyEvent(expectedInputKeyModel)
     }
 
     /**
@@ -118,13 +233,16 @@ class PerformActionsUseCaseTest {
                         descriptor = descriptor,
                         name = "fake_name_1",
                         id = 10,
-                        isExternal = true
+                        isExternal = true,
+                        isGameController = false
                     ),
+
                     InputDeviceInfo(
                         descriptor = descriptor,
                         name = "fake_name_2",
                         id = 11,
-                        isExternal = true
+                        isExternal = true,
+                        isGameController = false
                     )
                 )
             )
@@ -170,7 +288,8 @@ class PerformActionsUseCaseTest {
                         descriptor = descriptor,
                         name = "fake_name",
                         id = 10,
-                        isExternal = true
+                        isExternal = true,
+                        isGameController = false
                     )
                 )
             )

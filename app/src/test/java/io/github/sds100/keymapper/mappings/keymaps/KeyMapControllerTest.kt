@@ -3010,25 +3010,28 @@ class KeyMapControllerTest {
         }
     }
 
-    private fun triggerKeyDeviceToInputDevice(device: TriggerKeyDevice, deviceId: Int = 0): InputDeviceInfo {
+    private fun triggerKeyDeviceToInputDevice(device: TriggerKeyDevice, deviceId: Int = 0, isGameController: Boolean = false): InputDeviceInfo {
         return when (device) {
             TriggerKeyDevice.Any -> InputDeviceInfo(
                 descriptor = "any_device",
                 name = "any_device_name",
                 isExternal = false,
-                id = deviceId
+                id = deviceId,
+                isGameController = isGameController
             )
             is TriggerKeyDevice.External -> InputDeviceInfo(
                 descriptor = device.descriptor,
                 name = "device_name",
                 isExternal = true,
-                id = deviceId
+                id = deviceId,
+                isGameController = isGameController
             )
             TriggerKeyDevice.Internal -> InputDeviceInfo(
                 descriptor = "internal_device",
                 name = "internal_device_name",
                 isExternal = false,
-                id = deviceId
+                id = deviceId,
+                isGameController = isGameController
             )
         }
     }
