@@ -40,3 +40,7 @@ Your mapping will only work if the front or back flashlight is on/off.
 ### WiFi on/off/connected/disconnect (2.4.0+)
 
 Your mapping will only work if it your device's WiFi is on/off or connected/disconnected to a network. 
+
+### Input method is/not chosen (2.4.0+)
+
+Your mapping will only work if the input method that you are using matches the constraint.
