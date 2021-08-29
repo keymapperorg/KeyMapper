@@ -41,14 +41,16 @@ class AutoSwitchImeControllerTest {
             descriptor = "fake_keyboard_descriptor",
             name = "fake keyboard",
             id = 1,
-            isExternal = true
+            isExternal = true,
+            isGameController = false
         )
 
         private val FAKE_CONTROLLER = InputDeviceInfo(
             descriptor = "fake_controller_descriptor",
             name = "fake controller",
             id = 2,
-            isExternal = true
+            isExternal = true,
+            isGameController = true
         )
 
         private val KEY_MAPPER_IME = ImeInfo(

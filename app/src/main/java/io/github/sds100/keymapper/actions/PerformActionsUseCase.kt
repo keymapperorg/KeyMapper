@@ -27,6 +27,7 @@ import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeMessenger
 import io.github.sds100.keymapper.system.intents.IntentAdapter
+import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
 import io.github.sds100.keymapper.system.lock.LockScreenAdapter
 import io.github.sds100.keymapper.system.media.MediaAdapter
 import io.github.sds100.keymapper.system.navigation.OpenMenuHelper
@@ -737,7 +738,19 @@ class PerformActionsUseCaseImpl(
 
     private fun getDeviceIdForKeyEventAction(action: ActionData.InputKeyEvent): Int {
         if (action.device?.descriptor == null) {
-            return -1
+            //automatically select a game controller as the input device for game controller key events
+
+            if (KeyEventUtils.isGamepadKeyCode(action.keyCode)) {
+                deviceAdapter.connectedInputDevices.value.ifIsData { inputDevices ->
+                    val device = inputDevices.find { it.isGameController }
+
+                    if (device != null) {
+                        return device.id
+                    }
+                }
+            }
+
+            return 0
         }
 
         val inputDevices = deviceAdapter.connectedInputDevices.value

@@ -19,8 +19,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import io.github.sds100.keymapper.api.Api
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapId
-import io.github.sds100.keymapper.system.devices.InputDeviceInfo
-import io.github.sds100.keymapper.system.devices.isExternalCompat
+import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -218,12 +217,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
         val device = if (event.device == null) {
             null
         } else {
-            InputDeviceInfo(
-                descriptor = event.device.descriptor,
-                name = event.device.name,
-                id = event.deviceId,
-                isExternal = event.device.isExternalCompat
-            )
+            InputDeviceUtils.createInputDeviceInfo(event.device)
         }
 
         return controller.onKeyEvent(
