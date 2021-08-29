@@ -46,15 +46,18 @@ class GetActionErrorUseCaseImpl(
     )
 
     override fun getError(action: ActionData): Error? {
-        if (action.canUseShizuku() && shizukuAdapter.isInstalled.value) {
-            when {
-                !shizukuAdapter.isStarted.value ->
-                    return Error.ShizukuNotStarted
+        if (action.canUseShizukuToPerform() && shizukuAdapter.isInstalled.value) {
 
-                !permissionAdapter.isGranted(Permission.SHIZUKU) ->
-                    return Error.PermissionDenied(Permission.SHIZUKU)
+            if (!(action.canUseImeToPerform() && keyMapperImeHelper.isCompatibleImeChosen())) {
+                when {
+                    !shizukuAdapter.isStarted.value ->
+                        return Error.ShizukuNotStarted
+
+                    !permissionAdapter.isGranted(Permission.SHIZUKU) ->
+                        return Error.PermissionDenied(Permission.SHIZUKU)
+                }
             }
-        } else if (action.requiresImeToPerform()) {
+        } else if (action.canUseImeToPerform()) {
             if (!keyMapperImeHelper.isCompatibleImeEnabled()) {
                 return Error.NoCompatibleImeEnabled
             }

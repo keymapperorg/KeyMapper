@@ -545,14 +545,14 @@ fun ActionData.canBeHeldDown(): Boolean = when (this) {
     else -> false
 }
 
-fun ActionData.requiresImeToPerform(): Boolean = when (this) {
+fun ActionData.canUseImeToPerform(): Boolean = when (this) {
     is ActionData.InputKeyEvent -> !useShell
     is ActionData.Text -> true
     is ActionData.MoveCursorToEnd -> true
     else -> false
 }
 
-fun ActionData.canUseShizuku(): Boolean = when (this) {
+fun ActionData.canUseShizukuToPerform(): Boolean = when (this) {
     is ActionData.InputKeyEvent -> true
     is ActionData.MoveCursorToEnd -> true
     else -> false

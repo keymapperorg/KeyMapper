@@ -13,15 +13,18 @@ class IsActionSupportedUseCaseImpl(
 ) : IsActionSupportedUseCase {
 
     override fun invoke(id: ActionId): Error? {
-        val minApi = ActionUtils.getMinApi(id)
+        if (Build.VERSION.SDK_INT != 0) {
+            val minApi = ActionUtils.getMinApi(id)
 
-        if (Build.VERSION.SDK_INT < minApi) {
-            return Error.SdkVersionTooLow(minApi)
-        }
+            if (Build.VERSION.SDK_INT < minApi) {
+                return Error.SdkVersionTooLow(minApi)
+            }
 
-        val maxApi = ActionUtils.getMaxApi(id)
-        if (Build.VERSION.SDK_INT > maxApi) {
-            return Error.SdkVersionTooHigh(maxApi)
+            val maxApi = ActionUtils.getMaxApi(id)
+
+            if (Build.VERSION.SDK_INT > maxApi) {
+                return Error.SdkVersionTooHigh(maxApi)
+            }
         }
 
         ActionUtils.getRequiredSystemFeatures(id).forEach { feature ->
