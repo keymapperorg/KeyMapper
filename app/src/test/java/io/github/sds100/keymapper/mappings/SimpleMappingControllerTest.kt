@@ -75,7 +75,8 @@ class SimpleMappingControllerTest {
                 devicesAdapter = mock(),
                 displayAdapter = mock(),
                 cameraAdapter = mock(),
-                networkAdapter = mock()
+                networkAdapter = mock(),
+                inputMethodAdapter = mock()
             )
         }
 
