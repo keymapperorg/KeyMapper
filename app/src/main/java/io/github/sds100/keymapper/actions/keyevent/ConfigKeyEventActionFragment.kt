@@ -14,10 +14,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.checkbox
 import io.github.sds100.keymapper.databinding.FragmentConfigKeyEventBinding
+import io.github.sds100.keymapper.ui.utils.configuredCheckBox
 import io.github.sds100.keymapper.ui.utils.putJsonSerializable
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.Inject
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
+import io.github.sds100.keymapper.util.str
 import io.github.sds100.keymapper.util.ui.setupNavigation
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.decodeFromString
@@ -102,15 +104,9 @@ class ConfigKeyEventActionFragment : Fragment() {
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.uiState.collectLatest { state ->
                 binding.epoxyRecyclerViewModifiers.withModels {
-                    state.modifierListItems.forEach {
-                        checkbox {
-                            id(it.id)
-                            primaryText(it.label)
-                            isChecked(it.isChecked)
-
-                            onCheckedChange { _, isChecked ->
-                                viewModel.setModifierKeyChecked(it.id.toInt(), isChecked)
-                            }
+                    state.modifierListItems.forEach { listItem ->
+                        configuredCheckBox(listItem) { isChecked ->
+                            viewModel.setModifierKeyChecked(listItem.id.toInt(), isChecked)
                         }
                     }
                 }
