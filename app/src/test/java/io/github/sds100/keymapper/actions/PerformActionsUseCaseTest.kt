@@ -1,12 +1,17 @@
 package io.github.sds100.keymapper.actions
 
+import io.github.sds100.keymapper.actions.system.SystemActionId
+import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.devices.FakeDevicesAdapter
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeMessenger
+import io.github.sds100.keymapper.system.popup.PopupMessageAdapter
+import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.InputEventType
 import io.github.sds100.keymapper.util.State
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
@@ -14,9 +19,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
+import org.mockito.kotlin.*
 
 /**
  * Created by sds100 on 01/05/2021.
@@ -32,25 +35,31 @@ class PerformActionsUseCaseTest {
     private lateinit var useCase: PerformActionsUseCaseImpl
     private lateinit var mockKeyMapperImeMessenger: KeyMapperImeMessenger
     private lateinit var fakeDevicesAdapter: FakeDevicesAdapter
+    private lateinit var mockAccessibilityService: IAccessibilityService
+    private lateinit var mockToastAdapter: PopupMessageAdapter
 
     @Before
     fun init() {
         mockKeyMapperImeMessenger = mock()
         fakeDevicesAdapter = FakeDevicesAdapter()
+        mockAccessibilityService = mock()
+        mockToastAdapter = mock()
 
         useCase = PerformActionsUseCaseImpl(
             coroutineScope,
-            accessibilityService = mock(),
+            accessibilityService = mockAccessibilityService,
             inputMethodAdapter = mock(),
             fileAdapter = mock(),
-            suAdapter = mock(),
+            suAdapter = mock {
+                on { isGranted }.then { MutableStateFlow(false) }
+            },
             shellAdapter = mock(),
             intentAdapter = mock(),
             getActionError = mock(),
             keyMapperImeMessenger = mockKeyMapperImeMessenger,
             packageManagerAdapter = mock(),
             appShortcutAdapter = mock(),
-            popupMessageAdapter = mock(),
+            popupMessageAdapter = mockToastAdapter,
             deviceAdapter = fakeDevicesAdapter,
             phoneAdapter = mock(),
             volumeAdapter = mock(),
@@ -67,6 +76,23 @@ class PerformActionsUseCaseTest {
             preferenceRepository = mock(),
             soundsManager = mock()
         )
+    }
+
+    /**
+     * issue #771
+     */
+    @Test
+    fun `dont show accessibility service not found error for open menu action`() = coroutineScope.runBlockingTest {
+        //GIVEN
+        val action = SimpleSystemAction(SystemActionId.OPEN_MENU)
+
+        whenever(mockAccessibilityService.performActionOnNode(any(), any())).doReturn(Error.FailedToFindAccessibilityNode)
+
+        //WHEN
+        useCase.perform(action)
+
+        //THEN
+        verify(mockToastAdapter, never()).showPopupMessage(anyOrNull())
     }
 
     /**
