@@ -62,7 +62,7 @@ This will change the click type for a key in a sequence trigger. A parallel trig
 
 ## Customising actions
 
-You can tap the 3 stacked dots :fontawesome-solid-ellipsis-v: to the right of the action's name to bring up the following menu.
+You can tap the pencil icon :material-pencil-outline: to the right of the action's name to bring up the following menu.
 
 ![](../images/hg-action-settings.png)
 
