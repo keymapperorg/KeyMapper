@@ -7,6 +7,7 @@ import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.firstBlocking
+import io.github.sds100.keymapper.util.success
 
 /**
  * Created by sds100 on 21/04/2021.
@@ -21,12 +22,14 @@ class OpenMenuHelper(
     }
 
     fun openMenu(): Result<*> {
-        return if (suAdapter.isGranted.firstBlocking()) {
-            suAdapter.execute("input keyevent ${KeyEvent.KEYCODE_MENU}\n")
+        if (suAdapter.isGranted.firstBlocking()) {
+            return suAdapter.execute("input keyevent ${KeyEvent.KEYCODE_MENU}\n")
         } else {
             accessibilityService.performActionOnNode({ it.contentDescription == OVERFLOW_MENU_CONTENT_DESCRIPTION }) {
                 AccessibilityNodeAction(AccessibilityNodeInfoCompat.ACTION_CLICK)
             }
+
+            return success()
         }
     }
 }
