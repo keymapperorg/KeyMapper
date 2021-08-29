@@ -299,6 +299,11 @@
     <string name="constraint_wifi_connected_any_description">Connected to any WiFi</string>
     <string name="constraint_wifi_disconnected_any_description">Disconnected to no WiFi</string>
 
+    <string name="constraint_ime_chosen">Input method is chosen</string>
+    <string name="constraint_ime_chosen_description">%s is chosen</string>
+    <string name="constraint_ime_not_chosen">Input method is not chosen</string>
+    <string name="constraint_ime_not_chosen_description">%s is not chosen</string>
+
     <string name="orientation_0">Portrait (0°)</string>
     <string name="orientation_90">Landscape (90°)</string>
     <string name="orientation_180">Portrait (180°)</string>
