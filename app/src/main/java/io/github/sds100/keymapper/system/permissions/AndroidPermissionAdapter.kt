@@ -30,7 +30,7 @@ class AndroidPermissionAdapter(
     context: Context,
     private val coroutineScope: CoroutineScope,
     private val suAdapter: SuAdapter,
-    private val notificationReceiverAdapter: ServiceAdapter
+    private val notificationReceiverAdapter: ServiceAdapter,
 ) : PermissionAdapter {
     companion object {
         const val REQUEST_SHIZUKU_PERMISSION = 1

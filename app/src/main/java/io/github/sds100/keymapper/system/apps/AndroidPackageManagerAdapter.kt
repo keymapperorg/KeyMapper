@@ -16,7 +16,9 @@ import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import rikka.shizuku.ShizukuBinderWrapper
 import rikka.shizuku.SystemServiceHelper
@@ -97,7 +99,7 @@ class AndroidPackageManagerAdapter(
 
         } catch (e: ActivityNotFoundException) {
             val intent = Intent(Intent.ACTION_VIEW)
-            
+
             intent.data = Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
 
@@ -220,21 +222,33 @@ class AndroidPackageManagerAdapter(
         return activityExists
     }
 
-    override fun grantPermission(permissionName: String) {
-        if (permissionAdapter.isGranted(Permission.SHIZUKU)) {
-            val userId = Process.myUserHandle()!!.getIdentifier()
+    override fun grantPermission(permissionName: String): Result<*> {
+        val result: Result<*>
 
-            iPackageManager.grantRuntimePermission(
-                Constants.PACKAGE_NAME,
-                permissionName,
-                userId
-            )
+        if (permissionAdapter.isGranted(Permission.SHIZUKU)) {
+            result = try {
+                val userId = Process.myUserHandle()!!.getIdentifier()
+
+                iPackageManager.grantRuntimePermission(
+                    Constants.PACKAGE_NAME,
+                    permissionName,
+                    userId
+                )
+
+                success()
+            } catch (e: Exception) {
+                Error.Exception(e)
+            }
 
         } else if (permissionAdapter.isGranted(Permission.ROOT)) {
-            suAdapter.execute("pm grant ${Constants.PACKAGE_NAME} $permissionName", block = true)
+            result = suAdapter.execute("pm grant ${Constants.PACKAGE_NAME} $permissionName", block = true)
+        } else {
+            throw IllegalStateException("Shizuku or root permission has not been granted")
         }
 
         permissionAdapter.onPermissionsChanged()
+
+        return result
     }
 
     override fun launchCameraApp(): Result<*> {

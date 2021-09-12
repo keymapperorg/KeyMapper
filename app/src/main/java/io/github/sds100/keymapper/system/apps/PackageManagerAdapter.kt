@@ -27,7 +27,7 @@ interface PackageManagerAdapter {
     /**
      * Requires root or Shizuku permission.
      */
-    fun grantPermission(permissionName: String)
+    fun grantPermission(permissionName: String): Result<*>
 
     fun launchCameraApp(): Result<*>
     fun launchSettingsApp(): Result<*>

@@ -38,6 +38,7 @@ import io.github.sds100.keymapper.system.notifications.ManageNotificationsUseCas
 import io.github.sds100.keymapper.system.notifications.NotificationController
 import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapter
 import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
+import io.github.sds100.keymapper.system.permissions.AutoGrantPermissionController
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.phone.AndroidPhoneAdapter
 import io.github.sds100.keymapper.system.popup.AndroidToastAdapter
@@ -45,10 +46,12 @@ import io.github.sds100.keymapper.system.root.SuAdapterImpl
 import io.github.sds100.keymapper.system.url.AndroidOpenUrlAdapter
 import io.github.sds100.keymapper.system.vibrator.AndroidVibratorAdapter
 import io.github.sds100.keymapper.system.volume.AndroidVolumeAdapter
-import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.ResourceProviderImpl
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import splitties.toast.toast
@@ -104,6 +107,7 @@ class KeyMapperApp : MultiDexApplication() {
             notificationReceiverAdapter
         )
     }
+
     val systemFeatureAdapter by lazy { AndroidSystemFeatureAdapter(this) }
     val accessibilityServiceAdapter by lazy { AccessibilityServiceAdapter(this, appCoroutineScope) }
     val notificationReceiverAdapter by lazy { NotificationReceiverAdapter(this, appCoroutineScope) }
@@ -133,6 +137,16 @@ class KeyMapperApp : MultiDexApplication() {
 
     val recordTriggerController by lazy {
         RecordTriggerController(appCoroutineScope, accessibilityServiceAdapter)
+    }
+    
+    val autoGrantPermissionController by lazy {
+        AutoGrantPermissionController(
+            appCoroutineScope,
+            permissionAdapter,
+            packageManagerAdapter,
+            popupMessageAdapter,
+            resourceProvider
+        )
     }
 
     private val loggingTree by lazy {
@@ -240,5 +254,7 @@ class KeyMapperApp : MultiDexApplication() {
         notificationController.showToast.onEach {
             toast(it)
         }.launchIn(appCoroutineScope)
+
+        autoGrantPermissionController.start()
     }
 }
