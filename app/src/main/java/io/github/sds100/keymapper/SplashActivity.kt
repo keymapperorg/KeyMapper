@@ -33,6 +33,10 @@ class SplashActivity : FragmentActivity() {
                     yield(AppIntroSlide.FINGERPRINT_GESTURE_SUPPORT)
                 }
 
+                if (onboarding.showShizukuAppIntroSlide) {
+                    yield(AppIntroSlide.GRANT_SHIZUKU_PERMISSION)
+                }
+
                 yield(AppIntroSlide.CONTRIBUTING)
             }.toList()
         } else {
@@ -47,6 +51,10 @@ class SplashActivity : FragmentActivity() {
                 if (onboarding.showSetupChosenDevicesAgainAppIntro.firstBlocking()) {
                     yield(AppIntroSlide.SETUP_CHOSEN_DEVICES_AGAIN)
                 }
+
+                if (onboarding.promptForShizukuPermission.firstBlocking()) {
+                    yield(AppIntroSlide.GRANT_SHIZUKU_PERMISSION)
+                }
             }.toList()
         }
 
@@ -54,7 +62,7 @@ class SplashActivity : FragmentActivity() {
             startActivity(Intent(this, MainActivity::class.java))
         } else {
             Intent(this, AppIntroActivity::class.java).apply {
-                val slidesToStringArray = appIntroSlides.map { it.toString() }.toTypedArray()
+                val slidesToStringArray = appIntroSlides.map { it }.toTypedArray()
 
                 putExtra(AppIntroActivity.EXTRA_SLIDES, slidesToStringArray)
                 startActivity(this)

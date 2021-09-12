@@ -40,4 +40,8 @@ class ShizukuAdapterImpl(
             isStarted.value = Shizuku.getBinder() != null
         }
     }
+
+    override fun openShizukuApp() {
+        packageManagerAdapter.openApp(ShizukuUtils.SHIZUKU_PACKAGE)
+    }
 }

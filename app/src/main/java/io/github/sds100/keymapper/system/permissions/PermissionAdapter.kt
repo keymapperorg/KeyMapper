@@ -8,5 +8,6 @@ import kotlinx.coroutines.flow.Flow
 interface PermissionAdapter {
     val onPermissionsUpdate: Flow<Unit>
     fun isGranted(permission: Permission): Boolean
+    fun isGrantedFlow(permission: Permission): Flow<Boolean>
     fun request(permission: Permission)
 }

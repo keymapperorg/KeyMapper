@@ -155,6 +155,16 @@ class AndroidPermissionAdapter(
         }
     }
 
+    override fun isGrantedFlow(permission: Permission): Flow<Boolean> {
+        return callbackFlow {
+            send(isGranted(permission))
+
+            onPermissionsUpdate.collect {
+                send(isGranted(permission))
+            }
+        }
+    }
+
     fun onPermissionsChanged() {
         coroutineScope.launch {
             onPermissionsUpdate.emit(Unit)

@@ -2,10 +2,12 @@ package io.github.sds100.keymapper.onboarding
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.system.accessibility.ServiceState
-import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 /**
@@ -16,20 +18,23 @@ class AppIntroViewModel(
     private val useCase: AppIntroUseCase,
     slides: List<String>,
     resourceProvider: ResourceProvider
-) : ViewModel(), ResourceProvider by resourceProvider {
+) : ViewModel(), ResourceProvider by resourceProvider, PopupViewModel by PopupViewModelImpl() {
 
     companion object {
         private const val ID_BUTTON_ENABLE_ACCESSIBILITY_SERVICE = "enable_accessibility_service"
         private const val ID_BUTTON_RESTART_ACCESSIBILITY_SERVICE = "restart_accessibility_service"
         private const val ID_BUTTON_DISABLE_BATTERY_OPTIMISATION = "disable_battery_optimisation"
         private const val ID_BUTTON_DONT_KILL_MY_APP = "go_to_dont_kill_my_app"
+        private const val ID_BUTTON_MORE_SHIZUKU_INFO = "shizuku_info"
+        private const val ID_BUTTON_REQUEST_SHIZUKU_PERMISSION = "request_shizuku_permission"
     }
 
-    private val slideModels: Flow<List<AppIntroSlideUi>> = combine(
+    private val slideModels: StateFlow<List<AppIntroSlideUi>> = combine(
         useCase.serviceState,
         useCase.isBatteryOptimised,
-        useCase.fingerprintGesturesSupported
-    ) { serviceState, isBatteryOptimised, fingerprintGesturesSupported ->
+        useCase.fingerprintGesturesSupported,
+        useCase.isShizukuPermissionGranted
+    ) { serviceState, isBatteryOptimised, fingerprintGesturesSupported, isShizukuPermissionGranted ->
 
         slidesToShow.map { slide ->
             when (slide) {
@@ -40,10 +45,11 @@ class AppIntroViewModel(
                     fingerprintGestureSupportSlide(fingerprintGesturesSupported)
                 AppIntroSlide.CONTRIBUTING -> contributingSlide()
                 AppIntroSlide.SETUP_CHOSEN_DEVICES_AGAIN -> setupChosenDevicesAgainSlide()
+                AppIntroSlide.GRANT_SHIZUKU_PERMISSION -> requestShizukuPermissionSlide(isShizukuPermissionGranted)
                 else -> throw Exception("Unknown slide $slide")
             }
         }
-    }
+    }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     private val _openUrl = MutableSharedFlow<String>()
     val openUrl = _openUrl.asSharedFlow()
@@ -60,6 +66,28 @@ class AppIntroViewModel(
                 _openUrl.emit(getString(R.string.url_dont_kill_my_app))
             }
             ID_BUTTON_DISABLE_BATTERY_OPTIMISATION -> useCase.ignoreBatteryOptimisation()
+            ID_BUTTON_MORE_SHIZUKU_INFO -> runBlocking {
+                _openUrl.emit(getString(R.string.url_shizuku_setting_benefits))
+            }
+
+            ID_BUTTON_REQUEST_SHIZUKU_PERMISSION -> viewModelScope.launch {
+                if (useCase.isShizukuStarted) {
+                    useCase.requestShizukuPermission()
+                } else {
+                    val dialog = PopupUi.Dialog(
+                        title = getString(R.string.showcase_shizuku_not_started_title),
+                        message = getString(R.string.showcase_shizuku_not_started_message),
+                        positiveButtonText = getString(R.string.showcase_shizuku_launch_shizuku_app),
+                        negativeButtonText = getString(R.string.neg_cancel)
+                    )
+
+                    val response = showPopup("start_shizuku", dialog) ?: return@launch
+
+                    if (response == DialogResponse.POSITIVE) {
+                        useCase.openShizuku()
+                    }
+                }
+            }
         }
     }
 
@@ -67,6 +95,10 @@ class AppIntroViewModel(
         slideModels.mapNotNull { allSlides -> allSlides.find { it.id == slide } }
 
     fun onDoneClick() {
+        if (slideModels.value.any { it.id == AppIntroSlide.GRANT_SHIZUKU_PERMISSION }) {
+            useCase.shownShizukuPermissionPrompt()
+        }
+
         useCase.shownAppIntro()
     }
 
@@ -79,7 +111,7 @@ class AppIntroViewModel(
     )
 
     private fun accessibilityServiceSlide(serviceState: ServiceState): AppIntroSlideUi {
-      return  when(serviceState){
+        return when (serviceState) {
             ServiceState.ENABLED ->
                 AppIntroSlideUi(
                     id = AppIntroSlide.ACCESSIBILITY_SERVICE,
@@ -171,6 +203,30 @@ class AppIntroViewModel(
 
                 buttonId1 = ID_BUTTON_ENABLE_ACCESSIBILITY_SERVICE,
                 buttonText1 = getString(R.string.enable)
+            )
+        }
+    }
+
+    private fun requestShizukuPermissionSlide(isPermissionGranted: Boolean): AppIntroSlideUi {
+        if (isPermissionGranted) {
+            return AppIntroSlideUi(
+                id = AppIntroSlide.GRANT_SHIZUKU_PERMISSION,
+                image = getDrawable(R.drawable.ic_baseline_check_64),
+                title = getString(R.string.showcase_grant_shizuku_permission_granted_title),
+                description = getString(R.string.showcase_grant_shizuku_permission_granted_message),
+                backgroundColor = getColor(R.color.slideBlue)
+            )
+        } else {
+            return AppIntroSlideUi(
+                id = AppIntroSlide.GRANT_SHIZUKU_PERMISSION,
+                image = getDrawable(R.drawable.ic_outline_error_outline_64),
+                title = getString(R.string.showcase_grant_shizuku_permission_denied_title),
+                description = getString(R.string.showcase_grant_shizuku_permission_denied_message),
+                backgroundColor = getColor(R.color.slideBlue),
+                buttonId1 = ID_BUTTON_MORE_SHIZUKU_INFO,
+                buttonText1 = getString(R.string.showcase_more_shizuku_info),
+                buttonId2 = ID_BUTTON_REQUEST_SHIZUKU_PERMISSION,
+                buttonText2 = getString(R.string.showcase_request_shizuku_permission)
             )
         }
     }

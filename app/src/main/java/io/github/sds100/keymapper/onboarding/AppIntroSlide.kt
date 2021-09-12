@@ -10,4 +10,5 @@ object AppIntroSlide {
     const val FINGERPRINT_GESTURE_SUPPORT = "fingerprint_gesture_support"
     const val CONTRIBUTING = "contributing"
     const val SETUP_CHOSEN_DEVICES_AGAIN = "set_up_chosen_devices_again"
+    const val GRANT_SHIZUKU_PERMISSION = "grant_shizuku_permission"
 }

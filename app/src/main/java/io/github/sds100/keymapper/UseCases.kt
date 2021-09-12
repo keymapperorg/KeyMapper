@@ -88,7 +88,9 @@ object UseCases {
     fun onboarding(ctx: Context) = OnboardingUseCaseImpl(
         ServiceLocator.settingsRepository(ctx),
         ServiceLocator.fileAdapter(ctx),
-        ServiceLocator.leanbackAdapter(ctx)
+        ServiceLocator.leanbackAdapter(ctx),
+        ServiceLocator.shizukuAdapter(ctx),
+        ServiceLocator.permissionAdapter(ctx)
     )
 
     fun createKeymapShortcut(ctx: Context) = CreateKeyMapShortcutUseCaseImpl(

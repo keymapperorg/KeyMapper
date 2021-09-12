@@ -1,11 +1,14 @@
 package io.github.sds100.keymapper.util.ui
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.DialogChooseAppStoreBinding
@@ -70,16 +73,28 @@ fun PopupViewModel.showPopups(
     fragment: Fragment,
     binding: ViewDataBinding
 ) {
-    showPopups(fragment, binding.root)
+    showPopups(fragment.requireContext(), fragment.viewLifecycleOwner, binding.root)
 }
 
 fun PopupViewModel.showPopups(
     fragment: Fragment,
     rootView: View
 ) {
-    val lifecycleOwner = fragment.viewLifecycleOwner
-    val ctx = fragment.requireContext()
+    showPopups(fragment.requireContext(), fragment.viewLifecycleOwner, rootView)
+}
 
+fun PopupViewModel.showPopups(
+    activity: FragmentActivity,
+    rootView: View
+) {
+    showPopups(activity, activity, rootView)
+}
+
+fun PopupViewModel.showPopups(
+    ctx: Context,
+    lifecycleOwner: LifecycleOwner,
+    rootView: View
+) {
     //must be onCreate because dismissing in onDestroy
     lifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.CREATED) {
         showPopup.onEach { event ->

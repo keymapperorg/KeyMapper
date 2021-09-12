@@ -66,4 +66,5 @@ object Keys {
         stringSetPreferencesKey("key_devices_to_reroute_key_events")
 
     val log = booleanPreferencesKey("key_log")
+    val shownShizukuPermissionPrompt = booleanPreferencesKey("key_shown_shizuku_permission_prompt")
 }
