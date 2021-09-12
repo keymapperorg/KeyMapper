@@ -151,6 +151,8 @@ class KeyMapperApp : MultiDexApplication() {
             priorExceptionHandler?.uncaughtException(thread, exception)
         }
 
+        super.onCreate()
+
         ServiceLocator.settingsRepository(this).get(Keys.darkTheme)
             .map { it?.toIntOrNull() }
             .map {
@@ -162,8 +164,6 @@ class KeyMapperApp : MultiDexApplication() {
             }
             .onEach { mode -> AppCompatDelegate.setDefaultNightMode(mode) }
             .launchIn(appCoroutineScope)
-
-        super.onCreate()
 
         if (BuildConfig.BUILD_TYPE == "debug") {
             Timber.plant(Timber.DebugTree())
