@@ -90,7 +90,14 @@ class PerformActionsUseCaseImpl(
     private val notificationReceiverAdapter: ServiceAdapter
 ) : PerformActionsUseCase {
 
-    private val openMenuHelper by lazy { OpenMenuHelper(suAdapter, accessibilityService) }
+    private val openMenuHelper by lazy {
+        OpenMenuHelper(
+            suAdapter,
+            accessibilityService,
+            shizukuInputEventInjector,
+            permissionAdapter
+        )
+    }
 
     override fun perform(
         action: ActionData,

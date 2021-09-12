@@ -10,11 +10,13 @@ import io.github.sds100.keymapper.mappings.DetectMappingUseCase
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapEntityMapper
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapRepository
+import io.github.sds100.keymapper.shizuku.InputEventInjector
 import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.display.DisplayAdapter
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeMessenger
 import io.github.sds100.keymapper.system.navigation.OpenMenuHelper
+import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import io.github.sds100.keymapper.util.InputEventType
@@ -35,7 +37,9 @@ class DetectKeyMapsUseCaseImpl(
     private val displayAdapter: DisplayAdapter,
     private val volumeAdapter: VolumeAdapter,
     private val keyMapperImeMessenger: KeyMapperImeMessenger,
-    private val accessibilityService: IAccessibilityService
+    private val accessibilityService: IAccessibilityService,
+    private val shizukuInputEventInjector: InputEventInjector,
+    private val permissionAdapter: PermissionAdapter
 ) : DetectKeyMapsUseCase, DetectMappingUseCase by detectMappingUseCase {
 
     override val allKeyMapList: Flow<List<KeyMap>> =
@@ -81,7 +85,12 @@ class DetectKeyMapsUseCaseImpl(
     override val currentTime: Long
         get() = SystemClock.elapsedRealtime()
 
-    private val openMenuHelper = OpenMenuHelper(suAdapter, accessibilityService)
+    private val openMenuHelper = OpenMenuHelper(
+        suAdapter,
+        accessibilityService,
+        shizukuInputEventInjector,
+        permissionAdapter
+    )
 
     override fun imitateButtonPress(
         keyCode: Int,

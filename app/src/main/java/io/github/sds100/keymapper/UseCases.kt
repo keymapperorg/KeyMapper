@@ -187,7 +187,9 @@ object UseCases {
         ServiceLocator.displayAdapter(service),
         ServiceLocator.audioAdapter(service),
         keyMapperImeMessenger(service),
-        service
+        service,
+        ShizukuInputEventInjector(),
+        ServiceLocator.permissionAdapter(service)
     )
 
     fun detectFingerprintMaps(ctx: Context) = DetectFingerprintMapsUseCaseImpl(
