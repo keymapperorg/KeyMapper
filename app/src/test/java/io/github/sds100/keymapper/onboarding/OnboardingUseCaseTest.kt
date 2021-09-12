@@ -34,52 +34,62 @@ class OnboardingUseCaseTest {
     @Before
     fun init() {
         fakePreferences = FakePreferenceRepository()
-        useCase = OnboardingUseCaseImpl(fakePreferences, mock(), mock())
+        useCase = OnboardingUseCaseImpl(
+            fakePreferences,
+            mock(), leanbackAdapter = mock(), shizukuAdapter = mock(), permissionAdapter = mock()
+        )
     }
 
     /**
      * #709
      */
     @Test
-    fun `Only show fingerprint map feature notification for the first update only`() = coroutineScope.runBlockingTest {
-        //show it when updating from a version that didn't support it to a version that does
-        //GIVEN
-        fakePreferences.set(Keys.approvedFingerprintFeaturePrompt, false)
-        fakePreferences.set(Keys.fingerprintGesturesAvailable, true)
-        fakePreferences.set(Keys.shownAppIntro, true)
+    fun `Only show fingerprint map feature notification for the first update only`() =
+        coroutineScope.runBlockingTest {
+            //show it when updating from a version that didn't support it to a version that does
+            //GIVEN
+            fakePreferences.set(Keys.approvedFingerprintFeaturePrompt, false)
+            fakePreferences.set(Keys.fingerprintGesturesAvailable, true)
+            fakePreferences.set(Keys.shownAppIntro, true)
 
-        //WHEN
-        fakePreferences.set(Keys.lastInstalledVersionCodeHomeScreen, VersionHelper.FINGERPRINT_GESTURES_MIN_VERSION - 1)
-        advanceUntilIdle()
+            //WHEN
+            fakePreferences.set(
+                Keys.lastInstalledVersionCodeHomeScreen,
+                VersionHelper.FINGERPRINT_GESTURES_MIN_VERSION - 1
+            )
+            advanceUntilIdle()
 
-        //THEN
-        assertThat(useCase.showFingerprintFeatureNotificationIfAvailable.first(), `is`(true))
+            //THEN
+            assertThat(useCase.showFingerprintFeatureNotificationIfAvailable.first(), `is`(true))
 
-        //Don't show it when updating from a version that supports it.
-        //GIVEN
-        fakePreferences.set(Keys.approvedFingerprintFeaturePrompt, true)
-        fakePreferences.set(Keys.fingerprintGesturesAvailable, true)
+            //Don't show it when updating from a version that supports it.
+            //GIVEN
+            fakePreferences.set(Keys.approvedFingerprintFeaturePrompt, true)
+            fakePreferences.set(Keys.fingerprintGesturesAvailable, true)
 
-        //WHEN
-        fakePreferences.set(Keys.lastInstalledVersionCodeHomeScreen, VersionHelper.FINGERPRINT_GESTURES_MIN_VERSION)
-        advanceUntilIdle()
+            //WHEN
+            fakePreferences.set(
+                Keys.lastInstalledVersionCodeHomeScreen,
+                VersionHelper.FINGERPRINT_GESTURES_MIN_VERSION
+            )
+            advanceUntilIdle()
 
-        //THEN
-        assertThat(useCase.showFingerprintFeatureNotificationIfAvailable.first(), `is`(false))
+            //THEN
+            assertThat(useCase.showFingerprintFeatureNotificationIfAvailable.first(), `is`(false))
 
-        //Don't show it when opening the app for the first time.
-        //GIVEN
-        fakePreferences.set(Keys.approvedFingerprintFeaturePrompt, null)
-        fakePreferences.set(Keys.fingerprintGesturesAvailable, true)
-        fakePreferences.set(Keys.lastInstalledVersionCodeHomeScreen, null)
-        fakePreferences.set(Keys.shownAppIntro, null)
+            //Don't show it when opening the app for the first time.
+            //GIVEN
+            fakePreferences.set(Keys.approvedFingerprintFeaturePrompt, null)
+            fakePreferences.set(Keys.fingerprintGesturesAvailable, true)
+            fakePreferences.set(Keys.lastInstalledVersionCodeHomeScreen, null)
+            fakePreferences.set(Keys.shownAppIntro, null)
 
-        //WHEN
-        advanceUntilIdle()
+            //WHEN
+            advanceUntilIdle()
 
-        //THEN
-        assertThat(useCase.showFingerprintFeatureNotificationIfAvailable.first(), `is`(false))
-    }
+            //THEN
+            assertThat(useCase.showFingerprintFeatureNotificationIfAvailable.first(), `is`(false))
+        }
 
     @Test
     fun `update to 2_3_0, no bluetooth devices were chosen in settings, do not show notification to choose devices again`() =

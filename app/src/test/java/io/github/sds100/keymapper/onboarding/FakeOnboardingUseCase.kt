@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.onboarding
 
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
 /**
@@ -45,4 +46,8 @@ class FakeOnboardingUseCase : OnboardingUseCase {
     override val showQuickStartGuideHint = MutableStateFlow(false)
 
     override fun shownQuickStartGuideHint() {}
+
+    override val promptForShizukuPermission: Flow<Boolean> = MutableStateFlow(false)
+
+    override val showShizukuAppIntroSlide: Boolean = false
 }
