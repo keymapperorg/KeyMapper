@@ -188,7 +188,8 @@ class BackupManagerImpl(
             val file = fileAdapter.getFileFromUri(uri)
 
             val result = if (file.extension == "zip") {
-                val zipDestination = fileAdapter.getPrivateFile("$TEMP_RESTORE_ROOT_DIR/$restoreUuid")
+                val zipDestination =
+                    fileAdapter.getPrivateFile("$TEMP_RESTORE_ROOT_DIR/$restoreUuid")
 
                 try {
                     fileAdapter.extractZipFile(file, zipDestination).then {
@@ -201,7 +202,8 @@ class BackupManagerImpl(
                             return@withContext Error.UnknownIOError
                         }
 
-                        val soundFiles = soundDir.listFiles() ?: emptyList() //null if dir doesn't exist
+                        val soundFiles =
+                            soundDir.listFiles() ?: emptyList() //null if dir doesn't exist
 
                         restore(inputStream, soundFiles)
                     }
@@ -229,7 +231,13 @@ class BackupManagerImpl(
             val gson = Gson()
 
             val rootElement = inputStream.bufferedReader().use {
-                parser.parse(it).asJsonObject
+                val element = parser.parse(it)
+
+                if (element.isJsonNull) {
+                    return Error.EmptyJson
+                }
+
+                element.asJsonObject
             }
 
             //started storing database version at db version 10
