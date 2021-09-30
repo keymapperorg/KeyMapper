@@ -21,7 +21,9 @@ object SnackBarUtils {
                 view.longSnack(text) {
                     if (actionText != null) {
                         action(actionText) {
-                            continuation.resume(Unit)
+                            if (!continuation.isCompleted) {
+                                continuation.resume(Unit)
+                            }
                         }
                     }
 
@@ -31,7 +33,9 @@ object SnackBarUtils {
                 view.snack(text) {
                     if (actionText != null) {
                         action(actionText) {
-                            continuation.resume(Unit)
+                            if (!continuation.isCompleted) {
+                                continuation.resume(Unit)
+                            }
                         }
                     }
 
