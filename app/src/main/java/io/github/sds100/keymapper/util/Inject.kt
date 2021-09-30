@@ -277,7 +277,7 @@ object Inject {
         return AccessibilityServiceController(
             coroutineScope = service.lifecycleScope,
             accessibilityService = service,
-            inputEvents = ServiceLocator.serviceAdapter(service).serviceOutputEvents,
+            eventReceiver = ServiceLocator.serviceAdapter(service).serviceOutputEvents,
             outputEvents = ServiceLocator.serviceAdapter(service).eventReceiver,
             detectConstraintsUseCase = UseCases.detectConstraints(service),
             performActionsUseCase = UseCases.performActions(service, service),

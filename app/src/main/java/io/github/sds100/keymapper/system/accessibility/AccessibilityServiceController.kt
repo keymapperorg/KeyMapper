@@ -34,7 +34,7 @@ import timber.log.Timber
 class AccessibilityServiceController(
     val coroutineScope: CoroutineScope,
     val accessibilityService: IAccessibilityService,
-    val inputEvents: SharedFlow<Event>,
+    val eventReceiver: SharedFlow<Event>,
     val outputEvents: MutableSharedFlow<Event>,
     val detectConstraintsUseCase: DetectConstraintsUseCase,
     val performActionsUseCase: PerformActionsUseCase,
@@ -177,7 +177,7 @@ class AccessibilityServiceController(
             }
         }.launchIn(coroutineScope)
 
-        inputEvents.onEach {
+        eventReceiver.onEach {
             onEventFromUi(it)
         }.launchIn(coroutineScope)
 
