@@ -35,15 +35,15 @@ suspend fun Context.materialAlertDialog(
         setMessage(model.message)
 
         setPositiveButton(model.positiveButtonText) { _, _ ->
-            continuation.resume(DialogResponse.POSITIVE)
+            continuation.resumeIfNotCompleted(DialogResponse.POSITIVE)
         }
 
         setNeutralButton(model.neutralButtonText) { _, _ ->
-            continuation.resume(DialogResponse.NEUTRAL)
+            continuation.resumeIfNotCompleted(DialogResponse.NEUTRAL)
         }
 
         setNegativeButton(model.negativeButtonText) { _, _ ->
-            continuation.resume(DialogResponse.NEGATIVE)
+            continuation.resumeIfNotCompleted(DialogResponse.NEGATIVE)
         }
 
         show().apply {
@@ -82,7 +82,7 @@ suspend fun <ID> Context.multiChoiceDialog(
                 }
             }.toList()
 
-            continuation.resume(PopupUi.MultiChoiceResponse(checkedItemIds))
+            continuation.resumeIfNotCompleted(PopupUi.MultiChoiceResponse(checkedItemIds))
         }
 
         show().apply {
@@ -100,7 +100,7 @@ suspend fun <ID> Context.singleChoiceDialog(
         setItems(
             items.map { it.second }.toTypedArray(),
         ) { _, position ->
-            continuation.resume(PopupUi.SingleChoiceResponse(items[position].first))
+            continuation.resumeIfNotCompleted(PopupUi.SingleChoiceResponse(items[position].first))
         }
 
         show().apply {
@@ -131,7 +131,7 @@ suspend fun Context.editTextStringAlertDialog(
         }
 
         okButton {
-            continuation.resume(PopupUi.TextResponse(text.value))
+            continuation.resumeIfNotCompleted(PopupUi.TextResponse(text.value))
         }
 
         negativeButton(R.string.neg_cancel) {
@@ -240,7 +240,7 @@ suspend fun Context.okDialog(
         setMessage(message)
 
         okButton {
-            continuation.resume(PopupUi.OkResponse)
+            continuation.resumeIfNotCompleted(PopupUi.OkResponse)
         }
     }
 
