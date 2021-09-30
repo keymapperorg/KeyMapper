@@ -27,6 +27,7 @@ import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import timber.log.Timber
+import java.io.InputStream
 import java.util.*
 
 
@@ -200,10 +201,9 @@ class BackupManagerImpl(
                             return@withContext Error.UnknownIOError
                         }
 
-                        val json = inputStream.bufferedReader().use { it.readText() }
                         val soundFiles = soundDir.listFiles() ?: emptyList() //null if dir doesn't exist
 
-                        restore(json, soundFiles)
+                        restore(inputStream, soundFiles)
                     }
                 } finally {
                     zipDestination.delete()
@@ -215,8 +215,7 @@ class BackupManagerImpl(
                     return@withContext Error.UnknownIOError
                 }
 
-                val json = inputStream.bufferedReader().use { it.readText() }
-                restore(json, emptyList())
+                restore(inputStream, emptyList())
             }
 
             return@withContext result
@@ -224,14 +223,14 @@ class BackupManagerImpl(
     }
 
     @Suppress("DEPRECATION")
-    private suspend fun restore(backupJson: String, soundFiles: List<IFile>): Result<*> {
+    private suspend fun restore(inputStream: InputStream, soundFiles: List<IFile>): Result<*> {
         try {
             val parser = JsonParser()
             val gson = Gson()
 
-            if (backupJson.isBlank()) return Error.EmptyJson
-
-            val rootElement = parser.parse(backupJson).asJsonObject
+            val rootElement = inputStream.bufferedReader().use {
+                parser.parse(it).asJsonObject
+            }
 
             //started storing database version at db version 10
             val backupDbVersion = rootElement.get(NAME_DB_VERSION).nullInt ?: 9
