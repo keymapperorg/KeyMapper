@@ -12,9 +12,14 @@ import io.github.sds100.keymapper.databinding.DialogEdittextNumberBinding
 import io.github.sds100.keymapper.databinding.DialogEdittextStringBinding
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.CancellableContinuation
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.suspendCancellableCoroutine
-import splitties.alertdialog.appcompat.*
+import splitties.alertdialog.appcompat.message
+import splitties.alertdialog.appcompat.negativeButton
+import splitties.alertdialog.appcompat.okButton
+import splitties.alertdialog.appcompat.title
 import splitties.alertdialog.material.materialAlertDialog
 import kotlin.coroutines.resume
 
@@ -32,15 +37,15 @@ suspend fun Context.materialAlertDialog(
         setMessage(model.message)
 
         setPositiveButton(model.positiveButtonText) { _, _ ->
-            continuation.resume(DialogResponse.POSITIVE)
+            continuation.resumeIfNotCompleted(DialogResponse.POSITIVE)
         }
 
         setNeutralButton(model.neutralButtonText) { _, _ ->
-            continuation.resume(DialogResponse.NEUTRAL)
+            continuation.resumeIfNotCompleted(DialogResponse.NEUTRAL)
         }
 
         setNegativeButton(model.negativeButtonText) { _, _ ->
-            continuation.resume(DialogResponse.NEGATIVE)
+            continuation.resumeIfNotCompleted(DialogResponse.NEGATIVE)
         }
 
         show().apply {
@@ -69,15 +74,15 @@ suspend fun Context.materialAlertDialogCustomView(
         setMessage(message)
 
         setPositiveButton(positiveButtonText) { _, _ ->
-            continuation.resume(DialogResponse.POSITIVE)
+            continuation.resumeIfNotCompleted(DialogResponse.POSITIVE)
         }
 
         setNeutralButton(neutralButtonText) { _, _ ->
-            continuation.resume(DialogResponse.NEUTRAL)
+            continuation.resumeIfNotCompleted(DialogResponse.NEUTRAL)
         }
 
         setNegativeButton(negativeButtonText) { _, _ ->
-            continuation.resume(DialogResponse.NEGATIVE)
+            continuation.resumeIfNotCompleted(DialogResponse.NEGATIVE)
         }
 
         setView(view)
@@ -120,7 +125,7 @@ suspend fun Context.multiChoiceDialog(
                 }
             }.toList()
 
-            continuation.resume(checkedItemIds)
+            continuation.resumeIfNotCompleted(checkedItemIds)
         }
 
         show().apply {
@@ -139,7 +144,7 @@ suspend fun <ID> Context.singleChoiceDialog(
         setItems(
             items.map { it.second }.toTypedArray(),
         ) { _, position ->
-            continuation.resume(items[position].first)
+            continuation.resumeIfNotCompleted(items[position].first)
         }
 
         show().apply {
@@ -180,7 +185,7 @@ suspend fun Context.editTextStringAlertDialog(
         }
 
         okButton {
-            continuation.resume(text.value)
+            continuation.resumeIfNotCompleted(text.value)
         }
 
         negativeButton(R.string.neg_cancel) {
@@ -288,7 +293,7 @@ suspend fun Context.okDialog(
         setMessage(message)
 
         okButton {
-            continuation.resume(Unit)
+            continuation.resumeIfNotCompleted(Unit)
         }
     }
 
