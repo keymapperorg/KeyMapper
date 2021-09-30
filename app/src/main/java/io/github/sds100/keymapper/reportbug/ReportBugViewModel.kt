@@ -36,16 +36,7 @@ class ReportBugViewModel(
 
     private var bugReportUri: String? = null
 
-    private val slideModels: List<AppIntroSlideUi> = sequence {
-        yield(createBugReportSlide())
-        yield(shareBugReportSlide())
-
-        if (controlAccessibilityService.state.firstBlocking() == ServiceState.CRASHED) {
-            yield(restartServiceSlide())
-        }
-    }.toList()
-
-    val slides: List<String> = slideModels.map { it.id }
+    val slides: StateFlow<List<AppIntroSlideUi>> = MutableStateFlow(createSlides())
 
     private val _chooseBugReportLocation = MutableSharedFlow<Unit>()
     val chooseBugReportLocation = _chooseBugReportLocation.asSharedFlow()
@@ -99,8 +90,6 @@ class ReportBugViewModel(
         }
     }
 
-    fun getSlide(slide: String): Flow<AppIntroSlideUi> = flow { emit(slideModels.single { it.id == slide }) }
-
     fun canGoToNextSlide(currentSlide: String): Boolean {
         return when (currentSlide) {
             ReportBugSlide.CREATE_BUG_REPORT -> bugReportUri != null
@@ -141,6 +130,15 @@ class ReportBugViewModel(
         buttonText1 = getString(R.string.button_restart_accessibility_service),
         buttonId1 = ID_BUTTON_RESTART_ACCESSIBILITY_SERVICE
     )
+
+    private fun createSlides(): List<AppIntroSlideUi> = sequence {
+        yield(createBugReportSlide())
+        yield(shareBugReportSlide())
+
+        if (controlAccessibilityService.state.firstBlocking() == ServiceState.CRASHED) {
+            yield(restartServiceSlide())
+        }
+    }.toList()
 
     @Suppress("UNCHECKED_CAST")
     class Factory(

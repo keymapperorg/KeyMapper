@@ -31,12 +31,12 @@ class ReportBugSlideFragment : Fragment(), SlidePolicy {
         Inject.reportBugViewModel(requireContext())
     }
 
-    private val slide: String by lazy {
+    private val slideId: String by lazy {
         requireArguments().getString(KEY_SLIDE)!!
     }
 
     override val isPolicyRespected: Boolean
-        get() = viewModel.canGoToNextSlide(slide)
+        get() = viewModel.canGoToNextSlide(slideId)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,7 +58,9 @@ class ReportBugSlideFragment : Fragment(), SlidePolicy {
         viewModel.showPopups(this, binding)
 
         viewLifecycleOwner.addRepeatingJob(Lifecycle.State.CREATED) {
-            viewModel.getSlide(slide).collectLatest { model ->
+            viewModel.slides.collectLatest { slides ->
+                val model = slides.single { it.id == slideId }
+
                 binding.model = model
 
                 binding.setOnButton1ClickListener {
