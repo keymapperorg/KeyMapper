@@ -107,6 +107,7 @@ sealed class Error : Result<Nothing>() {
     object FileOperationCancelled : Error()
     object TargetDirectoryMatchesSourceDirectory : Error()
     data class NoSpaceLeftOnTarget(val uri: String) : Error()
+    object NoFileName : Error()
 
     object EmptyJson : Error()
     object CantFindSoundFile : Error()
