@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.actions.sound
 
 import io.github.sds100.keymapper.system.files.FileAdapter
+import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
 import kotlinx.coroutines.flow.StateFlow
@@ -20,7 +21,13 @@ class ChooseSoundFileUseCaseImpl(
     }
 
     override fun getSoundFileName(uri: String): Result<String> {
-        return Success(fileAdapter.getFileFromUri(uri).name!!)
+        val name = fileAdapter.getFileFromUri(uri).name
+
+        return if (name == null) {
+            Error.NoFileName
+        } else {
+            Success(name)
+        }
     }
 }
 

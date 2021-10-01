@@ -44,7 +44,10 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider) = when (this) {
         R.string.error_sdk_version_too_high,
         BuildUtils.getSdkVersionName(maxSdk)
     )
-    is Error.InputMethodNotFound -> resourceProvider.getString(R.string.error_ime_not_found, imeLabel)
+    is Error.InputMethodNotFound -> resourceProvider.getString(
+        R.string.error_ime_not_found,
+        imeLabel
+    )
     is Error.FrontFlashNotFound -> resourceProvider.getString(R.string.error_front_flash_not_found)
     is Error.BackFlashNotFound -> resourceProvider.getString(R.string.error_back_flash_not_found)
     is Error.DeviceNotFound -> resourceProvider.getString(R.string.error_device_not_found)
@@ -120,6 +123,7 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider) = when (this) {
     )
     Error.UnknownIOError -> resourceProvider.getString(R.string.error_io_error)
     Error.ShizukuNotStarted -> resourceProvider.getString(R.string.error_shizuku_not_started)
+    Error.NoFileName -> resourceProvider.getString(R.string.error_no_file_name)
 }
 
 val Error.isFixable: Boolean
