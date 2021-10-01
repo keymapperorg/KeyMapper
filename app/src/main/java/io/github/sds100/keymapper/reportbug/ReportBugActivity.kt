@@ -11,7 +11,6 @@ import androidx.lifecycle.lifecycleScope
 import com.github.appintro.AppIntro2
 import io.github.sds100.keymapper.system.permissions.RequestPermissionDelegate
 import io.github.sds100.keymapper.system.url.UrlUtils
-import io.github.sds100.keymapper.util.FeedbackUtils
 import io.github.sds100.keymapper.util.Inject
 import kotlinx.coroutines.flow.collectLatest
 
@@ -61,12 +60,6 @@ class ReportBugActivity : AppIntro2() {
         addRepeatingJob(Lifecycle.State.CREATED) {
             viewModel.goToNextSlide.collectLatest {
                 goToNextSlide()
-            }
-        }
-
-        addRepeatingJob(Lifecycle.State.CREATED) {
-            viewModel.emailDeveloper.collectLatest {
-                FeedbackUtils.emailBugReport(this@ReportBugActivity, it)
             }
         }
     }
