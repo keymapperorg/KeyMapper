@@ -41,7 +41,7 @@
     <uses-sdk tools:overrideLibrary="rikka.shizuku.provider, rikka.shizuku.api, rikka.shizuku.shared, rikka.shizuku.aidl" />
 
     <application
-        android:name=".KeyMapperApp"
+        android:name="io.github.sds100.keymapper.KeyMapperApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
