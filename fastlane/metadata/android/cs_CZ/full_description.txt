@@ -20,64 +20,9 @@ Co nelze přemapovat?
 Vaše klíčové mapy nefungují, pokud je obrazovka vypnutá. Toto je omezení v Android. Není nic, co by vývojář nemohl udělat.
 
 Co mohu přemapovat své klíče?
- Některé akce budou fungovat pouze na rootovaných zařízeních a konkrétních verzích Androidu.
+Některé akce budou fungovat pouze na rootovaných zařízeních a konkrétních verzích Androidu.
 
- * Otevřete aplikaci
- * Otevřete zástupce aplikace.
- * Otevřít URL
- * Vytvořit Intent
- * Vraťte se zpět
- * Návrat domů
- * Open recents
- * Otevřít nabídku
- * Rozbalit oznamovací lištu
- * Rozbalit rychlá nastavení
- * Sbalit stavovou lištu
- * Přepnout/zapnout/vypnout WiFi (ROOT pouze pro Android 10+)
- * Přepnout/zapnout/vypnout Bluetooth
- * Přepnout/zapnout/vypnout mobilní data (pouze ROOT)
- * Přepínání mezi přehráváním a pozastavením/pouze přehrávání/pozastavením médií
- * Fast forward/rewind
- * Další/předchozí skladba
- * Hlasitost nahoru/dolů
- * Zvýšit/snížit určitý objemový tok
- * Zobrazit dialog hlasitosti
- * Prohlédnout a změnit režim vyzvánění
- * Ztlumení/vypnutí zvuku/vypnutí (Android 6.0+)
- * Přepnout/zapnout/vypnout automatické otáčení
- * Přepínání mezi režimem na výšku a na šířku
- * Vynutit režim na výšku/na šířku
- * Zapnout/zapnout/vypnout automatický jas
- * Zvýšení/snížení jasu
- * Zapnout/zapnout/vypnout svítilnu (Android 6.0+)
- * Zapnout/zapnout/vypnout režim letadlo (pouze ROOT)
- * Přepnout/zapnout/vypnout režim Dnd (Android 6.0+)
- * Přepínání mezi vibrací a vyzváněním
- * Pořídit snímek obrazovky (Android 9.0 + )
- * Otevřete hlasového asistenta
- * Otevře zástupce zařízení
- * Otevřít fotoaparát
- * Spustit klíčovou událost. (Nic nedělat)
- * Zamknout zařízení
- * Zobrazit dialogové okno napájení (Android 5.0+)
- * Přesunout kurzor na konec souboru
-
-A další...
-
-Klávesová mapa musí být vybrána, aby fungovala:
-
-** Doporučujeme nainstalovat klávesovou Mapper GUI klávesnici, protože se jedná o správnou klávesnici na rozdíl od jedné vestavěné mapy klíčů **
-
- * Vložte specifický klíčový kód
- * Input a key
- * Vložit klíčovou událost
- * Vložte blok textu
-
-Co ostatní věci může aplikace dělat?
- * Možnost zobrazit trvalé oznámení, které může pozastavit/obnovit vaše klíčové mapy.
- * Automaticky změnit klávesnici na mapu kláves a/nebo zobrazit výběr klávesnice, když je vybrané zařízení Bluetooth připojeno a přepnout zpět na staré zařízení po odpojení.
- * Rychlé nastavení pro pozastavení/obnovení klíčových map a přepnutí klávesové mapy.
- * Vytvořte widget domovské obrazovky pro provedení výše uvedených akcí.
+Existuje příliš mnoho funkcí, které zde můžete vypsaovat, takže se podívejte na úplný seznam zde: https://docs.keymapper.club/user-guide/actions
 
 Skupiny uživatelů a dokumentů
 Není nutné udělovat všechna oprávnění pro fungování aplikace. Aplikace vám řekne, zda má být uděleno oprávnění pro funkčnost funkce.
