@@ -83,8 +83,8 @@ class KeyMapperImeService : InputMethodService() {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
-
         unregisterReceiver(broadcastReceiver)
+
+        super.onDestroy()
     }
 }
