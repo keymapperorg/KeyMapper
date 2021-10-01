@@ -159,7 +159,6 @@
     <string name="hint_create_text_action">Text to input</string>
     <string name="hint_create_url_action">Url to open</string>
     <string name="hint_create_phone_call_action">Phone number to call</string>
-    <string name="hint_bug_report_description_email">Bug description</string>
 
     <string name="hint_intent_action">Action</string>
     <string name="hint_intent_categories">Categories</string>
@@ -385,10 +384,9 @@
     <string name="slide_button_create_bug_report">Create report</string>
 
     <string name="slide_title_share_bug_report">Share the report</string>
-    <string name="slide_description_share_bug_report">There are 3 ways to share the bug report to the developer. Either join the Discord server, create a GitHub issue or (least preferably) send an email. Make sure that you attach the bug report to your message!</string>
+    <string name="slide_description_share_bug_report">There are 3 ways to share the bug report to the developer. Either join the Discord server or create a GitHub issue. Make sure that you attach the bug report to your message!</string>
     <string name="slide_button_share_discord">Discord</string>
     <string name="slide_button_share_github">GitHub</string>
-    <string name="slide_button_share_email">Email</string>
 
     <!--  Bug report slides-->
 
@@ -535,8 +533,6 @@
     <string name="dialog_button_read_dont_kill_my_app_no">No</string>
 
     <string name="dialog_title_failed_to_create_bug_report">Failed to create bug report</string>
-
-    <string name="dialog_message_bug_report_description_email">You must describe the issue in detail otherwise the developer will IGNORE your email.</string>
 
     <string name="dialog_title_request_shizuku_permission">Request Shizuku permission</string>
     <string name="dialog_message_request_shizuku_permission">Since you are using Shizuku it is highly recommended to grant this permission since some features in Key Mapper can be done without you having to configure anything (E.g inputting key codes without using the Key Mapper keyboard).</string>
@@ -1041,6 +1037,7 @@
     <string name="error_no_space_left_at_target">No space left at target! %s</string>
     <string name="error_shizuku_permission_denied">Shizuku permission is denied!</string>
     <string name="error_shizuku_not_started">Shizuku is not started!</string>
+    <string name="error_no_file_name">This file has no name!</string>
 
     <string name="error_access_fine_location_permission_denied">Denied permission to read fine location!</string>
     <!-- Error messages -->
