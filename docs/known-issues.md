@@ -33,6 +33,12 @@ For most devices you must...
 
 This is a bug in Android 11 and should be fixed in Android 12. There is a setting in Key Mapper 2.3.0+ that helps you work around this issue. Read more [here](https://sds100.github.io/KeyMapper/redirects/android-11-device-id-bug-work-around).
 
+## Key maps for an external device randomly stop working after a reboot
+See issue [#783](https://github.com/sds100/KeyMapper/issues/783).
+
+**Problem**: Key Mapper uses the device id (a.k.a descriptor) to ensure triggers from specific devices are only detected. The ids for some devices change after every reboot, which breaks this filtering. This is not supposed to happen but fortunately it only happens very rarely.
+**Solution**: Set the device for the trigger to "any device" so Key Mapper accepts the trigger from any device.
+
 ## Volume increases to max/minimum when pressing power and the respective volume button when the device is off
 
 This seems to be a bug with accessibility services on Android Pie+ on some devices. It also happens with the Macrodroid app when you only enable their accessibility service which filters key events. I tested Key Mapper with no code in the onKeyEvent function in the accessibility service and it still happens. These are the devices that I've tested.
