@@ -70,8 +70,6 @@
     <string name="enable_device_admin_message">Jakmile povolíte administrátora zařízení, musíte jej DEAKTIVOVAT pokud chcete odinstalovat Mapper.</string>
     <string name="constraints_recyclerview_placeholder">Přidat vazbu!</string>
     <string name="action_title_wait">Počkejte %sms</string>
-    <string name="email_subject">Klíčová zpráva o chybě Mapperu</string>
-    <string name="email_default_message">Popište prosím problém, který máte...</string>
     <string name="action_title_intent_start_activity">Počáteční aktivita: %s</string>
     <string name="action_title_intent_start_service">Spustit službu: %s</string>
     <string name="action_title_intent_send_broadcast">Odeslat všesměrové vysílání: %s</string>
@@ -247,7 +245,6 @@
     <string name="slide_title_share_bug_report">Sdílet zprávu</string>
     <string name="slide_description_share_bug_report">Existují tři způsoby, jak sdílet hlášení o chybě vývojáři. Buď se připojte na Discord server, vytvořte GitHub, nebo (alespoň pokud možno) pošlete e-mail. Ujistěte se, že připojíte zprávu o chybě k vaší zprávě!</string>
     <string name="slide_button_share_discord">Discord</string>
-    <string name="slide_button_share_email">E-mailová adresa</string>
     <!--  Bug report slides-->
     <!-- Menu action titles-->
     <string name="action_settings">Nastavení</string>
@@ -313,7 +310,6 @@
     <string name="dialog_message_root_prompt">Pokud víte, že váš telefon není rootnutý nebo nevíte, jaký je root, nemůžete použít funkce, které fungují pouze na rootovaných zařízeních. Po klepnutí na tlačítko \'OK\' budete přesměrováni do nastavení.
             V nastavení, přejít dolů a klepněte na \'Mapa klíče má root oprávnění\', abyste mohli použít root funkce/akce.</string>
     <string name="dialog_message_downloading">Stahování…</string>
-    <string name="dialog_message_describe_your_issue_in_the_email">Můžete prosím popsat problém, který máte, v e-mailu, jinak vám nemohu pomoci. Děkujeme!</string>
     <string name="dialog_message_long_press_warning">Dlouhé stisknutí funguje pouze pro fyzickou hlasitost a navigační tlačítka. Pokud to povolíte pro jiné klíče, klíče nebudou fungovat, když nebudou dlouho stisknuty.</string>
     <string name="dialog_message_write_secure_settings">Chcete-li udělit mapování klíčů WRITE_SECURE_SETTINGS povolení povolit \"kořenové funkce\" v nastavení, pokud je vaše zařízení zakořeněno. Pokud vaše zařízení není zakořeněné, postupujte podle pokynů, jak pomocí počítače PC/Mac udělit oprávnění.</string>
     <string name="dialog_message_cant_find_accessibility_settings_page">Zdá se, že vaše zařízení nemá stránku s nastavením služeb přístupnosti. Můžete povolit službu usnadnění přístupu tím, že udělíte aplikaci WRITE_SECURE_SETTINGS. Po klepnutí na \'okay\' vám vyskakovací okno pomůže to udělat.</string>
@@ -357,7 +353,7 @@
     <string name="pos_grant_write_secure_settings_guide">Průvodce</string>
     <string name="pos_grant_report_issues_guide">Průvodce</string>
     <string name="pos_enable_root_features">Povolit root funkce</string>
-    <string name="pos_grant">Udělit</string>
+    <string name="pos_grant">Udělit</string>strings
     <string name="pos_join">Připojit se</string>
     <string name="pos_change_location">Změnit</string>
     <string name="pos_turn_off_stock_battery_optimisation">částečně opravit</string>
