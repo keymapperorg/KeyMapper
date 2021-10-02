@@ -99,6 +99,7 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider) = when (this) {
     is Error.TargetDirectoryNotFound -> resourceProvider.getString(R.string.error_directory_not_found, uri)
     is Error.TargetFileNotFound -> resourceProvider.getString(R.string.error_target_file_not_found, uri)
     Error.UnknownIOError -> resourceProvider.getString(R.string.error_io_error)
+    Error.NoFileName -> resourceProvider.getString(R.string.error_no_file_name)
 }
 
 val Error.isFixable: Boolean

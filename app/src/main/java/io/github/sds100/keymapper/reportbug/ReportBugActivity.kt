@@ -7,10 +7,10 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.addRepeatingJob
+import androidx.lifecycle.lifecycleScope
 import com.github.appintro.AppIntro2
 import io.github.sds100.keymapper.system.permissions.RequestPermissionDelegate
 import io.github.sds100.keymapper.system.url.UrlUtils
-import io.github.sds100.keymapper.util.FeedbackUtils
 import io.github.sds100.keymapper.util.Inject
 import kotlinx.coroutines.flow.collectLatest
 
@@ -45,8 +45,10 @@ class ReportBugActivity : AppIntro2() {
             }
         }
 
-        viewModel.slides.forEach {
-            addSlide(it)
+        lifecycleScope.launchWhenCreated {
+            viewModel.slides.collectLatest { slides ->
+                slides.forEach { addSlide(it.id) }
+            }
         }
 
         addRepeatingJob(Lifecycle.State.CREATED) {
@@ -58,12 +60,6 @@ class ReportBugActivity : AppIntro2() {
         addRepeatingJob(Lifecycle.State.CREATED) {
             viewModel.goToNextSlide.collectLatest {
                 goToNextSlide()
-            }
-        }
-
-        addRepeatingJob(Lifecycle.State.CREATED) {
-            viewModel.emailDeveloper.collectLatest {
-                FeedbackUtils.emailBugReport(this@ReportBugActivity, it)
             }
         }
     }

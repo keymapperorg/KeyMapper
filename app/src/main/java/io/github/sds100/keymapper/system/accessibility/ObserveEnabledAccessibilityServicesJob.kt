@@ -11,9 +11,9 @@ import io.github.sds100.keymapper.system.JobSchedulerHelper
  */
 class ObserveEnabledAccessibilityServicesJob : JobService() {
     override fun onStartJob(params: JobParameters?): Boolean {
-        (applicationContext as KeyMapperApp).serviceAdapter.updateWhetherServiceIsEnabled()
+        (application!! as KeyMapperApp).serviceAdapter.updateWhetherServiceIsEnabled()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            JobSchedulerHelper.observeEnabledAccessibilityServices(applicationContext)
+            JobSchedulerHelper.observeEnabledAccessibilityServices(application!!)
         }
         return false
     }

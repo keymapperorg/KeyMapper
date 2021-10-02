@@ -10,4 +10,8 @@ import kotlinx.serialization.Serializable
 
 @Parcelize
 @Serializable
-data class InputDeviceInfo(val descriptor: String, val name: String, val id: Int, val isExternal: Boolean) : Parcelable
+data class InputDeviceInfo(val descriptor: String,
+                           val name: String,
+                           val id: Int,
+                           val isExternal: Boolean,
+                           val isGameController: Boolean) : Parcelable

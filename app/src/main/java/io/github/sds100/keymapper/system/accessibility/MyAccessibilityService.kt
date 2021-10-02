@@ -19,8 +19,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import io.github.sds100.keymapper.api.Api
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapId
-import io.github.sds100.keymapper.system.devices.InputDeviceInfo
-import io.github.sds100.keymapper.system.devices.isExternalCompat
+import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,7 +39,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
             when (intent?.action) {
                 Api.ACTION_TRIGGER_KEYMAP_BY_UID -> {
                     intent.getStringExtra(Api.EXTRA_KEYMAP_UID)?.let {
-                        controller.triggerKeyMapFromIntent(it)
+                        controller?.triggerKeyMapFromIntent(it)
                     }
                 }
             }
@@ -50,7 +49,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
     private lateinit var lifecycleRegistry: LifecycleRegistry
 
     private var fingerprintGestureCallback:
-        FingerprintGestureController.FingerprintGestureCallback? = null
+            FingerprintGestureController.FingerprintGestureCallback? = null
 
     override val rootNode: AccessibilityNodeModel?
         get() {
@@ -94,7 +93,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
                 }
             }
         }
-    private lateinit var controller: AccessibilityServiceController
+    private var controller: AccessibilityServiceController? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -102,8 +101,6 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
 
         lifecycleRegistry = LifecycleRegistry(this)
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
-
-        controller = Inject.accessibilityServiceController(this)
 
         IntentFilter().apply {
             addAction(Api.ACTION_TRIGGER_KEYMAP_BY_UID)
@@ -126,6 +123,14 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
         super.onServiceConnected()
 
         Timber.i("Accessibility service: onServiceConnected")
+
+        /*
+        I would put this in onCreate but for some reason on some devices getting the application
+        context would return null
+         */
+        if (controller == null) {
+            controller = Inject.accessibilityServiceController(this)
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
@@ -150,7 +155,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
 
                             else -> return
                         }
-                        controller.onFingerprintGesture(id)
+                        controller?.onFingerprintGesture(id)
                     }
                 }
 
@@ -159,7 +164,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
             }
         }
 
-        controller.onServiceConnected()
+        controller?.onServiceConnected()
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
@@ -170,6 +175,8 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
     override fun onInterrupt() {}
 
     override fun onDestroy() {
+
+        controller = null
 
         if (::lifecycleRegistry.isInitialized) {
             lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
@@ -205,22 +212,21 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
         val device = if (event.device == null) {
             null
         } else {
-            InputDeviceInfo(
-                descriptor = event.device.descriptor,
-                name = event.device.name,
-                id = event.deviceId,
-                isExternal = event.device.isExternalCompat
+            InputDeviceUtils.createInputDeviceInfo(event.device)
+        }
+
+        if (controller != null) {
+            return controller!!.onKeyEvent(
+                event.keyCode,
+                event.action,
+                device,
+                event.metaState,
+                event.scanCode,
+                event.eventTime
             )
         }
 
-        return controller.onKeyEvent(
-            event.keyCode,
-            event.action,
-            device,
-            event.metaState,
-            event.scanCode,
-            event.eventTime
-        )
+        return false
     }
 
     override fun getLifecycle() = lifecycleRegistry

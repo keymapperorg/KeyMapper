@@ -30,22 +30,12 @@ class ReportBugViewModel(
         private const val ID_BUTTON_RESTART_ACCESSIBILITY_SERVICE = "restart_accessibility_service"
         private const val ID_BUTTON_CREATE_GITHUB_ISSUE = "create_github_issue"
         private const val ID_BUTTON_DISCORD_SERVER = "discord_server"
-        private const val ID_BUTTON_EMAIL = "email"
         private const val ID_BUTTON_CREATE_BUG_REPORT = "create_bug_report"
     }
 
     private var bugReportUri: String? = null
 
-    private val slideModels: List<AppIntroSlideUi> = sequence {
-        yield(createBugReportSlide())
-        yield(shareBugReportSlide())
-
-        if (controlAccessibilityService.state.firstBlocking() == ServiceState.CRASHED) {
-            yield(restartServiceSlide())
-        }
-    }.toList()
-
-    val slides: List<String> = slideModels.map { it.id }
+    val slides: StateFlow<List<AppIntroSlideUi>> = MutableStateFlow(createSlides())
 
     private val _chooseBugReportLocation = MutableSharedFlow<Unit>()
     val chooseBugReportLocation = _chooseBugReportLocation.asSharedFlow()
@@ -56,20 +46,12 @@ class ReportBugViewModel(
     private val _openUrl = MutableSharedFlow<String>()
     val openUrl = _openUrl.asSharedFlow()
 
-    private val _emailDeveloper = MutableSharedFlow<String>()
-
-    /**
-     * The uri of the bug report.
-     */
-    val emailDeveloper = _emailDeveloper.asSharedFlow()
-
     fun onButtonClick(id: String) {
         viewModelScope.launch {
             when (id) {
                 ID_BUTTON_CREATE_BUG_REPORT -> _chooseBugReportLocation.emit(Unit)
                 ID_BUTTON_CREATE_GITHUB_ISSUE -> _openUrl.emit(getString(R.string.url_github_create_issue_bug))
                 ID_BUTTON_DISCORD_SERVER -> _openUrl.emit(getString(R.string.url_discord_server_invite))
-                ID_BUTTON_EMAIL -> _emailDeveloper.emit(bugReportUri!!)
                 ID_BUTTON_RESTART_ACCESSIBILITY_SERVICE -> {
                     controlAccessibilityService.restart()
 
@@ -99,8 +81,6 @@ class ReportBugViewModel(
         }
     }
 
-    fun getSlide(slide: String): Flow<AppIntroSlideUi> = flow { emit(slideModels.single { it.id == slide }) }
-
     fun canGoToNextSlide(currentSlide: String): Boolean {
         return when (currentSlide) {
             ReportBugSlide.CREATE_BUG_REPORT -> bugReportUri != null
@@ -127,9 +107,7 @@ class ReportBugViewModel(
         buttonText1 = getString(R.string.slide_button_share_discord),
         buttonId1 = ID_BUTTON_DISCORD_SERVER,
         buttonText2 = getString(R.string.slide_button_share_github),
-        buttonId2 = ID_BUTTON_CREATE_GITHUB_ISSUE,
-        buttonText3 = getString(R.string.slide_button_share_email),
-        buttonId3 = ID_BUTTON_EMAIL
+        buttonId2 = ID_BUTTON_CREATE_GITHUB_ISSUE
     )
 
     private fun restartServiceSlide() = AppIntroSlideUi(
@@ -141,6 +119,15 @@ class ReportBugViewModel(
         buttonText1 = getString(R.string.button_restart_accessibility_service),
         buttonId1 = ID_BUTTON_RESTART_ACCESSIBILITY_SERVICE
     )
+
+    private fun createSlides(): List<AppIntroSlideUi> = sequence {
+        yield(createBugReportSlide())
+        yield(shareBugReportSlide())
+
+        if (controlAccessibilityService.state.firstBlocking() == ServiceState.CRASHED) {
+            yield(restartServiceSlide())
+        }
+    }.toList()
 
     @Suppress("UNCHECKED_CAST")
     class Factory(

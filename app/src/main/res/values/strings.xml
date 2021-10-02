@@ -92,9 +92,6 @@
 
     <string name="action_title_wait">Wait %sms</string>
 
-    <string name="email_subject">Key Mapper bug report</string>
-    <string name="email_default_message">Please describe the issue you\'re having...</string>
-
     <string name="action_title_intent_start_activity">Start activity: %s</string>
     <string name="action_title_intent_start_service">Start service: %s</string>
     <string name="action_title_intent_send_broadcast">Send broadcast: %s</string>
@@ -342,10 +339,9 @@
     <string name="slide_button_create_bug_report">Create report</string>
 
     <string name="slide_title_share_bug_report">Share the report</string>
-    <string name="slide_description_share_bug_report">There are 3 ways to share the bug report to the developer. Either join the Discord server, create a GitHub issue or (least preferably) send an email. Make sure that you attach the bug report to your message!</string>
+    <string name="slide_description_share_bug_report">There are 3 ways to share the bug report to the developer. Either join the Discord server or create a GitHub issue. Make sure that you attach the bug report to your message!</string>
     <string name="slide_button_share_discord">Discord</string>
     <string name="slide_button_share_github">GitHub</string>
-    <string name="slide_button_share_email">Email</string>
 
     <!--  Bug report slides-->
 
@@ -415,7 +411,6 @@
     <string name="dialog_message_root_prompt">If you know your phone isn\'t rooted or you don\'t know what root is, you can\'t use features which only work on rooted devices. When you tap \'OK\', you will be taken to the settings.
             In the settings, scroll to the bottom and tap \'Key Mapper has root permission\' so you can use root features/actions.</string>
     <string name="dialog_message_downloading">Downloading…</string>
-    <string name="dialog_message_describe_your_issue_in_the_email">Can you please describe the issue you are having in the email, otherwise I can\'t help you. Thanks!</string>
     <string name="dialog_message_long_press_warning">Long pressing only works for physical volume and navigation buttons. If you enable it for other keys, the keys won\'t work when they aren\'t long pressed.</string>
     <string name="dialog_message_write_secure_settings">To grant Key Mapper WRITE_SECURE_SETTINGS permission enable "root features" in the settings if your device is rooted. If your device isn\'t rooted, follow the guide on how to use a PC/Mac to grant permission.</string>
     <string name="dialog_message_cant_find_accessibility_settings_page">Your device doesn\'t seem to have an accessibility services settings page. You can enable the accessibility service by giving the app WRITE_SECURE_SETTINGS permission. After you tap \'okay\' a popup will guide you how to do it.</string>
@@ -463,6 +458,9 @@
     <string name="dialog_button_read_dont_kill_my_app_no">No</string>
 
     <string name="dialog_title_failed_to_create_bug_report">Failed to create bug report</string>
+
+    <string name="dialog_title_request_shizuku_permission">Request Shizuku permission</string>
+    <string name="dialog_message_request_shizuku_permission">Since you are using Shizuku it is highly recommended to grant this permission since some features in Key Mapper can be done without you having to configure anything (E.g inputting key codes without using the Key Mapper keyboard).</string>
 
     <string name="pos_yes">Yes</string>
     <string name="pos_done">Done</string>
@@ -920,6 +918,7 @@
     <string name="error_storage_permission_denied">Storage permission denied!</string>
     <string name="error_matching_source_and_target_paths">The source and target can\'t be the same!</string>
     <string name="error_no_space_left_at_target">No space left at target! %s</string>
+    <string name="error_no_file_name">This file has no name!</string>
 
     <!-- Error messages -->
 

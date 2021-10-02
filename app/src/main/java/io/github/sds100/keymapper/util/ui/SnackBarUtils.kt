@@ -23,7 +23,9 @@ object SnackBarUtils {
                 view.longSnack(text) {
                     if (actionText != null) {
                         action(actionText) {
-                            continuation.resume(PopupUi.SnackBarActionResponse)
+                            if (!continuation.isCompleted) {
+                                continuation.resume(PopupUi.SnackBarActionResponse)
+                            }
                         }
                     }
 
@@ -33,7 +35,9 @@ object SnackBarUtils {
                 view.snack(text) {
                     if (actionText != null) {
                         action(actionText) {
-                            continuation.resume(PopupUi.SnackBarActionResponse)
+                            if (!continuation.isCompleted) {
+                                continuation.resume(PopupUi.SnackBarActionResponse)
+                            }
                         }
                     }
 

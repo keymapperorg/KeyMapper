@@ -1,10 +1,10 @@
 package io.github.sds100.keymapper.ui.utils
 
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.*
 import com.airbnb.epoxy.EpoxyController
 import com.google.android.material.slider.Slider
 import io.github.sds100.keymapper.*
+import io.github.sds100.keymapper.databinding.ListItemCheckboxBinding
 import io.github.sds100.keymapper.util.Defaultable
 import io.github.sds100.keymapper.util.ui.*
 import io.github.sds100.keymapper.util.viewLifecycleScope
@@ -54,11 +54,18 @@ fun EpoxyController.configuredCheckBox(
 ) {
     checkbox {
         id(model.id)
-        isChecked(model.isChecked)
-        primaryText(model.label)
+        onBind { _, view, _ ->
+            (view.dataBinding as ListItemCheckboxBinding).checkBox.apply {
+                //this is very important so checkboxes in other recycler views aren't affected by the checked state changing.
+                setOnCheckedChangeListener(null)
 
-        onCheckedChange { buttonView, isChecked ->
-            onCheckedChange.invoke(isChecked)
+                isChecked = model.isChecked
+                text = model.label
+
+                setOnCheckedChangeListener { buttonView, isChecked ->
+                    onCheckedChange.invoke(isChecked)
+                }
+            }
         }
     }
 }

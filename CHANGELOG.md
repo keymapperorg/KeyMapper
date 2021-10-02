@@ -1,3 +1,19 @@
+## [2.3.1](https://github.com/sds100/KeyMapper/releases/tag/v2.3.1)
+
+#### 02 October 2021
+
+### Changes
+- [#772](https://github.com/sds100/KeyMapper/issues/772) Remapping game controllers should work automatically in games now. You no longer have to manually set the device of a key event action to be the game controller.
+
+### Bug Fixes
+- Try to fix a lot of random crashes on some devices.
+- [#771](https://github.com/sds100/KeyMapper/issues/771) Don't show a "failed to find accessibility node" toast message when the open menu action fails.
+- 
+- [#775](https://github.com/sds100/KeyMapper/issues/775) The options for key maps would sometimes sporadically change when navigating the configuration screen.
+- 
+### Removed
+- Option to give feedback by emailing the developer. The number of emails was overwhelming and most of them were not constructive at all.
+
 ## [2.3.0](https://github.com/sds100/KeyMapper/releases/tag/v2.3.0)
 
 These are all the changes from 2.2.0.

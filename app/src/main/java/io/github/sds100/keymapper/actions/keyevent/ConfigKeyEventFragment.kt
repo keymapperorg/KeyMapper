@@ -14,10 +14,11 @@ import androidx.lifecycle.addRepeatingJob
 import androidx.navigation.fragment.findNavController
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.ChooseActionFragmentDirections
-import io.github.sds100.keymapper.checkbox
 import io.github.sds100.keymapper.databinding.FragmentConfigKeyEventBinding
+import io.github.sds100.keymapper.ui.utils.configuredCheckBox
 import io.github.sds100.keymapper.ui.utils.putJsonSerializable
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.Inject
+import io.github.sds100.keymapper.util.str
 import kotlinx.coroutines.flow.collectLatest
 
 /**
@@ -80,15 +81,9 @@ class ConfigKeyEventFragment : Fragment() {
         viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
             viewModel.uiState.collectLatest { state ->
                 binding.epoxyRecyclerViewModifiers.withModels {
-                    state.modifierListItems.forEach {
-                        checkbox {
-                            id(it.id)
-                            primaryText(it.label)
-                            isChecked(it.isChecked)
-
-                            onCheckedChange { _, isChecked ->
-                                viewModel.setModifierKeyChecked(it.id.toInt(), isChecked)
-                            }
+                    state.modifierListItems.forEach { listItem ->
+                        configuredCheckBox(listItem) { isChecked ->
+                            viewModel.setModifierKeyChecked(listItem.id.toInt(), isChecked)
                         }
                     }
                 }

@@ -32,6 +32,9 @@
 -keep class androidx.lifecycle.** { *; }
 -keep interface androidx.lifecycle.** { *; }
 
+-keep class androidx.recyclerview.** { *; }
+-keep interface androidx.recyclerview.** { *; }
+
 -keepattributes *Annotation*, InnerClasses
 -dontnote kotlinx.serialization.AnnotationsKt # core serialization annotations
 -dontnote kotlinx.serialization.SerializationKt

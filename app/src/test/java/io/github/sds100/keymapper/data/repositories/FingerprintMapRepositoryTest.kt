@@ -33,7 +33,8 @@ class FingerprintMapRepositoryTest {
             descriptor = "fake_keyboard_descriptor",
             name = "fake keyboard",
             id = 1,
-            isExternal = true
+            isExternal = true,
+            isGameController = false
         )
     }
 

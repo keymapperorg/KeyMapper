@@ -54,7 +54,7 @@ class AndroidDevicesAdapter(
                 override fun onInputDeviceAdded(deviceId: Int) {
                     coroutineScope.launch {
                         val device = InputDevice.getDevice(deviceId) ?: return@launch
-                        onInputDeviceConnect.emit(device.createModel())
+                        onInputDeviceConnect.emit(InputDeviceUtils.createInputDeviceInfo(device))
 
                         updateInputDevices()
                     }
@@ -115,7 +115,7 @@ class AndroidDevicesAdapter(
         InputDevice.getDeviceIds().forEach {
             val device = InputDevice.getDevice(it) ?: return@forEach
 
-            devices.add(device.createModel())
+            devices.add(InputDeviceUtils.createInputDeviceInfo(device))
         }
 
         connectedInputDevices.value = State.Data(devices)
@@ -142,14 +142,5 @@ class AndroidDevicesAdapter(
         }
 
         pairedBluetoothDevices.value = devices ?: emptyList()
-    }
-
-    private fun InputDevice.createModel(): InputDeviceInfo {
-        return InputDeviceInfo(
-            this.descriptor,
-            this.name,
-            this.id,
-            this.isExternalCompat
-        )
     }
 }

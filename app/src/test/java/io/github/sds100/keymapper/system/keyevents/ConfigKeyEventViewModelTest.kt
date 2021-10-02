@@ -68,14 +68,16 @@ class ConfigKeyEventViewModelTest {
                 descriptor = "bla",
                 name = "fake device 1",
                 id = 0,
-                isExternal = false
+                isExternal = false,
+                isGameController = false
             )
 
             val fakeDevice2 = InputDeviceInfo(
                 descriptor = "bla",
                 name = "fake device 2",
                 id = 1,
-                isExternal = false
+                isExternal = false,
+                isGameController = false
             )
 
             //WHEN
