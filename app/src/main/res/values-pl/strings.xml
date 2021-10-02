@@ -75,8 +75,6 @@
     <string name="enable_device_admin_message">Po włączeniu Zarządzanie urządzeniem musisz go DEZAKTYWOWAĆ, jeśli chcesz odinstalować Key Mapper.</string>
     <string name="constraints_recyclerview_placeholder">Dodaj ograniczenie!</string>
     <string name="action_title_wait">Czekaj %sms</string>
-    <string name="email_subject">Zgłoszenie o błędzie Key Mapper</string>
-    <string name="email_default_message">Proszę opisz swój problem...</string>
     <string name="action_title_intent_start_activity">Uruchom aktywność: %s</string>
     <string name="action_title_intent_start_service">Uruchom usługę: %s</string>
     <string name="action_title_intent_send_broadcast">Wyślij transmisję: %s</string>
@@ -351,7 +349,6 @@
     <string name="dialog_message_root_prompt">Jeśli wiesz, że Twój telefon nie jest zrootowany lub nie wiesz, czym jest root, nie możesz korzystać z funkcji, które działają tylko na zrootowanych urządzeniach. Po kliknięciu \"OK\" zostaniesz przeniesiony do ustawień.
             W ustawieniach przewiń w dół i kliknij \"Key Mapper ma uprawnienia roota\", aby móc korzystać z funkcji/działań roota.</string>
     <string name="dialog_message_downloading">Pobieranie…</string>
-    <string name="dialog_message_describe_your_issue_in_the_email">Czy możesz opisać swój problem przez e-mail? Bo inaczej nie mogę Ci pomóc. Dzięki!</string>
     <string name="dialog_message_long_press_warning">Przytrzymanie działa tylko w przypadku fizycznych przycisków głośności i nawigacji. Jeśli jest włączone dla innych klawiszy, nie będą działać bez przytrzymania.</string>
     <string name="dialog_title_write_secure_settings">Udziel uprawnienie WRITE_SECURE_SETTINGS</string>
     <string name="dialog_message_write_secure_settings">Do udzielenia tego uprawnienia wymagany jest komputer PC/Mac. Przeczytaj o tym przewodnik online.</string>
