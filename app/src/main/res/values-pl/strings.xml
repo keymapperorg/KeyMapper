@@ -186,6 +186,8 @@
     <string name="toast_root_features_turned_on">Funkcje roota są teraz włączone</string>
     <string name="toast_failed_to_choose_sound_file">Wybranie pliku dźwiękowego nie powiodło się! Sprawdź dziennik.</string>
     <string name="toast_no_sound_files">Nie ma żadnego pliku dźwiękowego!</string>
+    <string name="toast_granted_itself_write_secure_settings_with_shizuku">Aplikacja Key Mapper użyła Shizuku, aby przyznać sobie uprawnienie WRITE_SECURE_SETTINGS</string>
+    <string name="toast_granted_itself_write_secure_settings_with_root">Aplikacja Key Mapper użyła Root, aby przyznać sobie uprawnienie WRITE_SECURE_SETTINGS</string>
     <!--  Toasts  -->
     <!-- Extra labels -->
     <string name="extra_label_sequence_trigger_timeout">Limit czasu wyzwalacza kolejkowego (ms)</string>
@@ -247,6 +249,10 @@
     <string name="constraint_wifi_disconnected_description">Odłączono od sieci Wi-Fi %s</string>
     <string name="constraint_wifi_connected_any_description">Połączono z dowolną siecią Wi-Fi</string>
     <string name="constraint_wifi_disconnected_any_description">Odłączono od dowolnej sieci Wi-Fi</string>
+    <string name="constraint_ime_chosen">Metoda wprowadzania jest wybrana</string>
+    <string name="constraint_ime_chosen_description">%s jest wybrana</string>
+    <string name="constraint_ime_not_chosen">Metoda wprowadzania nie jest wybrana</string>
+    <string name="constraint_ime_not_chosen_description">%s nie jest wybrana</string>
     <string name="orientation_0">Pionowo (0°)</string>
     <string name="orientation_90">Poziomo (90°)</string>
     <string name="orientation_180">Pionowo (180°)</string>
@@ -275,10 +281,9 @@
     <string name="slide_description_create_bug_report">Wybierz lokalizację, w której chcesz zapisać zgłoszenie błędu, klikając \"Utwórz zgłoszenie\". Następny slajd pokaże, jak możesz wysłać go do programisty.</string>
     <string name="slide_button_create_bug_report">Utwórz zgłoszenie</string>
     <string name="slide_title_share_bug_report">Udostępnij zgłoszenie</string>
-    <string name="slide_description_share_bug_report">Istnieją 3 sposoby udostępnienia zgłoszeniu o błędzie programiście. Dołącz do serwera Discord, utwórz zgłoszenie na GitHub lub (najmniej korzystnie) wyślij e-mail. Upewnij się, że dołączasz zgłoszenie o błędzie do swojej wiadomości!</string>
+    <string name="slide_description_share_bug_report">Istnieją 3 sposoby udostępnienia zgłoszeniu o błędzie programiście. Dołącz do serwera Discord lub utwórz zgłoszenie na GitHubie. Upewnij się, że dołączasz zgłoszenie o błędzie do swojej wiadomości!</string>
     <string name="slide_button_share_discord">Discord</string>
     <string name="slide_button_share_github">GitHub</string>
-    <string name="slide_button_share_email">E-mail</string>
     <!--  Bug report slides-->
     <!-- Menu action titles-->
     <string name="action_settings">Ustawienia</string>
@@ -405,6 +410,8 @@
     <string name="dialog_button_read_dont_kill_my_app_yes">Tak</string>
     <string name="dialog_button_read_dont_kill_my_app_no">Nie</string>
     <string name="dialog_title_failed_to_create_bug_report">Nie udało się utworzyć zgłoszenie o błędzie</string>
+    <string name="dialog_title_request_shizuku_permission">Poproś o uprawnienie Shizuku</string>
+    <string name="dialog_message_request_shizuku_permission">Ponieważ używasz Shizuku, zdecydowanie zaleca się udzielenie tego uprawnienia, ponieważ niektóre funkcje Key Mappera można wykonać bez konieczności konfigurowania czegokolwiek (np. wprowadzanie kodów klawiszy bez użycia klawiatury Key Mapper).</string>
     <string name="pos_yes">Tak</string>
     <string name="pos_done">Gotowe</string>
     <string name="pos_opt_in">Zaakceptuj</string>
@@ -629,6 +636,15 @@
     <string name="showcase_fingerprint_gesture_support_button">Włącz</string>
     <string name="showcase_setup_chosen_devices_again_title">Musisz ponownie skonfigurować niektóre ustawienia</string>
     <string name="showcase_setup_chosen_devices_again_message">Wygląda na to, że używasz ustawienia do automatycznej zmiany klawiatury lub wyświetlania selektora metody wprowadzania, gdy urządzenie Bluetooth się łączy i rozłącza. Key Mapper umożliwia teraz korzystanie z dowolnego urządzenia wejściowego, a nie tylko urządzeń Bluetooth. Nie ma sposobu na migrację starych ustawień w taki sposób, aby nowa funkcja działała, więc trzeba będzie ponownie wybrać urządzenia.</string>
+    <string name="showcase_grant_shizuku_permission_denied_title">Udziel uprawnienie Shizuku</string>
+    <string name="showcase_grant_shizuku_permission_denied_message">Wygląda na to, że aplikacja Shizuku jest zainstalowana. Zaleca się udzielenie aplikacji Key Mapper uprawnień do korzystania z Shizuku, aby Key Mapper mógł robić więcej rzeczy bez udziału użytkownika. Na przykład wprowadzanie naciśnięć klawiatury bez konieczności używania \"Klawiatury Key Mapper\". Kliknij \"Więcej informacji\", aby zapoznać się ze wszystkimi korzyściami. Kliknij \"Udziel\", aby udzielić uprawnienie.</string>
+    <string name="showcase_grant_shizuku_permission_granted_title">Udzielono uprawnienie Shizuku!</string>
+    <string name="showcase_grant_shizuku_permission_granted_message">Pomyślnie udzielono uprawnienie Shizuku aplikacji Key Mapper!</string>
+    <string name="showcase_more_shizuku_info">Więcej informacji</string>
+    <string name="showcase_request_shizuku_permission">Udziel</string>
+    <string name="showcase_shizuku_not_started_title">Aplikacja Shizuku nie jest uruchomiona</string>
+    <string name="showcase_shizuku_not_started_message">Aby udzielić aplikacji Key Mapper uprawnienia do korzystania z aplikacji Shizuku, należy ją uruchomić. Kliknij \"Uruchom Shizuku\", aby otworzyć aplikację Shizuku, w której możesz ją uruchomić.</string>
+    <string name="showcase_shizuku_launch_shizuku_app">Uruchom Shizuku</string>
     <!-- Showcase -->
     <!-- system action options -->
     <string name="stream_accessibility">Ułatwienia dostępu</string>
@@ -788,6 +804,7 @@
     <string name="error_no_space_left_at_target">Brak miejsca na cel! %s</string>
     <string name="error_shizuku_permission_denied">Odmowa dostępu do Shizuku!</string>
     <string name="error_shizuku_not_started">Aplikacja Shizuku nie jest uruchomiona!</string>
+    <string name="error_no_file_name">Ten plik nie ma nazwy!</string>
     <string name="error_access_fine_location_permission_denied">Odmówiono dostępu do dokładnej lokalizacji!</string>
     <!-- Error messages -->
     <!-- action labels -->
@@ -991,5 +1008,8 @@
     <string name="about_header_our_team">Nasz zespół</string>
     <string name="about_team_sds100_role">Programista</string>
     <string name="about_team_jambl3r_role">Moderator społeczności/wsparcie</string>
+    <string name="about_team_gl513_role">Moderator społeczności/wsparcie</string>
+    <string name="about_team_kekero_role">Tłumacz (polski)</string>
+    <string name="about_team_trollserver_role">Tłumacz (czeski)</string>
     <!--  About  -->
 </resources>
