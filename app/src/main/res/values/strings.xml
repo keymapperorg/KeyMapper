@@ -97,9 +97,6 @@
 
     <string name="action_title_wait">Wait %sms</string>
 
-    <string name="email_subject">Key Mapper bug report</string>
-    <string name="email_default_message">Please describe the issue you\'re having...</string>
-
     <string name="action_title_intent_start_activity">Start activity: %s</string>
     <string name="action_title_intent_start_service">Start service: %s</string>
     <string name="action_title_intent_send_broadcast">Send broadcast: %s</string>
@@ -458,7 +455,6 @@
     <string name="dialog_message_root_prompt">If you know your phone isn\'t rooted or you don\'t know what root is, you can\'t use features which only work on rooted devices. When you tap \'OK\', you will be taken to the settings.
             In the settings, scroll to the bottom and tap \'Key Mapper has root permission\' so you can use root features/actions.</string>
     <string name="dialog_message_downloading">Downloading…</string>
-    <string name="dialog_message_describe_your_issue_in_the_email">Can you please describe the issue you are having in the email, otherwise I can\'t help you. Thanks!</string>
     <string name="dialog_message_long_press_warning">Long pressing only works for physical volume and navigation buttons. If you enable it for other keys, the keys won\'t work when they aren\'t long pressed.</string>
 
     <string name="dialog_title_write_secure_settings">Grant WRITE_SECURE_SETTINGS permission</string>
