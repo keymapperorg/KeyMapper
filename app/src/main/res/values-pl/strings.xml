@@ -248,7 +248,6 @@
     <string name="slide_description_share_bug_report">Istnieją 3 sposoby udostępnienia zgłoszeniu o błędzie programiście. Dołącz do serwera Discord, utwórz zgłoszenie na GitHub lub (najmniej korzystnie) wyślij e-mail. Upewnij się, że dołączasz zgłoszenie o błędzie do swojej wiadomości!</string>
     <string name="slide_button_share_discord">Discord</string>
     <string name="slide_button_share_github">GitHub</string>
-    <string name="slide_button_share_email">E-mail</string>
     <!--  Bug report slides-->
     <!-- Menu action titles-->
     <string name="action_settings">Ustawienia</string>
@@ -352,6 +351,8 @@
     <string name="dialog_button_read_dont_kill_my_app_yes">Tak</string>
     <string name="dialog_button_read_dont_kill_my_app_no">Nie</string>
     <string name="dialog_title_failed_to_create_bug_report">Nie udało się utworzyć zgłoszenie o błędzie</string>
+    <string name="dialog_title_request_shizuku_permission">Poproś o uprawnienie Shizuku</string>
+    <string name="dialog_message_request_shizuku_permission">Ponieważ używasz Shizuku, zdecydowanie zaleca się udzielenie tego uprawnienia, ponieważ niektóre funkcje Key Mappera można wykonać bez konieczności konfigurowania czegokolwiek (np. wprowadzanie kodów klawiszy bez użycia klawiatury Key Mapper).</string>
     <string name="pos_yes">Tak</string>
     <string name="pos_done">Gotowe</string>
     <string name="pos_opt_in">Zaakceptuj</string>
@@ -717,6 +718,7 @@
     <string name="error_storage_permission_denied">Odmowa dostępu do pamięci!</string>
     <string name="error_matching_source_and_target_paths">Ścieżka źródłowa i docelowa nie mogą być takie same!</string>
     <string name="error_no_space_left_at_target">Brak miejsca na cel! %s</string>
+    <string name="error_no_file_name">Ten plik nie ma nazwy!</string>
     <!-- Error messages -->
     <!-- System action labels -->
     <string name="action_toggle_wifi">Włącz/wyłącz Wi-Fi</string>
