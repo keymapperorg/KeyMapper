@@ -44,6 +44,7 @@ class ReportBugUseCaseImpl(
                 append("Manufacturer: ${Build.DEVICE}\n")
                 append("Device: ${Build.MANUFACTURER}\n")
                 append("Model: ${Build.MODEL}\n")
+                append("Android SDK version: ${Build.VERSION.SDK_INT}")
             }
 
             val deviceInfoFile = fileAdapter.getFile(tempFolder, FILE_DEVICE_INFO)
