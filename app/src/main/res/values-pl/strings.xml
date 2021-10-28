@@ -837,7 +837,7 @@
     <string name="action_landscape_mode">Orientacja pozioma</string>
     <string name="action_switch_orientation">Zmień orientację</string>
     <string name="action_cycle_rotations">Przełącz pomiędzy orientacjami</string>
-    <string name="action_cycle_rotations_formatted">Przełącz pomiędzy %s orientacjami</string>
+    <string name="action_cycle_rotations_formatted">Przełącz pomiędzy orientacjami: %s</string>
     <string name="action_toggle_mobile_data">Włącz/wyłącz mobilną transmisję danych</string>
     <string name="action_enable_mobile_data">Włącz mobilną transmisję danych</string>
     <string name="action_disable_mobile_data">Wyłącz mobilną transmisję danych</string>
