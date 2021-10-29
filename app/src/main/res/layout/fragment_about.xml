@@ -283,6 +283,7 @@
                                     android:layout_height="wrap_content"
                                     bind:icon="@{@drawable/ic_outline_account}"
                                     bind:subtitle="@{@string/about_team_trollserver_role}"
+                                    bind:url="@{@string/about_team_trollserver_url}"
                                     bind:title="@{@string/about_team_trollserver_name}" />
                             </LinearLayout>
                         </androidx.constraintlayout.widget.ConstraintLayout>
