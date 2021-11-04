@@ -179,17 +179,7 @@ class RequestPermissionDelegate(
                 messageResource = R.string.dialog_message_disable_battery_optimisation
 
                 positiveButton(R.string.pos_turn_off_stock_battery_optimisation) {
-
-                    try {
-                        val intent = Intent(
-                            Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-                            Uri.parse("package:${Constants.PACKAGE_NAME}")
-                        )
-
-                        activity.startActivity(intent)
-                    } catch (e: ActivityNotFoundException) {
-                        activity.longToast(R.string.error_battery_optimisation_activity_not_found)
-                    }
+                    showBatteryOptimisationExemptionSystemDialog()
                 }
 
                 negativeButton(R.string.neg_cancel) { it.cancel() }
@@ -204,14 +194,21 @@ class RequestPermissionDelegate(
                 show()
             }
         } else {
-            try {
-                val intent =
-                    Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+            showBatteryOptimisationExemptionSystemDialog()
+        }
+    }
 
-                activity.startActivity(intent)
-            } catch (e: ActivityNotFoundException) {
-                longToast(R.string.error_battery_optimisation_activity_not_found)
-            }
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun showBatteryOptimisationExemptionSystemDialog() {
+        try {
+            val intent = Intent(
+                Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
+                Uri.parse("package:${Constants.PACKAGE_NAME}")
+            )
+
+            activity.startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            activity.longToast(R.string.error_battery_optimisation_activity_not_found)
         }
     }
 }
