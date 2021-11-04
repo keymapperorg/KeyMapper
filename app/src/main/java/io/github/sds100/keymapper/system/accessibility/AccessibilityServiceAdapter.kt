@@ -189,7 +189,7 @@ class AccessibilityServiceAdapter(
 
         val pingJob = coroutineScope.launch {
             repeat(20) {
-                eventsToService.emit(Event.Ping(key))
+                serviceOutputEvents.emit(Ping(key))
                 delay(100)
             }
         }
