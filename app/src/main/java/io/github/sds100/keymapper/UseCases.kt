@@ -135,7 +135,8 @@ object UseCases {
         ServiceLocator.displayAdapter(service),
         ServiceLocator.cameraAdapter(service),
         ServiceLocator.networkAdapter(service),
-        ServiceLocator.inputMethodAdapter(service)
+        ServiceLocator.inputMethodAdapter(service),
+        ServiceLocator.lockScreenAdapter(service)
     )
 
     fun performActions(ctx: Context, service: IAccessibilityService) =

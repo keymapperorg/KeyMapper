@@ -129,6 +129,8 @@ class ConstraintUiHelper(
 
             getString(R.string.constraint_ime_not_chosen_description, label)
         }
+        Constraint.DeviceIsLocked -> getString(R.string.constraint_device_is_locked)
+        Constraint.DeviceIsUnlocked -> getString(R.string.constraint_device_is_unlocked)
     }
 
     fun getIcon(constraint: Constraint): IconInfo? = when (constraint) {
@@ -224,6 +226,16 @@ class ConstraintUiHelper(
 
         is Constraint.ImeNotChosen -> IconInfo(
             drawable = getDrawable(R.drawable.ic_outline_keyboard_24),
+            tintType = TintType.OnSurface
+        )
+
+        Constraint.DeviceIsLocked -> IconInfo(
+            drawable = getDrawable(R.drawable.ic_outline_lock_24),
+            tintType = TintType.OnSurface
+        )
+
+        Constraint.DeviceIsUnlocked -> IconInfo(
+            drawable = getDrawable(R.drawable.ic_outline_lock_open_24),
             tintType = TintType.OnSurface
         )
     }

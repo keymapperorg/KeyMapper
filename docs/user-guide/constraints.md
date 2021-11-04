@@ -39,8 +39,18 @@ Your mapping will only work if the front or back flashlight is on/off.
 
 ### WiFi on/off/connected/disconnect (2.4.0+)
 
-Your mapping will only work if it your device's WiFi is on/off or connected/disconnected to a network. 
+Your mapping will only work if it your device's WiFi is on/off or connected/disconnected to a
+network.
 
 ### Input method is/not chosen (2.4.0+)
 
 Your mapping will only work if the input method that you are using matches the constraint.
+
+### Device is locked (2.4.0+, Android 5.1+)
+
+Your mapping will only work if the device is locked. The screen must still be on because Android
+doesn't allow apps to detect button presses when the screen is off.
+
+### Device is unlocked (2.4.0+, Android 5.1+)
+
+Your mapping will only work if the device is unlocked.

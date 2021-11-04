@@ -26,7 +26,9 @@ object ConstraintUtils {
         ChooseConstraintType.WIFI_CONNECTED,
         ChooseConstraintType.WIFI_DISCONNECTED,
         ChooseConstraintType.IME_CHOSEN,
-        ChooseConstraintType.IME_NOT_CHOSEN
+        ChooseConstraintType.IME_NOT_CHOSEN,
+        ChooseConstraintType.DEVICE_IS_LOCKED,
+        ChooseConstraintType.DEVICE_IS_UNLOCKED
     )
 
     val KEY_MAP_ALLOWED_CONSTRAINTS = listOf(

@@ -1,5 +1,7 @@
 package io.github.sds100.keymapper.system.lock
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import io.github.sds100.keymapper.util.Result
 
 /**
@@ -7,4 +9,7 @@ import io.github.sds100.keymapper.util.Result
  */
 interface LockScreenAdapter {
     fun secureLockDevice(): Result<*>
+
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP_MR1)
+    fun isLocked(): Boolean
 }
