@@ -131,10 +131,6 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
     val action = MutableStateFlow("")
     val categoriesString = MutableStateFlow("")
 
-    val showChooseActivityButton: StateFlow<Boolean> = target.map {
-        it == IntentTarget.ACTIVITY
-    }.stateIn(viewModelScope, SharingStarted.Lazily, false)
-
     val data: MutableStateFlow<String> = MutableStateFlow("")
     val targetPackage: MutableStateFlow<String> = MutableStateFlow("")
     val targetClass: MutableStateFlow<String> = MutableStateFlow("")
@@ -142,7 +138,7 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
     val flagsString: MutableStateFlow<String> = MutableStateFlow("")
 
     private val extras: MutableStateFlow<List<IntentExtraModel>> =
-        MutableStateFlow(emptyList<IntentExtraModel>())
+        MutableStateFlow(emptyList())
 
     val extraListItems: StateFlow<List<IntentExtraListItem>> = extras.map { extras ->
         extras.map { it.toListItem() }
