@@ -99,7 +99,6 @@ class RequestPermissionDelegate(
 
     private fun requestWriteSecureSettings() {
         activity.materialAlertDialog {
-            titleResource = R.string.dialog_title_write_secure_settings
             messageResource = R.string.dialog_message_write_secure_settings
 
             positiveButton(R.string.pos_grant_write_secure_settings_guide) {
