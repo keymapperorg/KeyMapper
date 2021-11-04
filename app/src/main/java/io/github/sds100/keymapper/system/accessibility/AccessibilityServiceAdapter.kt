@@ -201,14 +201,18 @@ class AccessibilityServiceAdapter(
         Timber.i("Accessibility service: checking if it is crashed")
         val key = "check_is_crashed"
 
-        coroutineScope.launch {
-            delay(100)
-            eventsToService.emit(Event.Ping(key))
+        val pingJob = coroutineScope.launch {
+            repeat(20) {
+                eventsToService.emit(Event.Ping(key))
+                delay(100)
+            }
         }
 
         val pong: Event.Pong? = withTimeoutOrNull(2000L) {
             eventReceiver.first { it == Event.Pong(key) } as Event.Pong?
         }
+
+        pingJob.cancel()
 
         if (pong == null) {
             Timber.e("Accessibility service: is crashed")
