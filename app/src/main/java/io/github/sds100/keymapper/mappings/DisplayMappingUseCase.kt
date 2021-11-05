@@ -5,7 +5,6 @@ import io.github.sds100.keymapper.actions.GetActionErrorUseCase
 import io.github.sds100.keymapper.constraints.GetConstraintErrorUseCase
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.shizuku.ShizukuAdapter
 import io.github.sds100.keymapper.shizuku.ShizukuUtils
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
@@ -24,12 +23,12 @@ class DisplaySimpleMappingUseCaseImpl(
     private val packageManager: PackageManagerAdapter,
     private val permissionAdapter: PermissionAdapter,
     private val inputMethodAdapter: InputMethodAdapter,
-    private val serviceAdapter: ServiceAdapter,
     private val preferenceRepository: PreferenceRepository,
-    private val shizukuAdapter: ShizukuAdapter,
+    private val accessibilityServiceAdapter: ServiceAdapter,
     getActionError: GetActionErrorUseCase,
-    getConstraintError: GetConstraintErrorUseCase
-) : DisplaySimpleMappingUseCase, GetActionErrorUseCase by getActionError,
+    getConstraintError: GetConstraintErrorUseCase,
+) : DisplaySimpleMappingUseCase,
+    GetActionErrorUseCase by getActionError,
     GetConstraintErrorUseCase by getConstraintError {
 
     override val showDeviceDescriptors: Flow<Boolean> =
@@ -48,19 +47,26 @@ class DisplaySimpleMappingUseCaseImpl(
 
     override suspend fun fixError(error: Error) {
         when (error) {
-            Error.AccessibilityServiceDisabled -> serviceAdapter.enableService()
-            Error.AccessibilityServiceCrashed -> serviceAdapter.restartService()
             is Error.AppDisabled -> packageManager.enableApp(error.packageName)
             is Error.AppNotFound -> packageManager.downloadApp(error.packageName)
-            Error.NoCompatibleImeChosen -> keyMapperImeHelper.chooseCompatibleInputMethod()
-                .otherwise {
+            Error.NoCompatibleImeChosen ->
+                keyMapperImeHelper.chooseCompatibleInputMethod().otherwise {
                     inputMethodAdapter.showImePicker(fromForeground = true)
                 }
+
             Error.NoCompatibleImeEnabled -> keyMapperImeHelper.enableCompatibleInputMethods()
             is Error.ImeDisabled -> inputMethodAdapter.enableIme(error.ime.id)
             is Error.PermissionDenied -> permissionAdapter.request(error.permission)
             is Error.ShizukuNotStarted -> packageManager.openApp(ShizukuUtils.SHIZUKU_PACKAGE)
         }
+    }
+
+    override fun startAccessibilityService(): Boolean {
+        return accessibilityServiceAdapter.start()
+    }
+
+    override fun restartAccessibilityService(): Boolean {
+        return accessibilityServiceAdapter.restart()
     }
 }
 
@@ -74,6 +80,8 @@ interface DisplayActionUseCase : GetActionErrorUseCase {
     fun getAppIcon(packageName: String): Result<Drawable>
     fun getInputMethodLabel(imeId: String): Result<String>
     suspend fun fixError(error: Error)
+    fun startAccessibilityService(): Boolean
+    fun restartAccessibilityService(): Boolean
 }
 
 interface DisplayConstraintUseCase : GetConstraintErrorUseCase {

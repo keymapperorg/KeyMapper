@@ -33,7 +33,7 @@ class ConfigKeyMapTriggerViewModel(
     private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
     private val displayKeyMap: DisplayKeyMapUseCase,
     resourceProvider: ResourceProvider
-) : ResourceProvider by resourceProvider, PopupViewModel by PopupViewModelImpl() {
+) : BaseViewModel(resourceProvider) {
 
     val optionsViewModel = ConfigKeyMapTriggerOptionsViewModel(
         coroutineScope,
@@ -312,29 +312,17 @@ class ConfigKeyMapTriggerViewModel(
             }
 
             if (result is Error.AccessibilityServiceDisabled) {
-
-                val snackBar = PopupUi.SnackBar(
-                    message = getString(R.string.dialog_message_enable_accessibility_service_to_record_trigger),
-                    actionText = getString(R.string.pos_turn_on)
+                ViewModelHelper.handleAccessibilityServiceStoppedSnackBar(
+                    this@ConfigKeyMapTriggerViewModel,
+                    displayKeyMap::startAccessibilityService
                 )
-
-                val response = showPopup("enable_service", snackBar)
-
-                if (response != null) {
-                    displayKeyMap.fixError(Error.AccessibilityServiceDisabled)
-                }
             }
 
             if (result is Error.AccessibilityServiceCrashed) {
-
-                val dialog = DialogUtils.keyMapperCrashedDialog(this@ConfigKeyMapTriggerViewModel)
-
-                val response = showPopup("restart_service", dialog)
-
-                when (response) {
-                    DialogResponse.POSITIVE -> _fixAppKilling.emit(Unit)
-                    DialogResponse.NEUTRAL -> _reportBug.emit(Unit)
-                }
+                ViewModelHelper.handleAccessibilityServiceCrashedSnackBar(
+                    this@ConfigKeyMapTriggerViewModel,
+                    displayKeyMap::restartAccessibilityService
+                )
             }
         }
     }

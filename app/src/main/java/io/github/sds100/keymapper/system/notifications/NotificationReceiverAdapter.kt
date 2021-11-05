@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.system.notifications
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.database.ContentObserver
@@ -10,7 +11,6 @@ import android.os.Looper
 import android.provider.Settings
 import androidx.core.app.NotificationManagerCompat
 import io.github.sds100.keymapper.Constants
-import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.system.JobSchedulerHelper
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.accessibility.ServiceState
@@ -24,8 +24,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import splitties.bitflags.withFlag
-import splitties.toast.toast
-import timber.log.Timber
 
 /**
  * Created by sds100 on 27/07/2021.
@@ -37,7 +35,7 @@ class NotificationReceiverAdapter(
 ) : ServiceAdapter {
     private val ctx: Context = context.applicationContext
     override val state: MutableStateFlow<ServiceState> = MutableStateFlow(ServiceState.DISABLED)
-    
+
     override val eventReceiver: MutableSharedFlow<Event> = MutableSharedFlow()
     val eventsToService = MutableSharedFlow<Event>()
 
@@ -77,23 +75,23 @@ class NotificationReceiverAdapter(
         return Success(Unit)
     }
 
-    override fun enableService() {
-        openSettingsPage()
+    override fun start(): Boolean {
+        return openSettingsPage()
     }
 
-    override fun restartService() {
-        openSettingsPage()
+    override fun restart(): Boolean {
+        return openSettingsPage()
     }
 
-    override fun disableService() {
-        openSettingsPage()
+    override fun stop(): Boolean {
+        return openSettingsPage()
     }
 
     override suspend fun isCrashed(): Boolean {
         return false
     }
 
-    private fun openSettingsPage() {
+    private fun openSettingsPage(): Boolean {
         Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 .withFlag(Intent.FLAG_ACTIVITY_CLEAR_TASK)
@@ -101,9 +99,9 @@ class NotificationReceiverAdapter(
 
             try {
                 ctx.startActivity(this)
-            } catch (e: Exception) {
-                Timber.e(e)
-                toast(R.string.error_cant_find_notification_listener_settings)
+                return true
+            } catch (e: ActivityNotFoundException) {
+                return false
             }
         }
     }

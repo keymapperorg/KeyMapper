@@ -85,6 +85,12 @@ class HomeFragment : Fragment() {
 
     private var quickStartGuideTapTarget: MaterialTapTargetPrompt? = null
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        homeViewModel.setupNavigation(this)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

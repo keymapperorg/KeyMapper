@@ -31,7 +31,6 @@ abstract class RecyclerViewFragment<T, BINDING : ViewDataBinding> : Fragment() {
         private const val KEY_SAVED_STATE = "key_saved_state"
 
         private const val KEY_IS_APPBAR_VISIBLE = "key_is_app_visible"
-        private const val KEY_REQUEST_KEY = "key_request_key"
         private const val KEY_SEARCH_STATE_KEY = "key_search_state_key"
     }
 

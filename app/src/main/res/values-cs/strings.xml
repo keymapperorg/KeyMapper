@@ -404,7 +404,7 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <string name="pos_done">Hotovo</string>
     <string name="pos_opt_in">Přihlásit se</string>
     <string name="pos_grant_write_secure_settings_guide">Průvodce</string>
-    <string name="pos_grant_report_issues_guide">Průvodce</string>
+    <string name="pos_report_issues_guide">Průvodce</string>
     <string name="pos_enable_root_features">Povolit root funkce</string>
     <string name="pos_grant">Udělit</string>strings
     <string name="pos_join">Připojit se</string>

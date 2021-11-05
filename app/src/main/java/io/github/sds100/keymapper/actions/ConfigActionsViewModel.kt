@@ -23,14 +23,12 @@ import kotlinx.coroutines.runBlocking
 class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
     private val coroutineScope: CoroutineScope,
     private val displayActionUseCase: DisplayActionUseCase,
-    private val testAction: TestActionUseCase,
+    private val testActionUseCase: TestActionUseCase,
     private val config: ConfigMappingUseCase<A, M>,
     private val uiHelper: ActionUiHelper<M, A>,
     private val onboardingUseCase: OnboardingUseCase,
     resourceProvider: ResourceProvider
-) : ResourceProvider by resourceProvider,
-    PopupViewModel by PopupViewModelImpl(),
-    NavigationViewModel by NavigationViewModelImpl() {
+) : BaseViewModel(resourceProvider) {
 
     private val _state = MutableStateFlow<State<List<ActionListItem>>>(State.Loading)
     val state = _state.asStateFlow()
@@ -79,37 +77,7 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
                 val error = displayActionUseCase.getError(actionData)
 
                 when {
-                    error == null -> testAction(actionData).onFailure { error ->
-
-                        if (error is Error.AccessibilityServiceDisabled) {
-
-                            val snackBar = PopupUi.SnackBar(
-                                message = getString(R.string.dialog_message_enable_accessibility_service_to_test_action),
-                                actionText = getString(R.string.pos_turn_on)
-                            )
-
-                            val response = showPopup("enable_service", snackBar)
-
-                            if (response != null) {
-                                displayActionUseCase.fixError(Error.AccessibilityServiceDisabled)
-                            }
-                        }
-
-                        if (error is Error.AccessibilityServiceCrashed) {
-
-                            val snackBar = PopupUi.SnackBar(
-                                message = getString(R.string.dialog_message_restart_accessibility_service_to_test_action),
-                                actionText = getString(R.string.pos_restart)
-                            )
-
-                            val response = showPopup("restart_service", snackBar)
-
-                            if (response != null) {
-                                displayActionUseCase.fixError(Error.AccessibilityServiceCrashed)
-                            }
-                        }
-                    }
-
+                    error == null -> attemptTestAction(actionData)
                     error.isFixable -> displayActionUseCase.fixError(error)
                 }
             }
@@ -140,6 +108,25 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
 
     fun editAction(actionUid: String) {
         runBlocking { _openEditOptions.emit(actionUid) }
+    }
+
+    private suspend fun attemptTestAction(actionData: ActionData) {
+        testActionUseCase.invoke(actionData).onFailure { error ->
+
+            if (error is Error.AccessibilityServiceDisabled) {
+                ViewModelHelper.handleAccessibilityServiceStoppedSnackBar(
+                    this@ConfigActionsViewModel,
+                    displayActionUseCase::startAccessibilityService
+                )
+            }
+
+            if (error is Error.AccessibilityServiceCrashed) {
+                ViewModelHelper.handleAccessibilityServiceCrashedSnackBar(
+                    this@ConfigActionsViewModel,
+                    displayActionUseCase::restartAccessibilityService
+                )
+            }
+        }
     }
 
     private suspend fun promptToInstallGuiKeyboard() {

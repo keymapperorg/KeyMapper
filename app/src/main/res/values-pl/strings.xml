@@ -413,7 +413,7 @@
     <string name="pos_done">Gotowe</string>
     <string name="pos_opt_in">Zaakceptuj</string>
     <string name="pos_grant_write_secure_settings_guide">Przewodnik</string>
-    <string name="pos_grant_report_issues_guide">Przewodnik</string>
+    <string name="pos_report_issues_guide">Przewodnik</string>
     <string name="pos_enable_root_features">Włącz funkcje roota</string>
     <string name="pos_grant">Udziel</string>
     <string name="pos_join">Dołącz</string>

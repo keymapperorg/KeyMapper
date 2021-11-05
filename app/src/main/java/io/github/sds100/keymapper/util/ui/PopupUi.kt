@@ -45,6 +45,8 @@ sealed class PopupUi<R> {
         val positiveButtonText: CharSequence? = null,
         val negativeButtonText: CharSequence? = null
     ) : PopupUi<DialogResponse>()
+
+    data class OpenUrl(val url: String) : PopupUi<Unit>()
 }
 
 enum class DialogResponse {

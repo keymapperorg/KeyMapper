@@ -65,7 +65,7 @@ class NotificationControllerTest {
             },
             showImePicker = mock(),
             controlAccessibilityService = mock {
-                on { state }.then { flow<ServiceState> {} }
+                on { serviceState }.then { flow<ServiceState> {} }
             },
             toggleCompatibleIme = mock {
                 on { sufficientPermissions }.then { flow<Boolean> {} }

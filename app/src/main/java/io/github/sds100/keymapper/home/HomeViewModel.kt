@@ -32,9 +32,7 @@ class HomeViewModel(
     private val showImePicker: ShowInputMethodPickerUseCase,
     private val onboarding: OnboardingUseCase,
     resourceProvider: ResourceProvider,
-) : ViewModel(),
-    ResourceProvider by resourceProvider,
-    PopupViewModel by PopupViewModelImpl() {
+) : BaseViewModel(resourceProvider) {
 
     private companion object {
         const val ID_ACCESSIBILITY_SERVICE_DISABLED_LIST_ITEM = "accessibility_service_disabled"
@@ -167,7 +165,7 @@ class HomeViewModel(
 
     val errorListState = combine(
         showAlertsUseCase.isBatteryOptimised,
-        showAlertsUseCase.serviceState,
+        showAlertsUseCase.accessibilityServiceState,
         showAlertsUseCase.hideAlerts,
         showAlertsUseCase.areMappingsPaused,
         showAlertsUseCase.isLoggingEnabled
@@ -397,8 +395,16 @@ class HomeViewModel(
     fun onFixErrorListItemClick(id: String) {
         viewModelScope.launch {
             when (id) {
-                ID_ACCESSIBILITY_SERVICE_DISABLED_LIST_ITEM -> showAlertsUseCase.enableAccessibilityService()
-                ID_ACCESSIBILITY_SERVICE_CRASHED_LIST_ITEM -> showKeyMapperCrashedDialog()
+                ID_ACCESSIBILITY_SERVICE_DISABLED_LIST_ITEM ->
+                    if (!showAlertsUseCase.startAccessibilityService()) {
+                        ViewModelHelper.handleCantFindAccessibilitySettings(this@HomeViewModel)
+                    }
+
+                ID_ACCESSIBILITY_SERVICE_CRASHED_LIST_ITEM ->
+                    ViewModelHelper.handleKeyMapperCrashedDialog(
+                        this@HomeViewModel,
+                        restartService = showAlertsUseCase::restartAccessibilityService
+                    )
 
                 ID_BATTERY_OPTIMISATION_LIST_ITEM -> showAlertsUseCase.disableBatteryOptimisation()
                 ID_MAPPINGS_PAUSED_LIST_ITEM -> showAlertsUseCase.resumeMappings()
@@ -435,25 +441,6 @@ class HomeViewModel(
             val result = backupRestore.backupAllMappings(uri)
 
             onBackupResult(result)
-        }
-    }
-
-    private suspend fun showKeyMapperCrashedDialog() {
-        val dialog = DialogUtils.keyMapperCrashedDialog(this@HomeViewModel)
-
-        val response = showPopup("app_crashed_prompt", dialog) ?: return
-
-        when (response) {
-            DialogResponse.POSITIVE -> _fixAppKilling.emit(Unit)
-            DialogResponse.NEUTRAL -> {
-                val restartServiceDialog = PopupUi.Ok(
-                    message = getString(R.string.dialog_message_restart_accessibility_service)
-                )
-
-                if (showPopup("restart_service", restartServiceDialog) != null) {
-                    showAlertsUseCase.restartAccessibilityService()
-                }
-            }
         }
     }
 

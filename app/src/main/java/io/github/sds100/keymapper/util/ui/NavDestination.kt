@@ -26,6 +26,8 @@ sealed class NavDestination<R> {
         const val ID_CHOOSE_ACTION = "choose_action"
         const val ID_CHOOSE_CONSTRAINT = "choose_constraint"
         const val ID_CHOOSE_BLUETOOTH_DEVICE = "choose_bluetooth_device"
+        const val ID_REPORT_BUG = "report_bug"
+        const val ID_FIX_APP_KILLING = "fix_app_killing"
 
         fun NavDestination<*>.getId(): String {
             return when (this) {
@@ -40,6 +42,8 @@ sealed class NavDestination<R> {
                 ChooseAction -> ID_CHOOSE_ACTION
                 is ChooseConstraint -> ID_CHOOSE_CONSTRAINT
                 ChooseBluetoothDevice -> ID_CHOOSE_BLUETOOTH_DEVICE
+                FixAppKilling -> ID_FIX_APP_KILLING
+                ReportBug -> ID_REPORT_BUG
             }
         }
     }
@@ -63,4 +67,6 @@ sealed class NavDestination<R> {
         NavDestination<Constraint>()
 
     object ChooseBluetoothDevice : NavDestination<BluetoothDeviceInfo>()
+    object ReportBug : NavDestination<Unit>()
+    object FixAppKilling : NavDestination<Unit>()
 }

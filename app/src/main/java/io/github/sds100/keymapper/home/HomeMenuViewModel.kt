@@ -4,9 +4,9 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
 import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
-import io.github.sds100.keymapper.util.ui.PopupViewModel
-import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
+import io.github.sds100.keymapper.util.ui.BaseViewModel
 import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.util.ui.ViewModelHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -21,12 +21,12 @@ class HomeMenuViewModel(
     private val pauseMappings: PauseMappingsUseCase,
     private val showImePicker: ShowInputMethodPickerUseCase,
     resourceProvider: ResourceProvider
-) : ResourceProvider by resourceProvider, PopupViewModel by PopupViewModelImpl() {
+) : BaseViewModel(resourceProvider) {
 
     val toggleMappingsButtonState: StateFlow<ToggleMappingsButtonState?> =
         combine(
             pauseMappings.isPaused,
-            alertsUseCase.serviceState
+            alertsUseCase.accessibilityServiceState
         ) { isPaused, serviceState ->
             val text = when (serviceState) {
                 ServiceState.ENABLED ->
@@ -73,9 +73,19 @@ class HomeMenuViewModel(
         coroutineScope.launch {
             val areMappingsPaused = pauseMappings.isPaused.first()
 
+            val serviceState = alertsUseCase.accessibilityServiceState.first()
+
             when {
-                alertsUseCase.serviceState.first() == ServiceState.CRASHED -> alertsUseCase.restartAccessibilityService()
-                alertsUseCase.serviceState.first() == ServiceState.DISABLED -> alertsUseCase.enableAccessibilityService()
+                serviceState == ServiceState.CRASHED ->
+                    if (!alertsUseCase.restartAccessibilityService()) {
+                        ViewModelHelper.handleCantFindAccessibilitySettings(this@HomeMenuViewModel)
+                    }
+
+                serviceState == ServiceState.DISABLED ->
+                    if (!alertsUseCase.startAccessibilityService()) {
+                        ViewModelHelper.handleCantFindAccessibilitySettings(this@HomeMenuViewModel)
+                    }
+
                 areMappingsPaused -> pauseMappings.resume()
                 !areMappingsPaused -> pauseMappings.pause()
             }

@@ -22,9 +22,9 @@ import kotlinx.coroutines.launch
 
 class ReportBugViewModel(
     private val useCase: ReportBugUseCase,
-    private val controlAccessibilityService: ControlAccessibilityServiceUseCase,
+    private val controlService: ControlAccessibilityServiceUseCase,
     resourceProvider: ResourceProvider
-) : ViewModel(), ResourceProvider by resourceProvider, PopupViewModel by PopupViewModelImpl() {
+) : BaseViewModel(resourceProvider) {
 
     companion object {
         private const val ID_BUTTON_RESTART_ACCESSIBILITY_SERVICE = "restart_accessibility_service"
@@ -53,10 +53,12 @@ class ReportBugViewModel(
                 ID_BUTTON_CREATE_GITHUB_ISSUE -> _openUrl.emit(getString(R.string.url_github_create_issue_bug))
                 ID_BUTTON_DISCORD_SERVER -> _openUrl.emit(getString(R.string.url_discord_server_invite))
                 ID_BUTTON_RESTART_ACCESSIBILITY_SERVICE -> {
-                    controlAccessibilityService.restart()
-
-                    controlAccessibilityService.state.first { it == ServiceState.ENABLED } //wait for it to be started
-                    _goToNextSlide.emit(Unit)
+                    if (!controlService.restartService()) {
+                        ViewModelHelper.handleCantFindAccessibilitySettings(this@ReportBugViewModel)
+                    } else {
+                        controlService.serviceState.first { it == ServiceState.ENABLED } //wait for it to be started
+                        _goToNextSlide.emit(Unit)
+                    }
                 }
             }
         }
@@ -124,7 +126,7 @@ class ReportBugViewModel(
         yield(createBugReportSlide())
         yield(shareBugReportSlide())
 
-        if (controlAccessibilityService.state.firstBlocking() == ServiceState.CRASHED) {
+        if (controlService.serviceState.firstBlocking() == ServiceState.CRASHED) {
             yield(restartServiceSlide())
         }
     }.toList()

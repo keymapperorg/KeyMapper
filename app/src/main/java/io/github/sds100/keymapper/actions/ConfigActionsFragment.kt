@@ -27,10 +27,6 @@ import kotlinx.coroutines.flow.collectLatest
 abstract class ConfigActionsFragment<A : Action>
     : RecyclerViewFragment<ActionListItem, FragmentActionListBinding>() {
 
-    companion object {
-        const val CHOOSE_ACTION_REQUEST_KEY = "request_choose_action"
-    }
-
     abstract val configActionsViewModel: ConfigActionsViewModel<A, *>
 
     override val listItems: Flow<State<List<ActionListItem>>>

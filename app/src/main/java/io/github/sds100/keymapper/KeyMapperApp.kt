@@ -138,7 +138,7 @@ class KeyMapperApp : MultiDexApplication() {
     val recordTriggerController by lazy {
         RecordTriggerController(appCoroutineScope, accessibilityServiceAdapter)
     }
-    
+
     val autoGrantPermissionController by lazy {
         AutoGrantPermissionController(
             appCoroutineScope,
@@ -236,14 +236,15 @@ class KeyMapperApp : MultiDexApplication() {
                 notificationController.onOpenApp()
 
                 if (BuildConfig.DEBUG && permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)) {
-                    accessibilityServiceAdapter.enableService()
+                    accessibilityServiceAdapter.start()
                 }
             }
         })
 
         appCoroutineScope.launch {
-            notificationController.openApp.collectLatest {
+            notificationController.openApp.collectLatest { intentAction ->
                 Intent(this@KeyMapperApp, SplashActivity::class.java).apply {
+                    action = intentAction
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK
 
                     startActivity(this)

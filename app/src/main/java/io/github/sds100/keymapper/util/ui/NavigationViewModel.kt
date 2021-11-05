@@ -165,6 +165,8 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
             is NavDestination.ChooseBluetoothDevice -> NavAppDirections.chooseBluetoothDevice(
                 requestKey
             )
+            NavDestination.FixAppKilling -> NavAppDirections.goToFixAppKillingActivity()
+            NavDestination.ReportBug -> NavAppDirections.goToReportBugActivity()
         }
 
         fragment.findNavController().navigate(direction)

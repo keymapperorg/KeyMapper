@@ -3,8 +3,8 @@ package io.github.sds100.keymapper.home
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
+import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.accessibility.ServiceState
-import io.github.sds100.keymapper.system.accessibility.ControlAccessibilityServiceUseCase
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import kotlinx.coroutines.flow.Flow
@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.map
 class ShowHomeScreenAlertsUseCaseImpl(
     private val preferences: PreferenceRepository,
     private val permissions: PermissionAdapter,
-    private val controlService: ControlAccessibilityServiceUseCase,
+    private val accessibilityServiceAdapter: ServiceAdapter,
     private val pauseMappingsUseCase: PauseMappingsUseCase
 ) : ShowHomeScreenAlertsUseCase {
     override val hideAlerts: Flow<Boolean> =
@@ -33,35 +33,37 @@ class ShowHomeScreenAlertsUseCaseImpl(
         }
     }
 
-    override fun restartAccessibilityService() {
-        controlService.restart()
-    }
+    override val areMappingsPaused: Flow<Boolean> = pauseMappingsUseCase.isPaused
+
+    override val isLoggingEnabled: Flow<Boolean> = preferences.get(Keys.log).map { it ?: false }
 
     override fun disableBatteryOptimisation() {
         permissions.request(Permission.IGNORE_BATTERY_OPTIMISATION)
     }
 
-    override val serviceState = controlService.state
-    override fun enableAccessibilityService() {
-        controlService.enable()
+    override val accessibilityServiceState: Flow<ServiceState> = accessibilityServiceAdapter.state
+
+    override fun startAccessibilityService(): Boolean {
+        return accessibilityServiceAdapter.start()
     }
 
-    override val areMappingsPaused: Flow<Boolean> = pauseMappingsUseCase.isPaused
+    override fun restartAccessibilityService(): Boolean {
+        return accessibilityServiceAdapter.restart()
+    }
 
     override fun resumeMappings() {
         pauseMappingsUseCase.resume()
     }
 
-    override val isLoggingEnabled: Flow<Boolean> = preferences.get(Keys.log).map { it ?: false }
     override fun disableLogging() {
         preferences.set(Keys.log, false)
     }
 }
 
 interface ShowHomeScreenAlertsUseCase {
-    val serviceState: Flow<ServiceState>
-    fun enableAccessibilityService()
-    fun restartAccessibilityService()
+    val accessibilityServiceState: Flow<ServiceState>
+    fun startAccessibilityService(): Boolean
+    fun restartAccessibilityService(): Boolean
 
     val hideAlerts: Flow<Boolean>
     fun disableBatteryOptimisation()

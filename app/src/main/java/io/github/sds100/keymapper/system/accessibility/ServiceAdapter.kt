@@ -11,9 +11,21 @@ import kotlinx.coroutines.flow.StateFlow
 interface ServiceAdapter {
     val state: StateFlow<ServiceState>
 
-    fun enableService()
-    fun restartService()
-    fun disableService()
+    /**
+     * @return Whether the service could be started successfully.
+     */
+    fun start(): Boolean
+
+    /**
+     * @return Whether the service could be restarted successfully.
+     */
+    fun restart(): Boolean
+
+    /**
+     * @return Whether the service could be restarted successfully.
+     */
+    fun stop(): Boolean
+
     suspend fun isCrashed(): Boolean
 
     suspend fun send(event: Event): Result<*>

@@ -37,11 +37,11 @@ class AppIntroUseCaseImpl(
     }
 
     override fun enableAccessibilityService() {
-        serviceAdapter.enableService()
+        serviceAdapter.start()
     }
 
     override fun restartAccessibilityService() {
-        serviceAdapter.restartService()
+        serviceAdapter.restart()
     }
 
     override fun shownAppIntro() {

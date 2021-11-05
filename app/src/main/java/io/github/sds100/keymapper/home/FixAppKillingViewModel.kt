@@ -48,9 +48,9 @@ class FixAppKillingViewModel(
                 }
 
                 ID_BUTTON_RESTART_ACCESSIBILITY_SERVICE -> {
-                    controlAccessibilityService.restart()
+                    controlAccessibilityService.restartService()
 
-                    controlAccessibilityService.state.first { it == ServiceState.ENABLED } //wait for it to be started
+                    controlAccessibilityService.serviceState.first { it == ServiceState.ENABLED } //wait for it to be started
                     _goToNextSlide.emit(Unit)
                 }
             }
