@@ -36,7 +36,11 @@ class OnboardingUseCaseTest {
         fakePreferences = FakePreferenceRepository()
         useCase = OnboardingUseCaseImpl(
             fakePreferences,
-            mock(), leanbackAdapter = mock(), shizukuAdapter = mock(), permissionAdapter = mock()
+            mock(),
+            leanbackAdapter = mock(),
+            shizukuAdapter = mock(),
+            permissionAdapter = mock(),
+            packageManagerAdapter = mock()
         )
     }
 
