@@ -89,7 +89,8 @@ object UseCases {
         ServiceLocator.fileAdapter(ctx),
         ServiceLocator.leanbackAdapter(ctx),
         ServiceLocator.shizukuAdapter(ctx),
-        ServiceLocator.permissionAdapter(ctx)
+        ServiceLocator.permissionAdapter(ctx),
+        ServiceLocator.packageManagerAdapter(ctx)
     )
 
     fun createKeymapShortcut(ctx: Context) = CreateKeyMapShortcutUseCaseImpl(

@@ -86,7 +86,7 @@ class RequestPermissionDelegate(
                 }
 
             Permission.SHIZUKU ->
-                if (ShizukuUtils.isSdkSupported()) {
+                if (ShizukuUtils.isSupportedForSdkVersion()) {
                     if (Shizuku.getBinder() != null) {
                         Shizuku.requestPermission(AndroidPermissionAdapter.REQUEST_SHIZUKU_PERMISSION)
                     }

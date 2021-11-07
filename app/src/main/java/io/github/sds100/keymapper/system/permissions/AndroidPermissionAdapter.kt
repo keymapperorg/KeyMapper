@@ -140,7 +140,7 @@ class AndroidPermissionAdapter(
 
             //this check is super quick (~0ms) so this doesn't need to be cached.
             Permission.SHIZUKU -> {
-                if (ShizukuUtils.isSdkSupported() && Shizuku.getBinder() != null) {
+                if (ShizukuUtils.isSupportedForSdkVersion() && Shizuku.getBinder() != null) {
                     Shizuku.checkSelfPermission() == PERMISSION_GRANTED
                 } else {
                     false

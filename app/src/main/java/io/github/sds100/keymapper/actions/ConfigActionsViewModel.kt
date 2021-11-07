@@ -7,7 +7,6 @@ import io.github.sds100.keymapper.mappings.DisplayActionUseCase
 import io.github.sds100.keymapper.mappings.Mapping
 import io.github.sds100.keymapper.mappings.isDelayBeforeNextActionAllowed
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
-import io.github.sds100.keymapper.shizuku.ShizukuUtils
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.CoroutineScope
@@ -88,10 +87,15 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
         coroutineScope.launch {
             val actionData = navigate("add_action", NavDestination.ChooseAction) ?: return@launch
 
-            if (actionData is ActionData.InputKeyEvent && ShizukuUtils.isSdkRecommended()) {
-                promptToInstallShizukuOrGuiKeyboard()
-            } else if (actionData is ActionData.InputKeyEvent || actionData is ActionData.Text) {
-                promptToInstallGuiKeyboard()
+            val showInstallShizukuPrompt = onboardingUseCase.showInstallShizukuPrompt(actionData)
+            val showInstallGuiKeyboardPrompt =
+                onboardingUseCase.showInstallGuiKeyboardPrompt(actionData)
+
+            when {
+                showInstallShizukuPrompt && showInstallGuiKeyboardPrompt ->
+                    promptToInstallShizukuOrGuiKeyboard()
+
+                showInstallGuiKeyboardPrompt -> promptToInstallGuiKeyboard()
             }
 
             config.addAction(actionData)
@@ -130,10 +134,6 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
     }
 
     private suspend fun promptToInstallGuiKeyboard() {
-        if (!onboardingUseCase.showGuiKeyboardPrompt.first()) {
-            return
-        }
-
         if (onboardingUseCase.isTvDevice()) {
 
             val appStoreModel = ChooseAppStoreModel(
@@ -178,10 +178,6 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
     }
 
     private suspend fun promptToInstallShizukuOrGuiKeyboard() {
-        if (!onboardingUseCase.showGuiKeyboardPrompt.first()) {
-            return
-        }
-
         if (onboardingUseCase.isTvDevice()) {
             val chooseSolutionDialog = PopupUi.Dialog(
                 title = getText(R.string.dialog_title_install_shizuku_or_leanback_keyboard),

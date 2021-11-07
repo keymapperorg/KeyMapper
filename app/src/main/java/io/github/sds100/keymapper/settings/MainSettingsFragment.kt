@@ -312,7 +312,7 @@ class MainSettingsFragment : BaseSettingsFragment() {
 
         //Shizuku
         //shizuku is only supported on Marhsmallow+
-        if (ShizukuUtils.isSdkSupported()) {
+        if (ShizukuUtils.isSupportedForSdkVersion()) {
             Preference(requireContext()).apply {
                 setTitle(R.string.title_pref_category_shizuku)
                 setSummary(R.string.summary_pref_category_shizuku)
