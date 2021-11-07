@@ -6,9 +6,6 @@ import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.util.ui.BaseViewModel
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.ViewModelHelper
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 /**
@@ -18,9 +15,6 @@ class ActivityViewModel(
     resourceProvider: ResourceProvider
 ) : BaseViewModel(resourceProvider) {
     var previousNightMode: Int? = null
-
-    private val _openUrl: MutableSharedFlow<String> = MutableSharedFlow()
-    val openUrl: SharedFlow<String> = _openUrl.asSharedFlow()
 
     fun onCantFindAccessibilitySettings() {
         viewModelScope.launch {

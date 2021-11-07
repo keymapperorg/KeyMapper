@@ -19,7 +19,6 @@ import io.github.sds100.keymapper.databinding.FragmentConfigIntentBinding
 import io.github.sds100.keymapper.databinding.ListItemIntentExtraBoolBinding
 import io.github.sds100.keymapper.intentExtraBool
 import io.github.sds100.keymapper.intentExtraGeneric
-import io.github.sds100.keymapper.system.url.UrlUtils
 import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.setupNavigation
@@ -108,12 +107,6 @@ class ConfigIntentFragment : Fragment() {
                         bindExtra(it)
                     }
                 }
-            }
-        }
-
-        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
-            viewModel.openUrl.collectLatest {
-                UrlUtils.openUrl(requireContext(), it)
             }
         }
     }

@@ -13,11 +13,9 @@ import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.databinding.ActivityMainBinding
 import io.github.sds100.keymapper.system.permissions.RequestPermissionDelegate
-import io.github.sds100.keymapper.system.url.UrlUtils
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.showPopups
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import splitties.alertdialog.appcompat.*
@@ -65,12 +63,6 @@ class MainActivity : AppCompatActivity() {
                 )
             }
             .launchIn(lifecycleScope)
-
-        launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
-            viewModel.openUrl.collectLatest {
-                UrlUtils.openUrl(this@MainActivity, it)
-            }
-        }
 
         if (intent.action == ACTION_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG) {
             viewModel.onCantFindAccessibilitySettings()

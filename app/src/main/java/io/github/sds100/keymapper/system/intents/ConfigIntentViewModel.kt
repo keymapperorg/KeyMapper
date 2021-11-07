@@ -163,9 +163,6 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
     private val _returnResult = MutableSharedFlow<ConfigIntentResult>()
     val returnResult = _returnResult.asSharedFlow()
 
-    private val _openUrl = MutableSharedFlow<String>()
-    val openUrl = _openUrl.asSharedFlow()
-
     fun setActivityTargetChecked(isChecked: Boolean) {
         if (isChecked) {
             target.value = IntentTarget.ACTIVITY
@@ -391,7 +388,10 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
             val response = showPopup("flags_example", dialog) ?: return@launch
 
             if (response == DialogResponse.NEUTRAL) {
-                _openUrl.emit(getString(R.string.url_intent_set_flags_help))
+                showPopup(
+                    "url_intent_flags",
+                    PopupUi.OpenUrl(getString(R.string.url_intent_set_flags_help))
+                )
             }
         }
     }

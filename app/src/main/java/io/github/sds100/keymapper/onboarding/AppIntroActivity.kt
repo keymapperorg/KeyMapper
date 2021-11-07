@@ -11,7 +11,6 @@ import io.github.sds100.keymapper.MainActivity
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.system.permissions.RequestPermissionDelegate
-import io.github.sds100.keymapper.system.url.UrlUtils
 import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.showPopups
@@ -50,12 +49,6 @@ class AppIntroActivity : AppIntro2() {
                     permission,
                     null
                 )
-            }
-        }
-
-        launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
-            viewModel.openUrl.collectLatest {
-                UrlUtils.openUrl(this@AppIntroActivity, it)
             }
         }
 

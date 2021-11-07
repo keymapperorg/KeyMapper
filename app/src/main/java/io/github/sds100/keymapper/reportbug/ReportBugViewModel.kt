@@ -43,15 +43,21 @@ class ReportBugViewModel(
     private val _goToNextSlide = MutableSharedFlow<Unit>()
     val goToNextSlide = _goToNextSlide.asSharedFlow()
 
-    private val _openUrl = MutableSharedFlow<String>()
-    val openUrl = _openUrl.asSharedFlow()
-
     fun onButtonClick(id: String) {
         viewModelScope.launch {
             when (id) {
                 ID_BUTTON_CREATE_BUG_REPORT -> _chooseBugReportLocation.emit(Unit)
-                ID_BUTTON_CREATE_GITHUB_ISSUE -> _openUrl.emit(getString(R.string.url_github_create_issue_bug))
-                ID_BUTTON_DISCORD_SERVER -> _openUrl.emit(getString(R.string.url_discord_server_invite))
+
+                ID_BUTTON_CREATE_GITHUB_ISSUE -> showPopup(
+                    "url_create_github_issue",
+                    PopupUi.OpenUrl(getString(R.string.url_github_create_issue_bug))
+                )
+
+                ID_BUTTON_DISCORD_SERVER -> showPopup(
+                    "url_discord_server",
+                    PopupUi.OpenUrl(getString(R.string.url_discord_server_invite))
+                )
+
                 ID_BUTTON_RESTART_ACCESSIBILITY_SERVICE -> {
                     if (!controlService.restartService()) {
                         ViewModelHelper.handleCantFindAccessibilitySettings(this@ReportBugViewModel)

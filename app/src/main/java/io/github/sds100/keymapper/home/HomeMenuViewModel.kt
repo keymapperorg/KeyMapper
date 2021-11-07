@@ -54,9 +54,6 @@ class HomeMenuViewModel(
     private val _openAbout = MutableSharedFlow<Unit>()
     val openAbout = _openAbout.asSharedFlow()
 
-    private val _openUrl = MutableSharedFlow<String>()
-    val openUrl = _openUrl.asSharedFlow()
-
     private val _chooseBackupFile = MutableSharedFlow<Unit>()
     val chooseBackupFile = _chooseBackupFile.asSharedFlow()
 

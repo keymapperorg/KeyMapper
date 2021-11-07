@@ -12,7 +12,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.databinding.FragmentMenuBinding
-import io.github.sds100.keymapper.system.url.UrlUtils
 import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.showPopups
@@ -67,12 +66,6 @@ class MenuFragment : BottomSheetDialogFragment() {
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED){
             viewModel.openAbout.collectLatest {
                 findNavController().navigate(NavAppDirections.actionGlobalAboutFragment())
-            }
-        }
-
-        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED){
-            viewModel.openUrl.collectLatest {
-                UrlUtils.openUrl(requireContext(), it)
             }
         }
 

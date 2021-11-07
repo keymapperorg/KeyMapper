@@ -72,9 +72,6 @@ class HomeViewModel(
         )
     }
 
-    private val _openUrl = MutableSharedFlow<String>()
-    val openUrl = _openUrl.asSharedFlow()
-
     private val _openSettings = MutableSharedFlow<Unit>()
     val openSettings = _openSettings.asSharedFlow()
 
@@ -285,7 +282,7 @@ class HomeViewModel(
                 val response = showPopup("whats-new", dialog)
 
                 if (response == DialogResponse.NEUTRAL) {
-                    _openUrl.emit(getString(R.string.url_changelog))
+                    showPopup("url_changelog", PopupUi.OpenUrl(getString(R.string.url_changelog)))
                 }
 
                 onboarding.showedWhatsNew()

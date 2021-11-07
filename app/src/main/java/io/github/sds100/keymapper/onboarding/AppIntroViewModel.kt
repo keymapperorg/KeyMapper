@@ -45,14 +45,13 @@ class AppIntroViewModel(
                     fingerprintGestureSupportSlide(fingerprintGesturesSupported)
                 AppIntroSlide.CONTRIBUTING -> contributingSlide()
                 AppIntroSlide.SETUP_CHOSEN_DEVICES_AGAIN -> setupChosenDevicesAgainSlide()
-                AppIntroSlide.GRANT_SHIZUKU_PERMISSION -> requestShizukuPermissionSlide(isShizukuPermissionGranted)
+                AppIntroSlide.GRANT_SHIZUKU_PERMISSION -> requestShizukuPermissionSlide(
+                    isShizukuPermissionGranted
+                )
                 else -> throw Exception("Unknown slide $slide")
             }
         }
     }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
-
-    private val _openUrl = MutableSharedFlow<String>()
-    val openUrl = _openUrl.asSharedFlow()
 
     val slidesToShow = slides.mapNotNull { slide ->
         slide
@@ -63,11 +62,17 @@ class AppIntroViewModel(
             ID_BUTTON_ENABLE_ACCESSIBILITY_SERVICE -> useCase.enableAccessibilityService()
             ID_BUTTON_RESTART_ACCESSIBILITY_SERVICE -> useCase.restartAccessibilityService()
             ID_BUTTON_DONT_KILL_MY_APP -> runBlocking {
-                _openUrl.emit(getString(R.string.url_dont_kill_my_app))
+                showPopup(
+                    "url_dont_kill_my_app",
+                    PopupUi.OpenUrl(getString(R.string.url_dont_kill_my_app))
+                )
             }
             ID_BUTTON_DISABLE_BATTERY_OPTIMISATION -> useCase.ignoreBatteryOptimisation()
             ID_BUTTON_MORE_SHIZUKU_INFO -> runBlocking {
-                _openUrl.emit(getString(R.string.url_shizuku_setting_benefits))
+                showPopup(
+                    "url_shizuku_setting_benefits",
+                    PopupUi.OpenUrl(getString(R.string.url_shizuku_setting_benefits))
+                )
             }
 
             ID_BUTTON_REQUEST_SHIZUKU_PERMISSION -> viewModelScope.launch {

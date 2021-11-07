@@ -109,12 +109,6 @@ class HomeFragment : Fragment() {
         homeViewModel.keymapListViewModel.showPopups(this, binding)
         homeViewModel.fingerprintMapListViewModel.showPopups(this, binding)
 
-        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
-            homeViewModel.openUrl.collectLatest {
-                UrlUtils.openUrl(requireContext(), it)
-            }
-        }
-
         binding.viewModel = this@HomeFragment.homeViewModel
 
         val pagerAdapter = HomePagerAdapter(this@HomeFragment)
