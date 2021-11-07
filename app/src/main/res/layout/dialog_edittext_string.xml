@@ -19,7 +19,7 @@
 
     <com.google.android.material.textfield.TextInputLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/textInputLayout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@{hint}"
@@ -27,11 +27,13 @@
         app:errorWhenEmpty="@{!allowEmpty}"
         tools:hint="Hint">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editText"
+        <AutoCompleteTextView
+            android:id="@+id/autoCompleteTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:inputType="text"
             android:text="@={text}"
+            tools:ignore="LabelFor"
             tools:text="Some Text" />
     </com.google.android.material.textfield.TextInputLayout>
 </layout>

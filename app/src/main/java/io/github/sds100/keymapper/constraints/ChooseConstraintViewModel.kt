@@ -219,10 +219,13 @@ class ChooseConstraintViewModel(
         val chosenSSID: String?
 
         if (knownSSIDs == null) {
+            val savedWifiSSIDs = useCase.getSavedWifiSSIDs().first()
+
             val dialog = PopupUi.Text(
                 hint = getString(R.string.hint_wifi_ssid),
                 allowEmpty = true,
-                message = getString(R.string.constraint_wifi_message_cant_list_networks)
+                message = getString(R.string.constraint_wifi_message_cant_list_networks),
+                autoCompleteEntries = savedWifiSSIDs
             )
 
             val ssidText = showPopup("type_ssid", dialog) ?: return
@@ -231,6 +234,8 @@ class ChooseConstraintViewModel(
                 chosenSSID = null
             } else {
                 chosenSSID = ssidText
+
+                useCase.saveWifiSSID(chosenSSID)
             }
         } else {
             val anySSIDItem =

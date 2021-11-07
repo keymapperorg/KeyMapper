@@ -82,7 +82,8 @@ object Inject {
         return ChooseConstraintViewModel.Factory(
             CreateConstraintUseCaseImpl(
                 ServiceLocator.networkAdapter(ctx),
-                ServiceLocator.inputMethodAdapter(ctx)
+                ServiceLocator.inputMethodAdapter(ctx),
+                ServiceLocator.settingsRepository(ctx)
             ),
             ServiceLocator.resourceProvider(ctx)
         )

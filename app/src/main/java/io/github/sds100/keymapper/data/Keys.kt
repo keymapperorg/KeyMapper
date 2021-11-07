@@ -67,4 +67,5 @@ object Keys {
 
     val log = booleanPreferencesKey("key_log")
     val shownShizukuPermissionPrompt = booleanPreferencesKey("key_shown_shizuku_permission_prompt")
+    val savedWifiSSIDs = stringSetPreferencesKey("key_saved_wifi_ssids")
 }

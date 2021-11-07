@@ -141,7 +141,8 @@ fun PopupViewModel.showPopups(
                         event.ui.allowEmpty,
                         event.ui.text,
                         event.ui.inputType,
-                        event.ui.message
+                        event.ui.message,
+                        event.ui.autoCompleteEntries
                     )
 
                 is PopupUi.Dialog ->
