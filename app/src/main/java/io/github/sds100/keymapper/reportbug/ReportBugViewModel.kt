@@ -24,7 +24,10 @@ class ReportBugViewModel(
     private val useCase: ReportBugUseCase,
     private val controlService: ControlAccessibilityServiceUseCase,
     resourceProvider: ResourceProvider
-) : BaseViewModel(resourceProvider) {
+) : ViewModel(),
+    ResourceProvider by resourceProvider,
+    PopupViewModel by PopupViewModelImpl(),
+    NavigationViewModel by NavigationViewModelImpl() {
 
     companion object {
         private const val ID_BUTTON_RESTART_ACCESSIBILITY_SERVICE = "restart_accessibility_service"
@@ -60,7 +63,10 @@ class ReportBugViewModel(
 
                 ID_BUTTON_RESTART_ACCESSIBILITY_SERVICE -> {
                     if (!controlService.restartService()) {
-                        ViewModelHelper.handleCantFindAccessibilitySettings(this@ReportBugViewModel)
+                        ViewModelHelper.handleCantFindAccessibilitySettings(
+                            resourceProvider = this@ReportBugViewModel,
+                            popupViewModel = this@ReportBugViewModel
+                        )
                     } else {
                         controlService.serviceState.first { it == ServiceState.ENABLED } //wait for it to be started
                         _goToNextSlide.emit(Unit)

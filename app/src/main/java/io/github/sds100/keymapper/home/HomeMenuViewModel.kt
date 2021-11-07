@@ -19,7 +19,9 @@ class HomeMenuViewModel(
     private val pauseMappings: PauseMappingsUseCase,
     private val showImePicker: ShowInputMethodPickerUseCase,
     resourceProvider: ResourceProvider
-) : BaseViewModel(resourceProvider) {
+) : ResourceProvider by resourceProvider,
+    PopupViewModel by PopupViewModelImpl(),
+    NavigationViewModel by NavigationViewModelImpl() {
 
     val toggleMappingsButtonState: StateFlow<ToggleMappingsButtonState?> =
         combine(
@@ -64,12 +66,18 @@ class HomeMenuViewModel(
             when {
                 serviceState == ServiceState.CRASHED ->
                     if (!alertsUseCase.restartAccessibilityService()) {
-                        ViewModelHelper.handleCantFindAccessibilitySettings(this@HomeMenuViewModel)
+                        ViewModelHelper.handleCantFindAccessibilitySettings(
+                            this@HomeMenuViewModel,
+                            this@HomeMenuViewModel
+                        )
                     }
 
                 serviceState == ServiceState.DISABLED ->
                     if (!alertsUseCase.startAccessibilityService()) {
-                        ViewModelHelper.handleCantFindAccessibilitySettings(this@HomeMenuViewModel)
+                        ViewModelHelper.handleCantFindAccessibilitySettings(
+                            resourceProvider = this@HomeMenuViewModel,
+                            popupViewModel = this@HomeMenuViewModel
+                        )
                     }
 
                 areMappingsPaused -> pauseMappings.resume()

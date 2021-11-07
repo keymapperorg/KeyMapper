@@ -3,9 +3,7 @@ package io.github.sds100.keymapper
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import io.github.sds100.keymapper.util.ui.BaseViewModel
-import io.github.sds100.keymapper.util.ui.ResourceProvider
-import io.github.sds100.keymapper.util.ui.ViewModelHelper
+import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.launch
 
 /**
@@ -13,12 +11,19 @@ import kotlinx.coroutines.launch
  */
 class ActivityViewModel(
     resourceProvider: ResourceProvider
-) : BaseViewModel(resourceProvider) {
+) : ViewModel(),
+    ResourceProvider by resourceProvider,
+    PopupViewModel by PopupViewModelImpl(),
+    NavigationViewModel by NavigationViewModelImpl() {
+
     var previousNightMode: Int? = null
 
     fun onCantFindAccessibilitySettings() {
         viewModelScope.launch {
-            ViewModelHelper.handleCantFindAccessibilitySettings(this@ActivityViewModel)
+            ViewModelHelper.handleCantFindAccessibilitySettings(
+                resourceProvider = this@ActivityViewModel,
+                popupViewModel = this@ActivityViewModel
+            )
         }
     }
 

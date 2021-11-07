@@ -33,7 +33,9 @@ class ConfigKeyMapTriggerViewModel(
     private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
     private val displayKeyMap: DisplayKeyMapUseCase,
     resourceProvider: ResourceProvider
-) : BaseViewModel(resourceProvider) {
+) : ResourceProvider by resourceProvider,
+    PopupViewModel by PopupViewModelImpl(),
+    NavigationViewModel by NavigationViewModelImpl() {
 
     val optionsViewModel = ConfigKeyMapTriggerOptionsViewModel(
         coroutineScope,
@@ -313,15 +315,17 @@ class ConfigKeyMapTriggerViewModel(
 
             if (result is Error.AccessibilityServiceDisabled) {
                 ViewModelHelper.handleAccessibilityServiceStoppedSnackBar(
-                    this@ConfigKeyMapTriggerViewModel,
-                    displayKeyMap::startAccessibilityService
+                    resourceProvider = this@ConfigKeyMapTriggerViewModel,
+                    popupViewModel = this@ConfigKeyMapTriggerViewModel,
+                    startService = displayKeyMap::startAccessibilityService
                 )
             }
 
             if (result is Error.AccessibilityServiceCrashed) {
                 ViewModelHelper.handleAccessibilityServiceCrashedSnackBar(
-                    this@ConfigKeyMapTriggerViewModel,
-                    displayKeyMap::restartAccessibilityService
+                    resourceProvider = this@ConfigKeyMapTriggerViewModel,
+                    popupViewModel = this@ConfigKeyMapTriggerViewModel,
+                    restartService = displayKeyMap::restartAccessibilityService
                 )
             }
         }

@@ -27,7 +27,9 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
     private val uiHelper: ActionUiHelper<M, A>,
     private val onboardingUseCase: OnboardingUseCase,
     resourceProvider: ResourceProvider
-) : BaseViewModel(resourceProvider) {
+) : ResourceProvider by resourceProvider,
+    PopupViewModel by PopupViewModelImpl(),
+    NavigationViewModel by NavigationViewModelImpl() {
 
     private val _state = MutableStateFlow<State<List<ActionListItem>>>(State.Loading)
     val state = _state.asStateFlow()
@@ -119,15 +121,17 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
 
             if (error is Error.AccessibilityServiceDisabled) {
                 ViewModelHelper.handleAccessibilityServiceStoppedSnackBar(
-                    this@ConfigActionsViewModel,
-                    displayActionUseCase::startAccessibilityService
+                    resourceProvider = this,
+                    popupViewModel = this,
+                    startService = displayActionUseCase::startAccessibilityService
                 )
             }
 
             if (error is Error.AccessibilityServiceCrashed) {
                 ViewModelHelper.handleAccessibilityServiceCrashedSnackBar(
-                    this@ConfigActionsViewModel,
-                    displayActionUseCase::restartAccessibilityService
+                    resourceProvider = this,
+                    popupViewModel = this,
+                    restartService = displayActionUseCase::restartAccessibilityService
                 )
             }
         }

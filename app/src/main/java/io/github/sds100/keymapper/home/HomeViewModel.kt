@@ -32,7 +32,10 @@ class HomeViewModel(
     private val showImePicker: ShowInputMethodPickerUseCase,
     private val onboarding: OnboardingUseCase,
     resourceProvider: ResourceProvider,
-) : BaseViewModel(resourceProvider) {
+) : ViewModel(),
+    ResourceProvider by resourceProvider,
+    PopupViewModel by PopupViewModelImpl(),
+    NavigationViewModel by NavigationViewModelImpl() {
 
     private companion object {
         const val ID_ACCESSIBILITY_SERVICE_DISABLED_LIST_ITEM = "accessibility_service_disabled"
@@ -382,12 +385,17 @@ class HomeViewModel(
             when (id) {
                 ID_ACCESSIBILITY_SERVICE_DISABLED_LIST_ITEM ->
                     if (!showAlertsUseCase.startAccessibilityService()) {
-                        ViewModelHelper.handleCantFindAccessibilitySettings(this@HomeViewModel)
+                        ViewModelHelper.handleCantFindAccessibilitySettings(
+                            resourceProvider = this@HomeViewModel,
+                            popupViewModel = this@HomeViewModel
+                        )
                     }
 
                 ID_ACCESSIBILITY_SERVICE_CRASHED_LIST_ITEM ->
                     ViewModelHelper.handleKeyMapperCrashedDialog(
-                        this@HomeViewModel,
+                        resourceProvider = this@HomeViewModel,
+                        navigationViewModel = this@HomeViewModel,
+                        popupViewModel = this@HomeViewModel,
                         restartService = showAlertsUseCase::restartAccessibilityService
                     )
 
