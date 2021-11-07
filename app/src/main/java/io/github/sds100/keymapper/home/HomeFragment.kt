@@ -89,6 +89,8 @@ class HomeFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         homeViewModel.setupNavigation(this)
+        homeViewModel.keymapListViewModel.setupNavigation(this)
+        homeViewModel.fingerprintMapListViewModel.setupNavigation(this)
     }
 
     override fun onCreateView(
@@ -208,28 +210,9 @@ class HomeFragment : Fragment() {
         }
 
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
-            homeViewModel.reportBug.collectLatest {
-                findNavController().navigate(NavAppDirections.goToReportBugActivity())
-            }
-        }
-
-        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
-            homeViewModel.fixAppKilling.collectLatest {
-                findNavController().navigate(NavAppDirections.goToFixAppKillingActivity())
-            }
-        }
-
-        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             homeViewModel.tabsState.collectLatest { state ->
                 pagerAdapter.invalidateFragments(state.tabs)
                 binding.viewPager.isUserInputEnabled = state.enableViewPagerSwiping
-            }
-        }
-
-        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
-            homeViewModel.navigateToCreateKeymapScreen.collectLatest {
-                val direction = HomeFragmentDirections.actionToConfigKeymap()
-                findNavController().navigate(direction)
             }
         }
 
@@ -303,12 +286,6 @@ class HomeFragment : Fragment() {
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             homeViewModel.fingerprintMapListViewModel.requestFingerprintMapsBackup.collectLatest {
                 backupFingerprintMapsLauncher.launch(BackupUtils.createFingerprintMapsFileName())
-            }
-        }
-
-        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
-            homeViewModel.openSettings.collectLatest {
-                findNavController().navigate(NavAppDirections.toSettingsFragment())
             }
         }
     }

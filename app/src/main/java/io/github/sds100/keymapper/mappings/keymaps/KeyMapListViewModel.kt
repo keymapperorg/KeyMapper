@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
-import androidx.lifecycle.ViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ui.*
 import io.github.sds100.keymapper.util.*
@@ -15,15 +14,14 @@ open class KeyMapListViewModel constructor(
     private val useCase: ListKeyMapsUseCase,
     resourceProvider: ResourceProvider,
     private val multiSelectProvider: MultiSelectProvider<String>
-) : ViewModel(), PopupViewModel by PopupViewModelImpl(), ResourceProvider by resourceProvider {
+) : PopupViewModel by PopupViewModelImpl(),
+    ResourceProvider by resourceProvider,
+    NavigationViewModel by NavigationViewModelImpl() {
 
     private val listItemCreator = KeyMapListItemCreator(useCase, resourceProvider)
 
     private val _state = MutableStateFlow<State<List<KeyMapListItem>>>(State.Loading)
     val state = _state.asStateFlow()
-
-    private val _launchConfigKeyMap = MutableSharedFlow<String>()
-    val launchConfigKeymap = _launchConfigKeyMap.asSharedFlow()
 
     init {
         val keyMapStateListFlow =
@@ -96,7 +94,7 @@ open class KeyMapListViewModel constructor(
             multiSelectProvider.toggleSelection(uid)
         } else {
             coroutineScope.launch {
-                _launchConfigKeyMap.emit(uid)
+                navigate("config_key_map", NavDestination.ConfigKeyMap(uid))
             }
         }
     }

@@ -72,15 +72,6 @@ class HomeViewModel(
         )
     }
 
-    private val _openSettings = MutableSharedFlow<Unit>()
-    val openSettings = _openSettings.asSharedFlow()
-
-    private val _reportBug = MutableSharedFlow<Unit>()
-    val reportBug = merge(_reportBug.asSharedFlow(), menuViewModel.reportBug)
-
-    private val _fixAppKilling = MutableSharedFlow<Unit>()
-    val fixAppKilling = _fixAppKilling.asSharedFlow()
-
     private val _showQuickStartGuideHint = MutableStateFlow(false)
     val showQuickStartGuideHint = _showQuickStartGuideHint.asStateFlow()
 
@@ -229,9 +220,6 @@ class HomeViewModel(
     private val _showMenu = MutableSharedFlow<Unit>()
     val showMenu = _showMenu.asSharedFlow()
 
-    private val _navigateToCreateKeymapScreen = MutableSharedFlow<Unit>()
-    val navigateToCreateKeymapScreen = _navigateToCreateKeymapScreen.asSharedFlow()
-
     private val _closeKeyMapper = MutableSharedFlow<Unit>()
     val closeKeyMapper = _closeKeyMapper.asSharedFlow()
 
@@ -258,7 +246,7 @@ class HomeViewModel(
                         ) ?: return@collectLatest
 
                         if (response == DialogResponse.NEUTRAL) {
-                            _openSettings.emit(Unit)
+                            navigate("settings", NavDestination.Settings)
                         }
                     }
                 }
@@ -327,7 +315,7 @@ class HomeViewModel(
 
                 multiSelectProvider.stopSelecting()
             } else {
-                _navigateToCreateKeymapScreen.emit(Unit)
+                navigate("create_new_keymap", NavDestination.ConfigKeyMap(keyMapUid = null))
             }
         }
     }

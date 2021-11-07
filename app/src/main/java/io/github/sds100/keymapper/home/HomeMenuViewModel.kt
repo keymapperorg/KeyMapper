@@ -4,9 +4,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
 import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
-import io.github.sds100.keymapper.util.ui.BaseViewModel
-import io.github.sds100.keymapper.util.ui.ResourceProvider
-import io.github.sds100.keymapper.util.ui.ViewModelHelper
+import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -48,12 +46,6 @@ class HomeMenuViewModel(
 
         }.stateIn(coroutineScope, SharingStarted.Eagerly, null)
 
-    private val _openSettings = MutableSharedFlow<Unit>()
-    val openSettings = _openSettings.asSharedFlow()
-
-    private val _openAbout = MutableSharedFlow<Unit>()
-    val openAbout = _openAbout.asSharedFlow()
-
     private val _chooseBackupFile = MutableSharedFlow<Unit>()
     val chooseBackupFile = _chooseBackupFile.asSharedFlow()
 
@@ -62,9 +54,6 @@ class HomeMenuViewModel(
 
     private val _dismiss = MutableSharedFlow<Unit>()
     val dismiss = _dismiss
-
-    private val _reportBug = MutableSharedFlow<Unit>()
-    val reportBug = _reportBug.asSharedFlow()
 
     fun onToggleMappingsButtonClick() {
         coroutineScope.launch {
@@ -98,13 +87,17 @@ class HomeMenuViewModel(
 
     fun onOpenSettingsClick() {
         //dismiss afterwards so it is more responsive
-        runBlocking { _openSettings.emit(Unit) }
-        runBlocking { _dismiss.emit(Unit) }
+        coroutineScope.launch {
+            navigate("settings", NavDestination.Settings)
+            _dismiss.emit(Unit)
+        }
     }
 
     fun onOpenAboutClick() {
-        runBlocking { _openAbout.emit(Unit) }
-        runBlocking { _dismiss.emit(Unit) }
+        coroutineScope.launch {
+            navigate("about", NavDestination.About)
+            _dismiss.emit(Unit)
+        }
     }
 
     fun onBackupAllClick() {
@@ -123,7 +116,8 @@ class HomeMenuViewModel(
 
     fun onReportBugClick() {
         coroutineScope.launch {
-            _reportBug.emit(Unit)
+            navigate("report-bug", NavDestination.ReportBug)
+            _dismiss.emit(Unit)
         }
     }
 }
