@@ -12,6 +12,7 @@ import io.github.sds100.keymapper.system.lock.LockScreenAdapter
 import io.github.sds100.keymapper.system.media.MediaAdapter
 import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.util.firstBlocking
+import timber.log.Timber
 
 /**
  * Created by sds100 on 08/05/2021.
@@ -59,7 +60,8 @@ class ConstraintSnapshotImpl(
     }
 
     private fun isSatisfied(constraint: Constraint): Boolean {
-        return when (constraint) {
+
+        val isSatisfied = when (constraint) {
             is Constraint.AppInForeground -> appInForeground == constraint.packageName
             is Constraint.AppNotInForeground -> appInForeground != constraint.packageName
             is Constraint.AppPlayingMedia ->
@@ -83,13 +85,15 @@ class ConstraintSnapshotImpl(
             Constraint.ScreenOn -> isScreenOn
             is Constraint.FlashlightOff -> !cameraAdapter.isFlashlightOn(constraint.lens)
             is Constraint.FlashlightOn -> cameraAdapter.isFlashlightOn(constraint.lens)
-            is Constraint.WifiConnected ->
+            is Constraint.WifiConnected -> {
+                Timber.d("Connected WiFi ssid = $connectedWifiSSID")
                 if (constraint.ssid == null) {
                     //connected to any network
                     connectedWifiSSID != null
                 } else {
                     connectedWifiSSID == constraint.ssid
                 }
+            }
             is Constraint.WifiDisconnected ->
                 if (constraint.ssid == null) {
                     //connected to no network
@@ -105,6 +109,14 @@ class ConstraintSnapshotImpl(
             Constraint.DeviceIsLocked -> isLocked
             Constraint.DeviceIsUnlocked -> !isLocked
         }
+
+        if (isSatisfied) {
+            Timber.d("Constraint satisfied: $constraint")
+        } else {
+            Timber.d("Constraint not satisfied: $constraint")
+        }
+
+        return isSatisfied
     }
 }
 
