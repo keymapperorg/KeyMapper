@@ -16,21 +16,20 @@
 
 4. Open a terminal/command prompt in the unzipped folder.
 
-5. Type or paste in a terminal: `adb devices` and your device then click the prompt on your phone to
-   allow USB debugging from your PC.
+5. Type or paste in a terminal: `adb devices` and your device then click the prompt on your phone to allow USB debugging from your PC.
 
-   ??? info "Prompt on phone"
-   ![](../images/android-allow-usb-debugging-dialog.png)
+    ??? info "Prompt on phone"
+        ![](../images/android-allow-usb-debugging-dialog.png)
 
 6. Type `adb devices` again and make sure you see the correct output as shown below.
 
-   ??? success "Correct command prompt output"
-   ![](../images/command-prompt-adb-devices-success.png)
+    ??? success "Correct command prompt output"
+        ![](../images/command-prompt-adb-devices-success.png)
 
-   ??? failure "Incorrect command prompt outputs"
-   ![](../images/command-prompt-adb-devices-no-devices.png)
-   ![](../images/command-prompt-adb-devices-offline.png)
-   ![](../images/command-prompt-adb-devices-unauthorized.png)
+    ??? failure "Incorrect command prompt outputs"
+        ![](../images/command-prompt-adb-devices-no-devices.png)
+        ![](../images/command-prompt-adb-devices-offline.png)
+        ![](../images/command-prompt-adb-devices-unauthorized.png)
 
 ## WRITE_SECURE_SETTINGS
 
@@ -52,9 +51,8 @@ There are 3 ways to grant this permission.
     adb shell pm grant io.github.sds100.keymapper android.permission.WRITE_SECURE_SETTINGS
     ```
 
-  !!! attention For CI builds (the app icon with a green square) the package name
-  is `io.github.sds100.keymapper.ci`. For Debug builds (the app icon with a yellow square) the
-  package name is `io.github.sds100.keymapper.debug`.
+    !!! attention
+        For CI builds (the app icon with a green square) the package name is `io.github.sds100.keymapper.ci`. For Debug builds (the app icon with a yellow square) the package name is `io.github.sds100.keymapper.debug`.
 
   These permissions persist across reboots but need to be granted again if the app is reinstalled.
 
@@ -63,8 +61,9 @@ There are 3 ways to grant this permission.
 You may wish to enable Key Mapper's accessibility service using ADB if you cannot do so in-app due
 to manufacturer constraints.
 
-!!! tip It is recommended to also follow the instructions to grant the WRITE_SECURE_SETTINGS
-permission on this page so Key Mapper can start and stop the accessibility service itself.
+!!! tip
+    It is recommended to also follow the instructions to grant the WRITE_SECURE_SETTINGS permission
+    on this page so Key Mapper can start and stop the accessibility service itself.
 
 1. Follow the "Prepare ADB" guide at the top of this page.
 
