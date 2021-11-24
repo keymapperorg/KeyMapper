@@ -1,13 +1,10 @@
-package io.github.sds100.keymapper.mappings.keymaps
+package io.github.sds100.keymapper.data.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.github.salomonbrys.kotson.*
 import com.google.gson.annotations.SerializedName
-import io.github.sds100.keymapper.data.entities.ActionEntity
-import io.github.sds100.keymapper.data.entities.ConstraintEntity
-import io.github.sds100.keymapper.data.entities.TriggerEntity
 import io.github.sds100.keymapper.data.db.dao.KeyMapDao
 import java.util.*
 

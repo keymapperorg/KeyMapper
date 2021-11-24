@@ -7,7 +7,7 @@ import androidx.work.WorkerParameters
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.data.entities.ActionEntity
-import io.github.sds100.keymapper.mappings.keymaps.KeyMapEntity
+import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.data.entities.TriggerEntity
 import kotlinx.coroutines.coroutineScope
 

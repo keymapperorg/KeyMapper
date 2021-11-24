@@ -17,9 +17,9 @@ import io.github.sds100.keymapper.data.migration.*
 import io.github.sds100.keymapper.data.migration.fingerprintmaps.FingerprintMapMigration_0_1
 import io.github.sds100.keymapper.data.migration.fingerprintmaps.FingerprintMapMigration_1_2
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapEntity
+import io.github.sds100.keymapper.data.entities.FingerprintMapEntity
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapRepository
-import io.github.sds100.keymapper.mappings.keymaps.KeyMapEntity
+import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapRepository
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.files.IFile

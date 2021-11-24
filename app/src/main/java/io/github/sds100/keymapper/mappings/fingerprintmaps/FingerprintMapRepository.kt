@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.mappings.fingerprintmaps
 
-import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.data.entities.FingerprintMapEntity
 import io.github.sds100.keymapper.util.State
 import kotlinx.coroutines.flow.Flow
 
