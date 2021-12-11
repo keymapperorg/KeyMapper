@@ -3,6 +3,8 @@ package io.github.sds100.keymapper.onboarding
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.actions.ActionData
+import io.github.sds100.keymapper.actions.canUseImeToPerform
+import io.github.sds100.keymapper.actions.canUseShizukuToPerform
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.shizuku.ShizukuAdapter
@@ -41,11 +43,16 @@ class OnboardingUseCaseImpl(
 
         val isShizukuInstalled = shizukuAdapter.isInstalled.value
         
-        return (acknowledged == null || !acknowledged) && !isGuiKeyboardInstalled && !isShizukuInstalled
+        return (acknowledged == null || !acknowledged)
+                && !isGuiKeyboardInstalled 
+                && !isShizukuInstalled
+                && action.canUseImeToPerform()
     }
 
     override suspend fun showInstallShizukuPrompt(action: ActionData): Boolean {
-        return !shizukuAdapter.isInstalled.value && ShizukuUtils.isRecommendedForSdkVersion()
+        return !shizukuAdapter.isInstalled.value
+                && ShizukuUtils.isRecommendedForSdkVersion()
+                && action.canUseShizukuToPerform()
     }
 
     override fun neverShowGuiKeyboardPromptsAgain() {
