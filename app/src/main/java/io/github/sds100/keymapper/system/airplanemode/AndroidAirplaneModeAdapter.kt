@@ -14,7 +14,7 @@ class AndroidAirplaneModeAdapter(
     context: Context,
     val suAdapter: SuAdapter
 ) : AirplaneModeAdapter {
-    val ctx = context.applicationContext
+    private val ctx = context.applicationContext
 
     override fun enable(): Result<*> {
         return suAdapter.execute("settings put global airplane_mode_on 1").onSuccess {
@@ -29,7 +29,7 @@ class AndroidAirplaneModeAdapter(
     }
 
     override fun isEnabled(): Boolean {
-        return SettingsUtils.getGlobalSetting<Int>(ctx, Settings.Global.AIRPLANE_MODE_ON) == 0
+        return SettingsUtils.getGlobalSetting<Int>(ctx, Settings.Global.AIRPLANE_MODE_ON) == 1
     }
 
     private fun broadcastAirplaneModeChanged(enabled: Boolean) {
