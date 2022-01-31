@@ -84,7 +84,7 @@
     <string name="caption_action_type_phone_call">Enter the phone number.</string>
     <string name="caption_action_type_url">Type a URL which you want to be opened. The http://, https:// or www. isn\'t required.</string>
     <string name="caption_no_paired_bt_devices">Can\'t find any paired devices. Is Bluetooth turned on?</string>
-    <string name="caption_create_keymap_shortcut">The \"trigger from other apps\" option will be turned on for the key map that you select if it isn\'t already. If you turn this option off later then any shortcuts or Intents to trigger this key map will not work.</string>
+    <string name="caption_create_keymap_shortcut">The \"Allow other apps to trigger this key map\" option will be turned on for the key map that you select if it isn\'t already. If you turn this option off later then any shortcuts or Intents to trigger this key map will not work.</string>
 
     <string name="switch_enabled">Enabled</string>
     <string name="disabled">Disabled</string>
@@ -108,6 +108,8 @@
     <string name="trigger_error_dnd_access_denied_short">This trigger will not work as expected in Do Not Disturb mode!</string>
     <string name="trigger_error_screen_off_root_permission_denied">The option to trigger when the screen is off needs root permission to work!</string>
     <string name="trigger_error_screen_off_root_permission_denied_short">The option to trigger when the screen is off will not work!</string>
+    <string name="trigger_error_cant_detect_in_phone_call">This trigger won\'t work while ringing or in a phone call!</string>
+    <string name="trigger_error_cant_detect_in_phone_call_explanation">Android doesn\'t let accessibility services detect volume button presses while your phone is ringing or it is in a phone call but it does let input method services detect them. Therefore, you must use one of the Key Mapper keyboards if you want this trigger to work.</string>
 
     <string name="home_error_is_battery_optimised">Your mappings will stop working randomly!</string>
     <string name="home_error_key_maps_paused">Your mappings are paused!</string>
@@ -305,6 +307,10 @@
 
     <string name="constraint_device_is_locked">Device is locked</string>
     <string name="constraint_device_is_unlocked">Device is unlocked</string>
+
+    <string name="constraint_in_phone_call">In phone call</string>
+    <string name="constraint_not_in_phone_call">Not in phone call</string>
+    <string name="constraint_phone_ringing">Phone ringing</string>
 
     <string name="orientation_0">Portrait (0°)</string>
     <string name="orientation_90">Landscape (90°)</string>
@@ -536,6 +542,8 @@
 
     <string name="dialog_title_request_shizuku_permission">Request Shizuku permission</string>
     <string name="dialog_message_request_shizuku_permission">Since you are using Shizuku it is highly recommended to grant this permission since some features in Key Mapper can be done without you having to configure anything (E.g inputting key codes without using the Key Mapper keyboard).</string>
+    
+    <string name="dialog_title_home_fix_error">Fix error</string>
 
     <string name="pos_yes">Yes</string>
     <string name="pos_done">Done</string>
@@ -573,9 +581,12 @@
     <string name="dialog_button_install_gui_keyboard">Key Mapper GUI Keyboard</string>
     <string name="dialog_button_install_leanback_keyboard">Key Mapper Leanback Keyboard</string>
     <string name="dialog_button_install_nothing">Do nothing</string>
+    
+    <string name="dialog_button_fix">Fix</string>
 
     <string name="snackbar_cancel">Cancel</string>
     <string name="snackbar_fix">Fix</string>
+    
     <!-- Dialog stuff -->
 
     <!-- Notification strings -->
@@ -669,7 +680,7 @@
     <string name="summary_pref_auto_change_ime_on_input_focus">The last used non Key Mapper keyboard will be automatically selected when you try to open the keyboard. Your Key Mapper keyboard will be automatically selected once you stop using the keyboard.</string>
 
     <string name="title_pref_show_toast_when_auto_changing_ime">Show an on-screen message when automatically changing the keyboard</string>
-    
+
     <string name="title_pref_root_permission">Key Mapper has root permission</string>
     <string name="summary_pref_root_permission">Enable this if you want to use features/actions which only work on rooted devices. Key Mapper must have root permission from your root-access-management app (e.g Magisk, SuperSU) for these features to work.
             Only turn this on if you know your device is rooted and you have given Key Mapper root permission.</string>
@@ -690,13 +701,12 @@
     <string name="title_pref_show_device_descriptors">Show the first 5 characters of the device id for device specific triggers</string>
     <string name="summary_pref_show_device_descriptors">This is useful to differentiate between devices that have the same name.</string>
 
-    <string name="title_pref_reroute_keyevents">Workaround for Android 11 bug</string>
-    <string name="summary_pref_reroute_keyevents">This fixes keyboards that don\'t work when any accessibility services are enabled.</string>
+    <string name="title_pref_reroute_keyevents_link">Fix keyboards that are set to US English</string>
+    <string name="summary_pref_reroute_keyevents_link">This fixes keyboards that don\'t have the correct the keyboard layout when an accessibility service is enabled. Tap to read more and configure.</string>
 
-    <string name="title_pref_devices_to_reroute_keyevents">Workaround for Android 11 bug that sets the device id for input events to -1</string>
-    <string name="summary_pref_devices_to_reroute_keyevents">Workaround for Android 11 bug that sets the device id for input events to -1</string>
+    <string name="title_pref_reroute_keyevents">Fix keyboards that are set to US English</string>
+    <string name="summary_pref_reroute_keyevents">There is a bug in Android 11 that turning on an accessibility service makes Android think all external devices are the same internal virtual device. Because it can\'t identify these devices correctly, it doesn\'t know which keyboard layout to use with them so it defaults to US English even if it is a German keyboard for example. You can use Key Mapper to work around this problem by following the steps below.</string>
 
-    <string name="summary_pref_devices_to_reroute_keyevents_choose_devices">Select the devices that Key Mapper should intercept all key events and then reroute through the chosen Key Mapper keyboard. You MUST be using the Key Mapper GUI Keyboard or the Key Mapper Basic Input Method for this to work. This is a partial workaround for https://issuetracker.google.com/issues/163120692. This will NOT work with game controllers.</string>
     <string name="title_pref_devices_to_reroute_keyevents_choose_devices">4. Choose devices</string>
 
     <string name="title_pref_devices_to_reroute_keyevents_install_gui_keyboard">1. Install the Key Mapper GUI Keyboard (optional)</string>
@@ -801,7 +811,7 @@
     <string name="flag_hold_down_until_pressed_again">Hold down until pressed again</string>
     <string name="flag_dont_override_default_action">Do not override default action</string>
     <string name="flag_hold_down_until_swiped_again">Hold down until swiped again</string>
-    <string name="flag_trigger_from_other_apps">Trigger from other apps</string>
+    <string name="flag_trigger_from_other_apps">Allow other apps to trigger this key map</string>
     <!--flags-->
 
     <!-- Showcase -->
@@ -1041,6 +1051,7 @@
     <string name="error_no_file_name">This file has no name!</string>
 
     <string name="error_access_fine_location_permission_denied">Denied permission to read fine location!</string>
+    <string name="error_answer_end_phone_call">Denied permission to answer and end phone calls!</string>
     <!-- Error messages -->
 
     <!-- action labels -->
@@ -1194,6 +1205,8 @@
     <string name="action_open_url">Open URL</string>
     <string name="action_send_intent">Send intent</string>
     <string name="action_phone_call">Start phone call</string>
+    <string name="action_answer_call">Answer phone call</string>
+    <string name="action_end_call">End phone call</string>
     <string name="action_play_sound">Play sound</string>
     <string name="action_dismiss_most_recent_notification">Dismiss most recent notification</string>
     <string name="action_dismiss_all_notifications">Dismiss all notifications</string>
@@ -1296,7 +1309,7 @@
     <string name="about_team_kekero_name" translatable="false">Katie (kekero)</string>
     <string name="about_team_kekero_role">Translator (Polish)</string>
     <string name="about_team_kekero_url" translatable="false">https://github.com/LoveEevee</string>
-    
+
     <string name="about_team_trollserver_name" translatable="false">Trollserver</string>
     <string name="about_team_trollserver_url" translatable="false">https://youtube.com/channel/UCljg1FH1B_ju2D_NfqAYjDw</string>
     <string name="about_team_trollserver_role">Translator (Czech)</string>
