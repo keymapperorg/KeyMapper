@@ -52,13 +52,18 @@ External devices are only listed if they are connected to your Android device wh
 
 This menu pops up if you press the 3 dot :fontawesome-solid-ellipsis-v: button on a key.
 
-#### Do not override default action
+#### Do not remap
 
 --8<-- "trigger-options/dont-override-default-action.md"
 
+This option doesn't remap the trigger key, which means it will continue do its normal thing when clicked as well as your
+action. This will be automatically
+
 #### Click type
 
-This will change the click type for a key in a sequence trigger. A parallel trigger key will not have the click type option because all the keys have the same click type. You will find the buttons to change a parallel trigger's click type above the trigger mode buttons as shown in the image at the top of this Trigger section.
+This will change the click type for a key in a sequence trigger. A parallel trigger key will not have the click type
+option because all the keys have the same click type. You will find the buttons to change a parallel trigger's click
+type above the trigger mode buttons as shown in the image at the top of this Trigger section.
 
 ## Customising actions
 
