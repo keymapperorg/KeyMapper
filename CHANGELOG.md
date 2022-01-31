@@ -1,14 +1,43 @@
+## [2.3.2](https://github.com/sds100/KeyMapper/releases/tag/v2.3.2)
+
+#### 31 January 2022
+
+### Changes
+
+- [#828](https://github.com/sds100/KeyMapper/issues/828) Rename the "Android 11 workaround" setting to be more clear
+  what it does.
+- [#859](https://github.com/sds100/KeyMapper/issues/859) Rename the "trigger from other apps" trigger option to be more
+  clear what it does.
+- [#753](https://github.com/sds100/KeyMapper/issues/753) Automatically add the "do not remap" trigger key option when
+  remapping a modifier key. This will make sure the modifier key can still behave like a normal modifier key.
+
+### Added
+
+- [#814](https://github.com/sds100/KeyMapper/issues/814) Show system dialog to remove Key Mapper from battery
+  optimisation so the user doesn't have to dig through their device sittings.
+
+### Bug Fixes
+
+- [#810](https://github.com/sds100/KeyMapper/issues/810) Intent actions didn't work
+- [#789](https://github.com/sds100/KeyMapper/issues/789) Try to fix Key Mapper saying that the accessibility service has
+  crashed even if it hasn't.
+- [#829](https://github.com/sds100/KeyMapper/issues/829) Try to fix Key Mapper being listed as incompatible on Google
+  Play for some devices.
+- [#854](https://github.com/sds100/KeyMapper/issues/854) The toggle airplane mode action didn't work.
+
 ## [2.3.1](https://github.com/sds100/KeyMapper/releases/tag/v2.3.1)
 
 #### 02 October 2021
 
 ### Changes
-- [#772](https://github.com/sds100/KeyMapper/issues/772) Remapping game controllers should work automatically in games now. You no longer have to manually set the device of a key event action to be the game controller.
+
+- [#772](https://github.com/sds100/KeyMapper/issues/772) Remapping game controllers should work automatically in games
+  now. You no longer have to manually set the device of a key event action to be the game controller.
 
 ### Bug Fixes
+
 - Try to fix a lot of random crashes on some devices.
 - [#771](https://github.com/sds100/KeyMapper/issues/771) Don't show a "failed to find accessibility node" toast message when the open menu action fails.
-- 
 - [#775](https://github.com/sds100/KeyMapper/issues/775) The options for key maps would sometimes sporadically change when navigating the configuration screen.
 - 
 ### Removed
@@ -217,7 +246,7 @@ This sums up all the changes for 2.2
 
 ### Added
 - Remap fingerprint gestures! #378
-Android 8.0+ and only on devices which support them. Even devices with the setting to swipe down for notifications might not support this! The dev can't do anything about this.
+  Android 8.0+ and only on devices which support them. Even devices with the setting to swipe down for notifications might not support this! The dev can't do anything about this.
 
 - Widget/shortcut to launch actions. #459
 - Setting to show the first 5 digits of input devices so devices with the same name can be differentiated in Key Mapper lists. #470
@@ -277,7 +306,7 @@ Android 8.0+ and only on devices which support them. Even devices with the setti
 
 ### Added
 - Remap fingerprint gestures! #378
-Android 8.0+ and only on devices which support them. Even devices with the setting to swipe down for notifications might not support this! The dev can't do anything about this.
+  Android 8.0+ and only on devices which support them. Even devices with the setting to swipe down for notifications might not support this! The dev can't do anything about this.
 - Show the fingerprint gesture intro slide when updating to 2.2 #545
 - Show a silent notification, which advertises the remapping fingerprint gesture feature, when the user updates to 2.2 #546
 - Trigger key maps from an Intent #490
@@ -322,7 +351,7 @@ Android 8.0+ and only on devices which support them. Even devices with the setti
 
 ### Added
 - Remap fingerprint gestures! #378
-Android 8.0+ and only on devices which support them. Even devices with the setting to swipe down for notifications might not support this! The dev can't do anything about this.
+  Android 8.0+ and only on devices which support them. Even devices with the setting to swipe down for notifications might not support this! The dev can't do anything about this.
 
 - Widget/shortcut to launch actions. #459
 - Setting to show the first 5 digits of input devices so devices with the same name can be differentiated in Key Mapper lists. #470
@@ -361,7 +390,7 @@ This summarises the changes since 2.0.2.
 - Action to select word at cursor.
 - Action to toggle the screen on and off.
 - Action to tap a coordinate on the screen. The user and the app can NOT touch the screen at the same time. This is a
-limitation in Android.
+  limitation in Android.
 - Action to double press recents to go to last app.
 - Dismiss button to the notification that pauses/resumes keymaps. It will be shown again when the app is opened.
 - Show a warning dialog when leaving the screen to configure a keymap without saving.
@@ -415,7 +444,6 @@ limitation in Android.
 - The dialog prompting the user to reboot would show at the wrong time.
 - Switch to a new App Intro library. Hopefully it is more stable because the old library was crashing for many users.
 
-
 ## [2.1.0 Beta 2](https://github.com/sds100/KeyMapper/releases/tag/v2.1.0-beta.2) 
 
 #### 21 Oct 2020
@@ -438,7 +466,6 @@ limitation in Android.
 - Crash if a modifier key trigger is not mapped to a Key Event action.
 - Potential crash when showing keymaps on the homescreen.
 
-
 ## [2.1.0 Beta 1](https://github.com/sds100/KeyMapper/releases/tag/v2.1.0-beta.1) 
 
 #### 29 Sept 2020
@@ -453,7 +480,7 @@ limitation in Android.
 - Action to select word at cursor.
 - Action to toggle the screen on and off.
 - Action to tap a coordinate on the screen. The user and the app can NOT touch the screen at the same time. This is a
-limitation in Android.
+  limitation in Android.
 - Action to double press recents to go to last app.
 - Dismiss button to the notification that pauses/resumes keymaps. It will be shown again when the app is opened.
 - Show a warning dialog when leaving the screen to configure a keymap without saving.
@@ -509,7 +536,7 @@ limitation in Android.
   - App not in foreground
   - Bluetooth device connected
   - Bluetooth device not connected
-   - Screen on/off (ROOT only).
+  - Screen on/off (ROOT only).
 
 - Actions
   - Toggle/enable/disable a Do Not Disturb mode (Android 6.0+).
@@ -783,28 +810,32 @@ Changes from 1.1.0 Beta 8:
 ## [1.1.0 Beta 6](https://github.com/sds100/KeyMapper/releases/tag/v1.1.0-beta.6)
 #### 19 May 2019
 ### Bug Fixes
- - Don't show NFC actions on devices without NFC
- - Couldn't change volume when short pressing a volume button remapped to a long press action
+
+- Don't show NFC actions on devices without NFC
+- Couldn't change volume when short pressing a volume button remapped to a long press action
 
 ## [1.1.0 Beta 5](https://github.com/sds100/KeyMapper/releases/tag/v1.1.0-beta.5)
 #### 19 May 2019
- - Updated libraries
+
+- Updated libraries
 ### Added
- - Action to enable, disable and toggle NFC.
- - Action to switch between portrait and landscape mode.
- - Action to cycle through and change the ringer mode.
- - Action to fast forward and rewind.
- - Option to log events and send them to the developer so it is easier to debug issues with the app.
- - Button to Help page on homescreen.
- - Translation instuctions to the About activity.
+
+- Action to enable, disable and toggle NFC.
+- Action to switch between portrait and landscape mode.
+- Action to cycle through and change the ringer mode.
+- Action to fast forward and rewind.
+- Option to log events and send them to the developer so it is easier to debug issues with the app.
+- Button to Help page on homescreen.
+- Translation instuctions to the About activity.
 
 ### Changes
- - Add the trigger after the 5 seconds rather than having to press the button so the app can work with devices which only have remotes as input.
- - Cleanup Settings strings.
- - Use slightly darker homescreen background.
- - Don't show the "Key mapper is performing an action" toast message by default.
- - Allow the volume to be changed while in Do Not Disturb mode.
- - Minimum vibration duration is 1ms rather than 100ms
+
+- Add the trigger after the 5 seconds rather than having to press the button so the app can work with devices which only have remotes as input.
+- Cleanup Settings strings.
+- Use slightly darker homescreen background.
+- Don't show the "Key mapper is performing an action" toast message by default.
+- Allow the volume to be changed while in Do Not Disturb mode.
+- Minimum vibration duration is 1ms rather than 100ms
 
 ### Bug Fixes
 - The landscape mode action wouldn't work.
@@ -866,7 +897,6 @@ Changes from 1.1.0 Beta 8:
 - The app would crash if using the "open google assistant" action if the Google app wasn't installed.
 - Prevent the accessibility service from stopping if there is a fatal exception and show a toast when it happens.
 
-
 ## [1.0.0 Beta 6](https://github.com/sds100/KeyMapper/releases/tag/v1.0.0-beta.6)
 #### 22 Mar 2019
 - Changed developer email.
@@ -913,43 +943,43 @@ Changes from 1.1.0 Beta 8:
 - Optional flags for each keymap so it can only be triggered on a long press and whether to show the volume dialog for volume related actions.
 - Ability to enable/disable specific/all keymaps.
 
-   #### Added these actions
-   - Open App
-   - Open App shortcut
-   - A keycode
-   - A key
-   - A block of text
-   
-   - Go back
-   - Go home
-   - Open recents
-   - Open menu
-   
-   - Expand notification drawer
-   - Expand quick settings
-   - Collapse status bar
-   
-   - Toggle/enable/disable WiFi  
-   - Toggle/enable/disable Bluetooth
-   - Toggle/enable/disable mobile data
-   
-   - Toggle Play/pause media
-   - Pause,play media
-   - Next/previous track
-   
-   - Volume up/down
-   - Increase/decrease a specific volume stream
-   - Show the volume dialog
-   - Mute/unmute/toggle mute
-   
-   - Toggle/enable/disable auto-rotate
-   - Force portrait/landscape mode
-   
-   - Toggle/enable/disable auto-brightness
-   - Increase/decrease brightness
-   
-   - Toggle/enable/disable flashlight
-   
-   - Screenshot
-   - Open Google Assistant
-   - Open camera
+  ####  Added these actions
+  - Open App
+  - Open App shortcut
+  - A keycode
+  - A key
+  - A block of text
+
+  - Go back
+  - Go home
+  - Open recents
+  - Open menu
+
+  - Expand notification drawer
+  - Expand quick settings
+  - Collapse status bar
+
+  - Toggle/enable/disable WiFi  
+  - Toggle/enable/disable Bluetooth
+  - Toggle/enable/disable mobile data
+
+  - Toggle Play/pause media
+  - Pause,play media
+  - Next/previous track
+
+  - Volume up/down
+  - Increase/decrease a specific volume stream
+  - Show the volume dialog
+  - Mute/unmute/toggle mute
+
+  - Toggle/enable/disable auto-rotate
+  - Force portrait/landscape mode
+
+  - Toggle/enable/disable auto-brightness
+  - Increase/decrease brightness
+
+  - Toggle/enable/disable flashlight
+
+  - Screenshot
+  - Open Google Assistant
+  - Open camera

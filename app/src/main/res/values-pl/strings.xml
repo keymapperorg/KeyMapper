@@ -452,8 +452,6 @@
     <string name="summary_pref_hide_home_screen_alerts">Ukryj alerty u góry ekranu głównego.</string>
     <string name="title_pref_show_device_descriptors">Pokaż pierwsze 5 znaków identyfikatora urządzenia dla wyzwalaczy specyficznych dla urządzenia</string>
     <string name="summary_pref_show_device_descriptors">Jest to przydatne do rozróżnienia między urządzeniami o tej samej nazwie.</string>
-    <string name="title_pref_devices_to_reroute_keyevents">Obejście błędu Androida 11, który ustawia identyfikator urządzenia dla zdarzeń wejściowych na -1</string>
-    <string name="summary_pref_devices_to_reroute_keyevents">Obejście błędu Androida 11, który ustawia identyfikator urządzenia dla zdarzeń wejściowych na -1</string>
     <string name="title_pref_devices_to_reroute_keyevents_choose_devices">4. Wybierz urządzenia</string>
     <string name="title_pref_devices_to_reroute_keyevents_install_gui_keyboard">1. Zainstaluj GUI klawiaturę Key Mapper (opcjonalnie)</string>
     <string name="title_pref_devices_to_reroute_keyevents_install_leanback_keyboard">1. Zainstaluj klawiaturę Key Mapper Leanback (opcjonalnie)</string>
