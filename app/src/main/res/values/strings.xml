@@ -79,7 +79,7 @@
     <string name="caption_action_type_phone_call">Enter the phone number.</string>
     <string name="caption_action_type_url">Type a URL which you want to be opened. The http://, https:// or www. isn\'t required.</string>
     <string name="caption_no_paired_bt_devices">Can\'t find any paired devices. Is Bluetooth turned on?</string>
-    <string name="caption_create_keymap_shortcut">The \"trigger from other apps\" option will be turned on for the key map that you select if it isn\'t already. If you turn this option off later then any shortcuts or Intents to trigger this key map will not work.</string>
+    <string name="caption_create_keymap_shortcut">The \"Allow other apps to trigger this key map\" option will be turned on for the key map that you select if it isn\'t already. If you turn this option off later then any shortcuts or Intents to trigger this key map will not work.</string>
 
     <string name="switch_enabled">Enabled</string>
     <string name="disabled">Disabled</string>
@@ -604,8 +604,12 @@
     <string name="title_pref_show_device_descriptors">Show the first 5 characters of the device id for device specific triggers</string>
     <string name="summary_pref_show_device_descriptors">This is useful to differentiate between devices that have the same name.</string>
 
-    <string name="title_pref_devices_to_reroute_keyevents">Workaround for Android 11 bug that sets the device id for input events to -1</string>
-    <string name="summary_pref_devices_to_reroute_keyevents">Select the devices that Key Mapper should intercept all key events and then reroute through the chosen Key Mapper keyboard. You MUST be using the Key Mapper GUI Keyboard or the Key Mapper Basic Input Method for this to work. This is a partial workaround for https://issuetracker.google.com/issues/163120692. This will NOT work with game controllers.</string>
+    <string name="title_pref_reroute_keyevents_link">Fix keyboards that are set to US English</string>
+    <string name="summary_pref_reroute_keyevents_link">This fixes keyboards that don\'t have the correct the keyboard layout when an accessibility service is enabled. Tap to read more and configure.</string>
+
+    <string name="title_pref_reroute_keyevents">Fix keyboards that are set to US English</string>
+    <string name="summary_pref_reroute_keyevents">There is a bug in Android 11 that turning on an accessibility service makes Android think all external devices are the same internal virtual device. Because it can\'t identify these devices correctly, it doesn\'t know which keyboard layout to use with them so it defaults to US English even if it is a German keyboard for example. You can use Key Mapper to work around this problem by following the steps below.</string>
+
     <string name="title_pref_devices_to_reroute_keyevents_choose_devices">4. Choose devices</string>
 
     <string name="title_pref_devices_to_reroute_keyevents_install_gui_keyboard">1. Install the Key Mapper GUI Keyboard (optional)</string>
@@ -699,9 +703,9 @@
 
     <string name="flag_hold_down">Hold down</string>
     <string name="flag_hold_down_until_pressed_again">Hold down until pressed again</string>
-    <string name="flag_dont_override_default_action">Do not override default action</string>
+    <string name="flag_dont_override_default_action">Do not remap</string>
     <string name="flag_hold_down_until_swiped_again">Hold down until swiped again</string>
-    <string name="flag_trigger_from_other_apps">Trigger from other apps</string>
+    <string name="flag_trigger_from_other_apps">Allow other apps to trigger this key map</string>
     <!--flags-->
 
     <!-- Showcase -->
