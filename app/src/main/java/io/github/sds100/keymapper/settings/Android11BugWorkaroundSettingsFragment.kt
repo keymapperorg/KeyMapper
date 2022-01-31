@@ -51,8 +51,8 @@ class Android11BugWorkaroundSettingsFragment : BaseSettingsFragment() {
             key = Keys.rerouteKeyEvents.name
             setDefaultValue(false)
 
-            setTitle(R.string.title_pref_devices_to_reroute_keyevents)
-            setSummary(R.string.summary_pref_devices_to_reroute_keyevents_choose_devices)
+            setTitle(R.string.title_pref_reroute_keyevents)
+            setSummary(R.string.summary_pref_reroute_keyevents)
             isSingleLineTitle = false
 
             addPreference(this)

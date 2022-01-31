@@ -294,8 +294,8 @@ class MainSettingsFragment : BaseSettingsFragment() {
         //android 11 device id reset work around
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.R) {
             Preference(requireContext()).apply {
-                setTitle(R.string.title_pref_reroute_keyevents)
-                setSummary(R.string.summary_pref_reroute_keyevents)
+                setTitle(R.string.title_pref_reroute_keyevents_link)
+                setSummary(R.string.summary_pref_reroute_keyevents_link)
                 isSingleLineTitle = false
 
                 setOnPreferenceClickListener {
