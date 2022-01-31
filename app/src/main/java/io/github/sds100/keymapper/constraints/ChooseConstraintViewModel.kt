@@ -59,7 +59,11 @@ class ChooseConstraintViewModel(
             ChooseConstraintType.IME_NOT_CHOSEN,
 
             ChooseConstraintType.DEVICE_IS_LOCKED,
-            ChooseConstraintType.DEVICE_IS_UNLOCKED
+            ChooseConstraintType.DEVICE_IS_UNLOCKED,
+
+            ChooseConstraintType.IN_PHONE_CALL,
+            ChooseConstraintType.NOT_IN_PHONE_CALL,
+            ChooseConstraintType.PHONE_RINGING,
         )
     }
 
@@ -148,6 +152,15 @@ class ChooseConstraintViewModel(
 
                 ChooseConstraintType.DEVICE_IS_UNLOCKED ->
                     _returnResult.emit(Constraint.DeviceIsUnlocked)
+
+                ChooseConstraintType.IN_PHONE_CALL ->
+                    _returnResult.emit(Constraint.InPhoneCall)
+
+                ChooseConstraintType.NOT_IN_PHONE_CALL ->
+                    _returnResult.emit(Constraint.NotInPhoneCall)
+
+                ChooseConstraintType.PHONE_RINGING ->
+                    _returnResult.emit(Constraint.PhoneRinging)
             }
         }
     }
@@ -196,6 +209,9 @@ class ChooseConstraintViewModel(
                 ChooseConstraintType.IME_NOT_CHOSEN -> getString(R.string.constraint_ime_not_chosen)
                 ChooseConstraintType.DEVICE_IS_LOCKED -> getString(R.string.constraint_device_is_locked)
                 ChooseConstraintType.DEVICE_IS_UNLOCKED -> getString(R.string.constraint_device_is_unlocked)
+                ChooseConstraintType.IN_PHONE_CALL -> getString(R.string.constraint_in_phone_call)
+                ChooseConstraintType.NOT_IN_PHONE_CALL -> getString(R.string.constraint_not_in_phone_call)
+                ChooseConstraintType.PHONE_RINGING -> getString(R.string.constraint_phone_ringing)
             }
 
             val error = useCase.isSupported(type)

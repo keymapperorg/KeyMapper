@@ -353,6 +353,8 @@ object ActionDataEntityMapper {
             ActionId.SHOW_POWER_MENU -> ActionData.ShowPowerMenu
             ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> ActionData.DismissLastNotification
             ActionId.DISMISS_ALL_NOTIFICATIONS -> ActionData.DismissAllNotifications
+            ActionId.ANSWER_PHONE_CALL -> ActionData.AnswerCall
+            ActionId.END_PHONE_CALL -> ActionData.EndCall
         }
     }
 
@@ -654,6 +656,9 @@ object ActionDataEntityMapper {
         ActionId.SHOW_POWER_MENU to "show_power_menu",
 
         ActionId.DISMISS_MOST_RECENT_NOTIFICATION to "dismiss_most_recent_notification",
-        ActionId.DISMISS_ALL_NOTIFICATIONS to "dismiss_all_notifications"
+        ActionId.DISMISS_ALL_NOTIFICATIONS to "dismiss_all_notifications",
+        
+        ActionId.ANSWER_PHONE_CALL to "answer_phone_call",
+        ActionId.END_PHONE_CALL to "end_phone_call"
     )
 }

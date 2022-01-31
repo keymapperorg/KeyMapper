@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
-import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ui.*
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.*
@@ -119,38 +118,29 @@ open class KeyMapListViewModel constructor(
 
     fun onTriggerErrorChipClick(chipModel: ChipUi) {
         if (chipModel is ChipUi.Error) {
-            showSnackBarAndFixError(chipModel.error)
+            showDialogAndFixError(chipModel.error)
         }
     }
 
     fun onActionChipClick(chipModel: ChipUi) {
         if (chipModel is ChipUi.Error) {
-            showSnackBarAndFixError(chipModel.error)
+            showDialogAndFixError(chipModel.error)
         }
     }
 
     fun onConstraintsChipClick(chipModel: ChipUi) {
         if (chipModel is ChipUi.Error) {
-            showSnackBarAndFixError(chipModel.error)
+            showDialogAndFixError(chipModel.error)
         }
     }
 
-    private fun showSnackBarAndFixError(error: Error) {
+    private fun showDialogAndFixError(error: Error) {
         coroutineScope.launch {
-            val actionText = if (error.isFixable) {
-                getString(R.string.snackbar_fix)
-            } else {
-                null
-            }
-
-            val snackBar = PopupUi.SnackBar(
-                message = error.getFullMessage(this@KeyMapListViewModel),
-                actionText = actionText
-            )
-
-            showPopup("fix_error", snackBar) ?: return@launch
-
-            if (error.isFixable) {
+            ViewModelHelper.showFixErrorDialog(
+                    resourceProvider = this@KeyMapListViewModel,
+                    popupViewModel = this@KeyMapListViewModel,
+                    error
+            ) {
                 useCase.fixError(error)
             }
         }

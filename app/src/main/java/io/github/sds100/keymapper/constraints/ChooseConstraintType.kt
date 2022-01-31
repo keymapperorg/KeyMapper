@@ -40,5 +40,9 @@ enum class ChooseConstraintType {
     IME_NOT_CHOSEN,
 
     DEVICE_IS_LOCKED,
-    DEVICE_IS_UNLOCKED
+    DEVICE_IS_UNLOCKED,
+
+    IN_PHONE_CALL,
+    NOT_IN_PHONE_CALL,
+    PHONE_RINGING
 }

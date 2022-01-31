@@ -2,6 +2,7 @@ package io.github.sds100.keymapper
 
 import android.view.KeyEvent
 import io.github.sds100.keymapper.actions.ActionData
+import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapUseCaseImpl
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapAction
@@ -16,6 +17,7 @@ import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
+import org.hamcrest.Matchers.contains
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -46,6 +48,44 @@ class ConfigKeyMapUseCaseTest {
     fun tearDown() {
         testDispatcher.cleanupTestCoroutines()
     }
+
+    /**
+     * Issue #852. Add a phone ringing constraint when you add an action
+     * to answer a phone call.
+     */
+    @Test
+    fun `when add answer phone call action, then add phone ringing constraint`() =
+        coroutineScope.runBlockingTest {
+            //GIVEN
+            useCase.mapping.value = State.Data(KeyMap())
+            val action = ActionData.AnswerCall
+
+            //WHEN
+            useCase.addAction(action)
+
+            //THEN
+            val keyMap = useCase.mapping.value.dataOrNull()!!
+            assertThat(keyMap.constraintState.constraints, contains(Constraint.PhoneRinging))
+        }
+
+    /**
+     * Issue #852. Add a in phone call constraint when you add an action
+     * to end a phone call.
+     */
+    @Test
+    fun `when add end phone call action, then add in phone call constraint`() =
+        coroutineScope.runBlockingTest {
+            //GIVEN
+            useCase.mapping.value = State.Data(KeyMap())
+            val action = ActionData.EndCall
+
+            //WHEN
+            useCase.addAction(action)
+
+            //THEN
+            val keyMap = useCase.mapping.value.dataOrNull()!!
+            assertThat(keyMap.constraintState.constraints, contains(Constraint.InPhoneCall))
+        }
 
     /**
      * issue #593

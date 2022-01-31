@@ -13,12 +13,12 @@ import kotlinx.coroutines.launch
  * Created by sds100 on 08/09/20.
  */
 class CreateKeyMapShortcutViewModel(
-    private val configKeyMapUseCase: ConfigKeyMapUseCase,
-    private val listUseCase: ListKeyMapsUseCase,
-    private val createShortcutUseCase: CreateKeyMapShortcutUseCase,
-    resourceProvider: ResourceProvider
+        private val configKeyMapUseCase: ConfigKeyMapUseCase,
+        private val listUseCase: ListKeyMapsUseCase,
+        private val createShortcutUseCase: CreateKeyMapShortcutUseCase,
+        resourceProvider: ResourceProvider
 ) : ViewModel(), PopupViewModel by PopupViewModelImpl(),
-    ResourceProvider by resourceProvider {
+        ResourceProvider by resourceProvider {
 
     private val listItemCreator = KeyMapListItemCreator(listUseCase, resourceProvider)
 
@@ -32,11 +32,11 @@ class CreateKeyMapShortcutViewModel(
         val rebuildUiState = MutableSharedFlow<State<List<KeyMap>>>(replay = 1)
 
         combine(
-            rebuildUiState,
-            listUseCase.showDeviceDescriptors
+                rebuildUiState,
+                listUseCase.showDeviceDescriptors
         ) { keyMapListState, showDeviceDescriptors ->
             val selectionUiState =
-                KeyMapListItem.SelectionUiState(isSelected = false, isSelectable = false)
+                    KeyMapListItem.SelectionUiState(isSelected = false, isSelectable = false)
 
             _state.value = keyMapListState.mapData { keyMapList ->
                 keyMapList.map { keyMap ->
@@ -87,16 +87,16 @@ class CreateKeyMapShortcutViewModel(
 
                 val key = "create_launcher_shortcut"
                 val shortcutName = showPopup(
-                    key,
-                    PopupUi.Text(
-                        getString(R.string.hint_shortcut_name),
-                        allowEmpty = false
-                    )
+                        key,
+                        PopupUi.Text(
+                                getString(R.string.hint_shortcut_name),
+                                allowEmpty = false
+                        )
                 ) ?: return@launch
 
                 createShortcutUseCase.createIntentForMultipleActions(
-                    keyMapUid = keyMap.uid,
-                    shortcutLabel = shortcutName
+                        keyMapUid = keyMap.uid,
+                        shortcutLabel = shortcutName
                 )
             }
 
@@ -108,54 +108,45 @@ class CreateKeyMapShortcutViewModel(
 
     fun onTriggerErrorChipClick(chipModel: ChipUi) {
         if (chipModel is ChipUi.Error) {
-            showSnackBarAndFixError(chipModel.error)
+            showDialogAndFixError(chipModel.error)
         }
     }
 
     fun onActionChipClick(chipModel: ChipUi) {
         if (chipModel is ChipUi.Error) {
-            showSnackBarAndFixError(chipModel.error)
+            showDialogAndFixError(chipModel.error)
         }
     }
 
     fun onConstraintsChipClick(chipModel: ChipUi) {
         if (chipModel is ChipUi.Error) {
-            showSnackBarAndFixError(chipModel.error)
+            showDialogAndFixError(chipModel.error)
         }
     }
 
-    private fun showSnackBarAndFixError(error: Error) {
+    private fun showDialogAndFixError(error: Error) {
         viewModelScope.launch {
-            val actionText = if (error.isFixable) {
-                getString(R.string.snackbar_fix)
-            } else {
-                null
-            }
-
-            val snackBar = PopupUi.SnackBar(
-                message = error.getFullMessage(this@CreateKeyMapShortcutViewModel),
-                actionText = actionText
-            )
-
-            showPopup("fix_error", snackBar) ?: return@launch
-
-            if (error.isFixable) {
+            ViewModelHelper.showFixErrorDialog(
+                    resourceProvider = this@CreateKeyMapShortcutViewModel,
+                    popupViewModel = this@CreateKeyMapShortcutViewModel,
+                    error
+            ) {
                 listUseCase.fixError(error)
             }
         }
     }
 
     class Factory(
-        private val configKeyMapUseCase: ConfigKeyMapUseCase,
-        private val listUseCase: ListKeyMapsUseCase,
-        private val createShortcutUseCase: CreateKeyMapShortcutUseCase,
-        private val resourceProvider: ResourceProvider
+            private val configKeyMapUseCase: ConfigKeyMapUseCase,
+            private val listUseCase: ListKeyMapsUseCase,
+            private val createShortcutUseCase: CreateKeyMapShortcutUseCase,
+            private val resourceProvider: ResourceProvider
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>) =
-            CreateKeyMapShortcutViewModel(
-                configKeyMapUseCase, listUseCase, createShortcutUseCase, resourceProvider
-            ) as T
+                CreateKeyMapShortcutViewModel(
+                        configKeyMapUseCase, listUseCase, createShortcutUseCase, resourceProvider
+                ) as T
     }
 }

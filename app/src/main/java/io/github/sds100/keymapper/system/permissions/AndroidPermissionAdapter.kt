@@ -152,6 +152,12 @@ class AndroidPermissionAdapter(
                     ctx,
                     Manifest.permission.ACCESS_FINE_LOCATION
                 ) == PERMISSION_GRANTED
+            
+            Permission.ANSWER_PHONE_CALL ->
+                ContextCompat.checkSelfPermission(
+                    ctx,
+                    Manifest.permission.ANSWER_PHONE_CALLS
+                ) == PERMISSION_GRANTED
         }
     }
 

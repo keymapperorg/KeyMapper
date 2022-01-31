@@ -186,13 +186,26 @@ This will increase or decrease a specific one of these volume streams.
 !!! attention "Requires ROOT permission on Android 8.1 and older"
 
 ### Secure lock device
-This is different to 'lock device' because this will force you to unlock your device with your PIN or password and not with biometrics.
+
+This is different to 'lock device' because this will force you to unlock your device with your PIN or password and not
+with biometrics.
 
 ### Turn on/off device
 
 !!! attention "Requires ROOT permission"
 
 ### Show power menu
+
+### Answer/end phone call (2.4.0+)
+
+If your phone is ringing then this action will answer the phone or if you are in a call then it will end it. Selecting
+this action will automatically add the constraint to your key map when your device is ringing or is in a call
+respectively.
+
+!!! attention If you are using a volume button trigger with these actions then this key map will only work if you are
+using on of the Key Mapper keyboards! This is because Android doesn't tell accessibility services when the volume
+buttons are being pressed when your device is ringing or is in a phone call. But it does tell input methods when they
+are being pressed so you must use a Key Mapper keyboard that tells Key Mapper when the buttons are being pressed.
 
 ### Do nothing
 

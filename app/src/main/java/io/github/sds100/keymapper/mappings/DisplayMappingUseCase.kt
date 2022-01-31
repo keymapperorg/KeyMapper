@@ -13,6 +13,7 @@ import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 /**
@@ -58,6 +59,18 @@ class DisplaySimpleMappingUseCaseImpl(
             is Error.ImeDisabled -> inputMethodAdapter.enableIme(error.ime.id)
             is Error.PermissionDenied -> permissionAdapter.request(error.permission)
             is Error.ShizukuNotStarted -> packageManager.openApp(ShizukuUtils.SHIZUKU_PACKAGE)
+            is Error.CantDetectKeyEventsInPhoneCall -> {
+                if (!keyMapperImeHelper.isCompatibleImeEnabled()) {
+                    keyMapperImeHelper.enableCompatibleInputMethods()
+                }
+
+                //wait for compatible ime to be enabled then choose it.
+                keyMapperImeHelper.isCompatibleImeEnabledFlow.first { it }
+
+                keyMapperImeHelper.chooseCompatibleInputMethod().otherwise {
+                    inputMethodAdapter.showImePicker(fromForeground = true)
+                }
+            }
         }
     }
 

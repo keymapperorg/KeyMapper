@@ -28,7 +28,10 @@ object ConstraintUtils {
         ChooseConstraintType.IME_CHOSEN,
         ChooseConstraintType.IME_NOT_CHOSEN,
         ChooseConstraintType.DEVICE_IS_LOCKED,
-        ChooseConstraintType.DEVICE_IS_UNLOCKED
+        ChooseConstraintType.DEVICE_IS_UNLOCKED,
+        ChooseConstraintType.IN_PHONE_CALL,
+        ChooseConstraintType.NOT_IN_PHONE_CALL,
+        ChooseConstraintType.PHONE_RINGING
     )
 
     val KEY_MAP_ALLOWED_CONSTRAINTS = listOf(

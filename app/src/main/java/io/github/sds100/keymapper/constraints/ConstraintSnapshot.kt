@@ -11,6 +11,8 @@ import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.lock.LockScreenAdapter
 import io.github.sds100.keymapper.system.media.MediaAdapter
 import io.github.sds100.keymapper.system.network.NetworkAdapter
+import io.github.sds100.keymapper.system.phone.CallState
+import io.github.sds100.keymapper.system.phone.PhoneAdapter
 import io.github.sds100.keymapper.util.firstBlocking
 import timber.log.Timber
 
@@ -29,7 +31,8 @@ class ConstraintSnapshotImpl(
     networkAdapter: NetworkAdapter,
     private val cameraAdapter: CameraAdapter,
     inputMethodAdapter: InputMethodAdapter,
-    lockScreenAdapter: LockScreenAdapter
+    lockScreenAdapter: LockScreenAdapter,
+    phoneAdapter: PhoneAdapter
 ) : ConstraintSnapshot {
     private val appInForeground: String? by lazy { accessibilityService.rootNode?.packageName }
     private val connectedBluetoothDevices: Set<BluetoothDeviceInfo> by lazy { devicesAdapter.connectedBluetoothDevices.value }
@@ -39,6 +42,7 @@ class ConstraintSnapshotImpl(
     private val isWifiEnabled: Boolean by lazy { networkAdapter.isWifiEnabled() }
     private val connectedWifiSSID: String? by lazy { networkAdapter.connectedWifiSSID }
     private val chosenImeId: String? by lazy { inputMethodAdapter.chosenIme.value?.id }
+    private val callState: CallState by lazy { phoneAdapter.getCallState() }
 
     private val isLocked: Boolean by lazy {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
@@ -108,6 +112,9 @@ class ConstraintSnapshotImpl(
             is Constraint.ImeNotChosen -> chosenImeId != constraint.imeId
             Constraint.DeviceIsLocked -> isLocked
             Constraint.DeviceIsUnlocked -> !isLocked
+            Constraint.InPhoneCall -> callState == CallState.IN_PHONE_CALL
+            Constraint.NotInPhoneCall -> callState == CallState.NONE
+            Constraint.PhoneRinging -> callState == CallState.RINGING
         }
 
         if (isSatisfied) {

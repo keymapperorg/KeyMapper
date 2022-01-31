@@ -18,6 +18,8 @@ import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeMessenger
 import io.github.sds100.keymapper.system.navigation.OpenMenuHelper
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
+import io.github.sds100.keymapper.system.phone.CallState
+import io.github.sds100.keymapper.system.phone.PhoneAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import io.github.sds100.keymapper.util.InputEventType
@@ -40,7 +42,8 @@ class DetectKeyMapsUseCaseImpl(
     private val keyMapperImeMessenger: KeyMapperImeMessenger,
     private val accessibilityService: IAccessibilityService,
     private val shizukuInputEventInjector: InputEventInjector,
-    private val permissionAdapter: PermissionAdapter
+    private val permissionAdapter: PermissionAdapter,
+    private val phoneAdapter: PhoneAdapter
 ) : DetectKeyMapsUseCase, DetectMappingUseCase by detectMappingUseCase {
 
     override val allKeyMapList: Flow<List<KeyMap>> =
@@ -85,6 +88,12 @@ class DetectKeyMapsUseCaseImpl(
 
     override val currentTime: Long
         get() = SystemClock.elapsedRealtime()
+
+    override val isInPhoneCall: Boolean
+        get() = phoneAdapter.getCallState() == CallState.IN_PHONE_CALL
+
+    override val isPhoneRinging: Boolean
+        get() = phoneAdapter.getCallState() == CallState.RINGING
 
     private val openMenuHelper = OpenMenuHelper(
         suAdapter,
@@ -152,6 +161,9 @@ interface DetectKeyMapsUseCase : DetectMappingUseCase {
     val defaultLongPressDelay: Flow<Long>
     val defaultDoublePressDelay: Flow<Long>
     val defaultSequenceTriggerTimeout: Flow<Long>
+
+    val isInPhoneCall: Boolean
+    val isPhoneRinging: Boolean
 
     val currentTime: Long
 

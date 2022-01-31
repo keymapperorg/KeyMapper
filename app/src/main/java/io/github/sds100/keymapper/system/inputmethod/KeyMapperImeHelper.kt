@@ -2,6 +2,8 @@ package io.github.sds100.keymapper.system.inputmethod
 
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.util.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 /**
  * Created by sds100 on 16/03/2021.
@@ -25,6 +27,10 @@ class KeyMapperImeHelper(private val imeAdapter: InputMethodAdapter) {
             KEY_MAPPER_HACKERS_KEYBOARD_PACKAGE
         )
     }
+
+    val isCompatibleImeEnabledFlow: Flow<Boolean> =
+        imeAdapter.inputMethods
+            .map { containsCompatibleIme(it) }
 
     fun enableCompatibleInputMethods() {
         KEY_MAPPER_IME_PACKAGE_LIST.forEach { packageName ->
@@ -60,7 +66,12 @@ class KeyMapperImeHelper(private val imeAdapter: InputMethodAdapter) {
 
     fun isCompatibleImeEnabled(): Boolean {
         return imeAdapter.inputMethods
+            .map { containsCompatibleIme(it) }
             .firstBlocking()
+    }
+
+    private fun containsCompatibleIme(imeList: List<ImeInfo>): Boolean {
+        return imeList
             .filter { it.isEnabled }
             .any { it.packageName in KEY_MAPPER_IME_PACKAGE_LIST }
     }

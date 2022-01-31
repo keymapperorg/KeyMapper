@@ -484,6 +484,8 @@ class CreateActionViewModelImpl(
             ActionId.DISABLE_DND_MODE -> return ActionData.DoNotDisturb.Disable
             ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> return ActionData.DismissLastNotification
             ActionId.DISMISS_ALL_NOTIFICATIONS -> return ActionData.DismissAllNotifications
+            ActionId.ANSWER_PHONE_CALL -> return ActionData.AnswerCall
+            ActionId.END_PHONE_CALL -> return ActionData.EndCall
         }
     }
 }

@@ -75,6 +75,7 @@ class RequestPermissionDelegate(
             Permission.WRITE_SECURE_SETTINGS -> requestWriteSecureSettings()
             Permission.NOTIFICATION_LISTENER -> notificationReceiverAdapter.start()
             Permission.CALL_PHONE -> requestPermissionLauncher.launch(Manifest.permission.CALL_PHONE)
+            Permission.ANSWER_PHONE_CALL -> requestPermissionLauncher.launch(Manifest.permission.ANSWER_PHONE_CALLS)
             Permission.ROOT -> {
                 require(navController != null) { "nav controller can't be null!" }
                 requestRootPermission(navController)

@@ -2,8 +2,10 @@ package io.github.sds100.keymapper.actions
 
 import android.accessibilityservice.AccessibilityService
 import android.os.Build
+import android.telecom.TelecomManager
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityNodeInfo
+import androidx.core.content.getSystemService
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.sound.SoundsManager
 import io.github.sds100.keymapper.data.Keys
@@ -711,6 +713,16 @@ class PerformActionsUseCaseImpl(
                 }
 
                 result = null
+            }
+            
+            ActionData.AnswerCall ->{
+                phoneAdapter.answerCall()
+                result = success()
+            }
+            
+            ActionData.EndCall ->{
+                phoneAdapter.endCall()
+                result = success()
             }
         }
 

@@ -43,6 +43,7 @@ object UseCases {
     fun displayKeyMap(ctx: Context): DisplayKeyMapUseCase {
         return DisplayKeyMapUseCaseImpl(
             ServiceLocator.permissionAdapter(ctx),
+            ServiceLocator.inputMethodAdapter(ctx),
             displaySimpleMapping(ctx)
         )
     }
@@ -136,7 +137,8 @@ object UseCases {
         ServiceLocator.cameraAdapter(service),
         ServiceLocator.networkAdapter(service),
         ServiceLocator.inputMethodAdapter(service),
-        ServiceLocator.lockScreenAdapter(service)
+        ServiceLocator.lockScreenAdapter(service),
+        ServiceLocator.phoneAdapter(service)
     )
 
     fun performActions(ctx: Context, service: IAccessibilityService) =
@@ -190,7 +192,8 @@ object UseCases {
         keyMapperImeMessenger(service),
         service,
         ShizukuInputEventInjector(),
-        ServiceLocator.permissionAdapter(service)
+        ServiceLocator.permissionAdapter(service),
+        ServiceLocator.phoneAdapter(service)
     )
 
     fun detectFingerprintMaps(ctx: Context) = DetectFingerprintMapsUseCaseImpl(

@@ -66,12 +66,12 @@ class LegacyFingerprintMapMigrationTest {
 
     @Test
     fun `migrate 0 to 1`() {
-        val testData= MIGRATION_0_1_TEST_DATA.map {
-           parser.parse(it)
+        val testData = MIGRATION_0_1_TEST_DATA.map {
+            parser.parse(it)
         }.toJsonArray()
 
-        val expectedData= MIGRATION_0_1_EXPECTED_DATA.map {
-           parser.parse(it)
+        val expectedData = MIGRATION_0_1_EXPECTED_DATA.map {
+            parser.parse(it)
         }.toJsonArray()
 
         test(testData, expectedData, 0, 1)
@@ -91,7 +91,7 @@ class LegacyFingerprintMapMigrationTest {
     }
 
     private fun test(
-        testData:JsonArray,
+        testData: JsonArray,
         expectedData: JsonArray,
         inputVersion: Int,
         outputVersion: Int

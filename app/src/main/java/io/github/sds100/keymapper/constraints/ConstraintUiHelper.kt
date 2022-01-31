@@ -131,6 +131,9 @@ class ConstraintUiHelper(
         }
         Constraint.DeviceIsLocked -> getString(R.string.constraint_device_is_locked)
         Constraint.DeviceIsUnlocked -> getString(R.string.constraint_device_is_unlocked)
+        Constraint.InPhoneCall -> getString(R.string.constraint_in_phone_call)
+        Constraint.NotInPhoneCall -> getString(R.string.constraint_not_in_phone_call)
+        Constraint.PhoneRinging -> getString(R.string.constraint_phone_ringing)
     }
 
     fun getIcon(constraint: Constraint): IconInfo? = when (constraint) {
@@ -236,6 +239,18 @@ class ConstraintUiHelper(
 
         Constraint.DeviceIsUnlocked -> IconInfo(
             drawable = getDrawable(R.drawable.ic_outline_lock_open_24),
+            tintType = TintType.OnSurface
+        )
+        Constraint.InPhoneCall -> IconInfo(
+            drawable = getDrawable(R.drawable.ic_outline_call_24),
+            tintType = TintType.OnSurface
+        )
+        Constraint.NotInPhoneCall -> IconInfo(
+            drawable = getDrawable(R.drawable.ic_baseline_call_end_24),
+            tintType = TintType.OnSurface
+        )
+        Constraint.PhoneRinging -> IconInfo(
+            drawable = getDrawable(R.drawable.ic_baseline_ring_volume_24),
             tintType = TintType.OnSurface
         )
     }
