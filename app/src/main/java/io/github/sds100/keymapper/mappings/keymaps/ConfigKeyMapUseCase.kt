@@ -62,16 +62,23 @@ class ConfigKeyMapUseCaseImpl(
             }
         }
 
-        val newKeys = trigger.keys.toMutableList().apply {
+        val newKeys = trigger.keys.toMutableList()
 
-            val triggerKey = TriggerKey(
-                keyCode = keyCode,
-                device = device,
-                clickType = clickType
-            )
+        var consumeKeyEvent = true
 
-            add(triggerKey)
+        //Issue #753
+        if (KeyEventUtils.isModifierKey(keyCode)) {
+            consumeKeyEvent = false
         }
+
+        val triggerKey = TriggerKey(
+            keyCode = keyCode,
+            device = device,
+            clickType = clickType,
+            consumeKeyEvent = consumeKeyEvent
+        )
+
+        newKeys.add(triggerKey)
 
         val newMode = when {
             containsKey -> TriggerMode.Sequence

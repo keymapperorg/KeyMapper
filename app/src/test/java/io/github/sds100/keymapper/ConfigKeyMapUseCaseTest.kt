@@ -6,6 +6,7 @@ import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapUseCaseImpl
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapAction
+import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.dataOrNull
@@ -48,6 +49,60 @@ class ConfigKeyMapUseCaseTest {
     fun tearDown() {
         testDispatcher.cleanupTestCoroutines()
     }
+
+    /**
+     * Issue #753. If a modifier key is used as a trigger then it the
+     * option to not override the default action must be chosen so that the modifier
+     * key can still be used normally.
+     */
+    @Test
+    fun `when add modifier key trigger, enable do not remap option`() =
+        coroutineScope.runBlockingTest {
+            val modifierKeys = setOf(
+                KeyEvent.KEYCODE_SHIFT_LEFT,
+                KeyEvent.KEYCODE_SHIFT_RIGHT,
+                KeyEvent.KEYCODE_ALT_LEFT,
+                KeyEvent.KEYCODE_ALT_RIGHT,
+                KeyEvent.KEYCODE_CTRL_LEFT,
+                KeyEvent.KEYCODE_CTRL_RIGHT,
+                KeyEvent.KEYCODE_META_LEFT,
+                KeyEvent.KEYCODE_META_RIGHT,
+                KeyEvent.KEYCODE_SYM,
+                KeyEvent.KEYCODE_NUM,
+                KeyEvent.KEYCODE_FUNCTION
+            )
+
+            for (modifierKeyCode in modifierKeys) {
+                //GIVEN
+                useCase.mapping.value = State.Data(KeyMap())
+
+                //WHEN
+                useCase.addTriggerKey(modifierKeyCode, TriggerKeyDevice.Internal)
+
+                //THEN
+                val trigger = useCase.mapping.value.dataOrNull()!!.trigger
+
+                assertThat(trigger.keys[0].consumeKeyEvent, `is`(false))
+            }
+        }
+
+    /**
+     * Issue #753.
+     */
+    @Test
+    fun `when add non-modifier key trigger, do ont enable do not remap option`() =
+        coroutineScope.runBlockingTest {
+            //GIVEN
+            useCase.mapping.value = State.Data(KeyMap())
+
+            //WHEN
+            useCase.addTriggerKey(KeyEvent.KEYCODE_A, TriggerKeyDevice.Internal)
+
+            //THEN
+            val trigger = useCase.mapping.value.dataOrNull()!!.trigger
+
+            assertThat(trigger.keys[0].consumeKeyEvent, `is`(true))
+        }
 
     /**
      * Issue #852. Add a phone ringing constraint when you add an action
