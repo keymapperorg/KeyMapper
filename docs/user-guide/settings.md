@@ -83,15 +83,12 @@ When a device that you have chosen connects or disconnects the keyboard picker w
 
 This setting needs to be turned on for some features in Key Mapper to work. You **must** grant Key Mapper root permission in your root management app (e.g Magisk, SuperSU) before you turn this on.
 
-## Workaround for Android 11 bug that sets the device id for input events to -1 (2.3.0+, Android 11+)
+## Fix keyboards that are set to US English (2.3.0+, Android 11+)
 
 !!! info
     See the Android 11 bug on Google's issue tracker [here](https://issuetracker.google.com/issues/163120692).
 
-    There is a bug on Android 11 that changes the device id of all input events (e.g pressing buttons, moving joysticks) to -1 when any accessibility services are enabled. This means that apps can't determine which kind of device an input
-    event came from. This breaks keyboards that aren't using an American English keyboard layout because Android uses
-    the device id of a key event to determine what character to type when a key is pressed. If the device id is -1 Android
-    defaults to the American English keyboard layout.
+    There is a bug in Android 11 that turning on an accessibility service makes Android think all external devices are the same internal virtual device. Because it can\'t identify these devices correctly, it doesn\'t know which keyboard layout to use with them so it defaults to US English even if it is a German keyboard for example.
 
 !!! warning
     This feature **will not fix game controllers** because joysticks and triggers send *motion* events and not *key* events.
