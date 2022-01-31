@@ -79,7 +79,7 @@
     <string name="caption_action_type_phone_call">Enter the phone number.</string>
     <string name="caption_action_type_url">Type a URL which you want to be opened. The http://, https:// or www. isn\'t required.</string>
     <string name="caption_no_paired_bt_devices">Can\'t find any paired devices. Is Bluetooth turned on?</string>
-    <string name="caption_create_keymap_shortcut">The \"trigger from other apps\" option will be turned on for the key map that you select if it isn\'t already. If you turn this option off later then any shortcuts or Intents to trigger this key map will not work.</string>
+    <string name="caption_create_keymap_shortcut">The \"Allow other apps to trigger this key map\" option will be turned on for the key map that you select if it isn\'t already. If you turn this option off later then any shortcuts or Intents to trigger this key map will not work.</string>
 
     <string name="switch_enabled">Enabled</string>
     <string name="disabled">Disabled</string>
@@ -705,7 +705,7 @@
     <string name="flag_hold_down_until_pressed_again">Hold down until pressed again</string>
     <string name="flag_dont_override_default_action">Do not override default action</string>
     <string name="flag_hold_down_until_swiped_again">Hold down until swiped again</string>
-    <string name="flag_trigger_from_other_apps">Trigger from other apps</string>
+    <string name="flag_trigger_from_other_apps">Allow other apps to trigger this key map</string>
     <!--flags-->
 
     <!-- Showcase -->
