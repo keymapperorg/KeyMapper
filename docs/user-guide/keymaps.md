@@ -113,7 +113,7 @@ ___
 
 There are options for a key map under the 'Options' or 'Constraints and more' tab. Here are explanations of each option.
 
-### Trigger from other apps (2.3.0+)
+### Allow other apps to trigger this key map (2.3.0+)
 
 ![](../images/hg-trigger-from-other-apps.png)
 
