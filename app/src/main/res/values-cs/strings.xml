@@ -511,9 +511,6 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <string name="summary_pref_show_device_descriptors">Toto je užitečné pro rozlišení mezi zařízeními, která mají stejný název.</string>
     <string name="title_pref_reroute_keyevents_link">Řešení chyby Android 11</string>
     <string name="summary_pref_reroute_keyevents_link">Tím se opraví klávesnice, které nefungují, když jsou povoleny nějaké služby usnadnění.</string>
-    <string name="title_pref_devices_to_reroute_keyevents">Řešení pro chybu v Androidu 11, která nastaví id zařízení pro vstupní události na -1</string>
-    <string name="summary_pref_devices_to_reroute_keyevents">Řešení pro chybu v Androidu 11, která nastaví id zařízení pro vstupní události na -1</string>
-    <string name="summary_pref_devices_to_reroute_keyevents_choose_devices">Vyberte zařízení, která klíčová mapa by měla zachytit všechny klíčové události a poté přesměrovat zvolenou klávesovou mapu. MUSÍTE používat klávesovou mapu GUI nebo základní vstupní metodu klávesové mapy, aby to fungovalo. Toto je částečné řešení pro https://issuetracker.google.com/issues/163120692. Toto nebude fungovat s herními ovladači.</string>
     <string name="title_pref_devices_to_reroute_keyevents_choose_devices">4. Zvolte zařízení</string>
     <string name="title_pref_devices_to_reroute_keyevents_install_gui_keyboard">1. Nainstalujte klávesu Mapper GUI klíče (volitelné)</string>
     <string name="title_pref_devices_to_reroute_keyevents_install_leanback_keyboard">1. Nainstalujte klávesovou mapu Leanback (volitelné)</string>

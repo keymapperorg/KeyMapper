@@ -520,9 +520,6 @@
     <string name="summary_pref_show_device_descriptors">Jest to przydatne do rozróżnienia między urządzeniami o tej samej nazwie.</string>
     <string name="title_pref_reroute_keyevents_link">Obejście błędu Androida 11</string>
     <string name="summary_pref_reroute_keyevents_link">To naprawia klawiatury, które nie działają po włączeniu jakiejkolwiek usługi ułatwień dostępu.</string>
-    <string name="title_pref_devices_to_reroute_keyevents">Obejście błędu Androida 11, który ustawia identyfikator urządzenia dla zdarzeń wejściowych na -1</string>
-    <string name="summary_pref_devices_to_reroute_keyevents">Obejście błędu Androida 11, który ustawia identyfikator urządzenia dla zdarzeń wejściowych na -1</string>
-    <string name="summary_pref_devices_to_reroute_keyevents_choose_devices">Wybierz urządzenia, z których Key Mapper powinien przechwycić wszystkie zdarzenia klawiszy, a następnie przekierować przez wybraną klawiaturę Key Mapper. Aby to zadziałało, MUSISZ używać GUI klawiatury Key Mapper lub Podstawowej metody wprowadzania Key Mapper. Jest to częściowe obejście błędu https://issuetracker.google.com/issues/163120692. To NIE będzie działać z kontrolerami gier.</string>
     <string name="title_pref_devices_to_reroute_keyevents_choose_devices">4. Wybierz urządzenia</string>
     <string name="title_pref_devices_to_reroute_keyevents_install_gui_keyboard">1. Zainstaluj GUI klawiaturę Key Mapper (opcjonalnie)</string>
     <string name="title_pref_devices_to_reroute_keyevents_install_leanback_keyboard">1. Zainstaluj klawiaturę Key Mapper Leanback (opcjonalnie)</string>
