@@ -397,9 +397,14 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
                 key = Keys.rerouteKeyEvents.name
                 setDefaultValue(false)
 
-                setTitle(R.string.title_pref_devices_to_reroute_keyevents)
-                setSummary(R.string.summary_pref_devices_to_reroute_keyevents)
+                setTitle(R.string.title_pref_reroute_keyevents)
                 isSingleLineTitle = false
+
+                category.addPreference(this)
+            }
+
+            Preference(requireContext()).apply {
+                setSummary(R.string.summary_pref_reroute_keyevents)
 
                 category.addPreference(this)
             }
@@ -498,11 +503,9 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
             viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
                 viewModel.rerouteKeyEvents.collectLatest { enabled ->
-                    for (i in 0 until category.preferenceCount) {
+                    for (i in 2 until category.preferenceCount) {
                         category.getPreference(i).apply {
-                            if (this.key != Keys.rerouteKeyEvents.name) {
-                                this.isVisible = enabled
-                            }
+                            this.isVisible = enabled
                         }
                     }
                 }
