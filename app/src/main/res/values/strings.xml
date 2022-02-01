@@ -952,6 +952,7 @@
     <string name="error_system_feature_bluetooth_unsupported">Your device doesn\'t support Bluetooth.</string>
     <string name="error_system_feature_device_admin_unsupported">Your device doesn\'t support device policy enforcement.</string>
     <string name="error_system_feature_camera_flash_unsupported">Your device doesn\'t have a camera flash.</string>
+    <string name="error_system_feature_telephony_unsupported">Your device doesn\'t have any telephony features.</string>
     <string name="error_flag_not_found">Flag "%s" not found!</string>
     <string name="error_cant_find_ime_settings">Can\'t find the keyboard settings page!</string>
     <string name="error_need_to_enable_device_admin">Key Mapper needs to be a device administrator!</string>

@@ -33,6 +33,7 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider) = when (this) {
         PackageManager.FEATURE_BLUETOOTH -> resourceProvider.getString(R.string.error_system_feature_bluetooth_unsupported)
         PackageManager.FEATURE_DEVICE_ADMIN -> resourceProvider.getString(R.string.error_system_feature_device_admin_unsupported)
         PackageManager.FEATURE_CAMERA_FLASH -> resourceProvider.getString(R.string.error_system_feature_camera_flash_unsupported)
+        PackageManager.FEATURE_TELEPHONY -> resourceProvider.getString(R.string.error_system_feature_telephony_unsupported)
         else -> throw Exception("Don't know how to get error message for this system feature ${this.feature}")
     }
     is Error.ExtraNotFound -> resourceProvider.getString(R.string.error_extra_not_found, extraId)
