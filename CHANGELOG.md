@@ -1,3 +1,14 @@
+## [2.3.3](https://github.com/sds100/KeyMapper/releases/tag/v2.3.3)
+
+#### 06 February 2022
+
+- Update translations
+
+### Bug fixes
+
+- [#893](https://github.com/sds100/KeyMapper/issues/893) Creating intent actions with a boolean extra didn't work.
+- [#885](https://github.com/keymapperorg/KeyMapper/issues/885) F-Droid build failed.
+
 ## [2.3.2](https://github.com/sds100/KeyMapper/releases/tag/v2.3.2)
 
 #### 31 January 2022
@@ -245,8 +256,7 @@ See the 2.3.0 Beta releases below.
 This sums up all the changes for 2.2
 
 ### Added
-- Remap fingerprint gestures! #378
-  Android 8.0+ and only on devices which support them. Even devices with the setting to swipe down for notifications might not support this! The dev can't do anything about this.
+- Remap fingerprint gestures! #378 Android 8.0+ and only on devices which support them. Even devices with the setting to swipe down for notifications might not support this! The dev can't do anything about this.
 
 - Widget/shortcut to launch actions. #459
 - Setting to show the first 5 digits of input devices so devices with the same name can be differentiated in Key Mapper lists. #470
@@ -305,8 +315,7 @@ This sums up all the changes for 2.2
 #### 29 Jan 2021
 
 ### Added
-- Remap fingerprint gestures! #378
-  Android 8.0+ and only on devices which support them. Even devices with the setting to swipe down for notifications might not support this! The dev can't do anything about this.
+- Remap fingerprint gestures! #378 Android 8.0+ and only on devices which support them. Even devices with the setting to swipe down for notifications might not support this! The dev can't do anything about this.
 - Show the fingerprint gesture intro slide when updating to 2.2 #545
 - Show a silent notification, which advertises the remapping fingerprint gesture feature, when the user updates to 2.2 #546
 - Trigger key maps from an Intent #490
@@ -350,8 +359,7 @@ This sums up all the changes for 2.2
 #### 30 Dec 2020
 
 ### Added
-- Remap fingerprint gestures! #378
-  Android 8.0+ and only on devices which support them. Even devices with the setting to swipe down for notifications might not support this! The dev can't do anything about this.
+- Remap fingerprint gestures! #378 Android 8.0+ and only on devices which support them. Even devices with the setting to swipe down for notifications might not support this! The dev can't do anything about this.
 
 - Widget/shortcut to launch actions. #459
 - Setting to show the first 5 digits of input devices so devices with the same name can be differentiated in Key Mapper lists. #470
@@ -943,7 +951,7 @@ Changes from 1.1.0 Beta 8:
 - Optional flags for each keymap so it can only be triggered on a long press and whether to show the volume dialog for volume related actions.
 - Ability to enable/disable specific/all keymaps.
 
-  ####  Added these actions
+  ####   Added these actions
   - Open App
   - Open App shortcut
   - A keycode
