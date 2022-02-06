@@ -34,5 +34,5 @@ Není nutné udělovat všechna oprávnění pro fungování aplikace. Aplikace 
 
  Na některých zařízeních zakáže povolení služby usnadnění přístupu "rozšířené šifrování dat".
 
-Discord: https://discord.gg/Suj6nyw
-Web site: https://docs.keymapper.club
+Discord: www.keymapper.club
+Website: docs.keymapper.club
