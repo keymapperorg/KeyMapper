@@ -26,7 +26,7 @@ accessibility service.
 
 This is a bug in Android 11 and should be fixed in Android 12. There is a setting in Key Mapper
 2.3.0+ that helps you work around this issue. Read
-more [here](https://sds100.github.io/KeyMapper/redirects/android-11-device-id-bug-work-around).
+more [here](https://keymapperorg.github.io/KeyMapper/redirects/android-11-device-id-bug-work-around).
 
 ## Key maps for an external device randomly stop working after a reboot
 
