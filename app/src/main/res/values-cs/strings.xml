@@ -184,6 +184,8 @@
     <string name="toast_root_features_turned_on">Root funkce jsou nyní povoleny</string>
     <string name="toast_failed_to_choose_sound_file">Výběr zvukového souboru se nezdařil! Zkontrolujte záznam.</string>
     <string name="toast_no_sound_files">Neuložili jste žádné zvukové soubory!</string>
+    <string name="toast_granted_itself_write_secure_settings_with_shizuku">Key Mapper použil Shizuku, aby si udělil WRITE_SECURE_SETTINGS povolení</string>
+    <string name="toast_granted_itself_write_secure_settings_with_root">Key Mapper použil Root k udělení WRITE_SECURE_SETTINGS oprávnění</string>
     <!--  Toasts  -->
     <!-- Extra labels -->
     <string name="extra_label_sequence_trigger_timeout">Časový limit spouštění sekvence (ms)</string>
@@ -245,6 +247,10 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <string name="constraint_wifi_disconnected_description">Odpojeno od %s WiFi</string>
     <string name="constraint_wifi_connected_any_description">Připojeno k libovolnému WiFi</string>
     <string name="constraint_wifi_disconnected_any_description">Odpojeno od žádného WiFi</string>
+    <string name="constraint_ime_chosen">Je zvolena metoda zadávání</string>
+    <string name="constraint_ime_chosen_description">Je vybráno %s</string>
+    <string name="constraint_ime_not_chosen">Metoda zadávání není vybrána</string>
+    <string name="constraint_ime_not_chosen_description">%s není vybráno</string>
     <string name="orientation_0">Na výšku (0°)</string>
     <string name="orientation_90">Na šířku (90°)</string>
     <string name="orientation_180">Na výšku (180°)</string>
@@ -400,6 +406,8 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <string name="dialog_button_read_dont_kill_my_app_yes">Ano</string>
     <string name="dialog_button_read_dont_kill_my_app_no">Ne</string>
     <string name="dialog_title_failed_to_create_bug_report">Nepodařilo se vytvořit hlášení o chybě</string>
+    <string name="dialog_title_request_shizuku_permission">Požádat o povolení Shizuku</string>
+    <string name="dialog_message_request_shizuku_permission">Vzhledem k tomu, že používáte Shizuku, důrazně doporučujeme udělit toto oprávnění, protože některé funkce v Mapovači klíčů lze provést, aniž byste museli cokoli konfigurovat (např. zadávání klíčových kódů bez použití klávesnice Key Mapper).</string>
     <string name="pos_yes">Ano</string>
     <string name="pos_done">Hotovo</string>
     <string name="pos_opt_in">Přihlásit se</string>
@@ -621,6 +629,15 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <string name="showcase_fingerprint_gesture_support_button">Povolit</string>
     <string name="showcase_setup_chosen_devices_again_title">Některá nastavení musíte nastavit znovu</string>
     <string name="showcase_setup_chosen_devices_again_message">Vypadá to, že jste použili nastavení k automatické změně klávesnice nebo zobrazení výběru vstupní metody při připojení a odpojení zařízení Bluetooth. Klávesová mapa nyní umožňuje používat libovolné vstupní zařízení, nejen zařízení Bluetooth. Neexistuje způsob, jak migrovat stará nastavení tak, že nová funkce bude fungovat, takže budete muset znovu vybrat zařízení.</string>
+    <string name="showcase_grant_shizuku_permission_denied_title">Udělení povolení Shizuku</string>
+    <string name="showcase_grant_shizuku_permission_denied_message">Vypadá to, že máte nainstalovaný Shizuku. Doporučuje se udělit Key Mapper oprávnění k použití Shizuku, aby Key Mapper mohl dělat více věcí bez vstupu uživatele. Například vstupní tlačítko stiskne, aniž byste museli používat klávesnici \"Key Mapper\". Klepnutím na \"další informace\" si můžete přečíst všechny výhody. Klepnutím na \"grant\" udělíte oprávnění.</string>
+    <string name="showcase_grant_shizuku_permission_granted_title">Povolení Shizuku uděleno!</string>
+    <string name="showcase_grant_shizuku_permission_granted_message">Úspěšně jste udělili key mapper Shizuku oprávnění!</string>
+    <string name="showcase_more_shizuku_info">Více</string>
+    <string name="showcase_request_shizuku_permission">Udělit</string>
+    <string name="showcase_shizuku_not_started_title">Shizuku není spuštěn</string>
+    <string name="showcase_shizuku_not_started_message">Shizuku musí být spuštěn před udělením oprávnění Key Mapper k jeho použití. Klepnutím na \"Spustit Shizuku\" otevřete aplikaci Shizuku, abyste ji mohli spustit.</string>
+    <string name="showcase_shizuku_launch_shizuku_app">Spusťte Shizuku</string>
     <!-- Showcase -->
     <!-- system action options -->
     <string name="stream_accessibility">Přístupnost</string>
@@ -780,6 +797,7 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <string name="error_no_space_left_at_target">Na cíli není žádné místo! %s</string>
     <string name="error_shizuku_permission_denied">Oprávnění Shizuku je odepřeno!</string>
     <string name="error_shizuku_not_started">Šizuku není spuštěna!</string>
+    <string name="error_no_file_name">Tento soubor nemá žádné jméno!</string>
     <string name="error_access_fine_location_permission_denied">Bylo odepřeno oprávnění ke čtení pěkné polohy!</string>
     <!-- Error messages -->
     <!-- action labels -->
@@ -983,5 +1001,8 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <string name="about_header_our_team">Náš tým</string>
     <string name="about_team_sds100_role">Vývojář</string>
     <string name="about_team_jambl3r_role">Moderátor/podpora komunity</string>
+    <string name="about_team_gl513_role">Moderátor/podpora komunity</string>
+    <string name="about_team_kekero_role">Překladač (polština)</string>
+    <string name="about_team_trollserver_role">Překladatel (česky)</string>
     <!--  About  -->
 </resources>
