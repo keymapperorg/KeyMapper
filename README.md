@@ -11,6 +11,7 @@ Key Mapper is a free and open source Android app that can remap your buttons and
 <a href="https://f-droid.org/packages/io.github.sds100.keymapper/" rel="nofollow"><img alt="Get it on F-Droid" height="75" src="https://user-images.githubusercontent.com/53379023/142497343-0e635fc5-056b-46ff-8d8e-d607ed95527e.png" data-canonical-src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" style="max-width: 100%;"></a>
   </br>
 <a href='https://ko-fi.com/M4M41032E' target='_blank'><img height='30' style='border:0px;height:30x;' src='https://cdn.ko-fi.com/cdn/kofi1.png?v=2' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
+<noscript><a href="https://liberapay.com/sds100/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"></a></noscript>
 </p>
 
 [![Discord](https://img.shields.io/discord/717499872219103263)](https://discord.gg/Suj6nyw)
