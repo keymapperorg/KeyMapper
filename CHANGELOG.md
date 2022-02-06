@@ -8,6 +8,7 @@
 
 - [#893](https://github.com/sds100/KeyMapper/issues/893) Creating intent actions with a boolean extra didn't work.
 - [#885](https://github.com/keymapperorg/KeyMapper/issues/885) F-Droid build failed.
+- [#894](https://github.com/keymapperorg/KeyMapper/issues/894) Links to documentation website broke.
 
 ## [2.3.2](https://github.com/sds100/KeyMapper/releases/tag/v2.3.2)
 
