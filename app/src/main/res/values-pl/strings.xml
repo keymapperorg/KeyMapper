@@ -68,7 +68,7 @@
     <string name="caption_action_type_phone_call">Wprowadź numer telefonu.</string>
     <string name="caption_action_type_url">Wpisz adres URL, który chcesz otworzyć. http://, https:// lub www. nie jest wymagane.</string>
     <string name="caption_no_paired_bt_devices">Nie można znaleźć sparowanych urządzeń. Czy Bluetooth jest włączony?</string>
-    <string name="caption_create_keymap_shortcut">Opcja \"wyzwalacz z innych aplikacji\" zostanie włączona dla wybranej mapy klawiszy, jeśli jeszcze nie jest. Jeśli później wyłączysz tę opcję, żadne skróty ani Intencje uruchamiające tę mapę klawiszy nie będą działać.</string>
+    <string name="caption_create_keymap_shortcut">Opcja \"Zezwalaj innym aplikacjom na wyzwalanie tej mapy klawiszy\" zostanie włączona dla wybranej mapy klawiszy, jeśli była wyłączona. Jeśli później wyłączysz tę opcję, skróty i intencje uruchamiające tę mapę klawiszy nie będą działać.</string>
     <string name="switch_enabled">Włączone</string>
     <string name="disabled">Wyłączone</string>
     <string name="reset">Zresetuj</string>
@@ -84,6 +84,8 @@
     <string name="trigger_error_dnd_access_denied_short">Ten wyzwalacz nie będzie działał zgodnie z oczekiwaniami w trybie Nie przeszkadzać!</string>
     <string name="trigger_error_screen_off_root_permission_denied">Opcja wyzwalania, gdy ekran jest wyłączony, wymaga uprawnień roota do działania!</string>
     <string name="trigger_error_screen_off_root_permission_denied_short">Opcja wyzwalania, gdy ekran jest wyłączony, nie będzie działać!</string>
+    <string name="trigger_error_cant_detect_in_phone_call">Ten wyzwalacz nie zadziała, gdy telefon dzwoni lub w trakcie rozmowy telefonicznej!</string>
+    <string name="trigger_error_cant_detect_in_phone_call_explanation">Android nie pozwala usługom ułatwień dostępu wykrywać naciśnięcia przycisków głośności, gdy telefon dzwoni lub trwa rozmowa telefoniczna, ale umożliwia wykrywanie ich przez metody wprowadzania. Dlatego należy użyć jednej z klawiatur Key Mapper, jeśli chcesz, aby ten wyzwalacz działał w takich sytuacjach.</string>
     <string name="home_error_is_battery_optimised">Twoje działania mogą nagle przestać działać!</string>
     <string name="home_error_key_maps_paused">Twoje działania są wstrzymane!</string>
     <string name="home_error_key_maps_paused_button">Wznów</string>
@@ -253,6 +255,9 @@
     <string name="constraint_ime_not_chosen_description">%s nie jest wybrana</string>
     <string name="constraint_device_is_locked">Urządzenie jest zablokowane</string>
     <string name="constraint_device_is_unlocked">Urządzenie jest odblokowane</string>
+    <string name="constraint_in_phone_call">W rozmowie telefonicznej</string>
+    <string name="constraint_not_in_phone_call">Nie w rozmowie telefonicznej</string>
+    <string name="constraint_phone_ringing">Dzwoni telefon</string>
     <string name="orientation_0">Pionowo (0°)</string>
     <string name="orientation_90">Poziomo (90°)</string>
     <string name="orientation_180">Pionowo (180°)</string>
@@ -411,6 +416,7 @@
     <string name="dialog_title_failed_to_create_bug_report">Nie udało się utworzyć zgłoszenie o błędzie</string>
     <string name="dialog_title_request_shizuku_permission">Poproś o uprawnienie Shizuku</string>
     <string name="dialog_message_request_shizuku_permission">Ponieważ używasz Shizuku, zdecydowanie zaleca się udzielenie tego uprawnienia, ponieważ niektóre funkcje Key Mappera można wykonać bez konieczności konfigurowania czegokolwiek (np. wprowadzanie kodów klawiszy bez użycia klawiatury Key Mapper).</string>
+    <string name="dialog_title_home_fix_error">Napraw błąd</string>
     <string name="pos_yes">Tak</string>
     <string name="pos_done">Gotowe</string>
     <string name="pos_opt_in">Zaakceptuj</string>
@@ -443,6 +449,7 @@
     <string name="dialog_button_install_gui_keyboard">GUI klawiatura Key Mapper</string>
     <string name="dialog_button_install_leanback_keyboard">Klawiatura Key Mapper Leanback</string>
     <string name="dialog_button_install_nothing">Nic nie rób</string>
+    <string name="dialog_button_fix">Napraw</string>
     <string name="snackbar_cancel">Anuluj</string>
     <string name="snackbar_fix">Napraw</string>
     <!-- Dialog stuff -->
@@ -521,11 +528,10 @@
     <string name="summary_pref_hide_home_screen_alerts">Ukryj alerty u góry ekranu głównego.</string>
     <string name="title_pref_show_device_descriptors">Pokaż pierwsze 5 znaków identyfikatora urządzenia dla wyzwalaczy specyficznych dla urządzenia</string>
     <string name="summary_pref_show_device_descriptors">Jest to przydatne do rozróżnienia między urządzeniami o tej samej nazwie.</string>
-    <string name="title_pref_reroute_keyevents">Obejście błędu Androida 11</string>
-    <string name="summary_pref_reroute_keyevents">To naprawia klawiatury, które nie działają po włączeniu jakiejkolwiek usługi ułatwień dostępu.</string>
-    <string name="title_pref_devices_to_reroute_keyevents">Obejście błędu Androida 11, który ustawia identyfikator urządzenia dla zdarzeń wejściowych na -1</string>
-    <string name="summary_pref_devices_to_reroute_keyevents">Obejście błędu Androida 11, który ustawia identyfikator urządzenia dla zdarzeń wejściowych na -1</string>
-    <string name="summary_pref_devices_to_reroute_keyevents_choose_devices">Wybierz urządzenia, z których Key Mapper powinien przechwycić wszystkie zdarzenia klawiszy, a następnie przekierować przez wybraną klawiaturę Key Mapper. Aby to zadziałało, MUSISZ używać GUI klawiatury Key Mapper lub Podstawowej metody wprowadzania Key Mapper. Jest to częściowe obejście błędu https://issuetracker.google.com/issues/163120692. To NIE będzie działać z kontrolerami gier.</string>
+    <string name="title_pref_reroute_keyevents_link">Napraw klawiatury, które są ustawione na układ angielski (US)</string>
+    <string name="summary_pref_reroute_keyevents_link">To naprawia klawiatury, które nie mają prawidłowego układu klawiatury, gdy usługa ułatwień dostępu jest włączona. Kliknij, aby dowiedzieć się więcej i skonfigurować.</string>
+    <string name="title_pref_reroute_keyevents">Napraw klawiatury, które są ustawione na układ angielski (US)</string>
+    <string name="summary_pref_reroute_keyevents">W systemie Android 11 występuje błąd polegający na tym, że wszystkie urządzenia zewnętrzne, podczas korzystania z usługi ułatwień dostępu, stają się tym samym wewnętrznym urządzeniem wirtualnym. Ponieważ system Android nie może poprawnie zidentyfikować tych urządzeń, nie może określić, którego układu klawiatury należy z nimi używać, więc domyślnie jest to angielski (US), nawet jeśli jest to na przykład klawiatura niemiecka. Możesz użyć Key Mapper, aby obejść ten problem, wykonując poniższe czynności.</string>
     <string name="title_pref_devices_to_reroute_keyevents_choose_devices">4. Wybierz urządzenia</string>
     <string name="title_pref_devices_to_reroute_keyevents_install_gui_keyboard">1. Zainstaluj GUI klawiaturę Key Mapper (opcjonalnie)</string>
     <string name="title_pref_devices_to_reroute_keyevents_install_leanback_keyboard">1. Zainstaluj klawiaturę Key Mapper Leanback (opcjonalnie)</string>
@@ -599,9 +605,9 @@
     <string name="flag_repeat_actions_pressed_again">Powtarzaj aż do ponownego naciśnięcia</string>
     <string name="flag_hold_down">Przytrzymaj</string>
     <string name="flag_hold_down_until_pressed_again">Przytrzymaj do ponownego naciśnięcia</string>
-    <string name="flag_dont_override_default_action">Nie nadpisuj domyślnej czynności</string>
+    <string name="flag_dont_override_default_action">Nie zastępuj domyślnej funkcji</string>
     <string name="flag_hold_down_until_swiped_again">Przytrzymaj do ponownego przeciągnięcia</string>
-    <string name="flag_trigger_from_other_apps">Wyzwalaj z innych aplikacji</string>
+    <string name="flag_trigger_from_other_apps">Zezwalaj innym aplikacjom na wyzwalanie tej mapy klawiszy</string>
     <!--flags-->
     <!-- Showcase -->
     <string name="showcase_accessibility_service_title_enabled">Usługa ułatwień dostępu jest włączona :)</string>
@@ -714,6 +720,7 @@
     <string name="error_system_feature_bluetooth_unsupported">Twoje urządzenie nie posiada obsługi Bluetooth.</string>
     <string name="error_system_feature_device_admin_unsupported">Twoje urządzenie nie obsługuje egzekwowania zasad.</string>
     <string name="error_system_feature_camera_flash_unsupported">Twoje urządzenie nie ma lampy błyskowej aparatu.</string>
+    <string name="error_system_feature_telephony_unsupported">Twoje urządzenie nie obsługuje żadnych funkcji telefonicznych.</string>
     <string name="error_flag_not_found">Nie znaleziono flagi \"%s\"!</string>
     <string name="error_cant_find_ime_settings">Nie można wykryć strony ustawień klawiatury!</string>
     <string name="error_need_to_enable_device_admin">Key Mapper potrzebuje uprawnień administratora urządzenia!</string>
@@ -806,6 +813,7 @@
     <string name="error_shizuku_not_started">Aplikacja Shizuku nie jest uruchomiona!</string>
     <string name="error_no_file_name">Ten plik nie ma nazwy!</string>
     <string name="error_access_fine_location_permission_denied">Odmówiono dostępu do dokładnej lokalizacji!</string>
+    <string name="error_answer_end_phone_call">Odmowa uprawnienia na odbieranie i kończenie połączeń telefonicznych!</string>
     <!-- Error messages -->
     <!-- action labels -->
     <string name="action_toggle_wifi">Włącz/wyłącz Wi-Fi</string>
@@ -929,6 +937,8 @@
     <string name="action_open_url">Otwórz adres URL</string>
     <string name="action_send_intent">Wyślij Intencję</string>
     <string name="action_phone_call">Rozpocznij rozmowę telefoniczną</string>
+    <string name="action_answer_call">Odbierz połączenie telefoniczne</string>
+    <string name="action_end_call">Zakończ połączenie telefoniczne</string>
     <string name="action_play_sound">Odtwórz dźwięk</string>
     <string name="action_dismiss_most_recent_notification">Odrzuć ostatnie powiadomienie</string>
     <string name="action_dismiss_all_notifications">Odrzuć wszystkie powiadomienia</string>
