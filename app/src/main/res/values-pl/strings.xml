@@ -63,7 +63,7 @@
     <string name="caption_action_type_phone_call">Wprowadź numer telefonu.</string>
     <string name="caption_action_type_url">Wpisz adres URL, który chcesz otworzyć. http://, https:// lub www. nie jest wymagane.</string>
     <string name="caption_no_paired_bt_devices">Nie można znaleźć sparowanych urządzeń. Czy Bluetooth jest włączony?</string>
-    <string name="caption_create_keymap_shortcut">Opcja \"wyzwalacz z innych aplikacji\" zostanie włączona dla wybranej mapy klawiszy, jeśli jeszcze nie jest. Jeśli później wyłączysz tę opcję, żadne skróty ani Intencje uruchamiające tę mapę klawiszy nie będą działać.</string>
+    <string name="caption_create_keymap_shortcut">Opcja \"Zezwalaj innym aplikacjom na wyzwalanie tej mapy klawiszy\" zostanie włączona dla wybranej mapy klawiszy, jeśli była wyłączona. Jeśli później wyłączysz tę opcję, skróty i intencje uruchamiające tę mapę klawiszy nie będą działać.</string>
     <string name="switch_enabled">Włączone</string>
     <string name="disabled">Wyłączone</string>
     <string name="reset">Zresetuj</string>
@@ -452,8 +452,10 @@
     <string name="summary_pref_hide_home_screen_alerts">Ukryj alerty u góry ekranu głównego.</string>
     <string name="title_pref_show_device_descriptors">Pokaż pierwsze 5 znaków identyfikatora urządzenia dla wyzwalaczy specyficznych dla urządzenia</string>
     <string name="summary_pref_show_device_descriptors">Jest to przydatne do rozróżnienia między urządzeniami o tej samej nazwie.</string>
-    <string name="title_pref_devices_to_reroute_keyevents">Obejście błędu Androida 11, który ustawia identyfikator urządzenia dla zdarzeń wejściowych na -1</string>
-    <string name="summary_pref_devices_to_reroute_keyevents">Obejście błędu Androida 11, który ustawia identyfikator urządzenia dla zdarzeń wejściowych na -1</string>
+    <string name="title_pref_reroute_keyevents_link">Napraw klawiatury, które są ustawione na układ angielski (US)</string>
+    <string name="summary_pref_reroute_keyevents_link">To naprawia klawiatury, które nie mają prawidłowego układu klawiatury, gdy usługa ułatwień dostępu jest włączona. Kliknij, aby dowiedzieć się więcej i skonfigurować.</string>
+    <string name="title_pref_reroute_keyevents">Napraw klawiatury, które są ustawione na układ angielski (US)</string>
+    <string name="summary_pref_reroute_keyevents">W systemie Android 11 występuje błąd polegający na tym, że wszystkie urządzenia zewnętrzne, podczas korzystania z usługi ułatwień dostępu, stają się tym samym wewnętrznym urządzeniem wirtualnym. Ponieważ system Android nie może poprawnie zidentyfikować tych urządzeń, nie może określić, którego układu klawiatury należy z nimi używać, więc domyślnie jest to angielski (US), nawet jeśli jest to na przykład klawiatura niemiecka. Możesz użyć Key Mapper, aby obejść ten problem, wykonując poniższe czynności.</string>
     <string name="title_pref_devices_to_reroute_keyevents_choose_devices">4. Wybierz urządzenia</string>
     <string name="title_pref_devices_to_reroute_keyevents_install_gui_keyboard">1. Zainstaluj GUI klawiaturę Key Mapper (opcjonalnie)</string>
     <string name="title_pref_devices_to_reroute_keyevents_install_leanback_keyboard">1. Zainstaluj klawiaturę Key Mapper Leanback (opcjonalnie)</string>
@@ -526,9 +528,9 @@
     <string name="flag_repeat_actions_pressed_again">Powtarzaj aż do ponownego naciśnięcia</string>
     <string name="flag_hold_down">Przytrzymaj</string>
     <string name="flag_hold_down_until_pressed_again">Przytrzymaj do ponownego naciśnięcia</string>
-    <string name="flag_dont_override_default_action">Nie nadpisuj domyślnej czynności</string>
+    <string name="flag_dont_override_default_action">Nie zastępuj domyślnej funkcji</string>
     <string name="flag_hold_down_until_swiped_again">Przytrzymaj do ponownego przeciągnięcia</string>
-    <string name="flag_trigger_from_other_apps">Wyzwalaj z innych aplikacji</string>
+    <string name="flag_trigger_from_other_apps">Zezwalaj innym aplikacjom na wyzwalanie tej mapy klawiszy</string>
     <!--flags-->
     <!-- Showcase -->
     <string name="showcase_accessibility_service_title_enabled">Usługa ułatwień dostępu jest włączona :)</string>
