@@ -122,7 +122,7 @@ Fastlane is used to partially automate the releasing process. Follow the [guide]
 
 #### Production releases
 
-1. Check that all translations are >90% complete in CrowdIn.
+1. Check that all translations are merged.
 2. Credit the translators in the About screen in the app and in the index.md on the documentation website.
 3. Manually edit CHANGELOG.md with the *all* changes.
 4. Open the KeyMapper folder in a terminal and run `fastlane prod`. This will release the production build to the open-testing track on Google Play. Once it is approved by Google Play you must promote the release from open testing to the production track in Google Play.
@@ -133,7 +133,10 @@ Fastlane is used to partially automate the releasing process. Follow the [guide]
 Follow Google's Kotlin style guide. [https://developer.android.com/kotlin/style-guide](https://developer.android.com/kotlin/style-guide)
 
 ## Translating 🌍
-You can translate this project on the [CrowdIn page](https://crowdin.com/project/key-mapper). Translations will be merged into production once everything has been translated. If your language isn't available on the CrowdIn page then contact the developer so we can add it. Our contact details are in the footer of every page on this site.
+
+You can translate this project on the [CrowdIn page](https://crowdin.com/project/key-mapper). Translations will be
+merged into production once they are >50% translated. If your language isn't available on the CrowdIn page then contact
+the developer so we can add it. Our contact details are in the footer of every page on this site.
 
 We really appreciate translators so thank you! 🙂
 
