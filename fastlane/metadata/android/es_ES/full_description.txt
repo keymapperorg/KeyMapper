@@ -34,5 +34,5 @@ No tienes que conceder todos los permisos para que la aplicación funcione. La a
 
  En algunos dispositivos, al activar el servicio de accesibilidad se desactiva el "cifrado de datos mejorado".
 
-Discord: https://discord.gg/Suj6nyw
-Sitio web: https://docs.keymapper.club
+Discord: www.keymapper.club
+Sitio web: docs.keymapper.club
