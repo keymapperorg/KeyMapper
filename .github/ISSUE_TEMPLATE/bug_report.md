@@ -22,7 +22,7 @@ A clear and concise description of what the bug is.
 **To Reproduce**
 Steps to reproduce the behavior:
 
-Upload a backup of your keymaps. [Follow the guide here.](https://sds100.github.io/KeyMapper/user-guide/backup-restore)
+Upload a backup of your keymaps. (Follow the guide here.)[https://keymapperorg.github.io/KeyMapper/user-guide/backup-restore]
 
 **Expected behavior**
 A clear and concise description of what you expected to happen.
