@@ -11,6 +11,10 @@
             type="io.github.sds100.keymapper.system.intents.BoolIntentExtraListItem" />
 
         <variable
+            name="nameTextWatcher"
+            type="android.text.TextWatcher" />
+
+        <variable
             name="onRemoveClick"
             type="View.OnClickListener" />
     </data>
@@ -50,7 +54,8 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:text="@{model.name}"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    app:onTextChanged="@{nameTextWatcher}" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <RadioGroup
