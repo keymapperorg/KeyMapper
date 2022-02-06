@@ -1,3 +1,41 @@
+## [2.3.3](https://github.com/sds100/KeyMapper/releases/tag/v2.3.3)
+
+#### 06 February 2022
+
+- Update translations
+
+### Bug fixes
+
+- [#893](https://github.com/sds100/KeyMapper/issues/893) Creating intent actions with a boolean extra didn't work.
+- [#885](https://github.com/keymapperorg/KeyMapper/issues/885) F-Droid build failed.
+
+## [2.3.2](https://github.com/sds100/KeyMapper/releases/tag/v2.3.2)
+
+#### 31 January 2022
+
+### Changes
+
+- [#828](https://github.com/sds100/KeyMapper/issues/828) Rename the "Android 11 workaround" setting to be more clear
+  what it does.
+- [#859](https://github.com/sds100/KeyMapper/issues/859) Rename the "trigger from other apps" trigger option to be more
+  clear what it does.
+- [#753](https://github.com/sds100/KeyMapper/issues/753) Automatically add the "do not remap" trigger key option when
+  remapping a modifier key. This will make sure the modifier key can still behave like a normal modifier key.
+
+### Added
+
+- [#814](https://github.com/sds100/KeyMapper/issues/814) Show system dialog to remove Key Mapper from battery
+  optimisation so the user doesn't have to dig through their device sittings.
+
+### Bug Fixes
+
+- [#810](https://github.com/sds100/KeyMapper/issues/810) Intent actions didn't work
+- [#789](https://github.com/sds100/KeyMapper/issues/789) Try to fix Key Mapper saying that the accessibility service has
+  crashed even if it hasn't.
+- [#829](https://github.com/sds100/KeyMapper/issues/829) Try to fix Key Mapper being listed as incompatible on Google
+  Play for some devices.
+- [#854](https://github.com/sds100/KeyMapper/issues/854) The toggle airplane mode action didn't work.
+
 ## [2.3.1](https://github.com/sds100/KeyMapper/releases/tag/v2.3.1)
 
 #### 02 October 2021
@@ -216,8 +254,7 @@ See the 2.3.0 Beta releases below.
 This sums up all the changes for 2.2
 
 ### Added
-- Remap fingerprint gestures! #378
-Android 8.0+ and only on devices which support them. Even devices with the setting to swipe down for notifications might not support this! The dev can't do anything about this.
+- Remap fingerprint gestures! #378 Android 8.0+ and only on devices which support them. Even devices with the setting to swipe down for notifications might not support this! The dev can't do anything about this.
 
 - Widget/shortcut to launch actions. #459
 - Setting to show the first 5 digits of input devices so devices with the same name can be differentiated in Key Mapper lists. #470
@@ -276,8 +313,7 @@ Android 8.0+ and only on devices which support them. Even devices with the setti
 #### 29 Jan 2021
 
 ### Added
-- Remap fingerprint gestures! #378
-Android 8.0+ and only on devices which support them. Even devices with the setting to swipe down for notifications might not support this! The dev can't do anything about this.
+- Remap fingerprint gestures! #378 Android 8.0+ and only on devices which support them. Even devices with the setting to swipe down for notifications might not support this! The dev can't do anything about this.
 - Show the fingerprint gesture intro slide when updating to 2.2 #545
 - Show a silent notification, which advertises the remapping fingerprint gesture feature, when the user updates to 2.2 #546
 - Trigger key maps from an Intent #490
@@ -321,8 +357,7 @@ Android 8.0+ and only on devices which support them. Even devices with the setti
 #### 30 Dec 2020
 
 ### Added
-- Remap fingerprint gestures! #378
-Android 8.0+ and only on devices which support them. Even devices with the setting to swipe down for notifications might not support this! The dev can't do anything about this.
+- Remap fingerprint gestures! #378 Android 8.0+ and only on devices which support them. Even devices with the setting to swipe down for notifications might not support this! The dev can't do anything about this.
 
 - Widget/shortcut to launch actions. #459
 - Setting to show the first 5 digits of input devices so devices with the same name can be differentiated in Key Mapper lists. #470
@@ -913,43 +948,9 @@ Changes from 1.1.0 Beta 8:
 - Optional flags for each keymap so it can only be triggered on a long press and whether to show the volume dialog for volume related actions.
 - Ability to enable/disable specific/all keymaps.
 
-   #### Added these actions
-   - Open App
-   - Open App shortcut
-   - A keycode
-   - A key
-   - A block of text
-   
-   - Go back
-   - Go home
-   - Open recents
-   - Open menu
-   
-   - Expand notification drawer
-   - Expand quick settings
-   - Collapse status bar
-   
-   - Toggle/enable/disable WiFi  
-   - Toggle/enable/disable Bluetooth
-   - Toggle/enable/disable mobile data
-   
-   - Toggle Play/pause media
-   - Pause,play media
-   - Next/previous track
-   
-   - Volume up/down
-   - Increase/decrease a specific volume stream
-   - Show the volume dialog
-   - Mute/unmute/toggle mute
-   
-   - Toggle/enable/disable auto-rotate
-   - Force portrait/landscape mode
-   
-   - Toggle/enable/disable auto-brightness
-   - Increase/decrease brightness
-   
-   - Toggle/enable/disable flashlight
-   
-   - Screenshot
-   - Open Google Assistant
-   - Open camera
+  ####   Added these actions
+  - Open App
+  - Open App shortcut
+  - A keycode
+  - A key
+  - A block of text
