@@ -284,29 +284,29 @@
     <string name="url_license" translatable="false">https://github.com/sds100/KeyMapper/blob/master/LICENSE.md</string>
     <string name="url_changelog" translatable="false">https://github.com/sds100/KeyMapper/blob/master/CHANGELOG.md</string>
     <string name="url_credits" translatable="false">https://github.com/sds100/KeyMapper/blob/master/CREDITS.md</string>
-    <string name="url_translate" translatable="false">https://github.com/sds100/KeyMapper/wiki/Translate</string>
+    <string name="url_translate" translatable="false">https://keymapperorg.github.io/KeyMapper/contributing/#translating</string>
     <string name="url_privacy_policy" translatable="false">https://github.com/sds100/KeyMapper/blob/master/PRIVACY_POLICY.md</string>
     <string name="url_xda_thread" translatable="false">https://forum.xda-developers.com/android/apps-games/app-keyboard-button-mapper-t3914005</string>
     <string name="url_discord_server_invite" translatable="false">https://discord.gg/Suj6nyw</string>
     <string name="url_fdroid_key_mapper" translatable="false">https://f-droid.org/en/packages/io.github.sds100.keymapper/</string>
     <string name="url_github_releases_key_mapper" translatable="false">https://github.com/sds100/KeyMapper/releases</string>
     <string name="url_youtube_channel" translatable="false">https://www.youtube.com/channel/UC87daDTKj8hpQQolhB81mYA</string>
-    <string name="url_trigger_by_intent_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/trigger-by-intent</string>
-    <string name="url_trigger_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/trigger</string>
-    <string name="url_trigger_options_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/trigger-options</string>
-    <string name="url_action_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/action</string>
-    <string name="url_constraints_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/constraints</string>
-    <string name="url_fingerprint_map_options_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/fingerprint-map-options</string>
-    <string name="url_quick_start_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/quick-start</string>
-    <string name="url_faq" translatable="false">https://sds100.github.io/KeyMapper/redirects/faq</string>
-    <string name="url_grant_write_secure_settings_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/grant-write-secure-settings</string>
+    <string name="url_trigger_by_intent_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/trigger-by-intent</string>
+    <string name="url_trigger_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/trigger</string>
+    <string name="url_trigger_options_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/trigger-options</string>
+    <string name="url_action_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/action</string>
+    <string name="url_constraints_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/constraints</string>
+    <string name="url_fingerprint_map_options_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/fingerprint-map-options</string>
+    <string name="url_quick_start_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/quick-start</string>
+    <string name="url_faq" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/faq</string>
+    <string name="url_grant_write_secure_settings_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/grant-write-secure-settings</string>
     <string name="url_dont_kill_my_app" translatable="false">https://dontkillmyapp.com</string>
-    <string name="url_keymap_action_options_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/keymap-action-options</string>
-    <string name="url_fingerprint_action_options_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/fingerprint-action-options</string>
-    <string name="url_trigger_key_options_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/trigger-key-options</string>
-    <string name="url_android_11_bug_reset_id_work_around_setting_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/android-11-device-id-bug-work-around</string>
-    <string name="url_settings_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/settings</string>
-    <string name="url_report_issues_guide" translatable="false">https://sds100.github.io/KeyMapper/redirects/report-issues</string>
+    <string name="url_keymap_action_options_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/keymap-action-options</string>
+    <string name="url_fingerprint_action_options_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/fingerprint-action-options</string>
+    <string name="url_trigger_key_options_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/trigger-key-options</string>
+    <string name="url_android_11_bug_reset_id_work_around_setting_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/android-11-device-id-bug-work-around</string>
+    <string name="url_settings_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/settings</string>
+    <string name="url_report_issues_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/report-issues</string>
     <string name="url_intent_set_flags_help" translatable="false">https://developer.android.com/reference/android/content/Intent#setFlags(int)</string>
 
     <string name="url_play_store_keymapper_gui_keyboard" translatable="false">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper.inputmethod.latin</string>
