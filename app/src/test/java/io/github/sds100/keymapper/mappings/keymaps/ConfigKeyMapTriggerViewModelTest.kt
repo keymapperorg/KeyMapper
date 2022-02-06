@@ -53,7 +53,7 @@ class ConfigKeyMapTriggerViewModelTest {
 
         mockRecordTrigger = mock {
             on { onRecordKey }.then { onRecordKey }
-            on { state }.then { flow<RecordTriggerState>{} }
+            on { state }.then { flow<RecordTriggerState> {} }
         }
 
         mockConfigKeyMapUseCase = mock {
@@ -68,7 +68,7 @@ class ConfigKeyMapTriggerViewModelTest {
             mockConfigKeyMapUseCase,
             mockRecordTrigger,
             mock(),
-            mock{
+            mock {
                 on { invalidateTriggerErrors }.then { flow<Unit> { } }
                 on { showDeviceDescriptors }.then { flow<Unit> { } }
             },

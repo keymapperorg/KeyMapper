@@ -56,7 +56,14 @@ class ChooseConstraintViewModel(
             ChooseConstraintType.WIFI_DISCONNECTED,
 
             ChooseConstraintType.IME_CHOSEN,
-            ChooseConstraintType.IME_NOT_CHOSEN
+            ChooseConstraintType.IME_NOT_CHOSEN,
+
+            ChooseConstraintType.DEVICE_IS_LOCKED,
+            ChooseConstraintType.DEVICE_IS_UNLOCKED,
+
+            ChooseConstraintType.IN_PHONE_CALL,
+            ChooseConstraintType.NOT_IN_PHONE_CALL,
+            ChooseConstraintType.PHONE_RINGING,
         )
     }
 
@@ -88,83 +95,18 @@ class ChooseConstraintViewModel(
                 ChooseConstraintType.APP_IN_FOREGROUND,
                 ChooseConstraintType.APP_NOT_IN_FOREGROUND,
                 ChooseConstraintType.APP_PLAYING_MEDIA,
-                ChooseConstraintType.APP_NOT_PLAYING_MEDIA -> {
-                    val packageName =
-                        navigate("choose_package_for_constraint", NavDestination.ChooseApp)
-                            ?: return@launch
-
-                    val constraint = when (constraintType) {
-                        ChooseConstraintType.APP_IN_FOREGROUND -> Constraint.AppInForeground(
-                            packageName
-                        )
-                        ChooseConstraintType.APP_NOT_IN_FOREGROUND -> Constraint.AppNotInForeground(
-                            packageName
-                        )
-                        ChooseConstraintType.APP_PLAYING_MEDIA -> Constraint.AppPlayingMedia(
-                            packageName
-                        )
-                        ChooseConstraintType.APP_NOT_PLAYING_MEDIA -> Constraint.AppNotPlayingMedia(
-                            packageName
-                        )
-                        else -> throw Exception("Don't know how to create $constraintType constraint after choosing app")
-                    }
-
-                    _returnResult.emit(constraint)
-                }
+                ChooseConstraintType.APP_NOT_PLAYING_MEDIA -> onSelectAppConstraint(constraintType)
 
                 ChooseConstraintType.MEDIA_PLAYING -> _returnResult.emit(Constraint.MediaPlaying)
                 ChooseConstraintType.MEDIA_NOT_PLAYING -> _returnResult.emit(Constraint.NoMediaPlaying)
 
                 ChooseConstraintType.BT_DEVICE_CONNECTED,
-                ChooseConstraintType.BT_DEVICE_DISCONNECTED -> {
-                    val response = showPopup(
-                        "bluetooth_device_constraint_limitation",
-                        PopupUi.Ok(getString(R.string.dialog_message_bt_constraint_limitation))
-                    )
+                ChooseConstraintType.BT_DEVICE_DISCONNECTED -> onSelectBluetoothConstraint(
+                    constraintType
+                )
 
-                    response ?: return@launch
-                    val device = navigate(
-                        "choose_bluetooth_device_for_constraint",
-                        NavDestination.ChooseBluetoothDevice
-                    )
-                        ?: return@launch
-
-                    val constraint = when (constraintType) {
-                        ChooseConstraintType.BT_DEVICE_CONNECTED -> Constraint.BtDeviceConnected(
-                            device.address,
-                            device.name
-                        )
-                        ChooseConstraintType.BT_DEVICE_DISCONNECTED -> Constraint.BtDeviceDisconnected(
-                            device.address,
-                            device.name
-                        )
-                        else -> throw Exception("Don't know how to create $constraintType constraint after choosing app")
-                    }
-
-                    _returnResult.emit(constraint)
-                }
-
-                ChooseConstraintType.SCREEN_ON -> {
-                    val response = showPopup(
-                        "screen_on_constraint_limitation",
-                        PopupUi.Ok(getString(R.string.dialog_message_screen_constraints_limitation))
-                    )
-
-                    response ?: return@launch
-
-                    _returnResult.emit(Constraint.ScreenOn)
-                }
-
-                ChooseConstraintType.SCREEN_OFF -> {
-                    val response = showPopup(
-                        "screen_off_constraint_limitation",
-                        PopupUi.Ok(getString(R.string.dialog_message_screen_constraints_limitation))
-                    )
-
-                    response ?: return@launch
-
-                    _returnResult.emit(Constraint.ScreenOff)
-                }
+                ChooseConstraintType.SCREEN_ON -> onSelectScreenOnConstraint()
+                ChooseConstraintType.SCREEN_OFF -> onSelectScreenOffConstraint()
 
                 ChooseConstraintType.ORIENTATION_PORTRAIT ->
                     _returnResult.emit(Constraint.OrientationPortrait)
@@ -194,77 +136,31 @@ class ChooseConstraintViewModel(
                     _returnResult.emit(Constraint.FlashlightOff(lens))
                 }
 
-                ChooseConstraintType.WIFI_ON -> {
-                    _returnResult.emit(Constraint.WifiOn)
-                }
+                ChooseConstraintType.WIFI_ON -> _returnResult.emit(Constraint.WifiOn)
+                ChooseConstraintType.WIFI_OFF -> _returnResult.emit(Constraint.WifiOff)
 
-                ChooseConstraintType.WIFI_OFF -> {
-                    _returnResult.emit(Constraint.WifiOff)
-                }
+                ChooseConstraintType.WIFI_CONNECTED,
+                ChooseConstraintType.WIFI_DISCONNECTED -> onSelectWifiConnectedConstraint(
+                    constraintType
+                )
 
-                ChooseConstraintType.WIFI_CONNECTED, ChooseConstraintType.WIFI_DISCONNECTED -> {
-                    val knownSSIDs = useCase.getKnownWiFiSSIDs()
+                ChooseConstraintType.IME_CHOSEN,
+                ChooseConstraintType.IME_NOT_CHOSEN -> onSelectImeChosenConstraint(constraintType)
 
-                    val chosenSSID: String?
+                ChooseConstraintType.DEVICE_IS_LOCKED ->
+                    _returnResult.emit(Constraint.DeviceIsLocked)
 
-                    if (knownSSIDs == null) {
-                        val dialog = PopupUi.Text(
-                            hint = getString(R.string.hint_wifi_ssid),
-                            allowEmpty = true,
-                            message = getString(R.string.constraint_wifi_message_cant_list_networks)
-                        )
+                ChooseConstraintType.DEVICE_IS_UNLOCKED ->
+                    _returnResult.emit(Constraint.DeviceIsUnlocked)
 
-                        val ssidText = showPopup("type_ssid", dialog) ?: return@launch
+                ChooseConstraintType.IN_PHONE_CALL ->
+                    _returnResult.emit(Constraint.InPhoneCall)
 
-                        if (ssidText.isBlank()) {
-                            chosenSSID = null
-                        } else {
-                            chosenSSID = ssidText
-                        }
-                    } else {
-                        val anySSIDItem =
-                            "any" to getString(R.string.constraint_wifi_pick_network_any)
+                ChooseConstraintType.NOT_IN_PHONE_CALL ->
+                    _returnResult.emit(Constraint.NotInPhoneCall)
 
-                        val ssidItems = knownSSIDs.map { "ssid_$it" to it }
-
-                        val items = listOf(anySSIDItem).plus(ssidItems)
-
-                        val chosenItem =
-                            showPopup("choose_ssid", PopupUi.SingleChoice(items)) ?: return@launch
-
-                        if (chosenItem == anySSIDItem.first) {
-                            chosenSSID = null
-                        } else {
-                            chosenSSID = items.single { it.first == chosenItem }.second
-                        }
-                    }
-
-                    when (constraintType) {
-                        ChooseConstraintType.WIFI_CONNECTED ->
-                            _returnResult.emit(Constraint.WifiConnected(chosenSSID))
-
-                        ChooseConstraintType.WIFI_DISCONNECTED ->
-                            _returnResult.emit(Constraint.WifiDisconnected(chosenSSID))
-                    }
-                }
-
-                ChooseConstraintType.IME_CHOSEN, ChooseConstraintType.IME_NOT_CHOSEN -> {
-                    val inputMethods = useCase.getEnabledInputMethods()
-                    val items = inputMethods.map { it.id to it.label }
-                    val dialog = PopupUi.SingleChoice(items = items)
-
-                    val result = showPopup("choose_input_method", dialog) ?: return@launch
-
-                    val imeInfo = inputMethods.single { it.id == result }
-
-                    when (constraintType) {
-                        ChooseConstraintType.IME_CHOSEN ->
-                            _returnResult.emit(Constraint.ImeChosen(imeInfo.id, imeInfo.label))
-
-                        ChooseConstraintType.IME_NOT_CHOSEN ->
-                            _returnResult.emit(Constraint.ImeNotChosen(imeInfo.id, imeInfo.label))
-                    }
-                }
+                ChooseConstraintType.PHONE_RINGING ->
+                    _returnResult.emit(Constraint.PhoneRinging)
             }
         }
     }
@@ -311,6 +207,11 @@ class ChooseConstraintViewModel(
                 ChooseConstraintType.WIFI_DISCONNECTED -> getString(R.string.constraint_wifi_disconnected)
                 ChooseConstraintType.IME_CHOSEN -> getString(R.string.constraint_ime_chosen)
                 ChooseConstraintType.IME_NOT_CHOSEN -> getString(R.string.constraint_ime_not_chosen)
+                ChooseConstraintType.DEVICE_IS_LOCKED -> getString(R.string.constraint_device_is_locked)
+                ChooseConstraintType.DEVICE_IS_UNLOCKED -> getString(R.string.constraint_device_is_unlocked)
+                ChooseConstraintType.IN_PHONE_CALL -> getString(R.string.constraint_in_phone_call)
+                ChooseConstraintType.NOT_IN_PHONE_CALL -> getString(R.string.constraint_not_in_phone_call)
+                ChooseConstraintType.PHONE_RINGING -> getString(R.string.constraint_phone_ringing)
             }
 
             val error = useCase.isSupported(type)
@@ -327,6 +228,150 @@ class ChooseConstraintViewModel(
             yield(listItem)
         }
     }.toList()
+
+    private suspend fun onSelectWifiConnectedConstraint(type: ChooseConstraintType) {
+        val knownSSIDs = useCase.getKnownWiFiSSIDs()
+
+        val chosenSSID: String?
+
+        if (knownSSIDs == null) {
+            val savedWifiSSIDs = useCase.getSavedWifiSSIDs().first()
+
+            val dialog = PopupUi.Text(
+                hint = getString(R.string.hint_wifi_ssid),
+                allowEmpty = true,
+                message = getString(R.string.constraint_wifi_message_cant_list_networks),
+                autoCompleteEntries = savedWifiSSIDs
+            )
+
+            val ssidText = showPopup("type_ssid", dialog) ?: return
+
+            if (ssidText.isBlank()) {
+                chosenSSID = null
+            } else {
+                chosenSSID = ssidText
+
+                useCase.saveWifiSSID(chosenSSID)
+            }
+        } else {
+            val anySSIDItem =
+                "any" to getString(R.string.constraint_wifi_pick_network_any)
+
+            val ssidItems = knownSSIDs.map { "ssid_$it" to it }
+
+            val items = listOf(anySSIDItem).plus(ssidItems)
+
+            val chosenItem =
+                showPopup("choose_ssid", PopupUi.SingleChoice(items)) ?: return
+
+            if (chosenItem == anySSIDItem.first) {
+                chosenSSID = null
+            } else {
+                chosenSSID = items.single { it.first == chosenItem }.second
+            }
+        }
+
+        when (type) {
+            ChooseConstraintType.WIFI_CONNECTED ->
+                _returnResult.emit(Constraint.WifiConnected(chosenSSID))
+
+            ChooseConstraintType.WIFI_DISCONNECTED ->
+                _returnResult.emit(Constraint.WifiDisconnected(chosenSSID))
+        }
+    }
+
+    private suspend fun onSelectImeChosenConstraint(type: ChooseConstraintType) {
+        val inputMethods = useCase.getEnabledInputMethods()
+        val items = inputMethods.map { it.id to it.label }
+        val dialog = PopupUi.SingleChoice(items = items)
+
+        val result = showPopup("choose_input_method", dialog) ?: return
+
+        val imeInfo = inputMethods.single { it.id == result }
+
+        when (type) {
+            ChooseConstraintType.IME_CHOSEN ->
+                _returnResult.emit(Constraint.ImeChosen(imeInfo.id, imeInfo.label))
+
+            ChooseConstraintType.IME_NOT_CHOSEN ->
+                _returnResult.emit(Constraint.ImeNotChosen(imeInfo.id, imeInfo.label))
+        }
+    }
+
+    private suspend fun onSelectScreenOnConstraint() {
+        val response = showPopup(
+            "screen_on_constraint_limitation",
+            PopupUi.Ok(getString(R.string.dialog_message_screen_constraints_limitation))
+        )
+
+        response ?: return
+
+        _returnResult.emit(Constraint.ScreenOn)
+    }
+
+    private suspend fun onSelectScreenOffConstraint() {
+        val response = showPopup(
+            "screen_on_constraint_limitation",
+            PopupUi.Ok(getString(R.string.dialog_message_screen_constraints_limitation))
+        )
+
+        response ?: return
+
+        _returnResult.emit(Constraint.ScreenOff)
+    }
+
+    private suspend fun onSelectBluetoothConstraint(type: ChooseConstraintType) {
+        val response = showPopup(
+            "bluetooth_device_constraint_limitation",
+            PopupUi.Ok(getString(R.string.dialog_message_bt_constraint_limitation))
+        )
+
+        response ?: return
+        val device = navigate(
+            "choose_bluetooth_device_for_constraint",
+            NavDestination.ChooseBluetoothDevice
+        )
+            ?: return
+
+        val constraint = when (type) {
+            ChooseConstraintType.BT_DEVICE_CONNECTED -> Constraint.BtDeviceConnected(
+                device.address,
+                device.name
+            )
+            ChooseConstraintType.BT_DEVICE_DISCONNECTED -> Constraint.BtDeviceDisconnected(
+                device.address,
+                device.name
+            )
+            else -> throw IllegalArgumentException("Don't know how to create $type constraint after choosing app")
+        }
+
+        _returnResult.emit(constraint)
+    }
+
+    private suspend fun onSelectAppConstraint(type: ChooseConstraintType) {
+        val packageName =
+            navigate("choose_package_for_constraint", NavDestination.ChooseApp)
+                ?: return
+
+        val constraint = when (type) {
+            ChooseConstraintType.APP_IN_FOREGROUND -> Constraint.AppInForeground(
+                packageName
+            )
+            ChooseConstraintType.APP_NOT_IN_FOREGROUND -> Constraint.AppNotInForeground(
+                packageName
+            )
+            ChooseConstraintType.APP_PLAYING_MEDIA -> Constraint.AppPlayingMedia(
+                packageName
+            )
+            ChooseConstraintType.APP_NOT_PLAYING_MEDIA -> Constraint.AppNotPlayingMedia(
+                packageName
+            )
+
+            else -> throw IllegalArgumentException("Don't know how to create $type constraint after choosing app")
+        }
+
+        _returnResult.emit(constraint)
+    }
 
     @Suppress("UNCHECKED_CAST")
     class Factory(

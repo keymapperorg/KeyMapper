@@ -19,6 +19,7 @@ import io.github.sds100.keymapper.ui.utils.getJsonSerializable
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.FourFragments
 import io.github.sds100.keymapper.util.ui.TwoFragments
+import io.github.sds100.keymapper.util.ui.setupNavigation
 import io.github.sds100.keymapper.util.ui.showPopups
 import kotlinx.coroutines.flow.collectLatest
 
@@ -46,6 +47,8 @@ class ConfigKeyMapFragment : ConfigMappingFragment() {
                 }
             }
         }
+
+        viewModel.configTriggerViewModel.setupNavigation(this)
 
         setFragmentResultListener(ConfigConstraintsFragment.CHOOSE_CONSTRAINT_REQUEST_KEY) { _, result ->
             result.getJsonSerializable<Constraint>(ChooseConstraintFragment.EXTRA_CONSTRAINT)?.let {

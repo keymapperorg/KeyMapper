@@ -7,9 +7,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.onboarding.AppIntroSlideUi
 import io.github.sds100.keymapper.system.accessibility.ControlAccessibilityServiceUseCase
 import io.github.sds100.keymapper.system.accessibility.ServiceState
-import io.github.sds100.keymapper.util.ui.PopupViewModel
-import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
-import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
@@ -34,9 +32,6 @@ class FixAppKillingViewModel(
         restartServiceSlide()
     )
 
-    private val _openUrl = MutableSharedFlow<String>()
-    val openUrl = _openUrl.asSharedFlow()
-
     private val _goToNextSlide = MutableSharedFlow<Unit>()
     val goToNextSlide = _goToNextSlide.asSharedFlow()
 
@@ -44,13 +39,16 @@ class FixAppKillingViewModel(
         viewModelScope.launch {
             when (id) {
                 ID_BUTTON_GO_TO_DONT_KILL_MY_APP -> {
-                    _openUrl.emit(getString(R.string.url_dont_kill_my_app))
+                    showPopup(
+                        "url_dont_kill_my_app",
+                        PopupUi.OpenUrl(getString(R.string.url_dont_kill_my_app))
+                    )
                 }
 
                 ID_BUTTON_RESTART_ACCESSIBILITY_SERVICE -> {
-                    controlAccessibilityService.restart()
+                    controlAccessibilityService.restartService()
 
-                    controlAccessibilityService.state.first { it == ServiceState.ENABLED } //wait for it to be started
+                    controlAccessibilityService.serviceState.first { it == ServiceState.ENABLED } //wait for it to be started
                     _goToNextSlide.emit(Unit)
                 }
             }

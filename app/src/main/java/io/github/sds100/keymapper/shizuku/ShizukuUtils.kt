@@ -12,11 +12,11 @@ object ShizukuUtils {
      * @return whether it is recommended to use Shizuku on this Android version. It is set to
      * Android 11 because a PC/mac isn't needed after every reboot to make it work.
      */
-    fun isSdkRecommended(): Boolean {
+    fun isRecommendedForSdkVersion(): Boolean {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
     }
 
-    fun isSdkSupported(): Boolean {
+    fun isSupportedForSdkVersion(): Boolean {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
     }
 }

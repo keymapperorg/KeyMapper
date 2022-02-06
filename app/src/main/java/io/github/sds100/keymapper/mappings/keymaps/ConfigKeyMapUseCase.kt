@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.mappings.keymaps
 
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.RepeatMode
+import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
@@ -61,16 +62,23 @@ class ConfigKeyMapUseCaseImpl(
             }
         }
 
-        val newKeys = trigger.keys.toMutableList().apply {
+        val newKeys = trigger.keys.toMutableList()
 
-            val triggerKey = TriggerKey(
-                keyCode = keyCode,
-                device = device,
-                clickType = clickType
-            )
+        var consumeKeyEvent = true
 
-            add(triggerKey)
+        //Issue #753
+        if (KeyEventUtils.isModifierKey(keyCode)) {
+            consumeKeyEvent = false
         }
+
+        val triggerKey = TriggerKey(
+            keyCode = keyCode,
+            device = device,
+            clickType = clickType,
+            consumeKeyEvent = consumeKeyEvent
+        )
+
+        newKeys.add(triggerKey)
 
         val newMode = when {
             containsKey -> TriggerMode.Sequence
@@ -353,6 +361,14 @@ class ConfigKeyMapUseCaseImpl(
             } else {
                 repeat = true
             }
+        }
+        
+        if (data is ActionData.AnswerCall) {
+            addConstraint(Constraint.PhoneRinging)
+        }
+
+        if (data is ActionData.EndCall) {
+            addConstraint(Constraint.InPhoneCall)
         }
 
         return KeyMapAction(

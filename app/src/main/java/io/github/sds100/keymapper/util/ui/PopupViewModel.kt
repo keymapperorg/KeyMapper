@@ -12,6 +12,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.DialogChooseAppStoreBinding
+import io.github.sds100.keymapper.system.url.UrlUtils
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.runBlocking
@@ -113,37 +114,43 @@ fun PopupViewModel.showPopups(
 
             lifecycleOwner.lifecycle.addObserver(observer)
 
-            val response = when (event.ui) {
+            val response: Any?
+
+            when (event.ui) {
                 is PopupUi.Ok ->
-                    ctx.okDialog(lifecycleOwner, event.ui.message, event.ui.title)
+                    response = ctx.okDialog(lifecycleOwner, event.ui.message, event.ui.title)
 
                 is PopupUi.MultiChoice<*> ->
-                    ctx.multiChoiceDialog(lifecycleOwner, event.ui.items)
+                    response = ctx.multiChoiceDialog(lifecycleOwner, event.ui.items)
 
                 is PopupUi.SingleChoice<*> ->
-                    ctx.singleChoiceDialog(lifecycleOwner, event.ui.items)
+                    response = ctx.singleChoiceDialog(lifecycleOwner, event.ui.items)
 
                 is PopupUi.SnackBar ->
-                    SnackBarUtils.show(
+                    response = SnackBarUtils.show(
                         rootView.findViewById(R.id.coordinatorLayout),
                         event.ui.message,
                         event.ui.actionText,
                         event.ui.long
                     )
 
-                is PopupUi.Text -> ctx.editTextStringAlertDialog(
-                    lifecycleOwner,
-                    event.ui.hint,
-                    event.ui.allowEmpty,
-                    event.ui.text,
-                    event.ui.inputType,
-                    event.ui.message
-                )
+                is PopupUi.Text ->
+                    response = ctx.editTextStringAlertDialog(
+                        lifecycleOwner,
+                        event.ui.hint,
+                        event.ui.allowEmpty,
+                        event.ui.text,
+                        event.ui.inputType,
+                        event.ui.message,
+                        event.ui.autoCompleteEntries
+                    )
 
-                is PopupUi.Dialog -> ctx.materialAlertDialog(lifecycleOwner, event.ui)
+                is PopupUi.Dialog ->
+                    response = ctx.materialAlertDialog(lifecycleOwner, event.ui)
 
                 is PopupUi.Toast -> {
                     ctx.toast(event.ui.text)
+                    response = Unit
                 }
 
                 is PopupUi.ChooseAppStore -> {
@@ -151,7 +158,7 @@ fun PopupViewModel.showPopups(
                         model = event.ui.model
                     }.root
 
-                    ctx.materialAlertDialogCustomView(
+                    response = ctx.materialAlertDialogCustomView(
                         lifecycleOwner,
                         event.ui.title,
                         event.ui.message,
@@ -159,6 +166,11 @@ fun PopupViewModel.showPopups(
                         negativeButtonText = event.ui.negativeButtonText,
                         view = view
                     )
+                }
+
+                is PopupUi.OpenUrl -> {
+                    UrlUtils.openUrl(ctx, event.ui.url)
+                    response = Unit
                 }
             }
 

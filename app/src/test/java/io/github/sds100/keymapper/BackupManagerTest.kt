@@ -9,11 +9,11 @@ import io.github.sds100.keymapper.backup.BackupManagerImpl
 import io.github.sds100.keymapper.data.db.AppDatabase
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.Extra
+import io.github.sds100.keymapper.data.entities.FingerprintMapEntity
+import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.data.repositories.FakePreferenceRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapEntity
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapRepository
-import io.github.sds100.keymapper.mappings.keymaps.KeyMapEntity
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapRepository
 import io.github.sds100.keymapper.system.files.FakeFileAdapter
 import io.github.sds100.keymapper.util.Error

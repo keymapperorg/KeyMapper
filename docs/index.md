@@ -27,5 +27,5 @@ This wiki aims to provide users with a comprehensive guide to using and setting 
 
 ### Translators
 
-- TrollServer (Czech)
+- [TrollServer (Czech)](https://youtube.com/channel/UCljg1FH1B_ju2D_NfqAYjDw)
 - [Katie (kekero) (Polish)](https://github.com/LoveEevee)

@@ -89,6 +89,7 @@ plugins:
         'redirects/report-issues.md': 'https://sds100.github.io/KeyMapper/report-issues'
         'redirects/fix-optimisation.md': 'https://sds100.github.io/KeyMapper/known-issues.html#key-mapper-randomly-stops'
         'redirects/shizuku-benefits.md': 'https://sds100.github.io/KeyMapper/user-guide/shizuku#benefits'
+        'redirects/cant-find-accessibility-settings.md': 'https://sds100.github.io/KeyMapper/known-issues#key-mapper-cant-open-the-accessibility-settings-on-some-devices'
   - search:
       lang:
         - en

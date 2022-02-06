@@ -12,16 +12,16 @@ import io.github.sds100.keymapper.util.ui.ResourceProvider
 fun Error.getFullMessage(resourceProvider: ResourceProvider) = when (this) {
     is Error.PermissionDenied ->
         Error.PermissionDenied.getMessageForPermission(
-            resourceProvider,
-            permission
+                resourceProvider,
+                permission
         )
     is Error.AppNotFound -> resourceProvider.getString(
-        R.string.error_app_isnt_installed,
-        packageName
+            R.string.error_app_isnt_installed,
+            packageName
     )
     is Error.AppDisabled -> resourceProvider.getString(
-        R.string.error_app_is_disabled_package_name,
-        this.packageName
+            R.string.error_app_is_disabled_package_name,
+            this.packageName
     )
     is Error.NoCompatibleImeEnabled -> resourceProvider.getString(R.string.error_key_mapper_ime_service_disabled)
     is Error.NoCompatibleImeChosen -> resourceProvider.getString(R.string.error_ime_must_be_chosen)
@@ -33,20 +33,21 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider) = when (this) {
         PackageManager.FEATURE_BLUETOOTH -> resourceProvider.getString(R.string.error_system_feature_bluetooth_unsupported)
         PackageManager.FEATURE_DEVICE_ADMIN -> resourceProvider.getString(R.string.error_system_feature_device_admin_unsupported)
         PackageManager.FEATURE_CAMERA_FLASH -> resourceProvider.getString(R.string.error_system_feature_camera_flash_unsupported)
+        PackageManager.FEATURE_TELEPHONY -> resourceProvider.getString(R.string.error_system_feature_telephony_unsupported)
         else -> throw Exception("Don't know how to get error message for this system feature ${this.feature}")
     }
     is Error.ExtraNotFound -> resourceProvider.getString(R.string.error_extra_not_found, extraId)
     is Error.SdkVersionTooLow -> resourceProvider.getString(
-        R.string.error_sdk_version_too_low,
-        BuildUtils.getSdkVersionName(minSdk)
+            R.string.error_sdk_version_too_low,
+            BuildUtils.getSdkVersionName(minSdk)
     )
     is Error.SdkVersionTooHigh -> resourceProvider.getString(
-        R.string.error_sdk_version_too_high,
-        BuildUtils.getSdkVersionName(maxSdk)
+            R.string.error_sdk_version_too_high,
+            BuildUtils.getSdkVersionName(maxSdk)
     )
     is Error.InputMethodNotFound -> resourceProvider.getString(
-        R.string.error_ime_not_found,
-        imeLabel
+            R.string.error_ime_not_found,
+            imeLabel
     )
     is Error.FrontFlashNotFound -> resourceProvider.getString(R.string.error_front_flash_not_found)
     is Error.BackFlashNotFound -> resourceProvider.getString(R.string.error_back_flash_not_found)
@@ -68,8 +69,8 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider) = when (this) {
     Error.CantShowImePickerInBackground -> resourceProvider.getString(R.string.error_cant_show_ime_picker_in_background)
     Error.FailedToFindAccessibilityNode -> resourceProvider.getString(R.string.error_failed_to_find_accessibility_node)
     is Error.FailedToPerformAccessibilityGlobalAction -> resourceProvider.getString(
-        R.string.error_failed_to_perform_accessibility_global_action,
-        action
+            R.string.error_failed_to_perform_accessibility_global_action,
+            action
     )
 
     Error.FailedToDispatchGesture -> resourceProvider.getString(R.string.error_failed_to_dispatch_gesture)
@@ -83,8 +84,8 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider) = when (this) {
     Error.CameraDisconnected -> resourceProvider.getString(R.string.error_camera_disconnected)
     Error.MaxCamerasInUse -> resourceProvider.getString(R.string.error_max_cameras_in_use)
     is Error.FailedToModifySystemSetting -> resourceProvider.getString(
-        R.string.error_failed_to_modify_system_setting,
-        setting
+            R.string.error_failed_to_modify_system_setting,
+            setting
     )
     is Error.ImeDisabled -> resourceProvider.getString(R.string.error_ime_disabled, this.ime.label)
     Error.FailedToChangeIme -> resourceProvider.getString(R.string.error_failed_to_change_ime)
@@ -97,33 +98,34 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider) = when (this) {
     is Error.CorruptJsonFile -> reason
 
     is Error.CannotCreateFileInTarget -> resourceProvider.getString(
-        R.string.error_file_access_denied,
-        uri
+            R.string.error_file_access_denied,
+            uri
     )
     Error.FileOperationCancelled -> resourceProvider.getString(R.string.error_file_operation_cancelled)
     is Error.NoSpaceLeftOnTarget -> resourceProvider.getString(
-        R.string.error_no_space_left_at_target,
-        uri
+            R.string.error_no_space_left_at_target,
+            uri
     )
     is Error.NotADirectory -> resourceProvider.getString(R.string.error_not_a_directory, uri)
     is Error.NotAFile -> resourceProvider.getString(R.string.error_not_a_file, uri)
     is Error.SourceFileNotFound -> resourceProvider.getString(
-        R.string.error_source_file_not_found,
-        uri
+            R.string.error_source_file_not_found,
+            uri
     )
     Error.StoragePermissionDenied -> resourceProvider.getString(R.string.error_storage_permission_denied)
     Error.TargetDirectoryMatchesSourceDirectory -> resourceProvider.getString(R.string.error_matching_source_and_target_paths)
     is Error.TargetDirectoryNotFound -> resourceProvider.getString(
-        R.string.error_directory_not_found,
-        uri
+            R.string.error_directory_not_found,
+            uri
     )
     is Error.TargetFileNotFound -> resourceProvider.getString(
-        R.string.error_target_file_not_found,
-        uri
+            R.string.error_target_file_not_found,
+            uri
     )
     Error.UnknownIOError -> resourceProvider.getString(R.string.error_io_error)
     Error.ShizukuNotStarted -> resourceProvider.getString(R.string.error_shizuku_not_started)
     Error.NoFileName -> resourceProvider.getString(R.string.error_no_file_name)
+    Error.CantDetectKeyEventsInPhoneCall -> resourceProvider.getString(R.string.trigger_error_cant_detect_in_phone_call_explanation)
 }
 
 val Error.isFixable: Boolean
@@ -136,7 +138,8 @@ val Error.isFixable: Boolean
         Error.AccessibilityServiceDisabled,
         Error.AccessibilityServiceCrashed,
         is Error.PermissionDenied,
-        is Error.ShizukuNotStarted
+        is Error.ShizukuNotStarted,
+        is Error.CantDetectKeyEventsInPhoneCall
         -> true
 
         else -> false

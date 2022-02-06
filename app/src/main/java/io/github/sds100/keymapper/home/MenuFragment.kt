@@ -6,15 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.databinding.FragmentMenuBinding
-import io.github.sds100.keymapper.system.url.UrlUtils
 import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
+import io.github.sds100.keymapper.util.ui.setupNavigation
 import io.github.sds100.keymapper.util.ui.showPopups
 import kotlinx.coroutines.flow.collectLatest
 
@@ -33,6 +31,12 @@ class MenuFragment : BottomSheetDialogFragment() {
     private var _binding: FragmentMenuBinding? = null
     val binding: FragmentMenuBinding
         get() = _binding!!
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        viewModel.setupNavigation(this)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -57,24 +61,6 @@ class MenuFragment : BottomSheetDialogFragment() {
         binding.viewModel = viewModel
 
         viewModel.showPopups(this, binding)
-
-        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED){
-            viewModel.openSettings.collectLatest {
-                findNavController().navigate(NavAppDirections.toSettingsFragment())
-            }
-        }
-
-        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED){
-            viewModel.openAbout.collectLatest {
-                findNavController().navigate(NavAppDirections.actionGlobalAboutFragment())
-            }
-        }
-
-        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED){
-            viewModel.openUrl.collectLatest {
-                UrlUtils.openUrl(requireContext(), it)
-            }
-        }
 
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED){
             viewModel.dismiss.collectLatest {

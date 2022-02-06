@@ -1,9 +1,7 @@
 package io.github.sds100.keymapper.data.db.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
-import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapEntity
-import io.github.sds100.keymapper.mappings.keymaps.KeyMapEntity
+import io.github.sds100.keymapper.data.entities.FingerprintMapEntity
 import kotlinx.coroutines.flow.Flow
 
 /**

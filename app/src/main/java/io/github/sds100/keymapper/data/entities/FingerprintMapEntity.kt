@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.mappings.fingerprintmaps
+package io.github.sds100.keymapper.data.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -6,9 +6,6 @@ import androidx.room.PrimaryKey
 import com.github.salomonbrys.kotson.*
 import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.data.db.dao.FingerprintMapDao
-import io.github.sds100.keymapper.data.entities.ActionEntity
-import io.github.sds100.keymapper.data.entities.ConstraintEntity
-import io.github.sds100.keymapper.data.entities.Extra
 
 /**
  * Created by sds100 on 08/11/20.

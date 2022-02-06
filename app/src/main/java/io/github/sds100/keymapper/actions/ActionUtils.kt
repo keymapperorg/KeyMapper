@@ -151,6 +151,9 @@ object ActionUtils {
             ActionId.URL -> ActionCategory.CONTENT
 
             ActionId.PHONE_CALL -> ActionCategory.TELEPHONY
+            ActionId.ANSWER_PHONE_CALL -> ActionCategory.TELEPHONY
+            ActionId.END_PHONE_CALL -> ActionCategory.TELEPHONY
+
             ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> ActionCategory.NOTIFICATIONS
             ActionId.DISMISS_ALL_NOTIFICATIONS -> ActionCategory.NOTIFICATIONS
         }
@@ -259,6 +262,8 @@ object ActionUtils {
             ActionId.SOUND -> R.string.action_play_sound
             ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> R.string.action_dismiss_most_recent_notification
             ActionId.DISMISS_ALL_NOTIFICATIONS -> R.string.action_dismiss_all_notifications
+            ActionId.ANSWER_PHONE_CALL -> R.string.action_answer_call
+            ActionId.END_PHONE_CALL -> R.string.action_end_call
         }
 
     @DrawableRes
@@ -366,10 +371,15 @@ object ActionUtils {
             ActionId.SOUND -> R.drawable.ic_outline_volume_up_24
             ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> R.drawable.ic_baseline_clear_all_24
             ActionId.DISMISS_ALL_NOTIFICATIONS -> R.drawable.ic_baseline_clear_all_24
+            ActionId.ANSWER_PHONE_CALL -> R.drawable.ic_outline_call_24
+            ActionId.END_PHONE_CALL -> R.drawable.ic_outline_call_end_24
         }
 
     fun getMinApi(id: ActionId): Int {
         return when (id) {
+            ActionId.ANSWER_PHONE_CALL -> Build.VERSION_CODES.O
+            ActionId.END_PHONE_CALL -> Build.VERSION_CODES.P
+
             ActionId.TOGGLE_SPLIT_SCREEN -> Build.VERSION_CODES.N
             ActionId.GO_LAST_APP -> Build.VERSION_CODES.N
 
@@ -413,6 +423,10 @@ object ActionUtils {
 
     fun getRequiredSystemFeatures(id: ActionId): List<String> {
         return when (id) {
+            ActionId.END_PHONE_CALL,
+            ActionId.ANSWER_PHONE_CALL,
+            ActionId.PHONE_CALL -> listOf(PackageManager.FEATURE_TELEPHONY)
+
             ActionId.SECURE_LOCK_DEVICE
             -> listOf(PackageManager.FEATURE_DEVICE_ADMIN)
 
@@ -533,6 +547,9 @@ object ActionUtils {
             ActionId.DISMISS_ALL_NOTIFICATIONS,
             ActionId.DISMISS_MOST_RECENT_NOTIFICATION ->
                 return listOf(Permission.NOTIFICATION_LISTENER)
+
+            ActionId.ANSWER_PHONE_CALL,
+            ActionId.END_PHONE_CALL -> return listOf(Permission.ANSWER_PHONE_CALL)
         }
 
         return emptyList()

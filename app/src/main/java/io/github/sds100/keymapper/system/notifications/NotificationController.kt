@@ -4,6 +4,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import io.github.sds100.keymapper.Constants
+import io.github.sds100.keymapper.MainActivity
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
 import io.github.sds100.keymapper.mappings.fingerprintmaps.AreFingerprintGesturesSupportedUseCase
@@ -92,8 +93,11 @@ class NotificationController(
             "${Constants.PACKAGE_NAME}.ACTION_FINGERPRINT_GESTURE_FEATURE"
     }
 
-    private val _openApp = MutableSharedFlow<Unit>()
-    val openApp = _openApp.asSharedFlow()
+    /**
+     * Open the app and use the String as the Intent action.
+     */
+    private val _openApp: MutableSharedFlow<String?> = MutableSharedFlow()
+    val openApp: SharedFlow<String?> = _openApp.asSharedFlow()
 
     private val _showToast = MutableSharedFlow<String>()
     val showToast = _showToast.asSharedFlow()
@@ -104,7 +108,7 @@ class NotificationController(
 
         combine(
             manageNotifications.showToggleMappingsNotification,
-            controlAccessibilityService.state,
+            controlAccessibilityService.serviceState,
             pauseMappings.isPaused
         ) { show, serviceState, areMappingsPaused ->
             invalidateToggleMappingsNotification(show, serviceState, areMappingsPaused)
@@ -192,11 +196,12 @@ class NotificationController(
             when (actionId) {
                 ACTION_RESUME_MAPPINGS -> pauseMappings.resume()
                 ACTION_PAUSE_MAPPINGS -> pauseMappings.pause()
-                ACTION_START_SERVICE -> controlAccessibilityService.enable()
-                ACTION_STOP_SERVICE -> controlAccessibilityService.disable()
-                ACTION_RESTART_SERVICE -> controlAccessibilityService.restart()
+                ACTION_START_SERVICE -> attemptStartAccessibilityService()
+                ACTION_RESTART_SERVICE -> attemptRestartAccessibilityService()
+                ACTION_STOP_SERVICE -> controlAccessibilityService.stopService()
+
                 ACTION_DISMISS_TOGGLE_MAPPINGS -> manageNotifications.dismiss(ID_TOGGLE_MAPPINGS)
-                ACTION_OPEN_KEY_MAPPER -> _openApp.emit(Unit)
+                ACTION_OPEN_KEY_MAPPER -> _openApp.emit(null)
                 ACTION_SHOW_IME_PICKER -> showImePicker.show(fromForeground = false)
                 ACTION_SHOW_KEYBOARD -> hideInputMethod.show()
                 ACTION_TOGGLE_KEYBOARD -> toggleCompatibleIme.toggle().onSuccess {
@@ -206,11 +211,11 @@ class NotificationController(
                 }
                 ACTION_FINGERPRINT_GESTURE_FEATURE -> {
                     onboardingUseCase.approvedFingerprintFeaturePrompt = true
-                    _openApp.emit(Unit)
+                    _openApp.emit(null)
                 }
                 ACTION_ON_SETUP_CHOSEN_DEVICES_AGAIN -> {
                     onboardingUseCase.approvedSetupChosenDevicesAgainNotification()
-                    _openApp.emit(Unit)
+                    _openApp.emit(null)
                 }
             }
         }.flowOn(dispatchers.default()).launchIn(coroutineScope)
@@ -222,9 +227,25 @@ class NotificationController(
         coroutineScope.launch {
             invalidateToggleMappingsNotification(
                 show = manageNotifications.showToggleMappingsNotification.first(),
-                serviceState = controlAccessibilityService.state.first(),
+                serviceState = controlAccessibilityService.serviceState.first(),
                 areMappingsPaused = pauseMappings.isPaused.first()
             )
+        }
+    }
+
+    private fun attemptStartAccessibilityService() {
+        if (!controlAccessibilityService.startService()) {
+            coroutineScope.launch {
+                _openApp.emit(MainActivity.ACTION_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG)
+            }
+        }
+    }
+
+    private fun attemptRestartAccessibilityService() {
+        if (!controlAccessibilityService.restartService()) {
+            coroutineScope.launch {
+                _openApp.emit(MainActivity.ACTION_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG)
+            }
         }
     }
 
@@ -246,7 +267,7 @@ class NotificationController(
             return
         }
 
-        when(serviceState){
+        when (serviceState) {
             ServiceState.ENABLED -> {
                 if (areMappingsPaused) {
                     manageNotifications.show(mappingsPausedNotification())

@@ -22,9 +22,12 @@ import kotlinx.coroutines.launch
 
 class ReportBugViewModel(
     private val useCase: ReportBugUseCase,
-    private val controlAccessibilityService: ControlAccessibilityServiceUseCase,
+    private val controlService: ControlAccessibilityServiceUseCase,
     resourceProvider: ResourceProvider
-) : ViewModel(), ResourceProvider by resourceProvider, PopupViewModel by PopupViewModelImpl() {
+) : ViewModel(),
+    ResourceProvider by resourceProvider,
+    PopupViewModel by PopupViewModelImpl(),
+    NavigationViewModel by NavigationViewModelImpl() {
 
     companion object {
         private const val ID_BUTTON_RESTART_ACCESSIBILITY_SERVICE = "restart_accessibility_service"
@@ -43,20 +46,31 @@ class ReportBugViewModel(
     private val _goToNextSlide = MutableSharedFlow<Unit>()
     val goToNextSlide = _goToNextSlide.asSharedFlow()
 
-    private val _openUrl = MutableSharedFlow<String>()
-    val openUrl = _openUrl.asSharedFlow()
-
     fun onButtonClick(id: String) {
         viewModelScope.launch {
             when (id) {
                 ID_BUTTON_CREATE_BUG_REPORT -> _chooseBugReportLocation.emit(Unit)
-                ID_BUTTON_CREATE_GITHUB_ISSUE -> _openUrl.emit(getString(R.string.url_github_create_issue_bug))
-                ID_BUTTON_DISCORD_SERVER -> _openUrl.emit(getString(R.string.url_discord_server_invite))
-                ID_BUTTON_RESTART_ACCESSIBILITY_SERVICE -> {
-                    controlAccessibilityService.restart()
 
-                    controlAccessibilityService.state.first { it == ServiceState.ENABLED } //wait for it to be started
-                    _goToNextSlide.emit(Unit)
+                ID_BUTTON_CREATE_GITHUB_ISSUE -> showPopup(
+                    "url_create_github_issue",
+                    PopupUi.OpenUrl(getString(R.string.url_github_create_issue_bug))
+                )
+
+                ID_BUTTON_DISCORD_SERVER -> showPopup(
+                    "url_discord_server",
+                    PopupUi.OpenUrl(getString(R.string.url_discord_server_invite))
+                )
+
+                ID_BUTTON_RESTART_ACCESSIBILITY_SERVICE -> {
+                    if (!controlService.restartService()) {
+                        ViewModelHelper.handleCantFindAccessibilitySettings(
+                            resourceProvider = this@ReportBugViewModel,
+                            popupViewModel = this@ReportBugViewModel
+                        )
+                    } else {
+                        controlService.serviceState.first { it == ServiceState.ENABLED } //wait for it to be started
+                        _goToNextSlide.emit(Unit)
+                    }
                 }
             }
         }
@@ -124,7 +138,7 @@ class ReportBugViewModel(
         yield(createBugReportSlide())
         yield(shareBugReportSlide())
 
-        if (controlAccessibilityService.state.firstBlocking() == ServiceState.CRASHED) {
+        if (controlService.serviceState.firstBlocking() == ServiceState.CRASHED) {
             yield(restartServiceSlide())
         }
     }.toList()

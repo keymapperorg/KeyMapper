@@ -98,6 +98,21 @@ sealed class Constraint {
         val imeId: String,
         val imeLabel: String
     ) : Constraint()
+
+    @Serializable
+    object DeviceIsLocked : Constraint()
+
+    @Serializable
+    object DeviceIsUnlocked : Constraint()
+
+    @Serializable
+    object InPhoneCall : Constraint()
+
+    @Serializable
+    object NotInPhoneCall : Constraint()
+
+    @Serializable
+    object PhoneRinging : Constraint()
 }
 
 object ConstraintModeEntityMapper {
@@ -193,6 +208,13 @@ object ConstraintEntityMapper {
             ConstraintEntity.IME_CHOSEN -> Constraint.ImeChosen(getImeId(), getImeLabel())
             ConstraintEntity.IME_NOT_CHOSEN -> Constraint.ImeNotChosen(getImeId(), getImeLabel())
 
+            ConstraintEntity.DEVICE_IS_UNLOCKED -> Constraint.DeviceIsUnlocked
+            ConstraintEntity.DEVICE_IS_LOCKED -> Constraint.DeviceIsLocked
+
+            ConstraintEntity.PHONE_RINGING -> Constraint.PhoneRinging
+            ConstraintEntity.IN_PHONE_CALL -> Constraint.InPhoneCall
+            ConstraintEntity.NOT_IN_PHONE_CALL -> Constraint.NotInPhoneCall
+
             else -> throw Exception("don't know how to convert constraint entity with type ${entity.type}")
         }
     }
@@ -282,15 +304,25 @@ object ConstraintEntityMapper {
         Constraint.WifiOn -> ConstraintEntity(ConstraintEntity.WIFI_ON)
 
         is Constraint.ImeChosen -> {
-            ConstraintEntity(ConstraintEntity.IME_CHOSEN,
+            ConstraintEntity(
+                ConstraintEntity.IME_CHOSEN,
                 Extra(ConstraintEntity.EXTRA_IME_ID, constraint.imeId),
-                Extra(ConstraintEntity.EXTRA_IME_LABEL, constraint.imeLabel))
+                Extra(ConstraintEntity.EXTRA_IME_LABEL, constraint.imeLabel)
+            )
         }
 
         is Constraint.ImeNotChosen -> {
-            ConstraintEntity(ConstraintEntity.IME_NOT_CHOSEN,
+            ConstraintEntity(
+                ConstraintEntity.IME_NOT_CHOSEN,
                 Extra(ConstraintEntity.EXTRA_IME_ID, constraint.imeId),
-                Extra(ConstraintEntity.EXTRA_IME_LABEL, constraint.imeLabel))
+                Extra(ConstraintEntity.EXTRA_IME_LABEL, constraint.imeLabel)
+            )
         }
+
+        Constraint.DeviceIsLocked -> ConstraintEntity(ConstraintEntity.DEVICE_IS_LOCKED)
+        Constraint.DeviceIsUnlocked -> ConstraintEntity(ConstraintEntity.DEVICE_IS_UNLOCKED)
+        Constraint.InPhoneCall -> ConstraintEntity(ConstraintEntity.IN_PHONE_CALL)
+        Constraint.NotInPhoneCall -> ConstraintEntity(ConstraintEntity.NOT_IN_PHONE_CALL)
+        Constraint.PhoneRinging -> ConstraintEntity(ConstraintEntity.PHONE_RINGING)
     }
 }

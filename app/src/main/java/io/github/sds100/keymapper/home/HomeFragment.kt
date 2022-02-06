@@ -85,6 +85,14 @@ class HomeFragment : Fragment() {
 
     private var quickStartGuideTapTarget: MaterialTapTargetPrompt? = null
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        homeViewModel.setupNavigation(this)
+        homeViewModel.keymapListViewModel.setupNavigation(this)
+        homeViewModel.fingerprintMapListViewModel.setupNavigation(this)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -102,12 +110,6 @@ class HomeFragment : Fragment() {
         homeViewModel.showPopups(this, binding)
         homeViewModel.keymapListViewModel.showPopups(this, binding)
         homeViewModel.fingerprintMapListViewModel.showPopups(this, binding)
-
-        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
-            homeViewModel.openUrl.collectLatest {
-                UrlUtils.openUrl(requireContext(), it)
-            }
-        }
 
         binding.viewModel = this@HomeFragment.homeViewModel
 
@@ -208,28 +210,9 @@ class HomeFragment : Fragment() {
         }
 
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
-            homeViewModel.reportBug.collectLatest {
-                findNavController().navigate(NavAppDirections.goToReportBugActivity())
-            }
-        }
-
-        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
-            homeViewModel.fixAppKilling.collectLatest {
-                findNavController().navigate(NavAppDirections.goToFixAppKillingActivity())
-            }
-        }
-
-        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             homeViewModel.tabsState.collectLatest { state ->
                 pagerAdapter.invalidateFragments(state.tabs)
                 binding.viewPager.isUserInputEnabled = state.enableViewPagerSwiping
-            }
-        }
-
-        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
-            homeViewModel.navigateToCreateKeymapScreen.collectLatest {
-                val direction = HomeFragmentDirections.actionToConfigKeymap()
-                findNavController().navigate(direction)
             }
         }
 
@@ -303,12 +286,6 @@ class HomeFragment : Fragment() {
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             homeViewModel.fingerprintMapListViewModel.requestFingerprintMapsBackup.collectLatest {
                 backupFingerprintMapsLauncher.launch(BackupUtils.createFingerprintMapsFileName())
-            }
-        }
-
-        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
-            homeViewModel.openSettings.collectLatest {
-                findNavController().navigate(NavAppDirections.toSettingsFragment())
             }
         }
     }

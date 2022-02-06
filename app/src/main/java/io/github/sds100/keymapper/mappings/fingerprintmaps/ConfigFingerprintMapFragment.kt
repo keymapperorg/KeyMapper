@@ -16,8 +16,6 @@ import io.github.sds100.keymapper.ui.utils.getJsonSerializable
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.TwoFragments
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
 
 /**
  * Created by sds100 on 22/11/20.
@@ -35,7 +33,7 @@ class ConfigFingerprintMapFragment : ConfigMappingFragment() {
 
         //only load the fingerprint map if opening this fragment for the first time
         if (savedInstanceState == null) {
-            viewModel.loadFingerprintMap(Json.decodeFromString(args.gestureId))
+            viewModel.loadFingerprintMap(FingerprintMapId.valueOf(args.gestureId))
         }
 
         setFragmentResultListener(ConfigConstraintsFragment.CHOOSE_CONSTRAINT_REQUEST_KEY) { _, result ->

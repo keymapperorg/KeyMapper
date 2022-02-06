@@ -12,9 +12,9 @@ import androidx.navigation.findNavController
 import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.databinding.ActivityMainBinding
-import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.RequestPermissionDelegate
 import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.ui.showPopups
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -28,12 +28,12 @@ import timber.log.Timber
 class MainActivity : AppCompatActivity() {
 
     companion object {
-        const val KEY_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG =
-            "$PACKAGE_NAME.show_accessibility_settings_not_found_dialog"
+        const val ACTION_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG =
+                "$PACKAGE_NAME.ACTION_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG"
     }
 
     private val viewModel by viewModels<ActivityViewModel> {
-        ActivityViewModel.Factory()
+        ActivityViewModel.Factory(ServiceLocator.resourceProvider(this))
     }
 
     private val currentNightMode: Int
@@ -50,31 +50,23 @@ class MainActivity : AppCompatActivity() {
 
         DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
 
-        if (intent.getBooleanExtra(KEY_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG, false)) {
-            alertDialog {
-                titleResource = R.string.dialog_title_cant_find_accessibility_settings_page
-                messageResource = R.string.dialog_message_cant_find_accessibility_settings_page
-
-                okButton {
-                    ServiceLocator.permissionAdapter(this@MainActivity)
-                        .request(Permission.WRITE_SECURE_SETTINGS)
-                }
-
-                show()
-            }
-        }
+        viewModel.showPopups(this, coordinatorLayout)
 
         requestPermissionDelegate = RequestPermissionDelegate(this, showDialogs = true)
 
         ServiceLocator.permissionAdapter(this@MainActivity).request
-            .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
-            .onEach { permission ->
-                requestPermissionDelegate.requestPermission(
-                    permission,
-                    findNavController(R.id.container)
-                )
-            }
-            .launchIn(lifecycleScope)
+                .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+                .onEach { permission ->
+                    requestPermissionDelegate.requestPermission(
+                            permission,
+                            findNavController(R.id.container)
+                    )
+                }
+                .launchIn(lifecycleScope)
+
+        if (intent.action == ACTION_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG) {
+            viewModel.onCantFindAccessibilitySettings()
+        }
     }
 
     override fun onResume() {

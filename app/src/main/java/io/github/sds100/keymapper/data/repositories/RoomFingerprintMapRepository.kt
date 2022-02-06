@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.data.repositories
 import io.github.sds100.keymapper.data.db.dao.FingerprintMapDao
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.Extra
-import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapEntity
+import io.github.sds100.keymapper.data.entities.FingerprintMapEntity
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapRepository
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.util.*

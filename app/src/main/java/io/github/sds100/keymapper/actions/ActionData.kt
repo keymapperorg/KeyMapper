@@ -609,4 +609,14 @@ sealed class ActionData {
     object DismissAllNotifications : ActionData() {
         override val id: ActionId = ActionId.DISMISS_ALL_NOTIFICATIONS
     }
+    
+    @Serializable
+    object AnswerCall : ActionData(){
+        override val id: ActionId = ActionId.ANSWER_PHONE_CALL
+    }
+    
+    @Serializable
+    object EndCall : ActionData(){
+        override val id: ActionId = ActionId.END_PHONE_CALL
+    }
 }

@@ -4,12 +4,11 @@ import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.FingerprintGestureController
 import android.accessibilityservice.GestureDescription
 import android.app.ActivityManager
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.app.Service
+import android.content.*
 import android.graphics.Path
 import android.os.Build
+import android.os.IBinder
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import androidx.core.content.getSystemService
@@ -18,6 +17,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import io.github.sds100.keymapper.api.Api
+import io.github.sds100.keymapper.api.IKeyEventReceiver
+import io.github.sds100.keymapper.api.IKeyEventReceiverCallback
+import io.github.sds100.keymapper.api.KeyEventReceiver
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapId
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.util.*
@@ -36,7 +38,9 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
      */
     private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            when (intent?.action) {
+            intent ?: return
+
+            when (intent.action) {
                 Api.ACTION_TRIGGER_KEYMAP_BY_UID -> {
                     intent.getStringExtra(Api.EXTRA_KEYMAP_UID)?.let {
                         controller?.triggerKeyMapFromIntent(it)
@@ -104,6 +108,31 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
             }
         }
 
+    private val keyEventReceiverCallback: IKeyEventReceiverCallback = object : IKeyEventReceiverCallback.Stub() {
+        override fun onKeyEvent(event: KeyEvent?): Boolean {
+            return this@MyAccessibilityService.onKeyEvent(event)
+        }
+    }
+
+    private val keyEventReceiverLock: Any = Any()
+    private var keyEventReceiverBinder: IKeyEventReceiver? = null
+
+    private val keyEventReceiverConnection: ServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            synchronized(keyEventReceiverLock) {
+                keyEventReceiverBinder = IKeyEventReceiver.Stub.asInterface(service)
+                keyEventReceiverBinder?.registerCallback(keyEventReceiverCallback)
+            }
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            synchronized(keyEventReceiverLock) {
+                keyEventReceiverBinder?.unregisterCallback(keyEventReceiverCallback)
+                keyEventReceiverBinder = null
+            }
+        }
+    }
+
     private var controller: AccessibilityServiceController? = null
 
     override fun onCreate() {
@@ -116,7 +145,6 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
         IntentFilter().apply {
             addAction(Api.ACTION_TRIGGER_KEYMAP_BY_UID)
             addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
-
             registerReceiver(broadcastReceiver, this)
         }
 
@@ -127,6 +155,10 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
                     SHOW_MODE_HIDDEN -> _isKeyboardHidden.value = true
                 }
             }
+        }
+
+        Intent(this, KeyEventReceiver::class.java).also { intent ->
+            bindService(intent, keyEventReceiverConnection, Service.BIND_AUTO_CREATE)
         }
     }
 
@@ -145,30 +177,28 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
-            fingerprintGestureCallback =
-                object : FingerprintGestureController.FingerprintGestureCallback() {
+            fingerprintGestureCallback = object : FingerprintGestureController.FingerprintGestureCallback() {
+                override fun onGestureDetected(gesture: Int) {
+                    super.onGestureDetected(gesture)
 
-                    override fun onGestureDetected(gesture: Int) {
-                        super.onGestureDetected(gesture)
+                    val id: FingerprintMapId = when (gesture) {
+                        FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_DOWN ->
+                            FingerprintMapId.SWIPE_DOWN
 
-                        val id: FingerprintMapId = when (gesture) {
-                            FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_DOWN ->
-                                FingerprintMapId.SWIPE_DOWN
+                        FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_UP ->
+                            FingerprintMapId.SWIPE_UP
 
-                            FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_UP ->
-                                FingerprintMapId.SWIPE_UP
+                        FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_LEFT ->
+                            FingerprintMapId.SWIPE_LEFT
 
-                            FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_LEFT ->
-                                FingerprintMapId.SWIPE_LEFT
+                        FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_RIGHT ->
+                            FingerprintMapId.SWIPE_RIGHT
 
-                            FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_RIGHT ->
-                                FingerprintMapId.SWIPE_RIGHT
-
-                            else -> return
-                        }
-                        controller?.onFingerprintGesture(id)
+                        else -> return
                     }
+                    controller?.onFingerprintGesture(id)
                 }
+            }
 
             fingerprintGestureCallback?.let {
                 fingerprintGestureController.registerFingerprintGestureCallback(it, null)
@@ -200,6 +230,8 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
                 .unregisterFingerprintGestureCallback(fingerprintGestureCallback)
         }
 
+        unbindService(keyEventReceiverConnection)
+
         Timber.i("Accessibility service: onDestroy")
 
         super.onDestroy()
@@ -230,12 +262,12 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
 
         if (controller != null) {
             return controller!!.onKeyEvent(
-                event.keyCode,
-                event.action,
-                device,
-                event.metaState,
-                event.scanCode,
-                event.eventTime
+                    event.keyCode,
+                    event.action,
+                    device,
+                    event.metaState,
+                    event.scanCode,
+                    event.eventTime
             )
         }
 
@@ -263,8 +295,8 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
     }
 
     override fun performActionOnNode(
-        findNode: (node: AccessibilityNodeModel) -> Boolean,
-        performAction: (node: AccessibilityNodeModel) -> AccessibilityNodeAction?
+            findNode: (node: AccessibilityNodeModel) -> Boolean,
+            performAction: (node: AccessibilityNodeModel) -> AccessibilityNodeAction?
     ): Result<*> {
         val node = rootInActiveWindow.findNodeRecursively {
             findNode(it.toModel())
@@ -302,25 +334,25 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
             }
 
             val strokeDescription =
-                when {
-                    inputEventType == InputEventType.DOWN && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ->
-                        GestureDescription.StrokeDescription(
-                            path,
-                            0,
-                            duration,
-                            true
-                        )
+                    when {
+                        inputEventType == InputEventType.DOWN && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ->
+                            GestureDescription.StrokeDescription(
+                                    path,
+                                    0,
+                                    duration,
+                                    true
+                            )
 
-                    inputEventType == InputEventType.UP && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ->
-                        GestureDescription.StrokeDescription(
-                            path,
-                            59999,
-                            duration,
-                            false
-                        )
+                        inputEventType == InputEventType.UP && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ->
+                            GestureDescription.StrokeDescription(
+                                    path,
+                                    59999,
+                                    duration,
+                                    false
+                            )
 
-                    else -> GestureDescription.StrokeDescription(path, 0, duration)
-                }
+                        else -> GestureDescription.StrokeDescription(path, 0, duration)
+                    }
 
             strokeDescription.let {
                 val gestureDescription = GestureDescription.Builder().apply {

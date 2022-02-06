@@ -528,10 +528,10 @@
     <string name="summary_pref_hide_home_screen_alerts">Ukryj alerty u góry ekranu głównego.</string>
     <string name="title_pref_show_device_descriptors">Pokaż pierwsze 5 znaków identyfikatora urządzenia dla wyzwalaczy specyficznych dla urządzenia</string>
     <string name="summary_pref_show_device_descriptors">Jest to przydatne do rozróżnienia między urządzeniami o tej samej nazwie.</string>
-    <string name="title_pref_reroute_keyevents_link">Napraw klawiatury, które są ustawione na układ angielski (US)</string>
-    <string name="summary_pref_reroute_keyevents_link">To naprawia klawiatury, które nie mają prawidłowego układu klawiatury, gdy usługa ułatwień dostępu jest włączona. Kliknij, aby dowiedzieć się więcej i skonfigurować.</string>
     <string name="title_pref_reroute_keyevents">Napraw klawiatury, które są ustawione na układ angielski (US)</string>
     <string name="summary_pref_reroute_keyevents">W systemie Android 11 występuje błąd polegający na tym, że wszystkie urządzenia zewnętrzne, podczas korzystania z usługi ułatwień dostępu, stają się tym samym wewnętrznym urządzeniem wirtualnym. Ponieważ system Android nie może poprawnie zidentyfikować tych urządzeń, nie może określić, którego układu klawiatury należy z nimi używać, więc domyślnie jest to angielski (US), nawet jeśli jest to na przykład klawiatura niemiecka. Możesz użyć Key Mapper, aby obejść ten problem, wykonując poniższe czynności.</string>
+    <string name="title_pref_reroute_keyevents_link">Obejście błędu Androida 11</string>
+    <string name="summary_pref_reroute_keyevents_link">To naprawia klawiatury, które nie działają po włączeniu jakiejkolwiek usługi ułatwień dostępu.</string>
     <string name="title_pref_devices_to_reroute_keyevents_choose_devices">4. Wybierz urządzenia</string>
     <string name="title_pref_devices_to_reroute_keyevents_install_gui_keyboard">1. Zainstaluj GUI klawiaturę Key Mapper (opcjonalnie)</string>
     <string name="title_pref_devices_to_reroute_keyevents_install_leanback_keyboard">1. Zainstaluj klawiaturę Key Mapper Leanback (opcjonalnie)</string>

@@ -7,7 +7,6 @@ import io.github.sds100.keymapper.mappings.DisplayActionUseCase
 import io.github.sds100.keymapper.mappings.Mapping
 import io.github.sds100.keymapper.mappings.isDelayBeforeNextActionAllowed
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
-import io.github.sds100.keymapper.shizuku.ShizukuUtils
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.CoroutineScope
@@ -23,7 +22,7 @@ import kotlinx.coroutines.runBlocking
 class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
     private val coroutineScope: CoroutineScope,
     private val displayActionUseCase: DisplayActionUseCase,
-    private val testAction: TestActionUseCase,
+    private val testActionUseCase: TestActionUseCase,
     private val config: ConfigMappingUseCase<A, M>,
     private val uiHelper: ActionUiHelper<M, A>,
     private val onboardingUseCase: OnboardingUseCase,
@@ -79,37 +78,7 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
                 val error = displayActionUseCase.getError(actionData)
 
                 when {
-                    error == null -> testAction(actionData).onFailure { error ->
-
-                        if (error is Error.AccessibilityServiceDisabled) {
-
-                            val snackBar = PopupUi.SnackBar(
-                                message = getString(R.string.dialog_message_enable_accessibility_service_to_test_action),
-                                actionText = getString(R.string.pos_turn_on)
-                            )
-
-                            val response = showPopup("enable_service", snackBar)
-
-                            if (response != null) {
-                                displayActionUseCase.fixError(Error.AccessibilityServiceDisabled)
-                            }
-                        }
-
-                        if (error is Error.AccessibilityServiceCrashed) {
-
-                            val snackBar = PopupUi.SnackBar(
-                                message = getString(R.string.dialog_message_restart_accessibility_service_to_test_action),
-                                actionText = getString(R.string.pos_restart)
-                            )
-
-                            val response = showPopup("restart_service", snackBar)
-
-                            if (response != null) {
-                                displayActionUseCase.fixError(Error.AccessibilityServiceCrashed)
-                            }
-                        }
-                    }
-
+                    error == null -> attemptTestAction(actionData)
                     error.isFixable -> displayActionUseCase.fixError(error)
                 }
             }
@@ -120,10 +89,15 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
         coroutineScope.launch {
             val actionData = navigate("add_action", NavDestination.ChooseAction) ?: return@launch
 
-            if (actionData is ActionData.InputKeyEvent && ShizukuUtils.isSdkRecommended()) {
-                promptToInstallShizukuOrGuiKeyboard()
-            } else if (actionData is ActionData.InputKeyEvent || actionData is ActionData.Text) {
-                promptToInstallGuiKeyboard()
+            val showInstallShizukuPrompt = onboardingUseCase.showInstallShizukuPrompt(actionData)
+            val showInstallGuiKeyboardPrompt =
+                onboardingUseCase.showInstallGuiKeyboardPrompt(actionData)
+
+            when {
+                showInstallShizukuPrompt && showInstallGuiKeyboardPrompt ->
+                    promptToInstallShizukuOrGuiKeyboard()
+
+                showInstallGuiKeyboardPrompt -> promptToInstallGuiKeyboard()
             }
 
             config.addAction(actionData)
@@ -142,11 +116,28 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
         runBlocking { _openEditOptions.emit(actionUid) }
     }
 
-    private suspend fun promptToInstallGuiKeyboard() {
-        if (!onboardingUseCase.showGuiKeyboardPrompt.first()) {
-            return
-        }
+    private suspend fun attemptTestAction(actionData: ActionData) {
+        testActionUseCase.invoke(actionData).onFailure { error ->
 
+            if (error is Error.AccessibilityServiceDisabled) {
+                ViewModelHelper.handleAccessibilityServiceStoppedSnackBar(
+                    resourceProvider = this,
+                    popupViewModel = this,
+                    startService = displayActionUseCase::startAccessibilityService
+                )
+            }
+
+            if (error is Error.AccessibilityServiceCrashed) {
+                ViewModelHelper.handleAccessibilityServiceCrashedSnackBar(
+                    resourceProvider = this,
+                    popupViewModel = this,
+                    restartService = displayActionUseCase::restartAccessibilityService
+                )
+            }
+        }
+    }
+
+    private suspend fun promptToInstallGuiKeyboard() {
         if (onboardingUseCase.isTvDevice()) {
 
             val appStoreModel = ChooseAppStoreModel(
@@ -191,10 +182,6 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
     }
 
     private suspend fun promptToInstallShizukuOrGuiKeyboard() {
-        if (!onboardingUseCase.showGuiKeyboardPrompt.first()) {
-            return
-        }
-
         if (onboardingUseCase.isTvDevice()) {
             val chooseSolutionDialog = PopupUi.Dialog(
                 title = getText(R.string.dialog_title_install_shizuku_or_leanback_keyboard),

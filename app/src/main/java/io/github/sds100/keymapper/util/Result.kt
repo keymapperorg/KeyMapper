@@ -74,6 +74,7 @@ sealed class Error : Result<Nothing>() {
                     Permission.IGNORE_BATTERY_OPTIMISATION -> R.string.error_battery_optimisation_enabled
                     Permission.SHIZUKU -> R.string.error_shizuku_permission_denied
                     Permission.ACCESS_FINE_LOCATION -> R.string.error_access_fine_location_permission_denied
+                    Permission.ANSWER_PHONE_CALL -> R.string.error_answer_end_phone_call
                 }
 
                 return resourceProvider.getString(resId)
@@ -114,6 +115,7 @@ sealed class Error : Result<Nothing>() {
     data class CorruptJsonFile(val reason: String) : Error()
 
     object ShizukuNotStarted : Error()
+    object CantDetectKeyEventsInPhoneCall : Error()
 }
 
 inline fun <T> Result<T>.onSuccess(f: (T) -> Unit): Result<T> {

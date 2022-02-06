@@ -59,7 +59,12 @@ class SplashActivity : FragmentActivity() {
         }
 
         if (appIntroSlides.isEmpty()) {
-            startActivity(Intent(this, MainActivity::class.java))
+            val intentAction = this.intent.action
+
+            Intent(this, MainActivity::class.java).apply {
+                action = intentAction
+                startActivity(this)
+            }
         } else {
             Intent(this, AppIntroActivity::class.java).apply {
                 val slidesToStringArray = appIntroSlides.map { it }.toTypedArray()

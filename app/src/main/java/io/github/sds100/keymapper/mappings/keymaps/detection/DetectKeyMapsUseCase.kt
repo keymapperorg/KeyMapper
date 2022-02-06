@@ -16,7 +16,10 @@ import io.github.sds100.keymapper.system.display.DisplayAdapter
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeMessenger
 import io.github.sds100.keymapper.system.navigation.OpenMenuHelper
+import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
+import io.github.sds100.keymapper.system.phone.CallState
+import io.github.sds100.keymapper.system.phone.PhoneAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import io.github.sds100.keymapper.util.InputEventType
@@ -39,7 +42,8 @@ class DetectKeyMapsUseCaseImpl(
     private val keyMapperImeMessenger: KeyMapperImeMessenger,
     private val accessibilityService: IAccessibilityService,
     private val shizukuInputEventInjector: InputEventInjector,
-    private val permissionAdapter: PermissionAdapter
+    private val permissionAdapter: PermissionAdapter,
+    private val phoneAdapter: PhoneAdapter
 ) : DetectKeyMapsUseCase, DetectMappingUseCase by detectMappingUseCase {
 
     override val allKeyMapList: Flow<List<KeyMap>> =
@@ -85,6 +89,12 @@ class DetectKeyMapsUseCaseImpl(
     override val currentTime: Long
         get() = SystemClock.elapsedRealtime()
 
+    override val isInPhoneCall: Boolean
+        get() = phoneAdapter.getCallState() == CallState.IN_PHONE_CALL
+
+    override val isPhoneRinging: Boolean
+        get() = phoneAdapter.getCallState() == CallState.RINGING
+
     private val openMenuHelper = OpenMenuHelper(
         suAdapter,
         accessibilityService,
@@ -99,20 +109,10 @@ class DetectKeyMapsUseCaseImpl(
         inputEventType: InputEventType,
         scanCode: Int
     ) {
-        Timber.d("Imitate button press ${KeyEvent.keyCodeToString(keyCode)}, key code: $keyCode, device id: $deviceId, meta state: $metaState, scan code: $scanCode")
+        if (permissionAdapter.isGranted(Permission.SHIZUKU)) {
+            Timber.d("Imitate button press ${KeyEvent.keyCodeToString(keyCode)} with Shizuku, key code: $keyCode, device id: $deviceId, meta state: $metaState, scan code: $scanCode")
 
-        when (keyCode) {
-            KeyEvent.KEYCODE_VOLUME_UP -> volumeAdapter.raiseVolume(showVolumeUi = true)
-
-            KeyEvent.KEYCODE_VOLUME_DOWN -> volumeAdapter.lowerVolume(showVolumeUi = true)
-
-            KeyEvent.KEYCODE_BACK -> accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
-            KeyEvent.KEYCODE_HOME -> accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME)
-            KeyEvent.KEYCODE_APP_SWITCH -> accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_POWER_DIALOG)
-
-            KeyEvent.KEYCODE_MENU -> openMenuHelper.openMenu()
-
-            else -> keyMapperImeMessenger.inputKeyEvent(
+            shizukuInputEventInjector.inputKeyEvent(
                 InputKeyModel(
                     keyCode,
                     inputEventType,
@@ -121,6 +121,32 @@ class DetectKeyMapsUseCaseImpl(
                     scanCode
                 )
             )
+        } else {
+            Timber.d("Imitate button press ${KeyEvent.keyCodeToString(keyCode)}, key code: $keyCode, device id: $deviceId, meta state: $metaState, scan code: $scanCode")
+
+            when (keyCode) {
+                KeyEvent.KEYCODE_VOLUME_UP -> volumeAdapter.raiseVolume(showVolumeUi = true)
+
+                KeyEvent.KEYCODE_VOLUME_DOWN -> volumeAdapter.lowerVolume(showVolumeUi = true)
+
+                KeyEvent.KEYCODE_BACK -> accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
+                KeyEvent.KEYCODE_HOME -> accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME)
+                KeyEvent.KEYCODE_APP_SWITCH -> accessibilityService.doGlobalAction(
+                    AccessibilityService.GLOBAL_ACTION_POWER_DIALOG
+                )
+
+                KeyEvent.KEYCODE_MENU -> openMenuHelper.openMenu()
+
+                else -> keyMapperImeMessenger.inputKeyEvent(
+                    InputKeyModel(
+                        keyCode,
+                        inputEventType,
+                        metaState,
+                        deviceId,
+                        scanCode
+                    )
+                )
+            }
         }
     }
 
@@ -135,6 +161,9 @@ interface DetectKeyMapsUseCase : DetectMappingUseCase {
     val defaultLongPressDelay: Flow<Long>
     val defaultDoublePressDelay: Flow<Long>
     val defaultSequenceTriggerTimeout: Flow<Long>
+
+    val isInPhoneCall: Boolean
+    val isPhoneRinging: Boolean
 
     val currentTime: Long
 

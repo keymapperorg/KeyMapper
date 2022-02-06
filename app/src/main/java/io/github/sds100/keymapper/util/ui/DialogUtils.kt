@@ -4,8 +4,10 @@ import android.app.Dialog
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.*
+import com.google.android.material.textfield.TextInputLayout
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.databinding.DialogEdittextNumberBinding
@@ -161,6 +163,7 @@ suspend fun Context.editTextStringAlertDialog(
     initialText: String = "",
     inputType: Int? = null,
     message: CharSequence? = null,
+    autoCompleteEntries: List<String> = emptyList()
 ) = suspendCancellableCoroutine<String?> { continuation ->
 
     val text = MutableStateFlow(initialText)
@@ -173,9 +176,23 @@ suspend fun Context.editTextStringAlertDialog(
             setText(text)
             setAllowEmpty(allowEmpty)
 
-            if (inputType != null) {
-                editText.inputType = inputType
+            if (autoCompleteEntries.isEmpty()) {
+                textInputLayout.endIconMode = TextInputLayout.END_ICON_NONE
+            } else {
+                textInputLayout.endIconMode = TextInputLayout.END_ICON_DROPDOWN_MENU
             }
+
+            if (inputType != null) {
+                autoCompleteTextView.inputType = inputType
+            }
+
+            val autoCompleteAdapter = ArrayAdapter(
+                this@editTextStringAlertDialog,
+                R.layout.dropdown_menu_popup_item,
+                autoCompleteEntries
+            )
+
+            autoCompleteTextView.setAdapter(autoCompleteAdapter)
 
             setView(this.root)
         }
@@ -320,16 +337,4 @@ fun Dialog.dismissOnDestroy(lifecycleOwner: LifecycleOwner) {
             lifecycleOwner.lifecycle.removeObserver(this)
         }
     })
-}
-
-object DialogUtils {
-    fun keyMapperCrashedDialog(resourceProvider: ResourceProvider): PopupUi.Dialog {
-        return PopupUi.Dialog(
-            title = resourceProvider.getString(R.string.dialog_title_key_mapper_crashed),
-            message = resourceProvider.getText(R.string.dialog_message_key_mapper_crashed),
-            positiveButtonText = resourceProvider.getString(R.string.dialog_button_read_dont_kill_my_app_no),
-            negativeButtonText = resourceProvider.getString(R.string.neg_cancel),
-            neutralButtonText = resourceProvider.getString(R.string.dialog_button_read_dont_kill_my_app_yes)
-        )
-    }
 }

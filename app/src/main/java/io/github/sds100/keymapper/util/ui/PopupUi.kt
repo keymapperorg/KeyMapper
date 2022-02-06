@@ -28,6 +28,7 @@ sealed class PopupUi<R> {
         val text: String = "",
         val inputType: Int? = null,
         val message: CharSequence? = null,
+        val autoCompleteEntries: List<String> = emptyList()
     ) : PopupUi<String>()
 
     data class SingleChoice<ID>(
@@ -45,6 +46,8 @@ sealed class PopupUi<R> {
         val positiveButtonText: CharSequence? = null,
         val negativeButtonText: CharSequence? = null
     ) : PopupUi<DialogResponse>()
+
+    data class OpenUrl(val url: String) : PopupUi<Unit>()
 }
 
 enum class DialogResponse {

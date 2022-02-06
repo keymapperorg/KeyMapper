@@ -37,5 +37,12 @@ enum class ChooseConstraintType {
     WIFI_DISCONNECTED,
 
     IME_CHOSEN,
-    IME_NOT_CHOSEN
+    IME_NOT_CHOSEN,
+
+    DEVICE_IS_LOCKED,
+    DEVICE_IS_UNLOCKED,
+
+    IN_PHONE_CALL,
+    NOT_IN_PHONE_CALL,
+    PHONE_RINGING
 }

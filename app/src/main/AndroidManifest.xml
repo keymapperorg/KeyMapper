@@ -4,6 +4,7 @@
     package="io.github.sds100.keymapper">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -17,6 +18,14 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+
+    <permission android:name="io.github.sds100.keymapper.KEY_EVENT_RECEIVER">
+        <!--    I would make this have signature protection level
+                but I already released the Key Mapper GUI Keyboard
+                with a different signature -->
+    </permission>
+
     <uses-permission
         android:name="android.permission.QUERY_ALL_PACKAGES"
         tools:ignore="QueryAllPackagesPermission" />
@@ -36,6 +45,10 @@
 
     <uses-feature
         android:name="android.software.leanback"
+        android:required="false" />
+
+    <uses-feature
+        android:name="android.hardware.touchscreen"
         android:required="false" />
 
     <uses-sdk tools:overrideLibrary="rikka.shizuku.provider, rikka.shizuku.api, rikka.shizuku.shared, rikka.shizuku.aidl" />
@@ -192,6 +205,11 @@
         <service
             android:name=".system.accessibility.ObserveEnabledAccessibilityServicesJob"
             android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <service
+            android:name=".api.KeyEventReceiver"
+            android:exported="true"
+            android:permission="io.github.sds100.keymapper.KEY_EVENT_RECEIVER" />
 
         <service
             android:name=".system.inputmethod.ObserveInputMethodsJob"

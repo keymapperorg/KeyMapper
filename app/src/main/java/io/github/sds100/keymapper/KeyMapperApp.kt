@@ -75,36 +75,36 @@ class KeyMapperApp : MultiDexApplication() {
 
     val packageManagerAdapter by lazy {
         AndroidPackageManagerAdapter(
-            this,
-            appCoroutineScope,
-            permissionAdapter,
-            suAdapter
+                this,
+                appCoroutineScope,
+                permissionAdapter,
+                suAdapter
         )
     }
 
     val inputMethodAdapter by lazy {
         AndroidInputMethodAdapter(
-            this,
-            appCoroutineScope,
-            accessibilityServiceAdapter,
-            permissionAdapter,
-            suAdapter
+                this,
+                appCoroutineScope,
+                accessibilityServiceAdapter,
+                permissionAdapter,
+                suAdapter
         )
     }
     val devicesAdapter by lazy {
         AndroidDevicesAdapter(
-            this,
-            bluetoothMonitor,
-            appCoroutineScope
+                this,
+                bluetoothMonitor,
+                appCoroutineScope
         )
     }
     val cameraAdapter by lazy { AndroidCameraAdapter(this) }
     val permissionAdapter by lazy {
         AndroidPermissionAdapter(
-            this,
-            appCoroutineScope,
-            suAdapter,
-            notificationReceiverAdapter
+                this,
+                appCoroutineScope,
+                suAdapter,
+                notificationReceiverAdapter
         )
     }
 
@@ -123,7 +123,7 @@ class KeyMapperApp : MultiDexApplication() {
             ServiceLocator.settingsRepository(this)
         )
     }
-    val phoneAdapter by lazy { AndroidPhoneAdapter(this) }
+    val phoneAdapter by lazy { AndroidPhoneAdapter(this, appCoroutineScope) }
     val intentAdapter by lazy { IntentAdapterImpl(this) }
     val mediaAdapter by lazy { AndroidMediaAdapter(this) }
     val lockScreenAdapter by lazy { AndroidLockScreenAdapter(this) }
@@ -138,22 +138,22 @@ class KeyMapperApp : MultiDexApplication() {
     val recordTriggerController by lazy {
         RecordTriggerController(appCoroutineScope, accessibilityServiceAdapter)
     }
-    
+
     val autoGrantPermissionController by lazy {
         AutoGrantPermissionController(
-            appCoroutineScope,
-            permissionAdapter,
-            packageManagerAdapter,
-            popupMessageAdapter,
-            resourceProvider
+                appCoroutineScope,
+                permissionAdapter,
+                packageManagerAdapter,
+                popupMessageAdapter,
+                resourceProvider
         )
     }
 
     private val loggingTree by lazy {
         KeyMapperLoggingTree(
-            appCoroutineScope,
-            ServiceLocator.settingsRepository(this),
-            ServiceLocator.logRepository(this)
+                appCoroutineScope,
+                ServiceLocator.settingsRepository(this),
+                ServiceLocator.logRepository(this)
         )
     }
 
@@ -166,10 +166,10 @@ class KeyMapperApp : MultiDexApplication() {
         Thread.setDefaultUncaughtExceptionHandler { thread, exception ->
             //log in a blocking manner and always log regardless of whether the setting is turned on
             val entry = LogEntryEntity(
-                id = 0,
-                time = Calendar.getInstance().timeInMillis,
-                severity = LogEntryEntity.SEVERITY_ERROR,
-                message = exception.stackTraceToString()
+                    id = 0,
+                    time = Calendar.getInstance().timeInMillis,
+                    severity = LogEntryEntity.SEVERITY_ERROR,
+                    message = exception.stackTraceToString()
             )
 
             runBlocking {
@@ -182,49 +182,49 @@ class KeyMapperApp : MultiDexApplication() {
         super.onCreate()
 
         ServiceLocator.settingsRepository(this).get(Keys.darkTheme)
-            .map { it?.toIntOrNull() }
-            .map {
-                when (it) {
-                    ThemeUtils.DARK -> AppCompatDelegate.MODE_NIGHT_YES
-                    ThemeUtils.LIGHT -> AppCompatDelegate.MODE_NIGHT_NO
-                    else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                .map { it?.toIntOrNull() }
+                .map {
+                    when (it) {
+                        ThemeUtils.DARK -> AppCompatDelegate.MODE_NIGHT_YES
+                        ThemeUtils.LIGHT -> AppCompatDelegate.MODE_NIGHT_NO
+                        else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                    }
                 }
-            }
-            .onEach { mode -> AppCompatDelegate.setDefaultNightMode(mode) }
-            .launchIn(appCoroutineScope)
+                .onEach { mode -> AppCompatDelegate.setDefaultNightMode(mode) }
+                .launchIn(appCoroutineScope)
 
-        if (BuildConfig.BUILD_TYPE == "debug") {
+        if (BuildConfig.BUILD_TYPE == "debug" || BuildConfig.BUILD_TYPE == "debug_release") {
             Timber.plant(Timber.DebugTree())
         }
 
         Timber.plant(loggingTree)
 
         notificationController = NotificationController(
-            appCoroutineScope,
-            ManageNotificationsUseCaseImpl(
-                ServiceLocator.settingsRepository(this),
-                notificationAdapter,
-                suAdapter
-            ),
-            UseCases.pauseMappings(this),
-            UseCases.showImePicker(this),
-            UseCases.controlAccessibilityService(this),
-            UseCases.toggleCompatibleIme(this),
-            ShowHideInputMethodUseCaseImpl(ServiceLocator.accessibilityServiceAdapter(this)),
-            UseCases.fingerprintGesturesSupported(this),
-            UseCases.onboarding(this),
-            ServiceLocator.resourceProvider(this)
+                appCoroutineScope,
+                ManageNotificationsUseCaseImpl(
+                        ServiceLocator.settingsRepository(this),
+                        notificationAdapter,
+                        suAdapter
+                ),
+                UseCases.pauseMappings(this),
+                UseCases.showImePicker(this),
+                UseCases.controlAccessibilityService(this),
+                UseCases.toggleCompatibleIme(this),
+                ShowHideInputMethodUseCaseImpl(ServiceLocator.accessibilityServiceAdapter(this)),
+                UseCases.fingerprintGesturesSupported(this),
+                UseCases.onboarding(this),
+                ServiceLocator.resourceProvider(this)
         )
 
         autoSwitchImeController = AutoSwitchImeController(
-            appCoroutineScope,
-            ServiceLocator.settingsRepository(this),
-            ServiceLocator.inputMethodAdapter(this),
-            UseCases.pauseMappings(this),
-            devicesAdapter,
-            popupMessageAdapter,
-            resourceProvider,
-            ServiceLocator.accessibilityServiceAdapter(this)
+                appCoroutineScope,
+                ServiceLocator.settingsRepository(this),
+                ServiceLocator.inputMethodAdapter(this),
+                UseCases.pauseMappings(this),
+                devicesAdapter,
+                popupMessageAdapter,
+                resourceProvider,
+                ServiceLocator.accessibilityServiceAdapter(this)
         )
 
         processLifecycleOwner.lifecycle.addObserver(object : LifecycleObserver {
@@ -236,14 +236,15 @@ class KeyMapperApp : MultiDexApplication() {
                 notificationController.onOpenApp()
 
                 if (BuildConfig.DEBUG && permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)) {
-                    accessibilityServiceAdapter.enableService()
+                    accessibilityServiceAdapter.start()
                 }
             }
         })
 
         appCoroutineScope.launch {
-            notificationController.openApp.collectLatest {
+            notificationController.openApp.collectLatest { intentAction ->
                 Intent(this@KeyMapperApp, SplashActivity::class.java).apply {
+                    action = intentAction
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK
 
                     startActivity(this)

@@ -281,7 +281,6 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <string name="slide_title_share_bug_report">Sdílet zprávu</string>
     <string name="slide_description_share_bug_report">Existují tři způsoby, jak sdílet hlášení o chybě vývojáři. Buď se připojte na Discord server, vytvořte GitHub, nebo (alespoň pokud možno) pošlete e-mail. Ujistěte se, že připojíte zprávu o chybě k vaší zprávě!</string>
     <string name="slide_button_share_discord">Discord</string>
-    <string name="slide_button_share_github">GitHub</string>
     <!--  Bug report slides-->
     <!-- Menu action titles-->
     <string name="action_settings">Nastavení</string>
@@ -413,9 +412,9 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <string name="pos_done">Hotovo</string>
     <string name="pos_opt_in">Přihlásit se</string>
     <string name="pos_grant_write_secure_settings_guide">Průvodce</string>
-    <string name="pos_grant_report_issues_guide">Průvodce</string>
+    <string name="pos_report_issues_guide">Průvodce</string>
     <string name="pos_enable_root_features">Povolit root funkce</string>
-    <string name="pos_grant">Udělit</string>
+    <string name="pos_grant">Udělit</string>strings
     <string name="pos_join">Připojit se</string>
     <string name="pos_change_location">Změnit</string>
     <string name="pos_turn_off_stock_battery_optimisation">částečně opravit</string>
@@ -518,11 +517,8 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <string name="summary_pref_hide_home_screen_alerts">Skrýt upozornění v horní části domovské obrazovky.</string>
     <string name="title_pref_show_device_descriptors">Zobrazit prvních 5 znaků ID zařízení pro specifické spouštěče zařízení</string>
     <string name="summary_pref_show_device_descriptors">Toto je užitečné pro rozlišení mezi zařízeními, která mají stejný název.</string>
-    <string name="title_pref_reroute_keyevents">Řešení chyby Android 11</string>
-    <string name="summary_pref_reroute_keyevents">Tím se opraví klávesnice, které nefungují, když jsou povoleny nějaké služby usnadnění.</string>
-    <string name="title_pref_devices_to_reroute_keyevents">Řešení pro chybu v Androidu 11, která nastaví id zařízení pro vstupní události na -1</string>
-    <string name="summary_pref_devices_to_reroute_keyevents">Řešení pro chybu v Androidu 11, která nastaví id zařízení pro vstupní události na -1</string>
-    <string name="summary_pref_devices_to_reroute_keyevents_choose_devices">Vyberte zařízení, která klíčová mapa by měla zachytit všechny klíčové události a poté přesměrovat zvolenou klávesovou mapu. MUSÍTE používat klávesovou mapu GUI nebo základní vstupní metodu klávesové mapy, aby to fungovalo. Toto je částečné řešení pro https://issuetracker.google.com/issues/163120692. Toto nebude fungovat s herními ovladači.</string>
+    <string name="title_pref_reroute_keyevents_link">Řešení chyby Android 11</string>
+    <string name="summary_pref_reroute_keyevents_link">Tím se opraví klávesnice, které nefungují, když jsou povoleny nějaké služby usnadnění.</string>
     <string name="title_pref_devices_to_reroute_keyevents_choose_devices">4. Zvolte zařízení</string>
     <string name="title_pref_devices_to_reroute_keyevents_install_gui_keyboard">1. Nainstalujte klávesu Mapper GUI klíče (volitelné)</string>
     <string name="title_pref_devices_to_reroute_keyevents_install_leanback_keyboard">1. Nainstalujte klávesovou mapu Leanback (volitelné)</string>

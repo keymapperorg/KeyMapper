@@ -140,7 +140,7 @@ class AndroidPermissionAdapter(
 
             //this check is super quick (~0ms) so this doesn't need to be cached.
             Permission.SHIZUKU -> {
-                if (ShizukuUtils.isSdkSupported() && Shizuku.getBinder() != null) {
+                if (ShizukuUtils.isSupportedForSdkVersion() && Shizuku.getBinder() != null) {
                     Shizuku.checkSelfPermission() == PERMISSION_GRANTED
                 } else {
                     false
@@ -151,6 +151,12 @@ class AndroidPermissionAdapter(
                 ContextCompat.checkSelfPermission(
                     ctx,
                     Manifest.permission.ACCESS_FINE_LOCATION
+                ) == PERMISSION_GRANTED
+            
+            Permission.ANSWER_PHONE_CALL ->
+                ContextCompat.checkSelfPermission(
+                    ctx,
+                    Manifest.permission.ANSWER_PHONE_CALLS
                 ) == PERMISSION_GRANTED
         }
     }

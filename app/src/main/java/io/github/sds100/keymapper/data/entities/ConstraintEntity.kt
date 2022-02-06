@@ -15,7 +15,7 @@ data class ConstraintEntity(
 
     @SerializedName(NAME_EXTRAS)
     val extras: List<Extra>
-)  {
+) {
 
     constructor(type: String, vararg extra: Extra) : this(type, extra.toList())
 
@@ -59,6 +59,13 @@ data class ConstraintEntity(
 
         const val IME_CHOSEN = "ime_chosen"
         const val IME_NOT_CHOSEN = "ime_not_chosen"
+
+        const val DEVICE_IS_LOCKED = "is_locked"
+        const val DEVICE_IS_UNLOCKED = "is_unlocked"
+
+        const val IN_PHONE_CALL = "in_phone_call"
+        const val NOT_IN_PHONE_CALL = "not_in_phone_call"
+        const val PHONE_RINGING = "phone_ringing"
 
         const val EXTRA_PACKAGE_NAME = "extra_package_name"
         const val EXTRA_BT_ADDRESS = "extra_bluetooth_device_address"

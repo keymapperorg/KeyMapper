@@ -82,7 +82,8 @@ object Inject {
         return ChooseConstraintViewModel.Factory(
             CreateConstraintUseCaseImpl(
                 ServiceLocator.networkAdapter(ctx),
-                ServiceLocator.inputMethodAdapter(ctx)
+                ServiceLocator.inputMethodAdapter(ctx),
+                ServiceLocator.settingsRepository(ctx)
             ),
             ServiceLocator.resourceProvider(ctx)
         )
@@ -186,7 +187,7 @@ object Inject {
             ShowHomeScreenAlertsUseCaseImpl(
                 ServiceLocator.settingsRepository(ctx),
                 ServiceLocator.permissionAdapter(ctx),
-                UseCases.controlAccessibilityService(ctx),
+                ServiceLocator.accessibilityServiceAdapter(ctx),
                 UseCases.pauseMappings(ctx)
             ),
             UseCases.showImePicker(ctx),

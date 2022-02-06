@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.system.intents
 
 import android.content.Intent
 import android.os.Build
+import android.os.Bundle
 import android.text.InputType
 import androidx.core.net.toUri
 import androidx.lifecycle.*
@@ -129,21 +130,15 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
     val description = MutableStateFlow("")
     val action = MutableStateFlow("")
     val categoriesString = MutableStateFlow("")
-    val categoriesList = categoriesString.map {
-        it.split(',')
-    }
 
-    val showChooseActivityButton: StateFlow<Boolean> = target.map {
-        it == IntentTarget.ACTIVITY
-    }.stateIn(viewModelScope, SharingStarted.Lazily, false)
+    val data: MutableStateFlow<String> = MutableStateFlow("")
+    val targetPackage: MutableStateFlow<String> = MutableStateFlow("")
+    val targetClass: MutableStateFlow<String> = MutableStateFlow("")
 
-    val data = MutableStateFlow("")
-    val targetPackage = MutableStateFlow("")
-    val targetClass = MutableStateFlow("")
+    val flagsString: MutableStateFlow<String> = MutableStateFlow("")
 
-    val flagsString = MutableStateFlow("")
-
-    private val extras = MutableStateFlow(emptyList<IntentExtraModel>())
+    private val extras: MutableStateFlow<List<IntentExtraModel>> =
+        MutableStateFlow(emptyList())
 
     val extraListItems: StateFlow<List<IntentExtraListItem>> = extras.map { extras ->
         extras.map { it.toListItem() }
@@ -167,9 +162,6 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
 
     private val _returnResult = MutableSharedFlow<ConfigIntentResult>()
     val returnResult = _returnResult.asSharedFlow()
-
-    private val _openUrl = MutableSharedFlow<String>()
-    val openUrl = _openUrl.asSharedFlow()
 
     fun setActivityTargetChecked(isChecked: Boolean) {
         if (isChecked) {
@@ -200,37 +192,42 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
 
     fun onDoneClick() {
         viewModelScope.launch {
-            val intent = Intent().apply {
-                if (this@ConfigIntentViewModel.action.value.isNotEmpty()) {
-                    action = this@ConfigIntentViewModel.action.value
+            val intent = Intent()
+
+            if (this@ConfigIntentViewModel.action.value.isNotEmpty()) {
+                intent.action = this@ConfigIntentViewModel.action.value
+            }
+
+            val categoriesStringValue = categoriesString.value
+
+            if (categoriesStringValue.isNotBlank()) {
+                categoriesStringValue
+                    .split(',')
+                    .map { it.trim() }
+                    .forEach { intent.addCategory(it) }
+            }
+
+            if (this@ConfigIntentViewModel.data.value.isNotEmpty()) {
+                intent.data = this@ConfigIntentViewModel.data.value.toUri()
+            }
+
+            if (this@ConfigIntentViewModel.flagsString.value.isNotBlank()) {
+                intent.flags = flagsString.value.toIntOrNull() ?: 0
+            }
+
+            if (this@ConfigIntentViewModel.targetPackage.value.isNotEmpty()) {
+                intent.`package` = this@ConfigIntentViewModel.targetPackage.value
+
+                if (targetClass.value.isNotEmpty()) {
+                    intent.setClassName(targetPackage.value, targetClass.value)
                 }
+            }
 
-                categoriesList.first().forEach {
-                    addCategory(it)
-                }
+            this@ConfigIntentViewModel.extras.value.forEach { extraModel ->
+                if (extraModel.name.isEmpty()) return@forEach
+                if (extraModel.parsedValue == null) return@forEach
 
-                if (this@ConfigIntentViewModel.data.value.isNotEmpty()) {
-                    data = this@ConfigIntentViewModel.data.value.toUri()
-                }
-
-                if (this@ConfigIntentViewModel.flagsString.value.isNotBlank()) {
-                    flags = flagsString.value.toIntOrNull() ?: 0
-                }
-
-                if (this@ConfigIntentViewModel.targetPackage.value.isNotEmpty()) {
-                    `package` = this@ConfigIntentViewModel.targetPackage.value
-
-                    if (targetClass.value.isNotEmpty()) {
-                        setClassName(targetPackage.value, targetClass.value)
-                    }
-                }
-
-                this@ConfigIntentViewModel.extras.value.forEach { model ->
-                    if (model.name.isEmpty()) return@forEach
-                    if (model.parsedValue == null) return@forEach
-
-                    model.type.putInIntent(this, model.name, model.value)
-                }
+                extraModel.type.putInIntent(intent, extraModel.name, extraModel.value)
             }
 
             val uri = intent.toUri(0)
@@ -326,51 +323,52 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
 
         description.value = result.description
         target.value = result.target
-        action.value = intent.action.toString()
-        categoriesString.value = intent.categories.joinToString()
+        action.value = intent.action ?: ""
+
+        categoriesString.value = intent.categories?.joinToString() ?: ""
         data.value = intent.dataString ?: ""
         targetPackage.value = intent.`package` ?: ""
         targetClass.value = intent.component?.className ?: ""
 
         if (intent.flags != 0) {
             flagsString.value = intent.flags.toString()
+        } else {
+            flagsString.value = ""
         }
 
-        val extrasBundle = intent.extras
+        val extrasBundle = intent.extras ?: Bundle.EMPTY
 
-        if (extrasBundle != null) {
-            extras.value = extrasBundle.keySet().mapNotNull { key ->
-                val value = extrasBundle.get(key)
+        extras.value = extrasBundle.keySet().mapNotNull { key ->
+            val value = extrasBundle.get(key)
 
-                if (value == null) {
-                    return@mapNotNull null
-                }
-
-                val extraType = when (value) {
-                    is Boolean -> BoolExtraType()
-                    is BooleanArray -> BoolArrayExtraType()
-                    is Int -> IntExtraType()
-                    is IntArray -> IntArrayExtraType()
-                    is Long -> LongExtraType()
-                    is LongArrayExtraType -> LongArrayExtraType()
-                    is Byte -> ByteExtraType()
-                    is ByteArrayExtraType -> ByteArrayExtraType()
-                    is Double -> DoubleExtraType()
-                    is DoubleArray -> DoubleArrayExtraType()
-                    is Float -> FloatExtraType()
-                    is FloatArray -> FloatArrayExtraType()
-                    is Short -> ShortExtraType()
-                    is ShortArray -> ShortArrayExtraType()
-                    is String -> StringExtraType()
-                    else -> throw IllegalArgumentException("Don't know how to conver this extra (${value.javaClass.name}) to an IntentExtraType")
-                }
-
-                IntentExtraModel(
-                    type = extraType,
-                    name = key,
-                    value = value.toString()
-                )
+            if (value == null) {
+                return@mapNotNull null
             }
+
+            val extraType = when (value) {
+                is Boolean -> BoolExtraType()
+                is BooleanArray -> BoolArrayExtraType()
+                is Int -> IntExtraType()
+                is IntArray -> IntArrayExtraType()
+                is Long -> LongExtraType()
+                is LongArrayExtraType -> LongArrayExtraType()
+                is Byte -> ByteExtraType()
+                is ByteArrayExtraType -> ByteArrayExtraType()
+                is Double -> DoubleExtraType()
+                is DoubleArray -> DoubleArrayExtraType()
+                is Float -> FloatExtraType()
+                is FloatArray -> FloatArrayExtraType()
+                is Short -> ShortExtraType()
+                is ShortArray -> ShortArrayExtraType()
+                is String -> StringExtraType()
+                else -> throw IllegalArgumentException("Don't know how to conver this extra (${value.javaClass.name}) to an IntentExtraType")
+            }
+
+            IntentExtraModel(
+                type = extraType,
+                name = key,
+                value = value.toString()
+            )
         }
     }
 
@@ -390,7 +388,10 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
             val response = showPopup("flags_example", dialog) ?: return@launch
 
             if (response == DialogResponse.NEUTRAL) {
-                _openUrl.emit(getString(R.string.url_intent_set_flags_help))
+                showPopup(
+                    "url_intent_flags",
+                    PopupUi.OpenUrl(getString(R.string.url_intent_set_flags_help))
+                )
             }
         }
     }
@@ -410,43 +411,43 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
                         InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED
 
                     is IntArrayExtraType -> InputType.TYPE_CLASS_NUMBER or
-                        InputType.TYPE_NUMBER_FLAG_SIGNED or InputType.TYPE_CLASS_TEXT
+                            InputType.TYPE_NUMBER_FLAG_SIGNED or InputType.TYPE_CLASS_TEXT
 
                     is LongExtraType ->
                         InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED
 
                     is LongArrayExtraType -> InputType.TYPE_CLASS_NUMBER or
-                        InputType.TYPE_NUMBER_FLAG_SIGNED or InputType.TYPE_CLASS_TEXT
+                            InputType.TYPE_NUMBER_FLAG_SIGNED or InputType.TYPE_CLASS_TEXT
 
                     is ByteExtraType ->
                         InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED
 
                     is ByteArrayExtraType -> InputType.TYPE_CLASS_NUMBER or
-                        InputType.TYPE_NUMBER_FLAG_SIGNED or InputType.TYPE_CLASS_TEXT
+                            InputType.TYPE_NUMBER_FLAG_SIGNED or InputType.TYPE_CLASS_TEXT
 
                     is DoubleExtraType ->
                         InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED or
-                            InputType.TYPE_NUMBER_FLAG_DECIMAL
+                                InputType.TYPE_NUMBER_FLAG_DECIMAL
 
                     is DoubleArrayExtraType -> InputType.TYPE_CLASS_NUMBER or
-                        InputType.TYPE_NUMBER_FLAG_DECIMAL or
-                        InputType.TYPE_NUMBER_FLAG_SIGNED or
-                        InputType.TYPE_CLASS_TEXT
+                            InputType.TYPE_NUMBER_FLAG_DECIMAL or
+                            InputType.TYPE_NUMBER_FLAG_SIGNED or
+                            InputType.TYPE_CLASS_TEXT
 
                     is FloatExtraType ->
                         InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED or
-                            InputType.TYPE_NUMBER_FLAG_DECIMAL
+                                InputType.TYPE_NUMBER_FLAG_DECIMAL
 
                     is FloatArrayExtraType -> InputType.TYPE_CLASS_NUMBER or
-                        InputType.TYPE_NUMBER_FLAG_DECIMAL or
-                        InputType.TYPE_NUMBER_FLAG_SIGNED or
-                        InputType.TYPE_CLASS_TEXT
+                            InputType.TYPE_NUMBER_FLAG_DECIMAL or
+                            InputType.TYPE_NUMBER_FLAG_SIGNED or
+                            InputType.TYPE_CLASS_TEXT
 
                     is ShortExtraType ->
                         InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED
 
                     is ShortArrayExtraType -> InputType.TYPE_CLASS_NUMBER or
-                        InputType.TYPE_NUMBER_FLAG_SIGNED or InputType.TYPE_CLASS_TEXT
+                            InputType.TYPE_NUMBER_FLAG_SIGNED or InputType.TYPE_CLASS_TEXT
 
                     else -> InputType.TYPE_CLASS_TEXT
                 }

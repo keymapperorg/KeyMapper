@@ -5,6 +5,7 @@ import io.github.sds100.keymapper.actions.sound.ChooseSoundFileResult
 import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.constraints.ChooseConstraintType
 import io.github.sds100.keymapper.constraints.Constraint
+import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapId
 import io.github.sds100.keymapper.system.apps.ActivityInfo
 import io.github.sds100.keymapper.system.apps.ChooseAppShortcutResult
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
@@ -26,6 +27,12 @@ sealed class NavDestination<R> {
         const val ID_CHOOSE_ACTION = "choose_action"
         const val ID_CHOOSE_CONSTRAINT = "choose_constraint"
         const val ID_CHOOSE_BLUETOOTH_DEVICE = "choose_bluetooth_device"
+        const val ID_REPORT_BUG = "report_bug"
+        const val ID_FIX_APP_KILLING = "fix_app_killing"
+        const val ID_SETTINGS = "settings"
+        const val ID_ABOUT = "about"
+        const val ID_CONFIG_KEY_MAP = "config_key_map"
+        const val ID_CONFIG_FINGERPRINT_MAP = "config_fingerprint_map"
 
         fun NavDestination<*>.getId(): String {
             return when (this) {
@@ -40,6 +47,12 @@ sealed class NavDestination<R> {
                 ChooseAction -> ID_CHOOSE_ACTION
                 is ChooseConstraint -> ID_CHOOSE_CONSTRAINT
                 ChooseBluetoothDevice -> ID_CHOOSE_BLUETOOTH_DEVICE
+                FixAppKilling -> ID_FIX_APP_KILLING
+                ReportBug -> ID_REPORT_BUG
+                Settings -> ID_SETTINGS
+                About -> ID_ABOUT
+                is ConfigKeyMap -> ID_CONFIG_KEY_MAP
+                is ConfigFingerprintMap -> ID_CONFIG_FINGERPRINT_MAP
             }
         }
     }
@@ -63,4 +76,10 @@ sealed class NavDestination<R> {
         NavDestination<Constraint>()
 
     object ChooseBluetoothDevice : NavDestination<BluetoothDeviceInfo>()
+    object ReportBug : NavDestination<Unit>()
+    object FixAppKilling : NavDestination<Unit>()
+    object Settings : NavDestination<Unit>()
+    object About : NavDestination<Unit>()
+    data class ConfigKeyMap(val keyMapUid: String?) : NavDestination<Unit>()
+    data class ConfigFingerprintMap(val id: FingerprintMapId) : NavDestination<Unit>()
 }
