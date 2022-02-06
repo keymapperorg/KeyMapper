@@ -12,6 +12,7 @@ Key Mapper is a free and open source Android app that can remap your buttons and
   </br>
 <a href='https://ko-fi.com/M4M41032E' target='_blank'><img height='30' style='border:0px;height:30x;' src='https://cdn.ko-fi.com/cdn/kofi1.png?v=2' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
 <noscript><a href="https://liberapay.com/sds100/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"></a></noscript>
+<noscript><a href="https://buy.stripe.com/00g16L9YEabldDWdQQ"><img alt="Donate using Stripe" src="https://img.shields.io/badge/Donate-Stripe-blueviolet?style=for-the-badge&logo=stripe"></a></noscript>
 </p>
 
 [![Discord](https://img.shields.io/discord/717499872219103263)](https://discord.gg/Suj6nyw)
