@@ -339,7 +339,7 @@
     <string name="slide_button_create_bug_report">Create report</string>
 
     <string name="slide_title_share_bug_report">Share the report</string>
-    <string name="slide_description_share_bug_report">There are 3 ways to share the bug report to the developer. Either join the Discord server or create a GitHub issue. Make sure that you attach the bug report to your message!</string>
+    <string name="slide_description_share_bug_report">There are 2 ways to share the bug report to the developer. Either join the Discord server or create a GitHub issue. Make sure that you attach the bug report to your message!</string>
     <string name="slide_button_share_discord">Discord</string>
     <string name="slide_button_share_github">GitHub</string>
 
