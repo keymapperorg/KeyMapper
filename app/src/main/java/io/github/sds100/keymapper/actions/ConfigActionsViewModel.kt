@@ -123,7 +123,8 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
                 ViewModelHelper.handleAccessibilityServiceStoppedSnackBar(
                     resourceProvider = this,
                     popupViewModel = this,
-                    startService = displayActionUseCase::startAccessibilityService
+                    startService = displayActionUseCase::startAccessibilityService,
+                    message = R.string.dialog_message_enable_accessibility_service_to_test_action
                 )
             }
 
@@ -131,7 +132,8 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
                 ViewModelHelper.handleAccessibilityServiceCrashedSnackBar(
                     resourceProvider = this,
                     popupViewModel = this,
-                    restartService = displayActionUseCase::restartAccessibilityService
+                    restartService = displayActionUseCase::restartAccessibilityService,
+                    message = R.string.dialog_message_restart_accessibility_service_to_test_action
                 )
             }
         }

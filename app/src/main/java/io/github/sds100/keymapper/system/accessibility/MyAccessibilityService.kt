@@ -110,7 +110,26 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
 
     private val keyEventReceiverCallback: IKeyEventReceiverCallback = object : IKeyEventReceiverCallback.Stub() {
         override fun onKeyEvent(event: KeyEvent?): Boolean {
-            return this@MyAccessibilityService.onKeyEvent(event)
+            event ?: return false
+
+            val device = if (event.device == null) {
+                null
+            } else {
+                InputDeviceUtils.createInputDeviceInfo(event.device)
+            }
+
+            if (controller != null) {
+                return controller!!.onKeyEventFromIme(
+                    event.keyCode,
+                    event.action,
+                    device,
+                    event.metaState,
+                    event.scanCode,
+                    event.eventTime
+                )
+            }
+
+            return false
         }
     }
 

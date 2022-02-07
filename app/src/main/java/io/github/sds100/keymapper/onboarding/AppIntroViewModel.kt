@@ -61,7 +61,7 @@ class AppIntroViewModel(
         when (id) {
             ID_BUTTON_ENABLE_ACCESSIBILITY_SERVICE -> useCase.enableAccessibilityService()
             ID_BUTTON_RESTART_ACCESSIBILITY_SERVICE -> useCase.restartAccessibilityService()
-            ID_BUTTON_DONT_KILL_MY_APP -> runBlocking {
+            ID_BUTTON_DONT_KILL_MY_APP -> viewModelScope.launch {
                 showPopup(
                     "url_dont_kill_my_app",
                     PopupUi.OpenUrl(getString(R.string.url_dont_kill_my_app))
@@ -259,7 +259,7 @@ class AppIntroViewModel(
         private val resourceProvider: ResourceProvider
     ) : ViewModelProvider.NewInstanceFactory() {
 
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return AppIntroViewModel(
                 useCase,
                 slides,

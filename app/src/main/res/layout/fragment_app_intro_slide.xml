@@ -51,10 +51,12 @@
 
         <TextView
             android:id="@+id/textViewTitle"
-            style="@style/AppIntroDefaultHeading"
             android:layout_width="0dp"
+            android:padding="32dp"
+            android:textAppearance="@style/TextAppearance.Material3.HeadlineLarge"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:textColor="#FFFFFF"
             android:text="@{model.title}"
             app:layout_constraintBottom_toTopOf="@id/scrollViewDescription"
             app:layout_constraintEnd_toEndOf="parent"
@@ -75,8 +77,11 @@
 
             <TextView
                 android:id="@+id/textViewDescription"
-                style="@style/AppIntroDefaultText"
+                android:gravity="center"
+                android:padding="16dp"
                 android:layout_width="match_parent"
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                android:textColor="#FFFFFF"
                 android:layout_height="wrap_content"
                 android:text="@{model.description}"
                 tools:text="This is a demo of the AppIntro Library" />
@@ -85,37 +90,39 @@
         <!--    Set INVISIBLE rather than GONE so that the text doesn't move up and down between slides.    -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button1"
-            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+            style="@style/Widget.Material3.Button.TonalButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="@{onButton1ClickListener}"
             android:text="@{model.buttonText1}"
             android:visibility="@{model.buttonText1 == null ? View.INVISIBLE : View.VISIBLE}"
-            app:backgroundTint="@color/appintro_default_fab_background_color"
             app:elevation="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/button2"
             app:layout_constraintStart_toStartOf="parent"
+            android:textColor="#FFFFFF"
+            app:backgroundTint="@color/appintro_default_fab_background_color"
             tools:text="Button 1" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button2"
-            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+            style="@style/Widget.Material3.Button.TonalButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="@{onButton2ClickListener}"
             android:text="@{model.buttonText2}"
             android:visibility="@{model.buttonText2 == null ? View.GONE : View.VISIBLE}"
-            app:backgroundTint="@color/appintro_default_fab_background_color"
             app:elevation="0dp"
+            android:textColor="#FFFFFF"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/button3"
             app:layout_constraintStart_toEndOf="@id/button1"
+            app:backgroundTint="@color/appintro_default_fab_background_color"
             tools:text="Button 2" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button3"
-            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+            style="@style/Widget.Material3.Button.TonalButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="@{onButton3ClickListener}"
@@ -125,6 +132,7 @@
             app:elevation="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            android:textColor="#FFFFFF"
             app:layout_constraintStart_toEndOf="@id/button2"
             tools:text="Button 3" />
 

@@ -24,7 +24,6 @@ import kotlinx.coroutines.flow.map
 class ChooseAppFragment : RecyclerViewFragment<SimpleListItem, FragmentChooseAppBinding>() {
 
     companion object {
-        const val REQUEST_KEY = "request_app"
         const val EXTRA_PACKAGE_NAME = "extra_package_name"
         const val SEARCH_STATE_KEY = "key_app_search_state"
     }

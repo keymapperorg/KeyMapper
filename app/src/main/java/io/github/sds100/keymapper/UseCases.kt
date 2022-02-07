@@ -193,7 +193,8 @@ object UseCases {
         service,
         ShizukuInputEventInjector(),
         ServiceLocator.permissionAdapter(service),
-        ServiceLocator.phoneAdapter(service)
+        ServiceLocator.phoneAdapter(service),
+        ServiceLocator.inputMethodAdapter(service)
     )
 
     fun detectFingerprintMaps(ctx: Context) = DetectFingerprintMapsUseCaseImpl(

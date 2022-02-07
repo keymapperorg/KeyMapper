@@ -101,7 +101,7 @@
                     android:paddingEnd="16dp"
                     android:paddingBottom="8dp"
                     android:text='@{viewModel.selectionCountViewState.text}'
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
+                    android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
                     android:textSize="17sp"
                     tools:text="0 Selected" />
 
@@ -123,7 +123,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            app:backgroundTint="?attr/colorPrimarySurface"
             app:fabAnimationMode="slide"
             app:menu="@menu/menu_home"
             app:navigationIcon='@{viewModel.appBarState == HomeAppBarState.MULTI_SELECTING ? @drawable/ic_baseline_arrow_back_24 : @drawable/ic_baseline_menu_24}' />

@@ -44,7 +44,7 @@ class ChooseAppShortcutViewModel internal constructor(
 
                     AppShortcutListItem(shortcutInfo = it, name, IconInfo(icon))
                 }
-                .sortedBy { it.label.toLowerCase(Locale.getDefault()) }
+                .sortedBy { it.label.lowercase(Locale.getDefault()) }
         }
     }.flowOn(Dispatchers.Default)
 
@@ -118,7 +118,7 @@ class ChooseAppShortcutViewModel internal constructor(
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(modelClass: Class<T>) =
+        override fun <T : ViewModel> create(modelClass: Class<T>) =
             ChooseAppShortcutViewModel(
                 useCase,
                 resourceProvider

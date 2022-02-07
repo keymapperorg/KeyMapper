@@ -1,12 +1,14 @@
 package io.github.sds100.keymapper
 
 import android.content.Intent
+import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.multidex.MultiDexApplication
+import com.google.android.material.color.DynamicColors
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.entities.LogEntryEntity
 import io.github.sds100.keymapper.logging.KeyMapperLoggingTree
@@ -93,9 +95,10 @@ class KeyMapperApp : MultiDexApplication() {
     }
     val devicesAdapter by lazy {
         AndroidDevicesAdapter(
-                this,
-                bluetoothMonitor,
-                appCoroutineScope
+            this,
+            bluetoothMonitor,
+            permissionAdapter,
+            appCoroutineScope
         )
     }
     val cameraAdapter by lazy { AndroidCameraAdapter(this) }
@@ -160,7 +163,6 @@ class KeyMapperApp : MultiDexApplication() {
     private val processLifecycleOwner by lazy { ProcessLifecycleOwner.get() }
 
     override fun onCreate() {
-
         val priorExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
 
         Thread.setDefaultUncaughtExceptionHandler { thread, exception ->
@@ -181,15 +183,19 @@ class KeyMapperApp : MultiDexApplication() {
 
         super.onCreate()
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            DynamicColors.applyToActivitiesIfAvailable(this)
+        }
+
         ServiceLocator.settingsRepository(this).get(Keys.darkTheme)
-                .map { it?.toIntOrNull() }
-                .map {
-                    when (it) {
-                        ThemeUtils.DARK -> AppCompatDelegate.MODE_NIGHT_YES
-                        ThemeUtils.LIGHT -> AppCompatDelegate.MODE_NIGHT_NO
-                        else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-                    }
+            .map { it?.toIntOrNull() }
+            .map {
+                when (it) {
+                    ThemeUtils.DARK -> AppCompatDelegate.MODE_NIGHT_YES
+                    ThemeUtils.LIGHT -> AppCompatDelegate.MODE_NIGHT_NO
+                    else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
                 }
+            }
                 .onEach { mode -> AppCompatDelegate.setDefaultNightMode(mode) }
                 .launchIn(appCoroutineScope)
 
@@ -200,20 +206,20 @@ class KeyMapperApp : MultiDexApplication() {
         Timber.plant(loggingTree)
 
         notificationController = NotificationController(
-                appCoroutineScope,
-                ManageNotificationsUseCaseImpl(
-                        ServiceLocator.settingsRepository(this),
-                        notificationAdapter,
-                        suAdapter
-                ),
-                UseCases.pauseMappings(this),
-                UseCases.showImePicker(this),
-                UseCases.controlAccessibilityService(this),
-                UseCases.toggleCompatibleIme(this),
-                ShowHideInputMethodUseCaseImpl(ServiceLocator.accessibilityServiceAdapter(this)),
-                UseCases.fingerprintGesturesSupported(this),
-                UseCases.onboarding(this),
-                ServiceLocator.resourceProvider(this)
+            appCoroutineScope,
+            ManageNotificationsUseCaseImpl(
+                ServiceLocator.settingsRepository(this),
+                notificationAdapter,
+                suAdapter
+            ),
+            UseCases.pauseMappings(this),
+            UseCases.showImePicker(this),
+            UseCases.controlAccessibilityService(this),
+            UseCases.toggleCompatibleIme(this),
+            ShowHideInputMethodUseCaseImpl(ServiceLocator.accessibilityServiceAdapter(this)),
+            UseCases.fingerprintGesturesSupported(this),
+            UseCases.onboarding(this),
+            ServiceLocator.resourceProvider(this)
         )
 
         autoSwitchImeController = AutoSwitchImeController(

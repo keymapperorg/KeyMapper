@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.system.permissions.Permission
-import io.github.sds100.keymapper.system.volume.*
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.containsQuery
 import io.github.sds100.keymapper.util.getFullMessage
@@ -188,7 +187,7 @@ class ChooseActionViewModel(
         private val isActionSupported: IsActionSupportedUseCase
     ) : ViewModelProvider.NewInstanceFactory() {
 
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ChooseActionViewModel(useCase, resourceProvider, isActionSupported) as T
         }
     }

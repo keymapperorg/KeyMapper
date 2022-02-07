@@ -542,8 +542,11 @@
 
     <string name="dialog_title_request_shizuku_permission">Request Shizuku permission</string>
     <string name="dialog_message_request_shizuku_permission">Since you are using Shizuku it is highly recommended to grant this permission since some features in Key Mapper can be done without you having to configure anything (E.g inputting key codes without using the Key Mapper keyboard).</string>
-    
+
     <string name="dialog_title_home_fix_error">Fix error</string>
+
+    <string name="dialog_title_explain_bluetooth_permission">Permission is required</string>
+    <string name="dialog_message_explain_bluetooth_permission">Key Mapper needs the "nearby devices" permission so it can get the list of paired Bluetooth devices.</string>
 
     <string name="pos_yes">Yes</string>
     <string name="pos_done">Done</string>
@@ -1050,9 +1053,11 @@
     <string name="error_shizuku_permission_denied">Shizuku permission is denied!</string>
     <string name="error_shizuku_not_started">Shizuku is not started!</string>
     <string name="error_no_file_name">This file has no name!</string>
+    <string name="error_choose_bluetooth_devices_permission_denied">You must grant Key Mapper permission to see your paired Bluetooth devices.</string>
 
     <string name="error_access_fine_location_permission_denied">Denied permission to read fine location!</string>
-    <string name="error_answer_end_phone_call">Denied permission to answer and end phone calls!</string>
+    <string name="error_answer_end_phone_call_permission_denied">Denied permission to answer and end phone calls!</string>
+    <string name="error_find_nearby_devices_permission_denied">Denied permission to see paired Bluetooth devices!</string>
     <!-- Error messages -->
 
     <!-- action labels -->

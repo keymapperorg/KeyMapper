@@ -9,6 +9,7 @@ import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 /**
  * Created by sds100 on 14/04/2021.
@@ -22,7 +23,8 @@ class AppIntroUseCaseImpl(
 ) : AppIntroUseCase {
     override val serviceState: Flow<ServiceState> = serviceAdapter.state
 
-    override val isBatteryOptimised: Flow<Boolean> = permissionAdapter.isGrantedFlow(Permission.IGNORE_BATTERY_OPTIMISATION)
+    override val isBatteryOptimised: Flow<Boolean> =
+        permissionAdapter.isGrantedFlow(Permission.IGNORE_BATTERY_OPTIMISATION).map { !it }
 
     override val fingerprintGesturesSupported: Flow<Boolean?> =
         fingerprintGesturesSupportedUseCase.isSupported

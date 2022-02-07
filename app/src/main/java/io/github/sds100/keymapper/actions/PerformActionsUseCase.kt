@@ -2,10 +2,8 @@ package io.github.sds100.keymapper.actions
 
 import android.accessibilityservice.AccessibilityService
 import android.os.Build
-import android.telecom.TelecomManager
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityNodeInfo
-import androidx.core.content.getSystemService
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.sound.SoundsManager
 import io.github.sds100.keymapper.data.Keys
@@ -423,7 +421,7 @@ class PerformActionsUseCaseImpl(
             is ActionData.StatusBar.ToggleNotifications -> {
                 result =
                     if (accessibilityService.rootNode?.packageName == "com.android.systemui") {
-                        shellAdapter.execute("cmd statusbar collapse")
+                       closeStatusBarShade()
                     } else {
                         val globalAction = AccessibilityService.GLOBAL_ACTION_NOTIFICATIONS
 
@@ -445,7 +443,7 @@ class PerformActionsUseCaseImpl(
             is ActionData.StatusBar.ToggleQuickSettings -> {
                 result =
                     if (accessibilityService.rootNode?.packageName == "com.android.systemui") {
-                        shellAdapter.execute("cmd statusbar collapse")
+                        closeStatusBarShade()
                     } else {
                         val globalAction = AccessibilityService.GLOBAL_ACTION_QUICK_SETTINGS
 
@@ -456,7 +454,7 @@ class PerformActionsUseCaseImpl(
             }
 
             is ActionData.StatusBar.Collapse -> {
-                result = shellAdapter.execute("cmd statusbar collapse")
+                result = closeStatusBarShade()
             }
 
             is ActionData.ControlMedia.Pause -> {
@@ -800,6 +798,15 @@ class PerformActionsUseCaseImpl(
             ?: devicesWithSameDescriptor[0]
 
         return device.id
+    }
+
+    private fun closeStatusBarShade(): Result<*> {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            return accessibilityService
+                .doGlobalAction(AccessibilityService.GLOBAL_ACTION_DISMISS_NOTIFICATION_SHADE)
+        } else {
+            return shellAdapter.execute("cmd statusbar collapse")
+        }
     }
 
     private fun Result<*>.showErrorMessageOnFail() {

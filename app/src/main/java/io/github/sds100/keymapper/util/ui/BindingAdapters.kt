@@ -11,6 +11,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.databinding.BindingAdapter
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.ChipGroup
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.slider.Slider
 import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.textview.MaterialTextView
@@ -76,6 +77,18 @@ fun View.backgroundTint(@ColorInt color: Int) {
     backgroundTintList = ColorStateList.valueOf(color)
 }
 
+@BindingAdapter("app:harmonizeDrawableTint")
+fun MaterialTextView.harmonizeDrawableTint(@ColorInt color: Int) {
+    val harmonizedColor = MaterialColors.harmonizeWithPrimary(context, color)
+
+    setCompoundDrawablesRelativeWithIntrinsicBounds(
+        compoundDrawablesRelative[0]?.also { it.setTint(harmonizedColor) },
+        compoundDrawablesRelative[1]?.also { it.setTint(harmonizedColor) },
+        compoundDrawablesRelative[2]?.also { it.setTint(harmonizedColor) },
+        compoundDrawablesRelative[3]?.also { it.setTint(harmonizedColor) },
+    )
+}
+
 @BindingAdapter("app:openUrlOnClick")
 fun View.openUrlOnClick(url: String?) {
     url ?: return
@@ -102,7 +115,7 @@ fun ChipGroup.setChipUiModels(
     removeAllViews()
 
     val colorTintError by lazy { styledColorSL(R.attr.colorError) }
-    val colorOnSurface by lazy { styledColorSL(R.attr.colorOnSurface) }
+    val colorOnSurface by lazy { styledColorSL(R.attr.colorOnPrimaryContainer) }
 
     models.forEach { model ->
         when (model) {
@@ -163,7 +176,7 @@ fun View.enabled(isEnabled: Boolean) {
 fun TintType.toColor(ctx: Context): Int? =
     when (this) {
         TintType.None -> null
-        TintType.OnSurface -> ctx.styledColor(R.attr.colorOnSurface)
+        TintType.OnSurface -> ctx.styledColor(R.attr.colorOnPrimaryContainer)
         TintType.Error -> ctx.styledColor(R.attr.colorError)
         is TintType.Color -> this.color
     }

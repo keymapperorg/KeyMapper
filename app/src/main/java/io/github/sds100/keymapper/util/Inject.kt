@@ -273,7 +273,10 @@ object Inject {
 
     fun chooseBluetoothDeviceViewModel(ctx: Context): ChooseBluetoothDeviceViewModel.Factory {
         return ChooseBluetoothDeviceViewModel.Factory(
-            ChooseBluetoothDeviceUseCaseImpl(ServiceLocator.devicesAdapter(ctx)),
+            ChooseBluetoothDeviceUseCaseImpl(
+                ServiceLocator.devicesAdapter(ctx),
+                ServiceLocator.permissionAdapter(ctx)
+            ),
             ServiceLocator.resourceProvider(ctx)
         )
     }

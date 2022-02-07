@@ -120,25 +120,29 @@ abstract class RecyclerViewFragment<T, BINDING : ViewDataBinding> : Fragment() {
             listItems.collectLatest { state ->
                 when (state) {
                     is State.Data -> {
+                        val recyclerView = getRecyclerView(binding)
                         if (state.data.isEmpty()) {
                             getProgressBar(binding).visibility = View.INVISIBLE
 
-                            /*
-                            Use INVISIBLE rather than GONE so that the previous list items don't flash briefly before
-                            the new items are populated
-                             */
-                            getRecyclerView(binding).visibility = View.INVISIBLE
-                            getEmptyListPlaceHolderTextView(binding).visibility = View.VISIBLE
+                            recyclerView.post {
+                                /*
+                                Use INVISIBLE rather than GONE so that the previous list items don't flash briefly before
+                                the new items are populated
+                                 */
+                                recyclerView.visibility = View.INVISIBLE
+                                getEmptyListPlaceHolderTextView(binding).visibility = View.VISIBLE
 
-                            /*
-                             Don't clear the recyclerview here because if a custom epoxy controller is set then
-                             it will be cleared which means no items are shown when a request to populate it
-                             is made again.
-                              */
-                            populateList(getRecyclerView(binding), emptyList())
+                                /*
+                                 Don't clear the recyclerview here because if a custom epoxy controller is set then
+                                 it will be cleared which means no items are shown when a request to populate it
+                                 is made again.
+                                  */
+                                populateList(recyclerView, emptyList())
+                            }
+
                         } else {
                             //The recyclerview needs to be drawn before getting the height and width of it.
-                            getRecyclerView(binding).post {
+                            recyclerView.post {
                                 getProgressBar(binding).visibility = View.VISIBLE
                                 getEmptyListPlaceHolderTextView(binding).visibility = View.INVISIBLE
 
@@ -147,12 +151,12 @@ abstract class RecyclerViewFragment<T, BINDING : ViewDataBinding> : Fragment() {
                             an onclick event in the recyclerview then there isn't a smooth transition
                             between the states. E.g the ripple effect on a button or card doesn't complete
                              */
-                                populateList(getRecyclerView(binding), state.data)
+                                populateList(recyclerView, state.data)
 
                                 getProgressBar(binding).visibility = View.INVISIBLE
 
                                 //show the recyclerview once it has been populated
-                                getRecyclerView(binding).visibility = View.VISIBLE
+                                recyclerView.visibility = View.VISIBLE
                             }
                         }
                     }

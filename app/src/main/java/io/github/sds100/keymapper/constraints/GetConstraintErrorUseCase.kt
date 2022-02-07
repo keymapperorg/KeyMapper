@@ -53,10 +53,15 @@ class GetConstraintErrorUseCaseImpl(
             }
 
             is Constraint.BtDeviceConnected,
-            is Constraint.BtDeviceDisconnected ->
+            is Constraint.BtDeviceDisconnected -> {
                 if (!systemFeatureAdapter.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)) {
                     return Error.SystemFeatureNotSupported(PackageManager.FEATURE_BLUETOOTH)
                 }
+
+                if (!permissionAdapter.isGranted(Permission.FIND_NEARBY_DEVICES)) {
+                    return Error.PermissionDenied(Permission.FIND_NEARBY_DEVICES)
+                }
+            }
 
             is Constraint.OrientationCustom,
             Constraint.OrientationLandscape,
@@ -87,6 +92,12 @@ class GetConstraintErrorUseCaseImpl(
             is Constraint.ImeChosen -> {
                 if (inputMethodAdapter.inputMethods.value.none { it.id == constraint.imeId }) {
                     return Error.InputMethodNotFound(constraint.imeLabel)
+                }
+            }
+
+            is Constraint.InPhoneCall, is Constraint.PhoneRinging, is Constraint.NotInPhoneCall -> {
+                if (!permissionAdapter.isGranted(Permission.READ_PHONE_STATE)) {
+                    return Error.PermissionDenied(Permission.READ_PHONE_STATE)
                 }
             }
         }

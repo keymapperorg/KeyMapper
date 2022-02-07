@@ -57,7 +57,7 @@
                 android:onCheckedChanged="@{(view, checked) -> viewModel.setEnabled(checked)}"
                 android:text="@string/switch_enabled"
                 android:textAppearance="@style/TextAppearance.AppCompat.Button"
-                android:textColor="?attr/colorOnPrimarySurface"
+                android:textColor="?attr/colorOnSecondaryContainer"
                 app:switchPadding="16dp" />
 
         </com.google.android.material.bottomappbar.BottomAppBar>

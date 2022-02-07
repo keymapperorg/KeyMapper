@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.util.ui
 
+import androidx.annotation.StringRes
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.getFullMessage
@@ -70,14 +71,14 @@ object ViewModelHelper {
     }
 
     suspend fun handleAccessibilityServiceStoppedSnackBar(
-            resourceProvider: ResourceProvider,
-            popupViewModel: PopupViewModel,
-            startService: () -> Boolean
+        resourceProvider: ResourceProvider,
+        popupViewModel: PopupViewModel,
+        startService: () -> Boolean,
+        @StringRes message: Int
     ) {
-
         val snackBar = PopupUi.SnackBar(
-                message = resourceProvider.getString(R.string.dialog_message_enable_accessibility_service_to_test_action),
-                actionText = resourceProvider.getString(R.string.pos_turn_on)
+            message = resourceProvider.getString(message),
+            actionText = resourceProvider.getString(R.string.pos_turn_on)
         )
 
         popupViewModel.showPopup("snackbar_enable_service", snackBar) ?: return
@@ -88,13 +89,14 @@ object ViewModelHelper {
     }
 
     suspend fun handleAccessibilityServiceCrashedSnackBar(
-            resourceProvider: ResourceProvider,
-            popupViewModel: PopupViewModel,
-            restartService: () -> Boolean
+        resourceProvider: ResourceProvider,
+        popupViewModel: PopupViewModel,
+        restartService: () -> Boolean,
+        @StringRes message: Int
     ) {
         val snackBar = PopupUi.SnackBar(
-                message = resourceProvider.getString(R.string.dialog_message_restart_accessibility_service_to_test_action),
-                actionText = resourceProvider.getString(R.string.pos_restart)
+            message = resourceProvider.getString(message),
+            actionText = resourceProvider.getString(R.string.pos_restart)
         )
 
         popupViewModel.showPopup("snackbar_restart_service", snackBar) ?: return

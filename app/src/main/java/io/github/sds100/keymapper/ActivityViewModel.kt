@@ -32,7 +32,7 @@ class ActivityViewModel(
         private val resourceProvider: ResourceProvider
     ) : ViewModelProvider.NewInstanceFactory() {
 
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ActivityViewModel(resourceProvider) as T
         }
     }

@@ -1,10 +1,13 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
 import android.content.Intent
-import androidx.lifecycle.*
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.ui.*
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.Error
+import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.mapData
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -144,9 +147,9 @@ class CreateKeyMapShortcutViewModel(
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(modelClass: Class<T>) =
-                CreateKeyMapShortcutViewModel(
-                        configKeyMapUseCase, listUseCase, createShortcutUseCase, resourceProvider
-                ) as T
+        override fun <T : ViewModel> create(modelClass: Class<T>) =
+            CreateKeyMapShortcutViewModel(
+                configKeyMapUseCase, listUseCase, createShortcutUseCase, resourceProvider
+            ) as T
     }
 }

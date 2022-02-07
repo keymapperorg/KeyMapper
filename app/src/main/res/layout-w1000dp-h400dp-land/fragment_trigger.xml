@@ -120,8 +120,7 @@
             android:enabled="@{viewModel.triggerModeButtonsEnabled}"
             android:paddingTop="8dp"
             android:text="@string/press_dot_dot_dot"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-            android:textSize="14sp"
+            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
             app:layout_constraintBottom_toTopOf="@+id/radioGroupTriggerMode"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -167,7 +166,8 @@
 
         </RadioGroup>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.Button.Red"
             android:id="@+id/buttonRecordKeys"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -176,7 +176,6 @@
             android:layout_marginBottom="4dp"
             android:onClick="@{() -> viewModel.onRecordTriggerButtonClick()}"
             android:text="@{viewModel.recordTriggerButtonText}"
-            app:backgroundTint="@color/slideRed"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"

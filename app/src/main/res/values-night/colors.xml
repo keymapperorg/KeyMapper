@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">@color/colorAccent</color>
-    <color name="colorPrimaryDark">#000000</color>
-    <color name="colorAccent">#00e676</color>
-    <color name="colorPrimaryVariant">@color/colorAccent</color>
-    <color name="colorSecondary">@color/colorAccent</color>
+    <color name="brandAccent">#00e676</color>
     <color name="iconTintTriggerKeySeparator">#cccccc</color>
     <color name="divider">#1FFFFFFF</color>
     <color name="backgroundSelected">#3D00E676</color>

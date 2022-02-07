@@ -8,9 +8,7 @@ import kotlinx.coroutines.flow.Flow
  */
 interface BluetoothAdapter {
     val onDeviceConnect: Flow<BluetoothDeviceInfo>
-
     val onDeviceDisconnect: Flow<BluetoothDeviceInfo>
-
     val onDevicePairedChange: Flow<BluetoothDeviceInfo>
 
     val isBluetoothEnabled: Flow<Boolean>

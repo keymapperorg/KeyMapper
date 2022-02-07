@@ -65,7 +65,7 @@ class ChooseKeyCodeViewModel : ViewModel() {
     @Suppress("UNCHECKED_CAST")
     class Factory : ViewModelProvider.NewInstanceFactory() {
 
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ChooseKeyCodeViewModel() as T
         }
     }

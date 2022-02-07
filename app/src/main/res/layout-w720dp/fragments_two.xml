@@ -63,7 +63,7 @@
                         android:layout_marginEnd="@dimen/cardview_padding_right"
                         android:paddingBottom="@dimen/cardview_header_bottom_padding"
                         android:text="@{topFragmentInfo.header}"
-                        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
                         android:textColor="?attr/colorAccent"
                         android:textSize="14sp"
                         app:layout_constraintStart_toStartOf="parent"
@@ -72,7 +72,7 @@
 
                     <io.github.sds100.keymapper.util.ui.SquareImageButton
                         android:id="@+id/buttonHelpTopLeft"
-                        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                        style="@style/Widget.Material3.Button.TextButton"
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:layout_marginTop="8dp"
@@ -124,7 +124,7 @@
                         android:layout_marginEnd="@dimen/cardview_padding_right"
                         android:paddingBottom="@dimen/cardview_header_bottom_padding"
                         android:text="@{bottomFragmentInfo.header}"
-                        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
                         android:textColor="?attr/colorAccent"
                         android:textSize="14sp"
                         app:layout_constraintStart_toStartOf="parent"
@@ -133,7 +133,7 @@
 
                     <io.github.sds100.keymapper.util.ui.SquareImageButton
                         android:id="@+id/buttonHelpBottom"
-                        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                        style="@style/Widget.Material3.Button.TextButton"
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:layout_marginTop="8dp"

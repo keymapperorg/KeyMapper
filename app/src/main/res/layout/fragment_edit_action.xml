@@ -22,7 +22,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonEditAction"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -36,7 +36,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonReplaceAction"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -65,6 +65,7 @@
                 android:id="@+id/epoxyRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintBottom_toTopOf="@id/buttonHelp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -73,11 +74,11 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonHelp"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:text="@string/button_help"
                 app:layout_constraintBottom_toTopOf="@id/buttonDone"
@@ -86,7 +87,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonDone"
-                style="@style/Widget.MaterialComponents.Button"
+                style="@style/Widget.Material3.Button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"

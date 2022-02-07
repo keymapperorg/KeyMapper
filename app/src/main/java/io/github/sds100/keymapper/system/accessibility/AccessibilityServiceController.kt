@@ -284,24 +284,6 @@ class AccessibilityServiceController(
         scanCode: Int = 0,
         eventTime: Long
     ): Boolean {
-        /*
-        Issue #850
-        If a volume key is sent while the phone is ringing or in a call
-        then that key event must have been relayed by an input method and only an up event
-        is sent. This is a restriction in Android. So send a fake down key event as well.
-         */
-        if (action == KeyEvent.ACTION_UP
-            && (keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)
-            && (detectKeyMapsUseCase.isInPhoneCall || detectKeyMapsUseCase.isPhoneRinging)) {
-
-            onKeyEvent(keyCode,
-                KeyEvent.ACTION_DOWN,
-                device,
-                metaState,
-                0,
-                eventTime)
-        }
-
         val detailedLogInfo =
             "key code: $keyCode, time since event: ${SystemClock.uptimeMillis() - eventTime}ms, device name: ${device?.name}, descriptor: ${device?.descriptor}, device id: ${device?.id}, is external: ${device?.isExternal}, meta state: $metaState, scan code: $scanCode"
 
@@ -366,6 +348,46 @@ class AccessibilityServiceController(
         }
 
         return false
+    }
+
+    fun onKeyEventFromIme(
+        keyCode: Int,
+        action: Int,
+        device: InputDeviceInfo?,
+        metaState: Int,
+        scanCode: Int = 0,
+        eventTime: Long
+    ): Boolean {
+        if (!detectKeyMapsUseCase.acceptKeyEventsFromIme) {
+            Timber.d("Don't input key event from ime")
+            return false
+        }
+
+        /*
+        Issue #850
+        If a volume key is sent while the phone is ringing or in a call
+        then that key event must have been relayed by an input method and only an up event
+        is sent. This is a restriction in Android. So send a fake down key event as well.
+         */
+        if (action == KeyEvent.ACTION_UP && (keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)) {
+            onKeyEvent(
+                keyCode,
+                KeyEvent.ACTION_DOWN,
+                device,
+                metaState,
+                0,
+                eventTime
+            )
+        }
+
+        return onKeyEvent(
+            keyCode,
+            action,
+            device,
+            metaState,
+            scanCode,
+            eventTime
+        )
     }
 
     fun onAccessibilityEvent(event: AccessibilityEventModel?) {

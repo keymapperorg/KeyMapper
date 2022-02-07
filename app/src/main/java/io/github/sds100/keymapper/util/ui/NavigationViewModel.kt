@@ -258,7 +258,7 @@ fun NavigationViewModel.sendNavResultFromBundle(
 
         NavDestination.ID_CHOOSE_BLUETOOTH_DEVICE -> {
             val address = bundle.getString(ChooseBluetoothDeviceFragment.EXTRA_ADDRESS)!!
-            val name = bundle.getString(ChooseBluetoothDeviceFragment.EXTRA_ADDRESS)!!
+            val name = bundle.getString(ChooseBluetoothDeviceFragment.EXTRA_NAME)!!
 
             onNavResult(NavResult(requestKey, BluetoothDeviceInfo(address, name)))
         }

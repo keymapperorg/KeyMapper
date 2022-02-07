@@ -57,7 +57,6 @@ class AppIntroFragment : Fragment() {
                 binding.model = model
 
                 binding.setOnButton1ClickListener {
-
                     if (model.buttonId1 != null) {
                         appIntroViewModel.onButtonClick(model.buttonId1)
                     }
@@ -66,6 +65,12 @@ class AppIntroFragment : Fragment() {
                 binding.setOnButton2ClickListener {
                     if (model.buttonId2 != null) {
                         appIntroViewModel.onButtonClick(model.buttonId2)
+                    }
+                }
+
+                binding.setOnButton3ClickListener {
+                    if (model.buttonId3 != null) {
+                        appIntroViewModel.onButtonClick(model.buttonId3)
                     }
                 }
             }

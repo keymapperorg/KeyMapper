@@ -16,7 +16,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 /**
  * Created by sds100 on 21/04/2021.
@@ -84,7 +83,6 @@ class AndroidPhoneAdapter(
     }
 
     private suspend fun updateCallState(sdkCallState: Int) {
-        Timber.e("call state $sdkCallState")
         callStateFlow.emit(callStateConverter(sdkCallState))
     }
 

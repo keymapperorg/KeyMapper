@@ -4,9 +4,6 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.view.KeyEvent
-import io.github.sds100.keymapper.ServiceLocator
-import io.github.sds100.keymapper.system.phone.CallState
-import io.github.sds100.keymapper.system.phone.PhoneAdapter
 import timber.log.Timber
 
 /**
@@ -14,17 +11,10 @@ import timber.log.Timber
  */
 class KeyEventReceiver : Service() {
 
-    private val phoneAdapter: PhoneAdapter by lazy { ServiceLocator.phoneAdapter(this) }
-
     private val binderInterface: IKeyEventReceiver = object : IKeyEventReceiver.Stub() {
         override fun onKeyEvent(event: KeyEvent?): Boolean {
             synchronized(callbackLock) {
                 Timber.d("KeyEventReceiver: onKeyEvent ${event?.keyCode}")
-
-                if (event == null || callback == null || !shouldForwardKeyEvents()) {
-                    Timber.d("KeyEventReceiver: don't forward key event because not in a call")
-                    return false
-                }
 
                 return callback!!.onKeyEvent(event)
             }
@@ -48,10 +38,5 @@ class KeyEventReceiver : Service() {
 
     override fun onBind(intent: Intent?): IBinder? {
         return binderInterface.asBinder()
-    }
-
-    private fun shouldForwardKeyEvents(): Boolean {
-        val callState = phoneAdapter.getCallState()
-        return callState == CallState.IN_PHONE_CALL || callState == CallState.RINGING
     }
 }

@@ -112,14 +112,14 @@ class ChooseAppViewModel constructor(
         }
     }.flowOn(Dispatchers.Default)
         .toList()
-        .sortedBy { it.title.toLowerCase(Locale.getDefault()) }
+        .sortedBy { it.title.lowercase(Locale.getDefault()) }
 
     class Factory(
         private val useCase: DisplayAppsUseCase
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(modelClass: Class<T>) =
+        override fun <T : ViewModel> create(modelClass: Class<T>) =
             ChooseAppViewModel(useCase) as T
     }
 }

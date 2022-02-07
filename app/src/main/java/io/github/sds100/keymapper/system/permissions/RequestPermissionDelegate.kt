@@ -76,6 +76,7 @@ class RequestPermissionDelegate(
             Permission.NOTIFICATION_LISTENER -> notificationReceiverAdapter.start()
             Permission.CALL_PHONE -> requestPermissionLauncher.launch(Manifest.permission.CALL_PHONE)
             Permission.ANSWER_PHONE_CALL -> requestPermissionLauncher.launch(Manifest.permission.ANSWER_PHONE_CALLS)
+            Permission.FIND_NEARBY_DEVICES -> requestPermissionLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT)
             Permission.ROOT -> {
                 require(navController != null) { "nav controller can't be null!" }
                 requestRootPermission(navController)

@@ -2,9 +2,10 @@ package io.github.sds100.keymapper.actions.tapscreen
 
 import android.graphics.Bitmap
 import android.graphics.Point
-import androidx.lifecycle.*
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.ui.*
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -132,7 +133,7 @@ class PickDisplayCoordinateViewModel(
         private val resourceProvider: ResourceProvider
     ) : ViewModelProvider.NewInstanceFactory() {
 
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return PickDisplayCoordinateViewModel(resourceProvider) as T
         }
     }

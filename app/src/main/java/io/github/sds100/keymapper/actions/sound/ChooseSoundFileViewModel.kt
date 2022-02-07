@@ -90,7 +90,7 @@ class ChooseSoundFileViewModel(
         private val useCase: ChooseSoundFileUseCase
     ) : ViewModelProvider.NewInstanceFactory() {
 
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ChooseSoundFileViewModel(resourceProvider, useCase) as T
         }
     }

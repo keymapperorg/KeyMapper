@@ -77,7 +77,7 @@ class ChooseActivityViewModel(private val useCase: DisplayAppsUseCase) : ViewMod
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(modelClass: Class<T>) =
+        override fun <T : ViewModel> create(modelClass: Class<T>) =
             ChooseActivityViewModel(useCase) as T
     }
 }

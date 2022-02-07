@@ -9,7 +9,6 @@ import io.github.sds100.keymapper.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
 import io.github.sds100.keymapper.system.permissions.Permission
-import io.github.sds100.keymapper.ui.*
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.dataOrNull
@@ -324,17 +323,19 @@ class ConfigKeyMapTriggerViewModel(
 
             if (result is Error.AccessibilityServiceDisabled) {
                 ViewModelHelper.handleAccessibilityServiceStoppedSnackBar(
-                        resourceProvider = this@ConfigKeyMapTriggerViewModel,
-                        popupViewModel = this@ConfigKeyMapTriggerViewModel,
-                        startService = displayKeyMap::startAccessibilityService
+                    resourceProvider = this@ConfigKeyMapTriggerViewModel,
+                    popupViewModel = this@ConfigKeyMapTriggerViewModel,
+                    startService = displayKeyMap::startAccessibilityService,
+                    message = R.string.dialog_message_enable_accessibility_service_to_record_trigger
                 )
             }
 
             if (result is Error.AccessibilityServiceCrashed) {
                 ViewModelHelper.handleAccessibilityServiceCrashedSnackBar(
-                        resourceProvider = this@ConfigKeyMapTriggerViewModel,
-                        popupViewModel = this@ConfigKeyMapTriggerViewModel,
-                        restartService = displayKeyMap::restartAccessibilityService
+                    resourceProvider = this@ConfigKeyMapTriggerViewModel,
+                    popupViewModel = this@ConfigKeyMapTriggerViewModel,
+                    restartService = displayKeyMap::restartAccessibilityService,
+                    message = R.string.dialog_message_restart_accessibility_service_to_record_trigger
                 )
             }
         }

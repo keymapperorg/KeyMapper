@@ -327,11 +327,11 @@ class ChooseConstraintViewModel(
         )
 
         response ?: return
+
         val device = navigate(
             "choose_bluetooth_device_for_constraint",
             NavDestination.ChooseBluetoothDevice
-        )
-            ?: return
+        ) ?: return
 
         val constraint = when (type) {
             ChooseConstraintType.BT_DEVICE_CONNECTED -> Constraint.BtDeviceConnected(
@@ -379,7 +379,7 @@ class ChooseConstraintViewModel(
         private val resourceProvider: ResourceProvider
     ) : ViewModelProvider.NewInstanceFactory() {
 
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ChooseConstraintViewModel(isSupported, resourceProvider) as T
         }
     }

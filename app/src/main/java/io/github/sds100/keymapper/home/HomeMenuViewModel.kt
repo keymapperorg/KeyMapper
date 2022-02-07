@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.home
 
-import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
 import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
@@ -28,23 +27,17 @@ class HomeMenuViewModel(
             pauseMappings.isPaused,
             alertsUseCase.accessibilityServiceState
         ) { isPaused, serviceState ->
-            val text = when (serviceState) {
+            when (serviceState) {
                 ServiceState.ENABLED ->
                     if (isPaused) {
-                        getString(R.string.action_tap_to_resume_keymaps)
+                        ToggleMappingsButtonState.PAUSED
                     } else {
-                        getString(R.string.action_tap_to_pause_keymaps)
+                        ToggleMappingsButtonState.RESUMED
                     }
-                ServiceState.CRASHED -> getString(R.string.button_restart_accessibility_service)
-                ServiceState.DISABLED -> getString(R.string.button_enable_accessibility_service)
-            }
+                ServiceState.CRASHED -> ToggleMappingsButtonState.SERVICE_CRASHED
 
-            val tint = when {
-                serviceState != ServiceState.ENABLED || !isPaused -> getColor(R.color.slideRed)
-                else -> getColor(R.color.slideGreen)
+                ServiceState.DISABLED -> ToggleMappingsButtonState.SERVICE_DISABLED
             }
-
-            ToggleMappingsButtonState(text, tint)
 
         }.stateIn(coroutineScope, SharingStarted.Eagerly, null)
 
@@ -130,7 +123,6 @@ class HomeMenuViewModel(
     }
 }
 
-data class ToggleMappingsButtonState(
-    val text: String,
-    val tint: Int
-)
+enum class ToggleMappingsButtonState {
+    PAUSED, RESUMED, SERVICE_DISABLED, SERVICE_CRASHED
+}

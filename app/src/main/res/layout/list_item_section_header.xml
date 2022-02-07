@@ -9,14 +9,14 @@
             type="String" />
     </data>
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="36dp"
         android:layout_marginStart="16dp"
         android:gravity="center_vertical"
         android:text="@{header}"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+        android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
         android:textColor="?attr/colorAccent"
         tools:text="Subheading" />
 </layout>

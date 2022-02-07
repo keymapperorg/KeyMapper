@@ -65,7 +65,7 @@
                         android:layout_marginEnd="@dimen/cardview_padding_right"
                         android:paddingBottom="@dimen/cardview_header_bottom_padding"
                         android:text="@{topLeftFragmentInfo.header}"
-                        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
                         android:textColor="?attr/colorAccent"
                         android:textSize="14sp"
                         app:layout_constraintStart_toStartOf="parent"
@@ -74,7 +74,7 @@
 
                     <io.github.sds100.keymapper.util.ui.SquareImageButton
                         android:id="@+id/buttonHelpTopLeft"
-                        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                        style="@style/Widget.Material3.Button.TextButton"
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:layout_marginTop="8dp"
@@ -127,7 +127,7 @@
                         android:layout_marginEnd="@dimen/cardview_padding_right"
                         android:paddingBottom="@dimen/cardview_header_bottom_padding"
                         android:text="@{bottomLeftFragmentInfo.header}"
-                        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
                         android:textColor="?attr/colorAccent"
                         android:textSize="14sp"
                         app:layout_constraintStart_toStartOf="parent"
@@ -136,7 +136,7 @@
 
                     <io.github.sds100.keymapper.util.ui.SquareImageButton
                         android:id="@+id/buttonHelpBottomLeft"
-                        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                        style="@style/Widget.Material3.Button.TextButton"
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:layout_marginTop="8dp"
@@ -188,7 +188,7 @@
                         android:layout_marginEnd="@dimen/cardview_padding_right"
                         android:paddingBottom="@dimen/cardview_header_bottom_padding"
                         android:text="@{topRightFragmentInfo.header}"
-                        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
                         android:textColor="?attr/colorAccent"
                         android:textSize="14sp"
                         app:layout_constraintStart_toStartOf="parent"
@@ -197,7 +197,7 @@
 
                     <io.github.sds100.keymapper.util.ui.SquareImageButton
                         android:id="@+id/buttonHelpTopRight"
-                        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                        style="@style/Widget.Material3.Button.TextButton"
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:layout_marginTop="8dp"
@@ -250,7 +250,7 @@
                         android:layout_marginEnd="@dimen/cardview_padding_right"
                         android:paddingBottom="@dimen/cardview_header_bottom_padding"
                         android:text="@{bottomRightFragmentInfo.header}"
-                        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
                         android:textColor="?attr/colorAccent"
                         android:textSize="14sp"
                         app:layout_constraintStart_toStartOf="parent"
@@ -259,7 +259,7 @@
 
                     <io.github.sds100.keymapper.util.ui.SquareImageButton
                         android:id="@+id/buttonHelpBottomRight"
-                        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                        style="@style/Widget.Material3.Button.TextButton"
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:layout_marginTop="8dp"

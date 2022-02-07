@@ -77,7 +77,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@{state.extraInfo}"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                    android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
                     android:visibility='@{state.extraInfo == null ? View.GONE : View.VISIBLE}'
                     tools:text="Show Volume Dialog"
                     tools:visibility="visible" />
@@ -87,7 +87,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@{state.errorMessage}"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                    android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
                     android:textColor="?attr/colorError"
                     android:visibility='@{state.errorMessage != null ? View.VISIBLE : View.GONE}'
                     tools:text="Needs Do Not Disturb permission!"
@@ -96,7 +96,7 @@
 
             <io.github.sds100.keymapper.util.ui.SquareImageButton
                 android:id="@+id/buttonDrag"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                style="@style/Widget.Material3.Button.TextButton"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:tint="?attr/colorOnSurface"

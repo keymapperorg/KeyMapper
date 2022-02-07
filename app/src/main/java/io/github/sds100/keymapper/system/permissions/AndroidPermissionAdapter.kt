@@ -88,10 +88,11 @@ class AndroidPermissionAdapter(
                 devicePolicyManager.isAdminActive(ComponentName(ctx, DeviceAdmin::class.java))
             }
 
-            Permission.READ_PHONE_STATE -> ContextCompat.checkSelfPermission(
-                ctx,
-                Manifest.permission.READ_PHONE_STATE
-            ) == PERMISSION_GRANTED
+            Permission.READ_PHONE_STATE ->
+                ContextCompat.checkSelfPermission(
+                    ctx,
+                    Manifest.permission.READ_PHONE_STATE
+                ) == PERMISSION_GRANTED
 
             Permission.ACCESS_NOTIFICATION_POLICY ->
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -152,12 +153,22 @@ class AndroidPermissionAdapter(
                     ctx,
                     Manifest.permission.ACCESS_FINE_LOCATION
                 ) == PERMISSION_GRANTED
-            
+
             Permission.ANSWER_PHONE_CALL ->
                 ContextCompat.checkSelfPermission(
                     ctx,
                     Manifest.permission.ANSWER_PHONE_CALLS
                 ) == PERMISSION_GRANTED
+
+            Permission.FIND_NEARBY_DEVICES ->
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    ContextCompat.checkSelfPermission(
+                        ctx,
+                        Manifest.permission.BLUETOOTH_CONNECT
+                    ) == PERMISSION_GRANTED
+                } else {
+                    true
+                }
         }
     }
 

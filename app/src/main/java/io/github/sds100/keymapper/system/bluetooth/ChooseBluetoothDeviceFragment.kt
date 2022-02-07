@@ -2,34 +2,35 @@ package io.github.sds100.keymapper.system.bluetooth
 
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.navigation.fragment.navArgs
 import com.airbnb.epoxy.EpoxyRecyclerView
 import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
+import io.github.sds100.keymapper.fixError
 import io.github.sds100.keymapper.simple
 import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
-import io.github.sds100.keymapper.util.ui.RecyclerViewUtils
-import io.github.sds100.keymapper.util.ui.SimpleListItem
-import io.github.sds100.keymapper.util.ui.SimpleRecyclerViewFragment
+import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 
 /**
  * Created by sds100 on 22/02/2020.
  */
-class ChooseBluetoothDeviceFragment : SimpleRecyclerViewFragment<SimpleListItem>() {
+class ChooseBluetoothDeviceFragment : SimpleRecyclerViewFragment<ListItem>() {
 
     companion object {
-        const val REQUEST_KEY = "request_key_bluetooth_device"
         const val EXTRA_NAME = "extra_name"
         const val EXTRA_ADDRESS = "extra_address"
     }
+
+    private val args: ChooseBluetoothDeviceFragmentArgs by navArgs()
 
     private val viewModel: ChooseBluetoothDeviceViewModel by viewModels {
         Inject.chooseBluetoothDeviceViewModel(requireContext())
     }
 
-    override val listItems: Flow<State<List<SimpleListItem>>>
+    override val listItems: Flow<State<List<ListItem>>>
         get() = viewModel.listItems
 
     override fun subscribeUi(binding: FragmentSimpleRecyclerviewBinding) {
@@ -52,16 +53,26 @@ class ChooseBluetoothDeviceFragment : SimpleRecyclerViewFragment<SimpleListItem>
 
     override fun populateList(
         recyclerView: EpoxyRecyclerView,
-        listItems: List<SimpleListItem>
+        listItems: List<ListItem>
     ) {
         recyclerView.withModels {
             listItems.forEach { listItem ->
-                simple {
-                    id(listItem.id)
-                    model(listItem)
+                if (listItem is SimpleListItem) {
+                    simple {
+                        id(listItem.id)
+                        model(listItem)
 
-                    onClickListener { _ ->
-                        viewModel.onListItemClick(listItem.id)
+                        onClickListener { _ ->
+                            viewModel.onBluetoothDeviceListItemClick(listItem.id)
+                        }
+                    }
+                } else if (listItem is TextListItem.Error) {
+                    fixError {
+                        id(listItem.id)
+                        model(listItem)
+                        onFixClick { _ ->
+                            viewModel.onFixMissingPermissionListItemClick()
+                        }
                     }
                 }
             }
@@ -69,6 +80,6 @@ class ChooseBluetoothDeviceFragment : SimpleRecyclerViewFragment<SimpleListItem>
     }
 
     override fun getRequestKey(): String {
-        return REQUEST_KEY
+        return args.requestKey
     }
 }

@@ -180,7 +180,7 @@ class LogViewModel(
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(modelClass: Class<T>) =
+        override fun <T : ViewModel> create(modelClass: Class<T>) =
             LogViewModel(useCase, resourceProvider) as T
     }
 }

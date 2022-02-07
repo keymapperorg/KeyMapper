@@ -9,6 +9,10 @@ import kotlinx.coroutines.flow.Flow
 interface PhoneAdapter {
     val callStateFlow: Flow<CallState>
 
+    /**
+     * Must check if Key Mapper has READ_PHONE_STATE permission before calling this. Otherwise
+     * a security exception will be thrown.
+     */
     fun getCallState(): CallState
     fun startCall(number: String): Result<*>
     fun answerCall()
