@@ -40,7 +40,7 @@ extra_css:
 extra:
   social:
     - icon: fontawesome/brands/discord
-      link: https://keymapper.club
+      link: http://www.keymapper.club
     - icon: fontawesome/solid/envelope
       link: mailto:developer.sds100@gmail.com
     - icon: fontawesome/brands/google-play
