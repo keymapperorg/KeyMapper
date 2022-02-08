@@ -34,5 +34,5 @@ Nie musisz przyznawać wszystkich uprawnień, aby aplikacja działała. Aplikacj
 
  Na niektórych urządzeniach włączenie usługi ułatwień dostępu spowoduje wyłączenie "Ulepszonego szyfrowania danych".
 
-Discord: https://discord.gg/Suj6nyw
-Strona internetowa: https://docs.keymapper.club
+Discord: www.keymapper.club
+Strona internetowa: docs.keymapper.club

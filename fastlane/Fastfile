@@ -95,7 +95,7 @@ platform :android do
     apk_path_release="app/build/outputs/apk/release/keymapper-" + version_name + ".apk"
 
     github_release = set_github_release(
-      repository_name: "sds100/KeyMapper",
+      repository_name: "keymapperorg/KeyMapper",
       api_token: github_token,
       name: release_name,
       tag_name: "v" + version_name,
@@ -193,7 +193,7 @@ platform :android do
     apk_path_release="app/build/outputs/apk/release/keymapper-" + version_name + ".apk"
 
     github_release = set_github_release(
-      repository_name: "sds100/KeyMapper",
+      repository_name: "keymapperorg/KeyMapper",
       api_token: github_token,
       name: release_name,
       tag_name: "v" + version_name,

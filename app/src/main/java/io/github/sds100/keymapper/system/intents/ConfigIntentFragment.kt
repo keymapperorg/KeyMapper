@@ -107,6 +107,28 @@ class ConfigIntentFragment : Fragment() {
     }
 
     private fun EpoxyController.bindExtra(model: IntentExtraListItem) {
+        val intentNameTextWatcher = object : TextWatcher {
+            override fun beforeTextChanged(
+                s: CharSequence?,
+                start: Int,
+                count: Int,
+                after: Int
+            ) {
+            }
+
+            override fun onTextChanged(
+                s: CharSequence?,
+                start: Int,
+                before: Int,
+                count: Int
+            ) {
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                viewModel.setExtraName(model.uid, s.toString())
+            }
+        }
+
         when (model) {
             is GenericIntentExtraListItem -> intentExtraGeneric {
 
@@ -145,34 +167,15 @@ class ConfigIntentFragment : Fragment() {
                     }
                 })
 
-                nameTextWatcher(object : TextWatcher {
-                    override fun beforeTextChanged(
-                        s: CharSequence?,
-                        start: Int,
-                        count: Int,
-                        after: Int
-                    ) {
-
-                    }
-
-                    override fun onTextChanged(
-                        s: CharSequence?,
-                        start: Int,
-                        before: Int,
-                        count: Int
-                    ) {
-                    }
-
-                    override fun afterTextChanged(s: Editable?) {
-                        viewModel.setExtraName(model.uid, s.toString())
-                    }
-                })
+                nameTextWatcher(intentNameTextWatcher)
             }
 
             is BoolIntentExtraListItem -> intentExtraBool {
                 id(model.uid)
 
                 model(model)
+
+                nameTextWatcher(intentNameTextWatcher)
 
                 onRemoveClick { _ ->
                     viewModel.removeExtra(model.uid)

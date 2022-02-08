@@ -2,13 +2,13 @@ package io.github.sds100.keymapper.system.intents
 
 import android.content.Intent
 import android.os.Build
-import android.os.Bundle
 import android.text.InputType
 import androidx.core.net.toUri
-import androidx.lifecycle.*
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.system.apps.ActivityInfo
-import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -279,13 +279,16 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
 
             val dialog = PopupUi.SingleChoice(items)
 
-            val response = showPopup("add_extra", dialog) ?: return@launch
+            val extraType = showPopup("add_extra", dialog)?.item ?: return@launch
 
-            val model = IntentExtraModel(response.item)
-
-            extras.value = extras.value.toMutableList().apply {
-                add(model)
+            val modelValue = when (extraType) {
+                is BoolExtraType -> "true"
+                else -> ""
             }
+
+            val model = IntentExtraModel(extraType, value = modelValue)
+
+            extras.value = extras.value.plus(model)
         }
     }
 
