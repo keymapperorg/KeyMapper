@@ -21,6 +21,7 @@ import io.github.sds100.keymapper.util.ui.showPopups
 import splitties.alertdialog.appcompat.messageResource
 import splitties.alertdialog.appcompat.negativeButton
 import splitties.alertdialog.appcompat.positiveButton
+import splitties.alertdialog.appcompat.titleResource
 import splitties.alertdialog.material.materialAlertDialog
 
 /**
@@ -169,6 +170,7 @@ abstract class ConfigMappingFragment : Fragment() {
     private fun showOnBackPressedWarning() {
         viewLifecycleScope.launchWhenResumed {
             onBackPressedDialog = requireContext().materialAlertDialog {
+                titleResource = R.string.dialog_title_are_you_sure_want_to_leave_without_saving
                 messageResource = R.string.dialog_message_are_you_sure_want_to_leave_without_saving
 
                 positiveButton(R.string.pos_yes) {
