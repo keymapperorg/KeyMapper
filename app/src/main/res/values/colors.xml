@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="brandBlue">#1565c0</color>
-    <color name="brandAccent">#d32f2f</color>
     <color name="colorIconDark">#424242</color>
     <color name="cardTintGreen">#2C00C853</color>
 
