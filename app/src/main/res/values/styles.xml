@@ -84,10 +84,10 @@
     </style>
 
     <style name="BottomAppBar.Theme" parent="ThemeOverlay.Material3.BottomAppBar">
-        <item name="iconTint">?attr/colorOnSecondaryContainer</item>
-        <item name="tint">?attr/colorOnSecondaryContainer</item>
-        <item name="android:editTextColor">?attr/colorOnSecondaryContainer</item>
-        <item name="navigationIconTint">?attr/colorOnSecondaryContainer</item>
+        <!--        <item name="iconTint">?attr/colorOnSecondaryContainer</item>-->
+        <!--        <item name="tint">?attr/colorOnSecondaryContainer</item>-->
+        <!--        <item name="android:editTextColor">?attr/colorOnSecondaryContainer</item>-->
+        <!--        <item name="navigationIconTint">?attr/colorOnSecondaryContainer</item>-->
     </style>
 
     <style name="ShapeAppearanceOverlay.BottomSheetMenuItem">
