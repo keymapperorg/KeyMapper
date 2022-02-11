@@ -72,6 +72,7 @@ class ChooseActionFragment : SimpleRecyclerViewFragment<ListItem>() {
         recyclerView: EpoxyRecyclerView,
         listItems: List<ListItem>
     ) {
+        recyclerView.setRecycledViewPool(null)
         RecyclerViewUtils.setSpanCountForSimpleListItemGrid(recyclerView)
 
         recyclerView.withModels {
