@@ -16,7 +16,11 @@ class KeyEventReceiver : Service() {
             synchronized(callbackLock) {
                 Timber.d("KeyEventReceiver: onKeyEvent ${event?.keyCode}")
 
-                return callback!!.onKeyEvent(event)
+                if (callback != null) {
+                    return callback!!.onKeyEvent(event)
+                } else {
+                    return false
+                }
             }
         }
 
