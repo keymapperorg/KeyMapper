@@ -350,7 +350,7 @@ class ChooseConstraintViewModel(
 
     private suspend fun onSelectAppConstraint(type: ChooseConstraintType) {
         val packageName =
-            navigate("choose_package_for_constraint", NavDestination.ChooseApp)
+            navigate("choose_package_for_constraint", NavDestination.ChooseApp(allowHiddenApps = true))
                 ?: return
 
         val constraint = when (type) {

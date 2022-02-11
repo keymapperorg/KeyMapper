@@ -36,7 +36,7 @@ sealed class NavDestination<R> {
 
         fun NavDestination<*>.getId(): String {
             return when (this) {
-                ChooseApp -> ID_CHOOSE_APP
+                is ChooseApp -> ID_CHOOSE_APP
                 ChooseAppShortcut -> ID_CHOOSE_APP_SHORTCUT
                 ChooseKeyCode -> ID_KEY_CODE
                 is ConfigKeyEventAction -> ID_KEY_EVENT
@@ -57,7 +57,13 @@ sealed class NavDestination<R> {
         }
     }
 
-    object ChooseApp : NavDestination<String>()
+    data class ChooseApp(
+        /**
+         * Allow the list to show hidden apps that can't be launched.
+         */
+        val allowHiddenApps: Boolean
+    ) : NavDestination<String>()
+
     object ChooseAppShortcut : NavDestination<ChooseAppShortcutResult>()
     object ChooseKeyCode : NavDestination<Int>()
     data class ConfigKeyEventAction(val action: ActionData.InputKeyEvent? = null) :

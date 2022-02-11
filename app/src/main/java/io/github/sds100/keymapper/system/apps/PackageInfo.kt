@@ -6,11 +6,10 @@ package io.github.sds100.keymapper.system.apps
 
 data class PackageInfo(
     val packageName: String,
-
-    /**
-     * Whether the user can open this package like an "app".
-     */
-    val canBeLaunched: Boolean,
     val activities: List<ActivityInfo>,
-    val isEnabled: Boolean
+    val isEnabled: Boolean,
+    /**
+     * Whether this package can be launched.
+     */
+    val isLaunchable: Boolean
 )

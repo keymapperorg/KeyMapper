@@ -131,7 +131,7 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
         }
 
         val direction = when (destination) {
-            NavDestination.ChooseApp -> NavAppDirections.chooseApp(requestKey)
+           is NavDestination.ChooseApp -> NavAppDirections.chooseApp(destination.allowHiddenApps, requestKey)
             NavDestination.ChooseAppShortcut -> NavAppDirections.chooseAppShortcut(requestKey)
             NavDestination.ChooseKeyCode -> NavAppDirections.chooseKeyCode(requestKey)
             is NavDestination.ConfigKeyEventAction -> {

@@ -54,7 +54,6 @@ class ChooseActivityViewModel(private val useCase: DisplayAppsUseCase) : ViewMod
     private val _listItems = MutableStateFlow<State<List<ActivityListItem>>>(State.Loading)
     val listItems = _listItems.asStateFlow()
 
-
     init {
         combine(
             searchQuery,

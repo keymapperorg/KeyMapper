@@ -9,16 +9,13 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
-import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.databinding.ActivityMainBinding
 import io.github.sds100.keymapper.system.permissions.RequestPermissionDelegate
-import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.showPopups
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import splitties.alertdialog.appcompat.*
 import timber.log.Timber
 
 /**

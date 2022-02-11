@@ -84,7 +84,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/textViewTitle"
                 app:tintType="@{model.subtitleTint}"
                 tools:text="Root only"
-                tools:visibility="gone" />
+                tools:visibility="visible" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guidelineTop"

@@ -59,7 +59,7 @@ class CreateActionViewModelImpl(
             ActionId.REWIND_PACKAGE,
             -> {
                 val packageName =
-                    navigate("choose_app_for_media_action", NavDestination.ChooseApp)
+                    navigate("choose_app_for_media_action", NavDestination.ChooseApp(allowHiddenApps = true))
                         ?: return null
 
                 val action = when (actionId) {
@@ -246,7 +246,7 @@ class CreateActionViewModelImpl(
 
             ActionId.APP -> {
                 val packageName =
-                    navigate("choose_app_for_app_action", NavDestination.ChooseApp)
+                    navigate("choose_app_for_app_action", NavDestination.ChooseApp(allowHiddenApps = false))
                         ?: return null
 
                 return ActionData.App(packageName)

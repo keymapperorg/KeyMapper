@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.system.apps
 
 import android.content.*
+import android.content.pm.ApplicationInfo
 import android.content.pm.IPackageManager
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
@@ -63,8 +64,6 @@ class AndroidPackageManagerAdapter(
 
     init {
         coroutineScope.launch(Dispatchers.Default) {
-            updatePackageList()
-
             //save memory by only storing this stuff as it is needed
             installedPackages.subscriptionCount
                 .onEach { count ->
@@ -241,7 +240,10 @@ class AndroidPackageManagerAdapter(
             }
 
         } else if (permissionAdapter.isGranted(Permission.ROOT)) {
-            result = suAdapter.execute("pm grant ${Constants.PACKAGE_NAME} $permissionName", block = true)
+            result = suAdapter.execute(
+                "pm grant ${Constants.PACKAGE_NAME} $permissionName",
+                block = true
+            )
         } else {
             throw IllegalStateException("Shizuku or root permission has not been granted")
         }
@@ -300,40 +302,84 @@ class AndroidPackageManagerAdapter(
         }
     }
 
+    override fun getActivityLabel(packageName: String, activityClass: String): Result<String> {
+        try {
+            val component = ComponentName(packageName, activityClass)
+
+            return packageManager
+                .getActivityInfo(component, 0)
+                .loadLabel(packageManager)
+                .toString()
+                .success()
+        } catch (e: PackageManager.NameNotFoundException) {
+            return Error.AppNotFound(packageName)
+        }
+    }
+
+    override fun getActivityIcon(packageName: String, activityClass: String): Result<Drawable?> {
+        try {
+            val component = ComponentName(packageName, activityClass)
+
+            return packageManager
+                .getActivityInfo(component, 0)
+                .loadIcon(packageManager)
+                .success()
+        } catch (e: PackageManager.NameNotFoundException) {
+            return Error.AppNotFound(packageName)
+        }
+    }
+
     private fun updatePackageList() {
         installedPackages.value = State.Loading
 
         val packages = packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
-            .mapNotNull { applicationInfo ->
-                val packageName = applicationInfo.packageName
-                val canBeLaunched =
-                    (packageManager.getLaunchIntentForPackage(packageName) != null
-                        || packageManager.getLeanbackLaunchIntentForPackage(packageName) != null)
-
-                try {
-                    val activities =
-                        packageManager.getPackageInfo(
-                            packageName,
-                            PackageManager.GET_ACTIVITIES
-                        )?.activities?.map {
-                            ActivityInfo(it.name, it.packageName)
-                        }
-
-                    return@mapNotNull PackageInfo(
-                        packageName,
-                        canBeLaunched,
-                        activities = activities ?: emptyList(),
-                        isEnabled = applicationInfo.enabled
-                    )
-                } catch (e: PackageManager.NameNotFoundException) {
-                    return@mapNotNull null
-                } catch (e: TransactionTooLargeException) {
-                    return@mapNotNull null
-                } catch (e: Exception) {
-                    return@mapNotNull null
-                }
-            }
+            .mapNotNull { createPackageInfoModel(it) }
 
         installedPackages.value = State.Data(packages)
+    }
+
+    private fun createPackageInfoModel(applicationInfo: ApplicationInfo): PackageInfo? {
+        val packageName = applicationInfo.packageName
+
+        try {
+
+            val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
+            val leanbackLaunchIntent = packageManager.getLaunchIntentForPackage(packageName)
+
+            val isLaunchable = launchIntent != null || leanbackLaunchIntent != null
+
+            val activityPackageInfo = packageManager.getPackageInfo(
+                packageName,
+                PackageManager.GET_ACTIVITIES
+            )
+
+            if (activityPackageInfo == null) {
+                return null
+            }
+
+            val activityModels = mutableListOf<ActivityInfo>()
+
+            activityPackageInfo.activities.forEach { activity ->
+                val model = ActivityInfo(
+                    activityName = activity.name,
+                    packageName = activity.packageName,
+                )
+
+                activityModels.add(model)
+            }
+
+            return PackageInfo(
+                packageName,
+                activities = activityModels,
+                isEnabled = applicationInfo.enabled,
+                isLaunchable = isLaunchable
+            )
+        } catch (e: PackageManager.NameNotFoundException) {
+            return null
+        } catch (e: TransactionTooLargeException) {
+            return null
+        } catch (e: Exception) {
+            return null
+        }
     }
 }

@@ -1,6 +1,8 @@
 package io.github.sds100.keymapper.system.apps
 
+import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -38,6 +40,12 @@ class ChooseAppFragment : RecyclerViewFragment<SimpleListItem, FragmentChooseApp
 
     override val listItems: Flow<State<List<SimpleListItem>>>
         get() = viewModel.state.map { it.listItems }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewModel.allowHiddenApps = args.allowHiddenApps
+    }
 
     override fun subscribeUi(binding: FragmentChooseAppBinding) {
         binding.viewModel = viewModel

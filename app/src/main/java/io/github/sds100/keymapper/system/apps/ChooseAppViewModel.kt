@@ -37,20 +37,25 @@ class ChooseAppViewModel constructor(
     val state = _state.asStateFlow()
 
     private val allAppListItems = useCase.installedPackages.map { state ->
-        state.mapData { it.buildListItems() }
+        state.mapData { packages ->
+            packages.buildListItems()
+        }
     }.flowOn(Dispatchers.Default)
 
     private val launchableAppListItems = useCase.installedPackages.map { state ->
-        state.mapData { packageInfoList ->
-            packageInfoList.filter { it.canBeLaunched }.buildListItems()
+        state.mapData { packages ->
+            packages
+                .filter { it.isLaunchable }
+                .buildListItems()
         }
     }.flowOn(Dispatchers.Default)
 
     private val _returnResult = MutableSharedFlow<String>()
     val returnResult = _returnResult.asSharedFlow()
 
-    init {
+    var allowHiddenApps: Boolean = false
 
+    init {
         combine(
             allAppListItems,
             launchableAppListItems,
@@ -58,7 +63,7 @@ class ChooseAppViewModel constructor(
             searchQuery
         ) { allAppListItems, launchableAppListItems, showHiddenApps, query ->
 
-            val packagesToFilter = if (showHiddenApps) {
+            val packagesToFilter = if (allowHiddenApps && showHiddenApps) {
                 allAppListItems
             } else {
                 launchableAppListItems
@@ -69,7 +74,7 @@ class ChooseAppViewModel constructor(
                     packagesToFilter.data.filterByQuery(query).collectLatest { filteredListItems ->
                         _state.value = AppListState(
                             filteredListItems,
-                            showHiddenAppsButton = true,
+                            showHiddenAppsButton = allowHiddenApps,
                             isHiddenAppsChecked = showHiddenApps
                         )
                     }
@@ -78,7 +83,7 @@ class ChooseAppViewModel constructor(
                 is State.Loading -> _state.value =
                     AppListState(
                         State.Loading,
-                        showHiddenAppsButton = true,
+                        showHiddenAppsButton = allowHiddenApps,
                         isHiddenAppsChecked = showHiddenApps
                     )
             }
@@ -99,8 +104,11 @@ class ChooseAppViewModel constructor(
 
     private suspend fun List<PackageInfo>.buildListItems(): List<SimpleListItem> = flow {
         forEach { packageInfo ->
-            val name = useCase.getAppName(packageInfo.packageName).valueOrNull() ?: return@forEach
-            val icon = useCase.getAppIcon(packageInfo.packageName).valueOrNull() ?: return@forEach
+            val name = useCase.getAppName(packageInfo.packageName)
+                .valueOrNull() ?: return@forEach
+
+            val icon = useCase.getAppIcon(packageInfo.packageName)
+                .valueOrNull() ?: return@forEach
 
             val listItem = DefaultSimpleListItem(
                 id = packageInfo.packageName,
