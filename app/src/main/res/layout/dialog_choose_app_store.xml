@@ -18,34 +18,31 @@
         android:paddingEnd="16dp">
 
         <com.google.android.material.chip.Chip
-            style="@style/UrlLinkChip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/chip_play_store"
             android:visibility="@{model.playStoreLink != null ? View.VISIBLE : View.GONE}"
             app:chipIcon="@drawable/ic_google_play"
-            app:chipIconTint="?attr/colorAccent"
+            app:chipIconTint="?attr/colorPrimary"
             app:iconStartPadding="4dp"
             app:openUrlOnClick="@{model.playStoreLink}" />
 
         <com.google.android.material.chip.Chip
-            style="@style/UrlLinkChip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/chip_fdroid"
             android:visibility="@{model.fdroidLink != null ? View.VISIBLE : View.GONE}"
             app:chipIcon="@drawable/ic_fdroid"
-            app:chipIconTint="?attr/colorAccent"
+            app:chipIconTint="?attr/colorPrimary"
             app:openUrlOnClick="@{model.fdroidLink}" />
 
         <com.google.android.material.chip.Chip
-            style="@style/UrlLinkChip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/chip_github"
             android:visibility="@{model.githubLink != null ? View.VISIBLE : View.GONE}"
             app:chipIcon="@drawable/ic_github"
-            app:chipIconTint="?attr/colorAccent"
+            app:chipIconTint="?attr/colorPrimary"
             app:openUrlOnClick="@{model.githubLink}" />
 
     </com.google.android.material.chip.ChipGroup>

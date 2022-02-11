@@ -27,11 +27,6 @@
         <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
-    <style name="UrlLinkChip" parent="OutlineChip">
-        <item name="closeIconVisible">false</item>
-        <item name="chipIconTint">?attr/colorOnSurface</item>
-    </style>
-
     <style name="KeymapListChip" parent="OutlineChip" />
 
     <style name="KeymapListChip.TriggerKey">
