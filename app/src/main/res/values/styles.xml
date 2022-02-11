@@ -76,13 +76,10 @@
 
     <style name="BottomAppBar" parent="Widget.Material3.BottomAppBar">
         <item name="theme">@style/BottomAppBar.Theme</item>
+        <item name="navigationIconTint">?attr/colorOnSurface</item>
     </style>
 
     <style name="BottomAppBar.Theme" parent="ThemeOverlay.Material3.BottomAppBar">
-        <!--        <item name="iconTint">?attr/colorOnSecondaryContainer</item>-->
-        <!--        <item name="tint">?attr/colorOnSecondaryContainer</item>-->
-        <!--        <item name="android:editTextColor">?attr/colorOnSecondaryContainer</item>-->
-        <!--        <item name="navigationIconTint">?attr/colorOnSecondaryContainer</item>-->
     </style>
 
     <style name="ShapeAppearanceOverlay.BottomSheetMenuItem">
