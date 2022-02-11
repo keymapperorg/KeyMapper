@@ -20,7 +20,7 @@
         android:layout_marginEnd="@dimen/cardview_padding_right"
         android:layout_marginBottom="8dp"
         android:paddingHorizontal="8dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
         android:textColor="?attr/colorOnSurface"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
