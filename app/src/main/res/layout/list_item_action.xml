@@ -68,7 +68,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@{state.title == null ? state.errorMessage : state.title}"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                     android:textColor="?attr/colorOnSurface"
                     tools:text="Increase Volume" />
 
@@ -77,7 +77,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@{state.extraInfo}"
-                    android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                     android:visibility='@{state.extraInfo == null ? View.GONE : View.VISIBLE}'
                     tools:text="Show Volume Dialog"
                     tools:visibility="visible" />
@@ -87,7 +87,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@{state.errorMessage}"
-                    android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                     android:textColor="?attr/colorError"
                     android:visibility='@{state.errorMessage != null ? View.VISIBLE : View.GONE}'
                     tools:text="Needs Do Not Disturb permission!"

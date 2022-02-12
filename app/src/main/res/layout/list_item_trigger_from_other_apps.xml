@@ -44,7 +44,7 @@
             android:onCheckedChanged="@{onCheckedChange}"
             android:paddingHorizontal="8dp"
             android:text="@string/flag_trigger_from_other_apps"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
             android:textColor="?attr/colorOnSurface"
             app:layout_constraintEnd_toStartOf="@+id/buttonCopyToClipboard"
             app:layout_constraintStart_toStartOf="parent"
