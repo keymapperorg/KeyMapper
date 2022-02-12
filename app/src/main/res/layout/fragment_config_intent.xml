@@ -345,7 +345,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            app:backgroundTint="?attr/colorPrimarySurface"
             app:fabAlignmentMode="end"
             app:fabAnimationMode="slide"
             app:navigationIcon="@drawable/ic_baseline_arrow_back_24" />
