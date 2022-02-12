@@ -286,7 +286,7 @@
     <string name="slide_description_create_bug_report">Wybierz lokalizację, w której chcesz zapisać zgłoszenie błędu, klikając \"Utwórz zgłoszenie\". Następny slajd pokaże, jak możesz wysłać go do programisty.</string>
     <string name="slide_button_create_bug_report">Utwórz zgłoszenie</string>
     <string name="slide_title_share_bug_report">Udostępnij zgłoszenie</string>
-    <string name="slide_description_share_bug_report">Istnieją 3 sposoby udostępnienia zgłoszeniu o błędzie programiście. Dołącz do serwera Discord lub utwórz zgłoszenie na GitHubie. Upewnij się, że dołączasz zgłoszenie o błędzie do swojej wiadomości!</string>
+    <string name="slide_description_share_bug_report">Istnieją 2 sposoby udostępnienia zgłoszenia o błędzie programiście. Dołącz do serwera Discord lub utwórz zgłoszenie na GitHubie. Upewnij się, że dołączasz plik zgłoszenia o błędzie do swojej wiadomości!</string>
     <string name="slide_button_share_discord">Discord</string>
     <string name="slide_button_share_github">GitHub</string>
     <!--  Bug report slides-->
@@ -352,6 +352,7 @@
     <string name="dialog_title_choose_flash">Wybierz lampę błyskową</string>
     <string name="dialog_title_cant_find_accessibility_settings_page">Nie można wykryć strony ustawień ułatwień dostępu</string>
     <string name="dialog_title_cant_record_trigger">Nie możesz wprowadzić wyzwalacza?</string>
+    <string name="dialog_title_are_you_sure_want_to_leave_without_saving">Zapisz zmiany</string>
     <string name="dialog_message_are_you_sure_want_to_leave_without_saving">Czy na pewno chcesz wrócić bez zapisywania?</string>
     <string name="dialog_message_root_prompt">Jeśli wiesz, że Twój telefon nie jest zrootowany lub nie wiesz, czym jest root, nie możesz korzystać z funkcji, które działają tylko na zrootowanych urządzeniach. Po kliknięciu \"OK\" zostaniesz przeniesiony do ustawień.
             W ustawieniach przewiń w dół i kliknij \"Key Mapper ma uprawnienia roota\", aby móc korzystać z funkcji/działań roota.</string>
@@ -417,6 +418,8 @@
     <string name="dialog_title_request_shizuku_permission">Poproś o uprawnienie Shizuku</string>
     <string name="dialog_message_request_shizuku_permission">Ponieważ używasz Shizuku, zdecydowanie zaleca się udzielenie tego uprawnienia, ponieważ niektóre funkcje Key Mappera można wykonać bez konieczności konfigurowania czegokolwiek (np. wprowadzanie kodów klawiszy bez użycia klawiatury Key Mapper).</string>
     <string name="dialog_title_home_fix_error">Napraw błąd</string>
+    <string name="dialog_title_explain_bluetooth_permission">Wymagane uprawnienia</string>
+    <string name="dialog_message_explain_bluetooth_permission">Key Mapper potrzebuje uprawnienia \"urządzenia w pobliżu\", aby wyświetlić listę sparowanych urządzeń Bluetooth.</string>
     <string name="pos_yes">Tak</string>
     <string name="pos_done">Gotowe</string>
     <string name="pos_opt_in">Zaakceptuj</string>
@@ -528,10 +531,10 @@
     <string name="summary_pref_hide_home_screen_alerts">Ukryj alerty u góry ekranu głównego.</string>
     <string name="title_pref_show_device_descriptors">Pokaż pierwsze 5 znaków identyfikatora urządzenia dla wyzwalaczy specyficznych dla urządzenia</string>
     <string name="summary_pref_show_device_descriptors">Jest to przydatne do rozróżnienia między urządzeniami o tej samej nazwie.</string>
+    <string name="title_pref_reroute_keyevents_link">Napraw klawiatury, które są ustawione na układ angielski (US)</string>
+    <string name="summary_pref_reroute_keyevents_link">To naprawia klawiatury, które nie mają prawidłowego układu klawiatury, gdy usługa ułatwień dostępu jest włączona. Kliknij, aby dowiedzieć się więcej i skonfigurować.</string>
     <string name="title_pref_reroute_keyevents">Napraw klawiatury, które są ustawione na układ angielski (US)</string>
     <string name="summary_pref_reroute_keyevents">W systemie Android 11 występuje błąd polegający na tym, że wszystkie urządzenia zewnętrzne, podczas korzystania z usługi ułatwień dostępu, stają się tym samym wewnętrznym urządzeniem wirtualnym. Ponieważ system Android nie może poprawnie zidentyfikować tych urządzeń, nie może określić, którego układu klawiatury należy z nimi używać, więc domyślnie jest to angielski (US), nawet jeśli jest to na przykład klawiatura niemiecka. Możesz użyć Key Mapper, aby obejść ten problem, wykonując poniższe czynności.</string>
-    <string name="title_pref_reroute_keyevents_link">Obejście błędu Androida 11</string>
-    <string name="summary_pref_reroute_keyevents_link">To naprawia klawiatury, które nie działają po włączeniu jakiejkolwiek usługi ułatwień dostępu.</string>
     <string name="title_pref_devices_to_reroute_keyevents_choose_devices">4. Wybierz urządzenia</string>
     <string name="title_pref_devices_to_reroute_keyevents_install_gui_keyboard">1. Zainstaluj GUI klawiaturę Key Mapper (opcjonalnie)</string>
     <string name="title_pref_devices_to_reroute_keyevents_install_leanback_keyboard">1. Zainstaluj klawiaturę Key Mapper Leanback (opcjonalnie)</string>
@@ -812,8 +815,10 @@
     <string name="error_shizuku_permission_denied">Odmowa dostępu do Shizuku!</string>
     <string name="error_shizuku_not_started">Aplikacja Shizuku nie jest uruchomiona!</string>
     <string name="error_no_file_name">Ten plik nie ma nazwy!</string>
+    <string name="error_choose_bluetooth_devices_permission_denied">Aby wyświetlić sparowane urządzenia Bluetooth, konieczne jest udzielenie aplikacji Key Mapper uprawnienia.</string>
     <string name="error_access_fine_location_permission_denied">Odmówiono dostępu do dokładnej lokalizacji!</string>
-    <string name="error_answer_end_phone_call">Odmowa uprawnienia na odbieranie i kończenie połączeń telefonicznych!</string>
+    <string name="error_answer_end_phone_call_permission_denied">Odmowa uprawnienia na odbieranie i kończenie połączeń telefonicznych!</string>
+    <string name="error_find_nearby_devices_permission_denied">Odmowa uprawnienia do wyświetlania sparowanych urządzeń Bluetooth!</string>
     <!-- Error messages -->
     <!-- action labels -->
     <string name="action_toggle_wifi">Włącz/wyłącz Wi-Fi</string>
