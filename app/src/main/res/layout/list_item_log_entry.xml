@@ -47,7 +47,7 @@
             android:layout_marginStart="16dp"
             android:scrollHorizontally="true"
             android:text="@{model.message}"
-            android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/textViewTime"
             app:layout_constraintTop_toTopOf="parent"
