@@ -129,6 +129,14 @@ class GetActionErrorUseCaseImpl(
                 inputMethodAdapter.getInfoById(action.imeId).onFailure {
                     return it
                 }
+
+            is ActionData.Bluetooth ->
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                    && !permissionAdapter.isGranted(Permission.FIND_NEARBY_DEVICES)
+                ) {
+                    return Error.PermissionDenied(Permission.FIND_NEARBY_DEVICES)
+                }
+
         }
 
         return null
