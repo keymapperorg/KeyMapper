@@ -1,3 +1,60 @@
+## [2.4.0 Beta 1](https://github.com/sds100/KeyMapper/releases/tag/v2.4.0-beta.01)
+
+### Changes
+
+- [#815](https://github.com/keymapperorg/KeyMapper/issues/815) Always show the button to pick a package when configuring
+  an intent action.
+- [#749](https://github.com/keymapperorg/KeyMapper/issues/749) Remove do not disturb app intro slide.
+- [#750](https://github.com/keymapperorg/KeyMapper/issues/750) Redesign the About screen.
+- [#747](https://github.com/keymapperorg/KeyMapper/issues/747) Reorganise the Settings screen so it is less cluttered.
+
+### Added
+
+#### Important
+
+- [#748](https://github.com/keymapperorg/KeyMapper/issues/748) Android 12 and Material You support 🎨!
+- [#746](https://github.com/keymapperorg/KeyMapper/issues/746) Shizuku support for some features! You can use this
+  instead of using a Key Mapper keyboard!
+
+#### Actions
+
+- [#603](https://github.com/keymapperorg/KeyMapper/issues/603) You can now edit actions! You don't have to delete an
+  action and completely reconfigure it.
+- [#851](https://github.com/keymapperorg/KeyMapper/issues/850) Action to answer/end a phone call.
+- [#704](https://github.com/keymapperorg/KeyMapper/issues/704) Action to dismiss notifications.
+
+#### Constraints
+
+- [#851](https://github.com/keymapperorg/KeyMapper/issues/851) Constraints for when the device is ringing and in a phone
+  call.
+- [#811](https://github.com/keymapperorg/KeyMapper/issues/811) Constraint for when the device is locked.
+- [#776](https://github.com/keymapperorg/KeyMapper/issues/776) Constraint for when an input method is chosen.
+- [#598](https://github.com/keymapperorg/KeyMapper/issues/598) Constraint for any app (not) playing or a specific app
+  not playing media.
+- [#702](https://github.com/keymapperorg/KeyMapper/issues/702) WiFi on/off/connected/disconnected constraints.
+- [#722](https://github.com/keymapperorg/KeyMapper/issues/722) Flashlight on/off constraint.
+
+#### Other
+
+- [#911](https://github.com/keymapperorg/KeyMapper/issues/911) Detect camera button when screen is off.
+- [#780](https://github.com/keymapperorg/KeyMapper/issues/780) If the accessibility settings can't be found prompt the
+  user to follow an online guide to do it with ADB.
+- [#773](https://github.com/keymapperorg/KeyMapper/issues/773) Prompt for a message when the user reports a bug.
+- [#686](https://github.com/keymapperorg/KeyMapper/issues/686) Setting to switch to a different input method on input
+  focus.
+- [#715](https://github.com/keymapperorg/KeyMapper/issues/715) Show a share button after a successful backup.
+- [#716](https://github.com/keymapperorg/KeyMapper/issues/716) Support for a Key Mapper compatible version of Hacker's
+  Keyboard. Releases can be found here: https://github.com/keymapperorg/KeyMapperHackersKeyboard/releases
+
+### Bug Fixes
+
+- [#794](https://github.com/keymapperorg/KeyMapper/issues/794) Only list apps that can be launched when creating an open
+  app action.
+- [#823](https://github.com/keymapperorg/KeyMapper/issues/823) Can't choose an app when creating media action.
+- [#756](https://github.com/keymapperorg/KeyMapper/issues/756) On slighter smaller screens show split layout when
+  configuring a mapping.
+- [#739](https://github.com/keymapperorg/KeyMapper/issues/739) Long press triggers ignore constraints.
+
 ## [2.3.3](https://github.com/sds100/KeyMapper/releases/tag/v2.3.3)
 
 #### 06 February 2022
@@ -398,7 +455,7 @@ This summarises the changes since 2.0.2.
 - Action to select word at cursor.
 - Action to toggle the screen on and off.
 - Action to tap a coordinate on the screen. The user and the app can NOT touch the screen at the same time. This is a
-limitation in Android.
+  limitation in Android.
 - Action to double press recents to go to last app.
 - Dismiss button to the notification that pauses/resumes keymaps. It will be shown again when the app is opened.
 - Show a warning dialog when leaving the screen to configure a keymap without saving.
@@ -452,7 +509,6 @@ limitation in Android.
 - The dialog prompting the user to reboot would show at the wrong time.
 - Switch to a new App Intro library. Hopefully it is more stable because the old library was crashing for many users.
 
-
 ## [2.1.0 Beta 2](https://github.com/sds100/KeyMapper/releases/tag/v2.1.0-beta.2) 
 
 #### 21 Oct 2020
@@ -475,7 +531,6 @@ limitation in Android.
 - Crash if a modifier key trigger is not mapped to a Key Event action.
 - Potential crash when showing keymaps on the homescreen.
 
-
 ## [2.1.0 Beta 1](https://github.com/sds100/KeyMapper/releases/tag/v2.1.0-beta.1) 
 
 #### 29 Sept 2020
@@ -490,7 +545,7 @@ limitation in Android.
 - Action to select word at cursor.
 - Action to toggle the screen on and off.
 - Action to tap a coordinate on the screen. The user and the app can NOT touch the screen at the same time. This is a
-limitation in Android.
+  limitation in Android.
 - Action to double press recents to go to last app.
 - Dismiss button to the notification that pauses/resumes keymaps. It will be shown again when the app is opened.
 - Show a warning dialog when leaving the screen to configure a keymap without saving.
@@ -546,7 +601,7 @@ limitation in Android.
   - App not in foreground
   - Bluetooth device connected
   - Bluetooth device not connected
-   - Screen on/off (ROOT only).
+  - Screen on/off (ROOT only).
 
 - Actions
   - Toggle/enable/disable a Do Not Disturb mode (Android 6.0+).
@@ -820,28 +875,32 @@ Changes from 1.1.0 Beta 8:
 ## [1.1.0 Beta 6](https://github.com/sds100/KeyMapper/releases/tag/v1.1.0-beta.6)
 #### 19 May 2019
 ### Bug Fixes
- - Don't show NFC actions on devices without NFC
- - Couldn't change volume when short pressing a volume button remapped to a long press action
+
+- Don't show NFC actions on devices without NFC
+- Couldn't change volume when short pressing a volume button remapped to a long press action
 
 ## [1.1.0 Beta 5](https://github.com/sds100/KeyMapper/releases/tag/v1.1.0-beta.5)
 #### 19 May 2019
- - Updated libraries
+
+- Updated libraries
 ### Added
- - Action to enable, disable and toggle NFC.
- - Action to switch between portrait and landscape mode.
- - Action to cycle through and change the ringer mode.
- - Action to fast forward and rewind.
- - Option to log events and send them to the developer so it is easier to debug issues with the app.
- - Button to Help page on homescreen.
- - Translation instuctions to the About activity.
+
+- Action to enable, disable and toggle NFC.
+- Action to switch between portrait and landscape mode.
+- Action to cycle through and change the ringer mode.
+- Action to fast forward and rewind.
+- Option to log events and send them to the developer so it is easier to debug issues with the app.
+- Button to Help page on homescreen.
+- Translation instuctions to the About activity.
 
 ### Changes
- - Add the trigger after the 5 seconds rather than having to press the button so the app can work with devices which only have remotes as input.
- - Cleanup Settings strings.
- - Use slightly darker homescreen background.
- - Don't show the "Key mapper is performing an action" toast message by default.
- - Allow the volume to be changed while in Do Not Disturb mode.
- - Minimum vibration duration is 1ms rather than 100ms
+
+- Add the trigger after the 5 seconds rather than having to press the button so the app can work with devices which only have remotes as input.
+- Cleanup Settings strings.
+- Use slightly darker homescreen background.
+- Don't show the "Key mapper is performing an action" toast message by default.
+- Allow the volume to be changed while in Do Not Disturb mode.
+- Minimum vibration duration is 1ms rather than 100ms
 
 ### Bug Fixes
 - The landscape mode action wouldn't work.
@@ -903,7 +962,6 @@ Changes from 1.1.0 Beta 8:
 - The app would crash if using the "open google assistant" action if the Google app wasn't installed.
 - Prevent the accessibility service from stopping if there is a fatal exception and show a toast when it happens.
 
-
 ## [1.0.0 Beta 6](https://github.com/sds100/KeyMapper/releases/tag/v1.0.0-beta.6)
 #### 22 Mar 2019
 - Changed developer email.
@@ -950,7 +1008,7 @@ Changes from 1.1.0 Beta 8:
 - Optional flags for each keymap so it can only be triggered on a long press and whether to show the volume dialog for volume related actions.
 - Ability to enable/disable specific/all keymaps.
 
-  ####   Added these actions
+  ####    Added these actions
   - Open App
   - Open App shortcut
   - A keycode
