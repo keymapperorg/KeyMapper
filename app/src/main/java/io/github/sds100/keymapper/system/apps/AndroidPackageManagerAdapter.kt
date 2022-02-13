@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import rikka.shizuku.ShizukuBinderWrapper
 import rikka.shizuku.SystemServiceHelper
 import splitties.bitflags.withFlag
@@ -329,13 +330,15 @@ class AndroidPackageManagerAdapter(
         }
     }
 
-    private fun updatePackageList() {
-        installedPackages.value = State.Loading
+    private suspend fun updatePackageList() {
+        withContext(Dispatchers.Default) {
+            installedPackages.value = State.Loading
 
-        val packages = packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
-            .mapNotNull { createPackageInfoModel(it) }
+            val packages = packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
+                .mapNotNull { createPackageInfoModel(it) }
 
-        installedPackages.value = State.Data(packages)
+            installedPackages.value = State.Data(packages)
+        }
     }
 
     private fun createPackageInfoModel(applicationInfo: ApplicationInfo): PackageInfo? {

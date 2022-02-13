@@ -68,7 +68,7 @@ class ChooseActivityViewModel(private val useCase: DisplayAppsUseCase) : ViewMod
                 _listItems.value = unfilteredListItemsState
             }
 
-        }.launchIn(viewModelScope)
+        }.flowOn(Dispatchers.Default).launchIn(viewModelScope)
     }
 
     class Factory(

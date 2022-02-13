@@ -32,5 +32,5 @@ suspend fun <T : ISearchable> List<T>.filterByQuery(query: String?): Flow<State<
 fun String.containsQuery(query: String?): Boolean {
     if (query.isNullOrBlank()) return true
 
-    return toLowerCase(Locale.getDefault()).contains(query.toLowerCase(Locale.getDefault()))
+    return lowercase(Locale.getDefault()).contains(query.lowercase(Locale.getDefault()))
 }
