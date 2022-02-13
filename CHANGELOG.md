@@ -1,3 +1,60 @@
+## [2.4.0 Beta 1](https://github.com/sds100/KeyMapper/releases/tag/v2.4.0-beta.01)
+
+### Changes
+
+- [#815](https://github.com/keymapperorg/KeyMapper/issues/815) Always show the button to pick a package when configuring
+  an intent action.
+- [#749](https://github.com/keymapperorg/KeyMapper/issues/749) Remove do not disturb app intro slide.
+- [#750](https://github.com/keymapperorg/KeyMapper/issues/750) Redesign the About screen.
+- [#747](https://github.com/keymapperorg/KeyMapper/issues/747) Reorganise the Settings screen so it is less cluttered.
+
+### Added
+
+#### Important
+
+- [#748](https://github.com/keymapperorg/KeyMapper/issues/748) Android 12 and Material You support 🎨!
+- [#746](https://github.com/keymapperorg/KeyMapper/issues/746) Shizuku support for some features! You can use this
+  instead of using a Key Mapper keyboard!
+
+#### Actions
+
+- [#603](https://github.com/keymapperorg/KeyMapper/issues/603) You can now edit actions! You don't have to delete an
+  action and completely reconfigure it.
+- [#851](https://github.com/keymapperorg/KeyMapper/issues/850) Action to answer/end a phone call.
+- [#704](https://github.com/keymapperorg/KeyMapper/issues/704) Action to dismiss notifications.
+
+#### Constraints
+
+- [#851](https://github.com/keymapperorg/KeyMapper/issues/851) Constraints for when the device is ringing and in a phone
+  call.
+- [#811](https://github.com/keymapperorg/KeyMapper/issues/811) Constraint for when the device is locked.
+- [#776](https://github.com/keymapperorg/KeyMapper/issues/776) Constraint for when an input method is chosen.
+- [#598](https://github.com/keymapperorg/KeyMapper/issues/598) Constraint for any app (not) playing or a specific app
+  not playing media.
+- [#702](https://github.com/keymapperorg/KeyMapper/issues/702) WiFi on/off/connected/disconnected constraints.
+- [#722](https://github.com/keymapperorg/KeyMapper/issues/722) Flashlight on/off constraint.
+
+#### Other
+
+- [#911](https://github.com/keymapperorg/KeyMapper/issues/911) Detect camera button when screen is off.
+- [#780](https://github.com/keymapperorg/KeyMapper/issues/780) If the accessibility settings can't be found prompt the
+  user to follow an online guide to do it with ADB.
+- [#773](https://github.com/keymapperorg/KeyMapper/issues/773) Prompt for a message when the user reports a bug.
+- [#686](https://github.com/keymapperorg/KeyMapper/issues/686) Setting to switch to a different input method on input
+  focus.
+- [#715](https://github.com/keymapperorg/KeyMapper/issues/715) Show a share button after a successful backup.
+- [#716](https://github.com/keymapperorg/KeyMapper/issues/716) Support for a Key Mapper compatible version of Hacker's
+  Keyboard. Releases can be found here: https://github.com/keymapperorg/KeyMapperHackersKeyboard/releases
+
+### Bug Fixes
+
+- [#794](https://github.com/keymapperorg/KeyMapper/issues/794) Only list apps that can be launched when creating an open
+  app action.
+- [#823](https://github.com/keymapperorg/KeyMapper/issues/823) Can't choose an app when creating media action.
+- [#756](https://github.com/keymapperorg/KeyMapper/issues/756) On slighter smaller screens show split layout when
+  configuring a mapping.
+- [#739](https://github.com/keymapperorg/KeyMapper/issues/739) Long press triggers ignore constraints.
+
 ## [2.3.3](https://github.com/sds100/KeyMapper/releases/tag/v2.3.3)
 
 #### 06 February 2022
