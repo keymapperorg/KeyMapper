@@ -2,7 +2,7 @@
 <resources>
     <string name="slogan">Uwolnij swoje przyciski!</string>
     <string name="no_action_chosen">Nie wybrano działania</string>
-    <string name="accessibility_service_description">Key Mapper musi korzystać z usługi ułatwień dostępu, aby móc czytać naciśnięć przycisków/klawiszy i wykonywać wybrane działania.
+    <string name="accessibility_service_explanation">Key Mapper musi korzystać z usługi ułatwień dostępu, aby móc czytać naciśnięć przycisków/klawiszy i wykonywać wybrane działania.
     Usługa ułatwień dostępu czyta tylko zdarzeń związanych z klawiszami i wykrywa, w której aplikacji się znajdujesz. Dla pewności możesz przeczytać kod źródłowy, do którego link znajduje się na ekranie Informacje.</string>
     <string name="selection_count">%d elementy</string>
     <string name="enable">Włącz</string>

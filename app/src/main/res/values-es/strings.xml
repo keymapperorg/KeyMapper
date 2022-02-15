@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="no_action_chosen">Ninguna acción seleccionada</string>
-    <string name="accessibility_service_description">Key Mapper necesita usar el servicio de accesibilidad para poder detectar las pulsaciones en botones y teclas y así hacer las acciones que elijas.
+    <string name="accessibility_service_explanation">Key Mapper necesita usar el servicio de accesibilidad para poder detectar las pulsaciones en botones y teclas y así hacer las acciones que elijas.
 Los servicios de accesibilidad solo detectan las teclas y eventos de las aplicación en la que estás. Puedes mirar el código fuente, cuyo enlace está en la pantalla \'About\', para comprobarlo.</string>
     <string name="selection_count">%d seleccionado</string>
     <string name="enable">Activar</string>
