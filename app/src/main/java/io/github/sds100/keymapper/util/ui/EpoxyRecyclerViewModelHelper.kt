@@ -54,15 +54,18 @@ fun EpoxyController.configuredCheckBox(
 ) {
     checkbox {
         id(model.id)
-        onBind { _, view, _ ->
+        model(model)
+
+        onBind { bindingModel, view, _ ->
+
             (view.dataBinding as ListItemCheckboxBinding).checkBox.apply {
                 //this is very important so checkboxes in other recycler views aren't affected by the checked state changing.
                 setOnCheckedChangeListener(null)
 
-                isChecked = model.isChecked
-                text = model.label
+                isChecked = bindingModel.model().isChecked
+                text = bindingModel.model().label
 
-                setOnCheckedChangeListener { buttonView, isChecked ->
+                setOnCheckedChangeListener { _, isChecked ->
                     onCheckedChange.invoke(isChecked)
                 }
             }

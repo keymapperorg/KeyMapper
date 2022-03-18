@@ -4,15 +4,15 @@ import android.app.Activity
 import android.appwidget.AppWidgetManager
 import android.content.Intent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.addRepeatingJob
+import androidx.navigation.fragment.navArgs
 import com.airbnb.epoxy.EpoxyRecyclerView
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
 import io.github.sds100.keymapper.simple
 import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.ui.RecyclerViewUtils
 import io.github.sds100.keymapper.util.ui.SimpleRecyclerViewFragment
 import io.github.sds100.keymapper.util.ui.showPopups
 import kotlinx.coroutines.flow.Flow
@@ -33,7 +33,7 @@ class ChooseAppShortcutFragment : SimpleRecyclerViewFragment<AppShortcutListItem
         const val SEARCH_STATE_KEY = "key_app_shortcut_search_state"
     }
 
-    override var requestKey: String? = REQUEST_KEY
+    private val args: ChooseAppShortcutFragmentArgs by navArgs()
     override var searchStateKey: String? = SEARCH_STATE_KEY
 
     private val viewModel: ChooseAppShortcutViewModel by viewModels {
@@ -57,7 +57,9 @@ class ChooseAppShortcutFragment : SimpleRecyclerViewFragment<AppShortcutListItem
     override fun subscribeUi(binding: FragmentSimpleRecyclerviewBinding) {
         super.subscribeUi(binding)
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.CREATED) {
+        RecyclerViewUtils.applySimpleListItemDecorations(binding.epoxyRecyclerView)
+
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.CREATED) {
             viewModel.returnResult.collectLatest {
                 returnResult(EXTRA_RESULT to Json.encodeToString(it))
             }
@@ -73,11 +75,10 @@ class ChooseAppShortcutFragment : SimpleRecyclerViewFragment<AppShortcutListItem
         binding.epoxyRecyclerView.withModels {
             listItems.forEach {
                 simple {
-                    id(it.shortcutInfo.toString())
-                    primaryText(it.label)
-                    icon(it.icon)
+                    id(it.id)
+                    model(it)
 
-                    onClick { _ ->
+                    onClickListener { _ ->
                         launchShortcutConfiguration(it.shortcutInfo)
                     }
                 }
@@ -87,6 +88,10 @@ class ChooseAppShortcutFragment : SimpleRecyclerViewFragment<AppShortcutListItem
 
     override fun onSearchQuery(query: String?) {
         viewModel.searchQuery.value = query
+    }
+
+    override fun getRequestKey(): String {
+        return args.requestKey
     }
 
     private fun launchShortcutConfiguration(shortcutInfo: AppShortcutInfo) {

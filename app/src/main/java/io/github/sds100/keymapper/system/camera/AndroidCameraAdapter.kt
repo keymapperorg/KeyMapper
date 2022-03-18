@@ -10,6 +10,7 @@ import androidx.core.content.getSystemService
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
+import timber.log.Timber
 import kotlin.collections.set
 
 /**
@@ -40,6 +41,7 @@ class AndroidCameraAdapter(context: Context) : CameraAdapter {
                                 enabled
                         }
                     } catch (e: Exception) {
+                        Timber.e(e)
                     }
                 }
             }
@@ -80,6 +82,10 @@ class AndroidCameraAdapter(context: Context) : CameraAdapter {
 
     override fun toggleFlashlight(lens: CameraLens): Result<*> {
         return setFlashlightMode(!isFlashEnabledMap[lens]!!, lens)
+    }
+
+    override fun isFlashlightOn(lens: CameraLens): Boolean {
+        return isFlashEnabledMap[lens] ?: false
     }
 
     private fun setFlashlightMode(

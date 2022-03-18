@@ -76,21 +76,19 @@
                 android:id="@+id/buttonToggleKeymaps"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                style="@style/Widget.Button.Red"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
                 android:onClick="@{() -> viewModel.onToggleMappingsButtonClick()}"
-                android:text="@{viewModel.toggleMappingsButtonState.text}"
-                app:customBackgroundTint="@{viewModel.toggleMappingsButtonState.tint}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                tools:backgroundTint="@color/red"
                 tools:text="Resume Keymaps" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonRestore"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginStart="8dp"
@@ -104,7 +102,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonBackupAll"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"

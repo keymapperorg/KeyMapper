@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.actions
 
 import android.view.KeyEvent
-import io.github.sds100.keymapper.actions.system.SystemActionId
 import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.devices.FakeDevicesAdapter
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
@@ -75,17 +74,20 @@ class PerformActionsUseCaseTest {
             openUrlAdapter = mock(),
             resourceProvider = mock(),
             preferenceRepository = mock(),
-            soundsManager = mock()
+            soundsManager = mock(),
+            shizukuInputEventInjector = mock(),
+            permissionAdapter = mock(),
+            notificationReceiverAdapter = mock()
         )
     }
-    
+
     /**
      * issue #771
      */
     @Test
     fun `dont show accessibility service not found error for open menu action`() = coroutineScope.runBlockingTest {
         //GIVEN
-        val action = SimpleSystemAction(SystemActionId.OPEN_MENU)
+        val action = ActionData.OpenMenu
 
         whenever(mockAccessibilityService.performActionOnNode(any(), any())).doReturn(Error.FailedToFindAccessibilityNode)
 
@@ -112,7 +114,7 @@ class PerformActionsUseCaseTest {
 
         fakeDevicesAdapter.connectedInputDevices.value = State.Data(listOf(fakeGamePad))
 
-        val action = KeyEventAction(
+        val action = ActionData.InputKeyEvent(
             keyCode = KeyEvent.KEYCODE_BUTTON_A,
             device = null
         )
@@ -141,7 +143,7 @@ class PerformActionsUseCaseTest {
         //GIVEN
         fakeDevicesAdapter.connectedInputDevices.value = State.Data(emptyList())
 
-        val action = KeyEventAction(
+        val action = ActionData.InputKeyEvent(
             keyCode = KeyEvent.KEYCODE_BUTTON_A,
             device = null
         )
@@ -186,9 +188,9 @@ class PerformActionsUseCaseTest {
 
         fakeDevicesAdapter.connectedInputDevices.value = State.Data(listOf(fakeGamePad, fakeKeyboard))
 
-        val action = KeyEventAction(
+        val action = ActionData.InputKeyEvent(
             keyCode = KeyEvent.KEYCODE_BUTTON_A,
-            device = KeyEventAction.Device(
+            device = ActionData.InputKeyEvent.Device(
                 descriptor = "keyboard",
                 name = "Keyboard"
             )
@@ -220,11 +222,11 @@ class PerformActionsUseCaseTest {
             //GIVEN
             val descriptor = "fake_device_descriptor"
 
-            val action = KeyEventAction(
+            val action = ActionData.InputKeyEvent(
                 keyCode = 1,
                 metaState = 0,
                 useShell = false,
-                device = KeyEventAction.Device(descriptor = descriptor, name = "fake_name_2")
+                device = ActionData.InputKeyEvent.Device(descriptor = descriptor, name = "fake_name_2")
             )
 
             fakeDevicesAdapter.connectedInputDevices.value = State.Data(
@@ -275,11 +277,11 @@ class PerformActionsUseCaseTest {
             //GIVEN
             val descriptor = "fake_device_descriptor"
 
-            val action = KeyEventAction(
+            val action = ActionData.InputKeyEvent(
                 keyCode = 1,
                 metaState = 0,
                 useShell = false,
-                device = KeyEventAction.Device(descriptor = descriptor, name = "")
+                device = ActionData.InputKeyEvent.Device(descriptor = descriptor, name = "")
             )
 
             fakeDevicesAdapter.connectedInputDevices.value = State.Data(

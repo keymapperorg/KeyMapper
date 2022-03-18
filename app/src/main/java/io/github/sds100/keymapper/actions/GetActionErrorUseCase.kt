@@ -2,9 +2,7 @@ package io.github.sds100.keymapper.actions
 
 import android.os.Build
 import io.github.sds100.keymapper.actions.sound.SoundsManager
-import io.github.sds100.keymapper.actions.system.IsSystemActionSupportedUseCaseImpl
-import io.github.sds100.keymapper.actions.system.SystemActionId
-import io.github.sds100.keymapper.actions.system.SystemActionUtils
+import io.github.sds100.keymapper.shizuku.ShizukuAdapter
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.camera.CameraLens
@@ -31,21 +29,35 @@ class GetActionErrorUseCaseImpl(
     private val permissionAdapter: PermissionAdapter,
     private val systemFeatureAdapter: SystemFeatureAdapter,
     private val cameraAdapter: CameraAdapter,
-    private val soundsManager: SoundsManager
+    private val soundsManager: SoundsManager,
+    private val shizukuAdapter: ShizukuAdapter
 ) : GetActionErrorUseCase {
 
-    private val isSystemActionSupported = IsSystemActionSupportedUseCaseImpl(systemFeatureAdapter)
+    private val isActionSupported = IsActionSupportedUseCaseImpl(systemFeatureAdapter)
     private val keyMapperImeHelper = KeyMapperImeHelper(inputMethodAdapter)
 
     override val invalidateActionErrors = merge(
         inputMethodAdapter.chosenIme.drop(1).map { },
         inputMethodAdapter.inputMethods.drop(1).map { }, //invalidate when the input methods change
         permissionAdapter.onPermissionsUpdate,
-        soundsManager.soundFiles.drop(1).map { }
+        soundsManager.soundFiles.drop(1).map { },
+        shizukuAdapter.isStarted.drop(1).map { },
+        shizukuAdapter.isInstalled.drop(1).map { }
     )
 
     override fun getError(action: ActionData): Error? {
-        if (action.requiresImeToPerform()) {
+        if (action.canUseShizukuToPerform() && shizukuAdapter.isInstalled.value) {
+
+            if (!(action.canUseImeToPerform() && keyMapperImeHelper.isCompatibleImeChosen())) {
+                when {
+                    !shizukuAdapter.isStarted.value ->
+                        return Error.ShizukuNotStarted
+
+                    !permissionAdapter.isGranted(Permission.SHIZUKU) ->
+                        return Error.PermissionDenied(Permission.SHIZUKU)
+                }
+            }
+        } else if (action.canUseImeToPerform()) {
             if (!keyMapperImeHelper.isCompatibleImeEnabled()) {
                 return Error.NoCompatibleImeEnabled
             }
@@ -55,41 +67,76 @@ class GetActionErrorUseCaseImpl(
             }
         }
 
+        isActionSupported.invoke(action.id)?.let {
+            return it
+        }
+
+        ActionUtils.getRequiredPermissions(action.id).forEach { permission ->
+            if (!permissionAdapter.isGranted(permission)) {
+                return Error.PermissionDenied(permission)
+            }
+        }
+
         when (action) {
-            is OpenAppAction -> {
+            is ActionData.App -> {
                 return getAppError(action.packageName)
             }
 
-            is OpenAppShortcutAction -> {
+            is ActionData.AppShortcut -> {
                 action.packageName ?: return null
 
                 return getAppError(action.packageName)
             }
 
-            is KeyEventAction ->
+            is ActionData.InputKeyEvent ->
                 if (
                     action.useShell && !permissionAdapter.isGranted(Permission.ROOT)
                 ) {
                     return Error.PermissionDenied(Permission.ROOT)
                 }
 
-            is TapCoordinateAction ->
+            is ActionData.TapScreen ->
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
                     return Error.SdkVersionTooLow(Build.VERSION_CODES.N)
                 }
 
-            is PhoneCallAction ->
+            is ActionData.PhoneCall ->
                 if (!permissionAdapter.isGranted(Permission.CALL_PHONE)) {
                     return Error.PermissionDenied(Permission.CALL_PHONE)
                 }
 
-            is SystemAction -> return action.getError()
-
-            is SoundAction -> {
+            is ActionData.Sound -> {
                 soundsManager.getSound(action.soundUid).onFailure { error ->
                     return error
                 }
             }
+
+            is ActionData.VoiceAssistant -> {
+                if (!packageManager.isVoiceAssistantInstalled()) {
+                    return Error.NoVoiceAssistant
+                }
+            }
+
+            is ActionData.Flashlight ->
+                if (!cameraAdapter.hasFlashFacing(action.lens)) {
+                    return when (action.lens) {
+                        CameraLens.FRONT -> Error.FrontFlashNotFound
+                        CameraLens.BACK -> Error.BackFlashNotFound
+                    }
+                }
+
+            is ActionData.SwitchKeyboard ->
+                inputMethodAdapter.getInfoById(action.imeId).onFailure {
+                    return it
+                }
+
+            is ActionData.Bluetooth ->
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                    && !permissionAdapter.isGranted(Permission.FIND_NEARBY_DEVICES)
+                ) {
+                    return Error.PermissionDenied(Permission.FIND_NEARBY_DEVICES)
+                }
+
         }
 
         return null
@@ -104,39 +151,6 @@ class GetActionErrorUseCaseImpl(
 
         if (!packageManager.isAppInstalled(packageName)) {
             return Error.AppNotFound(packageName)
-        }
-
-        return null
-    }
-
-    private fun SystemAction.getError(): Error? {
-        isSystemActionSupported.invoke(this.id)?.let {
-            return it
-        }
-
-        SystemActionUtils.getRequiredPermissions(this.id).forEach { permission ->
-            if (!permissionAdapter.isGranted(permission)) {
-                return Error.PermissionDenied(permission)
-            }
-        }
-
-        when {
-            id == SystemActionId.OPEN_VOICE_ASSISTANT -> if (!packageManager.isVoiceAssistantInstalled()) {
-                return Error.NoVoiceAssistant
-            }
-
-            this is FlashlightSystemAction ->
-                if (!cameraAdapter.hasFlashFacing(this.lens)) {
-                    return when (lens) {
-                        CameraLens.FRONT -> Error.FrontFlashNotFound
-                        CameraLens.BACK -> Error.BackFlashNotFound
-                    }
-                }
-
-            this is SwitchKeyboardSystemAction ->
-                inputMethodAdapter.getInfoById(this.imeId).onFailure {
-                    return it
-                }
         }
 
         return null

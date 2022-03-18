@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.actions.ConfigActionsViewModel
+import io.github.sds100.keymapper.actions.CreateActionUseCase
 import io.github.sds100.keymapper.actions.TestActionUseCase
 import io.github.sds100.keymapper.constraints.ConfigConstraintsViewModel
 import io.github.sds100.keymapper.constraints.ConstraintUtils
@@ -36,6 +37,7 @@ class ConfigFingerprintMapViewModel(
     private val testAction: TestActionUseCase,
     private val display: DisplaySimpleMappingUseCase,
     private val onboarding: OnboardingUseCase,
+    createActionUseCase: CreateActionUseCase,
     resourceProvider: ResourceProvider
 ) : ViewModel(), ConfigMappingViewModel, PopupViewModel by PopupViewModelImpl() {
 
@@ -43,8 +45,13 @@ class ConfigFingerprintMapViewModel(
         private const val STATE_FINGERPRINT_MAP = "config_fingerprint_map"
     }
 
-    val configActionOptionsViewModel =
-        ConfigFingerprintMapActionOptionsViewModel(viewModelScope, config, resourceProvider)
+    override val editActionViewModel =
+        EditFingerprintMapActionViewModel(
+            viewModelScope,
+            config,
+            createActionUseCase,
+            resourceProvider
+        )
 
     val configOptionsViewModel =
         ConfigFingerprintMapOptionsViewModel(viewModelScope, config, resourceProvider)
@@ -119,16 +126,18 @@ class ConfigFingerprintMapViewModel(
         private val testAction: TestActionUseCase,
         private val display: DisplaySimpleMappingUseCase,
         private val onboarding: OnboardingUseCase,
+        private val createActionUseCase: CreateActionUseCase,
         private val resourceProvider: ResourceProvider
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(modelClass: Class<T>) =
+        override fun <T : ViewModel> create(modelClass: Class<T>) =
             ConfigFingerprintMapViewModel(
                 config,
                 testAction,
                 display,
                 onboarding,
+                createActionUseCase,
                 resourceProvider
             ) as T
     }

@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
 import io.github.sds100.keymapper.backup.BackupManager
-import io.github.sds100.keymapper.mappings.keymaps.detection.DisplayKeyMapUseCase
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.mapData
@@ -54,7 +53,7 @@ class ListKeyMapsUseCaseImpl(
         keyMapRepository.duplicate(*uid)
     }
 
-    override suspend fun backupKeyMaps(vararg uid: String, uri: String): Result<*> {
+    override suspend fun backupKeyMaps(vararg uid: String, uri: String): Result<String> {
         return backupManager.backupKeyMaps(uri, uid.asList())
     }
 }
@@ -65,5 +64,5 @@ interface ListKeyMapsUseCase : DisplayKeyMapUseCase {
     fun enableKeyMap(vararg uid: String)
     fun disableKeyMap(vararg uid: String)
     fun duplicateKeyMap(vararg uid: String)
-    suspend fun backupKeyMaps(vararg uid: String, uri: String): Result<*>
+    suspend fun backupKeyMaps(vararg uid: String, uri: String): Result<String>
 }

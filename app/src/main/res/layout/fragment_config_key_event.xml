@@ -13,21 +13,22 @@
 
         <variable
             name="viewModel"
-            type="io.github.sds100.keymapper.actions.keyevent.ConfigKeyEventViewModel" />
+            type="io.github.sds100.keymapper.actions.keyevent.ConfigKeyEventActionViewModel" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/coordinatorLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/scrollView"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/buttonDone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_height="match_parent"
+            android:layout_marginBottom="?attr/actionBarSize">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -35,7 +36,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/textInputLayoutKeyCode"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -64,7 +65,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
                     android:text="@{viewModel.uiState.keyCodeLabel}"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                     android:visibility="@{viewModel.uiState.showKeyCodeLabel ? View.VISIBLE : View.GONE}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -73,7 +74,7 @@
 
                 <Button
                     android:id="@+id/buttonChooseKeycode"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -95,7 +96,7 @@
                     android:checked="@{viewModel.uiState.isUseShellChecked}"
                     android:onCheckedChanged="@{(view, isChecked) -> viewModel.setUseShell(isChecked)}"
                     android:text="@string/check_box_key_event_option_use_shell"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                     android:textColor="?attr/colorOnSurface"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -103,7 +104,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/menuFromDevice"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -111,7 +112,6 @@
                     android:layout_marginEnd="16dp"
                     android:hint="@string/hint_from_device"
                     android:visibility="@{viewModel.uiState.isDevicePickerShown ? View.VISIBLE : View.GONE}"
-
                     app:layout_constraintEnd_toStartOf="@id/buttonRefreshDevices"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/checkBoxUseShell">
@@ -120,15 +120,15 @@
                         android:id="@+id/dropdownDeviceId"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@{viewModel.uiState.chosenDeviceName}"
                         android:inputType="none"
+                        android:text="@{viewModel.uiState.chosenDeviceName}"
                         tools:ignore="LabelFor" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <io.github.sds100.keymapper.util.ui.SquareImageButton
                     android:id="@+id/buttonRefreshDevices"
-                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                    style="@style/Widget.Material3.Button.TextButton"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_marginEnd="16dp"
@@ -149,7 +149,7 @@
                     android:layout_marginEnd="16dp"
                     android:paddingBottom="8dp"
                     android:text="@string/modifiers"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+                    android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
                     android:textColor="?attr/colorAccent"
                     android:textSize="14sp"
                     android:visibility="@{viewModel.uiState.isModifierListShown ? View.VISIBLE : View.GONE}"
@@ -170,19 +170,25 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
 
-        <Button
-            android:id="@+id/buttonDone"
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/content_description_done_configuring_key_event"
+            android:enabled="@{viewModel.uiState.isDoneButtonEnabled}"
+            android:onClick="@{() -> viewModel.onDoneClick()}"
+            android:src="@drawable/ic_baseline_done_24"
+            app:layout_anchor="@id/appBar" />
+
+        <com.google.android.material.bottomappbar.BottomAppBar
+            android:id="@+id/appBar"
+            style="@style/BottomAppBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="8dp"
-            android:enabled="@{viewModel.uiState.isDoneButtonEnabled}"
-            android:onClick="@{() -> viewModel.onDoneClick()}"
-            android:text="@string/button_done"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            app:fabAlignmentMode="end"
+            app:fabAnimationMode="slide"
+            app:navigationIcon="@drawable/ic_baseline_arrow_back_24" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

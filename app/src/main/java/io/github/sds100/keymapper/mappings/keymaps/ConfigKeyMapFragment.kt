@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.addRepeatingJob
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
@@ -17,12 +16,10 @@ import io.github.sds100.keymapper.mappings.ConfigMappingFragment
 import io.github.sds100.keymapper.mappings.keymaps.trigger.ConfigTriggerOptionsFragment
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerFragment
 import io.github.sds100.keymapper.ui.utils.getJsonSerializable
-import io.github.sds100.keymapper.util.FragmentInfo
-import io.github.sds100.keymapper.util.Inject
-import io.github.sds100.keymapper.util.int
-import io.github.sds100.keymapper.util.intArray
+import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.FourFragments
 import io.github.sds100.keymapper.util.ui.TwoFragments
+import io.github.sds100.keymapper.util.ui.setupNavigation
 import io.github.sds100.keymapper.util.ui.showPopups
 import kotlinx.coroutines.flow.collectLatest
 
@@ -51,6 +48,8 @@ class ConfigKeyMapFragment : ConfigMappingFragment() {
             }
         }
 
+        viewModel.configTriggerViewModel.setupNavigation(this)
+
         setFragmentResultListener(ConfigConstraintsFragment.CHOOSE_CONSTRAINT_REQUEST_KEY) { _, result ->
             result.getJsonSerializable<Constraint>(ChooseConstraintFragment.EXTRA_CONSTRAINT)?.let {
                 viewModel.configConstraintsViewModel.onChosenNewConstraint(it)
@@ -61,16 +60,16 @@ class ConfigKeyMapFragment : ConfigMappingFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.configActionsViewModel.openEditOptions.collectLatest { actionUid ->
                 if (findNavController().currentDestination?.id == R.id.config_key_map_fragment) {
-                    viewModel.configActionOptionsViewModel.setActionToConfigure(actionUid)
+                    viewModel.editActionViewModel.setActionToConfigure(actionUid)
                     findNavController().navigate(ConfigKeyMapFragmentDirections.actionConfigKeymapFragmentToActionOptionsFragment())
                 }
             }
         }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.configTriggerViewModel.openEditOptions.collectLatest { triggerKeyUid ->
                 if (findNavController().currentDestination?.id == R.id.config_key_map_fragment) {
                     viewModel.configTriggerKeyViewModel.setTriggerKeyToConfigure(triggerKeyUid)
@@ -82,13 +81,13 @@ class ConfigKeyMapFragment : ConfigMappingFragment() {
         viewModel.configTriggerViewModel.showPopups(this, binding)
         viewModel.configTriggerViewModel.optionsViewModel.showPopups(this, binding)
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.configTriggerViewModel.reportBug.collectLatest {
                 findNavController().navigate(NavAppDirections.goToReportBugActivity())
             }
         }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.configTriggerViewModel.fixAppKilling.collectLatest {
                 findNavController().navigate(NavAppDirections.goToFixAppKillingActivity())
             }

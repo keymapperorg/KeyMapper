@@ -9,14 +9,6 @@
         <variable
             name="showProgressBar"
             type="Boolean" />
-
-        <variable
-            name="onHelpClick"
-            type="View.OnClickListener" />
-
-        <variable
-            name="onDoneClick"
-            type="View.OnClickListener" />
     </data>
 
     <androidx.core.widget.NestedScrollView
@@ -35,9 +27,9 @@
                 android:indeterminate="true"
                 android:indeterminateBehavior="repeat"
                 android:visibility="@{showProgressBar ? View.VISIBLE : View.GONE}"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/epoxyRecyclerView"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toTopOf="@+id/epoxyRecyclerView"/>
+                app:layout_constraintStart_toStartOf="parent" />
 
             <com.airbnb.epoxy.EpoxyRecyclerView
                 android:id="@+id/epoxyRecyclerView"
@@ -50,13 +42,12 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonHelp"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
-                android:onClick="@{onHelpClick}"
                 android:text="@string/button_help"
                 app:layout_constraintBottom_toTopOf="@id/buttonDone"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -64,13 +55,13 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonDone"
+                style="@style/Widget.Material3.Button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
-                android:onClick="@{onDoneClick}"
                 android:text="@string/button_done"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

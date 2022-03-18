@@ -6,23 +6,25 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.addCallback
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.addRepeatingJob
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.airbnb.epoxy.EpoxyController
-import io.github.sds100.keymapper.actions.ChooseActionFragmentDirections
 import io.github.sds100.keymapper.databinding.FragmentConfigIntentBinding
 import io.github.sds100.keymapper.databinding.ListItemIntentExtraBoolBinding
 import io.github.sds100.keymapper.intentExtraBool
 import io.github.sds100.keymapper.intentExtraGeneric
-import io.github.sds100.keymapper.system.url.UrlUtils
 import io.github.sds100.keymapper.util.Inject
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
+import io.github.sds100.keymapper.util.ui.setupNavigation
 import io.github.sds100.keymapper.util.ui.showPopups
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -32,11 +34,13 @@ import kotlinx.serialization.json.Json
 
 class ConfigIntentFragment : Fragment() {
     companion object {
-        const val REQUEST_KEY = "request_intent"
         const val EXTRA_RESULT = "extra_config_intent_result"
     }
 
-    private val viewModel: ConfigIntentViewModel by activityViewModels {
+    private val args: ConfigIntentFragmentArgs by navArgs()
+    private val requestKey: String by lazy { args.requestKey }
+
+    private val viewModel: ConfigIntentViewModel by viewModels {
         Inject.configIntentViewModel(requireContext())
     }
 
@@ -60,6 +64,16 @@ class ConfigIntentFragment : Fragment() {
         }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        args.result?.let {
+            viewModel.loadResult(Json.decodeFromString(it))
+        }
+
+        viewModel.setupNavigation(this)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -67,10 +81,18 @@ class ConfigIntentFragment : Fragment() {
 
         viewModel.showPopups(this, binding)
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            findNavController().navigateUp()
+        }
+
+        binding.appBar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
+
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.returnResult.collectLatest { result ->
                 setFragmentResult(
-                    REQUEST_KEY,
+                    requestKey,
                     bundleOf(EXTRA_RESULT to Json.encodeToString(result))
                 )
 
@@ -78,25 +100,13 @@ class ConfigIntentFragment : Fragment() {
             }
         }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.extraListItems.collectLatest { listItems ->
                 binding.epoxyRecyclerViewExtras.withModels {
                     listItems.forEach {
                         bindExtra(it)
                     }
                 }
-            }
-        }
-
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
-            viewModel.chooseActivity.collectLatest {
-                findNavController().navigate(ChooseActionFragmentDirections.toActivityListFragment())
-            }
-        }
-
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
-            viewModel.openUrl.collectLatest {
-                UrlUtils.openUrl(requireContext(), it)
             }
         }
     }

@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.text.TextWatcher
 import android.view.View
-import android.widget.Button
 import android.widget.EditText
 import androidx.annotation.ColorInt
 import androidx.appcompat.widget.AppCompatImageView
@@ -12,6 +11,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.databinding.BindingAdapter
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.ChipGroup
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.slider.Slider
 import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.textview.MaterialTextView
@@ -20,6 +20,7 @@ import io.github.sds100.keymapper.system.url.UrlUtils
 import io.github.sds100.keymapper.util.str
 import io.github.sds100.keymapper.util.styledColor
 import io.github.sds100.keymapper.util.styledColorSL
+import io.github.sds100.keymapper.util.styledFloat
 
 /**
  * Created by sds100 on 25/01/2020.
@@ -76,8 +77,20 @@ fun View.backgroundTint(@ColorInt color: Int) {
     backgroundTintList = ColorStateList.valueOf(color)
 }
 
+@BindingAdapter("app:harmonizeDrawableTint")
+fun MaterialTextView.harmonizeDrawableTint(@ColorInt color: Int) {
+    val harmonizedColor = MaterialColors.harmonizeWithPrimary(context, color)
+
+    setCompoundDrawablesRelativeWithIntrinsicBounds(
+        compoundDrawablesRelative[0]?.also { it.setTint(harmonizedColor) },
+        compoundDrawablesRelative[1]?.also { it.setTint(harmonizedColor) },
+        compoundDrawablesRelative[2]?.also { it.setTint(harmonizedColor) },
+        compoundDrawablesRelative[3]?.also { it.setTint(harmonizedColor) },
+    )
+}
+
 @BindingAdapter("app:openUrlOnClick")
-fun Button.openUrlOnClick(url: String?) {
+fun View.openUrlOnClick(url: String?) {
     url ?: return
 
     setOnClickListener {
@@ -102,7 +115,7 @@ fun ChipGroup.setChipUiModels(
     removeAllViews()
 
     val colorTintError by lazy { styledColorSL(R.attr.colorError) }
-    val colorOnSurface by lazy { styledColorSL(R.attr.colorOnSurface) }
+    val colorOnSurface by lazy { styledColorSL(R.attr.colorOnPrimaryContainer) }
 
     models.forEach { model ->
         when (model) {
@@ -126,9 +139,10 @@ fun ChipGroup.setChipUiModels(
 
                     if (model.icon != null) {
                         this.iconTint = when (model.icon.tintType) {
-                            TintType.NONE -> null
-                            TintType.ON_SURFACE -> colorOnSurface
-                            TintType.ERROR -> colorTintError
+                            TintType.None -> null
+                            TintType.OnSurface -> colorOnSurface
+                            TintType.Error -> colorTintError
+                            is TintType.Color -> ColorStateList.valueOf(model.icon.tintType.color)
                         }
                     }
 
@@ -148,9 +162,21 @@ fun ChipGroup.setChipUiModels(
     }
 }
 
+@BindingAdapter("app:enabled")
+fun View.enabled(isEnabled: Boolean) {
+    if (isEnabled) {
+        setEnabled(true)
+        alpha = 1.0f
+    } else {
+        setEnabled(false)
+        alpha = styledFloat(android.R.attr.disabledAlpha)
+    }
+}
+
 fun TintType.toColor(ctx: Context): Int? =
     when (this) {
-        TintType.NONE -> null
-        TintType.ON_SURFACE -> ctx.styledColor(R.attr.colorOnSurface)
-        TintType.ERROR -> ctx.styledColor(R.attr.colorError)
+        TintType.None -> null
+        TintType.OnSurface -> ctx.styledColor(R.attr.colorOnPrimaryContainer)
+        TintType.Error -> ctx.styledColor(R.attr.colorError)
+        is TintType.Color -> this.color
     }

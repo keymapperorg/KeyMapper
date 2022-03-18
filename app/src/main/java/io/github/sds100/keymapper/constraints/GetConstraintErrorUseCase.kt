@@ -1,7 +1,9 @@
 package io.github.sds100.keymapper.constraints
 
 import android.content.pm.PackageManager
+import android.os.Build
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
+import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.permissions.SystemFeatureAdapter
@@ -17,6 +19,7 @@ class GetConstraintErrorUseCaseImpl(
     private val packageManager: PackageManagerAdapter,
     private val permissionAdapter: PermissionAdapter,
     private val systemFeatureAdapter: SystemFeatureAdapter,
+    private val inputMethodAdapter: InputMethodAdapter
 ) : GetConstraintErrorUseCase {
 
     override val invalidateConstraintErrors: Flow<Unit> = permissionAdapter.onPermissionsUpdate
@@ -35,11 +38,30 @@ class GetConstraintErrorUseCaseImpl(
                 return getAppError(constraint.packageName)
             }
 
+            is Constraint.AppNotPlayingMedia -> {
+                if (!permissionAdapter.isGranted(Permission.NOTIFICATION_LISTENER)) {
+                    return Error.PermissionDenied(Permission.NOTIFICATION_LISTENER)
+                }
+
+                return getAppError(constraint.packageName)
+            }
+
+            Constraint.MediaPlaying, Constraint.NoMediaPlaying -> {
+                if (!permissionAdapter.isGranted(Permission.NOTIFICATION_LISTENER)) {
+                    return Error.PermissionDenied(Permission.NOTIFICATION_LISTENER)
+                }
+            }
+
             is Constraint.BtDeviceConnected,
-            is Constraint.BtDeviceDisconnected ->
+            is Constraint.BtDeviceDisconnected -> {
                 if (!systemFeatureAdapter.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)) {
                     return Error.SystemFeatureNotSupported(PackageManager.FEATURE_BLUETOOTH)
                 }
+
+                if (!permissionAdapter.isGranted(Permission.FIND_NEARBY_DEVICES)) {
+                    return Error.PermissionDenied(Permission.FIND_NEARBY_DEVICES)
+                }
+            }
 
             is Constraint.OrientationCustom,
             Constraint.OrientationLandscape,
@@ -48,11 +70,34 @@ class GetConstraintErrorUseCaseImpl(
                     return Error.PermissionDenied(Permission.WRITE_SETTINGS)
                 }
 
-
             Constraint.ScreenOff,
             Constraint.ScreenOn -> {
                 if (!permissionAdapter.isGranted(Permission.ROOT)) {
                     return Error.PermissionDenied(Permission.ROOT)
+                }
+            }
+
+            is Constraint.FlashlightOn, is Constraint.FlashlightOff -> {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                    return Error.SdkVersionTooLow(minSdk = Build.VERSION_CODES.M)
+                }
+            }
+
+            is Constraint.WifiConnected, is Constraint.WifiDisconnected -> {
+                if (!permissionAdapter.isGranted(Permission.ACCESS_FINE_LOCATION)) {
+                    return Error.PermissionDenied(Permission.ACCESS_FINE_LOCATION)
+                }
+            }
+
+            is Constraint.ImeChosen -> {
+                if (inputMethodAdapter.inputMethods.value.none { it.id == constraint.imeId }) {
+                    return Error.InputMethodNotFound(constraint.imeLabel)
+                }
+            }
+
+            is Constraint.InPhoneCall, is Constraint.PhoneRinging, is Constraint.NotInPhoneCall -> {
+                if (!permissionAdapter.isGranted(Permission.READ_PHONE_STATE)) {
+                    return Error.PermissionDenied(Permission.READ_PHONE_STATE)
                 }
             }
         }
@@ -62,7 +107,7 @@ class GetConstraintErrorUseCaseImpl(
 
     private fun getAppError(packageName: String): Error? {
         packageManager.isAppEnabled(packageName).onSuccess { isEnabled ->
-            if (!isEnabled){
+            if (!isEnabled) {
                 return Error.AppDisabled(packageName)
             }
         }

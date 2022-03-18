@@ -11,6 +11,7 @@ import androidx.core.content.getSystemService
 import io.github.sds100.keymapper.system.accessibility.ObserveEnabledAccessibilityServicesJob
 import io.github.sds100.keymapper.system.inputmethod.AndroidInputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.ObserveInputMethodsJob
+import io.github.sds100.keymapper.system.notifications.ObserveNotificationListenersJob
 
 /**
  * Created by sds100 on 02/04/2021.
@@ -19,6 +20,30 @@ object JobSchedulerHelper {
 
     private const val ID_OBSERVE_ACCESSIBILITY_SERVICES = 1
     private const val ID_OBSERVE_ENABLED_INPUT_METHODS = 2
+    private const val ID_OBSERVE_NOTIFICATION_LISTENERS = 3
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    fun observeEnabledNotificationListeners(ctx: Context) {
+        val uri = Settings.Secure.getUriFor("enabled_notification_listeners")
+
+        val contentUri = JobInfo.TriggerContentUri(
+            uri,
+            JobInfo.TriggerContentUri.FLAG_NOTIFY_FOR_DESCENDANTS
+        )
+
+        val builder = JobInfo.Builder(
+            ID_OBSERVE_NOTIFICATION_LISTENERS,
+            ComponentName(ctx, ObserveNotificationListenersJob::class.java)
+        )
+            .addTriggerContentUri(contentUri)
+            .setTriggerContentUpdateDelay(500)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            builder.setImportantWhileForeground(true)
+        }
+
+        ctx.getSystemService<JobScheduler>()?.schedule(builder.build())
+    }
 
     @RequiresApi(Build.VERSION_CODES.N)
     fun observeEnabledAccessibilityServices(ctx: Context) {

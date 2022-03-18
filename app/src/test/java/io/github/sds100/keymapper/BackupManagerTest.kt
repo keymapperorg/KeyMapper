@@ -9,11 +9,11 @@ import io.github.sds100.keymapper.backup.BackupManagerImpl
 import io.github.sds100.keymapper.data.db.AppDatabase
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.Extra
+import io.github.sds100.keymapper.data.entities.FingerprintMapEntity
+import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.data.repositories.FakePreferenceRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapEntity
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapRepository
-import io.github.sds100.keymapper.mappings.keymaps.KeyMapEntity
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapRepository
 import io.github.sds100.keymapper.system.files.FakeFileAdapter
 import io.github.sds100.keymapper.util.Error
@@ -263,7 +263,7 @@ class BackupManagerTest {
 
         //THEN
 
-        assertThat(result, `is`(Success(Unit)))
+        assertThat(result, `is`(Success(backupZip.path)))
 
         coroutineScope.resumeDispatcher()
 
@@ -319,7 +319,7 @@ class BackupManagerTest {
 
         //THEN
 
-        assertThat(result, `is`(Success(Unit)))
+        assertThat(result, `is`(Success(backupZip.path)))
 
         coroutineScope.resumeDispatcher()
 
@@ -502,7 +502,7 @@ class BackupManagerTest {
             val result = backupManager.backupFingerprintMaps(backupZip.path)
             //THEN
 
-            assertThat(result, `is`(Success(Unit)))
+            assertThat(result, `is`(Success(backupZip.path)))
 
             coroutineScope.resumeDispatcher()
 
@@ -549,7 +549,7 @@ class BackupManagerTest {
             val result = backupManager.backupKeyMaps(backupZip.path, keyMapList.map { it.uid })
 
             //THEN
-            assertThat(result, `is`(Success(Unit)))
+            assertThat(result, `is`(Success(backupZip.path)))
 
             coroutineScope.resumeDispatcher()
 

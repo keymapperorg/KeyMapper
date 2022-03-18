@@ -12,7 +12,9 @@ class FingerprintMapListViewModel(
     private val coroutineScope: CoroutineScope,
     private val useCase: ListFingerprintMapsUseCase,
     resourceProvider: ResourceProvider,
-) : PopupViewModel by PopupViewModelImpl(), ResourceProvider by resourceProvider {
+) : PopupViewModel by PopupViewModelImpl(),
+    ResourceProvider by resourceProvider,
+    NavigationViewModel by NavigationViewModelImpl() {
 
     private val listItemCreator = FingerprintMapListItemCreator(
         useCase,
@@ -21,9 +23,6 @@ class FingerprintMapListViewModel(
 
     private val _state = MutableStateFlow<State<List<FingerprintMapListItem>>>(State.Loading)
     val state = _state.asStateFlow()
-
-    private val _launchConfigFingerprintMap = MutableSharedFlow<FingerprintMapId>()
-    val launchConfigFingerprintMap = _launchConfigFingerprintMap.asSharedFlow()
 
     private val _requestFingerprintMapsBackup = MutableSharedFlow<Unit>()
     val requestFingerprintMapsBackup = _requestFingerprintMapsBackup.asSharedFlow()
@@ -63,7 +62,9 @@ class FingerprintMapListViewModel(
     }
 
     fun onCardClick(id: FingerprintMapId) {
-        runBlocking { _launchConfigFingerprintMap.emit(id) }
+        coroutineScope.launch {
+            navigate("config_fingerprint_map", NavDestination.ConfigFingerprintMap(id))
+        }
     }
 
     fun onBackupAllClick() {

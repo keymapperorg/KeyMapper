@@ -8,7 +8,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
-import androidx.lifecycle.addRepeatingJob
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.epoxy.EpoxyRecyclerView
@@ -20,6 +19,7 @@ import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
 import io.github.sds100.keymapper.logEntry
 import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.SimpleRecyclerViewFragment
 import io.github.sds100.keymapper.util.ui.showPopups
 import kotlinx.coroutines.flow.Flow
@@ -66,7 +66,7 @@ class LogFragment : SimpleRecyclerViewFragment<LogEntryListItem>() {
             true
         }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.pickFileToSaveTo.collectLatest {
                 saveLogToFileLauncher.launch(LogUtils.createLogFileName())
             }
@@ -76,7 +76,7 @@ class LogFragment : SimpleRecyclerViewFragment<LogEntryListItem>() {
     override fun subscribeUi(binding: FragmentSimpleRecyclerviewBinding) {
         super.subscribeUi(binding)
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.appBarState.collectLatest { appBarState ->
                 when (appBarState) {
                     LogAppBarState.MULTI_SELECTING -> {
@@ -90,7 +90,7 @@ class LogFragment : SimpleRecyclerViewFragment<LogEntryListItem>() {
             }
         }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.goBack.collectLatest {
                 findNavController().navigateUp()
             }

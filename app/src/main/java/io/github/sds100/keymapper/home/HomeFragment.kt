@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.home
 
 import android.content.*
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +12,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.addRepeatingJob
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import androidx.work.OneTimeWorkRequestBuilder
@@ -26,8 +26,7 @@ import io.github.sds100.keymapper.databinding.FragmentHomeBinding
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.system.url.UrlUtils
 import io.github.sds100.keymapper.util.*
-import io.github.sds100.keymapper.util.ui.TextListItem
-import io.github.sds100.keymapper.util.ui.showPopups
+import io.github.sds100.keymapper.util.ui.*
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.flow.collectLatest
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt
@@ -86,11 +85,18 @@ class HomeFragment : Fragment() {
 
     private var quickStartGuideTapTarget: MaterialTapTargetPrompt? = null
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        homeViewModel.setupNavigation(this)
+        homeViewModel.keymapListViewModel.setupNavigation(this)
+        homeViewModel.fingerprintMapListViewModel.setupNavigation(this)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         FragmentHomeBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
             _binding = this
@@ -104,12 +110,6 @@ class HomeFragment : Fragment() {
         homeViewModel.showPopups(this, binding)
         homeViewModel.keymapListViewModel.showPopups(this, binding)
         homeViewModel.fingerprintMapListViewModel.showPopups(this, binding)
-
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
-            homeViewModel.openUrl.collectLatest {
-                UrlUtils.openUrl(requireContext(), it)
-            }
-        }
 
         binding.viewModel = this@HomeFragment.homeViewModel
 
@@ -180,7 +180,7 @@ class HomeFragment : Fragment() {
             homeViewModel.onAppBarNavigationButtonClick()
         }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             homeViewModel.appBarState.collectLatest {
                 /*
                 Do not use setFabAlignmentModeAndReplaceMenu because then there is big jank.
@@ -196,7 +196,7 @@ class HomeFragment : Fragment() {
             }
         }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             homeViewModel.showQuickStartGuideHint.collectLatest { show ->
                 if (show && quickStartGuideTapTarget?.state != MaterialTapTargetPrompt.STATE_REVEALED) {
                     quickStartGuideTapTarget?.dismiss()
@@ -209,57 +209,51 @@ class HomeFragment : Fragment() {
             }
         }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
-            homeViewModel.reportBug.collectLatest {
-                findNavController().navigate(NavAppDirections.goToReportBugActivity())
-            }
-        }
-
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
-            homeViewModel.fixAppKilling.collectLatest {
-                findNavController().navigate(NavAppDirections.goToFixAppKillingActivity())
-            }
-        }
-
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             homeViewModel.tabsState.collectLatest { state ->
                 pagerAdapter.invalidateFragments(state.tabs)
                 binding.viewPager.isUserInputEnabled = state.enableViewPagerSwiping
             }
         }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
-            homeViewModel.navigateToCreateKeymapScreen.collectLatest {
-                val direction = HomeFragmentDirections.actionToConfigKeymap()
-                findNavController().navigate(direction)
-            }
-        }
-
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             homeViewModel.showMenu.collectLatest {
                 findNavController().navigate(R.id.action_global_menuFragment)
             }
         }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             homeViewModel.closeKeyMapper.collectLatest {
                 requireActivity().finish()
             }
         }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             homeViewModel.menuViewModel.chooseBackupFile.collectLatest {
                 backupMappingsLauncher.launch(BackupUtils.createMappingsFileName())
             }
         }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             homeViewModel.menuViewModel.chooseRestoreFile.collectLatest {
                 restoreMappingsLauncher.launch(FileUtils.MIME_TYPE_ALL)
             }
         }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
+            homeViewModel.shareBackup.collectLatest { uri ->
+                Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_STREAM, Uri.parse(uri))
+
+                    type = FileUtils.MIME_TYPE_ZIP
+
+                    startActivity(Intent.createChooser(this, getText(R.string.sharesheet_title)))
+                }
+            }
+        }
+
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             homeViewModel.errorListState.collectLatest { state ->
                 binding.cardViewRecyclerViewErrors.isVisible = state.isVisible
 
@@ -289,15 +283,9 @@ class HomeFragment : Fragment() {
             }
         }
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             homeViewModel.fingerprintMapListViewModel.requestFingerprintMapsBackup.collectLatest {
                 backupFingerprintMapsLauncher.launch(BackupUtils.createFingerprintMapsFileName())
-            }
-        }
-
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
-            homeViewModel.openSettings.collectLatest {
-                findNavController().navigate(NavAppDirections.actionGlobalSettingsFragment())
             }
         }
     }

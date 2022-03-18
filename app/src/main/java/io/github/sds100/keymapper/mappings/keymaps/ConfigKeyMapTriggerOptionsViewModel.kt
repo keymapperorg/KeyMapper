@@ -31,8 +31,8 @@ class ConfigKeyMapTriggerOptionsViewModel(
         private const val ID_SHOW_TOAST = "show_toast"
     }
 
-    private val _state = MutableStateFlow(buildUiState(State.Loading))
-    val state = _state.asStateFlow()
+    private val _state by lazy { MutableStateFlow(buildUiState(State.Loading)) }
+    val state by lazy { _state.asStateFlow() }
 
     init {
         coroutineScope.launch {
@@ -73,7 +73,7 @@ class ConfigKeyMapTriggerOptionsViewModel(
             } else {
 
                 val key = "create_launcher_shortcut"
-                val response = showPopup(
+                val shortcutLabel = showPopup(
                     key,
                     PopupUi.Text(
                         getString(R.string.hint_shortcut_name),
@@ -83,7 +83,7 @@ class ConfigKeyMapTriggerOptionsViewModel(
 
                 createKeyMapShortcut.pinShortcutForMultipleActions(
                     keyMapUid = keyMapUid,
-                    shortcutLabel = response.text
+                    shortcutLabel = shortcutLabel
                 )
             }
 

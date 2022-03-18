@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.FragmentActivity
 import io.github.sds100.keymapper.onboarding.AppIntroActivity
 import io.github.sds100.keymapper.onboarding.AppIntroSlide
@@ -15,6 +16,9 @@ import io.github.sds100.keymapper.util.firstBlocking
 class SplashActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splashScreen = installSplashScreen()
+        splashScreen.setKeepOnScreenCondition { true }
+
         super.onCreate(savedInstanceState)
 
         val onboarding = UseCases.onboarding(this)
@@ -33,7 +37,10 @@ class SplashActivity : FragmentActivity() {
                     yield(AppIntroSlide.FINGERPRINT_GESTURE_SUPPORT)
                 }
 
-                yield(AppIntroSlide.DO_NOT_DISTURB)
+                if (onboarding.showShizukuAppIntroSlide) {
+                    yield(AppIntroSlide.GRANT_SHIZUKU_PERMISSION)
+                }
+
                 yield(AppIntroSlide.CONTRIBUTING)
             }.toList()
         } else {
@@ -48,14 +55,23 @@ class SplashActivity : FragmentActivity() {
                 if (onboarding.showSetupChosenDevicesAgainAppIntro.firstBlocking()) {
                     yield(AppIntroSlide.SETUP_CHOSEN_DEVICES_AGAIN)
                 }
+
+                if (onboarding.promptForShizukuPermission.firstBlocking()) {
+                    yield(AppIntroSlide.GRANT_SHIZUKU_PERMISSION)
+                }
             }.toList()
         }
 
         if (appIntroSlides.isEmpty()) {
-            startActivity(Intent(this, MainActivity::class.java))
+            val intentAction = this.intent.action
+
+            Intent(this, MainActivity::class.java).apply {
+                action = intentAction
+                startActivity(this)
+            }
         } else {
             Intent(this, AppIntroActivity::class.java).apply {
-                val slidesToStringArray = appIntroSlides.map { it.toString() }.toTypedArray()
+                val slidesToStringArray = appIntroSlides.map { it }.toTypedArray()
 
                 putExtra(AppIntroActivity.EXTRA_SLIDES, slidesToStringArray)
                 startActivity(this)

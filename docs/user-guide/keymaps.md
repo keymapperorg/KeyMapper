@@ -67,11 +67,11 @@ type above the trigger mode buttons as shown in the image at the top of this Tri
 
 ## Customising actions
 
-You can tap the 3 stacked dots :fontawesome-solid-ellipsis-v: to the right of the action's name to bring up the following menu.
+You can tap the pencil icon :material-pencil-outline: to the right of the action's name to bring up the following menu.
 
-![](../images/hg-action-settings.png) ![](../images/hg-action-settings-light.png)
+![](../images/hg-action-settings.png)
 
-Here you can customise a lot of the operation of your key map, including timing and multipliers.
+Here you can customise a lot of the operation of your key map, including timing and multipliers. There are two buttons to 'replace' and 'edit' the action. The 'edit' button isn't shown for all actions because you can't configure what they do.
 ___
 
 --8<-- "action-options/delay-before-next-action.md"

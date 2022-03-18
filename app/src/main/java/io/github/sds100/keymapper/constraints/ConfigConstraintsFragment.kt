@@ -2,22 +2,14 @@ package io.github.sds100.keymapper.constraints
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.addRepeatingJob
-import androidx.navigation.fragment.findNavController
 import com.airbnb.epoxy.EpoxyRecyclerView
-import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.constraint
 import io.github.sds100.keymapper.databinding.FragmentConstraintListBinding
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ui.RecyclerViewFragment
 import io.github.sds100.keymapper.util.ui.showPopups
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import splitties.toast.toast
 
 /**
  * Created by sds100 on 29/11/20.
@@ -46,12 +38,7 @@ abstract class ConfigConstraintsFragment
         configConstraintsViewModel.showPopups(this, binding)
 
         binding.setOnAddConstraintClick {
-            val direction = NavAppDirections.actionGlobalChooseConstraint(
-                CHOOSE_CONSTRAINT_REQUEST_KEY,
-                Json.encodeToString(configConstraintsViewModel.allowedConstraints)
-            )
-
-            findNavController().navigate(direction)
+            configConstraintsViewModel.onAddConstraintClick()
         }
     }
 

@@ -7,6 +7,8 @@ import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.filterByQuery
+import io.github.sds100.keymapper.util.ui.DefaultSimpleListItem
+import io.github.sds100.keymapper.util.ui.SimpleListItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -20,16 +22,22 @@ class ChooseKeyCodeViewModel : ViewModel() {
 
     val searchQuery = MutableStateFlow<String?>(null)
 
-    private val _state = MutableStateFlow<State<List<KeyCodeListItem>>>(State.Loading)
+    private val _state = MutableStateFlow<State<List<SimpleListItem>>>(State.Loading)
     val state = _state.asStateFlow()
 
     private val allListItems = flow {
         withContext(Dispatchers.Default) {
             KeyEventUtils.getKeyCodes().sorted().map { keyCode ->
-                KeyCodeListItem(keyCode, "$keyCode \t\t ${KeyEvent.keyCodeToString(keyCode)}")
+                DefaultSimpleListItem(
+                    id = keyCode.toString(),
+                    title = "$keyCode \t\t ${KeyEvent.keyCodeToString(keyCode)}"
+                )
             }
         }.let { emit(it) }
     }
+
+    private val _returnResult = MutableSharedFlow<Int>()
+    val returnResult = _returnResult.asSharedFlow()
 
     init {
         viewModelScope.launch {
@@ -48,10 +56,16 @@ class ChooseKeyCodeViewModel : ViewModel() {
         }
     }
 
+    fun onListItemClick(id: String) {
+        viewModelScope.launch {
+            _returnResult.emit(id.toInt())
+        }
+    }
+
     @Suppress("UNCHECKED_CAST")
     class Factory : ViewModelProvider.NewInstanceFactory() {
 
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ChooseKeyCodeViewModel() as T
         }
     }

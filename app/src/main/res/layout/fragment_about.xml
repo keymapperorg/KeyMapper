@@ -1,18 +1,355 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="version"
+            type="String" />
+    </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/coordinatorLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/container"
-            android:name="io.github.sds100.keymapper.about.AboutPreferenceFragment"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="?attr/actionBarSize" />
+            android:layout_marginBottom="?attr/actionBarSize">
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guidelineTop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.1" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guidelineBottomIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.30" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:gravity="center"
+                android:text="@string/title_about"
+                android:textAppearance="@style/TextAppearance.Material3.HeadlineLarge"
+                app:layout_constraintBottom_toTopOf="@id/guidelineTop"
+                app:layout_constraintEnd_toStartOf="@id/guidelineEndIcon"
+                app:layout_constraintStart_toEndOf="@id/guidelineStartIcon"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imageViewAppIcon"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:src="@drawable/ic_launcher_web"
+                app:layout_constraintBottom_toTopOf="@id/guidelineBottomIcon"
+                app:layout_constraintEnd_toEndOf="@id/guidelineEndIcon"
+                app:layout_constraintStart_toStartOf="@id/guidelineStartIcon"
+                app:layout_constraintTop_toBottomOf="@id/guidelineTop" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/textViewAppName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:text="@string/app_name"
+                android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+                app:layout_constraintEnd_toEndOf="@id/guidelineEndChipGroup"
+                app:layout_constraintStart_toStartOf="@id/guidelineStartChipGroup"
+                app:layout_constraintTop_toBottomOf="@id/guidelineBottomIcon" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/textViewAppVersion"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@{@string/about_version(version)}"
+                android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                app:layout_constraintEnd_toEndOf="@id/guidelineEndChipGroup"
+                app:layout_constraintStart_toStartOf="@id/guidelineStartChipGroup"
+                app:layout_constraintTop_toBottomOf="@id/textViewAppName"
+                tools:text="Version 2.4.0" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/textViewSlogan"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:text="@string/slogan"
+                android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                app:layout_constraintEnd_toEndOf="@id/guidelineEndChipGroup"
+                app:layout_constraintStart_toStartOf="@id/guidelineStartChipGroup"
+                app:layout_constraintTop_toBottomOf="@id/textViewAppVersion" />
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/flexBoxLinks"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:flexWrap="wrap"
+                app:justifyContent="center"
+                app:layout_constraintEnd_toEndOf="@id/guidelineEndChipGroup"
+                app:layout_constraintStart_toStartOf="@+id/guidelineStartChipGroup"
+                app:layout_constraintTop_toBottomOf="@id/textViewSlogan">
+
+                <com.google.android.material.button.MaterialButton
+                    style="@style/LinkChipButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/about_link_discord"
+                    app:icon="@drawable/ic_discord"
+                    app:iconTint="@color/blueDark"
+                    app:openUrlOnClick="@{@string/url_discord_server_invite}" />
+
+                <com.google.android.material.button.MaterialButton
+                    style="@style/LinkChipButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/about_link_github"
+                    app:icon="@drawable/ic_github"
+                    app:iconTint="@color/slidePurple"
+                    app:openUrlOnClick="@{@string/url_github_repo}" />
+
+                <com.google.android.material.button.MaterialButton
+                    style="@style/LinkChipButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/about_link_rate"
+                    app:icon="@drawable/ic_outline_star_rate_24"
+                    app:iconTint="@color/yellow"
+                    app:openUrlOnClick="@{@string/url_rate}" />
+
+                <com.google.android.material.button.MaterialButton
+                    style="@style/LinkChipButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/about_link_website"
+                    app:icon="@drawable/ic_outline_link_24"
+                    app:iconTint="?attr/colorOnSurface"
+                    app:openUrlOnClick="@{@string/url_website}" />
+
+                <com.google.android.material.button.MaterialButton
+                    style="@style/LinkChipButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/about_link_translations"
+                    app:icon="@drawable/ic_outline_translate_24"
+                    app:iconTint="@color/slideBlue"
+                    app:openUrlOnClick="@{@string/url_translate}" />
+
+                <com.google.android.material.button.MaterialButton
+                    style="@style/LinkChipButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/about_link_changelog"
+                    app:icon="@drawable/ic_script_text_outline"
+                    app:iconTint="@color/slideGreen"
+                    app:openUrlOnClick="@{@string/url_changelog}" />
+
+            </com.google.android.flexbox.FlexboxLayout>
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guidelineStartChipGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.1" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guidelineEndChipGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.9" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guidelineStartIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.3" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guidelineEndIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.7" />
+
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/flexBoxLinks">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.card.MaterialCardView
+                        style="@style/MyCardView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="8dp">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:paddingBottom="8dp">
+
+                            <TextView
+                                android:id="@+id/textViewTopHeader"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/cardview_padding_left"
+                                android:layout_marginTop="@dimen/cardview_padding_top"
+                                android:layout_marginEnd="@dimen/cardview_padding_right"
+                                android:paddingBottom="@dimen/cardview_header_bottom_padding"
+                                android:text="@string/about_header_our_team"
+                                android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+                                android:textColor="?attr/colorAccent"
+                                android:textSize="14sp"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/textViewTopHeader">
+
+                                <include
+                                    layout="@layout/list_item_about_item"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    bind:icon="@{@drawable/profile_pic_sds100}"
+                                    bind:subtitle="@{@string/about_team_sds100_role}"
+                                    bind:title="@{@string/about_team_sds100_name}"
+                                    bind:url="@{@string/about_team_sds100_url}" />
+
+                                <include
+                                    layout="@layout/list_item_about_item"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    bind:icon="@{@drawable/profile_pic_jambl3r}"
+                                    bind:subtitle="@{@string/about_team_jambl3r_role}"
+                                    bind:title="@{@string/about_team_jambl3r_name}"
+                                    bind:url="@{@string/about_team_jambl3r_url}" />
+
+                                <include
+                                    layout="@layout/list_item_about_item"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    bind:icon="@{@drawable/profile_pic_gl513}"
+                                    bind:subtitle="@{@string/about_team_gl513_role}"
+                                    bind:title="@{@string/about_team_gl513_name}"
+                                    bind:url="@{@string/about_team_gl513_url}" />
+
+                                <include
+                                    layout="@layout/list_item_about_item"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    bind:icon="@{@drawable/profile_pic_kekero}"
+                                    bind:subtitle="@{@string/about_team_kekero_role}"
+                                    bind:title="@{@string/about_team_kekero_name}"
+                                    bind:url="@{@string/about_team_kekero_url}" />
+                                
+                                <include
+                                    layout="@layout/list_item_about_item"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    bind:icon="@{@drawable/ic_outline_account}"
+                                    bind:subtitle="@{@string/about_team_trollserver_role}"
+                                    bind:url="@{@string/about_team_trollserver_url}"
+                                    bind:title="@{@string/about_team_trollserver_name}" />
+                            </LinearLayout>
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+
+                    <com.google.android.material.card.MaterialCardView
+                        style="@style/MyCardView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="8dp">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:paddingBottom="8dp">
+
+                            <TextView
+                                android:id="@+id/textViewHeaderBoringStuff"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/cardview_padding_left"
+                                android:layout_marginTop="@dimen/cardview_padding_top"
+                                android:layout_marginEnd="@dimen/cardview_padding_right"
+                                android:paddingBottom="@dimen/cardview_header_bottom_padding"
+                                android:text="@string/about_header_boring_stuff"
+                                android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+                                android:textColor="?attr/colorAccent"
+                                android:textSize="14sp"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/textViewHeaderBoringStuff">
+
+                                <include
+                                    layout="@layout/list_item_about_item"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    bind:icon="@{@drawable/ic_script_text_outline}"
+                                    bind:subtitle="@{@string/about_license_subtitle}"
+                                    bind:title="@{@string/about_license_title}"
+                                    bind:url="@{@string/url_license}" />
+
+                                <include
+                                    layout="@layout/list_item_about_item"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    bind:icon="@{@drawable/ic_outline_privacy_tip_24}"
+                                    bind:subtitle="@{@string/about_privacy_policy_subtitle}"
+                                    bind:title="@{@string/about_privacy_policy_title}"
+                                    bind:url="@{@string/url_privacy_policy}" />
+                            </LinearLayout>
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <com.google.android.material.bottomappbar.BottomAppBar
             android:id="@+id/appBar"
@@ -20,9 +357,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:gravity="center"
-            app:navigationIcon="@drawable/ic_baseline_arrow_back_24">
+            app:navigationIcon="@drawable/ic_baseline_arrow_back_24" />
 
-        </com.google.android.material.bottomappbar.BottomAppBar>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

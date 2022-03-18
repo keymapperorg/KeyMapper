@@ -1,17 +1,29 @@
 package io.github.sds100.keymapper.system.apps
 
 import android.content.*
+import android.content.pm.ApplicationInfo
+import android.content.pm.IPackageManager
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.os.Process
 import android.os.TransactionTooLargeException
 import android.provider.MediaStore
 import android.provider.Settings
+import io.github.sds100.keymapper.Constants
+import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
+import io.github.sds100.keymapper.system.permissions.Permission
+import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import rikka.shizuku.ShizukuBinderWrapper
+import rikka.shizuku.SystemServiceHelper
 import splitties.bitflags.withFlag
 
 /**
@@ -19,12 +31,19 @@ import splitties.bitflags.withFlag
  */
 class AndroidPackageManagerAdapter(
     context: Context,
-    coroutineScope: CoroutineScope
+    coroutineScope: CoroutineScope,
+    private val permissionAdapter: AndroidPermissionAdapter,
+    private val suAdapter: SuAdapter
 ) : PackageManagerAdapter {
-    private val ctx = context.applicationContext
-    private val packageManager = ctx.packageManager
+    private val ctx: Context = context.applicationContext
+    private val packageManager: PackageManager = ctx.packageManager
 
     override val installedPackages = MutableStateFlow<State<List<PackageInfo>>>(State.Loading)
+
+    private val iPackageManager: IPackageManager by lazy {
+        val binder = ShizukuBinderWrapper(SystemServiceHelper.getSystemService("package"))
+        IPackageManager.Stub.asInterface(binder)
+    }
 
     private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -46,8 +65,6 @@ class AndroidPackageManagerAdapter(
 
     init {
         coroutineScope.launch(Dispatchers.Default) {
-            updatePackageList()
-
             //save memory by only storing this stuff as it is needed
             installedPackages.subscriptionCount
                 .onEach { count ->
@@ -73,7 +90,7 @@ class AndroidPackageManagerAdapter(
         }
     }
 
-    override fun installApp(packageName: String) {
+    override fun downloadApp(packageName: String) {
         try {
             val intent = Intent(Intent.ACTION_VIEW)
             intent.data = Uri.parse("market://details?id=$packageName")
@@ -82,7 +99,7 @@ class AndroidPackageManagerAdapter(
 
         } catch (e: ActivityNotFoundException) {
             val intent = Intent(Intent.ACTION_VIEW)
-            
+
             intent.data = Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
 
@@ -205,6 +222,38 @@ class AndroidPackageManagerAdapter(
         return activityExists
     }
 
+    override fun grantPermission(permissionName: String): Result<*> {
+        val result: Result<*>
+
+        if (permissionAdapter.isGranted(Permission.SHIZUKU)) {
+            result = try {
+                val userId = Process.myUserHandle()!!.getIdentifier()
+
+                iPackageManager.grantRuntimePermission(
+                    Constants.PACKAGE_NAME,
+                    permissionName,
+                    userId
+                )
+
+                success()
+            } catch (e: Exception) {
+                Error.Exception(e)
+            }
+
+        } else if (permissionAdapter.isGranted(Permission.ROOT)) {
+            result = suAdapter.execute(
+                "pm grant ${Constants.PACKAGE_NAME} $permissionName",
+                block = true
+            )
+        } else {
+            throw IllegalStateException("Shizuku or root permission has not been granted")
+        }
+
+        permissionAdapter.onPermissionsChanged()
+
+        return result
+    }
+
     override fun launchCameraApp(): Result<*> {
         try {
             Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA).apply {
@@ -254,40 +303,86 @@ class AndroidPackageManagerAdapter(
         }
     }
 
-    private fun updatePackageList() {
-        installedPackages.value = State.Loading
+    override fun getActivityLabel(packageName: String, activityClass: String): Result<String> {
+        try {
+            val component = ComponentName(packageName, activityClass)
 
-        val packages = packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
-            .mapNotNull { applicationInfo ->
-                val packageName = applicationInfo.packageName
-                val canBeLaunched =
-                    (packageManager.getLaunchIntentForPackage(packageName) != null
-                        || packageManager.getLeanbackLaunchIntentForPackage(packageName) != null)
+            return packageManager
+                .getActivityInfo(component, 0)
+                .loadLabel(packageManager)
+                .toString()
+                .success()
+        } catch (e: PackageManager.NameNotFoundException) {
+            return Error.AppNotFound(packageName)
+        }
+    }
 
-                try {
-                    val activities =
-                        packageManager.getPackageInfo(
-                            packageName,
-                            PackageManager.GET_ACTIVITIES
-                        )?.activities?.map {
-                            ActivityInfo(it.name, it.packageName)
-                        }
+    override fun getActivityIcon(packageName: String, activityClass: String): Result<Drawable?> {
+        try {
+            val component = ComponentName(packageName, activityClass)
 
-                    return@mapNotNull PackageInfo(
-                        packageName,
-                        canBeLaunched,
-                        activities = activities ?: emptyList(),
-                        isEnabled = applicationInfo.enabled
-                    )
-                } catch (e: PackageManager.NameNotFoundException) {
-                    return@mapNotNull null
-                } catch (e: TransactionTooLargeException) {
-                    return@mapNotNull null
-                } catch (e: Exception) {
-                    return@mapNotNull null
-                }
+            return packageManager
+                .getActivityInfo(component, 0)
+                .loadIcon(packageManager)
+                .success()
+        } catch (e: PackageManager.NameNotFoundException) {
+            return Error.AppNotFound(packageName)
+        }
+    }
+
+    private suspend fun updatePackageList() {
+        withContext(Dispatchers.Default) {
+            installedPackages.value = State.Loading
+
+            val packages = packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
+                .mapNotNull { createPackageInfoModel(it) }
+
+            installedPackages.value = State.Data(packages)
+        }
+    }
+
+    private fun createPackageInfoModel(applicationInfo: ApplicationInfo): PackageInfo? {
+        val packageName = applicationInfo.packageName
+
+        try {
+
+            val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
+            val leanbackLaunchIntent = packageManager.getLaunchIntentForPackage(packageName)
+
+            val isLaunchable = launchIntent != null || leanbackLaunchIntent != null
+
+            val activityPackageInfo = packageManager.getPackageInfo(
+                packageName,
+                PackageManager.GET_ACTIVITIES
+            )
+
+            if (activityPackageInfo == null) {
+                return null
             }
 
-        installedPackages.value = State.Data(packages)
+            val activityModels = mutableListOf<ActivityInfo>()
+
+            activityPackageInfo.activities.forEach { activity ->
+                val model = ActivityInfo(
+                    activityName = activity.name,
+                    packageName = activity.packageName,
+                )
+
+                activityModels.add(model)
+            }
+
+            return PackageInfo(
+                packageName,
+                activities = activityModels,
+                isEnabled = applicationInfo.enabled,
+                isLaunchable = isLaunchable
+            )
+        } catch (e: PackageManager.NameNotFoundException) {
+            return null
+        } catch (e: TransactionTooLargeException) {
+            return null
+        } catch (e: Exception) {
+            return null
+        }
     }
 }

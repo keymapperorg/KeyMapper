@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.system.intents
 
 import android.content.Intent
 import android.os.Build
+import android.os.Bundle
 import android.text.InputType
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
@@ -19,7 +20,9 @@ import splitties.bitflags.withFlag
  */
 
 class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
-    ResourceProvider by resourceProvider, PopupViewModel by PopupViewModelImpl() {
+    ResourceProvider by resourceProvider,
+    PopupViewModel by PopupViewModelImpl(),
+    NavigationViewModel by NavigationViewModelImpl() {
 
     companion object {
         private val EXTRA_TYPES = arrayOf(
@@ -129,10 +132,6 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
     val action = MutableStateFlow("")
     val categoriesString = MutableStateFlow("")
 
-    val showChooseActivityButton: StateFlow<Boolean> = target.map {
-        it == IntentTarget.ACTIVITY
-    }.stateIn(viewModelScope, SharingStarted.Lazily, false)
-
     val data: MutableStateFlow<String> = MutableStateFlow("")
     val targetPackage: MutableStateFlow<String> = MutableStateFlow("")
     val targetClass: MutableStateFlow<String> = MutableStateFlow("")
@@ -140,7 +139,7 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
     val flagsString: MutableStateFlow<String> = MutableStateFlow("")
 
     private val extras: MutableStateFlow<List<IntentExtraModel>> =
-        MutableStateFlow(emptyList<IntentExtraModel>())
+        MutableStateFlow(emptyList())
 
     val extraListItems: StateFlow<List<IntentExtraListItem>> = extras.map { extras ->
         extras.map { it.toListItem() }
@@ -165,12 +164,6 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
     private val _returnResult = MutableSharedFlow<ConfigIntentResult>()
     val returnResult = _returnResult.asSharedFlow()
 
-    private val _chooseActivity = MutableSharedFlow<Unit>()
-    val chooseActivity = _chooseActivity.asSharedFlow()
-
-    private val _openUrl = MutableSharedFlow<String>()
-    val openUrl = _openUrl.asSharedFlow()
-
     fun setActivityTargetChecked(isChecked: Boolean) {
         if (isChecked) {
             target.value = IntentTarget.ACTIVITY
@@ -191,7 +184,10 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
 
     fun onChooseActivityClick() {
         viewModelScope.launch {
-            _chooseActivity.emit(Unit)
+            val activityInfo = navigate("choose_activity_for_intent", NavDestination.ChooseActivity)
+                ?: return@launch
+
+            setActivity(activityInfo)
         }
     }
 
@@ -279,7 +275,7 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
 
             val dialog = PopupUi.SingleChoice(items)
 
-            val extraType = showPopup("add_extra", dialog)?.item ?: return@launch
+            val extraType = showPopup("add_extra", dialog) ?: return@launch
 
             val modelValue = when (extraType) {
                 is BoolExtraType -> "true"
@@ -311,17 +307,72 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
     fun showFlagsDialog() {
         viewModelScope.launch {
 
-            val dialog = PopupUi.MultiChoice(items = availableIntentFlags)
+            val dialogItems = availableIntentFlags.map { MultiChoiceItem(it.first, it.second) }
+            val dialog = PopupUi.MultiChoice(items = dialogItems)
 
-            val response = showPopup("set_flags", dialog) ?: return@launch
+            val selectedFlags = showPopup("set_flags", dialog) ?: return@launch
 
             var newFlags = 0
 
-            response.items.forEach {
+            selectedFlags.forEach {
                 newFlags = newFlags.withFlag(it)
             }
 
             flagsString.value = newFlags.toString()
+        }
+    }
+
+    fun loadResult(result: ConfigIntentResult) {
+        val intent = Intent.parseUri(result.uri, 0)
+
+        description.value = result.description
+        target.value = result.target
+        action.value = intent.action ?: ""
+
+        categoriesString.value = intent.categories?.joinToString() ?: ""
+        data.value = intent.dataString ?: ""
+        targetPackage.value = intent.`package` ?: ""
+        targetClass.value = intent.component?.className ?: ""
+
+        if (intent.flags != 0) {
+            flagsString.value = intent.flags.toString()
+        } else {
+            flagsString.value = ""
+        }
+
+        val extrasBundle = intent.extras ?: Bundle.EMPTY
+
+        extras.value = extrasBundle.keySet().mapNotNull { key ->
+            val value = extrasBundle.get(key)
+
+            if (value == null) {
+                return@mapNotNull null
+            }
+
+            val extraType = when (value) {
+                is Boolean -> BoolExtraType()
+                is BooleanArray -> BoolArrayExtraType()
+                is Int -> IntExtraType()
+                is IntArray -> IntArrayExtraType()
+                is Long -> LongExtraType()
+                is LongArrayExtraType -> LongArrayExtraType()
+                is Byte -> ByteExtraType()
+                is ByteArrayExtraType -> ByteArrayExtraType()
+                is Double -> DoubleExtraType()
+                is DoubleArray -> DoubleArrayExtraType()
+                is Float -> FloatExtraType()
+                is FloatArray -> FloatArrayExtraType()
+                is Short -> ShortExtraType()
+                is ShortArray -> ShortArrayExtraType()
+                is String -> StringExtraType()
+                else -> throw IllegalArgumentException("Don't know how to conver this extra (${value.javaClass.name}) to an IntentExtraType")
+            }
+
+            IntentExtraModel(
+                type = extraType,
+                name = key,
+                value = value.toString()
+            )
         }
     }
 
@@ -341,7 +392,10 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
             val response = showPopup("flags_example", dialog) ?: return@launch
 
             if (response == DialogResponse.NEUTRAL) {
-                _openUrl.emit(getString(R.string.url_intent_set_flags_help))
+                showPopup(
+                    "url_intent_flags",
+                    PopupUi.OpenUrl(getString(R.string.url_intent_set_flags_help))
+                )
             }
         }
     }
@@ -420,7 +474,7 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
         private val resourceProvider: ResourceProvider
     ) : ViewModelProvider.NewInstanceFactory() {
 
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ConfigIntentViewModel(resourceProvider) as T
         }
     }

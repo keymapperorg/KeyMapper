@@ -3,7 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="io.github.sds100.keymapper">
 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -17,9 +20,15 @@
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+
+    <!--    This permission is in each build variant's AndroidManifest -->
+    <!--    <permission android:name="io.github.sds100.keymapper.KEY_EVENT_RECEIVER">-->
+    <!--    </permission>-->
+
     <uses-permission
         android:name="android.permission.QUERY_ALL_PACKAGES"
         tools:ignore="QueryAllPackagesPermission" />
+
     <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <uses-permission
@@ -33,6 +42,7 @@
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
+
     <uses-feature
         android:name="android.software.leanback"
         android:required="false" />
@@ -40,6 +50,24 @@
     <uses-feature
         android:name="android.hardware.touchscreen"
         android:required="false" />
+
+    <uses-feature
+        android:name="android.hardware.wifi"
+        android:required="false" />
+
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
+    
+    <uses-feature
+        android:name="android.hardware.bluetooth"
+        android:required="false" />
+
+    <uses-feature
+        android:name="android.hardware.location.gps"
+        android:required="false" />
+
+    <uses-sdk tools:overrideLibrary="rikka.shizuku.provider, rikka.shizuku.api, rikka.shizuku.shared, rikka.shizuku.aidl" />
 
     <application
         android:name="io.github.sds100.keymapper.KeyMapperApp"
@@ -53,8 +81,8 @@
 
         <activity
             android:name=".SplashActivity"
-            android:label="@string/app_name"
-            android:theme="@style/Splash">
+            android:exported="true"
+            android:theme="@style/Theme.App.Starting">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -77,6 +105,7 @@
             android:finishOnTaskLaunch="true"
             android:launchMode="singleInstance"
             android:taskAffinity=""
+            android:exported="true"
             android:theme="@android:style/Theme.NoDisplay">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -87,13 +116,16 @@
         <activity
             android:name=".mappings.keymaps.CreateKeyMapShortcutActivity"
             android:label="@string/shortcut_label_action"
+            android:exported="true"
             android:taskAffinity="">
             <intent-filter>
                 <action android:name="android.intent.action.CREATE_SHORTCUT" />
             </intent-filter>
         </activity>
 
-        <receiver android:name=".system.notifications.NotificationClickReceiver">
+        <receiver
+            android:name=".system.notifications.NotificationClickReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.hardware.input.action.QUERY_KEYBOARD_LAYOUTS" />
             </intent-filter>
@@ -102,7 +134,9 @@
                 android:resource="@xml/keyboard_layouts" />
         </receiver>
 
-        <receiver android:name=".system.BootBroadcastReceiver">
+        <receiver
+            android:name=".system.BootBroadcastReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
@@ -118,7 +152,9 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".system.bluetooth.BluetoothBroadcastReceiver">
+        <receiver
+            android:name=".system.bluetooth.BluetoothBroadcastReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.bluetooth.device.action.ACL_CONNECTED" />
                 <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED" />
@@ -127,6 +163,7 @@
 
         <receiver
             android:name=".system.DeviceAdmin"
+            android:exported="true"
             android:permission="android.permission.BIND_DEVICE_ADMIN">
             <meta-data
                 android:name="android.app.device_admin"
@@ -139,6 +176,7 @@
 
         <service
             android:name=".system.accessibility.MyAccessibilityService"
+            android:exported="true"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />
@@ -152,6 +190,7 @@
         <service
             android:name=".system.inputmethod.KeyMapperImeService"
             android:label="@string/ime_service_label"
+            android:exported="true"
             android:permission="android.permission.BIND_INPUT_METHOD">
             <intent-filter>
                 <action android:name="android.view.InputMethod" />
@@ -165,6 +204,7 @@
             android:name=".system.tiles.ToggleMappingsTile"
             android:icon="@drawable/ic_tile_pause"
             android:label="@string/tile_pause"
+            android:exported="true"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
@@ -175,6 +215,7 @@
             android:name=".system.tiles.ToggleKeyMapperKeyboardTile"
             android:icon="@drawable/ic_tile_keyboard"
             android:label="@string/tile_toggle_keymapper_keyboard"
+            android:exported="true"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
@@ -184,6 +225,7 @@
         <service
             android:name="io.github.sds100.keymapper.system.notifications.NotificationReceiver"
             android:label="Key Mapper Notification Receiver"
+            android:exported="true"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
                 <action android:name="android.service.notification.NotificationListenerService" />
@@ -195,7 +237,24 @@
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <service
+            android:name=".api.KeyEventReceiver"
+            android:exported="true"
+            android:permission="io.github.sds100.keymapper.KEY_EVENT_RECEIVER" />
+
+        <service
             android:name=".system.inputmethod.ObserveInputMethodsJob"
             android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <service
+            android:name=".system.notifications.ObserveNotificationListenersJob"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <provider
+            android:name="rikka.shizuku.ShizukuProvider"
+            android:authorities="${applicationId}.shizuku"
+            android:enabled="true"
+            android:exported="true"
+            android:multiprocess="false"
+            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
     </application>
 </manifest>

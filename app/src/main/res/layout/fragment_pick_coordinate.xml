@@ -23,9 +23,10 @@
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/scrollView"
-            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_marginBottom="?attr/actionBarSize"
+            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -33,7 +34,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/textInputLayoutX"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -58,7 +59,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/textInputLayoutY"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
@@ -89,6 +90,7 @@
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
                     android:layout_marginEnd="16dp"
                     android:text="@string/tap_coordinate_screenshot_message"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textInputLayoutX" />
@@ -122,18 +124,25 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
 
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:contentDescription="@string/content_description_done_configuring_coordinate"
+            android:enabled="@{viewModel.isDoneButtonEnabled()}"
             android:onClick="@{() -> viewModel.onDoneClick()}"
-            android:layout_margin="16dp"
-            android:contentDescription="@string/button_done"
-            android:text="@string/button_done"
-            android:visibility="@{viewModel.isDoneButtonEnabled ? View.VISIBLE : View.GONE}"
-            app:icon="@drawable/ic_baseline_check_64"
-            app:layout_anchor="@id/scrollView"
-            app:layout_anchorGravity="bottom|end"
-            app:layout_behavior="@string/hide_bottom_view_on_scroll_behavior" />
+            android:src="@drawable/ic_baseline_done_24"
+            app:layout_anchor="@id/appBar" />
+
+        <com.google.android.material.bottomappbar.BottomAppBar
+            android:id="@+id/appBar"
+            style="@style/BottomAppBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            app:fabAlignmentMode="end"
+            app:fabAnimationMode="slide"
+            app:navigationIcon="@drawable/ic_baseline_arrow_back_24" />
+
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

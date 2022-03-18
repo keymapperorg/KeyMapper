@@ -2,11 +2,11 @@ package io.github.sds100.keymapper.actions.tapscreen
 
 import android.graphics.Bitmap
 import android.graphics.Point
-import androidx.lifecycle.*
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.ui.*
 import io.github.sds100.keymapper.util.ui.*
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -47,7 +47,7 @@ class PickDisplayCoordinateViewModel(
     private val _returnResult = MutableSharedFlow<PickCoordinateResult>()
     val returnResult = _returnResult.asSharedFlow()
 
-    private var createResultJob: Job? = null
+    private val description: MutableStateFlow<String?> = MutableStateFlow(null)
 
     fun selectedScreenshot(newBitmap: Bitmap, displaySize: Point) {
         //check whether the height and width of the bitmap match the display size, even when it is rotated.
@@ -96,31 +96,34 @@ class PickDisplayCoordinateViewModel(
     }
 
     fun onDoneClick() {
-        createResultJob?.cancel()
-        createResultJob = viewModelScope.launch {
+        viewModelScope.launch {
             val x = x.value ?: return@launch
             val y = y.value ?: return@launch
 
-            val response = showPopup(
+            val description = showPopup(
                 "coordinate_description",
                 PopupUi.Text(
                     getString(R.string.hint_tap_coordinate_title),
-                    allowEmpty = true
+                    allowEmpty = true,
+                    text = description.value ?: ""
                 )
             ) ?: return@launch
 
-            val description = response.text
-
             _returnResult.emit(PickCoordinateResult(x, y, description))
+        }
+    }
+
+    fun loadResult(result: PickCoordinateResult) {
+        viewModelScope.launch {
+            x.value = result.x
+            y.value = result.y
+            description.value = result.description
         }
     }
 
     override fun onCleared() {
         bitmap.value?.recycle()
         _bitmap.value = null
-
-        createResultJob?.cancel()
-        createResultJob = null
 
         super.onCleared()
     }
@@ -130,7 +133,7 @@ class PickDisplayCoordinateViewModel(
         private val resourceProvider: ResourceProvider
     ) : ViewModelProvider.NewInstanceFactory() {
 
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return PickDisplayCoordinateViewModel(resourceProvider) as T
         }
     }

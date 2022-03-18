@@ -7,10 +7,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.addRepeatingJob
 import com.github.appintro.SlidePolicy
 import io.github.sds100.keymapper.databinding.FragmentAppIntroSlideBinding
 import io.github.sds100.keymapper.util.Inject
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.showPopups
 import kotlinx.coroutines.flow.collectLatest
 
@@ -57,7 +57,7 @@ class ReportBugSlideFragment : Fragment(), SlidePolicy {
 
         viewModel.showPopups(this, binding)
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.CREATED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.CREATED) {
             viewModel.slides.collectLatest { slides ->
                 val model = slides.single { it.id == slideId }
 

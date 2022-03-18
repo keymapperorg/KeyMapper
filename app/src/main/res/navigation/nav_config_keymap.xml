@@ -35,7 +35,7 @@
 
     <dialog
         android:id="@+id/keymapActionOptionsFragment"
-        android:name="io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapActionOptionsFragment"
+        android:name="io.github.sds100.keymapper.mappings.keymaps.EditKeyMapActionFragment"
         android:label="KeymapActionOptionsFragment">
    </dialog>
 </navigation>

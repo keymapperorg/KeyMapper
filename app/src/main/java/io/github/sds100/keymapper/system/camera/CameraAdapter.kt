@@ -10,4 +10,5 @@ interface CameraAdapter {
     fun enableFlashlight(lens: CameraLens): Result<*>
     fun disableFlashlight(lens: CameraLens): Result<*>
     fun toggleFlashlight(lens: CameraLens): Result<*>
+    fun isFlashlightOn(lens: CameraLens): Boolean
 }

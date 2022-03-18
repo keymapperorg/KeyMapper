@@ -19,7 +19,7 @@ class LaunchKeyMapShortcutActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val accessibilityServiceState = ServiceLocator.serviceAdapter(this).state.value
+        val accessibilityServiceState = ServiceLocator.accessibilityServiceAdapter(this).state.value
 
         when (accessibilityServiceState) {
             ServiceState.ENABLED ->

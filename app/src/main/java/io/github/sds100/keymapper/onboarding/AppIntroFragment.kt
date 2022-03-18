@@ -7,9 +7,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.addRepeatingJob
 import io.github.sds100.keymapper.databinding.FragmentAppIntroSlideBinding
 import io.github.sds100.keymapper.util.Inject
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import kotlinx.coroutines.flow.collectLatest
 
 class AppIntroFragment : Fragment() {
@@ -52,12 +52,11 @@ class AppIntroFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.CREATED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.CREATED) {
             appIntroViewModel.getSlide(slide).collectLatest { model ->
                 binding.model = model
 
                 binding.setOnButton1ClickListener {
-
                     if (model.buttonId1 != null) {
                         appIntroViewModel.onButtonClick(model.buttonId1)
                     }
@@ -66,6 +65,12 @@ class AppIntroFragment : Fragment() {
                 binding.setOnButton2ClickListener {
                     if (model.buttonId2 != null) {
                         appIntroViewModel.onButtonClick(model.buttonId2)
+                    }
+                }
+
+                binding.setOnButton3ClickListener {
+                    if (model.buttonId3 != null) {
+                        appIntroViewModel.onButtonClick(model.buttonId3)
                     }
                 }
             }

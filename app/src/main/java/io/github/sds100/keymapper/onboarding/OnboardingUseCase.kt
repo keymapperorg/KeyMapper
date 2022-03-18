@@ -2,42 +2,58 @@ package io.github.sds100.keymapper.onboarding
 
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import io.github.sds100.keymapper.Constants
+import io.github.sds100.keymapper.actions.ActionData
+import io.github.sds100.keymapper.actions.canUseImeToPerform
+import io.github.sds100.keymapper.actions.canUseShizukuToPerform
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.shizuku.ShizukuAdapter
+import io.github.sds100.keymapper.shizuku.ShizukuUtils
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
+import io.github.sds100.keymapper.system.leanback.LeanbackAdapter
+import io.github.sds100.keymapper.system.permissions.Permission
+import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.util.PrefDelegate
 import io.github.sds100.keymapper.util.VersionHelper
-import io.github.sds100.keymapper.util.ifIsData
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 
 /**
  * Created by sds100 on 14/02/21.
  */
 class OnboardingUseCaseImpl(
     private val preferenceRepository: PreferenceRepository,
-    private val packageManagerAdapter: PackageManagerAdapter,
-    private val fileAdapter: FileAdapter
+    private val fileAdapter: FileAdapter,
+    private val leanbackAdapter: LeanbackAdapter,
+    private val shizukuAdapter: ShizukuAdapter,
+    private val permissionAdapter: PermissionAdapter,
+    private val packageManagerAdapter: PackageManagerAdapter
 ) : PreferenceRepository by preferenceRepository, OnboardingUseCase {
 
     override var shownAppIntro by PrefDelegate(Keys.shownAppIntro, false)
 
-    override val showGuiKeyboardPrompt: Flow<Boolean> =
-        preferenceRepository.get(Keys.acknowledgedGuiKeyboard)
-            .map { acknowledged -> acknowledged == null || !acknowledged }
-            .map { show ->
-                if (show) {
-                    packageManagerAdapter.installedPackages.value.ifIsData { installedPackages ->
-                        if (installedPackages.any { it.packageName == KeyMapperImeHelper.KEY_MAPPER_GUI_IME_PACKAGE }) {
-                            neverShowGuiKeyboardPromptsAgain()
-                            return@map false
-                        }
-                    }
-                }
+    override suspend fun showInstallGuiKeyboardPrompt(action: ActionData): Boolean {
+        val acknowledged = preferenceRepository.get(Keys.acknowledgedGuiKeyboard).first()
+        val isGuiKeyboardInstalled =
+            packageManagerAdapter.isAppInstalled(KeyMapperImeHelper.KEY_MAPPER_GUI_IME_PACKAGE)
 
-                return@map show
-            }
+        val isShizukuInstalled = shizukuAdapter.isInstalled.value
+        
+        return (acknowledged == null || !acknowledged)
+                && !isGuiKeyboardInstalled 
+                && !isShizukuInstalled
+                && action.canUseImeToPerform()
+    }
+
+    override suspend fun showInstallShizukuPrompt(action: ActionData): Boolean {
+        return !shizukuAdapter.isInstalled.value
+                && ShizukuUtils.isRecommendedForSdkVersion()
+                && action.canUseShizukuToPerform()
+    }
 
     override fun neverShowGuiKeyboardPromptsAgain() {
         preferenceRepository.set(Keys.acknowledgedGuiKeyboard, true)
@@ -81,9 +97,9 @@ class OnboardingUseCaseImpl(
             val handledUpdateInHomeScreen = !showWhatsNew
 
             oldVersionCode < VersionHelper.FINGERPRINT_GESTURES_MIN_VERSION
-                && !handledUpdateInHomeScreen
-                && !approvedPrompt
-                && shownAppIntro
+                    && !handledUpdateInHomeScreen
+                    && !approvedPrompt
+                    && shownAppIntro
         }
     }
 
@@ -142,12 +158,41 @@ class OnboardingUseCaseImpl(
     override fun shownQuickStartGuideHint() {
         preferenceRepository.set(Keys.shownQuickStartGuideHint, true)
     }
+
+    override fun isTvDevice(): Boolean {
+        return leanbackAdapter.isTvDevice()
+    }
+
+    override val promptForShizukuPermission: Flow<Boolean> = combine(
+        preferenceRepository.get(Keys.shownShizukuPermissionPrompt),
+        shizukuAdapter.isInstalled,
+        permissionAdapter.isGrantedFlow(Permission.SHIZUKU),
+    ) { shownPromptBefore,
+        isShizkuInstalled,
+        isShizukuPermissionGranted ->
+        shownPromptBefore != true && isShizkuInstalled && !isShizukuPermissionGranted
+    }
+
+    override val showShizukuAppIntroSlide: Boolean
+        get() = shizukuAdapter.isInstalled.value
 }
 
 interface OnboardingUseCase {
     var shownAppIntro: Boolean
 
-    val showGuiKeyboardPrompt: Flow<Boolean>
+    /**
+     * @return whether to prompt the user to install the Key Mapper GUI Keyboard after adding
+     * this action
+     */
+    suspend fun showInstallGuiKeyboardPrompt(action: ActionData): Boolean
+
+    /**
+     * @return whether to prompt the user to install Shizuku after adding
+     * this action
+     */
+    suspend fun showInstallShizukuPrompt(action: ActionData): Boolean
+
+    fun isTvDevice(): Boolean
     fun neverShowGuiKeyboardPromptsAgain()
 
     var approvedFingerprintFeaturePrompt: Boolean
@@ -169,4 +214,8 @@ interface OnboardingUseCase {
 
     val showQuickStartGuideHint: Flow<Boolean>
     fun shownQuickStartGuideHint()
+
+    val promptForShizukuPermission: Flow<Boolean>
+
+    val showShizukuAppIntroSlide: Boolean
 }

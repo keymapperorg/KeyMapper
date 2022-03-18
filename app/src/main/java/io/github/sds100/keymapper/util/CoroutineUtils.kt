@@ -1,13 +1,12 @@
 package io.github.sds100.keymapper.util
 
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LifecycleCoroutineScope
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.coroutineScope
+import androidx.lifecycle.*
 import kotlinx.coroutines.CancellableContinuation
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlin.coroutines.resume
 
@@ -17,6 +16,15 @@ import kotlin.coroutines.resume
 
 val Fragment.viewLifecycleScope: LifecycleCoroutineScope
     get() = viewLifecycleOwner.lifecycle.coroutineScope
+
+fun LifecycleOwner.launchRepeatOnLifecycle(
+    state: Lifecycle.State,
+    block: suspend CoroutineScope.() -> Unit
+) {
+    lifecycleScope.launch {
+        this@launchRepeatOnLifecycle.repeatOnLifecycle(state, block)
+    }
+}
 
 fun <T> CancellableContinuation<T>.resumeIfNotCompleted(value: T) {
     if (!this.isCompleted) {

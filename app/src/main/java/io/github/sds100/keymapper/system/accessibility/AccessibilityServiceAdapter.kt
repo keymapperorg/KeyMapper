@@ -10,7 +10,6 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
 import io.github.sds100.keymapper.Constants
-import io.github.sds100.keymapper.MainActivity
 import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.system.JobSchedulerHelper
 import io.github.sds100.keymapper.system.SettingsUtils
@@ -35,7 +34,7 @@ class AccessibilityServiceAdapter(
     private val ctx = context.applicationContext
     override val eventReceiver = MutableSharedFlow<Event>()
 
-    val serviceOutputEvents = MutableSharedFlow<Event>()
+    val eventsToService = MutableSharedFlow<Event>()
 
     override val state = MutableStateFlow(ServiceState.DISABLED)
 
@@ -84,13 +83,13 @@ class AccessibilityServiceAdapter(
         }
 
         coroutineScope.launch {
-            serviceOutputEvents.emit(event)
+            eventsToService.emit(event)
         }
 
         return Success(Unit)
     }
 
-    override fun enableService() {
+    override fun start(): Boolean {
         if (permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)) {
 
             enableWithWriteSecureSettings()
@@ -110,44 +109,83 @@ class AccessibilityServiceAdapter(
                     delay(100)
 
                     Timber.d("Ping service to check if crashed")
-                    serviceOutputEvents.emit(Ping(key))
+                    eventsToService.emit(Event.Ping(key))
                 }
 
-                val pong: Pong? = withTimeoutOrNull(2000L) {
-                    eventReceiver.first { it == Pong(key) } as Pong?
+                val pong: Event.Pong? = withTimeoutOrNull(2000L) {
+                    eventReceiver.first { it == Event.Pong(key) } as Event.Pong?
                 }
 
                 if (pong == null) {
                     Timber.e("Service crashed so restarting")
-                    disableService()
+                    disableServiceSuspend()
                     delay(200)
                     enableWithWriteSecureSettings()
                 }
             }
+
+            return true
         } else {
             Timber.i("Enable service by opening accessibility settings")
 
-            openAccessibilitySettings()
+            return launchSettingsScreen()
         }
     }
 
-    override fun restartService() {
+    override fun restart(): Boolean {
         if (permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)) {
             Timber.i("Restarting service with WRITE_SECURE_SETTINGS")
 
             coroutineScope.launch {
-                disableService()
+                disableServiceSuspend()
                 delay(200)
                 enableWithWriteSecureSettings()
             }
+
+            return true
         } else {
             Timber.i("Restarting service by opening accessibility settings")
 
-            openAccessibilitySettings()
+            return launchSettingsScreen()
         }
     }
 
-    override fun disableService() {
+    override fun stop(): Boolean {
+        coroutineScope.launch {
+            disableServiceSuspend()
+        }
+
+        return true
+    }
+
+    private fun launchSettingsScreen(): Boolean {
+        try {
+            val settingsIntent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+
+            settingsIntent.addFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK
+                        or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
+            )
+
+            ctx.startActivity(settingsIntent)
+
+            return true
+
+        } catch (e: ActivityNotFoundException) {
+            return false
+        }
+    }
+
+    private suspend fun disableServiceSuspend() {
+        send(Event.DisableService).onSuccess {
+            Timber.i("Disabling service by calling disableSelf()")
+
+            return
+        }.onFailure {
+            Timber.i("Failed to disable service by calling disableSelf()")
+        }
+
         if (permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)) {
             Timber.i("Disabling service with WRITE_SECURE_SETTINGS")
 
@@ -176,10 +214,6 @@ class AccessibilityServiceAdapter(
                 Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES,
                 newEnabledServices
             )
-        } else {
-            Timber.i("Disabling service by opening accessibility settings")
-
-            openAccessibilitySettings()
         }
     }
 
@@ -189,13 +223,13 @@ class AccessibilityServiceAdapter(
 
         val pingJob = coroutineScope.launch {
             repeat(20) {
-                serviceOutputEvents.emit(Ping(key))
+                eventsToService.emit(Event.Ping(key))
                 delay(100)
             }
         }
 
-        val pong: Pong? = withTimeoutOrNull(2000L) {
-            eventReceiver.first { it == Pong(key) } as Pong?
+        val pong: Event.Pong? = withTimeoutOrNull(2000L) {
+            eventReceiver.first { it == Event.Pong(key) } as Event.Pong?
         }
 
         pingJob.cancel()
@@ -236,29 +270,6 @@ class AccessibilityServiceAdapter(
                 ctx,
                 Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES, newEnabledServices
             )
-        }
-    }
-
-    private fun openAccessibilitySettings() {
-        try {
-            val settingsIntent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-
-            settingsIntent.addFlags(
-                Intent.FLAG_ACTIVITY_NEW_TASK
-                    or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
-            )
-
-            ctx.startActivity(settingsIntent)
-
-        } catch (e: ActivityNotFoundException) {
-            //open the app to show a dialog to tell the user to give the app WRITE_SECURE_SETTINGS permission
-            Intent(ctx, MainActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                putExtra(MainActivity.KEY_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG, true)
-
-                ctx.startActivity(this)
-            }
         }
     }
 

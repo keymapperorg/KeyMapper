@@ -1,22 +1,19 @@
 package io.github.sds100.keymapper.constraints
 
 import android.os.Bundle
-import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.addRepeatingJob
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.GridLayoutManager
 import com.airbnb.epoxy.EpoxyRecyclerView
-import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
 import io.github.sds100.keymapper.simple
-import io.github.sds100.keymapper.system.apps.ChooseAppFragment
-import io.github.sds100.keymapper.system.bluetooth.ChooseBluetoothDeviceFragment
-import io.github.sds100.keymapper.util.State
-import io.github.sds100.keymapper.util.ui.SimpleRecyclerViewFragment
-import io.github.sds100.keymapper.util.ui.showPopups
+import io.github.sds100.keymapper.simpleGrid
 import io.github.sds100.keymapper.util.Inject
+import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
+import io.github.sds100.keymapper.util.ui.*
+import io.github.sds100.keymapper.util.viewLifecycleScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.decodeFromString
@@ -27,7 +24,7 @@ import kotlinx.serialization.json.Json
  * A placeholder fragment containing a simple view.
  */
 class ChooseConstraintFragment
-    : SimpleRecyclerViewFragment<ChooseConstraintListItem>() {
+    : SimpleRecyclerViewFragment<SimpleListItem>() {
 
     companion object {
         const val EXTRA_CONSTRAINT = "extra_constraint"
@@ -39,71 +36,70 @@ class ChooseConstraintFragment
         Inject.chooseConstraintListViewModel(requireContext())
     }
 
-    override val listItems: Flow<State<List<ChooseConstraintListItem>>>
-        get() = viewModel.state
-
-    @Suppress("SuspiciousVarProperty")
-    override var requestKey: String? = null
-        get() = navArgs<ChooseConstraintFragmentArgs>().value.chooseConstraintRequestKey
+    override val listItems: Flow<State<List<SimpleListItem>>>
+        get() = viewModel.listItems
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel.setSupportedConstraints(Json.decodeFromString(navArgs.supportedConstraintList))
+        viewModel.setSupportedConstraints(Json.decodeFromString(navArgs.supportedConstraints))
+        viewModel.setupNavigation(this)
 
-        setFragmentResultListener(ChooseAppFragment.REQUEST_KEY) { _, result ->
-            val packageName = result.getString(ChooseAppFragment.EXTRA_PACKAGE_NAME)
-
-            viewModel.onChooseApp(packageName!!)
-        }
-
-        setFragmentResultListener(ChooseBluetoothDeviceFragment.REQUEST_KEY) { _, result ->
-            val address = result.getString(ChooseBluetoothDeviceFragment.EXTRA_ADDRESS)
-            val name = result.getString(ChooseBluetoothDeviceFragment.EXTRA_NAME)
-
-            viewModel.onChooseBluetoothDevice(address!!, name!!)
+        launchRepeatOnLifecycle(Lifecycle.State.CREATED) {
+            viewModel.returnResult.collectLatest {
+                viewLifecycleScope.launchWhenResumed {
+                    returnResult(EXTRA_CONSTRAINT to Json.encodeToString(it))
+                }
+            }
         }
     }
 
     override fun subscribeUi(binding: FragmentSimpleRecyclerviewBinding) {
         super.subscribeUi(binding)
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.CREATED) {
-            viewModel.returnResult.collectLatest {
-                returnResult(EXTRA_CONSTRAINT to Json.encodeToString(it))
-            }
-        }
-
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
-            viewModel.chooseApp.collectLatest {
-                findNavController().navigate(NavAppDirections.chooseApp())
-            }
-        }
-
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
-            viewModel.chooseBluetoothDevice.collectLatest {
-                findNavController().navigate(NavAppDirections.chooseBluetoothDevice())
-            }
-        }
-
         viewModel.showPopups(this, binding)
+
+        binding.epoxyRecyclerView.apply {
+            RecyclerViewUtils.applySimpleListItemDecorations(this)
+
+            layoutManager = GridLayoutManager(requireContext(), 1)
+            clipToPadding = false
+            clipChildren = false
+        }
     }
 
     override fun populateList(
         recyclerView: EpoxyRecyclerView,
-        listItems: List<ChooseConstraintListItem>
+        listItems: List<SimpleListItem>
     ) {
+        RecyclerViewUtils.setSpanCountForSimpleListItemGrid(recyclerView)
+
         recyclerView.withModels {
             listItems.forEach { listItem ->
-                simple {
-                    id(listItem.id.toString())
-                    primaryText(listItem.title)
+                if (spanCount == 1) {
+                    simple {
+                        id(listItem.id)
+                        model(listItem)
 
-                    onClick { _ ->
-                        viewModel.chooseConstraint(listItem.id)
+                        onClickListener { _ ->
+                            viewModel.onListItemClick(listItem.id)
+                        }
+                    }
+                } else {
+                    simpleGrid {
+                        id(listItem.id)
+                        model(listItem)
+
+                        onClickListener { _ ->
+                            viewModel.onListItemClick(listItem.id)
+                        }
                     }
                 }
             }
         }
+    }
+
+    override fun getRequestKey(): String {
+        return navArgs.requestKey
     }
 }

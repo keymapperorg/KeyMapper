@@ -21,7 +21,10 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
-import org.mockito.kotlin.*
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 /**
  * Created by sds100 on 25/04/2021.
@@ -62,7 +65,7 @@ class NotificationControllerTest {
             },
             showImePicker = mock(),
             controlAccessibilityService = mock {
-                on { state }.then { flow<ServiceState> {} }
+                on { serviceState }.then { flow<ServiceState> {} }
             },
             toggleCompatibleIme = mock {
                 on { sufficientPermissions }.then { flow<Boolean> {} }
@@ -74,7 +77,8 @@ class NotificationControllerTest {
                 on { isSupported }.then { flow<Boolean?> {} }
             },
             onboardingUseCase = fakeOnboarding,
-            resourceProvider = mockResourceProvider
+            resourceProvider = mockResourceProvider,
+            dispatchers = TestDispatcherProvider(testDispatcher)
         )
     }
 

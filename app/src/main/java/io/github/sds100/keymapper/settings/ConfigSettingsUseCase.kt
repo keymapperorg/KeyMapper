@@ -6,6 +6,11 @@ import io.github.sds100.keymapper.actions.sound.SoundsManager
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.shizuku.ShizukuAdapter
+import io.github.sds100.keymapper.shizuku.ShizukuUtils
+import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
+import io.github.sds100.keymapper.system.devices.DevicesAdapter
+import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
@@ -13,10 +18,8 @@ import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.util.Result
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.map
+import io.github.sds100.keymapper.util.State
+import kotlinx.coroutines.flow.*
 
 /**
  * Created by sds100 on 14/02/2021.
@@ -26,7 +29,10 @@ class ConfigSettingsUseCaseImpl(
     private val permissionAdapter: PermissionAdapter,
     private val inputMethodAdapter: InputMethodAdapter,
     private val soundsManager: SoundsManager,
-    suAdapter: SuAdapter
+    private val suAdapter: SuAdapter,
+    private val packageManagerAdapter: PackageManagerAdapter,
+    private val shizukuAdapter: ShizukuAdapter,
+    private val devicesAdapter: DevicesAdapter
 ) : ConfigSettingsUseCase {
 
     private val imeHelper by lazy { KeyMapperImeHelper(inputMethodAdapter) }
@@ -41,6 +47,22 @@ class ConfigSettingsUseCaseImpl(
         }
     }
 
+    override val isShizukuInstalled: Flow<Boolean> by lazy {
+        shizukuAdapter.isInstalled
+    }
+
+    override val isShizukuStarted: Flow<Boolean> by lazy {
+        shizukuAdapter.isStarted
+    }
+
+    override val isShizukuPermissionGranted: Flow<Boolean> = channelFlow {
+        send(permissionAdapter.isGranted(Permission.SHIZUKU))
+
+        permissionAdapter.onPermissionsUpdate.collectLatest {
+            send(permissionAdapter.isGranted(Permission.SHIZUKU))
+        }
+    }
+
     override val rerouteKeyEvents: Flow<Boolean> =
         preferenceRepository.get(Keys.rerouteKeyEvents).map { it ?: false }
 
@@ -51,6 +73,9 @@ class ConfigSettingsUseCaseImpl(
     override val isCompatibleImeEnabled: Flow<Boolean> = inputMethodAdapter.inputMethods.map {
         imeHelper.isCompatibleImeEnabled()
     }
+
+    override val connectedInputDevices: StateFlow<State<List<InputDeviceInfo>>>
+        get() = devicesAdapter.connectedInputDevices
 
     override fun enableCompatibleIme() {
         imeHelper.enableCompatibleInputMethods()
@@ -118,12 +143,24 @@ class ConfigSettingsUseCaseImpl(
         permissionAdapter.request(Permission.WRITE_SECURE_SETTINGS)
     }
 
+    override fun requestShizukuPermission() {
+        permissionAdapter.request(Permission.SHIZUKU)
+    }
+
+    override fun downloadShizuku() {
+        packageManagerAdapter.downloadApp(ShizukuUtils.SHIZUKU_PACKAGE)
+    }
+
+    override fun openShizukuApp() {
+        packageManagerAdapter.openApp(ShizukuUtils.SHIZUKU_PACKAGE)
+    }
+
     override fun getSoundFiles(): List<SoundFileInfo> {
         return soundsManager.soundFiles.value
     }
 
-    override fun deleteSoundFiles(uids: List<String>) {
-        uids.forEach {
+    override fun deleteSoundFiles(uid: List<String>) {
+        uid.forEach {
             soundsManager.deleteSound(it)
         }
     }
@@ -137,10 +174,16 @@ interface ConfigSettingsUseCase {
     fun disableAutomaticBackup()
     val isRootGranted: Flow<Boolean>
     val isWriteSecureSettingsGranted: Flow<Boolean>
+
+    val isShizukuInstalled: Flow<Boolean>
+    val isShizukuStarted: Flow<Boolean>
+    val isShizukuPermissionGranted: Flow<Boolean>
+    fun downloadShizuku()
+    fun openShizukuApp()
+
     val rerouteKeyEvents: Flow<Boolean>
     val isCompatibleImeChosen: Flow<Boolean>
     val isCompatibleImeEnabled: Flow<Boolean>
-
     fun enableCompatibleIme()
     suspend fun chooseCompatibleIme(): Result<ImeInfo>
     suspend fun showImePicker(): Result<*>
@@ -156,4 +199,7 @@ interface ConfigSettingsUseCase {
     fun deleteSoundFiles(uid: List<String>)
     fun resetDefaultMappingOptions()
     fun requestWriteSecureSettingsPermission()
+    fun requestShizukuPermission()
+
+    val connectedInputDevices: StateFlow<State<List<InputDeviceInfo>>>
 }

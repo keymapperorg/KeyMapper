@@ -1,8 +1,8 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
 import io.github.sds100.keymapper.actions.ActionData
-import io.github.sds100.keymapper.actions.KeyEventAction
 import io.github.sds100.keymapper.actions.RepeatMode
+import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
@@ -298,6 +298,22 @@ class ConfigKeyMapUseCaseImpl(
         editKeyMap { it.copy(isEnabled = enabled) }
     }
 
+    override fun setActionData(uid: String, data: ActionData) {
+        editKeyMap { keyMap ->
+            val newActionList = keyMap.actionList.map { action ->
+                if (action.uid == uid) {
+                    action.copy(data = data)
+                } else {
+                    action
+                }
+            }
+
+            keyMap.copy(
+                actionList = newActionList
+            )
+        }
+    }
+
     override fun setActionRepeatEnabled(uid: String, repeat: Boolean) =
         setActionOption(uid) { it.copy(repeat = repeat) }
 
@@ -338,13 +354,21 @@ class ConfigKeyMapUseCaseImpl(
         var holdDown = false
         var repeat = false
 
-        if (data is KeyEventAction) {
+        if (data is ActionData.InputKeyEvent) {
             if (KeyEventUtils.isModifierKey(data.keyCode)) {
                 holdDown = true
                 repeat = false
             } else {
                 repeat = true
             }
+        }
+        
+        if (data is ActionData.AnswerCall) {
+            addConstraint(Constraint.PhoneRinging)
+        }
+
+        if (data is ActionData.EndCall) {
+            addConstraint(Constraint.InPhoneCall)
         }
 
         return KeyMapAction(

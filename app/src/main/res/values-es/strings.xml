@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="no_action_chosen">Ninguna acción seleccionada</string>
+    <string name="accessibility_service_description">Key Mapper necesita usar el servicio de accesibilidad para poder detectar las pulsaciones en botones y teclas y así hacer las acciones que elijas.
+Los servicios de accesibilidad solo detectan las teclas y eventos de las aplicación en la que estás. Puedes mirar el código fuente, cuyo enlace está en la pantalla \'About\', para comprobarlo.</string>
+    <string name="selection_count">%d seleccionado</string>
+    <string name="enable">Activar</string>
+    <string name="open">Abrir</string>
+    <string name="recyclerview_placeholder">¯\\_(ツ)_/¯\n\nNada por aquí!</string>
+    <string name="triggers_recyclerview_placeholder">¡Graba un disparador!</string>
+    <string name="actions_recyclerview_placeholder">¡Añadir una acción!</string>
+    <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\n¡Crea un mapeado!</string>
+    <string name="action_shortcut_list_recyclerview_placeholder">¯\\_(ツ)_/¯\n\n¡No has escogido acciones para este atajo!</string>
+    <string name="no_key_maps">¡No has creado ningún mapeado!</string>
+    <string name="everything_looks_good">¡Todo parece correcto!</string>
+    <string name="warning_the_app_will_work">La aplicación funcionará, pero algunas cosas necesitan repararse dependiendo de qué estás haciendo.</string>
+    <string name="your_device_doesnt_support_some_actions">Tu dispositivo no soporta algunas acciones.</string>
+    <string name="tab_unsupported_actions">Acciones no soportadas</string>
+    <string name="press_dot_dot_dot">Presiona…</string>
+    <string name="no_actions">Sin acciones</string>
+    <string name="no_trigger">Sin disparadores</string>
+    <string name="unknown_keycode">Código de tecla desconocido: %s</string>
+    <string name="on">Encendido</string>
+    <string name="off">Apagado</string>
+    <string name="follow_system">Igual que el sistema</string>
+    <string name="this_device">Este dispositivo</string>
+    <string name="any_device">Cualquier dispositivo</string>
+    <string name="trigger_device_name_not_found">El nombre de este dispositivo es desconocido</string>
+    <string name="slider_default">Predeterminado</string>
+    <string name="button_enable_accessibility_service">Activa el servicio de accesibilidad</string>
+    <string name="show_hidden_apps">Mostrar aplicaciones ocultas</string>
+    <string name="modifiers">Modificadores</string>
+    <string name="toggle">Cambiar</string>
+    <string name="tap_coordinate_screenshot_message">¡¡¡¡IMPORTANTE!!! Estas coordenadas solo son correctas cuando su pantalla está en la misma orientación que la captura de pantalla! Esta acción cancelará cualquier toque o gesto que estés haciendo en la pantalla.\n\nSi necesitas ayuda para encontrar las coordenadas de un punto en tu pantalla toma una captura de pantalla y pulsa en la captura de pantalla donde quieres que ocurra el toque.</string>
+    <string name="dont_know_device_name">¡No se conoce el nombre del dispositivo!</string>
+    <string name="tap_actions_to_fix">¡Toca las acciones para arreglar!</string>
+    <string name="shortcut_label_action">Realizar acciones</string>
+    <string name="hold_down_until_trigger_is_dot_dot_dot">Mantén presionado hasta que el disparador…</string>
+    <string name="from_no_device">Sin dispositivos</string>
+    <string name="intent_extras_recycler_view_placeholder">¯\\_(ツ)_/¯\n\n¡Sin extras!</string>
+    <string name="content_description_fab_new_keymap">Crear un nuevo mapa</string>
+    <string name="whats_new">Novedades</string>
+    <string name="caption_action_type_key">Haga clic en la tecla del dispositivo que desea que se introduzca.
+            \n\n¡IMPORTANTE!
+            Configurar esta tecla como una acción solo funcionará si está usando un teclado compatible con Key Mapper.</string>
+    <string name="caption_action_type_keycode">¡IMPORTANTE!
+            Introduce este código de tecla como una acción solo funcionará si estás usando un teclado compatible con Key Mapper.</string>
+    <string name="caption_action_type_text">Escribe el texto que quieres que se ingrese cuando realices esta acción.</string>
+    <string name="caption_action_type_phone_call">Introduce el número de teléfono.</string>
+    <string name="caption_action_type_url">Escribe la URL que quieres abrir. El http://, https:// o el www. no son necesarios.</string>
+    <string name="caption_no_paired_bt_devices">No se han encontrado dispositivos emparejados. ¿Está activado Bluetooth?</string>
+    <string name="caption_create_keymap_shortcut">La opción \"trigger from other apps\" se activará para el mapeado de teclas que seleccione si no lo estaba ya. Si desactiva esta opción más adelante, cualquier atajo o intento de activar este mapeado de teclas no funcionará.</string>
+    <string name="switch_enabled">Activado</string>
+    <string name="disabled">Desactivado</string>
+    <string name="reset">Restablecer</string>
+    <string name="action_title_wait">Espera %sms</string>
+    <string name="action_title_intent_start_activity">Iniciar actividad: %s</string>
+    <string name="action_title_intent_start_service">Iniciar servicio: %s</string>
+    <string name="action_title_intent_send_broadcast">Enviar transmisión: %s</string>
+    <string name="clipboard_label_keymap_uid">UUID del mapeado de teclas</string>
+    <string name="check_box_key_event_option_use_shell">Usar shell (solo ROOT)</string>
+    <!--  Action descriptions  -->
+    <string name="description_open_app">Abrir %s</string>
+    <string name="description_key">Presiona la tecla \"%s\"</string>
+    <string name="description_text_block">Teclear \'%s\'</string>
+    <string name="description_keyevent">Introducir: %s%s</string>
+    <string name="description_keyevent_from_device">Entrada %s%s desde %s</string>
+    <string name="description_url">Abrir %s</string>
+    <!--  Action descriptions  -->
+    <!--  Headers  -->
+    <!--  Headers  -->
+    <!--  Hints  -->
+    <!--  Hints  -->
+    <!--  Radio buttons  -->
+    <!--  Radio buttons  -->
+    <!--  Tabs  -->
+    <!--  Tabs  -->
+    <!--  Navigation argument ids  -->
+    <!--  Navigation argument ids  -->
+    <!--  Toasts  -->
+    <string name="toast_screenshot_taken">Captura de pantalla hecha</string>
+    <string name="toast_io_exception_shrug">Excepción IO ¯\\_(ツ)_/¯</string>
+    <string name="toast_incorrect_screenshot_resolution">¡La resolución de la captura de pantalla no coincide con la resolución de este dispositivo!</string>
+    <string name="toast_copied_keymap_uid_to_clipboard">UUID del mapeado de teclas copiado al portapapeles</string>
+    <!--  Toasts  -->
+    <!-- Extra labels -->
+    <string name="extra_label_sequence_trigger_timeout">Tiempo de espera del disparador de secuencia (ms)</string>
+    <string name="extra_label_long_press_delay_timeout">Retraso en pulsación larga (ms)</string>
+    <string name="extra_label_double_press_delay_timeout">Tiempo de espera de doble pulsación (ms)</string>
+    <string name="extra_label_repeat_delay">Retraso hasta repetir (ms)</string>
+    <string name="extra_label_repeat_rate">Repetir cada… (ms)</string>
+    <string name="extra_label_vibration_duration">Duración de la vibración (ms)</string>
+    <string name="extra_label_delay_before_next_action">Retraso antes de la siguiente acción (ms)</string>
+    <string name="extra_label_hold_down_duration">Mantener la duración (ms)</string>
+    <!-- Extra labels -->
+    <!-- Constraints -->
+    <string name="constraint_app_foreground_description">%s está en primer plano</string>
+    <string name="constraint_app_not_foreground_description">%s no está en primer plano</string>
+    <string name="constraint_app_playing_media_description">%s está reproduciendo</string>
+    <string name="constraint_bt_device_connected_description">%s está conectado</string>
+    <string name="constraint_bt_device_disconnected_description">%s desconectado</string>
+    <string name="constraint_screen_on_description">La pantalla está encendida</string>
+    <string name="constraint_screen_off_description">La pantalla está apagada</string>
+    <string name="constraint_mode_and">y</string>
+    <string name="constraint_mode_or">o</string>
+    <string name="constraint_category_app">Aplicación</string>
+    <string name="constraint_category_bluetooth">Bluetooth</string>
+    <string name="constraint_category_screen">Pantalla</string>
+    <string name="constraint_category_orientation">Orientación</string>
+    <string name="constraint_choose_app_foreground">Aplicación en primer plano</string>
+    <string name="constraint_choose_app_not_foreground">La aplicación no está en primer plano</string>
+    <string name="constraint_choose_bluetooth_device_connected">Dispositivo bluetooth conectado</string>
+    <string name="constraint_choose_bluetooth_device_disconnected">Dispositivo bluetooth desconectado</string>
+    <string name="constraint_choose_screen_on_description">Pantalla encendida</string>
+    <string name="constraint_choose_screen_off_description">Pantalla apagada</string>
+    <string name="constraint_choose_orientation_0">Retrato (0°)</string>
+    <string name="constraint_choose_orientation_90">Paisaje (90°)</string>
+    <string name="constraint_choose_orientation_180">Retrato (180°)</string>
+    <string name="constraint_choose_orientation_270">Paisaje (270°)</string>
+    <string name="constraint_choose_orientation_portrait">Retrato (cualquiera)</string>
+    <string name="constraint_choose_orientation_landscape">Paisaje (cualquiera)</string>
+    <string name="constraint_choose_app_playing_media">Aplicación específica que reproduce media</string>
+    <string name="orientation_0">Retrato (0°)</string>
+    <string name="orientation_90">Paisaje (90°)</string>
+    <string name="orientation_180">Retrato (180°)</string>
+    <string name="orientation_270">Paisaje (270°)</string>
+    <!-- Constraints -->
+    <!-- Click types -->
+    <string name="clicktype_short_press">Pulsación corta</string>
+    <string name="clicktype_long_press">Pulsación larga</string>
+    <string name="clicktype_double_press">Pulsación doble</string>
+    <!-- Click types -->
+    <!-- URLs -->
+    <!-- URLs -->
+    <!-- Activity titles -->
+    <string name="title_choose_action">Elegir acción</string>
+    <!-- Activity titles -->
+    <!--  Bug report slides-->
+    <!--  Bug report slides-->
+    <!-- Menu action titles-->
+    <string name="action_settings">Ajustes</string>
+    <string name="action_done">Hecho</string>
+    <!-- Menu action titles-->
+    <!-- Button titles -->
+    <!-- Button titles -->
+    <!-- Dialog stuff -->
+    <string name="dialog_message_long_press_warning">La pulsación larga sólo funciona para los botones físicos de volumen y navegación. Si lo activa para otras teclas, las teclas no funcionarán cuando no estén pulsadas durante mucho tiempo.</string>
+    <!-- Dialog stuff -->
+    <!-- Notification strings -->
+    <!--  remove accessibility from the word because the other notification buttons arent visible on small screens  -->
+    <!-- Notification strings -->
+    <!--Preference titles and summaries-->
+    <!--Preference titles and summaries-->
+    <!--Preference categories-->
+    <!--Preference categories-->
+    <!-- About activity-->
+    <!-- About activity-->
+    <!--flags-->
+    <!--flags-->
+    <!-- Showcase -->
+    <!-- Showcase -->
+    <!-- system action options -->
+    <!-- system action options -->
+    <!-- Tiles -->
+    <!-- Tiles -->
+    <!-- Meta States -->
+    <!-- Meta States -->
+    <!-- Error messages -->
+    <!-- Error messages -->
+    <!-- action labels -->
+    <!-- action labels -->
+    <!-- action category labels -->
+    <!-- action category labels -->
+    <!--  Intent action type strings  -->
+    <!--  Intent action type strings  -->
+    <!--  Tap targets  -->
+    <!--  Tap targets  -->
+    <!--  About  -->
+    <!--  About  -->
+</resources>

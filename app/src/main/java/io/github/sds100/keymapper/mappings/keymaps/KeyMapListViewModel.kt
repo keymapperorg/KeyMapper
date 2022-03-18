@@ -1,7 +1,5 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
-import androidx.lifecycle.ViewModel
-import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ui.*
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.*
@@ -9,22 +7,20 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 open class KeyMapListViewModel constructor(
     private val coroutineScope: CoroutineScope,
     private val useCase: ListKeyMapsUseCase,
     resourceProvider: ResourceProvider,
     private val multiSelectProvider: MultiSelectProvider<String>
-) : ViewModel(), PopupViewModel by PopupViewModelImpl(), ResourceProvider by resourceProvider {
+) : PopupViewModel by PopupViewModelImpl(),
+    ResourceProvider by resourceProvider,
+    NavigationViewModel by NavigationViewModelImpl() {
 
     private val listItemCreator = KeyMapListItemCreator(useCase, resourceProvider)
 
     private val _state = MutableStateFlow<State<List<KeyMapListItem>>>(State.Loading)
     val state = _state.asStateFlow()
-
-    private val _launchConfigKeyMap = MutableSharedFlow<String>()
-    val launchConfigKeymap = _launchConfigKeyMap.asSharedFlow()
 
     init {
         val keyMapStateListFlow =
@@ -37,7 +33,6 @@ open class KeyMapListViewModel constructor(
             useCase.showDeviceDescriptors
         ) { keyMapListState, showDeviceDescriptors ->
             keyMapStateListFlow.value = State.Loading
-
 
             keyMapStateListFlow.value = keyMapListState.mapData { keyMapList ->
                 keyMapList.map { keyMap ->
@@ -64,7 +59,7 @@ open class KeyMapListViewModel constructor(
             }
         }
 
-        coroutineScope.launch {
+        coroutineScope.launch(Dispatchers.Default) {
             combine(
                 keyMapStateListFlow,
                 multiSelectProvider.state
@@ -76,19 +71,17 @@ open class KeyMapListViewModel constructor(
                 _state.value = keyMapUiListState.mapData { keyMapUiList ->
                     val isSelectable = selectionState is SelectionState.Selecting<*>
 
-                    withContext(Dispatchers.Default) {
-                        keyMapUiList.map { keymapUiState ->
-                            val isSelected = if (selectionState is SelectionState.Selecting<*>) {
-                                selectionState.selectedIds.contains(keymapUiState.uid)
-                            } else {
-                                false
-                            }
-
-                            KeyMapListItem(
-                                keymapUiState,
-                                KeyMapListItem.SelectionUiState(isSelected, isSelectable)
-                            )
+                    keyMapUiList.map { keymapUiState ->
+                        val isSelected = if (selectionState is SelectionState.Selecting<*>) {
+                            selectionState.selectedIds.contains(keymapUiState.uid)
+                        } else {
+                            false
                         }
+
+                        KeyMapListItem(
+                            keymapUiState,
+                            KeyMapListItem.SelectionUiState(isSelected, isSelectable)
+                        )
                     }
                 }
             }
@@ -100,7 +93,7 @@ open class KeyMapListViewModel constructor(
             multiSelectProvider.toggleSelection(uid)
         } else {
             coroutineScope.launch {
-                _launchConfigKeyMap.emit(uid)
+                navigate("config_key_map", NavDestination.ConfigKeyMap(uid))
             }
         }
     }
@@ -125,38 +118,29 @@ open class KeyMapListViewModel constructor(
 
     fun onTriggerErrorChipClick(chipModel: ChipUi) {
         if (chipModel is ChipUi.Error) {
-            showSnackBarAndFixError(chipModel.error)
+            showDialogAndFixError(chipModel.error)
         }
     }
 
     fun onActionChipClick(chipModel: ChipUi) {
         if (chipModel is ChipUi.Error) {
-            showSnackBarAndFixError(chipModel.error)
+            showDialogAndFixError(chipModel.error)
         }
     }
 
     fun onConstraintsChipClick(chipModel: ChipUi) {
         if (chipModel is ChipUi.Error) {
-            showSnackBarAndFixError(chipModel.error)
+            showDialogAndFixError(chipModel.error)
         }
     }
 
-    private fun showSnackBarAndFixError(error: Error) {
+    private fun showDialogAndFixError(error: Error) {
         coroutineScope.launch {
-            val actionText = if (error.isFixable) {
-                getString(R.string.snackbar_fix)
-            } else {
-                null
-            }
-
-            val snackBar = PopupUi.SnackBar(
-                message = error.getFullMessage(this@KeyMapListViewModel),
-                actionText = actionText
-            )
-
-            showPopup("fix_error", snackBar) ?: return@launch
-
-            if (error.isFixable) {
+            ViewModelHelper.showFixErrorDialog(
+                    resourceProvider = this@KeyMapListViewModel,
+                    popupViewModel = this@KeyMapListViewModel,
+                    error
+            ) {
                 useCase.fixError(error)
             }
         }

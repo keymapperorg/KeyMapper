@@ -9,9 +9,11 @@ import io.github.sds100.keymapper.system.inputmethod.AutoSwitchImeController
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.popup.PopupMessageAdapter
+import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.TestCoroutineDispatcher
@@ -21,10 +23,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
-import org.mockito.kotlin.anyOrNull
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
+import org.mockito.kotlin.*
 
 /**
  * Created by sds100 on 25/04/2021.
@@ -126,7 +125,10 @@ class AutoSwitchImeControllerTest {
             mockPauseMappingsUseCase,
             fakeDevicesAdapter,
             mockPopupMessageAdapter,
-            mockResourceProvider
+            mockResourceProvider,
+            accessibilityServiceAdapter = mock {
+                on { eventReceiver }.then { MutableSharedFlow<Event>() }
+            }
         )
     }
 
@@ -169,6 +171,9 @@ class AutoSwitchImeControllerTest {
             val chosenDevices = setOf(FAKE_KEYBOARD.descriptor)
             fakePreferenceRepository.set(Keys.devicesThatChangeIme, chosenDevices)
             fakePreferenceRepository.set(Keys.changeImeOnDeviceConnect, true)
+            fakePreferenceRepository.set(Keys.showToastWhenAutoChangingIme, true)
+
+            whenever(mockInputMethodAdapter.chosenIme).then { MutableStateFlow(KEY_MAPPER_IME) }
 
             //WHEN
             fakeDevicesAdapter.onInputDeviceDisconnect.emit(FAKE_KEYBOARD)
@@ -192,6 +197,9 @@ class AutoSwitchImeControllerTest {
             val chosenDevices = setOf(FAKE_KEYBOARD.descriptor)
             fakePreferenceRepository.set(Keys.devicesThatChangeIme, chosenDevices)
             fakePreferenceRepository.set(Keys.changeImeOnDeviceConnect, true)
+            fakePreferenceRepository.set(Keys.showToastWhenAutoChangingIme, true)
+
+            whenever(mockInputMethodAdapter.chosenIme).then { MutableStateFlow(NORMAL_IME) }
 
             //WHEN
             fakeDevicesAdapter.onInputDeviceConnect.emit(FAKE_KEYBOARD)

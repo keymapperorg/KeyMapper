@@ -1,23 +1,21 @@
 package io.github.sds100.keymapper
 
+import android.content.res.Configuration
 import android.os.Bundle
-import android.view.KeyEvent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.addRepeatingJob
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
-import io.github.sds100.keymapper.*
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
-import io.github.sds100.keymapper.actions.keyevent.ChooseKeyViewModel
 import io.github.sds100.keymapper.databinding.ActivityMainBinding
-import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.RequestPermissionDelegate
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.ui.showPopups
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.coroutines.flow.collectLatest
-import splitties.alertdialog.appcompat.*
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
 
 /**
@@ -27,44 +25,44 @@ import timber.log.Timber
 class MainActivity : AppCompatActivity() {
 
     companion object {
-        const val KEY_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG =
-            "$PACKAGE_NAME.show_accessibility_settings_not_found_dialog"
+        const val ACTION_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG =
+                "$PACKAGE_NAME.ACTION_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG"
     }
 
-    private val chooseKeyViewModel: ChooseKeyViewModel by viewModels {
-        Inject.keyActionTypeViewModel()
+    private val viewModel by viewModels<ActivityViewModel> {
+        ActivityViewModel.Factory(ServiceLocator.resourceProvider(this))
     }
+
+    private val currentNightMode: Int
+        get() = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
 
     private lateinit var requestPermissionDelegate: RequestPermissionDelegate
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        if (viewModel.previousNightMode != currentNightMode) {
+            ServiceLocator.resourceProvider(this).onThemeChange()
+        }
+
         DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
 
-        if (intent.getBooleanExtra(KEY_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG, false)) {
-            alertDialog {
-                titleResource = R.string.dialog_title_cant_find_accessibility_settings_page
-                messageResource = R.string.dialog_message_cant_find_accessibility_settings_page
-
-                okButton {
-                    ServiceLocator.permissionAdapter(this@MainActivity)
-                        .request(Permission.WRITE_SECURE_SETTINGS)
-                }
-
-                show()
-            }
-        }
+        viewModel.showPopups(this, coordinatorLayout)
 
         requestPermissionDelegate = RequestPermissionDelegate(this, showDialogs = true)
 
-        addRepeatingJob(Lifecycle.State.RESUMED) {
-            ServiceLocator.permissionAdapter(this@MainActivity).request.collectLatest { permission ->
-                requestPermissionDelegate.requestPermission(
-                    permission,
-                    findNavController(R.id.container)
-                )
-            }
+        ServiceLocator.permissionAdapter(this@MainActivity).request
+                .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+                .onEach { permission ->
+                    requestPermissionDelegate.requestPermission(
+                            permission,
+                            findNavController(R.id.container)
+                    )
+                }
+                .launchIn(lifecycleScope)
+
+        if (intent.action == ACTION_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG) {
+            viewModel.onCantFindAccessibilitySettings()
         }
     }
 
@@ -74,9 +72,8 @@ class MainActivity : AppCompatActivity() {
         Timber.i("MainActivity: onResume. Version: ${Constants.VERSION}")
     }
 
-    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
-        event?.let { chooseKeyViewModel.onKeyDown(it.keyCode) }
-
-        return super.onKeyUp(keyCode, event)
+    override fun onDestroy() {
+        viewModel.previousNightMode = currentNightMode
+        super.onDestroy()
     }
 }

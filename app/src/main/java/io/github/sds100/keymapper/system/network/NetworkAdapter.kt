@@ -6,6 +6,8 @@ import io.github.sds100.keymapper.util.Result
  * Created by sds100 on 24/04/2021.
  */
 interface NetworkAdapter {
+    val connectedWifiSSID: String?
+
     fun isWifiEnabled(): Boolean
 
     fun enableWifi(): Result<*>
@@ -15,4 +17,6 @@ interface NetworkAdapter {
 
     fun enableMobileData(): Result<*>
     fun disableMobileData(): Result<*>
+
+    fun getKnownWifiSSIDs(): List<String>?
 }

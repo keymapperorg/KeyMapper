@@ -8,6 +8,8 @@ import android.os.Handler
 import android.view.InputDevice
 import androidx.core.content.getSystemService
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
+import io.github.sds100.keymapper.system.permissions.Permission
+import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
@@ -20,13 +22,14 @@ import splitties.mainthread.mainLooper
 class AndroidDevicesAdapter(
     context: Context,
     private val bluetoothAdapter: io.github.sds100.keymapper.system.bluetooth.BluetoothAdapter,
+    private val permissionAdapter: PermissionAdapter,
     private val coroutineScope: CoroutineScope
 ) : DevicesAdapter {
     private val ctx = context.applicationContext
     private val inputManager = ctx.getSystemService<InputManager>()
 
-    override val onInputDeviceConnect = MutableSharedFlow<InputDeviceInfo>()
-    override val onInputDeviceDisconnect = MutableSharedFlow<InputDeviceInfo>()
+    override val onInputDeviceConnect: MutableSharedFlow<InputDeviceInfo> = MutableSharedFlow()
+    override val onInputDeviceDisconnect: MutableSharedFlow<InputDeviceInfo> = MutableSharedFlow()
     override val connectedInputDevices =
         MutableStateFlow<State<List<InputDeviceInfo>>>(State.Loading)
 
@@ -43,7 +46,8 @@ class AndroidDevicesAdapter(
         coroutineScope.launch {
             merge(
                 bluetoothAdapter.onDevicePairedChange,
-                bluetoothAdapter.isBluetoothEnabled
+                bluetoothAdapter.isBluetoothEnabled,
+                permissionAdapter.isGrantedFlow(Permission.FIND_NEARBY_DEVICES)
             ).collectLatest {
                 updatePairedBluetoothDevices()
             }
@@ -87,6 +91,7 @@ class AndroidDevicesAdapter(
         }.launchIn(coroutineScope)
 
         bluetoothAdapter.onDeviceDisconnect.onEach { device ->
+
             val currentValue = connectedBluetoothDevices.value
 
             connectedBluetoothDevices.value = currentValue.minus(device)
@@ -124,7 +129,7 @@ class AndroidDevicesAdapter(
     private fun updatePairedBluetoothDevices() {
         val adapter = BluetoothAdapter.getDefaultAdapter()
 
-        if (adapter == null) {
+        if (adapter == null || !permissionAdapter.isGranted(Permission.FIND_NEARBY_DEVICES)) {
             pairedBluetoothDevices.value = emptyList()
             return
         }

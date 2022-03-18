@@ -184,7 +184,7 @@ class AndroidInputMethodAdapter(
         var failed = true
 
         if (failed && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && serviceAdapter.state.value == ServiceState.ENABLED) {
-            serviceAdapter.send(ChangeIme(imeId)).onSuccess {
+            serviceAdapter.send(Event.ChangeIme(imeId)).onSuccess {
                 failed = false
             }
         }
@@ -242,6 +242,7 @@ class AndroidInputMethodAdapter(
     fun onInputMethodsUpdate() {
         inputMethods.value = getInputMethods()
         inputMethodHistory.value = getImeHistory().mapNotNull { getInfoById(it).valueOrNull() }
+        Timber.i("On input method update, chosen IME = ${chosenIme.value.toString()}")
     }
 
     private fun getInputMethods(): List<ImeInfo> {

@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name" translatable="false">Key Mapper</string>
     <string name="developer_email" translatable="false">developer.sds100@gmail.com</string>
+    <string name="slogan">Unleash your keys!</string>
 
     <string name="no_action_chosen">No action chosen</string>
     <string name="accessibility_service_description">Key Mapper needs to use an accessibility service so it can listen to button/key presses and perform the actions you\'ve chosen.
@@ -20,7 +21,7 @@
     <string name="warning_the_app_will_work">The app will work but some things might need fixing depending on what you\'re doing.</string>
     <string name="your_device_doesnt_support_some_actions">Your device doesn\'t support some actions.</string>
     <string name="tab_unsupported_actions">Unsupported actions</string>
-    <string name="requires_root">REQUIRES ROOT</string>
+    <string name="choose_action_warning_requires_root">Requires root</string>
     <string name="press_dot_dot_dot">Press…</string>
     <string name="no_actions">No actions</string>
     <string name="no_trigger">No trigger</string>
@@ -39,6 +40,7 @@
     <string name="slider_default">Default</string>
     <string name="button_enable_accessibility_service">Enable accessibility service</string>
     <string name="button_restart_accessibility_service">Restart accessibility service</string>
+    <string name="share_backup">Share</string>
 
     <string name="stop_repeating_dot_dot_dot">Stop repeating when…</string>
     <string name="stop_repeating_when_trigger_released">Trigger is released</string>
@@ -64,7 +66,10 @@
     <string name="from_no_device">No device</string>
     <string name="intent_extras_recycler_view_placeholder">¯\\_(ツ)_/¯\n\nNo extras!</string>
     <string name="content_description_fab_new_keymap">Create a new key map</string>
+    <string name="content_description_done_configuring_key_event">Done configuring key event action</string>
+    <string name="content_description_done_configuring_coordinate">Done picking coordinate</string>
     <string name="clip_key_mapper_log">Key Mapper log</string>
+    <string name="sharesheet_title">Send to</string>
 
     <string name="whats_new">What\'s New</string>
     <string name="caption_action_type_key">Click the key on the device which you want to be entered.
@@ -103,6 +108,8 @@
     <string name="trigger_error_dnd_access_denied_short">This trigger will not work as expected in Do Not Disturb mode!</string>
     <string name="trigger_error_screen_off_root_permission_denied">The option to trigger when the screen is off needs root permission to work!</string>
     <string name="trigger_error_screen_off_root_permission_denied_short">The option to trigger when the screen is off will not work!</string>
+    <string name="trigger_error_cant_detect_in_phone_call">This trigger won\'t work while ringing or in a phone call!</string>
+    <string name="trigger_error_cant_detect_in_phone_call_explanation">Android doesn\'t let accessibility services detect volume button presses while your phone is ringing or it is in a phone call but it does let input method services detect them. Therefore, you must use one of the Key Mapper keyboards if you want this trigger to work.</string>
 
     <string name="home_error_is_battery_optimised">Your mappings will stop working randomly!</string>
     <string name="home_error_key_maps_paused">Your mappings are paused!</string>
@@ -113,6 +120,7 @@
     <string name="home_error_logging_enabled">Extra logging is turned on! Turn this off if you aren\'t trying to fix an issue.</string>
     <string name="home_error_logging_enabled_button">Turn off</string>
 
+    <string name="title_about">About</string>
     <!--  Action descriptions  -->
     <string name="description_open_app">Open %s</string>
     <string name="description_key">Press \'%s\' key</string>
@@ -147,6 +155,9 @@
     <string name="hint_from_device">From device</string>
     <string name="hint_shortcut_name">Shortcut name</string>
     <string name="hint_tap_coordinate_title">Coordinate description (optional)</string>
+    <string name="hint_create_text_action">Text to input</string>
+    <string name="hint_create_url_action">Url to open</string>
+    <string name="hint_create_phone_call_action">Phone number to call</string>
 
     <string name="hint_intent_action">Action</string>
     <string name="hint_intent_categories">Categories</string>
@@ -158,6 +169,7 @@
     <string name="hint_intent_description">Description for Key Mapper (required)</string>
     <string name="hint_intent_flags">Flags</string>
     <string name="hint_sound_file_description">Sound file description</string>
+    <string name="hint_wifi_ssid">WiFi network SSID</string>
     <!--  Hints  -->
 
     <!--  Radio buttons  -->
@@ -218,6 +230,8 @@
     <string name="toast_root_features_turned_on">Root features are now enabled</string>
     <string name="toast_failed_to_choose_sound_file">Selecting the sound file failed! Check the log.</string>
     <string name="toast_no_sound_files">You have saved no sound files!</string>
+    <string name="toast_granted_itself_write_secure_settings_with_shizuku">Key Mapper has used Shizuku to grant itself WRITE_SECURE_SETTINGS permission</string>
+    <string name="toast_granted_itself_write_secure_settings_with_root">Key Mapper has used Root to grant itself WRITE_SECURE_SETTINGS permission</string>
     <!--  Toasts  -->
 
     <!-- Extra labels -->
@@ -238,10 +252,13 @@
     <string name="constraint_app_foreground_description">%s is in foreground</string>
     <string name="constraint_app_not_foreground_description">%s is not in foreground</string>
     <string name="constraint_app_playing_media_description">%s is playing media</string>
+    <string name="constraint_app_not_playing_media_description">%s is not playing media</string>
     <string name="constraint_bt_device_connected_description">%s is connected</string>
     <string name="constraint_bt_device_disconnected_description">%s is disconnected</string>
     <string name="constraint_screen_on_description">Screen is on</string>
     <string name="constraint_screen_off_description">Screen is off</string>
+    <string name="constraint_flashlight_off_description">%s flashlight is off</string>
+    <string name="constraint_flashlight_on_description">%s flashlight is on</string>
 
     <string name="constraint_mode_and">and</string>
     <string name="constraint_mode_or">or</string>
@@ -263,7 +280,37 @@
     <string name="constraint_choose_orientation_270">Landscape (270°)</string>
     <string name="constraint_choose_orientation_portrait">Portrait (any)</string>
     <string name="constraint_choose_orientation_landscape">Landscape (any)</string>
-    <string name="constraint_choose_app_playing_media">Specific app playing media</string>
+    <string name="constraint_choose_app_playing_media">App playing media</string>
+    <string name="constraint_choose_app_not_playing_media">App not playing media</string>
+    <string name="constraint_choose_media_playing">Media is playing</string>
+    <string name="constraint_choose_media_not_playing">No media is playing</string>
+    <string name="constraint_flashlight_on">Flashlight is on</string>
+    <string name="constraint_flashlight_off">Flashlight is off</string>
+
+    <string name="constraint_wifi_on">WiFi is on</string>
+    <string name="constraint_wifi_off">WiFi is off</string>
+    <string name="constraint_wifi_connected">Connected to a WiFi network</string>
+    <string name="constraint_wifi_disconnected">Disconnected from a WiFi network</string>
+    <string name="constraint_wifi_message_cant_list_networks">You will have to type the SSID manually because apps aren\'t allowed to query the list of known WiFi networks on Android 10 and newer.
+    
+    Leave it empty if any WiFi network should be matched.</string>
+    <string name="constraint_wifi_pick_network_any">Any</string>
+    <string name="constraint_wifi_connected_description">Connected to %s WiFi</string>
+    <string name="constraint_wifi_disconnected_description">Disconnected from %s WiFi</string>
+    <string name="constraint_wifi_connected_any_description">Connected to any WiFi</string>
+    <string name="constraint_wifi_disconnected_any_description">Disconnected to no WiFi</string>
+
+    <string name="constraint_ime_chosen">Input method is chosen</string>
+    <string name="constraint_ime_chosen_description">%s is chosen</string>
+    <string name="constraint_ime_not_chosen">Input method is not chosen</string>
+    <string name="constraint_ime_not_chosen_description">%s is not chosen</string>
+
+    <string name="constraint_device_is_locked">Device is locked</string>
+    <string name="constraint_device_is_unlocked">Device is unlocked</string>
+
+    <string name="constraint_in_phone_call">In phone call</string>
+    <string name="constraint_not_in_phone_call">Not in phone call</string>
+    <string name="constraint_phone_ringing">Phone ringing</string>
 
     <string name="orientation_0">Portrait (0°)</string>
     <string name="orientation_90">Landscape (90°)</string>
@@ -305,9 +352,14 @@
     <string name="url_fingerprint_action_options_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/fingerprint-action-options</string>
     <string name="url_trigger_key_options_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/trigger-key-options</string>
     <string name="url_android_11_bug_reset_id_work_around_setting_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/android-11-device-id-bug-work-around</string>
+    <string name="url_cant_find_accessibility_settings_issue" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/cant-find-accessibility-settings</string>
+    <string name="url_shizuku_setting_benefits" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/shizuku-benefits</string>
     <string name="url_settings_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/settings</string>
     <string name="url_report_issues_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/report-issues</string>
     <string name="url_intent_set_flags_help" translatable="false">https://developer.android.com/reference/android/content/Intent#setFlags(int)</string>
+    <string name="url_github_repo" translatable="false">https://github.com/sds100/KeyMapper</string>
+    <string name="url_rate" translatable="false">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper</string>
+    <string name="url_website" translatable="false">https://keymapperorg.github.io/KeyMapper</string>
 
     <string name="url_play_store_keymapper_gui_keyboard" translatable="false">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper.inputmethod.latin</string>
     <string name="url_fdroid_keymapper_gui_keyboard" translatable="false">https://f-droid.org/en/packages/io.github.sds100.keymapper.inputmethod.latin</string>
@@ -396,6 +448,8 @@
     <string name="button_copy_log">Copy</string>
     <string name="button_slider_repeat_no_limit">No limit</string>
     <string name="button_choose_sound_file">Choose sound file</string>
+    <string name="button_edit_action">Edit action</string>
+    <string name="button_replace_action">Replace action</string>
     <!-- Button titles -->
 
     <!-- Dialog stuff -->
@@ -407,13 +461,17 @@
     <string name="dialog_title_choose_flash">Choose flash</string>
     <string name="dialog_title_cant_find_accessibility_settings_page">Can\'t find the accessibility settings page</string>
     <string name="dialog_title_cant_record_trigger">Can\'t record trigger?</string>
+    <string name="dialog_title_are_you_sure_want_to_leave_without_saving">Save your changes</string>
     <string name="dialog_message_are_you_sure_want_to_leave_without_saving">Are you sure you want to leave without saving?</string>
     <string name="dialog_message_root_prompt">If you know your phone isn\'t rooted or you don\'t know what root is, you can\'t use features which only work on rooted devices. When you tap \'OK\', you will be taken to the settings.
             In the settings, scroll to the bottom and tap \'Key Mapper has root permission\' so you can use root features/actions.</string>
     <string name="dialog_message_downloading">Downloading…</string>
     <string name="dialog_message_long_press_warning">Long pressing only works for physical volume and navigation buttons. If you enable it for other keys, the keys won\'t work when they aren\'t long pressed.</string>
-    <string name="dialog_message_write_secure_settings">To grant Key Mapper WRITE_SECURE_SETTINGS permission enable "root features" in the settings if your device is rooted. If your device isn\'t rooted, follow the guide on how to use a PC/Mac to grant permission.</string>
-    <string name="dialog_message_cant_find_accessibility_settings_page">Your device doesn\'t seem to have an accessibility services settings page. You can enable the accessibility service by giving the app WRITE_SECURE_SETTINGS permission. After you tap \'okay\' a popup will guide you how to do it.</string>
+
+    <string name="dialog_title_write_secure_settings">Grant WRITE_SECURE_SETTINGS permission</string>
+    <string name="dialog_message_write_secure_settings">A PC/Mac is required to grant this permission. Read the online guide.</string>
+
+    <string name="dialog_message_cant_find_accessibility_settings_page">Your device doesn\'t seem to have an accessibility services settings page. Tap \"guide\" to read the online guide that explains how to fix this.</string>
     <string name="dialog_message_double_press_restricted_to_single_key">"Multiple keys can't be double pressed at the same time."</string>
     <string name="dialog_message_parallel_trigger_order">The keys need to be listed from top to bottom in the order that they will be held down.</string>
     <string name="dialog_message_sequence_trigger_explanation">A \"sequence\" trigger has a timeout unlike parallel triggers. This means after you press the first key, you will have a set amount of time to input the rest of the keys in the trigger. All the keys that you have added to the trigger won\'t do their usual action until the timeout has been reached. You can change this timeout in the "Options" tab.</string>
@@ -431,6 +489,30 @@
 
     <string name="dialog_title_install_leanback_keyboard">Install the Key Mapper Leanback Keyboard</string>
     <string name="dialog_message_install_leanback_keyboard">This is highly recommended! This is a proper keyboard for Android TV that you can use with Key Mapper. The one built-in to Key Mapper (the Basic Input Method) has no on-screen keyboard. Choose where you want to install it from.</string>
+
+    <string name="dialog_title_choose_download_gui_keyboard">Install the Key Mapper GUI Keyboard</string>
+    <string name="dialog_message_choose_download_gui_keyboard">Choose where you want to download it from.</string>
+
+    <string name="dialog_title_choose_download_leanback_keyboard">Install the Key Mapper Leanback Keyboard</string>
+    <string name="dialog_message_choose_download_leanback_keyboard">Choose where you want to download it from.</string>
+
+    <string name="dialog_title_install_shizuku_or_gui_keyboard">This action needs some extra setting up</string>
+    <string name="dialog_message_install_shizuku_or_gui_keyboard">There are 3 ways that you can set up your device to use this action. Here are the advantages and disadvantages of each.
+        
+        \n\n<b>1. Download Shizuku (recommended).</b> You do not have to use a different on-screen keyboard to the one that you are already using but it will require a minute of setting up every time you reboot your device.
+        
+        \n\n<b>2. Download the Key Mapper GUI Keyboard.</b> This is an on-screen keyboard that you can use with Key Mapper but you will not be able to use the keyboard that you are currently using, such as Gboard.
+        
+        \n\n<b>3. Do nothing and use the built-in Key Mapper keyboard.</b> This is not recommended since you will have <b>no</b> on-screen keyboard when you use Key Mapper! There are no advantages.</string>
+
+    <string name="dialog_title_install_shizuku_or_leanback_keyboard">This action needs some extra setting up</string>
+    <string name="dialog_message_install_shizuku_or_leanback_keyboard">There are 3 ways that you can set up your device to use this action. Here are the advantages and disadvantages of each.
+        
+        \n\n<b>1. Download Shizuku (recommended).</b> You do not have to use a different on-screen keyboard to the one that you are already using but it will require a minute of setting up every time you reboot your device.
+        
+        \n\n<b>2. Download the Key Mapper Leanback Keyboard.</b> This is an on-screen keyboard optimised for Android TV that you can use with Key Mapper but you will not be able to use the keyboard that you are currently using, such as Gboard.
+        
+        \n\n<b>3. Do nothing and use the built-in Key Mapper keyboard.</b> This is not recommended since you will have <b>no</b> on-screen keyboard when you use Key Mapper! There are no advantages.</string>
 
     <string name="dialog_title_disable_battery_optimisation">Disable battery optimisation</string>
     <string name="dialog_message_disable_battery_optimisation">You <b>MUST</b> read this <b>all</b> otherwise you will get <b>frustrated</b> in the future!\n\nTapping \"fix partially\" <b>might</b> prevent Android from stopping the app while it is in the background.\n\n<b>This is NOT ENOUGH</b>. Your OEM\'s skin such as MIUI or Samsung Experience may have other app killing features so you MUST turn them off for Key Mapper as well by following the online guide at dontkillmyapp.com.</string>
@@ -462,11 +544,17 @@
     <string name="dialog_title_request_shizuku_permission">Request Shizuku permission</string>
     <string name="dialog_message_request_shizuku_permission">Since you are using Shizuku it is highly recommended to grant this permission since some features in Key Mapper can be done without you having to configure anything (E.g inputting key codes without using the Key Mapper keyboard).</string>
 
+    <string name="dialog_title_home_fix_error">Fix error</string>
+
+    <string name="dialog_title_explain_bluetooth_permission">Permission is required</string>
+    <string name="dialog_message_explain_bluetooth_permission">Key Mapper needs the "nearby devices" permission so it can get the list of paired Bluetooth devices.</string>
+
     <string name="pos_yes">Yes</string>
     <string name="pos_done">Done</string>
     <string name="pos_opt_in">Opt in</string>
     <string name="pos_grant_write_secure_settings_guide">Guide</string>
-    <string name="pos_grant_report_issues_guide">Guide</string>
+    <string name="pos_report_issues_guide">Guide</string>
+    <string name="pos_start_service_with_adb_guide">Guide</string>
     <string name="pos_enable_root_features">Enable root features</string>
     <string name="pos_grant">Grant</string>
     <string name="pos_join">Join</string>
@@ -493,8 +581,16 @@
     <string name="dialog_button_restart_accessibility_service">Restart</string>
     <string name="dialog_button_open_guide_to_fix_optimisation">Go to guide</string>
 
+    <string name="dialog_button_install_shizuku">Shizuku</string>
+    <string name="dialog_button_install_gui_keyboard">Key Mapper GUI Keyboard</string>
+    <string name="dialog_button_install_leanback_keyboard">Key Mapper Leanback Keyboard</string>
+    <string name="dialog_button_install_nothing">Do nothing</string>
+    
+    <string name="dialog_button_fix">Fix</string>
+
     <string name="snackbar_cancel">Cancel</string>
     <string name="snackbar_fix">Fix</string>
+    
     <!-- Dialog stuff -->
 
     <!-- Notification strings -->
@@ -584,6 +680,11 @@
     <string name="title_pref_auto_change_ime_on_connection">Automatically change the on-screen keyboard when a device (e.g a keyboard) connects/disconnects</string>
     <string name="summary_pref_auto_change_ime_on_connection">The last used Key Mapper keyboard will be automatically selected when a chosen device is connected. Your normal keyboard will be automatically selected when the device disconnects.</string>
 
+    <string name="title_pref_auto_change_ime_on_input_focus">Automatically change the on-screen keyboard when you start inputting text</string>
+    <string name="summary_pref_auto_change_ime_on_input_focus">The last used non Key Mapper keyboard will be automatically selected when you try to open the keyboard. Your Key Mapper keyboard will be automatically selected once you stop using the keyboard.</string>
+
+    <string name="title_pref_show_toast_when_auto_changing_ime">Show an on-screen message when automatically changing the keyboard</string>
+
     <string name="title_pref_root_permission">Key Mapper has root permission</string>
     <string name="summary_pref_root_permission">Enable this if you want to use features/actions which only work on rooted devices. Key Mapper must have root permission from your root-access-management app (e.g Magisk, SuperSU) for these features to work.
             Only turn this on if you know your device is rooted and you have given Key Mapper root permission.</string>
@@ -626,20 +727,44 @@
     <string name="title_pref_report_issue">Report issue</string>
 
     <string name="title_pref_delete_sound_files">Delete sound files</string>
+    <string name="summary_pref_delete_sound_files">Delete sound files that can be used for the Sound action.</string>
+
     <string name="title_pref_grant_write_secure_settings_not_granted">Grant permission</string>
     <string name="title_pref_grant_write_secure_settings_granted">Permission granted</string>
+
+    <string name="title_pref_grant_shizuku_install_app_not_installed">1. Shizuku is not installed! Tap to download the Shizuku app.</string>
+    <string name="title_pref_grant_shizuku_install_app_installed">1. Shizuku is installed.</string>
+
+    <string name="title_pref_grant_shizuku_not_started">2. Shizuku is not started! Tap to open the Shizuku app and then read their instructions that explain how to start it.</string>
+    <string name="title_pref_grant_shizuku_started">2. Shizuku is started.</string>
+
+    <string name="title_pref_grant_shizuku_not_granted">3. Key Mapper does not have permission to use Shizuku. Tap to grant this permission.</string>
+    <string name="title_pref_grant_shizuku_granted">3. Key Mapper will automatically use Shizuku. Tap to read which Key Mapper features use Shizuku.</string>
+
+    <string name="title_pref_default_options">Default mapping options</string>
+    <string name="summary_pref_default_options">Change the default options for your mappings.</string>
+
     <!--Preference titles and summaries-->
 
     <!--Preference categories-->
-    <string name="title_pref_category_ime_picker">Keyboard picker</string>
+    <string name="title_pref_category_ime_picker">Automatically show the keyboard picker</string>
+    <string name="summary_pref_category_ime_picker">Tap to see the settings that allow you to automatically show the keyboard picker.</string>
+
     <string name="title_pref_category_notifications">Notifications</string>
     <string name="title_pref_category_defaults">Defaults</string>
 
-    <string name="title_pref_category_root">ROOT</string>
+    <string name="title_pref_category_root">Root settings</string>
     <string name="summary_pref_category_root">These options will only work on root devices! If you don\'t know what root is or whether your device is rooted, please don\'t leave a poor review if they don\'t work. :)</string>
 
     <string name="title_pref_category_write_secure_settings">Require WRITE_SECURE_SETTINGS permission</string>
     <string name="summary_pref_category_write_secure_settings">These options are only enabled if Key Mapper has WRITE_SECURE_SETTINGS permission. Click the button below to learn how to grant the permission.</string>
+
+    <string name="title_pref_category_shizuku">Shizuku support</string>
+    <string name="summary_pref_category_shizuku">Shizuku is an app that allows Key Mapper to do things that only system apps can do. You don\'t need to use the Key Mapper keyboard for example. Tap to learn how to set this up.</string>
+    <string name="summary_pref_category_shizuku_follow_steps">Follow these steps to set up Shizuku.</string>
+
+    <string name="title_pref_automatically_change_ime">Automatically change the keyboard</string>
+    <string name="summary_pref_automatically_change_ime">These are really useful settings and you are recommended to check them out!</string>
 
     <string name="title_pref_category_log">Logging</string>
     <string name="summary_pref_category_log">This may add latency to your key maps so only turn this on if you are trying to debug the app or have been asked to by the developer.</string>
@@ -665,21 +790,6 @@
         <item>@string/off</item>
         <item>@string/follow_system</item>
     </string-array>
-
-    <!--Action Types Titles-->
-    <string name="action_type_title_application">App</string>
-    <string name="action_type_title_application_shortcut">App shortcut</string>
-    <string name="action_type_title_key">Key</string>
-    <string name="action_type_title_key_code">Key code</string>
-    <string name="action_type_title_keyevent">Key event</string>
-    <string name="action_type_title_system_action">System</string>
-    <string name="action_type_title_text_block">Text</string>
-    <string name="action_type_url">URL</string>
-    <string name="action_type_tap_coordinate">Tap screen</string>
-    <string name="action_type_intent">Intent</string>
-    <string name="action_type_phone_call">Phone call</string>
-    <string name="action_type_sound">Sound</string>
-    <!--Action Types Titles-->
 
     <!--flags-->
     <string name="flag_show_volume_dialog">Show volume dialog</string>
@@ -751,6 +861,19 @@
 
     <string name="showcase_setup_chosen_devices_again_title">You need to setup some settings again</string>
     <string name="showcase_setup_chosen_devices_again_message">It looks like you were using the setting to automatically change the keyboard or show the input method picker when a Bluetooth device connects and disconnects. Key Mapper now allows you to use any input device and not just Bluetooth devices. There isn\'t a way to migrate the old settings in a way that the new functionality will work so you\'ll have to choose the devices again.</string>
+
+    <string name="showcase_grant_shizuku_permission_denied_title">Grant Shizuku permission</string>
+    <string name="showcase_grant_shizuku_permission_denied_message">It looks like you have Shizuku installed. It is recommended to grant Key Mapper permission to use Shizuku so that Key Mapper can do more things without user input. For example input button presses without you having to use the \'Key Mapper keyboard\'. Tap \'more info\' to read all the benefits. Tap \'grant\' to grant the permission.</string>
+
+    <string name="showcase_grant_shizuku_permission_granted_title">Shizuku permission granted!</string>
+    <string name="showcase_grant_shizuku_permission_granted_message">You have granted Key Mapper Shizuku permission successfully!</string>
+    <string name="showcase_more_shizuku_info">More info</string>
+    <string name="showcase_request_shizuku_permission">Grant</string>
+
+    <string name="showcase_shizuku_not_started_title">Shizuku is not started</string>
+    <string name="showcase_shizuku_not_started_message">Shizuku must be started before you grant Key Mapper permission to use it. Tap \'Launch Shizuku\' to open the Shizuku app so that you can start it.</string>
+    <string name="showcase_shizuku_launch_shizuku_app">Launch Shizuku</string>
+
     <!-- Showcase -->
 
     <!-- system action options -->
@@ -824,9 +947,16 @@
     <string name="error_action_requires_write_settings_permission">You need to grant Key Mapper permission to modify system settings.</string>
     <string name="error_requires_root">This requires root permission!</string>
     <string name="error_action_requires_camera_permission">This action requires camera permission!</string>
-    <string name="error_sdk_version_too_low">This requires Android %s</string>
-    <string name="error_sdk_version_too_high">This is only supported up to Android %s</string>
-    <string name="error_feature_not_available">Your device doesn\'t support %s.</string>
+    <string name="error_sdk_version_too_low">Requires Android %s or newer</string>
+    <string name="error_sdk_version_too_high">Requires Android %s or older</string>
+    <string name="error_system_feature_camera_unsupported">Your device doesn\'t have a camera.</string>
+    <string name="error_system_feature_nfc_unsupported">Your device doesn\'t support NFC.</string>
+    <string name="error_system_feature_fingerprint_unsupported">Your device doesn\'t have a fingerprint reader.</string>
+    <string name="error_system_feature_wifi_unsupported">Your device doesn\'t support WiFi.</string>
+    <string name="error_system_feature_bluetooth_unsupported">Your device doesn\'t support Bluetooth.</string>
+    <string name="error_system_feature_device_admin_unsupported">Your device doesn\'t support device policy enforcement.</string>
+    <string name="error_system_feature_camera_flash_unsupported">Your device doesn\'t have a camera flash.</string>
+    <string name="error_system_feature_telephony_unsupported">Your device doesn\'t have any telephony features.</string>
     <string name="error_flag_not_found">Flag "%s" not found!</string>
     <string name="error_cant_find_ime_settings">Can\'t find the keyboard settings page!</string>
     <string name="error_need_to_enable_device_admin">Key Mapper needs to be a device administrator!</string>
@@ -901,7 +1031,6 @@
     <string name="error_corrupt_json_file">Corrupt JSON file!</string>
     <string name="error_voice_assistant_not_found">There is no voice assistant installed!</string>
     <string name="error_insufficient_permissions">Insufficient permissions</string>
-    <string name="error_corrupt_action">Corrupt action</string>
     <string name="error_no_incompatible_input_methods_installed">You only have Key Mapper keyboards installed!</string>
     <string name="error_no_media_sessions">There are no apps playing media!</string>
     <string name="error_source_file_not_found">Source file not found! %s</string>
@@ -922,11 +1051,17 @@
     <string name="error_storage_permission_denied">Storage permission denied!</string>
     <string name="error_matching_source_and_target_paths">The source and target can\'t be the same!</string>
     <string name="error_no_space_left_at_target">No space left at target! %s</string>
+    <string name="error_shizuku_permission_denied">Shizuku permission is denied!</string>
+    <string name="error_shizuku_not_started">Shizuku is not started!</string>
     <string name="error_no_file_name">This file has no name!</string>
+    <string name="error_choose_bluetooth_devices_permission_denied">You must grant Key Mapper permission to see your paired Bluetooth devices.</string>
 
+    <string name="error_access_fine_location_permission_denied">Denied permission to read fine location!</string>
+    <string name="error_answer_end_phone_call_permission_denied">Denied permission to answer and end phone calls!</string>
+    <string name="error_find_nearby_devices_permission_denied">Denied permission to see paired Bluetooth devices!</string>
     <!-- Error messages -->
 
-    <!-- System action labels -->
+    <!-- action labels -->
     <string name="action_toggle_wifi">Toggle WiFi</string>
     <string name="action_enable_wifi">Enable WiFi</string>
     <string name="action_disable_wifi">Disable WiFi</string>
@@ -1045,7 +1180,7 @@
     <string name="action_consume_keyevent">Do nothing</string>
 
     <string name="action_move_to_end_of_text">Move cursor to the end</string>
-    <string name="action_move_to_end_of_text_message">The Key Mapper keyboard must be selected for this action to work and this action may not work as intended in some apps.</string>
+    <string name="action_move_to_end_of_text_message">This action may not work as intended in some apps.</string>
     <string name="action_toggle_keyboard">Toggle keyboard</string>
     <string name="action_toggle_keyboard_message">This action will only work if you have tapped on an input field where the keyboard is supposed to be shown.</string>
     <string name="action_show_keyboard">Show keyboard</string>
@@ -1066,24 +1201,39 @@
     <string name="action_toggle_airplane_mode">Toggle Airplane mode</string>
     <string name="action_enable_airplane_mode">Enable Airplane mode</string>
     <string name="action_disable_airplane_mode">Disable Airplane mode</string>
-    <!-- System action labels -->
 
-    <!-- System action category labels -->
-    <string name="system_action_cat_wifi">WiFi</string>
-    <string name="system_action_cat_bluetooth">Bluetooth</string>
-    <string name="system_action_cat_mobile_data">Mobile data</string>
-    <string name="system_action_cat_navigation">Navigation</string>
-    <string name="system_action_cat_volume">Volume</string>
-    <string name="system_action_cat_screen_rotation">Screen rotation</string>
-    <string name="system_action_cat_brightness">Brightness</string>
-    <string name="system_action_cat_status_bar">Status bar</string>
-    <string name="system_action_cat_media">Media</string>
-    <string name="system_action_cat_flashlight">Flashlight</string>
-    <string name="system_action_cat_nfc">NFC</string>
-    <string name="system_action_cat_other">Other</string>
-    <string name="system_action_cat_keyboard">Keyboard</string>
-    <string name="system_action_cat_airplane_mode">Airplane mode</string>
-    <!-- System action category labels -->
+    <string name="action_open_app">Launch app</string>
+    <string name="action_open_app_shortcut">Launch app shortcut</string>
+    <string name="action_input_key_code">Input key code</string>
+    <string name="action_input_key_event">Input key event</string>
+
+    <string name="action_tap_screen">Tap screen</string>
+    <string name="action_input_text">Input text</string>
+    <string name="action_open_url">Open URL</string>
+    <string name="action_send_intent">Send intent</string>
+    <string name="action_phone_call">Start phone call</string>
+    <string name="action_answer_call">Answer phone call</string>
+    <string name="action_end_call">End phone call</string>
+    <string name="action_play_sound">Play sound</string>
+    <string name="action_dismiss_most_recent_notification">Dismiss most recent notification</string>
+    <string name="action_dismiss_all_notifications">Dismiss all notifications</string>
+    <!-- action labels -->
+
+    <!-- action category labels -->
+    <string name="action_cat_navigation">Navigation</string>
+    <string name="action_cat_volume">Volume</string>
+    <string name="action_cat_media">Media</string>
+    <string name="action_cat_keyboard">Keyboard</string>
+    <string name="action_cat_apps">Apps</string>
+    <string name="action_cat_input">Input</string>
+    <string name="action_cat_camera_sound">Camera &amp; Sound</string>
+    <string name="action_cat_connectivity">Connectivity</string>
+    <string name="action_cat_content">Content</string>
+    <string name="action_cat_interface">Interface</string>
+    <string name="action_cat_telephony">Phone</string>
+    <string name="action_cat_display">Display</string>
+    <string name="action_cat_notifications">Notifications</string>
+    <!-- action category labels -->
 
     <!--  Intent action type strings  -->
     <string name="intent_type_bool_header">Boolean</string>
@@ -1133,4 +1283,42 @@
     <string name="tap_target_quick_start_guide_secondary">Check out the Quick Start Guide if you are stuck.</string>
     <!--  Tap targets  -->
 
+    <!--  About  -->
+    <string name="about_link_github">GitHub</string>
+    <string name="about_link_website">Website</string>
+    <string name="about_link_translations">Translations</string>
+    <string name="about_version">Version %s</string>
+    <string name="about_link_rate">Rate</string>
+    <string name="about_link_changelog">Changelog</string>
+    <string name="about_link_discord">Discord</string>
+
+    <string name="about_header_boring_stuff">Boring stuff</string>
+    <string name="about_license_title">License</string>
+    <string name="about_license_subtitle">The open source license for this app.</string>
+
+    <string name="about_privacy_policy_title">Privacy Policy</string>
+    <string name="about_privacy_policy_subtitle">We don\'t collect any personal information but here is a privacy policy saying this.</string>
+
+    <string name="about_header_our_team">Our team</string>
+
+    <string name="about_team_sds100_name" translatable="false">Seth Schroeder (sds100)</string>
+    <string name="about_team_sds100_role">Developer</string>
+    <string name="about_team_sds100_url" translatable="false">https://github.com/sds100</string>
+
+    <string name="about_team_jambl3r_name" translatable="false">Jambl3r</string>
+    <string name="about_team_jambl3r_role">Community moderator/support</string>
+    <string name="about_team_jambl3r_url" translatable="false">https://gitlab.com/jambl3r</string>
+
+    <string name="about_team_gl513_name" translatable="false">GL513</string>
+    <string name="about_team_gl513_role">Community moderator/support</string>
+    <string name="about_team_gl513_url" translatable="false">https://gl513.github.io/</string>
+
+    <string name="about_team_kekero_name" translatable="false">Katie (kekero)</string>
+    <string name="about_team_kekero_role">Translator (Polish)</string>
+    <string name="about_team_kekero_url" translatable="false">https://github.com/LoveEevee</string>
+
+    <string name="about_team_trollserver_name" translatable="false">Trollserver</string>
+    <string name="about_team_trollserver_url" translatable="false">https://youtube.com/channel/UCljg1FH1B_ju2D_NfqAYjDw</string>
+    <string name="about_team_trollserver_role">Translator (Czech)</string>
+    <!--  About  -->
 </resources>

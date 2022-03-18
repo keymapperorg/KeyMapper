@@ -1,12 +1,9 @@
 package io.github.sds100.keymapper.home
 
-import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
 import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
-import io.github.sds100.keymapper.util.ui.PopupViewModel
-import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
-import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -21,41 +18,28 @@ class HomeMenuViewModel(
     private val pauseMappings: PauseMappingsUseCase,
     private val showImePicker: ShowInputMethodPickerUseCase,
     resourceProvider: ResourceProvider
-) : ResourceProvider by resourceProvider, PopupViewModel by PopupViewModelImpl() {
+) : ResourceProvider by resourceProvider,
+    PopupViewModel by PopupViewModelImpl(),
+    NavigationViewModel by NavigationViewModelImpl() {
 
     val toggleMappingsButtonState: StateFlow<ToggleMappingsButtonState?> =
         combine(
             pauseMappings.isPaused,
-            alertsUseCase.serviceState
+            alertsUseCase.accessibilityServiceState
         ) { isPaused, serviceState ->
-            val text = when (serviceState) {
+            when (serviceState) {
                 ServiceState.ENABLED ->
                     if (isPaused) {
-                        getString(R.string.action_tap_to_resume_keymaps)
+                        ToggleMappingsButtonState.PAUSED
                     } else {
-                        getString(R.string.action_tap_to_pause_keymaps)
+                        ToggleMappingsButtonState.RESUMED
                     }
-                ServiceState.CRASHED -> getString(R.string.button_restart_accessibility_service)
-                ServiceState.DISABLED -> getString(R.string.button_enable_accessibility_service)
-            }
+                ServiceState.CRASHED -> ToggleMappingsButtonState.SERVICE_CRASHED
 
-            val tint = when {
-                serviceState != ServiceState.ENABLED || !isPaused -> getColor(R.color.red)
-                else -> getColor(R.color.green)
+                ServiceState.DISABLED -> ToggleMappingsButtonState.SERVICE_DISABLED
             }
-
-            ToggleMappingsButtonState(text, tint)
 
         }.stateIn(coroutineScope, SharingStarted.Eagerly, null)
-
-    private val _openSettings = MutableSharedFlow<Unit>()
-    val openSettings = _openSettings.asSharedFlow()
-
-    private val _openAbout = MutableSharedFlow<Unit>()
-    val openAbout = _openAbout.asSharedFlow()
-
-    private val _openUrl = MutableSharedFlow<String>()
-    val openUrl = _openUrl.asSharedFlow()
 
     private val _chooseBackupFile = MutableSharedFlow<Unit>()
     val chooseBackupFile = _chooseBackupFile.asSharedFlow()
@@ -66,16 +50,29 @@ class HomeMenuViewModel(
     private val _dismiss = MutableSharedFlow<Unit>()
     val dismiss = _dismiss
 
-    private val _reportBug = MutableSharedFlow<Unit>()
-    val reportBug = _reportBug.asSharedFlow()
-
     fun onToggleMappingsButtonClick() {
         coroutineScope.launch {
             val areMappingsPaused = pauseMappings.isPaused.first()
 
+            val serviceState = alertsUseCase.accessibilityServiceState.first()
+
             when {
-                alertsUseCase.serviceState.first() == ServiceState.CRASHED -> alertsUseCase.restartAccessibilityService()
-                alertsUseCase.serviceState.first() == ServiceState.DISABLED -> alertsUseCase.enableAccessibilityService()
+                serviceState == ServiceState.CRASHED ->
+                    if (!alertsUseCase.restartAccessibilityService()) {
+                        ViewModelHelper.handleCantFindAccessibilitySettings(
+                            this@HomeMenuViewModel,
+                            this@HomeMenuViewModel
+                        )
+                    }
+
+                serviceState == ServiceState.DISABLED ->
+                    if (!alertsUseCase.startAccessibilityService()) {
+                        ViewModelHelper.handleCantFindAccessibilitySettings(
+                            resourceProvider = this@HomeMenuViewModel,
+                            popupViewModel = this@HomeMenuViewModel
+                        )
+                    }
+
                 areMappingsPaused -> pauseMappings.resume()
                 !areMappingsPaused -> pauseMappings.pause()
             }
@@ -91,13 +88,17 @@ class HomeMenuViewModel(
 
     fun onOpenSettingsClick() {
         //dismiss afterwards so it is more responsive
-        runBlocking { _openSettings.emit(Unit) }
-        runBlocking { _dismiss.emit(Unit) }
+        coroutineScope.launch {
+            navigate("settings", NavDestination.Settings)
+            _dismiss.emit(Unit)
+        }
     }
 
     fun onOpenAboutClick() {
-        runBlocking { _openAbout.emit(Unit) }
-        runBlocking { _dismiss.emit(Unit) }
+        coroutineScope.launch {
+            navigate("about", NavDestination.About)
+            _dismiss.emit(Unit)
+        }
     }
 
     fun onBackupAllClick() {
@@ -116,12 +117,12 @@ class HomeMenuViewModel(
 
     fun onReportBugClick() {
         coroutineScope.launch {
-            _reportBug.emit(Unit)
+            navigate("report-bug", NavDestination.ReportBug)
+            _dismiss.emit(Unit)
         }
     }
 }
 
-data class ToggleMappingsButtonState(
-    val text: String,
-    val tint: Int
-)
+enum class ToggleMappingsButtonState {
+    PAUSED, RESUMED, SERVICE_DISABLED, SERVICE_CRASHED
+}

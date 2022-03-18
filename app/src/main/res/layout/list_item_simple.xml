@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
@@ -7,113 +8,97 @@
 
         <import type="android.view.View" />
 
-        <import type="io.github.sds100.keymapper.util.ui.TintType" />
+        <variable
+            name="model"
+            type="io.github.sds100.keymapper.util.ui.SimpleListItem" />
 
         <variable
-            name="primaryText"
-            type="String" />
-
-        <variable
-            name="secondaryText"
-            type="String" />
-
-        <variable
-            name="isSecondaryTextAnError"
-            type="Boolean" />
-
-        <variable
-            name="icon"
-            type="android.graphics.drawable.Drawable" />
-
-        <variable
-            name="tintType"
-            type="io.github.sds100.keymapper.util.ui.TintType" />
-
-        <variable
-            name="onClick"
-            type="android.view.View.OnClickListener" />
+            name="onClickListener"
+            type="View.OnClickListener" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <com.google.android.material.card.MaterialCardView
+        style="@style/MyCardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackground"
-        android:onClick="@{onClick}">
+        android:clickable="@{model.isEnabled}"
+        android:focusable="true"
+        android:onClick="@{onClickListener}">
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/imageView"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginStart="8dp"
-            android:src="@{icon}"
-            app:layout_constraintBottom_toBottomOf="@id/textViewTitle"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/textViewTitle"
-            app:tintType="@{tintType}"
-            tools:srcCompat="@mipmap/ic_launcher_round"
-            tools:visibility="visible" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/textViewTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="8dp"
-            android:text="@{primaryText}"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-            android:textColor="?attr/colorOnSurface"
-            app:layout_constraintBottom_toTopOf="@+id/textViewSecondary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/imageView"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="TextView" />
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imageViewIcon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="16dp"
+                android:src="@{model.icon.drawable}"
+                android:visibility="@{model.icon == null ? View.GONE : View.VISIBLE}"
+                app:enabled="@{model.isEnabled}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_outline_wifi_24"
+                app:tintType="@{model.icon.tintType}"
+                tools:tint="?attr/colorOnSurface" />
 
-        <!--  you can't reference attributes in Data Binding, so toggle the visibility of two textviews  -->
-        <FrameLayout
-            android:id="@+id/textViewSecondary"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="8dp"
-            android:visibility='@{secondaryText == null || secondaryText == "" ? View.GONE : View.VISIBLE}'
-            app:layout_constraintBottom_toTopOf="@id/bottom_divider"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/imageView"
-            app:layout_constraintTop_toBottomOf="@id/textViewTitle"
-            tools:visibility="gone">
-
-            <TextView
-                android:layout_width="match_parent"
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/textViewTitle"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@{secondaryText}"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-                android:textColor="?attr/colorOnSurface"
-                android:visibility='@{isSecondaryTextAnError == false ? View.VISIBLE : View.GONE}'
-                tools:text="Here is some secondary text. Let's make it really long."
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:ellipsize="end"
+                android:enabled="@{model.isEnabled}"
+                android:gravity="center_vertical"
+                android:singleLine="true"
+                android:text="@{model.title}"
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                app:autoSizeTextType="uniform"
+                app:layout_constrainedHeight="true"
+                app:layout_constraintBottom_toTopOf="@+id/textViewSubtitle"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/imageViewIcon"
+                app:layout_constraintTop_toTopOf="@+id/guidelineTop"
+                app:layout_constraintVertical_chainStyle="spread"
+                app:selected="@{true}"
+                tools:text="I am some very long text. bla bla bla bla" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/textViewSubtitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="@{model.subtitle}"
+                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                android:visibility="@{model.subtitle == null ? View.GONE : View.VISIBLE }"
+                app:layout_constraintBottom_toTopOf="@+id/guidelineBottom"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/imageViewIcon"
+                app:layout_constraintTop_toBottomOf="@+id/textViewTitle"
+                app:tintType="@{model.subtitleTint}"
+                tools:text="Root only"
                 tools:visibility="visible" />
 
-            <TextView
-                android:layout_width="match_parent"
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guidelineTop"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{secondaryText}"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-                android:textColor="?attr/colorError"
-                android:visibility='@{isSecondaryTextAnError == true ? View.VISIBLE : View.GONE}'
-                tools:text="Here is some secondary text. Let's make it really long."
-                tools:visibility="gone" />
-        </FrameLayout>
+                android:orientation="horizontal"
+                app:layout_constraintGuide_begin="8dp" />
 
-        <View
-            android:id="@+id/bottom_divider"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/divider"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guidelineBottom"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_end="8dp" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
 </layout>

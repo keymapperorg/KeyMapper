@@ -60,16 +60,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@{model.title}"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                     android:textColor="?attr/colorOnSurface"
                     tools:text="Increase Volume" />
 
                 <TextView
-                    android:id="@+id/textViewError"
+                    android:id="@+id/textViewSubtitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@{model.errorMessage}"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                     android:textColor="?attr/colorError"
                     android:visibility='@{model.errorMessage == null ? View.GONE : View.VISIBLE}'
                     tools:text="Needs Do Not Disturb permission!"
@@ -93,7 +93,7 @@
 
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/buttonRemove"
-                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                style="@style/Widget.Material3.Button.TextButton"
                 android:layout_width="36dp"
                 android:layout_height="0dp"
                 android:onClick="@{onRemoveClick}"

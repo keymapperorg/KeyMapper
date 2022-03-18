@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="io.github.sds100.keymapper">
+
+    <permission android:name="io.github.sds100.keymapper.KEY_EVENT_RECEIVER">
+        <!--    I would make this have signature protection level
+                but I already released the Key Mapper GUI Keyboard
+                with a different signature -->
+    </permission>
+
+</manifest>

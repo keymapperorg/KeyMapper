@@ -11,6 +11,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.getResourceIdOrThrow
 import androidx.fragment.app.Fragment
+import com.google.android.material.color.MaterialColors
 import splitties.mainthread.isMainThread
 
 /**
@@ -123,9 +124,18 @@ fun Context.drawable(@DrawableRes resId: Int): Drawable {
 fun View.drawable(@DrawableRes resId: Int): Drawable = context.drawable(resId)
 fun Fragment.drawable(@DrawableRes resId: Int): Drawable = requireContext().drawable(resId)
 
-fun Context.color(@ColorRes resId: Int): Int = ContextCompat.getColor(this, resId)
-fun View.color(@ColorRes resId: Int): Int = context.color(resId)
-fun Fragment.color(@ColorRes resId: Int): Int = requireContext().color(resId)
+fun Context.color(@ColorRes resId: Int, harmonize: Boolean = false): Int {
+    val color = ContextCompat.getColor(this, resId)
+
+    if (harmonize) {
+        return MaterialColors.harmonizeWithPrimary(this, color)
+    } else {
+        return color
+    }
+}
+
+fun View.color(@ColorRes resId: Int, harmonize: Boolean = false): Int = context.color(resId, harmonize)
+fun Fragment.color(@ColorRes resId: Int, harmonize: Boolean = false): Int = requireContext().color(resId, harmonize)
 
 @ColorInt
 fun Context.styledColor(@AttrRes attr: Int) = withStyledAttributes(attr) { getColor(it, 0) }
@@ -135,6 +145,9 @@ fun Fragment.styledColor(@AttrRes attr: Int) = requireContext().styledColor(attr
 
 @ColorInt
 fun View.styledColor(@AttrRes attr: Int) = context.styledColor(attr)
+
+fun View.styledFloat(@AttrRes attr: Int): Float = context.styledFloat(attr)
+fun Context.styledFloat(@AttrRes attr: Int): Float = withStyledAttributes(attr) { getFloat(it, 1f) }
 
 fun Context.int(@IntegerRes resId: Int) = resources.getInteger(resId)
 fun Fragment.int(@IntegerRes resId: Int) = requireContext().int(resId)

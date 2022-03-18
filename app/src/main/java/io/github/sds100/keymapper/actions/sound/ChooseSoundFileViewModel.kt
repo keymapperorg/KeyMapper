@@ -9,9 +9,7 @@ import io.github.sds100.keymapper.util.onFailure
 import io.github.sds100.keymapper.util.onSuccess
 import io.github.sds100.keymapper.util.ui.*
 import io.github.sds100.keymapper.util.valueOrNull
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 /**
@@ -25,7 +23,12 @@ class ChooseSoundFileViewModel(
     private val _chooseSoundFile = MutableSharedFlow<Unit>()
     val chooseSoundFile = _chooseSoundFile.asSharedFlow()
 
-    val soundFileListItems: StateFlow<List<SoundFileInfo>> = useCase.soundFiles
+    val soundFileListItems: StateFlow<List<DefaultSimpleListItem>> =
+        useCase.soundFiles.map { sounds ->
+            sounds.map {
+                DefaultSimpleListItem(id = it.uid, title = it.name)
+            }
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     private val _returnResult = MutableSharedFlow<ChooseSoundFileResult>()
     val returnResult = _returnResult.asSharedFlow()
@@ -36,22 +39,22 @@ class ChooseSoundFileViewModel(
         }
     }
 
-    fun onFileListItemClick(soundFileInfo: SoundFileInfo) {
+    fun onFileListItemClick(id: String) {
         viewModelScope.launch {
+            val soundFileInfo = useCase.soundFiles.value.find { it.uid == id } ?: return@launch
+
             val dialog = PopupUi.Text(
                 hint = getString(R.string.hint_sound_file_description),
                 allowEmpty = false,
                 text = soundFileInfo.name
             )
 
-            val result = showPopup("file_description", dialog)
-
-            result ?: return@launch
+            val soundDescription = showPopup("file_description", dialog) ?: return@launch
 
             _returnResult.emit(
                 ChooseSoundFileResult(
                     soundUid = soundFileInfo.uid,
-                    description = result.text
+                    description = soundDescription
                 )
             )
         }
@@ -67,7 +70,7 @@ class ChooseSoundFileViewModel(
                 text = fileName
             )
 
-            val soundDescription = showPopup("file_description", dialog)?.text
+            val soundDescription = showPopup("file_description", dialog)
 
             soundDescription ?: return@launch
 
@@ -87,7 +90,7 @@ class ChooseSoundFileViewModel(
         private val useCase: ChooseSoundFileUseCase
     ) : ViewModelProvider.NewInstanceFactory() {
 
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ChooseSoundFileViewModel(resourceProvider, useCase) as T
         }
     }

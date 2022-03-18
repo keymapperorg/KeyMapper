@@ -1,14 +1,3 @@
-🎉 A new website with tutorials!!! 🎉
-Check it out at docs.keymapper.club.
+This is an alpha build. The dev cba putting info in here.
 
-• Action to broadcast intent, start activity and start service.
-• Action to toggle the notification drawer and the quick settings drawer.
-• Action to call a phone number.
-• Action to play a sound.
-• A repeat limit action option.
-• A logging page.
-• A better way to report bugs.
-
-A lot of bug fixes and performance improvements.
-
-See the changelog at changelog.keymapper.club for more details.
+See the changelog at http://changelog.keymapper.club for more details.

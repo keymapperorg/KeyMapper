@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.SystemClock
 import android.view.KeyEvent
+import io.github.sds100.keymapper.shizuku.InputEventInjector
 import io.github.sds100.keymapper.util.InputEventType
 import timber.log.Timber
 
@@ -36,6 +37,7 @@ class KeyMapperImeMessengerImpl(
     private val ctx = context.applicationContext
 
     override fun inputKeyEvent(model: InputKeyModel) {
+        Timber.d("Inject key event with input method ${KeyEvent.keyCodeToString(model.keyCode)}, $model")
 
         val imePackageName = inputMethodAdapter.chosenIme.value?.packageName
 
@@ -78,6 +80,8 @@ class KeyMapperImeMessengerImpl(
     }
 
     override fun inputText(text: String) {
+        Timber.d("Input text through IME $text")
+
         val imePackageName = inputMethodAdapter.chosenIme.value?.packageName
 
         if (imePackageName == null) {
@@ -94,7 +98,6 @@ class KeyMapperImeMessengerImpl(
     }
 }
 
-interface KeyMapperImeMessenger {
-    fun inputKeyEvent(model: InputKeyModel)
+interface KeyMapperImeMessenger : InputEventInjector {
     fun inputText(text: String)
 }

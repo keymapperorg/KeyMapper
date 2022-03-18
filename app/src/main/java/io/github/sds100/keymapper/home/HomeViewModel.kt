@@ -13,8 +13,10 @@ import io.github.sds100.keymapper.mappings.keymaps.ListKeyMapsUseCase
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
-import io.github.sds100.keymapper.ui.*
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.Error
+import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.util.Success
+import io.github.sds100.keymapper.util.getFullMessage
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -34,7 +36,8 @@ class HomeViewModel(
     resourceProvider: ResourceProvider,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
-    PopupViewModel by PopupViewModelImpl() {
+    PopupViewModel by PopupViewModelImpl(),
+    NavigationViewModel by NavigationViewModelImpl() {
 
     private companion object {
         const val ID_ACCESSIBILITY_SERVICE_DISABLED_LIST_ITEM = "accessibility_service_disabled"
@@ -47,41 +50,38 @@ class HomeViewModel(
 
     private val multiSelectProvider: MultiSelectProvider<String> = MultiSelectProviderImpl()
 
-    val menuViewModel = HomeMenuViewModel(
-        viewModelScope,
-        showAlertsUseCase,
-        pauseMappings,
-        showImePicker,
-        resourceProvider
-    )
+    val menuViewModel by lazy {
+        HomeMenuViewModel(
+            viewModelScope,
+            showAlertsUseCase,
+            pauseMappings,
+            showImePicker,
+            resourceProvider
+        )
+    }
 
-    val keymapListViewModel = KeyMapListViewModel(
-        viewModelScope,
-        listKeyMaps,
-        resourceProvider,
-        multiSelectProvider
-    )
+    val keymapListViewModel by lazy {
+        KeyMapListViewModel(
+            viewModelScope,
+            listKeyMaps,
+            resourceProvider,
+            multiSelectProvider
+        )
+    }
 
-    val fingerprintMapListViewModel = FingerprintMapListViewModel(
-        viewModelScope,
-        listFingerprintMaps,
-        resourceProvider
-    )
-
-    private val _openUrl = MutableSharedFlow<String>()
-    val openUrl = _openUrl.asSharedFlow()
-
-    private val _openSettings = MutableSharedFlow<Unit>()
-    val openSettings = _openSettings.asSharedFlow()
-
-    private val _reportBug = MutableSharedFlow<Unit>()
-    val reportBug = merge(_reportBug.asSharedFlow(), menuViewModel.reportBug)
-
-    private val _fixAppKilling = MutableSharedFlow<Unit>()
-    val fixAppKilling = _fixAppKilling.asSharedFlow()
+    val fingerprintMapListViewModel by lazy {
+        FingerprintMapListViewModel(
+            viewModelScope,
+            listFingerprintMaps,
+            resourceProvider
+        )
+    }
 
     private val _showQuickStartGuideHint = MutableStateFlow(false)
     val showQuickStartGuideHint = _showQuickStartGuideHint.asStateFlow()
+
+    private val _shareBackup = MutableSharedFlow<String>()
+    val shareBackup = _shareBackup.asSharedFlow()
 
     val selectionCountViewState = multiSelectProvider.state.map {
         when (it) {
@@ -94,14 +94,16 @@ class HomeViewModel(
                 text = getString(R.string.selection_count, it.selectedIds.size)
             )
         }
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.Eagerly,
-        SelectionCountViewState(
-            isVisible = false,
-            text = ""
+    }
+        .flowOn(Dispatchers.Default)
+        .stateIn(
+            viewModelScope,
+            SharingStarted.Lazily,
+            SelectionCountViewState(
+                isVisible = false,
+                text = ""
+            )
         )
-    )
 
     val tabsState =
         combine(
@@ -129,30 +131,34 @@ class HomeViewModel(
                 tabs = tabs
             )
 
-        }.stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            HomeTabsState(
-                enableViewPagerSwiping = false,
-                showTabs = false,
-                emptySet()
+        }
+            .flowOn(Dispatchers.Default)
+            .stateIn(
+                viewModelScope,
+                SharingStarted.Lazily,
+                HomeTabsState(
+                    enableViewPagerSwiping = false,
+                    showTabs = false,
+                    emptySet()
+                )
             )
-        )
 
     val appBarState = multiSelectProvider.state.map {
         when (it) {
             SelectionState.NotSelecting -> HomeAppBarState.NORMAL
             is SelectionState.Selecting<*> -> HomeAppBarState.MULTI_SELECTING
         }
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.Eagerly,
-        HomeAppBarState.NORMAL
-    )
+    }
+        .flowOn(Dispatchers.Default)
+        .stateIn(
+            viewModelScope,
+            SharingStarted.Lazily,
+            HomeAppBarState.NORMAL
+        )
 
     val errorListState = combine(
         showAlertsUseCase.isBatteryOptimised,
-        showAlertsUseCase.serviceState,
+        showAlertsUseCase.accessibilityServiceState,
         showAlertsUseCase.hideAlerts,
         showAlertsUseCase.areMappingsPaused,
         showAlertsUseCase.isLoggingEnabled
@@ -214,19 +220,16 @@ class HomeViewModel(
         }.toList()
         HomeErrorListState(listItems, !isHidden)
     }.flowOn(Dispatchers.Default)
-        .stateIn(viewModelScope, SharingStarted.Eagerly, HomeErrorListState(emptyList(), false))
+        .stateIn(viewModelScope, SharingStarted.Lazily, HomeErrorListState(emptyList(), false))
 
     private val _showMenu = MutableSharedFlow<Unit>()
     val showMenu = _showMenu.asSharedFlow()
-
-    private val _navigateToCreateKeymapScreen = MutableSharedFlow<Unit>()
-    val navigateToCreateKeymapScreen = _navigateToCreateKeymapScreen.asSharedFlow()
 
     private val _closeKeyMapper = MutableSharedFlow<Unit>()
     val closeKeyMapper = _closeKeyMapper.asSharedFlow()
 
     init {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             backupRestore.onAutomaticBackupResult.collectLatest { result ->
                 when (result) {
                     is Success -> {
@@ -248,7 +251,7 @@ class HomeViewModel(
                         ) ?: return@collectLatest
 
                         if (response == DialogResponse.NEUTRAL) {
-                            _openSettings.emit(Unit)
+                            navigate("settings", NavDestination.Settings)
                         }
                     }
                 }
@@ -272,7 +275,7 @@ class HomeViewModel(
                 val response = showPopup("whats-new", dialog)
 
                 if (response == DialogResponse.NEUTRAL) {
-                    _openUrl.emit(getString(R.string.url_changelog))
+                    showPopup("url_changelog", PopupUi.OpenUrl(getString(R.string.url_changelog)))
                 }
 
                 onboarding.showedWhatsNew()
@@ -280,7 +283,7 @@ class HomeViewModel(
 
             _showQuickStartGuideHint.value = showQuickStartGuideHint
 
-        }.launchIn(viewModelScope)
+        }.flowOn(Dispatchers.Default).launchIn(viewModelScope)
     }
 
     fun approvedQuickStartGuideTapTarget() {
@@ -317,7 +320,7 @@ class HomeViewModel(
 
                 multiSelectProvider.stopSelecting()
             } else {
-                _navigateToCreateKeymapScreen.emit(Unit)
+                navigate("create_new_keymap", NavDestination.ConfigKeyMap(keyMapUid = null))
             }
         }
     }
@@ -382,8 +385,21 @@ class HomeViewModel(
     fun onFixErrorListItemClick(id: String) {
         viewModelScope.launch {
             when (id) {
-                ID_ACCESSIBILITY_SERVICE_DISABLED_LIST_ITEM -> showAlertsUseCase.enableAccessibilityService()
-                ID_ACCESSIBILITY_SERVICE_CRASHED_LIST_ITEM -> showKeyMapperCrashedDialog()
+                ID_ACCESSIBILITY_SERVICE_DISABLED_LIST_ITEM ->
+                    if (!showAlertsUseCase.startAccessibilityService()) {
+                        ViewModelHelper.handleCantFindAccessibilitySettings(
+                            resourceProvider = this@HomeViewModel,
+                            popupViewModel = this@HomeViewModel
+                        )
+                    }
+
+                ID_ACCESSIBILITY_SERVICE_CRASHED_LIST_ITEM ->
+                    ViewModelHelper.handleKeyMapperCrashedDialog(
+                        resourceProvider = this@HomeViewModel,
+                        navigationViewModel = this@HomeViewModel,
+                        popupViewModel = this@HomeViewModel,
+                        restartService = showAlertsUseCase::restartAccessibilityService
+                    )
 
                 ID_BATTERY_OPTIMISATION_LIST_ITEM -> showAlertsUseCase.disableBatteryOptimisation()
                 ID_MAPPINGS_PAUSED_LIST_ITEM -> showAlertsUseCase.resumeMappings()
@@ -423,32 +439,22 @@ class HomeViewModel(
         }
     }
 
-    private suspend fun showKeyMapperCrashedDialog() {
-        val dialog = DialogUtils.keyMapperCrashedDialog(this@HomeViewModel)
-
-        val response = showPopup("app_crashed_prompt", dialog) ?: return
-
-        when (response) {
-            DialogResponse.POSITIVE -> _fixAppKilling.emit(Unit)
-            DialogResponse.NEUTRAL -> {
-                val restartServiceDialog = PopupUi.Ok(
-                    message = getString(R.string.dialog_message_restart_accessibility_service)
-                )
-
-                if (showPopup("restart_service", restartServiceDialog) != null) {
-                    showAlertsUseCase.restartAccessibilityService()
-                }
-            }
-        }
-    }
-
-    private suspend fun onBackupResult(result: Result<*>) {
+    private suspend fun onBackupResult(result: Result<String>) {
         when (result) {
             is Success -> {
-                showPopup(
+                val response = showPopup(
                     "successful_backup_result",
-                    PopupUi.SnackBar(getString(R.string.toast_backup_successful))
+                    PopupUi.SnackBar(
+                        message = getString(R.string.toast_backup_successful),
+                        actionText = getString(R.string.share_backup)
+                    )
                 )
+
+                if (response != null) {
+                    val uri = result.value
+
+                    _shareBackup.emit(uri)
+                }
             }
 
             is Error -> showPopup(
@@ -473,7 +479,7 @@ class HomeViewModel(
         private val resourceProvider: ResourceProvider,
     ) : ViewModelProvider.NewInstanceFactory() {
 
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return HomeViewModel(
                 listKeyMaps,
                 listFingerprintMaps,

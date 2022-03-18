@@ -10,11 +10,18 @@ import io.github.sds100.keymapper.mappings.DetectMappingUseCase
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapEntityMapper
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapRepository
+import io.github.sds100.keymapper.shizuku.InputEventInjector
 import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.display.DisplayAdapter
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
+import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
+import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeMessenger
 import io.github.sds100.keymapper.system.navigation.OpenMenuHelper
+import io.github.sds100.keymapper.system.permissions.Permission
+import io.github.sds100.keymapper.system.permissions.PermissionAdapter
+import io.github.sds100.keymapper.system.phone.CallState
+import io.github.sds100.keymapper.system.phone.PhoneAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import io.github.sds100.keymapper.util.InputEventType
@@ -35,7 +42,11 @@ class DetectKeyMapsUseCaseImpl(
     private val displayAdapter: DisplayAdapter,
     private val volumeAdapter: VolumeAdapter,
     private val keyMapperImeMessenger: KeyMapperImeMessenger,
-    private val accessibilityService: IAccessibilityService
+    private val accessibilityService: IAccessibilityService,
+    private val shizukuInputEventInjector: InputEventInjector,
+    private val permissionAdapter: PermissionAdapter,
+    private val phoneAdapter: PhoneAdapter,
+    private val inputMethodAdapter: InputMethodAdapter
 ) : DetectKeyMapsUseCase, DetectMappingUseCase by detectMappingUseCase {
 
     override val allKeyMapList: Flow<List<KeyMap>> =
@@ -81,37 +92,75 @@ class DetectKeyMapsUseCaseImpl(
     override val currentTime: Long
         get() = SystemClock.elapsedRealtime()
 
-    private val openMenuHelper = OpenMenuHelper(suAdapter, accessibilityService)
+    override val acceptKeyEventsFromIme: Boolean
+        get() {
+            if (!keyMapperImeHelper.isCompatibleImeChosen()) {
+                return false
+            }
+
+            if (permissionAdapter.isGranted(Permission.READ_PHONE_STATE)) {
+                val callState = phoneAdapter.getCallState()
+
+                return callState == CallState.IN_PHONE_CALL || callState == CallState.RINGING
+            }
+
+            return false
+        }
+
+    private val keyMapperImeHelper: KeyMapperImeHelper = KeyMapperImeHelper(inputMethodAdapter)
+
+    private val openMenuHelper = OpenMenuHelper(
+        suAdapter,
+        accessibilityService,
+        shizukuInputEventInjector,
+        permissionAdapter
+    )
 
     override fun imitateButtonPress(
         keyCode: Int,
         metaState: Int,
         deviceId: Int,
-        keyEventAction: InputEventType,
+        inputEventType: InputEventType,
         scanCode: Int
     ) {
-        Timber.d("Imitate button press ${KeyEvent.keyCodeToString(keyCode)}, key code: $keyCode, device id: $deviceId, meta state: $metaState, scan code: $scanCode")
+        if (permissionAdapter.isGranted(Permission.SHIZUKU)) {
+            Timber.d("Imitate button press ${KeyEvent.keyCodeToString(keyCode)} with Shizuku, key code: $keyCode, device id: $deviceId, meta state: $metaState, scan code: $scanCode")
 
-        when (keyCode) {
-            KeyEvent.KEYCODE_VOLUME_UP -> volumeAdapter.raiseVolume(showVolumeUi = true)
-
-            KeyEvent.KEYCODE_VOLUME_DOWN -> volumeAdapter.lowerVolume(showVolumeUi = true)
-
-            KeyEvent.KEYCODE_BACK -> accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
-            KeyEvent.KEYCODE_HOME -> accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME)
-            KeyEvent.KEYCODE_APP_SWITCH -> accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_POWER_DIALOG)
-
-            KeyEvent.KEYCODE_MENU -> openMenuHelper.openMenu()
-
-            else -> keyMapperImeMessenger.inputKeyEvent(
+            shizukuInputEventInjector.inputKeyEvent(
                 InputKeyModel(
                     keyCode,
-                    keyEventAction,
+                    inputEventType,
                     metaState,
                     deviceId,
                     scanCode
                 )
             )
+        } else {
+            Timber.d("Imitate button press ${KeyEvent.keyCodeToString(keyCode)}, key code: $keyCode, device id: $deviceId, meta state: $metaState, scan code: $scanCode")
+
+            when (keyCode) {
+                KeyEvent.KEYCODE_VOLUME_UP -> volumeAdapter.raiseVolume(showVolumeUi = true)
+
+                KeyEvent.KEYCODE_VOLUME_DOWN -> volumeAdapter.lowerVolume(showVolumeUi = true)
+
+                KeyEvent.KEYCODE_BACK -> accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
+                KeyEvent.KEYCODE_HOME -> accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME)
+                KeyEvent.KEYCODE_APP_SWITCH -> accessibilityService.doGlobalAction(
+                    AccessibilityService.GLOBAL_ACTION_POWER_DIALOG
+                )
+
+                KeyEvent.KEYCODE_MENU -> openMenuHelper.openMenu()
+
+                else -> keyMapperImeMessenger.inputKeyEvent(
+                    InputKeyModel(
+                        keyCode,
+                        inputEventType,
+                        metaState,
+                        deviceId,
+                        scanCode
+                    )
+                )
+            }
         }
     }
 
@@ -127,13 +176,15 @@ interface DetectKeyMapsUseCase : DetectMappingUseCase {
     val defaultDoublePressDelay: Flow<Long>
     val defaultSequenceTriggerTimeout: Flow<Long>
 
+    val acceptKeyEventsFromIme: Boolean
+
     val currentTime: Long
 
     fun imitateButtonPress(
         keyCode: Int,
         metaState: Int = 0,
         deviceId: Int = 0,
-        keyEventAction: InputEventType = InputEventType.DOWN_UP,
+        inputEventType: InputEventType = InputEventType.DOWN_UP,
         scanCode: Int = 0
     )
 

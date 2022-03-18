@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.filterByQuery
+import io.github.sds100.keymapper.util.ui.IconInfo
+import io.github.sds100.keymapper.util.ui.TintType
 import io.github.sds100.keymapper.util.valueOrNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -37,7 +39,7 @@ class ChooseActivityViewModel(private val useCase: DisplayAppsUseCase) : ViewMod
                             ActivityListItem(
                                 appName = appName,
                                 activityInfo = activityInfo,
-                                icon = appIcon
+                                icon = appIcon?.let { IconInfo(it, TintType.None) }
                             )
                         )
                     }
@@ -51,7 +53,6 @@ class ChooseActivityViewModel(private val useCase: DisplayAppsUseCase) : ViewMod
 
     private val _listItems = MutableStateFlow<State<List<ActivityListItem>>>(State.Loading)
     val listItems = _listItems.asStateFlow()
-
 
     init {
         combine(
@@ -67,7 +68,7 @@ class ChooseActivityViewModel(private val useCase: DisplayAppsUseCase) : ViewMod
                 _listItems.value = unfilteredListItemsState
             }
 
-        }.launchIn(viewModelScope)
+        }.flowOn(Dispatchers.Default).launchIn(viewModelScope)
     }
 
     class Factory(
@@ -75,7 +76,7 @@ class ChooseActivityViewModel(private val useCase: DisplayAppsUseCase) : ViewMod
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(modelClass: Class<T>) =
+        override fun <T : ViewModel> create(modelClass: Class<T>) =
             ChooseActivityViewModel(useCase) as T
     }
 }

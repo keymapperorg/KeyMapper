@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.actions
 
-import io.github.sds100.keymapper.actions.system.SystemActionId
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.Extra
 import io.github.sds100.keymapper.data.entities.getData
@@ -23,10 +22,25 @@ import splitties.bitflags.hasFlag
 object ActionDataEntityMapper {
 
     fun fromEntity(entity: ActionEntity): ActionData? {
-        return when (entity.type) {
-            ActionEntity.Type.APP -> OpenAppAction(packageName = entity.data)
+        val actionId = when (entity.type) {
+            ActionEntity.Type.APP -> ActionId.APP
+            ActionEntity.Type.APP_SHORTCUT -> ActionId.APP_SHORTCUT
+            ActionEntity.Type.KEY_EVENT -> ActionId.KEY_EVENT
+            ActionEntity.Type.TEXT_BLOCK -> ActionId.TEXT
+            ActionEntity.Type.URL -> ActionId.URL
+            ActionEntity.Type.TAP_COORDINATE -> ActionId.TAP_SCREEN
+            ActionEntity.Type.INTENT -> ActionId.INTENT
+            ActionEntity.Type.PHONE_CALL -> ActionId.PHONE_CALL
+            ActionEntity.Type.SOUND -> ActionId.SOUND
+            ActionEntity.Type.SYSTEM_ACTION -> {
+                SYSTEM_ACTION_ID_MAP.getKey(entity.data) ?: return null
+            }
+        }
 
-            ActionEntity.Type.APP_SHORTCUT -> {
+        return when (actionId) {
+            ActionId.APP -> ActionData.App(packageName = entity.data)
+
+            ActionId.APP_SHORTCUT -> {
                 val packageName =
                     entity.extras.getData(ActionEntity.EXTRA_PACKAGE_NAME).valueOrNull()
 
@@ -34,14 +48,14 @@ object ActionDataEntityMapper {
                     entity.extras.getData(ActionEntity.EXTRA_SHORTCUT_TITLE).valueOrNull()
                         ?: return null
 
-                OpenAppShortcutAction(
+                ActionData.AppShortcut(
                     packageName = packageName,
                     shortcutTitle = shortcutTitle,
                     uri = entity.data
                 )
             }
 
-            ActionEntity.Type.KEY_EVENT -> {
+            ActionId.KEY_EVENT, ActionId.KEY_CODE -> {
                 val metaState =
                     entity.extras.getData(ActionEntity.EXTRA_KEY_EVENT_META_STATE).valueOrNull()
                         ?.toInt()
@@ -61,12 +75,12 @@ object ActionDataEntityMapper {
                     }.valueOrNull() ?: false
 
                 val device = if (deviceDescriptor != null) {
-                    KeyEventAction.Device(deviceDescriptor, deviceName)
+                    ActionData.InputKeyEvent.Device(deviceDescriptor, deviceName)
                 } else {
                     null
                 }
 
-                KeyEventAction(
+                ActionData.InputKeyEvent(
                     keyCode = entity.data.toInt(),
                     metaState = metaState,
                     useShell = useShell,
@@ -74,18 +88,18 @@ object ActionDataEntityMapper {
                 )
             }
 
-            ActionEntity.Type.TEXT_BLOCK -> TextAction(text = entity.data)
-            ActionEntity.Type.URL -> UrlAction(url = entity.data)
-            ActionEntity.Type.TAP_COORDINATE -> {
+            ActionId.TEXT -> ActionData.Text(text = entity.data)
+            ActionId.URL -> ActionData.Url(url = entity.data)
+            ActionId.TAP_SCREEN -> {
                 val x = entity.data.split(',')[0].toInt()
                 val y = entity.data.split(',')[1].toInt()
                 val description = entity.extras.getData(ActionEntity.EXTRA_COORDINATE_DESCRIPTION)
                     .valueOrNull()
 
-                TapCoordinateAction(x = x, y = y, description = description)
+                ActionData.TapScreen(x = x, y = y, description = description)
             }
 
-            ActionEntity.Type.INTENT -> {
+            ActionId.INTENT -> {
                 val target = entity.extras.getData(ActionEntity.EXTRA_INTENT_TARGET).then {
                     INTENT_TARGET_MAP.getKey(it).success()
                 }.valueOrNull() ?: return null
@@ -94,190 +108,268 @@ object ActionDataEntityMapper {
                     entity.extras.getData(ActionEntity.EXTRA_INTENT_DESCRIPTION).valueOrNull()
                         ?: return null
 
-                return IntentAction(
+                return ActionData.Intent(
                     target = target,
                     description = description,
                     uri = entity.data
                 )
             }
 
-            ActionEntity.Type.PHONE_CALL -> PhoneCallAction(number = entity.data)
+            ActionId.PHONE_CALL -> ActionData.PhoneCall(number = entity.data)
 
-            ActionEntity.Type.SYSTEM_ACTION -> {
-                val id = SYSTEM_ACTION_ID_MAP.getKey(entity.data) ?: return null
+            ActionId.SOUND -> {
+                val soundFileDescription =
+                    entity.extras.getData(ActionEntity.EXTRA_SOUND_FILE_DESCRIPTION)
+                        .valueOrNull() ?: return null
 
-                when (id) {
-                    SystemActionId.VOLUME_INCREASE_STREAM,
-                    SystemActionId.VOLUME_DECREASE_STREAM -> {
-                        val stream = entity.extras.getData(ActionEntity.EXTRA_STREAM_TYPE).then {
-                            VOLUME_STREAM_MAP.getKey(it)!!.success()
-                        }.valueOrNull() ?: return null
+                ActionData.Sound(soundUid = entity.data, soundDescription = soundFileDescription)
+            }
 
-                        val showVolumeUi =
-                            entity.flags.hasFlag(ActionEntity.ACTION_FLAG_SHOW_VOLUME_UI)
+            ActionId.VOLUME_INCREASE_STREAM,
+            ActionId.VOLUME_DECREASE_STREAM -> {
+                val stream =
+                    entity.extras.getData(ActionEntity.EXTRA_STREAM_TYPE).then {
+                        VOLUME_STREAM_MAP.getKey(it)!!.success()
+                    }.valueOrNull() ?: return null
 
-                        when (id) {
-                            SystemActionId.VOLUME_INCREASE_STREAM ->
-                                VolumeSystemAction.Stream.Increase(showVolumeUi, stream)
+                val showVolumeUi =
+                    entity.flags.hasFlag(ActionEntity.ACTION_FLAG_SHOW_VOLUME_UI)
 
-                            SystemActionId.VOLUME_DECREASE_STREAM ->
-                                VolumeSystemAction.Stream.Decrease(showVolumeUi, stream)
+                when (actionId) {
+                    ActionId.VOLUME_INCREASE_STREAM ->
+                        ActionData.Volume.Stream.Increase(showVolumeUi, stream)
 
-                            else -> throw Exception("don't know how to create system action for $id")
-                        }
-                    }
+                    ActionId.VOLUME_DECREASE_STREAM ->
+                        ActionData.Volume.Stream.Decrease(showVolumeUi, stream)
 
-                    SystemActionId.VOLUME_UP,
-                    SystemActionId.VOLUME_DOWN,
-                    SystemActionId.VOLUME_TOGGLE_MUTE,
-                    SystemActionId.VOLUME_UNMUTE,
-                    SystemActionId.VOLUME_MUTE -> {
-                        val showVolumeUi =
-                            entity.flags.hasFlag(ActionEntity.ACTION_FLAG_SHOW_VOLUME_UI)
-
-                        when (id) {
-                            SystemActionId.VOLUME_UP -> VolumeSystemAction.Up(showVolumeUi)
-                            SystemActionId.VOLUME_DOWN -> VolumeSystemAction.Down(showVolumeUi)
-                            SystemActionId.VOLUME_TOGGLE_MUTE -> VolumeSystemAction.ToggleMute(
-                                showVolumeUi
-                            )
-                            SystemActionId.VOLUME_UNMUTE -> VolumeSystemAction.UnMute(showVolumeUi)
-                            SystemActionId.VOLUME_MUTE -> VolumeSystemAction.Mute(showVolumeUi)
-
-                            else -> throw Exception("don't know how to create system action for $id")
-                        }
-                    }
-
-                    SystemActionId.TOGGLE_FLASHLIGHT,
-                    SystemActionId.ENABLE_FLASHLIGHT,
-                    SystemActionId.DISABLE_FLASHLIGHT -> {
-                        val lens = entity.extras.getData(ActionEntity.EXTRA_LENS).then {
-                            LENS_MAP.getKey(it)!!.success()
-                        }.valueOrNull() ?: return null
-
-                        when (id) {
-                            SystemActionId.TOGGLE_FLASHLIGHT ->
-                                FlashlightSystemAction.Toggle(lens)
-
-                            SystemActionId.ENABLE_FLASHLIGHT ->
-                                FlashlightSystemAction.Enable(lens)
-
-                            SystemActionId.DISABLE_FLASHLIGHT ->
-                                FlashlightSystemAction.Disable(lens)
-
-                            else -> throw Exception("don't know how to create system action for $id")
-                        }
-                    }
-
-                    SystemActionId.TOGGLE_DND_MODE,
-                    SystemActionId.ENABLE_DND_MODE -> {
-                        val dndMode = entity.extras.getData(ActionEntity.EXTRA_DND_MODE).then {
-                            DND_MODE_MAP.getKey(it)!!.success()
-                        }.valueOrNull() ?: return null
-
-                        when (id) {
-                            SystemActionId.TOGGLE_DND_MODE ->
-                                ToggleDndMode(dndMode)
-
-                            SystemActionId.ENABLE_DND_MODE ->
-                                EnableDndMode(dndMode)
-
-                            else -> throw Exception("don't know how to create system action for $id")
-                        }
-                    }
-
-                    SystemActionId.DISABLE_DND_MODE -> {
-                        return SimpleSystemAction(SystemActionId.DISABLE_DND_MODE)
-                    }
-
-                    SystemActionId.PAUSE_MEDIA_PACKAGE,
-                    SystemActionId.PLAY_MEDIA_PACKAGE,
-                    SystemActionId.PLAY_PAUSE_MEDIA_PACKAGE,
-                    SystemActionId.NEXT_TRACK_PACKAGE,
-                    SystemActionId.PREVIOUS_TRACK_PACKAGE,
-                    SystemActionId.FAST_FORWARD_PACKAGE,
-                    SystemActionId.REWIND_PACKAGE -> {
-                        val packageName =
-                            entity.extras.getData(ActionEntity.EXTRA_PACKAGE_NAME).valueOrNull()
-                                ?: return null
-
-                        when (id) {
-                            SystemActionId.PAUSE_MEDIA_PACKAGE ->
-                                ControlMediaForAppSystemAction.Pause(packageName)
-                            SystemActionId.PLAY_MEDIA_PACKAGE ->
-                                ControlMediaForAppSystemAction.Play(packageName)
-                            SystemActionId.PLAY_PAUSE_MEDIA_PACKAGE ->
-                                ControlMediaForAppSystemAction.PlayPause(packageName)
-                            SystemActionId.NEXT_TRACK_PACKAGE ->
-                                ControlMediaForAppSystemAction.NextTrack(packageName)
-                            SystemActionId.PREVIOUS_TRACK_PACKAGE ->
-                                ControlMediaForAppSystemAction.PreviousTrack(packageName)
-                            SystemActionId.FAST_FORWARD_PACKAGE ->
-                                ControlMediaForAppSystemAction.FastForward(packageName)
-                            SystemActionId.REWIND_PACKAGE ->
-                                ControlMediaForAppSystemAction.Rewind(packageName)
-
-                            else -> throw Exception("don't know how to create system action for $id")
-                        }
-                    }
-
-                    SystemActionId.CHANGE_RINGER_MODE -> {
-                        val ringerMode =
-                            entity.extras.getData(ActionEntity.EXTRA_RINGER_MODE).then {
-                                RINGER_MODE_MAP.getKey(it)!!.success()
-                            }.valueOrNull() ?: return null
-
-                        ChangeRingerModeSystemAction(ringerMode)
-                    }
-
-                    SystemActionId.SWITCH_KEYBOARD -> {
-                        val imeId = entity.extras.getData(ActionEntity.EXTRA_IME_ID)
-                            .valueOrNull() ?: return null
-
-                        val imeName = entity.extras.getData(ActionEntity.EXTRA_IME_NAME)
-                            .valueOrNull() ?: return null
-
-                        SwitchKeyboardSystemAction(imeId, imeName)
-                    }
-
-                    SystemActionId.CYCLE_ROTATIONS -> {
-                        val orientations =
-                            entity.extras.getData(ActionEntity.EXTRA_ORIENTATIONS)
-                                .then { extraValue ->
-                                    extraValue
-                                        .split(",")
-                                        .map { ORIENTATION_MAP.getKey(it)!! }
-                                        .success()
-                                }.valueOrNull() ?: return null
-
-                        CycleRotationsSystemAction(orientations)
-                    }
-
-                    else -> SimpleSystemAction(id)
+                    else -> throw Exception("don't know how to create system action for $actionId")
                 }
             }
-            ActionEntity.Type.SOUND -> {
-                val soundFileDescription = entity.extras.getData(ActionEntity.EXTRA_SOUND_FILE_DESCRIPTION)
+
+            ActionId.VOLUME_UP,
+            ActionId.VOLUME_DOWN,
+            ActionId.VOLUME_TOGGLE_MUTE,
+            ActionId.VOLUME_UNMUTE,
+            ActionId.VOLUME_MUTE -> {
+                val showVolumeUi =
+                    entity.flags.hasFlag(ActionEntity.ACTION_FLAG_SHOW_VOLUME_UI)
+
+                when (actionId) {
+                    ActionId.VOLUME_UP -> ActionData.Volume.Up(showVolumeUi)
+                    ActionId.VOLUME_DOWN -> ActionData.Volume.Down(showVolumeUi)
+                    ActionId.VOLUME_TOGGLE_MUTE -> ActionData.Volume.ToggleMute(
+                        showVolumeUi
+                    )
+                    ActionId.VOLUME_UNMUTE -> ActionData.Volume.UnMute(showVolumeUi)
+                    ActionId.VOLUME_MUTE -> ActionData.Volume.Mute(showVolumeUi)
+
+                    else -> throw Exception("don't know how to create system action for $actionId")
+                }
+            }
+
+            ActionId.TOGGLE_FLASHLIGHT,
+            ActionId.ENABLE_FLASHLIGHT,
+            ActionId.DISABLE_FLASHLIGHT -> {
+                val lens = entity.extras.getData(ActionEntity.EXTRA_LENS).then {
+                    LENS_MAP.getKey(it)!!.success()
+                }.valueOrNull() ?: return null
+
+                when (actionId) {
+                    ActionId.TOGGLE_FLASHLIGHT ->
+                        ActionData.Flashlight.Toggle(lens)
+
+                    ActionId.ENABLE_FLASHLIGHT ->
+                        ActionData.Flashlight.Enable(lens)
+
+                    ActionId.DISABLE_FLASHLIGHT ->
+                        ActionData.Flashlight.Disable(lens)
+
+                    else -> throw Exception("don't know how to create system action for $actionId")
+                }
+            }
+
+            ActionId.TOGGLE_DND_MODE,
+            ActionId.ENABLE_DND_MODE -> {
+                val dndMode = entity.extras.getData(ActionEntity.EXTRA_DND_MODE).then {
+                    DND_MODE_MAP.getKey(it)!!.success()
+                }.valueOrNull() ?: return null
+
+                when (actionId) {
+                    ActionId.TOGGLE_DND_MODE ->
+                        ActionData.DoNotDisturb.Toggle(dndMode)
+
+                    ActionId.ENABLE_DND_MODE ->
+                        ActionData.DoNotDisturb.Enable(dndMode)
+
+                    else -> throw Exception("don't know how to create system action for $actionId")
+                }
+            }
+
+            ActionId.DISABLE_DND_MODE -> {
+                return ActionData.DoNotDisturb.Disable
+            }
+
+            ActionId.PAUSE_MEDIA_PACKAGE,
+            ActionId.PLAY_MEDIA_PACKAGE,
+            ActionId.PLAY_PAUSE_MEDIA_PACKAGE,
+            ActionId.NEXT_TRACK_PACKAGE,
+            ActionId.PREVIOUS_TRACK_PACKAGE,
+            ActionId.FAST_FORWARD_PACKAGE,
+            ActionId.REWIND_PACKAGE -> {
+                val packageName =
+                    entity.extras.getData(ActionEntity.EXTRA_PACKAGE_NAME).valueOrNull()
+                        ?: return null
+
+                when (actionId) {
+                    ActionId.PAUSE_MEDIA_PACKAGE ->
+                        ActionData.ControlMediaForApp.Pause(packageName)
+                    ActionId.PLAY_MEDIA_PACKAGE ->
+                        ActionData.ControlMediaForApp.Play(packageName)
+                    ActionId.PLAY_PAUSE_MEDIA_PACKAGE ->
+                        ActionData.ControlMediaForApp.PlayPause(packageName)
+                    ActionId.NEXT_TRACK_PACKAGE ->
+                        ActionData.ControlMediaForApp.NextTrack(packageName)
+                    ActionId.PREVIOUS_TRACK_PACKAGE ->
+                        ActionData.ControlMediaForApp.PreviousTrack(packageName)
+                    ActionId.FAST_FORWARD_PACKAGE ->
+                        ActionData.ControlMediaForApp.FastForward(packageName)
+                    ActionId.REWIND_PACKAGE ->
+                        ActionData.ControlMediaForApp.Rewind(packageName)
+
+                    else -> throw Exception("don't know how to create system action for $actionId")
+                }
+            }
+
+            ActionId.CHANGE_RINGER_MODE -> {
+                val ringerMode =
+                    entity.extras.getData(ActionEntity.EXTRA_RINGER_MODE).then {
+                        RINGER_MODE_MAP.getKey(it)!!.success()
+                    }.valueOrNull() ?: return null
+
+                ActionData.Volume.SetRingerMode(ringerMode)
+            }
+
+            ActionId.SWITCH_KEYBOARD -> {
+                val imeId = entity.extras.getData(ActionEntity.EXTRA_IME_ID)
                     .valueOrNull() ?: return null
 
-                SoundAction(soundUid = entity.data, soundDescription = soundFileDescription)
+                val imeName = entity.extras.getData(ActionEntity.EXTRA_IME_NAME)
+                    .valueOrNull() ?: return null
+
+                ActionData.SwitchKeyboard(imeId, imeName)
             }
+
+            ActionId.CYCLE_ROTATIONS -> {
+                val orientations =
+                    entity.extras.getData(ActionEntity.EXTRA_ORIENTATIONS)
+                        .then { extraValue ->
+                            extraValue
+                                .split(",")
+                                .map { ORIENTATION_MAP.getKey(it)!! }
+                                .success()
+                        }.valueOrNull() ?: return null
+
+                ActionData.Rotation.CycleRotations(orientations)
+            }
+
+            ActionId.TOGGLE_WIFI -> ActionData.Wifi.Toggle
+            ActionId.ENABLE_WIFI -> ActionData.Wifi.Enable
+            ActionId.DISABLE_WIFI -> ActionData.Wifi.Disable
+
+            ActionId.TOGGLE_BLUETOOTH -> ActionData.Bluetooth.Toggle
+            ActionId.ENABLE_BLUETOOTH -> ActionData.Bluetooth.Enable
+            ActionId.DISABLE_BLUETOOTH -> ActionData.Bluetooth.Disable
+
+            ActionId.TOGGLE_MOBILE_DATA -> ActionData.MobileData.Toggle
+            ActionId.ENABLE_MOBILE_DATA -> ActionData.MobileData.Enable
+            ActionId.DISABLE_MOBILE_DATA -> ActionData.MobileData.Disable
+
+            ActionId.TOGGLE_AUTO_BRIGHTNESS -> ActionData.Brightness.ToggleAuto
+            ActionId.DISABLE_AUTO_BRIGHTNESS -> ActionData.Brightness.DisableAuto
+            ActionId.ENABLE_AUTO_BRIGHTNESS -> ActionData.Brightness.EnableAuto
+            ActionId.INCREASE_BRIGHTNESS -> ActionData.Brightness.Increase
+            ActionId.DECREASE_BRIGHTNESS -> ActionData.Brightness.Decrease
+
+            ActionId.TOGGLE_AUTO_ROTATE -> ActionData.Rotation.ToggleAuto
+            ActionId.ENABLE_AUTO_ROTATE -> ActionData.Rotation.EnableAuto
+            ActionId.DISABLE_AUTO_ROTATE -> ActionData.Rotation.DisableAuto
+            ActionId.PORTRAIT_MODE -> ActionData.Rotation.Portrait
+            ActionId.LANDSCAPE_MODE -> ActionData.Rotation.Landscape
+            ActionId.SWITCH_ORIENTATION -> ActionData.Rotation.SwitchOrientation
+
+            ActionId.VOLUME_SHOW_DIALOG -> ActionData.Volume.ShowDialog
+            ActionId.CYCLE_RINGER_MODE -> ActionData.Volume.CycleRingerMode
+            ActionId.CYCLE_VIBRATE_RING -> ActionData.Volume.CycleVibrateRing
+
+            ActionId.EXPAND_NOTIFICATION_DRAWER -> ActionData.StatusBar.ExpandNotifications
+            ActionId.TOGGLE_NOTIFICATION_DRAWER -> ActionData.StatusBar.ToggleNotifications
+            ActionId.EXPAND_QUICK_SETTINGS -> ActionData.StatusBar.ExpandQuickSettings
+            ActionId.TOGGLE_QUICK_SETTINGS -> ActionData.StatusBar.ToggleQuickSettings
+            ActionId.COLLAPSE_STATUS_BAR -> ActionData.StatusBar.Collapse
+
+            ActionId.PAUSE_MEDIA -> ActionData.ControlMedia.Pause
+            ActionId.PLAY_MEDIA -> ActionData.ControlMedia.Play
+            ActionId.PLAY_PAUSE_MEDIA -> ActionData.ControlMedia.PlayPause
+            ActionId.NEXT_TRACK -> ActionData.ControlMedia.NextTrack
+            ActionId.PREVIOUS_TRACK -> ActionData.ControlMedia.PreviousTrack
+            ActionId.FAST_FORWARD -> ActionData.ControlMedia.FastForward
+            ActionId.REWIND -> ActionData.ControlMedia.Rewind
+
+            ActionId.GO_BACK -> ActionData.GoBack
+            ActionId.GO_HOME -> ActionData.GoHome
+            ActionId.OPEN_RECENTS -> ActionData.OpenRecents
+            ActionId.TOGGLE_SPLIT_SCREEN -> ActionData.ToggleSplitScreen
+            ActionId.GO_LAST_APP -> ActionData.GoLastApp
+            ActionId.OPEN_MENU -> ActionData.OpenMenu
+
+            ActionId.ENABLE_NFC -> ActionData.Nfc.Enable
+            ActionId.DISABLE_NFC -> ActionData.Nfc.Disable
+            ActionId.TOGGLE_NFC -> ActionData.Nfc.Toggle
+
+            ActionId.MOVE_CURSOR_TO_END -> ActionData.MoveCursorToEnd
+            ActionId.TOGGLE_KEYBOARD -> ActionData.ToggleKeyboard
+            ActionId.SHOW_KEYBOARD -> ActionData.ShowKeyboard
+            ActionId.HIDE_KEYBOARD -> ActionData.HideKeyboard
+            ActionId.SHOW_KEYBOARD_PICKER -> ActionData.ShowKeyboardPicker
+            ActionId.TEXT_CUT -> ActionData.CutText
+            ActionId.TEXT_COPY -> ActionData.CopyText
+            ActionId.TEXT_PASTE -> ActionData.PasteText
+            ActionId.SELECT_WORD_AT_CURSOR -> ActionData.SelectWordAtCursor
+
+            ActionId.TOGGLE_AIRPLANE_MODE -> ActionData.AirplaneMode.Toggle
+            ActionId.ENABLE_AIRPLANE_MODE -> ActionData.AirplaneMode.Enable
+            ActionId.DISABLE_AIRPLANE_MODE -> ActionData.AirplaneMode.Disable
+
+            ActionId.SCREENSHOT -> ActionData.Screenshot
+            ActionId.OPEN_VOICE_ASSISTANT -> ActionData.VoiceAssistant
+            ActionId.OPEN_DEVICE_ASSISTANT -> ActionData.DeviceAssistant
+
+            ActionId.OPEN_CAMERA -> ActionData.OpenCamera
+            ActionId.LOCK_DEVICE -> ActionData.LockDevice
+            ActionId.POWER_ON_OFF_DEVICE -> ActionData.ScreenOnOff
+            ActionId.SECURE_LOCK_DEVICE -> ActionData.SecureLock
+            ActionId.CONSUME_KEY_EVENT -> ActionData.ConsumeKeyEvent
+            ActionId.OPEN_SETTINGS -> ActionData.OpenSettings
+            ActionId.SHOW_POWER_MENU -> ActionData.ShowPowerMenu
+            ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> ActionData.DismissLastNotification
+            ActionId.DISMISS_ALL_NOTIFICATIONS -> ActionData.DismissAllNotifications
+            ActionId.ANSWER_PHONE_CALL -> ActionData.AnswerCall
+            ActionId.END_PHONE_CALL -> ActionData.EndCall
         }
     }
 
-    fun toEntity(data: ActionData): ActionEntity? {
+    fun toEntity(data: ActionData): ActionEntity {
         val type = when (data) {
-            CorruptAction -> return null
-            is IntentAction -> ActionEntity.Type.INTENT
-            is KeyEventAction -> ActionEntity.Type.KEY_EVENT
-            is OpenAppAction -> ActionEntity.Type.APP
-            is OpenAppShortcutAction -> ActionEntity.Type.APP_SHORTCUT
-            is PhoneCallAction -> ActionEntity.Type.PHONE_CALL
-            is SystemAction -> ActionEntity.Type.SYSTEM_ACTION
-            is TapCoordinateAction -> ActionEntity.Type.TAP_COORDINATE
-            is TextAction -> ActionEntity.Type.TEXT_BLOCK
-            is UrlAction -> ActionEntity.Type.URL
-            is SoundAction -> ActionEntity.Type.SOUND
+            is ActionData.Intent -> ActionEntity.Type.INTENT
+            is ActionData.InputKeyEvent -> ActionEntity.Type.KEY_EVENT
+            is ActionData.App -> ActionEntity.Type.APP
+            is ActionData.AppShortcut -> ActionEntity.Type.APP_SHORTCUT
+            is ActionData.PhoneCall -> ActionEntity.Type.PHONE_CALL
+            is ActionData.TapScreen -> ActionEntity.Type.TAP_COORDINATE
+            is ActionData.Text -> ActionEntity.Type.TEXT_BLOCK
+            is ActionData.Url -> ActionEntity.Type.URL
+            is ActionData.Sound -> ActionEntity.Type.SOUND
+            else -> ActionEntity.Type.SYSTEM_ACTION
         }
 
         return ActionEntity(
@@ -288,40 +380,45 @@ object ActionDataEntityMapper {
         )
     }
 
-    private fun getFlags(data: ActionData): Int = when (data) {
-        is VolumeSystemAction ->
-            if (data.showVolumeUi) {
-                ActionEntity.ACTION_FLAG_SHOW_VOLUME_UI
-            } else {
-                0
-            }
+    private fun getFlags(data: ActionData): Int {
+        val showVolumeUiFlag = when (data) {
+            is ActionData.Volume.Stream -> data.showVolumeUi
+            is ActionData.Volume.Up -> data.showVolumeUi
+            is ActionData.Volume.Down -> data.showVolumeUi
+            is ActionData.Volume.Mute -> data.showVolumeUi
+            is ActionData.Volume.UnMute -> data.showVolumeUi
+            is ActionData.Volume.ToggleMute -> data.showVolumeUi
+            else -> false
+        }
 
-        else -> 0
+        if (showVolumeUiFlag) {
+            return ActionEntity.ACTION_FLAG_SHOW_VOLUME_UI
+        } else {
+            return 0
+        }
     }
 
     private fun getDataString(data: ActionData): String = when (data) {
-        CorruptAction -> ""
-        is IntentAction -> data.uri
-        is KeyEventAction -> data.keyCode.toString()
-        is OpenAppAction -> data.packageName
-        is OpenAppShortcutAction -> data.uri
-        is PhoneCallAction -> data.number
-        is SystemAction -> SYSTEM_ACTION_ID_MAP[data.id]!!
-        is TapCoordinateAction -> "${data.x},${data.y}"
-        is TextAction -> data.text
-        is UrlAction -> data.url
-        is SoundAction -> data.soundUid
+        is ActionData.Intent -> data.uri
+        is ActionData.InputKeyEvent -> data.keyCode.toString()
+        is ActionData.App -> data.packageName
+        is ActionData.AppShortcut -> data.uri
+        is ActionData.PhoneCall -> data.number
+        is ActionData.TapScreen -> "${data.x},${data.y}"
+        is ActionData.Text -> data.text
+        is ActionData.Url -> data.url
+        is ActionData.Sound -> data.soundUid
+        else -> SYSTEM_ACTION_ID_MAP[data.id]!!
     }
 
     private fun getExtras(data: ActionData): List<Extra> = when (data) {
-        CorruptAction -> emptyList()
-        is IntentAction ->
+        is ActionData.Intent ->
             listOf(
                 Extra(ActionEntity.EXTRA_INTENT_DESCRIPTION, data.description),
                 Extra(ActionEntity.EXTRA_INTENT_TARGET, INTENT_TARGET_MAP[data.target]!!)
             )
 
-        is KeyEventAction -> sequence {
+        is ActionData.InputKeyEvent -> sequence {
             if (data.useShell) {
                 val string = if (data.useShell) {
                     "true"
@@ -346,67 +443,67 @@ object ActionDataEntityMapper {
             }
         }.toList()
 
-        is OpenAppAction -> emptyList()
-        is OpenAppShortcutAction -> sequence {
+        is ActionData.App -> emptyList()
+        is ActionData.AppShortcut -> sequence {
             yield(Extra(ActionEntity.EXTRA_SHORTCUT_TITLE, data.shortcutTitle))
             data.packageName?.let { yield(Extra(ActionEntity.EXTRA_PACKAGE_NAME, it)) }
         }.toList()
 
-        is PhoneCallAction -> emptyList()
+        is ActionData.PhoneCall -> emptyList()
 
-        is EnableDndMode -> listOf(
+        is ActionData.DoNotDisturb.Enable -> listOf(
             Extra(ActionEntity.EXTRA_DND_MODE, DND_MODE_MAP[data.dndMode]!!)
         )
 
-        is ToggleDndMode -> listOf(
+        is ActionData.DoNotDisturb.Toggle -> listOf(
             Extra(ActionEntity.EXTRA_DND_MODE, DND_MODE_MAP[data.dndMode]!!)
         )
 
-        is ChangeRingerModeSystemAction -> listOf(
+        is ActionData.Volume.SetRingerMode -> listOf(
             Extra(ActionEntity.EXTRA_RINGER_MODE, RINGER_MODE_MAP[data.ringerMode]!!)
         )
 
-        is ControlMediaForAppSystemAction -> listOf(
+        is ActionData.ControlMediaForApp -> listOf(
             Extra(ActionEntity.EXTRA_PACKAGE_NAME, data.packageName)
         )
 
-        is CycleRotationsSystemAction -> listOf(
+        is ActionData.Rotation.CycleRotations -> listOf(
             Extra(
                 ActionEntity.EXTRA_ORIENTATIONS,
                 data.orientations.joinToString(",") { ORIENTATION_MAP[it]!! })
         )
 
-        is FlashlightSystemAction -> listOf(
+        is ActionData.Flashlight -> listOf(
             Extra(ActionEntity.EXTRA_LENS, LENS_MAP[data.lens]!!)
         )
 
-        is SimpleSystemAction -> emptyList()
-
-        is SwitchKeyboardSystemAction -> listOf(
+        is ActionData.SwitchKeyboard -> listOf(
             Extra(ActionEntity.EXTRA_IME_ID, data.imeId),
             Extra(ActionEntity.EXTRA_IME_NAME, data.savedImeName)
         )
 
-        is VolumeSystemAction ->
+        is ActionData.Volume ->
             when (data) {
-                is VolumeSystemAction.Stream -> listOf(
+                is ActionData.Volume.Stream -> listOf(
                     Extra(ActionEntity.EXTRA_STREAM_TYPE, VOLUME_STREAM_MAP[data.volumeStream]!!)
                 )
 
                 else -> emptyList()
             }
-        is TapCoordinateAction -> sequence {
+        is ActionData.TapScreen -> sequence {
             if (!data.description.isNullOrBlank()) {
                 yield(Extra(ActionEntity.EXTRA_COORDINATE_DESCRIPTION, data.description))
             }
         }.toList()
 
-        is TextAction -> emptyList()
-        is UrlAction -> emptyList()
+        is ActionData.Text -> emptyList()
+        is ActionData.Url -> emptyList()
 
-        is SoundAction -> listOf(
+        is ActionData.Sound -> listOf(
             Extra(ActionEntity.EXTRA_SOUND_FILE_DESCRIPTION, data.soundDescription),
         )
+
+        else -> emptyList()
     }
 
     private val ORIENTATION_MAP = mapOf(
@@ -454,108 +551,114 @@ object ActionDataEntityMapper {
      * DON'T CHANGE THESE
      */
     private val SYSTEM_ACTION_ID_MAP = mapOf(
-        SystemActionId.TOGGLE_WIFI to "toggle_wifi",
-        SystemActionId.ENABLE_WIFI to "enable_wifi",
-        SystemActionId.DISABLE_WIFI to "disable_wifi",
+        ActionId.TOGGLE_WIFI to "toggle_wifi",
+        ActionId.ENABLE_WIFI to "enable_wifi",
+        ActionId.DISABLE_WIFI to "disable_wifi",
 
-        SystemActionId.TOGGLE_BLUETOOTH to "toggle_bluetooth",
-        SystemActionId.ENABLE_BLUETOOTH to "enable_bluetooth",
-        SystemActionId.DISABLE_BLUETOOTH to "disable_bluetooth",
+        ActionId.TOGGLE_BLUETOOTH to "toggle_bluetooth",
+        ActionId.ENABLE_BLUETOOTH to "enable_bluetooth",
+        ActionId.DISABLE_BLUETOOTH to "disable_bluetooth",
 
-        SystemActionId.TOGGLE_MOBILE_DATA to "toggle_mobile_data",
-        SystemActionId.ENABLE_MOBILE_DATA to "enable_mobile_data",
-        SystemActionId.DISABLE_MOBILE_DATA to "disable_mobile_data",
+        ActionId.TOGGLE_MOBILE_DATA to "toggle_mobile_data",
+        ActionId.ENABLE_MOBILE_DATA to "enable_mobile_data",
+        ActionId.DISABLE_MOBILE_DATA to "disable_mobile_data",
 
-        SystemActionId.TOGGLE_AUTO_BRIGHTNESS to "toggle_auto_brightness",
-        SystemActionId.DISABLE_AUTO_BRIGHTNESS to "disable_auto_brightness",
-        SystemActionId.ENABLE_AUTO_BRIGHTNESS to "enable_auto_brightness",
-        SystemActionId.INCREASE_BRIGHTNESS to "increase_brightness",
-        SystemActionId.DECREASE_BRIGHTNESS to "decrease_brightness",
+        ActionId.TOGGLE_AUTO_BRIGHTNESS to "toggle_auto_brightness",
+        ActionId.DISABLE_AUTO_BRIGHTNESS to "disable_auto_brightness",
+        ActionId.ENABLE_AUTO_BRIGHTNESS to "enable_auto_brightness",
+        ActionId.INCREASE_BRIGHTNESS to "increase_brightness",
+        ActionId.DECREASE_BRIGHTNESS to "decrease_brightness",
 
-        SystemActionId.TOGGLE_AUTO_ROTATE to "toggle_auto_rotate",
-        SystemActionId.ENABLE_AUTO_ROTATE to "enable_auto_rotate",
-        SystemActionId.DISABLE_AUTO_ROTATE to "disable_auto_rotate",
-        SystemActionId.PORTRAIT_MODE to "portrait_mode",
-        SystemActionId.LANDSCAPE_MODE to "landscape_mode",
-        SystemActionId.SWITCH_ORIENTATION to "switch_orientation",
-        SystemActionId.CYCLE_ROTATIONS to "cycle_rotations",
+        ActionId.TOGGLE_AUTO_ROTATE to "toggle_auto_rotate",
+        ActionId.ENABLE_AUTO_ROTATE to "enable_auto_rotate",
+        ActionId.DISABLE_AUTO_ROTATE to "disable_auto_rotate",
+        ActionId.PORTRAIT_MODE to "portrait_mode",
+        ActionId.LANDSCAPE_MODE to "landscape_mode",
+        ActionId.SWITCH_ORIENTATION to "switch_orientation",
+        ActionId.CYCLE_ROTATIONS to "cycle_rotations",
 
-        SystemActionId.VOLUME_UP to "volume_up",
-        SystemActionId.VOLUME_DOWN to "volume_down",
-        SystemActionId.VOLUME_SHOW_DIALOG to "volume_show_dialog",
-        SystemActionId.VOLUME_DECREASE_STREAM to "volume_decrease_stream",
-        SystemActionId.VOLUME_INCREASE_STREAM to "volume_increase_stream",
-        SystemActionId.CYCLE_RINGER_MODE to "ringer_mode_cycle",
-        SystemActionId.CHANGE_RINGER_MODE to "ringer_mode_change",
-        SystemActionId.CYCLE_VIBRATE_RING to "ringer_mode_cycle_vibrate_ring",
-        SystemActionId.TOGGLE_DND_MODE to "toggle_do_not_disturb_mode",
-        SystemActionId.ENABLE_DND_MODE to "set_do_not_disturb_mode",
-        SystemActionId.DISABLE_DND_MODE to "disable_do_not_disturb_mode",
-        SystemActionId.VOLUME_UNMUTE to "volume_unmute",
-        SystemActionId.VOLUME_MUTE to "volume_mute",
-        SystemActionId.VOLUME_TOGGLE_MUTE to "volume_toggle_mute",
+        ActionId.VOLUME_UP to "volume_up",
+        ActionId.VOLUME_DOWN to "volume_down",
+        ActionId.VOLUME_SHOW_DIALOG to "volume_show_dialog",
+        ActionId.VOLUME_DECREASE_STREAM to "volume_decrease_stream",
+        ActionId.VOLUME_INCREASE_STREAM to "volume_increase_stream",
+        ActionId.CYCLE_RINGER_MODE to "ringer_mode_cycle",
+        ActionId.CHANGE_RINGER_MODE to "ringer_mode_change",
+        ActionId.CYCLE_VIBRATE_RING to "ringer_mode_cycle_vibrate_ring",
+        ActionId.TOGGLE_DND_MODE to "toggle_do_not_disturb_mode",
+        ActionId.ENABLE_DND_MODE to "set_do_not_disturb_mode",
+        ActionId.DISABLE_DND_MODE to "disable_do_not_disturb_mode",
+        ActionId.VOLUME_UNMUTE to "volume_unmute",
+        ActionId.VOLUME_MUTE to "volume_mute",
+        ActionId.VOLUME_TOGGLE_MUTE to "volume_toggle_mute",
 
-        SystemActionId.EXPAND_NOTIFICATION_DRAWER to "expand_notification_drawer",
-        SystemActionId.TOGGLE_NOTIFICATION_DRAWER to "toggle_notification_drawer",
-        SystemActionId.EXPAND_QUICK_SETTINGS to "expand_quick_settings",
-        SystemActionId.TOGGLE_QUICK_SETTINGS to "toggle_quick_settings_drawer",
-        SystemActionId.COLLAPSE_STATUS_BAR to "collapse_status_bar",
+        ActionId.EXPAND_NOTIFICATION_DRAWER to "expand_notification_drawer",
+        ActionId.TOGGLE_NOTIFICATION_DRAWER to "toggle_notification_drawer",
+        ActionId.EXPAND_QUICK_SETTINGS to "expand_quick_settings",
+        ActionId.TOGGLE_QUICK_SETTINGS to "toggle_quick_settings_drawer",
+        ActionId.COLLAPSE_STATUS_BAR to "collapse_status_bar",
 
-        SystemActionId.PAUSE_MEDIA to "pause_media",
-        SystemActionId.PAUSE_MEDIA_PACKAGE to "pause_media_package",
-        SystemActionId.PLAY_MEDIA to "play_media",
-        SystemActionId.PLAY_MEDIA_PACKAGE to "play_media_package",
-        SystemActionId.PLAY_PAUSE_MEDIA to "play_pause_media",
-        SystemActionId.PLAY_PAUSE_MEDIA_PACKAGE to "play_pause_media_package",
-        SystemActionId.NEXT_TRACK to "next_track",
-        SystemActionId.NEXT_TRACK_PACKAGE to "next_track_package",
-        SystemActionId.PREVIOUS_TRACK to "previous_track",
-        SystemActionId.PREVIOUS_TRACK_PACKAGE to "previous_track_package",
-        SystemActionId.FAST_FORWARD to "fast_forward",
-        SystemActionId.FAST_FORWARD_PACKAGE to "fast_forward_package",
-        SystemActionId.REWIND to "rewind",
-        SystemActionId.REWIND_PACKAGE to "rewind_package",
+        ActionId.PAUSE_MEDIA to "pause_media",
+        ActionId.PAUSE_MEDIA_PACKAGE to "pause_media_package",
+        ActionId.PLAY_MEDIA to "play_media",
+        ActionId.PLAY_MEDIA_PACKAGE to "play_media_package",
+        ActionId.PLAY_PAUSE_MEDIA to "play_pause_media",
+        ActionId.PLAY_PAUSE_MEDIA_PACKAGE to "play_pause_media_package",
+        ActionId.NEXT_TRACK to "next_track",
+        ActionId.NEXT_TRACK_PACKAGE to "next_track_package",
+        ActionId.PREVIOUS_TRACK to "previous_track",
+        ActionId.PREVIOUS_TRACK_PACKAGE to "previous_track_package",
+        ActionId.FAST_FORWARD to "fast_forward",
+        ActionId.FAST_FORWARD_PACKAGE to "fast_forward_package",
+        ActionId.REWIND to "rewind",
+        ActionId.REWIND_PACKAGE to "rewind_package",
 
-        SystemActionId.GO_BACK to "go_back",
-        SystemActionId.GO_HOME to "go_home",
-        SystemActionId.OPEN_RECENTS to "open_recents",
-        SystemActionId.TOGGLE_SPLIT_SCREEN to "toggle_split_screen",
-        SystemActionId.GO_LAST_APP to "go_last_app",
-        SystemActionId.OPEN_MENU to "open_menu",
+        ActionId.GO_BACK to "go_back",
+        ActionId.GO_HOME to "go_home",
+        ActionId.OPEN_RECENTS to "open_recents",
+        ActionId.TOGGLE_SPLIT_SCREEN to "toggle_split_screen",
+        ActionId.GO_LAST_APP to "go_last_app",
+        ActionId.OPEN_MENU to "open_menu",
 
-        SystemActionId.TOGGLE_FLASHLIGHT to "toggle_flashlight",
-        SystemActionId.ENABLE_FLASHLIGHT to "enable_flashlight",
-        SystemActionId.DISABLE_FLASHLIGHT to "disable_flashlight",
+        ActionId.TOGGLE_FLASHLIGHT to "toggle_flashlight",
+        ActionId.ENABLE_FLASHLIGHT to "enable_flashlight",
+        ActionId.DISABLE_FLASHLIGHT to "disable_flashlight",
 
-        SystemActionId.ENABLE_NFC to "nfc_enable",
-        SystemActionId.DISABLE_NFC to "nfc_disable",
-        SystemActionId.TOGGLE_NFC to "nfc_toggle",
+        ActionId.ENABLE_NFC to "nfc_enable",
+        ActionId.DISABLE_NFC to "nfc_disable",
+        ActionId.TOGGLE_NFC to "nfc_toggle",
 
-        SystemActionId.MOVE_CURSOR_TO_END to "move_cursor_to_end",
-        SystemActionId.TOGGLE_KEYBOARD to "toggle_keyboard",
-        SystemActionId.SHOW_KEYBOARD to "show_keyboard",
-        SystemActionId.HIDE_KEYBOARD to "hide_keyboard",
-        SystemActionId.SHOW_KEYBOARD_PICKER to "show_keyboard_picker",
-        SystemActionId.TEXT_CUT to "text_cut",
-        SystemActionId.TEXT_COPY to "text_copy",
-        SystemActionId.TEXT_PASTE to "text_paste",
-        SystemActionId.SELECT_WORD_AT_CURSOR to "select_word_at_cursor",
+        ActionId.MOVE_CURSOR_TO_END to "move_cursor_to_end",
+        ActionId.TOGGLE_KEYBOARD to "toggle_keyboard",
+        ActionId.SHOW_KEYBOARD to "show_keyboard",
+        ActionId.HIDE_KEYBOARD to "hide_keyboard",
+        ActionId.SHOW_KEYBOARD_PICKER to "show_keyboard_picker",
+        ActionId.TEXT_CUT to "text_cut",
+        ActionId.TEXT_COPY to "text_copy",
+        ActionId.TEXT_PASTE to "text_paste",
+        ActionId.SELECT_WORD_AT_CURSOR to "select_word_at_cursor",
 
-        SystemActionId.SWITCH_KEYBOARD to "switch_keyboard",
+        ActionId.SWITCH_KEYBOARD to "switch_keyboard",
 
-        SystemActionId.TOGGLE_AIRPLANE_MODE to "toggle_airplane_mode",
-        SystemActionId.ENABLE_AIRPLANE_MODE to "enable_airplane_mode",
-        SystemActionId.DISABLE_AIRPLANE_MODE to "disable_airplane_mode",
+        ActionId.TOGGLE_AIRPLANE_MODE to "toggle_airplane_mode",
+        ActionId.ENABLE_AIRPLANE_MODE to "enable_airplane_mode",
+        ActionId.DISABLE_AIRPLANE_MODE to "disable_airplane_mode",
 
-        SystemActionId.SCREENSHOT to "screenshot",
-        SystemActionId.OPEN_VOICE_ASSISTANT to "open_assistant",
-        SystemActionId.OPEN_DEVICE_ASSISTANT to "open_device_assistant",
-        SystemActionId.OPEN_CAMERA to "open_camera",
-        SystemActionId.LOCK_DEVICE to "lock_device",
-        SystemActionId.POWER_ON_OFF_DEVICE to "power_on_off_device",
-        SystemActionId.SECURE_LOCK_DEVICE to "secure_lock_device",
-        SystemActionId.CONSUME_KEY_EVENT to "consume_key_event",
-        SystemActionId.OPEN_SETTINGS to "open_settings",
-        SystemActionId.SHOW_POWER_MENU to "show_power_menu",
+        ActionId.SCREENSHOT to "screenshot",
+        ActionId.OPEN_VOICE_ASSISTANT to "open_assistant",
+        ActionId.OPEN_DEVICE_ASSISTANT to "open_device_assistant",
+        ActionId.OPEN_CAMERA to "open_camera",
+        ActionId.LOCK_DEVICE to "lock_device",
+        ActionId.POWER_ON_OFF_DEVICE to "power_on_off_device",
+        ActionId.SECURE_LOCK_DEVICE to "secure_lock_device",
+        ActionId.CONSUME_KEY_EVENT to "consume_key_event",
+        ActionId.OPEN_SETTINGS to "open_settings",
+        ActionId.SHOW_POWER_MENU to "show_power_menu",
+
+        ActionId.DISMISS_MOST_RECENT_NOTIFICATION to "dismiss_most_recent_notification",
+        ActionId.DISMISS_ALL_NOTIFICATIONS to "dismiss_all_notifications",
+        
+        ActionId.ANSWER_PHONE_CALL to "answer_phone_call",
+        ActionId.END_PHONE_CALL to "end_phone_call"
     )
 }

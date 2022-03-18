@@ -6,12 +6,13 @@ import android.view.KeyEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.sound.SoundsManager
-import io.github.sds100.keymapper.actions.system.SystemActionId
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.shizuku.InputEventInjector
 import io.github.sds100.keymapper.system.accessibility.AccessibilityNodeAction
 import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
+import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.airplanemode.AirplaneModeAdapter
 import io.github.sds100.keymapper.system.apps.AppShortcutAdapter
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
@@ -32,6 +33,8 @@ import io.github.sds100.keymapper.system.media.MediaAdapter
 import io.github.sds100.keymapper.system.navigation.OpenMenuHelper
 import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.system.nfc.NfcAdapter
+import io.github.sds100.keymapper.system.permissions.Permission
+import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.phone.PhoneAdapter
 import io.github.sds100.keymapper.system.popup.PopupMessageAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
@@ -64,6 +67,7 @@ class PerformActionsUseCaseImpl(
     private val intentAdapter: IntentAdapter,
     private val getActionError: GetActionErrorUseCase,
     private val keyMapperImeMessenger: KeyMapperImeMessenger,
+    private val shizukuInputEventInjector: InputEventInjector,
     private val packageManagerAdapter: PackageManagerAdapter,
     private val appShortcutAdapter: AppShortcutAdapter,
     private val popupMessageAdapter: PopupMessageAdapter,
@@ -81,15 +85,24 @@ class PerformActionsUseCaseImpl(
     private val openUrlAdapter: OpenUrlAdapter,
     private val resourceProvider: ResourceProvider,
     private val preferenceRepository: PreferenceRepository,
-    private val soundsManager: SoundsManager
+    private val soundsManager: SoundsManager,
+    private val permissionAdapter: PermissionAdapter,
+    private val notificationReceiverAdapter: ServiceAdapter
 ) : PerformActionsUseCase {
 
-    private val openMenuHelper by lazy { OpenMenuHelper(suAdapter, accessibilityService) }
+    private val openMenuHelper by lazy {
+        OpenMenuHelper(
+            suAdapter,
+            accessibilityService,
+            shizukuInputEventInjector,
+            permissionAdapter
+        )
+    }
 
     override fun perform(
         action: ActionData,
         inputEventType: InputEventType,
-        keyMetaState: Int
+        keyMetaState: Int,
     ) {
         /**
          * Is null if the action is being performed asynchronously
@@ -97,77 +110,84 @@ class PerformActionsUseCaseImpl(
         val result: Result<*>?
 
         when (action) {
-            is OpenAppAction -> {
+            is ActionData.App -> {
                 result = packageManagerAdapter.openApp(action.packageName)
             }
-            is OpenAppShortcutAction -> {
+            is ActionData.AppShortcut -> {
                 result = appShortcutAdapter.launchShortcut(action.uri)
             }
-            is IntentAction -> {
+            is ActionData.Intent -> {
                 result = intentAdapter.send(action.target, action.uri)
             }
 
-            is KeyEventAction -> {
+            is ActionData.InputKeyEvent -> {
+                val deviceId: Int = getDeviceIdForKeyEventAction(action)
 
-                if (action.useShell) {
-                    result = suAdapter.execute("input keyevent ${action.keyCode}")
-                } else {
-                    val deviceId: Int = getDeviceIdForKeyEventAction(action)
+                val model = InputKeyModel(
+                    keyCode = action.keyCode,
+                    inputType = inputEventType,
+                    metaState = keyMetaState.withFlag(action.metaState),
+                    deviceId = deviceId
+                )
 
-                    keyMapperImeMessenger.inputKeyEvent(
-                        InputKeyModel(
-                            keyCode = action.keyCode,
-                            inputType = inputEventType,
-                            metaState = keyMetaState.withFlag(action.metaState),
-                            deviceId = deviceId
-                        )
-                    )
+                result = when {
+                    permissionAdapter.isGranted(Permission.SHIZUKU) -> {
+                        shizukuInputEventInjector.inputKeyEvent(model)
+                        Success(Unit)
+                    }
 
-                    result = Success(Unit)
+                    action.useShell -> suAdapter.execute("input keyevent ${model.keyCode}")
+
+                    else -> {
+                        keyMapperImeMessenger.inputKeyEvent(model)
+
+                        Success(Unit)
+                    }
                 }
             }
 
-            is PhoneCallAction -> {
+            is ActionData.PhoneCall -> {
                 result = phoneAdapter.startCall(action.number)
             }
 
-            is EnableDndMode -> {
+            is ActionData.DoNotDisturb.Enable -> {
                 result = volumeAdapter.enableDndMode(action.dndMode)
             }
-            is ToggleDndMode -> {
+            is ActionData.DoNotDisturb.Toggle -> {
                 result = if (volumeAdapter.isDndEnabled()) {
                     volumeAdapter.disableDndMode()
                 } else {
                     volumeAdapter.enableDndMode(action.dndMode)
                 }
             }
-            is ChangeRingerModeSystemAction -> {
+
+            is ActionData.Volume.SetRingerMode -> {
                 result = volumeAdapter.setRingerMode(action.ringerMode)
             }
 
-            is ControlMediaForAppSystemAction.FastForward -> {
+            is ActionData.ControlMediaForApp.FastForward -> {
                 result = mediaAdapter.fastForward(action.packageName)
             }
-            is ControlMediaForAppSystemAction.NextTrack -> {
+            is ActionData.ControlMediaForApp.NextTrack -> {
                 result = mediaAdapter.nextTrack(action.packageName)
             }
-            is ControlMediaForAppSystemAction.Pause -> {
+            is ActionData.ControlMediaForApp.Pause -> {
                 result = mediaAdapter.pause(action.packageName)
             }
-            is ControlMediaForAppSystemAction.Play -> {
+            is ActionData.ControlMediaForApp.Play -> {
                 result = mediaAdapter.play(action.packageName)
             }
-            is ControlMediaForAppSystemAction.PlayPause -> {
+            is ActionData.ControlMediaForApp.PlayPause -> {
                 result = mediaAdapter.playPause(action.packageName)
             }
-            is ControlMediaForAppSystemAction.PreviousTrack -> {
+            is ActionData.ControlMediaForApp.PreviousTrack -> {
                 result = mediaAdapter.previousTrack(action.packageName)
             }
-            is ControlMediaForAppSystemAction.Rewind -> {
+            is ActionData.ControlMediaForApp.Rewind -> {
                 result = mediaAdapter.rewind(action.packageName)
             }
 
-            is CycleRotationsSystemAction -> {
+            is ActionData.Rotation.CycleRotations -> {
                 result = displayAdapter.disableAutoRotate().then {
                     val currentOrientation = displayAdapter.orientation
 
@@ -183,19 +203,19 @@ class PerformActionsUseCaseImpl(
                 }
             }
 
-            is FlashlightSystemAction.Disable -> {
+            is ActionData.Flashlight.Disable -> {
                 result = cameraAdapter.disableFlashlight(action.lens)
             }
 
-            is FlashlightSystemAction.Enable -> {
+            is ActionData.Flashlight.Enable -> {
                 result = cameraAdapter.enableFlashlight(action.lens)
             }
 
-            is FlashlightSystemAction.Toggle -> {
+            is ActionData.Flashlight.Toggle -> {
                 result = cameraAdapter.toggleFlashlight(action.lens)
             }
 
-            is SwitchKeyboardSystemAction -> {
+            is ActionData.SwitchKeyboard -> {
                 coroutineScope.launch {
                     inputMethodAdapter
                         .chooseImeWithoutUserInput(action.imeId)
@@ -212,479 +232,502 @@ class PerformActionsUseCaseImpl(
                 result = null
             }
 
-            is VolumeSystemAction.Down -> {
+            is ActionData.Volume.Down -> {
                 result = volumeAdapter.lowerVolume(showVolumeUi = action.showVolumeUi)
             }
-            is VolumeSystemAction.Up -> {
+            is ActionData.Volume.Up -> {
                 result = volumeAdapter.raiseVolume(showVolumeUi = action.showVolumeUi)
             }
 
-            is VolumeSystemAction.Mute -> {
+            is ActionData.Volume.Mute -> {
                 result = volumeAdapter.muteVolume(showVolumeUi = action.showVolumeUi)
             }
 
-            is VolumeSystemAction.Stream.Decrease -> {
+            is ActionData.Volume.Stream.Decrease -> {
                 result = volumeAdapter.lowerVolume(
                     stream = action.volumeStream,
                     showVolumeUi = action.showVolumeUi
                 )
             }
 
-            is VolumeSystemAction.Stream.Increase -> {
+            is ActionData.Volume.Stream.Increase -> {
                 result = volumeAdapter.raiseVolume(
                     stream = action.volumeStream,
                     showVolumeUi = action.showVolumeUi
                 )
             }
 
-            is VolumeSystemAction.ToggleMute -> {
+            is ActionData.Volume.ToggleMute -> {
                 result = volumeAdapter.toggleMuteVolume(showVolumeUi = action.showVolumeUi)
             }
 
-            is VolumeSystemAction.UnMute -> {
+            is ActionData.Volume.UnMute -> {
                 result = volumeAdapter.unmuteVolume(showVolumeUi = action.showVolumeUi)
             }
 
-            is TapCoordinateAction -> {
+            is ActionData.TapScreen -> {
                 result = accessibilityService.tapScreen(action.x, action.y, inputEventType)
             }
 
-            is TextAction -> {
+            is ActionData.Text -> {
                 keyMapperImeMessenger.inputText(action.text)
                 result = Success(Unit)
             }
 
-            is SimpleSystemAction -> {
-                when (action.id) {
-                    SystemActionId.TOGGLE_WIFI -> {
-                        result = if (networkAdapter.isWifiEnabled()) {
-                            networkAdapter.disableWifi()
-                        } else {
-                            networkAdapter.enableWifi()
-                        }
-                    }
-                    SystemActionId.ENABLE_WIFI -> {
-                        result = networkAdapter.enableWifi()
-                    }
-                    SystemActionId.DISABLE_WIFI -> {
-                        result = networkAdapter.disableWifi()
-                    }
-
-                    SystemActionId.TOGGLE_BLUETOOTH -> {
-                        result = if (bluetoothAdapter.isBluetoothEnabled.firstBlocking()) {
-                            bluetoothAdapter.disable()
-                        } else {
-                            bluetoothAdapter.enable()
-                        }
-                    }
-                    SystemActionId.ENABLE_BLUETOOTH -> {
-                        result = bluetoothAdapter.enable()
-                    }
-
-                    SystemActionId.DISABLE_BLUETOOTH -> {
-                        result = bluetoothAdapter.disable()
-                    }
-
-                    SystemActionId.TOGGLE_MOBILE_DATA -> {
-                        result = if (networkAdapter.isMobileDataEnabled()) {
-                            networkAdapter.disableMobileData()
-                        } else {
-                            networkAdapter.enableMobileData()
-                        }
-                    }
-                    SystemActionId.ENABLE_MOBILE_DATA -> {
-                        result = networkAdapter.enableMobileData()
-                    }
-                    SystemActionId.DISABLE_MOBILE_DATA -> {
-                        result = networkAdapter.disableMobileData()
-                    }
-
-                    SystemActionId.TOGGLE_AUTO_BRIGHTNESS -> {
-                        result = if (displayAdapter.isAutoBrightnessEnabled()) {
-                            displayAdapter.disableAutoBrightness()
-                        } else {
-                            displayAdapter.enableAutoBrightness()
-                        }
-                    }
-                    SystemActionId.DISABLE_AUTO_BRIGHTNESS -> {
-                        result = displayAdapter.disableAutoBrightness()
-                    }
-                    SystemActionId.ENABLE_AUTO_BRIGHTNESS -> {
-                        result = displayAdapter.enableAutoBrightness()
-                    }
-                    SystemActionId.INCREASE_BRIGHTNESS -> {
-                        result = displayAdapter.increaseBrightness()
-                    }
-                    SystemActionId.DECREASE_BRIGHTNESS -> {
-                        result = displayAdapter.decreaseBrightness()
-                    }
-
-                    SystemActionId.TOGGLE_AUTO_ROTATE -> {
-                        result = if (displayAdapter.isAutoRotateEnabled()) {
-                            displayAdapter.disableAutoRotate()
-                        } else {
-                            displayAdapter.enableAutoRotate()
-                        }
-                    }
-
-                    SystemActionId.ENABLE_AUTO_ROTATE -> {
-                        result = displayAdapter.enableAutoRotate()
-                    }
-
-                    SystemActionId.DISABLE_AUTO_ROTATE -> {
-                        result = displayAdapter.disableAutoRotate()
-                    }
-
-                    SystemActionId.PORTRAIT_MODE -> {
-                        displayAdapter.disableAutoRotate()
-                        result = displayAdapter.setOrientation(Orientation.ORIENTATION_0)
-                    }
-
-                    SystemActionId.LANDSCAPE_MODE -> {
-                        displayAdapter.disableAutoRotate()
-                        result = displayAdapter.setOrientation(Orientation.ORIENTATION_90)
-                    }
-
-                    SystemActionId.SWITCH_ORIENTATION -> {
-                        if (displayAdapter.orientation == Orientation.ORIENTATION_180
-                            || displayAdapter.orientation == Orientation.ORIENTATION_0
-                        ) {
-                            result = displayAdapter.setOrientation(Orientation.ORIENTATION_90)
-                        } else {
-                            result = displayAdapter.setOrientation(Orientation.ORIENTATION_0)
-                        }
-                    }
-
-                    SystemActionId.CYCLE_RINGER_MODE -> {
-                        result = when (volumeAdapter.ringerMode) {
-                            RingerMode.NORMAL -> volumeAdapter.setRingerMode(RingerMode.VIBRATE)
-                            RingerMode.VIBRATE -> volumeAdapter.setRingerMode(RingerMode.SILENT)
-                            RingerMode.SILENT -> volumeAdapter.setRingerMode(RingerMode.NORMAL)
-                        }
-                    }
-
-                    SystemActionId.CYCLE_VIBRATE_RING -> {
-                        result = when (volumeAdapter.ringerMode) {
-                            RingerMode.NORMAL -> volumeAdapter.setRingerMode(RingerMode.VIBRATE)
-                            RingerMode.VIBRATE -> volumeAdapter.setRingerMode(RingerMode.NORMAL)
-                            RingerMode.SILENT -> volumeAdapter.setRingerMode(RingerMode.NORMAL)
-                        }
-                    }
-
-                    SystemActionId.DISABLE_DND_MODE -> {
-                        result = volumeAdapter.disableDndMode()
-                    }
-
-                    SystemActionId.EXPAND_NOTIFICATION_DRAWER -> {
-                        val globalAction = AccessibilityService.GLOBAL_ACTION_NOTIFICATIONS
-
-                        result = accessibilityService.doGlobalAction(globalAction).otherwise {
-                            shellAdapter.execute("cmd statusbar expand-notifications")
-                        }
-                    }
-
-                    SystemActionId.TOGGLE_NOTIFICATION_DRAWER -> {
-                        result =
-                            if (accessibilityService.rootNode?.packageName == "com.android.systemui") {
-                                shellAdapter.execute("cmd statusbar collapse")
-                            } else {
-                                val globalAction = AccessibilityService.GLOBAL_ACTION_NOTIFICATIONS
-
-                                accessibilityService.doGlobalAction(globalAction).otherwise {
-                                    shellAdapter.execute("cmd statusbar expand-notifications")
-                                }
-                            }
-                    }
-
-                    SystemActionId.EXPAND_QUICK_SETTINGS -> {
-                        val globalAction = AccessibilityService.GLOBAL_ACTION_QUICK_SETTINGS
-
-                        result =
-                            accessibilityService.doGlobalAction(globalAction).otherwise {
-                                shellAdapter.execute("cmd statusbar expand-settings")
-                            }
-                    }
-
-                    SystemActionId.TOGGLE_QUICK_SETTINGS -> {
-                        result =
-                            if (accessibilityService.rootNode?.packageName == "com.android.systemui") {
-                                shellAdapter.execute("cmd statusbar collapse")
-                            } else {
-                                val globalAction = AccessibilityService.GLOBAL_ACTION_QUICK_SETTINGS
-
-                                accessibilityService.doGlobalAction(globalAction).otherwise {
-                                    shellAdapter.execute("cmd statusbar expand-settings")
-                                }
-                            }
-                    }
-
-                    SystemActionId.COLLAPSE_STATUS_BAR -> {
-                        result = shellAdapter.execute("cmd statusbar collapse")
-                    }
-
-                    SystemActionId.PAUSE_MEDIA -> {
-                        result = mediaAdapter.pause()
-                    }
-                    SystemActionId.PLAY_MEDIA -> {
-                        result = mediaAdapter.play()
-                    }
-                    SystemActionId.PLAY_PAUSE_MEDIA -> {
-                        result = mediaAdapter.playPause()
-                    }
-                    SystemActionId.NEXT_TRACK -> {
-                        result = mediaAdapter.nextTrack()
-                    }
-                    SystemActionId.PREVIOUS_TRACK -> {
-                        result = mediaAdapter.previousTrack()
-                    }
-                    SystemActionId.FAST_FORWARD -> {
-                        result = mediaAdapter.fastForward()
-                    }
-                    SystemActionId.REWIND -> {
-                        result = mediaAdapter.rewind()
-                    }
-
-                    SystemActionId.GO_BACK -> {
-                        result =
-                            accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
-                    }
-                    SystemActionId.GO_HOME -> {
-                        result =
-                            accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME)
-                    }
-
-                    SystemActionId.OPEN_RECENTS -> {
-                        result =
-                            accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS)
-                    }
-
-                    SystemActionId.TOGGLE_SPLIT_SCREEN -> {
-                        result = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                            accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_TOGGLE_SPLIT_SCREEN)
-                        } else {
-                            Error.SdkVersionTooLow(minSdk = Build.VERSION_CODES.N)
-                        }
-                    }
-
-                    SystemActionId.GO_LAST_APP -> {
-                        coroutineScope.launch {
-                            accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS)
-                            delay(100)
-                            accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS)
-                                .showErrorMessageOnFail()
-                        }
-
-                        result = null
-                    }
-
-                    SystemActionId.OPEN_MENU -> {
-                        result = openMenuHelper.openMenu()
-                    }
-
-                    SystemActionId.ENABLE_NFC -> {
-                        result = nfcAdapter.enable()
-                    }
-                    SystemActionId.DISABLE_NFC -> {
-                        result = nfcAdapter.disable()
-                    }
-                    SystemActionId.TOGGLE_NFC -> {
-                        result = if (nfcAdapter.isEnabled()) {
-                            nfcAdapter.disable()
-                        } else {
-                            nfcAdapter.enable()
-                        }
-                    }
-
-                    SystemActionId.MOVE_CURSOR_TO_END -> {
-                        keyMapperImeMessenger.inputKeyEvent(
-                            InputKeyModel(
-                                keyCode = KeyEvent.KEYCODE_MOVE_END,
-                                metaState = KeyEvent.META_CTRL_ON,
-                            )
-                        )
-
-                        result = Success(Unit)
-                    }
-
-                    SystemActionId.TOGGLE_KEYBOARD -> {
-                        val isHidden = accessibilityService.isKeyboardHidden.firstBlocking()
-                        if (isHidden) {
-                            accessibilityService.showKeyboard()
-                        } else {
-                            accessibilityService.hideKeyboard()
-                        }
-
-                        result = Success(Unit)
-                    }
-
-
-                    SystemActionId.SHOW_KEYBOARD -> {
-                        accessibilityService.showKeyboard()
-                        result = Success(Unit)
-                    }
-
-                    SystemActionId.HIDE_KEYBOARD -> {
-                        accessibilityService.hideKeyboard()
-                        result = Success(Unit)
-                    }
-
-                    SystemActionId.SHOW_KEYBOARD_PICKER -> {
-                        result = inputMethodAdapter.showImePicker(fromForeground = false)
-                    }
-
-                    SystemActionId.TEXT_CUT -> {
-                        result = accessibilityService.performActionOnNode({ it.isFocused }) {
-                            AccessibilityNodeAction(AccessibilityNodeInfo.ACTION_CUT)
-                        }
-                    }
-
-                    SystemActionId.TEXT_COPY -> {
-                        result = accessibilityService.performActionOnNode({ it.isFocused }) {
-                            AccessibilityNodeAction(AccessibilityNodeInfo.ACTION_COPY)
-                        }
-                    }
-                    SystemActionId.TEXT_PASTE -> {
-                        result = accessibilityService.performActionOnNode({ it.isFocused }) {
-                            AccessibilityNodeAction(AccessibilityNodeInfo.ACTION_PASTE)
-                        }
-                    }
-
-                    SystemActionId.SELECT_WORD_AT_CURSOR -> {
-                        result = accessibilityService.performActionOnNode({ it.isFocused }) {
-                            //it is at the cursor position if they both return the same value
-                            if (it.textSelectionStart == it.textSelectionEnd) {
-                                val cursorPosition = it.textSelectionStart
-
-                                val wordBoundary =
-                                    it.text.toString().getWordBoundaries(cursorPosition)
-                                        ?: return@performActionOnNode null
-
-                                val extras = mapOf(
-                                    AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_START_INT to wordBoundary.first,
-
-                                    //The index of the cursor is the index of the last char in the word + 1
-                                    AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_END_INT to wordBoundary.second + 1
-                                )
-
-                                AccessibilityNodeAction(
-                                    AccessibilityNodeInfo.ACTION_SET_SELECTION,
-                                    extras
-                                )
-                            } else {
-                                null
-                            }
-
-                        }
-                    }
-
-                    SystemActionId.TOGGLE_AIRPLANE_MODE -> {
-                        result = if (airplaneModeAdapter.isEnabled()) {
-                            airplaneModeAdapter.disable()
-                        } else {
-                            airplaneModeAdapter.enable()
-                        }
-                    }
-                    SystemActionId.ENABLE_AIRPLANE_MODE -> {
-                        result = airplaneModeAdapter.enable()
-                    }
-                    SystemActionId.DISABLE_AIRPLANE_MODE -> {
-                        result = airplaneModeAdapter.disable()
-                    }
-
-                    SystemActionId.SCREENSHOT -> {
-                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-                            coroutineScope.launch {
-                                val picturesFolder = fileAdapter.getPicturesFolder()
-                                val screenshotsFolder = "$picturesFolder/Screenshots"
-                                val fileDate = FileUtils.createFileDate()
-
-                                suAdapter.execute("mkdir -p $screenshotsFolder; screencap -p $screenshotsFolder/Screenshot_$fileDate.png")
-                                    .onSuccess {
-                                        popupMessageAdapter.showPopupMessage(
-                                            resourceProvider.getString(
-                                                R.string.toast_screenshot_taken
-                                            )
-                                        )
-                                    }.showErrorMessageOnFail()
-                            }
-                            result = null
-
-                        } else {
-                            result =
-                                accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_TAKE_SCREENSHOT)
-                        }
-                    }
-
-                    SystemActionId.OPEN_VOICE_ASSISTANT -> {
-                        result = packageManagerAdapter.launchVoiceAssistant()
-                    }
-                    SystemActionId.OPEN_DEVICE_ASSISTANT -> {
-                        result = packageManagerAdapter.launchDeviceAssistant()
-                    }
-                    SystemActionId.OPEN_CAMERA -> {
-                        result = packageManagerAdapter.launchCameraApp()
-                    }
-
-                    SystemActionId.LOCK_DEVICE -> {
-                        result = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-                            suAdapter.execute("input keyevent ${KeyEvent.KEYCODE_POWER}")
-                        } else {
-                            accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_LOCK_SCREEN)
-                        }
-                    }
-
-                    SystemActionId.POWER_ON_OFF_DEVICE -> {
-                        result = suAdapter.execute("input keyevent ${KeyEvent.KEYCODE_POWER}")
-                    }
-
-                    SystemActionId.SECURE_LOCK_DEVICE -> {
-                        result = lockScreenAdapter.secureLockDevice()
-                    }
-
-                    SystemActionId.CONSUME_KEY_EVENT -> {
-                        result = Success(Unit)
-                    }
-
-                    SystemActionId.OPEN_SETTINGS -> {
-                        result = packageManagerAdapter.launchSettingsApp()
-                    }
-
-                    SystemActionId.SHOW_POWER_MENU -> {
-                        result =
-                            accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_POWER_DIALOG)
-                    }
-
-                    SystemActionId.VOLUME_SHOW_DIALOG -> {
-                        result = volumeAdapter.showVolumeUi()
-                    }
-
-                    else -> throw Exception("Don't know how to perform this action ${action.id}")
-                }
-            }
-
-            is UrlAction -> {
+            is ActionData.Url -> {
                 result = openUrlAdapter.openUrl(action.url)
             }
 
-            is SoundAction -> {
+            is ActionData.Sound -> {
                 result = soundsManager.getSound(action.soundUid).then { file ->
                     mediaAdapter.playSoundFile(file.uri, VolumeStream.ACCESSIBILITY)
                 }
             }
 
-            CorruptAction -> {
-                result = Error.CorruptActionError
+            is ActionData.Wifi.Toggle -> {
+                result = if (networkAdapter.isWifiEnabled()) {
+                    networkAdapter.disableWifi()
+                } else {
+                    networkAdapter.enableWifi()
+                }
+            }
+
+            is ActionData.Wifi.Enable -> {
+                result = networkAdapter.enableWifi()
+            }
+
+            is ActionData.Wifi.Disable -> {
+                result = networkAdapter.disableWifi()
+            }
+
+            is ActionData.Bluetooth.Toggle -> {
+                result = if (bluetoothAdapter.isBluetoothEnabled.firstBlocking()) {
+                    bluetoothAdapter.disable()
+                } else {
+                    bluetoothAdapter.enable()
+                }
+            }
+
+            is ActionData.Bluetooth.Enable -> {
+                result = bluetoothAdapter.enable()
+            }
+
+            is ActionData.Bluetooth.Disable -> {
+                result = bluetoothAdapter.disable()
+            }
+
+            is ActionData.MobileData.Toggle -> {
+                result = if (networkAdapter.isMobileDataEnabled()) {
+                    networkAdapter.disableMobileData()
+                } else {
+                    networkAdapter.enableMobileData()
+                }
+            }
+
+            is ActionData.MobileData.Enable -> {
+                result = networkAdapter.enableMobileData()
+            }
+
+            is ActionData.MobileData.Disable -> {
+                result = networkAdapter.disableMobileData()
+            }
+
+            is ActionData.Brightness.ToggleAuto -> {
+                result = if (displayAdapter.isAutoBrightnessEnabled()) {
+                    displayAdapter.disableAutoBrightness()
+                } else {
+                    displayAdapter.enableAutoBrightness()
+                }
+            }
+
+            is ActionData.Brightness.DisableAuto -> {
+                result = displayAdapter.disableAutoBrightness()
+            }
+
+            is ActionData.Brightness.EnableAuto -> {
+                result = displayAdapter.enableAutoBrightness()
+            }
+            is ActionData.Brightness.Increase -> {
+                result = displayAdapter.increaseBrightness()
+            }
+            is ActionData.Brightness.Decrease -> {
+                result = displayAdapter.decreaseBrightness()
+            }
+
+            is ActionData.Rotation.ToggleAuto -> {
+                result = if (displayAdapter.isAutoRotateEnabled()) {
+                    displayAdapter.disableAutoRotate()
+                } else {
+                    displayAdapter.enableAutoRotate()
+                }
+            }
+
+            is ActionData.Rotation.EnableAuto -> {
+                result = displayAdapter.enableAutoRotate()
+            }
+
+            is ActionData.Rotation.DisableAuto -> {
+                result = displayAdapter.disableAutoRotate()
+            }
+
+            is ActionData.Rotation.Portrait -> {
+                displayAdapter.disableAutoRotate()
+                result = displayAdapter.setOrientation(Orientation.ORIENTATION_0)
+            }
+
+            is ActionData.Rotation.Landscape -> {
+                displayAdapter.disableAutoRotate()
+                result = displayAdapter.setOrientation(Orientation.ORIENTATION_90)
+            }
+
+            is ActionData.Rotation.SwitchOrientation -> {
+                if (displayAdapter.orientation == Orientation.ORIENTATION_180
+                    || displayAdapter.orientation == Orientation.ORIENTATION_0
+                ) {
+                    result = displayAdapter.setOrientation(Orientation.ORIENTATION_90)
+                } else {
+                    result = displayAdapter.setOrientation(Orientation.ORIENTATION_0)
+                }
+            }
+
+            is ActionData.Volume.CycleRingerMode -> {
+                result = when (volumeAdapter.ringerMode) {
+                    RingerMode.NORMAL -> volumeAdapter.setRingerMode(RingerMode.VIBRATE)
+                    RingerMode.VIBRATE -> volumeAdapter.setRingerMode(RingerMode.SILENT)
+                    RingerMode.SILENT -> volumeAdapter.setRingerMode(RingerMode.NORMAL)
+                }
+            }
+
+            is ActionData.Volume.CycleVibrateRing -> {
+                result = when (volumeAdapter.ringerMode) {
+                    RingerMode.NORMAL -> volumeAdapter.setRingerMode(RingerMode.VIBRATE)
+                    RingerMode.VIBRATE -> volumeAdapter.setRingerMode(RingerMode.NORMAL)
+                    RingerMode.SILENT -> volumeAdapter.setRingerMode(RingerMode.NORMAL)
+                }
+            }
+
+            is ActionData.DoNotDisturb.Disable -> {
+                result = volumeAdapter.disableDndMode()
+            }
+
+            is ActionData.StatusBar.ExpandNotifications -> {
+                val globalAction = AccessibilityService.GLOBAL_ACTION_NOTIFICATIONS
+
+                result = accessibilityService.doGlobalAction(globalAction).otherwise {
+                    shellAdapter.execute("cmd statusbar expand-notifications")
+                }
+            }
+
+            is ActionData.StatusBar.ToggleNotifications -> {
+                result =
+                    if (accessibilityService.rootNode?.packageName == "com.android.systemui") {
+                       closeStatusBarShade()
+                    } else {
+                        val globalAction = AccessibilityService.GLOBAL_ACTION_NOTIFICATIONS
+
+                        accessibilityService.doGlobalAction(globalAction).otherwise {
+                            shellAdapter.execute("cmd statusbar expand-notifications")
+                        }
+                    }
+            }
+
+            is ActionData.StatusBar.ExpandQuickSettings -> {
+                val globalAction = AccessibilityService.GLOBAL_ACTION_QUICK_SETTINGS
+
+                result =
+                    accessibilityService.doGlobalAction(globalAction).otherwise {
+                        shellAdapter.execute("cmd statusbar expand-settings")
+                    }
+            }
+
+            is ActionData.StatusBar.ToggleQuickSettings -> {
+                result =
+                    if (accessibilityService.rootNode?.packageName == "com.android.systemui") {
+                        closeStatusBarShade()
+                    } else {
+                        val globalAction = AccessibilityService.GLOBAL_ACTION_QUICK_SETTINGS
+
+                        accessibilityService.doGlobalAction(globalAction).otherwise {
+                            shellAdapter.execute("cmd statusbar expand-settings")
+                        }
+                    }
+            }
+
+            is ActionData.StatusBar.Collapse -> {
+                result = closeStatusBarShade()
+            }
+
+            is ActionData.ControlMedia.Pause -> {
+                result = mediaAdapter.pause()
+            }
+            is ActionData.ControlMedia.Play -> {
+                result = mediaAdapter.play()
+            }
+            is ActionData.ControlMedia.PlayPause -> {
+                result = mediaAdapter.playPause()
+            }
+            is ActionData.ControlMedia.NextTrack -> {
+                result = mediaAdapter.nextTrack()
+            }
+            is ActionData.ControlMedia.PreviousTrack -> {
+                result = mediaAdapter.previousTrack()
+            }
+            is ActionData.ControlMedia.FastForward -> {
+                result = mediaAdapter.fastForward()
+            }
+            is ActionData.ControlMedia.Rewind -> {
+                result = mediaAdapter.rewind()
+            }
+
+            is ActionData.GoBack -> {
+                result =
+                    accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
+            }
+            is ActionData.GoHome -> {
+                result =
+                    accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME)
+            }
+
+            is ActionData.OpenRecents -> {
+                result =
+                    accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS)
+            }
+
+            is ActionData.ToggleSplitScreen -> {
+                result = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_TOGGLE_SPLIT_SCREEN)
+                } else {
+                    Error.SdkVersionTooLow(minSdk = Build.VERSION_CODES.N)
+                }
+            }
+
+            is ActionData.GoLastApp -> {
+                coroutineScope.launch {
+                    accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS)
+                    delay(100)
+                    accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS)
+                        .showErrorMessageOnFail()
+                }
+
+                result = null
+            }
+
+            is ActionData.OpenMenu -> {
+                result = openMenuHelper.openMenu()
+            }
+
+            is ActionData.Nfc.Enable -> {
+                result = nfcAdapter.enable()
+            }
+            is ActionData.Nfc.Disable -> {
+                result = nfcAdapter.disable()
+            }
+            is ActionData.Nfc.Toggle -> {
+                result = if (nfcAdapter.isEnabled()) {
+                    nfcAdapter.disable()
+                } else {
+                    nfcAdapter.enable()
+                }
+            }
+
+            is ActionData.MoveCursorToEnd -> {
+                val keyModel = InputKeyModel(
+                    keyCode = KeyEvent.KEYCODE_MOVE_END,
+                    metaState = KeyEvent.META_CTRL_ON,
+                )
+
+                if (permissionAdapter.isGranted(Permission.SHIZUKU)) {
+                    shizukuInputEventInjector.inputKeyEvent(keyModel)
+                } else {
+                    keyMapperImeMessenger.inputKeyEvent(keyModel)
+                }
+
+                result = Success(Unit)
+            }
+
+            is ActionData.ToggleKeyboard -> {
+                val isHidden = accessibilityService.isKeyboardHidden.firstBlocking()
+                if (isHidden) {
+                    accessibilityService.showKeyboard()
+                } else {
+                    accessibilityService.hideKeyboard()
+                }
+
+                result = Success(Unit)
+            }
+
+
+            is ActionData.ShowKeyboard -> {
+                accessibilityService.showKeyboard()
+                result = Success(Unit)
+            }
+
+            is ActionData.HideKeyboard -> {
+                accessibilityService.hideKeyboard()
+                result = Success(Unit)
+            }
+
+            is ActionData.ShowKeyboardPicker -> {
+                result = inputMethodAdapter.showImePicker(fromForeground = false)
+            }
+
+            is ActionData.CutText -> {
+                result = accessibilityService.performActionOnNode({ it.isFocused }) {
+                    AccessibilityNodeAction(AccessibilityNodeInfo.ACTION_CUT)
+                }
+            }
+
+            is ActionData.CopyText -> {
+                result = accessibilityService.performActionOnNode({ it.isFocused }) {
+                    AccessibilityNodeAction(AccessibilityNodeInfo.ACTION_COPY)
+                }
+            }
+            is ActionData.PasteText -> {
+                result = accessibilityService.performActionOnNode({ it.isFocused }) {
+                    AccessibilityNodeAction(AccessibilityNodeInfo.ACTION_PASTE)
+                }
+            }
+
+            is ActionData.SelectWordAtCursor -> {
+                result = accessibilityService.performActionOnNode({ it.isFocused }) {
+                    //it is at the cursor position if they both return the same value
+                    if (it.textSelectionStart == it.textSelectionEnd) {
+                        val cursorPosition = it.textSelectionStart
+
+                        val wordBoundary =
+                            it.text.toString().getWordBoundaries(cursorPosition)
+                                ?: return@performActionOnNode null
+
+                        val extras = mapOf(
+                            AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_START_INT to wordBoundary.first,
+
+                            //The index of the cursor is the index of the last char in the word + 1
+                            AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_END_INT to wordBoundary.second + 1
+                        )
+
+                        AccessibilityNodeAction(
+                            AccessibilityNodeInfo.ACTION_SET_SELECTION,
+                            extras
+                        )
+                    } else {
+                        null
+                    }
+
+                }
+            }
+
+            is ActionData.AirplaneMode.Toggle -> {
+                result = if (airplaneModeAdapter.isEnabled()) {
+                    airplaneModeAdapter.disable()
+                } else {
+                    airplaneModeAdapter.enable()
+                }
+            }
+            is ActionData.AirplaneMode.Enable -> {
+                result = airplaneModeAdapter.enable()
+            }
+            is ActionData.AirplaneMode.Disable -> {
+                result = airplaneModeAdapter.disable()
+            }
+
+            is ActionData.Screenshot -> {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+                    coroutineScope.launch {
+                        val picturesFolder = fileAdapter.getPicturesFolder()
+                        val screenshotsFolder = "$picturesFolder/Screenshots"
+                        val fileDate = FileUtils.createFileDate()
+
+                        suAdapter.execute("mkdir -p $screenshotsFolder; screencap -p $screenshotsFolder/Screenshot_$fileDate.png")
+                            .onSuccess {
+                                popupMessageAdapter.showPopupMessage(
+                                    resourceProvider.getString(
+                                        R.string.toast_screenshot_taken
+                                    )
+                                )
+                            }.showErrorMessageOnFail()
+                    }
+                    result = null
+
+                } else {
+                    result =
+                        accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_TAKE_SCREENSHOT)
+                }
+            }
+
+            is ActionData.VoiceAssistant -> {
+                result = packageManagerAdapter.launchVoiceAssistant()
+            }
+            is ActionData.DeviceAssistant -> {
+                result = packageManagerAdapter.launchDeviceAssistant()
+            }
+            is ActionData.OpenCamera -> {
+                result = packageManagerAdapter.launchCameraApp()
+            }
+
+            is ActionData.LockDevice -> {
+                result = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+                    suAdapter.execute("input keyevent ${KeyEvent.KEYCODE_POWER}")
+                } else {
+                    accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_LOCK_SCREEN)
+                }
+            }
+
+            is ActionData.ScreenOnOff -> {
+                result = suAdapter.execute("input keyevent ${KeyEvent.KEYCODE_POWER}")
+            }
+
+            is ActionData.SecureLock -> {
+                result = lockScreenAdapter.secureLockDevice()
+            }
+
+            is ActionData.ConsumeKeyEvent -> {
+                result = Success(Unit)
+            }
+
+            is ActionData.OpenSettings -> {
+                result = packageManagerAdapter.launchSettingsApp()
+            }
+
+            is ActionData.ShowPowerMenu -> {
+                result =
+                    accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_POWER_DIALOG)
+            }
+
+            is ActionData.Volume.ShowDialog -> {
+                result = volumeAdapter.showVolumeUi()
+            }
+
+            ActionData.DismissAllNotifications -> {
+                coroutineScope.launch {
+                    notificationReceiverAdapter.send(Event.DismissAllNotifications)
+                }
+
+                result = null
+            }
+
+            ActionData.DismissLastNotification -> {
+                coroutineScope.launch {
+                    notificationReceiverAdapter.send(Event.DismissLastNotification)
+                }
+
+                result = null
+            }
+            
+            ActionData.AnswerCall ->{
+                phoneAdapter.answerCall()
+                result = success()
+            }
+            
+            ActionData.EndCall ->{
+                phoneAdapter.endCall()
+                result = success()
             }
         }
 
         when (result) {
             null, is Success -> Timber.d("Performed action $action, input event type: $inputEventType, key meta state: $keyMetaState")
             is Error -> Timber.d(
-                "Failed to perform action $action, reason: ${
-                    result.getFullMessage(
-                        resourceProvider
-                    )
-                }, action: $action, input event type: $inputEventType, key meta state: $keyMetaState"
+                "Failed to perform action $action, reason: ${result.getFullMessage(resourceProvider)}, action: $action, input event type: $inputEventType, key meta state: $keyMetaState"
             )
         }
 
@@ -710,7 +753,7 @@ class PerformActionsUseCaseImpl(
             .map { it ?: PreferenceDefaults.HOLD_DOWN_DURATION }
             .map { it.toLong() }
 
-    private fun getDeviceIdForKeyEventAction(action: KeyEventAction): Int {
+    private fun getDeviceIdForKeyEventAction(action: ActionData.InputKeyEvent): Int {
         if (action.device?.descriptor == null) {
             //automatically select a game controller as the input device for game controller key events
 
@@ -755,6 +798,15 @@ class PerformActionsUseCaseImpl(
             ?: devicesWithSameDescriptor[0]
 
         return device.id
+    }
+
+    private fun closeStatusBarShade(): Result<*> {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            return accessibilityService
+                .doGlobalAction(AccessibilityService.GLOBAL_ACTION_DISMISS_NOTIFICATION_SHADE)
+        } else {
+            return shellAdapter.execute("cmd statusbar collapse")
+        }
     }
 
     private fun Result<*>.showErrorMessageOnFail() {

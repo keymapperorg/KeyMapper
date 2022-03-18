@@ -15,6 +15,7 @@ object FileUtils {
     const val MIME_TYPE_PNG = "image/png"
     const val MIME_TYPE_ALL = "*/*"
     const val MIME_TYPE_AUDIO = "audio/*"
+    const val MIME_TYPE_ZIP = "application/zip"
 
     @SuppressLint("SimpleDateFormat")
     fun createFileDate(): String {

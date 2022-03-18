@@ -1,9 +1,8 @@
 package io.github.sds100.keymapper.onboarding
 
+import io.github.sds100.keymapper.actions.ActionData
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flow
 
 /**
  * Created by sds100 on 26/04/2021.
@@ -12,7 +11,18 @@ class FakeOnboardingUseCase : OnboardingUseCase {
     var approvedSetupChosenDevicesAgainNotification = false
 
     override var shownAppIntro: Boolean = false
-    override val showGuiKeyboardPrompt = MutableStateFlow(true)
+
+    override suspend fun showInstallGuiKeyboardPrompt(action: ActionData): Boolean {
+        throw NotImplementedError()
+    }
+
+    override suspend fun showInstallShizukuPrompt(action: ActionData): Boolean {
+        throw NotImplementedError()
+    }
+
+    override fun isTvDevice(): Boolean {
+        throw NotImplementedError()
+    }
 
     override fun neverShowGuiKeyboardPromptsAgain() {}
 
@@ -38,10 +48,14 @@ class FakeOnboardingUseCase : OnboardingUseCase {
     override fun showedWhatsNew() {}
 
     override fun getWhatsNewText(): String {
-        throw Exception()
+        throw NotImplementedError()
     }
 
     override val showQuickStartGuideHint = MutableStateFlow(false)
 
     override fun shownQuickStartGuideHint() {}
+
+    override val promptForShizukuPermission: Flow<Boolean> = MutableStateFlow(false)
+
+    override val showShizukuAppIntroSlide: Boolean = false
 }

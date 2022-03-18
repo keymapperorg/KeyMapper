@@ -2,20 +2,18 @@ package io.github.sds100.keymapper.mappings.keymaps.trigger
 
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.ClickType
-import io.github.sds100.keymapper.util.Defaultable
-import io.github.sds100.keymapper.util.State
-import io.github.sds100.keymapper.util.ui.ResourceProvider
-import io.github.sds100.keymapper.mappings.OptionsUiState
+import io.github.sds100.keymapper.mappings.DefaultOptionsUiState
 import io.github.sds100.keymapper.mappings.OptionsViewModel
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapUseCase
+import io.github.sds100.keymapper.util.Defaultable
+import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ui.CheckBoxListItem
 import io.github.sds100.keymapper.util.ui.ListItem
 import io.github.sds100.keymapper.util.ui.RadioButtonTripleListItem
+import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
 
 /**
  * Created by sds100 on 12/04/2021.
@@ -38,17 +36,23 @@ class ConfigTriggerKeyViewModel(
         when {
             mapping is State.Data -> {
                 val key = mapping.data.trigger.keys.find { it.uid == keyUid }
-                    ?: return@combine OptionsUiState(showProgressBar = true)
+                    ?: return@combine DefaultOptionsUiState(showProgressBar = true)
 
-                OptionsUiState(
+                DefaultOptionsUiState(
                     showProgressBar = false,
                     listItems = createListItems(mapping.data.trigger.mode, key)
                 )
             }
 
-            else -> OptionsUiState(showProgressBar = true)
+            else -> DefaultOptionsUiState(showProgressBar = true)
         }
-    }.stateIn(coroutineScope, SharingStarted.Eagerly, OptionsUiState(showProgressBar = true))
+    }
+        .flowOn(Dispatchers.Default)
+        .stateIn(
+            coroutineScope,
+            SharingStarted.Lazily,
+            DefaultOptionsUiState(showProgressBar = true)
+        )
 
     override fun setRadioButtonValue(id: String, value: Boolean) {
         val keyUid = triggerKeyUid.value ?: return

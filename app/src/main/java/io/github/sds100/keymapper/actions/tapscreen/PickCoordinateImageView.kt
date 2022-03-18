@@ -7,9 +7,9 @@ import android.graphics.Point
 import android.util.AttributeSet
 import android.view.MotionEvent
 import androidx.appcompat.widget.AppCompatImageView
-import androidx.lifecycle.MutableLiveData
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.color
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlin.math.roundToInt
 
 /**
@@ -24,7 +24,7 @@ class PickCoordinateImageView(
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context) : this(context, null, 0)
 
-    val pointCoordinates = MutableLiveData<Point>()
+    val pointCoordinates = MutableStateFlow<Point?>(null)
 
     private val coordinateLinePaint = Paint().apply {
         color = context.color(R.color.coordinate_line)

@@ -8,11 +8,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.filterByQuery
 import io.github.sds100.keymapper.util.mapData
-import io.github.sds100.keymapper.util.ui.ResourceProvider
-import io.github.sds100.keymapper.util.ui.PopupViewModel
-import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
-import io.github.sds100.keymapper.util.ui.PopupUi
-import io.github.sds100.keymapper.util.ui.showPopup
+import io.github.sds100.keymapper.util.ui.*
 import io.github.sds100.keymapper.util.valueOrNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -46,9 +42,9 @@ class ChooseAppShortcutViewModel internal constructor(
                     val icon = useCase.getShortcutIcon(it).valueOrNull()
                         ?: return@mapNotNull null
 
-                    AppShortcutListItem(shortcutInfo = it, name, icon)
+                    AppShortcutListItem(shortcutInfo = it, name, IconInfo(icon))
                 }
-                .sortedBy { it.label.toLowerCase(Locale.getDefault()) }
+                .sortedBy { it.label.lowercase(Locale.getDefault()) }
         }
     }.flowOn(Dispatchers.Default)
 
@@ -92,18 +88,18 @@ class ChooseAppShortcutViewModel internal constructor(
 
             val intentShortcutName = intent.getStringExtra(Intent.EXTRA_SHORTCUT_NAME)
 
-            val shortcutName: String = if (intentShortcutName != null) {
-                intentShortcutName
+            val shortcutName: String
+
+            if (intentShortcutName != null) {
+                shortcutName = intentShortcutName
             } else {
-                val response = showPopup(
+                shortcutName = showPopup(
                     "create_shortcut_name",
                     PopupUi.Text(
                         hint = getString(R.string.hint_shortcut_name),
                         allowEmpty = false
                     )
                 ) ?: return@launch
-
-                response.text
             }
 
             _returnResult.emit(
@@ -122,7 +118,7 @@ class ChooseAppShortcutViewModel internal constructor(
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(modelClass: Class<T>) =
+        override fun <T : ViewModel> create(modelClass: Class<T>) =
             ChooseAppShortcutViewModel(
                 useCase,
                 resourceProvider

@@ -26,7 +26,6 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button"
-            style="@style/Widget.MaterialComponents.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -35,6 +34,7 @@
             android:onClick="@{onFixClick}"
             android:text="@{model.customButtonText == null ? @string/button_fix : model.customButtonText }"
             app:backgroundTint="?attr/colorError"
+            android:textColor="?attr/colorOnError"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -51,7 +51,7 @@
             android:drawablePadding="16dp"
             android:gravity="center_vertical"
             android:text="@{model.text}"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
             app:drawableTint="?attr/colorError"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/button"

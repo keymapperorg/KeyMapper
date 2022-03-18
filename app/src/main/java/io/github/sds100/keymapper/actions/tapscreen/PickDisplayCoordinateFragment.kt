@@ -10,20 +10,25 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.getSystemService
 import androidx.core.graphics.decodeBitmap
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import io.github.sds100.keymapper.databinding.FragmentPickCoordinateBinding
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.showPopups
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 /**
  * Created by sds100 on 30/03/2020.
@@ -31,13 +36,13 @@ import kotlinx.coroutines.flow.collectLatest
 
 class PickDisplayCoordinateFragment : Fragment() {
     companion object {
-        const val REQUEST_KEY = "request_coordinate"
-        const val EXTRA_X = "extra_x"
-        const val EXTRA_Y = "extra_y"
-        const val EXTRA_DESCRIPTION = "extra_description"
+        const val EXTRA_RESULT = "extra_result"
     }
 
-    private val viewModel: PickDisplayCoordinateViewModel by activityViewModels {
+    private val args: PickDisplayCoordinateFragmentArgs by navArgs()
+    private val requestKey: String by lazy { args.requestKey }
+
+    private val viewModel: PickDisplayCoordinateViewModel by viewModels {
         Inject.tapCoordinateActionTypeViewModel(requireContext())
     }
 
@@ -57,12 +62,7 @@ class PickDisplayCoordinateFragment : Fragment() {
                 windowManager.defaultDisplay.getRealSize(this)
             }
 
-            /**
-             * Do this on resume so the snack bar shared flow has a chance to be collected.
-             */
-            viewLifecycleOwner.lifecycleScope.launchWhenResumed {
-                viewModel.selectedScreenshot(bitmap, displaySize)
-            }
+            viewModel.selectedScreenshot(bitmap, displaySize)
         }
 
     /**
@@ -72,15 +72,21 @@ class PickDisplayCoordinateFragment : Fragment() {
     val binding: FragmentPickCoordinateBinding
         get() = _binding!!
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        args.result?.let {
+            viewModel.loadResult(Json.decodeFromString(it))
+        }
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         FragmentPickCoordinateBinding.inflate(inflater, container, false).apply {
-
             lifecycleOwner = viewLifecycleOwner
             _binding = this
 
@@ -93,30 +99,42 @@ class PickDisplayCoordinateFragment : Fragment() {
 
         binding.viewModel = viewModel
 
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
-            viewModel.bitmap.collectLatest {
-                binding.imageViewScreenshot.setImageBitmap(it)
+        viewModel.showPopups(this, binding)
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            findNavController().navigateUp()
+        }
+
+        binding.appBar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
+
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
+            viewModel.bitmap.collectLatest { bitmap ->
+                if (bitmap == null) {
+                    binding.imageViewScreenshot.setImageDrawable(null)
+                } else {
+                    binding.imageViewScreenshot.setImageBitmap(bitmap)
+                }
             }
         }
 
-        binding.imageViewScreenshot.pointCoordinates.observe(viewLifecycleOwner, {
-            viewModel.onScreenshotTouch(
-                it.x.toFloat() / binding.imageViewScreenshot.width,
-                it.y.toFloat() / binding.imageViewScreenshot.height
-            )
-        })
-
-        viewModel.showPopups(this, binding)
-
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
-            viewModel.returnResult.collectLatest {
-                setFragmentResult(
-                    REQUEST_KEY,
-                    bundleOf(
-                        EXTRA_X to it.x,
-                        EXTRA_Y to it.y,
-                        EXTRA_DESCRIPTION to it.description
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
+            binding.imageViewScreenshot.pointCoordinates.collectLatest { point ->
+                if (point != null) {
+                    viewModel.onScreenshotTouch(
+                        point.x.toFloat() / binding.imageViewScreenshot.width,
+                        point.y.toFloat() / binding.imageViewScreenshot.height
                     )
+                }
+            }
+        }
+
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
+            viewModel.returnResult.collectLatest { result ->
+                setFragmentResult(
+                    requestKey,
+                    bundleOf(EXTRA_RESULT to Json.encodeToString(result))
                 )
 
                 findNavController().navigateUp()

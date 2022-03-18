@@ -19,12 +19,12 @@ import io.github.sds100.keymapper.util.ui.ResourceProvider
  * Created by sds100 on 19/03/2021.
  */
 class KeyMapListItemCreator(
-    private val displayMapping: DisplayKeyMapUseCase,
-    resourceProvider: ResourceProvider
+        private val displayMapping: DisplayKeyMapUseCase,
+        resourceProvider: ResourceProvider
 ) : BaseMappingListItemCreator<KeyMap, KeyMapAction>(
-    displayMapping,
-    KeyMapActionUiHelper(displayMapping, resourceProvider),
-    resourceProvider
+        displayMapping,
+        KeyMapActionUiHelper(displayMapping, resourceProvider),
+        resourceProvider
 ) {
 
     fun create(keyMap: KeyMap, showDeviceDescriptors: Boolean): KeyMapListItem.KeyMapUiState {
@@ -46,11 +46,11 @@ class KeyMapListItemCreator(
                 }
 
                 when (key.clickType) {
-                    ClickType.LONG_PRESS -> append(longPressString)
-                    ClickType.DOUBLE_PRESS -> append(doublePressString)
+                    ClickType.LONG_PRESS -> append(longPressString).append(" ")
+                    ClickType.DOUBLE_PRESS -> append(doublePressString).append(" ")
                 }
 
-                append(" ${KeyEventUtils.keyCodeToString(key.keyCode)}")
+                append(KeyEventUtils.keyCodeToString(key.keyCode))
 
                 val deviceName = when (key.device) {
                     is TriggerKeyDevice.Internal -> getString(R.string.this_device)
@@ -58,8 +58,8 @@ class KeyMapListItemCreator(
                     is TriggerKeyDevice.External -> {
                         if (showDeviceDescriptors) {
                             InputDeviceUtils.appendDeviceDescriptorToName(
-                                key.device.descriptor,
-                                key.device.name
+                                    key.device.descriptor,
+                                    key.device.name
                             )
                         } else {
                             key.device.name
@@ -104,33 +104,39 @@ class KeyMapListItemCreator(
             }
         }
 
-        val triggerErrors = displayMapping.getTriggerErrors(keyMap.trigger)
+        val triggerErrors = displayMapping.getTriggerErrors(keyMap)
 
         val triggerErrorChips = triggerErrors.map {
             when (it) {
                 KeyMapTriggerError.DND_ACCESS_DENIED ->
                     ChipUi.Error(
-                        id = KeyMapTriggerError.DND_ACCESS_DENIED.toString(),
-                        text = getString(R.string.trigger_error_dnd_access_denied_short),
-                        error = Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)
+                            id = KeyMapTriggerError.DND_ACCESS_DENIED.toString(),
+                            text = getString(R.string.trigger_error_dnd_access_denied_short),
+                            error = Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)
                     )
 
                 KeyMapTriggerError.SCREEN_OFF_ROOT_DENIED -> ChipUi.Error(
-                    id = KeyMapTriggerError.SCREEN_OFF_ROOT_DENIED.toString(),
-                    text = getString(R.string.trigger_error_screen_off_root_permission_denied_short),
-                    error = Error.PermissionDenied(Permission.ROOT)
+                        id = KeyMapTriggerError.SCREEN_OFF_ROOT_DENIED.toString(),
+                        text = getString(R.string.trigger_error_screen_off_root_permission_denied_short),
+                        error = Error.PermissionDenied(Permission.ROOT)
+                )
+                
+                KeyMapTriggerError.CANT_DETECT_IN_PHONE_CALL -> ChipUi.Error(
+                        id = KeyMapTriggerError.SCREEN_OFF_ROOT_DENIED.toString(),
+                        text = getString(R.string.trigger_error_cant_detect_in_phone_call),
+                        error = Error.CantDetectKeyEventsInPhoneCall
                 )
             }
         }
 
         return KeyMapListItem.KeyMapUiState(
-            uid = keyMap.uid,
-            actionChipList = actionChipList,
-            constraintChipList = constraintChipList,
-            triggerDescription = triggerDescription,
-            optionsDescription = optionsDescription,
-            extraInfo = extraInfo,
-            triggerErrorChipList = triggerErrorChips
+                uid = keyMap.uid,
+                actionChipList = actionChipList,
+                constraintChipList = constraintChipList,
+                triggerDescription = triggerDescription,
+                optionsDescription = optionsDescription,
+                extraInfo = extraInfo,
+                triggerErrorChipList = triggerErrorChips
         )
     }
 

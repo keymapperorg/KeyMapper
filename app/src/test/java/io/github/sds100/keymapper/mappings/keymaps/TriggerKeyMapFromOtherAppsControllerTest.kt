@@ -1,9 +1,9 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
-import io.github.sds100.keymapper.actions.KeyEventAction
+import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.actions.RepeatMode
-import io.github.sds100.keymapper.constraints.ConstraintSnapshot
+import io.github.sds100.keymapper.constraints.ConstraintSnapshotImpl
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCase
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTrigger
@@ -78,11 +78,16 @@ class TriggerKeyMapFromOtherAppsControllerTest {
         }
 
         detectConstraintsUseCase = mock {
-            on { getSnapshot() } doReturn ConstraintSnapshot(
+            on { getSnapshot() } doReturn ConstraintSnapshotImpl(
                 accessibilityService = mock(),
                 mediaAdapter = mock(),
                 devicesAdapter = mock(),
-                displayAdapter = mock()
+                displayAdapter = mock(),
+                cameraAdapter = mock(),
+                networkAdapter = mock(),
+                inputMethodAdapter = mock(),
+                lockScreenAdapter = mock(),
+                phoneAdapter = mock()
             )
         }
 
@@ -107,7 +112,7 @@ class TriggerKeyMapFromOtherAppsControllerTest {
         //GIVEN
         val action =
             KeyMapAction(
-                data = KeyEventAction(keyCode = 1),
+                data = ActionData.InputKeyEvent(keyCode = 1),
                 repeat = true,
                 repeatMode = RepeatMode.TRIGGER_RELEASED
             )

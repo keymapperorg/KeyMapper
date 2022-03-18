@@ -23,6 +23,6 @@
 
     <dialog
         android:id="@+id/fingerprintActionOptionsFragment"
-        android:name="io.github.sds100.keymapper.mappings.fingerprintmaps.ConfigFingerprintMapActionFragment"
+        android:name="io.github.sds100.keymapper.mappings.fingerprintmaps.EditFingerprintMapActionFragment"
         android:label="FingerprintActionOptionsFragment"/>
 </navigation>

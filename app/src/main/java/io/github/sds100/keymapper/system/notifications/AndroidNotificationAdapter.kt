@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.google.android.material.color.DynamicColors
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.color
 import kotlinx.coroutines.CoroutineScope
@@ -28,7 +29,11 @@ class AndroidNotificationAdapter(
 
     override fun showNotification(notification: NotificationModel) {
         val builder = NotificationCompat.Builder(ctx, notification.channel).apply {
-            color = ctx.color(R.color.colorAccent)
+
+            if (!DynamicColors.isDynamicColorAvailable()) {
+                color = ctx.color(R.color.md_theme_secondary)
+            }
+
             setContentTitle(notification.title)
             setContentText(notification.text)
 
@@ -101,6 +106,6 @@ class AndroidNotificationAdapter(
             action = actionId
         }
 
-        return PendingIntent.getBroadcast(ctx, 0, intent, 0)
+        return PendingIntent.getBroadcast(ctx, 0, intent, PendingIntent.FLAG_IMMUTABLE)
     }
 }

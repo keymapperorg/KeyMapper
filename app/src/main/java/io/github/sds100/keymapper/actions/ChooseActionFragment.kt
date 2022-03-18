@@ -1,310 +1,126 @@
 package io.github.sds100.keymapper.actions
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
-import androidx.appcompat.widget.SearchView
-import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.setFragmentResult
-import androidx.fragment.app.setFragmentResultListener
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.addRepeatingJob
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.tabs.TabLayoutMediator
-import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.actions.*
-import io.github.sds100.keymapper.actions.keyevent.*
-import io.github.sds100.keymapper.actions.phone.ChoosePhoneNumberFragment
-import io.github.sds100.keymapper.actions.sound.ChooseSoundFileFragment
-import io.github.sds100.keymapper.actions.sound.ChooseSoundFileResult
-import io.github.sds100.keymapper.actions.system.SystemActionListFragment
-import io.github.sds100.keymapper.actions.tapscreen.PickDisplayCoordinateFragment
-import io.github.sds100.keymapper.actions.text.TextBlockActionTypeFragment
-import io.github.sds100.keymapper.actions.url.ChooseUrlFragment
-import io.github.sds100.keymapper.databinding.FragmentChooseActionBinding
-import io.github.sds100.keymapper.system.apps.*
-import io.github.sds100.keymapper.system.intents.ConfigIntentFragment
-import io.github.sds100.keymapper.system.intents.ConfigIntentResult
-import io.github.sds100.keymapper.system.intents.ConfigIntentViewModel
-import io.github.sds100.keymapper.system.keyevents.*
-import io.github.sds100.keymapper.ui.utils.getJsonSerializable
-import io.github.sds100.keymapper.ui.utils.putJsonSerializable
-import io.github.sds100.keymapper.util.*
-import io.github.sds100.keymapper.util.ui.setCurrentDestinationLiveData
+import androidx.recyclerview.widget.GridLayoutManager
+import com.airbnb.epoxy.EpoxyRecyclerView
+import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
+import io.github.sds100.keymapper.sectionHeader
+import io.github.sds100.keymapper.simple
+import io.github.sds100.keymapper.simpleGrid
+import io.github.sds100.keymapper.util.Inject
+import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
+import io.github.sds100.keymapper.util.ui.*
+import io.github.sds100.keymapper.util.viewLifecycleScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 /**
- * A placeholder fragment containing a simple view.
+ * Created by sds100 on 22/07/2021.
  */
-class ChooseActionFragment : Fragment() {
+class ChooseActionFragment : SimpleRecyclerViewFragment<ListItem>() {
 
     companion object {
         const val EXTRA_ACTION = "extra_action"
     }
 
-    private val viewModel by activityViewModels<ChooseActionViewModel> {
+    override var searchStateKey: String? = "choose_action_fragment_search"
+
+    private val args: ChooseActionFragmentArgs by navArgs()
+
+    private val viewModel by viewModels<ChooseActionViewModel> {
         Inject.chooseActionViewModel(requireContext())
     }
 
-    private val mArgs by navArgs<ChooseActionFragmentArgs>()
+    override val listItems: Flow<State<List<ListItem>>>
+        get() = viewModel.listItems
 
-    /**
-     * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
-     */
-    private var _binding: FragmentChooseActionBinding? = null
-    val binding: FragmentChooseActionBinding
-        get() = _binding!!
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+        viewModel.setupNavigation(this)
 
-        createActionOnResult(ChooseAppFragment.REQUEST_KEY) {
-            val packageName = it.getString(ChooseAppFragment.EXTRA_PACKAGE_NAME)
-            OpenAppAction(packageName!!)
-        }
-
-        createActionOnResult(ChooseAppShortcutFragment.REQUEST_KEY) {
-            val result =
-                it.getJsonSerializable<ChooseAppShortcutResult>(ChooseAppShortcutFragment.EXTRA_RESULT)
-
-            OpenAppShortcutAction(
-                result!!.packageName,
-                result.shortcutName,
-                result.uri
-            )
-        }
-
-        createActionOnResult(ChooseKeyFragment.REQUEST_KEY) {
-            val keyCode = it.getInt(ChooseKeyFragment.EXTRA_KEYCODE)
-
-            KeyEventAction(keyCode)
-        }
-
-        createActionOnResult(ConfigKeyEventFragment.REQUEST_KEY) { bundle ->
-            val result =
-                bundle.getJsonSerializable<ConfigKeyEventResult>(ConfigKeyEventFragment.EXTRA_RESULT)
-
-            result!!
-
-            val device = if (result.device != null) {
-                KeyEventAction.Device(result.device.descriptor, result.device.name)
-            } else {
-                null
-            }
-
-            KeyEventAction(
-                result.keyCode,
-                result.metaState,
-                result.useShell,
-                device
-            )
-        }
-
-        createActionOnResult(TextBlockActionTypeFragment.REQUEST_KEY) {
-            val text = it.getString(TextBlockActionTypeFragment.EXTRA_TEXT_BLOCK)
-
-            TextAction(text!!)
-        }
-
-        createActionOnResult(ChooseUrlFragment.REQUEST_KEY) {
-            val url = it.getString(ChooseUrlFragment.EXTRA_URL)
-
-            UrlAction(url!!)
-        }
-
-        createActionOnResult(SystemActionListFragment.REQUEST_KEY) {
-            it.getJsonSerializable<SystemAction>(SystemActionListFragment.EXTRA_SYSTEM_ACTION)!!
-        }
-
-        createActionOnResult(KeyCodeListFragment.REQUEST_KEY) {
-            val keyCode = it.getInt(KeyCodeListFragment.EXTRA_KEYCODE)
-
-            KeyEventAction(keyCode)
-        }
-
-        createActionOnResult(PickDisplayCoordinateFragment.REQUEST_KEY) {
-            val x = it.getInt(PickDisplayCoordinateFragment.EXTRA_X)
-            val y = it.getInt(PickDisplayCoordinateFragment.EXTRA_Y)
-            val description = it.getString(PickDisplayCoordinateFragment.EXTRA_DESCRIPTION)
-
-            TapCoordinateAction(x, y, description)
-        }
-
-        createActionOnResult(ConfigIntentFragment.REQUEST_KEY) { bundle ->
-            val json = bundle.getString(ConfigIntentFragment.EXTRA_RESULT)!!
-            val result: ConfigIntentResult = Json.decodeFromString(json)
-
-            IntentAction(result.description, result.target, result.uri)
-        }
-
-        createActionOnResult(ChoosePhoneNumberFragment.REQUEST_KEY) {
-            val number = it.getString(ChoosePhoneNumberFragment.EXTRA_PHONE_NUMBER)
-
-            PhoneCallAction(number!!)
-        }
-
-        childFragmentManager.setFragmentResultListener(
-            ChooseSoundFileFragment.REQUEST_KEY,
-            viewLifecycleOwner
-        ) { _, bundle ->
-            val resultJson = bundle.getString(ChooseSoundFileFragment.EXTRA_RESULT)!!
-            val result: ChooseSoundFileResult = Json.decodeFromString(resultJson)
-
-            viewModel.onChooseSoundFile(result)
-        }
-
-        setFragmentResultListener(KeyCodeListFragment.REQUEST_KEY) { _, result ->
-            val keyEventViewModel by activityViewModels<ConfigKeyEventViewModel> {
-                Inject.configKeyEventViewModel(requireContext())
-            }
-
-            result.getInt(KeyCodeListFragment.EXTRA_KEYCODE).let {
-                keyEventViewModel.setKeyCode(it)
-            }
-        }
-
-        setFragmentResultListener(ChooseActivityFragment.REQUEST_KEY) { _, result ->
-            val viewModel by activityViewModels<ConfigIntentViewModel> {
-                Inject.configIntentViewModel(requireContext())
-            }
-
-            result.getJsonSerializable<ActivityInfo>(ChooseActivityFragment.EXTRA_ACTIVITY_INFO).let {
-                viewModel.setActivity(it ?: return@let)
-            }
-        }
-
-        FragmentChooseActionBinding.inflate(inflater, container, false).apply {
-            lifecycleOwner = viewLifecycleOwner
-            _binding = this
-
-            return this.root
-        }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        binding.apply {
-            val pagerAdapter = ChooseActionPagerAdapter(this@ChooseActionFragment)
-            viewPager.adapter = pagerAdapter
-
-            TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-                tab.text = str(pagerAdapter.tabFragmentCreators[position].tabTitle)
-            }.attach()
-
-            appBar.setNavigationOnClickListener {
-                findNavController().navigateUp()
-            }
-
-            viewModel.currentTabPosition.let {
-                if (it > pagerAdapter.itemCount - 1) return@let
-
-                viewPager.setCurrentItem(it, false)
-            }
-
-            viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-                override fun onPageSelected(position: Int) {
-                    super.onPageSelected(position)
-
-                    viewModel.currentTabPosition = position
-                }
-            })
-
-            subscribeSearchView(pagerAdapter)
-        }
-
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+        launchRepeatOnLifecycle(Lifecycle.State.CREATED) {
             viewModel.returnAction.collectLatest { action ->
-                setFragmentResult(
-                    mArgs.chooseActionRequestKey,
-                    Bundle().apply { putJsonSerializable(EXTRA_ACTION, action) }
-                )
-                findNavController().navigateUp()
+                viewLifecycleScope.launchWhenResumed {
+                    returnResult(EXTRA_ACTION to Json.encodeToString(action))
+                }
             }
         }
     }
 
-    override fun onDestroyView() {
-        _binding = null
-        super.onDestroyView()
-    }
+    override fun subscribeUi(binding: FragmentSimpleRecyclerviewBinding) {
+        super.subscribeUi(binding)
 
-    @Suppress("UNCHECKED_CAST")
-    private fun createActionOnResult(
-        requestKey: String,
-        createAction: (bundle: Bundle) -> ActionData
-    ) {
-        childFragmentManager.setFragmentResultListener(
-            requestKey,
-            viewLifecycleOwner
-        ) { _, result ->
-            val action = createAction(result)
+        viewModel.showPopups(this, binding)
 
-            setFragmentResult(
-                this.mArgs.chooseActionRequestKey,
-                Bundle().apply { putJsonSerializable(EXTRA_ACTION, action) }
-            )
+        binding.epoxyRecyclerView.apply {
+            RecyclerViewUtils.applySimpleListItemDecorations(this)
+
+            layoutManager = GridLayoutManager(requireContext(), 1)
+            clipToPadding = false
+            clipChildren = false
         }
     }
 
-    private fun FragmentChooseActionBinding.subscribeSearchView(
-        pagerAdapter: ChooseActionPagerAdapter
+    override fun populateList(
+        recyclerView: EpoxyRecyclerView,
+        listItems: List<ListItem>
     ) {
-        val searchViewMenuItem = appBar.menu.findItem(R.id.action_search)
-        val searchView = searchViewMenuItem.actionView as SearchView
+        recyclerView.setRecycledViewPool(null)
+        RecyclerViewUtils.setSpanCountForSimpleListItemGrid(recyclerView)
 
-        searchViewMenuItem.isVisible =
-            pagerAdapter.tabFragmentCreators[viewPager.currentItem].searchStateKey != null
+        recyclerView.withModels {
+            listItems.forEach { listItem ->
+                if (listItem is DefaultSimpleListItem) {
+                    if (spanCount == 1) {
+                        simple {
+                            id(listItem.id)
+                            model(listItem)
 
-        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                super.onPageSelected(position)
+                            onClickListener { _ ->
+                                viewModel.onListItemClick(listItem.id)
+                            }
+                        }
+                    } else {
+                        simpleGrid {
+                            id(listItem.id)
+                            model(listItem)
 
-                searchViewMenuItem.isVisible =
-                    pagerAdapter.tabFragmentCreators[position].searchStateKey != null
-            }
-        })
-
-        searchViewMenuItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
-            override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
-                //don't allow the user to change the tab when searching
-                viewPager.isUserInputEnabled = false
-                tabLayout.isVisible = false
-
-                return true
-            }
-
-            override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
-                viewPager.isUserInputEnabled = true
-                tabLayout.isVisible = true
-
-                return true
-            }
-        })
-
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-
-                pagerAdapter.tabFragmentCreators[viewPager.currentItem].searchStateKey?.let {
-                    findNavController().setCurrentDestinationLiveData(it, newText)
+                            onClickListener { _ ->
+                                viewModel.onListItemClick(listItem.id)
+                            }
+                        }
+                    }
                 }
 
-                return false
-            }
+                if (listItem is SectionHeaderListItem) {
+                    sectionHeader {
+                        id(listItem.id)
+                        header(listItem.text)
 
-            override fun onQueryTextSubmit(query: String?) = onQueryTextChange(query)
-        })
+                        //headers should always go across the whole recycler view.
+                        spanSizeOverride { totalSpanCount, position, itemCount ->
+                            totalSpanCount
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    override fun onSearchQuery(query: String?) {
+        super.onSearchQuery(query)
+
+        viewModel.searchQuery.value = query
+    }
+
+    override fun getRequestKey(): String {
+        return args.requestKey
     }
 }

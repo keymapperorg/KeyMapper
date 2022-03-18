@@ -4,18 +4,17 @@ import androidx.annotation.VisibleForTesting
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import io.github.sds100.keymapper.Constants
+import io.github.sds100.keymapper.MainActivity
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
 import io.github.sds100.keymapper.mappings.fingerprintmaps.AreFingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
-import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.accessibility.ControlAccessibilityServiceUseCase
+import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.inputmethod.ShowHideInputMethodUseCase
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
 import io.github.sds100.keymapper.system.inputmethod.ToggleCompatibleImeUseCase
-import io.github.sds100.keymapper.util.getFullMessage
-import io.github.sds100.keymapper.util.onFailure
-import io.github.sds100.keymapper.util.onSuccess
+import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
@@ -35,7 +34,8 @@ class NotificationController(
     private val hideInputMethod: ShowHideInputMethodUseCase,
     private val areFingerprintGesturesSupported: AreFingerprintGesturesSupportedUseCase,
     private val onboardingUseCase: OnboardingUseCase,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    private val dispatchers: DispatcherProvider = DefaultDispatcherProvider()
 ) : ResourceProvider by resourceProvider {
 
     companion object {
@@ -93,8 +93,11 @@ class NotificationController(
             "${Constants.PACKAGE_NAME}.ACTION_FINGERPRINT_GESTURE_FEATURE"
     }
 
-    private val _openApp = MutableSharedFlow<Unit>()
-    val openApp = _openApp.asSharedFlow()
+    /**
+     * Open the app and use the String as the Intent action.
+     */
+    private val _openApp: MutableSharedFlow<String?> = MutableSharedFlow()
+    val openApp: SharedFlow<String?> = _openApp.asSharedFlow()
 
     private val _showToast = MutableSharedFlow<String>()
     val showToast = _showToast.asSharedFlow()
@@ -105,11 +108,11 @@ class NotificationController(
 
         combine(
             manageNotifications.showToggleMappingsNotification,
-            controlAccessibilityService.state,
+            controlAccessibilityService.serviceState,
             pauseMappings.isPaused
         ) { show, serviceState, areMappingsPaused ->
             invalidateToggleMappingsNotification(show, serviceState, areMappingsPaused)
-        }.launchIn(coroutineScope)
+        }.flowOn(dispatchers.default()).launchIn(coroutineScope)
 
         manageNotifications.showImePickerNotification.onEach { show ->
             if (show) {
@@ -126,7 +129,7 @@ class NotificationController(
                 //don't delete the channel because then the user's notification config is lost
                 manageNotifications.dismiss(ID_IME_PICKER)
             }
-        }.launchIn(coroutineScope)
+        }.flowOn(dispatchers.default()).launchIn(coroutineScope)
 
         toggleCompatibleIme.sufficientPermissions.onEach { canToggleIme ->
             if (canToggleIme) {
@@ -143,9 +146,9 @@ class NotificationController(
                 //don't delete the channel because then the user's notification config is lost
                 manageNotifications.dismiss(ID_TOGGLE_KEYBOARD)
             }
-        }.launchIn(coroutineScope)
+        }.flowOn(dispatchers.default()).launchIn(coroutineScope)
 
-        coroutineScope.launch {
+        coroutineScope.launch(dispatchers.default()) {
             combine(
                 onboardingUseCase.showFingerprintFeatureNotificationIfAvailable,
                 areFingerprintGesturesSupported.isSupported.map { it ?: false }
@@ -171,7 +174,7 @@ class NotificationController(
             } else {
                 manageNotifications.dismiss(ID_SETUP_CHOSEN_DEVICES_AGAIN)
             }
-        }.launchIn(coroutineScope)
+        }.flowOn(dispatchers.default()).launchIn(coroutineScope)
 
         hideInputMethod.onHiddenChange.onEach { isHidden ->
             manageNotifications.createChannel(
@@ -187,17 +190,18 @@ class NotificationController(
             } else {
                 manageNotifications.dismiss(ID_KEYBOARD_HIDDEN)
             }
-        }.launchIn(coroutineScope)
+        }.flowOn(dispatchers.default()).launchIn(coroutineScope)
 
         manageNotifications.onActionClick.onEach { actionId ->
             when (actionId) {
                 ACTION_RESUME_MAPPINGS -> pauseMappings.resume()
                 ACTION_PAUSE_MAPPINGS -> pauseMappings.pause()
-                ACTION_START_SERVICE -> controlAccessibilityService.enable()
-                ACTION_STOP_SERVICE -> controlAccessibilityService.disable()
-                ACTION_RESTART_SERVICE -> controlAccessibilityService.restart()
+                ACTION_START_SERVICE -> attemptStartAccessibilityService()
+                ACTION_RESTART_SERVICE -> attemptRestartAccessibilityService()
+                ACTION_STOP_SERVICE -> controlAccessibilityService.stopService()
+
                 ACTION_DISMISS_TOGGLE_MAPPINGS -> manageNotifications.dismiss(ID_TOGGLE_MAPPINGS)
-                ACTION_OPEN_KEY_MAPPER -> _openApp.emit(Unit)
+                ACTION_OPEN_KEY_MAPPER -> _openApp.emit(null)
                 ACTION_SHOW_IME_PICKER -> showImePicker.show(fromForeground = false)
                 ACTION_SHOW_KEYBOARD -> hideInputMethod.show()
                 ACTION_TOGGLE_KEYBOARD -> toggleCompatibleIme.toggle().onSuccess {
@@ -207,14 +211,14 @@ class NotificationController(
                 }
                 ACTION_FINGERPRINT_GESTURE_FEATURE -> {
                     onboardingUseCase.approvedFingerprintFeaturePrompt = true
-                    _openApp.emit(Unit)
+                    _openApp.emit(null)
                 }
                 ACTION_ON_SETUP_CHOSEN_DEVICES_AGAIN -> {
                     onboardingUseCase.approvedSetupChosenDevicesAgainNotification()
-                    _openApp.emit(Unit)
+                    _openApp.emit(null)
                 }
             }
-        }.launchIn(coroutineScope)
+        }.flowOn(dispatchers.default()).launchIn(coroutineScope)
     }
 
     fun onOpenApp() {
@@ -223,9 +227,25 @@ class NotificationController(
         coroutineScope.launch {
             invalidateToggleMappingsNotification(
                 show = manageNotifications.showToggleMappingsNotification.first(),
-                serviceState = controlAccessibilityService.state.first(),
+                serviceState = controlAccessibilityService.serviceState.first(),
                 areMappingsPaused = pauseMappings.isPaused.first()
             )
+        }
+    }
+
+    private fun attemptStartAccessibilityService() {
+        if (!controlAccessibilityService.startService()) {
+            coroutineScope.launch {
+                _openApp.emit(MainActivity.ACTION_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG)
+            }
+        }
+    }
+
+    private fun attemptRestartAccessibilityService() {
+        if (!controlAccessibilityService.restartService()) {
+            coroutineScope.launch {
+                _openApp.emit(MainActivity.ACTION_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG)
+            }
         }
     }
 
@@ -247,7 +267,7 @@ class NotificationController(
             return
         }
 
-        when(serviceState){
+        when (serviceState) {
             ServiceState.ENABLED -> {
                 if (areMappingsPaused) {
                     manageNotifications.show(mappingsPausedNotification())

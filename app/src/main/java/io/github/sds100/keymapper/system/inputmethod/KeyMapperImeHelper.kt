@@ -2,6 +2,8 @@ package io.github.sds100.keymapper.system.inputmethod
 
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.util.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 /**
  * Created by sds100 on 16/03/2021.
@@ -12,15 +14,23 @@ class KeyMapperImeHelper(private val imeAdapter: InputMethodAdapter) {
         const val KEY_MAPPER_GUI_IME_PACKAGE =
             "io.github.sds100.keymapper.inputmethod.latin"
 
-        const val KEY_MAPPER_LEANBACK_IME_PACKAGE =
+        private const val KEY_MAPPER_LEANBACK_IME_PACKAGE =
             "io.github.sds100.keymapper.inputmethod.leanback"
+
+        private const val KEY_MAPPER_HACKERS_KEYBOARD_PACKAGE =
+            "io.github.sds100.keymapper.inputmethod.hackers"
 
         val KEY_MAPPER_IME_PACKAGE_LIST = arrayOf(
             Constants.PACKAGE_NAME,
             KEY_MAPPER_GUI_IME_PACKAGE,
-            KEY_MAPPER_LEANBACK_IME_PACKAGE
+            KEY_MAPPER_LEANBACK_IME_PACKAGE,
+            KEY_MAPPER_HACKERS_KEYBOARD_PACKAGE
         )
     }
+
+    val isCompatibleImeEnabledFlow: Flow<Boolean> =
+        imeAdapter.inputMethods
+            .map { containsCompatibleIme(it) }
 
     fun enableCompatibleInputMethods() {
         KEY_MAPPER_IME_PACKAGE_LIST.forEach { packageName ->
@@ -56,7 +66,12 @@ class KeyMapperImeHelper(private val imeAdapter: InputMethodAdapter) {
 
     fun isCompatibleImeEnabled(): Boolean {
         return imeAdapter.inputMethods
+            .map { containsCompatibleIme(it) }
             .firstBlocking()
+    }
+
+    private fun containsCompatibleIme(imeList: List<ImeInfo>): Boolean {
+        return imeList
             .filter { it.isEnabled }
             .any { it.packageName in KEY_MAPPER_IME_PACKAGE_LIST }
     }

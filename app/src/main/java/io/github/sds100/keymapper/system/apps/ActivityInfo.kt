@@ -1,7 +1,5 @@
 package io.github.sds100.keymapper.system.apps
 
-import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
 import kotlinx.serialization.Serializable
 
 /**
@@ -9,4 +7,7 @@ import kotlinx.serialization.Serializable
  */
 
 @Serializable
-data class ActivityInfo(val activityName: String, val packageName: String)
+data class ActivityInfo(
+    val activityName: String,
+    val packageName: String
+)

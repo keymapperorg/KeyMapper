@@ -80,7 +80,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@{model.name}"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                         android:textColor="?attr/colorOnSurface"
                         tools:text="Volume Up" />
 
@@ -89,7 +89,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@{model.clickTypeString}"
-                        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                         android:visibility='@{model.clickTypeString == null ? View.GONE : View.VISIBLE}'
                         tools:text="Long Press"
                         tools:visibility="visible" />
@@ -99,7 +99,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@{model.extraInfo}"
-                        android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                         android:visibility='@{model.extraInfo == null ? View.GONE : View.VISIBLE}'
                         tools:text="External Keyboard"
                         tools:visibility="visible" />
@@ -107,7 +107,7 @@
 
                 <io.github.sds100.keymapper.util.ui.SquareImageButton
                     android:id="@+id/buttonDrag"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    style="@style/Widget.Material3.Button.TextButton"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:tint="?attr/colorOnSurface"
@@ -120,7 +120,7 @@
                     app:srcCompat="@drawable/ic_baseline_drag_handle_24" />
 
                 <androidx.appcompat.widget.AppCompatImageButton
-                    android:id="@+id/buttonMore"
+                    android:id="@+id/buttonEdit"
                     style="@style/Widget.AppCompat.Button.Borderless.Colored"
                     android:layout_width="36dp"
                     android:layout_height="0dp"
@@ -133,19 +133,19 @@
 
                 <androidx.appcompat.widget.AppCompatImageButton
                     android:id="@+id/buttonDevice"
-                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                    style="@style/Widget.Material3.Button.TextButton"
                     android:layout_width="36dp"
                     android:layout_height="0dp"
                     android:onClick="@{onDeviceClick}"
                     android:tint="?attr/colorOnSurface"
                     app:layout_constraintBottom_toBottomOf="@+id/buttonRemove"
-                    app:layout_constraintEnd_toStartOf="@+id/buttonMore"
+                    app:layout_constraintEnd_toStartOf="@+id/buttonEdit"
                     app:layout_constraintTop_toTopOf="@id/buttonRemove"
                     app:srcCompat="@drawable/ic_baseline_devices_other_24" />
 
                 <io.github.sds100.keymapper.util.ui.SquareImageButton
                     android:id="@+id/buttonRemove"
-                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                    style="@style/Widget.Material3.Button.TextButton"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:onClick="@{onRemoveClick}"

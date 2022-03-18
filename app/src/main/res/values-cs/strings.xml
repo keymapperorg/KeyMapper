@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="slogan">Uvolnite své klíče!</string>
     <string name="no_action_chosen">Není vybrána žádná akce</string>
     <string name="accessibility_service_description">Klávesová mapa potřebuje použít službu usnadnění přístupu, aby mohla poslouchat stisknutí tlačítek/klávesy a provádět akce, které jste zvolili.
     Služba přístupnosti poslouchá pouze klíčové události a detekuje aplikaci, ve které se nacházíte. Můžete se podívat na zdrojový kód, který je propojen na obrazovce O zobrazení, a ověřit to.</string>
@@ -16,7 +17,7 @@
     <string name="warning_the_app_will_work">Aplikace bude fungovat, ale některé věci budou muset být opraveny v závislosti na tom, co děláte.</string>
     <string name="your_device_doesnt_support_some_actions">Vaše zařízení nepodporuje tyto akce.</string>
     <string name="tab_unsupported_actions">Nepodporované akce</string>
-    <string name="requires_root">VYŽADUJE ROOT</string>
+    <string name="choose_action_warning_requires_root">Vyžaduje kořen</string>
     <string name="press_dot_dot_dot">Stiskněte…</string>
     <string name="no_actions">Žádné akce</string>
     <string name="no_trigger">Žádný spouštěč</string>
@@ -31,6 +32,7 @@
     <string name="slider_default">Výchozí</string>
     <string name="button_enable_accessibility_service">Povolit službu usnadnění přístupu</string>
     <string name="button_restart_accessibility_service">Restartovat službu usnadnění přístupu</string>
+    <string name="share_backup">Sdílení</string>
     <string name="stop_repeating_dot_dot_dot">Přestat se opakovat, keď…</string>
     <string name="stop_repeating_when_trigger_released">Spouštěč byl uvolněn</string>
     <string name="stop_repeating_trigger_pressed_again">Spouštěč je znovu stisknuty</string>
@@ -50,7 +52,10 @@
     <string name="from_no_device">Žádné zařízení</string>
     <string name="intent_extras_recycler_view_placeholder">&lt;unk&gt; \\_(&lt;unk&gt;)_/ &lt;unk&gt;\n\nŽádné extrakce!</string>
     <string name="content_description_fab_new_keymap">Vytvořit novou mapu klíče</string>
+    <string name="content_description_done_configuring_key_event">Byla provedena konfigurace klíčové akce události</string>
+    <string name="content_description_done_configuring_coordinate">Hotovo vyskladnění souřadnice</string>
     <string name="clip_key_mapper_log">Protokol Mapperu klíče</string>
+    <string name="sharesheet_title">Poslat do</string>
     <string name="whats_new">Co je nového</string>
     <string name="caption_action_type_key">Klikněte na klávesu na zařízení, kterou chcete vložit.
             \n\nDŮLEŽITÉ!
@@ -87,6 +92,7 @@
     <string name="home_success_accessibility_service_is_enabled">Služba přístupnosti je povolena! Vaše mapování by mělo fungovat.</string>
     <string name="home_error_logging_enabled">Extra logování je zapnuto! Vypněte tuto možnost, pokud se nesnažíte vyřešit problém.</string>
     <string name="home_error_logging_enabled_button">Vypnout</string>
+    <string name="title_about">O aplikaci</string>
     <!--  Action descriptions  -->
     <string name="description_open_app">Otevřít %s</string>
     <string name="description_key">Stiskněte klávesu %s</string>
@@ -117,6 +123,9 @@
     <string name="hint_from_device">Ze zařízení</string>
     <string name="hint_shortcut_name">Název zástupce</string>
     <string name="hint_tap_coordinate_title">Popis souřadnic (nepovinné)</string>
+    <string name="hint_create_text_action">Text k zadání</string>
+    <string name="hint_create_url_action">Adresa URL, kterou chcete otevřít</string>
+    <string name="hint_create_phone_call_action">Telefonní číslo, na které chcete zavolat</string>
     <string name="hint_intent_action">Akce</string>
     <string name="hint_intent_categories">Kategorie</string>
     <string name="hint_intent_data">Údaje</string>
@@ -127,6 +136,7 @@
     <string name="hint_intent_description">Popis pro hlavní mapu (povinné)</string>
     <string name="hint_intent_flags">Vlajky</string>
     <string name="hint_sound_file_description">Popis zvukového souboru</string>
+    <string name="hint_wifi_ssid">WiFi síť SSID</string>
     <!--  Hints  -->
     <!--  Radio buttons  -->
     <string name="radio_button_parallel">Současně</string>
@@ -174,6 +184,8 @@
     <string name="toast_root_features_turned_on">Root funkce jsou nyní povoleny</string>
     <string name="toast_failed_to_choose_sound_file">Výběr zvukového souboru se nezdařil! Zkontrolujte záznam.</string>
     <string name="toast_no_sound_files">Neuložili jste žádné zvukové soubory!</string>
+    <string name="toast_granted_itself_write_secure_settings_with_shizuku">Key Mapper použil Shizuku, aby si udělil WRITE_SECURE_SETTINGS povolení</string>
+    <string name="toast_granted_itself_write_secure_settings_with_root">Key Mapper použil Root k udělení WRITE_SECURE_SETTINGS oprávnění</string>
     <!--  Toasts  -->
     <!-- Extra labels -->
     <string name="extra_label_sequence_trigger_timeout">Časový limit spouštění sekvence (ms)</string>
@@ -192,10 +204,13 @@
     <string name="constraint_app_foreground_description">%s je v popředí</string>
     <string name="constraint_app_not_foreground_description">%s není v popředí</string>
     <string name="constraint_app_playing_media_description">%s přehrává média</string>
+    <string name="constraint_app_not_playing_media_description">%s nepřehrává média.</string>
     <string name="constraint_bt_device_connected_description">%s je připojen</string>
     <string name="constraint_bt_device_disconnected_description">%s je odpojen</string>
     <string name="constraint_screen_on_description">Obrazovka je zapnutá</string>
     <string name="constraint_screen_off_description">Obrazovka je vypnuta</string>
+    <string name="constraint_flashlight_off_description">Svítilna %s je vypnuta</string>
+    <string name="constraint_flashlight_on_description">%s svítilna je zapnuta</string>
     <string name="constraint_mode_and">a</string>
     <string name="constraint_mode_or">nebo</string>
     <string name="constraint_category_app">Aplikace</string>
@@ -214,7 +229,28 @@
     <string name="constraint_choose_orientation_270">Na šířku (270°)</string>
     <string name="constraint_choose_orientation_portrait">Portrét (libovolný)</string>
     <string name="constraint_choose_orientation_landscape">Na šířku (libovolné)</string>
-    <string name="constraint_choose_app_playing_media">Konkrétní přehráná média aplikace</string>
+    <string name="constraint_choose_app_playing_media">Přehrání médií aplikací</string>
+    <string name="constraint_choose_app_not_playing_media">Aplikace, která přehrává média</string>
+    <string name="constraint_choose_media_playing">Přehrává se médium</string>
+    <string name="constraint_choose_media_not_playing">Není přehrává se žádné médium</string>
+    <string name="constraint_flashlight_on">Svítilna je zapnuta</string>
+    <string name="constraint_flashlight_off">Svítilna je vypnuta</string>
+    <string name="constraint_wifi_on">WiFi je za posuvné</string>
+    <string name="constraint_wifi_off">WiFi je vypnuté</string>
+    <string name="constraint_wifi_connected">Připojeno k WiFi síti</string>
+    <string name="constraint_wifi_disconnected">Odpojeno od WiFi sítě</string>
+    <string name="constraint_wifi_message_cant_list_networks">SSID budete muset zadat ručně, protože aplikace se nesmí dotazovat na seznam známých WiFi sítí v systému Android 10 a novějším.
+    
+Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</string>
+    <string name="constraint_wifi_pick_network_any">Libovolný</string>
+    <string name="constraint_wifi_connected_description">Připojeno k %s WiFi</string>
+    <string name="constraint_wifi_disconnected_description">Odpojeno od %s WiFi</string>
+    <string name="constraint_wifi_connected_any_description">Připojeno k libovolnému WiFi</string>
+    <string name="constraint_wifi_disconnected_any_description">Odpojeno od žádného WiFi</string>
+    <string name="constraint_ime_chosen">Je zvolena metoda zadávání</string>
+    <string name="constraint_ime_chosen_description">Je vybráno %s</string>
+    <string name="constraint_ime_not_chosen">Metoda zadávání není vybrána</string>
+    <string name="constraint_ime_not_chosen_description">%s není vybráno</string>
     <string name="orientation_0">Na výšku (0°)</string>
     <string name="orientation_90">Na šířku (90°)</string>
     <string name="orientation_180">Na výšku (180°)</string>
@@ -296,6 +332,8 @@
     <string name="button_copy_log">Kopírovat</string>
     <string name="button_slider_repeat_no_limit">Bez omezení</string>
     <string name="button_choose_sound_file">Vyberte zvukový soubor</string>
+    <string name="button_edit_action">Upravit akci</string>
+    <string name="button_replace_action">Nahradit akci</string>
     <!-- Button titles -->
     <!-- Dialog stuff -->
     <string name="dialog_title_are_you_sure">Jste si jisti?</string>
@@ -311,7 +349,8 @@
             V nastavení, přejít dolů a klepněte na \'Mapa klíče má root oprávnění\', abyste mohli použít root funkce/akce.</string>
     <string name="dialog_message_downloading">Stahování…</string>
     <string name="dialog_message_long_press_warning">Dlouhé stisknutí funguje pouze pro fyzickou hlasitost a navigační tlačítka. Pokud to povolíte pro jiné klíče, klíče nebudou fungovat, když nebudou dlouho stisknuty.</string>
-    <string name="dialog_message_write_secure_settings">Chcete-li udělit mapování klíčů WRITE_SECURE_SETTINGS povolení povolit \"kořenové funkce\" v nastavení, pokud je vaše zařízení zakořeněno. Pokud vaše zařízení není zakořeněné, postupujte podle pokynů, jak pomocí počítače PC/Mac udělit oprávnění.</string>
+    <string name="dialog_title_write_secure_settings">Udělit oprávnění WRITE_SECURE_SETTINGS</string>
+    <string name="dialog_message_write_secure_settings">K udělení tohoto oprávnění je vyžadován PC/Mac. Přečtěte si online průvodce.</string>
     <string name="dialog_message_cant_find_accessibility_settings_page">Zdá se, že vaše zařízení nemá stránku s nastavením služeb přístupnosti. Můžete povolit službu usnadnění přístupu tím, že udělíte aplikaci WRITE_SECURE_SETTINGS. Po klepnutí na \'okay\' vám vyskakovací okno pomůže to udělat.</string>
     <string name="dialog_message_double_press_restricted_to_single_key">"Více klíčů nemůže být současně dvojím stisknuto."</string>
     <string name="dialog_message_parallel_trigger_order">Klávesy musí být uvedeny od shora dolů v pořadí, ve kterém budou drženy.</string>
@@ -328,6 +367,26 @@
     <string name="dialog_message_install_gui_keyboard">To je velmi doporučeno! Toto je správná klávesnice, kterou můžete použít s Mapperem kláves. Jedna vestavěná do Mapperu klíčů (základní vstupní metoda) nemá žádnou klávesnici na obrazovce. Vyberte si, odkud ji chcete nainstalovat.</string>
     <string name="dialog_title_install_leanback_keyboard">Nainstalovat klávesovou mapu Leanback</string>
     <string name="dialog_message_install_leanback_keyboard">To je velmi doporučeno! Toto je správná klávesnice pro Android TV, kterou můžete použít s Mapperem kláves. Jedna vestavěná do Mapperu klíčů (základní vstupní metoda) nemá žádnou klávesnici na obrazovce. Vyberte si, odkud ji chcete nainstalovat.</string>
+    <string name="dialog_title_choose_download_gui_keyboard">Nainstalovat klávesu Mapper GUI</string>
+    <string name="dialog_message_choose_download_gui_keyboard">Vyberte si, odkud si jej chcete stáhnout.</string>
+    <string name="dialog_title_choose_download_leanback_keyboard">Nainstalovat klávesovou mapu Leanback</string>
+    <string name="dialog_message_choose_download_leanback_keyboard">Vyberte si, odkud si jej chcete stáhnout.</string>
+    <string name="dialog_title_install_shizuku_or_gui_keyboard">Tato akce vyžaduje nějaké další nastavení</string>
+    <string name="dialog_message_install_shizuku_or_gui_keyboard">Existují tři způsoby, jak nastavit vaše zařízení pro použití této akce. Zde jsou výhody a nevýhody každého z nich.
+        
+        \n\n<b>1. Stáhnout Shizuku (doporučeno).</b> Nemusíte používat jinou klávesnici na obrazovce, než kterou již používáte, ale bude to vyžadovat minutu nastavení při každém restartu zařízení.
+        
+        \n\n<b>2. Stáhněte si klávesovou klávesu Mapper GUI.</b> Toto je klávesnice na obrazovce, kterou můžete použít s klávesovou mapou, ale nebudete moci používat klávesnici, kterou právě používáte, jako je Gboard.
+        
+        \n\n<b>3. Neudělejte nic a používejte vestavěnou mapu kláves.</b> To se nedoporučuje, protože pokud používáte klávesovou mapu, <b>nebude</b> klávesnice! Neexistují žádné výhody.</string>
+    <string name="dialog_title_install_shizuku_or_leanback_keyboard">Tato akce vyžaduje nějaké další nastavení</string>
+    <string name="dialog_message_install_shizuku_or_leanback_keyboard">Existují tři způsoby, jak nastavit vaše zařízení pro použití této akce. Zde jsou výhody a nevýhody každého z nich.
+        
+        \n\n<b>1. Stáhnout Shizuku (doporučeno).</b> Nemusíte používat jinou klávesnici na obrazovce, než kterou již používáte, ale bude to vyžadovat minutu nastavení při každém restartu zařízení.
+        
+        \n\n<b>2. Stáhněte si klávesovou mapu Leanback.</b> Toto je klávesnice optimalizovaná pro Android TV, kterou můžete použít s klávesovou mapou, ale nebudete moci používat klávesnici, kterou právě používáte, jako je Gboard.
+        
+        \n\n<b>3. Neudělejte nic a používejte vestavěnou mapu kláves.</b> To se nedoporučuje, protože pokud používáte klávesovou mapu, <b>nebude</b> klávesnice! Neexistují žádné výhody.</string>
     <string name="dialog_title_disable_battery_optimisation">Zakázat optimalizaci baterie</string>
     <string name="dialog_message_disable_battery_optimisation">&lt;b&gt;MUSÍTE&lt;/b&gt; přečtěte si toto &lt;b&gt;vše&lt;/b&gt; , jinak v budoucnu získáte &lt;b&gt;frustrovanou&lt;/b&gt; &lt;/b&gt;.!\n\nKlepnutím na \"částečně opravit\" &lt;b&gt;může&lt;/b&gt; zabránit Androidu v zastavení aplikace v době, kdy je na pozadí.\n\n&lt;b&gt;Toto NEPOČÁTEK&lt;/b&gt;. Skin OEM jako MIUI nebo Samsung Experience může mít další funkce zabíjení aplikací, takže je MUSÍ vypnout pro mapování klíčových klíčů a také sledovat online průvodce na dontkillmyapp. kde:</string>
     <string name="dialog_title_send_feedback">Odeslat zpětnou vazbu</string>
@@ -336,22 +395,24 @@
     <string name="dialog_message_restart_accessibility_service_to_record_trigger">Restartujte službu přístupnosti vypnutím <i>vypněte</i> a <i>zapněte</i> , abyste mohli zaznamenat spouštěč.</string>
     <string name="dialog_message_enable_accessibility_service_to_test_action">Zapněte službu usnadnění přístupu, abyste mohli vyzkoušet akci.</string>
     <string name="dialog_message_restart_accessibility_service_to_test_action">Restartujte službu přístupnosti vypnutím <i>vypněte</i> a <i>dne</i> , abyste mohli vyzkoušet akci.</string>
-    <string name="dialog_message_restart_accessibility_service">Restartujte službu přístupnosti vypnutím <i/> a <i>dne</i>.</string>
+    <string name="dialog_message_restart_accessibility_service">Restartujte službu přístupnosti vypnutím <i></i> a <i>dne</i>.</string>
     <string name="dialog_message_screen_pinning_warning">Použití tohoto spouštěče může způsobit černou obrazovku, když odemknete zařízení po použití nastavení připnutí obrazovky v nastavení zařízení. To lze opravit restartem. To se neděje na všech zařízeních, takže beware a vypněte nastavení, pokud tak učiní!</string>
     <string name="dialog_title_reset_fingerprint_maps">Obnovit mapy gesta otisků prstů</string>
     <string name="dialog_message_reset_fingerprint_maps">Jste si jisti, že chcete obnovit mapy gesta otisků prstů?</string>
     <string name="dialog_title_key_mapper_crashed">Mapa klíče byla ukončena nebo havarována</string>
-    <string name="dialog_message_key_mapper_crashed">Je velmi pravděpodobné, že váš telefon ukončil klávesovou mapu, zatímco se pokoušel běžet na pozadí. Tohle není <b/> chyba vývojáře a není nic, co by mohli udělat pro opravu, proto prosím neponechejte špatnou recenzi 😃.
+    <string name="dialog_message_key_mapper_crashed">Je velmi pravděpodobné, že váš telefon ukončil klávesovou mapu, zatímco se pokoušel běžet na pozadí. Tohle není <b></b> chyba vývojáře a není nic, co by mohli udělat pro opravu, proto prosím neponechejte špatnou recenzi 😃.
 
     \n\nSledujete průvodce dontkillmyapp.com před tím, aby váš telefon zastavil zabíjení Mapper?</string>
     <string name="dialog_button_read_dont_kill_my_app_yes">Ano</string>
     <string name="dialog_button_read_dont_kill_my_app_no">Ne</string>
     <string name="dialog_title_failed_to_create_bug_report">Nepodařilo se vytvořit hlášení o chybě</string>
+    <string name="dialog_title_request_shizuku_permission">Požádat o povolení Shizuku</string>
+    <string name="dialog_message_request_shizuku_permission">Vzhledem k tomu, že používáte Shizuku, důrazně doporučujeme udělit toto oprávnění, protože některé funkce v Mapovači klíčů lze provést, aniž byste museli cokoli konfigurovat (např. zadávání klíčových kódů bez použití klávesnice Key Mapper).</string>
     <string name="pos_yes">Ano</string>
     <string name="pos_done">Hotovo</string>
     <string name="pos_opt_in">Přihlásit se</string>
     <string name="pos_grant_write_secure_settings_guide">Průvodce</string>
-    <string name="pos_grant_report_issues_guide">Průvodce</string>
+    <string name="pos_report_issues_guide">Průvodce</string>
     <string name="pos_enable_root_features">Povolit root funkce</string>
     <string name="pos_grant">Udělit</string>strings
     <string name="pos_join">Připojit se</string>
@@ -374,6 +435,10 @@
     <string name="neutral_report_bug">Nahlásit chybu</string>
     <string name="dialog_button_restart_accessibility_service">Restartovat</string>
     <string name="dialog_button_open_guide_to_fix_optimisation">Přejít na průvodce</string>
+    <string name="dialog_button_install_shizuku">Shizuku</string>
+    <string name="dialog_button_install_gui_keyboard">Klávesa Mapper GUI klávesnice</string>
+    <string name="dialog_button_install_leanback_keyboard">Klávesová mapa Leanback</string>
+    <string name="dialog_button_install_nothing">nic nestane</string>
     <string name="snackbar_cancel">Zrušit</string>
     <string name="snackbar_fix">Opravit</string>
     <!-- Dialog stuff -->
@@ -436,6 +501,9 @@
     <string name="summary_pref_auto_show_ime_picker">Když jste vybrali zařízení, které se připojí nebo odpojí, bude se automaticky zobrazovat výběr klávesnice. Vyberte zařízení níže.</string>
     <string name="title_pref_auto_change_ime_on_connection">Automaticky změnit klávesnici na obrazovce při připojení/odpojení zařízení (např. klávesnice)</string>
     <string name="summary_pref_auto_change_ime_on_connection">Po připojení vybraného zařízení bude automaticky vybrána poslední použitá klávesová mapa. Vaše normální klávesnice bude automaticky vybrána po odpojení zařízení.</string>
+    <string name="title_pref_auto_change_ime_on_input_focus">Automatická změna klávesnice na obrazovce při zahájení zadávání textu</string>
+    <string name="summary_pref_auto_change_ime_on_input_focus">Při pokusu o otevření klávesnice bude automaticky vybrána naposledy použitá klávesnice bez mapovací klávesnice. Klávesnice mapovací klávesy bude automaticky vybrána, jakmile přestanete klávesnici používat.</string>
+    <string name="title_pref_show_toast_when_auto_changing_ime">Zobrazení zprávy na obrazovce při automatické změně klávesnice</string>
     <string name="title_pref_root_permission">Mapper klíče má root oprávnění</string>
     <string name="summary_pref_root_permission">Povolte tuto možnost, pokud chcete používat funkce/akce, které fungují pouze na rootovaných zařízeních. Mapa klíče musí mít oprávnění root z vaší aplikace root-access-management (např. Magisk, SuperSU) pro fungování těchto funkcí.
             Zapněte pouze pokud víte, že vaše zařízení je rootnuté a že jste udělili oprávnění Mapper (root) klíče.</string>
@@ -449,6 +517,8 @@
     <string name="summary_pref_hide_home_screen_alerts">Skrýt upozornění v horní části domovské obrazovky.</string>
     <string name="title_pref_show_device_descriptors">Zobrazit prvních 5 znaků ID zařízení pro specifické spouštěče zařízení</string>
     <string name="summary_pref_show_device_descriptors">Toto je užitečné pro rozlišení mezi zařízeními, která mají stejný název.</string>
+    <string name="title_pref_reroute_keyevents_link">Řešení chyby Android 11</string>
+    <string name="summary_pref_reroute_keyevents_link">Tím se opraví klávesnice, které nefungují, když jsou povoleny nějaké služby usnadnění.</string>
     <string name="title_pref_devices_to_reroute_keyevents_choose_devices">4. Zvolte zařízení</string>
     <string name="title_pref_devices_to_reroute_keyevents_install_gui_keyboard">1. Nainstalujte klávesu Mapper GUI klíče (volitelné)</string>
     <string name="title_pref_devices_to_reroute_keyevents_install_leanback_keyboard">1. Nainstalujte klávesovou mapu Leanback (volitelné)</string>
@@ -460,17 +530,32 @@
     <string name="title_pref_view_and_share_log">Zobrazit a sdílet protokol</string>
     <string name="title_pref_report_issue">Nahlásit problém</string>
     <string name="title_pref_delete_sound_files">Odstranit zvukové soubory</string>
+    <string name="summary_pref_delete_sound_files">Odstranit zvukové soubory, které mohou být použity pro akci zvuku.</string>
     <string name="title_pref_grant_write_secure_settings_not_granted">Udělit oprávnění</string>
     <string name="title_pref_grant_write_secure_settings_granted">Oprávnění uděleno</string>
+    <string name="title_pref_grant_shizuku_install_app_not_installed">1. Shizuku není nainstalován! Klepnutím stáhnete aplikaci Shizuku.</string>
+    <string name="title_pref_grant_shizuku_install_app_installed">1. Šizuku je nainstalován.</string>
+    <string name="title_pref_grant_shizuku_not_started">2. Šizuku není spuštěno! Klepnutím otevřete aplikaci Shizuku a pak si přečtěte jejich pokyny, které vysvětlují, jak ji spustit.</string>
+    <string name="title_pref_grant_shizuku_started">2. Šizuku je spuštěno.</string>
+    <string name="title_pref_grant_shizuku_not_granted">3. Mapa klíče nemá oprávnění používat Shizuku. Klepnutím udělíte toto oprávnění.</string>
+    <string name="title_pref_grant_shizuku_granted">3. Klávesová mapa bude automaticky používat Shizuku. Klepnutím čtete které funkce pro mapu kláves používají Shizuku.</string>
+    <string name="title_pref_default_options">Výchozí možnosti mapování</string>
+    <string name="summary_pref_default_options">Změňte výchozí možnosti mapování.</string>
     <!--Preference titles and summaries-->
     <!--Preference categories-->
-    <string name="title_pref_category_ime_picker">Výběr klávesnice</string>
+    <string name="title_pref_category_ime_picker">Automaticky zobrazit výběr klávesnice</string>
+    <string name="summary_pref_category_ime_picker">Klepnutím zobrazíte nastavení, která vám umožňují automaticky zobrazit výběr klávesnice.</string>
     <string name="title_pref_category_notifications">Oznámení</string>
     <string name="title_pref_category_defaults">Výchozí nastavení</string>
-    <string name="title_pref_category_root">ROOT</string>
+    <string name="title_pref_category_root">Root nastavení</string>
     <string name="summary_pref_category_root">Tyto možnosti budou fungovat pouze na root zařízeních! Pokud nevíte, jaký je root nebo zda je vaše zařízení rootnuté, nenechte prosím špatnou recenzi, pokud nefungují. :)</string>
     <string name="title_pref_category_write_secure_settings">Vyžadovat oprávnění WRITE_SECURE_SETTINGS</string>
     <string name="summary_pref_category_write_secure_settings">Tyto možnosti jsou povoleny pouze v případě, že klíčová mapa má oprávnění WRITE_SECURE_SETTINGS. Klepnutím na tlačítko níže se dozvíte, jak oprávnění udělit.</string>
+    <string name="title_pref_category_shizuku">Podpora Shizuku</string>
+    <string name="summary_pref_category_shizuku">Shizuku je aplikace, která umožňuje klávesovým maperům dělat věci, které mohou dělat pouze systémové aplikace. Nepotřebujete například použít klávesovou mapu klávesy. Klepnutím se naučíte, jak ji nastavit.</string>
+    <string name="summary_pref_category_shizuku_follow_steps">Postupujte podle těchto kroků pro nastavení Šizuku.</string>
+    <string name="title_pref_automatically_change_ime">Automatická změna klávesnice</string>
+    <string name="summary_pref_automatically_change_ime">Jedná se o opravdu užitečná nastavení a doporučujeme je zkontrolovat!</string>
     <string name="title_pref_category_log">Logování</string>
     <string name="summary_pref_category_log">Toto může přidat latenci do Vašich klíčových map, takže to zapněte pouze v případě, že se pokoušíte aplikaci ladit nebo jste o ni vývojář požádal.</string>
     <!--Preference categories-->
@@ -488,20 +573,6 @@
     <string name="pref_title_discord">Discord server</string>
     <string name="pref_title_youtube_channel">YouTube kanál (Tutoriály)</string>
     <!-- About activity-->
-    <!--Action Types Titles-->
-    <string name="action_type_title_application">Aplikace</string>
-    <string name="action_type_title_application_shortcut">Skratka aplikace</string>
-    <string name="action_type_title_key">Klíč</string>
-    <string name="action_type_title_key_code">Klíčový kód</string>
-    <string name="action_type_title_keyevent">Klíčová událost</string>
-    <string name="action_type_title_system_action">Systém</string>
-    <string name="action_type_title_text_block">Text</string>
-    <string name="action_type_url">URL</string>
-    <string name="action_type_tap_coordinate">Klepnout na obrazovku</string>
-    <string name="action_type_intent">Záměr</string>
-    <string name="action_type_phone_call">Telefonní hovor</string>
-    <string name="action_type_sound">Zvuk</string>
-    <!--Action Types Titles-->
     <!--flags-->
     <string name="flag_show_volume_dialog">Zobrazit dialog hlasitosti</string>
     <string name="flag_long_press">Dlouhý stisk</string>
@@ -558,13 +629,22 @@
     <string name="showcase_fingerprint_gesture_support_button">Povolit</string>
     <string name="showcase_setup_chosen_devices_again_title">Některá nastavení musíte nastavit znovu</string>
     <string name="showcase_setup_chosen_devices_again_message">Vypadá to, že jste použili nastavení k automatické změně klávesnice nebo zobrazení výběru vstupní metody při připojení a odpojení zařízení Bluetooth. Klávesová mapa nyní umožňuje používat libovolné vstupní zařízení, nejen zařízení Bluetooth. Neexistuje způsob, jak migrovat stará nastavení tak, že nová funkce bude fungovat, takže budete muset znovu vybrat zařízení.</string>
+    <string name="showcase_grant_shizuku_permission_denied_title">Udělení povolení Shizuku</string>
+    <string name="showcase_grant_shizuku_permission_denied_message">Vypadá to, že máte nainstalovaný Shizuku. Doporučuje se udělit Key Mapper oprávnění k použití Shizuku, aby Key Mapper mohl dělat více věcí bez vstupu uživatele. Například vstupní tlačítko stiskne, aniž byste museli používat klávesnici \"Key Mapper\". Klepnutím na \"další informace\" si můžete přečíst všechny výhody. Klepnutím na \"grant\" udělíte oprávnění.</string>
+    <string name="showcase_grant_shizuku_permission_granted_title">Povolení Shizuku uděleno!</string>
+    <string name="showcase_grant_shizuku_permission_granted_message">Úspěšně jste udělili key mapper Shizuku oprávnění!</string>
+    <string name="showcase_more_shizuku_info">Více</string>
+    <string name="showcase_request_shizuku_permission">Udělit</string>
+    <string name="showcase_shizuku_not_started_title">Shizuku není spuštěn</string>
+    <string name="showcase_shizuku_not_started_message">Shizuku musí být spuštěn před udělením oprávnění Key Mapper k jeho použití. Klepnutím na \"Spustit Shizuku\" otevřete aplikaci Shizuku, abyste ji mohli spustit.</string>
+    <string name="showcase_shizuku_launch_shizuku_app">Spusťte Shizuku</string>
     <!-- Showcase -->
     <!-- system action options -->
     <string name="stream_accessibility">Přístupnost</string>
     <string name="stream_alarm">Alarm</string>
     <string name="stream_dtmf">DTMF</string>
     <string name="stream_music">Hudba</string>
-    <string name="stream_notification">Oznámení</string>
+    <string name="stream_notification">Notifications</string>
     <string name="stream_ring">Vyzvánění</string>
     <string name="stream_system">Systém</string>
     <string name="stream_voice_call">Hlasový hovor</string>
@@ -618,9 +698,15 @@
     <string name="error_action_requires_write_settings_permission">Pro změnu nastavení systému musíte udělit oprávnění Mapperu klíče.</string>
     <string name="error_requires_root">To vyžaduje oprávnění root!</string>
     <string name="error_action_requires_camera_permission">Tato akce vyžaduje oprávnění k fotoaparátu!</string>
-    <string name="error_sdk_version_too_low">To vyžaduje Android %s</string>
-    <string name="error_sdk_version_too_high">To je podporováno pouze do systému Android %s</string>
-    <string name="error_feature_not_available">Vaše zařízení nepodporuje %s.</string>
+    <string name="error_sdk_version_too_low">Vyžaduje Android %s nebo novější</string>
+    <string name="error_sdk_version_too_high">Vyžaduje Android %s nebo starší</string>
+    <string name="error_system_feature_camera_unsupported">Zařízení nemá fotoaparát.</string>
+    <string name="error_system_feature_nfc_unsupported">Vaše zařízení nepodporuje NFC.</string>
+    <string name="error_system_feature_fingerprint_unsupported">Zařízení nemá čtečku otisků prstů.</string>
+    <string name="error_system_feature_wifi_unsupported">Vaše zařízení nepodporuje WiFi.</string>
+    <string name="error_system_feature_bluetooth_unsupported">Vaše zařízení bluetooth nepodporuje.</string>
+    <string name="error_system_feature_device_admin_unsupported">Vaše zařízení nepodporuje vynucení zásad zařízení.</string>
+    <string name="error_system_feature_camera_flash_unsupported">Zařízení nemá blesk fotoaparátu.</string>
     <string name="error_flag_not_found">Označit \"%s\" nenalezeno!</string>
     <string name="error_cant_find_ime_settings">Nelze najít stránku nastavení klávesnice!</string>
     <string name="error_need_to_enable_device_admin">Klíčová mapa musí být správcem zařízení!</string>
@@ -689,7 +775,6 @@
     <string name="error_corrupt_json_file">Korumpovaný soubor JSON!</string>
     <string name="error_voice_assistant_not_found">Není nainstalován žádný hlasový asistent!</string>
     <string name="error_insufficient_permissions">Nedostatečná oprávnění</string>
-    <string name="error_corrupt_action">Poškozená akce</string>
     <string name="error_no_incompatible_input_methods_installed">Máte nainstalovány pouze klíčové klávesnice Mapper!</string>
     <string name="error_no_media_sessions">Nebyly nalezeny žádné aplikace přehrávající média!</string>
     <string name="error_source_file_not_found">Zdrojový soubor nebyl nalezen! %s</string>
@@ -710,8 +795,12 @@
     <string name="error_storage_permission_denied">Oprávnění k úložišti zamítnuto!</string>
     <string name="error_matching_source_and_target_paths">Zdroj a cíl nemohou být stejné!</string>
     <string name="error_no_space_left_at_target">Na cíli není žádné místo! %s</string>
+    <string name="error_shizuku_permission_denied">Oprávnění Shizuku je odepřeno!</string>
+    <string name="error_shizuku_not_started">Šizuku není spuštěna!</string>
+    <string name="error_no_file_name">Tento soubor nemá žádné jméno!</string>
+    <string name="error_access_fine_location_permission_denied">Bylo odepřeno oprávnění ke čtení pěkné polohy!</string>
     <!-- Error messages -->
-    <!-- System action labels -->
+    <!-- action labels -->
     <string name="action_toggle_wifi">Přepnout WiFi</string>
     <string name="action_enable_wifi">Povolit WiFi</string>
     <string name="action_disable_wifi">Zakázat WiFi</string>
@@ -807,7 +896,7 @@
     <string name="action_power_on_off_device_message">Musíte zapnout možnost pro detekci spouštěče při vypnuté obrazovce!</string>
     <string name="action_consume_keyevent">Nic nedělat</string>
     <string name="action_move_to_end_of_text">Přesunout kurzor na konec</string>
-    <string name="action_move_to_end_of_text_message">Aby tato akce fungovala, musí být vybrána klávesnice Mapovací klávesy a tato akce nemusí v některých aplikacích fungovat tak, jak má.</string>
+    <string name="action_move_to_end_of_text_message">Tato akce nemusí v některých aplikacích fungovat tak, jak bylo zamýšleno.</string>
     <string name="action_toggle_keyboard">Přepnout klávesnici</string>
     <string name="action_toggle_keyboard_message">Tato akce bude fungovat pouze v případě, že jste klepli na vstupní pole, kde má být zobrazena klávesnice.</string>
     <string name="action_show_keyboard">Zobrazit klávesnici</string>
@@ -824,23 +913,34 @@
     <string name="action_toggle_airplane_mode">Zapnout/Zapnout režim Letadlo</string>
     <string name="action_enable_airplane_mode">Povolit režim Letadlo</string>
     <string name="action_disable_airplane_mode">Zakázat režim Letadlo</string>
-    <!-- System action labels -->
-    <!-- System action category labels -->
-    <string name="system_action_cat_wifi">WiFi</string>
-    <string name="system_action_cat_bluetooth">Bluetooth</string>
-    <string name="system_action_cat_mobile_data">Mobilní data</string>
-    <string name="system_action_cat_navigation">Navigace</string>
-    <string name="system_action_cat_volume">Hlasitost</string>
-    <string name="system_action_cat_screen_rotation">Otočení obrazovky</string>
-    <string name="system_action_cat_brightness">Jas</string>
-    <string name="system_action_cat_status_bar">Stavový řádek</string>
-    <string name="system_action_cat_media">Média</string>
-    <string name="system_action_cat_flashlight">Baterka</string>
-    <string name="system_action_cat_nfc">NFC</string>
-    <string name="system_action_cat_other">Jiný</string>
-    <string name="system_action_cat_keyboard">Klávesnice</string>
-    <string name="system_action_cat_airplane_mode">Režim letadlo</string>
-    <!-- System action category labels -->
+    <string name="action_open_app">Spustit aplikaci</string>
+    <string name="action_open_app_shortcut">Spuštění zástupce aplikace</string>
+    <string name="action_input_key_code">Kód vstupního klíče</string>
+    <string name="action_input_key_event">Událost vstupního klíče</string>
+    <string name="action_tap_screen">Klepnout na obrazovku</string>
+    <string name="action_input_text">Vstupní text</string>
+    <string name="action_open_url">Otevřít adresu URL</string>
+    <string name="action_send_intent">Odeslat záměr</string>
+    <string name="action_phone_call">Zahájit telefonní hovor</string>
+    <string name="action_play_sound">Přehrávání zvuku</string>
+    <string name="action_dismiss_most_recent_notification">Zavření posledního oznámení</string>
+    <string name="action_dismiss_all_notifications">Zrušit všechna Halo upozornění</string>
+    <!-- action labels -->
+    <!-- action category labels -->
+    <string name="action_cat_navigation">Navigace</string>
+    <string name="action_cat_volume">Hlasitost</string>
+    <string name="action_cat_media">Média</string>
+    <string name="action_cat_keyboard">Klávesnice</string>
+    <string name="action_cat_apps">aplikací</string>
+    <string name="action_cat_input">Vstup</string>
+    <string name="action_cat_camera_sound">Kamera a zvuk</string>
+    <string name="action_cat_connectivity">Připojení</string>
+    <string name="action_cat_content">Obsah</string>
+    <string name="action_cat_interface">Prostředí</string>
+    <string name="action_cat_telephony">Telefon</string>
+    <string name="action_cat_display">Displej</string>
+    <string name="action_cat_notifications">Oznámení</string>
+    <!-- action category labels -->
     <!--  Intent action type strings  -->
     <string name="intent_type_bool_header">Boolean</string>
     <string name="intent_type_bool_array_header">Logické pole</string>
@@ -885,4 +985,24 @@
     <string name="tap_target_quick_start_guide_primary">Příručka pro rychlý start</string>
     <string name="tap_target_quick_start_guide_secondary">Pokud se zaseknete, podívejte se do průvodce rychlým startem.</string>
     <!--  Tap targets  -->
+    <!--  About  -->
+    <string name="about_link_github">GitHub</string>
+    <string name="about_link_website">Web</string>
+    <string name="about_link_translations">Překlady</string>
+    <string name="about_version">Verze %s</string>
+    <string name="about_link_rate">Ohodnoďte</string>
+    <string name="about_link_changelog">Změny ve verzích</string>
+    <string name="about_link_discord">Discord</string>
+    <string name="about_header_boring_stuff">Skladování věcí</string>
+    <string name="about_license_title">Licence</string>
+    <string name="about_license_subtitle">Open source licence pro tuto aplikaci.</string>
+    <string name="about_privacy_policy_title">Nastavení soukromí</string>
+    <string name="about_privacy_policy_subtitle">Nesbíráme žádné osobní údaje, ale zde je politika ochrany osobních údajů, která to potvrzuje.</string>
+    <string name="about_header_our_team">Náš tým</string>
+    <string name="about_team_sds100_role">Vývojář</string>
+    <string name="about_team_jambl3r_role">Moderátor/podpora komunity</string>
+    <string name="about_team_gl513_role">Moderátor/podpora komunity</string>
+    <string name="about_team_kekero_role">Překladač (polština)</string>
+    <string name="about_team_trollserver_role">Překladatel (česky)</string>
+    <!--  About  -->
 </resources>

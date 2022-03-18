@@ -100,14 +100,12 @@
 #### 02 October 2021
 
 ### Changes
-
-- [#772](https://github.com/sds100/KeyMapper/issues/772) Remapping game controllers should work automatically in games
-  now. You no longer have to manually set the device of a key event action to be the game controller.
+- [#772](https://github.com/sds100/KeyMapper/issues/772) Remapping game controllers should work automatically in games now. You no longer have to manually set the device of a key event action to be the game controller.
 
 ### Bug Fixes
-
 - Try to fix a lot of random crashes on some devices.
 - [#771](https://github.com/sds100/KeyMapper/issues/771) Don't show a "failed to find accessibility node" toast message when the open menu action fails.
+- 
 - [#775](https://github.com/sds100/KeyMapper/issues/775) The options for key maps would sometimes sporadically change when navigating the configuration screen.
 - 
 ### Removed
@@ -308,20 +306,17 @@ See the 2.3.0 Beta releases below.
 - Trigger button isn't imitated when a short press trigger with multiple keys fails to be triggered. #664
 - Overlapping triggers. #653
 
-## [2.2.0](https://github.com/sds100/KeyMapper/releases/tag/v2.2.0)
+## [2.2.0](https://github.com/sds100/KeyMapper/releases/tag/v2.2.0) 
 
 #### 07 March 2021
 
 This sums up all the changes for 2.2
 
 ### Added
-
-- Remap fingerprint gestures! #378 Android 8.0+ and only on devices which support them. Even devices with the setting to
-  swipe down for notifications might not support this! The dev can't do anything about this.
+- Remap fingerprint gestures! #378 Android 8.0+ and only on devices which support them. Even devices with the setting to swipe down for notifications might not support this! The dev can't do anything about this.
 
 - Widget/shortcut to launch actions. #459
-- Setting to show the first 5 digits of input devices so devices with the same name can be differentiated in Key Mapper
-  lists. #470
+- Setting to show the first 5 digits of input devices so devices with the same name can be differentiated in Key Mapper lists. #470
 - Show a warning at the top of the homescreen if the user hasn't disabled battery optimisation for Key Mapper. #496
 - Action option to hold down until the trigger is pressed again. #479
 - Action option to change the delay before the next action in the list. #476
@@ -372,25 +367,20 @@ This sums up all the changes for 2.2
 - Try to fix random crashes when navigating.
 - Duplicating key maps didn't work.
 
-## [2.2.0 Beta 2](https://github.com/sds100/KeyMapper/releases/tag/v2.2.0-beta.2)
+## [2.2.0 Beta 2](https://github.com/sds100/KeyMapper/releases/tag/v2.2.0-beta.2) 
 
 #### 29 Jan 2021
 
 ### Added
-
-- Remap fingerprint gestures! #378 Android 8.0+ and only on devices which support them. Even devices with the setting to
-  swipe down for notifications might not support this! The dev can't do anything about this.
+- Remap fingerprint gestures! #378 Android 8.0+ and only on devices which support them. Even devices with the setting to swipe down for notifications might not support this! The dev can't do anything about this.
 - Show the fingerprint gesture intro slide when updating to 2.2 #545
-- Show a silent notification, which advertises the remapping fingerprint gesture feature, when the user updates to 2.2
-  #546
+- Show a silent notification, which advertises the remapping fingerprint gesture feature, when the user updates to 2.2 #546
 - Trigger key maps from an Intent #490
 - Prompt the user to go to https://dontkillmyapp.com when they first setup the app.
 - Add Fdroid link to the Key Mapper GUI Keyboard ad. #524
 
 ### BREAKING CHANGES
-
-- Key Mapper action shortcuts work completely differently.
-  See https://docs.keymapper.club/user-guide/triggers/#trigger-from-other-apps-230
+- Key Mapper action shortcuts work completely differently. See https://docs.keymapper.club/user-guide/triggers/#trigger-from-other-apps-230
 
 ### Changes
 - The app intro slides will show feedback if the steps have been done correctly.
@@ -421,18 +411,15 @@ This sums up all the changes for 2.2
 - Try to fix random crashes when navigating.
 - Duplicating key maps didn't work.
 
-## [2.2.0 Beta 1](https://github.com/sds100/KeyMapper/releases/tag/v2.2.0-beta.1)
+## [2.2.0 Beta 1](https://github.com/sds100/KeyMapper/releases/tag/v2.2.0-beta.1) 
 
 #### 30 Dec 2020
 
 ### Added
-
-- Remap fingerprint gestures! #378 Android 8.0+ and only on devices which support them. Even devices with the setting to
-  swipe down for notifications might not support this! The dev can't do anything about this.
+- Remap fingerprint gestures! #378 Android 8.0+ and only on devices which support them. Even devices with the setting to swipe down for notifications might not support this! The dev can't do anything about this.
 
 - Widget/shortcut to launch actions. #459
-- Setting to show the first 5 digits of input devices so devices with the same name can be differentiated in Key Mapper
-  lists. #470
+- Setting to show the first 5 digits of input devices so devices with the same name can be differentiated in Key Mapper lists. #470
 - Show a warning at the top of the homescreen if the user hasn't disabled battery optimisation for Key Mapper. #496
 - Action option to hold down until the trigger is pressed again. #479
 - Action option to change the delay before the next action in the list. #476
@@ -609,8 +596,7 @@ This summarises the changes since 2.0.2.
   - 2 modes. The keys can all be pressed at the same time or one after another in a sequence.
   - Keys can be limited to a specific external device, any device or the device the app is installed on.
   - Double press support.
-- Constraints. Keymaps can be restricted to only work in certain situations. Constraints can be mixed in OR mode or AND
-  mode.
+- Constraints. Keymaps can be restricted to only work in certain situations. Constraints can be mixed in OR mode or AND mode.
   - App in foreground
   - App not in foreground
   - Bluetooth device connected
@@ -741,8 +727,7 @@ Significantly improved the input latency.
   - 2 modes. The keys can all be pressed at the same time or one after another in a sequence.
   - Keys can be limited to a specific external device, any device or the device the app is installed on.
   - Double press support.
-- Constraints. Keymaps can be restricted to only work in certain situations. Constraints can be mixed in OR mode or AND
-  mode.
+- Constraints. Keymaps can be restricted to only work in certain situations. Constraints can be mixed in OR mode or AND mode.
   - App in foreground
   - App not in foreground
   - Bluetooth device connected
@@ -1020,47 +1005,12 @@ Changes from 1.1.0 Beta 8:
 - A Help activity
 - An About activity
 - No limit on the amount of triggers for a keymap and how many keys can be used to create a trigger.
-- Optional flags for each keymap so it can only be triggered on a long press and whether to show the volume dialog for
-  volume related actions.
+- Optional flags for each keymap so it can only be triggered on a long press and whether to show the volume dialog for volume related actions.
 - Ability to enable/disable specific/all keymaps.
 
-  #### Added these actions
+  ####    Added these actions
   - Open App
   - Open App shortcut
   - A keycode
   - A key
   - A block of text
-
-  - Go back
-  - Go home
-  - Open recents
-  - Open menu
-
-  - Expand notification drawer
-  - Expand quick settings
-  - Collapse status bar
-
-  - Toggle/enable/disable WiFi
-  - Toggle/enable/disable Bluetooth
-  - Toggle/enable/disable mobile data
-
-  - Toggle Play/pause media
-  - Pause,play media
-  - Next/previous track
-
-  - Volume up/down
-  - Increase/decrease a specific volume stream
-  - Show the volume dialog
-  - Mute/unmute/toggle mute
-
-  - Toggle/enable/disable auto-rotate
-  - Force portrait/landscape mode
-
-  - Toggle/enable/disable auto-brightness
-  - Increase/decrease brightness
-
-  - Toggle/enable/disable flashlight
-
-  - Screenshot
-  - Open Google Assistant
-  - Open camera

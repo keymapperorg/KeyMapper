@@ -22,46 +22,60 @@ import kotlinx.android.parcel.Parcelize
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed class Event
+sealed class Event {
 
-@Serializable
-data class Ping(val key: String) : Event()
-@Serializable
-data class Pong(val key: String) : Event()
+    @Serializable
+    data class Ping(val key: String) : Event()
 
-@Parcelize
-@Serializable
-data class RecordedTriggerKeyEvent(
-    val keyCode: Int,
-    val device: InputDeviceInfo?
-) : Event(), Parcelable
+    @Serializable
+    data class Pong(val key: String) : Event()
 
-@Serializable
-object StartRecordingTrigger : Event()
+    @Parcelize
+    @Serializable
+    data class RecordedTriggerKey(
+        val keyCode: Int,
+        val device: InputDeviceInfo?
+    ) : Event(), Parcelable
 
-@Serializable
-object StopRecordingTrigger : Event()
+    @Serializable
+    object StartRecordingTrigger : Event()
 
-@Serializable
-data class OnIncrementRecordTriggerTimer(val timeLeft: Int) : Event()
+    @Serializable
+    object StopRecordingTrigger : Event()
 
-@Serializable
-object OnStoppedRecordingTrigger : Event()
+    @Serializable
+    data class OnIncrementRecordTriggerTimer(val timeLeft: Int) : Event()
 
-@Serializable
-object OnHideKeyboardEvent : Event()
+    @Serializable
+    object OnStoppedRecordingTrigger : Event()
 
-@Serializable
-object OnShowKeyboardEvent : Event()
+    @Serializable
+    object OnHideKeyboardEvent : Event()
 
-@Serializable
-object HideKeyboardEvent: Event()
+    @Serializable
+    object OnShowKeyboardEvent : Event()
 
-@Serializable
-object ShowKeyboardEvent: Event()
+    @Serializable
+    object HideKeyboard : Event()
 
-@Serializable
-data class TestActionEvent(val action: ActionData): Event()
+    @Serializable
+    object ShowKeyboard : Event()
 
-@Serializable
-data class ChangeIme(val imeId: String): Event()
+    @Serializable
+    data class TestAction(val action: ActionData) : Event()
+
+    @Serializable
+    data class ChangeIme(val imeId: String) : Event()
+
+    @Serializable
+    object DisableService : Event()
+
+    @Serializable
+    object DismissLastNotification : Event()
+
+    @Serializable
+    object DismissAllNotifications : Event()
+
+    @Serializable
+    data class OnInputFocusChange(val isFocussed: Boolean) : Event()
+}

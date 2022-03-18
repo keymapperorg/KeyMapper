@@ -17,18 +17,15 @@ import io.github.sds100.keymapper.data.migration.*
 import io.github.sds100.keymapper.data.migration.fingerprintmaps.FingerprintMapMigration_0_1
 import io.github.sds100.keymapper.data.migration.fingerprintmaps.FingerprintMapMigration_1_2
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapEntity
+import io.github.sds100.keymapper.data.entities.FingerprintMapEntity
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapRepository
-import io.github.sds100.keymapper.mappings.keymaps.KeyMapEntity
+import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapRepository
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.files.IFile
 import io.github.sds100.keymapper.util.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.async
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.InputStream
 import java.util.*
@@ -147,7 +144,7 @@ class BackupManagerImpl(
         }.launchIn(coroutineScope)
     }
 
-    override suspend fun backupKeyMaps(uri: String, keyMapIds: List<String>): Result<*> {
+    override suspend fun backupKeyMaps(uri: String, keyMapIds: List<String>): Result<String> {
         return withContext(dispatchers.default()) {
             val outputFile = fileAdapter.getFileFromUri(uri)
             val allKeyMaps = keyMapRepository.keyMapList
@@ -155,21 +152,21 @@ class BackupManagerImpl(
 
             val keyMapsToBackup = allKeyMaps.data.filter { keyMapIds.contains(it.uid) }
 
-            backupAsync(outputFile, keyMapsToBackup).await()
+            backupAsync(outputFile, keyMapsToBackup).await().then { Success(uri) }
         }
     }
 
-    override suspend fun backupFingerprintMaps(uri: String): Result<*> {
+    override suspend fun backupFingerprintMaps(uri: String): Result<String> {
         return withContext(dispatchers.default()) {
             val outputFile = fileAdapter.getFileFromUri(uri)
             val fingerprintMaps =
                 fingerprintMapRepository.fingerprintMapList.first { it is State.Data } as State.Data
 
-            backupAsync(outputFile, fingerprintMaps = fingerprintMaps.data).await()
+            backupAsync(outputFile, fingerprintMaps = fingerprintMaps.data).await().then { Success(uri) }
         }
     }
 
-    override suspend fun backupMappings(uri: String): Result<*> {
+    override suspend fun backupMappings(uri: String): Result<String> {
         return withContext(dispatchers.default()) {
             val outputFile = fileAdapter.getFileFromUri(uri)
 
@@ -179,7 +176,7 @@ class BackupManagerImpl(
             val fingerprintMaps =
                 fingerprintMapRepository.fingerprintMapList.first { it is State.Data } as State.Data
 
-            backupAsync(outputFile, keyMaps.data, fingerprintMaps.data).await()
+            backupAsync(outputFile, keyMaps.data, fingerprintMaps.data).await().then { Success(uri) }
         }
     }
 
@@ -239,7 +236,7 @@ class BackupManagerImpl(
                 if (element.isJsonNull) {
                     return Error.EmptyJson
                 }
-                
+
                 element.asJsonObject
             }
 
@@ -404,7 +401,7 @@ class BackupManagerImpl(
         output: IFile,
         keyMapList: List<KeyMapEntity>? = null,
         fingerprintMaps: List<FingerprintMapEntity>? = null
-    ) = coroutineScope.async(dispatchers.io()) {
+    ): Deferred<Result<*>> = coroutineScope.async(dispatchers.io()) {
         var tempBackupDir: IFile? = null
 
         try {
@@ -541,8 +538,19 @@ class BackupManagerImpl(
 interface BackupManager {
     val onAutomaticBackupResult: Flow<Result<*>>
 
-    suspend fun backupKeyMaps(uri: String, keyMapIds: List<String>): Result<*>
-    suspend fun backupFingerprintMaps(uri: String): Result<*>
-    suspend fun backupMappings(uri: String): Result<*>
+    /**
+     * @return the URI to the back up
+     */
+    suspend fun backupKeyMaps(uri: String, keyMapIds: List<String>): Result<String>
+
+    /**
+     * @return the URI to the back up
+     */
+    suspend fun backupFingerprintMaps(uri: String): Result<String>
+
+    /**
+     * @return the URI to the back up
+     */
+    suspend fun backupMappings(uri: String): Result<String>
     suspend fun restoreMappings(uri: String): Result<*>
 }

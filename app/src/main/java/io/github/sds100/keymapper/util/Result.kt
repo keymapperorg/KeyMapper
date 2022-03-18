@@ -23,8 +23,7 @@ sealed class Error : Result<Nothing>() {
     data class ExtraNotFound(val extraId: String) : Error()
     data class SdkVersionTooLow(val minSdk: Int) : Error()
     data class SdkVersionTooHigh(val maxSdk: Int) : Error()
-    data class FeatureUnavailable(val feature: String) : Error()
-    data class InputMethodNotFound(val id: String) : Error()
+    data class InputMethodNotFound(val imeLabel: String) : Error()
     object NoVoiceAssistant : Error()
     object NoDeviceAssistant : Error()
     object NoCameraApp : Error()
@@ -40,7 +39,6 @@ sealed class Error : Result<Nothing>() {
     object NoIncompatibleKeyboardsInstalled : Error()
     object NoMediaSessions : Error()
     object BackupVersionTooNew : Error()
-    object CorruptActionError : Error()
     object LauncherShortcutsNotSupported : Error()
 
     data class AppNotFound(val packageName: String) : Error()
@@ -74,6 +72,10 @@ sealed class Error : Result<Nothing>() {
                     Permission.CALL_PHONE -> R.string.error_denied_call_phone_permission
                     Permission.ROOT -> R.string.error_requires_root
                     Permission.IGNORE_BATTERY_OPTIMISATION -> R.string.error_battery_optimisation_enabled
+                    Permission.SHIZUKU -> R.string.error_shizuku_permission_denied
+                    Permission.ACCESS_FINE_LOCATION -> R.string.error_access_fine_location_permission_denied
+                    Permission.ANSWER_PHONE_CALL -> R.string.error_answer_end_phone_call_permission_denied
+                    Permission.FIND_NEARBY_DEVICES -> R.string.error_find_nearby_devices_permission_denied
                 }
 
                 return resourceProvider.getString(resId)
@@ -112,6 +114,9 @@ sealed class Error : Result<Nothing>() {
     object EmptyJson : Error()
     object CantFindSoundFile : Error()
     data class CorruptJsonFile(val reason: String) : Error()
+
+    object ShizukuNotStarted : Error()
+    object CantDetectKeyEventsInPhoneCall : Error()
 }
 
 inline fun <T> Result<T>.onSuccess(f: (T) -> Unit): Result<T> {
@@ -148,6 +153,12 @@ inline infix fun <T> Result<T>.otherwise(f: (error: Error) -> Result<T>) =
         is Error -> f(this)
     }
 
+inline infix fun <T> Result<T>.valueIfFailure(f: (error: Error) -> T): T =
+    when (this) {
+        is Success -> this.value
+        is Error -> f(this)
+    }
+
 fun <T> Result<T>.errorOrNull(): Error? {
     when (this) {
         is Error -> return this
@@ -174,16 +185,6 @@ fun <T, U> Result<T>.handle(onSuccess: (value: T) -> U, onError: (error: Error) 
     return when (this) {
         is Success -> onSuccess(value)
         is Error -> onError(this)
-    }
-}
-
-suspend fun <T, U> Result<T>.handleAsync(
-    onSuccess: suspend (value: T) -> U,
-    onFailure: suspend (error: Error) -> U
-): U {
-    return when (this) {
-        is Success -> onSuccess(value)
-        is Error -> onFailure(this)
     }
 }
 
