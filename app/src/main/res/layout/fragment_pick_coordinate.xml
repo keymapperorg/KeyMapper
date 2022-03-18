@@ -87,7 +87,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
                     android:layout_marginEnd="16dp"
                     android:text="@string/tap_coordinate_screenshot_message"
                     android:textAppearance="@style/TextAppearance.Material3.BodyMedium"

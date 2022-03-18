@@ -3,6 +3,8 @@ package io.github.sds100.keymapper.mappings.keymaps.detection
 import android.os.Build
 import android.view.KeyEvent
 import io.github.sds100.keymapper.mappings.DisplaySimpleMappingUseCase
+import io.github.sds100.keymapper.mappings.keymaps.KeyMap
+import io.github.sds100.keymapper.mappings.keymaps.requiresImeKeyEventForwarding
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTriggerError
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
