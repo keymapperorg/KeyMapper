@@ -113,8 +113,10 @@ platform :android do
         skip_upload_apk: true
     )
 
-    publishBeforePush = prompt(
-            text: "Publish GitHub release before pushing changed versions to git.",
+    git_commit(path: "*", message: "chore (release): update changelog, whats_new")
+
+    pushBeforePublish = prompt(
+            text: "Push committed whats_new and changelog before publishing GitHub release.",
             boolean: true
            )
 
@@ -131,7 +133,7 @@ platform :android do
       )
 
     git_add
-    git_commit(path: "*", message: "chore (release): update changelog, whats_new and version")
+    git_commit(path: "*", message: "chore (release): update version")
 
     ensure_git_status_clean
 
@@ -211,12 +213,11 @@ platform :android do
         skip_upload_apk: true
     )
 
-    publishBeforePush = prompt(
-            text: "Publish GitHub release before pushing changed versions to git.",
+    git_commit(path: "*", message: "chore (release): update changelog, whats_new")
+
+    pushBeforePublish = prompt(
+            text: "Push committed whats_new and changelog before publishing GitHub release.",
             boolean: true
            )
-
-    git_add
-    git_commit(path: "*", message: "chore (release): update whats_new")
   end
 end
