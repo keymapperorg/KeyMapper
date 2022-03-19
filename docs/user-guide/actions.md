@@ -63,6 +63,11 @@ Send a broadcast to launch a Tasker action. These are the only fields that you n
 
 - Action = The exact same action that you used in Tasker. In my example this would be `net.dinglish.android.tasker.MY_ACTION`.
 
+!!! attention "Launching Termux command intents"
+    You need to open the app info page for Key Mapper in your device settings and grant it the "run commands in termux environment" permission.
+    On Android 12+ you must also turn off battery optimisation for Termux so that Android allows Termux to be started from the
+    background.
+
 ### Phone call (2.3.0+)
 
 This will start calling the number that you put.
