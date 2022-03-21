@@ -224,7 +224,7 @@ class KeyMapController(
                     val trigger = triggers[triggerIndex]
 
                     otherTriggerLoop@ for (otherTriggerIndex in sequenceTriggers) {
-                        val otherTrigger = triggers[triggerIndex]
+                        val otherTrigger = triggers[otherTriggerIndex]
 
                         //Don't compare a trigger to itself
                         if (triggerIndex == otherTriggerIndex) {
