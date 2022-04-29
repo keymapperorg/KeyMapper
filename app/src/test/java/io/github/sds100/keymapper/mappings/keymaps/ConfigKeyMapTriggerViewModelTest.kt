@@ -88,9 +88,7 @@ class ConfigKeyMapTriggerViewModelTest {
     fun `when create back button trigger key then prompt the user to disable screen pinning`() =
         coroutineScope.runBlockingTest {
             //GIVEN
-            fakeResourceProvider.stringResourceMap = mapOf(
-                R.string.dialog_message_screen_pinning_warning to "bla"
-            )
+            fakeResourceProvider.stringResourceMap[R.string.dialog_message_screen_pinning_warning] = "bla"
 
             //WHEN
             onRecordKey.emit(
