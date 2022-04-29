@@ -184,7 +184,7 @@ object ConstraintEntityMapper {
                 Constraint.BtDeviceConnected(getBluetoothAddress(), getBluetoothDeviceName())
 
             ConstraintEntity.BT_DEVICE_DISCONNECTED ->
-                Constraint.BtDeviceConnected(getBluetoothAddress(), getBluetoothDeviceName())
+                Constraint.BtDeviceDisconnected(getBluetoothAddress(), getBluetoothDeviceName())
 
             ConstraintEntity.ORIENTATION_0 -> Constraint.OrientationCustom(Orientation.ORIENTATION_0)
             ConstraintEntity.ORIENTATION_90 -> Constraint.OrientationCustom(Orientation.ORIENTATION_90)
