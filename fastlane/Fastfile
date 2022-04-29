@@ -113,6 +113,7 @@ platform :android do
         skip_upload_apk: true
     )
 
+    git_add
     git_commit(path: "*", message: "chore (release): update changelog, whats_new")
 
     pushBeforePublish = prompt(
@@ -213,6 +214,7 @@ platform :android do
         skip_upload_apk: true
     )
 
+    git_add
     git_commit(path: "*", message: "chore (release): update changelog, whats_new")
 
     pushBeforePublish = prompt(
