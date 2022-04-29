@@ -11,9 +11,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.setMain
 import org.hamcrest.Matchers.*
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.jupiter.api.BeforeEach
 
 /**
  * Created by sds100 on 29/04/2022.
@@ -28,7 +28,7 @@ internal class ConfigIntentViewModelTest {
     private lateinit var fakeResourceProvider: FakeResourceProvider
     private lateinit var viewModel: ConfigIntentViewModel
 
-    @BeforeEach
+    @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
 
