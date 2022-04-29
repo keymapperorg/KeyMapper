@@ -3,8 +3,9 @@
 These are the buttons which can be detected when the screen is off. Let the developer know about any buttons you would
 also like to be supported.
 
-!!! note Please send the output of pressing the buttons while running the `adb shell getevent -lq` command so the
-developer knows which key event name they need to add.
+!!! note 
+    Please send the output of pressing the buttons while running the `adb shell getevent -lq` command so the
+    developer knows which key event name they need to add.
 
 * Volume Up
 * Volume Down
