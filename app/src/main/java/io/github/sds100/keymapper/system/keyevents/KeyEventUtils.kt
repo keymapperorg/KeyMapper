@@ -651,7 +651,9 @@ object KeyEventUtils {
             "KEY_MEDIA" to KeyEvent.KEYCODE_HEADSETHOOK,
             "KEY_HEADSETHOOK" to KeyEvent.KEYCODE_HEADSETHOOK,
             "KEY_CAMERA_FOCUS" to KeyEvent.KEYCODE_FOCUS,
-            "02fe" to KeyEvent.KEYCODE_CAMERA
+            "02fe" to KeyEvent.KEYCODE_CAMERA,
+            "02bf" to KeyEvent.KEYCODE_MENU,
+            "KEY_SEARCH" to KeyEvent.KEYCODE_SEARCH
         )
 
     val MODIFIER_KEYCODES: Set<Int>
