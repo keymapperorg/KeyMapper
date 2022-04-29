@@ -2,15 +2,15 @@ package io.github.sds100.keymapper.system.intents
 
 import android.content.Intent
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import assertk.assertThat
-import assertk.assertions.*
 import io.github.sds100.keymapper.util.firstBlocking
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.setMain
-import org.hamcrest.Matchers.*
+import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers.`is`
+import org.hamcrest.Matchers.hasItem
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -42,9 +42,7 @@ internal class ConfigIntentViewModelTest {
         val popupEvent: ShowPopupEvent = viewModel.showPopup.firstBlocking()
         val multipleChoiceDialog = popupEvent.ui as PopupUi.MultiChoice<*>
 
-        assertThat(multipleChoiceDialog.items).each {
-            it.prop(MultiChoiceItem<*>::isChecked).isFalse()
-        }
+        assertThat(multipleChoiceDialog.items.none { it.isChecked }, `is`(true))
     }
 
     @Test
@@ -58,8 +56,6 @@ internal class ConfigIntentViewModelTest {
         val multipleChoiceDialog = popupEvent.ui as PopupUi.MultiChoice<*>
         val expectedCheckedItem = MultiChoiceItem(Intent.FLAG_ACTIVITY_NEW_TASK, "FLAG_ACTIVITY_NEW_TASK", true)
 
-        assertThat(multipleChoiceDialog.items).any {
-            it.isEqualTo(expectedCheckedItem)
-        }
+        assertThat(multipleChoiceDialog.items, hasItem(expectedCheckedItem))
     }
 }
