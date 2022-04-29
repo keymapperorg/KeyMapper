@@ -1325,5 +1325,9 @@
     <string name="about_team_trollserver_name" translatable="false">Trollserver</string>
     <string name="about_team_trollserver_url" translatable="false">https://youtube.com/channel/UCljg1FH1B_ju2D_NfqAYjDw</string>
     <string name="about_team_trollserver_role">Translator (Czech)</string>
+
+    <string name="about_team_bydario_name" translatable="false">Darío B. C. (bydariogamer)</string>
+    <string name="about_team_bydario_url" translatable="false">https://github.com/bydariogamer</string>
+    <string name="about_team_bydario_role">Translator (Spanish)</string>
     <!--  About  -->
 </resources>
