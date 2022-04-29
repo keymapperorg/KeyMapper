@@ -8,3 +8,4 @@ These are the buttons which can be detected when the screen is off. Let the deve
 * Camera focus button
 * Camera button
 * Menu button (on some devices the Bixby button is detected by Key Mapper as a menu button)
+* Search button

@@ -653,7 +653,8 @@ object KeyEventUtils {
             "KEY_CAMERA_FOCUS" to KeyEvent.KEYCODE_FOCUS,
             "02fe" to KeyEvent.KEYCODE_CAMERA,
             "KEY_COMPOSE" to KeyEvent.KEYCODE_MENU,
-            "KEY_SOFT1" to KeyEvent.KEYCODE_MENU
+            "KEY_SOFT1" to KeyEvent.KEYCODE_MENU,
+            "KEY_SEARCH" to KeyEvent.KEYCODE_SEARCH
         )
 
     val MODIFIER_KEYCODES: Set<Int>
