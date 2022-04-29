@@ -215,8 +215,8 @@ dependencies {
     testImplementation "pl.pragmatists:JUnitParams:1.1.1"
     testImplementation "org.mockito.kotlin:mockito-kotlin:3.1.0"
     testImplementation "org.mockito:mockito-core:3.8.0"
-    testImplementation('org.mockito:mockito-inline:3.8.0')
-
+    testImplementation 'org.mockito:mockito-inline:3.8.0'
+    
     androidTestImplementation "androidx.test.ext:junit:$androidXTestExtKotlinRunnerVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
     androidTestImplementation "androidx.arch.core:core-testing:2.1.0"

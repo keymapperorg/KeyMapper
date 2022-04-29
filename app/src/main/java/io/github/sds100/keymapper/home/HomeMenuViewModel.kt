@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.home
 
+import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
 import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
@@ -119,6 +120,28 @@ class HomeMenuViewModel(
         coroutineScope.launch {
             navigate("report-bug", NavDestination.ReportBug)
             _dismiss.emit(Unit)
+        }
+    }
+
+    fun onCreateBackupFileActivityNotFound() {
+        val dialog = PopupUi.Dialog(
+            message = getString(R.string.dialog_message_no_app_found_to_create_file),
+            positiveButtonText = getString(R.string.pos_ok)
+        )
+        
+        coroutineScope.launch {
+            showPopup("create_document_activity_not_found", dialog)
+        }
+    }
+
+    fun onChooseRestoreFileActivityNotFound() {
+        val dialog = PopupUi.Dialog(
+            message = getString(R.string.dialog_message_no_app_found_to_choose_a_file),
+            positiveButtonText = getString(R.string.pos_ok)
+        )
+
+        coroutineScope.launch {
+            showPopup("get_content_activity_not_found", dialog)
         }
     }
 }

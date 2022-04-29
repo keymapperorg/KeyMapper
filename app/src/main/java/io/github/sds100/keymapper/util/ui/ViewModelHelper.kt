@@ -38,7 +38,7 @@ object ViewModelHelper {
                 )
 
                 popupViewModel.showPopup("restart_accessibility_service", restartServiceDialog)
-                        ?: return
+                    ?: return
 
                 if (!restartService.invoke()) {
                     handleCantFindAccessibilitySettings(resourceProvider, popupViewModel)
@@ -47,15 +47,32 @@ object ViewModelHelper {
         }
     }
 
+    suspend fun showAccessibilityServiceExplanationDialog(
+        resourceProvider: ResourceProvider,
+        popupViewModel: PopupViewModel
+    ): DialogResponse {
+        val dialog = PopupUi.Dialog(
+            title = resourceProvider.getString(R.string.dialog_title_accessibility_service_explanation),
+            message = resourceProvider.getString(R.string.dialog_message_accessibility_service_explanation),
+            positiveButtonText = resourceProvider.getString(R.string.enable),
+            negativeButtonText = resourceProvider.getString(R.string.neg_cancel)
+        )
+
+        val response =
+            popupViewModel.showPopup("accessibility_service_explanation", dialog) ?: return DialogResponse.NEGATIVE
+
+        return response
+    }
+
     suspend fun handleCantFindAccessibilitySettings(
-            resourceProvider: ResourceProvider,
-            popupViewModel: PopupViewModel,
+        resourceProvider: ResourceProvider,
+        popupViewModel: PopupViewModel,
     ) {
         val dialog = PopupUi.Dialog(
-                title = resourceProvider.getString(R.string.dialog_title_cant_find_accessibility_settings_page),
-                message = resourceProvider.getText(R.string.dialog_message_cant_find_accessibility_settings_page),
-                positiveButtonText = resourceProvider.getString(R.string.pos_start_service_with_adb_guide),
-                negativeButtonText = resourceProvider.getString(R.string.neg_cancel)
+            title = resourceProvider.getString(R.string.dialog_title_cant_find_accessibility_settings_page),
+            message = resourceProvider.getText(R.string.dialog_message_cant_find_accessibility_settings_page),
+            positiveButtonText = resourceProvider.getString(R.string.pos_start_service_with_adb_guide),
+            negativeButtonText = resourceProvider.getString(R.string.neg_cancel)
         )
 
         val response =
@@ -82,6 +99,12 @@ object ViewModelHelper {
         )
 
         popupViewModel.showPopup("snackbar_enable_service", snackBar) ?: return
+
+        val explanationResponse = showAccessibilityServiceExplanationDialog(resourceProvider, popupViewModel)
+
+        if (explanationResponse != DialogResponse.POSITIVE) {
+            return
+        }
 
         if (!startService.invoke()) {
             handleCantFindAccessibilitySettings(resourceProvider, popupViewModel)

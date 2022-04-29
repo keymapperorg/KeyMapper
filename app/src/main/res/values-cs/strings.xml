@@ -2,7 +2,7 @@
 <resources>
     <string name="slogan">Uvolnite své klíče!</string>
     <string name="no_action_chosen">Není vybrána žádná akce</string>
-    <string name="accessibility_service_description">Klávesová mapa potřebuje použít službu usnadnění přístupu, aby mohla poslouchat stisknutí tlačítek/klávesy a provádět akce, které jste zvolili.
+    <string name="accessibility_service_explanation">Klávesová mapa potřebuje použít službu usnadnění přístupu, aby mohla poslouchat stisknutí tlačítek/klávesy a provádět akce, které jste zvolili.
     Služba přístupnosti poslouchá pouze klíčové události a detekuje aplikaci, ve které se nacházíte. Můžete se podívat na zdrojový kód, který je propojen na obrazovce O zobrazení, a ověřit to.</string>
     <string name="selection_count">%d vybrán</string>
     <string name="enable">Povolit</string>

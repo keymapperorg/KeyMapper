@@ -385,13 +385,23 @@ class HomeViewModel(
     fun onFixErrorListItemClick(id: String) {
         viewModelScope.launch {
             when (id) {
-                ID_ACCESSIBILITY_SERVICE_DISABLED_LIST_ITEM ->
+                ID_ACCESSIBILITY_SERVICE_DISABLED_LIST_ITEM -> {
+                    val explanationResponse = ViewModelHelper.showAccessibilityServiceExplanationDialog(
+                        resourceProvider = this@HomeViewModel,
+                        popupViewModel = this@HomeViewModel
+                    )
+
+                    if (explanationResponse != DialogResponse.POSITIVE) {
+                        return@launch
+                    }
+
                     if (!showAlertsUseCase.startAccessibilityService()) {
                         ViewModelHelper.handleCantFindAccessibilitySettings(
                             resourceProvider = this@HomeViewModel,
                             popupViewModel = this@HomeViewModel
                         )
                     }
+                }
 
                 ID_ACCESSIBILITY_SERVICE_CRASHED_LIST_ITEM ->
                     ViewModelHelper.handleKeyMapperCrashedDialog(

@@ -547,6 +547,9 @@
 
     <string name="dialog_title_explain_bluetooth_permission">Permission is required</string>
     <string name="dialog_message_explain_bluetooth_permission">Key Mapper needs the "nearby devices" permission so it can get the list of paired Bluetooth devices.</string>
+    
+    <string name="dialog_message_no_app_found_to_create_file">You have no files app installed that allows you to create a file for Key Mapper. Please install a file manager.</string>
+    <string name="dialog_message_no_app_found_to_choose_a_file">You have no files app installed that allows you to choose a file for Key Mapper. Please install a file manager.</string>
 
     <string name="dialog_title_accessibility_service_explanation">Accessibility service must be enabled</string>
     <string name="dialog_message_accessibility_service_explanation">@string/accessibility_service_explanation</string>
