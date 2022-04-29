@@ -5,3 +5,5 @@ These are the buttons which can be detected when the screen is off. Let the deve
 * Volume Up
 * Volume Down
 * Headset button
+* Camera focus button
+* Camera button
