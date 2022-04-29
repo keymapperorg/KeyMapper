@@ -105,7 +105,7 @@ class KeyMapController(
                 val parallelTriggerModifierKeyIndices = mutableListOf<Pair<Int, Int>>()
 
                 //Only process key maps that can be triggered
-                val validKeyMaps = keyMapList.filter {
+                val validKeyMaps = value.filter {
                     it.actionList.isNotEmpty() && it.isEnabled
                 }
 
