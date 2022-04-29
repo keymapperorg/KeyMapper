@@ -13,6 +13,7 @@ import io.github.sds100.keymapper.system.apps.ActivityInfo
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag
 
 /**
@@ -137,6 +138,9 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
     val targetClass: MutableStateFlow<String> = MutableStateFlow("")
 
     val flagsString: MutableStateFlow<String> = MutableStateFlow("")
+    private val flags: Flow<Int> = flagsString.map {
+        it.toIntOrNull() ?: 0
+    }
 
     private val extras: MutableStateFlow<List<IntentExtraModel>> =
         MutableStateFlow(emptyList())
@@ -213,7 +217,7 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
             }
 
             if (this@ConfigIntentViewModel.flagsString.value.isNotBlank()) {
-                intent.flags = flagsString.value.toIntOrNull() ?: 0
+                intent.flags = flags.first()
             }
 
             if (this@ConfigIntentViewModel.targetPackage.value.isNotEmpty()) {
@@ -307,7 +311,17 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
     fun showFlagsDialog() {
         viewModelScope.launch {
 
-            val dialogItems = availableIntentFlags.map { MultiChoiceItem(it.first, it.second) }
+            val oldSelectedFlags: Int = flags.first()
+
+            val dialogItems = availableIntentFlags.map { pair ->
+                val intentFlagInt = pair.first
+                val intentFlagText = pair.second
+
+                val isChecked = oldSelectedFlags.hasFlag(intentFlagInt)
+
+                MultiChoiceItem(intentFlagInt, intentFlagText, isChecked)
+            }
+
             val dialog = PopupUi.MultiChoice(items = dialogItems)
 
             val selectedFlags = showPopup("set_flags", dialog) ?: return@launch
