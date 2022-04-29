@@ -104,18 +104,14 @@ class KeyMapController(
                 val parallelTriggerActionPerformers = mutableMapOf<Int, ParallelTriggerActionPerformer>()
                 val parallelTriggerModifierKeyIndices = mutableListOf<Pair<Int, Int>>()
 
-                for ((triggerIndex, keyMap) in value.withIndex()) {
-                    // ignore the keymap if it has no action.
-                    if (keyMap.actionList.isEmpty()) {
-                        continue
-                    }
+                //Only process key maps that can be triggered
+                val validKeyMaps = keyMapList.filter {
+                    it.actionList.isNotEmpty() && it.isEnabled
+                }
 
-                    if (!keyMap.isEnabled) {
-                        continue
-                    }
+                for ((triggerIndex, keyMap) in validKeyMaps.withIndex()) {
 
                     //TRIGGER STUFF
-
                     keyMap.trigger.keys.forEachIndexed { keyIndex, key ->
                         if (keyMap.trigger.mode == TriggerMode.Sequence
                             && key.clickType == ClickType.LONG_PRESS
