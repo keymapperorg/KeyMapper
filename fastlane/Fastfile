@@ -44,6 +44,9 @@ platform :android do
   desc "Create and deploy beta release"
   lane :beta do
 
+    gradle(task: "testDebugUnitTest")
+    gradle(task: "connectedDebugAndroidTest")
+
     whats_new = prompt(
                   text: "Whats new: ",
                   multi_line_end_keyword: "END"
@@ -55,9 +58,6 @@ platform :android do
     version_name = get_properties_value(key: "VERSION_NAME", path: "./app/version.properties")
 
     File.write("metadata/android/en-US/changelogs/" + version_code + ".txt", whats_new)
-
-    gradle(task: "testDebugUnitTest")
-    gradle(task: "connectedDebugAndroidTest")
 
     github_token = prompt(
                     text: "Github token: ",
@@ -153,6 +153,9 @@ platform :android do
   desc "Create and deploy production release"
   lane :prod do
 
+    gradle(task: "testDebugUnitTest")
+    gradle(task: "connectedDebugAndroidTest")
+
     whats_new = prompt(
                   text: "Whats new: ",
                   multi_line_end_keyword: "END"
@@ -164,9 +167,6 @@ platform :android do
     version_name = get_properties_value(key: "VERSION_NAME", path: "./app/version.properties")
 
     File.write("metadata/android/en-US/changelogs/" + version_code + ".txt", whats_new)
-
-    gradle(task: "testDebugUnitTest")
-    gradle(task: "connectedDebugAndroidTest")
 
     github_token = prompt(
                     text: "Github token: ",
