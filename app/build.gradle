@@ -194,7 +194,7 @@ dependencies {
     implementation "androidx.room:room-runtime:$room_version"
     implementation "androidx.viewpager2:viewpager2:1.0.0"
     implementation "androidx.datastore:datastore-preferences:1.0.0"
-    implementation "androidx.core:core-splashscreen:1.0.0-beta01"
+    implementation "androidx.core:core-splashscreen:1.0.0-beta02"
     kapt "androidx.room:room-compiler:$room_version"
 
 //    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.6'
