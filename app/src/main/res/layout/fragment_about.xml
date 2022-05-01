@@ -290,7 +290,7 @@
                                     layout="@layout/list_item_about_item"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    bind:icon="@{@drawable/ic_outline_account}"
+                                    bind:icon="@{@drawable/profile_pic_bydario}"
                                     bind:subtitle="@{@string/about_team_bydario_role}"
                                     bind:title="@{@string/about_team_bydario_name}"
                                     bind:url="@{@string/about_team_bydario_url}" />
