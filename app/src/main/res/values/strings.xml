@@ -1015,6 +1015,7 @@
     <string name="error_duplicate_constraint">You can\'t have duplicate constraints!</string>
     <string name="error_fingerprint_gesture_map_constraint_exists">This gesture already has this constraint!</string>
     <string name="error_cant_be_empty">Can\'t be empty!</string>
+    <string name="error_cant_be_blank">Can\'t only contain whitespace!</string>
     <string name="error_this_is_unsupported">This is unsupported. :(</string>
     <string name="error_device_not_found">Device not found!</string>
     <string name="error_failed_to_pick_file">Failed to pick file</string>
