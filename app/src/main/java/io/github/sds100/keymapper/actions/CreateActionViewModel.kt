@@ -322,6 +322,7 @@ class CreateActionViewModelImpl(
                     "create_text_action", PopupUi.Text(
                         hint = getString(R.string.hint_create_text_action),
                         allowEmpty = false,
+                        allowBlank = true, // allow blank strings in case the user wants to input blank chars
                         text = oldText
                     )
                 ) ?: return null

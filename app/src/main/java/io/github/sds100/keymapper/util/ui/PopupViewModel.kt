@@ -139,6 +139,7 @@ fun PopupViewModel.showPopups(
                         lifecycleOwner,
                         event.ui.hint,
                         event.ui.allowEmpty,
+                        event.ui.allowBlank,
                         event.ui.text,
                         event.ui.inputType,
                         event.ui.message,

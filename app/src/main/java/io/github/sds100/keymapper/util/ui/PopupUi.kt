@@ -24,7 +24,16 @@ sealed class PopupUi<R> {
 
     data class Text(
         val hint: String,
+        /**
+         * Whether to allow no string to be accepted.
+         */
         val allowEmpty: Boolean,
+
+        /**
+         * Whether to allow a string made up of blank characters
+         * to be accepted.
+         */
+        val allowBlank: Boolean = false,
         val text: String = "",
         val inputType: Int? = null,
         val message: CharSequence? = null,
