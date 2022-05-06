@@ -15,6 +15,10 @@
         <variable
             name="allowEmpty"
             type="Boolean" />
+
+        <variable
+            name="allowBlank"
+            type="Boolean" />
     </data>
 
     <com.google.android.material.textfield.TextInputLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -25,6 +29,7 @@
         android:hint="@{hint}"
         android:padding="8dp"
         app:errorWhenEmpty="@{!allowEmpty}"
+        app:errorWhenBlank="@{!allowBlank}"
         tools:hint="Hint">
 
         <AutoCompleteTextView

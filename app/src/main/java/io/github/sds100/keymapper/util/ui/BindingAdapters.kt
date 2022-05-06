@@ -41,24 +41,24 @@ fun MaterialTextView.tintType(tintType: TintType?) {
     tintType?.toColor(context)?.let { setTextColor(it) }
 }
 
-@BindingAdapter("app:errorWhenEmpty")
-fun TextInputLayout.errorWhenEmpty(enabled: Boolean) {
+@BindingAdapter("app:errorWhenEmpty", "app:errorWhenBlank", requireAll = false)
+fun TextInputLayout.errorWhenEmpty(errorWhenEmpty: Boolean = false, errorWhenBlank: Boolean = true) {
+    fun invalidate() {
+        if (editText?.text.isNullOrEmpty() && errorWhenEmpty) {
+            error = str(R.string.error_cant_be_empty)
 
-    //need to set it up when the view is created
-    if (editText?.text.isNullOrBlank()) {
-        error = if (enabled) {
-            str(R.string.error_cant_be_empty)
+        } else if (editText?.text.isNullOrBlank() && errorWhenBlank) {
+            error = str(R.string.error_cant_be_blank)
         } else {
-            null
+            error = null
         }
     }
 
+    // need to set it up when the view is created
+    invalidate()
+
     editText?.addTextChangedListener {
-        error = if (it.isNullOrBlank() && enabled) {
-            str(R.string.error_cant_be_empty)
-        } else {
-            null
-        }
+        invalidate()
     }
 }
 

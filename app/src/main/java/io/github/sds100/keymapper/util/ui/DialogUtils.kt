@@ -160,6 +160,7 @@ suspend fun Context.editTextStringAlertDialog(
     lifecycleOwner: LifecycleOwner,
     hint: String,
     allowEmpty: Boolean = false,
+    allowBlank: Boolean = false,
     initialText: String = "",
     inputType: Int? = null,
     message: CharSequence? = null,
@@ -175,6 +176,7 @@ suspend fun Context.editTextStringAlertDialog(
             setHint(hint)
             setText(text)
             setAllowEmpty(allowEmpty)
+            setAllowBlank(allowBlank)
 
             if (autoCompleteEntries.isEmpty()) {
                 textInputLayout.endIconMode = TextInputLayout.END_ICON_NONE
@@ -217,12 +219,14 @@ suspend fun Context.editTextStringAlertDialog(
     alertDialog.show()
 
     lifecycleOwner.lifecycleScope.launchWhenResumed {
-        text.collectLatest {
+        text.collectLatest { text ->
             alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled =
-                if (allowEmpty) {
-                    true
+                if (!allowBlank) {
+                    text.isNotBlank()
+                } else if (!allowEmpty) {
+                    text.isNotEmpty()
                 } else {
-                    it.isNotBlank()
+                    true
                 }
         }
     }
