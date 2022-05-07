@@ -774,6 +774,7 @@
     <string name="error_duplicate_constraint">Nie możesz mieć dwóch takich samych ograniczeń!</string>
     <string name="error_fingerprint_gesture_map_constraint_exists">Ten gest ma już to ograniczenie!</string>
     <string name="error_cant_be_empty">Nie może być puste!</string>
+    <string name="error_cant_be_blank">Nie może zawierać tylko spacji!</string>
     <string name="error_this_is_unsupported">To nie jest obsługiwane. :(</string>
     <string name="error_device_not_found">Nie znaleziono urządzenia!</string>
     <string name="error_failed_to_pick_file">Nie udało się wybrać pliku</string>
