@@ -4,7 +4,7 @@ You can get the apks for the pre-release versions in 2 ways:
 
 1. Join [the Discord server](http://keymapper.club) and download the apks from the #testing-builds channel.
 2. Download the apk from GitHub Actions. This requires a GitHub account.
-    You can get alpha builds [here](https://github.com/sds100/KeyMapper/actions/workflows/android.yml) and beta builds [here](https://github.com/sds100/KeyMapper/actions/workflows/android-release.yml).
+    You can get alpha builds [here](https://github.com/keymapperorg/KeyMapper/actions/workflows/android.yml) and beta builds [here](https://github.com/keymapperorg/KeyMapper/actions/workflows/android-release.yml).
 
     Click on a 'workflow run' and then scroll down to see the 'artifacts'. If a build was successful then you can find the apk here.
 
@@ -17,7 +17,7 @@ You can get the apks for the pre-release versions in 2 ways:
     - **Beta**. These builds have some of the latest features and contain a few bugs. You can safely update between versions. These have ".beta.X" in the version name. These are pre-release builds for the the open-testing channel on Google Play and F-droid always has beta builds. When all known bugs are fixed a new build is released to the app stores.
 
 ### How can I help?
-- Test and experiment new features. All features and bug-fixes that are being worked on for a release can be found on the Projects page [here](https://github.com/sds100/KeyMapper/projects).
+- Test and experiment new features. All features and bug-fixes that are being worked on for a release can be found on the Projects page [here](https://github.com/keymapperorg/KeyMapper/projects).
 - If you find any bugs or crashes then report them by following the guide [here](report-issues.md).
 
 ## Contributing code
@@ -144,7 +144,7 @@ We really appreciate translators so thank you! 🙂
 
 ### Writing
 
-It is important to use consistent language within the app's code and documentation. Make sure that your submissions comply with these standards. If you have noticed inconsistencies you can alert the developer with [an issue](https://github.com/sds100/KeyMapper/issues/new) or in [the Discord](http://keymapper.club). These standards don't need to be followed in places other than the documentation and source code. Follow this Material Design [guide](https://material.io/design/communication/writing.html).
+It is important to use consistent language within the app's code and documentation. Make sure that your submissions comply with these standards. If you have noticed inconsistencies you can alert the developer with [an issue](https://github.com/keymapperorg/KeyMapper/issues/new) or in [the Discord](http://keymapper.club). These standards don't need to be followed in places other than the documentation and source code. Follow this Material Design [guide](https://material.io/design/communication/writing.html).
 
 #### Case
 
