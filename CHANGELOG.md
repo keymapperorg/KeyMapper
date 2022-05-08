@@ -1,3 +1,51 @@
+## [2.4.0](https://github.com/sds100/KeyMapper/releases/tag/v2.4.0)
+
+#### 08 May 2022
+
+See beta releases for bug fixes.
+
+### Added
+
+#### Important
+
+- [#748](https://github.com/keymapperorg/KeyMapper/issues/748) Android 12 and Material You support 🎨!
+- [#746](https://github.com/keymapperorg/KeyMapper/issues/746) Shizuku support for some features! You can use this
+  instead of using a Key Mapper keyboard!
+
+#### Actions
+
+- [#603](https://github.com/keymapperorg/KeyMapper/issues/603) You can now edit actions! You don't have to delete an
+  action and completely reconfigure it.
+- [#851](https://github.com/keymapperorg/KeyMapper/issues/850) Action to answer/end a phone call.
+- [#704](https://github.com/keymapperorg/KeyMapper/issues/704) Action to dismiss notifications.
+
+#### Constraints
+
+- [#851](https://github.com/keymapperorg/KeyMapper/issues/851) Constraints for when the device is ringing and in a phone
+  call.
+- [#811](https://github.com/keymapperorg/KeyMapper/issues/811) Constraint for when the device is locked.
+- [#776](https://github.com/keymapperorg/KeyMapper/issues/776) Constraint for when an input method is chosen.
+- [#598](https://github.com/keymapperorg/KeyMapper/issues/598) Constraint for any app (not) playing or a specific app
+  not playing media.
+- [#702](https://github.com/keymapperorg/KeyMapper/issues/702) WiFi on/off/connected/disconnected constraints.
+- [#722](https://github.com/keymapperorg/KeyMapper/issues/722) Flashlight on/off constraint.
+
+#### Other
+
+- [#911](https://github.com/keymapperorg/KeyMapper/issues/911) Detect camera button when screen is off.
+- [#780](https://github.com/keymapperorg/KeyMapper/issues/780) If the accessibility settings can't be found prompt the
+  user to follow an online guide to do it with ADB.
+- [#773](https://github.com/keymapperorg/KeyMapper/issues/773) Prompt for a message when the user reports a bug.
+- [#686](https://github.com/keymapperorg/KeyMapper/issues/686) Setting to switch to a different input method on input
+  focus.
+- [#715](https://github.com/keymapperorg/KeyMapper/issues/715) Show a share button after a successful backup.
+- [#716](https://github.com/keymapperorg/KeyMapper/issues/716) Support for a Key Mapper compatible version of Hacker's
+  Keyboard. Releases can be found here: https://github.com/keymapperorg/KeyMapperHackersKeyboard/releases
+- [#955](https://github.com/keymapperorg/KeyMapper/issues/955) You can now detect the Menu and Search button when the
+  screen is off. On some devices the Bixby button is detected by Key Mapper as the Menu button.
+- [#928](https://github.com/keymapperorg/KeyMapper/issues/928) You can now call Termux RUN_COMMAND intents because the
+  necessary permission has been added to Key Mapper.
+
 ## [2.4.0 Beta 2](https://github.com/sds100/KeyMapper/releases/tag/v2.4.0-beta.02)
 
 #### 29 April 2022
@@ -1031,7 +1079,7 @@ Changes from 1.1.0 Beta 8:
 - Optional flags for each keymap so it can only be triggered on a long press and whether to show the volume dialog for volume related actions.
 - Ability to enable/disable specific/all keymaps.
 
-  ####     Added these actions
+  ####      Added these actions
   - Open App
   - Open App shortcut
   - A keycode
