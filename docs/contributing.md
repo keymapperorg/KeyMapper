@@ -4,7 +4,7 @@ You can get the apks for the pre-release versions in 2 ways:
 
 1. Join [the Discord server](http://keymapper.club) and download the apks from the #testing-builds channel.
 2. Download the apk from GitHub Actions. This requires a GitHub account.
-    You can get alpha builds [here](https://github.com/sds100/KeyMapper/actions/workflows/android.yml) and beta builds [here](https://github.com/sds100/KeyMapper/actions/workflows/android-release.yml).
+    You can get alpha builds [here](https://github.com/keymapperorg/KeyMapper/actions/workflows/android.yml) and beta builds [here](https://github.com/keymapperorg/KeyMapper/actions/workflows/android-release.yml).
 
     Click on a 'workflow run' and then scroll down to see the 'artifacts'. If a build was successful then you can find the apk here.
 
@@ -17,7 +17,7 @@ You can get the apks for the pre-release versions in 2 ways:
     - **Beta**. These builds have some of the latest features and contain a few bugs. You can safely update between versions. These have ".beta.X" in the version name. These are pre-release builds for the the open-testing channel on Google Play and F-droid always has beta builds. When all known bugs are fixed a new build is released to the app stores.
 
 ### How can I help?
-- Test and experiment new features. All features and bug-fixes that are being worked on for a release can be found on the Projects page [here](https://github.com/sds100/KeyMapper/projects).
+- Test and experiment new features. All features and bug-fixes that are being worked on for a release can be found on the Projects page [here](https://github.com/keymapperorg/KeyMapper/projects).
 - If you find any bugs or crashes then report them by following the guide [here](report-issues.md).
 
 ## Contributing code
@@ -117,15 +117,18 @@ Fastlane is used to partially automate the releasing process. Follow the [guide]
 3. Change the version name and version code in `version.properties` in the develop branch to be one version ahead of the release branch.
 
 ##### For every release
-1. Manually edit CHANGELOG.md in the develop branch with *all* changes.
+1. Manually edit CHANGELOG.md **in the develop branch** with *all* changes. Cherry pick this into the release branch.
 2. Open the KeyMapper folder in a terminal and run `fastlane beta`.
+3. Squash and merge the release branch into master. Then delete the release branch.
 
 #### Production releases
 
 1. Check that all translations are merged.
 2. Credit the translators in the About screen in the app and in the index.md on the documentation website.
-3. Manually edit CHANGELOG.md with the *all* changes.
-4. Open the KeyMapper folder in a terminal and run `fastlane prod`. This will release the production build to the open-testing track on Google Play. Once it is approved by Google Play you must promote the release from open testing to the production track in Google Play.
+3. Manually edit CHANGELOG.md **in the develop branch** with *all* changes. Cherry pick this into the release branch.
+4. Open the KeyMapper folder in a terminal and run `fastlane prod`. This will release the production build to the
+   open-testing track on Google Play. Once it is approved by Google Play you must promote the release from open testing
+   to the production track in Google Play.
 5. Squash and merge the release branch into master. Then delete the release branch.
 
 ### Code Style
@@ -144,7 +147,7 @@ We really appreciate translators so thank you! 🙂
 
 ### Writing
 
-It is important to use consistent language within the app's code and documentation. Make sure that your submissions comply with these standards. If you have noticed inconsistencies you can alert the developer with [an issue](https://github.com/sds100/KeyMapper/issues/new) or in [the Discord](http://keymapper.club). These standards don't need to be followed in places other than the documentation and source code. Follow this Material Design [guide](https://material.io/design/communication/writing.html).
+It is important to use consistent language within the app's code and documentation. Make sure that your submissions comply with these standards. If you have noticed inconsistencies you can alert the developer with [an issue](https://github.com/keymapperorg/KeyMapper/issues/new) or in [the Discord](http://keymapper.club). These standards don't need to be followed in places other than the documentation and source code. Follow this Material Design [guide](https://material.io/design/communication/writing.html).
 
 #### Case
 

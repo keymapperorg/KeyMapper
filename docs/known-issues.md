@@ -30,7 +30,7 @@ more [here](https://keymapperorg.github.io/KeyMapper/redirects/android-11-device
 
 ## Key maps for an external device randomly stop working after a reboot
 
-See issue [#783](https://github.com/sds100/KeyMapper/issues/783).
+See issue [#783](https://github.com/keymapperorg/KeyMapper/issues/783).
 
 **Problem**: Key Mapper uses the device id (a.k.a descriptor) to ensure triggers from specific
 devices are only detected. The ids for some devices change after every reboot, which breaks this

@@ -2,7 +2,7 @@
 <resources>
     <string name="slogan">Uwolnij swoje przyciski!</string>
     <string name="no_action_chosen">Nie wybrano działania</string>
-    <string name="accessibility_service_explanation">Key Mapper musi korzystać z usługi ułatwień dostępu, aby móc czytać naciśnięć przycisków/klawiszy i wykonywać wybrane działania. Usługa ułatwień dostępu czyta tylko zdarzeń związanych z klawiszami i wykrywa, w której aplikacji się znajdujesz. Dla pewności możesz przeczytać kod źródłowy, do którego link znajduje się na ekranie Informacje.</string>
+    <string name="accessibility_service_explanation">Aplikacja Key Mapper wymaga włączenia usługi ułatwień dostępu, aby mogła wykrywać i zmieniać działanie naciśnięć przycisków, gdy jesteś poza aplikacją. Mapy klawiszy będą działać dopiero po włączeniu usługi ułatwień dostępu. Należy również włączyć usługę, aby utworzyć wyzwalacz.</string>
     <string name="selection_count">%d elementy</string>
     <string name="enable">Włącz</string>
     <string name="open">Otwórz</string>
@@ -419,6 +419,8 @@
     <string name="dialog_title_home_fix_error">Napraw błąd</string>
     <string name="dialog_title_explain_bluetooth_permission">Wymagane uprawnienia</string>
     <string name="dialog_message_explain_bluetooth_permission">Key Mapper potrzebuje uprawnienia \"urządzenia w pobliżu\", aby wyświetlić listę sparowanych urządzeń Bluetooth.</string>
+    <string name="dialog_message_no_app_found_to_create_file">Aplikacja Pliki, umożliwiająca tworzeniu pliku w Key Mapper, nie jest zainstalowana. Proszę zainstalować menedżera plików.</string>
+    <string name="dialog_message_no_app_found_to_choose_a_file">Aplikacja Pliki, umożliwiająca wybraniu pliku w Key Mapper, nie jest zainstalowana. Proszę zainstalować menedżera plików.</string>
     <string name="dialog_title_accessibility_service_explanation">Usługa ułatwień dostępu musi być włączona</string>
     <string name="dialog_message_accessibility_service_explanation">@string/accessibility_service_explanation</string>
     <string name="pos_yes">Tak</string>
@@ -1027,5 +1029,6 @@
     <string name="about_team_gl513_role">Moderator społeczności/wsparcie</string>
     <string name="about_team_kekero_role">Tłumacz (polski)</string>
     <string name="about_team_trollserver_role">Tłumacz (czeski)</string>
+    <string name="about_team_bydario_role">Tłumacz (hiszpański)</string>
     <!--  About  -->
 </resources>
