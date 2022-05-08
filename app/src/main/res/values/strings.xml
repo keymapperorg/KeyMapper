@@ -4,8 +4,7 @@
     <string name="slogan">Unleash your keys!</string>
 
     <string name="no_action_chosen">No action chosen</string>
-    <string name="accessibility_service_description">Key Mapper needs to use an accessibility service so it can listen to button/key presses and perform the actions you\'ve chosen.
-    The accessibility service only listens for key events and detects which app you are in. You can look at the source code, which is linked in the About screen, to verify this.</string>
+    <string name="accessibility_service_explanation">Key Mapper requires the use of an accessibility service so that it can detect and change what your button presses do while you are outside of the app. Your key maps will only work once you have enabled the accessibility service. It must also be turned on to create a trigger.</string>
     <string name="selection_count">%d selected</string>
     <string name="ime_service_label" translatable="false">Key Mapper Basic Input Method</string>
     <string name="enable">Enable</string>
@@ -548,6 +547,12 @@
 
     <string name="dialog_title_explain_bluetooth_permission">Permission is required</string>
     <string name="dialog_message_explain_bluetooth_permission">Key Mapper needs the "nearby devices" permission so it can get the list of paired Bluetooth devices.</string>
+    
+    <string name="dialog_message_no_app_found_to_create_file">You have no files app installed that allows you to create a file for Key Mapper. Please install a file manager.</string>
+    <string name="dialog_message_no_app_found_to_choose_a_file">You have no files app installed that allows you to choose a file for Key Mapper. Please install a file manager.</string>
+
+    <string name="dialog_title_accessibility_service_explanation">Accessibility service must be enabled</string>
+    <string name="dialog_message_accessibility_service_explanation">@string/accessibility_service_explanation</string>
 
     <string name="pos_yes">Yes</string>
     <string name="pos_done">Done</string>
@@ -820,14 +825,14 @@
 
     <!-- Showcase -->
     <string name="showcase_accessibility_service_title_enabled">Accessibility service is enabled :)</string>
-    <string name="showcase_accessibility_service_description_enabled">All good.</string>
+    <string name="showcase_accessibility_service_description_enabled">All good. Key Mapper can now detect your button presses.</string>
 
     <string name="showcase_accessibility_service_title_crashed">Restart the accessibility service</string>
     <string name="showcase_accessibility_service_description_crashed">The accessibility services is enabled but it has been killed by your phone or it has crashed. Restart it.</string>
     <string name="showcase_accessibility_service_button_restart">Restart</string>
 
     <string name="showcase_accessibility_service_title_disabled">Enable the accessibility service</string>
-    <string name="showcase_accessibility_service_description_disabled">Your key maps will only work once you have enabled the accessibility service. It also needs to be turned on to create a trigger.</string>
+    <string name="showcase_accessibility_service_description_disabled">@string/accessibility_service_explanation</string>
 
     <string name="showcase_record_trigger_title">The accessibility service is disabled</string>
     <string name="showcase_record_trigger_description">You can only record a trigger if the accessibility service is enabled.</string>
@@ -1320,5 +1325,9 @@
     <string name="about_team_trollserver_name" translatable="false">Trollserver</string>
     <string name="about_team_trollserver_url" translatable="false">https://youtube.com/channel/UCljg1FH1B_ju2D_NfqAYjDw</string>
     <string name="about_team_trollserver_role">Translator (Czech)</string>
+
+    <string name="about_team_bydario_name" translatable="false">Darío B. C. (bydariogamer)</string>
+    <string name="about_team_bydario_url" translatable="false">https://github.com/bydariogamer</string>
+    <string name="about_team_bydario_role">Translator (Spanish)</string>
     <!--  About  -->
 </resources>

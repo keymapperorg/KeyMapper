@@ -4,7 +4,6 @@ import android.os.Build
 import android.view.KeyEvent
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.ClickType
-import io.github.sds100.keymapper.mappings.keymaps.detection.DisplayKeyMapUseCase
 import io.github.sds100.keymapper.mappings.keymaps.trigger.*
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
@@ -26,13 +25,13 @@ import kotlinx.coroutines.runBlocking
  */
 
 class ConfigKeyMapTriggerViewModel(
-    private val coroutineScope: CoroutineScope,
-    private val onboarding: OnboardingUseCase,
-    private val config: ConfigKeyMapUseCase,
-    private val recordTrigger: RecordTriggerUseCase,
-    private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
-    private val displayKeyMap: DisplayKeyMapUseCase,
-    resourceProvider: ResourceProvider
+        private val coroutineScope: CoroutineScope,
+        private val onboarding: OnboardingUseCase,
+        private val config: ConfigKeyMapUseCase,
+        private val recordTrigger: RecordTriggerUseCase,
+        private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
+        private val displayKeyMap: DisplayKeyMapUseCase,
+        resourceProvider: ResourceProvider
 ) : ResourceProvider by resourceProvider,
         PopupViewModel by PopupViewModelImpl(),
         NavigationViewModel by NavigationViewModelImpl() {

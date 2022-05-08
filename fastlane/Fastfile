@@ -44,6 +44,9 @@ platform :android do
   desc "Create and deploy beta release"
   lane :beta do
 
+    gradle(task: "testDebugUnitTest")
+    gradle(task: "connectedDebugAndroidTest")
+
     whats_new = prompt(
                   text: "Whats new: ",
                   multi_line_end_keyword: "END"
@@ -55,9 +58,6 @@ platform :android do
     version_name = get_properties_value(key: "VERSION_NAME", path: "./app/version.properties")
 
     File.write("metadata/android/en-US/changelogs/" + version_code + ".txt", whats_new)
-
-    gradle(task: "testDebugUnitTest")
-    gradle(task: "connectedDebugAndroidTest")
 
     github_token = prompt(
                     text: "Github token: ",
@@ -113,8 +113,11 @@ platform :android do
         skip_upload_apk: true
     )
 
-    publishBeforePush = prompt(
-            text: "Publish GitHub release before pushing changed versions to git.",
+    git_add
+    git_commit(path: "*", message: "chore (release): update changelog, whats_new")
+
+    pushBeforePublish = prompt(
+            text: "Push committed whats_new and changelog before publishing GitHub release.",
             boolean: true
            )
 
@@ -131,7 +134,7 @@ platform :android do
       )
 
     git_add
-    git_commit(path: "*", message: "chore (release): update changelog, whats_new and version")
+    git_commit(path: "*", message: "chore (release): update version")
 
     ensure_git_status_clean
 
@@ -151,6 +154,9 @@ platform :android do
   desc "Create and deploy production release"
   lane :prod do
 
+    gradle(task: "testDebugUnitTest")
+    gradle(task: "connectedDebugAndroidTest")
+
     whats_new = prompt(
                   text: "Whats new: ",
                   multi_line_end_keyword: "END"
@@ -162,9 +168,6 @@ platform :android do
     version_name = get_properties_value(key: "VERSION_NAME", path: "./app/version.properties")
 
     File.write("metadata/android/en-US/changelogs/" + version_code + ".txt", whats_new)
-
-    gradle(task: "testDebugUnitTest")
-    gradle(task: "connectedDebugAndroidTest")
 
     github_token = prompt(
                     text: "Github token: ",
@@ -211,12 +214,12 @@ platform :android do
         skip_upload_apk: true
     )
 
-    publishBeforePush = prompt(
-            text: "Publish GitHub release before pushing changed versions to git.",
+    git_add
+    git_commit(path: "*", message: "chore (release): update changelog, whats_new")
+
+    pushBeforePublish = prompt(
+            text: "Push committed whats_new and changelog before publishing GitHub release.",
             boolean: true
            )
-
-    git_add
-    git_commit(path: "*", message: "chore (release): update whats_new")
   end
 end

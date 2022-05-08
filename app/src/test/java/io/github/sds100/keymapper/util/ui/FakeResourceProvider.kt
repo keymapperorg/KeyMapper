@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
  * Created by sds100 on 26/04/2021.
  */
 class FakeResourceProvider : ResourceProvider {
-    var stringResourceMap: Map<Int, String> = emptyMap()
+    val stringResourceMap: MutableMap<Int, String> = mutableMapOf()
     override val onThemeChange: Flow<Unit> = MutableSharedFlow()
 
     override fun getString(resId: Int, args: Array<Any>): String {

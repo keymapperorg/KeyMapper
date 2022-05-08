@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.home
 
-import android.content.*
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -19,18 +20,21 @@ import androidx.work.WorkManager
 import com.google.android.material.bottomappbar.BottomAppBar.FAB_ALIGNMENT_MODE_CENTER
 import com.google.android.material.bottomappbar.BottomAppBar.FAB_ALIGNMENT_MODE_END
 import com.google.android.material.tabs.TabLayoutMediator
-import io.github.sds100.keymapper.*
+import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.backup.BackupUtils
 import io.github.sds100.keymapper.data.db.SeedDatabaseWorker
 import io.github.sds100.keymapper.databinding.FragmentHomeBinding
+import io.github.sds100.keymapper.fixError
+import io.github.sds100.keymapper.success
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.system.url.UrlUtils
 import io.github.sds100.keymapper.util.*
-import io.github.sds100.keymapper.util.ui.*
+import io.github.sds100.keymapper.util.ui.TextListItem
+import io.github.sds100.keymapper.util.ui.setupNavigation
+import io.github.sds100.keymapper.util.ui.showPopups
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.flow.collectLatest
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt
-import java.util.*
 
 class HomeFragment : Fragment() {
 
@@ -108,6 +112,7 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         homeViewModel.showPopups(this, binding)
+        homeViewModel.menuViewModel.showPopups(this, binding)
         homeViewModel.keymapListViewModel.showPopups(this, binding)
         homeViewModel.fingerprintMapListViewModel.showPopups(this, binding)
 
@@ -230,13 +235,21 @@ class HomeFragment : Fragment() {
 
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             homeViewModel.menuViewModel.chooseBackupFile.collectLatest {
-                backupMappingsLauncher.launch(BackupUtils.createMappingsFileName())
+                try {
+                    backupMappingsLauncher.launch(BackupUtils.createMappingsFileName())
+                } catch (e: ActivityNotFoundException) {
+                    homeViewModel.menuViewModel.onCreateBackupFileActivityNotFound()
+                }
             }
         }
 
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             homeViewModel.menuViewModel.chooseRestoreFile.collectLatest {
-                restoreMappingsLauncher.launch(FileUtils.MIME_TYPE_ALL)
+                try {
+                    restoreMappingsLauncher.launch(FileUtils.MIME_TYPE_ALL)
+                } catch (e: ActivityNotFoundException) {
+                    homeViewModel.menuViewModel.onChooseRestoreFileActivityNotFound()
+                }
             }
         }
 

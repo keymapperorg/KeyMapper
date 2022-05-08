@@ -33,7 +33,7 @@ sealed class TapTarget(
             focalColour = fragment.color(android.R.color.transparent)
             setPrimaryText(this@TapTarget.primaryText)
             setSecondaryText(this@TapTarget.secondaryText)
-            backgroundColour = fragment.styledColor(R.attr.colorSecondary)
+            backgroundColour = fragment.styledColor(R.attr.colorPrimary)
             this.promptFocal = promptFocal
 
             setPromptStateChangeListener { _, state ->
