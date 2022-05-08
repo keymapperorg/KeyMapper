@@ -16,7 +16,7 @@ Key Mapper is a free and open source Android app that can remap your buttons and
 </p>
 
 [![Discord](https://img.shields.io/discord/717499872219103263)](https://discord.gg/Suj6nyw)
-![GitHub release](https://img.shields.io/github/release/sds100/KeyMapper.svg)
+![GitHub release](https://img.shields.io/github/release/keymapperorg/KeyMapper.svg)
 ![fdroid release](https://img.shields.io/f-droid/v/io.github.sds100.keymapper.svg)
 
 🎉 Check out the new [website](https://docs.keymapper.club) for more information and help! 🎉
