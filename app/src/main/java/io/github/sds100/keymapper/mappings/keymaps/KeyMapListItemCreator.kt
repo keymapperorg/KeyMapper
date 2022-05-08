@@ -3,7 +3,6 @@ package io.github.sds100.keymapper.mappings.keymaps
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.BaseMappingListItemCreator
 import io.github.sds100.keymapper.mappings.ClickType
-import io.github.sds100.keymapper.mappings.keymaps.detection.DisplayKeyMapUseCase
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTrigger
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTriggerError
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
