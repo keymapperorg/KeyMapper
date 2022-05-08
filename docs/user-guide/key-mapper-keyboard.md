@@ -4,7 +4,7 @@ On Android the on-screen keyboard that you see when you want to type something i
 
 1. The one built-in to Key Mapper is called the "Key Mapper Basic Input Method". This one has **NO** on-screen keyboard. You won't see a keyboard when you want to type something. This keyboard doesn't support non-English languages! You are not recommended to use this since it is not a proper keyboard.
 
-2. If you want an on-screen keyboard to be available while using Key Mapper or if you need support for non-English languages, you need to install "Key Mapper GUI Keyboard". It is available on the [Google Play Store](http://gui.keymapper.club), [F-Droid](https://www.f-droid.org/en/packages/io.github.sds100.keymapper.inputmethod.latin/) and [GitHub.](https://github.com/sds100/KeyMapperKeyboard/releases) This is the recommended input method for Key Mapper.
+2. If you want an on-screen keyboard to be available while using Key Mapper or if you need support for non-English languages, you need to install "Key Mapper GUI Keyboard". It is available on the [Google Play Store](http://gui.keymapper.club), [F-Droid](https://www.f-droid.org/en/packages/io.github.sds100.keymapper.inputmethod.latin/) and [GitHub.](https://github.com/keymapperorg/KeyMapperKeyboard/releases) This is the recommended input method for Key Mapper.
     
 3. A fork of Hacker's Keyboard that adds support for Key Mapper. Download from GitHub [here](https://github.com/keymapperorg/KeyMapperHackersKeyboard/releases).
 
