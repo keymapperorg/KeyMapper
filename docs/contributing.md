@@ -117,15 +117,18 @@ Fastlane is used to partially automate the releasing process. Follow the [guide]
 3. Change the version name and version code in `version.properties` in the develop branch to be one version ahead of the release branch.
 
 ##### For every release
-1. Manually edit CHANGELOG.md in the develop branch with *all* changes.
+1. Manually edit CHANGELOG.md **in the develop branch** with *all* changes. Cherry pick this into the release branch.
 2. Open the KeyMapper folder in a terminal and run `fastlane beta`.
+3. Squash and merge the release branch into master. Then delete the release branch.
 
 #### Production releases
 
 1. Check that all translations are merged.
 2. Credit the translators in the About screen in the app and in the index.md on the documentation website.
-3. Manually edit CHANGELOG.md with the *all* changes.
-4. Open the KeyMapper folder in a terminal and run `fastlane prod`. This will release the production build to the open-testing track on Google Play. Once it is approved by Google Play you must promote the release from open testing to the production track in Google Play.
+3. Manually edit CHANGELOG.md **in the develop branch** with *all* changes. Cherry pick this into the release branch.
+4. Open the KeyMapper folder in a terminal and run `fastlane prod`. This will release the production build to the
+   open-testing track on Google Play. Once it is approved by Google Play you must promote the release from open testing
+   to the production track in Google Play.
 5. Squash and merge the release branch into master. Then delete the release branch.
 
 ### Code Style
