@@ -1,4 +1,27 @@
+## [2.4.0 Beta 2](https://github.com/sds100/KeyMapper/releases/tag/v2.4.0-beta.02)
+
+#### 29 April 2022
+
+### Bug fixes
+
+- [#946](https://github.com/keymapperorg/KeyMapper/issues/946) Choosing a Bluetooth device disconnected constraint would
+  save it as a connected constraint.
+- [#981](https://github.com/keymapperorg/KeyMapper/issues/981) Trying to backup/restore would crash the app if no
+  file-picker was installed.
+- [#965](https://github.com/keymapperorg/KeyMapper/issues/965) The app would crash if you had disabled key maps.
+- [#957](https://github.com/keymapperorg/KeyMapper/issues/957) The dialog to choose flags for an Intent action wouldn't
+  show the flags that had already been picked.
+
+### Added
+
+- [#955](https://github.com/keymapperorg/KeyMapper/issues/955) You can now detect the Menu and Search button when the
+  screen is off. On some devices the Bixby button is detected by Key Mapper as the Menu button.
+- [#928](https://github.com/keymapperorg/KeyMapper/issues/928) You can now call Termux RUN_COMMAND intents because the
+  necessary permission has been added to Key Mapper.
+
 ## [2.4.0 Beta 1](https://github.com/sds100/KeyMapper/releases/tag/v2.4.0-beta.01)
+
+#### 19 March 2022
 
 ### Changes
 
@@ -1008,7 +1031,7 @@ Changes from 1.1.0 Beta 8:
 - Optional flags for each keymap so it can only be triggered on a long press and whether to show the volume dialog for volume related actions.
 - Ability to enable/disable specific/all keymaps.
 
-  ####    Added these actions
+  ####     Added these actions
   - Open App
   - Open App shortcut
   - A keycode
