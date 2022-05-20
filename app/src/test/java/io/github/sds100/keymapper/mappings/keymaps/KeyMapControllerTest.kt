@@ -11,7 +11,7 @@ import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCase
-import io.github.sds100.keymapper.mappings.keymaps.detection.KeyMapController
+import io.github.sds100.keymapper.mappings.keymaps.detection.KeyMapController2
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTrigger
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
@@ -80,7 +80,7 @@ class KeyMapControllerTest {
         )
     }
 
-    private lateinit var controller: KeyMapController
+    private lateinit var controller: KeyMapController2
     private lateinit var detectKeyMapsUseCase: DetectKeyMapsUseCase
     private lateinit var performActionsUseCase: PerformActionsUseCase
     private lateinit var detectConstraintsUseCase: DetectConstraintsUseCase
@@ -141,7 +141,7 @@ class KeyMapControllerTest {
             on { getSnapshot() } doReturn mock()
         }
 
-        controller = KeyMapController(
+        controller = KeyMapController2(
             coroutineScope,
             detectKeyMapsUseCase,
             performActionsUseCase,
@@ -727,7 +727,7 @@ class KeyMapControllerTest {
             verify(performActionsUseCase, never()).perform(keyMaps[0].actionList[0].data)
 
             //WHEN
-            mockParallelTrigger(keyMaps[0].trigger)
+            fakeParallelTrigger(keyMaps[0].trigger)
 
             //THEN
             verify(performActionsUseCase, times(1)).perform(keyMaps[0].actionList[0].data)
@@ -990,7 +990,7 @@ class KeyMapControllerTest {
 
             performActionsUseCase.inOrder {
                 //when short press
-                mockParallelTrigger(trigger1)
+                fakeParallelTrigger(trigger1)
                 delay(2000)// let it try to repeat
 
                 //then
@@ -998,7 +998,7 @@ class KeyMapControllerTest {
                 verifyNoMoreInteractions()
 
                 //when long press
-                mockParallelTrigger(trigger2, delay = 2000)//let it repeat
+                fakeParallelTrigger(trigger2, delay = 2000)//let it repeat
 
                 //then
                 verify(performActionsUseCase, atLeast(2)).perform(action2.data)
@@ -1037,7 +1037,7 @@ class KeyMapControllerTest {
 
             performActionsUseCase.inOrder {
                 //when short press
-                mockParallelTrigger(trigger1)
+                fakeParallelTrigger(trigger1)
                 delay(2000)// let it repeat
 
                 //then
@@ -1096,7 +1096,7 @@ class KeyMapControllerTest {
 
             performActionsUseCase.inOrder {
                 //when short press
-                mockParallelTrigger(trigger1)
+                fakeParallelTrigger(trigger1)
                 advanceUntilIdle()
 
                 //then
@@ -1104,7 +1104,7 @@ class KeyMapControllerTest {
                 verifyNoMoreInteractions()
 
                 //when long press
-                mockParallelTrigger(trigger2, delay = 2000)//let it repeat
+                fakeParallelTrigger(trigger2, delay = 2000)//let it repeat
 
                 //then
                 verify(performActionsUseCase, atLeast(2)).perform(action2.data)
@@ -1150,17 +1150,17 @@ class KeyMapControllerTest {
 
             performActionsUseCase.inOrder {
                 //when short press
-                mockParallelTrigger(trigger1)
+                fakeParallelTrigger(trigger1)
                 delay(2000)// let it repeat
 
                 //then
-                mockParallelTrigger(trigger1) //press the key again to stop it repeating
+                fakeParallelTrigger(trigger1) //press the key again to stop it repeating
 
                 verify(performActionsUseCase, atLeast(2)).perform(action1.data)
                 verifyNoMoreInteractions()
 
                 //when long press
-                mockParallelTrigger(trigger2, delay = 2000)//let it repeat
+                fakeParallelTrigger(trigger2, delay = 2000)//let it repeat
 
                 //then
                 verify(performActionsUseCase, atLeast(2)).perform(action2.data)
@@ -1200,12 +1200,12 @@ class KeyMapControllerTest {
 
             performActionsUseCase.inOrder {
                 //when short press
-                mockParallelTrigger(trigger1)
+                fakeParallelTrigger(trigger1)
                 delay(2000)// let it repeat
 
                 //then
 
-                mockParallelTrigger(trigger1) //press the key again to stop it repeating
+                fakeParallelTrigger(trigger1) //press the key again to stop it repeating
                 advanceUntilIdle()
 
                 verify(performActionsUseCase, atLeast(2)).perform(action1.data)
@@ -1262,21 +1262,21 @@ class KeyMapControllerTest {
             )
 
             //when short press
-            mockParallelTrigger(trigger1)
+            fakeParallelTrigger(trigger1)
 
             delay(2000)// let it repeat
 
             performActionsUseCase.inOrder {
 
                 //then
-                mockParallelTrigger(trigger1) //press the key again to stop it repeating
+                fakeParallelTrigger(trigger1) //press the key again to stop it repeating
                 advanceUntilIdle()
 
                 verify(performActionsUseCase, atLeast(2)).perform(action1.data)
                 verifyNoMoreInteractions()
 
                 //when long press
-                mockParallelTrigger(trigger2, delay = 2000) //let it repeat
+                fakeParallelTrigger(trigger2, delay = 2000) //let it repeat
 
                 //then
                 verify(performActionsUseCase, atLeast(2)).perform(action2.data)
@@ -1829,7 +1829,7 @@ class KeyMapControllerTest {
             keyMapListFlow.value = listOf(KeyMap(0, trigger = trigger, actionList = listOf(action)))
 
             when (trigger.mode) {
-                is TriggerMode.Parallel -> mockParallelTrigger(trigger, delay = 2000L)
+                is TriggerMode.Parallel -> fakeParallelTrigger(trigger, delay = 2000L)
                 TriggerMode.Undefined -> mockTriggerKeyInput(trigger.keys[0], delay = 2000L)
             }
 
@@ -2134,7 +2134,7 @@ class KeyMapControllerTest {
 
             //WHEN
             if (trigger.mode is TriggerMode.Parallel) {
-                mockParallelTrigger(trigger)
+                fakeParallelTrigger(trigger)
             } else {
                 trigger.keys.forEach {
                     mockTriggerKeyInput(it)
@@ -3016,7 +3016,7 @@ class KeyMapControllerTest {
 
             if (keyMap.trigger.mode is TriggerMode.Parallel) {
                 //WHEN
-                mockParallelTrigger(keyMap.trigger)
+                fakeParallelTrigger(keyMap.trigger)
                 advanceUntilIdle()
 
             } else {
@@ -3073,14 +3073,14 @@ class KeyMapControllerTest {
     ): Boolean {
         return controller.onKeyEvent(
             keyCode = keyCode,
-            action = action,
+            keyEventAction = action,
             metaState = metaState ?: 0,
             scanCode = scanCode,
             device = device
         )
     }
 
-    private suspend fun mockParallelTrigger(
+    private suspend fun fakeParallelTrigger(
         trigger: KeyMapTrigger,
         delay: Long? = null
     ) {
