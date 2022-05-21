@@ -70,15 +70,16 @@ class SimpleMappingControllerTest {
 
         detectConstraintsUseCase = mock {
             on { getSnapshot() } doReturn ConstraintSnapshotImpl(
-                    accessibilityService = mock(),
-                    mediaAdapter = mock(),
-                    devicesAdapter = mock(),
-                    displayAdapter = mock(),
-                    cameraAdapter = mock(),
-                    networkAdapter = mock(),
-                    inputMethodAdapter = mock(),
-                    lockScreenAdapter = mock(),
-                    phoneAdapter = mock(),
+                accessibilityService = mock(),
+                mediaAdapter = mock(),
+                devicesAdapter = mock(),
+                displayAdapter = mock(),
+                cameraAdapter = mock(),
+                networkAdapter = mock(),
+                inputMethodAdapter = mock(),
+                lockScreenAdapter = mock(),
+                phoneAdapter = mock(),
+                powerAdapter = mock()
             )
         }
 
