@@ -9,6 +9,7 @@ import io.github.sds100.keymapper.system.lock.LockScreenAdapter
 import io.github.sds100.keymapper.system.media.MediaAdapter
 import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.system.phone.PhoneAdapter
+import io.github.sds100.keymapper.system.power.PowerAdapter
 
 /**
  * Created by sds100 on 17/04/2021.
@@ -23,7 +24,8 @@ class DetectConstraintsUseCaseImpl(
     private val networkAdapter: NetworkAdapter,
     private val inputMethodAdapter: InputMethodAdapter,
     private val lockScreenAdapter: LockScreenAdapter,
-    private val phoneAdapter: PhoneAdapter
+    private val phoneAdapter: PhoneAdapter,
+    private val powerAdapter: PowerAdapter
 ) : DetectConstraintsUseCase {
 
     override fun getSnapshot(): ConstraintSnapshotImpl {
@@ -36,7 +38,8 @@ class DetectConstraintsUseCaseImpl(
             cameraAdapter,
             inputMethodAdapter,
             lockScreenAdapter,
-            phoneAdapter
+            phoneAdapter,
+            powerAdapter
         )
     }
 }

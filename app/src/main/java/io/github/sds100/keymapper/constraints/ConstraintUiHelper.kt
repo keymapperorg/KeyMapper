@@ -134,6 +134,8 @@ class ConstraintUiHelper(
         Constraint.InPhoneCall -> getString(R.string.constraint_in_phone_call)
         Constraint.NotInPhoneCall -> getString(R.string.constraint_not_in_phone_call)
         Constraint.PhoneRinging -> getString(R.string.constraint_phone_ringing)
+        Constraint.Charging -> getString(R.string.constraint_charging)
+        Constraint.Discharging -> getString(R.string.constraint_discharging)
     }
 
     fun getIcon(constraint: Constraint): IconInfo? = when (constraint) {
@@ -251,6 +253,14 @@ class ConstraintUiHelper(
         )
         Constraint.PhoneRinging -> IconInfo(
             drawable = getDrawable(R.drawable.ic_baseline_ring_volume_24),
+            tintType = TintType.OnSurface
+        )
+        Constraint.Charging -> IconInfo(
+            drawable = getDrawable(R.drawable.ic_baseline_battery_charging_full_24),
+            tintType = TintType.OnSurface
+        )
+        Constraint.Discharging -> IconInfo(
+            drawable = getDrawable(R.drawable.ic_battery_70),
             tintType = TintType.OnSurface
         )
     }
