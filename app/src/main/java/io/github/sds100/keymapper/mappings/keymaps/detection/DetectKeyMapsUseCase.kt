@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.mappings.keymaps.detection
 import android.accessibilityservice.AccessibilityService
 import android.os.SystemClock
 import android.view.KeyEvent
+import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
@@ -22,10 +23,13 @@ import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.phone.CallState
 import io.github.sds100.keymapper.system.phone.PhoneAdapter
+import io.github.sds100.keymapper.system.popup.PopupMessageAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
+import io.github.sds100.keymapper.system.vibrator.VibratorAdapter
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import io.github.sds100.keymapper.util.InputEventType
 import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import timber.log.Timber
@@ -35,7 +39,6 @@ import timber.log.Timber
  */
 
 class DetectKeyMapsUseCaseImpl(
-    detectMappingUseCase: DetectMappingUseCase,
     private val keyMapRepository: KeyMapRepository,
     private val preferenceRepository: PreferenceRepository,
     private val suAdapter: SuAdapter,
@@ -46,8 +49,11 @@ class DetectKeyMapsUseCaseImpl(
     private val shizukuInputEventInjector: InputEventInjector,
     private val permissionAdapter: PermissionAdapter,
     private val phoneAdapter: PhoneAdapter,
-    private val inputMethodAdapter: InputMethodAdapter
-) : DetectKeyMapsUseCase, DetectMappingUseCase by detectMappingUseCase {
+    private val inputMethodAdapter: InputMethodAdapter,
+    private val vibrator: VibratorAdapter,
+    private val popupMessageAdapter: PopupMessageAdapter,
+    private val resourceProvider: ResourceProvider
+) : DetectKeyMapsUseCase {
 
     override val allKeyMapList: Flow<List<KeyMap>> =
         keyMapRepository.keyMapList
@@ -89,6 +95,31 @@ class DetectKeyMapsUseCaseImpl(
             .map { it ?: PreferenceDefaults.SEQUENCE_TRIGGER_TIMEOUT }
             .map { it.toLong() }
 
+    private val forceVibrate: Flow<Boolean> =
+        preferenceRepository.get(Keys.forceVibrate).map { it ?: false }
+
+    private val defaultVibrateDuration: Flow<Long> =
+        preferenceRepository.get(Keys.defaultVibrateDuration)
+            .map { it ?: PreferenceDefaults.VIBRATION_DURATION }
+            .map { it.toLong() }
+
+    override val defaultOptions: Flow<DefaultKeyMapOptions> =
+        combine(
+            defaultLongPressDelay,
+            defaultDoublePressDelay,
+            defaultSequenceTriggerTimeout,
+            defaultVibrateDuration,
+            forceVibrate
+        ) { longPressDelay, doublePressDelay, sequenceTriggerTimeout, vibrateDuration, forceVibrate ->
+            DefaultKeyMapOptions(
+                longPressDelay,
+                doublePressDelay,
+                sequenceTriggerTimeout,
+                vibrateDuration,
+                forceVibrate
+            )
+        }
+
     override val currentTime: Long
         get() = SystemClock.elapsedRealtime()
 
@@ -115,6 +146,14 @@ class DetectKeyMapsUseCaseImpl(
         shizukuInputEventInjector,
         permissionAdapter
     )
+
+    override fun showTriggeredToast() {
+        popupMessageAdapter.showPopupMessage(resourceProvider.getString(R.string.toast_triggered_keymap))
+    }
+
+    override fun vibrate(duration: Long) {
+        vibrator.vibrate(duration)
+    }
 
     override fun imitateButtonPress(
         keyCode: Int,
@@ -171,6 +210,8 @@ interface DetectKeyMapsUseCase : DetectMappingUseCase {
     val allKeyMapList: Flow<List<KeyMap>>
     val keyMapsToTriggerFromOtherApps: Flow<List<KeyMap>>
     val detectScreenOffTriggers: Flow<Boolean>
+
+    val defaultOptions: Flow<DefaultKeyMapOptions>
 
     //TODO delete
     val defaultLongPressDelay: Flow<Long>

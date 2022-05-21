@@ -4,7 +4,10 @@ import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.mappings.SimpleMappingController
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -23,6 +26,13 @@ class FingerprintGestureMapController(
     detectConstraintsUseCase
 ) {
     private var fingerprintMaps: List<FingerprintMap>? = null
+
+    override val defaultOptions: StateFlow<DefaultFingerprintMapOptions> =
+        detectMappingUseCase.defaultOptions.stateIn(
+            coroutineScope,
+            SharingStarted.Lazily,
+            DefaultFingerprintMapOptions.DEFAULT
+        )
 
     init {
         coroutineScope.launch {

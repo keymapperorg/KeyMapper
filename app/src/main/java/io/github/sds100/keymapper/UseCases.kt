@@ -7,7 +7,6 @@ import io.github.sds100.keymapper.actions.IsActionSupportedUseCaseImpl
 import io.github.sds100.keymapper.actions.PerformActionsUseCaseImpl
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCaseImpl
 import io.github.sds100.keymapper.constraints.GetConstraintErrorUseCaseImpl
-import io.github.sds100.keymapper.mappings.DetectMappingUseCaseImpl
 import io.github.sds100.keymapper.mappings.DisplaySimpleMappingUseCase
 import io.github.sds100.keymapper.mappings.DisplaySimpleMappingUseCaseImpl
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCaseImpl
@@ -176,15 +175,7 @@ object UseCases {
             ServiceLocator.notificationReceiverAdapter(ctx)
         )
 
-    fun detectMappings(ctx: Context) = DetectMappingUseCaseImpl(
-        ServiceLocator.vibratorAdapter(ctx),
-        ServiceLocator.settingsRepository(ctx),
-        ServiceLocator.popupMessageAdapter(ctx),
-        ServiceLocator.resourceProvider(ctx)
-    )
-
     fun detectKeyMaps(service: MyAccessibilityService) = DetectKeyMapsUseCaseImpl(
-        detectMappings(service),
         ServiceLocator.roomKeymapRepository(service),
         ServiceLocator.settingsRepository(service),
         ServiceLocator.suAdapter(service),
@@ -195,13 +186,19 @@ object UseCases {
         ShizukuInputEventInjector(),
         ServiceLocator.permissionAdapter(service),
         ServiceLocator.phoneAdapter(service),
-        ServiceLocator.inputMethodAdapter(service)
+        ServiceLocator.inputMethodAdapter(service),
+        ServiceLocator.vibratorAdapter(service),
+        ServiceLocator.popupMessageAdapter(service),
+        ServiceLocator.resourceProvider(service)
     )
 
     fun detectFingerprintMaps(ctx: Context) = DetectFingerprintMapsUseCaseImpl(
         ServiceLocator.fingerprintMapRepository(ctx),
         fingerprintGesturesSupported(ctx),
-        detectMappings(ctx)
+        ServiceLocator.vibratorAdapter(ctx),
+        ServiceLocator.settingsRepository(ctx),
+        ServiceLocator.popupMessageAdapter(ctx),
+        ServiceLocator.resourceProvider(ctx)
     )
 
     fun rerouteKeyEvents(ctx: Context) = RerouteKeyEventsUseCaseImpl(

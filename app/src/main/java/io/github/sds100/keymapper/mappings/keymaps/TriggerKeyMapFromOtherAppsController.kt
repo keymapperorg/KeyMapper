@@ -1,12 +1,15 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
-import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
+import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.mappings.SimpleMappingController
+import io.github.sds100.keymapper.mappings.keymaps.detection.DefaultKeyMapOptions
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCase
-import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -26,6 +29,13 @@ class TriggerKeyMapFromOtherAppsController(
 ) {
 
     private var keyMapList = emptyList<KeyMap>()
+
+    override val defaultOptions: StateFlow<DefaultKeyMapOptions> =
+        detectKeyMapsUseCase.defaultOptions.stateIn(
+            coroutineScope,
+            SharingStarted.Lazily,
+            DefaultKeyMapOptions.DEFAULT
+        )
 
     init {
         coroutineScope.launch {
