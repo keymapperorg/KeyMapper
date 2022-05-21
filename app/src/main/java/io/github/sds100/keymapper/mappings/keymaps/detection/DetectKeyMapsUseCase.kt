@@ -172,6 +172,7 @@ interface DetectKeyMapsUseCase : DetectMappingUseCase {
     val keyMapsToTriggerFromOtherApps: Flow<List<KeyMap>>
     val detectScreenOffTriggers: Flow<Boolean>
 
+    //TODO delete
     val defaultLongPressDelay: Flow<Long>
     val defaultDoublePressDelay: Flow<Long>
     val defaultSequenceTriggerTimeout: Flow<Long>
