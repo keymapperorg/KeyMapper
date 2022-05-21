@@ -139,7 +139,7 @@ dependencies {
     def epoxy_version = "4.6.2"
     def splitties_version = "3.0.0-beta01"
     def multidex_version = "2.0.1"
-    def shizuku_version = '11.0.3'
+    def shizuku_version = '12.1.0'
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
@@ -163,7 +163,8 @@ dependencies {
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
     implementation "dev.rikka.shizuku:api:$shizuku_version"
     implementation "dev.rikka.shizuku:provider:$shizuku_version"
-
+    implementation 'org.lsposed.hiddenapibypass:hiddenapibypass:4.3'
+    
     // splitties
     implementation "com.louiscad.splitties:splitties-bitflags:$splitties_version"
     implementation "com.louiscad.splitties:splitties-alertdialog-appcompat-coroutines:$splitties_version"

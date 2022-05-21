@@ -26,11 +26,6 @@ interface PackageManagerAdapter {
     fun launchDeviceAssistant(): Result<*>
     fun isVoiceAssistantInstalled(): Boolean
 
-    /**
-     * Requires root or Shizuku permission.
-     */
-    fun grantPermission(permissionName: String): Result<*>
-
     fun launchCameraApp(): Result<*>
     fun launchSettingsApp(): Result<*>
 }

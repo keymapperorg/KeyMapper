@@ -2,18 +2,12 @@ package io.github.sds100.keymapper.system.apps
 
 import android.content.*
 import android.content.pm.ApplicationInfo
-import android.content.pm.IPackageManager
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.os.Process
 import android.os.TransactionTooLargeException
 import android.provider.MediaStore
 import android.provider.Settings
-import io.github.sds100.keymapper.Constants
-import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
-import io.github.sds100.keymapper.system.permissions.Permission
-import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -22,8 +16,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import rikka.shizuku.ShizukuBinderWrapper
-import rikka.shizuku.SystemServiceHelper
 import splitties.bitflags.withFlag
 
 /**
@@ -31,19 +23,12 @@ import splitties.bitflags.withFlag
  */
 class AndroidPackageManagerAdapter(
     context: Context,
-    coroutineScope: CoroutineScope,
-    private val permissionAdapter: AndroidPermissionAdapter,
-    private val suAdapter: SuAdapter
+    coroutineScope: CoroutineScope
 ) : PackageManagerAdapter {
     private val ctx: Context = context.applicationContext
     private val packageManager: PackageManager = ctx.packageManager
 
     override val installedPackages = MutableStateFlow<State<List<PackageInfo>>>(State.Loading)
-
-    private val iPackageManager: IPackageManager by lazy {
-        val binder = ShizukuBinderWrapper(SystemServiceHelper.getSystemService("package"))
-        IPackageManager.Stub.asInterface(binder)
-    }
 
     private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -220,38 +205,6 @@ class AndroidPackageManagerAdapter(
             Intent(Intent.ACTION_VOICE_COMMAND).resolveActivityInfo(ctx.packageManager, 0) != null
 
         return activityExists
-    }
-
-    override fun grantPermission(permissionName: String): Result<*> {
-        val result: Result<*>
-
-        if (permissionAdapter.isGranted(Permission.SHIZUKU)) {
-            result = try {
-                val userId = Process.myUserHandle()!!.getIdentifier()
-
-                iPackageManager.grantRuntimePermission(
-                    Constants.PACKAGE_NAME,
-                    permissionName,
-                    userId
-                )
-
-                success()
-            } catch (e: Exception) {
-                Error.Exception(e)
-            }
-
-        } else if (permissionAdapter.isGranted(Permission.ROOT)) {
-            result = suAdapter.execute(
-                "pm grant ${Constants.PACKAGE_NAME} $permissionName",
-                block = true
-            )
-        } else {
-            throw IllegalStateException("Shizuku or root permission has not been granted")
-        }
-
-        permissionAdapter.onPermissionsChanged()
-
-        return result
     }
 
     override fun launchCameraApp(): Result<*> {
