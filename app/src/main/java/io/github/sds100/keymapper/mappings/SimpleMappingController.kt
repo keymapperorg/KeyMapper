@@ -5,7 +5,7 @@ import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.data.PreferenceDefaults
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.InputEventType
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -31,12 +31,6 @@ abstract class SimpleMappingController(
             PreferenceDefaults.REPEAT_RATE.toLong()
         )
 
-    private val forceVibrate: StateFlow<Boolean> =
-        detectMappingUseCase.forceVibrate.stateIn(
-            coroutineScope,
-            SharingStarted.Eagerly,
-            PreferenceDefaults.FORCE_VIBRATE
-        )
     private val defaultHoldDownDuration: StateFlow<Long> =
         performActionsUseCase.defaultHoldDownDuration.stateIn(
             coroutineScope,
@@ -44,12 +38,7 @@ abstract class SimpleMappingController(
             PreferenceDefaults.HOLD_DOWN_DURATION.toLong()
         )
 
-    private val defaultVibrateDuration: StateFlow<Long> =
-        detectMappingUseCase.defaultVibrateDuration.stateIn(
-            coroutineScope,
-            SharingStarted.Eagerly,
-            PreferenceDefaults.VIBRATION_DURATION.toLong()
-        )
+    abstract val defaultOptions: StateFlow<DefaultMappingOptions>
 
     fun onDetected(
         mappingId: String,
@@ -113,9 +102,9 @@ abstract class SimpleMappingController(
             this@SimpleMappingController.repeatJobs[mappingId] = repeatJobs
         }
 
-        if (mapping.vibrate || forceVibrate.value) {
+        if (mapping.vibrate || defaultOptions.value.forceVibrate) {
             detectMappingUseCase.vibrate(
-                mapping.vibrateDuration?.toLong() ?: defaultVibrateDuration.value
+                mapping.vibrateDuration?.toLong() ?: defaultOptions.value.vibrateDuration
             )
         }
 

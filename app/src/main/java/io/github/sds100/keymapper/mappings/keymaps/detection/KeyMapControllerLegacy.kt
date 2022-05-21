@@ -9,7 +9,6 @@ import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.constraints.ConstraintSnapshot
 import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
-import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
@@ -481,43 +480,15 @@ class KeyMapControllerLegacy(
     private var parallelTriggerActionPerformers: Map<Int, ParallelTriggerActionPerformer> = emptyMap()
     private var sequenceTriggerActionPerformers: Map<Int, SequenceTriggerActionPerformer> = emptyMap()
 
+    private val defaultOptions: StateFlow<DefaultKeyMapOptions> =
+        useCase.defaultOptions.stateIn(
+            coroutineScope,
+            SharingStarted.Lazily,
+            DefaultKeyMapOptions.DEFAULT
+        )
+
     private val currentTime: Long
         get() = useCase.currentTime
-
-    private val defaultVibrateDuration: StateFlow<Long> =
-        useCase.defaultVibrateDuration.stateIn(
-            coroutineScope,
-            SharingStarted.Eagerly,
-            PreferenceDefaults.VIBRATION_DURATION.toLong()
-        )
-
-    private val defaultSequenceTriggerTimeout: StateFlow<Long> =
-        useCase.defaultSequenceTriggerTimeout.stateIn(
-            coroutineScope,
-            SharingStarted.Eagerly,
-            PreferenceDefaults.SEQUENCE_TRIGGER_TIMEOUT.toLong()
-        )
-
-    private val defaultLongPressDelay: StateFlow<Long> =
-        useCase.defaultLongPressDelay.stateIn(
-            coroutineScope,
-            SharingStarted.Eagerly,
-            PreferenceDefaults.LONG_PRESS_DELAY.toLong()
-        )
-
-    private val defaultDoublePressDelay: StateFlow<Long> =
-        useCase.defaultDoublePressDelay.stateIn(
-            coroutineScope,
-            SharingStarted.Eagerly,
-            PreferenceDefaults.DOUBLE_PRESS_DELAY.toLong()
-        )
-
-    private val forceVibrate: StateFlow<Boolean> =
-        useCase.forceVibrate.stateIn(
-            coroutineScope,
-            SharingStarted.Eagerly,
-            PreferenceDefaults.FORCE_VIBRATE
-        )
 
     init {
         coroutineScope.launch {
@@ -754,7 +725,7 @@ class KeyMapControllerLegacy(
                                 vibrateDuration(trigger)
                             }
 
-                            forceVibrate.value -> defaultVibrateDuration.value
+                            defaultOptions.value.forceVibrate -> defaultOptions.value.vibrateDuration
                             else -> -1L
                         }
 
@@ -849,8 +820,8 @@ class KeyMapControllerLegacy(
             useCase.showTriggeredToast()
         }
 
-        if (forceVibrate.value) {
-            useCase.vibrate(defaultVibrateDuration.value)
+        if (defaultOptions.value.forceVibrate) {
+            useCase.vibrate(defaultOptions.value.vibrateDuration)
         } else {
             vibrateDurations.maxOrNull()?.let {
                 useCase.vibrate(it)
@@ -1245,8 +1216,8 @@ class KeyMapControllerLegacy(
             )
         }
 
-        if (forceVibrate.value) {
-            useCase.vibrate(defaultVibrateDuration.value)
+        if (defaultOptions.value.forceVibrate) {
+            useCase.vibrate(defaultOptions.value.vibrateDuration)
         } else {
             vibrateDurations.maxOrNull()?.let {
                 useCase.vibrate(it)
@@ -1373,8 +1344,8 @@ class KeyMapControllerLegacy(
             useCase.showTriggeredToast()
         }
 
-        if (forceVibrate.value) {
-            useCase.vibrate(defaultVibrateDuration.value)
+        if (defaultOptions.value.forceVibrate) {
+            useCase.vibrate(defaultOptions.value.vibrateDuration)
         } else {
             vibrateDurations.maxOrNull()?.let {
                 useCase.vibrate(it)
@@ -1435,7 +1406,7 @@ class KeyMapControllerLegacy(
             metaState = metaStateFromActions.withFlag(metaStateFromKeyEvent)
         )
 
-        if (triggers[triggerIndex].vibrate || forceVibrate.value
+        if (triggers[triggerIndex].vibrate || defaultOptions.value.forceVibrate
             || triggers[triggerIndex].longPressDoubleVibration
         ) {
             useCase.vibrate(vibrateDuration(triggers[triggerIndex]))
@@ -1488,19 +1459,19 @@ class KeyMapControllerLegacy(
     }
 
     private fun longPressDelay(trigger: KeyMapTrigger): Long {
-        return trigger.longPressDelay?.toLong() ?: defaultLongPressDelay.value
+        return trigger.longPressDelay?.toLong() ?: defaultOptions.value.longPressDelay
     }
 
     private fun doublePressTimeout(trigger: KeyMapTrigger): Long {
-        return trigger.doublePressDelay?.toLong() ?: defaultDoublePressDelay.value
+        return trigger.doublePressDelay?.toLong() ?: defaultOptions.value.doublePressDelay
     }
 
     private fun vibrateDuration(trigger: KeyMapTrigger): Long {
-        return trigger.vibrateDuration?.toLong() ?: defaultVibrateDuration.value
+        return trigger.vibrateDuration?.toLong() ?: defaultOptions.value.vibrateDuration
     }
 
     private fun sequenceTriggerTimeout(trigger: KeyMapTrigger): Long {
-        return trigger.sequenceTriggerTimeout?.toLong() ?: defaultSequenceTriggerTimeout.value
+        return trigger.sequenceTriggerTimeout?.toLong() ?: defaultOptions.value.sequenceTriggerTimeout
     }
 
     private fun setActionMapAndOptions(actions: Set<KeyMapAction>) {

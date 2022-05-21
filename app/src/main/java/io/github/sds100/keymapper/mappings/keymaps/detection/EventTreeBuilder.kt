@@ -10,7 +10,7 @@ import io.github.sds100.keymapper.util.InputEventType
 
 object EventTreeBuilder{
 
-    fun createEventTrees(keyMaps: List<KeyMap>): List<KeyEventNode> {
+    fun createEventTrees(keyMaps: List<KeyMap>, options: DefaultKeyMapOptions): List<KeyEventNode> {
         val eventTrees = mutableListOf<KeyEventNode>()
 
         for (keyMap in keyMaps) {

@@ -6,7 +6,9 @@ import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 /**
@@ -30,13 +32,12 @@ class KeyMapController(
      */
     private var eventTreeLocations: MutableList<KeyEventNode> = mutableListOf()
 
-    private val defaultKeyMapOptions: StateFlow<DefaultKeyMapOptions> = 
-
     init {
-        detectKeyMapsUseCase.allKeyMapList.onEach { keyMaps ->
-            eventTrees = EventTreeBuilder.createEventTrees(keyMaps)
-            // set the locations to the initial node
-            eventTreeLocations = eventTrees.toMutableList()
+        combine(detectKeyMapsUseCase.allKeyMapList, detectKeyMapsUseCase.defaultOptions) { keyMaps, options ->
+            EventTreeBuilder.createEventTrees(keyMaps, options)
+        }.onEach {
+            eventTrees = it
+            eventTreeLocations = eventTrees.toMutableList() //set the pointer to the initial node
         }.launchIn(coroutineScope)
     }
 
@@ -107,7 +108,4 @@ class KeyMapController(
             doTaskNode(node.next!!)
         }
     }
-
-
-
 }
