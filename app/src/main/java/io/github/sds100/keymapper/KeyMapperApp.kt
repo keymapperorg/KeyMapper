@@ -78,9 +78,7 @@ class KeyMapperApp : MultiDexApplication() {
     val packageManagerAdapter by lazy {
         AndroidPackageManagerAdapter(
                 this,
-                appCoroutineScope,
-                permissionAdapter,
-                suAdapter
+                appCoroutineScope
         )
     }
 
@@ -146,7 +144,6 @@ class KeyMapperApp : MultiDexApplication() {
         AutoGrantPermissionController(
                 appCoroutineScope,
                 permissionAdapter,
-                packageManagerAdapter,
                 popupMessageAdapter,
                 resourceProvider
         )
