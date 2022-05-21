@@ -311,6 +311,9 @@
     <string name="constraint_not_in_phone_call">Not in phone call</string>
     <string name="constraint_phone_ringing">Phone ringing</string>
 
+    <string name="constraint_charging">Charging</string>
+    <string name="constraint_discharging">Discharging</string>
+
     <string name="orientation_0">Portrait (0°)</string>
     <string name="orientation_90">Landscape (90°)</string>
     <string name="orientation_180">Portrait (180°)</string>

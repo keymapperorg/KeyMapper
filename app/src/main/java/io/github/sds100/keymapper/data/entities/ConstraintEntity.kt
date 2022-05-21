@@ -67,6 +67,9 @@ data class ConstraintEntity(
         const val NOT_IN_PHONE_CALL = "not_in_phone_call"
         const val PHONE_RINGING = "phone_ringing"
 
+        const val CHARGING = "charging"
+        const val DISCHARGING = "discharging"
+
         const val EXTRA_PACKAGE_NAME = "extra_package_name"
         const val EXTRA_BT_ADDRESS = "extra_bluetooth_device_address"
         const val EXTRA_BT_NAME = "extra_bluetooth_device_name"

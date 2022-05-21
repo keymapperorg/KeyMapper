@@ -58,3 +58,7 @@ Your mapping will only work if the device is unlocked.
 ### In phone call/not in phone call/phone ringing (2.4.0+)
 
 Your mapping will only be triggered if you are (not) in a phone call or if your device is ringing.
+
+### Charging/discharging (2.4.1+)
+
+Your mapping will only be triggered if your device is charging or discharging.
