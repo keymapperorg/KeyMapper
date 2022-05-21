@@ -19,7 +19,6 @@ import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.shizuku.ShizukuUtils
 import io.github.sds100.keymapper.system.DeviceAdmin
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
-import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.url.UrlUtils
 import io.github.sds100.keymapper.util.str
 import rikka.shizuku.Shizuku
@@ -57,10 +56,6 @@ class RequestPermissionDelegate(
         ServiceLocator.permissionAdapter(activity)
     }
 
-    private val packageManagerAdapter: PackageManagerAdapter by lazy {
-        ServiceLocator.packageManagerAdapter(activity)
-    }
-
     private val notificationReceiverAdapter: ServiceAdapter by lazy {
         ServiceLocator.notificationReceiverAdapter(activity)
     }
@@ -90,7 +85,7 @@ class RequestPermissionDelegate(
             Permission.SHIZUKU ->
                 if (ShizukuUtils.isSupportedForSdkVersion()) {
                     if (Shizuku.getBinder() != null) {
-                        Shizuku.requestPermission(AndroidPermissionAdapter.REQUEST_SHIZUKU_PERMISSION)
+                        Shizuku.requestPermission(AndroidPermissionAdapter.REQUEST_CODE_SHIZUKU_PERMISSION)
                     }
                 }
 
@@ -130,7 +125,7 @@ class RequestPermissionDelegate(
         if (permissionAdapter.isGranted(Permission.SHIZUKU)
             || permissionAdapter.isGranted(Permission.ROOT)
         ) {
-            packageManagerAdapter.grantPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
+            permissionAdapter.grant(Manifest.permission.WRITE_SECURE_SETTINGS)
 
             return
         }

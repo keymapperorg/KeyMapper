@@ -8,8 +8,6 @@ import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
 
 /**
@@ -25,23 +23,19 @@ class ShowHomeScreenAlertsUseCaseImpl(
     override val hideAlerts: Flow<Boolean> =
         preferences.get(Keys.hideHomeScreenAlerts).map { it ?: false }
 
-    override val isBatteryOptimised: Flow<Boolean> = channelFlow {
-        send(!permissions.isGranted(Permission.IGNORE_BATTERY_OPTIMISATION))
-
-        permissions.onPermissionsUpdate.collectLatest {
-            send(!permissions.isGranted(Permission.IGNORE_BATTERY_OPTIMISATION))
-        }
-    }
+    override val isBatteryOptimised: Flow<Boolean> =
+        permissions.isGrantedFlow(Permission.IGNORE_BATTERY_OPTIMISATION)
+            .map { !it } //if granted then battery is NOT optimised
 
     override val areMappingsPaused: Flow<Boolean> = pauseMappingsUseCase.isPaused
 
     override val isLoggingEnabled: Flow<Boolean> = preferences.get(Keys.log).map { it ?: false }
 
+    override val accessibilityServiceState: Flow<ServiceState> = accessibilityServiceAdapter.state
+
     override fun disableBatteryOptimisation() {
         permissions.request(Permission.IGNORE_BATTERY_OPTIMISATION)
     }
-
-    override val accessibilityServiceState: Flow<ServiceState> = accessibilityServiceAdapter.state
 
     override fun startAccessibilityService(): Boolean {
         return accessibilityServiceAdapter.start()
