@@ -10,8 +10,10 @@ import io.github.sds100.keymapper.constraints.ConstraintSnapshot
 import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.mappings.ClickType
+import io.github.sds100.keymapper.mappings.keymaps.detection.DefaultKeyMapOptions
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCase
 import io.github.sds100.keymapper.mappings.keymaps.detection.KeyMapController
+import io.github.sds100.keymapper.mappings.keymaps.detection.KeyMapControllerLegacy
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTrigger
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
@@ -80,7 +82,7 @@ class KeyMapControllerLegacyTest {
         )
     }
 
-    private lateinit var controller: KeyMapController
+    private lateinit var controller: KeyMapControllerLegacy
     private lateinit var detectKeyMapsUseCase: DetectKeyMapsUseCase
     private lateinit var performActionsUseCase: PerformActionsUseCase
     private lateinit var detectConstraintsUseCase: DetectConstraintsUseCase
@@ -95,29 +97,18 @@ class KeyMapControllerLegacyTest {
     @Before
     fun init() {
         keyMapListFlow = MutableStateFlow(emptyList())
+        val defaultKeyMapOptions = DefaultKeyMapOptions(
+            LONG_PRESS_DELAY,
+            DOUBLE_PRESS_DELAY,
+            SEQUENCE_TRIGGER_TIMEOUT,
+            VIBRATION_DURATION,
+            FORCE_VIBRATE
+        )
 
         detectKeyMapsUseCase = mock {
             on { allKeyMapList } doReturn keyMapListFlow
 
-            MutableStateFlow(VIBRATION_DURATION).apply {
-                on { defaultVibrateDuration } doReturn this
-            }
-
-            MutableStateFlow(SEQUENCE_TRIGGER_TIMEOUT).apply {
-                on { defaultSequenceTriggerTimeout } doReturn this
-            }
-
-            MutableStateFlow(LONG_PRESS_DELAY).apply {
-                on { defaultLongPressDelay } doReturn this
-            }
-
-            MutableStateFlow(FORCE_VIBRATE).apply {
-                on { forceVibrate } doReturn this
-            }
-
-            MutableStateFlow(DOUBLE_PRESS_DELAY).apply {
-                on { defaultDoublePressDelay } doReturn this
-            }
+            on { defaultOptions } doReturn MutableStateFlow(defaultKeyMapOptions)
         }
 
         whenever(detectKeyMapsUseCase.currentTime).thenAnswer { coroutineScope.currentTime }
@@ -141,7 +132,7 @@ class KeyMapControllerLegacyTest {
             on { getSnapshot() } doReturn mock()
         }
 
-        controller = KeyMapController(
+        controller = KeyMapControllerLegacy(
             coroutineScope,
             detectKeyMapsUseCase,
             performActionsUseCase,
@@ -3073,7 +3064,7 @@ class KeyMapControllerLegacyTest {
     ): Boolean {
         return controller.onKeyEvent(
             keyCode = keyCode,
-            keyEventAction = action,
+            action = action,
             metaState = metaState ?: 0,
             scanCode = scanCode,
             device = device

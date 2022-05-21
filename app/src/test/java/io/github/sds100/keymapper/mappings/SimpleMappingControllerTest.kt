@@ -27,13 +27,7 @@ import org.mockito.kotlin.*
 class SimpleMappingControllerTest {
 
     companion object {
-        private const val LONG_PRESS_DELAY = 500L
-        private const val DOUBLE_PRESS_DELAY = 300L
-        private const val FORCE_VIBRATE = false
         private const val REPEAT_RATE = 50L
-        private const val REPEAT_DELAY = 400L
-        private const val SEQUENCE_TRIGGER_TIMEOUT = 2000L
-        private const val VIBRATION_DURATION = 100L
         private const val HOLD_DOWN_DURATION = 1000L
     }
 
@@ -47,17 +41,6 @@ class SimpleMappingControllerTest {
 
     @Before
     fun init() {
-        detectMappingUseCase = mock {
-
-            MutableStateFlow(VIBRATION_DURATION).apply {
-                on { defaultVibrateDuration } doReturn this
-            }
-
-            MutableStateFlow(FORCE_VIBRATE).apply {
-                on { forceVibrate } doReturn this
-            }
-        }
-
         performActionsUseCase = mock {
             MutableStateFlow(REPEAT_RATE).apply {
                 on { defaultRepeatRate } doReturn this

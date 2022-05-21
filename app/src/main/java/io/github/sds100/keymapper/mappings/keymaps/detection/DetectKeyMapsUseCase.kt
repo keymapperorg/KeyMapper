@@ -80,17 +80,17 @@ class DetectKeyMapsUseCaseImpl(
             keyMapList.any { it.trigger.screenOffTrigger } && isRootPermissionGranted
         }.flowOn(Dispatchers.Default)
 
-    override val defaultLongPressDelay: Flow<Long> =
+    private val defaultLongPressDelay: Flow<Long> =
         preferenceRepository.get(Keys.defaultLongPressDelay)
             .map { it ?: PreferenceDefaults.LONG_PRESS_DELAY }
             .map { it.toLong() }
 
-    override val defaultDoublePressDelay: Flow<Long> =
+    private val defaultDoublePressDelay: Flow<Long> =
         preferenceRepository.get(Keys.defaultDoublePressDelay)
             .map { it ?: PreferenceDefaults.DOUBLE_PRESS_DELAY }
             .map { it.toLong() }
 
-    override val defaultSequenceTriggerTimeout: Flow<Long> =
+    private val defaultSequenceTriggerTimeout: Flow<Long> =
         preferenceRepository.get(Keys.defaultSequenceTriggerTimeout)
             .map { it ?: PreferenceDefaults.SEQUENCE_TRIGGER_TIMEOUT }
             .map { it.toLong() }
@@ -212,12 +212,6 @@ interface DetectKeyMapsUseCase : DetectMappingUseCase {
     val detectScreenOffTriggers: Flow<Boolean>
 
     val defaultOptions: Flow<DefaultKeyMapOptions>
-
-    //TODO delete
-    val defaultLongPressDelay: Flow<Long>
-    val defaultDoublePressDelay: Flow<Long>
-    val defaultSequenceTriggerTimeout: Flow<Long>
-
     val acceptKeyEventsFromIme: Boolean
 
     val currentTime: Long
