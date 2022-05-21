@@ -75,7 +75,7 @@ class AccessibilityServiceController(
         detectConstraintsUseCase
     )
 
-    private val keymapDetectionDelegate = KeyMapController(
+    private val keyMapController = KeyMapController(
         coroutineScope,
         detectKeyMapsUseCase,
         performActionsUseCase,
@@ -106,7 +106,7 @@ class AccessibilityServiceController(
 
             if (!isPaused.value) {
                 withContext(Dispatchers.Main.immediate) {
-                    keymapDetectionDelegate.onKeyEvent(
+                    keyMapController.onKeyEvent(
                         keyCode,
                         action,
                         metaState = 0,
@@ -179,7 +179,7 @@ class AccessibilityServiceController(
         }
 
         pauseMappingsUseCase.isPaused.distinctUntilChanged().onEach {
-            keymapDetectionDelegate.reset()
+            keyMapController.reset()
             fingerprintMapController.reset()
             triggerKeyMapFromOtherAppsController.reset()
         }.launchIn(coroutineScope)
@@ -312,7 +312,7 @@ class AccessibilityServiceController(
             try {
                 var consume: Boolean
 
-                consume = keymapDetectionDelegate.onKeyEvent(
+                consume = keyMapController.onKeyEvent(
                     keyCode,
                     action,
                     metaState,
