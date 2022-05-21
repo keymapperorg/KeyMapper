@@ -5,6 +5,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
+import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapAction
 import io.github.sds100.keymapper.system.camera.CameraLens
@@ -16,6 +17,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -44,6 +46,11 @@ class KeyMapController2Test {
 
     private val TEST_ACTION: KeyMapAction = KeyMapAction(
         data = ActionData.Flashlight.Toggle(CameraLens.BACK)
+    )
+
+    private val TEST_HOLD_DOWN_ACTION: KeyMapAction = KeyMapAction(
+        data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_A),
+        holdDown = true
     )
 
     private val TEST_REPEAT_ACTION: KeyMapAction = KeyMapAction(
@@ -78,16 +85,49 @@ class KeyMapController2Test {
     }
 
     @Test
-    fun shortPress() {
+    fun longPress() = coroutineScope.runBlockingTest {
+        setKeyMaps(
+            KeyMap(
+                0,
+                trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_A, clickType = ClickType.LONG_PRESS)),
+                actionList = listOf(TEST_ACTION)
+            )
+        )
+
+        inputDown(KeyEvent.KEYCODE_A)
+        advanceTimeBy(500)
+        verify(performActionsUseCase).perform(TEST_ACTION.data, InputEventType.DOWN_UP, 0)
+
+        inputUp(KeyEvent.KEYCODE_A)
+    }
+
+    @Test
+    fun shortPress() = coroutineScope.runBlockingTest {
         setKeyMaps(
             KeyMap(0, trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_A)), actionList = listOf(TEST_ACTION))
         )
 
         inputDown(KeyEvent.KEYCODE_A)
-        coroutineScope.advanceUntilIdle()
         verify(performActionsUseCase).perform(TEST_ACTION.data, InputEventType.DOWN_UP, 0)
 
         inputUp(KeyEvent.KEYCODE_A)
+    }
+
+    @Test
+    fun shortPress_holdDownAction() = coroutineScope.runBlockingTest {
+        setKeyMaps(
+            KeyMap(
+                0,
+                trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_A)),
+                actionList = listOf(TEST_HOLD_DOWN_ACTION)
+            )
+        )
+
+        inputDown(KeyEvent.KEYCODE_A)
+        verify(performActionsUseCase).perform(TEST_HOLD_DOWN_ACTION.data, InputEventType.DOWN, 0)
+
+        inputUp(KeyEvent.KEYCODE_A)
+        verify(performActionsUseCase).perform(TEST_HOLD_DOWN_ACTION.data, InputEventType.UP, 0)
     }
 
     private fun setKeyMaps(vararg keyMap: KeyMap) {
