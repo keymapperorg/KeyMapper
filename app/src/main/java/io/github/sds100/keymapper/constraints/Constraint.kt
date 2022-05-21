@@ -113,6 +113,12 @@ sealed class Constraint {
 
     @Serializable
     object PhoneRinging : Constraint()
+
+    @Serializable
+    object Charging : Constraint()
+
+    @Serializable
+    object Discharging : Constraint()
 }
 
 object ConstraintModeEntityMapper {
@@ -214,6 +220,9 @@ object ConstraintEntityMapper {
             ConstraintEntity.PHONE_RINGING -> Constraint.PhoneRinging
             ConstraintEntity.IN_PHONE_CALL -> Constraint.InPhoneCall
             ConstraintEntity.NOT_IN_PHONE_CALL -> Constraint.NotInPhoneCall
+
+            ConstraintEntity.CHARGING -> Constraint.Charging
+            ConstraintEntity.DISCHARGING -> Constraint.Discharging
 
             else -> throw Exception("don't know how to convert constraint entity with type ${entity.type}")
         }
@@ -324,5 +333,7 @@ object ConstraintEntityMapper {
         Constraint.InPhoneCall -> ConstraintEntity(ConstraintEntity.IN_PHONE_CALL)
         Constraint.NotInPhoneCall -> ConstraintEntity(ConstraintEntity.NOT_IN_PHONE_CALL)
         Constraint.PhoneRinging -> ConstraintEntity(ConstraintEntity.PHONE_RINGING)
+        Constraint.Charging -> ConstraintEntity(ConstraintEntity.CHARGING)
+        Constraint.Discharging -> ConstraintEntity(ConstraintEntity.DISCHARGING)
     }
 }

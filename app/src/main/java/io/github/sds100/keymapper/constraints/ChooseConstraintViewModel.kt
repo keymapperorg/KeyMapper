@@ -64,6 +64,9 @@ class ChooseConstraintViewModel(
             ChooseConstraintType.IN_PHONE_CALL,
             ChooseConstraintType.NOT_IN_PHONE_CALL,
             ChooseConstraintType.PHONE_RINGING,
+
+            ChooseConstraintType.CHARGING,
+            ChooseConstraintType.DISCHARGING
         )
     }
 
@@ -161,6 +164,12 @@ class ChooseConstraintViewModel(
 
                 ChooseConstraintType.PHONE_RINGING ->
                     _returnResult.emit(Constraint.PhoneRinging)
+
+                ChooseConstraintType.CHARGING ->
+                    _returnResult.emit(Constraint.Charging)
+
+                ChooseConstraintType.DISCHARGING ->
+                    _returnResult.emit(Constraint.Discharging)
             }
         }
     }
@@ -212,6 +221,8 @@ class ChooseConstraintViewModel(
                 ChooseConstraintType.IN_PHONE_CALL -> getString(R.string.constraint_in_phone_call)
                 ChooseConstraintType.NOT_IN_PHONE_CALL -> getString(R.string.constraint_not_in_phone_call)
                 ChooseConstraintType.PHONE_RINGING -> getString(R.string.constraint_phone_ringing)
+                ChooseConstraintType.CHARGING -> getString(R.string.constraint_charging)
+                ChooseConstraintType.DISCHARGING -> getString(R.string.constraint_discharging)
             }
 
             val error = useCase.isSupported(type)

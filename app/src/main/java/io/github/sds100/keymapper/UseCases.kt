@@ -138,7 +138,8 @@ object UseCases {
         ServiceLocator.networkAdapter(service),
         ServiceLocator.inputMethodAdapter(service),
         ServiceLocator.lockScreenAdapter(service),
-        ServiceLocator.phoneAdapter(service)
+        ServiceLocator.phoneAdapter(service),
+        ServiceLocator.powerAdapter(service)
     )
 
     fun performActions(ctx: Context, service: IAccessibilityService) =

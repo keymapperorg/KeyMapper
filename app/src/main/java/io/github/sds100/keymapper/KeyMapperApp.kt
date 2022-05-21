@@ -44,6 +44,7 @@ import io.github.sds100.keymapper.system.permissions.AutoGrantPermissionControll
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.phone.AndroidPhoneAdapter
 import io.github.sds100.keymapper.system.popup.AndroidToastAdapter
+import io.github.sds100.keymapper.system.power.AndroidPowerAdapter
 import io.github.sds100.keymapper.system.root.SuAdapterImpl
 import io.github.sds100.keymapper.system.url.AndroidOpenUrlAdapter
 import io.github.sds100.keymapper.system.vibrator.AndroidVibratorAdapter
@@ -135,6 +136,7 @@ class KeyMapperApp : MultiDexApplication() {
     val clipboardAdapter by lazy { AndroidClipboardAdapter(this) }
     val shizukuAdapter by lazy { ShizukuAdapterImpl(appCoroutineScope, packageManagerAdapter) }
     val leanbackAdapter by lazy { LeanbackAdapterImpl(this) }
+    val powerAdapter by lazy { AndroidPowerAdapter(this) }
 
     val recordTriggerController by lazy {
         RecordTriggerController(appCoroutineScope, accessibilityServiceAdapter)

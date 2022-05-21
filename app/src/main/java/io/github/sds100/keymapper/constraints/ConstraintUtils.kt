@@ -31,7 +31,9 @@ object ConstraintUtils {
         ChooseConstraintType.DEVICE_IS_UNLOCKED,
         ChooseConstraintType.IN_PHONE_CALL,
         ChooseConstraintType.NOT_IN_PHONE_CALL,
-        ChooseConstraintType.PHONE_RINGING
+        ChooseConstraintType.PHONE_RINGING,
+        ChooseConstraintType.CHARGING,
+        ChooseConstraintType.DISCHARGING,
     )
 
     val KEY_MAP_ALLOWED_CONSTRAINTS = listOf(
