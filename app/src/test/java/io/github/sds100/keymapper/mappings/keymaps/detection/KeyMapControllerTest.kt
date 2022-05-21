@@ -30,9 +30,9 @@ import org.mockito.kotlin.verify
  * Created by sds100 on 20/05/2022.
  */
 @ExperimentalCoroutinesApi
-class KeyMapController2Test {
+class KeyMapControllerTest {
 
-    private lateinit var controller: KeyMapController2
+    private lateinit var controller: KeyMapController
     private lateinit var detectKeyMapsUseCase: DetectKeyMapsUseCase
     private lateinit var performActionsUseCase: PerformActionsUseCase
     private lateinit var detectConstraintsUseCase: DetectConstraintsUseCase
@@ -71,7 +71,7 @@ class KeyMapController2Test {
         performActionsUseCase = mock()
         detectConstraintsUseCase = mock()
 
-        controller = KeyMapController2(
+        controller = KeyMapController(
             coroutineScope,
             detectKeyMapsUseCase,
             performActionsUseCase,

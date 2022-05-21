@@ -11,7 +11,7 @@ import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCase
-import io.github.sds100.keymapper.mappings.keymaps.detection.KeyMapController2
+import io.github.sds100.keymapper.mappings.keymaps.detection.KeyMapController
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTrigger
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
@@ -44,7 +44,7 @@ import splitties.bitflags.withFlag
 
 @ExperimentalCoroutinesApi
 @RunWith(JUnitParamsRunner::class)
-class KeyMapControllerTest {
+class KeyMapControllerLegacyTest {
 
     companion object {
         private const val FAKE_KEYBOARD_DEVICE_ID = 123
@@ -80,7 +80,7 @@ class KeyMapControllerTest {
         )
     }
 
-    private lateinit var controller: KeyMapController2
+    private lateinit var controller: KeyMapController
     private lateinit var detectKeyMapsUseCase: DetectKeyMapsUseCase
     private lateinit var performActionsUseCase: PerformActionsUseCase
     private lateinit var detectConstraintsUseCase: DetectConstraintsUseCase
@@ -141,7 +141,7 @@ class KeyMapControllerTest {
             on { getSnapshot() } doReturn mock()
         }
 
-        controller = KeyMapController2(
+        controller = KeyMapController(
             coroutineScope,
             detectKeyMapsUseCase,
             performActionsUseCase,

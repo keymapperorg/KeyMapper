@@ -8,7 +8,7 @@ import io.github.sds100.keymapper.constraints.ConstraintModeEntityMapper
 import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.mappings.Mapping
-import io.github.sds100.keymapper.mappings.keymaps.detection.KeyMapController
+import io.github.sds100.keymapper.mappings.keymaps.detection.KeyMapControllerLegacy
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTrigger
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeymapTriggerEntityMapper
 import kotlinx.serialization.Serializable
@@ -38,7 +38,7 @@ data class KeyMap(
         get() = trigger.vibrateDuration
 
     fun isRepeatingActionsAllowed(): Boolean {
-        return KeyMapController.performActionOnDown(trigger)
+        return KeyMapControllerLegacy.performActionOnDown(trigger)
     }
 
     fun isChangingActionRepeatRateAllowed(action: KeyMapAction): Boolean {
@@ -50,7 +50,7 @@ data class KeyMap(
     }
 
     fun isHoldingDownActionAllowed(action: KeyMapAction): Boolean {
-        return KeyMapController.performActionOnDown(trigger) && action.data.canBeHeldDown()
+        return KeyMapControllerLegacy.performActionOnDown(trigger) && action.data.canBeHeldDown()
     }
 
     fun isHoldingDownActionBeforeRepeatingAllowed(action: KeyMapAction): Boolean {

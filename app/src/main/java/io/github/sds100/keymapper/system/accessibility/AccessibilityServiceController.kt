@@ -19,7 +19,6 @@ import io.github.sds100.keymapper.mappings.keymaps.TriggerKeyMapFromOtherAppsCon
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCase
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectScreenOffKeyEventsController
 import io.github.sds100.keymapper.mappings.keymaps.detection.KeyMapController
-import io.github.sds100.keymapper.mappings.keymaps.detection.KeyMapController2
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsController
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsUseCase
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
@@ -76,7 +75,7 @@ class AccessibilityServiceController(
         detectConstraintsUseCase
     )
 
-    private val keymapDetectionDelegate = KeyMapController2(
+    private val keymapDetectionDelegate = KeyMapController(
         coroutineScope,
         detectKeyMapsUseCase,
         performActionsUseCase,
