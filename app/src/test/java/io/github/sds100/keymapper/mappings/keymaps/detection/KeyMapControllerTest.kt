@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.mappings.keymaps.detection
 
 import android.view.KeyEvent
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import io.github.sds100.keymapper.TestLoggingTree
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
@@ -26,6 +27,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.*
+import timber.log.Timber
 
 /**
  * Created by sds100 on 20/05/2022.
@@ -60,6 +62,14 @@ class KeyMapControllerTest {
         data = ActionData.Flashlight.Toggle(CameraLens.BACK)
     )
 
+    private val TEST_ACTION_2: KeyMapAction = KeyMapAction(
+        data = ActionData.Flashlight.Enable(CameraLens.BACK)
+    )
+
+    private val TEST_ACTION_3: KeyMapAction = KeyMapAction(
+        data = ActionData.Flashlight.Disable(CameraLens.BACK)
+    )
+
     private val TEST_HOLD_DOWN_ACTION: KeyMapAction = KeyMapAction(
         data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_A),
         holdDown = true
@@ -88,8 +98,12 @@ class KeyMapControllerTest {
             on { defaultOptions } doReturn MutableStateFlow(defaultKeyMapOptions)
         }
 
+        whenever(detectKeyMapsUseCase.currentTime).thenAnswer { coroutineScope.currentTime }
+
         performActionsUseCase = mock()
         detectConstraintsUseCase = mock()
+
+        Timber.plant(TestLoggingTree())
 
         controller = KeyMapController(
             coroutineScope,
@@ -122,6 +136,48 @@ class KeyMapControllerTest {
     }
 
     @Test
+    fun longPress_releaseEarly_doNotPerformAction() = coroutineScope.runBlockingTest {
+        setKeyMaps(
+            KeyMap(
+                0,
+                trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_A, clickType = ClickType.LONG_PRESS)),
+                actionList = listOf(TEST_ACTION)
+            )
+        )
+
+        assertThat(inputDown(KeyEvent.KEYCODE_A), `is`(true))
+        advanceTimeBy(100) //release early
+
+        assertThat(inputUp(KeyEvent.KEYCODE_A), `is`(true))
+
+        advanceTimeBy(2000) //wait to see if the action is performed
+        verify(performActionsUseCase, never()).perform(TEST_ACTION.data)
+    }
+
+    @Test
+    fun longPress_repeatAction() = coroutineScope.runBlockingTest {
+        setKeyMaps(
+            KeyMap(
+                0,
+                trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_A, clickType = ClickType.LONG_PRESS)),
+                actionList = listOf(TEST_REPEAT_ACTION)
+            )
+        )
+
+        assertThat(inputDown(KeyEvent.KEYCODE_A), `is`(true))
+
+        advanceTimeBy(500)
+        verify(performActionsUseCase).perform(TEST_REPEAT_ACTION.data)
+
+        advanceTimeBy(2000)
+
+        verify(performActionsUseCase, atLeast(4)).perform(TEST_REPEAT_ACTION.data)
+
+        assertThat(inputUp(KeyEvent.KEYCODE_A), `is`(true))
+        verifyNoMoreInteractions(performActionsUseCase)
+    }
+
+    @Test
     fun shortPress() = coroutineScope.runBlockingTest {
         setKeyMaps(
             KeyMap(0, trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_A)), actionList = listOf(TEST_ACTION))
@@ -131,6 +187,32 @@ class KeyMapControllerTest {
         verify(performActionsUseCase).perform(TEST_ACTION.data)
 
         assertThat(inputUp(KeyEvent.KEYCODE_A), `is`(true))
+    }
+
+    @Test
+    fun multipleShortPressTriggers() = coroutineScope.runBlockingTest {
+        setKeyMaps(
+            KeyMap(0, trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_A)), actionList = listOf(TEST_ACTION)),
+            KeyMap(1, trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_B)), actionList = listOf(TEST_ACTION_2)),
+            KeyMap(2, trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_C)), actionList = listOf(TEST_ACTION_3)),
+        )
+
+        performActionsUseCase.inOrder {
+            assertThat(inputDown(KeyEvent.KEYCODE_A), `is`(true))
+            verify().perform(TEST_ACTION.data)
+
+            assertThat(inputUp(KeyEvent.KEYCODE_A), `is`(true))
+
+            assertThat(inputDown(KeyEvent.KEYCODE_B), `is`(true))
+            verify().perform(TEST_ACTION_2.data)
+
+            assertThat(inputUp(KeyEvent.KEYCODE_B), `is`(true))
+
+            assertThat(inputDown(KeyEvent.KEYCODE_C), `is`(true))
+            verify().perform(TEST_ACTION_3.data)
+
+            assertThat(inputUp(KeyEvent.KEYCODE_C), `is`(true))
+        }
     }
 
     @Test
@@ -160,18 +242,16 @@ class KeyMapControllerTest {
             )
         )
 
-        performActionsUseCase.inOrder {
-            assertThat(inputDown(KeyEvent.KEYCODE_A), `is`(true))
+        assertThat(inputDown(KeyEvent.KEYCODE_A), `is`(true))
 
-            verify(performActionsUseCase).perform(TEST_REPEAT_ACTION.data)
+        verify(performActionsUseCase).perform(TEST_REPEAT_ACTION.data)
 
-            advanceTimeBy(500)
+        advanceTimeBy(500)
 
-            verify(performActionsUseCase, atLeast(4)).perform(TEST_REPEAT_ACTION.data)
+        verify(performActionsUseCase, atLeast(4)).perform(TEST_REPEAT_ACTION.data)
 
-            assertThat(inputUp(KeyEvent.KEYCODE_A), `is`(true))
-            verifyNoMoreInteractions(performActionsUseCase)
-        }
+        assertThat(inputUp(KeyEvent.KEYCODE_A), `is`(true))
+        verifyNoMoreInteractions(performActionsUseCase)
     }
 
     /**

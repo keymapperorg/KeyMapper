@@ -5,6 +5,7 @@ import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
@@ -59,9 +60,9 @@ class KeyMapController(
         for ((eventTreeIndex, eventNode) in eventTreeLocations.withIndex()) {
             val keyEventMatchesEventNode = keyCode == eventNode.keyCode
                 && (eventNode.device == null || device == eventNode.device)
-                && ((keyEventAction == KeyEvent.ACTION_DOWN && eventNode.type == KeyEventAction.DOWN)
-                ||
-                (keyEventAction == KeyEvent.ACTION_UP && eventNode.type == KeyEventAction.UP)
+                && (
+                (keyEventAction == KeyEvent.ACTION_DOWN && eventNode.type == KeyEventAction.DOWN)
+                    || (keyEventAction == KeyEvent.ACTION_UP && eventNode.type == KeyEventAction.UP)
                 )
 
             if (!keyEventMatchesEventNode) {
@@ -73,7 +74,7 @@ class KeyMapController(
             for (jobNode in eventNode.jobs) {
                 jobNode.cancel()
 
-                val job = coroutineScope.launch {
+                val job = coroutineScope.launch(start = CoroutineStart.LAZY) {
                     doTaskNode(jobNode.task)
                 }
 
@@ -86,6 +87,16 @@ class KeyMapController(
                 eventTreeLocations[eventTreeIndex] = eventTreeStartNodes[eventTreeIndex]
             } else {
                 eventTreeLocations[eventTreeIndex] = eventNode.next!!
+            }
+
+            for (timeout in eventNode.timeouts) {
+                if (detectKeyMapsUseCase.currentTime - timeout.sinceEvent.eventTime < timeout.time) {
+                    timeout.jobsToCancel.forEach { it.cancel() }
+
+                    coroutineScope.launch {
+                        timeout.tasks.forEach { doTaskNode(it) }
+                    }
+                }
             }
 
             if (eventNode.consume) {

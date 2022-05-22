@@ -60,8 +60,36 @@ object EventTreeBuilder{
                                 delay = longPressDelay
                             )
                         )
+
                         val repeatActionsJobs = createRepeatActionsJobs(keyMap, additionalDelay = longPressDelay)
 
+                        val onDownNode = KeyEventNode(
+                            KeyEventAction.DOWN,
+                            triggerKey.keyCode,
+                            consume = true,
+                            jobs = listOf(initialActionsJob).plus(repeatActionsJobs)
+                        )
+
+                        val timeouts = listOf(
+                            Timeout(
+                                longPressDelay,
+                                onDownNode,
+                                tasks = listOf(ImitateKeyNode(triggerKey.keyCode)),
+                                jobsToCancel = listOf(initialActionsJob)
+                            )
+                        )
+
+                        val onUpNode = KeyEventNode(
+                            KeyEventAction.UP,
+                            triggerKey.keyCode,
+                            consume = true,
+                            jobsToCancel = repeatActionsJobs,
+                            timeouts = timeouts
+                        )
+
+                        onDownNode.next = onUpNode
+
+                        eventTrees.add(onDownNode)
                     }
 
                     ClickType.DOUBLE_PRESS -> {
