@@ -155,6 +155,26 @@ class KeyMapControllerTest {
     }
 
     @Test
+    fun longPress_releaseEarly_imitate() = coroutineScope.runBlockingTest {
+        setKeyMaps(
+            KeyMap(
+                0,
+                trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_A, clickType = ClickType.LONG_PRESS)),
+                actionList = listOf(TEST_ACTION)
+            )
+        )
+
+        assertThat(inputDown(KeyEvent.KEYCODE_A), `is`(true))
+        advanceTimeBy(100) //release early
+
+        assertThat(inputUp(KeyEvent.KEYCODE_A), `is`(true))
+
+        advanceUntilIdle()
+
+        verify(detectKeyMapsUseCase).imitateButtonPress(KeyEvent.KEYCODE_A)
+    }
+
+    @Test
     fun longPress_repeatAction() = coroutineScope.runBlockingTest {
         setKeyMaps(
             KeyMap(
@@ -284,13 +304,13 @@ class KeyMapControllerTest {
     private fun inputDown(
         keyCode: Int,
         device: InputDeviceInfo? = null,
-        metaState: Int? = null,
+        metaState: Int = 0,
         scanCode: Int = 0,
     ): Boolean {
         return controller.onKeyEvent(
             keyCode = keyCode,
             keyEventAction = KeyEvent.ACTION_DOWN,
-            metaState = metaState ?: 0,
+            metaState = metaState,
             scanCode = scanCode,
             device = device
         )
@@ -299,13 +319,13 @@ class KeyMapControllerTest {
     private fun inputUp(
         keyCode: Int,
         device: InputDeviceInfo? = null,
-        metaState: Int? = null,
+        metaState: Int = 0,
         scanCode: Int = 0,
     ): Boolean {
         return controller.onKeyEvent(
             keyCode = keyCode,
             keyEventAction = KeyEvent.ACTION_UP,
-            metaState = metaState ?: 0,
+            metaState = metaState,
             scanCode = scanCode,
             device = device
         )

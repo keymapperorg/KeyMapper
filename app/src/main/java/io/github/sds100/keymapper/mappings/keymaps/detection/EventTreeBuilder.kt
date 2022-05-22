@@ -74,7 +74,7 @@ object EventTreeBuilder{
                             Timeout(
                                 longPressDelay,
                                 onDownNode,
-                                tasks = listOf(ImitateKeyNode(triggerKey.keyCode)),
+                                tasks = listOf(ImitateKeyNode(triggerKey.keyCode, InputEventType.DOWN_UP)),
                                 jobsToCancel = listOf(initialActionsJob)
                             )
                         )

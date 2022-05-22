@@ -45,7 +45,12 @@ class ActionNode(
     }
 }
 
-class ImitateKeyNode(val keyCode: Int, next: TaskNode? = null, delay: Long = -1) : TaskNode(delay, next)
+class ImitateKeyNode(
+    val keyCode: Int,
+    val inputEventType: InputEventType,
+    next: TaskNode? = null,
+    delay: Long = -1
+) : TaskNode(delay, next)
 
 /**
  * @param device this node will only be triggered if a key event comes from a device matching this.

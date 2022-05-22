@@ -38,6 +38,12 @@ class KeyMapController(
      */
     private var eventTreeStartNodes: List<KeyEventNode> = emptyList()
 
+    /**
+     * Keeps track of the modifier keys that have been pressed down from key events
+     * and actions.
+     */
+    private var metaState = 0
+
     init {
         combine(detectKeyMapsUseCase.allKeyMapList, detectKeyMapsUseCase.defaultOptions) { keyMaps, options ->
             EventTreeBuilder.createEventTrees(keyMaps, options)
@@ -75,7 +81,7 @@ class KeyMapController(
                 jobNode.cancel()
 
                 val job = coroutineScope.launch(start = CoroutineStart.LAZY) {
-                    doTaskNode(jobNode.task)
+                    doTaskNode(jobNode.task, scanCode, device)
                 }
 
                 jobNode.startJob(job)
@@ -94,7 +100,7 @@ class KeyMapController(
                     timeout.jobsToCancel.forEach { it.cancel() }
 
                     coroutineScope.launch {
-                        timeout.tasks.forEach { doTaskNode(it) }
+                        timeout.tasks.forEach { doTaskNode(it, scanCode, device) }
                     }
                 }
             }
@@ -111,7 +117,7 @@ class KeyMapController(
         //todo
     }
 
-    private tailrec suspend fun doTaskNode(node: TaskNode) {
+    private tailrec suspend fun doTaskNode(node: TaskNode, scanCode: Int, device: InputDeviceInfo?) {
         if (node.delay != -1L) {
             delay(node.delay)
         }
@@ -126,10 +132,20 @@ class KeyMapController(
             is VibrateNode -> {
                 detectKeyMapsUseCase.vibrate(node.duration)
             }
+
+            is ImitateKeyNode -> {
+                detectKeyMapsUseCase.imitateButtonPress(
+                    node.keyCode,
+                    metaState,
+                    device?.id ?: 0,
+                    node.inputEventType,
+                    scanCode
+                )
+            }
         }
 
         if (node.next != null) {
-            doTaskNode(node.next!!)
+            doTaskNode(node.next!!, scanCode, device)
         }
     }
 }
