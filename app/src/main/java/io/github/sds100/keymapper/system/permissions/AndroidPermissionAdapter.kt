@@ -94,23 +94,7 @@ class AndroidPermissionAdapter(
 
         if (isGranted(Permission.SHIZUKU)) {
             result = try {
-                val userId = Process.myUserHandle()!!.getIdentifier()
-
-                // In Android 12 this method was moved from IPackageManager to IPermissionManager
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    iPermissionManager.grantRuntimePermission(
-                        Constants.PACKAGE_NAME,
-                        permissionName,
-                        userId
-                    )
-                } else {
-                    iPackageManager.grantRuntimePermission(
-                        Constants.PACKAGE_NAME,
-                        permissionName,
-                        userId
-                    )
-                }
-
+                grantPermissionWithShizuku(permissionName)
                 success()
             } catch (e: Exception) {
                 Error.Exception(e)
@@ -122,7 +106,7 @@ class AndroidPermissionAdapter(
                 block = true
             )
         } else {
-            throw IllegalStateException("Shizuku or root permission has not been granted")
+            result = Error.PermissionDenied(Permission.SHIZUKU)
         }
 
         result.onSuccess {
@@ -132,6 +116,25 @@ class AndroidPermissionAdapter(
         }
 
         return result
+    }
+
+    private fun grantPermissionWithShizuku(permissionName: String) {
+        val userId = Process.myUserHandle()!!.getIdentifier()
+
+        // In Android 12 this method was moved from IPackageManager to IPermissionManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            iPermissionManager.grantRuntimePermission(
+                Constants.PACKAGE_NAME,
+                permissionName,
+                userId
+            )
+        } else {
+            iPackageManager.grantRuntimePermission(
+                Constants.PACKAGE_NAME,
+                permissionName,
+                userId
+            )
+        }
     }
 
     override fun isGranted(permission: Permission): Boolean {
