@@ -32,12 +32,18 @@ class KeyMapController(
      */
     private var eventTreeLocations: MutableList<KeyEventNode> = mutableListOf()
 
+    /**
+     * Pointers to the first nodes in each event tree.
+     */
+    private var eventTreeStartNodes: List<KeyEventNode> = emptyList()
+
     init {
         combine(detectKeyMapsUseCase.allKeyMapList, detectKeyMapsUseCase.defaultOptions) { keyMaps, options ->
             EventTreeBuilder.createEventTrees(keyMaps, options)
         }.onEach {
             eventTrees = it
             eventTreeLocations = eventTrees.toMutableList() //set the pointer to the initial node
+            eventTreeStartNodes = eventTrees.toList() //set the pointer to the initial node
         }.launchIn(coroutineScope)
     }
 
@@ -48,14 +54,14 @@ class KeyMapController(
         scanCode: Int = 0,
         device: InputDeviceInfo?
     ): Boolean {
+        var consume = false
 
         for ((eventTreeIndex, eventNode) in eventTreeLocations.withIndex()) {
             val keyEventMatchesEventNode = keyCode == eventNode.keyCode
                 && (eventNode.device == null || device == eventNode.device)
-                && (
-                (keyEventAction == KeyEvent.ACTION_DOWN && eventNode.type == KeyEventAction.DOWN)
-                    ||
-                    (keyEventAction == KeyEvent.ACTION_UP && eventNode.type == KeyEventAction.UP)
+                && ((keyEventAction == KeyEvent.ACTION_DOWN && eventNode.type == KeyEventAction.DOWN)
+                ||
+                (keyEventAction == KeyEvent.ACTION_UP && eventNode.type == KeyEventAction.UP)
                 )
 
             if (!keyEventMatchesEventNode) {
@@ -64,43 +70,50 @@ class KeyMapController(
 
             eventNode.eventTime = detectKeyMapsUseCase.currentTime
 
-            for (taskNode in eventNode.tasks) {
-                taskNode.cancel()
+            for (jobNode in eventNode.jobs) {
+                jobNode.cancel()
 
                 val job = coroutineScope.launch {
-                    doTaskNode(taskNode)
+                    doTaskNode(jobNode.task)
                 }
 
-                taskNode.setJob(job)
+                jobNode.startJob(job)
             }
 
-            eventNode.tasksToCancel.forEach { it.cancel() }
+            eventNode.jobsToCancel.forEach { it.cancel() }
 
-            if (eventNode.next != null) {
+            if (eventNode.next == null) { //if at the last event in the trigger
+                eventTreeLocations[eventTreeIndex] = eventTreeStartNodes[eventTreeIndex]
+            } else {
                 eventTreeLocations[eventTreeIndex] = eventNode.next!!
+            }
+
+            if (eventNode.consume) {
+                consume = true
             }
         }
 
-        return true
+        return consume
     }
 
     fun reset() {
         //todo
     }
 
-    private suspend fun doTaskNode(node: TaskNode) {
+    private tailrec suspend fun doTaskNode(node: TaskNode) {
+        if (node.delay != -1L) {
+            delay(node.delay)
+        }
+
         when (node) {
             is ActionNode -> {
                 node.actions.forEach { action ->
                     performActionsUseCase.perform(action)
                 }
             }
-            is DelayNode -> {
-                delay(node.delay)
 
-                if (node.next != null) {
-                    doTaskNode(node.next!!)
-                }
+            is VibrateNode -> {
+                detectKeyMapsUseCase.vibrate(node.duration)
             }
         }
 

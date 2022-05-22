@@ -9,31 +9,36 @@ import kotlinx.coroutines.Job
  * Created by sds100 on 21/05/2022.
  */
 
-sealed interface Node
-
-sealed class TaskNode(var next: TaskNode?) : Node {
+class JobNode(val task: TaskNode) {
+    private val jobLock: Any = Any()
     private var job: Job? = null
 
     fun cancel() {
-        job?.cancel()
-        job = null
+        synchronized(jobLock) {
+            job?.cancel()
+            job = null
+        }
     }
 
-    fun setJob(job: Job) {
-        cancel()
-        this.job = job
+    fun startJob(job: Job) {
+        synchronized(jobLock) {
+            cancel()
+            this.job = job
+            job.start()
+        }
     }
 }
 
-class VibrateNode(val duration: Long, next: TaskNode? = null) : TaskNode(next)
+sealed class TaskNode(val delay: Long, var next: TaskNode? = null)
 
+class VibrateNode(val duration: Long, next: TaskNode? = null, delay: Long = -1) : TaskNode(delay)
+    
 class ActionNode(
     val actions: List<ActionData>,
     val inputEventType: InputEventType,
-    next: TaskNode? = null
-) : TaskNode(next)
-
-class DelayNode(val delay: Long, next: TaskNode? = null) : TaskNode(next)
+    next: JobNode? = null,
+    delay: Long = -1,
+) : TaskNode(delay)
 
 /**
  * @param device this node will only be triggered if a key event comes from a device matching this.
@@ -42,13 +47,14 @@ class DelayNode(val delay: Long, next: TaskNode? = null) : TaskNode(next)
 class KeyEventNode(
     val type: KeyEventAction,
     val keyCode: Int,
+    val consume: Boolean,
     val device: InputDeviceInfo? = null,
-    val tasks: List<TaskNode> = emptyList(),
-    val tasksToCancel: List<TaskNode> = emptyList(),
+    val jobs: List<JobNode> = emptyList(),
+    val jobsToCancel: List<JobNode> = emptyList(),
     val timeout: Timeout? = null,
     var next: KeyEventNode? = null
-) : Node {
+) {
     var eventTime: Long = -1
 }
 
-class Timeout(val time: Long, val sinceNode: KeyEventNode, val tasks: List<TaskNode>)
+class Timeout(val time: Long, val sinceNode: KeyEventNode, val tasks: List<JobNode>)

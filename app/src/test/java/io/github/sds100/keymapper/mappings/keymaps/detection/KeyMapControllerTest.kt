@@ -15,22 +15,34 @@ import io.github.sds100.keymapper.util.singleKeyTrigger
 import io.github.sds100.keymapper.util.triggerKey
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.DelayController
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
+import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers.`is`
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
+import org.mockito.kotlin.*
 
 /**
  * Created by sds100 on 20/05/2022.
  */
 @ExperimentalCoroutinesApi
 class KeyMapControllerTest {
+
+    companion object {
+        private const val LONG_PRESS_DELAY = 500L
+        private const val DOUBLE_PRESS_DELAY = 300L
+        private const val FORCE_VIBRATE = false
+        private const val REPEAT_RATE = 50L
+        private const val REPEAT_DELAY = 400L
+        private const val SEQUENCE_TRIGGER_TIMEOUT = 2000L
+        private const val VIBRATION_DURATION = 100L
+        private const val HOLD_DOWN_DURATION = 1000L
+    }
 
     private lateinit var controller: KeyMapController
     private lateinit var detectKeyMapsUseCase: DetectKeyMapsUseCase
@@ -63,11 +75,19 @@ class KeyMapControllerTest {
     @Before
     fun setUp() {
         keyMapListFlow = MutableStateFlow(emptyList())
+        val defaultKeyMapOptions = DefaultKeyMapOptions(
+            LONG_PRESS_DELAY,
+            DOUBLE_PRESS_DELAY,
+            SEQUENCE_TRIGGER_TIMEOUT,
+            VIBRATION_DURATION,
+            FORCE_VIBRATE
+        )
 
         detectKeyMapsUseCase = mock {
             on { allKeyMapList }.doReturn(keyMapListFlow)
+            on { defaultOptions } doReturn MutableStateFlow(defaultKeyMapOptions)
         }
-        
+
         performActionsUseCase = mock()
         detectConstraintsUseCase = mock()
 
@@ -94,11 +114,11 @@ class KeyMapControllerTest {
             )
         )
 
-        inputDown(KeyEvent.KEYCODE_A)
+        assertThat(inputDown(KeyEvent.KEYCODE_A), `is`(true))
         advanceTimeBy(500)
         verify(performActionsUseCase).perform(TEST_ACTION.data, InputEventType.DOWN_UP, 0)
 
-        inputUp(KeyEvent.KEYCODE_A)
+        assertThat(inputUp(KeyEvent.KEYCODE_A), `is`(true))
     }
 
     @Test
@@ -107,10 +127,10 @@ class KeyMapControllerTest {
             KeyMap(0, trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_A)), actionList = listOf(TEST_ACTION))
         )
 
-        inputDown(KeyEvent.KEYCODE_A)
-        verify(performActionsUseCase).perform(TEST_ACTION.data, InputEventType.DOWN_UP, 0)
+        assertThat(inputDown(KeyEvent.KEYCODE_A), `is`(true))
+        verify(performActionsUseCase).perform(TEST_ACTION.data)
 
-        inputUp(KeyEvent.KEYCODE_A)
+        assertThat(inputUp(KeyEvent.KEYCODE_A), `is`(true))
     }
 
     @Test
@@ -123,15 +143,62 @@ class KeyMapControllerTest {
             )
         )
 
-        inputDown(KeyEvent.KEYCODE_A)
+        assertThat(inputDown(KeyEvent.KEYCODE_A), `is`(true))
         verify(performActionsUseCase).perform(TEST_HOLD_DOWN_ACTION.data, InputEventType.DOWN, 0)
 
-        inputUp(KeyEvent.KEYCODE_A)
+        assertThat(inputUp(KeyEvent.KEYCODE_A), `is`(true))
         verify(performActionsUseCase).perform(TEST_HOLD_DOWN_ACTION.data, InputEventType.UP, 0)
     }
 
-    private fun setKeyMaps(vararg keyMap: KeyMap) {
+    @Test
+    fun shortPress_repeatAction() = coroutineScope.runBlockingTest {
+        setKeyMaps(
+            KeyMap(
+                0,
+                trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_A)),
+                actionList = listOf(TEST_REPEAT_ACTION)
+            )
+        )
+
+        performActionsUseCase.inOrder {
+            assertThat(inputDown(KeyEvent.KEYCODE_A), `is`(true))
+
+            verify(performActionsUseCase).perform(TEST_REPEAT_ACTION.data)
+
+            advanceTimeBy(500)
+
+            verify(performActionsUseCase, atLeast(4)).perform(TEST_REPEAT_ACTION.data)
+
+            assertThat(inputUp(KeyEvent.KEYCODE_A), `is`(true))
+            verifyNoMoreInteractions(performActionsUseCase)
+        }
+    }
+
+    /**
+     * You should be able to trigger a key map again after using it.
+     */
+    @Test
+    fun triggerMultipleTimes() = coroutineScope.runBlockingTest {
+        setKeyMaps(
+            KeyMap(0, trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_A)), actionList = listOf(TEST_ACTION))
+        )
+
+        performActionsUseCase.inOrder {
+            assertThat(inputDown(KeyEvent.KEYCODE_A), `is`(true))
+            verify(performActionsUseCase).perform(TEST_ACTION.data)
+
+            assertThat(inputUp(KeyEvent.KEYCODE_A), `is`(true))
+
+            assertThat(inputDown(KeyEvent.KEYCODE_A), `is`(true))
+            verify(performActionsUseCase).perform(TEST_ACTION.data)
+
+            assertThat(inputUp(KeyEvent.KEYCODE_A), `is`(true))
+        }
+    }
+
+    private fun DelayController.setKeyMaps(vararg keyMap: KeyMap) {
         keyMapListFlow.value = keyMap.toList()
+        advanceUntilIdle()
     }
 
     private fun inputDown(

@@ -21,27 +21,30 @@ object EventTreeBuilder{
 
             val trigger = keyMap.trigger
 
+            val longPressDelay = trigger.longPressDelay?.toLong() ?: options.longPressDelay
+
             if (trigger.keys.size == 1) {
                 val triggerKey = trigger.keys[0]
 
                 when (triggerKey.clickType) {
                     ClickType.SHORT_PRESS -> {
-                        val onDownTasks = createTasksOnTriggered(keyMap)
+                        val initialActionsJob = JobNode(
+                            ActionNode(keyMap.actionList.map { it.data }, InputEventType.DOWN_UP)
+                        )
+                        val repeatActionsJobs = createRepeatActionsJobs(keyMap)
 
                         val onDownNode = KeyEventNode(
                             KeyEventAction.DOWN,
                             triggerKey.keyCode,
-                            tasks = onDownTasks,
-                            next = KeyEventNode(
-                                KeyEventAction.UP,
-                                triggerKey.keyCode
-                            )
+                            consume = true,
+                            jobs = listOf(initialActionsJob).plus(repeatActionsJobs)
                         )
 
                         val onUpNode = KeyEventNode(
                             KeyEventAction.UP,
                             triggerKey.keyCode,
-                            tasksToCancel = listOf() //todo
+                            consume = true,
+                            jobsToCancel = repeatActionsJobs
                         )
 
                         onDownNode.next = onUpNode
@@ -50,18 +53,14 @@ object EventTreeBuilder{
                     }
 
                     ClickType.LONG_PRESS -> {
-                        val onTriggeredTasks = createTasksOnTriggered(keyMap)
-
-                        val longPressDelayNode = DelayNode(
-                            500,
-
+                        val initialActionsJob = JobNode(
+                            ActionNode(
+                                keyMap.actionList.map { it.data },
+                                InputEventType.DOWN_UP,
+                                delay = longPressDelay
                             )
-
-                        val onDownNode = KeyEventNode(
-                            KeyEventAction.DOWN,
-                            triggerKey.keyCode,
-
-                            )
+                        )
+                        val repeatActionsJobs = createRepeatActionsJobs(keyMap, additionalDelay = longPressDelay)
 
                     }
 
@@ -75,31 +74,28 @@ object EventTreeBuilder{
         return eventTrees
     }
 
-    fun createTasksOnTriggered(keyMap: KeyMap): List<TaskNode> {
-        val tasks = mutableListOf<TaskNode>()
-
-        tasks.add(ActionNode(keyMap.actionList.map { it.data }, InputEventType.DOWN_UP))
+    /**
+     * @param additionalDelay Any additional delay on top of the configured repeat delay in the action.
+     * E.g long press triggers need to add an extra long press delay.
+     */
+    fun createRepeatActionsJobs(keyMap: KeyMap, additionalDelay: Long = 0): List<JobNode> {
+        val jobs = mutableListOf<JobNode>()
 
         for (action in keyMap.actionList) {
             //TODO if multiple repeat actions
             if (action.repeat) {
-                val actionNode = ActionNode(
-                    keyMap.actionList.map { it.data },
-                    inputEventType = InputEventType.DOWN_UP
-                )
+                val firstRepeatAction =
+                    ActionNode(listOf(action.data), InputEventType.DOWN_UP, delay = additionalDelay + 300)
+                val repeatedAction =
+                    ActionNode(listOf(action.data), InputEventType.DOWN_UP, delay = 50)
 
-                // link the delayed node back to the action node so it repeats.
-                actionNode.next = DelayNode(50, actionNode)
+                repeatedAction.next = repeatedAction
+                firstRepeatAction.next = repeatedAction
 
-                val delayRepeatNode = DelayNode(
-                    300,
-                    actionNode
-                )
-
-                tasks.add(delayRepeatNode)
+                jobs.add(JobNode(firstRepeatAction))
             }
         }
 
-        return tasks
+        return jobs
     }
 }
