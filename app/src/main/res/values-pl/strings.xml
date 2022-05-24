@@ -257,6 +257,8 @@
     <string name="constraint_in_phone_call">W rozmowie telefonicznej</string>
     <string name="constraint_not_in_phone_call">Nie w rozmowie telefonicznej</string>
     <string name="constraint_phone_ringing">Dzwoni telefon</string>
+    <string name="constraint_charging">Ładowanie</string>
+    <string name="constraint_discharging">Rozładowanie</string>
     <string name="orientation_0">Pionowo (0°)</string>
     <string name="orientation_90">Poziomo (90°)</string>
     <string name="orientation_180">Pionowo (180°)</string>
