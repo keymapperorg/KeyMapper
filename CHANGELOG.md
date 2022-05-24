@@ -1,3 +1,18 @@
+## [2.4.1](https://github.com/sds100/KeyMapper/releases/tag/v2.4.1)
+
+#### 24 May 2022
+
+### Added
+
+- [#989](https://github.com/keymapperorg/KeyMapper/issues/989) Constraint for charging/discharging.
+
+### Bug fixes
+
+- Crash if trying to grant permission with Shizuku but Key Mapper doesn't have Shizuku permission.
+- [#1009](https://github.com/keymapperorg/KeyMapper/issues/1009) Crash when trying to edit actions.
+- [#1001](https://github.com/keymapperorg/KeyMapper/issues/1001) Crash when granting permission with Shizuku on Android
+  12+.
+
 ## [2.4.0](https://github.com/sds100/KeyMapper/releases/tag/v2.4.0)
 
 #### 08 May 2022
@@ -1079,7 +1094,7 @@ Changes from 1.1.0 Beta 8:
 - Optional flags for each keymap so it can only be triggered on a long press and whether to show the volume dialog for volume related actions.
 - Ability to enable/disable specific/all keymaps.
 
-  ####      Added these actions
+  #### Added these actions
   - Open App
   - Open App shortcut
   - A keycode

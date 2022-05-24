@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.system.permissions
 
 import android.Manifest
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.popup.PopupMessageAdapter
 import io.github.sds100.keymapper.util.onSuccess
 import io.github.sds100.keymapper.util.ui.ResourceProvider
@@ -16,7 +15,6 @@ import kotlinx.coroutines.flow.launchIn
 class AutoGrantPermissionController(
     private val coroutineScope: CoroutineScope,
     private val permissionAdapter: PermissionAdapter,
-    private val packageManager: PackageManagerAdapter,
     private val popupAdapter: PopupMessageAdapter,
     private val resourceProvider: ResourceProvider) {
 
@@ -28,7 +26,7 @@ class AutoGrantPermissionController(
             permissionAdapter.isGrantedFlow(Permission.WRITE_SECURE_SETTINGS)) { isRootGranted, isShizukuGranted, isWriteSecureSettingsGranted ->
 
             if (!isWriteSecureSettingsGranted && (isRootGranted || isShizukuGranted)) {
-                packageManager.grantPermission(Manifest.permission.WRITE_SECURE_SETTINGS).onSuccess {
+                permissionAdapter.grant(Manifest.permission.WRITE_SECURE_SETTINGS).onSuccess {
                     val stringRes = if (isRootGranted) {
                         R.string.toast_granted_itself_write_secure_settings_with_root
                     } else {

@@ -5,9 +5,12 @@ import android.app.NotificationManager
 import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Context
+import android.content.pm.IPackageManager
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Build
 import android.os.PowerManager
+import android.os.Process
+import android.permission.IPermissionManager
 import android.provider.Settings
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -17,10 +20,14 @@ import io.github.sds100.keymapper.shizuku.ShizukuUtils
 import io.github.sds100.keymapper.system.DeviceAdmin
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
+import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import org.lsposed.hiddenapibypass.HiddenApiBypass
 import rikka.shizuku.Shizuku
+import rikka.shizuku.ShizukuBinderWrapper
+import rikka.shizuku.SystemServiceHelper
 import timber.log.Timber
 
 /**
@@ -33,7 +40,22 @@ class AndroidPermissionAdapter(
     private val notificationReceiverAdapter: ServiceAdapter,
 ) : PermissionAdapter {
     companion object {
-        const val REQUEST_SHIZUKU_PERMISSION = 1
+        const val REQUEST_CODE_SHIZUKU_PERMISSION = 1
+    }
+
+    private val iPackageManager: IPackageManager by lazy {
+        val binder = ShizukuBinderWrapper(SystemServiceHelper.getSystemService("package"))
+        IPackageManager.Stub.asInterface(binder)
+    }
+
+    private val iPermissionManager: IPermissionManager by lazy {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            HiddenApiBypass.addHiddenApiExemptions(
+                "Landroid/permission"
+            )
+        }
+        val binder = ShizukuBinderWrapper(SystemServiceHelper.getSystemService("permissionmgr"))
+        IPermissionManager.Stub.asInterface(binder)
     }
 
     private val ctx = context.applicationContext
@@ -51,8 +73,8 @@ class AndroidPermissionAdapter(
 
         Shizuku.addRequestPermissionResultListener { requestCode, grantResult ->
             coroutineScope.launch {
-                if (requestCode == REQUEST_SHIZUKU_PERMISSION) {
-                    onPermissionsUpdate.emit(Unit)
+                if (requestCode == REQUEST_CODE_SHIZUKU_PERMISSION) {
+                    onPermissionsChanged()
                 }
             }
         }
@@ -67,8 +89,55 @@ class AndroidPermissionAdapter(
         coroutineScope.launch { _request.emit(permission) }
     }
 
-    override fun isGranted(permission: Permission): Boolean {
+    override fun grant(permissionName: String): Result<*> {
+        val result: Result<*>
 
+        if (isGranted(Permission.SHIZUKU)) {
+            result = try {
+                grantPermissionWithShizuku(permissionName)
+                success()
+            } catch (e: Exception) {
+                Error.Exception(e)
+            }
+
+        } else if (isGranted(Permission.ROOT)) {
+            result = suAdapter.execute(
+                "pm grant ${Constants.PACKAGE_NAME} $permissionName",
+                block = true
+            )
+        } else {
+            result = Error.PermissionDenied(Permission.SHIZUKU)
+        }
+
+        result.onSuccess {
+            onPermissionsChanged()
+        }.onFailure {
+            Timber.e("Error granting permission: $it")
+        }
+
+        return result
+    }
+
+    private fun grantPermissionWithShizuku(permissionName: String) {
+        val userId = Process.myUserHandle()!!.getIdentifier()
+
+        // In Android 12 this method was moved from IPackageManager to IPermissionManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            iPermissionManager.grantRuntimePermission(
+                Constants.PACKAGE_NAME,
+                permissionName,
+                userId
+            )
+        } else {
+            iPackageManager.grantRuntimePermission(
+                Constants.PACKAGE_NAME,
+                permissionName,
+                userId
+            )
+        }
+    }
+
+    override fun isGranted(permission: Permission): Boolean {
         return when (permission) {
             Permission.WRITE_SETTINGS ->
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
