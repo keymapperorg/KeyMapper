@@ -1,0 +1,12 @@
+🎉 A new website with tutorials!!! 🎉
+Check it out at docs.keymapper.club.
+
+• Android 12 and Material You support 🎨! The app has a completely different style. Please give feedback 🙂.
+• Shizuku support for some features! If you use Shizuku you no longer need to use the Key Mapper keyboard!
+• You can now edit actions.
+• A bunch of new actions.
+• Many new constraints.
+
+A lot of bug fixes and performance improvements.
+
+See the changelog at http://changelog.keymapper.club for more details.
