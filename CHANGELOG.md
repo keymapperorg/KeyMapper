@@ -1,3 +1,12 @@
+## [2.4.2](https://github.com/sds100/KeyMapper/releases/tag/v2.4.2)
+
+#### 27 May 2022
+
+### Bug fixes
+
+- [#1017](https://github.com/keymapperorg/KeyMapper/issues/1017) The app would go in an infinite loop saying "Using root
+  to grant WRITE_SECURE_SETTINGS permission" on screen and then eventually crashing.
+
 ## [2.4.1](https://github.com/sds100/KeyMapper/releases/tag/v2.4.1)
 
 #### 24 May 2022
