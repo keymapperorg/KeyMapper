@@ -92,19 +92,35 @@ class AndroidPermissionAdapter(
     override fun grant(permissionName: String): Result<*> {
         val result: Result<*>
 
+        if (ContextCompat.checkSelfPermission(ctx, permissionName) == PERMISSION_GRANTED) { //if already granted
+            return success()
+        }
+
         if (isGranted(Permission.SHIZUKU)) {
             result = try {
                 grantPermissionWithShizuku(permissionName)
-                success()
+
+                //if successfully granted
+                if (ContextCompat.checkSelfPermission(ctx, permissionName) == PERMISSION_GRANTED) {
+                    success()
+                } else {
+                    Error.Exception(Exception("Failed to grant permission with Shizuku."))
+                }
             } catch (e: Exception) {
                 Error.Exception(e)
             }
 
         } else if (isGranted(Permission.ROOT)) {
-            result = suAdapter.execute(
+            suAdapter.execute(
                 "pm grant ${Constants.PACKAGE_NAME} $permissionName",
                 block = true
             )
+            if (ContextCompat.checkSelfPermission(ctx, permissionName) == PERMISSION_GRANTED) {
+                result = success()
+            } else {
+                result =
+                    Error.Exception(Exception("Failed to grant permission with root. Key Mapper may not actually have root permission."))
+            }
         } else {
             result = Error.PermissionDenied(Permission.SHIZUKU)
         }
