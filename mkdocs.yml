@@ -7,6 +7,9 @@ use_directory_urls: true
 nav:
   - Home: index.md
   - Quick Start Guide: quick-start.md
+  - Sharing Keymaps:
+      - rules.md
+      - sharing.md
   - FAQ: faq.md
   - User Guide:
       - Key Maps: user-guide/keymaps.md
