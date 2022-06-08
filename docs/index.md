@@ -7,11 +7,11 @@
 ![GitHub release](https://img.shields.io/github/release/keymapperorg/KeyMapper.svg)
 ![fdroid release](https://img.shields.io/f-droid/v/io.github.sds100.keymapper.svg)
 
-
 This wiki aims to provide users with a comprehensive guide to using and setting up Key Mapper for typical implementations. For specific help with more complicated key maps or if this wiki does not answer your questions, you can join the [Key Mapper Discord support server](http://keymapper.club) and ask for help.
 
 [Get help :fontawesome-brands-discord:](http://keymapper.club){: .md-button .md-button--primary }
 [Support the project :fontawesome-solid-heart:](https://ko-fi.com/sethschroeder){: .md-button }
+[Share your key maps :material-hand-heart:](sharing.md){: .md-button .md-button--md-primary-bg-color }
 
 ## Our team 🧑‍💻
 

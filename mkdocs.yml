@@ -8,6 +8,7 @@ nav:
   - Home: index.md
   - Quick Start Guide: quick-start.md
   - FAQ: faq.md
+  - Share Your Key Maps Here! 👐: sharing.md
   - User Guide:
       - Key Maps: user-guide/keymaps.md
       - Fingerprint Gesture Maps (2.2.0+, Android 8.0+): user-guide/fingerprint-gestures.md
@@ -33,7 +34,7 @@ theme:
   custom_dir: docs/overrides
   features:
     - navigation.instant
-
+  
 extra_css:
   - stylesheets/extra.css
 
