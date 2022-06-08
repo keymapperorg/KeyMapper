@@ -2,7 +2,7 @@
 name: Bug report
 about: Create a report to help us improve
 title: ''
-labels: bug
+labels: bug, enhancement
 assignees: sds100
 
 ---
@@ -11,8 +11,7 @@ assignees: sds100
 - [ ] create new branch. put issue number at start of name if not a very quick fix.
 - [ ] write tests. put issue number in comment
 - [ ] update documentation
-- [ ] squash and merge
-- [ ] delete branch
+- [ ] merge and delete branch (don't squash because want commit history to see why I made changes)
 
 **Discord message link/email recipient**
 
