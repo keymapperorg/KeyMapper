@@ -41,3 +41,8 @@ Post your key maps in a new comment at the bottom of this page. React to other's
 
 The main intent behind Key Mapper Discussions is to provide users an easy way to share their key maps without them
 getting lost in the Discord chat, or any other subtle inconvenience.
+
+!!! tip
+
+    Please write in your comment what your key map does. E.g if your key map opens the home screen when you press
+    your volume buttons please put "open home screen with the volume down button".
