@@ -37,7 +37,7 @@ Giscus. After being logged in, you are free to use the Discussions.
 
 ## 2. Share your key maps
 
-Post your key maps in a new comment at the bottom of this page. React to other's key maps with
+Post your key maps in a new comment at the bottom of this page. React to other's key maps with the upvote button.
 
 The main intent behind Key Mapper Discussions is to provide users an easy way to share their key maps without them
 getting lost in the Discord chat, or any other subtle inconvenience.
