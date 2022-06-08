@@ -1,9 +1,10 @@
 # Discussions Rules
 
 ## Foreword
-Before posting on Github Discussions, please make sure you adhere to these guidelines.<br><br>
+Before posting on GitHub Discussions, please make sure you adhere to these guidelines.<br><br>
 
-Don't forget that by using the comment system on this website that you are still using another service, and should adhere to it's [guidelines](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service) as well.
+Don't forget that by using the comment system on this website that you are still using another service, and should
+adhere to it's [guidelines](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service) as well.
 
 ## General Rules
 
