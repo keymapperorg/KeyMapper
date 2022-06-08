@@ -67,9 +67,6 @@ jobs:
         with:
           ruby-version: '2.7'
 
-      - name: Make .android folder
-        run: mkdir /home/runner/.android
-
       - name: Create debug keystore
         run: |
           echo "${{ secrets.CI_KEYSTORE }}" > debug.keystore.asc
