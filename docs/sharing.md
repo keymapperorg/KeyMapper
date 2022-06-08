@@ -1,8 +1,12 @@
+---
+template: sharing.html
+---
+
 # Share Your Key Maps
 
 ???+ info "Rules"
-    Before posting on GitHub Discussions, please make sure you adhere to these guidelines.
-    
+Before posting on GitHub Discussions, please make sure you adhere to these guidelines.
+
     Don't forget that by using the comment system on this website that you are still using another service, and should
     adhere to it's [guidelines](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service) as well.
     
@@ -22,7 +26,7 @@
     ### Rule #4
     This is an English-only discussion group. We remove messages in other languages simply because we don't have the time to translate or moderate messages in other languages.
 
-## Signing into Giscus
+## 1. Sign into Giscus
 
 Giscus is a free and open source GitHub Discussions interpreter for integrating GitHub Discussions into a
 website.<br><br>
@@ -31,20 +35,9 @@ Scroll to the bottom of the current page, and click the button that says "Sign i
 to GitHub or create an account from the newly opened GitHub window. You will be asked to sign into GitHub so you can use
 Giscus. After being logged in, you are free to use the Discussions.
 
-## How to share key maps
+## 2. Share your key maps
+
+Post your key maps in a new comment at the bottom of this page. React to other's key maps with
 
 The main intent behind Key Mapper Discussions is to provide users an easy way to share their key maps without them
 getting lost in the Discord chat, or any other subtle inconvenience.
-
-### Key map sharing threads
-
-Please note that some off-topic discussions aside from help threads may not get responses from Key Mapper
-volunteers.<br>
-
-### Help threads
-
-Once again, note that some off-topic discussions aside from help threads may not get responses from Key Mapper
-volunteers.<br>
-The help threads are for users who are having a hard time understanding how something works, or they Just because you
-mention someone (using the prefix ```@``` before a user's name) does not mean they will respond. Some may never respond
-to you if you mention them too many times.
