@@ -28,13 +28,27 @@ nav:
 theme:
   name: material
   palette:
-    accent: red
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: red
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: light-blue
+      accent: red
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+
   favicon: images/favicon.ico
   logo: images/logo.png
   custom_dir: docs/overrides
   features:
     - navigation.instant
-  
+
 extra_css:
   - stylesheets/extra.css
 
