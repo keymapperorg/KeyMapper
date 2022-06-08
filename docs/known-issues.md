@@ -15,12 +15,18 @@ For most devices you must...
 6. Reboot your device into normal mode by pressing power off or restart in the power menu. You do **
    not** need to hold down on the "power off"/"restart" button to boot into safe mode.
 
+## Key Mapper can't tap multiple places at the same time
+
+If you are wanting to use Key Mapper to make buttons tap points on your screen then you need to use the "tap screen"
+action. Due to a restriction in what background apps are allowed to do in Android, it is not possible for Key Mapper to
+tap multiple places on screen at the same time.
+
 ## Key Mapper can't open the accessibility settings on some devices.
 
-This is probably happening because your TV doesn't have any accessibility settings. The only way to
-fix it is to use ADB (Android Debug Bridge) on a PC/Mac. Please follow
-this [guide](user-guide/adb-permissions.md#enabling-the-accessibility-service) to grant enable the
-accessibility service.
+This is probably happening because your TV doesn't have any accessibility settings. The only way to fix it is to use
+ADB (Android Debug Bridge) on a PC/Mac. Please follow
+this [guide](user-guide/adb-permissions.md#enabling-the-accessibility-service) to grant enable the accessibility
+service.
 
 ## External keyboard language is set to English US when using Key Mapper (Android 11 only)
 
