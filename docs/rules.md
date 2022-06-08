@@ -10,9 +10,10 @@ Don't forget that by using the comment system on this website that you are still
 ### Rule #1
 Be polite and respectful. People who work on this app are volunteering their time.
 
-
 ### Rule #2
-You should read the faq before asking questions, requesting features, reporting bugs, or creating GitHub issues. Bear in mind that this may update frequently. Messages repeating what is in the faq wastes everyone's time, so please don't do it.
+You should read the [FAQ](faq.md) and [known issues](known-issues.md) before asking questions, requesting features,
+reporting bugs, or creating GitHub issues. Bear in mind that this may update frequently. Messages repeating what is in
+the FAQ wastes everyone's time, so please don't do it.
 
 ### Rule #3
 No overly political discussion or NSFW discussion or imagery is permitted in any of our discussions. If discovered by a moderator you may be permanently banned.

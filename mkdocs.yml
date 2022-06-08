@@ -7,9 +7,6 @@ use_directory_urls: true
 nav:
   - Home: index.md
   - Quick Start Guide: quick-start.md
-  - Sharing Keymaps:
-      - rules.md
-      - sharing.md
   - FAQ: faq.md
   - User Guide:
       - Key Maps: user-guide/keymaps.md
@@ -23,6 +20,9 @@ nav:
       - Controlling your mappings: user-guide/controlling-mappings.md
       - Shizuku support (2.4.0+, Android 6.0+): user-guide/shizuku.md
       - API: user-guide/api.md
+  - Sharing Key Maps:
+      - rules.md
+      - sharing.md
   - Contributing: contributing.md
   - Report Issues: report-issues.md
   - Known Issues: known-issues.md
