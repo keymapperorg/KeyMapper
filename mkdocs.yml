@@ -8,6 +8,7 @@ nav:
   - Home: index.md
   - Quick Start Guide: quick-start.md
   - FAQ: faq.md
+  - Share Your Key Maps Here! 👐: sharing.md
   - User Guide:
       - Key Maps: user-guide/keymaps.md
       - Fingerprint Gesture Maps (2.2.0+, Android 8.0+): user-guide/fingerprint-gestures.md
@@ -20,9 +21,6 @@ nav:
       - Controlling your mappings: user-guide/controlling-mappings.md
       - Shizuku support (2.4.0+, Android 6.0+): user-guide/shizuku.md
       - API: user-guide/api.md
-  - Sharing Key Maps:
-      - rules.md
-      - sharing.md
   - Contributing: contributing.md
   - Report Issues: report-issues.md
   - Known Issues: known-issues.md
@@ -36,7 +34,7 @@ theme:
   custom_dir: docs/overrides
   features:
     - navigation.instant
-
+  
 extra_css:
   - stylesheets/extra.css
 
