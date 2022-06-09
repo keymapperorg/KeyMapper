@@ -133,7 +133,7 @@ android.applicationVariants.all { variant ->
 
 dependencies {
     def room_version = "2.4.2"
-    def coroutinesVersion = "1.5.2"
+    def coroutinesVersion = "1.6.2"
     def nav_version = '2.4.2'
     def work_version = "2.7.1"
     def epoxy_version = "4.6.2"
@@ -149,13 +149,13 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3"
 
     // random stuff
-    implementation 'com.google.android.material:material:1.6.0'
+    implementation 'com.google.android.material:material:1.6.1'
     implementation 'com.github.salomonbrys.kotson:kotson:2.5.0'
     implementation "com.airbnb.android:epoxy:$epoxy_version"
     implementation 'com.github.AppIntro:AppIntro:6.1.0'
     implementation "com.airbnb.android:epoxy-databinding:$epoxy_version"
     kapt "com.airbnb.android:epoxy-processor:$epoxy_version"
-    implementation 'com.jakewharton.timber:timber:4.7.1'
+    implementation 'com.jakewharton.timber:timber:5.0.1'
     implementation 'uk.co.samuelwall:material-tap-target-prompt:3.1.0'
     implementation 'net.lingala.zip4j:zip4j:2.8.0'
     implementation "com.anggrayudi:storage:0.8.1"
@@ -175,7 +175,7 @@ dependencies {
 
     // androidx
     implementation 'androidx.legacy:legacy-support-core-ui:1.0.0'
-    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.core:core-ktx:1.8.0'
 
     implementation 'androidx.fragment:fragment-ktx:1.4.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1'
@@ -187,10 +187,10 @@ dependencies {
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
     implementation "androidx.multidex:multidex:$multidex_version"
     implementation "androidx.browser:browser:1.4.0"
-    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'androidx.preference:preference-ktx:1.2.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
     implementation "androidx.room:room-runtime:$room_version"
     implementation "androidx.viewpager2:viewpager2:1.0.0"
@@ -210,13 +210,13 @@ dependencies {
     testImplementation "org.hamcrest:hamcrest-all:1.3"
     testImplementation "androidx.test.ext:junit-ktx:$androidXTestExtKotlinRunnerVersion"
     testImplementation "androidx.test:core-ktx:1.4.0"
-    testImplementation "org.robolectric:robolectric:4.3.1"
+    testImplementation "org.robolectric:robolectric:4.5.1"
     testImplementation "androidx.arch.core:core-testing:2.1.0"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
     testImplementation "pl.pragmatists:JUnitParams:1.1.1"
-    testImplementation "org.mockito.kotlin:mockito-kotlin:3.1.0"
-    testImplementation "org.mockito:mockito-core:4.4.0"
-    testImplementation "org.mockito:mockito-inline:3.8.0"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:4.0.0"
+    testImplementation "org.mockito:mockito-core:4.6.1"
+    testImplementation "org.mockito:mockito-inline:4.6.1"
     
     androidTestImplementation "androidx.test.ext:junit:$androidXTestExtKotlinRunnerVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
@@ -225,7 +225,7 @@ dependencies {
     androidTestImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.navigation:navigation-testing:$nav_version"
     androidTestImplementation 'android.arch.persistence.room:testing:1.1.1'
-    androidTestImplementation "org.mockito:mockito-android:3.1.0"
+    androidTestImplementation "org.mockito:mockito-android:4.6.1"
     debugImplementation "androidx.fragment:fragment-testing:1.4.1"
     implementation "androidx.test:core:$androidXTestCoreVersion"
 }
