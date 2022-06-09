@@ -2,15 +2,16 @@ package io.github.sds100.keymapper.mappings.keymaps.detection
 
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
+import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
 import io.github.sds100.keymapper.util.InputEventType
 
 /**
  * Created by sds100 on 21/05/2022.
  */
 
-object EventTreeBuilder{
+class EventTreeBuilder(private val keyMaps: List<KeyMap>, private val options: DefaultKeyMapOptions) {
 
-    fun createEventTrees(keyMaps: List<KeyMap>, options: DefaultKeyMapOptions): List<KeyEventNode> {
+    fun build(): List<KeyEventNode> {
         val eventTrees = mutableListOf<KeyEventNode>()
 
         for (keyMap in keyMaps) {
@@ -19,94 +20,118 @@ object EventTreeBuilder{
                 continue
             }
 
-            val trigger = keyMap.trigger
+            if (keyMap.trigger.keys.isEmpty()) {
+                continue
+            }
 
-            val longPressDelay = trigger.longPressDelay?.toLong() ?: options.longPressDelay
-
-            if (trigger.keys.size == 1) {
-                val triggerKey = trigger.keys[0]
-
-                when (triggerKey.clickType) {
-                    ClickType.SHORT_PRESS -> {
-                        val initialActionsJob = JobNode(
-                            ActionNode(keyMap.actionList.map { it.data }, InputEventType.DOWN_UP)
-                        )
-                        val repeatActionsJobs = createRepeatActionsJobs(keyMap)
-
-                        val onDownNode = KeyEventNode(
-                            KeyEventAction.DOWN,
-                            triggerKey.keyCode,
-                            consume = true,
-                            jobs = listOf(initialActionsJob).plus(repeatActionsJobs)
-                        )
-
-                        val onUpNode = KeyEventNode(
-                            KeyEventAction.UP,
-                            triggerKey.keyCode,
-                            consume = true,
-                            jobsToCancel = repeatActionsJobs
-                        )
-
-                        onDownNode.next = onUpNode
-
-                        eventTrees.add(onDownNode)
-                    }
-
-                    ClickType.LONG_PRESS -> {
-                        val initialActionsJob = JobNode(
-                            ActionNode(
-                                keyMap.actionList.map { it.data },
-                                InputEventType.DOWN_UP,
-                                delay = longPressDelay
-                            )
-                        )
-
-                        val repeatActionsJobs = createRepeatActionsJobs(keyMap, additionalDelay = longPressDelay)
-
-                        val onDownNode = KeyEventNode(
-                            KeyEventAction.DOWN,
-                            triggerKey.keyCode,
-                            consume = true,
-                            jobs = listOf(initialActionsJob).plus(repeatActionsJobs)
-                        )
-
-                        val timeouts = listOf(
-                            Timeout(
-                                longPressDelay,
-                                onDownNode,
-                                tasks = listOf(ImitateKeyNode(triggerKey.keyCode, InputEventType.DOWN_UP)),
-                                jobsToCancel = listOf(initialActionsJob)
-                            )
-                        )
-
-                        val onUpNode = KeyEventNode(
-                            KeyEventAction.UP,
-                            triggerKey.keyCode,
-                            consume = true,
-                            jobsToCancel = repeatActionsJobs,
-                            timeouts = timeouts
-                        )
-
-                        onDownNode.next = onUpNode
-
-                        eventTrees.add(onDownNode)
-                    }
-
-                    ClickType.DOUBLE_PRESS -> {
-
-                    }
-                }
+            if (keyMap.trigger.mode is TriggerMode.Parallel) {
+                eventTrees.add(createParallelTriggerTree(keyMap))
             }
         }
 
         return eventTrees
     }
 
+    private fun createParallelTriggerTree(keyMap: KeyMap): KeyEventNode {
+        val trigger = keyMap.trigger
+
+        require(trigger.mode is TriggerMode.Parallel)
+
+        val longPressDelay = trigger.longPressDelay?.toLong() ?: options.longPressDelay
+
+        val initialActionsJob = JobNode(
+            ActionNode(keyMap.actionList.map { it.data }, InputEventType.DOWN_UP)
+        )
+        val repeatActionsJobs = createRepeatActionsJobs(keyMap)
+        var startNode: KeyEventNode? = null
+
+        when (trigger.mode.clickType) {
+            ClickType.SHORT_PRESS -> {
+
+                var node: KeyEventNode? = null
+
+                for (triggerKey in trigger.keys) {
+                    val nextNode: KeyEventNode
+
+                    if (triggerKey == trigger.keys.last()) {
+                        nextNode = KeyEventNode(
+                            KeyEventAction.DOWN,
+                            listOf(triggerKey.keyCode),
+                            consume = true,
+                            jobs = listOf(initialActionsJob).plus(repeatActionsJobs)
+                        )
+                    } else {
+                        nextNode = KeyEventNode(
+                            KeyEventAction.DOWN,
+                            listOf(triggerKey.keyCode),
+                            consume = true,
+                        )
+                    }
+
+                    node?.next = nextNode
+
+                    if (node == null) {
+                        startNode = nextNode
+                    }
+
+                    node = nextNode
+                }
+            }
+
+            ClickType.LONG_PRESS -> {
+                throw NotImplementedError()
+//                val initialActionsJob = JobNode(
+//                    ActionNode(
+//                        keyMap.actionList.map { it.data },
+//                        InputEventType.DOWN_UP,
+//                        delay = longPressDelay
+//                    )
+//                )
+//
+//                val repeatActionsJobs = createRepeatActionsJobs(keyMap, additionalDelay = longPressDelay)
+//
+//                val onDownNode = KeyEventNode(
+//                    KeyEventAction.DOWN,
+//                    triggerKey.keyCode,
+//                    consume = true,
+//                    jobs = listOf(initialActionsJob).plus(repeatActionsJobs)
+//                )
+//
+//                val timeouts = listOf(
+//                    Timeout(
+//                        longPressDelay,
+//                        onDownNode,
+//                        tasks = listOf(ImitateKeyNode(triggerKey.keyCode, InputEventType.DOWN_UP)),
+//                        jobsToCancel = listOf(initialActionsJob)
+//                    )
+//                )
+//
+//                val onUpNode = KeyEventNode(
+//                    KeyEventAction.UP,
+//                    triggerKey.keyCode,
+//                    consume = true,
+//                    jobsToCancel = repeatActionsJobs,
+//                    timeouts = timeouts
+//                )
+//
+//                onDownNode.next = onUpNode
+//
+//                return onDownNode
+            }
+
+            ClickType.DOUBLE_PRESS -> {
+                throw NotImplementedError()
+            }
+        }
+
+        return startNode!!
+    }
+
     /**
      * @param additionalDelay Any additional delay on top of the configured repeat delay in the action.
      * E.g long press triggers need to add an extra long press delay.
      */
-    fun createRepeatActionsJobs(keyMap: KeyMap, additionalDelay: Long = 0): List<JobNode> {
+    private fun createRepeatActionsJobs(keyMap: KeyMap, additionalDelay: Long = 0): List<JobNode> {
         val jobs = mutableListOf<JobNode>()
 
         for (action in keyMap.actionList) {

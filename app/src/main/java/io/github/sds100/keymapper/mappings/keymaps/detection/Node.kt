@@ -52,13 +52,31 @@ class ImitateKeyNode(
     delay: Long = -1
 ) : TaskNode(delay, next)
 
+sealed class EventNode {
+    class DownEventNode(val event: Event) {
+
+    }
+
+    class UpEventNode(val ) {
+        
+    }
+}
+
+data class Event(val keyCode: Int, val device: InputDeviceInfo? = null)
+
 /**
  * @param device this node will only be triggered if a key event comes from a device matching this.
  *               null if any device is accepted.
  */
 class KeyEventNode(
     val type: KeyEventAction,
-    val keyCode: Int,
+    /**
+     * Which key codes should this node match. E.g there would be multiple key codes
+     * here for the UP event for a parallel trigger with multiple keys. The keys
+     * can be released in any order and only one needs to be released for the key map
+     * to stop.
+     */
+    val keyCodes: List<Int>,
     val consume: Boolean,
     val device: InputDeviceInfo? = null,
     val jobs: List<JobNode> = emptyList(),
@@ -74,7 +92,7 @@ class KeyEventNode(
             KeyEventAction.UP -> "UP"
         }
 
-        val keyCodeString = KeyEventUtils.keyCodeToString(keyCode)
+        val keyCodeString = keyCodes.joinToString { KeyEventUtils.keyCodeToString(it) }
 
         return "$typeString $keyCodeString consume = $consume"
     }

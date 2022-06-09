@@ -46,7 +46,7 @@ class KeyMapController(
 
     init {
         combine(detectKeyMapsUseCase.allKeyMapList, detectKeyMapsUseCase.defaultOptions) { keyMaps, options ->
-            EventTreeBuilder.createEventTrees(keyMaps, options)
+            EventTreeBuilder(keyMaps, options).build()
         }.onEach {
             eventTrees = it
             eventTreeLocations = eventTrees.toMutableList() //set the pointer to the initial node
@@ -64,7 +64,7 @@ class KeyMapController(
         var consume = false
 
         for ((eventTreeIndex, eventNode) in eventTreeLocations.withIndex()) {
-            val keyEventMatchesEventNode = keyCode == eventNode.keyCode
+            val keyEventMatchesEventNode = keyCode in eventNode.keyCodes
                 && (eventNode.device == null || device == eventNode.device)
                 && (
                 (keyEventAction == KeyEvent.ACTION_DOWN && eventNode.type == KeyEventAction.DOWN)
