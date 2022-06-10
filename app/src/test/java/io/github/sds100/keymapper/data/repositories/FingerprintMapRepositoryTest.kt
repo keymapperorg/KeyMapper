@@ -11,9 +11,10 @@ import io.github.sds100.keymapper.util.State
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineScope
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -38,8 +39,8 @@ class FingerprintMapRepositoryTest {
         )
     }
 
-    private val testDispatcher = TestCoroutineDispatcher()
-    private val coroutineScope = TestCoroutineScope(testDispatcher)
+    private val testDispatcher = StandardTestDispatcher()
+    private val coroutineScope = TestScope(testDispatcher)
     private val dispatchers = TestDispatcherProvider(testDispatcher)
 
     private lateinit var repository: RoomFingerprintMapRepository
@@ -63,11 +64,13 @@ class FingerprintMapRepositoryTest {
             devicesAdapter,
             dispatchers = dispatchers
         )
+
+        coroutineScope.advanceUntilIdle()
     }
 
     @Test
     fun `only swipe down fingerprint map in database, insert 3 blank fingerprint maps for the other fingerprint maps`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             repository.fingerprintMapList.launchIn(coroutineScope)
 
             fingerprintMaps.emit(listOf(FingerprintMapEntity(id = FingerprintMapEntity.ID_SWIPE_DOWN)))
@@ -81,7 +84,7 @@ class FingerprintMapRepositoryTest {
 
     @Test
     fun `no fingerprint maps in database, insert 4 blank fingerprint maps`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             repository.fingerprintMapList.launchIn(coroutineScope)
 
             fingerprintMaps.emit(emptyList())
@@ -96,7 +99,7 @@ class FingerprintMapRepositoryTest {
 
     @Test
     fun `fingerprint map with key event action from device and proper device name extra, do not update action device name`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             //GIVEN
             val action = ActionEntity(
                 type = ActionEntity.Type.KEY_EVENT,
@@ -120,7 +123,7 @@ class FingerprintMapRepositoryTest {
 
     @Test
     fun `fingerprint map with key event action from device and blank device name extra, if device for action is disconnected, do not update action device name`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             //GIVEN
             val action = ActionEntity(
                 type = ActionEntity.Type.KEY_EVENT,
@@ -144,7 +147,7 @@ class FingerprintMapRepositoryTest {
 
     @Test
     fun `fingerprint map with key event action from device and blank device name extra, if device for action is connected, update action device name`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             //GIVEN
             val action = ActionEntity(
                 type = ActionEntity.Type.KEY_EVENT,
@@ -186,7 +189,7 @@ class FingerprintMapRepositoryTest {
 
     @Test
     fun `fingerprint map with key event action from device and no device name extra, if device for action is connected, update action device name`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             //GIVEN
             val action = ActionEntity(
                 type = ActionEntity.Type.KEY_EVENT,
@@ -202,6 +205,7 @@ class FingerprintMapRepositoryTest {
             devicesAdapter.connectedInputDevices.value = State.Data(
                 listOf(FAKE_KEYBOARD)
             )
+            advanceUntilIdle()
 
             //WHEN
             fingerprintMaps.emit(
@@ -228,7 +232,7 @@ class FingerprintMapRepositoryTest {
 
     @Test
     fun `fingerprint map with key event action from device and no device name extra, if device for action is disconnected, update action device name`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             //GIVEN
             val action = ActionEntity(
                 type = ActionEntity.Type.KEY_EVENT,

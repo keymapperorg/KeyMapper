@@ -12,9 +12,9 @@ import io.github.sds100.keymapper.util.InputEventType
 import io.github.sds100.keymapper.util.State
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineScope
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -29,8 +29,8 @@ import org.mockito.kotlin.*
 @RunWith(MockitoJUnitRunner::class)
 class PerformActionsUseCaseTest {
 
-    private val testDispatcher = TestCoroutineDispatcher()
-    private val coroutineScope = TestCoroutineScope(testDispatcher)
+    private val testDispatcher = StandardTestDispatcher()
+    private val coroutineScope = TestScope(testDispatcher)
 
     private lateinit var useCase: PerformActionsUseCaseImpl
     private lateinit var mockKeyMapperImeMessenger: KeyMapperImeMessenger
@@ -85,11 +85,16 @@ class PerformActionsUseCaseTest {
      * issue #771
      */
     @Test
-    fun `dont show accessibility service not found error for open menu action`() = coroutineScope.runBlockingTest {
+    fun `dont show accessibility service not found error for open menu action`() = runTest {
         //GIVEN
         val action = ActionData.OpenMenu
 
-        whenever(mockAccessibilityService.performActionOnNode(any(), any())).doReturn(Error.FailedToFindAccessibilityNode)
+        whenever(
+            mockAccessibilityService.performActionOnNode(
+                any(),
+                any()
+            )
+        ).doReturn(Error.FailedToFindAccessibilityNode)
 
         //WHEN
         useCase.perform(action)
@@ -102,7 +107,7 @@ class PerformActionsUseCaseTest {
      * issue #772
      */
     @Test
-    fun `set the device id of key event actions to a connected game controller if is a game pad key code`() = coroutineScope.runBlockingTest {
+    fun `set the device id of key event actions to a connected game controller if is a game pad key code`() = runTest {
         //GIVEN
         val fakeGamePad = InputDeviceInfo(
             descriptor = "game_pad",
@@ -139,85 +144,87 @@ class PerformActionsUseCaseTest {
      * issue #772
      */
     @Test
-    fun `don't set the device id of key event actions to a connected game controller if there are no connected game controllers`() = coroutineScope.runBlockingTest {
-        //GIVEN
-        fakeDevicesAdapter.connectedInputDevices.value = State.Data(emptyList())
+    fun `don't set the device id of key event actions to a connected game controller if there are no connected game controllers`() =
+        runTest {
+            //GIVEN
+            fakeDevicesAdapter.connectedInputDevices.value = State.Data(emptyList())
 
-        val action = ActionData.InputKeyEvent(
-            keyCode = KeyEvent.KEYCODE_BUTTON_A,
-            device = null
-        )
+            val action = ActionData.InputKeyEvent(
+                keyCode = KeyEvent.KEYCODE_BUTTON_A,
+                device = null
+            )
 
-        //WHEN
-        useCase.perform(action)
+            //WHEN
+            useCase.perform(action)
 
-        //THEN
-        val expectedInputKeyModel = InputKeyModel(
-            keyCode = KeyEvent.KEYCODE_BUTTON_A,
-            inputType = InputEventType.DOWN_UP,
-            metaState = 0,
-            deviceId = 0,
-            scanCode = 0,
-            repeat = 0
-        )
+            //THEN
+            val expectedInputKeyModel = InputKeyModel(
+                keyCode = KeyEvent.KEYCODE_BUTTON_A,
+                inputType = InputEventType.DOWN_UP,
+                metaState = 0,
+                deviceId = 0,
+                scanCode = 0,
+                repeat = 0
+            )
 
-        verify(mockKeyMapperImeMessenger, times(1)).inputKeyEvent(expectedInputKeyModel)
-    }
+            verify(mockKeyMapperImeMessenger, times(1)).inputKeyEvent(expectedInputKeyModel)
+        }
 
     /**
      * issue #772
      */
     @Test
-    fun `don't set the device id of key event actions to a connected game controller if the action has a custom device set`() = coroutineScope.runBlockingTest {
-        //GIVEN
-        val fakeGamePad = InputDeviceInfo(
-            descriptor = "game_pad",
-            name = "Game pad",
-            id = 1,
-            isExternal = true,
-            isGameController = true
-        )
-
-        val fakeKeyboard = InputDeviceInfo(
-            descriptor = "keyboard",
-            name = "Keyboard",
-            id = 2,
-            isExternal = true,
-            isGameController = false
-        )
-
-        fakeDevicesAdapter.connectedInputDevices.value = State.Data(listOf(fakeGamePad, fakeKeyboard))
-
-        val action = ActionData.InputKeyEvent(
-            keyCode = KeyEvent.KEYCODE_BUTTON_A,
-            device = ActionData.InputKeyEvent.Device(
-                descriptor = "keyboard",
-                name = "Keyboard"
+    fun `don't set the device id of key event actions to a connected game controller if the action has a custom device set`() =
+        runTest {
+            //GIVEN
+            val fakeGamePad = InputDeviceInfo(
+                descriptor = "game_pad",
+                name = "Game pad",
+                id = 1,
+                isExternal = true,
+                isGameController = true
             )
-        )
 
-        //WHEN
-        useCase.perform(action)
+            val fakeKeyboard = InputDeviceInfo(
+                descriptor = "keyboard",
+                name = "Keyboard",
+                id = 2,
+                isExternal = true,
+                isGameController = false
+            )
 
-        //THEN
-        val expectedInputKeyModel = InputKeyModel(
-            keyCode = KeyEvent.KEYCODE_BUTTON_A,
-            inputType = InputEventType.DOWN_UP,
-            metaState = 0,
-            deviceId = fakeKeyboard.id,
-            scanCode = 0,
-            repeat = 0
-        )
+            fakeDevicesAdapter.connectedInputDevices.value = State.Data(listOf(fakeGamePad, fakeKeyboard))
 
-        verify(mockKeyMapperImeMessenger, times(1)).inputKeyEvent(expectedInputKeyModel)
-    }
+            val action = ActionData.InputKeyEvent(
+                keyCode = KeyEvent.KEYCODE_BUTTON_A,
+                device = ActionData.InputKeyEvent.Device(
+                    descriptor = "keyboard",
+                    name = "Keyboard"
+                )
+            )
+
+            //WHEN
+            useCase.perform(action)
+
+            //THEN
+            val expectedInputKeyModel = InputKeyModel(
+                keyCode = KeyEvent.KEYCODE_BUTTON_A,
+                inputType = InputEventType.DOWN_UP,
+                metaState = 0,
+                deviceId = fakeKeyboard.id,
+                scanCode = 0,
+                repeat = 0
+            )
+
+            verify(mockKeyMapperImeMessenger, times(1)).inputKeyEvent(expectedInputKeyModel)
+        }
 
     /**
      * issue #637
      */
     @Test
     fun `perform key event action with device name and multiple devices connected with same descriptor and none support the key code, ensure action is still performed`() =
-        coroutineScope.runBlockingTest {
+        runTest {
 
             //GIVEN
             val descriptor = "fake_device_descriptor"
@@ -272,7 +279,7 @@ class PerformActionsUseCaseTest {
 
     @Test
     fun `perform key event action with no device name, ensure action is still performed with correct device id`() =
-        coroutineScope.runBlockingTest {
+        runTest {
 
             //GIVEN
             val descriptor = "fake_device_descriptor"

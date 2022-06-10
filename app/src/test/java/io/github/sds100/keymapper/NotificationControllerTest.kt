@@ -12,9 +12,11 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineScope
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
+
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
 import org.junit.Before
@@ -34,8 +36,8 @@ import org.mockito.kotlin.whenever
 @RunWith(MockitoJUnitRunner::class)
 class NotificationControllerTest {
 
-    private val testDispatcher = TestCoroutineDispatcher()
-    private val coroutineScope = TestCoroutineScope(testDispatcher)
+    private val testDispatcher = StandardTestDispatcher()
+    private val coroutineScope = TestScope(testDispatcher)
 
     private lateinit var controller: NotificationController
     private lateinit var mockManageNotifications: ManageNotificationsUseCase
@@ -83,63 +85,60 @@ class NotificationControllerTest {
     }
 
     @Test
-    fun `click setup chosen devices notification, open app and approve`() =
-        coroutineScope.runBlockingTest {
-            //WHEN
+    fun `click setup chosen devices notification, open app and approve`() = runTest(testDispatcher) {
+        //WHEN
 
-            pauseDispatcher()
-            launch {
-                onActionClick.emit(NotificationController.ACTION_ON_SETUP_CHOSEN_DEVICES_AGAIN)
-            }
-
-            //THEN
-            assertThat(controller.openApp.toListWithTimeout().size, `is`(1))
-            resumeDispatcher()
-
-            assertThat(fakeOnboarding.approvedSetupChosenDevicesAgainNotification, `is`(true))
+        launch {
+            onActionClick.emit(NotificationController.ACTION_ON_SETUP_CHOSEN_DEVICES_AGAIN)
         }
 
+        //THEN
+        assertThat(controller.openApp.toListWithTimeout().size, `is`(1))
+
+        assertThat(fakeOnboarding.approvedSetupChosenDevicesAgainNotification, `is`(true))
+    }
+
     @Test
-    fun `show setup chosen devices notification`() =
-        coroutineScope.runBlockingTest {
-            //GIVEN
-            val title = "title"
-            val text = "text"
-            whenever(mockResourceProvider.getString(R.string.notification_setup_chosen_devices_again_title)).then { title }
-            whenever(mockResourceProvider.getString(R.string.notification_setup_chosen_devices_again_text)).then { text }
+    fun `show setup chosen devices notification`() = runTest(testDispatcher) {
+        //GIVEN
+        val title = "title"
+        val text = "text"
+        whenever(mockResourceProvider.getString(R.string.notification_setup_chosen_devices_again_title)).then { title }
+        whenever(mockResourceProvider.getString(R.string.notification_setup_chosen_devices_again_text)).then { text }
 
-            //WHEN
-            fakeOnboarding.showSetupChosenDevicesAgainNotification.value = true
+        //WHEN
+        fakeOnboarding.showSetupChosenDevicesAgainNotification.value = true
+        advanceUntilIdle()
 
-            //THEN
-            verify(
-                mockResourceProvider,
-                times(1)
-            ).getString(R.string.notification_setup_chosen_devices_again_title)
+        //THEN
+        verify(
+            mockResourceProvider,
+            times(1)
+        ).getString(R.string.notification_setup_chosen_devices_again_title)
 
-            verify(
-                mockResourceProvider,
-                times(1)
-            ).getString(R.string.notification_setup_chosen_devices_again_text)
+        verify(
+            mockResourceProvider,
+            times(1)
+        ).getString(R.string.notification_setup_chosen_devices_again_text)
 
-            val expectedNotification = NotificationModel(
-                id = NotificationController.ID_SETUP_CHOSEN_DEVICES_AGAIN,
-                channel = NotificationController.CHANNEL_NEW_FEATURES,
-                icon = R.drawable.ic_notification_settings,
-                title = title,
-                text = text,
-                onClickActionId = NotificationController.ACTION_ON_SETUP_CHOSEN_DEVICES_AGAIN,
-                showOnLockscreen = false,
-                onGoing = false,
-                priority = NotificationCompat.PRIORITY_LOW,
-                actions = emptyList(),
-                autoCancel = true,
-                bigTextStyle = true
-            )
+        val expectedNotification = NotificationModel(
+            id = NotificationController.ID_SETUP_CHOSEN_DEVICES_AGAIN,
+            channel = NotificationController.CHANNEL_NEW_FEATURES,
+            icon = R.drawable.ic_notification_settings,
+            title = title,
+            text = text,
+            onClickActionId = NotificationController.ACTION_ON_SETUP_CHOSEN_DEVICES_AGAIN,
+            showOnLockscreen = false,
+            onGoing = false,
+            priority = NotificationCompat.PRIORITY_LOW,
+            actions = emptyList(),
+            autoCancel = true,
+            bigTextStyle = true
+        )
 
-            verify(mockManageNotifications, times(1)).show(expectedNotification)
+        verify(mockManageNotifications, times(1)).show(expectedNotification)
 
-            //this should be called when the notification is clicked
-            assertThat(fakeOnboarding.approvedSetupChosenDevicesAgainNotification, `is`(false))
+        //this should be called when the notification is clicked
+        assertThat(fakeOnboarding.approvedSetupChosenDevicesAgainNotification, `is`(false))
         }
 }

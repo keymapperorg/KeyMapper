@@ -14,9 +14,7 @@ import io.github.sds100.keymapper.data.migration.fingerprintmaps.FingerprintMapM
 import io.github.sds100.keymapper.data.migration.fingerprintmaps.FingerprintMapMigration_1_2
 import io.github.sds100.keymapper.util.JsonTestUtils
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineScope
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -44,8 +42,9 @@ class LegacyFingerprintMapMigrationTest {
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
 
-    private val testDispatcher = TestCoroutineDispatcher()
-    private val coroutineScope = TestCoroutineScope(testDispatcher)
+    private val testDispatcher = StandardTestDispatcher()
+    private val coroutineScope =
+        createTestCoroutineScope(TestCoroutineDispatcher() + TestCoroutineExceptionHandler() + testDispatcher)
     private lateinit var parser: JsonParser
     private lateinit var gson: Gson
 
@@ -95,7 +94,7 @@ class LegacyFingerprintMapMigrationTest {
         expectedData: JsonArray,
         inputVersion: Int,
         outputVersion: Int
-    ) = coroutineScope.runBlockingTest {
+    ) = runTest {
         val migrations = listOf(
             JsonMigration(0, 1) { json -> FingerprintMapMigration_0_1.migrate(json) },
             JsonMigration(1, 2) { json -> FingerprintMapMigration_1_2.migrate(json) },

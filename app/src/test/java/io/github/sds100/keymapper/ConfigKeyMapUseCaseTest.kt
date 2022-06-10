@@ -13,13 +13,10 @@ import io.github.sds100.keymapper.util.dataOrNull
 import io.github.sds100.keymapper.util.singleKeyTrigger
 import io.github.sds100.keymapper.util.triggerKey
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineScope
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.contains
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
@@ -30,10 +27,6 @@ import org.mockito.kotlin.mock
 
 @ExperimentalCoroutinesApi
 class ConfigKeyMapUseCaseTest {
-
-    private val testDispatcher = TestCoroutineDispatcher()
-    private val coroutineScope = TestCoroutineScope(testDispatcher)
-
     private lateinit var useCase: ConfigKeyMapUseCaseImpl
 
     @Before
@@ -45,11 +38,6 @@ class ConfigKeyMapUseCaseTest {
         )
     }
 
-    @After
-    fun tearDown() {
-        testDispatcher.cleanupTestCoroutines()
-    }
-
     /**
      * Issue #753. If a modifier key is used as a trigger then it the
      * option to not override the default action must be chosen so that the modifier
@@ -57,7 +45,7 @@ class ConfigKeyMapUseCaseTest {
      */
     @Test
     fun `when add modifier key trigger, enable do not remap option`() =
-        coroutineScope.runBlockingTest {
+        runTest {
             val modifierKeys = setOf(
                 KeyEvent.KEYCODE_SHIFT_LEFT,
                 KeyEvent.KEYCODE_SHIFT_RIGHT,
@@ -91,7 +79,7 @@ class ConfigKeyMapUseCaseTest {
      */
     @Test
     fun `when add non-modifier key trigger, do ont enable do not remap option`() =
-        coroutineScope.runBlockingTest {
+        runTest {
             //GIVEN
             useCase.mapping.value = State.Data(KeyMap())
 
@@ -110,7 +98,7 @@ class ConfigKeyMapUseCaseTest {
      */
     @Test
     fun `when add answer phone call action, then add phone ringing constraint`() =
-        coroutineScope.runBlockingTest {
+        runTest {
             //GIVEN
             useCase.mapping.value = State.Data(KeyMap())
             val action = ActionData.AnswerCall
@@ -129,7 +117,7 @@ class ConfigKeyMapUseCaseTest {
      */
     @Test
     fun `when add end phone call action, then add in phone call constraint`() =
-        coroutineScope.runBlockingTest {
+        runTest {
             //GIVEN
             useCase.mapping.value = State.Data(KeyMap())
             val action = ActionData.EndCall
@@ -147,7 +135,7 @@ class ConfigKeyMapUseCaseTest {
      */
     @Test
     fun `key map with hold down action, load key map, hold down flag shouldn't disappear`() =
-        coroutineScope.runBlockingTest {
+        runTest {
             //given
             val action = KeyMapAction(
                 data = ActionData.TapScreen(100, 100, null),
@@ -169,7 +157,7 @@ class ConfigKeyMapUseCaseTest {
 
     @Test
     fun `add modifier key event action, enable hold down option and disable repeat option`() =
-        coroutineScope.runBlockingTest {
+        runTest {
             KeyEventUtils.MODIFIER_KEYCODES.forEach { keyCode ->
                 useCase.mapping.value = State.Data(KeyMap())
 

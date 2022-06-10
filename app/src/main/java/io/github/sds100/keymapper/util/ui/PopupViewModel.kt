@@ -32,8 +32,10 @@ class PopupViewModelImpl : PopupViewModel {
 
     override suspend fun showPopup(event: ShowPopupEvent) {
         //wait for the view to collect so no dialogs are missed
+        println("await subscription")
         _getUserResponse.subscriptionCount.first { it > 0 }
 
+        println("emit response")
         _getUserResponse.emit(event)
     }
 
@@ -64,9 +66,11 @@ suspend inline fun <reified R> PopupViewModel.showPopup(
     This ensures only one job for a dialog is active at once by cancelling previous jobs when a new
     dialog is shown with the same key
      */
+    println("before merge")
     return merge(
         showPopup.dropWhile { it.key != key }.map { null },
-        onUserResponse.dropWhile { it.response !is R? && it.key != key }.map { it.response }
+        onUserResponse.onEach { println("on response $it") }.dropWhile { it.response !is R? && it.key != key }
+            .map { it.response }
     ).first() as R?
 }
 

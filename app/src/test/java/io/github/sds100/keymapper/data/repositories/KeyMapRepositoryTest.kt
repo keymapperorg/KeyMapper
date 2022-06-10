@@ -11,9 +11,10 @@ import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.util.State
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineScope
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -38,8 +39,8 @@ class KeyMapRepositoryTest {
         )
     }
 
-    private val testDispatcher = TestCoroutineDispatcher()
-    private val coroutineScope = TestCoroutineScope(testDispatcher)
+    private val testDispatcher = StandardTestDispatcher()
+    private val coroutineScope = TestScope(testDispatcher)
 
     private lateinit var repository: RoomKeyMapRepository
     private lateinit var devicesAdapter: FakeDevicesAdapter
@@ -62,6 +63,8 @@ class KeyMapRepositoryTest {
             coroutineScope,
             dispatchers = TestDispatcherProvider(testDispatcher)
         )
+
+        coroutineScope.advanceUntilIdle()
     }
 
     /**
@@ -69,7 +72,7 @@ class KeyMapRepositoryTest {
      */
     @Test
     fun `if modifying a huge number of key maps then split job into batches`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             //GIVEN
             val keyMapList = sequence {
                 repeat(991) {
@@ -83,28 +86,34 @@ class KeyMapRepositoryTest {
                 //WHEN, THEN
                 //split job up into batches of 200 key maps
                 repository.enableById(*keyMapList.map { it.uid }.toTypedArray())
+                advanceUntilIdle()
                 verify(mockDao, times(5)).enableKeymapByUid(anyVararg())
 
                 repository.disableById(*keyMapList.map { it.uid }.toTypedArray())
+                advanceUntilIdle()
                 verify(mockDao, times(5)).disableKeymapByUid(anyVararg())
 
                 repository.delete(*keyMapList.map { it.uid }.toTypedArray())
+                advanceUntilIdle()
                 verify(mockDao, times(5)).deleteById(anyVararg())
 
                 repository.duplicate(*keyMapList.map { it.uid }.toTypedArray())
+                advanceUntilIdle()
                 verify(mockDao, times(5)).insert(anyVararg())
 
                 repository.insert(*keyMapList.toTypedArray())
+                advanceUntilIdle()
                 verify(mockDao, times(5)).insert(anyVararg())
 
                 repository.update(*keyMapList.toTypedArray())
+                advanceUntilIdle()
                 verify(mockDao, times(5)).update(anyVararg())
             }
         }
 
     @Test
     fun `key map with key event action from device and proper device name extra, do not update action device name`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             //GIVEN
             val action = ActionEntity(
                 type = ActionEntity.Type.KEY_EVENT,
@@ -128,7 +137,7 @@ class KeyMapRepositoryTest {
 
     @Test
     fun `key map with key event action from device and blank device name extra, if device for action is disconnected, do not update action device name`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             //GIVEN
             val action = ActionEntity(
                 type = ActionEntity.Type.KEY_EVENT,
@@ -152,7 +161,7 @@ class KeyMapRepositoryTest {
 
     @Test
     fun `key map with key event action from device and blank device name extra, if device for action is connected, update action device name`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             //GIVEN
             val action = ActionEntity(
                 type = ActionEntity.Type.KEY_EVENT,
@@ -171,6 +180,7 @@ class KeyMapRepositoryTest {
 
             //WHEN
             keyMaps.emit(listOf(keyMap))
+            advanceUntilIdle()
 
             val expectedAction = action.copy(
                 extras = listOf(
@@ -187,7 +197,7 @@ class KeyMapRepositoryTest {
 
     @Test
     fun `key map with key event action from device and no device name extra, if device for action is connected, update action device name`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             //GIVEN
             val action = ActionEntity(
                 type = ActionEntity.Type.KEY_EVENT,
@@ -206,6 +216,7 @@ class KeyMapRepositoryTest {
 
             //WHEN
             keyMaps.emit(listOf(keyMap))
+            advanceUntilIdle()
 
             val expectedAction = action.copy(
                 extras = listOf(
@@ -222,7 +233,7 @@ class KeyMapRepositoryTest {
 
     @Test
     fun `key map with key event action from device and no device name extra, if device for action is disconnected, update action device name`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             //GIVEN
             val action = ActionEntity(
                 type = ActionEntity.Type.KEY_EVENT,
@@ -246,7 +257,7 @@ class KeyMapRepositoryTest {
 
     @Test
     fun `key map with device name for trigger key, if device for trigger key is connected, do not update trigger key device name`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             //GIVEN
             val triggerKey = TriggerEntity.KeyEntity(
                 keyCode = 1,
@@ -269,7 +280,7 @@ class KeyMapRepositoryTest {
 
     @Test
     fun `key map with device name for trigger key, if device for trigger key is disconnected, do not update trigger key device name`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             //GIVEN
             val triggerKey = TriggerEntity.KeyEntity(
                 keyCode = 1,
@@ -290,7 +301,7 @@ class KeyMapRepositoryTest {
 
     @Test
     fun `key map with no device name for trigger key, if device for trigger key is connected, update trigger key device name`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             //GIVEN
             val triggerKey = TriggerEntity.KeyEntity(
                 keyCode = 1,
@@ -306,6 +317,7 @@ class KeyMapRepositoryTest {
 
             //WHEN
             keyMaps.emit(listOf(keyMap))
+            advanceUntilIdle()
 
             //THEN
             val expectedTriggerKey = triggerKey.copy(deviceName = FAKE_KEYBOARD.name)

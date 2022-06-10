@@ -6,9 +6,9 @@ import io.github.sds100.keymapper.util.ui.FakeResourceProvider
 import io.github.sds100.keymapper.util.ui.PopupUi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineScope
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
@@ -25,15 +25,14 @@ class HomeMenuViewModelTest {
 
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
-    private val testDispatcher = TestCoroutineDispatcher()
-    private val testCoroutineScope = TestCoroutineScope(testDispatcher)
-
+    private val testDispatcher = StandardTestDispatcher()
+    private val testCoroutineScope = TestScope(testDispatcher)
     private lateinit var fakeResourceProvider: FakeResourceProvider
     private lateinit var viewModel: HomeMenuViewModel
 
     @Before
     fun setUp() {
-        fakeResourceProvider = FakeResourceProvider();
+        fakeResourceProvider = FakeResourceProvider()
         viewModel = HomeMenuViewModel(
             testCoroutineScope,
             alertsUseCase = mock(),
@@ -44,7 +43,7 @@ class HomeMenuViewModelTest {
     }
 
     @Test
-    fun onCreateDocumentActivityNotFound() = runBlockingTest {
+    fun onCreateDocumentActivityNotFound() = runTest(testDispatcher) {
         //given
         fakeResourceProvider.stringResourceMap[R.string.dialog_message_no_app_found_to_create_file] = "message"
         fakeResourceProvider.stringResourceMap[R.string.pos_ok] = "ok"
@@ -60,7 +59,7 @@ class HomeMenuViewModelTest {
     }
 
     @Test
-    fun onGetContentActivityNotFound() = runBlockingTest {
+    fun onGetContentActivityNotFound() = runTest(testDispatcher) {
         //given
         fakeResourceProvider.stringResourceMap[R.string.dialog_message_no_app_found_to_choose_a_file] = "message"
         fakeResourceProvider.stringResourceMap[R.string.pos_ok] = "ok"

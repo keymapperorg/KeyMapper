@@ -16,9 +16,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineScope
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -70,8 +71,8 @@ class AutoSwitchImeControllerTest {
         )
     }
 
-    private val testDispatcher = TestCoroutineDispatcher()
-    private val coroutineScope = TestCoroutineScope(testDispatcher)
+    private val testDispatcher = StandardTestDispatcher()
+    private val coroutineScope = TestScope(testDispatcher)
 
     private lateinit var controller: AutoSwitchImeController
     private lateinit var fakePreferenceRepository: FakePreferenceRepository
@@ -133,86 +134,86 @@ class AutoSwitchImeControllerTest {
     }
 
     @Test
-    fun `choose single device, when device connected, show ime picker`() =
-        coroutineScope.runBlockingTest {
-            //GIVEN
-            val chosenDevices = setOf(FAKE_KEYBOARD.descriptor)
+    fun `choose single device, when device connected, show ime picker`() = runTest(testDispatcher) {
+        //GIVEN
+        val chosenDevices = setOf(FAKE_KEYBOARD.descriptor)
 
-            fakePreferenceRepository.set(Keys.showImePickerOnDeviceConnect, true)
-            fakePreferenceRepository.set(Keys.devicesThatShowImePicker, chosenDevices)
+        fakePreferenceRepository.set(Keys.showImePickerOnDeviceConnect, true)
+        fakePreferenceRepository.set(Keys.devicesThatShowImePicker, chosenDevices)
+        advanceUntilIdle()
 
-            //WHEN
-            fakeDevicesAdapter.onInputDeviceConnect.emit(FAKE_KEYBOARD)
+        //WHEN
+        fakeDevicesAdapter.onInputDeviceConnect.emit(FAKE_KEYBOARD)
 
-            //THEN
-            verify(mockInputMethodAdapter, times(1)).showImePicker(fromForeground = false)
+        //THEN
+        verify(mockInputMethodAdapter, times(1)).showImePicker(fromForeground = false)
+    }
+
+    @Test
+    fun `choose single device, when device disconnected, show ime picker`() = runTest(testDispatcher) {
+        //GIVEN
+        val chosenDevices = setOf(FAKE_KEYBOARD.descriptor)
+
+        fakePreferenceRepository.set(Keys.showImePickerOnDeviceConnect, true)
+        fakePreferenceRepository.set(Keys.devicesThatShowImePicker, chosenDevices)
+        advanceUntilIdle()
+
+        //WHEN
+        fakeDevicesAdapter.onInputDeviceDisconnect.emit(FAKE_KEYBOARD)
+
+        //THEN
+        verify(mockInputMethodAdapter, times(1)).showImePicker(fromForeground = false)
         }
 
     @Test
-    fun `choose single device, when device disconnected, show ime picker`() =
-        coroutineScope.runBlockingTest {
-            //GIVEN
-            val chosenDevices = setOf(FAKE_KEYBOARD.descriptor)
+    fun `choose single device, on device disconnect, choose normal keyboard`() = runTest(testDispatcher) {
+        //GIVEN
+        val chosenDevices = setOf(FAKE_KEYBOARD.descriptor)
+        fakePreferenceRepository.set(Keys.devicesThatChangeIme, chosenDevices)
+        fakePreferenceRepository.set(Keys.changeImeOnDeviceConnect, true)
+        fakePreferenceRepository.set(Keys.showToastWhenAutoChangingIme, true)
+        advanceUntilIdle()
 
-            fakePreferenceRepository.set(Keys.showImePickerOnDeviceConnect, true)
-            fakePreferenceRepository.set(Keys.devicesThatShowImePicker, chosenDevices)
+        whenever(mockInputMethodAdapter.chosenIme).then { MutableStateFlow(KEY_MAPPER_IME) }
 
-            //WHEN
-            fakeDevicesAdapter.onInputDeviceDisconnect.emit(FAKE_KEYBOARD)
+        //WHEN
+        fakeDevicesAdapter.onInputDeviceDisconnect.emit(FAKE_KEYBOARD)
 
-            //THEN
-            verify(mockInputMethodAdapter, times(1)).showImePicker(fromForeground = false)
+        //THEN
+        verify(mockInputMethodAdapter, times(1)).chooseImeWithoutUserInput(
+            NORMAL_IME_ID,
+        )
+
+        verify(mockResourceProvider, times(1)).getString(
+            R.string.toast_chose_keyboard,
+            NORMAL_IME.label
+        )
+        verify(mockPopupMessageAdapter, times(1)).showPopupMessage(anyOrNull())
         }
 
     @Test
-    fun `choose single device, on device disconnect, choose normal keyboard`() =
-        coroutineScope.runBlockingTest {
-            //GIVEN
-            val chosenDevices = setOf(FAKE_KEYBOARD.descriptor)
-            fakePreferenceRepository.set(Keys.devicesThatChangeIme, chosenDevices)
-            fakePreferenceRepository.set(Keys.changeImeOnDeviceConnect, true)
-            fakePreferenceRepository.set(Keys.showToastWhenAutoChangingIme, true)
+    fun `choose single device, when device connected, choose key mapper keyboard`() = runTest(testDispatcher) {
+        //GIVEN
+        val chosenDevices = setOf(FAKE_KEYBOARD.descriptor)
+        fakePreferenceRepository.set(Keys.devicesThatChangeIme, chosenDevices)
+        fakePreferenceRepository.set(Keys.changeImeOnDeviceConnect, true)
+        fakePreferenceRepository.set(Keys.showToastWhenAutoChangingIme, true)
+        advanceUntilIdle()
 
-            whenever(mockInputMethodAdapter.chosenIme).then { MutableStateFlow(KEY_MAPPER_IME) }
+        whenever(mockInputMethodAdapter.chosenIme).then { MutableStateFlow(NORMAL_IME) }
 
-            //WHEN
-            fakeDevicesAdapter.onInputDeviceDisconnect.emit(FAKE_KEYBOARD)
+        //WHEN
+        fakeDevicesAdapter.onInputDeviceConnect.emit(FAKE_KEYBOARD)
 
-            //THEN
-            verify(mockInputMethodAdapter, times(1)).chooseImeWithoutUserInput(
-                NORMAL_IME_ID,
-            )
+        //THEN
+        verify(mockInputMethodAdapter, times(1)).chooseImeWithoutUserInput(
+            KEY_MAPPER_IME_ID,
+        )
 
-            verify(mockResourceProvider, times(1)).getString(
-                R.string.toast_chose_keyboard,
-                NORMAL_IME.label
-            )
-            verify(mockPopupMessageAdapter, times(1)).showPopupMessage(anyOrNull())
-        }
-
-    @Test
-    fun `choose single device, when device connected, choose key mapper keyboard`() =
-        coroutineScope.runBlockingTest {
-            //GIVEN
-            val chosenDevices = setOf(FAKE_KEYBOARD.descriptor)
-            fakePreferenceRepository.set(Keys.devicesThatChangeIme, chosenDevices)
-            fakePreferenceRepository.set(Keys.changeImeOnDeviceConnect, true)
-            fakePreferenceRepository.set(Keys.showToastWhenAutoChangingIme, true)
-
-            whenever(mockInputMethodAdapter.chosenIme).then { MutableStateFlow(NORMAL_IME) }
-
-            //WHEN
-            fakeDevicesAdapter.onInputDeviceConnect.emit(FAKE_KEYBOARD)
-
-            //THEN
-            verify(mockInputMethodAdapter, times(1)).chooseImeWithoutUserInput(
-                KEY_MAPPER_IME_ID,
-            )
-
-            verify(mockResourceProvider, times(1)).getString(
-                R.string.toast_chose_keyboard,
-                KEY_MAPPER_IME.label
-            )
-            verify(mockPopupMessageAdapter, times(1)).showPopupMessage(anyOrNull())
+        verify(mockResourceProvider, times(1)).getString(
+            R.string.toast_chose_keyboard,
+            KEY_MAPPER_IME.label
+        )
+        verify(mockPopupMessageAdapter, times(1)).showPopupMessage(anyOrNull())
         }
 }

@@ -30,8 +30,7 @@ class ConfigKeyEventActionViewModelTest {
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
 
-    private val testDispatcher = TestCoroutineDispatcher()
-    private val coroutineScope = TestCoroutineScope(testDispatcher)
+    private val testDispatcher = StandardTestDispatcher()
     private lateinit var viewModel: ConfigKeyEventActionViewModel
     private lateinit var mockUseCase: ConfigKeyEventUseCase
 
@@ -40,7 +39,7 @@ class ConfigKeyEventActionViewModelTest {
     @Before
     fun init() {
         Dispatchers.setMain(testDispatcher)
-        inputDevices = MutableStateFlow(emptyList<InputDeviceInfo>())
+        inputDevices = MutableStateFlow(emptyList())
 
         mockUseCase = mock {
             on { showDeviceDescriptors }.then { MutableStateFlow(false) }
@@ -56,13 +55,12 @@ class ConfigKeyEventActionViewModelTest {
 
     @After
     fun tearDown() {
-        testDispatcher.cleanupTestCoroutines()
         Dispatchers.resetMain()
     }
 
     @Test
     fun `multiple input devices with same descriptor but a different name, choose a device, ensure device with correct name is chosen`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             //GIVEN
             val fakeDevice1 = InputDeviceInfo(
                 descriptor = "bla",
@@ -82,14 +80,16 @@ class ConfigKeyEventActionViewModelTest {
 
             //WHEN
             inputDevices.value = listOf(fakeDevice1, fakeDevice2)
+            advanceUntilIdle()
 
             //THEN
             viewModel.chooseDevice(0)
-            coroutineScope.advanceUntilIdle()
+            advanceUntilIdle()
 
             assertThat(viewModel.uiState.value.chosenDeviceName, `is`(fakeDevice1.name))
 
             viewModel.chooseDevice(1)
+            advanceUntilIdle()
 
             assertThat(viewModel.uiState.value.chosenDeviceName, `is`(fakeDevice2.name))
         }

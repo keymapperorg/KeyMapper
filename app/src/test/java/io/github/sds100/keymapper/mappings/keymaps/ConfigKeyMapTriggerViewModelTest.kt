@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.mappings.keymaps
 
 import android.view.KeyEvent
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.TestDispatcherProvider
 import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerState
 import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerUseCase
 import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordedKey
@@ -10,14 +11,12 @@ import io.github.sds100.keymapper.onboarding.FakeOnboardingUseCase
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ui.FakeResourceProvider
 import io.github.sds100.keymapper.util.ui.PopupUi
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineScope
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.*
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -32,8 +31,8 @@ import org.mockito.kotlin.mock
 @RunWith(MockitoJUnitRunner::class)
 class ConfigKeyMapTriggerViewModelTest {
 
-    private val testDispatcher = TestCoroutineDispatcher()
-    private val coroutineScope = TestCoroutineScope(testDispatcher)
+    private val testDispatcher = StandardTestDispatcher()
+    private val coroutineScope = TestScope(testDispatcher)
     private lateinit var viewModel: ConfigKeyMapTriggerViewModel
     private lateinit var mockConfigKeyMapUseCase: ConfigKeyMapUseCase
     private lateinit var mockRecordTrigger: RecordTriggerUseCase
@@ -43,9 +42,10 @@ class ConfigKeyMapTriggerViewModelTest {
     private lateinit var onRecordKey: MutableSharedFlow<RecordedKey>
     private lateinit var keyMap: MutableStateFlow<KeyMap>
 
-
     @Before
     fun init() {
+        Dispatchers.setMain(testDispatcher)
+
         fakeOnboarding = FakeOnboardingUseCase()
 
         keyMap = MutableStateFlow(KeyMap())
@@ -72,13 +72,11 @@ class ConfigKeyMapTriggerViewModelTest {
                 on { invalidateTriggerErrors }.then { flow<Unit> { } }
                 on { showDeviceDescriptors }.then { flow<Unit> { } }
             },
-            fakeResourceProvider
+            fakeResourceProvider,
+            TestDispatcherProvider(testDispatcher)
         )
-    }
 
-    @After
-    fun tearDown() {
-        coroutineScope.cleanupTestCoroutines()
+        coroutineScope.advanceUntilIdle()
     }
 
     /**
@@ -86,7 +84,7 @@ class ConfigKeyMapTriggerViewModelTest {
      */
     @Test
     fun `when create back button trigger key then prompt the user to disable screen pinning`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             //GIVEN
             fakeResourceProvider.stringResourceMap[R.string.dialog_message_screen_pinning_warning] = "bla"
 

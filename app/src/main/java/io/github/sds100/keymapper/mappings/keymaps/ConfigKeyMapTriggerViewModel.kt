@@ -9,13 +9,9 @@ import io.github.sds100.keymapper.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
 import io.github.sds100.keymapper.system.permissions.Permission
-import io.github.sds100.keymapper.util.Error
-import io.github.sds100.keymapper.util.State
-import io.github.sds100.keymapper.util.dataOrNull
-import io.github.sds100.keymapper.util.mapData
+import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -25,13 +21,14 @@ import kotlinx.coroutines.runBlocking
  */
 
 class ConfigKeyMapTriggerViewModel(
-        private val coroutineScope: CoroutineScope,
-        private val onboarding: OnboardingUseCase,
-        private val config: ConfigKeyMapUseCase,
-        private val recordTrigger: RecordTriggerUseCase,
-        private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
-        private val displayKeyMap: DisplayKeyMapUseCase,
-        resourceProvider: ResourceProvider
+    private val coroutineScope: CoroutineScope,
+    private val onboarding: OnboardingUseCase,
+    private val config: ConfigKeyMapUseCase,
+    private val recordTrigger: RecordTriggerUseCase,
+    private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
+    private val displayKeyMap: DisplayKeyMapUseCase,
+    resourceProvider: ResourceProvider,
+    private val dispatchers: DispatcherProvider = DefaultDispatcherProvider()
 ) : ResourceProvider by resourceProvider,
         PopupViewModel by PopupViewModelImpl(),
         NavigationViewModel by NavigationViewModelImpl() {
@@ -53,19 +50,19 @@ class ConfigKeyMapTriggerViewModel(
     val recordTriggerButtonText: StateFlow<String> = recordTrigger.state.map { recordTriggerState ->
         when (recordTriggerState) {
             is RecordTriggerState.CountingDown -> getString(
-                    R.string.button_recording_trigger_countdown,
-                    recordTriggerState.timeLeft
+                R.string.button_recording_trigger_countdown,
+                recordTriggerState.timeLeft
             )
             RecordTriggerState.Stopped -> getString(R.string.button_record_trigger)
         }
-    }.flowOn(Dispatchers.Default).stateIn(coroutineScope, SharingStarted.Lazily, "")
+    }.flowOn(dispatchers.default()).stateIn(coroutineScope, SharingStarted.Lazily, "")
 
     val triggerModeButtonsEnabled: StateFlow<Boolean> = config.mapping.map { state ->
         when (state) {
             is State.Data -> state.data.trigger.keys.size > 1
             State.Loading -> false
         }
-    }.flowOn(Dispatchers.Default).stateIn(coroutineScope, SharingStarted.Eagerly, false)
+    }.flowOn(dispatchers.default()).stateIn(coroutineScope, SharingStarted.Eagerly, false)
 
     val checkedTriggerModeRadioButton: StateFlow<Int> = config.mapping.map { state ->
         when (state) {
@@ -77,20 +74,20 @@ class ConfigKeyMapTriggerViewModel(
 
             State.Loading -> R.id.radioButtonUndefined
         }
-    }.flowOn(Dispatchers.Default)
+    }.flowOn(dispatchers.default())
             .stateIn(coroutineScope, SharingStarted.Eagerly, R.id.radioButtonUndefined)
 
     val triggerKeyListItems: StateFlow<State<List<TriggerKeyListItem>>> =
-            combine(
-                    config.mapping,
-                    displayKeyMap.showDeviceDescriptors
-            ) { mappingState, showDeviceDescriptors ->
+        combine(
+            config.mapping,
+            displayKeyMap.showDeviceDescriptors
+        ) { mappingState, showDeviceDescriptors ->
 
-                mappingState.mapData { keyMap ->
-                    createListItems(keyMap.trigger, showDeviceDescriptors)
-                }
+            mappingState.mapData { keyMap ->
+                createListItems(keyMap.trigger, showDeviceDescriptors)
+            }
 
-            }.flowOn(Dispatchers.Default).stateIn(coroutineScope, SharingStarted.Eagerly, State.Loading)
+        }.flowOn(dispatchers.default()).stateIn(coroutineScope, SharingStarted.Eagerly, State.Loading)
 
     val clickTypeRadioButtonsVisible: StateFlow<Boolean> = config.mapping.map { state ->
         when (state) {
@@ -101,14 +98,14 @@ class ConfigKeyMapTriggerViewModel(
             }
             State.Loading -> false
         }
-    }.flowOn(Dispatchers.Default).stateIn(coroutineScope, SharingStarted.Eagerly, false)
+    }.flowOn(dispatchers.default()).stateIn(coroutineScope, SharingStarted.Eagerly, false)
 
     val doublePressButtonVisible: StateFlow<Boolean> = config.mapping.map { state ->
         when (state) {
             is State.Data -> state.data.trigger.keys.size == 1
             State.Loading -> false
         }
-    }.flowOn(Dispatchers.Default).stateIn(coroutineScope, SharingStarted.Eagerly, false)
+    }.flowOn(dispatchers.default()).stateIn(coroutineScope, SharingStarted.Eagerly, false)
 
     val checkedClickTypeRadioButton: StateFlow<Int> = config.mapping.map { state ->
         when (state) {
@@ -130,7 +127,7 @@ class ConfigKeyMapTriggerViewModel(
             }
             State.Loading -> R.id.radioButtonShortPress
         }
-    }.flowOn(Dispatchers.Default)
+    }.flowOn(dispatchers.default())
             .stateIn(coroutineScope, SharingStarted.Eagerly, R.id.radioButtonShortPress)
 
     private val _errorListItems = MutableStateFlow<List<TextListItem.Error>>(emptyList())
@@ -145,7 +142,7 @@ class ConfigKeyMapTriggerViewModel(
     init {
         val rebuildErrorList = MutableSharedFlow<State<KeyMap>>(replay = 1)
 
-        coroutineScope.launch(Dispatchers.Default) {
+        coroutineScope.launch(dispatchers.default()) {
             rebuildErrorList.collectLatest { keyMapState ->
                 if (keyMapState !is State.Data) {
                     _errorListItems.value = emptyList()

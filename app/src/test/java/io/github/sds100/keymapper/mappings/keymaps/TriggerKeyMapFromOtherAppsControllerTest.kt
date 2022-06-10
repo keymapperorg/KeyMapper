@@ -9,12 +9,8 @@ import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCas
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTrigger
 import junitparams.JUnitParamsRunner
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineScope
-import kotlinx.coroutines.test.runBlockingTest
-import org.junit.After
+import kotlinx.coroutines.test.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -42,8 +38,8 @@ class TriggerKeyMapFromOtherAppsControllerTest {
         private const val HOLD_DOWN_DURATION = 1000L
     }
 
-    private val testDispatcher = TestCoroutineDispatcher()
-    private val coroutineScope = TestCoroutineScope(testDispatcher)
+    private val testDispatcher = StandardTestDispatcher()
+    private val coroutineScope = TestScope(testDispatcher)
 
     private lateinit var controller: TriggerKeyMapFromOtherAppsController
     private lateinit var detectKeyMapsUseCase: DetectKeyMapsUseCase
@@ -100,16 +96,11 @@ class TriggerKeyMapFromOtherAppsControllerTest {
         )
     }
 
-    @After
-    fun tearDown() {
-        coroutineScope.cleanupTestCoroutines()
-    }
-
     /**
      * #707
      */
     @Test
-    fun `Key map with repeat option, don't repeat when triggered if repeat until released`() = coroutineScope.runBlockingTest {
+    fun `Key map with repeat option, don't repeat when triggered if repeat until released`() = runTest(testDispatcher) {
         //GIVEN
         val action =
             KeyMapAction(
@@ -119,12 +110,13 @@ class TriggerKeyMapFromOtherAppsControllerTest {
             )
         val keyMap = KeyMap(actionList = listOf(action), trigger = KeyMapTrigger(triggerFromOtherApps = true))
         keyMapListFlow.value = listOf(keyMap)
-
-        advanceUntilIdle()
+        runCurrent()
 
         //WHEN
         controller.onDetected(keyMap.uid)
-        delay(500)
+        advanceTimeBy(500)
+        runCurrent()
+
         controller.reset() //stop any repeating that might be happening
         advanceUntilIdle()
 

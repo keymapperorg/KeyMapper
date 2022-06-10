@@ -324,7 +324,13 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
 
             val dialog = PopupUi.MultiChoice(items = dialogItems)
 
-            val selectedFlags = showPopup("set_flags", dialog) ?: return@launch
+            println("before result")
+            val selectedFlags = showPopup("set_flags", dialog)
+            println("after result")
+
+            if (selectedFlags == null) {
+                return@launch
+            }
 
             var newFlags = 0
 
