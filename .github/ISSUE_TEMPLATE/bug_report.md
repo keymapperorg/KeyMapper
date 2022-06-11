@@ -2,7 +2,7 @@
 name: Bug report
 about: Create a report to help us improve
 title: ''
-labels: bug, enhancement
+labels: bug
 assignees: sds100
 
 ---
@@ -21,7 +21,7 @@ A clear and concise description of what the bug is.
 **To Reproduce**
 Steps to reproduce the behavior:
 
-Upload a backup of your keymaps. (Follow the guide here.)[https://keymapperorg.github.io/KeyMapper/user-guide/backup-restore]
+Upload a backup of your keymaps. [Follow the guide here](https://keymapperorg.github.io/KeyMapper/user-guide/backup-restore)
 
 **Expected behavior**
 A clear and concise description of what you expected to happen.
