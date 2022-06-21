@@ -1,10 +1,13 @@
 package io.github.sds100.keymapper.system.apps
 
+import android.annotation.SuppressLint
+import android.app.PendingIntent
 import android.content.*
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.os.Build
 import android.os.TransactionTooLargeException
 import android.provider.MediaStore
 import android.provider.Settings
@@ -171,6 +174,7 @@ class AndroidPackageManagerAdapter(
 
     }
 
+    @SuppressLint("UnspecifiedImmutableFlag") //only specify the flag on SDK 23+. SDK 31 is first to enforce it.
     override fun openApp(packageName: String): Result<*> {
         val leanbackIntent = packageManager.getLeanbackLaunchIntentForPackage(packageName)
 
@@ -180,7 +184,13 @@ class AndroidPackageManagerAdapter(
 
         //intent = null if the app doesn't exist
         if (intent != null) {
-            ctx.startActivity(intent)
+            val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                PendingIntent.getActivity(ctx, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+            } else {
+                PendingIntent.getActivity(ctx, 0, intent, 0)
+            }
+
+            pendingIntent.send()
             return Success(Unit)
 
         } else {
