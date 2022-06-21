@@ -128,7 +128,7 @@ class AccessibilityServiceAdapter(
         } else {
             Timber.i("Enable service by opening accessibility settings")
 
-            return launchSettingsScreen()
+            return launchAccessibilitySettings()
         }
     }
 
@@ -146,7 +146,7 @@ class AccessibilityServiceAdapter(
         } else {
             Timber.i("Restarting service by opening accessibility settings")
 
-            return launchSettingsScreen()
+            return launchAccessibilitySettings()
         }
     }
 
@@ -158,14 +158,14 @@ class AccessibilityServiceAdapter(
         return true
     }
 
-    private fun launchSettingsScreen(): Boolean {
+    private fun launchAccessibilitySettings(): Boolean {
         try {
             val settingsIntent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
 
             settingsIntent.addFlags(
                 Intent.FLAG_ACTIVITY_NEW_TASK
-                        or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
+                    or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
             )
 
             ctx.startActivity(settingsIntent)
@@ -178,12 +178,15 @@ class AccessibilityServiceAdapter(
     }
 
     private suspend fun disableServiceSuspend() {
-        send(Event.DisableService).onSuccess {
-            Timber.i("Disabling service by calling disableSelf()")
+        // disableSelf method only exists in 7.0.0+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            send(Event.DisableService).onSuccess {
+                Timber.i("Disabling service by calling disableSelf()")
 
-            return
-        }.onFailure {
-            Timber.i("Failed to disable service by calling disableSelf()")
+                return
+            }.onFailure {
+                Timber.i("Failed to disable service by calling disableSelf()")
+            }
         }
 
         if (permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)) {
@@ -214,7 +217,11 @@ class AccessibilityServiceAdapter(
                 Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES,
                 newEnabledServices
             )
+
+            return
         }
+
+        launchAccessibilitySettings()
     }
 
     override suspend fun isCrashed(): Boolean {
@@ -261,7 +268,7 @@ class AccessibilityServiceAdapter(
             val keyMapperEntry = "${Constants.PACKAGE_NAME}/$className"
 
             val newEnabledServices = when {
-                enabledServices == null -> keyMapperEntry
+                enabledServices.isNullOrBlank() -> keyMapperEntry
                 enabledServices.contains(keyMapperEntry) -> enabledServices
                 else -> "$keyMapperEntry:$enabledServices"
             }
@@ -269,6 +276,11 @@ class AccessibilityServiceAdapter(
             SettingsUtils.putSecureSetting(
                 ctx,
                 Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES, newEnabledServices
+            )
+
+            SettingsUtils.putSecureSetting(
+                ctx,
+                Settings.Secure.ACCESSIBILITY_ENABLED, 1
             )
         }
     }

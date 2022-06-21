@@ -12,6 +12,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+
       - name: Unit tests
         run: bash ./gradlew testDebugUnitTest
 
@@ -49,13 +52,13 @@ jobs:
         with:
           java-version: 1.11
 
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+
       - name: set up Ruby for fastlane
         uses: actions/setup-ruby@v1
         with:
           ruby-version: '2.7'
-
-      - name: Make .android folder
-        run: mkdir /home/runner/.android
 
       - name: Create debug keystore
         run: |

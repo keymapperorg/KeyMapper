@@ -44,7 +44,8 @@ object UseCases {
         return DisplayKeyMapUseCaseImpl(
             ServiceLocator.permissionAdapter(ctx),
             ServiceLocator.inputMethodAdapter(ctx),
-            displaySimpleMapping(ctx)
+            displaySimpleMapping(ctx),
+            ServiceLocator.settingsRepository(ctx)
         )
     }
 

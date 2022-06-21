@@ -1,7 +1,9 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
-import io.github.sds100.keymapper.ui.*
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.system.permissions.Permission
+import io.github.sds100.keymapper.util.Error
+import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.mapData
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -118,7 +120,18 @@ open class KeyMapListViewModel constructor(
 
     fun onTriggerErrorChipClick(chipModel: ChipUi) {
         if (chipModel is ChipUi.Error) {
-            showDialogAndFixError(chipModel.error)
+            if (chipModel.error == Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)) {
+                coroutineScope.launch {
+                    ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
+                        resourceProvider = this@KeyMapListViewModel,
+                        popupViewModel = this@KeyMapListViewModel,
+                        neverShowDndTriggerErrorAgain = { useCase.neverShowDndTriggerErrorAgain() },
+                        fixError = { useCase.fixError(it) }
+                    )
+                }
+            } else {
+                showDialogAndFixError(chipModel.error)
+            }
         }
     }
 

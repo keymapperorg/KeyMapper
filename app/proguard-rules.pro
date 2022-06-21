@@ -35,6 +35,10 @@
 -keep class androidx.recyclerview.** { *; }
 -keep interface androidx.recyclerview.** { *; }
 
+-keep class android.hardware.input.IInputManager$Stub { *; }
+-keep class android.content.pm.IPackageManager$Stub { *; }
+-keep class android.permission.IPermissionManager$Stub { *; }
+
 -keepattributes *Annotation*, InnerClasses
 -dontnote kotlinx.serialization.AnnotationsKt # core serialization annotations
 -dontnote kotlinx.serialization.SerializationKt

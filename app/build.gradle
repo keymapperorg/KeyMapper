@@ -6,8 +6,8 @@ apply plugin: "androidx.navigation.safeargs.kotlin"
 apply plugin: "kotlinx-serialization"
 
 android {
-    compileSdkVersion 31
-    buildToolsVersion = '31.0.0'
+    compileSdkVersion 32
+    buildToolsVersion = '32.1.0-rc1'
 
     def versionProperties = new Properties()
     file("version.properties").withInputStream { versionProperties.load(it) }
@@ -15,7 +15,7 @@ android {
     defaultConfig {
         applicationId "io.github.sds100.keymapper"
         minSdkVersion 21
-        targetSdkVersion 31
+        targetSdkVersion 32
         versionCode versionProperties.getProperty("VERSION_CODE").toInteger()
         versionName versionProperties.getProperty("VERSION_NAME")
         multiDexEnabled true
@@ -53,7 +53,7 @@ android {
             postprocessing {
                 removeUnusedCode true
                 removeUnusedResources true
-                obfuscate false
+                obfuscate false //don't obfuscate so stacktraces are easier to read
                 optimizeCode true
                 proguardFiles 'proguard-rules.pro'
             }

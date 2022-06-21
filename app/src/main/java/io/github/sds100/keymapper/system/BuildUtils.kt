@@ -30,6 +30,7 @@ object BuildUtils {
             Q -> "10"
             R -> "11"
             S -> "12"
+            S_V2 -> "12L"
             else -> "API $version"
         }
     }
