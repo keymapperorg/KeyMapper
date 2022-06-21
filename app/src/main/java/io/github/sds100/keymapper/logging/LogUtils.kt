@@ -10,7 +10,7 @@ import java.util.*
  */
 object LogUtils {
     val DATE_FORMAT
-        get() = SimpleDateFormat("HH:mm:ss.SSS", Locale.getDefault())
+        get() = SimpleDateFormat("MM/dd HH:mm:ss.SSS", Locale.getDefault())
 
     fun createLogFileName(): String {
         val formattedDate = FileUtils.createFileDate()
