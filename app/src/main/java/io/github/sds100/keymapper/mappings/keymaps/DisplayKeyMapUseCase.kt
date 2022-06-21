@@ -2,23 +2,25 @@ package io.github.sds100.keymapper.mappings.keymaps
 
 import android.os.Build
 import android.view.KeyEvent
+import io.github.sds100.keymapper.data.Keys
+import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.DisplaySimpleMappingUseCase
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTriggerError
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.*
 
 /**
  * Created by sds100 on 04/04/2021.
  */
 
 class DisplayKeyMapUseCaseImpl(
-        private val permissionAdapter: PermissionAdapter,
-        private val inputMethodAdapter: InputMethodAdapter,
-        displaySimpleMappingUseCase: DisplaySimpleMappingUseCase
+    private val permissionAdapter: PermissionAdapter,
+    private val inputMethodAdapter: InputMethodAdapter,
+    displaySimpleMappingUseCase: DisplaySimpleMappingUseCase,
+    private val preferenceRepository: PreferenceRepository
 ) : DisplayKeyMapUseCase, DisplaySimpleMappingUseCase by displaySimpleMappingUseCase {
     private companion object {
         val keysThatRequireDndAccess = arrayOf(
@@ -30,39 +32,45 @@ class DisplayKeyMapUseCaseImpl(
     private val keyMapperImeHelper: KeyMapperImeHelper = KeyMapperImeHelper(inputMethodAdapter)
 
     override val invalidateTriggerErrors = merge(
-            permissionAdapter.onPermissionsUpdate
+        permissionAdapter.onPermissionsUpdate,
+        preferenceRepository.get(Keys.neverShowDndError).map { }.drop(1)
     )
 
-    override fun getTriggerErrors(keyMap: KeyMap): List<KeyMapTriggerError> {
+    override suspend fun getTriggerErrors(keyMap: KeyMap): List<KeyMapTriggerError> {
         val trigger = keyMap.trigger
         val errors = mutableListOf<KeyMapTriggerError>()
 
         // can only detect volume button presses during a phone call with an input method service
-        if (!keyMapperImeHelper.isCompatibleImeChosen() &&keyMap.requiresImeKeyEventForwarding()) {
-
+        if (!keyMapperImeHelper.isCompatibleImeChosen() && keyMap.requiresImeKeyEventForwarding()) {
             errors.add(KeyMapTriggerError.CANT_DETECT_IN_PHONE_CALL)
         }
 
         if (trigger.keys.any { it.keyCode in keysThatRequireDndAccess }) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-                    && !permissionAdapter.isGranted(Permission.ACCESS_NOTIFICATION_POLICY)
+                && !permissionAdapter.isGranted(Permission.ACCESS_NOTIFICATION_POLICY)
+                && preferenceRepository.get(Keys.neverShowDndError).first() != true
             ) {
                 errors.add(KeyMapTriggerError.DND_ACCESS_DENIED)
             }
         }
 
         if (trigger.screenOffTrigger
-                && !permissionAdapter.isGranted(Permission.ROOT)
-                && trigger.isDetectingWhenScreenOffAllowed()) {
-
+            && !permissionAdapter.isGranted(Permission.ROOT)
+            && trigger.isDetectingWhenScreenOffAllowed()
+        ) {
             errors.add(KeyMapTriggerError.SCREEN_OFF_ROOT_DENIED)
         }
 
         return errors
     }
+
+    override fun neverShowDndTriggerErrorAgain() {
+        preferenceRepository.set(Keys.neverShowDndError, true)
+    }
 }
 
 interface DisplayKeyMapUseCase : DisplaySimpleMappingUseCase {
     val invalidateTriggerErrors: Flow<Unit>
-    fun getTriggerErrors(keyMap: KeyMap): List<KeyMapTriggerError>
+    suspend fun getTriggerErrors(keyMap: KeyMap): List<KeyMapTriggerError>
+    fun neverShowDndTriggerErrorAgain()
 }

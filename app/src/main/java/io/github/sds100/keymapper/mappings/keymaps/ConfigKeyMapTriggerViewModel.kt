@@ -347,13 +347,16 @@ class ConfigKeyMapTriggerViewModel(
         }
     }
 
-    fun fixError(listItemId: String) {
+    fun onTriggerErrorClick(listItemId: String) {
         coroutineScope.launch {
             when (KeyMapTriggerError.valueOf(listItemId)) {
                 KeyMapTriggerError.DND_ACCESS_DENIED -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    val error =
-                            Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)
-                    displayKeyMap.fixError(error)
+                    ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
+                        resourceProvider = this@ConfigKeyMapTriggerViewModel,
+                        popupViewModel = this@ConfigKeyMapTriggerViewModel,
+                        neverShowDndTriggerErrorAgain = { displayKeyMap.neverShowDndTriggerErrorAgain() },
+                        fixError = { displayKeyMap.fixError(it) }
+                    )
                 }
 
                 KeyMapTriggerError.SCREEN_OFF_ROOT_DENIED -> {
@@ -369,58 +372,57 @@ class ConfigKeyMapTriggerViewModel(
     }
 
     private fun createListItems(
-            trigger: KeyMapTrigger,
-            showDeviceDescriptors: Boolean
+        trigger: KeyMapTrigger,
+        showDeviceDescriptors: Boolean
     ): List<TriggerKeyListItem> =
-            trigger.keys.mapIndexed { index, key ->
-                val extraInfo = buildString {
-                    append(getTriggerKeyDeviceName(key.device, showDeviceDescriptors))
+        trigger.keys.mapIndexed { index, key ->
+            val extraInfo = buildString {
+                append(getTriggerKeyDeviceName(key.device, showDeviceDescriptors))
 
-                    if (!key.consumeKeyEvent) {
-                        val midDot = getString(R.string.middot)
-                        append(" $midDot ${getString(R.string.flag_dont_override_default_action)}")
-                    }
+                if (!key.consumeKeyEvent) {
+                    val midDot = getString(R.string.middot)
+                    append(" $midDot ${getString(R.string.flag_dont_override_default_action)}")
                 }
+            }
 
-                val clickTypeString = when (key.clickType) {
-                    ClickType.SHORT_PRESS -> null
-                    ClickType.LONG_PRESS -> getString(R.string.clicktype_long_press)
-                    ClickType.DOUBLE_PRESS -> getString(R.string.clicktype_double_press)
-                }
+            val clickTypeString = when (key.clickType) {
+                ClickType.SHORT_PRESS -> null
+                ClickType.LONG_PRESS -> getString(R.string.clicktype_long_press)
+                ClickType.DOUBLE_PRESS -> getString(R.string.clicktype_double_press)
+            }
 
-                val linkDrawable = when {
-                    trigger.mode is TriggerMode.Parallel && index < trigger.keys.lastIndex -> TriggerKeyLinkType.PLUS
-                    trigger.mode is TriggerMode.Sequence && index < trigger.keys.lastIndex -> TriggerKeyLinkType.ARROW
-                    else -> TriggerKeyLinkType.HIDDEN
-                }
+            val linkDrawable = when {
+                trigger.mode is TriggerMode.Parallel && index < trigger.keys.lastIndex -> TriggerKeyLinkType.PLUS
+                trigger.mode is TriggerMode.Sequence && index < trigger.keys.lastIndex -> TriggerKeyLinkType.ARROW
+                else -> TriggerKeyLinkType.HIDDEN
+            }
 
-                TriggerKeyListItem(
-                        id = key.uid,
-                        keyCode = key.keyCode,
-                        name = KeyEventUtils.keyCodeToString(key.keyCode),
-                        clickTypeString = clickTypeString,
-                        extraInfo = extraInfo,
-                        linkType = linkDrawable,
-                        isDragDropEnabled = trigger.keys.size > 1
-                )
+            TriggerKeyListItem(
+                id = key.uid,
+                keyCode = key.keyCode,
+                name = KeyEventUtils.keyCodeToString(key.keyCode),
+                clickTypeString = clickTypeString,
+                extraInfo = extraInfo,
+                linkType = linkDrawable,
+                isDragDropEnabled = trigger.keys.size > 1
+            )
             }
 
     private fun getTriggerKeyDeviceName(
-            device: TriggerKeyDevice,
-            showDeviceDescriptors: Boolean
-    ): String =
-            when (device) {
-                is TriggerKeyDevice.Internal -> getString(R.string.this_device)
-                is TriggerKeyDevice.Any -> getString(R.string.any_device)
-                is TriggerKeyDevice.External -> {
-                    if (showDeviceDescriptors) {
-                        InputDeviceUtils.appendDeviceDescriptorToName(
-                                device.descriptor,
-                                device.name
-                        )
-                    } else {
-                        device.name
-                    }
-                }
+        device: TriggerKeyDevice,
+        showDeviceDescriptors: Boolean
+    ): String = when (device) {
+        is TriggerKeyDevice.Internal -> getString(R.string.this_device)
+        is TriggerKeyDevice.Any -> getString(R.string.any_device)
+        is TriggerKeyDevice.External -> {
+            if (showDeviceDescriptors) {
+                InputDeviceUtils.appendDeviceDescriptorToName(
+                    device.descriptor,
+                    device.name
+                )
+            } else {
+                device.name
             }
+        }
+    }
 }

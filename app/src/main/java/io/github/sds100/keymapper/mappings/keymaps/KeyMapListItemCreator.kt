@@ -26,17 +26,17 @@ class KeyMapListItemCreator(
         resourceProvider
 ) {
 
-    fun create(keyMap: KeyMap, showDeviceDescriptors: Boolean): KeyMapListItem.KeyMapUiState {
-        val midDot = getString(R.string.middot)
+   suspend fun create(keyMap: KeyMap, showDeviceDescriptors: Boolean): KeyMapListItem.KeyMapUiState {
+       val midDot = getString(R.string.middot)
 
-        val triggerDescription = buildString {
-            val separator = when (keyMap.trigger.mode) {
-                is TriggerMode.Parallel -> getString(R.string.plus)
-                is TriggerMode.Sequence -> getString(R.string.arrow)
-                is TriggerMode.Undefined -> null
-            }
+       val triggerDescription = buildString {
+           val separator = when (keyMap.trigger.mode) {
+               is TriggerMode.Parallel -> getString(R.string.plus)
+               is TriggerMode.Sequence -> getString(R.string.arrow)
+               is TriggerMode.Undefined -> null
+           }
 
-            val longPressString = getString(R.string.clicktype_long_press)
+           val longPressString = getString(R.string.clicktype_long_press)
             val doublePressString = getString(R.string.clicktype_double_press)
 
             keyMap.trigger.keys.forEachIndexed { index, key ->

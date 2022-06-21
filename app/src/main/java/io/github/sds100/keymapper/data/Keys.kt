@@ -59,13 +59,15 @@ object Keys {
             booleanPreferencesKey("fingerprint_gestures_available")
 
     val approvedSetupChosenDevicesAgain =
-            booleanPreferencesKey("pref_approved_new_choose_devices_settings")
+        booleanPreferencesKey("pref_approved_new_choose_devices_settings")
 
     val rerouteKeyEvents = booleanPreferencesKey("key_reroute_key_events_from_specified_devices")
     val devicesToRerouteKeyEvents =
-            stringSetPreferencesKey("key_devices_to_reroute_key_events")
+        stringSetPreferencesKey("key_devices_to_reroute_key_events")
 
     val log = booleanPreferencesKey("key_log")
     val shownShizukuPermissionPrompt = booleanPreferencesKey("key_shown_shizuku_permission_prompt")
     val savedWifiSSIDs = stringSetPreferencesKey("key_saved_wifi_ssids")
+
+    val neverShowDndError = booleanPreferencesKey("key_never_show_dnd_error")
 }

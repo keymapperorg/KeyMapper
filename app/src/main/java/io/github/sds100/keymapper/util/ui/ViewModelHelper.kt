@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.util.ui
 
 import androidx.annotation.StringRes
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.getFullMessage
 import io.github.sds100.keymapper.util.isFixable
@@ -149,11 +150,36 @@ object ViewModelHelper {
             }
         } else {
             val dialog = PopupUi.Dialog(
-                    message = error.getFullMessage(resourceProvider),
-                    positiveButtonText = resourceProvider.getString(R.string.pos_ok),
+                message = error.getFullMessage(resourceProvider),
+                positiveButtonText = resourceProvider.getString(R.string.pos_ok),
             )
 
             popupViewModel.showPopup("fix_error", dialog)
         }
     }
+
+    suspend fun showDialogExplainingDndAccessBeingUnavailable(
+        resourceProvider: ResourceProvider,
+        popupViewModel: PopupViewModel,
+        neverShowDndTriggerErrorAgain: () -> Unit,
+        fixError: suspend (Error) -> Unit
+    ) {
+        val dialog = PopupUi.Dialog(
+            title = resourceProvider.getString(R.string.dialog_title_fix_dnd_trigger_error),
+            message = resourceProvider.getText(R.string.dialog_message_fix_dnd_trigger_error),
+            positiveButtonText = resourceProvider.getString(R.string.pos_ok),
+            negativeButtonText = resourceProvider.getString(R.string.neg_cancel),
+            neutralButtonText = resourceProvider.getString(R.string.neg_dont_show_again)
+        )
+
+        val dialogResponse = popupViewModel.showPopup("fix_dnd_trigger_error", dialog)
+
+        if (dialogResponse == DialogResponse.POSITIVE) {
+            val error = Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)
+            fixError.invoke(error)
+        } else if (dialogResponse == DialogResponse.NEUTRAL) {
+            neverShowDndTriggerErrorAgain.invoke()
+        }
+    }
+
 }
