@@ -261,7 +261,7 @@ class AccessibilityServiceAdapter(
             val keyMapperEntry = "${Constants.PACKAGE_NAME}/$className"
 
             val newEnabledServices = when {
-                enabledServices == null -> keyMapperEntry
+                enabledServices.isNullOrBlank() -> keyMapperEntry
                 enabledServices.contains(keyMapperEntry) -> enabledServices
                 else -> "$keyMapperEntry:$enabledServices"
             }
@@ -269,6 +269,11 @@ class AccessibilityServiceAdapter(
             SettingsUtils.putSecureSetting(
                 ctx,
                 Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES, newEnabledServices
+            )
+
+            SettingsUtils.putSecureSetting(
+                ctx,
+                Settings.Secure.ACCESSIBILITY_ENABLED, 1
             )
         }
     }
