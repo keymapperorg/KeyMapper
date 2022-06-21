@@ -1,5 +1,7 @@
 package io.github.sds100.keymapper.system.accessibility
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import io.github.sds100.keymapper.util.InputEventType
 import io.github.sds100.keymapper.util.Result
 import kotlinx.coroutines.flow.Flow
@@ -31,6 +33,7 @@ interface IAccessibilityService {
 
     fun switchIme(imeId: String)
 
+    @RequiresApi(Build.VERSION_CODES.N)
     fun disableSelf()
 
     fun findFocussedNode(focus: Int): AccessibilityNodeModel?
