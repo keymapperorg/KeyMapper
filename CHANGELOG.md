@@ -1,3 +1,29 @@
+## [2.4.3](https://github.com/sds100/KeyMapper/releases/tag/v2.4.3)
+
+#### 21 June 2022
+
+### Bug fixes
+
+- [#1052](https://github.com/keymapperorg/KeyMapper/issues/1052) Crash when disabling accessibility service through the
+  Key Mapper notification on Android Lollipop and Marshmallow.
+- [#1049](https://github.com/keymapperorg/KeyMapper/issues/1049) Enabling the accessibility service automatically with
+  WRITE_SECURE_SETTINGS wouldn't work if no other accessibility features were enabled.
+- [#1044](https://github.com/keymapperorg/KeyMapper/issues/1044) On some devices there was a random crash in the
+  notification listener service.
+- [#999](https://github.com/keymapperorg/KeyMapper/issues/999) Action to launch app has a 5-10 second delay when you're
+  on your device's home screen.
+- [#1047](https://github.com/keymapperorg/KeyMapper/issues/1047) App NOT playing media constraint would be saved as
+  wrong constraint.
+- [#1043](https://github.com/keymapperorg/KeyMapper/issues/1043) Inputting key events with Shizuku didn't actually work
+  on release builds. OOPS. 🤦‍
+
+### Added
+
+- [#1025](https://github.com/keymapperorg/KeyMapper/issues/1025) Support for Android 12L.
+- [#1016](https://github.com/keymapperorg/KeyMapper/issues/1016) Ability to never show the denied Do Not Disturb
+  permission errors if the device does not support those settings.
+- [#1042](https://github.com/keymapperorg/KeyMapper/issues/1042) Put date in the timestamp in the log.
+
 ## [2.4.2](https://github.com/sds100/KeyMapper/releases/tag/v2.4.2)
 
 #### 27 May 2022
@@ -1103,7 +1129,7 @@ Changes from 1.1.0 Beta 8:
 - Optional flags for each keymap so it can only be triggered on a long press and whether to show the volume dialog for volume related actions.
 - Ability to enable/disable specific/all keymaps.
 
-  ####        Added these actions
+  ####         Added these actions
   - Open App
   - Open App shortcut
   - A keycode
