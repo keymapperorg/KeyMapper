@@ -14,6 +14,7 @@ import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.util.Event
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import timber.log.Timber
 
 /**
  * Created by sds100 on 14/11/20.
@@ -84,13 +85,20 @@ class NotificationReceiver : NotificationListenerService(), LifecycleOwner {
     override fun onListenerConnected() {
         super.onListenerConnected()
 
-        mediaSessionManager.addOnActiveSessionsChangedListener(
-            activeSessionsChangeListener,
-            notificationListenerComponent
-        )
+        try {
+            mediaSessionManager.addOnActiveSessionsChangedListener(
+                activeSessionsChangeListener,
+                notificationListenerComponent
+            )
 
-        val activeSessions = mediaSessionManager.getActiveSessions(notificationListenerComponent)
-        mediaAdapter.onActiveMediaSessionChange(activeSessions)
+            val activeSessions = mediaSessionManager.getActiveSessions(notificationListenerComponent)
+            mediaAdapter.onActiveMediaSessionChange(activeSessions)
+        } catch (e: SecurityException) {
+            Timber.e(
+                "NotificationReceiver: " +
+                    "Failed to add active sessions changed listener due to security exception. $e"
+            )
+        }
     }
 
     override fun onListenerDisconnected() {
