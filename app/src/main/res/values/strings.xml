@@ -550,12 +550,15 @@
 
     <string name="dialog_title_explain_bluetooth_permission">Permission is required</string>
     <string name="dialog_message_explain_bluetooth_permission">Key Mapper needs the "nearby devices" permission so it can get the list of paired Bluetooth devices.</string>
-    
+
     <string name="dialog_message_no_app_found_to_create_file">You have no files app installed that allows you to create a file for Key Mapper. Please install a file manager.</string>
     <string name="dialog_message_no_app_found_to_choose_a_file">You have no files app installed that allows you to choose a file for Key Mapper. Please install a file manager.</string>
 
     <string name="dialog_title_accessibility_service_explanation">Accessibility service must be enabled</string>
     <string name="dialog_message_accessibility_service_explanation">@string/accessibility_service_explanation</string>
+    
+    <string name="dialog_title_fix_dnd_trigger_error">Grant Do Not Disturb access</string>
+    <string name="dialog_message_fix_dnd_trigger_error">You will be taken to your device\'s settings page to manage which apps can modify the Do Not Disturb state. This is <b>not present on some devices</b> so tap don\'t show again if you do not see Key Mapper in the list.</string>
 
     <string name="pos_yes">Yes</string>
     <string name="pos_done">Done</string>
