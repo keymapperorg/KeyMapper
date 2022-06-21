@@ -1129,7 +1129,7 @@ Changes from 1.1.0 Beta 8:
 - Optional flags for each keymap so it can only be triggered on a long press and whether to show the volume dialog for volume related actions.
 - Ability to enable/disable specific/all keymaps.
 
-  ####         Added these actions
+#### Added these actions
   - Open App
   - Open App shortcut
   - A keycode
