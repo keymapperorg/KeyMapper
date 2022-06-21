@@ -69,7 +69,7 @@ class TriggerFragment : RecyclerViewFragment<TriggerKeyListItem, FragmentTrigger
                             model(it)
 
                             onFixClick { _ ->
-                                configKeyMapTriggerViewModel.fixError(it.id)
+                                configKeyMapTriggerViewModel.onTriggerErrorClick(it.id)
                             }
                         }
                     }
