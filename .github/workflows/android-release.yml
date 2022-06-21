@@ -12,6 +12,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+
       - name: Unit tests
         run: bash ./gradlew testDebugUnitTest
 
