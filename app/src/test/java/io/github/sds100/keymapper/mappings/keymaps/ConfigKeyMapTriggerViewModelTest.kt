@@ -21,6 +21,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 
 /**
@@ -71,6 +72,7 @@ class ConfigKeyMapTriggerViewModelTest {
             mock {
                 on { invalidateTriggerErrors }.then { flow<Unit> { } }
                 on { showDeviceDescriptors }.then { flow<Unit> { } }
+                onBlocking { getTriggerErrors(any()) }.thenReturn(emptyList())
             },
             fakeResourceProvider,
             TestDispatcherProvider(testDispatcher)
