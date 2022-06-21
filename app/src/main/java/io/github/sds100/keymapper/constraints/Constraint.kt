@@ -245,7 +245,7 @@ object ConstraintEntityMapper {
         )
 
         is Constraint.AppNotPlayingMedia -> ConstraintEntity(
-            type = ConstraintEntity.APP_PLAYING_MEDIA,
+            type = ConstraintEntity.APP_NOT_PLAYING_MEDIA,
             extras = listOf(Extra(ConstraintEntity.EXTRA_PACKAGE_NAME, constraint.packageName))
         )
 
