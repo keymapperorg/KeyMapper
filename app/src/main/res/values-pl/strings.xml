@@ -257,6 +257,8 @@
     <string name="constraint_in_phone_call">W rozmowie telefonicznej</string>
     <string name="constraint_not_in_phone_call">Nie w rozmowie telefonicznej</string>
     <string name="constraint_phone_ringing">Dzwoni telefon</string>
+    <string name="constraint_charging">Ładowanie</string>
+    <string name="constraint_discharging">Rozładowanie</string>
     <string name="orientation_0">Pionowo (0°)</string>
     <string name="orientation_90">Poziomo (90°)</string>
     <string name="orientation_180">Pionowo (180°)</string>
@@ -423,6 +425,8 @@
     <string name="dialog_message_no_app_found_to_choose_a_file">Aplikacja Pliki, umożliwiająca wybraniu pliku w Key Mapper, nie jest zainstalowana. Proszę zainstalować menedżera plików.</string>
     <string name="dialog_title_accessibility_service_explanation">Usługa ułatwień dostępu musi być włączona</string>
     <string name="dialog_message_accessibility_service_explanation">@string/accessibility_service_explanation</string>
+    <string name="dialog_title_fix_dnd_trigger_error">Udziel dostęp do trybu Nie przeszkadzać</string>
+    <string name="dialog_message_fix_dnd_trigger_error">Spowoduje to przejście do strony ustawień urządzenia, na której możesz zarządzać aplikacjami, które mogą zmieniać stan Nie przeszkadzać. To <b>nie występuje na niektórych urządzeniach</b>, więc możesz kliknąć Nie wyświetlaj ponownie, jeśli nie widzisz aplikacji Key Mapper na tej liście.</string>
     <string name="pos_yes">Tak</string>
     <string name="pos_done">Gotowe</string>
     <string name="pos_opt_in">Zaakceptuj</string>
@@ -484,7 +488,7 @@
     <string name="notification_keyboard_hidden_title">Klawiatura jest ukryta!</string>
     <string name="notification_keyboard_hidden_text">Kliknij \'Pokaż klawiaturę\', aby znowu wyświetlić klawiaturę.</string>
     <string name="notification_toggle_keyboard_title">Włącz/wyłącz klawiaturę Key Mapper</string>
-    <string name="notification_toggle_keyboard_text">Kliknij \'przełącz\', aby przełączyć się na i z klawiatury Key Mapper.</string>
+    <string name="notification_toggle_keyboard_text">Kliknij \'włącz/wyłącz\', aby przełączyć się na i z klawiatury Key Mapper.</string>
     <string name="notification_toggle_keyboard_action">Włącz/wyłącz</string>
     <string name="notification_feature_fingerprint_title">Zmień funkcje gestów czytnika linii papilarnych za pomocą Key Mapper!</string>
     <string name="notification_feature_fingerprint_text">Twoje urządzenie obsługuje zmianę funkcji gestów na czytniku linii papilarnych. Kliknij, aby rozpocząć!</string>
