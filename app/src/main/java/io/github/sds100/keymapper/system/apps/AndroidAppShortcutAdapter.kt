@@ -1,10 +1,12 @@
 package io.github.sds100.keymapper.system.apps
 
+import android.app.PendingIntent
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.os.Bundle
 import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
@@ -106,7 +108,13 @@ class AndroidAppShortcutAdapter(context: Context) : AppShortcutAdapter {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
         try {
-            ctx.startActivity(intent)
+            val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                PendingIntent.getActivity(ctx, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+            } else {
+                PendingIntent.getActivity(ctx, 0, intent, 0)
+            }
+
+            pendingIntent.send()
             return Success(Unit)
         } catch (e: SecurityException) {
             return Error.InsufficientPermissionsToOpenAppShortcut
