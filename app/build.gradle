@@ -4,6 +4,7 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: "androidx.navigation.safeargs.kotlin"
 apply plugin: "kotlinx-serialization"
+apply plugin: 'dagger.hilt.android.plugin'
 
 android {
     compileSdkVersion 32
@@ -164,6 +165,8 @@ dependencies {
     implementation "dev.rikka.shizuku:api:$shizuku_version"
     implementation "dev.rikka.shizuku:provider:$shizuku_version"
     implementation 'org.lsposed.hiddenapibypass:hiddenapibypass:4.3'
+    implementation 'com.google.dagger:hilt-android:2.42'
+    kapt 'com.google.dagger:hilt-compiler:2.42'
     
     // splitties
     implementation "com.louiscad.splitties:splitties-bitflags:$splitties_version"
