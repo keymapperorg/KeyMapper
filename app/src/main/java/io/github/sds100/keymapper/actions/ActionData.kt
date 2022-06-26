@@ -55,73 +55,56 @@ sealed class ActionData {
 
     @Serializable
     sealed class Volume : ActionData() {
-        sealed class Stream : Volume() {
-            abstract val volumeStream: VolumeStream
-            abstract val showVolumeUi: Boolean
 
-            @Serializable
-            data class Increase(
-                override val showVolumeUi: Boolean,
-                override val volumeStream: VolumeStream
-            ) : Stream() {
-                override val id = ActionId.VOLUME_INCREASE_STREAM
-            }
-
-            @Serializable
-            data class Decrease(
-                override val showVolumeUi: Boolean,
-                override val volumeStream: VolumeStream
-            ) : Stream() {
-                override val id = ActionId.VOLUME_DECREASE_STREAM
-            }
-        }
+        abstract val volumeStream: VolumeStream
+        abstract val showVolumeUi: Boolean
 
         @Serializable
-        data class Up(val showVolumeUi: Boolean) : Volume() {
+        data class Up(override val showVolumeUi: Boolean, override val volumeStream: VolumeStream) : Volume() {
             override val id = ActionId.VOLUME_UP
         }
 
         @Serializable
-        data class Down(val showVolumeUi: Boolean) : Volume() {
+        data class Down(override val showVolumeUi: Boolean, override val volumeStream: VolumeStream) : Volume() {
             override val id = ActionId.VOLUME_DOWN
         }
 
         @Serializable
-        data class Mute(val showVolumeUi: Boolean) : Volume() {
+        data class Mute(override val showVolumeUi: Boolean, override val volumeStream: VolumeStream) : Volume() {
             override val id = ActionId.VOLUME_MUTE
         }
 
         @Serializable
-        data class UnMute(val showVolumeUi: Boolean) : Volume() {
+        data class UnMute(override val showVolumeUi: Boolean, override val volumeStream: VolumeStream) : Volume() {
             override val id = ActionId.VOLUME_UNMUTE
         }
 
         @Serializable
-        data class ToggleMute(val showVolumeUi: Boolean) : Volume() {
+        data class ToggleMute(override val showVolumeUi: Boolean, override val volumeStream: VolumeStream) : Volume() {
             override val id = ActionId.VOLUME_TOGGLE_MUTE
         }
+    }
 
-        @Serializable
-        data class SetRingerMode(
-            val ringerMode: RingerMode
-        ) : Volume() {
-            override val id: ActionId = ActionId.CHANGE_RINGER_MODE
-        }
+    @Serializable
+    data class SetRingerMode(
+        val ringerMode: RingerMode
+    ) : ActionData() {
+        override val id: ActionId = ActionId.CHANGE_RINGER_MODE
+    }
 
-        @Serializable
-        object ShowDialog : Volume() {
-            override val id = ActionId.VOLUME_SHOW_DIALOG
-        }
+    @Serializable
+    object ShowVolumeDialog : ActionData() {
+        override val id = ActionId.VOLUME_SHOW_DIALOG
+    }
 
-        @Serializable
-        object CycleRingerMode : Volume() {
-            override val id = ActionId.CYCLE_RINGER_MODE
-        }
+    @Serializable
+    object CycleRingerMode : ActionData() {
+        override val id = ActionId.CYCLE_RINGER_MODE
+    }
 
-        @Serializable
-        object CycleVibrateRing : Volume() {
-            override val id = ActionId.CYCLE_VIBRATE_RING
-        }
+    @Serializable
+    object CycleVibrateRing : ActionData() {
+        override val id = ActionId.CYCLE_VIBRATE_RING
     }
 
     @Serializable

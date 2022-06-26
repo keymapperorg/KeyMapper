@@ -11,6 +11,7 @@ import io.github.sds100.keymapper.system.intents.IntentTarget
 import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
 import io.github.sds100.keymapper.system.volume.DndModeUtils
 import io.github.sds100.keymapper.system.volume.RingerModeUtils
+import io.github.sds100.keymapper.system.volume.VolumeStream
 import io.github.sds100.keymapper.system.volume.VolumeStreamUtils
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.handle
@@ -113,113 +114,54 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
 
             ActionData.DoNotDisturb.Disable -> getString(R.string.action_disable_dnd_mode)
 
-            is ActionData.Volume.SetRingerMode -> {
+            is ActionData.SetRingerMode -> {
                 val ringerModeString = getString(RingerModeUtils.getLabel(action.ringerMode))
 
                 getString(R.string.action_change_ringer_mode_formatted, ringerModeString)
             }
 
             is ActionData.Volume -> {
-                var hasShowVolumeUiFlag = false
-                val string: String
+                val actionText: String
 
-                when (action) {
-                    is ActionData.Volume.Stream -> {
-                        val streamString = getString(
-                            VolumeStreamUtils.getLabel(action.volumeStream)
-                        )
-
-                        if (action.showVolumeUi) {
-                            hasShowVolumeUiFlag = true
-                        }
-
-                        string = when (action) {
-                            is ActionData.Volume.Stream.Decrease -> getString(
-                                R.string.action_decrease_stream_formatted,
-                                streamString
-                            )
-
-                            is ActionData.Volume.Stream.Increase -> getString(
-                                R.string.action_increase_stream_formatted,
-                                streamString
-                            )
-                        }
+                if (action.volumeStream == VolumeStream.DEFAULT) {
+                    actionText = when (action) {
+                        is ActionData.Volume.Down -> getString(R.string.action_volume_down)
+                        is ActionData.Volume.Mute -> getString(R.string.action_volume_mute)
+                        is ActionData.Volume.ToggleMute -> getString(R.string.action_toggle_mute)
+                        is ActionData.Volume.UnMute -> getString(R.string.action_volume_unmute)
+                        is ActionData.Volume.Up -> getString(R.string.action_volume_up)
                     }
-
-                    is ActionData.Volume.Down -> {
-
-                        if (action.showVolumeUi) {
-                            hasShowVolumeUiFlag = true
-                        }
-
-                        string = getString(R.string.action_volume_down)
-                    }
-
-                    is ActionData.Volume.Mute -> {
-
-                        if (action.showVolumeUi) {
-                            hasShowVolumeUiFlag = true
-                        }
-
-                        string = getString(R.string.action_volume_mute)
-                    }
-
-                    is ActionData.Volume.ToggleMute -> {
-
-                        if (action.showVolumeUi) {
-                            hasShowVolumeUiFlag = true
-                        }
-
-                        string = getString(R.string.action_toggle_mute)
-                    }
-
-                    is ActionData.Volume.UnMute -> {
-
-                        if (action.showVolumeUi) {
-                            hasShowVolumeUiFlag = true
-                        }
-
-                        string = getString(R.string.action_volume_unmute)
-                    }
-
-                    is ActionData.Volume.Up -> {
-
-                        if (action.showVolumeUi) {
-                            hasShowVolumeUiFlag = true
-                        }
-
-                        string = getString(R.string.action_volume_up)
-                    }
-
-                    ActionData.Volume.CycleRingerMode -> {
-                        string = getString(R.string.action_cycle_ringer_mode)
-                    }
-
-                    ActionData.Volume.CycleVibrateRing -> {
-                        string = getString(R.string.action_cycle_vibrate_ring)
-                    }
-
-                    is ActionData.Volume.SetRingerMode -> {
-                        val ringerModeString =
-                            getString(RingerModeUtils.getLabel(action.ringerMode))
-
-                        string = getString(
-                            R.string.action_change_ringer_mode_formatted,
-                            ringerModeString
-                        )
-                    }
-
-                    ActionData.Volume.ShowDialog -> {
-                        string = getString(R.string.action_volume_show_dialog)
-                    }
-                }
-
-                if (hasShowVolumeUiFlag) {
-                    val midDot = getString(R.string.middot)
-                    "$string $midDot ${getString(R.string.flag_show_volume_dialog)}"
                 } else {
-                    string
+                    val streamString = getString(VolumeStreamUtils.getLabel(action.volumeStream))
+
+                    actionText = when (action) {
+                        is ActionData.Volume.Down -> getString(R.string.action_volume_down_stream, streamString)
+                        is ActionData.Volume.Mute -> getString(R.string.action_volume_mute_stream, streamString)
+                        is ActionData.Volume.ToggleMute -> getString(R.string.action_toggle_mute_stream, streamString)
+                        is ActionData.Volume.UnMute -> getString(R.string.action_volume_unmute_stream, streamString)
+                        is ActionData.Volume.Up -> getString(R.string.action_volume_up_stream, streamString)
+                    }
                 }
+
+                // add "show volume dialog" text if flag enabled
+                if (action.showVolumeUi) {
+                    val midDot = getString(R.string.middot)
+                    "$actionText $midDot ${getString(R.string.flag_show_volume_dialog)}"
+                } else {
+                    actionText
+                }
+            }
+
+            ActionData.CycleRingerMode -> {
+                getString(R.string.action_cycle_ringer_mode)
+            }
+
+            ActionData.CycleVibrateRing -> {
+                getString(R.string.action_cycle_vibrate_ring)
+            }
+
+            ActionData.ShowVolumeDialog -> {
+                getString(R.string.action_volume_show_dialog)
             }
 
             is ActionData.ControlMediaForApp ->

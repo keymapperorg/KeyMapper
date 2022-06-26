@@ -6,6 +6,9 @@ import io.github.sds100.keymapper.R
  * Created by sds100 on 23/03/2021.
  */
 object VolumeStreamUtils {
+    /**
+     * Get the UI text for a volume stream.
+     */
     fun getLabel(stream: VolumeStream) = when (stream) {
         VolumeStream.ALARM -> R.string.stream_alarm
         VolumeStream.DTMF -> R.string.stream_dtmf
@@ -15,5 +18,6 @@ object VolumeStreamUtils {
         VolumeStream.SYSTEM -> R.string.stream_system
         VolumeStream.VOICE_CALL -> R.string.stream_voice_call
         VolumeStream.ACCESSIBILITY -> R.string.stream_accessibility
+        VolumeStream.DEFAULT -> R.string.stream_default
     }
 }

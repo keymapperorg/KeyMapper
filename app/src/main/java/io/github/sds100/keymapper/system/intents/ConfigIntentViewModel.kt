@@ -277,7 +277,7 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
         viewModelScope.launch {
             val items = EXTRA_TYPES.map { it to getString(it.labelStringRes) }
 
-            val dialog = PopupUi.SingleChoice(items)
+            val dialog = PopupUi.SingleChoice(title = getString(R.string.title_choose_extra_type), items)
 
             val extraType = showPopup("add_extra", dialog) ?: return@launch
 
@@ -322,11 +322,9 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
                 MultiChoiceItem(intentFlagInt, intentFlagText, isChecked)
             }
 
-            val dialog = PopupUi.MultiChoice(items = dialogItems)
+            val dialog = PopupUi.MultiChoice(title = getString(R.string.dialog_title_choose_intent_flags), dialogItems)
 
-            println("before result")
             val selectedFlags = showPopup("set_flags", dialog)
-            println("after result")
 
             if (selectedFlags == null) {
                 return@launch

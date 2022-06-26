@@ -180,7 +180,7 @@ class ChooseConstraintViewModel(
             CameraLens.BACK to getString(R.string.lens_back)
         )
 
-        val dialog = PopupUi.SingleChoice(items)
+        val dialog = PopupUi.SingleChoice(title = getString(R.string.dialog_title_choose_camera_flash), items)
 
         val cameraLens = showPopup("choose_flashlight_lens", dialog)
 
@@ -271,9 +271,9 @@ class ChooseConstraintViewModel(
             val ssidItems = knownSSIDs.map { "ssid_$it" to it }
 
             val items = listOf(anySSIDItem).plus(ssidItems)
+            val dialog = PopupUi.SingleChoice(title = getString(R.string.dialog_title_choose_wifi_network), items)
 
-            val chosenItem =
-                showPopup("choose_ssid", PopupUi.SingleChoice(items)) ?: return
+            val chosenItem = showPopup("choose_ssid", dialog) ?: return
 
             if (chosenItem == anySSIDItem.first) {
                 chosenSSID = null
@@ -294,7 +294,7 @@ class ChooseConstraintViewModel(
     private suspend fun onSelectImeChosenConstraint(type: ChooseConstraintType) {
         val inputMethods = useCase.getEnabledInputMethods()
         val items = inputMethods.map { it.id to it.label }
-        val dialog = PopupUi.SingleChoice(items = items)
+        val dialog = PopupUi.SingleChoice(title = getString(R.string.dialog_title_choose_keyboard), items)
 
         val result = showPopup("choose_input_method", dialog) ?: return
 

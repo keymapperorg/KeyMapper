@@ -29,19 +29,19 @@ class AndroidVolumeAdapter(context: Context) : VolumeAdapter {
             else -> throw Exception("Don't know how to convert this ringer moder ${audioManager.ringerMode}")
         }
 
-    override fun raiseVolume(stream: VolumeStream?, showVolumeUi: Boolean): Result<*> {
+    override fun raiseVolume(stream: VolumeStream, showVolumeUi: Boolean): Result<*> {
         return stream.convert().then { streamType ->
             adjustVolume(AudioManager.ADJUST_RAISE, showVolumeUi, streamType)
         }
     }
 
-    override fun lowerVolume(stream: VolumeStream?, showVolumeUi: Boolean): Result<*> {
+    override fun lowerVolume(stream: VolumeStream, showVolumeUi: Boolean): Result<*> {
         return stream.convert().then { streamType ->
             adjustVolume(AudioManager.ADJUST_LOWER, showVolumeUi, streamType)
         }
     }
 
-    override fun muteVolume(stream: VolumeStream?, showVolumeUi: Boolean): Result<*> {
+    override fun muteVolume(stream: VolumeStream, showVolumeUi: Boolean): Result<*> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return stream.convert().then { streamType ->
                 adjustVolume(AudioManager.ADJUST_MUTE, showVolumeUi, streamType)
@@ -51,7 +51,7 @@ class AndroidVolumeAdapter(context: Context) : VolumeAdapter {
         }
     }
 
-    override fun unmuteVolume(stream: VolumeStream?, showVolumeUi: Boolean): Result<*> {
+    override fun unmuteVolume(stream: VolumeStream, showVolumeUi: Boolean): Result<*> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return stream.convert().then { streamType ->
                 adjustVolume(AudioManager.ADJUST_UNMUTE, showVolumeUi, streamType)
@@ -61,7 +61,7 @@ class AndroidVolumeAdapter(context: Context) : VolumeAdapter {
         }
     }
 
-    override fun toggleMuteVolume(stream: VolumeStream?, showVolumeUi: Boolean): Result<*> {
+    override fun toggleMuteVolume(stream: VolumeStream, showVolumeUi: Boolean): Result<*> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return stream.convert().then { streamType ->
                 adjustVolume(AudioManager.ADJUST_TOGGLE_MUTE, showVolumeUi, streamType)
@@ -126,7 +126,7 @@ class AndroidVolumeAdapter(context: Context) : VolumeAdapter {
         }
     }
 
-    private fun VolumeStream?.convert(): Result<Int?> {
+    private fun VolumeStream.convert(): Result<Int?> {
         return when (this) {
             VolumeStream.ALARM -> Success(AudioManager.STREAM_ALARM)
             VolumeStream.DTMF -> Success(AudioManager.STREAM_DTMF)
@@ -141,8 +141,7 @@ class AndroidVolumeAdapter(context: Context) : VolumeAdapter {
                 } else {
                     Error.SdkVersionTooLow(minSdk = Build.VERSION_CODES.O)
                 }
-
-            null -> Success(null)
+            VolumeStream.DEFAULT -> Success(null)
         }
     }
 

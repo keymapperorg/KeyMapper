@@ -120,10 +120,10 @@ fun PopupViewModel.showPopups(
                     response = ctx.okDialog(lifecycleOwner, event.ui.message, event.ui.title)
 
                 is PopupUi.MultiChoice<*> ->
-                    response = ctx.multiChoiceDialog(lifecycleOwner, event.ui.items)
+                    response = ctx.multiChoiceDialog(lifecycleOwner, event.ui.title, event.ui.items)
 
                 is PopupUi.SingleChoice<*> ->
-                    response = ctx.singleChoiceDialog(lifecycleOwner, event.ui.items)
+                    response = ctx.singleChoiceDialog(lifecycleOwner, event.ui.title, event.ui.items)
 
                 is PopupUi.SnackBar ->
                     response = SnackBarUtils.show(

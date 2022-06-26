@@ -8,11 +8,11 @@ import io.github.sds100.keymapper.util.Result
 interface VolumeAdapter {
     val ringerMode: RingerMode
 
-    fun raiseVolume(stream: VolumeStream? = null, showVolumeUi: Boolean): Result<*>
-    fun lowerVolume(stream: VolumeStream? = null, showVolumeUi: Boolean): Result<*>
-    fun muteVolume(stream: VolumeStream? = null, showVolumeUi: Boolean): Result<*>
-    fun unmuteVolume(stream: VolumeStream? = null, showVolumeUi: Boolean): Result<*>
-    fun toggleMuteVolume(stream: VolumeStream? = null, showVolumeUi: Boolean): Result<*>
+    fun raiseVolume(stream: VolumeStream, showVolumeUi: Boolean): Result<*>
+    fun lowerVolume(stream: VolumeStream, showVolumeUi: Boolean): Result<*>
+    fun muteVolume(stream: VolumeStream, showVolumeUi: Boolean): Result<*>
+    fun unmuteVolume(stream: VolumeStream, showVolumeUi: Boolean): Result<*>
+    fun toggleMuteVolume(stream: VolumeStream, showVolumeUi: Boolean): Result<*>
     fun showVolumeUi(): Result<*>
     fun setRingerMode(mode: RingerMode): Result<*>
 

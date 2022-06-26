@@ -459,7 +459,7 @@
     <string name="dialog_title_create_shortcut_title">Create shortcut title</string>
     <string name="dialog_title_root_prompt">Root permission needed!</string>
     <string name="dialog_title_flags">More</string>
-    <string name="dialog_title_pick_stream">Pick stream</string>
+    <string name="dialog_title_pick_stream">Choose volume stream</string>
     <string name="dialog_title_choose_flash">Choose flash</string>
     <string name="dialog_title_cant_find_accessibility_settings_page">Can\'t find the accessibility settings page</string>
     <string name="dialog_title_cant_record_trigger">Can\'t record trigger?</string>
@@ -556,9 +556,21 @@
 
     <string name="dialog_title_accessibility_service_explanation">Accessibility service must be enabled</string>
     <string name="dialog_message_accessibility_service_explanation">@string/accessibility_service_explanation</string>
-    
+
     <string name="dialog_title_fix_dnd_trigger_error">Grant Do Not Disturb access</string>
     <string name="dialog_message_fix_dnd_trigger_error">You will be taken to your device\'s settings page to manage which apps can modify the Do Not Disturb state. This is <b>not present on some devices</b> so tap don\'t show again if you do not see Key Mapper in the list.</string>
+
+    <string name="dialog_title_choose_to_show_volume_ui">Show volume UI?</string>
+    <string name="dialog_title_choose_orientations_to_cycle">Choose which orientations to cycle through</string>
+    <string name="dialog_title_choose_dnd_mode">Choose do not disturb mode</string>
+    <string name="dialog_title_choose_ringer_mode">Choose ringer mode</string>
+    <string name="dialog_title_choose_camera_flash">Choose camera flash</string>
+    <string name="dialog_title_choose_keyboard">Choose keyboard</string>
+    <string name="dialog_title_choose_wifi_network">Choose network</string>
+    <string name="dialog_title_choose_device">Choose device</string>
+    <string name="dialog_title_choose_sound">Choose sound</string>
+    <string name="title_choose_extra_type">Choose the type of the extra</string>
+    <string name="dialog_title_choose_intent_flags">Choose intent flags</string>
 
     <string name="pos_yes">Yes</string>
     <string name="pos_done">Done</string>
@@ -896,6 +908,7 @@
     <string name="stream_ring">Ring</string>
     <string name="stream_system">System</string>
     <string name="stream_voice_call">Voice call</string>
+    <string name="stream_default">Default</string>
 
     <string name="ringer_mode_normal">Ring</string>
     <string name="ringer_mode_vibrate">Vibrate</string>
@@ -1083,15 +1096,16 @@
     <string name="action_disable_bluetooth">Disable Bluetooth</string>
 
     <string name="action_volume_up">Volume up</string>
+    <string name="action_volume_up_stream">Increase %s volume</string>
     <string name="action_volume_down">Volume down</string>
+    <string name="action_volume_down_stream">Decrease %s volume</string>
     <string name="action_volume_mute">Mute volume</string>
+    <string name="action_volume_mute_stream">Mute %s volume</string>
     <string name="action_toggle_mute">Toggle mute</string>
+    <string name="action_toggle_mute_stream">Toggle mute %s volume</string>
     <string name="action_volume_unmute">Unmute volume</string>
+    <string name="action_volume_unmute_stream">Unmute %s volume</string>
     <string name="action_volume_show_dialog">Show volume dialog</string>
-    <string name="action_increase_stream">Increase stream</string>
-    <string name="action_increase_stream_formatted">Increase %s stream</string>
-    <string name="action_decrease_stream">Decrease stream</string>
-    <string name="action_decrease_stream_formatted">Decrease %s stream</string>
     <string name="action_cycle_ringer_mode">Cycle through ringer modes (Ring, Vibrate, Silent)</string>
     <string name="action_cycle_vibrate_ring">Cycle through ringer modes (Ring, Vibrate)</string>
     <string name="action_change_ringer_mode">Change ringer mode</string>

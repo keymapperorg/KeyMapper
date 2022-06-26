@@ -41,10 +41,11 @@ sealed class PopupUi<R> {
     ) : PopupUi<String>()
 
     data class SingleChoice<ID>(
+        val title: CharSequence,
         val items: List<Pair<ID, String>>
     ) : PopupUi<ID>()
 
-    data class MultiChoice<ID>(val items: List<MultiChoiceItem<ID>>) : PopupUi<List<ID>>()
+    data class MultiChoice<ID>(val title: CharSequence, val items: List<MultiChoiceItem<ID>>) : PopupUi<List<ID>>()
 
     data class Toast(val text: String) : PopupUi<Unit>()
 
