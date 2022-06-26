@@ -91,6 +91,7 @@ class SettingsViewModel(
             }
 
             val dialog = PopupUi.MultiChoice(
+                title = getString(R.string.dialog_title_choose_sound),
                 items = soundFiles.map { MultiChoiceItem(it.uid, it.name) }
             )
 
@@ -142,6 +143,7 @@ class SettingsViewModel(
                 val checkedDevices = useCase.getPreference(prefKey).first() ?: emptySet()
 
                 val dialog = PopupUi.MultiChoice(
+                    title = getString(R.string.dialog_title_choose_device),
                     items = externalDevices.map { device ->
                         MultiChoiceItem(
                             id = device.descriptor,

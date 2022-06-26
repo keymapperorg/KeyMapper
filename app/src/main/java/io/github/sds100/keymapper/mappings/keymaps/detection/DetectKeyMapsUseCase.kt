@@ -24,6 +24,7 @@ import io.github.sds100.keymapper.system.phone.CallState
 import io.github.sds100.keymapper.system.phone.PhoneAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
+import io.github.sds100.keymapper.system.volume.VolumeStream
 import io.github.sds100.keymapper.util.InputEventType
 import io.github.sds100.keymapper.util.State
 import kotlinx.coroutines.Dispatchers
@@ -139,9 +140,9 @@ class DetectKeyMapsUseCaseImpl(
             Timber.d("Imitate button press ${KeyEvent.keyCodeToString(keyCode)}, key code: $keyCode, device id: $deviceId, meta state: $metaState, scan code: $scanCode")
 
             when (keyCode) {
-                KeyEvent.KEYCODE_VOLUME_UP -> volumeAdapter.raiseVolume(showVolumeUi = true)
+                KeyEvent.KEYCODE_VOLUME_UP -> volumeAdapter.raiseVolume(VolumeStream.DEFAULT, showVolumeUi = true)
 
-                KeyEvent.KEYCODE_VOLUME_DOWN -> volumeAdapter.lowerVolume(showVolumeUi = true)
+                KeyEvent.KEYCODE_VOLUME_DOWN -> volumeAdapter.lowerVolume(VolumeStream.DEFAULT, showVolumeUi = true)
 
                 KeyEvent.KEYCODE_BACK -> accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
                 KeyEvent.KEYCODE_HOME -> accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME)

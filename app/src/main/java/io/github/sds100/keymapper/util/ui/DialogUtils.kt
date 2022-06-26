@@ -102,9 +102,13 @@ suspend fun Context.materialAlertDialogCustomView(
 
 suspend fun Context.multiChoiceDialog(
     lifecycleOwner: LifecycleOwner,
+    title: CharSequence,
     items: List<MultiChoiceItem<*>>
 ) = suspendCancellableCoroutine<List<*>?> { continuation ->
     materialAlertDialog {
+        //message isn't supported but title is
+        setTitle(title)
+
         val checkedItems = items
             .map { it.isChecked }
             .toBooleanArray()
@@ -139,10 +143,13 @@ suspend fun Context.multiChoiceDialog(
 
 suspend fun <ID> Context.singleChoiceDialog(
     lifecycleOwner: LifecycleOwner,
+    title: CharSequence? = null,
     items: List<Pair<ID, String>>
 ) = suspendCancellableCoroutine<ID?> { continuation ->
     materialAlertDialog {
-        //message isn't supported
+        //message isn't supported but title is
+        setTitle(title)
+
         setItems(
             items.map { it.second }.toTypedArray(),
         ) { _, position ->

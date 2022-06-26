@@ -43,8 +43,9 @@ class CreateActionViewModelImpl(
                     it.id to it.label
                 }
 
-                val imeId =
-                    showPopup("choose_ime", PopupUi.SingleChoice(items)) ?: return null
+                val dialog = PopupUi.SingleChoice(title = getString(R.string.dialog_title_choose_keyboard), items)
+                val imeId = showPopup("choose_ime", dialog) ?: return null
+
                 val imeName = inputMethods.single { it.id == imeId }.label
 
                 return ActionData.SwitchKeyboard(imeId, imeName)
@@ -88,84 +89,20 @@ class CreateActionViewModelImpl(
             ActionId.VOLUME_MUTE,
             ActionId.VOLUME_UNMUTE,
             ActionId.VOLUME_TOGGLE_MUTE -> {
-
-                val showVolumeUiId = 0
-                val isVolumeUiChecked =
-                    when (oldData) {
-                        is ActionData.Volume.Up -> oldData.showVolumeUi
-                        is ActionData.Volume.Down -> oldData.showVolumeUi
-                        is ActionData.Volume.Mute -> oldData.showVolumeUi
-                        is ActionData.Volume.UnMute -> oldData.showVolumeUi
-                        is ActionData.Volume.ToggleMute -> oldData.showVolumeUi
-                        else -> false
-                    }
-
-                val dialogItems = listOf(
-                    MultiChoiceItem(
-                        showVolumeUiId,
-                        getString(R.string.flag_show_volume_dialog),
-                        isVolumeUiChecked
-                    )
-                )
-
-                val showVolumeUiDialog = PopupUi.MultiChoice(items = dialogItems)
-
-                val chosenFlags = showPopup("show_volume_ui", showVolumeUiDialog) ?: return null
-
-                val showVolumeUi = chosenFlags.contains(showVolumeUiId)
-
-                val action = when (actionId) {
-                    ActionId.VOLUME_UP -> ActionData.Volume.Up(showVolumeUi)
-                    ActionId.VOLUME_DOWN -> ActionData.Volume.Down(showVolumeUi)
-                    ActionId.VOLUME_MUTE -> ActionData.Volume.Mute(showVolumeUi)
-                    ActionId.VOLUME_UNMUTE -> ActionData.Volume.UnMute(showVolumeUi)
-                    ActionId.VOLUME_TOGGLE_MUTE -> ActionData.Volume.ToggleMute(
-                        showVolumeUi
-                    )
-                    else -> throw Exception("don't know how to create action for $actionId")
-                }
-
-                return action
-            }
-
-            ActionId.VOLUME_INCREASE_STREAM,
-            ActionId.VOLUME_DECREASE_STREAM -> {
-
-                val showVolumeUiId = 0
-                val isVolumeUiChecked = if (oldData is ActionData.Volume.Stream) {
+                val isShowVolumeUiChecked = if (oldData is ActionData.Volume) {
                     oldData.showVolumeUi
                 } else {
                     false
                 }
-
-                val dialogItems = listOf(
-                    MultiChoiceItem(
-                        showVolumeUiId,
-                        getString(R.string.flag_show_volume_dialog),
-                        isVolumeUiChecked
-                    )
-                )
-
-                val showVolumeUiDialog = PopupUi.MultiChoice(items = dialogItems)
-
-                val chosenFlags =
-                    showPopup("show_volume_ui", showVolumeUiDialog) ?: return null
-
-                val showVolumeUi = chosenFlags.contains(showVolumeUiId)
-
-                val items = VolumeStream.values()
-                    .map { it to getString(VolumeStreamUtils.getLabel(it)) }
-
-                val stream = showPopup("pick_volume_stream", PopupUi.SingleChoice(items))
-                    ?: return null
+                val showVolumeUi = chooseWhetherToShowVolumeUi(isShowVolumeUiChecked)
+                val volumeStream = chooseVolumeStream()
 
                 val action = when (actionId) {
-                    ActionId.VOLUME_INCREASE_STREAM ->
-                        ActionData.Volume.Stream.Increase(showVolumeUi = showVolumeUi, stream)
-
-                    ActionId.VOLUME_DECREASE_STREAM ->
-                        ActionData.Volume.Stream.Decrease(showVolumeUi = showVolumeUi, stream)
-
+                    ActionId.VOLUME_UP -> ActionData.Volume.Up(showVolumeUi, volumeStream)
+                    ActionId.VOLUME_DOWN -> ActionData.Volume.Down(showVolumeUi, volumeStream)
+                    ActionId.VOLUME_MUTE -> ActionData.Volume.Mute(showVolumeUi, volumeStream)
+                    ActionId.VOLUME_UNMUTE -> ActionData.Volume.UnMute(showVolumeUi, volumeStream)
+                    ActionId.VOLUME_TOGGLE_MUTE -> ActionData.Volume.ToggleMute(showVolumeUi, volumeStream)
                     else -> throw Exception("don't know how to create action for $actionId")
                 }
 
@@ -176,11 +113,10 @@ class CreateActionViewModelImpl(
                 val items = RingerMode.values()
                     .map { it to getString(RingerModeUtils.getLabel(it)) }
 
-                val ringerMode =
-                    showPopup("pick_ringer_mode", PopupUi.SingleChoice(items))
-                        ?: return null
+                val dialog = PopupUi.SingleChoice(title = getString(R.string.dialog_title_choose_ringer_mode), items)
+                val ringerMode = showPopup("pick_ringer_mode", dialog) ?: return null
 
-                return ActionData.Volume.SetRingerMode(ringerMode)
+                return ActionData.SetRingerMode(ringerMode)
             }
 
             //don't need to show options for disabling do not disturb
@@ -189,9 +125,8 @@ class CreateActionViewModelImpl(
                 val items = DndMode.values()
                     .map { it to getString(DndModeUtils.getLabel(it)) }
 
-                val dndMode =
-                    showPopup("pick_dnd_mode", PopupUi.SingleChoice(items))
-                        ?: return null
+                val dialog = PopupUi.SingleChoice(title = getString(R.string.dialog_title_choose_dnd_mode), items)
+                val dndMode = showPopup("pick_dnd_mode", dialog) ?: return null
 
                 val action = when (actionId) {
                     ActionId.TOGGLE_DND_MODE -> ActionData.DoNotDisturb.Toggle(dndMode)
@@ -218,8 +153,11 @@ class CreateActionViewModelImpl(
                     )
                 }
 
-                val orientations =
-                    showPopup("pick_orientations", PopupUi.MultiChoice(items)) ?: return null
+                val dialog = PopupUi.MultiChoice(
+                    title = getString(R.string.dialog_title_choose_orientations_to_cycle),
+                    items
+                )
+                val orientations = showPopup("pick_orientations", dialog) ?: return null
 
                 return ActionData.Rotation.CycleRotations(orientations)
             }
@@ -231,8 +169,8 @@ class CreateActionViewModelImpl(
                     it to getString(CameraLensUtils.getLabel(it))
                 }
 
-                val lens = showPopup("pick_lens", PopupUi.SingleChoice(items))
-                    ?: return null
+                val dialog = PopupUi.SingleChoice(getString(R.string.dialog_title_choose_camera_flash), items)
+                val lens = showPopup("pick_lens", dialog) ?: return null
 
                 val action = when (actionId) {
                     ActionId.TOGGLE_FLASHLIGHT -> ActionData.Flashlight.Toggle(lens)
@@ -428,9 +366,9 @@ class CreateActionViewModelImpl(
             ActionId.LANDSCAPE_MODE -> return ActionData.Rotation.Landscape
             ActionId.SWITCH_ORIENTATION -> return ActionData.Rotation.SwitchOrientation
 
-            ActionId.VOLUME_SHOW_DIALOG -> return ActionData.Volume.ShowDialog
-            ActionId.CYCLE_RINGER_MODE -> return ActionData.Volume.CycleRingerMode
-            ActionId.CYCLE_VIBRATE_RING -> return ActionData.Volume.CycleVibrateRing
+            ActionId.VOLUME_SHOW_DIALOG -> return ActionData.ShowVolumeDialog
+            ActionId.CYCLE_RINGER_MODE -> return ActionData.CycleRingerMode
+            ActionId.CYCLE_VIBRATE_RING -> return ActionData.CycleVibrateRing
 
             ActionId.EXPAND_NOTIFICATION_DRAWER -> return ActionData.StatusBar.ExpandNotifications
             ActionId.TOGGLE_NOTIFICATION_DRAWER -> return ActionData.StatusBar.ToggleNotifications
@@ -488,6 +426,37 @@ class CreateActionViewModelImpl(
             ActionId.ANSWER_PHONE_CALL -> return ActionData.AnswerCall
             ActionId.END_PHONE_CALL -> return ActionData.EndCall
         }
+    }
+
+    private suspend fun chooseWhetherToShowVolumeUi(isChecked: Boolean): Boolean {
+        val showVolumeUiId = 0
+
+        val showVolumeUiDialogItem = MultiChoiceItem(
+            showVolumeUiId,
+            getString(R.string.flag_show_volume_dialog),
+            isChecked
+        )
+
+        val showVolumeUiDialog: PopupUi.MultiChoice<Int> = PopupUi.MultiChoice(
+            title = getString(R.string.dialog_title_choose_to_show_volume_ui),
+            items = listOf(showVolumeUiDialogItem)
+        )
+
+        val chosenFlags = showPopup("show_volume_ui", showVolumeUiDialog) ?: emptyList()
+
+        return chosenFlags.contains(showVolumeUiId)
+    }
+
+    private suspend fun chooseVolumeStream(): VolumeStream {
+        val items = VolumeStream.values()
+            .map { it to getString(VolumeStreamUtils.getLabel(it)) }
+
+        val dialog = PopupUi.SingleChoice(
+            title = getString(R.string.dialog_title_pick_stream),
+            items
+        )
+
+        return showPopup("pick_volume_stream", dialog) ?: VolumeStream.DEFAULT
     }
 }
 

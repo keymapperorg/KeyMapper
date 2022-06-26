@@ -161,7 +161,7 @@ class PerformActionsUseCaseImpl(
                 }
             }
 
-            is ActionData.Volume.SetRingerMode -> {
+            is ActionData.SetRingerMode -> {
                 result = volumeAdapter.setRingerMode(action.ringerMode)
             }
 
@@ -233,36 +233,22 @@ class PerformActionsUseCaseImpl(
             }
 
             is ActionData.Volume.Down -> {
-                result = volumeAdapter.lowerVolume(showVolumeUi = action.showVolumeUi)
+                result = volumeAdapter.lowerVolume(action.volumeStream, action.showVolumeUi)
             }
             is ActionData.Volume.Up -> {
-                result = volumeAdapter.raiseVolume(showVolumeUi = action.showVolumeUi)
+                result = volumeAdapter.raiseVolume(action.volumeStream, action.showVolumeUi)
             }
 
             is ActionData.Volume.Mute -> {
-                result = volumeAdapter.muteVolume(showVolumeUi = action.showVolumeUi)
-            }
-
-            is ActionData.Volume.Stream.Decrease -> {
-                result = volumeAdapter.lowerVolume(
-                    stream = action.volumeStream,
-                    showVolumeUi = action.showVolumeUi
-                )
-            }
-
-            is ActionData.Volume.Stream.Increase -> {
-                result = volumeAdapter.raiseVolume(
-                    stream = action.volumeStream,
-                    showVolumeUi = action.showVolumeUi
-                )
+                result = volumeAdapter.muteVolume(action.volumeStream, action.showVolumeUi)
             }
 
             is ActionData.Volume.ToggleMute -> {
-                result = volumeAdapter.toggleMuteVolume(showVolumeUi = action.showVolumeUi)
+                result = volumeAdapter.toggleMuteVolume(action.volumeStream, action.showVolumeUi)
             }
 
             is ActionData.Volume.UnMute -> {
-                result = volumeAdapter.unmuteVolume(showVolumeUi = action.showVolumeUi)
+                result = volumeAdapter.unmuteVolume(action.volumeStream, action.showVolumeUi)
             }
 
             is ActionData.TapScreen -> {
@@ -390,7 +376,7 @@ class PerformActionsUseCaseImpl(
                 }
             }
 
-            is ActionData.Volume.CycleRingerMode -> {
+            is ActionData.CycleRingerMode -> {
                 result = when (volumeAdapter.ringerMode) {
                     RingerMode.NORMAL -> volumeAdapter.setRingerMode(RingerMode.VIBRATE)
                     RingerMode.VIBRATE -> volumeAdapter.setRingerMode(RingerMode.SILENT)
@@ -398,7 +384,7 @@ class PerformActionsUseCaseImpl(
                 }
             }
 
-            is ActionData.Volume.CycleVibrateRing -> {
+            is ActionData.CycleVibrateRing -> {
                 result = when (volumeAdapter.ringerMode) {
                     RingerMode.NORMAL -> volumeAdapter.setRingerMode(RingerMode.VIBRATE)
                     RingerMode.VIBRATE -> volumeAdapter.setRingerMode(RingerMode.NORMAL)
@@ -693,7 +679,7 @@ class PerformActionsUseCaseImpl(
                     accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_POWER_DIALOG)
             }
 
-            is ActionData.Volume.ShowDialog -> {
+            is ActionData.ShowVolumeDialog -> {
                 result = volumeAdapter.showVolumeUi()
             }
 

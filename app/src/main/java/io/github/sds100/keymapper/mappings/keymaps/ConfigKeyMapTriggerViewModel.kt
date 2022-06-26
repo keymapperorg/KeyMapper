@@ -276,15 +276,15 @@ class ConfigKeyMapTriggerViewModel(
             val devices = config.getAvailableTriggerKeyDevices()
             val showDeviceDescriptors = displayKeyMap.showDeviceDescriptors.first()
 
-            val listItems = devices.map { device: TriggerKeyDevice ->
+            val items = devices.map { device: TriggerKeyDevice ->
                 when (device) {
                     TriggerKeyDevice.Any -> idAny to getString(R.string.any_device)
                     TriggerKeyDevice.Internal -> idInternal to getString(R.string.this_device)
                     is TriggerKeyDevice.External -> {
                         if (showDeviceDescriptors) {
                             val name = InputDeviceUtils.appendDeviceDescriptorToName(
-                                    device.descriptor,
-                                    device.name
+                                device.descriptor,
+                                device.name
                             )
                             device.descriptor to name
                         } else {
@@ -294,10 +294,8 @@ class ConfigKeyMapTriggerViewModel(
                 }
             }
 
-            val triggerKeyDeviceId = showPopup(
-                    "pick_trigger_key_device",
-                    PopupUi.SingleChoice(listItems)
-            ) ?: return@launch
+            val dialog = PopupUi.SingleChoice(title = getString(R.string.dialog_title_choose_device), items)
+            val triggerKeyDeviceId = showPopup("pick_trigger_key_device", dialog) ?: return@launch
 
             val selectedTriggerKeyDevice = when (triggerKeyDeviceId) {
                 idAny -> TriggerKeyDevice.Any

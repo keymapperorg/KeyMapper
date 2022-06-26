@@ -78,8 +78,6 @@ object ActionUtils {
             ActionId.VOLUME_UP -> ActionCategory.VOLUME
             ActionId.VOLUME_DOWN -> ActionCategory.VOLUME
             ActionId.VOLUME_SHOW_DIALOG -> ActionCategory.VOLUME
-            ActionId.VOLUME_DECREASE_STREAM -> ActionCategory.VOLUME
-            ActionId.VOLUME_INCREASE_STREAM -> ActionCategory.VOLUME
             ActionId.CYCLE_RINGER_MODE -> ActionCategory.VOLUME
             ActionId.CHANGE_RINGER_MODE -> ActionCategory.VOLUME
             ActionId.CYCLE_VIBRATE_RING -> ActionCategory.VOLUME
@@ -185,8 +183,6 @@ object ActionUtils {
             ActionId.VOLUME_UP -> R.string.action_volume_up
             ActionId.VOLUME_DOWN -> R.string.action_volume_down
             ActionId.VOLUME_SHOW_DIALOG -> R.string.action_volume_show_dialog
-            ActionId.VOLUME_DECREASE_STREAM -> R.string.action_decrease_stream
-            ActionId.VOLUME_INCREASE_STREAM -> R.string.action_increase_stream
             ActionId.CYCLE_RINGER_MODE -> R.string.action_cycle_ringer_mode
             ActionId.CHANGE_RINGER_MODE -> R.string.action_change_ringer_mode
             ActionId.CYCLE_VIBRATE_RING -> R.string.action_cycle_vibrate_ring
@@ -293,8 +289,6 @@ object ActionUtils {
             ActionId.VOLUME_UP -> R.drawable.ic_outline_volume_up_24
             ActionId.VOLUME_DOWN -> R.drawable.ic_outline_volume_down_24
             ActionId.VOLUME_SHOW_DIALOG -> null
-            ActionId.VOLUME_DECREASE_STREAM -> R.drawable.ic_outline_volume_down_24
-            ActionId.VOLUME_INCREASE_STREAM -> R.drawable.ic_outline_volume_up_24
             ActionId.CYCLE_RINGER_MODE -> null
             ActionId.CHANGE_RINGER_MODE -> null
             ActionId.CYCLE_VIBRATE_RING -> null
@@ -479,8 +473,6 @@ object ActionUtils {
 
             ActionId.VOLUME_UP,
             ActionId.VOLUME_DOWN,
-            ActionId.VOLUME_INCREASE_STREAM,
-            ActionId.VOLUME_DECREASE_STREAM,
             ActionId.VOLUME_SHOW_DIALOG,
             ActionId.CYCLE_RINGER_MODE,
             ActionId.CYCLE_VIBRATE_RING,
@@ -588,9 +580,7 @@ fun ActionData.isEditable(): Boolean = when (this) {
     is ActionData.Volume.Mute,
     is ActionData.Volume.UnMute,
     is ActionData.Volume.ToggleMute,
-    is ActionData.Volume.Stream.Increase,
-    is ActionData.Volume.Stream.Decrease,
-    is ActionData.Volume.SetRingerMode,
+    is ActionData.SetRingerMode,
     is ActionData.DoNotDisturb.Enable,
     is ActionData.DoNotDisturb.Toggle,
     is ActionData.Rotation.CycleRotations,
