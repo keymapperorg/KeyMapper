@@ -105,21 +105,35 @@ This action will play a sound. Key Mapper will copy the sound file to its own fo
 
 ### Volume up/down
 
+!!! tip "Change specific volume stream"
+    Before Key Mapper 2.5.0 this option only worked with the "Increase/decrease volume stream" actions.
+
+    You can choose one of these volume streams that the action should change. If you select "Default" the action will let the system decide which stream to change.
+
+    - Alarm
+    - DTMF
+    - Music
+    - Notification
+    - Ring
+    - System
+    - Voice call
+    - Accessibility
+
 ### Mute/un-mute/toggle volume (Android 6.0+)
 
+!!! tip "Mute specific volume stream (Key Mapper 2.5.0+)"
+    You can choose one of these volume streams that the action should change. If you select "Default" the action will let the system decide which stream to change.
+
+    - Alarm
+    - DTMF
+    - Music
+    - Notification
+    - Ring
+    - System
+    - Voice call
+    - Accessibility
+
 ### Show volume popup
-
-### Increase/decrease volume stream
-This will increase or decrease a specific one of these volume streams.
-
-- Alarm
-- DTMF
-- Music
-- Notification
-- Ring
-- System
-- Voice call
-- Accessibility
 
 ### Cycle through ringer modes
 
