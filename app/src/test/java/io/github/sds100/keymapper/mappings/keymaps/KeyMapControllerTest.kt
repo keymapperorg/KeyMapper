@@ -18,6 +18,7 @@ import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
+import io.github.sds100.keymapper.system.volume.VolumeStream
 import io.github.sds100.keymapper.util.*
 import junitparams.JUnitParamsRunner
 import junitparams.Parameters
@@ -1875,7 +1876,7 @@ class KeyMapControllerTest {
         runTest(testDispatcher) {
             //given
             val action = KeyMapAction(
-                data = ActionData.Volume.Up(showVolumeUi = false),
+                data = ActionData.Volume.Up(showVolumeUi = false, VolumeStream.DEFAULT),
                 repeat = true
             )
 
