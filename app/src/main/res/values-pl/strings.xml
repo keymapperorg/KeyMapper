@@ -425,6 +425,8 @@
     <string name="dialog_message_no_app_found_to_choose_a_file">Aplikacja Pliki, umożliwiająca wybraniu pliku w Key Mapper, nie jest zainstalowana. Proszę zainstalować menedżera plików.</string>
     <string name="dialog_title_accessibility_service_explanation">Usługa ułatwień dostępu musi być włączona</string>
     <string name="dialog_message_accessibility_service_explanation">@string/accessibility_service_explanation</string>
+    <string name="dialog_title_fix_dnd_trigger_error">Udziel dostęp do trybu Nie przeszkadzać</string>
+    <string name="dialog_message_fix_dnd_trigger_error">Spowoduje to przejście do strony ustawień urządzenia, na której możesz zarządzać aplikacjami, które mogą zmieniać stan Nie przeszkadzać. To <b>nie występuje na niektórych urządzeniach</b>, więc możesz kliknąć Nie wyświetlaj ponownie, jeśli nie widzisz aplikacji Key Mapper na tej liście.</string>
     <string name="pos_yes">Tak</string>
     <string name="pos_done">Gotowe</string>
     <string name="pos_opt_in">Zaakceptuj</string>
