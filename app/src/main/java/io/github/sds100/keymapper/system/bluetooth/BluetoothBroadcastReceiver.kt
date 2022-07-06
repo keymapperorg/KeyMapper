@@ -1,18 +1,21 @@
 package io.github.sds100.keymapper.system.bluetooth
 
-import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import io.github.sds100.keymapper.KeyMapperApp
-import timber.log.Timber
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 28/12/2018.
  */
 
+@AndroidEntryPoint
 class BluetoothBroadcastReceiver : BroadcastReceiver() {
+    
+    @Inject
+    lateinit var bluetoothAdapter: AndroidBluetoothAdapter
 
     override fun onReceive(context: Context?, intent: Intent?) {
         context ?: return
@@ -21,7 +24,7 @@ class BluetoothBroadcastReceiver : BroadcastReceiver() {
         if (intent.action == BluetoothDevice.ACTION_ACL_CONNECTED ||
             intent.action == BluetoothDevice.ACTION_ACL_DISCONNECTED
         ) {
-            (context.applicationContext as KeyMapperApp).bluetoothMonitor.onReceiveIntent(intent)
+            bluetoothAdapter.onReceiveIntent(intent)
         }
     }
 }

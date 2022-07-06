@@ -12,16 +12,18 @@ import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
 import androidx.core.graphics.drawable.toBitmap
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.api.LaunchKeyMapShortcutActivity
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.util.*
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 20/03/2021.
  */
-class AndroidAppShortcutAdapter(context: Context) : AppShortcutAdapter {
+class AndroidAppShortcutAdapter @Inject constructor(@ApplicationContext context: Context) : AppShortcutAdapter {
     private val ctx = context.applicationContext
 
     override val installedAppShortcuts: Flow<State<List<AppShortcutInfo>>> = flow {

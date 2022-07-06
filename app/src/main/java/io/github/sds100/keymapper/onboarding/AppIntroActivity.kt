@@ -7,32 +7,37 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import com.github.appintro.AppIntro2
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.MainActivity
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.ServiceLocator
+import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapterImpl
+import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
 import io.github.sds100.keymapper.system.permissions.RequestPermissionDelegate
-import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.showPopups
 import kotlinx.coroutines.flow.collectLatest
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 07/07/2019.
  */
 
+@AndroidEntryPoint
 class AppIntroActivity : AppIntro2() {
 
     companion object {
         const val EXTRA_SLIDES = "extra_slides"
     }
 
-    private val viewModel by viewModels<AppIntroViewModel> {
-        val slides = intent.getStringArrayExtra(EXTRA_SLIDES)
-
-        Inject.appIntroViewModel(this, slides!!.toList())
-    }
+    private val viewModel by viewModels<AppIntroViewModel>()
 
     private lateinit var requestPermissionDelegate: RequestPermissionDelegate
+
+    @Inject
+    lateinit var permissionAdapter: AndroidPermissionAdapter
+
+    @Inject
+    lateinit var notificationReceiverAdapter: NotificationReceiverAdapterImpl
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,10 +46,11 @@ class AppIntroActivity : AppIntro2() {
 
         isSkipButtonEnabled = false
 
-        requestPermissionDelegate = RequestPermissionDelegate(this, showDialogs = false)
+        requestPermissionDelegate =
+            RequestPermissionDelegate(this, showDialogs = false, permissionAdapter, notificationReceiverAdapter)
 
         launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
-            ServiceLocator.permissionAdapter(this@AppIntroActivity).request.collectLatest { permission ->
+            permissionAdapter.request.collectLatest { permission ->
                 requestPermissionDelegate.requestPermission(
                     permission,
                     null

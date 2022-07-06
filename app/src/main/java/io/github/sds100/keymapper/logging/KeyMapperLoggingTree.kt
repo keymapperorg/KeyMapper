@@ -10,11 +10,12 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 import timber.log.Timber
 import java.util.*
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 13/05/2021.
  */
-class KeyMapperLoggingTree(
+class KeyMapperLoggingTree @Inject constructor(
     private val coroutineScope: CoroutineScope,
     preferenceRepository: PreferenceRepository,
     private val logRepository: LogRepository

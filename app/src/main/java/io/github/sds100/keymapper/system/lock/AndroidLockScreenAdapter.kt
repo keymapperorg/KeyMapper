@@ -6,13 +6,15 @@ import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 22/04/2021.
  */
-class AndroidLockScreenAdapter(context: Context) : LockScreenAdapter {
+class AndroidLockScreenAdapter @Inject constructor(@ApplicationContext context: Context) : LockScreenAdapter {
     private val ctx = context.applicationContext
 
     private val devicePolicyManager: DevicePolicyManager by lazy { ctx.getSystemService()!! }

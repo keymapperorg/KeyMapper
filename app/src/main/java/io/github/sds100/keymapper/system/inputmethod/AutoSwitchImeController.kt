@@ -5,9 +5,9 @@ import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
-import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
-import io.github.sds100.keymapper.system.popup.PopupMessageAdapter
+import io.github.sds100.keymapper.system.popup.ToastAdapter
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
@@ -24,9 +24,9 @@ class AutoSwitchImeController(
     private val inputMethodAdapter: InputMethodAdapter,
     private val pauseMappingsUseCase: PauseMappingsUseCase,
     private val devicesAdapter: DevicesAdapter,
-    private val popupMessageAdapter: PopupMessageAdapter,
+    private val popupMessageAdapter: ToastAdapter,
     private val resourceProvider: ResourceProvider,
-    private val accessibilityServiceAdapter: ServiceAdapter
+    private val accessibilityServiceAdapter: AccessibilityServiceAdapter
 ) : PreferenceRepository by preferenceRepository {
     private val imeHelper = KeyMapperImeHelper(inputMethodAdapter)
 

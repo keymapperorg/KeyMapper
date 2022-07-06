@@ -9,7 +9,9 @@ import io.github.sds100.keymapper.system.JobSchedulerHelper
 /**
  * Created by sds100 on 02/04/2021.
  */
+
 class ObserveInputMethodsJob : JobService() {
+    
     override fun onStartJob(params: JobParameters?): Boolean {
         (applicationContext as KeyMapperApp).inputMethodAdapter.onInputMethodsUpdate()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {

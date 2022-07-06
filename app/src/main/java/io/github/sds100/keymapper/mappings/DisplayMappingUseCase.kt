@@ -6,7 +6,7 @@ import io.github.sds100.keymapper.constraints.GetConstraintErrorUseCase
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.shizuku.ShizukuUtils
-import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
@@ -25,7 +25,7 @@ class DisplaySimpleMappingUseCaseImpl(
     private val permissionAdapter: PermissionAdapter,
     private val inputMethodAdapter: InputMethodAdapter,
     private val preferenceRepository: PreferenceRepository,
-    private val accessibilityServiceAdapter: ServiceAdapter,
+    private val accessibilityServiceAdapter: AccessibilityServiceAdapter,
     getActionError: GetActionErrorUseCase,
     getConstraintError: GetConstraintErrorUseCase,
 ) : DisplaySimpleMappingUseCase,

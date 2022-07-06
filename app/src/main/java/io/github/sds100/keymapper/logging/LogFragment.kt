@@ -17,7 +17,6 @@ import com.michaelflisar.dragselectrecyclerview.DragSelectionProcessor
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
 import io.github.sds100.keymapper.logEntry
-import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.SimpleRecyclerViewFragment
@@ -30,9 +29,7 @@ import kotlinx.coroutines.flow.collectLatest
  */
 class LogFragment : SimpleRecyclerViewFragment<LogEntryListItem>() {
 
-    private val viewModel by viewModels<LogViewModel> {
-        Inject.logViewModel(requireContext())
-    }
+    private val viewModel by viewModels<LogViewModel>()
 
     override val listItems: Flow<State<List<LogEntryListItem>>>
         get() = viewModel.listItems

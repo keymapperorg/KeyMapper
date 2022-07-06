@@ -3,13 +3,14 @@ package io.github.sds100.keymapper.mappings.fingerprintmaps
 import androidx.navigation.navGraphViewModels
 import com.airbnb.epoxy.EpoxyRecyclerView
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.ui.*
 import io.github.sds100.keymapper.ui.utils.configuredCheckBox
 import io.github.sds100.keymapper.ui.utils.configuredSlider
 import io.github.sds100.keymapper.util.FragmentInfo
-import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.State
-import io.github.sds100.keymapper.util.ui.*
+import io.github.sds100.keymapper.util.ui.CheckBoxListItem
+import io.github.sds100.keymapper.util.ui.ListItem
+import io.github.sds100.keymapper.util.ui.SimpleRecyclerViewFragment
+import io.github.sds100.keymapper.util.ui.SliderListItem
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -23,9 +24,7 @@ class FingerprintMapOptionsFragment : SimpleRecyclerViewFragment<ListItem>() {
         { FingerprintMapOptionsFragment() }
     )
 
-    private val configViewModel: ConfigFingerprintMapViewModel by navGraphViewModels(R.id.nav_config_fingerprint_map) {
-        Inject.configFingerprintMapViewModel(requireContext())
-    }
+    private val configViewModel: ConfigFingerprintMapViewModel by navGraphViewModels(R.id.nav_config_fingerprint_map)
 
     private val viewModel: ConfigFingerprintMapOptionsViewModel
         get() = configViewModel.configOptionsViewModel

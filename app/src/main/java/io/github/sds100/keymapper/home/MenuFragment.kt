@@ -11,7 +11,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentMenuBinding
-import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.color
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.str
@@ -21,9 +20,7 @@ import kotlinx.coroutines.flow.collectLatest
 
 class MenuFragment : BottomSheetDialogFragment() {
 
-    private val homeViewModel: HomeViewModel by activityViewModels {
-        Inject.homeViewModel(requireContext())
-    }
+    private val homeViewModel: HomeViewModel by activityViewModels()
 
     private val viewModel: HomeMenuViewModel
         get() = homeViewModel.menuViewModel

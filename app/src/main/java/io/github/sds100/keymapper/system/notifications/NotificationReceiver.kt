@@ -10,11 +10,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.lifecycleScope
-import io.github.sds100.keymapper.ServiceLocator
+import io.github.sds100.keymapper.system.media.AndroidMediaAdapter
 import io.github.sds100.keymapper.util.Event
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 14/11/20.
@@ -29,7 +30,8 @@ class NotificationReceiver : NotificationListenerService(), LifecycleOwner {
         )
     }
 
-    private val mediaAdapter by lazy { ServiceLocator.mediaAdapter(this) }
+    @Inject
+    lateinit var mediaAdapter: AndroidMediaAdapter
 
     private val activeSessionsChangeListener =
         MediaSessionManager.OnActiveSessionsChangedListener { controllers ->
@@ -38,9 +40,8 @@ class NotificationReceiver : NotificationListenerService(), LifecycleOwner {
 
     private var lastNotificationKey: String? = null
 
-    private val serviceAdapter: NotificationReceiverAdapter by lazy {
-        ServiceLocator.notificationReceiverAdapter(this)
-    }
+    @Inject
+    lateinit var serviceAdapter: NotificationReceiverAdapterImpl
 
     private lateinit var lifecycleRegistry: LifecycleRegistry
 

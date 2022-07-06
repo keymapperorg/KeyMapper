@@ -2,18 +2,20 @@ package io.github.sds100.keymapper.settings
 
 import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 19/01/21.
  */
-class SettingsViewModel(
+@HiltViewModel
+class SettingsViewModel @Inject constructor(
     private val useCase: ConfigSettingsUseCase,
     resourceProvider: ResourceProvider
 ) : ViewModel(), PopupViewModel by PopupViewModelImpl(), ResourceProvider by resourceProvider {
@@ -157,20 +159,6 @@ class SettingsViewModel(
 
                 useCase.setPreference(prefKey, newCheckedDevices.toSet())
             }
-        }
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    class Factory(
-        private val configSettingsUseCase: ConfigSettingsUseCase,
-        private val resourceProvider: ResourceProvider
-    ) : ViewModelProvider.NewInstanceFactory() {
-
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return SettingsViewModel(
-                configSettingsUseCase,
-                resourceProvider
-            ) as T
         }
     }
 }

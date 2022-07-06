@@ -6,7 +6,7 @@ import io.github.sds100.keymapper.system.devices.FakeDevicesAdapter
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeMessenger
-import io.github.sds100.keymapper.system.popup.PopupMessageAdapter
+import io.github.sds100.keymapper.system.popup.ToastAdapter
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.InputEventType
 import io.github.sds100.keymapper.util.State
@@ -36,7 +36,7 @@ class PerformActionsUseCaseTest {
     private lateinit var mockKeyMapperImeMessenger: KeyMapperImeMessenger
     private lateinit var fakeDevicesAdapter: FakeDevicesAdapter
     private lateinit var mockAccessibilityService: IAccessibilityService
-    private lateinit var mockToastAdapter: PopupMessageAdapter
+    private lateinit var mockToastAdapter: ToastAdapter
 
     @Before
     fun init() {

@@ -7,11 +7,13 @@ import android.content.IntentFilter
 import android.os.BatteryManager
 import android.os.Build
 import androidx.core.content.getSystemService
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import javax.inject.Inject
 
-class AndroidPowerAdapter(context: Context) : PowerAdapter {
+class AndroidPowerAdapter @Inject constructor(@ApplicationContext context: Context) : PowerAdapter {
     private val ctx: Context = context.applicationContext
     private val batteryManager: BatteryManager by lazy { ctx.getSystemService()!! }
 

@@ -17,7 +17,10 @@ import io.github.sds100.keymapper.fixError
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapTriggerViewModel
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapViewModel
 import io.github.sds100.keymapper.triggerKey
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.FragmentInfo
+import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.color
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.RecyclerViewFragment
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
@@ -35,9 +38,7 @@ class TriggerFragment : RecyclerViewFragment<TriggerKeyListItem, FragmentTrigger
     )
 
     private val configKeyMapTriggerViewModel: ConfigKeyMapTriggerViewModel by lazy {
-        navGraphViewModels<ConfigKeyMapViewModel>(R.id.nav_config_keymap) {
-            Inject.configKeyMapViewModel(requireContext())
-        }.value.configTriggerViewModel
+        navGraphViewModels<ConfigKeyMapViewModel>(R.id.nav_config_keymap).value.configTriggerViewModel
     }
 
     private val triggerKeyController = TriggerKeyController()

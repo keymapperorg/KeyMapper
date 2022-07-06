@@ -8,12 +8,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import com.github.appintro.SlidePolicy
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.databinding.FragmentAppIntroSlideBinding
-import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.showPopups
 import kotlinx.coroutines.flow.collectLatest
 
+@AndroidEntryPoint
 class ReportBugSlideFragment : Fragment(), SlidePolicy {
 
     companion object {
@@ -27,9 +28,7 @@ class ReportBugSlideFragment : Fragment(), SlidePolicy {
     val binding: FragmentAppIntroSlideBinding
         get() = _binding!!
 
-    private val viewModel by activityViewModels<ReportBugViewModel> {
-        Inject.reportBugViewModel(requireContext())
-    }
+    private val viewModel by activityViewModels<ReportBugViewModel> ()
 
     private val slideId: String by lazy {
         requireArguments().getString(KEY_SLIDE)!!

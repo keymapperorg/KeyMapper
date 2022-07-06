@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.mappings.keymaps.trigger
 
-import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.Result
 import kotlinx.coroutines.CoroutineScope
@@ -11,11 +11,11 @@ import kotlinx.coroutines.flow.*
  */
 class RecordTriggerController(
     private val coroutineScope: CoroutineScope,
-    private val serviceAdapter: ServiceAdapter
+    private val accessibilityServiceAdapter: AccessibilityServiceAdapter
 ) : RecordTriggerUseCase {
     override val state = MutableStateFlow<RecordTriggerState>(RecordTriggerState.Stopped)
 
-    override val onRecordKey = serviceAdapter.eventReceiver.mapNotNull { event ->
+    override val onRecordKey = accessibilityServiceAdapter.eventReceiver.mapNotNull { event ->
         when (event) {
             is Event.RecordedTriggerKey -> {
                 val device = if (event.device != null && event.device.isExternal) {
@@ -32,7 +32,7 @@ class RecordTriggerController(
     }
 
     init {
-        serviceAdapter.eventReceiver.onEach { event ->
+        accessibilityServiceAdapter.eventReceiver.onEach { event ->
             when (event) {
                 is Event.OnStoppedRecordingTrigger -> state.value = RecordTriggerState.Stopped
 
@@ -43,11 +43,11 @@ class RecordTriggerController(
     }
 
     override suspend fun startRecording(): Result<*> {
-        return serviceAdapter.send(Event.StartRecordingTrigger)
+        return accessibilityServiceAdapter.send(Event.StartRecordingTrigger)
     }
 
     override suspend fun stopRecording(): Result<*> {
-        return serviceAdapter.send(Event.StopRecordingTrigger)
+        return accessibilityServiceAdapter.send(Event.StopRecordingTrigger)
     }
 }
 

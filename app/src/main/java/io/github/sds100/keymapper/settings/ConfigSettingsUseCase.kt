@@ -20,11 +20,12 @@ import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.State
 import kotlinx.coroutines.flow.*
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 14/02/2021.
  */
-class ConfigSettingsUseCaseImpl(
+class ConfigSettingsUseCaseImpl @Inject constructor(
     private val preferenceRepository: PreferenceRepository,
     private val permissionAdapter: PermissionAdapter,
     private val inputMethodAdapter: InputMethodAdapter,

@@ -8,7 +8,6 @@ import com.google.android.material.switchmaterial.SwitchMaterial
 import io.github.sds100.keymapper.databinding.FragmentFingerprintMapListBinding
 import io.github.sds100.keymapper.fingerprintMap
 import io.github.sds100.keymapper.home.HomeViewModel
-import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ui.ChipUi
 import io.github.sds100.keymapper.util.ui.OnChipClickCallback
@@ -21,9 +20,7 @@ import kotlinx.coroutines.flow.Flow
 class FingerprintMapListFragment :
     RecyclerViewFragment<FingerprintMapListItem, FragmentFingerprintMapListBinding>() {
 
-    private val homeViewModel: HomeViewModel by activityViewModels {
-        Inject.homeViewModel(requireContext())
-    }
+    private val homeViewModel: HomeViewModel by activityViewModels()
 
     private val viewModel by lazy { homeViewModel.fingerprintMapListViewModel }
 

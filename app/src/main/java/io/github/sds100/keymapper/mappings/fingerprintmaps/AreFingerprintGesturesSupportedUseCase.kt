@@ -5,11 +5,12 @@ import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 02/04/2021.
  */
-class AreFingerprintGesturesSupportedUseCaseImpl(
+class AreFingerprintGesturesSupportedUseCaseImpl @Inject constructor(
    private val preferenceRepository: PreferenceRepository
 ) : AreFingerprintGesturesSupportedUseCase {
     override val isSupported: Flow<Boolean?> =

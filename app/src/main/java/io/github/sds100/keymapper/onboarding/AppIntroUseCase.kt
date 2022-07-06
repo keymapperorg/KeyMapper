@@ -4,7 +4,7 @@ import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.fingerprintmaps.AreFingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.shizuku.ShizukuAdapter
-import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
@@ -16,12 +16,12 @@ import kotlinx.coroutines.flow.map
  */
 class AppIntroUseCaseImpl(
     private val permissionAdapter: PermissionAdapter,
-    private val serviceAdapter: ServiceAdapter,
+    private val accessibilityServiceAdapter: AccessibilityServiceAdapter,
     private val preferenceRepository: PreferenceRepository,
     private val fingerprintGesturesSupportedUseCase: AreFingerprintGesturesSupportedUseCase,
     private val shizukuAdapter: ShizukuAdapter
 ) : AppIntroUseCase {
-    override val serviceState: Flow<ServiceState> = serviceAdapter.state
+    override val serviceState: Flow<ServiceState> = accessibilityServiceAdapter.state
 
     override val isBatteryOptimised: Flow<Boolean> =
         permissionAdapter.isGrantedFlow(Permission.IGNORE_BATTERY_OPTIMISATION).map { !it }
@@ -39,11 +39,11 @@ class AppIntroUseCaseImpl(
     }
 
     override fun enableAccessibilityService() {
-        serviceAdapter.start()
+        accessibilityServiceAdapter.start()
     }
 
     override fun restartAccessibilityService() {
-        serviceAdapter.restart()
+        accessibilityServiceAdapter.restart()
     }
 
     override fun shownAppIntro() {

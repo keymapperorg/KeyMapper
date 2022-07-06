@@ -5,22 +5,31 @@ import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import androidx.annotation.RequiresApi
-import androidx.lifecycle.*
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.lifecycleScope
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.ServiceLocator
-import io.github.sds100.keymapper.UseCases
+import io.github.sds100.keymapper.system.inputmethod.ToggleCompatibleImeUseCase
 import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.flow.first
 import splitties.toast.toast
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 12/06/2020.
  */
 @RequiresApi(Build.VERSION_CODES.N)
+@AndroidEntryPoint
 class ToggleKeyMapperKeyboardTile : TileService(), LifecycleOwner {
 
-    private val useCase by lazy { UseCases.toggleCompatibleIme(this) }
-    private val resourceProvider by lazy { ServiceLocator.resourceProvider(this) }
+    @Inject
+    lateinit var useCase: ToggleCompatibleImeUseCase
+
+    @Inject
+    lateinit var resourceProvider: ResourceProvider
 
     private lateinit var lifecycleRegistry: LifecycleRegistry
 

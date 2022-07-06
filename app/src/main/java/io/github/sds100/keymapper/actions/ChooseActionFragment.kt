@@ -10,7 +10,6 @@ import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
 import io.github.sds100.keymapper.sectionHeader
 import io.github.sds100.keymapper.simple
 import io.github.sds100.keymapper.simpleGrid
-import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.*
@@ -33,9 +32,7 @@ class ChooseActionFragment : SimpleRecyclerViewFragment<ListItem>() {
 
     private val args: ChooseActionFragmentArgs by navArgs()
 
-    private val viewModel by viewModels<ChooseActionViewModel> {
-        Inject.chooseActionViewModel(requireContext())
-    }
+    private val viewModel by viewModels<ChooseActionViewModel>()
 
     override val listItems: Flow<State<List<ListItem>>>
         get() = viewModel.listItems

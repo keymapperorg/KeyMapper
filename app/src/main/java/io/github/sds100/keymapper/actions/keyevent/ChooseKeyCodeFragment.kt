@@ -6,7 +6,6 @@ import androidx.navigation.fragment.navArgs
 import com.airbnb.epoxy.EpoxyRecyclerView
 import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
 import io.github.sds100.keymapper.simple
-import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.RecyclerViewUtils
@@ -28,9 +27,7 @@ class ChooseKeyCodeFragment : SimpleRecyclerViewFragment<SimpleListItem>() {
     override var searchStateKey: String? = SEARCH_STATE_KEY
 
     private val args: ChooseKeyCodeFragmentArgs by navArgs()
-    private val viewModel: ChooseKeyCodeViewModel by viewModels {
-        Inject.chooseKeyCodeViewModel()
-    }
+    private val viewModel: ChooseKeyCodeViewModel by viewModels()
 
     override val listItems: Flow<State<List<SimpleListItem>>>
         get() = viewModel.state

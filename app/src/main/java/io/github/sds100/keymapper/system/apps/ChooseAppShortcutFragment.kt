@@ -11,7 +11,8 @@ import com.airbnb.epoxy.EpoxyRecyclerView
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
 import io.github.sds100.keymapper.simple
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.RecyclerViewUtils
 import io.github.sds100.keymapper.util.ui.SimpleRecyclerViewFragment
 import io.github.sds100.keymapper.util.ui.showPopups
@@ -36,9 +37,7 @@ class ChooseAppShortcutFragment : SimpleRecyclerViewFragment<AppShortcutListItem
     private val args: ChooseAppShortcutFragmentArgs by navArgs()
     override var searchStateKey: String? = SEARCH_STATE_KEY
 
-    private val viewModel: ChooseAppShortcutViewModel by viewModels {
-        Inject.chooseAppShortcutViewModel(requireContext())
-    }
+    private val viewModel: ChooseAppShortcutViewModel by viewModels ()
 
     override val listItems: Flow<State<List<AppShortcutListItem>>>
         get() = viewModel.state

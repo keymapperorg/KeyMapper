@@ -8,17 +8,19 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.google.android.material.color.DynamicColors
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.color
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 17/04/2021.
  */
-class AndroidNotificationAdapter(
-    context: Context,
+class AndroidNotificationAdapter @Inject constructor(
+    @ApplicationContext context: Context,
     private val coroutineScope: CoroutineScope
 ) : NotificationAdapter {
 

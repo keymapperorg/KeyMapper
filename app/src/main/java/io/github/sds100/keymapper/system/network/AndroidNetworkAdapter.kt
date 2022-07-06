@@ -5,15 +5,17 @@ import android.net.wifi.WifiManager
 import android.os.Build
 import android.telephony.TelephonyManager
 import androidx.core.content.getSystemService
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 24/04/2021.
  */
-class AndroidNetworkAdapter(
-    context: Context,
+class AndroidNetworkAdapter @Inject constructor(
+    @ApplicationContext context: Context,
     private val suAdapter: SuAdapter
 ) : NetworkAdapter {
     private val ctx = context.applicationContext

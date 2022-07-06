@@ -1,13 +1,14 @@
 package io.github.sds100.keymapper.system.accessibility
 
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 16/04/2021.
  */
 
-class ControlAccessibilityServiceUseCaseImpl(
-    private val adapter: ServiceAdapter
+class ControlAccessibilityServiceUseCaseImpl @Inject constructor(
+    private val adapter: AccessibilityServiceAdapter
 ) : ControlAccessibilityServiceUseCase {
     override val serviceState: Flow<ServiceState> = adapter.state
 

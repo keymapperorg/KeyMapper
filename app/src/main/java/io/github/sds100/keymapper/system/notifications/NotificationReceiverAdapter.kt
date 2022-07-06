@@ -10,9 +10,9 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
 import androidx.core.app.NotificationManagerCompat
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.system.JobSchedulerHelper
-import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.util.Error
@@ -22,17 +22,20 @@ import io.github.sds100.keymapper.util.Success
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import splitties.bitflags.withFlag
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 27/07/2021.
  */
 
-class NotificationReceiverAdapter(
-    context: Context,
+class NotificationReceiverAdapterImpl @Inject constructor(
+    @ApplicationContext context: Context,
     private val coroutineScope: CoroutineScope,
-) : ServiceAdapter {
+) : NotificationReceiverAdapter {
     private val ctx: Context = context.applicationContext
     override val state: MutableStateFlow<ServiceState> = MutableStateFlow(ServiceState.DISABLED)
 
@@ -75,23 +78,7 @@ class NotificationReceiverAdapter(
         return Success(Unit)
     }
 
-    override fun start(): Boolean {
-        return openSettingsPage()
-    }
-
-    override fun restart(): Boolean {
-        return openSettingsPage()
-    }
-
-    override fun stop(): Boolean {
-        return openSettingsPage()
-    }
-
-    override suspend fun isCrashed(): Boolean {
-        return false
-    }
-
-    private fun openSettingsPage(): Boolean {
+    override fun openSettingsPage() {
         Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 .withFlag(Intent.FLAG_ACTIVITY_CLEAR_TASK)
@@ -99,9 +86,7 @@ class NotificationReceiverAdapter(
 
             try {
                 ctx.startActivity(this)
-                return true
             } catch (e: ActivityNotFoundException) {
-                return false
             }
         }
     }
@@ -116,4 +101,13 @@ class NotificationReceiverAdapter(
             ServiceState.DISABLED
         }
     }
+}
+
+interface NotificationReceiverAdapter {
+    val state: StateFlow<ServiceState>
+
+    fun openSettingsPage()
+
+    suspend fun send(event: Event): Result<*>
+    val eventReceiver: SharedFlow<Event>
 }

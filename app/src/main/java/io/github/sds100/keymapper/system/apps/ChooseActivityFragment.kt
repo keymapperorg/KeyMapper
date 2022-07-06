@@ -5,7 +5,6 @@ import androidx.navigation.fragment.navArgs
 import com.airbnb.epoxy.EpoxyRecyclerView
 import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
 import io.github.sds100.keymapper.simple
-import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ui.RecyclerViewUtils
 import io.github.sds100.keymapper.util.ui.SimpleRecyclerViewFragment
@@ -27,9 +26,7 @@ class ChooseActivityFragment : SimpleRecyclerViewFragment<ActivityListItem>() {
 
     private val args: ChooseActivityFragmentArgs by navArgs()
 
-    private val viewModel: ChooseActivityViewModel by activityViewModels {
-        Inject.chooseActivityViewModel(requireContext())
-    }
+    private val viewModel: ChooseActivityViewModel by activityViewModels ()
 
     override val listItems: Flow<State<List<ActivityListItem>>>
         get() = viewModel.listItems

@@ -3,6 +3,9 @@ package io.github.sds100.keymapper.onboarding
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.util.ui.*
@@ -14,11 +17,16 @@ import kotlinx.coroutines.runBlocking
  * Created by sds100 on 14/02/2021.
  */
 
-class AppIntroViewModel(
+class AppIntroViewModel @AssistedInject constructor(
     private val useCase: AppIntroUseCase,
-    slides: List<String>,
+    @Assisted slides: List<String>,
     resourceProvider: ResourceProvider
 ) : ViewModel(), ResourceProvider by resourceProvider, PopupViewModel by PopupViewModelImpl() {
+
+    @dagger.assisted.AssistedFactory
+    interface AssistedFactory {
+        fun create(slides: List<String>): AppIntroViewModel
+    }
 
     companion object {
         private const val ID_BUTTON_ENABLE_ACCESSIBILITY_SERVICE = "enable_accessibility_service"
@@ -27,6 +35,15 @@ class AppIntroViewModel(
         private const val ID_BUTTON_DONT_KILL_MY_APP = "go_to_dont_kill_my_app"
         private const val ID_BUTTON_MORE_SHIZUKU_INFO = "shizuku_info"
         private const val ID_BUTTON_REQUEST_SHIZUKU_PERMISSION = "request_shizuku_permission"
+
+        fun provideFactory(
+            assistedFactory: AssistedFactory,
+            slides: List<String>
+        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return assistedFactory.create(slides) as T
+            }
+        }
     }
 
     private val slideModels: StateFlow<List<AppIntroSlideUi>> = combine(

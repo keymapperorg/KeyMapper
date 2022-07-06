@@ -12,7 +12,6 @@ import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.shizuku.InputEventInjector
 import io.github.sds100.keymapper.system.accessibility.AccessibilityNodeAction
 import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
-import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.airplanemode.AirplaneModeAdapter
 import io.github.sds100.keymapper.system.apps.AppShortcutAdapter
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
@@ -33,10 +32,11 @@ import io.github.sds100.keymapper.system.media.MediaAdapter
 import io.github.sds100.keymapper.system.navigation.OpenMenuHelper
 import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.system.nfc.NfcAdapter
+import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapter
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.phone.PhoneAdapter
-import io.github.sds100.keymapper.system.popup.PopupMessageAdapter
+import io.github.sds100.keymapper.system.popup.ToastAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.shell.ShellAdapter
 import io.github.sds100.keymapper.system.url.OpenUrlAdapter
@@ -70,7 +70,7 @@ class PerformActionsUseCaseImpl(
     private val shizukuInputEventInjector: InputEventInjector,
     private val packageManagerAdapter: PackageManagerAdapter,
     private val appShortcutAdapter: AppShortcutAdapter,
-    private val popupMessageAdapter: PopupMessageAdapter,
+    private val popupMessageAdapter: ToastAdapter,
     private val deviceAdapter: DevicesAdapter,
     private val phoneAdapter: PhoneAdapter,
     private val volumeAdapter: VolumeAdapter,
@@ -87,7 +87,7 @@ class PerformActionsUseCaseImpl(
     private val preferenceRepository: PreferenceRepository,
     private val soundsManager: SoundsManager,
     private val permissionAdapter: PermissionAdapter,
-    private val notificationReceiverAdapter: ServiceAdapter
+    private val notificationReceiverAdapter: NotificationReceiverAdapter
 ) : PerformActionsUseCase {
 
     private val openMenuHelper by lazy {

@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
@@ -14,13 +15,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 14/02/2021.
  */
 
-class AndroidBluetoothAdapter(
-    context: Context,
+class AndroidBluetoothAdapter @Inject constructor(
+    @ApplicationContext context: Context,
     private val coroutineScope: CoroutineScope
 ) : io.github.sds100.keymapper.system.bluetooth.BluetoothAdapter {
 

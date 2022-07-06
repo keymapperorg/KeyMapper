@@ -7,20 +7,20 @@ import android.media.MediaPlayer
 import android.media.session.MediaController
 import android.media.session.PlaybackState
 import android.net.Uri
-import android.os.Build
-import android.telecom.TelecomManager
 import android.view.KeyEvent
 import androidx.core.content.getSystemService
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.system.volume.VolumeStream
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
 import java.io.FileNotFoundException
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 21/04/2021.
  */
-class AndroidMediaAdapter(context: Context) : MediaAdapter {
+class AndroidMediaAdapter @Inject constructor(@ApplicationContext context: Context) : MediaAdapter {
     private val ctx = context.applicationContext
 
     private val audioManager: AudioManager by lazy { ctx.getSystemService()!! }

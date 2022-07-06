@@ -22,10 +22,14 @@ import io.github.sds100.keymapper.api.IKeyEventReceiverCallback
 import io.github.sds100.keymapper.api.KeyEventReceiver
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapId
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.Error
+import io.github.sds100.keymapper.util.InputEventType
+import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.util.Success
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import timber.log.Timber
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 05/04/2020.
@@ -43,7 +47,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
             when (intent.action) {
                 Api.ACTION_TRIGGER_KEYMAP_BY_UID -> {
                     intent.getStringExtra(Api.EXTRA_KEYMAP_UID)?.let {
-                        controller?.triggerKeyMapFromIntent(it)
+                        controller.triggerKeyMapFromIntent(it)
                     }
                 }
             }
@@ -119,7 +123,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
             }
 
             if (controller != null) {
-                return controller!!.onKeyEventFromIme(
+                return controller.onKeyEventFromIme(
                     event.keyCode,
                     event.action,
                     device,
@@ -152,7 +156,8 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
         }
     }
 
-    private var controller: AccessibilityServiceController? = null
+    @Inject
+    lateinit var controller: AccessibilityServiceController
 
     override fun onCreate() {
         super.onCreate()
@@ -186,14 +191,6 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
 
         Timber.i("Accessibility service: onServiceConnected")
 
-        /*
-        I would put this in onCreate but for some reason on some devices getting the application
-        context would return null
-         */
-        if (controller == null) {
-            controller = Inject.accessibilityServiceController(this)
-        }
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
             fingerprintGestureCallback = object : FingerprintGestureController.FingerprintGestureCallback() {
@@ -215,7 +212,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
 
                         else -> return
                     }
-                    controller?.onFingerprintGesture(id)
+                    controller.onFingerprintGesture(id)
                 }
             }
 
@@ -224,7 +221,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
             }
         }
 
-        controller?.onServiceConnected()
+        controller.onServiceConnected()
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
@@ -235,9 +232,6 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
     override fun onInterrupt() {}
 
     override fun onDestroy() {
-
-        controller = null
-
         if (::lifecycleRegistry.isInitialized) {
             lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
         }
@@ -267,7 +261,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        controller?.onAccessibilityEvent(event?.toModel())
+        controller.onAccessibilityEvent(event?.toModel())
     }
 
     override fun onKeyEvent(event: KeyEvent?): Boolean {
@@ -279,18 +273,14 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
             InputDeviceUtils.createInputDeviceInfo(event.device)
         }
 
-        if (controller != null) {
-            return controller!!.onKeyEvent(
-                    event.keyCode,
-                    event.action,
-                    device,
-                    event.metaState,
-                    event.scanCode,
-                    event.eventTime
-            )
-        }
-
-        return false
+        return controller.onKeyEvent(
+            event.keyCode,
+            event.action,
+            device,
+            event.metaState,
+            event.scanCode,
+            event.eventTime
+        )
     }
 
     override fun getLifecycle() = lifecycleRegistry

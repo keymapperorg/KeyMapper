@@ -4,7 +4,6 @@ import androidx.navigation.navGraphViewModels
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.BaseEditActionFragment
 import io.github.sds100.keymapper.mappings.EditActionViewModel
-import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.str
 
 /**
@@ -13,9 +12,7 @@ import io.github.sds100.keymapper.util.str
 class EditFingerprintMapActionFragment :
     BaseEditActionFragment<FingerprintMap, FingerprintMapAction>() {
 
-    private val configFingerprintMapViewModel: ConfigFingerprintMapViewModel by navGraphViewModels(R.id.nav_config_fingerprint_map) {
-        Inject.configFingerprintMapViewModel(requireContext())
-    }
+    private val configFingerprintMapViewModel: ConfigFingerprintMapViewModel by navGraphViewModels(R.id.nav_config_fingerprint_map)
 
     override val viewModel: EditActionViewModel<FingerprintMap, FingerprintMapAction>
         get() = configFingerprintMapViewModel.editActionViewModel

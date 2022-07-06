@@ -7,7 +7,6 @@ import com.airbnb.epoxy.EpoxyRecyclerView
 import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
 import io.github.sds100.keymapper.fixError
 import io.github.sds100.keymapper.simple
-import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.*
@@ -26,9 +25,7 @@ class ChooseBluetoothDeviceFragment : SimpleRecyclerViewFragment<ListItem>() {
 
     private val args: ChooseBluetoothDeviceFragmentArgs by navArgs()
 
-    private val viewModel: ChooseBluetoothDeviceViewModel by viewModels {
-        Inject.chooseBluetoothDeviceViewModel(requireContext())
-    }
+    private val viewModel: ChooseBluetoothDeviceViewModel by viewModels()
 
     override val listItems: Flow<State<List<ListItem>>>
         get() = viewModel.listItems

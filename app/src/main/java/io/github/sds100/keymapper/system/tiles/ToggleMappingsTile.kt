@@ -5,26 +5,34 @@ import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import androidx.annotation.RequiresApi
-import androidx.lifecycle.*
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.ServiceLocator
-import io.github.sds100.keymapper.UseCases
+import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.util.firstBlocking
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.str
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 12/06/2020.
  */
 
 @RequiresApi(Build.VERSION_CODES.N)
+@AndroidEntryPoint
 class ToggleMappingsTile : TileService(), LifecycleOwner {
 
-    private val serviceAdapter by lazy { ServiceLocator.accessibilityServiceAdapter(this) }
-    private val useCase by lazy { UseCases.pauseMappings(this) }
+    @Inject
+    lateinit var serviceAdapter: AccessibilityServiceAdapter
+    
+    @Inject
+    lateinit var useCase: PauseMappingsUseCase
 
     private lateinit var lifecycleRegistry: LifecycleRegistry
 

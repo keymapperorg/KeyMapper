@@ -5,16 +5,18 @@ import androidx.datastore.preferences.SharedPreferencesMigration
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.Constants
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SettingsPreferenceRepository(
-        context: Context,
-        private val coroutineScope: CoroutineScope
+class SettingsPreferenceRepository @Inject constructor(
+    @ApplicationContext context: Context,
+    private val coroutineScope: CoroutineScope
 ) : PreferenceRepository {
 
     companion object {
@@ -27,7 +29,7 @@ class SettingsPreferenceRepository(
             ctx,
             DEFAULT_SHARED_PREFS_NAME
     )
-
+    
     private val Context.dataStore by preferencesDataStore(
             name = "preferences",
             produceMigrations = { listOf(sharedPreferencesMigration) }

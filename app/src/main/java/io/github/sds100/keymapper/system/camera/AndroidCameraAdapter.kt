@@ -7,16 +7,18 @@ import android.hardware.camera2.CameraManager
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
 import timber.log.Timber
+import javax.inject.Inject
 import kotlin.collections.set
 
 /**
  * Created by sds100 on 17/03/2021.
  */
-class AndroidCameraAdapter(context: Context) : CameraAdapter {
+class AndroidCameraAdapter @Inject constructor(@ApplicationContext context: Context) : CameraAdapter {
     private val ctx = context.applicationContext
 
     private val cameraManager: CameraManager by lazy { ctx.getSystemService()!! }

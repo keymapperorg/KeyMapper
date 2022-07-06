@@ -3,24 +3,23 @@ package io.github.sds100.keymapper.settings
 import android.os.Bundle
 import android.view.View
 import androidx.activity.addCallback
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.bottomappbar.BottomAppBar
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.system.url.UrlUtils
-import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.str
 import io.github.sds100.keymapper.util.ui.showPopups
 
 /**
  * Created by sds100 on 20/07/2021.
  */
+@AndroidEntryPoint
 abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
 
-    val viewModel by activityViewModels<SettingsViewModel> {
-        Inject.settingsViewModel(requireContext())
-    }
+    val viewModel: SettingsViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

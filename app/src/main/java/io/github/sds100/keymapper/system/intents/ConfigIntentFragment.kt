@@ -19,7 +19,6 @@ import io.github.sds100.keymapper.databinding.FragmentConfigIntentBinding
 import io.github.sds100.keymapper.databinding.ListItemIntentExtraBoolBinding
 import io.github.sds100.keymapper.intentExtraBool
 import io.github.sds100.keymapper.intentExtraGeneric
-import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.setupNavigation
 import io.github.sds100.keymapper.util.ui.showPopups
@@ -40,9 +39,7 @@ class ConfigIntentFragment : Fragment() {
     private val args: ConfigIntentFragmentArgs by navArgs()
     private val requestKey: String by lazy { args.requestKey }
 
-    private val viewModel: ConfigIntentViewModel by viewModels {
-        Inject.configIntentViewModel(requireContext())
-    }
+    private val viewModel: ConfigIntentViewModel by viewModels()
 
     /**
      * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)

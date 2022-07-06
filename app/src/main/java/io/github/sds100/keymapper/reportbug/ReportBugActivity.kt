@@ -8,21 +8,29 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import com.github.appintro.AppIntro2
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapterImpl
+import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
 import io.github.sds100.keymapper.system.permissions.RequestPermissionDelegate
-import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.showPopups
 import kotlinx.coroutines.flow.collectLatest
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 30/06/2021.
  */
+@AndroidEntryPoint
 class ReportBugActivity : AppIntro2() {
 
-    private val viewModel by viewModels<ReportBugViewModel> {
-        Inject.reportBugViewModel(this)
-    }
+    private val viewModel by viewModels<ReportBugViewModel>()
+
+    @Inject
+    lateinit var permissionAdapter: AndroidPermissionAdapter
+
+    @Inject
+    lateinit var notificationReceiverAdapter: NotificationReceiverAdapterImpl
 
     private lateinit var requestPermissionDelegate: RequestPermissionDelegate
 
@@ -40,7 +48,8 @@ class ReportBugActivity : AppIntro2() {
 
         isSkipButtonEnabled = false
 
-        requestPermissionDelegate = RequestPermissionDelegate(this, showDialogs = false)
+        requestPermissionDelegate =
+            RequestPermissionDelegate(this, showDialogs = false, permissionAdapter, notificationReceiverAdapter)
 
         lifecycleScope.launchWhenCreated {
             viewModel.slides.collectLatest { slides ->

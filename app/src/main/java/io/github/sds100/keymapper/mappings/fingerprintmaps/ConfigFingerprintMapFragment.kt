@@ -13,7 +13,10 @@ import io.github.sds100.keymapper.constraints.ConfigConstraintsFragment
 import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.mappings.ConfigMappingFragment
 import io.github.sds100.keymapper.ui.utils.getJsonSerializable
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.FragmentInfo
+import io.github.sds100.keymapper.util.int
+import io.github.sds100.keymapper.util.intArray
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.TwoFragments
 import kotlinx.coroutines.flow.collectLatest
 
@@ -23,10 +26,7 @@ import kotlinx.coroutines.flow.collectLatest
 class ConfigFingerprintMapFragment : ConfigMappingFragment() {
     private val args by navArgs<ConfigFingerprintMapFragmentArgs>()
 
-    override val viewModel: ConfigFingerprintMapViewModel
-        by navGraphViewModels(R.id.nav_config_fingerprint_map) {
-            Inject.configFingerprintMapViewModel(requireContext())
-        }
+    override val viewModel: ConfigFingerprintMapViewModel by navGraphViewModels(R.id.nav_config_fingerprint_map)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -15,10 +15,11 @@ import android.provider.Settings
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.shizuku.ShizukuUtils
 import io.github.sds100.keymapper.system.DeviceAdmin
-import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
+import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.CoroutineScope
@@ -29,15 +30,16 @@ import rikka.shizuku.Shizuku
 import rikka.shizuku.ShizukuBinderWrapper
 import rikka.shizuku.SystemServiceHelper
 import timber.log.Timber
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 17/03/2021.
  */
-class AndroidPermissionAdapter(
-    context: Context,
+class AndroidPermissionAdapter @Inject constructor(
+    @ApplicationContext context: Context,
     private val coroutineScope: CoroutineScope,
     private val suAdapter: SuAdapter,
-    private val notificationReceiverAdapter: ServiceAdapter,
+    private val notificationReceiverAdapter: NotificationReceiverAdapter,
 ) : PermissionAdapter {
     companion object {
         const val REQUEST_CODE_SHIZUKU_PERMISSION = 1

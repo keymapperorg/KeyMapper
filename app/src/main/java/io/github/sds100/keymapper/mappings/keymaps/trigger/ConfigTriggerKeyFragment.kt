@@ -7,7 +7,6 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentOptionsBinding
 import io.github.sds100.keymapper.mappings.OptionsBottomSheetFragment
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapViewModel
-import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.str
 
 /**
@@ -15,9 +14,7 @@ import io.github.sds100.keymapper.util.str
  */
 class ConfigTriggerKeyFragment : OptionsBottomSheetFragment<FragmentOptionsBinding>() {
 
-    private val configKeyMapViewModel: ConfigKeyMapViewModel by navGraphViewModels(R.id.nav_config_keymap) {
-        Inject.configKeyMapViewModel(requireContext())
-    }
+    private val configKeyMapViewModel: ConfigKeyMapViewModel by navGraphViewModels(R.id.nav_config_keymap)
 
     override val viewModel: ConfigTriggerKeyViewModel
         get() = configKeyMapViewModel.configTriggerKeyViewModel

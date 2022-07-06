@@ -8,7 +8,7 @@ import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.system.inputmethod.AutoSwitchImeController
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
-import io.github.sds100.keymapper.system.popup.PopupMessageAdapter
+import io.github.sds100.keymapper.system.popup.ToastAdapter
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.ui.ResourceProvider
@@ -79,7 +79,7 @@ class AutoSwitchImeControllerTest {
     private lateinit var mockInputMethodAdapter: InputMethodAdapter
     private lateinit var mockPauseMappingsUseCase: PauseMappingsUseCase
     private lateinit var fakeDevicesAdapter: FakeDevicesAdapter
-    private lateinit var mockPopupMessageAdapter: PopupMessageAdapter
+    private lateinit var mockPopupMessageAdapter: ToastAdapter
     private lateinit var mockResourceProvider: ResourceProvider
 
     @Before

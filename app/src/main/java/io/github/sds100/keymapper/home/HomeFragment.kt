@@ -15,20 +15,20 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
 import com.google.android.material.bottomappbar.BottomAppBar.FAB_ALIGNMENT_MODE_CENTER
 import com.google.android.material.bottomappbar.BottomAppBar.FAB_ALIGNMENT_MODE_END
 import com.google.android.material.tabs.TabLayoutMediator
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.backup.BackupUtils
-import io.github.sds100.keymapper.data.db.SeedDatabaseWorker
 import io.github.sds100.keymapper.databinding.FragmentHomeBinding
 import io.github.sds100.keymapper.fixError
 import io.github.sds100.keymapper.success
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.system.url.UrlUtils
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.QuickStartGuideTapTarget
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
+import io.github.sds100.keymapper.util.str
+import io.github.sds100.keymapper.util.strArray
 import io.github.sds100.keymapper.util.ui.TextListItem
 import io.github.sds100.keymapper.util.ui.setupNavigation
 import io.github.sds100.keymapper.util.ui.showPopups
@@ -38,9 +38,7 @@ import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt
 
 class HomeFragment : Fragment() {
 
-    private val homeViewModel: HomeViewModel by activityViewModels {
-        Inject.homeViewModel(requireContext())
-    }
+    private val homeViewModel: HomeViewModel by activityViewModels()
 
     /**
      * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
@@ -139,12 +137,6 @@ class HomeFragment : Fragment() {
                         requireContext(),
                         str(R.string.url_quick_start_guide)
                     )
-                    true
-                }
-
-                R.id.action_seed_database -> {
-                    val request = OneTimeWorkRequestBuilder<SeedDatabaseWorker>().build()
-                    WorkManager.getInstance(requireContext()).enqueue(request)
                     true
                 }
 
