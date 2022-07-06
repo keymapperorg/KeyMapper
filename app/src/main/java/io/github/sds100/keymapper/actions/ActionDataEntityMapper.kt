@@ -556,10 +556,10 @@ object ActionDataEntityMapper {
         "cycle_rotations" to ActionId.CYCLE_ROTATIONS,
 
         "volume_up" to ActionId.VOLUME_UP,
-        "volume_decrease_stream" to ActionId.VOLUME_UP,
+        "volume_increase_stream" to ActionId.VOLUME_UP,
 
         "volume_down" to ActionId.VOLUME_DOWN,
-        "volume_increase_stream" to ActionId.VOLUME_DOWN,
+        "volume_decrease_stream" to ActionId.VOLUME_DOWN,
 
         "volume_show_dialog" to ActionId.VOLUME_SHOW_DIALOG,
         "ringer_mode_cycle" to ActionId.CYCLE_RINGER_MODE,
