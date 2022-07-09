@@ -51,6 +51,13 @@ Many Bluetooth devices (like headphones) aren't supported by Key Mapper out of t
 ## "Why doesn't the app open in Dex mode?"
 Samsung Dex doesn't allow apps with a 3rd party keyboard to open while in Dex mode. You can still configure key maps while out of Dex mode and your key maps which don't require a Key Mapper keyboard will still work in Dex mode.
 
+If you *really* want to open the app in DeX, you can put DeX in developer mode:
+
+- In Samsung DeX, open Settings -> Samsung DeX -> About Samsung DeX
+- Click/Tap on the "Samsung DeX" title 5 times very fast
+- You will see a pop-up "Turn on developer options?", press OK
+- Restart Samsung DeX for the change to take effect
+
 ## "Why doesn't the app uninstall?"
 You have probably enabled the app's device administrator in your device's settings. To uninstall the app, you must turn it off. The location of the device admin settings page varies on devices but on skins close to stock-Android it is under "Security" -> "Device admin apps". If you need help, [ask in the Discord server.](http://keymapper.club)
 
