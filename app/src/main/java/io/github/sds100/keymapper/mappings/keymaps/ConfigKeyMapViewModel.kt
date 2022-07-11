@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.actions.ConfigActionsViewModel
 import io.github.sds100.keymapper.actions.CreateActionUseCase
 import io.github.sds100.keymapper.actions.TestActionUseCase
@@ -23,12 +24,14 @@ import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 22/11/20.
  */
 
-class ConfigKeyMapViewModel(
+@HiltViewModel
+class ConfigKeyMapViewModel @Inject constructor(
     private val config: ConfigKeyMapUseCase,
     private val testAction: TestActionUseCase,
     private val onboarding: OnboardingUseCase,

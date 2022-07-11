@@ -5,11 +5,12 @@ import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.Result
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 04/03/2021.
  */
-class RecordTriggerController(
+class RecordTriggerUseCaseImpl @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val accessibilityServiceAdapter: AccessibilityServiceAdapter
 ) : RecordTriggerUseCase {

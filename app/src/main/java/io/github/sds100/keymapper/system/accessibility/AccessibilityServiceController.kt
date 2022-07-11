@@ -7,23 +7,22 @@ import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import io.github.sds100.keymapper.actions.ActionData
-import io.github.sds100.keymapper.actions.PerformActionsUseCase
-import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
+import io.github.sds100.keymapper.mappings.detection.PerformActionsUseCase
+import io.github.sds100.keymapper.mappings.detection.DetectConstraintsUseCase
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
-import io.github.sds100.keymapper.mappings.fingerprintmaps.DetectFingerprintMapsUseCase
-import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintGestureMapController
+import io.github.sds100.keymapper.mappings.detection.DetectFingerprintMapsUseCase
+import io.github.sds100.keymapper.mappings.detection.FingerprintGestureMapController
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapId
 import io.github.sds100.keymapper.mappings.keymaps.TriggerKeyMapFromOtherAppsController
-import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCase
-import io.github.sds100.keymapper.mappings.keymaps.detection.DetectScreenOffKeyEventsController
-import io.github.sds100.keymapper.mappings.keymaps.detection.KeyMapController
+import io.github.sds100.keymapper.mappings.detection.DetectKeyMapsUseCase
+import io.github.sds100.keymapper.mappings.detection.DetectScreenOffKeyEventsController
+import io.github.sds100.keymapper.mappings.detection.KeyMapController
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsController
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsUseCase
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
-import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.firstBlocking
@@ -37,7 +36,7 @@ import timber.log.Timber
 /**
  * Created by sds100 on 17/04/2021.
  */
-class AccessibilityServiceController(
+class AccessibilityServiceController constructor(
     private val coroutineScope: CoroutineScope,
     private val accessibilityService: IAccessibilityService,
     private val inputEvents: SharedFlow<Event>,
@@ -50,7 +49,6 @@ class AccessibilityServiceController(
     private val pauseMappingsUseCase: PauseMappingsUseCase,
     private val devicesAdapter: DevicesAdapter,
     private val suAdapter: SuAdapter,
-    private val inputMethodAdapter: InputMethodAdapter,
     private val settingsRepository: PreferenceRepository
 ) {
 

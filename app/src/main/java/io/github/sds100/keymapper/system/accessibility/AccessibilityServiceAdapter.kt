@@ -23,10 +23,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Created by sds100 on 17/03/2021.
  */
+@Singleton
 class AccessibilityServiceAdapterImpl @Inject constructor(
     @ApplicationContext context: Context,
     private val coroutineScope: CoroutineScope,
@@ -41,6 +43,7 @@ class AccessibilityServiceAdapterImpl @Inject constructor(
     override val state = MutableStateFlow(ServiceState.DISABLED)
 
     init {
+        Timber.e("init")
         //use job scheduler because there is there is a much shorter delay when the app is in the background
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             JobSchedulerHelper.observeEnabledAccessibilityServices(ctx)

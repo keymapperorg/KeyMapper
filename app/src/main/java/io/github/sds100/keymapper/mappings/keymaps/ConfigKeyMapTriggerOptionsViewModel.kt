@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.OptionMinimums
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerFromOtherAppsListItem
@@ -8,11 +9,12 @@ import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 29/11/20.
  */
-class ConfigKeyMapTriggerOptionsViewModel(
+class ConfigKeyMapTriggerOptionsViewModel @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val config: ConfigKeyMapUseCase,
     private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,

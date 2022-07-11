@@ -8,11 +8,12 @@ import io.github.sds100.keymapper.mappings.ConfigMappingUseCase
 import io.github.sds100.keymapper.util.Defaultable
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ifIsData
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 16/02/2021.
  */
-class ConfigFingerprintMapUseCaseImpl(
+class ConfigFingerprintMapUseCaseImpl @Inject constructor(
     private val repository: FingerprintMapRepository
 ) : BaseConfigMappingUseCase<FingerprintMapAction, FingerprintMap>(),
     ConfigFingerprintMapUseCase {

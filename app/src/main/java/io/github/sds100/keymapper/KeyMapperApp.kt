@@ -11,7 +11,7 @@ import com.google.android.material.color.DynamicColors
 import dagger.hilt.android.HiltAndroidApp
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.entities.LogEntryEntity
-import io.github.sds100.keymapper.data.repositories.SettingsPreferenceRepository
+import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.logging.KeyMapperLoggingTree
 import io.github.sds100.keymapper.logging.LogRepository
 import io.github.sds100.keymapper.settings.ThemeUtils
@@ -44,10 +44,13 @@ class KeyMapperApp : MultiDexApplication() {
     lateinit var coroutineScope: CoroutineScope
     @Inject
     lateinit var notificationController: NotificationController
+
     @Inject
     lateinit var logRepository: LogRepository
+
     @Inject
-    lateinit var settingsRepository: SettingsPreferenceRepository
+    lateinit var settingsRepository: PreferenceRepository
+
     @Inject
     lateinit var loggingTree: KeyMapperLoggingTree
     @Inject

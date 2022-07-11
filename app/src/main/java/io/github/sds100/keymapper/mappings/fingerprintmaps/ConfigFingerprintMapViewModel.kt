@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.actions.ConfigActionsViewModel
 import io.github.sds100.keymapper.actions.CreateActionUseCase
 import io.github.sds100.keymapper.actions.TestActionUseCase
@@ -27,12 +28,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 08/11/20.
  */
 
-class ConfigFingerprintMapViewModel(
+@HiltViewModel
+class ConfigFingerprintMapViewModel @Inject constructor(
     private val config: ConfigFingerprintMapUseCase,
     private val testAction: TestActionUseCase,
     private val display: DisplaySimpleMappingUseCase,

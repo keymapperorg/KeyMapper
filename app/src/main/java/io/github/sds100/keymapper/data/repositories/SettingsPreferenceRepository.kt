@@ -12,8 +12,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class SettingsPreferenceRepository @Inject constructor(
     @ApplicationContext context: Context,
     private val coroutineScope: CoroutineScope

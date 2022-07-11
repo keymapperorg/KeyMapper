@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.mappings.keymaps
 
 import android.os.Build
 import android.view.KeyEvent
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.keymaps.trigger.*
@@ -15,12 +16,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 24/11/20.
  */
 
-class ConfigKeyMapTriggerViewModel(
+class ConfigKeyMapTriggerViewModel @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val onboarding: OnboardingUseCase,
     private val config: ConfigKeyMapUseCase,

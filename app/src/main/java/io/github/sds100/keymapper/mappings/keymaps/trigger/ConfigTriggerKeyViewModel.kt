@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.mappings.keymaps.trigger
 
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.DefaultOptionsUiState
@@ -14,11 +15,12 @@ import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 12/04/2021.
  */
-class ConfigTriggerKeyViewModel(
+class ConfigTriggerKeyViewModel @Inject constructor(
     coroutineScope: CoroutineScope,
     val config: ConfigKeyMapUseCase,
     resourceProvider: ResourceProvider

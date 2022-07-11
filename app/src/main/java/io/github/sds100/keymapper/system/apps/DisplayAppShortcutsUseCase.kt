@@ -4,12 +4,13 @@ import android.graphics.drawable.Drawable
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.Result
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 04/04/2021.
  */
 
-class DisplayAppShortcutsUseCaseImpl(
+class DisplayAppShortcutsUseCaseImpl @Inject constructor(
     private val appShortcutAdapter: AppShortcutAdapter,
 ) : DisplayAppShortcutsUseCase {
     override val shortcuts: Flow<State<List<AppShortcutInfo>>> = appShortcutAdapter.installedAppShortcuts

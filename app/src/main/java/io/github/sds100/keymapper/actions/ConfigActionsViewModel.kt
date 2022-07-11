@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.actions
 
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.home.ChooseAppStoreModel
 import io.github.sds100.keymapper.mappings.ConfigMappingUseCase
@@ -14,12 +15,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 22/11/20.
  */
 
-class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
+class ConfigActionsViewModel<A : Action, M : Mapping<A>> @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val displayActionUseCase: DisplayActionUseCase,
     private val testActionUseCase: TestActionUseCase,

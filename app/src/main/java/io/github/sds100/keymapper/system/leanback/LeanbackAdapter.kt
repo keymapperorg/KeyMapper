@@ -4,12 +4,14 @@ import android.app.UiModeManager
 import android.content.Context
 import android.content.res.Configuration
 import androidx.core.content.getSystemService
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 21/07/2021.
  */
 
-class LeanbackAdapterImpl(context: Context) : LeanbackAdapter {
+class LeanbackAdapterImpl @Inject constructor(@ApplicationContext context: Context) : LeanbackAdapter {
     private val ctx = context.applicationContext
 
     override fun isTvDevice(): Boolean {

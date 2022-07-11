@@ -2,10 +2,12 @@ package io.github.sds100.keymapper.mappings
 
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.FakeAction
-import io.github.sds100.keymapper.actions.PerformActionsUseCase
+import io.github.sds100.keymapper.mappings.detection.PerformActionsUseCase
 import io.github.sds100.keymapper.actions.RepeatMode
-import io.github.sds100.keymapper.constraints.ConstraintSnapshotImpl
-import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
+import io.github.sds100.keymapper.mappings.detection.ConstraintSnapshotImpl
+import io.github.sds100.keymapper.mappings.detection.DetectConstraintsUseCase
+import io.github.sds100.keymapper.mappings.detection.DetectMappingUseCase
+import io.github.sds100.keymapper.mappings.detection.SimpleMappingController
 import junitparams.JUnitParamsRunner
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow

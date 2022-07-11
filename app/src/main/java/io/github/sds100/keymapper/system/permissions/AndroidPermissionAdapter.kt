@@ -31,10 +31,12 @@ import rikka.shizuku.ShizukuBinderWrapper
 import rikka.shizuku.SystemServiceHelper
 import timber.log.Timber
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Created by sds100 on 17/03/2021.
  */
+@Singleton
 class AndroidPermissionAdapter @Inject constructor(
     @ApplicationContext context: Context,
     private val coroutineScope: CoroutineScope,

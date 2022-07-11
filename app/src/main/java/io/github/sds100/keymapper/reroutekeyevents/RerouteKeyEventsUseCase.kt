@@ -8,12 +8,13 @@ import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeMessenger
 import io.github.sds100.keymapper.util.firstBlocking
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 27/04/2021.
  */
 
-class RerouteKeyEventsUseCaseImpl(
+class RerouteKeyEventsUseCaseImpl @Inject constructor(
     private val inputMethodAdapter: InputMethodAdapter,
     private val keyMapperImeMessenger: KeyMapperImeMessenger,
     private val preferenceRepository: PreferenceRepository

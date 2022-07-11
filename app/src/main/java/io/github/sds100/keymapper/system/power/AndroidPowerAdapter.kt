@@ -12,7 +12,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class AndroidPowerAdapter @Inject constructor(@ApplicationContext context: Context) : PowerAdapter {
     private val ctx: Context = context.applicationContext
     private val batteryManager: BatteryManager by lazy { ctx.getSystemService()!! }

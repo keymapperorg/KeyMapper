@@ -1,7 +1,6 @@
-package io.github.sds100.keymapper.mappings.keymaps.detection
+package io.github.sds100.keymapper.mappings.detection
 
 import io.github.sds100.keymapper.actions.ActionData
-import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapAction

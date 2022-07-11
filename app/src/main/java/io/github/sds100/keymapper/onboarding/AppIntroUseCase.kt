@@ -10,11 +10,12 @@ import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 14/04/2021.
  */
-class AppIntroUseCaseImpl(
+class AppIntroUseCaseImpl @Inject constructor(
     private val permissionAdapter: PermissionAdapter,
     private val accessibilityServiceAdapter: AccessibilityServiceAdapter,
     private val preferenceRepository: PreferenceRepository,

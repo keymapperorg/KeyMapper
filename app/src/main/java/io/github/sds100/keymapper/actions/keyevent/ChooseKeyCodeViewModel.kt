@@ -4,6 +4,7 @@ import android.view.KeyEvent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.filterByQuery
@@ -13,12 +14,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 31/03/2020.
  */
 
-class ChooseKeyCodeViewModel : ViewModel() {
+@HiltViewModel
+class ChooseKeyCodeViewModel @Inject constructor() : ViewModel() {
 
     val searchQuery = MutableStateFlow<String?>(null)
 

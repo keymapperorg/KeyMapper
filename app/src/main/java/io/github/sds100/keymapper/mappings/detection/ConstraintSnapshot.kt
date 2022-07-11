@@ -1,6 +1,9 @@
-package io.github.sds100.keymapper.constraints
+package io.github.sds100.keymapper.mappings.detection
 
 import android.os.Build
+import io.github.sds100.keymapper.constraints.Constraint
+import io.github.sds100.keymapper.constraints.ConstraintMode
+import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import io.github.sds100.keymapper.system.camera.CameraAdapter

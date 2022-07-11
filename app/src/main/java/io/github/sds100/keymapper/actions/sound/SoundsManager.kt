@@ -9,12 +9,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.*
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 24/06/2021.
  */
 
-class SoundsManagerImpl(
+class SoundsManagerImpl @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val fileAdapter: FileAdapter,
 ) : SoundsManager {

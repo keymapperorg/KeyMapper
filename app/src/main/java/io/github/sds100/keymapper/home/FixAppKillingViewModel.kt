@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.onboarding.AppIntroSlideUi
 import io.github.sds100.keymapper.system.accessibility.ControlAccessibilityServiceUseCase
@@ -12,12 +13,14 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 14/02/2021.
  */
 
-class FixAppKillingViewModel(
+@HiltViewModel
+class FixAppKillingViewModel @Inject constructor(
     resourceProvider: ResourceProvider,
     private val controlAccessibilityService: ControlAccessibilityServiceUseCase
 ) : ViewModel(), ResourceProvider by resourceProvider, PopupViewModel by PopupViewModelImpl() {

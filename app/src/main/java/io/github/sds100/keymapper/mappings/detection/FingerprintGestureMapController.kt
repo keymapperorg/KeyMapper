@@ -1,8 +1,7 @@
-package io.github.sds100.keymapper.mappings.fingerprintmaps
+package io.github.sds100.keymapper.mappings.detection
 
-import io.github.sds100.keymapper.actions.PerformActionsUseCase
-import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
-import io.github.sds100.keymapper.mappings.SimpleMappingController
+import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMap
+import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch

@@ -3,12 +3,13 @@ package io.github.sds100.keymapper.actions
 import android.os.Build
 import io.github.sds100.keymapper.system.permissions.SystemFeatureAdapter
 import io.github.sds100.keymapper.util.Error
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 16/03/2021.
  */
 
-class IsActionSupportedUseCaseImpl(
+class IsActionSupportedUseCaseImpl @Inject constructor(
     private val adapter: SystemFeatureAdapter
 ) : IsActionSupportedUseCase {
 

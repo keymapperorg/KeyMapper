@@ -7,6 +7,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.constraints.ChooseConstraintFragment
@@ -29,6 +30,7 @@ import kotlinx.coroutines.flow.collectLatest
 /**
  * Created by sds100 on 22/11/20.
  */
+@AndroidEntryPoint
 class ConfigKeyMapFragment : ConfigMappingFragment() {
 
     private val args by navArgs<ConfigKeyMapFragmentArgs>()

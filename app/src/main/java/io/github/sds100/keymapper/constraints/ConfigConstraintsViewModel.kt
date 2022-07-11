@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.constraints
 
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.ConfigMappingUseCase
 import io.github.sds100.keymapper.mappings.DisplayConstraintUseCase
@@ -10,12 +11,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 29/11/20.
  */
 
-class ConfigConstraintsViewModel(
+class ConfigConstraintsViewModel @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val display: DisplayConstraintUseCase,
     private val config: ConfigMappingUseCase<*, *>,

@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.mappings.fingerprintmaps
 
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.OptionMinimums
 import io.github.sds100.keymapper.util.Defaultable
@@ -13,11 +14,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 12/04/2021.
  */
-class ConfigFingerprintMapOptionsViewModel(
+class ConfigFingerprintMapOptionsViewModel @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val config: ConfigFingerprintMapUseCase,
     resourceProvider: ResourceProvider

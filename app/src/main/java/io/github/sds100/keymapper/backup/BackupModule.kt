@@ -15,4 +15,7 @@ abstract class BackupModule {
     @Binds
     @Singleton
     abstract fun bindBackupManager(impl: BackupManagerImpl): BackupManager
+    
+    @Binds
+    abstract fun bindBackupRestoreMappingsUseCase(impl: BackupRestoreMappingsUseCaseImpl):BackupRestoreMappingsUseCase
 }

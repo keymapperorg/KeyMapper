@@ -1,10 +1,9 @@
-package io.github.sds100.keymapper.mappings
+package io.github.sds100.keymapper.mappings.detection
 
 import io.github.sds100.keymapper.actions.Action
-import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.actions.RepeatMode
-import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.data.PreferenceDefaults
+import io.github.sds100.keymapper.mappings.Mapping
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.SharingStarted

@@ -1,15 +1,17 @@
-package io.github.sds100.keymapper.actions
+package io.github.sds100.keymapper.mappings.detection
 
 import android.accessibilityservice.AccessibilityService
 import android.os.Build
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.actions.ActionData
+import io.github.sds100.keymapper.actions.GetActionErrorUseCase
 import io.github.sds100.keymapper.actions.sound.SoundsManager
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.shizuku.InputEventInjector
+import io.github.sds100.keymapper.shizuku.ShizukuInputEventInjector
 import io.github.sds100.keymapper.system.accessibility.AccessibilityNodeAction
 import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.airplanemode.AirplaneModeAdapter
@@ -52,12 +54,13 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import splitties.bitflags.withFlag
 import timber.log.Timber
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 14/02/21.
  */
 
-class PerformActionsUseCaseImpl(
+class PerformActionsUseCaseImpl @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val accessibilityService: IAccessibilityService,
     private val inputMethodAdapter: InputMethodAdapter,
@@ -67,7 +70,7 @@ class PerformActionsUseCaseImpl(
     private val intentAdapter: IntentAdapter,
     private val getActionError: GetActionErrorUseCase,
     private val keyMapperImeMessenger: KeyMapperImeMessenger,
-    private val shizukuInputEventInjector: InputEventInjector,
+    private val shizukuInputEventInjector: ShizukuInputEventInjector,
     private val packageManagerAdapter: PackageManagerAdapter,
     private val appShortcutAdapter: AppShortcutAdapter,
     private val popupMessageAdapter: ToastAdapter,

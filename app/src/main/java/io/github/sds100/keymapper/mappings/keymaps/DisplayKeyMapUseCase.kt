@@ -11,12 +11,13 @@ import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import kotlinx.coroutines.flow.*
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 04/04/2021.
  */
 
-class DisplayKeyMapUseCaseImpl(
+class DisplayKeyMapUseCaseImpl @Inject constructor(
     private val permissionAdapter: PermissionAdapter,
     private val inputMethodAdapter: InputMethodAdapter,
     displaySimpleMappingUseCase: DisplaySimpleMappingUseCase,

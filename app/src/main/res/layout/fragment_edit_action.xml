@@ -9,7 +9,7 @@
 
         <variable
             name="viewModel"
-            type="io.github.sds100.keymapper.mappings.EditActionViewModel" />
+            type="io.github.sds100.keymapper.actions.EditActionViewModel" />
     </data>
 
     <androidx.core.widget.NestedScrollView

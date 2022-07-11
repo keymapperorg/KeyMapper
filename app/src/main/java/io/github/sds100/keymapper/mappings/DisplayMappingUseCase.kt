@@ -15,12 +15,13 @@ import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 03/04/2021.
  */
 
-class DisplaySimpleMappingUseCaseImpl(
+class DisplaySimpleMappingUseCaseImpl @Inject constructor(
     private val packageManager: PackageManagerAdapter,
     private val permissionAdapter: PermissionAdapter,
     private val inputMethodAdapter: InputMethodAdapter,

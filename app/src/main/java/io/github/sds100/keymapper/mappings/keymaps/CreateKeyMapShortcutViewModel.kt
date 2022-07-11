@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.State
@@ -11,11 +12,13 @@ import io.github.sds100.keymapper.util.mapData
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 08/09/20.
  */
-class CreateKeyMapShortcutViewModel(
+@HiltViewModel
+class CreateKeyMapShortcutViewModel @Inject constructor(
         private val configKeyMapUseCase: ConfigKeyMapUseCase,
         private val listUseCase: ListKeyMapsUseCase,
         private val createShortcutUseCase: CreateKeyMapShortcutUseCase,

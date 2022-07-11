@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import com.github.appintro.AppIntro2
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,8 +29,15 @@ class AppIntroActivity : AppIntro2() {
     companion object {
         const val EXTRA_SLIDES = "extra_slides"
     }
+    
+    @Inject
+    lateinit var appIntroViewModelFactory: AppIntroViewModel.AssistedFactory
 
-    private val viewModel by viewModels<AppIntroViewModel>()
+    private val viewModel by viewModels<AppIntroViewModel> {
+        val slides = intent.getStringArrayExtra(EXTRA_SLIDES)
+
+        AppIntroViewModel.provideFactory(appIntroViewModelFactory, slides!!.toList())
+    }
 
     private lateinit var requestPermissionDelegate: RequestPermissionDelegate
 

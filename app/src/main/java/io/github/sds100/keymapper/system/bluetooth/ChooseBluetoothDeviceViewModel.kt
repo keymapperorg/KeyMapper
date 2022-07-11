@@ -3,16 +3,19 @@ package io.github.sds100.keymapper.system.bluetooth
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 07/04/2021.
  */
-class ChooseBluetoothDeviceViewModel(
+@HiltViewModel
+class ChooseBluetoothDeviceViewModel @Inject constructor(
     val useCase: ChooseBluetoothDeviceUseCase,
     resourceProvider: ResourceProvider
 ) : ViewModel(),
@@ -65,18 +68,5 @@ class ChooseBluetoothDeviceViewModel(
             val deviceInfo = useCase.devices.value.find { it.address == id } ?: return@launch
             _returnResult.emit(deviceInfo)
         }
-    }
-
-    class Factory(
-        private val useCase: ChooseBluetoothDeviceUseCase,
-        private val resourceProvider: ResourceProvider
-    ) : ViewModelProvider.Factory {
-
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>) =
-            ChooseBluetoothDeviceViewModel(
-                useCase,
-                resourceProvider
-            ) as T
     }
 }

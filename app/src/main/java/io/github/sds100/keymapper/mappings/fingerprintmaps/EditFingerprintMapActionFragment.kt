@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.mappings.fingerprintmaps
 import androidx.navigation.navGraphViewModels
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.BaseEditActionFragment
-import io.github.sds100.keymapper.mappings.EditActionViewModel
+import io.github.sds100.keymapper.actions.EditActionViewModel
 import io.github.sds100.keymapper.util.str
 
 /**

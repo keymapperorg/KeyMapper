@@ -8,6 +8,7 @@ import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.system.apps.ActivityInfo
 import io.github.sds100.keymapper.util.ui.*
@@ -15,12 +16,14 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 01/01/21.
  */
 
-class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
+@HiltViewModel
+class ConfigIntentViewModel @Inject constructor(resourceProvider: ResourceProvider) : ViewModel(),
     ResourceProvider by resourceProvider,
     PopupViewModel by PopupViewModelImpl(),
     NavigationViewModel by NavigationViewModelImpl() {

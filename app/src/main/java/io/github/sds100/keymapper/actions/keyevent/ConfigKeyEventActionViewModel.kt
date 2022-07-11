@@ -5,6 +5,7 @@ import android.view.KeyEvent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
@@ -18,12 +19,14 @@ import kotlinx.coroutines.runBlocking
 import splitties.bitflags.hasFlag
 import splitties.bitflags.minusFlag
 import splitties.bitflags.withFlag
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 30/03/2020.
  */
 
-class ConfigKeyEventActionViewModel(
+@HiltViewModel
+class ConfigKeyEventActionViewModel @Inject constructor(
     private val useCase: ConfigKeyEventUseCase,
     resourceProvider: ResourceProvider
 ) : ViewModel(),

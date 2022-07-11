@@ -16,5 +16,5 @@ import javax.inject.Singleton
 abstract class DataBindings {
     @Binds
     @Singleton
-    abstract fun bindSettingsRepository(imple: SettingsPreferenceRepository): PreferenceRepository
+    abstract fun bindSettingsRepository(impl: SettingsPreferenceRepository): PreferenceRepository
 }

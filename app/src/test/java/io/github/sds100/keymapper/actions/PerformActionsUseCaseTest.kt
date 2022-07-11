@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.actions
 
 import android.view.KeyEvent
+import io.github.sds100.keymapper.mappings.detection.PerformActionsUseCaseImpl
 import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.devices.FakeDevicesAdapter
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo

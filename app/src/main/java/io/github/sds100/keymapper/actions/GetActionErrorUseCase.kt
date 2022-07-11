@@ -18,12 +18,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 15/02/2021.
  */
 
-class GetActionErrorUseCaseImpl(
+class GetActionErrorUseCaseImpl @Inject constructor(
     private val packageManager: PackageManagerAdapter,
     private val inputMethodAdapter: InputMethodAdapter,
     private val permissionAdapter: PermissionAdapter,

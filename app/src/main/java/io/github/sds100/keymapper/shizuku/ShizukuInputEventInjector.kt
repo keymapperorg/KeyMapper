@@ -3,7 +3,6 @@ package io.github.sds100.keymapper.shizuku
 import android.annotation.SuppressLint
 import android.content.Context
 import android.hardware.input.IInputManager
-import android.os.IBinder
 import android.os.SystemClock
 import android.view.KeyEvent
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
@@ -11,13 +10,14 @@ import io.github.sds100.keymapper.util.InputEventType
 import rikka.shizuku.ShizukuBinderWrapper
 import rikka.shizuku.SystemServiceHelper
 import timber.log.Timber
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 21/04/2021.
  */
 
 @SuppressLint("PrivateApi")
-class ShizukuInputEventInjector : InputEventInjector {
+class ShizukuInputEventInjectorImpl @Inject constructor() : ShizukuInputEventInjector {
 
     companion object {
         private const val INJECT_INPUT_EVENT_MODE_ASYNC = 0
@@ -59,6 +59,6 @@ class ShizukuInputEventInjector : InputEventInjector {
     }
 }
 
-interface InputEventInjector {
+interface ShizukuInputEventInjector {
     fun inputKeyEvent(model: InputKeyModel)
 }

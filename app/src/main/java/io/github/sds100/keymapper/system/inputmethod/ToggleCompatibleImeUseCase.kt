@@ -2,12 +2,13 @@ package io.github.sds100.keymapper.system.inputmethod
 
 import io.github.sds100.keymapper.util.Result
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 16/04/2021.
  */
 
-class ToggleCompatibleImeUseCaseImpl(
+class ToggleCompatibleImeUseCaseImpl @Inject constructor(
     private val inputMethodAdapter: InputMethodAdapter
 ) : ToggleCompatibleImeUseCase {
     private val keyMapperImeHelper = KeyMapperImeHelper(inputMethodAdapter)

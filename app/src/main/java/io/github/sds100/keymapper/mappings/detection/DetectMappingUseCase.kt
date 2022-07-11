@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.mappings
+package io.github.sds100.keymapper.mappings.detection
 
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.Keys
@@ -9,12 +9,13 @@ import io.github.sds100.keymapper.system.vibrator.VibratorAdapter
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 17/04/2021.
  */
 
-class DetectMappingUseCaseImpl(
+class DetectMappingUseCaseImpl @Inject constructor(
     private val vibrator: VibratorAdapter,
     private val preferenceRepository: PreferenceRepository,
     private val popupMessageAdapter: ToastAdapter,

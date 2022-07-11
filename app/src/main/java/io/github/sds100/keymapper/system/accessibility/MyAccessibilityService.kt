@@ -16,6 +16,7 @@ import androidx.core.os.bundleOf
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.api.Api
 import io.github.sds100.keymapper.api.IKeyEventReceiver
 import io.github.sds100.keymapper.api.IKeyEventReceiverCallback
@@ -35,6 +36,7 @@ import javax.inject.Inject
  * Created by sds100 on 05/04/2020.
  */
 
+@AndroidEntryPoint
 class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessibilityService {
 
     /**
@@ -122,18 +124,14 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
                 InputDeviceUtils.createInputDeviceInfo(event.device)
             }
 
-            if (controller != null) {
-                return controller.onKeyEventFromIme(
-                    event.keyCode,
-                    event.action,
-                    device,
-                    event.metaState,
-                    event.scanCode,
-                    event.eventTime
-                )
-            }
-
-            return false
+            return controller.onKeyEventFromIme(
+                event.keyCode,
+                event.action,
+                device,
+                event.metaState,
+                event.scanCode,
+                event.eventTime
+            )
         }
     }
 
