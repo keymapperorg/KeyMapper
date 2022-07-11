@@ -21,11 +21,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 14/02/21.
  */
-class OnboardingUseCaseImpl(
+class OnboardingUseCaseImpl @Inject constructor(
     private val preferenceRepository: PreferenceRepository,
     private val fileAdapter: FileAdapter,
     private val leanbackAdapter: LeanbackAdapter,

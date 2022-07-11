@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.system.navigation
 
 import android.view.KeyEvent
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
-import io.github.sds100.keymapper.shizuku.InputEventInjector
+import io.github.sds100.keymapper.shizuku.ShizukuInputEventInjector
 import io.github.sds100.keymapper.system.accessibility.AccessibilityNodeAction
 import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
@@ -20,7 +20,7 @@ import io.github.sds100.keymapper.util.success
 class OpenMenuHelper(
     private val suAdapter: SuAdapter,
     private val accessibilityService: IAccessibilityService,
-    private val shizukuInputEventInjector: InputEventInjector,
+    private val shizukuInputEventInjector: ShizukuInputEventInjector,
     private val permissionAdapter: PermissionAdapter
 ) {
 

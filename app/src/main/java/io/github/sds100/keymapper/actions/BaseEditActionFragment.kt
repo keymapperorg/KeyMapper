@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import io.github.sds100.keymapper.databinding.FragmentEditActionBinding
-import io.github.sds100.keymapper.mappings.EditActionViewModel
 import io.github.sds100.keymapper.mappings.Mapping
 import io.github.sds100.keymapper.mappings.OptionsBottomSheetFragment
 

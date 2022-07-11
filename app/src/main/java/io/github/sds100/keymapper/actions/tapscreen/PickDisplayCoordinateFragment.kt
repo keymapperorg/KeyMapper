@@ -18,12 +18,13 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.*
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.databinding.FragmentPickCoordinateBinding
 import io.github.sds100.keymapper.system.files.FileUtils
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.showPopups
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.decodeFromString
@@ -34,6 +35,7 @@ import kotlinx.serialization.json.Json
  * Created by sds100 on 30/03/2020.
  */
 
+@AndroidEntryPoint
 class PickDisplayCoordinateFragment : Fragment() {
     companion object {
         const val EXTRA_RESULT = "extra_result"
@@ -42,9 +44,7 @@ class PickDisplayCoordinateFragment : Fragment() {
     private val args: PickDisplayCoordinateFragmentArgs by navArgs()
     private val requestKey: String by lazy { args.requestKey }
 
-    private val viewModel: PickDisplayCoordinateViewModel by viewModels {
-        Inject.tapCoordinateActionTypeViewModel(requireContext())
-    }
+    private val viewModel: PickDisplayCoordinateViewModel by viewModels()
 
     private val screenshotLauncher =
         registerForActivityResult(ActivityResultContracts.GetContent()) {

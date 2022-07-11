@@ -1,18 +1,22 @@
-package io.github.sds100.keymapper.mappings.fingerprintmaps
+package io.github.sds100.keymapper.mappings.detection
 
-import io.github.sds100.keymapper.mappings.DetectMappingUseCase
+import io.github.sds100.keymapper.mappings.fingerprintmaps.AreFingerprintGesturesSupportedUseCase
+import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMap
+import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapEntityMapper
+import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapRepository
 import io.github.sds100.keymapper.util.State
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 17/04/2021.
  */
 
-class DetectFingerprintMapsUseCaseImpl(
+class DetectFingerprintMapsUseCaseImpl @Inject constructor(
     private val repository: FingerprintMapRepository,
     private val areSupportedUseCase: AreFingerprintGesturesSupportedUseCase,
     detectMappingUseCase: DetectMappingUseCase

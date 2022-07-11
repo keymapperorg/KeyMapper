@@ -2,16 +2,20 @@ package io.github.sds100.keymapper.system.airplanemode
 
 import android.content.Context
 import android.provider.Settings
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.system.SettingsUtils
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.onSuccess
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Created by sds100 on 24/04/2021.
  */
-class AndroidAirplaneModeAdapter(
-    context: Context,
+@Singleton
+class AndroidAirplaneModeAdapter @Inject constructor(
+    @ApplicationContext context: Context,
     val suAdapter: SuAdapter
 ) : AirplaneModeAdapter {
     private val ctx = context.applicationContext

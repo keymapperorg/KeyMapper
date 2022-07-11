@@ -29,20 +29,19 @@ import kotlinx.coroutines.flow.*
 import timber.log.Timber
 import java.io.InputStream
 import java.util.*
-
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 16/03/2021.
  */
 
-class BackupManagerImpl(
+class BackupManagerImpl @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val fileAdapter: FileAdapter,
     private val keyMapRepository: KeyMapRepository,
     private val preferenceRepository: PreferenceRepository,
     private val fingerprintMapRepository: FingerprintMapRepository,
     private val soundsManager: SoundsManager,
-    private val throwExceptions: Boolean = false,
     private val dispatchers: DispatcherProvider = DefaultDispatcherProvider(),
     private val uuidGenerator: UuidGenerator = DefaultUuidGenerator()
 ) : BackupManager {
@@ -69,7 +68,7 @@ class BackupManagerImpl(
         private const val TEMP_RESTORE_ROOT_DIR = "restore_temp"
     }
 
-    override val onAutomaticBackupResult = MutableSharedFlow<Result<*>>()
+    override val onAutomaticBackupResult: MutableSharedFlow<Result<*>> = MutableSharedFlow()
 
     private val gson: Gson by lazy {
         GsonBuilder()
@@ -387,11 +386,6 @@ class BackupManagerImpl(
             return Error.CorruptJsonFile(e.message ?: "")
 
         } catch (e: Exception) {
-            if (throwExceptions) {
-                e.printStackTrace()
-                throw e
-            }
-
             return Error.Exception(e)
         }
     }
@@ -486,10 +480,6 @@ class BackupManagerImpl(
 
         } catch (e: Exception) {
             Timber.e(e)
-
-            if (throwExceptions) {
-                throw e
-            }
 
             return@async Error.Exception(e)
         } finally {

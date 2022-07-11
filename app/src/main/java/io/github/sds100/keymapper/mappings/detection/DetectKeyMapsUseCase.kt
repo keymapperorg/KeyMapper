@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.mappings.keymaps.detection
+package io.github.sds100.keymapper.mappings.detection
 
 import android.accessibilityservice.AccessibilityService
 import android.os.SystemClock
@@ -6,11 +6,10 @@ import android.view.KeyEvent
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.mappings.DetectMappingUseCase
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapEntityMapper
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapRepository
-import io.github.sds100.keymapper.shizuku.InputEventInjector
+import io.github.sds100.keymapper.shizuku.ShizukuInputEventInjector
 import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.display.DisplayAdapter
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
@@ -30,12 +29,13 @@ import io.github.sds100.keymapper.util.State
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import timber.log.Timber
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 17/04/2021.
  */
 
-class DetectKeyMapsUseCaseImpl(
+class DetectKeyMapsUseCaseImpl @Inject constructor(
     detectMappingUseCase: DetectMappingUseCase,
     private val keyMapRepository: KeyMapRepository,
     private val preferenceRepository: PreferenceRepository,
@@ -44,7 +44,7 @@ class DetectKeyMapsUseCaseImpl(
     private val volumeAdapter: VolumeAdapter,
     private val keyMapperImeMessenger: KeyMapperImeMessenger,
     private val accessibilityService: IAccessibilityService,
-    private val shizukuInputEventInjector: InputEventInjector,
+    private val shizukuInputEventInjector: ShizukuInputEventInjector,
     private val permissionAdapter: PermissionAdapter,
     private val phoneAdapter: PhoneAdapter,
     private val inputMethodAdapter: InputMethodAdapter

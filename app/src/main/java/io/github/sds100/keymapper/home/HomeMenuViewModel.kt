@@ -9,11 +9,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 17/11/20.
  */
-class HomeMenuViewModel(
+class HomeMenuViewModel @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val alertsUseCase: ShowHomeScreenAlertsUseCase,
     private val pauseMappings: PauseMappingsUseCase,

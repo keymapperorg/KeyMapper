@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
  * Created by sds100 on 29/11/20.
  */
 
-class ConfigConstraintsViewModel(
+class ConfigConstraintsViewModel constructor(
     private val coroutineScope: CoroutineScope,
     private val display: DisplayConstraintUseCase,
     private val config: ConfigMappingUseCase<*, *>,

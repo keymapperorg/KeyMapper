@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.backup.BackupRestoreMappingsUseCase
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
@@ -21,11 +22,13 @@ import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 18/01/21.
  */
-class HomeViewModel(
+@HiltViewModel
+class HomeViewModel @Inject constructor(
     private val listKeyMaps: ListKeyMapsUseCase,
     private val listFingerprintMaps: ListFingerprintMapsUseCase,
     private val pauseMappings: PauseMappingsUseCase,

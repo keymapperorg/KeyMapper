@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.michaelflisar.dragselectrecyclerview.DragSelectionProcessor
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ifIsData
@@ -13,12 +14,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 14/05/2021.
  */
 
-class LogViewModel(
+@HiltViewModel
+class LogViewModel @Inject constructor(
     private val useCase: DisplayLogUseCase,
     resourceProvider: ResourceProvider
 ) : ViewModel(), PopupViewModel by PopupViewModelImpl(), ResourceProvider by resourceProvider {

@@ -1,14 +1,16 @@
 package io.github.sds100.keymapper.mappings.fingerprintmaps
 
 import androidx.lifecycle.*
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ui.*
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
+import javax.inject.Inject
 
-class FingerprintMapListViewModel(
+class FingerprintMapListViewModel @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val useCase: ListFingerprintMapsUseCase,
     resourceProvider: ResourceProvider,

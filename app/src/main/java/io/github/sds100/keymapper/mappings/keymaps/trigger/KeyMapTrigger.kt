@@ -4,7 +4,7 @@ import io.github.sds100.keymapper.data.entities.Extra
 import io.github.sds100.keymapper.data.entities.TriggerEntity
 import io.github.sds100.keymapper.data.entities.getData
 import io.github.sds100.keymapper.mappings.ClickType
-import io.github.sds100.keymapper.mappings.keymaps.detection.DetectScreenOffKeyEventsController
+import io.github.sds100.keymapper.mappings.detection.DetectScreenOffKeyEventsController
 import io.github.sds100.keymapper.util.valueOrNull
 import kotlinx.serialization.Serializable
 import splitties.bitflags.hasFlag

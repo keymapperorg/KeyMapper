@@ -19,12 +19,13 @@ import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 24/03/2019.
  */
 
-class NotificationController(
+class NotificationController @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val manageNotifications: ManageNotificationsUseCase,
     private val pauseMappings: PauseMappingsUseCase,
@@ -113,7 +114,7 @@ class NotificationController(
         ) { show, serviceState, areMappingsPaused ->
             invalidateToggleMappingsNotification(show, serviceState, areMappingsPaused)
         }.flowOn(dispatchers.default()).launchIn(coroutineScope)
-
+    
         manageNotifications.showImePickerNotification.onEach { show ->
             if (show) {
                 manageNotifications.createChannel(

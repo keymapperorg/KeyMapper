@@ -5,12 +5,13 @@ import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
 import kotlinx.coroutines.flow.StateFlow
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 25/06/2021.
  */
 
-class ChooseSoundFileUseCaseImpl(
+class ChooseSoundFileUseCaseImpl @Inject constructor(
     private val fileAdapter: FileAdapter,
     private val soundsManager: SoundsManager
 ) : ChooseSoundFileUseCase {

@@ -15,11 +15,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.airbnb.epoxy.EpoxyController
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.databinding.FragmentConfigIntentBinding
 import io.github.sds100.keymapper.databinding.ListItemIntentExtraBoolBinding
 import io.github.sds100.keymapper.intentExtraBool
 import io.github.sds100.keymapper.intentExtraGeneric
-import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.setupNavigation
 import io.github.sds100.keymapper.util.ui.showPopups
@@ -32,6 +32,7 @@ import kotlinx.serialization.json.Json
  * Created by sds100 on 30/03/2020.
  */
 
+@AndroidEntryPoint
 class ConfigIntentFragment : Fragment() {
     companion object {
         const val EXTRA_RESULT = "extra_config_intent_result"
@@ -40,9 +41,7 @@ class ConfigIntentFragment : Fragment() {
     private val args: ConfigIntentFragmentArgs by navArgs()
     private val requestKey: String by lazy { args.requestKey }
 
-    private val viewModel: ConfigIntentViewModel by viewModels {
-        Inject.configIntentViewModel(requireContext())
-    }
+    private val viewModel: ConfigIntentViewModel by viewModels()
 
     /**
      * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)

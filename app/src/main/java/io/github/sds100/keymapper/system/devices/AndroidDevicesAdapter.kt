@@ -7,6 +7,7 @@ import android.hardware.input.InputManager
 import android.os.Handler
 import android.view.InputDevice
 import androidx.core.content.getSystemService
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
@@ -15,12 +16,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import splitties.mainthread.mainLooper
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Created by sds100 on 13/03/2021.
  */
-class AndroidDevicesAdapter(
-    context: Context,
+@Singleton
+class AndroidDevicesAdapter @Inject constructor(
+    @ApplicationContext context: Context,
     private val bluetoothAdapter: io.github.sds100.keymapper.system.bluetooth.BluetoothAdapter,
     private val permissionAdapter: PermissionAdapter,
     private val coroutineScope: CoroutineScope

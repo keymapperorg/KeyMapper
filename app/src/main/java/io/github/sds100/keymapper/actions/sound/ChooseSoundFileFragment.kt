@@ -13,10 +13,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.databinding.FragmentChooseSoundFileBinding
 import io.github.sds100.keymapper.simple
 import io.github.sds100.keymapper.system.files.FileUtils
-import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.showPopups
 import kotlinx.coroutines.flow.collectLatest
@@ -27,6 +27,7 @@ import kotlinx.serialization.json.Json
  * Created by sds100 on 22/06/2021.
  */
 
+@AndroidEntryPoint
 class ChooseSoundFileFragment : Fragment() {
     companion object {
         const val EXTRA_RESULT = "extra_sound_file_result"
@@ -35,9 +36,7 @@ class ChooseSoundFileFragment : Fragment() {
     private val args: ChooseSoundFileFragmentArgs by navArgs()
     private val requestKey: String by lazy { args.requestKey }
 
-    private val viewModel: ChooseSoundFileViewModel by viewModels {
-        Inject.soundFileActionTypeViewModel(requireContext())
-    }
+    private val viewModel: ChooseSoundFileViewModel by viewModels()
 
     private val chooseSoundFileLauncher =
         registerForActivityResult(ActivityResultContracts.GetContent()) {

@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.util.color
 import io.github.sds100.keymapper.util.drawable
 import io.github.sds100.keymapper.util.str
@@ -12,13 +13,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 21/02/2021.
  */
 
-class ResourceProviderImpl(
-    context: Context,
+class ResourceProviderImpl @Inject constructor(
+    @ApplicationContext context: Context,
     private val coroutineScope: CoroutineScope
 ) : ResourceProvider {
     private val ctx = context.applicationContext

@@ -6,12 +6,13 @@ import io.github.sds100.keymapper.system.media.MediaAdapter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 16/04/2021.
  */
 
-class PauseMappingsUseCaseImpl(
+class PauseMappingsUseCaseImpl @Inject constructor(
     private val preferenceRepository: PreferenceRepository,
     private val mediaAdapter: MediaAdapter
 ) : PauseMappingsUseCase {

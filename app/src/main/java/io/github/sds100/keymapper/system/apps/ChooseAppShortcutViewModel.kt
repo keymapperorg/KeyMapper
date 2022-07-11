@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.filterByQuery
@@ -14,11 +15,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 27/01/2020.
  */
-class ChooseAppShortcutViewModel internal constructor(
+@HiltViewModel
+class ChooseAppShortcutViewModel @Inject internal constructor(
     private val useCase: DisplayAppShortcutsUseCase,
     resourceProvider: ResourceProvider
 ) : ViewModel(), PopupViewModel by PopupViewModelImpl(),
@@ -110,18 +113,5 @@ class ChooseAppShortcutViewModel internal constructor(
                 )
             )
         }
-    }
-
-    class Factory(
-        private val useCase: DisplayAppShortcutsUseCase,
-        private val resourceProvider: ResourceProvider
-    ) : ViewModelProvider.Factory {
-
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>) =
-            ChooseAppShortcutViewModel(
-                useCase,
-                resourceProvider
-            ) as T
     }
 }

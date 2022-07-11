@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.util.State
@@ -13,11 +14,13 @@ import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 22/07/2021.
  */
-class ChooseActionViewModel(
+@HiltViewModel
+class ChooseActionViewModel @Inject constructor(
     private val useCase: CreateActionUseCase,
     resourceProvider: ResourceProvider,
     private val isActionSupported: IsActionSupportedUseCase
@@ -178,17 +181,5 @@ class ChooseActionViewModel(
         }
 
         return true
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    class Factory(
-        private val useCase: CreateActionUseCase,
-        private val resourceProvider: ResourceProvider,
-        private val isActionSupported: IsActionSupportedUseCase
-    ) : ViewModelProvider.NewInstanceFactory() {
-
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return ChooseActionViewModel(useCase, resourceProvider, isActionSupported) as T
-        }
     }
 }

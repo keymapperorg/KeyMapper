@@ -12,9 +12,10 @@ import android.os.Looper
 import android.provider.Settings
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.getSystemService
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.system.JobSchedulerHelper
 import io.github.sds100.keymapper.system.SettingsUtils
-import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
@@ -25,15 +26,18 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Created by sds100 on 14/02/2021.
  */
 
-class AndroidInputMethodAdapter(
-    context: Context,
+@Singleton
+class AndroidInputMethodAdapter @Inject constructor(
+    @ApplicationContext context: Context,
     private val coroutineScope: CoroutineScope,
-    private val serviceAdapter: ServiceAdapter,
+    private val accessibilityServiceAdapter: AccessibilityServiceAdapter,
     private val permissionAdapter: PermissionAdapter,
     private val suAdapter: SuAdapter
 ) : InputMethodAdapter {
@@ -80,7 +84,7 @@ class AndroidInputMethodAdapter(
         suspend fun invalidate() {
             when {
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
-                    && serviceAdapter.state.first() == ServiceState.ENABLED -> send(true)
+                    && accessibilityServiceAdapter.state.first() == ServiceState.ENABLED -> send(true)
 
                 permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS) -> send(true)
 
@@ -97,7 +101,7 @@ class AndroidInputMethodAdapter(
         }
 
         launch {
-            serviceAdapter.state.collectLatest {
+            accessibilityServiceAdapter.state.collectLatest {
                 invalidate()
             }
         }
@@ -183,8 +187,8 @@ class AndroidInputMethodAdapter(
 
         var failed = true
 
-        if (failed && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && serviceAdapter.state.value == ServiceState.ENABLED) {
-            serviceAdapter.send(Event.ChangeIme(imeId)).onSuccess {
+        if (failed && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && accessibilityServiceAdapter.state.value == ServiceState.ENABLED) {
+            accessibilityServiceAdapter.send(Event.ChangeIme(imeId)).onSuccess {
                 failed = false
             }
         }

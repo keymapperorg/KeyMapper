@@ -4,16 +4,17 @@ import android.content.Context
 import android.content.Intent
 import android.os.SystemClock
 import android.view.KeyEvent
-import io.github.sds100.keymapper.shizuku.InputEventInjector
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.util.InputEventType
 import timber.log.Timber
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 21/04/2021.
  */
 
-class KeyMapperImeMessengerImpl(
-    context: Context,
+class KeyMapperImeMessengerImpl @Inject constructor(
+    @ApplicationContext context: Context,
     private val inputMethodAdapter: InputMethodAdapter
 ) : KeyMapperImeMessenger {
 
@@ -98,6 +99,7 @@ class KeyMapperImeMessengerImpl(
     }
 }
 
-interface KeyMapperImeMessenger : InputEventInjector {
+interface KeyMapperImeMessenger {
+    fun inputKeyEvent(model: InputKeyModel)
     fun inputText(text: String)
 }

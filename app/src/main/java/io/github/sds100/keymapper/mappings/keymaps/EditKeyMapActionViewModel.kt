@@ -2,18 +2,19 @@ package io.github.sds100.keymapper.mappings.keymaps
 
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.CreateActionUseCase
+import io.github.sds100.keymapper.actions.EditActionViewModel
 import io.github.sds100.keymapper.actions.RepeatMode
-import io.github.sds100.keymapper.mappings.EditActionViewModel
 import io.github.sds100.keymapper.mappings.OptionMinimums
 import io.github.sds100.keymapper.mappings.isDelayBeforeNextActionAllowed
 import io.github.sds100.keymapper.util.Defaultable
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.CoroutineScope
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 27/06/20.
  */
-class EditKeyMapActionViewModel(
+class EditKeyMapActionViewModel @Inject constructor(
     coroutineScope: CoroutineScope,
     val config: ConfigKeyMapUseCase,
     resourceProvider: ResourceProvider,
@@ -23,8 +24,7 @@ class EditKeyMapActionViewModel(
     coroutineScope,
     config,
     createActionUseCase
-),
-    ResourceProvider by resourceProvider {
+), ResourceProvider by resourceProvider {
 
     companion object {
         private const val ID_REPEAT_RATE = "repeat_rate"

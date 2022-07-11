@@ -1,19 +1,21 @@
 package io.github.sds100.keymapper.mappings.fingerprintmaps
 
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.CreateActionUseCase
 import io.github.sds100.keymapper.actions.RepeatMode
-import io.github.sds100.keymapper.mappings.EditActionViewModel
+import io.github.sds100.keymapper.actions.EditActionViewModel
 import io.github.sds100.keymapper.mappings.OptionMinimums
 import io.github.sds100.keymapper.mappings.isDelayBeforeNextActionAllowed
 import io.github.sds100.keymapper.util.Defaultable
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.CoroutineScope
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 27/06/20.
  */
-class EditFingerprintMapActionViewModel(
+class EditFingerprintMapActionViewModel @Inject constructor(
     coroutineScope: CoroutineScope,
     val config: ConfigFingerprintMapUseCase,
     createActionUseCase: CreateActionUseCase,

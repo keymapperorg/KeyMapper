@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Environment
 import androidx.documentfile.provider.DocumentFile
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
 import kotlinx.coroutines.Dispatchers
@@ -12,11 +13,14 @@ import net.lingala.zip4j.ZipFile
 import java.io.File
 import java.io.InputStream
 import java.util.*
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Created by sds100 on 13/04/2021.
  */
-class AndroidFileAdapter(context: Context) : FileAdapter {
+@Singleton
+class AndroidFileAdapter @Inject constructor(@ApplicationContext context: Context) : FileAdapter {
     private val ctx = context.applicationContext
 
     override fun getPrivateFile(path: String): IFile {

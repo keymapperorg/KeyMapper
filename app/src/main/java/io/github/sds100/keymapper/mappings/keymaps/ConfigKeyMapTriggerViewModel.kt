@@ -20,7 +20,7 @@ import kotlinx.coroutines.runBlocking
  * Created by sds100 on 24/11/20.
  */
 
-class ConfigKeyMapTriggerViewModel(
+class ConfigKeyMapTriggerViewModel constructor(
     private val coroutineScope: CoroutineScope,
     private val onboarding: OnboardingUseCase,
     private val config: ConfigKeyMapUseCase,
@@ -30,7 +30,7 @@ class ConfigKeyMapTriggerViewModel(
     resourceProvider: ResourceProvider,
     private val dispatchers: DispatcherProvider = DefaultDispatcherProvider()
 ) : ResourceProvider by resourceProvider,
-        PopupViewModel by PopupViewModelImpl(),
+    PopupViewModel by PopupViewModelImpl(),
         NavigationViewModel by NavigationViewModelImpl() {
 
     val optionsViewModel = ConfigKeyMapTriggerOptionsViewModel(

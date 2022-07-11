@@ -9,11 +9,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 16/04/2021.
  */
-class ListKeyMapsUseCaseImpl(
+class ListKeyMapsUseCaseImpl @Inject constructor(
     private val keyMapRepository: KeyMapRepository,
     private val backupManager: BackupManager,
     displayKeyMapUseCase: DisplayKeyMapUseCase,

@@ -7,11 +7,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.databinding.FragmentAppIntroSlideBinding
-import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import kotlinx.coroutines.flow.collectLatest
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class AppIntroFragment : Fragment() {
 
     companion object {
@@ -25,10 +27,13 @@ class AppIntroFragment : Fragment() {
     val binding: FragmentAppIntroSlideBinding
         get() = _binding!!
 
+    @Inject
+    lateinit var appIntroViewModelFactory: AppIntroViewModel.AssistedFactory
+
     private val appIntroViewModel by activityViewModels<AppIntroViewModel> {
         val slides = requireActivity().intent.getStringArrayExtra(AppIntroActivity.EXTRA_SLIDES)
 
-        Inject.appIntroViewModel(requireContext(), slides!!.toList())
+        AppIntroViewModel.provideFactory(appIntroViewModelFactory, slides!!.toList())
     }
 
     private val slide: String by lazy {

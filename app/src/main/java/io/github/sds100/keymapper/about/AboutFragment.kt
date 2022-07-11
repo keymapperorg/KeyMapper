@@ -1,5 +1,8 @@
 package io.github.sds100.keymapper.about
 
+/**
+ * Created by sds100 on 05/04/2020.
+ */
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,10 +12,6 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.databinding.FragmentAboutBinding
-
-/**
- * Created by sds100 on 05/04/2020.
- */
 
 class AboutFragment : Fragment() {
 

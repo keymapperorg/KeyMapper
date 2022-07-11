@@ -15,10 +15,9 @@ import androidx.navigation.NavController
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.shizuku.ShizukuUtils
 import io.github.sds100.keymapper.system.DeviceAdmin
-import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
+import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapterImpl
 import io.github.sds100.keymapper.system.url.UrlUtils
 import io.github.sds100.keymapper.util.str
 import rikka.shizuku.Shizuku
@@ -32,7 +31,9 @@ import splitties.toast.toast
  */
 class RequestPermissionDelegate(
     private val activity: AppCompatActivity,
-    val showDialogs: Boolean
+    private val showDialogs: Boolean,
+    private val permissionAdapter: AndroidPermissionAdapter,
+    private val notificationReceiverAdapter: NotificationReceiverAdapterImpl
 ) {
     private val startActivityForResultLauncher =
         activity.activityResultRegistry.register(
@@ -40,7 +41,7 @@ class RequestPermissionDelegate(
             activity,
             ActivityResultContracts.StartActivityForResult()
         ) {
-            ServiceLocator.permissionAdapter(activity).onPermissionsChanged()
+            permissionAdapter.onPermissionsChanged()
         }
 
     private val requestPermissionLauncher =
@@ -49,16 +50,8 @@ class RequestPermissionDelegate(
             activity,
             ActivityResultContracts.RequestPermission()
         ) {
-            ServiceLocator.permissionAdapter(activity).onPermissionsChanged()
+            permissionAdapter.onPermissionsChanged()
         }
-
-    private val permissionAdapter: PermissionAdapter by lazy {
-        ServiceLocator.permissionAdapter(activity)
-    }
-
-    private val notificationReceiverAdapter: ServiceAdapter by lazy {
-        ServiceLocator.notificationReceiverAdapter(activity)
-    }
 
     fun requestPermission(permission: Permission, navController: NavController?) {
         when (permission) {
@@ -68,7 +61,7 @@ class RequestPermissionDelegate(
             Permission.READ_PHONE_STATE -> requestPermissionLauncher.launch(Manifest.permission.READ_PHONE_STATE)
             Permission.ACCESS_NOTIFICATION_POLICY -> requestAccessNotificationPolicy()
             Permission.WRITE_SECURE_SETTINGS -> requestWriteSecureSettings()
-            Permission.NOTIFICATION_LISTENER -> notificationReceiverAdapter.start()
+            Permission.NOTIFICATION_LISTENER -> notificationReceiverAdapter.openSettingsPage()
             Permission.CALL_PHONE -> requestPermissionLauncher.launch(Manifest.permission.CALL_PHONE)
             Permission.ANSWER_PHONE_CALL -> requestPermissionLauncher.launch(Manifest.permission.ANSWER_PHONE_CALLS)
             Permission.FIND_NEARBY_DEVICES -> requestPermissionLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT)

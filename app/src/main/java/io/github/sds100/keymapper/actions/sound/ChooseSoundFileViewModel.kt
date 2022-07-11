@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.actions.sound
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.getFullMessage
 import io.github.sds100.keymapper.util.onFailure
@@ -11,11 +12,13 @@ import io.github.sds100.keymapper.util.ui.*
 import io.github.sds100.keymapper.util.valueOrNull
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 31/03/2020.
  */
-class ChooseSoundFileViewModel(
+@HiltViewModel
+class ChooseSoundFileViewModel @Inject constructor(
     resourceProvider: ResourceProvider,
     private val useCase: ChooseSoundFileUseCase
 ) : ViewModel(), PopupViewModel by PopupViewModelImpl(), ResourceProvider by resourceProvider {

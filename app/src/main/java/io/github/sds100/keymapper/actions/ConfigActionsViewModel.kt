@@ -19,7 +19,7 @@ import kotlinx.coroutines.runBlocking
  * Created by sds100 on 22/11/20.
  */
 
-class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
+class ConfigActionsViewModel<A : Action, M : Mapping<A>> constructor(
     private val coroutineScope: CoroutineScope,
     private val displayActionUseCase: DisplayActionUseCase,
     private val testActionUseCase: TestActionUseCase,

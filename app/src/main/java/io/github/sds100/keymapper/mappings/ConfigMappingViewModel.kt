@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.mappings
 
 import android.os.Bundle
 import io.github.sds100.keymapper.actions.ConfigActionsViewModel
+import io.github.sds100.keymapper.actions.EditActionViewModel
 import io.github.sds100.keymapper.constraints.ConfigConstraintsViewModel
 import kotlinx.coroutines.flow.StateFlow
 

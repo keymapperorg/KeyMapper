@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.constraints
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.display.Orientation
@@ -12,12 +13,14 @@ import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 21/03/2020.
  */
 
-class ChooseConstraintViewModel(
+@HiltViewModel
+class ChooseConstraintViewModel @Inject constructor(
     private val useCase: CreateConstraintUseCase,
     resourceProvider: ResourceProvider
 ) : ViewModel(),
@@ -382,16 +385,5 @@ class ChooseConstraintViewModel(
         }
 
         _returnResult.emit(constraint)
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    class Factory(
-        private val isSupported: CreateConstraintUseCase,
-        private val resourceProvider: ResourceProvider
-    ) : ViewModelProvider.NewInstanceFactory() {
-
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return ChooseConstraintViewModel(isSupported, resourceProvider) as T
-        }
     }
 }

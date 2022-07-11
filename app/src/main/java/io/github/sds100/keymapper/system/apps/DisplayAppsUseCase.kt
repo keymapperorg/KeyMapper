@@ -4,12 +4,13 @@ import android.graphics.drawable.Drawable
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.State
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 04/04/2021.
  */
 
-class DisplayAppsUseCaseImpl(
+class DisplayAppsUseCaseImpl @Inject constructor(
     private val adapter: PackageManagerAdapter
 ) : DisplayAppsUseCase {
     override val installedPackages: Flow<State<List<PackageInfo>>> = adapter.installedPackages

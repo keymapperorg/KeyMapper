@@ -5,6 +5,7 @@ import android.view.View
 import androidx.lifecycle.Lifecycle
 import androidx.preference.Preference
 import androidx.preference.isEmpty
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.system.url.UrlUtils
 import io.github.sds100.keymapper.util.drawable
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.launchIn
 /**
  * Created by sds100 on 18/07/2021.
  */
+@AndroidEntryPoint
 class ShizukuSettingsFragment : BaseSettingsFragment() {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {

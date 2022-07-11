@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.State
@@ -9,8 +10,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-open class KeyMapListViewModel constructor(
+class KeyMapListViewModel @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val useCase: ListKeyMapsUseCase,
     resourceProvider: ResourceProvider,

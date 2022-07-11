@@ -1,18 +1,19 @@
-package io.github.sds100.keymapper.actions
+package io.github.sds100.keymapper.mappings.detection
 
 import android.accessibilityservice.AccessibilityService
 import android.os.Build
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.actions.ActionData
+import io.github.sds100.keymapper.actions.GetActionErrorUseCase
 import io.github.sds100.keymapper.actions.sound.SoundsManager
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.shizuku.InputEventInjector
+import io.github.sds100.keymapper.shizuku.ShizukuInputEventInjector
 import io.github.sds100.keymapper.system.accessibility.AccessibilityNodeAction
 import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
-import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.airplanemode.AirplaneModeAdapter
 import io.github.sds100.keymapper.system.apps.AppShortcutAdapter
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
@@ -33,10 +34,11 @@ import io.github.sds100.keymapper.system.media.MediaAdapter
 import io.github.sds100.keymapper.system.navigation.OpenMenuHelper
 import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.system.nfc.NfcAdapter
+import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapter
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.phone.PhoneAdapter
-import io.github.sds100.keymapper.system.popup.PopupMessageAdapter
+import io.github.sds100.keymapper.system.popup.ToastAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.shell.ShellAdapter
 import io.github.sds100.keymapper.system.url.OpenUrlAdapter
@@ -52,12 +54,13 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import splitties.bitflags.withFlag
 import timber.log.Timber
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 14/02/21.
  */
 
-class PerformActionsUseCaseImpl(
+class PerformActionsUseCaseImpl @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val accessibilityService: IAccessibilityService,
     private val inputMethodAdapter: InputMethodAdapter,
@@ -67,10 +70,10 @@ class PerformActionsUseCaseImpl(
     private val intentAdapter: IntentAdapter,
     private val getActionError: GetActionErrorUseCase,
     private val keyMapperImeMessenger: KeyMapperImeMessenger,
-    private val shizukuInputEventInjector: InputEventInjector,
+    private val shizukuInputEventInjector: ShizukuInputEventInjector,
     private val packageManagerAdapter: PackageManagerAdapter,
     private val appShortcutAdapter: AppShortcutAdapter,
-    private val popupMessageAdapter: PopupMessageAdapter,
+    private val popupMessageAdapter: ToastAdapter,
     private val deviceAdapter: DevicesAdapter,
     private val phoneAdapter: PhoneAdapter,
     private val volumeAdapter: VolumeAdapter,
@@ -87,7 +90,7 @@ class PerformActionsUseCaseImpl(
     private val preferenceRepository: PreferenceRepository,
     private val soundsManager: SoundsManager,
     private val permissionAdapter: PermissionAdapter,
-    private val notificationReceiverAdapter: ServiceAdapter
+    private val notificationReceiverAdapter: NotificationReceiverAdapter
 ) : PerformActionsUseCase {
 
     private val openMenuHelper by lazy {

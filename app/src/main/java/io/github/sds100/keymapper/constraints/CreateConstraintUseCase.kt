@@ -10,12 +10,13 @@ import io.github.sds100.keymapper.util.Error
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 06/07/2021.
  */
 
-class CreateConstraintUseCaseImpl(
+class CreateConstraintUseCaseImpl @Inject constructor(
     private val networkAdapter: NetworkAdapter,
     private val inputMethodAdapter: InputMethodAdapter,
     private val preferenceRepository: PreferenceRepository

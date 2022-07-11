@@ -3,27 +3,30 @@ package io.github.sds100.keymapper.mappings.keymaps.trigger
 import android.content.ClipData
 import android.content.ClipboardManager
 import androidx.core.content.getSystemService
-import androidx.navigation.navGraphViewModels
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import com.airbnb.epoxy.EpoxyRecyclerView
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapTriggerOptionsViewModel
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapViewModel
 import io.github.sds100.keymapper.system.url.UrlUtils
 import io.github.sds100.keymapper.triggerFromOtherApps
-import io.github.sds100.keymapper.ui.*
 import io.github.sds100.keymapper.ui.utils.configuredCheckBox
 import io.github.sds100.keymapper.ui.utils.configuredSlider
 import io.github.sds100.keymapper.util.FragmentInfo
-import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.str
-import io.github.sds100.keymapper.util.ui.*
+import io.github.sds100.keymapper.util.ui.CheckBoxListItem
+import io.github.sds100.keymapper.util.ui.ListItem
+import io.github.sds100.keymapper.util.ui.SimpleRecyclerViewFragment
+import io.github.sds100.keymapper.util.ui.SliderListItem
 import kotlinx.coroutines.flow.Flow
 import splitties.toast.toast
 
 /**
  * Created by sds100 on 29/11/20.
  */
+@AndroidEntryPoint
 class ConfigTriggerOptionsFragment : SimpleRecyclerViewFragment<ListItem>() {
 
     class Info : FragmentInfo(
@@ -32,9 +35,7 @@ class ConfigTriggerOptionsFragment : SimpleRecyclerViewFragment<ListItem>() {
         { ConfigTriggerOptionsFragment() }
     )
 
-    private val configKeyMapViewModel: ConfigKeyMapViewModel by navGraphViewModels(R.id.nav_config_keymap) {
-        Inject.configKeyMapViewModel(requireContext())
-    }
+    private val configKeyMapViewModel: ConfigKeyMapViewModel by hiltNavGraphViewModels(R.id.nav_config_keymap)
 
     private val viewModel: ConfigKeyMapTriggerOptionsViewModel
         get() = configKeyMapViewModel.configTriggerViewModel.optionsViewModel

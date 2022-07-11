@@ -9,8 +9,8 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.Constants
-import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.system.JobSchedulerHelper
 import io.github.sds100.keymapper.system.SettingsUtils
 import io.github.sds100.keymapper.system.permissions.Permission
@@ -22,14 +22,18 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Created by sds100 on 17/03/2021.
  */
-class AccessibilityServiceAdapter(
-    context: Context,
-    private val coroutineScope: CoroutineScope
-) : ServiceAdapter {
+@Singleton
+class AccessibilityServiceAdapterImpl @Inject constructor(
+    @ApplicationContext context: Context,
+    private val coroutineScope: CoroutineScope,
+    private val permissionAdapter: PermissionAdapter
+) : AccessibilityServiceAdapter {
 
     private val ctx = context.applicationContext
     override val eventReceiver = MutableSharedFlow<Event>()
@@ -38,9 +42,8 @@ class AccessibilityServiceAdapter(
 
     override val state = MutableStateFlow(ServiceState.DISABLED)
 
-    private val permissionAdapter: PermissionAdapter by lazy { ServiceLocator.permissionAdapter(ctx) }
-
     init {
+        Timber.e("init")
         //use job scheduler because there is there is a much shorter delay when the app is in the background
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             JobSchedulerHelper.observeEnabledAccessibilityServices(ctx)
@@ -315,4 +318,28 @@ class AccessibilityServiceAdapter(
             else -> ServiceState.ENABLED
         }
     }
+}
+
+interface AccessibilityServiceAdapter {
+    val state: StateFlow<ServiceState>
+
+    /**
+     * @return Whether the service could be started successfully.
+     */
+    fun start(): Boolean
+
+    /**
+     * @return Whether the service could be restarted successfully.
+     */
+    fun restart(): Boolean
+
+    /**
+     * @return Whether the service could be restarted successfully.
+     */
+    fun stop(): Boolean
+
+    suspend fun isCrashed(): Boolean
+
+    suspend fun send(event: Event): Result<*>
+    val eventReceiver: SharedFlow<Event>
 }

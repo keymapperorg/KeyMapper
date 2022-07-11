@@ -1,5 +1,6 @@
-package io.github.sds100.keymapper.constraints
+package io.github.sds100.keymapper.mappings.detection
 
+import dagger.hilt.android.scopes.ServiceScoped
 import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
@@ -10,12 +11,14 @@ import io.github.sds100.keymapper.system.media.MediaAdapter
 import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.system.phone.PhoneAdapter
 import io.github.sds100.keymapper.system.power.PowerAdapter
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 17/04/2021.
  */
 
-class DetectConstraintsUseCaseImpl(
+@ServiceScoped
+class DetectConstraintsUseCaseImpl @Inject constructor(
     private val accessibilityService: IAccessibilityService,
     private val mediaAdapter: MediaAdapter,
     private val devicesAdapter: DevicesAdapter,

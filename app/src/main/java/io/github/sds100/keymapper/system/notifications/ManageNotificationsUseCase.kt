@@ -7,12 +7,13 @@ import io.github.sds100.keymapper.system.root.SuAdapter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 14/02/21.
  */
 
-class ManageNotificationsUseCaseImpl(
+class ManageNotificationsUseCaseImpl @Inject constructor(
     private val preferences: PreferenceRepository,
     private val notificationAdapter: NotificationAdapter,
     private val suAdapter: SuAdapter,

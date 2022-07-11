@@ -8,8 +8,8 @@ import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.*
 import com.google.android.material.textfield.TextInputLayout
+import io.github.sds100.keymapper.KeyMapperApp
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.databinding.DialogEdittextNumberBinding
 import io.github.sds100.keymapper.databinding.DialogEdittextStringBinding
 import io.github.sds100.keymapper.util.*
@@ -272,7 +272,7 @@ suspend fun Context.editTextNumberAlertDialog(
         }
     }
 
-    val resourceProvider = ServiceLocator.resourceProvider(this)
+    val resourceProvider = (this.applicationContext as KeyMapperApp).resourceProvider
     val text = MutableStateFlow("")
 
     val inflater = LayoutInflater.from(this@editTextNumberAlertDialog)

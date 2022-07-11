@@ -3,7 +3,10 @@ package io.github.sds100.keymapper.settings
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Lifecycle
-import androidx.preference.*
+import androidx.preference.Preference
+import androidx.preference.SeekBarPreference
+import androidx.preference.isEmpty
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
@@ -16,6 +19,7 @@ import kotlinx.coroutines.flow.collectLatest
 /**
  * Created by sds100 on 16/07/2021.
  */
+@AndroidEntryPoint
 class DefaultOptionsSettingsFragment : BaseSettingsFragment() {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {

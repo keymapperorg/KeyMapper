@@ -11,6 +11,7 @@ import android.os.Build
 import android.os.TransactionTooLargeException
 import android.provider.MediaStore
 import android.provider.Settings
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -20,12 +21,15 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import splitties.bitflags.withFlag
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Created by sds100 on 16/03/2021.
  */
-class AndroidPackageManagerAdapter(
-    context: Context,
+@Singleton
+class AndroidPackageManagerAdapter @Inject constructor(
+    @ApplicationContext context: Context,
     coroutineScope: CoroutineScope
 ) : PackageManagerAdapter {
     private val ctx: Context = context.applicationContext

@@ -2,22 +2,21 @@ package io.github.sds100.keymapper.mappings.keymaps.trigger
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.navigation.navGraphViewModels
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentOptionsBinding
 import io.github.sds100.keymapper.mappings.OptionsBottomSheetFragment
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapViewModel
-import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.str
 
 /**
  * Created by sds100 on 12/04/2021.
  */
+@AndroidEntryPoint
 class ConfigTriggerKeyFragment : OptionsBottomSheetFragment<FragmentOptionsBinding>() {
 
-    private val configKeyMapViewModel: ConfigKeyMapViewModel by navGraphViewModels(R.id.nav_config_keymap) {
-        Inject.configKeyMapViewModel(requireContext())
-    }
+    private val configKeyMapViewModel: ConfigKeyMapViewModel by hiltNavGraphViewModels(R.id.nav_config_keymap)
 
     override val viewModel: ConfigTriggerKeyViewModel
         get() = configKeyMapViewModel.configTriggerKeyViewModel

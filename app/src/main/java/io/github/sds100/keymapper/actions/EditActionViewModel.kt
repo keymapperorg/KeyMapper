@@ -1,6 +1,9 @@
-package io.github.sds100.keymapper.mappings
+package io.github.sds100.keymapper.actions
 
-import io.github.sds100.keymapper.actions.*
+import io.github.sds100.keymapper.mappings.ConfigMappingUseCase
+import io.github.sds100.keymapper.mappings.Mapping
+import io.github.sds100.keymapper.mappings.OptionsUiState
+import io.github.sds100.keymapper.mappings.OptionsViewModel
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.CoroutineScope

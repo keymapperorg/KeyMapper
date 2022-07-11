@@ -13,12 +13,13 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.util.*
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 30/06/2021.
  */
 
-class ReportBugUseCaseImpl(
+class ReportBugUseCaseImpl @Inject constructor(
     private val fileAdapter: FileAdapter,
     private val logRepository: LogRepository,
     private val backupManager: BackupManager

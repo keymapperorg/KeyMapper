@@ -3,21 +3,22 @@ package io.github.sds100.keymapper.home
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
-import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 04/04/2021.
  */
 
-class ShowHomeScreenAlertsUseCaseImpl(
+class ShowHomeScreenAlertsUseCaseImpl @Inject constructor(
     private val preferences: PreferenceRepository,
     private val permissions: PermissionAdapter,
-    private val accessibilityServiceAdapter: ServiceAdapter,
+    private val accessibilityServiceAdapter: AccessibilityServiceAdapter,
     private val pauseMappingsUseCase: PauseMappingsUseCase
 ) : ShowHomeScreenAlertsUseCase {
     override val hideAlerts: Flow<Boolean> =

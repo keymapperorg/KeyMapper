@@ -9,12 +9,13 @@ import io.github.sds100.keymapper.system.apps.AppShortcutAdapter
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.system.accessibility.MyAccessibilityService
 import io.github.sds100.keymapper.util.Result
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 23/03/2021.
  */
 
-class CreateKeyMapShortcutUseCaseImpl(
+class CreateKeyMapShortcutUseCaseImpl @Inject constructor(
     private val adapter: AppShortcutAdapter,
     displayKeyMap: DisplayKeyMapUseCase,
     resourceProvider: ResourceProvider

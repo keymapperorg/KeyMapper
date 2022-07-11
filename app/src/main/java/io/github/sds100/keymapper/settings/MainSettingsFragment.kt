@@ -9,6 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.preference.*
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.backup.BackupUtils
@@ -27,6 +28,7 @@ import splitties.alertdialog.appcompat.positiveButton
 /**
  * Created by sds100 on 16/07/2021.
  */
+@AndroidEntryPoint
 class MainSettingsFragment : BaseSettingsFragment() {
 
     companion object {

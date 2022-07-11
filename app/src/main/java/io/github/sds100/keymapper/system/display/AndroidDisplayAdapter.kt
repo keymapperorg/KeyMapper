@@ -8,16 +8,20 @@ import android.hardware.display.DisplayManager
 import android.provider.Settings
 import android.view.Surface
 import androidx.core.content.getSystemService
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.system.SettingsUtils
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
 import kotlinx.coroutines.flow.MutableStateFlow
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Created by sds100 on 17/04/2021.
  */
-class AndroidDisplayAdapter(context: Context) : DisplayAdapter {
+@Singleton
+class AndroidDisplayAdapter @Inject constructor(@ApplicationContext context: Context) : DisplayAdapter {
     companion object {
 
         /**

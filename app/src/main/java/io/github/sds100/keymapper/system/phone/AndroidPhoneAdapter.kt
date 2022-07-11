@@ -9,19 +9,22 @@ import android.telecom.TelecomManager
 import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
 import androidx.core.content.getSystemService
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Created by sds100 on 21/04/2021.
  */
-class AndroidPhoneAdapter(
-    context: Context,
+@Singleton
+class AndroidPhoneAdapter @Inject constructor(
+    @ApplicationContext context: Context,
     private val coroutineScope: CoroutineScope
 ) : PhoneAdapter {
     private val ctx: Context = context.applicationContext

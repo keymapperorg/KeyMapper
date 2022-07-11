@@ -5,10 +5,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.airbnb.epoxy.EpoxyRecyclerView
 import com.google.android.material.switchmaterial.SwitchMaterial
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.databinding.FragmentFingerprintMapListBinding
 import io.github.sds100.keymapper.fingerprintMap
 import io.github.sds100.keymapper.home.HomeViewModel
-import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ui.ChipUi
 import io.github.sds100.keymapper.util.ui.OnChipClickCallback
@@ -18,12 +18,11 @@ import kotlinx.coroutines.flow.Flow
 /**
  * Created by sds100 on 11/12/2020.
  */
+@AndroidEntryPoint
 class FingerprintMapListFragment :
     RecyclerViewFragment<FingerprintMapListItem, FragmentFingerprintMapListBinding>() {
 
-    private val homeViewModel: HomeViewModel by activityViewModels {
-        Inject.homeViewModel(requireContext())
-    }
+    private val homeViewModel: HomeViewModel by activityViewModels()
 
     private val viewModel by lazy { homeViewModel.fingerprintMapListViewModel }
 

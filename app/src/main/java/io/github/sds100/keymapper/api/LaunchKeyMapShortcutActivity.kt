@@ -5,9 +5,10 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.ServiceLocator
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.accessibility.ServiceState
 import splitties.toast.toast
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 08/09/20.
@@ -15,11 +16,14 @@ import splitties.toast.toast
 
 //DON'T MOVE THIS CLASS TO A DIFFERENT PACKAGE BECAUSE IT BREAKS THE API
 class LaunchKeyMapShortcutActivity : AppCompatActivity() {
+    
+    @Inject
+    lateinit var accessibilityServiceAdapter: AccessibilityServiceAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val accessibilityServiceState = ServiceLocator.accessibilityServiceAdapter(this).state.value
+        val accessibilityServiceState = accessibilityServiceAdapter.state.value
 
         when (accessibilityServiceState) {
             ServiceState.ENABLED ->

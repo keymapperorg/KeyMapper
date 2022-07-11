@@ -6,10 +6,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
 import com.airbnb.epoxy.EpoxyRecyclerView
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
 import io.github.sds100.keymapper.simple
 import io.github.sds100.keymapper.simpleGrid
-import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.*
@@ -23,6 +23,7 @@ import kotlinx.serialization.json.Json
 /**
  * A placeholder fragment containing a simple view.
  */
+@AndroidEntryPoint
 class ChooseConstraintFragment
     : SimpleRecyclerViewFragment<SimpleListItem>() {
 
@@ -32,9 +33,7 @@ class ChooseConstraintFragment
 
     private val navArgs by navArgs<ChooseConstraintFragmentArgs>()
 
-    private val viewModel: ChooseConstraintViewModel by viewModels {
-        Inject.chooseConstraintListViewModel(requireContext())
-    }
+    private val viewModel: ChooseConstraintViewModel by viewModels()
 
     override val listItems: Flow<State<List<SimpleListItem>>>
         get() = viewModel.listItems

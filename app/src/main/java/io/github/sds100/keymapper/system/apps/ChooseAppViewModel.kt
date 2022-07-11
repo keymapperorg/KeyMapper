@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.system.apps
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.filterByQuery
 import io.github.sds100.keymapper.util.mapData
@@ -14,12 +15,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 27/01/2020.
  */
 
-class ChooseAppViewModel constructor(
+@HiltViewModel
+class ChooseAppViewModel @Inject constructor(
     private val useCase: DisplayAppsUseCase,
 ) : ViewModel() {
 
@@ -121,15 +124,6 @@ class ChooseAppViewModel constructor(
     }.flowOn(Dispatchers.Default)
         .toList()
         .sortedBy { it.title.lowercase(Locale.getDefault()) }
-
-    class Factory(
-        private val useCase: DisplayAppsUseCase
-    ) : ViewModelProvider.Factory {
-
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>) =
-            ChooseAppViewModel(useCase) as T
-    }
 }
 
 data class AppListState(

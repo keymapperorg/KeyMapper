@@ -2,20 +2,21 @@ package io.github.sds100.keymapper.system.permissions
 
 import android.Manifest
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.system.popup.PopupMessageAdapter
+import io.github.sds100.keymapper.system.popup.ToastAdapter
 import io.github.sds100.keymapper.util.onSuccess
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 12/09/2021.
  */
-class AutoGrantPermissionController(
+class AutoGrantPermissionController @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val permissionAdapter: PermissionAdapter,
-    private val popupAdapter: PopupMessageAdapter,
+    private val popupAdapter: ToastAdapter,
     private val resourceProvider: ResourceProvider) {
 
     fun start() {

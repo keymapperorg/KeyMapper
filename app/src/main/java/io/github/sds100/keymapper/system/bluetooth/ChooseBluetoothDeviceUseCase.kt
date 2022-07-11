@@ -5,12 +5,13 @@ import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 07/04/2021.
  */
 
-class ChooseBluetoothDeviceUseCaseImpl(
+class ChooseBluetoothDeviceUseCaseImpl @Inject constructor(
     private val devicesAdapter: DevicesAdapter,
     private val permissionAdapter: PermissionAdapter
 ) :

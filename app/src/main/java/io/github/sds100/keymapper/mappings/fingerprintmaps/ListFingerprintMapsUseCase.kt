@@ -12,12 +12,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 16/04/2021.
  */
 
-class ListFingerprintMapsUseCaseImpl(
+class ListFingerprintMapsUseCaseImpl @Inject constructor(
     private val fingerprintMapRepository: FingerprintMapRepository,
     private val backupManager: BackupManager,
     private val preferenceRepository: PreferenceRepository,

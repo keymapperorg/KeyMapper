@@ -3,30 +3,32 @@ package io.github.sds100.keymapper.mappings.fingerprintmaps
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.setFragmentResultListener
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.navigation.navGraphViewModels
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.constraints.ChooseConstraintFragment
 import io.github.sds100.keymapper.constraints.ConfigConstraintsFragment
 import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.mappings.ConfigMappingFragment
 import io.github.sds100.keymapper.ui.utils.getJsonSerializable
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.FragmentInfo
+import io.github.sds100.keymapper.util.int
+import io.github.sds100.keymapper.util.intArray
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.TwoFragments
 import kotlinx.coroutines.flow.collectLatest
 
 /**
  * Created by sds100 on 22/11/20.
  */
+@AndroidEntryPoint
 class ConfigFingerprintMapFragment : ConfigMappingFragment() {
     private val args by navArgs<ConfigFingerprintMapFragmentArgs>()
 
-    override val viewModel: ConfigFingerprintMapViewModel
-        by navGraphViewModels(R.id.nav_config_fingerprint_map) {
-            Inject.configFingerprintMapViewModel(requireContext())
-        }
+    override val viewModel: ConfigFingerprintMapViewModel by hiltNavGraphViewModels(R.id.nav_config_fingerprint_map)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

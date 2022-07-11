@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.actions
 
 import android.text.InputType
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.system.camera.CameraLens
@@ -10,12 +11,13 @@ import io.github.sds100.keymapper.system.display.OrientationUtils
 import io.github.sds100.keymapper.system.intents.ConfigIntentResult
 import io.github.sds100.keymapper.system.volume.*
 import io.github.sds100.keymapper.util.ui.*
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 26/07/2021.
  */
 
-class CreateActionViewModelImpl(
+class CreateActionViewModelImpl @Inject constructor(
     private val useCase: CreateActionUseCase,
     resourceProvider: ResourceProvider
 ) : CreateActionViewModel,

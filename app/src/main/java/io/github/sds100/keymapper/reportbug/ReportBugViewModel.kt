@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.reportbug
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.home.FixAppKillingSlide
 import io.github.sds100.keymapper.onboarding.AppIntroSlideUi
@@ -15,12 +16,14 @@ import io.github.sds100.keymapper.util.onSuccess
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 14/02/2021.
  */
 
-class ReportBugViewModel(
+@HiltViewModel
+class ReportBugViewModel @Inject constructor(
     private val useCase: ReportBugUseCase,
     private val controlService: ControlAccessibilityServiceUseCase,
     resourceProvider: ResourceProvider

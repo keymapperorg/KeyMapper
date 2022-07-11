@@ -13,11 +13,11 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentConfigKeyEventBinding
 import io.github.sds100.keymapper.ui.utils.configuredCheckBox
 import io.github.sds100.keymapper.ui.utils.putJsonSerializable
-import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.str
 import io.github.sds100.keymapper.util.ui.setupNavigation
@@ -29,6 +29,7 @@ import kotlinx.serialization.json.Json
  * Created by sds100 on 30/03/2020.
  */
 
+@AndroidEntryPoint
 class ConfigKeyEventActionFragment : Fragment() {
     companion object {
         const val EXTRA_RESULT = "extra_result"
@@ -38,9 +39,7 @@ class ConfigKeyEventActionFragment : Fragment() {
 
     private val requestKey: String by lazy { args.requestKey }
 
-    private val viewModel: ConfigKeyEventActionViewModel by viewModels {
-        Inject.configKeyEventViewModel(requireContext())
-    }
+    private val viewModel: ConfigKeyEventActionViewModel by viewModels()
 
     /**
      * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)

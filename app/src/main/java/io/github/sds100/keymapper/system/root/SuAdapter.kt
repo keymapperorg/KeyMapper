@@ -2,8 +2,8 @@ package io.github.sds100.keymapper.system.root
 
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.system.Shell
 import io.github.sds100.keymapper.system.permissions.Permission
+import io.github.sds100.keymapper.system.shell.ShellAdapter
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
@@ -15,13 +15,17 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import java.io.IOException
 import java.io.InputStream
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Created by sds100 on 21/04/2021.
  */
 
-class SuAdapterImpl(
+@Singleton
+class SuAdapterImpl @Inject constructor(
         coroutineScope: CoroutineScope,
+    private val shell: ShellAdapter,
         private val preferenceRepository: PreferenceRepository
 ) : SuAdapter {
     private var process: Process? = null
@@ -34,7 +38,7 @@ class SuAdapterImpl(
         preferenceRepository.set(Keys.hasRootPermission, true)
 
         //show the su prompt
-        Shell.run("su")
+        shell.execute("su")
 
         return true
     }
@@ -47,7 +51,7 @@ class SuAdapterImpl(
         try {
             if (block) {
                 //Don't use the long running su process because that will block the thread indefinitely
-                Shell.run("su", "-c", command, waitFor = true)
+                shell.execute("su", "-c", command, waitFor = true)
 
             } else {
                 if (process == null) {
@@ -72,7 +76,7 @@ class SuAdapterImpl(
         }
 
         try {
-            val inputStream = Shell.getShellCommandStdOut("su", "-c", command)
+            val inputStream = shell.getShellCommandStdOut("su", "-c", command)
             return Success(inputStream)
         } catch (e: IOException) {
             return Error.UnknownIOError

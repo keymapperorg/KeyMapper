@@ -6,11 +6,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import rikka.shizuku.Shizuku
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Created by sds100 on 20/07/2021.
  */
-class ShizukuAdapterImpl(
+@Singleton
+class ShizukuAdapterImpl @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val packageManagerAdapter: PackageManagerAdapter
 ) : ShizukuAdapter {

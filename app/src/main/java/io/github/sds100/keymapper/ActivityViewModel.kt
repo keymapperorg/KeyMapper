@@ -3,13 +3,16 @@ package io.github.sds100.keymapper
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 23/07/2021.
  */
-class ActivityViewModel(
+@HiltViewModel
+class ActivityViewModel @Inject constructor(
     resourceProvider: ResourceProvider
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
@@ -24,16 +27,6 @@ class ActivityViewModel(
                 resourceProvider = this@ActivityViewModel,
                 popupViewModel = this@ActivityViewModel
             )
-        }
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    class Factory(
-        private val resourceProvider: ResourceProvider
-    ) : ViewModelProvider.NewInstanceFactory() {
-
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return ActivityViewModel(resourceProvider) as T
         }
     }
 }

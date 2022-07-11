@@ -1,14 +1,11 @@
-package io.github.sds100.keymapper.mappings.keymaps.detection
+package io.github.sds100.keymapper.mappings.detection
 
 import android.view.KeyEvent
 import androidx.collection.SparseArrayCompat
 import androidx.collection.keyIterator
 import androidx.collection.valueIterator
 import io.github.sds100.keymapper.actions.ActionData
-import io.github.sds100.keymapper.actions.PerformActionsUseCase
-import io.github.sds100.keymapper.constraints.ConstraintSnapshot
 import io.github.sds100.keymapper.constraints.ConstraintState
-import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.mappings.ClickType

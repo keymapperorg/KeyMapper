@@ -12,12 +12,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 13/05/2021.
  */
 
-class DisplayLogUseCaseImpl(
+class DisplayLogUseCaseImpl @Inject constructor(
     private val repository: LogRepository,
     private val resourceProvider: ResourceProvider,
     private val clipboardAdapter: ClipboardAdapter,

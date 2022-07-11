@@ -6,6 +6,7 @@ import android.view.View
 import androidx.preference.Preference
 import androidx.preference.SwitchPreferenceCompat
 import androidx.preference.isEmpty
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.system.notifications.NotificationController
@@ -15,6 +16,7 @@ import io.github.sds100.keymapper.util.viewLifecycleScope
 /**
  * Created by sds100 on 18/07/2021.
  */
+@AndroidEntryPoint
 class ImePickerSettingsFragment : BaseSettingsFragment() {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {

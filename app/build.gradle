@@ -4,6 +4,7 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: "androidx.navigation.safeargs.kotlin"
 apply plugin: "kotlinx-serialization"
+apply plugin: 'dagger.hilt.android.plugin'
 
 android {
     compileSdkVersion 32
@@ -25,7 +26,7 @@ android {
 
         javaCompileOptions {
             annotationProcessorOptions {
-                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
+                arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
             }
         }
     }
@@ -164,6 +165,8 @@ dependencies {
     implementation "dev.rikka.shizuku:api:$shizuku_version"
     implementation "dev.rikka.shizuku:provider:$shizuku_version"
     implementation 'org.lsposed.hiddenapibypass:hiddenapibypass:4.3'
+    implementation 'com.google.dagger:hilt-android:2.42'
+    kapt 'com.google.dagger:hilt-compiler:2.42'
     
     // splitties
     implementation "com.louiscad.splitties:splitties-bitflags:$splitties_version"
@@ -196,6 +199,7 @@ dependencies {
     implementation "androidx.viewpager2:viewpager2:1.0.0"
     implementation "androidx.datastore:datastore-preferences:1.0.0"
     implementation "androidx.core:core-splashscreen:1.0.0-rc01"
+    implementation "androidx.hilt:hilt-navigation-fragment:1.0.0"
     kapt "androidx.room:room-compiler:$room_version"
 
 //    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.6'

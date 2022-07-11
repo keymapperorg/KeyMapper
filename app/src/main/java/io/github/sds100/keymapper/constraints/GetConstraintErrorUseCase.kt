@@ -10,12 +10,13 @@ import io.github.sds100.keymapper.system.permissions.SystemFeatureAdapter
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.onSuccess
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 17/04/2021.
  */
 
-class GetConstraintErrorUseCaseImpl(
+class GetConstraintErrorUseCaseImpl @Inject constructor(
     private val packageManager: PackageManagerAdapter,
     private val permissionAdapter: PermissionAdapter,
     private val systemFeatureAdapter: SystemFeatureAdapter,

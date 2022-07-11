@@ -4,9 +4,9 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.navArgs
 import com.airbnb.epoxy.EpoxyRecyclerView
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
 import io.github.sds100.keymapper.simple
-import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.RecyclerViewUtils
@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.collectLatest
  * Created by sds100 on 30/03/2020.
  */
 
+@AndroidEntryPoint
 class ChooseKeyCodeFragment : SimpleRecyclerViewFragment<SimpleListItem>() {
     companion object {
         const val EXTRA_KEYCODE = "extra_keycode"
@@ -28,9 +29,7 @@ class ChooseKeyCodeFragment : SimpleRecyclerViewFragment<SimpleListItem>() {
     override var searchStateKey: String? = SEARCH_STATE_KEY
 
     private val args: ChooseKeyCodeFragmentArgs by navArgs()
-    private val viewModel: ChooseKeyCodeViewModel by viewModels {
-        Inject.chooseKeyCodeViewModel()
-    }
+    private val viewModel: ChooseKeyCodeViewModel by viewModels()
 
     override val listItems: Flow<State<List<SimpleListItem>>>
         get() = viewModel.state

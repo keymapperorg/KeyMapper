@@ -5,11 +5,12 @@ import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.util.InputEventType
 import kotlinx.coroutines.*
+import javax.inject.Inject
 
 /**
  * Created by sds100 on 27/04/2021.
  */
-class RerouteKeyEventsController(
+class RerouteKeyEventsController @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val useCase: RerouteKeyEventsUseCase
 ) {
