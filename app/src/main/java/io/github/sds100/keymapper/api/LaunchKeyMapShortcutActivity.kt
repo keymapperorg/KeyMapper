@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.api
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
@@ -15,6 +16,7 @@ import javax.inject.Inject
  */
 
 //DON'T MOVE THIS CLASS TO A DIFFERENT PACKAGE BECAUSE IT BREAKS THE API
+@AndroidEntryPoint
 class LaunchKeyMapShortcutActivity : AppCompatActivity() {
     
     @Inject
