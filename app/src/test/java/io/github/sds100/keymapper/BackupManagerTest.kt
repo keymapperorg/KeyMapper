@@ -95,7 +95,6 @@ class BackupManagerTest {
             keyMapRepository = mockKeyMapRepository,
             preferenceRepository = fakePreferenceRepository,
             fingerprintMapRepository = mockFingerprintMapRepository,
-            throwExceptions = true,
             dispatchers = dispatcherProvider,
             soundsManager = mockSoundsManager,
             uuidGenerator = mockUuidGenerator
@@ -198,8 +197,6 @@ class BackupManagerTest {
 
         //THEN
         assertThat(result, `is`(Success(Unit)))
-
-
 
         verify(mockKeyMapRepository, times(1)).insert(any(), any())
         verify(mockFingerprintMapRepository, times(1)).update(any(), any(), any(), any())
