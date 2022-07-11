@@ -6,10 +6,12 @@ import android.content.Context
 import androidx.core.content.getSystemService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Created by sds100 on 14/05/2021.
  */
+@Singleton
 class AndroidClipboardAdapter @Inject constructor(@ApplicationContext context: Context) : ClipboardAdapter {
     private val ctx = context.applicationContext
 

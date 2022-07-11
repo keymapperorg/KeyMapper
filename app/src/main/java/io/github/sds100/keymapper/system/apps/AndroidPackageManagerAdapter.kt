@@ -22,10 +22,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import splitties.bitflags.withFlag
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Created by sds100 on 16/03/2021.
  */
+@Singleton
 class AndroidPackageManagerAdapter @Inject constructor(
     @ApplicationContext context: Context,
     coroutineScope: CoroutineScope

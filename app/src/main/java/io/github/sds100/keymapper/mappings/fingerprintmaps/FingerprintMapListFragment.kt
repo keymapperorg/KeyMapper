@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.airbnb.epoxy.EpoxyRecyclerView
 import com.google.android.material.switchmaterial.SwitchMaterial
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.databinding.FragmentFingerprintMapListBinding
 import io.github.sds100.keymapper.fingerprintMap
 import io.github.sds100.keymapper.home.HomeViewModel
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.Flow
 /**
  * Created by sds100 on 11/12/2020.
  */
+@AndroidEntryPoint
 class FingerprintMapListFragment :
     RecyclerViewFragment<FingerprintMapListItem, FragmentFingerprintMapListBinding>() {
 

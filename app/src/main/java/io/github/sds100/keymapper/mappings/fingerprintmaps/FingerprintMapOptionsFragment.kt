@@ -1,7 +1,8 @@
 package io.github.sds100.keymapper.mappings.fingerprintmaps
 
-import androidx.navigation.navGraphViewModels
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import com.airbnb.epoxy.EpoxyRecyclerView
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ui.utils.configuredCheckBox
 import io.github.sds100.keymapper.ui.utils.configuredSlider
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.Flow
 /**
  * Created by sds100 on 29/11/20.
  */
+@AndroidEntryPoint
 class FingerprintMapOptionsFragment : SimpleRecyclerViewFragment<ListItem>() {
 
     class Info : FragmentInfo(
@@ -24,7 +26,7 @@ class FingerprintMapOptionsFragment : SimpleRecyclerViewFragment<ListItem>() {
         { FingerprintMapOptionsFragment() }
     )
 
-    private val configViewModel: ConfigFingerprintMapViewModel by navGraphViewModels(R.id.nav_config_fingerprint_map)
+    private val configViewModel: ConfigFingerprintMapViewModel by hiltNavGraphViewModels(R.id.nav_config_fingerprint_map)
 
     private val viewModel: ConfigFingerprintMapOptionsViewModel
         get() = configViewModel.configOptionsViewModel

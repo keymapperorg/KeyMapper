@@ -17,10 +17,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Created by sds100 on 21/04/2021.
  */
+@Singleton
 class AndroidPhoneAdapter @Inject constructor(
     @ApplicationContext context: Context,
     private val coroutineScope: CoroutineScope

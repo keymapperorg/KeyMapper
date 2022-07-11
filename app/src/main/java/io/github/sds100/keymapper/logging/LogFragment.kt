@@ -14,6 +14,7 @@ import com.airbnb.epoxy.EpoxyRecyclerView
 import com.airbnb.epoxy.TypedEpoxyController
 import com.michaelflisar.dragselectrecyclerview.DragSelectTouchListener
 import com.michaelflisar.dragselectrecyclerview.DragSelectionProcessor
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
 import io.github.sds100.keymapper.logEntry
@@ -27,6 +28,7 @@ import kotlinx.coroutines.flow.collectLatest
 /**
  * Created by sds100 on 13/05/2021.
  */
+@AndroidEntryPoint
 class LogFragment : SimpleRecyclerViewFragment<LogEntryListItem>() {
 
     private val viewModel by viewModels<LogViewModel>()

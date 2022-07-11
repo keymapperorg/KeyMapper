@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.system.root
 
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.system.Shell
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.shell.ShellAdapter
 import io.github.sds100.keymapper.util.Error
@@ -17,11 +16,13 @@ import kotlinx.coroutines.flow.stateIn
 import java.io.IOException
 import java.io.InputStream
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Created by sds100 on 21/04/2021.
  */
 
+@Singleton
 class SuAdapterImpl @Inject constructor(
         coroutineScope: CoroutineScope,
     private val shell: ShellAdapter,

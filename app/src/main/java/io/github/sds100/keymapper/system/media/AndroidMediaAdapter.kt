@@ -16,10 +16,12 @@ import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
 import java.io.FileNotFoundException
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Created by sds100 on 21/04/2021.
  */
+@Singleton
 class AndroidMediaAdapter @Inject constructor(@ApplicationContext context: Context) : MediaAdapter {
     private val ctx = context.applicationContext
 

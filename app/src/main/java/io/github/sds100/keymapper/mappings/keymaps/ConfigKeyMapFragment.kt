@@ -3,10 +3,10 @@ package io.github.sds100.keymapper.mappings.keymaps
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.setFragmentResultListener
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.navigation.navGraphViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.R
@@ -35,7 +35,7 @@ class ConfigKeyMapFragment : ConfigMappingFragment() {
 
     private val args by navArgs<ConfigKeyMapFragmentArgs>()
 
-    override val viewModel: ConfigKeyMapViewModel by navGraphViewModels(R.id.nav_config_keymap)
+    override val viewModel: ConfigKeyMapViewModel by hiltNavGraphViewModels(R.id.nav_config_keymap)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

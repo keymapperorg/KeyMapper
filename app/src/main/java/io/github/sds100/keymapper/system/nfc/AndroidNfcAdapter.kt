@@ -7,10 +7,12 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.util.Result
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Created by sds100 on 24/04/2021.
  */
+@Singleton
 class AndroidNfcAdapter @Inject constructor(
     @ApplicationContext context: Context,
     private val suAdapter: SuAdapter

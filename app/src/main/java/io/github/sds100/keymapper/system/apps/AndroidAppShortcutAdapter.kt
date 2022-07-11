@@ -19,10 +19,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.util.*
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Created by sds100 on 20/03/2021.
  */
+@Singleton
 class AndroidAppShortcutAdapter @Inject constructor(@ApplicationContext context: Context) : AppShortcutAdapter {
     private val ctx = context.applicationContext
 

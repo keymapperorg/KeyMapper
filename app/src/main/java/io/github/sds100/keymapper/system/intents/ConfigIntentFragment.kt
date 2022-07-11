@@ -15,6 +15,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.airbnb.epoxy.EpoxyController
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.databinding.FragmentConfigIntentBinding
 import io.github.sds100.keymapper.databinding.ListItemIntentExtraBoolBinding
 import io.github.sds100.keymapper.intentExtraBool
@@ -31,6 +32,7 @@ import kotlinx.serialization.json.Json
  * Created by sds100 on 30/03/2020.
  */
 
+@AndroidEntryPoint
 class ConfigIntentFragment : Fragment() {
     companion object {
         const val EXTRA_RESULT = "extra_config_intent_result"

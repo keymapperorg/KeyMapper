@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.mappings.keymaps
 
 import androidx.fragment.app.activityViewModels
 import com.airbnb.epoxy.EpoxyRecyclerView
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.home.HomeViewModel
 import io.github.sds100.keymapper.keymap
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.Flow
 /**
  * Created by sds100 on 22/02/2020.
  */
+@AndroidEntryPoint
 class KeyMapListFragment : SimpleRecyclerViewFragment<KeyMapListItem>() {
 
     private val homeViewModel: HomeViewModel by activityViewModels()

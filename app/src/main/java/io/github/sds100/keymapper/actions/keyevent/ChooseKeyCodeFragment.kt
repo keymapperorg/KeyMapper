@@ -4,6 +4,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.navArgs
 import com.airbnb.epoxy.EpoxyRecyclerView
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
 import io.github.sds100.keymapper.simple
 import io.github.sds100.keymapper.util.State
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.collectLatest
  * Created by sds100 on 30/03/2020.
  */
 
+@AndroidEntryPoint
 class ChooseKeyCodeFragment : SimpleRecyclerViewFragment<SimpleListItem>() {
     companion object {
         const val EXTRA_KEYCODE = "extra_keycode"

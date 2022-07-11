@@ -13,11 +13,13 @@ import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
 import timber.log.Timber
 import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.collections.set
 
 /**
  * Created by sds100 on 17/03/2021.
  */
+@Singleton
 class AndroidCameraAdapter @Inject constructor(@ApplicationContext context: Context) : CameraAdapter {
     private val ctx = context.applicationContext
 

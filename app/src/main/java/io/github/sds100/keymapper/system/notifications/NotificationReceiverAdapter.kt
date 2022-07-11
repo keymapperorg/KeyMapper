@@ -27,11 +27,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import splitties.bitflags.withFlag
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Created by sds100 on 27/07/2021.
  */
 
+@Singleton
 class NotificationReceiverAdapterImpl @Inject constructor(
     @ApplicationContext context: Context,
     private val coroutineScope: CoroutineScope,

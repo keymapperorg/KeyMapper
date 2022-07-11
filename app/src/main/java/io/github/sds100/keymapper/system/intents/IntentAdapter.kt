@@ -7,11 +7,13 @@ import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Created by sds100 on 21/04/2021.
  */
 
+@Singleton
 class IntentAdapterImpl @Inject constructor(@ApplicationContext context: Context) : IntentAdapter {
     private val ctx = context.applicationContext
 

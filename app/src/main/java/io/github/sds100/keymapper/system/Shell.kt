@@ -7,10 +7,12 @@ import io.github.sds100.keymapper.util.success
 import java.io.IOException
 import java.io.InputStream
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Created by sds100 on 05/11/2018.
  */
+@Singleton
 class Shell @Inject constructor() : ShellAdapter {
     /**
      * Remember to close it after using it.

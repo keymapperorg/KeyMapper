@@ -14,10 +14,12 @@ import java.io.File
 import java.io.InputStream
 import java.util.*
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Created by sds100 on 13/04/2021.
  */
+@Singleton
 class AndroidFileAdapter @Inject constructor(@ApplicationContext context: Context) : FileAdapter {
     private val ctx = context.applicationContext
 

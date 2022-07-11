@@ -6,11 +6,13 @@ import android.content.res.Configuration
 import androidx.core.content.getSystemService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Created by sds100 on 21/07/2021.
  */
 
+@Singleton
 class LeanbackAdapterImpl @Inject constructor(@ApplicationContext context: Context) : LeanbackAdapter {
     private val ctx = context.applicationContext
 

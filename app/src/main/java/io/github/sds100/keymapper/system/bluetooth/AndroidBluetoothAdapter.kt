@@ -16,11 +16,13 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Created by sds100 on 14/02/2021.
  */
 
+@Singleton
 class AndroidBluetoothAdapter @Inject constructor(
     @ApplicationContext context: Context,
     private val coroutineScope: CoroutineScope

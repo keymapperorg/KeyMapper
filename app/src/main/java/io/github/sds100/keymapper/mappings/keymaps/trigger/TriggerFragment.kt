@@ -3,13 +3,14 @@ package io.github.sds100.keymapper.mappings.keymaps.trigger
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.Lifecycle
-import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.airbnb.epoxy.EpoxyController
 import com.airbnb.epoxy.EpoxyRecyclerView
 import com.airbnb.epoxy.EpoxyTouchHelper
 import com.google.android.material.card.MaterialCardView
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.TriggerKeyBindingModel_
 import io.github.sds100.keymapper.databinding.FragmentTriggerBinding
@@ -29,6 +30,7 @@ import kotlinx.coroutines.flow.collectLatest
  * Created by sds100 on 25/11/20.
  */
 
+@AndroidEntryPoint
 class TriggerFragment : RecyclerViewFragment<TriggerKeyListItem, FragmentTriggerBinding>() {
 
     class Info : FragmentInfo(
@@ -38,7 +40,7 @@ class TriggerFragment : RecyclerViewFragment<TriggerKeyListItem, FragmentTrigger
     )
 
     private val configKeyMapTriggerViewModel: ConfigKeyMapTriggerViewModel by lazy {
-        navGraphViewModels<ConfigKeyMapViewModel>(R.id.nav_config_keymap).value.configTriggerViewModel
+        hiltNavGraphViewModels<ConfigKeyMapViewModel>(R.id.nav_config_keymap).value.configTriggerViewModel
     }
 
     private val triggerKeyController = TriggerKeyController()

@@ -8,6 +8,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.navArgs
 import com.airbnb.epoxy.EpoxyRecyclerView
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.databinding.FragmentChooseAppBinding
 import io.github.sds100.keymapper.simple
 import io.github.sds100.keymapper.util.State
@@ -22,6 +23,7 @@ import kotlinx.coroutines.flow.map
 /**
  * Created by sds100 on 22/02/2020.
  */
+@AndroidEntryPoint
 class ChooseAppFragment : RecyclerViewFragment<SimpleListItem, FragmentChooseAppBinding>() {
 
     companion object {

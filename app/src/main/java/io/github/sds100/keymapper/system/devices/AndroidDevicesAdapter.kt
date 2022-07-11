@@ -17,10 +17,12 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import splitties.mainthread.mainLooper
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Created by sds100 on 13/03/2021.
  */
+@Singleton
 class AndroidDevicesAdapter @Inject constructor(
     @ApplicationContext context: Context,
     private val bluetoothAdapter: io.github.sds100.keymapper.system.bluetooth.BluetoothAdapter,

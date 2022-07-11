@@ -13,10 +13,12 @@ import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.then
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Created by sds100 on 20/04/2021.
  */
+@Singleton
 class AndroidVolumeAdapter @Inject constructor(@ApplicationContext context: Context) : VolumeAdapter {
     private val ctx = context.applicationContext
 

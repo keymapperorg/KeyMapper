@@ -27,11 +27,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Created by sds100 on 14/02/2021.
  */
 
+@Singleton
 class AndroidInputMethodAdapter @Inject constructor(
     @ApplicationContext context: Context,
     private val coroutineScope: CoroutineScope,

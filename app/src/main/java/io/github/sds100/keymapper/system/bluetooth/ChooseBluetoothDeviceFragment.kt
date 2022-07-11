@@ -4,6 +4,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.navArgs
 import com.airbnb.epoxy.EpoxyRecyclerView
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
 import io.github.sds100.keymapper.fixError
 import io.github.sds100.keymapper.simple
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.collectLatest
 /**
  * Created by sds100 on 22/02/2020.
  */
+@AndroidEntryPoint
 class ChooseBluetoothDeviceFragment : SimpleRecyclerViewFragment<ListItem>() {
 
     companion object {

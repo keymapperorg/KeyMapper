@@ -8,6 +8,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.navArgs
 import com.airbnb.epoxy.EpoxyRecyclerView
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
 import io.github.sds100.keymapper.simple
@@ -26,6 +27,7 @@ import splitties.toast.toast
  * Created by sds100 on 29/03/2020.
  */
 
+@AndroidEntryPoint
 class ChooseAppShortcutFragment : SimpleRecyclerViewFragment<AppShortcutListItem>() {
 
     companion object {

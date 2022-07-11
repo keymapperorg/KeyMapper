@@ -10,10 +10,12 @@ import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Created by sds100 on 24/04/2021.
  */
+@Singleton
 class AndroidNetworkAdapter @Inject constructor(
     @ApplicationContext context: Context,
     private val suAdapter: SuAdapter

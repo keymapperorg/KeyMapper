@@ -13,6 +13,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.databinding.FragmentChooseSoundFileBinding
 import io.github.sds100.keymapper.simple
 import io.github.sds100.keymapper.system.files.FileUtils
@@ -26,6 +27,7 @@ import kotlinx.serialization.json.Json
  * Created by sds100 on 22/06/2021.
  */
 
+@AndroidEntryPoint
 class ChooseSoundFileFragment : Fragment() {
     companion object {
         const val EXTRA_RESULT = "extra_sound_file_result"

@@ -4,6 +4,7 @@ import android.app.Activity
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import com.airbnb.epoxy.EpoxyRecyclerView
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
 import io.github.sds100.keymapper.keymap
@@ -25,6 +26,7 @@ import splitties.alertdialog.appcompat.positiveButton
  * Created by sds100 on 08/09/20.
  */
 
+@AndroidEntryPoint
 class CreateKeyMapShortcutFragment : SimpleRecyclerViewFragment<KeyMapListItem>() {
 
     private val viewModel by activityViewModels<CreateKeyMapShortcutViewModel>()

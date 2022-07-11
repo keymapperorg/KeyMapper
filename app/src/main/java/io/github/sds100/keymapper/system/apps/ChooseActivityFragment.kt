@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.system.apps
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
 import com.airbnb.epoxy.EpoxyRecyclerView
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
 import io.github.sds100.keymapper.simple
 import io.github.sds100.keymapper.util.State
@@ -15,6 +16,7 @@ import kotlinx.serialization.json.Json
 /**
  * Created by sds100 on 22/02/2020.
  */
+@AndroidEntryPoint
 class ChooseActivityFragment : SimpleRecyclerViewFragment<ActivityListItem>() {
 
     companion object {

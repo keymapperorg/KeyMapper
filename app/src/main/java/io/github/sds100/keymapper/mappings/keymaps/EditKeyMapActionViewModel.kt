@@ -1,10 +1,9 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
-import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.CreateActionUseCase
-import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.actions.EditActionViewModel
+import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.mappings.OptionMinimums
 import io.github.sds100.keymapper.mappings.isDelayBeforeNextActionAllowed
 import io.github.sds100.keymapper.util.Defaultable
@@ -25,8 +24,7 @@ class EditKeyMapActionViewModel @Inject constructor(
     coroutineScope,
     config,
     createActionUseCase
-),
-    ResourceProvider by resourceProvider {
+), ResourceProvider by resourceProvider {
 
     companion object {
         private const val ID_REPEAT_RATE = "repeat_rate"
