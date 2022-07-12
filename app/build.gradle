@@ -106,6 +106,9 @@ android {
     // work-runtime-ktx 2.1.0 and above now requires Java 8
     kotlinOptions {
         jvmTarget = "1.8"
+        freeCompilerArgs += [
+                '-Xjvm-default=enable'
+        ]
     }
 
     kapt {
@@ -140,7 +143,7 @@ android.applicationVariants.all { variant ->
 dependencies {
     def room_version = "2.4.2"
     def coroutinesVersion = "1.6.2"
-    def nav_version = '2.4.2'
+    def nav_version = '2.5.0'
     def work_version = "2.7.1"
     def epoxy_version = "4.6.2"
     def splitties_version = "3.0.0-beta01"
@@ -186,10 +189,10 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-core-ui:1.0.0'
     implementation 'androidx.core:core-ktx:1.8.0'
 
-    implementation 'androidx.fragment:fragment-ktx:1.4.1'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1'
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.1'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.4.1'
+    implementation 'androidx.fragment:fragment-ktx:1.5.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.0'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.0'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.0'
     implementation "androidx.room:room-ktx:$room_version"
     implementation "androidx.work:work-runtime-ktx:$work_version"
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
@@ -208,11 +211,11 @@ dependencies {
     implementation "androidx.hilt:hilt-navigation-fragment:1.0.0"
     kapt "androidx.room:room-compiler:$room_version"
 
-    implementation 'androidx.activity:activity-compose:1.4.0'
+    implementation 'androidx.activity:activity-compose:1.5.0'
     implementation 'androidx.compose.material:material:1.1.1'
     implementation 'androidx.compose.animation:animation:1.1.1'
     implementation 'androidx.compose.ui:ui-tooling:1.1.1'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.5.0'
 
 
 //    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.6'
@@ -243,6 +246,6 @@ dependencies {
     androidTestImplementation "androidx.navigation:navigation-testing:$nav_version"
     androidTestImplementation 'android.arch.persistence.room:testing:1.1.1'
     androidTestImplementation "org.mockito:mockito-android:4.6.1"
-    debugImplementation "androidx.fragment:fragment-testing:1.4.1"
+    debugImplementation "androidx.fragment:fragment-testing:1.5.0"
     implementation "androidx.test:core:$androidXTestCoreVersion"
 }
