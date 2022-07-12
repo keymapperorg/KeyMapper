@@ -95,6 +95,7 @@ android {
 
     buildFeatures {
         dataBinding true
+        compose true
     }
 
     compileOptions {
@@ -112,6 +113,10 @@ android {
     }
 
     kotlinOptions.useIR = false
+
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.1.1'
+    }
 }
 
 android.sourceSets {
@@ -151,6 +156,7 @@ dependencies {
 
     // random stuff
     implementation 'com.google.android.material:material:1.6.1'
+    implementation "com.google.android.material:compose-theme-adapter:1.1.14"
     implementation 'com.github.salomonbrys.kotson:kotson:2.5.0'
     implementation "com.airbnb.android:epoxy:$epoxy_version"
     implementation 'com.github.AppIntro:AppIntro:6.1.0'
@@ -201,6 +207,13 @@ dependencies {
     implementation "androidx.core:core-splashscreen:1.0.0-rc01"
     implementation "androidx.hilt:hilt-navigation-fragment:1.0.0"
     kapt "androidx.room:room-compiler:$room_version"
+
+    implementation 'androidx.activity:activity-compose:1.4.0'
+    implementation 'androidx.compose.material:material:1.1.1'
+    implementation 'androidx.compose.animation:animation:1.1.1'
+    implementation 'androidx.compose.ui:ui-tooling:1.1.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1'
+
 
 //    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.6'
 
