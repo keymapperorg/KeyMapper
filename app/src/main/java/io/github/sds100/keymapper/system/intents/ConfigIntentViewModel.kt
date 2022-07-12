@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.text.InputType
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
@@ -487,16 +486,6 @@ class ConfigIntentViewModel @Inject constructor(resourceProvider: ResourceProvid
                     inputType
                 )
             }
-        }
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    class Factory(
-        private val resourceProvider: ResourceProvider
-    ) : ViewModelProvider.NewInstanceFactory() {
-
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return ConfigIntentViewModel(resourceProvider) as T
         }
     }
 }

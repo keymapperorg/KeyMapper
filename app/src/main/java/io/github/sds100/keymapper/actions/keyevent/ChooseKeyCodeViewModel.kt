@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.actions.keyevent
 
 import android.view.KeyEvent
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
@@ -62,14 +61,6 @@ class ChooseKeyCodeViewModel @Inject constructor() : ViewModel() {
     fun onListItemClick(id: String) {
         viewModelScope.launch {
             _returnResult.emit(id.toInt())
-        }
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    class Factory : ViewModelProvider.NewInstanceFactory() {
-
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return ChooseKeyCodeViewModel() as T
         }
     }
 }

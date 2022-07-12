@@ -3,7 +3,6 @@ package io.github.sds100.keymapper.actions.keyevent
 import android.annotation.SuppressLint
 import android.view.KeyEvent
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
@@ -240,17 +239,6 @@ class ConfigKeyEventActionViewModel @Inject constructor(
             deviceListItems = deviceListItems,
             chosenDeviceName = chosenDeviceName
         )
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    class Factory(
-        private val useCase: ConfigKeyEventUseCase,
-        private val resourceProvider: ResourceProvider
-    ) : ViewModelProvider.NewInstanceFactory() {
-
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return ConfigKeyEventActionViewModel(useCase, resourceProvider) as T
-        }
     }
 
     private data class KeyEventState(

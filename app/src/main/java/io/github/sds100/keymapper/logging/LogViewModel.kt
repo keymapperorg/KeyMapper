@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.logging
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.michaelflisar.dragselectrecyclerview.DragSelectionProcessor
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -175,16 +174,6 @@ class LogViewModel @Inject constructor(
             message = message,
             isSelected = isSelected
         )
-    }
-
-    class Factory(
-        private val useCase: DisplayLogUseCase,
-        private val resourceProvider: ResourceProvider
-    ) : ViewModelProvider.Factory {
-
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>) =
-            LogViewModel(useCase, resourceProvider) as T
     }
 }
 
