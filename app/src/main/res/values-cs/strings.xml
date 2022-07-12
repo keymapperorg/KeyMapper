@@ -813,10 +813,6 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <string name="action_toggle_mute">Přepnout zvuk</string>
     <string name="action_volume_unmute">Zrušit ztlumení hlasitosti</string>
     <string name="action_volume_show_dialog">Zobrazit dialog hlasitosti</string>
-    <string name="action_increase_stream">Zvýšit proud</string>
-    <string name="action_increase_stream_formatted">Zvýšit %s stream</string>
-    <string name="action_decrease_stream">Snížit stream</string>
-    <string name="action_decrease_stream_formatted">Snížit %s stream</string>
     <string name="action_cycle_ringer_mode">Cykovat pomocí vyzváněcích režimů (Ring, vibrace, Tichý)</string>
     <string name="action_cycle_vibrate_ring">Cyklus přes režimy vyzvánění (Ring, Vibrace)</string>
     <string name="action_change_ringer_mode">Změnit režim vyzvánění</string>
