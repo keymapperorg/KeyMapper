@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.actions.sound
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
@@ -84,17 +83,6 @@ class ChooseSoundFileViewModel @Inject constructor(
                     val toast = PopupUi.Toast(error.getFullMessage(this@ChooseSoundFileViewModel))
                     showPopup("failed_toast", toast)
                 }
-        }
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    class Factory(
-        private val resourceProvider: ResourceProvider,
-        private val useCase: ChooseSoundFileUseCase
-    ) : ViewModelProvider.NewInstanceFactory() {
-
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return ChooseSoundFileViewModel(resourceProvider, useCase) as T
         }
     }
 }

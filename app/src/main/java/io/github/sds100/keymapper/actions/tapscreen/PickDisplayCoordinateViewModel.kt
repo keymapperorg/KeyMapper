@@ -3,7 +3,6 @@ package io.github.sds100.keymapper.actions.tapscreen
 import android.graphics.Bitmap
 import android.graphics.Point
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
@@ -129,15 +128,5 @@ class PickDisplayCoordinateViewModel @Inject constructor(
         _bitmap.value = null
 
         super.onCleared()
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    class Factory(
-        private val resourceProvider: ResourceProvider
-    ) : ViewModelProvider.NewInstanceFactory() {
-
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return PickDisplayCoordinateViewModel(resourceProvider) as T
-        }
     }
 }

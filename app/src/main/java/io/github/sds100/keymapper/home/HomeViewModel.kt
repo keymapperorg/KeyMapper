@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.home
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
@@ -477,32 +476,6 @@ class HomeViewModel @Inject constructor(
                     message = result.getFullMessage(this@HomeViewModel)
                 )
             )
-        }
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    class Factory(
-        private val listKeyMaps: ListKeyMapsUseCase,
-        private val listFingerprintMaps: ListFingerprintMapsUseCase,
-        private val pauseMappings: PauseMappingsUseCase,
-        private val backupRestore: BackupRestoreMappingsUseCase,
-        private val showAlertsUseCase: ShowHomeScreenAlertsUseCase,
-        private val showImePicker: ShowInputMethodPickerUseCase,
-        private val onboarding: OnboardingUseCase,
-        private val resourceProvider: ResourceProvider,
-    ) : ViewModelProvider.NewInstanceFactory() {
-
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return HomeViewModel(
-                listKeyMaps,
-                listFingerprintMaps,
-                pauseMappings,
-                backupRestore,
-                showAlertsUseCase,
-                showImePicker,
-                onboarding,
-                resourceProvider
-            ) as T
         }
     }
 }

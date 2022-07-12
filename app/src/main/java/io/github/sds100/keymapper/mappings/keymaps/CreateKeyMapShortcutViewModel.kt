@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.mappings.keymaps
 
 import android.content.Intent
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
@@ -140,19 +139,5 @@ class CreateKeyMapShortcutViewModel @Inject constructor(
                 listUseCase.fixError(error)
             }
         }
-    }
-
-    class Factory(
-            private val configKeyMapUseCase: ConfigKeyMapUseCase,
-            private val listUseCase: ListKeyMapsUseCase,
-            private val createShortcutUseCase: CreateKeyMapShortcutUseCase,
-            private val resourceProvider: ResourceProvider
-    ) : ViewModelProvider.Factory {
-
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>) =
-            CreateKeyMapShortcutViewModel(
-                configKeyMapUseCase, listUseCase, createShortcutUseCase, resourceProvider
-            ) as T
     }
 }

@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.home
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
@@ -80,15 +79,4 @@ class FixAppKillingViewModel @Inject constructor(
         buttonText1 = getString(R.string.button_restart_accessibility_service),
         buttonId1 = ID_BUTTON_RESTART_ACCESSIBILITY_SERVICE
     )
-
-    @Suppress("UNCHECKED_CAST")
-    class Factory(
-        private val resourceProvider: ResourceProvider,
-        private val controlAccessibilityServiceUseCase: ControlAccessibilityServiceUseCase
-    ) : ViewModelProvider.NewInstanceFactory() {
-
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return FixAppKillingViewModel(resourceProvider, controlAccessibilityServiceUseCase) as T
-        }
-    }
 }

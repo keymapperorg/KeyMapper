@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.mappings.fingerprintmaps
 
 import android.os.Bundle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.actions.ConfigActionsViewModel
@@ -122,27 +121,6 @@ class ConfigFingerprintMapViewModel @Inject constructor(
             is State.Data -> ConfigFingerprintMapUiState(configState.data.isEnabled)
             is State.Loading -> ConfigFingerprintMapUiState(isEnabled = false)
         }
-    }
-
-    class Factory(
-        private val config: ConfigFingerprintMapUseCase,
-        private val testAction: TestActionUseCase,
-        private val display: DisplaySimpleMappingUseCase,
-        private val onboarding: OnboardingUseCase,
-        private val createActionUseCase: CreateActionUseCase,
-        private val resourceProvider: ResourceProvider
-    ) : ViewModelProvider.Factory {
-
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>) =
-            ConfigFingerprintMapViewModel(
-                config,
-                testAction,
-                display,
-                onboarding,
-                createActionUseCase,
-                resourceProvider
-            ) as T
     }
 }
 

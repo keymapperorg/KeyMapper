@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.reportbug
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
@@ -145,16 +144,4 @@ class ReportBugViewModel @Inject constructor(
             yield(restartServiceSlide())
         }
     }.toList()
-
-    @Suppress("UNCHECKED_CAST")
-    class Factory(
-        private val useCase: ReportBugUseCase,
-        private val controlAccessibilityService: ControlAccessibilityServiceUseCase,
-        private val resourceProvider: ResourceProvider
-    ) : ViewModelProvider.NewInstanceFactory() {
-
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return ReportBugViewModel(useCase, controlAccessibilityService, resourceProvider) as T
-        }
-    }
 }
