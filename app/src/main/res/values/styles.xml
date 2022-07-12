@@ -82,7 +82,7 @@
     <style name="BottomAppBar.Theme" parent="ThemeOverlay.Material3.BottomAppBar">
     </style>
 
-    <style name="ShapeAppearanceOverlay.BottomSheetMenuItem">
+    <style name="ShapeAppearanceOverlayBottomSheetMenuItem">
         <item name="cornerSizeTopRight">0dp</item>
         <item name="cornerSizeBottomRight">0dp</item>
         <item name="cornerSizeTopLeft">24dp</item>
@@ -96,7 +96,7 @@
         <item name="android:paddingLeft">16dp</item>
         <item name="android:textColor">?attr/colorOnSurface</item>
         <item name="iconTint">?attr/colorOnSurface</item>
-        <item name="shapeAppearance">@style/ShapeAppearanceOverlay.BottomSheetMenuItem</item>
+        <item name="shapeAppearance">@style/ShapeAppearanceOverlayBottomSheetMenuItem</item>
     </style>
 
     <style name="ActionButton" parent="Widget.AppCompat.ActionButton">
