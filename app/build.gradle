@@ -159,7 +159,7 @@ dependencies {
 
     // random stuff
     implementation 'com.google.android.material:material:1.6.1'
-    implementation "com.google.android.material:compose-theme-adapter:1.1.14"
+    implementation 'com.google.android.material:compose-theme-adapter-3:1.0.14'
     implementation 'com.github.salomonbrys.kotson:kotson:2.5.0'
     implementation "com.airbnb.android:epoxy:$epoxy_version"
     implementation 'com.github.AppIntro:AppIntro:6.1.0'
@@ -212,7 +212,8 @@ dependencies {
     kapt "androidx.room:room-compiler:$room_version"
 
     implementation 'androidx.activity:activity-compose:1.5.0'
-    implementation 'androidx.compose.material:material:1.1.1'
+    implementation 'androidx.compose.material3:material3:1.0.0-alpha14'
+    implementation 'androidx.compose.material3:material3-window-size-class:1.0.0-alpha14'
     implementation 'androidx.compose.animation:animation:1.1.1'
     implementation 'androidx.compose.ui:ui-tooling:1.1.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.5.0'

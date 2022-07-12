@@ -333,7 +333,7 @@
         android:label="ShizukuSettingsFragment" />
     <fragment
         android:id="@+id/chooseActionFragment"
-        android:name="io.github.sds100.keymapper.actions.ChooseActionFragment"
+        android:name="io.github.sds100.keymapper.actions.ChooseActionFragment2"
         android:label="ChooseActionFragmentNew">
         <argument
             android:name="requestKey"

@@ -3,7 +3,6 @@ package io.github.sds100.keymapper.actions
 import android.os.Bundle
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
 import com.airbnb.epoxy.EpoxyRecyclerView
 import dagger.hilt.android.AndroidEntryPoint
@@ -32,7 +31,7 @@ class ChooseActionFragment : SimpleRecyclerViewFragment<ListItem>() {
 
     override var searchStateKey: String? = "choose_action_fragment_search"
 
-    private val args: ChooseActionFragmentArgs by navArgs()
+//    private val args: ChooseActionFragmentArgs by navArgs()
 
     private val viewModel by viewModels<ChooseActionViewModel>()
 
@@ -120,6 +119,7 @@ class ChooseActionFragment : SimpleRecyclerViewFragment<ListItem>() {
     }
 
     override fun getRequestKey(): String {
-        return args.requestKey
+        return ""
+//        return args.requestKey
     }
 }
