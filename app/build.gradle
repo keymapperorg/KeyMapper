@@ -48,22 +48,16 @@ android {
             signingConfig signingConfigs.release
         }
 
-        debug_release {
-            debuggable = true
+        benchmark {
+            applicationIdSuffix ".benchmark"
+            versionNameSuffix "-benchmark"
 
-            postprocessing {
-                removeUnusedCode true
-                removeUnusedResources true
-                obfuscate false //don't obfuscate so stacktraces are easier to read
-                optimizeCode true
-                proguardFiles 'proguard-rules.pro'
-            }
-
-            /*
-            This is required because the splitties library doesn't have a ci build type.
-             */
-            matchingFallbacks = ['debug']
+            initWith buildTypes.release
             signingConfig signingConfigs.debug
+            matchingFallbacks = ['release']
+            proguardFiles 'benchmark-rules.pro'
+            debuggable false
+            minifyEnabled true
         }
 
         debug {
