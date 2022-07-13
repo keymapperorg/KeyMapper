@@ -463,8 +463,8 @@
     <string name="dialog_title_choose_flash">Choose flash</string>
     <string name="dialog_title_cant_find_accessibility_settings_page">Can\'t find the accessibility settings page</string>
     <string name="dialog_title_cant_record_trigger">Can\'t record trigger?</string>
-    <string name="dialog_title_are_you_sure_want_to_leave_without_saving">Save your changes</string>
-    <string name="dialog_message_are_you_sure_want_to_leave_without_saving">Are you sure you want to leave without saving?</string>
+    <string name="dialog_title_discard_changes">Discard your changes</string>
+    <string name="dialog_message_discard_changes">Are you sure you want to discard your changes?</string>
     <string name="dialog_message_root_prompt">If you know your phone isn\'t rooted or you don\'t know what root is, you can\'t use features which only work on rooted devices. When you tap \'OK\', you will be taken to the settings.
             In the settings, scroll to the bottom and tap \'Key Mapper has root permission\' so you can use root features/actions.</string>
     <string name="dialog_message_downloading">Downloading…</string>
@@ -573,6 +573,7 @@
     <string name="dialog_title_choose_intent_flags">Choose intent flags</string>
 
     <string name="pos_yes">Yes</string>
+    <string name="pos_confirm">Confirm</string>
     <string name="pos_done">Done</string>
     <string name="pos_opt_in">Opt in</string>
     <string name="pos_grant_write_secure_settings_guide">Guide</string>
