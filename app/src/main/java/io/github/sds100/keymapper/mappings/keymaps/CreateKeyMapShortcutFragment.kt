@@ -17,10 +17,7 @@ import io.github.sds100.keymapper.util.ui.SimpleRecyclerViewFragment
 import io.github.sds100.keymapper.util.ui.showPopups
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
-import splitties.alertdialog.appcompat.alertDialog
-import splitties.alertdialog.appcompat.messageResource
-import splitties.alertdialog.appcompat.negativeButton
-import splitties.alertdialog.appcompat.positiveButton
+import splitties.alertdialog.appcompat.*
 
 /**
  * Created by sds100 on 08/09/20.
@@ -93,9 +90,10 @@ class CreateKeyMapShortcutFragment : SimpleRecyclerViewFragment<KeyMapListItem>(
 
     private fun showOnBackPressedWarning() {
         requireContext().alertDialog {
-            messageResource = R.string.dialog_message_are_you_sure_want_to_leave_without_saving
+            titleResource = R.string.dialog_title_discard_changes
+            messageResource = R.string.dialog_message_discard_changes
 
-            positiveButton(R.string.pos_yes) {
+            positiveButton(R.string.pos_confirm) {
                 requireActivity().finish()
             }
 
