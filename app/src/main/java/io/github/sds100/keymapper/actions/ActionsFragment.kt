@@ -6,7 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.setFragmentResult
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.google.android.material.composethemeadapter3.Mdc3Theme
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.databinding.FragmentComposeViewBinding
@@ -15,12 +18,17 @@ import io.github.sds100.keymapper.databinding.FragmentComposeViewBinding
  * Created by sds100 on 12/07/2022.
  */
 @AndroidEntryPoint
-class ChooseActionFragment2 : Fragment() {
+class ActionsFragment : Fragment() {
+
+    companion object {
+        const val EXTRA_ACTION = "extra_action"
+    }
+
     private var _binding: FragmentComposeViewBinding? = null
     private val binding: FragmentComposeViewBinding
         get() = _binding!!
 
-    private val viewModel: ChooseActionViewModel2 by viewModels()
+    private val args: ActionsFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -28,16 +36,23 @@ class ChooseActionFragment2 : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentComposeViewBinding.inflate(inflater, container, false)
-        val view = binding.root
         binding.composeView.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 Mdc3Theme {
-                    ChooseActionScreen(viewModel)
+                    ActionsNavHost(
+                        navHostController = rememberNavController(),
+                        navigateUp = { result ->
+                            setFragmentResult(args.requestKey, result)
+                            findNavController().navigateUp()
+                        },
+                        startDestination = args.destination
+                    )
                 }
             }
         }
-        return view
+
+        return binding.root
     }
 
     override fun onDestroyView() {
