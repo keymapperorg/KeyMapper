@@ -91,9 +91,10 @@ class CreateKeyMapShortcutFragment : SimpleRecyclerViewFragment<KeyMapListItem>(
 
     private fun showOnBackPressedWarning() {
         requireContext().alertDialog {
-            messageResource = R.string.dialog_message_are_you_sure_want_to_leave_without_saving
+            titleResource = R.string.dialog_title_discard_changes
+            messageResource = R.string.dialog_message_discard_changes
 
-            positiveButton(R.string.pos_yes) {
+            positiveButton(R.string.pos_confirm) {
                 requireActivity().finish()
             }
 
