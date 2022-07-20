@@ -578,13 +578,13 @@ class PerformActionsUseCaseImpl @Inject constructor(
             }
 
             is ActionData.SelectWordAtCursor -> {
-                result = accessibilityService.performActionOnNode({ it.isFocused }) {
+                result = accessibilityService.performActionOnNode({ it.isFocused }) { node ->
                     //it is at the cursor position if they both return the same value
-                    if (it.textSelectionStart == it.textSelectionEnd) {
-                        val cursorPosition = it.textSelectionStart
+                    if (node.textSelectionStart == node.textSelectionEnd) {
+                        val cursorPosition = node.textSelectionStart
 
                         val wordBoundary =
-                            it.text.toString().getWordBoundaries(cursorPosition)
+                            node.text.toString().getWordBoundaries(cursorPosition)
                                 ?: return@performActionOnNode null
 
                         val extras = mapOf(
