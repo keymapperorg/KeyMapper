@@ -441,7 +441,8 @@
     <string name="button_yes">Yes!</string>
     <string name="button_choose_action">Choose action</string>
     <string name="button_add_intent_extra">Add extra</string>
-    <string name="button_create_keymap_shortcut_in_launcher">Create launcher shortcut</string>
+    <string name="button_create_keymap_shortcut_in_launcher_enabled">Create launcher shortcut</string>
+    <string name="button_create_keymap_shortcut_in_launcher_disabled">Create the shortcut manually</string>
     <string name="button_open_trigger_keymap_from_intent_guide">Intent guide</string>
     <string name="button_help">Help</string>
     <string name="button_pick_coordinate_select_screenshot">Select Screenshot (optional)</string>
