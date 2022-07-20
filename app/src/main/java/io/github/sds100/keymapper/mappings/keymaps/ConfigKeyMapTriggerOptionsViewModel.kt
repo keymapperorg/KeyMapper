@@ -1,14 +1,18 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
-import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.OptionMinimums
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerFromOtherAppsListItem
-import io.github.sds100.keymapper.ui.*
 import io.github.sds100.keymapper.util.*
 import io.github.sds100.keymapper.util.ui.*
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 /**
@@ -111,7 +115,7 @@ class ConfigKeyMapTriggerOptionsViewModel @Inject constructor(
                         isEnabled = trigger.triggerFromOtherApps,
                         keyMapUid = keyMapUid,
                         label = getString(R.string.flag_trigger_from_other_apps),
-                        showCreateLauncherShortcutButton = createKeyMapShortcut.isSupported
+                        isCreateLauncherShortcutButtonEnabled = createKeyMapShortcut.isSupported
                     )
                 )
 

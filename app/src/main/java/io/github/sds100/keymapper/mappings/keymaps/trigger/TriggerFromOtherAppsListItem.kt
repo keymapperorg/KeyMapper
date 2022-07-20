@@ -7,5 +7,5 @@ data class TriggerFromOtherAppsListItem(
     val isEnabled: Boolean,
     val keyMapUid: String,
     val label: String,
-    val showCreateLauncherShortcutButton: Boolean
+    val isCreateLauncherShortcutButtonEnabled: Boolean
 ) : ListItem
