@@ -128,6 +128,9 @@ This allows you to trigger the key map by using a shortcut or by sending an [Int
 
 You can create a home screen shortcut by tapping "create launcher shortcut" or by adding the shortcut to your home screen in the same way as a widget. You can also use this shortcut from automation apps like Tasker and Automate without having to create a home screen shortcut.
 
+!!! note
+    This button will be disabled if your launcher doesn't let 3rd party apps tell it to create shortcuts so you'll have to create it manually.
+
 #### Intent
 
 There are many apps that can automate broadcasting Intents such as Tasker and Automate.
