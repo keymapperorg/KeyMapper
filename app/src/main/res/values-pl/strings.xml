@@ -353,8 +353,8 @@
     <string name="dialog_title_choose_flash">Wybierz lampę błyskową</string>
     <string name="dialog_title_cant_find_accessibility_settings_page">Nie można wykryć strony ustawień ułatwień dostępu</string>
     <string name="dialog_title_cant_record_trigger">Nie możesz wprowadzić wyzwalacza?</string>
-    <string name="dialog_title_are_you_sure_want_to_leave_without_saving">Zapisz zmiany</string>
-    <string name="dialog_message_are_you_sure_want_to_leave_without_saving">Czy na pewno chcesz wrócić bez zapisywania?</string>
+    <string name="dialog_title_discard_changes">Odrzucenie zmian</string>
+    <string name="dialog_message_discard_changes">Czy na pewno chcesz odrzucić zmiany?</string>
     <string name="dialog_message_root_prompt">Jeśli wiesz, że Twój telefon nie jest zrootowany lub nie wiesz, czym jest root, nie możesz korzystać z funkcji, które działają tylko na zrootowanych urządzeniach. Po kliknięciu \"OK\" zostaniesz przeniesiony do ustawień.
             W ustawieniach przewiń w dół i kliknij \"Key Mapper ma uprawnienia roota\", aby móc korzystać z funkcji/działań roota.</string>
     <string name="dialog_message_downloading">Pobieranie…</string>
@@ -428,6 +428,7 @@
     <string name="dialog_title_fix_dnd_trigger_error">Udziel dostęp do trybu Nie przeszkadzać</string>
     <string name="dialog_message_fix_dnd_trigger_error">Spowoduje to przejście do strony ustawień urządzenia, na której możesz zarządzać aplikacjami, które mogą zmieniać stan Nie przeszkadzać. To <b>nie występuje na niektórych urządzeniach</b>, więc możesz kliknąć Nie wyświetlaj ponownie, jeśli nie widzisz aplikacji Key Mapper na tej liście.</string>
     <string name="pos_yes">Tak</string>
+    <string name="pos_confirm">Potwierdź</string>
     <string name="pos_done">Gotowe</string>
     <string name="pos_opt_in">Zaakceptuj</string>
     <string name="pos_grant_write_secure_settings_guide">Przewodnik</string>
