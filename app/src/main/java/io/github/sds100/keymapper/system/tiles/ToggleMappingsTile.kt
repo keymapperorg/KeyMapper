@@ -30,7 +30,7 @@ class ToggleMappingsTile : TileService(), LifecycleOwner {
 
     @Inject
     lateinit var serviceAdapter: AccessibilityServiceAdapter
-    
+
     @Inject
     lateinit var useCase: PauseMappingsUseCase
 
@@ -62,14 +62,14 @@ class ToggleMappingsTile : TileService(), LifecycleOwner {
                         qsTile.label = str(R.string.tile_resume)
                         qsTile.contentDescription = str(R.string.tile_resume)
                         qsTile.icon = Icon.createWithResource(ctx, R.drawable.ic_tile_resume)
-                        qsTile.state = Tile.STATE_ACTIVE
+                        qsTile.state = Tile.STATE_INACTIVE
                     }
 
                     !isPaused -> {
                         qsTile.label = str(R.string.tile_pause)
                         qsTile.contentDescription = str(R.string.tile_pause)
                         qsTile.icon = Icon.createWithResource(ctx, R.drawable.ic_tile_pause)
-                        qsTile.state = Tile.STATE_INACTIVE
+                        qsTile.state = Tile.STATE_ACTIVE
                     }
                 }
 
