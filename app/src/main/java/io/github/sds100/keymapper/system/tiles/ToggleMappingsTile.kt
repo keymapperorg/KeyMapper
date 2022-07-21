@@ -5,7 +5,9 @@ import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import androidx.annotation.RequiresApi
-import androidx.lifecycle.*
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.UseCases
@@ -54,14 +56,14 @@ class ToggleMappingsTile : TileService(), LifecycleOwner {
                         qsTile.label = str(R.string.tile_resume)
                         qsTile.contentDescription = str(R.string.tile_resume)
                         qsTile.icon = Icon.createWithResource(ctx, R.drawable.ic_tile_resume)
-                        qsTile.state = Tile.STATE_ACTIVE
+                        qsTile.state = Tile.STATE_INACTIVE
                     }
 
                     !isPaused -> {
                         qsTile.label = str(R.string.tile_pause)
                         qsTile.contentDescription = str(R.string.tile_pause)
                         qsTile.icon = Icon.createWithResource(ctx, R.drawable.ic_tile_pause)
-                        qsTile.state = Tile.STATE_INACTIVE
+                        qsTile.state = Tile.STATE_ACTIVE
                     }
                 }
 
