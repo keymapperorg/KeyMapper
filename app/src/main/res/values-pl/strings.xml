@@ -332,7 +332,8 @@
     <string name="button_yes">Tak!</string>
     <string name="button_choose_action">Wybierz czynność</string>
     <string name="button_add_intent_extra">Dodaj dodatek</string>
-    <string name="button_create_keymap_shortcut_in_launcher">Utwórz skrót w launcherze</string>
+    <string name="button_create_keymap_shortcut_in_launcher_enabled">Utwórz skrót w launcherze</string>
+    <string name="button_create_keymap_shortcut_in_launcher_disabled">Utwórz skrót ręcznie</string>
     <string name="button_open_trigger_keymap_from_intent_guide">Przewodnik po Intencjach</string>
     <string name="button_help">Pomoc</string>
     <string name="button_pick_coordinate_select_screenshot">Wybierz zrzut ekranu (opcjonalnie)</string>
