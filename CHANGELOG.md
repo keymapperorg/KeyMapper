@@ -1,3 +1,23 @@
+## [2.4.4](https://github.com/sds100/KeyMapper/releases/tag/v2.4.4)
+
+#### 21 July 2022
+
+### Bug fixes
+
+- [#1073](https://github.com/keymapperorg/KeyMapper/issues/1073) The toggle key maps quick settings tile now looks
+  enabled when the key maps are resumed.
+- [#1062](https://github.com/keymapperorg/KeyMapper/issues/1062) The select word at cursor action would select the whole
+  line if the cursor is at the end of the line.
+- [#999](https://github.com/keymapperorg/KeyMapper/issues/999) Remove delay when launching app shortcut actions when at
+  the launcher.
+
+### Added
+
+- [#1054](https://github.com/keymapperorg/KeyMapper/issues/1054) Make it clearer why key map launcher shortcut can't be
+  created automatically.
+- [#1068](https://github.com/keymapperorg/KeyMapper/issues/1068) Make the confirmation dialog when leaving without
+  saving clearer.
+
 ## [2.4.3](https://github.com/sds100/KeyMapper/releases/tag/v2.4.3)
 
 #### 21 June 2022
@@ -1130,8 +1150,9 @@ Changes from 1.1.0 Beta 8:
 - Ability to enable/disable specific/all keymaps.
 
 #### Added these actions
-  - Open App
-  - Open App shortcut
-  - A keycode
-  - A key
-  - A block of text
+
+- Open App
+- Open App shortcut
+- A keycode
+- A key
+- A block of text
