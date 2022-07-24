@@ -82,8 +82,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:onClick="@{onCreateLauncherShortcutClick}"
-            android:text="@string/button_create_keymap_shortcut_in_launcher"
-            android:visibility="@{model.showCreateLauncherShortcutButton &amp;&amp; model.isEnabled ? View.VISIBLE : View.GONE}"
+            android:enabled="@{model.isCreateLauncherShortcutButtonEnabled}"
+            android:text="@{model.isCreateLauncherShortcutButtonEnabled ? @string/button_create_keymap_shortcut_in_launcher_enabled : @string/button_create_keymap_shortcut_in_launcher_disabled}"
+            android:visibility="@{model.isEnabled ? View.VISIBLE : View.GONE}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/textViewUid" />
