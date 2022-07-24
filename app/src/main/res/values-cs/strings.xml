@@ -323,7 +323,6 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <string name="button_yes">Ano!</string>
     <string name="button_choose_action">Vybrat akci</string>
     <string name="button_add_intent_extra">Pridať extra</string>
-    <string name="button_create_keymap_shortcut_in_launcher">Vytvořit zástupce spouštěče</string>
     <string name="button_open_trigger_keymap_from_intent_guide">Průvodce myšlením</string>
     <string name="button_help">Nápověda</string>
     <string name="button_pick_coordinate_select_screenshot">Vybrat snímek obrazovky (volitelné)</string>
