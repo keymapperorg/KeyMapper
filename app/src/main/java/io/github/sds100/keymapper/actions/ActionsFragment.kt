@@ -42,11 +42,11 @@ class ActionsFragment : Fragment() {
                 Mdc3Theme {
                     ActionsNavHost(
                         navHostController = rememberNavController(),
-                        navigateUp = { result ->
+                        setResult = { result ->
                             setFragmentResult(args.requestKey, result)
-                            findNavController().navigateUp()
                         },
-                        startDestination = args.destination
+                        startDestination = args.destination,
+                        navigateBack = { findNavController().navigateUp() }
                     )
                 }
             }

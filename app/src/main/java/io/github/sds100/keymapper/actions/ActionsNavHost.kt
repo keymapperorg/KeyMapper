@@ -19,7 +19,8 @@ fun ActionsNavHost(
     modifier: Modifier = Modifier,
     startDestination: String,
     navHostController: NavHostController,
-    navigateUp: (result: Bundle) -> Unit
+    setResult: (result: Bundle) -> Unit,
+    navigateBack: () -> Unit
 ) {
     NavHost(
         navHostController,
@@ -27,9 +28,12 @@ fun ActionsNavHost(
         modifier = modifier
     ) {
         composable(ActionDestination.ChooseAction.NAME) { navBackStackEntry ->
-            ChooseActionScreen(onActionChosen = { action ->
-                navigateUp(bundleOf(ActionsFragment.EXTRA_ACTION to Json.encodeToString(action)))
-            })
+            ChooseActionScreen(
+                onActionChosen = { action ->
+                    setResult(bundleOf(ActionsFragment.EXTRA_ACTION to Json.encodeToString(action)))
+                },
+                navigateBack = navigateBack
+            )
         }
 
         composable(

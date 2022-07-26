@@ -1351,4 +1351,11 @@
     <string name="about_team_bydario_url" translatable="false">https://github.com/bydariogamer</string>
     <string name="about_team_bydario_role">Translator (Spanish)</string>
     <!--  About  -->
+    
+    <!-- Choose action screen -->
+    <string name="choose_action_search_content_description">Search</string>
+    <string name="choose_action_back_content_description">Go back</string>
+    <string name="choose_action_done_searching_content_description">Done searching</string>
+    <!-- Choose action screen -->
+
 </resources>

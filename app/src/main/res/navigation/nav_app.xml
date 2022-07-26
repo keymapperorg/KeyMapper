@@ -18,7 +18,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_app"
-    app:startDestination="@id/home_fragment">
+    app:startDestination="@id/actionsFragment">
     <fragment
         android:id="@+id/home_fragment"
         android:name="io.github.sds100.keymapper.home.HomeFragment"
@@ -337,9 +337,11 @@
         android:label="ComposeActionsFragment">
         <argument
             android:name="requestKey"
-            app:argType="string" />
+            app:argType="string"
+            android:defaultValue="choose_action"/>
         <argument
             android:name="destination"
-            app:argType="string" />
+            app:argType="string"
+            android:defaultValue="choose_action"/>
     </fragment>
 </navigation>

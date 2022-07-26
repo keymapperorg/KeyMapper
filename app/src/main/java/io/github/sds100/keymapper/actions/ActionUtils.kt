@@ -4,14 +4,18 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AirplanemodeActive
+import androidx.compose.material.icons.outlined.AirplanemodeInactive
+import androidx.compose.material.icons.outlined.Face
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.system.permissions.Permission
+import io.github.sds100.keymapper.util.ui.Icon
 
 /**
  * Created by sds100 on 16/03/2021.
  */
-
 
 object ActionUtils {
 
@@ -261,6 +265,15 @@ object ActionUtils {
             ActionId.ANSWER_PHONE_CALL -> R.string.action_answer_call
             ActionId.END_PHONE_CALL -> R.string.action_end_call
         }
+
+    fun getNewIcon(id: ActionId): Icon {
+        return when(id){
+            ActionId.TOGGLE_AIRPLANE_MODE -> Icon.ImageVector(Icons.Outlined.AirplanemodeActive)
+            ActionId.ENABLE_AIRPLANE_MODE -> Icon.ImageVector(Icons.Outlined.AirplanemodeActive)
+            ActionId.DISABLE_AIRPLANE_MODE -> Icon.ImageVector(Icons.Outlined.AirplanemodeInactive)
+            else -> Icon.ImageVector(Icons.Outlined.Face)
+        }
+    }
 
     @DrawableRes
     fun getIcon(id: ActionId): Int? =
