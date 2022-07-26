@@ -1,19 +1,17 @@
 package io.github.sds100.keymapper.actions
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AddRoad
-import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.util.ui.Icon
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -45,14 +43,18 @@ class ChooseActionViewModel2 @Inject constructor(
 
     var query: String by mutableStateOf("")
     private val queryFlow: Flow<String> = snapshotFlow { query }
-    
+
     init {
         listItems = ActionId.values().map { id ->
-            ChooseActionListItem(id, resourceProvider.getString(ActionUtils.getTitle(id)), ActionUtils.getNewIcon(id))
+            ChooseActionListItem(
+                id,
+                resourceProvider.getString(ActionUtils.getTitle(id)),
+                ActionUtils.getNewIcon(id)
+            )
         }
 
         queryFlow.onEach {
-            
+
         }.launchIn(viewModelScope)
     }
 }
