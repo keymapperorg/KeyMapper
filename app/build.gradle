@@ -103,6 +103,20 @@ android {
         freeCompilerArgs += [
                 '-Xjvm-default=enable'
         ]
+
+        if (project.findProperty("myapp.enableComposeCompilerReports") == "true") {
+            freeCompilerArgs += [
+                    "-P",
+                    "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=" +
+                            project.buildDir.absolutePath + "/compose_metrics"
+            ]
+
+            freeCompilerArgs += [
+                    "-P",
+                    "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" +
+                            project.buildDir.absolutePath + "/compose_metrics"
+            ]
+        }
     }
 
     kapt {
