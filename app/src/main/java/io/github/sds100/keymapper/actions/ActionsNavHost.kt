@@ -1,9 +1,11 @@
 package io.github.sds100.keymapper.actions
 
 import android.os.Bundle
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.core.os.bundleOf
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -29,10 +31,12 @@ fun ActionsNavHost(
     ) {
         composable(ActionDestination.ChooseAction.NAME) { navBackStackEntry ->
             ChooseActionScreen(
-                onActionChosen = { action ->
+                Modifier.fillMaxSize(),
+                viewModel = hiltViewModel(),
+                setResult = { action ->
                     setResult(bundleOf(ActionsFragment.EXTRA_ACTION to Json.encodeToString(action)))
                 },
-                navigateBack = navigateBack
+                onBack = navigateBack
             )
         }
 

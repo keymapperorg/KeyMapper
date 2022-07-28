@@ -7,11 +7,13 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.util.ui.Icon
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -19,7 +21,8 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class ChooseActionViewModel2 @Inject constructor(
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    private val useCase: CreateActionUseCase
 ) : ViewModel() {
     companion object {
         private val CATEGORY_ORDER = arrayOf(
@@ -39,6 +42,9 @@ class ChooseActionViewModel2 @Inject constructor(
         )
     }
 
+    var configActionState: ConfigActionState? by mutableStateOf(null)
+        private set
+
     var listItems: List<ChooseActionListItem> by mutableStateOf(emptyList())
 
     var query: String by mutableStateOf("")
@@ -57,6 +63,29 @@ class ChooseActionViewModel2 @Inject constructor(
 
         }.launchIn(viewModelScope)
     }
+
+    fun dismissConfiguringAction() {
+        configActionState = null
+    }
+
+    fun onChooseInputMethod(inputMethod: String) {
+
+    }
+
+    fun onActionClick(id: ActionId) {
+        viewModelScope.launch {
+            configActionState = ConfigActionState.ChooseKeyboard(useCase.getInputMethods())
+
+            when (id) {
+                ActionId.SWITCH_KEYBOARD -> {
+                }
+            }
+        }
+    }
 }
 
 data class ChooseActionListItem(val id: ActionId, val title: String, val icon: Icon)
+
+sealed class ConfigActionState(val id: ActionId) {
+    data class ChooseKeyboard(val inputMethods: List<ImeInfo>) : ConfigActionState(ActionId.SWITCH_KEYBOARD)
+}
