@@ -9,8 +9,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.actions.ActionData
-import io.github.sds100.keymapper.actions.ActionDestination
 import io.github.sds100.keymapper.actions.ActionsFragment
+import io.github.sds100.keymapper.actions.destinations.ChooseActionScreenDestination
 import io.github.sds100.keymapper.actions.keyevent.ChooseKeyCodeFragment
 import io.github.sds100.keymapper.actions.keyevent.ConfigKeyEventActionFragment
 import io.github.sds100.keymapper.actions.sound.ChooseSoundFileFragment
@@ -160,7 +160,7 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
             is NavDestination.ChooseSound -> NavAppDirections.chooseSoundFile(requestKey)
             NavDestination.ChooseAction -> NavAppDirections.toChooseActionFragment(
                 requestKey,
-                ActionDestination.ChooseAction.NAME
+                ChooseActionScreenDestination.route
             )
             is NavDestination.ChooseConstraint -> NavAppDirections.chooseConstraint(
                 supportedConstraints = Json.encodeToString(destination.supportedConstraints),

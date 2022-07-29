@@ -19,8 +19,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.result.NavResult
+import com.ramcosta.composedestinations.result.ResultRecipient
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.actions.destinations.ChooseKeyCodeScreenDestination
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.util.ui.CustomDialog
 import io.github.sds100.keymapper.util.ui.Icon
@@ -47,16 +52,50 @@ private fun ChooseActionScreenPreview() {
     }
 }
 
+@RootNavGraph(start = true)
+@Destination
 @Composable
 fun ChooseActionScreen(
-    modifier: Modifier = Modifier,
-    viewModel: ChooseActionViewModel2 = hiltViewModel(),
+    viewModel: ChooseActionViewModel2,
+    navigator: DestinationsNavigator,
+    keyCodeResultRecipient: ResultRecipient<ChooseKeyCodeScreenDestination, Int>,
     setResult: (ActionData) -> Unit,
-    onBack: () -> Unit
+    navigateBack: () -> Unit
+) {
+    keyCodeResultRecipient.onNavResult { result ->
+        when (result) {
+            is NavResult.Canceled -> {
+                viewModel.dismissConfiguringAction()
+            }
+
+            is NavResult.Value -> {
+                viewModel.onChooseKeyCode(result.value)
+            }
+        }
+    }
+
+    ChooseActionScreen(
+        viewModel = viewModel,
+        setResult = setResult,
+        onBack = navigateBack,
+        navigateToChooseKeyCode = {
+            viewModel.onNavigateToConfigScreen()
+            navigator.navigate(ChooseKeyCodeScreenDestination)
+        }
+    )
+}
+
+@Composable
+private fun ChooseActionScreen(
+    modifier: Modifier = Modifier,
+    viewModel: ChooseActionViewModel2,
+    setResult: (ActionData) -> Unit,
+    onBack: () -> Unit,
+    navigateToChooseKeyCode: () -> Unit
 ) {
     ChooseActionScreen(
         modifier,
-        viewModel.listItems,
+        viewModel.actionListItems,
         viewModel.query,
         onSearchQueryChanged = { viewModel.query = it },
         viewModel.configActionState,
@@ -66,7 +105,8 @@ fun ChooseActionScreen(
             onBack()
         },
         viewModel::onActionClick,
-        onBack
+        onBack,
+        navigateToChooseKeyCode
     )
 }
 
@@ -81,37 +121,51 @@ private fun ChooseActionScreen(
     onDismissConfiguringAction: () -> Unit = {},
     onActionConfigured: (ActionData) -> Unit = {},
     onActionClick: (ActionId) -> Unit = {},
-    onBack: () -> Unit = {}
+    onBack: () -> Unit = {},
+    navigateToChooseKeyCode: () -> Unit = {}
 ) {
     Scaffold(modifier, bottomBar = {
         ChooseActionAppBar(onBack, query, onSearchQueryChanged)
     }) { padding ->
 
-        when (configActionState) {
-            is ConfigActionState.ChooseKeyboard -> {
+        if (configActionState is ConfigActionState.Finished) {
+            onActionConfigured(configActionState.action)
+        }
 
-                var selectedIme: ImeInfo? by remember { mutableStateOf(null) }
+        if (configActionState is ConfigActionState.Screen) {
+            when (configActionState) {
+                is ConfigActionState.Screen.ChooseKeycode -> navigateToChooseKeyCode()
 
-                CustomDialog(
-                    onDismissRequest = onDismissConfiguringAction,
-                    title = "Choose a keyboard",
-                    confirmButton = {
-                        TextButton(onClick = {
-                            onActionConfigured(ActionData.SwitchKeyboard(selectedIme!!.id, selectedIme!!.label))
-                        }, enabled = selectedIme != null) {
-                            Text("Confirm")
-                        }
-                    },
-                    dismissButton = {
-                        TextButton(onClick = onDismissConfiguringAction) {
-                            Text("Cancel")
-                        }
-                    }) {
-                    LazyColumn {
-                        items(configActionState.inputMethods) { imeInfo ->
-                            Row {
-                                RadioButton(selected = selectedIme == imeInfo, onClick = { selectedIme = imeInfo })
-                                Text(imeInfo.label)
+                ConfigActionState.Screen.Navigated -> {}
+            }
+        }
+
+        if (configActionState is ConfigActionState.Dialog) {
+            when (configActionState) {
+                is ConfigActionState.Dialog.ChooseKeyboard -> {
+
+                    var selectedIme: ImeInfo? by remember { mutableStateOf(null) }
+
+                    CustomDialog(
+                        onDismissRequest = onDismissConfiguringAction,
+                        title = "Choose a keyboard",
+                        confirmButton = {
+                            TextButton(onClick = {
+                            }, enabled = selectedIme != null) {
+                                Text("Confirm")
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = onDismissConfiguringAction) {
+                                Text("Cancel")
+                            }
+                        }) {
+                        LazyColumn {
+                            items(configActionState.inputMethods) { imeInfo ->
+                                Row {
+                                    RadioButton(selected = selectedIme == imeInfo, onClick = { selectedIme = imeInfo })
+                                    Text(imeInfo.label)
+                                }
                             }
                         }
                     }

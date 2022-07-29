@@ -1,14 +1,18 @@
 package io.github.sds100.keymapper.actions
 
 import android.os.Bundle
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.core.os.bundleOf
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
+import com.ramcosta.composedestinations.scope.resultBackNavigator
+import com.ramcosta.composedestinations.scope.resultRecipient
+import com.ramcosta.composedestinations.utils.composable
+import io.github.sds100.keymapper.actions.destinations.ChooseActionScreenDestination
+import io.github.sds100.keymapper.actions.destinations.ChooseKeyCodeScreenDestination
+import io.github.sds100.keymapper.actions.keyevent.ChooseKeyCodeScreen
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -29,23 +33,20 @@ fun ActionsNavHost(
         startDestination = startDestination,
         modifier = modifier
     ) {
-        composable(ActionDestination.ChooseAction.NAME) { navBackStackEntry ->
+        composable(ChooseActionScreenDestination) {
             ChooseActionScreen(
-                Modifier.fillMaxSize(),
                 viewModel = hiltViewModel(),
-                setResult = { action ->
-                    setResult(bundleOf(ActionsFragment.EXTRA_ACTION to Json.encodeToString(action)))
-                },
-                onBack = navigateBack
+                navigator = destinationsNavigator(navHostController),
+                keyCodeResultRecipient = resultRecipient(),
+                setResult = { setResult(bundleOf(ActionsFragment.EXTRA_ACTION to Json.encodeToString(it))) },
+                navigateBack = navigateBack
             )
         }
 
-        composable(
-            ActionDestination.ConfigKeyEvent.NAME,
-            ActionDestination.ConfigKeyEvent.ARGUMENTS
-        ) { navBackStackEntry ->
-            val keyEventAction = ActionDestination.ConfigKeyEvent.getKeyEventAction(navBackStackEntry.arguments!!)
-
+        composable(ChooseKeyCodeScreenDestination) {
+            ChooseKeyCodeScreen(
+                resultNavigator = resultBackNavigator(navHostController)
+            )
         }
     }
 }

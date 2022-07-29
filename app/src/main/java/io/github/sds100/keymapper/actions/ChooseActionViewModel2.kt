@@ -42,16 +42,16 @@ class ChooseActionViewModel2 @Inject constructor(
         )
     }
 
-    var configActionState: ConfigActionState? by mutableStateOf(null)
+    var configActionState: ConfigActionState by mutableStateOf(ConfigActionState.NotStarted)
         private set
 
-    var listItems: List<ChooseActionListItem> by mutableStateOf(emptyList())
+    var actionListItems: List<ChooseActionListItem> by mutableStateOf(emptyList())
 
     var query: String by mutableStateOf("")
     private val queryFlow: Flow<String> = snapshotFlow { query }
 
     init {
-        listItems = ActionId.values().map { id ->
+        actionListItems = ActionId.values().map { id ->
             ChooseActionListItem(
                 id,
                 resourceProvider.getString(ActionUtils.getTitle(id)),
@@ -65,19 +65,35 @@ class ChooseActionViewModel2 @Inject constructor(
     }
 
     fun dismissConfiguringAction() {
-        configActionState = null
+        configActionState = ConfigActionState.NotStarted
     }
 
-    fun onChooseInputMethod(inputMethod: String) {
+    fun onNavigateToConfigScreen() {
+        configActionState = ConfigActionState.Screen.Navigated
+    }
 
+    fun onChooseInputMethod(imeId: String, imeName: String) {
+        configActionState = ConfigActionState.Finished(ActionData.SwitchKeyboard(imeId, imeName))
+    }
+
+    fun onChooseKeyCode(keyCode: Int) {
+        configActionState = ConfigActionState.Finished(ActionData.InputKeyEvent(keyCode = keyCode))
     }
 
     fun onActionClick(id: ActionId) {
         viewModelScope.launch {
-            configActionState = ConfigActionState.ChooseKeyboard(useCase.getInputMethods())
 
             when (id) {
+                ActionId.TOGGLE_WIFI -> {
+                    
+                }
+
+                ActionId.KEY_CODE -> {
+                    configActionState = ConfigActionState.Screen.ChooseKeycode
+                }
+
                 ActionId.SWITCH_KEYBOARD -> {
+                    configActionState = ConfigActionState.Dialog.ChooseKeyboard(useCase.getInputMethods())
                 }
             }
         }
@@ -86,6 +102,36 @@ class ChooseActionViewModel2 @Inject constructor(
 
 data class ChooseActionListItem(val id: ActionId, val title: String, val icon: Icon)
 
-sealed class ConfigActionState(val id: ActionId) {
-    data class ChooseKeyboard(val inputMethods: List<ImeInfo>) : ConfigActionState(ActionId.SWITCH_KEYBOARD)
+/**
+ * Represents the current state of configuring an action.
+ */
+sealed class ConfigActionState {
+    /**
+     * The user is not currently configuring an action.
+     */
+    object NotStarted : ConfigActionState()
+
+    /**
+     * The user is configuring an action with a dialog.
+     */
+    sealed class Dialog(val actionId: ActionId) : ConfigActionState() {
+        data class ChooseKeyboard(val inputMethods: List<ImeInfo>) : Dialog(ActionId.SWITCH_KEYBOARD)
+    }
+
+    /**
+     * The user is configuring an action on another screen.
+     */
+    sealed class Screen : ConfigActionState() {
+        /**
+         * The user has navigated away to the other screen.
+         */
+        object Navigated : Screen()
+
+        /**
+         * The user should be taken to the screen to choose a key code.
+         */
+        object ChooseKeycode : Screen()
+    }
+
+    data class Finished(val action: ActionData) : ConfigActionState()
 }

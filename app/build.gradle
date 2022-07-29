@@ -5,6 +5,7 @@ apply plugin: 'kotlin-parcelize'
 apply plugin: "androidx.navigation.safeargs.kotlin"
 apply plugin: "kotlinx-serialization"
 apply plugin: 'dagger.hilt.android.plugin'
+apply plugin: 'com.google.devtools.ksp'
 
 android {
     compileSdkVersion 32
@@ -130,6 +131,10 @@ android {
     }
 }
 
+ksp {
+    arg("compose-destinations.generateNavGraphs", "false")
+}
+
 android.sourceSets {
     test {
         java.srcDirs += "$projectDir/src/testShared"
@@ -145,6 +150,14 @@ android.sourceSets {
 android.applicationVariants.all { variant ->
     variant.outputs.all {
         outputFileName = "keymapper-${variant.versionName}.apk"
+    }
+}
+
+android.applicationVariants.all { variant ->
+    kotlin.sourceSets {
+        getByName(variant.name) {
+            kotlin.srcDir("build/generated/ksp/${variant.name}/kotlin")
+        }
     }
 }
 
@@ -184,7 +197,10 @@ dependencies {
     implementation 'org.lsposed.hiddenapibypass:hiddenapibypass:4.3'
     implementation 'com.google.dagger:hilt-android:2.42'
     kapt 'com.google.dagger:hilt-compiler:2.42'
-    
+    implementation 'com.google.devtools.ksp:symbol-processing-api:1.6.10-1.0.4'
+    implementation 'io.github.raamcosta.compose-destinations:core:1.5.14-beta'
+    ksp 'io.github.raamcosta.compose-destinations:ksp:1.5.14-beta'
+
     // splitties
     implementation "com.louiscad.splitties:splitties-bitflags:$splitties_version"
     implementation "com.louiscad.splitties:splitties-alertdialog-appcompat-coroutines:$splitties_version"
@@ -229,6 +245,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.5.0'
     implementation "androidx.compose.material:material-icons-extended:1.1.1"
     implementation "com.google.accompanist:accompanist-drawablepainter:0.23.1"
+    implementation "androidx.compose.runtime:runtime-livedata:1.1.1"
 
 //    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.6'
 
