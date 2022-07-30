@@ -12,7 +12,6 @@ import androidx.compose.material.icons.outlined.Keyboard
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -27,10 +26,7 @@ import com.ramcosta.composedestinations.result.ResultRecipient
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.destinations.ChooseKeyCodeScreenDestination
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
-import io.github.sds100.keymapper.util.ui.CustomDialog
-import io.github.sds100.keymapper.util.ui.HeaderListItem
-import io.github.sds100.keymapper.util.ui.Icon
-import io.github.sds100.keymapper.util.ui.SimpleListItem
+import io.github.sds100.keymapper.util.ui.*
 
 /**
  * Created by sds100 on 12/07/2022.
@@ -49,7 +45,7 @@ private fun ChooseActionScreenPreview() {
                     Icon.ImageVector(Icons.Outlined.Keyboard)
                 )
             ),
-            query = ""
+            searchState = SearchState.Idle
         )
     }
 }
@@ -95,20 +91,22 @@ private fun ChooseActionScreen(
     onBack: () -> Unit,
     navigateToChooseKeyCode: () -> Unit
 ) {
+    val searchState by viewModel.searchState.collectAsState()
+
     ChooseActionScreen(
-        modifier,
-        viewModel.actionListItems,
-        viewModel.query,
-        onSearchQueryChanged = { viewModel.query = it },
-        viewModel.configActionState,
-        viewModel::dismissConfiguringAction,
+        modifier = modifier,
+        actions = viewModel.actionListItems,
+        searchState = searchState,
+        setSearchState = viewModel::setSearchState,
+        configActionState = viewModel.configActionState,
+        onDismissConfiguringAction = viewModel::dismissConfiguringAction,
         onActionConfigured = {
             setResult(it)
             onBack()
         },
-        viewModel::onActionClick,
-        onBack,
-        navigateToChooseKeyCode
+        onActionClick = viewModel::onActionClick,
+        onBack = onBack,
+        navigateToChooseKeyCode = navigateToChooseKeyCode
     )
 }
 
@@ -117,8 +115,8 @@ private fun ChooseActionScreen(
 private fun ChooseActionScreen(
     modifier: Modifier = Modifier,
     actions: List<ChooseActionListItem>,
-    query: String,
-    onSearchQueryChanged: (String) -> Unit = {},
+    searchState: SearchState,
+    setSearchState: (SearchState) -> Unit = {},
     configActionState: ConfigActionState? = null,
     onDismissConfiguringAction: () -> Unit = {},
     onActionConfigured: (ActionData) -> Unit = {},
@@ -127,7 +125,7 @@ private fun ChooseActionScreen(
     navigateToChooseKeyCode: () -> Unit = {}
 ) {
     Scaffold(modifier, bottomBar = {
-        ChooseActionAppBar(onBack, query, onSearchQueryChanged)
+        ChooseActionAppBar(onBack, searchState, setSearchState)
     }) { padding ->
 
         if (configActionState is ConfigActionState.Finished) {
@@ -205,7 +203,7 @@ private fun ChooseActionList(
             key = { listItem ->
                 when (listItem) {
                     is ChooseActionListItem.Action -> listItem.id
-                    is ChooseActionListItem.Header -> listItem.text
+                    is ChooseActionListItem.Header -> listItem.header
                 }
             },
             contentType = { listItem ->
@@ -227,17 +225,20 @@ private fun ChooseActionList(
                 is ChooseActionListItem.Header ->
                     HeaderListItem(
                         modifier = Modifier.fillMaxWidth(),
-                        text = listItem.text
+                        text = listItem.header
                     )
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ChooseActionAppBar(onBack: () -> Unit, searchQuery: String, onSearchQueryChanged: (String) -> Unit) {
-    var isSearching: Boolean by rememberSaveable { mutableStateOf(false) }
+private fun ChooseActionAppBar(
+    navigateBack: () -> Unit,
+    searchState: SearchState,
+    setSearchState: (SearchState) -> Unit
+) {
+    val isSearching: Boolean by derivedStateOf { searchState is SearchState.Searching }
 
     BottomAppBar {
         Row(
@@ -247,9 +248,9 @@ private fun ChooseActionAppBar(onBack: () -> Unit, searchQuery: String, onSearch
         ) {
             IconButton(onClick = {
                 if (isSearching) {
-                    isSearching = false
+                    setSearchState(SearchState.Idle)
                 } else {
-                    onBack()
+                    navigateBack()
                 }
             }) {
                 Icon(
@@ -259,12 +260,16 @@ private fun ChooseActionAppBar(onBack: () -> Unit, searchQuery: String, onSearch
             }
 
             AnimatedVisibility(visible = isSearching, modifier = Modifier.fillMaxWidth()) {
-                TextField(value = searchQuery, onValueChange = onSearchQueryChanged)
+                if (searchState is SearchState.Searching) {
+                    TextField(value = searchState.query,
+                        onValueChange = { setSearchState(SearchState.Searching(it)) })
+                }
             }
 
             AnimatedVisibility(visible = !isSearching) {
                 FloatingActionButton(
-                    onClick = { isSearching = true }, elevation = BottomAppBarDefaults.FloatingActionButtonElevation
+                    onClick = { setSearchState(SearchState.Searching("")) },
+                    elevation = BottomAppBarDefaults.FloatingActionButtonElevation
                 ) {
                     if (isSearching) {
                         Icon(

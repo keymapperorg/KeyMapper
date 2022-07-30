@@ -3,17 +3,21 @@ package io.github.sds100.keymapper.actions
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
+import io.github.sds100.keymapper.util.containsQuery
 import io.github.sds100.keymapper.util.ui.Icon
 import io.github.sds100.keymapper.util.ui.ResourceProvider
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import io.github.sds100.keymapper.util.ui.SearchState
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 /**
@@ -45,15 +49,35 @@ class ChooseActionViewModel2 @Inject constructor(
     var configActionState: ConfigActionState by mutableStateOf(ConfigActionState.NotStarted)
         private set
 
-    var actionListItems: List<ChooseActionListItem> by mutableStateOf(createListItems())
+    private val allActionGroups: List<ChooseActionListGroup> = createActionGroups()
+    private val allActionListItems: List<ChooseActionListItem> = convertGroupsIntoListItems(allActionGroups)
 
-    var query: String by mutableStateOf("")
-    private val queryFlow: Flow<String> = snapshotFlow { query }
+    var actionListItems: List<ChooseActionListItem> by mutableStateOf(allActionListItems)
+        private set
+
+    private val _searchState: MutableStateFlow<SearchState> = MutableStateFlow(SearchState.Idle)
+    val searchState: StateFlow<SearchState> = _searchState.asStateFlow()
 
     init {
-        queryFlow.onEach {
+        viewModelScope.launch(Dispatchers.Default) {
+            searchState.collectLatest { searchState ->
+                val newActionListItems = when (searchState) {
+                    SearchState.Idle -> allActionListItems
+                    is SearchState.Searching -> {
+                        val filteredGroups = filterGroups(searchState.query)
+                        convertGroupsIntoListItems(filteredGroups)
+                    }
+                }
 
-        }.launchIn(viewModelScope)
+                withContext(Dispatchers.Main) {
+                    actionListItems = newActionListItems
+                }
+            }
+        }
+    }
+
+    fun setSearchState(state: SearchState) {
+        _searchState.value = state
     }
 
     fun dismissConfiguringAction() {
@@ -91,15 +115,36 @@ class ChooseActionViewModel2 @Inject constructor(
         }
     }
 
-    private fun createListItems(): List<ChooseActionListItem> {
-        val listItems = mutableListOf<ChooseActionListItem>()
+    private fun filterGroups(query: String): List<ChooseActionListGroup> {
+        val filteredGroups = mutableListOf<ChooseActionListGroup>()
+
+        for (group in allActionGroups) {
+            val filteredActions = group.actions.filter { it.title.containsQuery(query) }
+            if (filteredActions.isNotEmpty()) {
+                filteredGroups.add(ChooseActionListGroup(group.header, filteredActions))
+            }
+        }
+
+        return filteredGroups
+    }
+
+    private fun convertGroupsIntoListItems(groups: List<ChooseActionListGroup>): List<ChooseActionListItem> {
+        return sequence {
+            groups.forEach { group ->
+                yield(group.header)
+                yieldAll(group.actions)
+            }
+        }.toList()
+    }
+
+    private fun createActionGroups(): List<ChooseActionListGroup> {
+        val groups = mutableListOf<ChooseActionListGroup>()
 
         for (category in CATEGORY_ORDER) {
             val actionIds = ActionId.values().filter { ActionUtils.getCategory(it) == category }
 
             val headerLabelRes = ActionUtils.getCategoryLabel(category)
-            val header = ChooseActionListItem.Header(resourceProvider.getString(headerLabelRes))
-            listItems.add(header)
+            val headerListItem = ChooseActionListItem.Header(resourceProvider.getString(headerLabelRes))
 
             val actionListItems = actionIds.map { actionId ->
                 ChooseActionListItem.Action(
@@ -109,16 +154,22 @@ class ChooseActionViewModel2 @Inject constructor(
                 )
             }
 
-            listItems.addAll(actionListItems)
+            val group = ChooseActionListGroup(headerListItem, actionListItems)
+            groups.add(group)
         }
 
-        return listItems
+        return groups
     }
 
 }
 
+data class ChooseActionListGroup(
+    val header: ChooseActionListItem.Header,
+    val actions: List<ChooseActionListItem.Action>
+)
+
 sealed class ChooseActionListItem {
-    data class Header(val text: String) : ChooseActionListItem()
+    data class Header(val header: String) : ChooseActionListItem()
     data class Action(val id: ActionId, val title: String, val icon: Icon) : ChooseActionListItem()
 }
 
