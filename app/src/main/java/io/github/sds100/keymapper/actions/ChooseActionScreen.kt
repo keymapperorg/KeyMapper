@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.actions
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -254,6 +255,15 @@ private fun ChooseActionAppBar(
     setSearchState: (SearchState) -> Unit
 ) {
     val isSearching: Boolean by derivedStateOf { searchState is SearchState.Searching }
+    val onBack = {
+        if (isSearching) {
+            setSearchState(SearchState.Idle)
+        } else {
+            navigateBack()
+        }
+    }
+
+    BackHandler(onBack = onBack)
 
     BottomAppBar {
         Row(
@@ -261,13 +271,7 @@ private fun ChooseActionAppBar(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            IconButton(onClick = {
-                if (isSearching) {
-                    setSearchState(SearchState.Idle)
-                } else {
-                    navigateBack()
-                }
-            }) {
+            IconButton(onClick = onBack) {
                 Icon(
                     Icons.Outlined.ArrowBack,
                     contentDescription = stringResource(R.string.choose_action_back_content_description)
