@@ -21,22 +21,30 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun SimpleListItem(
     modifier: Modifier = Modifier,
-    icon: KMIcon,
+    icon: KMIcon? = null,
     title: String,
     subtitle: String? = null,
     onClick: () -> Unit = {}
 ) {
     OutlinedCard(modifier = modifier, onClick = onClick) {
         Row(Modifier.padding(top = 8.dp, bottom = 8.dp, start = 16.dp, end = 16.dp)) {
-            Icon(
-                icon = icon, modifier = Modifier
-                    .size(24.dp)
+            if (icon != null) {
+                Icon(
+                    modifier = Modifier
+                        .size(24.dp)
+                        .align(Alignment.CenterVertically),
+                    icon = icon
+                )
+
+                Spacer(Modifier.width(16.dp))
+            }
+
+            Column(
+                Modifier
                     .align(Alignment.CenterVertically)
-            )
-
-            Spacer(Modifier.width(16.dp))
-
-            Column(Modifier.align(Alignment.CenterVertically)) {
+                    .defaultMinSize(minHeight = 24.dp),
+                verticalArrangement = Arrangement.Center
+            ) {
                 Text(title, style = MaterialTheme.typography.bodyMedium)
 
                 if (subtitle != null) {
@@ -67,6 +75,17 @@ private fun PreviewWithoutSubtitle() {
         SimpleListItem(
             Modifier.fillMaxWidth(),
             icon = KMIcon.ImageVector(Icons.Outlined.Face),
+            title = "Volume up"
+        )
+    }
+}
+
+@Preview(widthDp = 400)
+@Composable
+private fun PreviewNoIcon() {
+    MaterialTheme {
+        SimpleListItem(
+            Modifier.fillMaxWidth(),
             title = "Volume up"
         )
     }

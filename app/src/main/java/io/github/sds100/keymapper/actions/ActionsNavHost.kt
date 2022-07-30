@@ -45,6 +45,7 @@ fun ActionsNavHost(
 
         composable(ChooseKeyCodeScreenDestination) {
             ChooseKeyCodeScreen(
+                viewModel = hiltViewModel(),
                 resultNavigator = resultBackNavigator(navHostController)
             )
         }

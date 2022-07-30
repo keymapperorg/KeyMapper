@@ -39,6 +39,11 @@ private fun ChooseActionScreenPreview() {
                     ActionId.SWITCH_KEYBOARD,
                     "Switch keyboard",
                     KMIcon.ImageVector(Icons.Outlined.Keyboard)
+                ),
+                ChooseActionListItem.Action(
+                    ActionId.SHOW_KEYBOARD,
+                    "Show keyboard",
+                    KMIcon.ImageVector(Icons.Outlined.Keyboard)
                 )
             ),
             searchState = SearchState.Idle
@@ -215,7 +220,6 @@ private fun ChooseActionList(
     LazyColumn(
         modifier = modifier,
         contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
         state = listState
     ) {
 
