@@ -7,18 +7,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
 
-sealed class Icon {
-    data class ImageVector(val imageVector: androidx.compose.ui.graphics.vector.ImageVector) : Icon()
-    data class DrawableResource(@DrawableRes val id: Int) : Icon()
+sealed class KMIcon {
+    data class ImageVector(val imageVector: androidx.compose.ui.graphics.vector.ImageVector) : KMIcon()
+    data class DrawableResource(@DrawableRes val id: Int) : KMIcon()
 }
 
 @Composable
-fun Icon(modifier: Modifier = Modifier, icon: Icon) {
+fun Icon(modifier: Modifier = Modifier, icon: KMIcon) {
     when (icon) {
-        is Icon.DrawableResource -> {
+        is KMIcon.DrawableResource -> {
             Icon(modifier = modifier, painter = painterResource(icon.id), contentDescription = null)
         }
-        is Icon.ImageVector -> {
+        is KMIcon.ImageVector -> {
             val painter = rememberVectorPainter(icon.imageVector)
             Icon(modifier = modifier, painter = painter, contentDescription = null)
         }

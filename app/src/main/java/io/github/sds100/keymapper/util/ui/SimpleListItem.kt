@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun SimpleListItem(
     modifier: Modifier = Modifier,
-    icon: Icon,
+    icon: KMIcon,
     title: String,
     subtitle: String? = null,
     onClick: () -> Unit = {}
@@ -53,7 +53,7 @@ private fun PreviewWithSubtitle() {
     MaterialTheme {
         SimpleListItem(
             Modifier.fillMaxWidth(),
-            icon = Icon.ImageVector(Icons.Outlined.Face),
+            icon = KMIcon.ImageVector(Icons.Outlined.Face),
             title = "Volume up",
             subtitle = "Root required"
         )
@@ -66,7 +66,7 @@ private fun PreviewWithoutSubtitle() {
     MaterialTheme {
         SimpleListItem(
             Modifier.fillMaxWidth(),
-            icon = Icon.ImageVector(Icons.Outlined.Face),
+            icon = KMIcon.ImageVector(Icons.Outlined.Face),
             title = "Volume up"
         )
     }

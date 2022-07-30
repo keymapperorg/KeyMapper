@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.util.containsQuery
-import io.github.sds100.keymapper.util.ui.Icon
+import io.github.sds100.keymapper.util.ui.KMIcon
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.SearchState
 import kotlinx.coroutines.Dispatchers
@@ -170,7 +170,7 @@ data class ChooseActionListGroup(
 
 sealed class ChooseActionListItem {
     data class Header(val header: String) : ChooseActionListItem()
-    data class Action(val id: ActionId, val title: String, val icon: Icon) : ChooseActionListItem()
+    data class Action(val id: ActionId, val title: String, val icon: KMIcon) : ChooseActionListItem()
 }
 
 /**

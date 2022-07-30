@@ -1356,6 +1356,7 @@
     <string name="choose_action_search_content_description">Search</string>
     <string name="choose_action_back_content_description">Go back</string>
     <string name="choose_action_done_searching_content_description">Done searching</string>
+    <string name="clear_search_query_content_description">Clear</string>
     <!-- Choose action screen -->
 
 </resources>

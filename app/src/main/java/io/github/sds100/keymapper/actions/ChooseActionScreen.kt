@@ -6,10 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.Done
-import androidx.compose.material.icons.outlined.Keyboard
-import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -42,10 +39,28 @@ private fun ChooseActionScreenPreview() {
                 ChooseActionListItem.Action(
                     ActionId.SWITCH_KEYBOARD,
                     "Switch keyboard",
-                    Icon.ImageVector(Icons.Outlined.Keyboard)
+                    KMIcon.ImageVector(Icons.Outlined.Keyboard)
                 )
             ),
             searchState = SearchState.Idle
+        )
+    }
+}
+
+@Preview(showBackground = true, device = Devices.PIXEL_3)
+@Composable
+private fun ChooseActionScreenPreview_Searching() {
+    MaterialTheme {
+        ChooseActionScreen(
+            actions = listOf(
+                ChooseActionListItem.Header("Keyboard"),
+                ChooseActionListItem.Action(
+                    ActionId.SWITCH_KEYBOARD,
+                    "Switch keyboard",
+                    KMIcon.ImageVector(Icons.Outlined.Keyboard)
+                )
+            ),
+            searchState = SearchState.Searching("Search")
         )
     }
 }
@@ -261,8 +276,18 @@ private fun ChooseActionAppBar(
 
             AnimatedVisibility(visible = isSearching, modifier = Modifier.fillMaxWidth()) {
                 if (searchState is SearchState.Searching) {
-                    TextField(value = searchState.query,
-                        onValueChange = { setSearchState(SearchState.Searching(it)) })
+                    TextField(
+                        value = searchState.query,
+                        onValueChange = { setSearchState(SearchState.Searching(it)) },
+                        trailingIcon = {
+                            IconButton(onClick = { setSearchState(SearchState.Searching("")) }) {
+                                Icon(
+                                    Icons.Outlined.Close,
+                                    contentDescription = stringResource(R.string.clear_search_query_content_description)
+                                )
+                            }
+                        }
+                    )
                 }
             }
 
