@@ -46,7 +46,7 @@ class ActionsFragment : Fragment() {
                             setFragmentResult(args.requestKey, result)
                         },
                         startDestination = args.destination,
-                        navigateBack = { findNavController().navigateUp() }
+                        navigateBack = { findNavController().navigateUp() },
                     )
                 }
             }
