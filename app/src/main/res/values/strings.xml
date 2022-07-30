@@ -608,12 +608,12 @@
     <string name="dialog_button_install_gui_keyboard">Key Mapper GUI Keyboard</string>
     <string name="dialog_button_install_leanback_keyboard">Key Mapper Leanback Keyboard</string>
     <string name="dialog_button_install_nothing">Do nothing</string>
-    
+
     <string name="dialog_button_fix">Fix</string>
 
     <string name="snackbar_cancel">Cancel</string>
     <string name="snackbar_fix">Fix</string>
-    
+
     <!-- Dialog stuff -->
 
     <!-- Notification strings -->
@@ -1351,7 +1351,7 @@
     <string name="about_team_bydario_url" translatable="false">https://github.com/bydariogamer</string>
     <string name="about_team_bydario_role">Translator (Spanish)</string>
     <!--  About  -->
-    
+
     <!-- Choose action screen -->
     <string name="choose_action_search_content_description">Search</string>
     <string name="choose_action_back_content_description">Go back</string>
