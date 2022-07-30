@@ -45,20 +45,12 @@ class ChooseActionViewModel2 @Inject constructor(
     var configActionState: ConfigActionState by mutableStateOf(ConfigActionState.NotStarted)
         private set
 
-    var actionListItems: List<ChooseActionListItem> by mutableStateOf(emptyList())
+    var actionListItems: List<ChooseActionListItem> by mutableStateOf(createListItems())
 
     var query: String by mutableStateOf("")
     private val queryFlow: Flow<String> = snapshotFlow { query }
 
     init {
-        actionListItems = ActionId.values().map { id ->
-            ChooseActionListItem(
-                id,
-                resourceProvider.getString(ActionUtils.getTitle(id)),
-                ActionUtils.getNewIcon(id)
-            )
-        }
-
         queryFlow.onEach {
 
         }.launchIn(viewModelScope)
@@ -85,7 +77,7 @@ class ChooseActionViewModel2 @Inject constructor(
 
             when (id) {
                 ActionId.TOGGLE_WIFI -> {
-                    
+
                 }
 
                 ActionId.KEY_CODE -> {
@@ -98,9 +90,37 @@ class ChooseActionViewModel2 @Inject constructor(
             }
         }
     }
+
+    private fun createListItems(): List<ChooseActionListItem> {
+        val listItems = mutableListOf<ChooseActionListItem>()
+
+        for (category in CATEGORY_ORDER) {
+            val actionIds = ActionId.values().filter { ActionUtils.getCategory(it) == category }
+
+            val headerLabelRes = ActionUtils.getCategoryLabel(category)
+            val header = ChooseActionListItem.Header(resourceProvider.getString(headerLabelRes))
+            listItems.add(header)
+
+            val actionListItems = actionIds.map { actionId ->
+                ChooseActionListItem.Action(
+                    actionId,
+                    resourceProvider.getString(ActionUtils.getTitle(actionId)),
+                    ActionUtils.getNewIcon(actionId)
+                )
+            }
+
+            listItems.addAll(actionListItems)
+        }
+
+        return listItems
+    }
+
 }
 
-data class ChooseActionListItem(val id: ActionId, val title: String, val icon: Icon)
+sealed class ChooseActionListItem {
+    data class Header(val text: String) : ChooseActionListItem()
+    data class Action(val id: ActionId, val title: String, val icon: Icon) : ChooseActionListItem()
+}
 
 /**
  * Represents the current state of configuring an action.

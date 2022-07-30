@@ -28,6 +28,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.destinations.ChooseKeyCodeScreenDestination
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.util.ui.CustomDialog
+import io.github.sds100.keymapper.util.ui.HeaderListItem
 import io.github.sds100.keymapper.util.ui.Icon
 import io.github.sds100.keymapper.util.ui.SimpleListItem
 
@@ -41,7 +42,8 @@ private fun ChooseActionScreenPreview() {
     MaterialTheme {
         ChooseActionScreen(
             actions = listOf(
-                ChooseActionListItem(
+                ChooseActionListItem.Header("Keyboard"),
+                ChooseActionListItem.Action(
                     ActionId.SWITCH_KEYBOARD,
                     "Switch keyboard",
                     Icon.ImageVector(Icons.Outlined.Keyboard)
@@ -190,19 +192,44 @@ private fun ChooseActionList(
     onActionClick: (ActionId) -> Unit
 ) {
     val listState = rememberLazyListState()
+
     LazyColumn(
         modifier = modifier,
         contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
         state = listState
     ) {
-        items(listItems) {
-            SimpleListItem(
-                modifier = Modifier.fillMaxWidth(),
-                icon = it.icon,
-                title = it.title,
-                onClick = { onActionClick(it.id) }
-            )
+
+        items(
+            listItems,
+            key = { listItem ->
+                when (listItem) {
+                    is ChooseActionListItem.Action -> listItem.id
+                    is ChooseActionListItem.Header -> listItem.text
+                }
+            },
+            contentType = { listItem ->
+                when (listItem) {
+                    is ChooseActionListItem.Action -> 0
+                    is ChooseActionListItem.Header -> 1
+                }
+            }
+        ) { listItem ->
+            when (listItem) {
+                is ChooseActionListItem.Action ->
+                    SimpleListItem(
+                        modifier = Modifier.fillMaxWidth(),
+                        icon = listItem.icon,
+                        title = listItem.title,
+                        onClick = { onActionClick(listItem.id) }
+                    )
+
+                is ChooseActionListItem.Header ->
+                    HeaderListItem(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = listItem.text
+                    )
+            }
         }
     }
 }
