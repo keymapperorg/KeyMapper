@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.sds100.keymapper.system.apps.ChooseAppShortcutResult
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.util.containsQuery
 import io.github.sds100.keymapper.util.ui.KMIcon
@@ -100,6 +101,11 @@ class ChooseActionViewModel2 @Inject constructor(
         configActionState = ConfigActionState.Finished(ActionData.App(packageName))
     }
 
+    fun onChooseAppShortcut(result: ChooseAppShortcutResult) {
+        val action = ActionData.AppShortcut(result.packageName, result.shortcutName, result.uri)
+        configActionState = ConfigActionState.Finished(action)
+    }
+
     fun onActionClick(id: ActionId) {
         viewModelScope.launch {
 
@@ -128,7 +134,9 @@ class ChooseActionViewModel2 @Inject constructor(
                     configActionState = ConfigActionState.Screen.ChooseApp
                 }
 
-                ActionId.APP_SHORTCUT -> TODO()
+                ActionId.APP_SHORTCUT -> {
+                    configActionState = ConfigActionState.Screen.ChooseAppShortcut
+                }
                 ActionId.KEY_EVENT -> TODO()
                 ActionId.TAP_SCREEN -> TODO()
                 ActionId.TEXT -> TODO()
@@ -452,6 +460,7 @@ sealed class ConfigActionState {
         object ChooseKeycode : Screen()
 
         object ChooseApp : Screen()
+        object ChooseAppShortcut : Screen()
     }
 
     data class Finished(val action: ActionData) : ConfigActionState()

@@ -13,8 +13,10 @@ import com.ramcosta.composedestinations.utils.composable
 import io.github.sds100.keymapper.actions.keyevent.ChooseKeyCodeScreen
 import io.github.sds100.keymapper.destinations.ChooseActionScreenDestination
 import io.github.sds100.keymapper.destinations.ChooseAppScreenDestination
+import io.github.sds100.keymapper.destinations.ChooseAppShortcutScreenDestination
 import io.github.sds100.keymapper.destinations.ChooseKeyCodeScreenDestination
 import io.github.sds100.keymapper.system.apps.ChooseAppScreen
+import io.github.sds100.keymapper.system.apps.ChooseAppShortcutScreen
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -41,6 +43,7 @@ fun ActionsNavHost(
                 navigator = destinationsNavigator(navHostController),
                 keyCodeResultRecipient = resultRecipient(),
                 appResultRecipient = resultRecipient(),
+                appShortcutResultRecipient = resultRecipient(),
                 setResult = { setResult(bundleOf(ActionsFragment.EXTRA_ACTION to Json.encodeToString(it))) },
                 navigateBack = navigateBack
             )
@@ -55,6 +58,13 @@ fun ActionsNavHost(
 
         composable(ChooseAppScreenDestination) {
             ChooseAppScreen(
+                viewModel = hiltViewModel(),
+                resultBackNavigator = resultBackNavigator(navHostController)
+            )
+        }
+
+        composable(ChooseAppShortcutScreenDestination) {
+            ChooseAppShortcutScreen(
                 viewModel = hiltViewModel(),
                 resultBackNavigator = resultBackNavigator(navHostController)
             )

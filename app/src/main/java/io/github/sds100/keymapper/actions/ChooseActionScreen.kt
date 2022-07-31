@@ -24,7 +24,9 @@ import com.ramcosta.composedestinations.result.NavResult
 import com.ramcosta.composedestinations.result.ResultRecipient
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.destinations.ChooseAppScreenDestination
+import io.github.sds100.keymapper.destinations.ChooseAppShortcutScreenDestination
 import io.github.sds100.keymapper.destinations.ChooseKeyCodeScreenDestination
+import io.github.sds100.keymapper.system.apps.ChooseAppShortcutResult
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.util.ui.*
 
@@ -36,6 +38,7 @@ fun ChooseActionScreen(
     navigator: DestinationsNavigator,
     keyCodeResultRecipient: ResultRecipient<ChooseKeyCodeScreenDestination, Int>,
     appResultRecipient: ResultRecipient<ChooseAppScreenDestination, String>,
+    appShortcutResultRecipient: ResultRecipient<ChooseAppShortcutScreenDestination, ChooseAppShortcutResult>,
     setResult: (ActionData) -> Unit,
     navigateBack: () -> Unit
 ) {
@@ -63,6 +66,18 @@ fun ChooseActionScreen(
         }
     }
 
+    appShortcutResultRecipient.onNavResult { result ->
+        when (result) {
+            is NavResult.Canceled -> {
+                viewModel.dismissConfiguringAction()
+            }
+
+            is NavResult.Value -> {
+                viewModel.onChooseAppShortcut(result.value)
+            }
+        }
+    }
+
     ChooseActionScreen(
         viewModel = viewModel,
         setResult = setResult,
@@ -74,6 +89,10 @@ fun ChooseActionScreen(
         navigateToChooseApp = {
             viewModel.onNavigateToConfigScreen()
             navigator.navigate(ChooseAppScreenDestination(allowHiddenApps = true))
+        },
+        navigateToChooseAppShortcut = {
+            viewModel.onNavigateToConfigScreen()
+            navigator.navigate(ChooseAppShortcutScreenDestination)
         }
     )
 }
@@ -130,7 +149,8 @@ private fun ChooseActionScreen(
     setResult: (ActionData) -> Unit,
     navigateBack: () -> Unit,
     navigateToChooseKeyCode: () -> Unit,
-    navigateToChooseApp: () -> Unit
+    navigateToChooseApp: () -> Unit,
+    navigateToChooseAppShortcut: () -> Unit,
 ) {
     val searchState by viewModel.searchState.collectAsState()
     val configActionState = viewModel.configActionState
@@ -142,10 +162,11 @@ private fun ChooseActionScreen(
 
     if (configActionState is ConfigActionState.Screen) {
         when (configActionState) {
-            is ConfigActionState.Screen.ChooseKeycode -> navigateToChooseKeyCode()
-
-            ConfigActionState.Screen.ChooseApp -> navigateToChooseApp()
             ConfigActionState.Screen.Navigated -> {}
+
+            is ConfigActionState.Screen.ChooseKeycode -> navigateToChooseKeyCode()
+            ConfigActionState.Screen.ChooseApp -> navigateToChooseApp()
+            ConfigActionState.Screen.ChooseAppShortcut -> navigateToChooseAppShortcut()
         }
     }
 
