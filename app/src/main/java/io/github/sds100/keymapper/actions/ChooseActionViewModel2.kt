@@ -88,8 +88,8 @@ class ChooseActionViewModel2 @Inject constructor(
         configActionState = ConfigActionState.Screen.Navigated
     }
 
-    fun onChooseInputMethod(imeId: String, imeName: String) {
-        configActionState = ConfigActionState.Finished(ActionData.SwitchKeyboard(imeId, imeName))
+    fun onChooseInputMethod(imeInfo: ImeInfo) {
+        configActionState = ConfigActionState.Finished(ActionData.SwitchKeyboard(imeInfo.id, imeInfo.label))
     }
 
     fun onChooseKeyCode(keyCode: Int) {
@@ -116,7 +116,9 @@ class ChooseActionViewModel2 @Inject constructor(
                     configActionState = ConfigActionState.Screen.ChooseKeycode
                 }
 
-                ActionId.SWITCH_KEYBOARD -> TODO()
+                ActionId.SWITCH_KEYBOARD -> {
+                    configActionState = ConfigActionState.Dialog.ChooseKeyboard(useCase.getInputMethods())
+                }
 
                 ActionId.APP -> TODO()
                 ActionId.APP_SHORTCUT -> TODO()

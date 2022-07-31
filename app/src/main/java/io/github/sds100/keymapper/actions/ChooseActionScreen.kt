@@ -1,6 +1,9 @@
 package io.github.sds100.keymapper.actions
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -94,7 +97,7 @@ fun ChooseActionScreen(
     ChooseActionScreen(
         viewModel = viewModel,
         setResult = setResult,
-        onBack = navigateBack,
+        navigateBack = navigateBack,
         navigateToChooseKeyCode = {
             viewModel.onNavigateToConfigScreen()
             navigator.navigate(ChooseKeyCodeScreenDestination)
@@ -107,10 +110,16 @@ private fun ChooseActionScreen(
     modifier: Modifier = Modifier,
     viewModel: ChooseActionViewModel2,
     setResult: (ActionData) -> Unit,
-    onBack: () -> Unit,
+    navigateBack: () -> Unit,
     navigateToChooseKeyCode: () -> Unit
 ) {
     val searchState by viewModel.searchState.collectAsState()
+    val configActionState = viewModel.configActionState
+
+    if (configActionState is ConfigActionState.Finished) {
+        setResult(configActionState.action)
+        navigateBack()
+    }
 
     ChooseActionScreen(
         modifier = modifier,
@@ -119,13 +128,10 @@ private fun ChooseActionScreen(
         setSearchState = viewModel::setSearchState,
         configActionState = viewModel.configActionState,
         onDismissConfiguringAction = viewModel::dismissConfiguringAction,
-        onActionConfigured = {
-            setResult(it)
-            onBack()
-        },
         onActionClick = viewModel::onActionClick,
-        onBack = onBack,
-        navigateToChooseKeyCode = navigateToChooseKeyCode
+        onBack = navigateBack,
+        navigateToChooseKeyCode = navigateToChooseKeyCode,
+        onChooseInputMethod = viewModel::onChooseInputMethod
     )
 }
 
@@ -138,10 +144,10 @@ private fun ChooseActionScreen(
     setSearchState: (SearchState) -> Unit = {},
     configActionState: ConfigActionState? = null,
     onDismissConfiguringAction: () -> Unit = {},
-    onActionConfigured: (ActionData) -> Unit = {},
     onActionClick: (ActionId) -> Unit = {},
     onBack: () -> Unit = {},
-    navigateToChooseKeyCode: () -> Unit = {}
+    navigateToChooseKeyCode: () -> Unit = {},
+    onChooseInputMethod: (ImeInfo) -> Unit = {}
 ) {
     Scaffold(modifier, bottomBar = {
         SearchAppBar(onBack, searchState, setSearchState) {
@@ -153,11 +159,6 @@ private fun ChooseActionScreen(
             }
         }
     }) { padding ->
-
-        if (configActionState is ConfigActionState.Finished) {
-            onActionConfigured(configActionState.action)
-        }
-
         if (configActionState is ConfigActionState.Screen) {
             when (configActionState) {
                 is ConfigActionState.Screen.ChooseKeycode -> navigateToChooseKeyCode()
@@ -168,34 +169,12 @@ private fun ChooseActionScreen(
 
         if (configActionState is ConfigActionState.Dialog) {
             when (configActionState) {
-                is ConfigActionState.Dialog.ChooseKeyboard -> {
-
-                    var selectedIme: ImeInfo? by remember { mutableStateOf(null) }
-
-                    CustomDialog(
+                is ConfigActionState.Dialog.ChooseKeyboard ->
+                    ChooseInputMethodDialog(
+                        inputMethods = configActionState.inputMethods,
                         onDismissRequest = onDismissConfiguringAction,
-                        title = "Choose a keyboard",
-                        confirmButton = {
-                            TextButton(onClick = {
-                            }, enabled = selectedIme != null) {
-                                Text("Confirm")
-                            }
-                        },
-                        dismissButton = {
-                            TextButton(onClick = onDismissConfiguringAction) {
-                                Text("Cancel")
-                            }
-                        }) {
-                        LazyColumn {
-                            items(configActionState.inputMethods) { imeInfo ->
-                                Row {
-                                    RadioButton(selected = selectedIme == imeInfo, onClick = { selectedIme = imeInfo })
-                                    Text(imeInfo.label)
-                                }
-                            }
-                        }
-                    }
-                }
+                        onConfirmClick = onChooseInputMethod
+                    )
             }
         }
 
@@ -222,7 +201,6 @@ private fun ChooseActionList(
         contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp),
         state = listState
     ) {
-
         items(
             listItems,
             key = { listItem ->
@@ -252,6 +230,56 @@ private fun ChooseActionList(
                         modifier = Modifier.fillMaxWidth(),
                         text = listItem.header
                     )
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun ChooseInputMethodDialogPreview() {
+    MaterialTheme {
+        ChooseInputMethodDialog(
+            inputMethods = listOf(
+                ImeInfo("id0", "package0", "Gboard", isEnabled = true, isChosen = true),
+                ImeInfo("id1", "package1", "Key Mapper GUI Keyboard", isEnabled = true, isChosen = true),
+            )
+        )
+    }
+}
+
+@Composable
+private fun ChooseInputMethodDialog(
+    inputMethods: List<ImeInfo>,
+    onDismissRequest: () -> Unit = {},
+    onConfirmClick: (ImeInfo) -> Unit = {},
+) {
+    var selectedIme: ImeInfo? by remember { mutableStateOf(null) }
+
+    CustomDialog(
+        onDismissRequest = onDismissRequest,
+        title = stringResource(R.string.choose_action_choose_keyboard_dialog_title),
+        confirmButton = {
+            TextButton(
+                onClick = { onConfirmClick(selectedIme!!) }, enabled = selectedIme != null
+            ) {
+                Text(stringResource(R.string.pos_confirm))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text(stringResource(R.string.neg_cancel))
+            }
+        }
+    ) {
+        LazyColumn {
+            items(inputMethods) { imeInfo ->
+                RadioButtonRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    isSelected = selectedIme == imeInfo,
+                    text = imeInfo.label,
+                    onClick = { selectedIme = imeInfo }
+                )
             }
         }
     }

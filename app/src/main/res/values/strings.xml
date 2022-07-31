@@ -588,6 +588,7 @@
     <string name="pos_restart">Restart</string>
     <string name="pos_never_show_again">Never show again</string>
     <string name="pos_go_to_dont_kill_my_app">Open online guide</string>
+    <string name="pos_confirm">Confirm</string>
 
     <string name="neg_turn_off">Turn off</string>
     <string name="neg_stay_out">Stay out</string>
@@ -1356,6 +1357,7 @@
     <string name="choose_action_search_content_description">Search</string>
     <string name="choose_action_back_content_description">Go back</string>
     <string name="clear_search_query_content_description">Clear</string>
+    <string name="choose_action_choose_keyboard_dialog_title">Choose a keyboard</string>
     <!-- Choose action screen -->
 
 </resources>
