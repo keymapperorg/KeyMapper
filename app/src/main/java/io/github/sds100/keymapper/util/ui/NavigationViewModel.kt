@@ -10,7 +10,6 @@ import androidx.navigation.fragment.findNavController
 import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.ActionsFragment
-import io.github.sds100.keymapper.actions.destinations.ChooseActionScreenDestination
 import io.github.sds100.keymapper.actions.keyevent.ChooseKeyCodeFragment
 import io.github.sds100.keymapper.actions.keyevent.ConfigKeyEventActionFragment
 import io.github.sds100.keymapper.actions.sound.ChooseSoundFileFragment
@@ -19,6 +18,7 @@ import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.actions.tapscreen.PickDisplayCoordinateFragment
 import io.github.sds100.keymapper.constraints.ChooseConstraintFragment
 import io.github.sds100.keymapper.constraints.Constraint
+import io.github.sds100.keymapper.destinations.ChooseActionScreenDestination
 import io.github.sds100.keymapper.system.apps.*
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import io.github.sds100.keymapper.system.bluetooth.ChooseBluetoothDeviceFragment
@@ -132,7 +132,7 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
         }
 
         val direction = when (destination) {
-           is NavDestination.ChooseApp -> NavAppDirections.chooseApp(destination.allowHiddenApps, requestKey)
+            is NavDestination.ChooseApp -> NavAppDirections.chooseApp(destination.allowHiddenApps, requestKey)
             NavDestination.ChooseAppShortcut -> NavAppDirections.chooseAppShortcut(requestKey)
             NavDestination.ChooseKeyCode -> NavAppDirections.chooseKeyCode(requestKey)
             is NavDestination.ConfigKeyEventAction -> {

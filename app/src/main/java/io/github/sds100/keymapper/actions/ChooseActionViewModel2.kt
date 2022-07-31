@@ -96,6 +96,10 @@ class ChooseActionViewModel2 @Inject constructor(
         configActionState = ConfigActionState.Finished(ActionData.InputKeyEvent(keyCode = keyCode))
     }
 
+    fun onChooseApp(packageName: String) {
+        configActionState = ConfigActionState.Finished(ActionData.App(packageName))
+    }
+
     fun onActionClick(id: ActionId) {
         viewModelScope.launch {
 
@@ -120,7 +124,10 @@ class ChooseActionViewModel2 @Inject constructor(
                     configActionState = ConfigActionState.Dialog.ChooseKeyboard(useCase.getInputMethods())
                 }
 
-                ActionId.APP -> TODO()
+                ActionId.APP -> {
+                    configActionState = ConfigActionState.Screen.ChooseApp
+                }
+                
                 ActionId.APP_SHORTCUT -> TODO()
                 ActionId.KEY_EVENT -> TODO()
                 ActionId.TAP_SCREEN -> TODO()
@@ -290,8 +297,10 @@ sealed class ConfigActionState {
     /**
      * The user is configuring an action with a dialog.
      */
-    sealed class Dialog(val actionId: ActionId) : ConfigActionState() {
-        data class ChooseKeyboard(val inputMethods: List<ImeInfo>) : Dialog(ActionId.SWITCH_KEYBOARD)
+    sealed class Dialog : ConfigActionState() {
+        data class ChooseKeyboard(val inputMethods: List<ImeInfo>) : Dialog()
+
+        object Hidden : Dialog()
     }
 
     /**
@@ -307,6 +316,8 @@ sealed class ConfigActionState {
          * The user should be taken to the screen to choose a key code.
          */
         object ChooseKeycode : Screen()
+
+        object ChooseApp : Screen()
     }
 
     data class Finished(val action: ActionData) : ConfigActionState()

@@ -23,9 +23,60 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.NavResult
 import com.ramcosta.composedestinations.result.ResultRecipient
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.actions.destinations.ChooseKeyCodeScreenDestination
+import io.github.sds100.keymapper.destinations.ChooseAppScreenDestination
+import io.github.sds100.keymapper.destinations.ChooseKeyCodeScreenDestination
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.util.ui.*
+
+@RootNavGraph(start = true)
+@Destination
+@Composable
+fun ChooseActionScreen(
+    viewModel: ChooseActionViewModel2,
+    navigator: DestinationsNavigator,
+    keyCodeResultRecipient: ResultRecipient<ChooseKeyCodeScreenDestination, Int>,
+    appResultRecipient: ResultRecipient<ChooseAppScreenDestination, String>,
+    setResult: (ActionData) -> Unit,
+    navigateBack: () -> Unit
+) {
+    keyCodeResultRecipient.onNavResult { result ->
+        when (result) {
+            is NavResult.Canceled -> {
+                viewModel.dismissConfiguringAction()
+            }
+
+            is NavResult.Value -> {
+                viewModel.onChooseKeyCode(result.value)
+            }
+        }
+    }
+
+    appResultRecipient.onNavResult { result ->
+        when (result) {
+            is NavResult.Canceled -> {
+                viewModel.dismissConfiguringAction()
+            }
+
+            is NavResult.Value -> {
+                viewModel.onChooseApp(result.value)
+            }
+        }
+    }
+
+    ChooseActionScreen(
+        viewModel = viewModel,
+        setResult = setResult,
+        navigateBack = navigateBack,
+        navigateToChooseKeyCode = {
+            viewModel.onNavigateToConfigScreen()
+            navigator.navigate(ChooseKeyCodeScreenDestination)
+        },
+        navigateToChooseApp = {
+            viewModel.onNavigateToConfigScreen()
+            navigator.navigate(ChooseAppScreenDestination(allowHiddenApps = true))
+        }
+    )
+}
 
 /**
  * Created by sds100 on 12/07/2022.
@@ -72,46 +123,14 @@ private fun ChooseActionScreenPreview_Searching() {
     }
 }
 
-@RootNavGraph(start = true)
-@Destination
-@Composable
-fun ChooseActionScreen(
-    viewModel: ChooseActionViewModel2,
-    navigator: DestinationsNavigator,
-    keyCodeResultRecipient: ResultRecipient<ChooseKeyCodeScreenDestination, Int>,
-    setResult: (ActionData) -> Unit,
-    navigateBack: () -> Unit
-) {
-    keyCodeResultRecipient.onNavResult { result ->
-        when (result) {
-            is NavResult.Canceled -> {
-                viewModel.dismissConfiguringAction()
-            }
-
-            is NavResult.Value -> {
-                viewModel.onChooseKeyCode(result.value)
-            }
-        }
-    }
-
-    ChooseActionScreen(
-        viewModel = viewModel,
-        setResult = setResult,
-        navigateBack = navigateBack,
-        navigateToChooseKeyCode = {
-            viewModel.onNavigateToConfigScreen()
-            navigator.navigate(ChooseKeyCodeScreenDestination)
-        }
-    )
-}
-
 @Composable
 private fun ChooseActionScreen(
     modifier: Modifier = Modifier,
     viewModel: ChooseActionViewModel2,
     setResult: (ActionData) -> Unit,
     navigateBack: () -> Unit,
-    navigateToChooseKeyCode: () -> Unit
+    navigateToChooseKeyCode: () -> Unit,
+    navigateToChooseApp: () -> Unit
 ) {
     val searchState by viewModel.searchState.collectAsState()
     val configActionState = viewModel.configActionState
@@ -121,16 +140,32 @@ private fun ChooseActionScreen(
         navigateBack()
     }
 
+    if (configActionState is ConfigActionState.Screen) {
+        when (configActionState) {
+            is ConfigActionState.Screen.ChooseKeycode -> navigateToChooseKeyCode()
+
+            ConfigActionState.Screen.ChooseApp -> navigateToChooseApp()
+            ConfigActionState.Screen.Navigated -> {}
+        }
+    }
+
+    val dialogState by derivedStateOf {
+        if (configActionState is ConfigActionState.Dialog) {
+            configActionState
+        } else {
+            ConfigActionState.Dialog.Hidden
+        }
+    }
+
     ChooseActionScreen(
         modifier = modifier,
         actions = viewModel.actionListItems,
         searchState = searchState,
         setSearchState = viewModel::setSearchState,
-        configActionState = viewModel.configActionState,
+        dialogState = dialogState,
         onDismissConfiguringAction = viewModel::dismissConfiguringAction,
         onActionClick = viewModel::onActionClick,
         onBack = navigateBack,
-        navigateToChooseKeyCode = navigateToChooseKeyCode,
         onChooseInputMethod = viewModel::onChooseInputMethod
     )
 }
@@ -142,11 +177,10 @@ private fun ChooseActionScreen(
     actions: List<ChooseActionListItem>,
     searchState: SearchState,
     setSearchState: (SearchState) -> Unit = {},
-    configActionState: ConfigActionState? = null,
+    dialogState: ConfigActionState.Dialog = ConfigActionState.Dialog.Hidden,
     onDismissConfiguringAction: () -> Unit = {},
     onActionClick: (ActionId) -> Unit = {},
     onBack: () -> Unit = {},
-    navigateToChooseKeyCode: () -> Unit = {},
     onChooseInputMethod: (ImeInfo) -> Unit = {}
 ) {
     Scaffold(modifier, bottomBar = {
@@ -159,23 +193,14 @@ private fun ChooseActionScreen(
             }
         }
     }) { padding ->
-        if (configActionState is ConfigActionState.Screen) {
-            when (configActionState) {
-                is ConfigActionState.Screen.ChooseKeycode -> navigateToChooseKeyCode()
-
-                ConfigActionState.Screen.Navigated -> {}
-            }
-        }
-
-        if (configActionState is ConfigActionState.Dialog) {
-            when (configActionState) {
-                is ConfigActionState.Dialog.ChooseKeyboard ->
-                    ChooseInputMethodDialog(
-                        inputMethods = configActionState.inputMethods,
-                        onDismissRequest = onDismissConfiguringAction,
-                        onConfirmClick = onChooseInputMethod
-                    )
-            }
+        when (dialogState) {
+            is ConfigActionState.Dialog.ChooseKeyboard ->
+                ChooseInputMethodDialog(
+                    inputMethods = dialogState.inputMethods,
+                    onDismissRequest = onDismissConfiguringAction,
+                    onConfirmClick = onChooseInputMethod
+                )
+            ConfigActionState.Dialog.Hidden -> {}
         }
 
         ChooseActionList(
@@ -274,7 +299,7 @@ private fun ChooseInputMethodDialog(
     ) {
         LazyColumn {
             items(inputMethods) { imeInfo ->
-                RadioButtonRow(
+                RadioButtonWithText(
                     modifier = Modifier.fillMaxWidth(),
                     isSelected = selectedIme == imeInfo,
                     text = imeInfo.label,

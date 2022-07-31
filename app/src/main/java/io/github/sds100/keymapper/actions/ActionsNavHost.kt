@@ -10,9 +10,11 @@ import androidx.navigation.compose.NavHost
 import com.ramcosta.composedestinations.scope.resultBackNavigator
 import com.ramcosta.composedestinations.scope.resultRecipient
 import com.ramcosta.composedestinations.utils.composable
-import io.github.sds100.keymapper.actions.destinations.ChooseActionScreenDestination
-import io.github.sds100.keymapper.actions.destinations.ChooseKeyCodeScreenDestination
 import io.github.sds100.keymapper.actions.keyevent.ChooseKeyCodeScreen
+import io.github.sds100.keymapper.destinations.ChooseActionScreenDestination
+import io.github.sds100.keymapper.destinations.ChooseAppScreenDestination
+import io.github.sds100.keymapper.destinations.ChooseKeyCodeScreenDestination
+import io.github.sds100.keymapper.system.apps.ChooseAppScreen
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -38,6 +40,7 @@ fun ActionsNavHost(
                 viewModel = hiltViewModel(),
                 navigator = destinationsNavigator(navHostController),
                 keyCodeResultRecipient = resultRecipient(),
+                appResultRecipient = resultRecipient(),
                 setResult = { setResult(bundleOf(ActionsFragment.EXTRA_ACTION to Json.encodeToString(it))) },
                 navigateBack = navigateBack
             )
@@ -47,6 +50,13 @@ fun ActionsNavHost(
             ChooseKeyCodeScreen(
                 viewModel = hiltViewModel(),
                 resultNavigator = resultBackNavigator(navHostController)
+            )
+        }
+
+        composable(ChooseAppScreenDestination) {
+            ChooseAppScreen(
+                viewModel = hiltViewModel(),
+                resultBackNavigator = resultBackNavigator(navHostController)
             )
         }
     }

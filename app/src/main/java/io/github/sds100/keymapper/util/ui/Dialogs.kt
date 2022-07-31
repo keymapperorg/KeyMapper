@@ -67,14 +67,14 @@ private fun Preview() {
         ) {
             LazyColumn {
                 item {
-                    RadioButtonRow(
+                    RadioButtonWithText(
                         modifier = Modifier.fillMaxWidth(),
                         isSelected = true,
                         text = "Button 1"
                     )
                 }
                 item {
-                    RadioButtonRow(
+                    RadioButtonWithText(
                         modifier = Modifier.fillMaxWidth(),
                         isSelected = false,
                         text = "Button 2"

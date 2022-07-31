@@ -25,6 +25,23 @@ import io.github.sds100.keymapper.util.ui.SearchAppBar
 import io.github.sds100.keymapper.util.ui.SearchState
 import io.github.sds100.keymapper.util.ui.SimpleListItem
 
+@Destination
+@Composable
+fun ChooseKeyCodeScreen(
+    viewModel: ChooseKeyCodeViewModel2,
+    resultNavigator: ResultBackNavigator<Int>,
+) {
+    val searchState by viewModel.searchState.collectAsState()
+
+    ChooseKeyCodeScreen(
+        listItems = viewModel.listItems,
+        searchState = searchState,
+        setSearchState = viewModel::setSearchState,
+        onKeyCodeClick = resultNavigator::navigateBack,
+        onBackClick = resultNavigator::navigateBack
+    )
+}
+
 /**
  * Created by sds100 on 28/07/2022.
  */
@@ -41,23 +58,6 @@ private fun ChooseKeyCodeScreenPreview() {
             searchState = SearchState.Idle
         )
     }
-}
-
-@Destination
-@Composable
-fun ChooseKeyCodeScreen(
-    viewModel: ChooseKeyCodeViewModel2,
-    resultNavigator: ResultBackNavigator<Int>,
-) {
-    val searchState by viewModel.searchState.collectAsState()
-
-    ChooseKeyCodeScreen(
-        listItems = viewModel.listItems,
-        searchState = searchState,
-        setSearchState = viewModel::setSearchState,
-        onKeyCodeClick = resultNavigator::navigateBack,
-        onBackClick = resultNavigator::navigateBack
-    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
