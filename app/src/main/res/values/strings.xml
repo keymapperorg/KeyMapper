@@ -1354,6 +1354,9 @@
     <string name="choose_action_back_content_description">Go back</string>
     <string name="clear_search_query_content_description">Clear</string>
     <string name="choose_action_choose_keyboard_dialog_title">Choose a keyboard</string>
+    <string name="choose_action_text_action_title">Create text action</string>
+    <string name="choose_action_text_action_label">Text to input</string>
+    <string name="choose_action_text_empty_error">Must not be empty!</string>
     <!-- Choose action screen -->
 
     <!-- Choose app shortcut screen -->

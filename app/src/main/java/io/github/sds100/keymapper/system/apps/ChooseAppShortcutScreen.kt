@@ -16,7 +16,6 @@ import androidx.compose.material.icons.outlined.Android
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -97,7 +96,11 @@ private fun ChooseAppShortcutScreen(
     val noPermissionMessage = stringResource(R.string.error_keymapper_doesnt_have_permission_app_shortcut)
 
     if (configState is ConfigAppShortcutState.ChooseName) {
-        ChooseNameDialog(onConfirmClick = onChooseName, onDismissRequest = onDismissChoosingName)
+        TextFieldDialog(
+            title = stringResource(R.string.choose_app_shortcut_choose_name),
+            onConfirm = onChooseName,
+            onDismiss = onDismissChoosingName
+        )
     }
 
     Scaffold(
@@ -137,37 +140,6 @@ private fun ChooseAppShortcutScreen(
             )
         }
     }
-}
-
-@Composable
-private fun ChooseNameDialog(
-    onConfirmClick: (String) -> Unit,
-    onDismissRequest: () -> Unit
-) {
-    var text: String by rememberSaveable { mutableStateOf("") }
-
-    CustomDialog(
-        title = stringResource(R.string.choose_app_shortcut_choose_name),
-        confirmButton = {
-            TextButton(onClick = { onConfirmClick(text) }) {
-                Text(stringResource(R.string.pos_confirm))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismissRequest) {
-                Text(stringResource(R.string.neg_cancel))
-            }
-        },
-        onDismissRequest = onDismissRequest
-    ) {
-        TextField(value = text, onValueChange = { text = it })
-    }
-}
-
-@Preview
-@Composable
-private fun ChooseNameDialogPreview() {
-    ChooseNameDialog(onConfirmClick = {}, onDismissRequest = {})
 }
 
 @Composable

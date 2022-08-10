@@ -12,6 +12,7 @@ import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Keyboard
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
@@ -208,7 +209,8 @@ private fun ChooseActionScreen(
         onDismissConfiguringAction = viewModel::dismissConfiguringAction,
         onActionClick = viewModel::onActionClick,
         onBack = navigateBack,
-        onChooseInputMethod = viewModel::onChooseInputMethod
+        onChooseInputMethod = viewModel::onChooseInputMethod,
+        onCreateTextAction = viewModel::onCreateTextAction
     )
 }
 
@@ -223,7 +225,8 @@ private fun ChooseActionScreen(
     onDismissConfiguringAction: () -> Unit = {},
     onActionClick: (ActionId) -> Unit = {},
     onBack: () -> Unit = {},
-    onChooseInputMethod: (ImeInfo) -> Unit = {}
+    onChooseInputMethod: (ImeInfo) -> Unit = {},
+    onCreateTextAction: (String) -> Unit = {}
 ) {
     Scaffold(modifier, bottomBar = {
         SearchAppBar(onBack, searchState, setSearchState) {
@@ -243,7 +246,24 @@ private fun ChooseActionScreen(
                     onDismissRequest = onDismissConfiguringAction,
                     onConfirmClick = onChooseInputMethod
                 )
-            ConfigActionState.Dialog.TextAction ->
+            ConfigActionState.Dialog.TextAction -> {
+                var error: String? by rememberSaveable { mutableStateOf("") }
+                val emptyErrorString = stringResource(R.string.choose_action_text_empty_error)
+
+                TextFieldDialog(
+                    title = stringResource(R.string.choose_action_text_action_title),
+                    label = stringResource(R.string.choose_action_text_action_label),
+                    error = error,
+                    onTextChange = { text ->
+                        error = when {
+                            text.isEmpty() -> emptyErrorString
+                            else -> null
+                        }
+                    },
+                    onConfirm = onCreateTextAction,
+                    onDismiss = onDismissConfiguringAction
+                )
+            }
         }
 
         ChooseActionList(
@@ -350,18 +370,5 @@ private fun ChooseInputMethodDialogPreview() {
                 ImeInfo("id1", "package1", "Key Mapper GUI Keyboard", isEnabled = true, isChosen = true),
             )
         )
-    }
-}
-
-@Composable
-private fun TextFieldDialog() {
-
-}
-
-@Preview
-@Composable
-private fun TextFieldDialogPreview() {
-    MaterialTheme {
-        TextFieldDialog()
     }
 }

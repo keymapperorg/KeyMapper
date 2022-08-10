@@ -113,6 +113,10 @@ class ChooseActionViewModel2 @Inject constructor(
         configActionState = ConfigActionState.Finished(action)
     }
 
+    fun onCreateTextAction(text: String) {
+        configActionState = ConfigActionState.Finished(ActionData.Text(text))
+    }
+
     fun onActionClick(id: ActionId) {
         viewModelScope.launch {
 
