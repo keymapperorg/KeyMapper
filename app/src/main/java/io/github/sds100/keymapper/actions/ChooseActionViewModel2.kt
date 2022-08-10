@@ -117,6 +117,10 @@ class ChooseActionViewModel2 @Inject constructor(
         configActionState = ConfigActionState.Finished(ActionData.Text(text))
     }
 
+    fun onCreateUrlAction(text: String) {
+        configActionState = ConfigActionState.Finished(ActionData.Url(text))
+    }
+
     fun onActionClick(id: ActionId) {
         viewModelScope.launch {
 
@@ -155,7 +159,9 @@ class ChooseActionViewModel2 @Inject constructor(
                 ActionId.TEXT -> {
                     configActionState = ConfigActionState.Dialog.TextAction
                 }
-                ActionId.URL -> TODO()
+                ActionId.URL -> {
+                    configActionState = ConfigActionState.Dialog.UrlAction
+                }
                 ActionId.INTENT -> TODO()
                 ActionId.PHONE_CALL -> TODO()
                 ActionId.SOUND -> TODO()
@@ -458,6 +464,8 @@ sealed class ConfigActionState {
         data class ChooseKeyboard(val inputMethods: List<ImeInfo>) : Dialog()
 
         object TextAction : Dialog()
+
+        object UrlAction : Dialog()
 
         object Hidden : Dialog()
     }

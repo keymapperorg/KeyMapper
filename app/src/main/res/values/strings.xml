@@ -1357,6 +1357,9 @@
     <string name="choose_action_text_action_title">Create text action</string>
     <string name="choose_action_text_action_label">Text to input</string>
     <string name="choose_action_text_empty_error">Must not be empty!</string>
+    <string name="choose_action_url_action_title">Create url action</string>
+    <string name="choose_action_url_action_label">Url to open</string>
+    <string name="choose_action_url_empty_error">Must not be empty!</string>
     <!-- Choose action screen -->
 
     <!-- Choose app shortcut screen -->

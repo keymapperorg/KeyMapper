@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Keyboard
@@ -15,6 +16,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -210,7 +212,8 @@ private fun ChooseActionScreen(
         onActionClick = viewModel::onActionClick,
         onBack = navigateBack,
         onChooseInputMethod = viewModel::onChooseInputMethod,
-        onCreateTextAction = viewModel::onCreateTextAction
+        onCreateTextAction = viewModel::onCreateTextAction,
+        onCreateUrlAction = viewModel::onCreateUrlAction
     )
 }
 
@@ -226,7 +229,8 @@ private fun ChooseActionScreen(
     onActionClick: (ActionId) -> Unit = {},
     onBack: () -> Unit = {},
     onChooseInputMethod: (ImeInfo) -> Unit = {},
-    onCreateTextAction: (String) -> Unit = {}
+    onCreateTextAction: (String) -> Unit = {},
+    onCreateUrlAction: (String) -> Unit = {},
 ) {
     Scaffold(modifier, bottomBar = {
         SearchAppBar(onBack, searchState, setSearchState) {
@@ -261,6 +265,25 @@ private fun ChooseActionScreen(
                         }
                     },
                     onConfirm = onCreateTextAction,
+                    onDismiss = onDismissConfiguringAction
+                )
+            }
+            ConfigActionState.Dialog.UrlAction -> {
+                var error: String? by rememberSaveable { mutableStateOf("") }
+                val emptyErrorString = stringResource(R.string.choose_action_url_empty_error)
+
+                TextFieldDialog(
+                    title = stringResource(R.string.choose_action_url_action_title),
+                    label = stringResource(R.string.choose_action_url_action_label),
+                    error = error,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
+                    onTextChange = { text ->
+                        error = when {
+                            text.isEmpty() -> emptyErrorString
+                            else -> null
+                        }
+                    },
+                    onConfirm = onCreateUrlAction,
                     onDismiss = onDismissConfiguringAction
                 )
             }
