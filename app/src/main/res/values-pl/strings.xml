@@ -42,7 +42,7 @@
     <string name="show_hidden_apps">Pokaż ukryte aplikacje</string>
     <string name="modifiers">Modyfikatory</string>
     <string name="toggle">Włącz/wyłącz</string>
-    <string name="tap_coordinate_screenshot_message">UWAGA!!! Te współrzędne są poprawne tylko wtedy, gdy urządzenie i zrzut ekranu są w tej samej orientacji! To działanie spowoduje anulowanie wszelkich kliknięć lub gestów, które wykonujesz na ekranie.\n\nJeśli potrzebujesz pomocy w znalezieniu współrzędnych punktu na ekranie, zrób zrzut ekranu, a następnie dotknij go w miejscu, w którym ma zostać wykonane to działanie.</string>
+    <string name="create_tap_screen_explanation">UWAGA!!! Te współrzędne są poprawne tylko wtedy, gdy urządzenie i zrzut ekranu są w tej samej orientacji! To działanie spowoduje anulowanie wszelkich kliknięć lub gestów, które wykonujesz na ekranie.\n\nJeśli potrzebujesz pomocy w znalezieniu współrzędnych punktu na ekranie, zrób zrzut ekranu, a następnie dotknij go w miejscu, w którym ma zostać wykonane to działanie.</string>
     <string name="dont_know_device_name">Nie znam nazwy urządzenia!</string>
     <string name="tap_actions_to_fix">Kliknij działania, aby naprawić!</string>
     <string name="tap_constraints_to_fix">Kliknij ograniczenia, aby naprawić!</string>
@@ -178,7 +178,7 @@
     <string name="toast_automatic_backup_failed">Tworzenie automatycznej kopii zapasowej nie powiodło się!</string>
     <string name="toast_screenshot_taken">Wykonano zrzut ekranu</string>
     <string name="toast_io_exception_shrug">Wyjątek wejścia/wyjścia ¯\\_(ツ)_/¯</string>
-    <string name="toast_incorrect_screenshot_resolution">Rozdzielczość zrzutu ekranu nie pasuje do rozdzielczości tego urządzenia!</string>
+    <string name="create_tap_screen_incorrect_resolution_error">Rozdzielczość zrzutu ekranu nie pasuje do rozdzielczości tego urządzenia!</string>
     <string name="toast_copied_keymap_uid_to_clipboard">Skopiowano UUID mapy klawiszy do schowka</string>
     <string name="toast_triggered_keymap">Wywołałeś(-aś) mapę klawiszy</string>
     <string name="toast_copied_log">Dziennik został skopiowany</string>

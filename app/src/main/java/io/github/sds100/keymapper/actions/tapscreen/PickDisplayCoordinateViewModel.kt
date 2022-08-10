@@ -62,7 +62,7 @@ class PickDisplayCoordinateViewModel @Inject constructor(
         ) {
             viewModelScope.launch {
                 val snackBar = PopupUi.SnackBar(
-                    message = getString(R.string.toast_incorrect_screenshot_resolution)
+                    message = getString(R.string.create_tap_screen_incorrect_resolution_error)
                 )
 
                 showPopup("incorrect_resolution", snackBar)

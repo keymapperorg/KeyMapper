@@ -56,7 +56,6 @@
     <string name="chip_play_store" translatable="false">Play Store</string>
     <string name="chip_fdroid" translatable="false">F-Droid</string>
     <string name="chip_github" translatable="false">GitHub</string>
-    <string name="tap_coordinate_screenshot_message">IMPORTANT!!! These coordinates are only correct when your display is in the same orientation as the screenshot! This action will cancel any touches or gestures you are doing on the screen.\n\nIf you need help finding the coordinates of a point on your screen take a screenshot and then tap on the screenshot where you want this action to press.</string>
     <string name="dont_know_device_name">Don\'t know device name!</string>
     <string name="tap_actions_to_fix">Tap actions to fix!</string>
     <string name="tap_constraints_to_fix">Tap constraints to fix!</string>
@@ -148,8 +147,6 @@
     <!--  Headers  -->
 
     <!--  Hints  -->
-    <string name="hint_coordinate_x" translatable="false">X</string>
-    <string name="hint_coordinate_y" translatable="false">Y</string>
     <string name="hint_keycode">Key code</string>
     <string name="hint_from_device">From device</string>
     <string name="hint_shortcut_name">Shortcut name</string>
@@ -222,7 +219,6 @@
     <string name="toast_automatic_backup_failed">Automatic back up failed!</string>
     <string name="toast_screenshot_taken">Screenshot taken</string>
     <string name="toast_io_exception_shrug">IO exception ¯\\_(ツ)_/¯</string>
-    <string name="toast_incorrect_screenshot_resolution">Screenshot resolution doesn\'t match this device\'s resolution!</string>
     <string name="toast_copied_keymap_uid_to_clipboard">Copied key map UUID to clipboard</string>
     <string name="toast_triggered_keymap">You\'ve triggered a mapping</string>
     <string name="toast_copied_log">Copied log</string>
@@ -444,7 +440,7 @@
     <string name="button_create_keymap_shortcut_in_launcher">Create launcher shortcut</string>
     <string name="button_open_trigger_keymap_from_intent_guide">Intent guide</string>
     <string name="button_help">Help</string>
-    <string name="button_pick_coordinate_select_screenshot">Select Screenshot (optional)</string>
+    <string name="button_pick_coordinate_select_screenshot">Select screenshot (optional)</string>
     <string name="button_config_intent_choose_activity">Choose activity</string>
     <string name="button_config_intent_set_flags">Set flags</string>
     <string name="button_copy_log">Copy</string>
@@ -1363,4 +1359,14 @@
     <!-- Choose app shortcut screen -->
     <string name="choose_app_shortcut_choose_name">Create shortcut name</string>
     <!-- Choose app shortcut screen -->
+
+    <!-- Create tap screen action screen -->
+    <string name="create_tap_screen_action_empty_error">Must not be empty!</string>
+    <string name="create_tap_screen_action_not_an_integer_error">Must be an integer!</string>
+    <string name="create_tap_screen_action_x_label" translatable="false">X</string>
+    <string name="create_tap_screen_action_y_label" translatable="false">Y</string>
+    <string name="create_tap_screen_explanation">These coordinates are only correct when your display is in the same orientation as the screenshot! This action will cancel any touches or gestures you are doing on the screen.\n\nIf you need help finding the coordinates of a point on your screen take a screenshot and then tap on the screenshot where you want this action to press.</string>
+    <string name="create_tap_screen_incorrect_resolution_error">Screenshot resolution must match the display\'s resolution!</string>
+    <string name="create_tap_screen_description_label">Description (optional)</string>
+    <!-- Create tap screen action screen -->
 </resources>

@@ -43,7 +43,7 @@
     <string name="show_hidden_apps">Zobrazit schované aplikace</string>
     <string name="modifiers">Modifikátory</string>
     <string name="toggle">Přepnout</string>
-    <string name="tap_coordinate_screenshot_message">DŮLEŽITÉ!!! Tyto souřadnice jsou správné pouze tehdy, když je obrazovka ve stejné orientaci jako snímek obrazovky! Tato akce zruší všechna gesta, která na obrazovce děláte.\n\nPokud potřebujete pomoci najít souřadnice bodu na obrazovce, pořídí snímek obrazovky a klepněte na snímek obrazovky, kde chcete tuto akci stisknout.</string>
+    <string name="create_tap_screen_explanation">DŮLEŽITÉ!!! Tyto souřadnice jsou správné pouze tehdy, když je obrazovka ve stejné orientaci jako snímek obrazovky! Tato akce zruší všechna gesta, která na obrazovce děláte.\n\nPokud potřebujete pomoci najít souřadnice bodu na obrazovce, pořídí snímek obrazovky a klepněte na snímek obrazovky, kde chcete tuto akci stisknout.</string>
     <string name="dont_know_device_name">Neznám jméno zařízení!</string>
     <string name="tap_actions_to_fix">Klepnutím na akce opravíte!</string>
     <string name="tap_constraints_to_fix">Klepnutím na vazby opravíte!</string>
@@ -177,7 +177,7 @@
     <string name="toast_automatic_backup_failed">Automatické zálohování selhalo!</string>
     <string name="toast_screenshot_taken">Snímek obrazovky pořízen</string>
     <string name="toast_io_exception_shrug">IO výjimka &lt;unk&gt; \\_(&lt;unk&gt;)_/ &lt;unk&gt;</string>
-    <string name="toast_incorrect_screenshot_resolution">Rozlišení snímku neodpovídá rozlišení tohoto zařízení!</string>
+    <string name="create_tap_screen_incorrect_resolution_error">Rozlišení snímku neodpovídá rozlišení tohoto zařízení!</string>
     <string name="toast_copied_keymap_uid_to_clipboard">UUID klíče zkopírováno do schránky</string>
     <string name="toast_triggered_keymap">Aktivovali jste mapování</string>
     <string name="toast_copied_log">Protokol zkopírován</string>

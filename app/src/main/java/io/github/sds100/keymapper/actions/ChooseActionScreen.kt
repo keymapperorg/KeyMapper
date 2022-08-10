@@ -23,9 +23,11 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.NavResult
 import com.ramcosta.composedestinations.result.ResultRecipient
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.destinations.ChooseAppScreenDestination
 import io.github.sds100.keymapper.destinations.ChooseAppShortcutScreenDestination
 import io.github.sds100.keymapper.destinations.ChooseKeyCodeScreenDestination
+import io.github.sds100.keymapper.destinations.CreateTapScreenActionScreenDestination
 import io.github.sds100.keymapper.system.apps.ChooseAppShortcutResult
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.util.ui.*
@@ -39,6 +41,7 @@ fun ChooseActionScreen(
     keyCodeResultRecipient: ResultRecipient<ChooseKeyCodeScreenDestination, Int>,
     appResultRecipient: ResultRecipient<ChooseAppScreenDestination, String>,
     appShortcutResultRecipient: ResultRecipient<ChooseAppShortcutScreenDestination, ChooseAppShortcutResult>,
+    tapScreenActionResultRecipient: ResultRecipient<CreateTapScreenActionScreenDestination, PickCoordinateResult>,
     setResult: (ActionData) -> Unit,
     navigateBack: () -> Unit
 ) {
@@ -78,6 +81,18 @@ fun ChooseActionScreen(
         }
     }
 
+    tapScreenActionResultRecipient.onNavResult { result ->
+        when (result) {
+            is NavResult.Canceled -> {
+                viewModel.dismissConfiguringAction()
+            }
+
+            is NavResult.Value -> {
+                viewModel.onCreateTapScreenAction(result.value)
+            }
+        }
+    }
+
     ChooseActionScreen(
         viewModel = viewModel,
         setResult = setResult,
@@ -93,6 +108,10 @@ fun ChooseActionScreen(
         navigateToChooseAppShortcut = {
             viewModel.onNavigateToConfigScreen()
             navigator.navigate(ChooseAppShortcutScreenDestination)
+        },
+        navigateToCreateTapScreenAction = {
+            viewModel.onNavigateToConfigScreen()
+            navigator.navigate(CreateTapScreenActionScreenDestination)
         }
     )
 }
@@ -151,6 +170,7 @@ private fun ChooseActionScreen(
     navigateToChooseKeyCode: () -> Unit,
     navigateToChooseApp: () -> Unit,
     navigateToChooseAppShortcut: () -> Unit,
+    navigateToCreateTapScreenAction: () -> Unit
 ) {
     val searchState by viewModel.searchState.collectAsState()
     val configActionState = viewModel.configActionState
@@ -167,6 +187,7 @@ private fun ChooseActionScreen(
             is ConfigActionState.Screen.ChooseKeycode -> navigateToChooseKeyCode()
             ConfigActionState.Screen.ChooseApp -> navigateToChooseApp()
             ConfigActionState.Screen.ChooseAppShortcut -> navigateToChooseAppShortcut()
+            ConfigActionState.Screen.CreateTapScreenAction -> navigateToCreateTapScreenAction()
         }
     }
 
@@ -215,13 +236,14 @@ private fun ChooseActionScreen(
         }
     }) { padding ->
         when (dialogState) {
+            ConfigActionState.Dialog.Hidden -> {}
             is ConfigActionState.Dialog.ChooseKeyboard ->
                 ChooseInputMethodDialog(
                     inputMethods = dialogState.inputMethods,
                     onDismissRequest = onDismissConfiguringAction,
                     onConfirmClick = onChooseInputMethod
                 )
-            ConfigActionState.Dialog.Hidden -> {}
+            ConfigActionState.Dialog.TextAction ->
         }
 
         ChooseActionList(
@@ -281,19 +303,6 @@ private fun ChooseActionList(
     }
 }
 
-@Preview
-@Composable
-private fun ChooseInputMethodDialogPreview() {
-    MaterialTheme {
-        ChooseInputMethodDialog(
-            inputMethods = listOf(
-                ImeInfo("id0", "package0", "Gboard", isEnabled = true, isChosen = true),
-                ImeInfo("id1", "package1", "Key Mapper GUI Keyboard", isEnabled = true, isChosen = true),
-            )
-        )
-    }
-}
-
 @Composable
 private fun ChooseInputMethodDialog(
     inputMethods: List<ImeInfo>,
@@ -328,5 +337,31 @@ private fun ChooseInputMethodDialog(
                 )
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun ChooseInputMethodDialogPreview() {
+    MaterialTheme {
+        ChooseInputMethodDialog(
+            inputMethods = listOf(
+                ImeInfo("id0", "package0", "Gboard", isEnabled = true, isChosen = true),
+                ImeInfo("id1", "package1", "Key Mapper GUI Keyboard", isEnabled = true, isChosen = true),
+            )
+        )
+    }
+}
+
+@Composable
+private fun TextFieldDialog() {
+
+}
+
+@Preview
+@Composable
+private fun TextFieldDialogPreview() {
+    MaterialTheme {
+        TextFieldDialog()
     }
 }

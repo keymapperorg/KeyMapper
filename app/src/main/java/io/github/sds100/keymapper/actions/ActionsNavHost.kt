@@ -11,10 +11,8 @@ import com.ramcosta.composedestinations.scope.resultBackNavigator
 import com.ramcosta.composedestinations.scope.resultRecipient
 import com.ramcosta.composedestinations.utils.composable
 import io.github.sds100.keymapper.actions.keyevent.ChooseKeyCodeScreen
-import io.github.sds100.keymapper.destinations.ChooseActionScreenDestination
-import io.github.sds100.keymapper.destinations.ChooseAppScreenDestination
-import io.github.sds100.keymapper.destinations.ChooseAppShortcutScreenDestination
-import io.github.sds100.keymapper.destinations.ChooseKeyCodeScreenDestination
+import io.github.sds100.keymapper.actions.tapscreen.CreateTapScreenActionScreen
+import io.github.sds100.keymapper.destinations.*
 import io.github.sds100.keymapper.system.apps.ChooseAppScreen
 import io.github.sds100.keymapper.system.apps.ChooseAppShortcutScreen
 import kotlinx.serialization.encodeToString
@@ -44,6 +42,7 @@ fun ActionsNavHost(
                 keyCodeResultRecipient = resultRecipient(),
                 appResultRecipient = resultRecipient(),
                 appShortcutResultRecipient = resultRecipient(),
+                tapScreenActionResultRecipient = resultRecipient(),
                 setResult = { setResult(bundleOf(ActionsFragment.EXTRA_ACTION to Json.encodeToString(it))) },
                 navigateBack = navigateBack
             )
@@ -65,6 +64,13 @@ fun ActionsNavHost(
 
         composable(ChooseAppShortcutScreenDestination) {
             ChooseAppShortcutScreen(
+                viewModel = hiltViewModel(),
+                resultBackNavigator = resultBackNavigator(navHostController)
+            )
+        }
+
+        composable(CreateTapScreenActionScreenDestination) {
+            CreateTapScreenActionScreen(
                 viewModel = hiltViewModel(),
                 resultBackNavigator = resultBackNavigator(navHostController)
             )

@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.system.apps.ChooseAppShortcutResult
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.util.containsQuery
@@ -106,6 +107,12 @@ class ChooseActionViewModel2 @Inject constructor(
         configActionState = ConfigActionState.Finished(action)
     }
 
+    fun onCreateTapScreenAction(result: PickCoordinateResult) {
+        val description = result.description.takeIf { it.isNotEmpty() }
+        val action = ActionData.TapScreen(result.x, result.y, description)
+        configActionState = ConfigActionState.Finished(action)
+    }
+
     fun onActionClick(id: ActionId) {
         viewModelScope.launch {
 
@@ -138,8 +145,12 @@ class ChooseActionViewModel2 @Inject constructor(
                     configActionState = ConfigActionState.Screen.ChooseAppShortcut
                 }
                 ActionId.KEY_EVENT -> TODO()
-                ActionId.TAP_SCREEN -> TODO()
-                ActionId.TEXT -> TODO()
+                ActionId.TAP_SCREEN -> {
+                    configActionState = ConfigActionState.Screen.CreateTapScreenAction
+                }
+                ActionId.TEXT -> {
+                    configActionState = ConfigActionState.Dialog.TextAction
+                }
                 ActionId.URL -> TODO()
                 ActionId.INTENT -> TODO()
                 ActionId.PHONE_CALL -> TODO()
@@ -442,6 +453,8 @@ sealed class ConfigActionState {
     sealed class Dialog : ConfigActionState() {
         data class ChooseKeyboard(val inputMethods: List<ImeInfo>) : Dialog()
 
+        object TextAction : Dialog()
+
         object Hidden : Dialog()
     }
 
@@ -461,6 +474,7 @@ sealed class ConfigActionState {
 
         object ChooseApp : Screen()
         object ChooseAppShortcut : Screen()
+        object CreateTapScreenAction : Screen()
     }
 
     data class Finished(val action: ActionData) : ConfigActionState()

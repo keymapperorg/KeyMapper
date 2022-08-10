@@ -342,6 +342,6 @@
         <argument
             android:name="destination"
             app:argType="string"
-            android:defaultValue="choose_action_screen" />
+            android:defaultValue="create_tap_screen_action_screen" />
     </fragment>
 </navigation>

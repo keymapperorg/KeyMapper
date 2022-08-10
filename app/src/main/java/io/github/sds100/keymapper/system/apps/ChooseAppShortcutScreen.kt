@@ -92,7 +92,7 @@ private fun ChooseAppShortcutScreen(
     onChooseName: (String) -> Unit = {},
     onDismissChoosingName: () -> Unit = {}
 ) {
-    val snackBarHostState = remember { SnackbarHostState() }
+    val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val noPermissionMessage = stringResource(R.string.error_keymapper_doesnt_have_permission_app_shortcut)
 
@@ -102,7 +102,7 @@ private fun ChooseAppShortcutScreen(
 
     Scaffold(
         modifier,
-        snackbarHost = { SnackbarHost(snackBarHostState) },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
             SearchAppBar(onBackClick, searchState, setSearchState) {
                 IconButton(onClick = onBackClick) {
@@ -124,7 +124,7 @@ private fun ChooseAppShortcutScreen(
                         launchShortcutConfig(shortcut)
                     } catch (e: SecurityException) {
                         scope.launch {
-                            snackBarHostState.showSnackbar(noPermissionMessage)
+                            snackbarHostState.showSnackbar(noPermissionMessage)
                         }
                     }
                 }

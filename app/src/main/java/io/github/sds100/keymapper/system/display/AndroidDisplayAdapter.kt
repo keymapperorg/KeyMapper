@@ -4,9 +4,12 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Point
 import android.hardware.display.DisplayManager
 import android.provider.Settings
+import android.util.Size
 import android.view.Surface
+import android.view.WindowManager
 import androidx.core.content.getSystemService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.system.SettingsUtils
@@ -31,6 +34,7 @@ class AndroidDisplayAdapter @Inject constructor(@ApplicationContext context: Con
     }
 
     private val ctx = context.applicationContext
+    private val windowManager: WindowManager by lazy { ctx.getSystemService()!! }
 
     private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -65,6 +69,10 @@ class AndroidDisplayAdapter @Inject constructor(@ApplicationContext context: Con
     }
 
     override var orientation: Orientation = getDisplayOrientation()
+    override fun getDisplaySize(): Size {
+        val point = Point().also { windowManager.defaultDisplay.getRealSize(it) }
+        return Size(point.x, point.y)
+    }
 
     init {
         IntentFilter().apply {
