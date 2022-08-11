@@ -31,6 +31,7 @@ import io.github.sds100.keymapper.destinations.*
 import io.github.sds100.keymapper.system.apps.ChooseAppShortcutResult
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
+import io.github.sds100.keymapper.system.volume.DndMode
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeStream
 import io.github.sds100.keymapper.system.volume.VolumeStreamUtils
@@ -237,7 +238,8 @@ private fun ChooseActionScreen(
         onCreatePhoneCallAction = viewModel::onCreatePhoneCallAction,
         onConfigCycleRotationsAction = viewModel::onConfigCycleRotations,
         onConfigVolumeAction = viewModel::onConfigVolumeAction,
-        onChooseRingerMode = viewModel::onChooseRingerMode
+        onChooseRingerMode = viewModel::onChooseRingerMode,
+        onChooseDoNotDisturbMode = viewModel::onChooseDoNotDisturbMode
     )
 }
 
@@ -258,7 +260,8 @@ private fun ChooseActionScreen(
     onCreatePhoneCallAction: (String) -> Unit = {},
     onConfigCycleRotationsAction: (List<Orientation>) -> Unit = {},
     onConfigVolumeAction: (Boolean, VolumeStream) -> Unit = { _, _ -> },
-    onChooseRingerMode: (RingerMode) -> Unit = {}
+    onChooseRingerMode: (RingerMode) -> Unit = {},
+    onChooseDoNotDisturbMode: (DndMode) -> Unit = {}
 ) {
     Scaffold(modifier, bottomBar = {
         SearchAppBar(onBack, searchState, setSearchState) {
@@ -364,6 +367,18 @@ private fun ChooseActionScreen(
             ConfigActionState.Dialog.RingerMode -> {
                 ChooseRingerModeDialog(
                     onConfirm = onChooseRingerMode,
+                    onDismiss = onDismissConfiguringAction
+                )
+            }
+            is ConfigActionState.Dialog.DoNotDisturb -> {
+                val titleRes = when (dialogState) {
+                    ConfigActionState.Dialog.DoNotDisturb.Enable -> R.string.choose_action_choose_enable_dnd_mode_dialog_title
+                    ConfigActionState.Dialog.DoNotDisturb.Toggle -> R.string.choose_action_choose_toggle_dnd_mode_dialog_title
+                }
+
+                ChooseDoNotDisturbMode(
+                    title = stringResource(titleRes),
+                    onConfirm = onChooseDoNotDisturbMode,
                     onDismiss = onDismissConfiguringAction
                 )
             }
@@ -624,7 +639,7 @@ private fun ChooseRingerModeDialog(
     CustomDialog(
         title = stringResource(R.string.choose_action_choose_ringer_mode_dialog_title),
         confirmButton = {
-            TextButton(onClick = { onConfirm(selectedRingerMode!!) }) {
+            TextButton(onClick = { onConfirm(selectedRingerMode!!) }, enabled = selectedRingerMode != null) {
                 Text(stringResource(R.string.pos_confirm))
             }
         },
@@ -662,5 +677,49 @@ private fun ChooseRingerModeDialog(
 private fun ChooseRingerModeDialogPreview() {
     MaterialTheme {
         ChooseRingerModeDialog()
+    }
+}
+
+@Composable
+private fun ChooseDoNotDisturbMode(
+    title: String,
+    onConfirm: (DndMode) -> Unit = { _ -> },
+    onDismiss: () -> Unit = {}
+) {
+    var selectedMode: DndMode? by rememberSaveable { mutableStateOf(null) }
+
+    CustomDialog(
+        title = title,
+        confirmButton = {
+            TextButton(onClick = { onConfirm(selectedMode!!) }, enabled = selectedMode != null) {
+                Text(stringResource(R.string.pos_confirm))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.neg_cancel))
+            }
+        }
+    ) {
+        Column(Modifier.fillMaxWidth()) {
+            RadioButtonWithText(
+                modifier = Modifier.fillMaxWidth(),
+                isSelected = selectedMode == DndMode.ALARMS,
+                text = stringResource(R.string.dnd_mode_alarms),
+                onClick = { selectedMode = DndMode.ALARMS }
+            )
+            RadioButtonWithText(
+                modifier = Modifier.fillMaxWidth(),
+                isSelected = selectedMode == DndMode.NONE,
+                text = stringResource(R.string.dnd_mode_none),
+                onClick = { selectedMode = DndMode.NONE }
+            )
+            RadioButtonWithText(
+                modifier = Modifier.fillMaxWidth(),
+                isSelected = selectedMode == DndMode.PRIORITY,
+                text = stringResource(R.string.dnd_mode_priority),
+                onClick = { selectedMode = DndMode.PRIORITY }
+            )
+        }
     }
 }

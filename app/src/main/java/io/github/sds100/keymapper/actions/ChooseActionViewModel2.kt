@@ -11,6 +11,7 @@ import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.system.apps.ChooseAppShortcutResult
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
+import io.github.sds100.keymapper.system.volume.DndMode
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeStream
 import io.github.sds100.keymapper.util.containsQuery
@@ -154,6 +155,17 @@ class ChooseActionViewModel2 @Inject constructor(
         configActionState = ConfigActionState.Finished(action)
     }
 
+    fun onChooseDoNotDisturbMode(mode: DndMode) {
+        val dndConfig = (configActionState as? ConfigActionState.Dialog.DoNotDisturb) ?: return
+
+        val action = when (dndConfig) {
+            ConfigActionState.Dialog.DoNotDisturb.Enable -> ActionData.DoNotDisturb.Enable(mode)
+            ConfigActionState.Dialog.DoNotDisturb.Toggle -> ActionData.DoNotDisturb.Toggle(mode)
+        }
+
+        configActionState = ConfigActionState.Finished(action)
+    }
+
     fun onActionClick(id: ActionId) {
         viewModelScope.launch {
 
@@ -283,9 +295,12 @@ class ChooseActionViewModel2 @Inject constructor(
                 ActionId.CYCLE_VIBRATE_RING -> {
                     configActionState = ConfigActionState.Finished(ActionData.CycleVibrateRing)
                 }
-                ActionId.TOGGLE_DND_MODE -> TODO()
-                ActionId.ENABLE_DND_MODE -> TODO()
-
+                ActionId.TOGGLE_DND_MODE -> {
+                    configActionState = ConfigActionState.Dialog.DoNotDisturb.Toggle
+                }
+                ActionId.ENABLE_DND_MODE -> {
+                    configActionState = ConfigActionState.Dialog.DoNotDisturb.Enable
+                }
                 ActionId.DISABLE_DND_MODE -> {
                     configActionState = ConfigActionState.Finished(ActionData.DoNotDisturb.Disable)
                 }
@@ -530,6 +545,11 @@ sealed class ConfigActionState {
         }
 
         object RingerMode : Dialog()
+
+        sealed class DoNotDisturb : Dialog() {
+            object Enable : DoNotDisturb()
+            object Toggle : DoNotDisturb()
+        }
 
         object Hidden : Dialog()
     }

@@ -129,7 +129,8 @@ class CreateActionViewModelImpl @Inject constructor(
                 val items = DndMode.values()
                     .map { it to getString(DndModeUtils.getLabel(it)) }
 
-                val dialog = PopupUi.SingleChoice(title = getString(R.string.dialog_title_choose_dnd_mode), items)
+                val dialog =
+                    PopupUi.SingleChoice(title = getString(R.string.choose_action_choose_dnd_mode_dialog_title), items)
                 val dndMode = showPopup("pick_dnd_mode", dialog) ?: return null
 
                 val action = when (actionId) {

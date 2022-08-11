@@ -553,7 +553,6 @@
     <string name="dialog_message_fix_dnd_trigger_error">You will be taken to your device\'s settings page to manage which apps can modify the Do Not Disturb state. This is <b>not present on some devices</b> so tap don\'t show again if you do not see Key Mapper in the list.</string>
 
     <string name="dialog_title_choose_to_show_volume_ui">Show volume UI?</string>
-    <string name="dialog_title_choose_dnd_mode">Choose do not disturb mode</string>
     <string name="dialog_title_choose_camera_flash">Choose camera flash</string>
     <string name="dialog_title_choose_keyboard">Choose keyboard</string>
     <string name="dialog_title_choose_wifi_network">Choose network</string>
@@ -1366,6 +1365,9 @@
     <string name="choose_action_config_show_volume_ui_checkbox">Show volume dialog</string>
     <string name="choose_action_config_volume_stream_header">Volume stream to change</string>
     <string name="choose_action_choose_ringer_mode_dialog_title">Choose ringer mode</string>
+    <string name="choose_action_choose_dnd_mode_dialog_title">Choose do not disturb mode</string>
+    <string name="choose_action_choose_enable_dnd_mode_dialog_title">Choose do not disturb mode to enable</string>
+    <string name="choose_action_choose_toggle_dnd_mode_dialog_title">Choose do not disturb mode to toggle</string>
     <!-- Choose action screen -->
 
     <!-- Choose app shortcut screen -->
