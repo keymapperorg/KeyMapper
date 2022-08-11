@@ -213,7 +213,8 @@ private fun ChooseActionScreen(
         onBack = navigateBack,
         onChooseInputMethod = viewModel::onChooseInputMethod,
         onCreateTextAction = viewModel::onCreateTextAction,
-        onCreateUrlAction = viewModel::onCreateUrlAction
+        onCreateUrlAction = viewModel::onCreateUrlAction,
+        onCreatePhoneCallAction = viewModel::onCreatePhoneCallAction
     )
 }
 
@@ -231,6 +232,7 @@ private fun ChooseActionScreen(
     onChooseInputMethod: (ImeInfo) -> Unit = {},
     onCreateTextAction: (String) -> Unit = {},
     onCreateUrlAction: (String) -> Unit = {},
+    onCreatePhoneCallAction: (String) -> Unit = {},
 ) {
     Scaffold(modifier, bottomBar = {
         SearchAppBar(onBack, searchState, setSearchState) {
@@ -250,7 +252,7 @@ private fun ChooseActionScreen(
                     onDismissRequest = onDismissConfiguringAction,
                     onConfirmClick = onChooseInputMethod
                 )
-            ConfigActionState.Dialog.TextAction -> {
+            ConfigActionState.Dialog.Text -> {
                 var error: String? by rememberSaveable { mutableStateOf("") }
                 val emptyErrorString = stringResource(R.string.choose_action_text_empty_error)
 
@@ -268,7 +270,7 @@ private fun ChooseActionScreen(
                     onDismiss = onDismissConfiguringAction
                 )
             }
-            ConfigActionState.Dialog.UrlAction -> {
+            ConfigActionState.Dialog.Url -> {
                 var error: String? by rememberSaveable { mutableStateOf("") }
                 val emptyErrorString = stringResource(R.string.choose_action_url_empty_error)
 
@@ -284,6 +286,25 @@ private fun ChooseActionScreen(
                         }
                     },
                     onConfirm = onCreateUrlAction,
+                    onDismiss = onDismissConfiguringAction
+                )
+            }
+            ConfigActionState.Dialog.PhoneCall -> {
+                var error: String? by rememberSaveable { mutableStateOf("") }
+                val emptyErrorString = stringResource(R.string.choose_action_phone_empty_error)
+
+                TextFieldDialog(
+                    title = stringResource(R.string.choose_action_phone_action_title),
+                    label = stringResource(R.string.choose_action_phone_action_label),
+                    error = error,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                    onTextChange = { text ->
+                        error = when {
+                            text.isEmpty() -> emptyErrorString
+                            else -> null
+                        }
+                    },
+                    onConfirm = onCreatePhoneCallAction,
                     onDismiss = onDismissConfiguringAction
                 )
             }

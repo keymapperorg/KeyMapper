@@ -121,6 +121,10 @@ class ChooseActionViewModel2 @Inject constructor(
         configActionState = ConfigActionState.Finished(ActionData.Url(text))
     }
 
+    fun onCreatePhoneCallAction(text: String) {
+        configActionState = ConfigActionState.Finished(ActionData.PhoneCall(text))
+    }
+
     fun onActionClick(id: ActionId) {
         viewModelScope.launch {
 
@@ -157,13 +161,15 @@ class ChooseActionViewModel2 @Inject constructor(
                     configActionState = ConfigActionState.Screen.CreateTapScreenAction
                 }
                 ActionId.TEXT -> {
-                    configActionState = ConfigActionState.Dialog.TextAction
+                    configActionState = ConfigActionState.Dialog.Text
                 }
                 ActionId.URL -> {
-                    configActionState = ConfigActionState.Dialog.UrlAction
+                    configActionState = ConfigActionState.Dialog.Url
                 }
                 ActionId.INTENT -> TODO()
-                ActionId.PHONE_CALL -> TODO()
+                ActionId.PHONE_CALL -> {
+                    configActionState = ConfigActionState.Dialog.PhoneCall
+                }
                 ActionId.SOUND -> TODO()
                 ActionId.TOGGLE_BLUETOOTH -> {
                     configActionState = ConfigActionState.Finished(ActionData.Bluetooth.Toggle)
@@ -462,11 +468,9 @@ sealed class ConfigActionState {
      */
     sealed class Dialog : ConfigActionState() {
         data class ChooseKeyboard(val inputMethods: List<ImeInfo>) : Dialog()
-
-        object TextAction : Dialog()
-
-        object UrlAction : Dialog()
-
+        object Text : Dialog()
+        object Url : Dialog()
+        object PhoneCall : Dialog()
         object Hidden : Dialog()
     }
 

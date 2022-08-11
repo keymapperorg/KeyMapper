@@ -1360,6 +1360,9 @@
     <string name="choose_action_url_action_title">Create url action</string>
     <string name="choose_action_url_action_label">Url to open</string>
     <string name="choose_action_url_empty_error">Must not be empty!</string>
+    <string name="choose_action_phone_action_title">Create phone call action</string>
+    <string name="choose_action_phone_action_label">Phone number to call</string>
+    <string name="choose_action_phone_empty_error">Must not be empty!</string>
     <!-- Choose action screen -->
 
     <!-- Choose app shortcut screen -->
