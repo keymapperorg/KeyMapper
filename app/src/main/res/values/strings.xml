@@ -1368,6 +1368,9 @@
     <string name="choose_action_choose_dnd_mode_dialog_title">Choose do not disturb mode</string>
     <string name="choose_action_choose_enable_dnd_mode_dialog_title">Choose do not disturb mode to enable</string>
     <string name="choose_action_choose_toggle_dnd_mode_dialog_title">Choose do not disturb mode to toggle</string>
+    <string name="choose_action_choose_enable_flashlight_dialog_title">Choose flashlight to enable</string>
+    <string name="choose_action_choose_disable_flashlight_dialog_title">Choose flashlight to disable</string>
+    <string name="choose_action_choose_toggle_flashlight_dialog_title">Choose flashlight to toggle</string>
     <!-- Choose action screen -->
 
     <!-- Choose app shortcut screen -->

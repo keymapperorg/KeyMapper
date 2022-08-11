@@ -29,6 +29,7 @@ import io.github.sds100.keymapper.actions.sound.ChooseSoundResult
 import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.destinations.*
 import io.github.sds100.keymapper.system.apps.ChooseAppShortcutResult
+import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.volume.DndMode
@@ -238,7 +239,8 @@ private fun ChooseActionScreen(
         onConfigCycleRotationsAction = viewModel::onConfigCycleRotations,
         onConfigVolumeAction = viewModel::onConfigVolumeAction,
         onChooseRingerMode = viewModel::onChooseRingerMode,
-        onChooseDoNotDisturbMode = viewModel::onChooseDoNotDisturbMode
+        onChooseDoNotDisturbMode = viewModel::onChooseDoNotDisturbMode,
+        onChooseFlashlight = viewModel::onChooseFlashlight
     )
 }
 
@@ -260,7 +262,8 @@ private fun ChooseActionScreen(
     onConfigCycleRotationsAction: (List<Orientation>) -> Unit = {},
     onConfigVolumeAction: (Boolean, VolumeStream) -> Unit = { _, _ -> },
     onChooseRingerMode: (RingerMode) -> Unit = {},
-    onChooseDoNotDisturbMode: (DndMode) -> Unit = {}
+    onChooseDoNotDisturbMode: (DndMode) -> Unit = {},
+    onChooseFlashlight: (CameraLens) -> Unit = {}
 ) {
     Scaffold(modifier, bottomBar = {
         SearchAppBar(onBack, searchState, setSearchState) {
@@ -375,9 +378,23 @@ private fun ChooseActionScreen(
                     ConfigActionState.Dialog.DoNotDisturb.Toggle -> R.string.choose_action_choose_toggle_dnd_mode_dialog_title
                 }
 
-                ChooseDoNotDisturbMode(
+                ChooseDoNotDisturbModeDialog(
                     title = stringResource(titleRes),
                     onConfirm = onChooseDoNotDisturbMode,
+                    onDismiss = onDismissConfiguringAction
+                )
+            }
+
+            is ConfigActionState.Dialog.Flashlight -> {
+                val titleRes = when (dialogState) {
+                    ConfigActionState.Dialog.Flashlight.Disable -> R.string.choose_action_choose_disable_flashlight_dialog_title
+                    ConfigActionState.Dialog.Flashlight.Enable -> R.string.choose_action_choose_enable_flashlight_dialog_title
+                    ConfigActionState.Dialog.Flashlight.Toggle -> R.string.choose_action_choose_toggle_flashlight_dialog_title
+                }
+
+                ChooseFlashlightDialog(
+                    title = stringResource(titleRes),
+                    onConfirm = onChooseFlashlight,
                     onDismiss = onDismissConfiguringAction
                 )
             }
@@ -680,7 +697,7 @@ private fun ChooseRingerModeDialogPreview() {
 }
 
 @Composable
-private fun ChooseDoNotDisturbMode(
+private fun ChooseDoNotDisturbModeDialog(
     title: String,
     onConfirm: (DndMode) -> Unit = { _ -> },
     onDismiss: () -> Unit = {}
@@ -718,6 +735,44 @@ private fun ChooseDoNotDisturbMode(
                 isSelected = selectedMode == DndMode.PRIORITY,
                 text = stringResource(R.string.dnd_mode_priority),
                 onClick = { selectedMode = DndMode.PRIORITY }
+            )
+        }
+    }
+}
+
+@Composable
+private fun ChooseFlashlightDialog(
+    title: String,
+    onConfirm: (CameraLens) -> Unit = { _ -> },
+    onDismiss: () -> Unit = {}
+) {
+    var selectedFlashlight: CameraLens by rememberSaveable { mutableStateOf(CameraLens.BACK) }
+
+    CustomDialog(
+        title = title,
+        confirmButton = {
+            TextButton(onClick = { onConfirm(selectedFlashlight) }) {
+                Text(stringResource(R.string.pos_confirm))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.neg_cancel))
+            }
+        }
+    ) {
+        Column(Modifier.fillMaxWidth()) {
+            RadioButtonWithText(
+                modifier = Modifier.fillMaxWidth(),
+                isSelected = selectedFlashlight == CameraLens.BACK,
+                text = stringResource(R.string.lens_back),
+                onClick = { selectedFlashlight = CameraLens.BACK }
+            )
+            RadioButtonWithText(
+                modifier = Modifier.fillMaxWidth(),
+                isSelected = selectedFlashlight == CameraLens.FRONT,
+                text = stringResource(R.string.lens_front),
+                onClick = { selectedFlashlight = CameraLens.FRONT }
             )
         }
     }

@@ -9,6 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.actions.sound.ChooseSoundResult
 import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.system.apps.ChooseAppShortcutResult
+import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.volume.DndMode
@@ -192,6 +193,18 @@ class ChooseActionViewModel2 @Inject constructor(
         val action = when (dndConfig) {
             ConfigActionState.Dialog.DoNotDisturb.Enable -> ActionData.DoNotDisturb.Enable(mode)
             ConfigActionState.Dialog.DoNotDisturb.Toggle -> ActionData.DoNotDisturb.Toggle(mode)
+        }
+
+        configActionState = ConfigActionState.Finished(action)
+    }
+
+    fun onChooseFlashlight(flashlight: CameraLens) {
+        val flashlightConfig = (configActionState as? ConfigActionState.Dialog.Flashlight) ?: return
+
+        val action = when (flashlightConfig) {
+            ConfigActionState.Dialog.Flashlight.Enable -> ActionData.Flashlight.Enable(flashlight)
+            ConfigActionState.Dialog.Flashlight.Disable -> ActionData.Flashlight.Disable(flashlight)
+            ConfigActionState.Dialog.Flashlight.Toggle -> ActionData.Flashlight.Toggle(flashlight)
         }
 
         configActionState = ConfigActionState.Finished(action)
@@ -410,9 +423,15 @@ class ChooseActionViewModel2 @Inject constructor(
                 ActionId.OPEN_MENU -> {
                     configActionState = ConfigActionState.Finished(ActionData.OpenMenu)
                 }
-                ActionId.TOGGLE_FLASHLIGHT -> TODO()
-                ActionId.ENABLE_FLASHLIGHT -> TODO()
-                ActionId.DISABLE_FLASHLIGHT -> TODO()
+                ActionId.TOGGLE_FLASHLIGHT -> {
+                    configActionState = ConfigActionState.Dialog.Flashlight.Toggle
+                }
+                ActionId.ENABLE_FLASHLIGHT -> {
+                    configActionState = ConfigActionState.Dialog.Flashlight.Enable
+                }
+                ActionId.DISABLE_FLASHLIGHT -> {
+                    configActionState = ConfigActionState.Dialog.Flashlight.Disable
+                }
                 ActionId.ENABLE_NFC -> {
                     configActionState = ConfigActionState.Finished(ActionData.Nfc.Enable)
                 }
@@ -594,6 +613,12 @@ sealed class ConfigActionState {
         sealed class DoNotDisturb : Dialog() {
             object Enable : DoNotDisturb()
             object Toggle : DoNotDisturb()
+        }
+
+        sealed class Flashlight : Dialog() {
+            object Enable : Flashlight()
+            object Disable : Flashlight()
+            object Toggle : Flashlight()
         }
 
         object Hidden : Dialog()
