@@ -1359,6 +1359,13 @@
     <string name="choose_action_phone_action_label">Phone number to call</string>
     <string name="choose_action_phone_empty_error">Must not be empty!</string>
     <string name="choose_action_cycle_orientations_dialog_title">Choose which orientations to cycle through</string>
+    <string name="choose_action_config_volume_up_action_dialog_title">Create volume up action</string>
+    <string name="choose_action_config_volume_down_action_dialog_title">Create volume down action</string>
+    <string name="choose_action_config_volume_unmute_action_dialog_title">Create unmute volume action</string>
+    <string name="choose_action_config_volume_mute_action_dialog_title">Create mute volume action</string>
+    <string name="choose_action_config_volume_toggle_mute_action_dialog_title">Create toggle mute action</string>
+    <string name="choose_action_config_show_volume_ui_checkbox">Show volume dialog</string>
+    <string name="choose_action_config_volume_stream_header">Volume stream to change</string>
     <!-- Choose action screen -->
 
     <!-- Choose app shortcut screen -->

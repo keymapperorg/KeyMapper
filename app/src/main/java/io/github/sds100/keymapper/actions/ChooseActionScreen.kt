@@ -31,6 +31,8 @@ import io.github.sds100.keymapper.destinations.*
 import io.github.sds100.keymapper.system.apps.ChooseAppShortcutResult
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
+import io.github.sds100.keymapper.system.volume.VolumeStream
+import io.github.sds100.keymapper.system.volume.VolumeStreamUtils
 import io.github.sds100.keymapper.util.ui.*
 
 @RootNavGraph(start = true)
@@ -232,7 +234,8 @@ private fun ChooseActionScreen(
         onCreateTextAction = viewModel::onCreateTextAction,
         onCreateUrlAction = viewModel::onCreateUrlAction,
         onCreatePhoneCallAction = viewModel::onCreatePhoneCallAction,
-        onConfigCycleRotationsAction = viewModel::onConfigCycleRotations
+        onConfigCycleRotationsAction = viewModel::onConfigCycleRotations,
+        onConfigVolumeAction = viewModel::onConfigVolumeAction
     )
 }
 
@@ -251,7 +254,8 @@ private fun ChooseActionScreen(
     onCreateTextAction: (String) -> Unit = {},
     onCreateUrlAction: (String) -> Unit = {},
     onCreatePhoneCallAction: (String) -> Unit = {},
-    onConfigCycleRotationsAction: (List<Orientation>) -> Unit = {}
+    onConfigCycleRotationsAction: (List<Orientation>) -> Unit = {},
+    onConfigVolumeAction: (Boolean, VolumeStream) -> Unit = { _, _ -> }
 ) {
     Scaffold(modifier, bottomBar = {
         SearchAppBar(onBack, searchState, setSearchState) {
@@ -337,6 +341,21 @@ private fun ChooseActionScreen(
                 ConfigCycleRotationDialog(
                     onDismissRequest = onDismissConfiguringAction,
                     onConfirmClick = onConfigCycleRotationsAction
+                )
+            }
+            is ConfigActionState.Dialog.Volume -> {
+                val titleRes = when (dialogState) {
+                    ConfigActionState.Dialog.Volume.Down -> R.string.choose_action_config_volume_down_action_dialog_title
+                    ConfigActionState.Dialog.Volume.Mute -> R.string.choose_action_config_volume_mute_action_dialog_title
+                    ConfigActionState.Dialog.Volume.ToggleMute -> R.string.choose_action_config_volume_toggle_mute_action_dialog_title
+                    ConfigActionState.Dialog.Volume.Unmute -> R.string.choose_action_config_volume_unmute_action_dialog_title
+                    ConfigActionState.Dialog.Volume.Up -> R.string.choose_action_config_volume_up_action_dialog_title
+                }
+
+                ConfigVolumeActionDialog(
+                    title = stringResource(titleRes),
+                    onConfirm = onConfigVolumeAction,
+                    onDismiss = onDismissConfiguringAction
                 )
             }
         }
@@ -520,6 +539,68 @@ private fun ChooseInputMethodDialogPreview() {
                 ImeInfo("id0", "package0", "Gboard", isEnabled = true, isChosen = true),
                 ImeInfo("id1", "package1", "Key Mapper GUI Keyboard", isEnabled = true, isChosen = true),
             )
+        )
+    }
+}
+
+@Composable
+private fun ConfigVolumeActionDialog(
+    title: String,
+    onConfirm: (showVolumeDialog: Boolean, stream: VolumeStream) -> Unit = { _, _ -> },
+    onDismiss: () -> Unit = {}
+) {
+    var showVolumeDialog: Boolean by rememberSaveable { mutableStateOf(true) }
+    var selectedStream: VolumeStream by rememberSaveable { mutableStateOf(VolumeStream.DEFAULT) }
+
+    CustomDialog(
+        title = title,
+        confirmButton = {
+            TextButton(onClick = { onConfirm(showVolumeDialog, selectedStream) }) {
+                Text(stringResource(R.string.pos_confirm))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.neg_cancel))
+            }
+        }
+    ) {
+        Column {
+            CheckBoxWithText(
+                isChecked = showVolumeDialog,
+                text = stringResource(R.string.choose_action_config_show_volume_ui_checkbox),
+                onCheckedChange = { showVolumeDialog = it }
+            )
+
+            Spacer(Modifier.height(8.dp))
+
+            Text(
+                text = stringResource(R.string.choose_action_config_volume_stream_header),
+                style = MaterialTheme.typography.titleMedium
+            )
+
+            Spacer(Modifier.height(8.dp))
+
+            LazyColumn(Modifier.fillMaxWidth()) {
+                items(VolumeStream.values()) { stream ->
+                    RadioButtonWithText(
+                        modifier = Modifier.fillMaxWidth(),
+                        isSelected = selectedStream == stream,
+                        text = stringResource(VolumeStreamUtils.getLabel(stream)),
+                        onClick = { selectedStream = stream }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Preview(widthDp = 600, heightDp = 400)
+@Composable
+private fun ConfigVolumeActionDialogPreview() {
+    MaterialTheme {
+        ConfigVolumeActionDialog(
+            title = stringResource(R.string.choose_action_config_volume_down_action_dialog_title)
         )
     }
 }

@@ -11,6 +11,7 @@ import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.system.apps.ChooseAppShortcutResult
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
+import io.github.sds100.keymapper.system.volume.VolumeStream
 import io.github.sds100.keymapper.util.containsQuery
 import io.github.sds100.keymapper.util.ui.KMIcon
 import io.github.sds100.keymapper.util.ui.ResourceProvider
@@ -135,6 +136,19 @@ class ChooseActionViewModel2 @Inject constructor(
         configActionState = ConfigActionState.Finished(ActionData.Rotation.CycleRotations(orientations))
     }
 
+    fun onConfigVolumeAction(showVolumeDialog: Boolean, stream: VolumeStream) {
+        val volumeConfig = (configActionState as? ConfigActionState.Dialog.Volume) ?: return
+        val action = when (volumeConfig) {
+            is ConfigActionState.Dialog.Volume.Up -> ActionData.Volume.Up(showVolumeDialog, stream)
+            is ConfigActionState.Dialog.Volume.Down -> ActionData.Volume.Down(showVolumeDialog, stream)
+            is ConfigActionState.Dialog.Volume.Mute -> ActionData.Volume.Mute(showVolumeDialog, stream)
+            is ConfigActionState.Dialog.Volume.Unmute -> ActionData.Volume.UnMute(showVolumeDialog, stream)
+            is ConfigActionState.Dialog.Volume.ToggleMute -> ActionData.Volume.ToggleMute(showVolumeDialog, stream)
+        }
+
+        configActionState = ConfigActionState.Finished(action)
+    }
+
     fun onActionClick(id: ActionId) {
         viewModelScope.launch {
 
@@ -237,8 +251,21 @@ class ChooseActionViewModel2 @Inject constructor(
                 ActionId.CYCLE_ROTATIONS -> {
                     configActionState = ConfigActionState.Dialog.CycleRotations
                 }
-                ActionId.VOLUME_UP -> TODO()
-                ActionId.VOLUME_DOWN -> TODO()
+                ActionId.VOLUME_UP -> {
+                    configActionState = ConfigActionState.Dialog.Volume.Up
+                }
+                ActionId.VOLUME_DOWN -> {
+                    configActionState = ConfigActionState.Dialog.Volume.Down
+                }
+                ActionId.VOLUME_UNMUTE -> {
+                    configActionState = ConfigActionState.Dialog.Volume.Unmute
+                }
+                ActionId.VOLUME_MUTE -> {
+                    configActionState = ConfigActionState.Dialog.Volume.Mute
+                }
+                ActionId.VOLUME_TOGGLE_MUTE -> {
+                    configActionState = ConfigActionState.Dialog.Volume.ToggleMute
+                }
                 ActionId.VOLUME_SHOW_DIALOG -> {
                     configActionState = ConfigActionState.Finished(ActionData.ShowVolumeDialog)
                 }
@@ -251,10 +278,9 @@ class ChooseActionViewModel2 @Inject constructor(
                 }
                 ActionId.TOGGLE_DND_MODE -> TODO()
                 ActionId.ENABLE_DND_MODE -> TODO()
+
+                //TODO dont select dnd mode
                 ActionId.DISABLE_DND_MODE -> TODO()
-                ActionId.VOLUME_UNMUTE -> TODO()
-                ActionId.VOLUME_MUTE -> TODO()
-                ActionId.VOLUME_TOGGLE_MUTE -> TODO()
                 ActionId.EXPAND_NOTIFICATION_DRAWER -> {
                     configActionState = ConfigActionState.Finished(ActionData.StatusBar.ExpandNotifications)
                 }
@@ -486,6 +512,15 @@ sealed class ConfigActionState {
         object Url : Dialog()
         object PhoneCall : Dialog()
         object CycleRotations : Dialog()
+
+        sealed class Volume : Dialog() {
+            object Up : Volume()
+            object Down : Volume()
+            object Mute : Volume()
+            object Unmute : Volume()
+            object ToggleMute : Volume()
+        }
+
         object Hidden : Dialog()
     }
 
