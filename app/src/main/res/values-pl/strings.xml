@@ -136,7 +136,7 @@
     <string name="hint_intent_extra_value_with_type">Wartość (%s)</string>
     <string name="hint_intent_description">Opis dla Key Mapper (wymagane)</string>
     <string name="hint_intent_flags">Flagi</string>
-    <string name="hint_sound_file_description">Opis pliku dźwiękowego</string>
+    <string name="choose_sound_file_description_title">Opis pliku dźwiękowego</string>
     <string name="hint_wifi_ssid">SSID sieci Wi-Fi</string>
     <!--  Hints  -->
     <!--  Radio buttons  -->
@@ -340,7 +340,7 @@
     <string name="button_config_intent_set_flags">Ustaw flagi</string>
     <string name="button_copy_log">Kopiuj</string>
     <string name="button_slider_repeat_no_limit">Bez ograniczeń</string>
-    <string name="button_choose_sound_file">Wybierz plik dźwiękowy</string>
+    <string name="choose_sound_file_button">Wybierz plik dźwiękowy</string>
     <string name="button_edit_action">Edytuj działanie</string>
     <string name="button_replace_action">Zastąp działanie</string>
     <!-- Button titles -->

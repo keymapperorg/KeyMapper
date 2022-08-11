@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.actions
 
 import android.text.InputType
-import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.system.camera.CameraLens
@@ -339,7 +338,7 @@ class CreateActionViewModelImpl @Inject constructor(
 
                 return ActionData.Sound(
                     soundUid = result.soundUid,
-                    soundDescription = result.description
+                    soundDescription = result.name
                 )
             }
 

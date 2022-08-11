@@ -75,8 +75,6 @@
             Inputting this key as an action will only work if you are using a Key Mapper compatible keyboard.</string>
     <string name="caption_action_type_keycode">IMPORTANT!
             Inputting this key code as an action will only work if you are using a Key Mapper compatible keyboard.</string>
-    <string name="caption_action_type_sound">The sound file will be copied to Key Mapper\'s private data folder, which means your actions will still work even if the file is moved or deleted. It will also be backed up with your key maps in the zip folder.
-    You can delete saved sound files in the settings.</string>
 
     <string name="caption_action_type_text">Type some text you want to be inserted when you perform this action.</string>
     <string name="caption_action_type_phone_call">Enter the phone number.</string>
@@ -164,7 +162,6 @@
     <string name="hint_intent_extra_value_with_type">Value (%s)</string>
     <string name="hint_intent_description">Description for Key Mapper (required)</string>
     <string name="hint_intent_flags">Flags</string>
-    <string name="hint_sound_file_description">Sound file description</string>
     <string name="hint_wifi_ssid">WiFi network SSID</string>
     <!--  Hints  -->
 
@@ -445,7 +442,6 @@
     <string name="button_config_intent_set_flags">Set flags</string>
     <string name="button_copy_log">Copy</string>
     <string name="button_slider_repeat_no_limit">No limit</string>
-    <string name="button_choose_sound_file">Choose sound file</string>
     <string name="button_edit_action">Edit action</string>
     <string name="button_replace_action">Replace action</string>
     <!-- Button titles -->
@@ -1378,4 +1374,13 @@
     <string name="create_tap_screen_incorrect_resolution_error">Screenshot resolution must match the display\'s resolution!</string>
     <string name="create_tap_screen_description_label">Description (optional)</string>
     <!-- Create tap screen action screen -->
+
+    <!-- Choose sound file action -->
+    <string name="choose_sound_file_caption">The sound file will be copied to Key Mapper\'s private data folder, which means your actions will still work even if the file is moved or deleted. It will also be backed up with your key maps in the zip folder.
+    You can delete saved sound files in the settings.</string>
+    <string name="choose_sound_file_button">Choose new sound file</string>
+    <string name="choose_sound_file_description_title">Create sound name</string>
+    <string name="choose_sound_file_description_label">Sound name</string>
+
+    <!-- Choose sound file action -->
 </resources>

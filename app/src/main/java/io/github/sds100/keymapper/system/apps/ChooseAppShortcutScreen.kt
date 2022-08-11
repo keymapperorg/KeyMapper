@@ -16,6 +16,7 @@ import androidx.compose.material.icons.outlined.Android
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -96,10 +97,14 @@ private fun ChooseAppShortcutScreen(
     val noPermissionMessage = stringResource(R.string.error_keymapper_doesnt_have_permission_app_shortcut)
 
     if (configState is ConfigAppShortcutState.ChooseName) {
+        var text by rememberSaveable { mutableStateOf("") }
+
         TextFieldDialog(
+            text = text,
             title = stringResource(R.string.choose_app_shortcut_choose_name),
             onConfirm = onChooseName,
-            onDismiss = onDismissChoosingName
+            onDismiss = onDismissChoosingName,
+            onTextChange = { text = it }
         )
     }
 

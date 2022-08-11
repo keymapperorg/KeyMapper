@@ -13,7 +13,7 @@ import io.github.sds100.keymapper.actions.ActionsFragment
 import io.github.sds100.keymapper.actions.keyevent.ChooseKeyCodeFragment
 import io.github.sds100.keymapper.actions.keyevent.ConfigKeyEventActionFragment
 import io.github.sds100.keymapper.actions.sound.ChooseSoundFileFragment
-import io.github.sds100.keymapper.actions.sound.ChooseSoundFileResult
+import io.github.sds100.keymapper.actions.sound.ChooseSoundResult
 import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.actions.tapscreen.PickDisplayCoordinateFragment
 import io.github.sds100.keymapper.constraints.ChooseConstraintFragment
@@ -241,7 +241,7 @@ fun NavigationViewModel.sendNavResultFromBundle(
 
         NavDestination.ID_CHOOSE_SOUND -> {
             val json = bundle.getString(ChooseSoundFileFragment.EXTRA_RESULT)!!
-            val result = Json.decodeFromString<ChooseSoundFileResult>(json)
+            val result = Json.decodeFromString<ChooseSoundResult>(json)
 
             onNavResult(NavResult(requestKey, result))
         }

@@ -5,10 +5,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
@@ -16,6 +12,7 @@ import io.github.sds100.keymapper.R
 
 @Composable
 fun TextFieldDialog(
+    text: String,
     title: String,
     label: String = "",
     error: String? = null,
@@ -24,8 +21,6 @@ fun TextFieldDialog(
     onConfirm: (String) -> Unit = { _ -> },
     onDismiss: () -> Unit = {}
 ) {
-    var text: String by rememberSaveable { mutableStateOf("") }
-
     CustomDialog(
         title = title,
         confirmButton = {
@@ -45,10 +40,7 @@ fun TextFieldDialog(
             label = label,
             errorMessage = error ?: "",
             isError = error != null,
-            onValueChange = {
-                text = it
-                onTextChange(it)
-            },
+            onValueChange = onTextChange,
             keyboardOptions = keyboardOptions.copy(imeAction = ImeAction.Done)
         )
     }
@@ -59,6 +51,7 @@ fun TextFieldDialog(
 private fun TextFieldDialogPreview() {
     MaterialTheme {
         TextFieldDialog(
+            text = "Text",
             title = "Title",
             label = "Label"
         )

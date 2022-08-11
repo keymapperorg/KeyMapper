@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.sds100.keymapper.actions.sound.ChooseSoundResult
 import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.system.apps.ChooseAppShortcutResult
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
@@ -125,6 +126,10 @@ class ChooseActionViewModel2 @Inject constructor(
         configActionState = ConfigActionState.Finished(ActionData.PhoneCall(text))
     }
 
+    fun onChooseSound(result: ChooseSoundResult) {
+        configActionState = ConfigActionState.Finished(ActionData.Sound(result.soundUid, result.name))
+    }
+
     fun onActionClick(id: ActionId) {
         viewModelScope.launch {
 
@@ -170,7 +175,9 @@ class ChooseActionViewModel2 @Inject constructor(
                 ActionId.PHONE_CALL -> {
                     configActionState = ConfigActionState.Dialog.PhoneCall
                 }
-                ActionId.SOUND -> TODO()
+                ActionId.SOUND -> {
+                    configActionState = ConfigActionState.Screen.ChooseSound
+                }
                 ActionId.TOGGLE_BLUETOOTH -> {
                     configActionState = ConfigActionState.Finished(ActionData.Bluetooth.Toggle)
                 }
@@ -491,6 +498,7 @@ sealed class ConfigActionState {
         object ChooseApp : Screen()
         object ChooseAppShortcut : Screen()
         object CreateTapScreenAction : Screen()
+        object ChooseSound : Screen()
     }
 
     data class Finished(val action: ActionData) : ConfigActionState()

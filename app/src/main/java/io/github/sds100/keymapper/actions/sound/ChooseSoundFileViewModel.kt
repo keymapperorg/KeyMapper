@@ -32,7 +32,7 @@ class ChooseSoundFileViewModel @Inject constructor(
             }
         }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    private val _returnResult = MutableSharedFlow<ChooseSoundFileResult>()
+    private val _returnResult = MutableSharedFlow<ChooseSoundResult>()
     val returnResult = _returnResult.asSharedFlow()
 
     fun onChooseSoundFileButtonClick() {
@@ -46,7 +46,7 @@ class ChooseSoundFileViewModel @Inject constructor(
             val soundFileInfo = useCase.soundFiles.value.find { it.uid == id } ?: return@launch
 
             val dialog = PopupUi.Text(
-                hint = getString(R.string.hint_sound_file_description),
+                hint = getString(R.string.choose_sound_file_description_title),
                 allowEmpty = false,
                 text = soundFileInfo.name
             )
@@ -54,9 +54,9 @@ class ChooseSoundFileViewModel @Inject constructor(
             val soundDescription = showPopup("file_description", dialog) ?: return@launch
 
             _returnResult.emit(
-                ChooseSoundFileResult(
+                ChooseSoundResult(
                     soundUid = soundFileInfo.uid,
-                    description = soundDescription
+                    name = soundDescription
                 )
             )
         }
@@ -67,7 +67,7 @@ class ChooseSoundFileViewModel @Inject constructor(
             val fileName = useCase.getSoundFileName(uri).valueOrNull() ?: return@launch
 
             val dialog = PopupUi.Text(
-                hint = getString(R.string.hint_sound_file_description),
+                hint = getString(R.string.choose_sound_file_description_title),
                 allowEmpty = false,
                 text = fileName
             )
@@ -76,9 +76,9 @@ class ChooseSoundFileViewModel @Inject constructor(
 
             soundDescription ?: return@launch
 
-            useCase.saveSound(uri)
+            useCase.saveSound(uri, soundDescription)
                 .onSuccess { soundFileUid ->
-                    _returnResult.emit(ChooseSoundFileResult(soundFileUid, soundDescription))
+                    _returnResult.emit(ChooseSoundResult(soundFileUid, soundDescription))
                 }.onFailure { error ->
                     val toast = PopupUi.Toast(error.getFullMessage(this@ChooseSoundFileViewModel))
                     showPopup("failed_toast", toast)

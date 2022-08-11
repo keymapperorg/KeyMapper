@@ -31,11 +31,11 @@ class SoundsManagerImpl @Inject constructor(
         }
     }
 
-    override suspend fun saveNewSound(uri: String): Result<String> {
+    override suspend fun saveNewSound(uri: String, name: String): Result<String> {
         val uid = UUID.randomUUID().toString()
 
         val soundFile = fileAdapter.getFileFromUri(uri)
-        val newFileName = createSoundCopyFileName(soundFile, uid)
+        val newFileName = createSoundCopyFileName(uid, name, soundFile.extension ?: "")
 
         val soundsDir = fileAdapter.getPrivateFile(SOUNDS_DIR_NAME)
         soundsDir.createDirectory()
@@ -105,11 +105,11 @@ class SoundsManagerImpl @Inject constructor(
             .map { getSoundFileInfo(it.name!!) }
     }
 
-    private fun createSoundCopyFileName(originalSoundFile: IFile, uid: String): String {
+    private fun createSoundCopyFileName(uid: String, name: String, extension: String): String {
         return buildString {
-            append(originalSoundFile.baseName)
+            append(name)
             append("_$uid")
-            append(".${originalSoundFile.extension}")
+            append(".$extension")
         }
     }
 }
@@ -120,7 +120,7 @@ interface SoundsManager {
     /**
      * @return the sound file uid
      */
-    suspend fun saveNewSound(uri: String): Result<String>
+    suspend fun saveNewSound(uri: String, name: String): Result<String>
     suspend fun restoreSound(file: IFile): Result<*>
     fun getSound(uid: String): Result<IFile>
     fun deleteSound(uid: String): Result<*>

@@ -26,11 +26,9 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.NavResult
 import com.ramcosta.composedestinations.result.ResultRecipient
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.actions.sound.ChooseSoundResult
 import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
-import io.github.sds100.keymapper.destinations.ChooseAppScreenDestination
-import io.github.sds100.keymapper.destinations.ChooseAppShortcutScreenDestination
-import io.github.sds100.keymapper.destinations.ChooseKeyCodeScreenDestination
-import io.github.sds100.keymapper.destinations.CreateTapScreenActionScreenDestination
+import io.github.sds100.keymapper.destinations.*
 import io.github.sds100.keymapper.system.apps.ChooseAppShortcutResult
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.util.ui.*
@@ -45,6 +43,7 @@ fun ChooseActionScreen(
     appResultRecipient: ResultRecipient<ChooseAppScreenDestination, String>,
     appShortcutResultRecipient: ResultRecipient<ChooseAppShortcutScreenDestination, ChooseAppShortcutResult>,
     tapScreenActionResultRecipient: ResultRecipient<CreateTapScreenActionScreenDestination, PickCoordinateResult>,
+    chooseSoundResultRecipient: ResultRecipient<ChooseSoundScreenDestination, ChooseSoundResult>,
     setResult: (ActionData) -> Unit,
     navigateBack: () -> Unit
 ) {
@@ -96,6 +95,18 @@ fun ChooseActionScreen(
         }
     }
 
+    chooseSoundResultRecipient.onNavResult { result ->
+        when (result) {
+            is NavResult.Canceled -> {
+                viewModel.dismissConfiguringAction()
+            }
+
+            is NavResult.Value -> {
+                viewModel.onChooseSound(result.value)
+            }
+        }
+    }
+
     ChooseActionScreen(
         viewModel = viewModel,
         setResult = setResult,
@@ -115,6 +126,10 @@ fun ChooseActionScreen(
         navigateToCreateTapScreenAction = {
             viewModel.onNavigateToConfigScreen()
             navigator.navigate(CreateTapScreenActionScreenDestination)
+        },
+        navigateToChooseSound = {
+            viewModel.onNavigateToConfigScreen()
+            navigator.navigate(ChooseSoundScreenDestination)
         }
     )
 }
@@ -173,7 +188,8 @@ private fun ChooseActionScreen(
     navigateToChooseKeyCode: () -> Unit,
     navigateToChooseApp: () -> Unit,
     navigateToChooseAppShortcut: () -> Unit,
-    navigateToCreateTapScreenAction: () -> Unit
+    navigateToCreateTapScreenAction: () -> Unit,
+    navigateToChooseSound: () -> Unit
 ) {
     val searchState by viewModel.searchState.collectAsState()
     val configActionState = viewModel.configActionState
@@ -191,6 +207,7 @@ private fun ChooseActionScreen(
             ConfigActionState.Screen.ChooseApp -> navigateToChooseApp()
             ConfigActionState.Screen.ChooseAppShortcut -> navigateToChooseAppShortcut()
             ConfigActionState.Screen.CreateTapScreenAction -> navigateToCreateTapScreenAction()
+            ConfigActionState.Screen.ChooseSound -> navigateToChooseSound()
         }
     }
 
@@ -253,57 +270,63 @@ private fun ChooseActionScreen(
                     onConfirmClick = onChooseInputMethod
                 )
             ConfigActionState.Dialog.Text -> {
-                var error: String? by rememberSaveable { mutableStateOf("") }
+                var text by rememberSaveable { mutableStateOf("") }
                 val emptyErrorString = stringResource(R.string.choose_action_text_empty_error)
+                val error by derivedStateOf {
+                    when {
+                        text.isEmpty() -> emptyErrorString
+                        else -> null
+                    }
+                }
 
                 TextFieldDialog(
+                    text = text,
                     title = stringResource(R.string.choose_action_text_action_title),
                     label = stringResource(R.string.choose_action_text_action_label),
                     error = error,
-                    onTextChange = { text ->
-                        error = when {
-                            text.isEmpty() -> emptyErrorString
-                            else -> null
-                        }
-                    },
+                    onTextChange = { text = it },
                     onConfirm = onCreateTextAction,
                     onDismiss = onDismissConfiguringAction
                 )
             }
             ConfigActionState.Dialog.Url -> {
-                var error: String? by rememberSaveable { mutableStateOf("") }
+                var text by rememberSaveable { mutableStateOf("") }
                 val emptyErrorString = stringResource(R.string.choose_action_url_empty_error)
+                val error by derivedStateOf {
+                    when {
+                        text.isEmpty() -> emptyErrorString
+                        else -> null
+                    }
+                }
 
                 TextFieldDialog(
+                    text = text,
                     title = stringResource(R.string.choose_action_url_action_title),
                     label = stringResource(R.string.choose_action_url_action_label),
                     error = error,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
-                    onTextChange = { text ->
-                        error = when {
-                            text.isEmpty() -> emptyErrorString
-                            else -> null
-                        }
-                    },
+                    onTextChange = { text = it },
                     onConfirm = onCreateUrlAction,
                     onDismiss = onDismissConfiguringAction
                 )
             }
             ConfigActionState.Dialog.PhoneCall -> {
-                var error: String? by rememberSaveable { mutableStateOf("") }
+                var text by rememberSaveable { mutableStateOf("") }
                 val emptyErrorString = stringResource(R.string.choose_action_phone_empty_error)
+                val error by derivedStateOf {
+                    when {
+                        text.isEmpty() -> emptyErrorString
+                        else -> null
+                    }
+                }
 
                 TextFieldDialog(
+                    text = text,
                     title = stringResource(R.string.choose_action_phone_action_title),
                     label = stringResource(R.string.choose_action_phone_action_label),
                     error = error,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                    onTextChange = { text ->
-                        error = when {
-                            text.isEmpty() -> emptyErrorString
-                            else -> null
-                        }
-                    },
+                    onTextChange = { text = it },
                     onConfirm = onCreatePhoneCallAction,
                     onDismiss = onDismissConfiguringAction
                 )
