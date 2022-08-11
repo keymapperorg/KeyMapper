@@ -155,7 +155,7 @@ class CreateActionViewModelImpl @Inject constructor(
                 }
 
                 val dialog = PopupUi.MultiChoice(
-                    title = getString(R.string.dialog_title_choose_orientations_to_cycle),
+                    title = getString(R.string.choose_action_cycle_orientations_dialog_title),
                     items
                 )
                 val orientations = showPopup("pick_orientations", dialog) ?: return null

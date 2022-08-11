@@ -1,13 +1,12 @@
 package io.github.sds100.keymapper.actions
 
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Keyboard
@@ -30,6 +29,7 @@ import io.github.sds100.keymapper.actions.sound.ChooseSoundResult
 import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.destinations.*
 import io.github.sds100.keymapper.system.apps.ChooseAppShortcutResult
+import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.util.ui.*
 
@@ -231,7 +231,8 @@ private fun ChooseActionScreen(
         onChooseInputMethod = viewModel::onChooseInputMethod,
         onCreateTextAction = viewModel::onCreateTextAction,
         onCreateUrlAction = viewModel::onCreateUrlAction,
-        onCreatePhoneCallAction = viewModel::onCreatePhoneCallAction
+        onCreatePhoneCallAction = viewModel::onCreatePhoneCallAction,
+        onConfigCycleRotationsAction = viewModel::onConfigCycleRotations
     )
 }
 
@@ -250,6 +251,7 @@ private fun ChooseActionScreen(
     onCreateTextAction: (String) -> Unit = {},
     onCreateUrlAction: (String) -> Unit = {},
     onCreatePhoneCallAction: (String) -> Unit = {},
+    onConfigCycleRotationsAction: (List<Orientation>) -> Unit = {}
 ) {
     Scaffold(modifier, bottomBar = {
         SearchAppBar(onBack, searchState, setSearchState) {
@@ -331,6 +333,12 @@ private fun ChooseActionScreen(
                     onDismiss = onDismissConfiguringAction
                 )
             }
+            ConfigActionState.Dialog.CycleRotations -> {
+                ConfigCycleRotationDialog(
+                    onDismissRequest = onDismissConfiguringAction,
+                    onConfirmClick = onConfigCycleRotationsAction
+                )
+            }
         }
 
         ChooseActionList(
@@ -386,6 +394,82 @@ private fun ChooseActionList(
                         text = listItem.header
                     )
             }
+        }
+    }
+}
+
+@Composable
+private fun ConfigCycleRotationDialog(
+    onDismissRequest: () -> Unit = {},
+    onConfirmClick: (List<Orientation>) -> Unit = {},
+) {
+    var orientations by rememberSaveable { mutableStateOf(emptySet<Orientation>()) }
+
+    CustomDialog(
+        onDismissRequest = onDismissRequest,
+        title = stringResource(R.string.choose_action_cycle_orientations_dialog_title),
+        confirmButton = {
+            TextButton(
+                onClick = { onConfirmClick(orientations.toList()) }, enabled = orientations.isNotEmpty()
+            ) {
+                Text(stringResource(R.string.pos_confirm))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text(stringResource(R.string.neg_cancel))
+            }
+        }
+    ) {
+        Column(Modifier.verticalScroll(rememberScrollState())) {
+            CheckBoxWithText(
+                modifier = Modifier.fillMaxWidth(),
+                isChecked = orientations.contains(Orientation.ORIENTATION_0),
+                text = stringResource(R.string.orientation_0),
+                onCheckedChange = { isChecked ->
+                    if (isChecked) {
+                        orientations = orientations + Orientation.ORIENTATION_0
+                    } else {
+                        orientations = orientations - Orientation.ORIENTATION_0
+                    }
+                }
+            )
+            CheckBoxWithText(
+                modifier = Modifier.fillMaxWidth(),
+                isChecked = orientations.contains(Orientation.ORIENTATION_90),
+                text = stringResource(R.string.orientation_90),
+                onCheckedChange = { isChecked ->
+                    if (isChecked) {
+                        orientations = orientations + Orientation.ORIENTATION_90
+                    } else {
+                        orientations = orientations - Orientation.ORIENTATION_90
+                    }
+                }
+            )
+            CheckBoxWithText(
+                modifier = Modifier.fillMaxWidth(),
+                isChecked = orientations.contains(Orientation.ORIENTATION_180),
+                text = stringResource(R.string.orientation_180),
+                onCheckedChange = { isChecked ->
+                    if (isChecked) {
+                        orientations = orientations + Orientation.ORIENTATION_180
+                    } else {
+                        orientations = orientations - Orientation.ORIENTATION_180
+                    }
+                }
+            )
+            CheckBoxWithText(
+                modifier = Modifier.fillMaxWidth(),
+                isChecked = orientations.contains(Orientation.ORIENTATION_270),
+                text = stringResource(R.string.orientation_270),
+                onCheckedChange = { isChecked ->
+                    if (isChecked) {
+                        orientations = orientations + Orientation.ORIENTATION_270
+                    } else {
+                        orientations = orientations - Orientation.ORIENTATION_270
+                    }
+                }
+            )
         }
     }
 }

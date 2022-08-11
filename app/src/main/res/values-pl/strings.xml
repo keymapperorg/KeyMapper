@@ -428,7 +428,7 @@
     <string name="dialog_title_fix_dnd_trigger_error">Udziel dostęp do trybu Nie przeszkadzać</string>
     <string name="dialog_message_fix_dnd_trigger_error">Spowoduje to przejście do strony ustawień urządzenia, na której możesz zarządzać aplikacjami, które mogą zmieniać stan Nie przeszkadzać. To <b>nie występuje na niektórych urządzeniach</b>, więc możesz kliknąć Nie wyświetlaj ponownie, jeśli nie widzisz aplikacji Key Mapper na tej liście.</string>
     <string name="dialog_title_choose_to_show_volume_ui">Pokazać interfejs głośności?</string>
-    <string name="dialog_title_choose_orientations_to_cycle">Wybierz orientacje do przełączenia</string>
+    <string name="choose_action_cycle_orientations_dialog_title">Wybierz orientacje do przełączenia</string>
     <string name="dialog_title_choose_dnd_mode">Wybierz tryb Nie przeszkadzać</string>
     <string name="dialog_title_choose_ringer_mode">Wybierz tryb dzwonka</string>
     <string name="dialog_title_choose_camera_flash">Wybierz lampę błyskową aparatu</string>

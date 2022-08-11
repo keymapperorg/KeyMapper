@@ -553,7 +553,6 @@
     <string name="dialog_message_fix_dnd_trigger_error">You will be taken to your device\'s settings page to manage which apps can modify the Do Not Disturb state. This is <b>not present on some devices</b> so tap don\'t show again if you do not see Key Mapper in the list.</string>
 
     <string name="dialog_title_choose_to_show_volume_ui">Show volume UI?</string>
-    <string name="dialog_title_choose_orientations_to_cycle">Choose which orientations to cycle through</string>
     <string name="dialog_title_choose_dnd_mode">Choose do not disturb mode</string>
     <string name="dialog_title_choose_ringer_mode">Choose ringer mode</string>
     <string name="dialog_title_choose_camera_flash">Choose camera flash</string>
@@ -1359,6 +1358,7 @@
     <string name="choose_action_phone_action_title">Create phone call action</string>
     <string name="choose_action_phone_action_label">Phone number to call</string>
     <string name="choose_action_phone_empty_error">Must not be empty!</string>
+    <string name="choose_action_cycle_orientations_dialog_title">Choose which orientations to cycle through</string>
     <!-- Choose action screen -->
 
     <!-- Choose app shortcut screen -->
@@ -1381,6 +1381,5 @@
     <string name="choose_sound_file_button">Choose new sound file</string>
     <string name="choose_sound_file_description_title">Create sound name</string>
     <string name="choose_sound_file_description_label">Sound name</string>
-
     <!-- Choose sound file action -->
 </resources>

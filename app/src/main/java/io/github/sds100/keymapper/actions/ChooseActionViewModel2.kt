@@ -9,6 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.actions.sound.ChooseSoundResult
 import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.system.apps.ChooseAppShortcutResult
+import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.util.containsQuery
 import io.github.sds100.keymapper.util.ui.KMIcon
@@ -130,6 +131,10 @@ class ChooseActionViewModel2 @Inject constructor(
         configActionState = ConfigActionState.Finished(ActionData.Sound(result.soundUid, result.name))
     }
 
+    fun onConfigCycleRotations(orientations: List<Orientation>) {
+        configActionState = ConfigActionState.Finished(ActionData.Rotation.CycleRotations(orientations))
+    }
+
     fun onActionClick(id: ActionId) {
         viewModelScope.launch {
 
@@ -229,7 +234,9 @@ class ChooseActionViewModel2 @Inject constructor(
                 ActionId.SWITCH_ORIENTATION -> {
                     configActionState = ConfigActionState.Finished(ActionData.Rotation.SwitchOrientation)
                 }
-                ActionId.CYCLE_ROTATIONS -> TODO()
+                ActionId.CYCLE_ROTATIONS -> {
+                    configActionState = ConfigActionState.Dialog.CycleRotations
+                }
                 ActionId.VOLUME_UP -> TODO()
                 ActionId.VOLUME_DOWN -> TODO()
                 ActionId.VOLUME_SHOW_DIALOG -> {
@@ -478,6 +485,7 @@ sealed class ConfigActionState {
         object Text : Dialog()
         object Url : Dialog()
         object PhoneCall : Dialog()
+        object CycleRotations : Dialog()
         object Hidden : Dialog()
     }
 
