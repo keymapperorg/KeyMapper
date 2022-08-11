@@ -92,7 +92,9 @@ class ChooseActionViewModel2 @Inject constructor(
     }
 
     fun onNavigateToConfigScreen() {
-        configActionState = ConfigActionState.Screen.Navigated
+        (configActionState as? ConfigActionState.Screen)?.also { screen ->
+            configActionState = ConfigActionState.Screen.Navigated(screen)
+        }
     }
 
     fun onChooseInputMethod(imeInfo: ImeInfo) {
@@ -104,7 +106,36 @@ class ChooseActionViewModel2 @Inject constructor(
     }
 
     fun onChooseApp(packageName: String) {
-        configActionState = ConfigActionState.Finished(ActionData.App(packageName))
+        val navigatedScreen = (configActionState as? ConfigActionState.Screen.Navigated)?.screen ?: return
+        val chooseAppConfig = (navigatedScreen as? ConfigActionState.Screen.ChooseApp) ?: return
+
+        val action = when (chooseAppConfig) {
+            ConfigActionState.Screen.ChooseApp.ForAppAction ->
+                ActionData.App(packageName)
+
+            ConfigActionState.Screen.ChooseApp.ForNextTrackAction ->
+                ActionData.ControlMediaForApp.NextTrack(packageName)
+
+            ConfigActionState.Screen.ChooseApp.ForPauseMediaAction ->
+                ActionData.ControlMediaForApp.Pause(packageName)
+
+            ConfigActionState.Screen.ChooseApp.ForPlayMediaAction ->
+                ActionData.ControlMediaForApp.Play(packageName)
+
+            ConfigActionState.Screen.ChooseApp.ForPlayPauseMediaAction ->
+                ActionData.ControlMediaForApp.PlayPause(packageName)
+
+            ConfigActionState.Screen.ChooseApp.ForPreviousTrackAction ->
+                ActionData.ControlMediaForApp.PreviousTrack(packageName)
+
+            ConfigActionState.Screen.ChooseApp.ForFastForwardAction ->
+                ActionData.ControlMediaForApp.FastForward(packageName)
+
+            ConfigActionState.Screen.ChooseApp.ForRewindAction ->
+                ActionData.ControlMediaForApp.Rewind(packageName)
+        }
+
+        configActionState = ConfigActionState.Finished(action)
     }
 
     fun onChooseAppShortcut(result: ChooseAppShortcutResult) {
@@ -191,7 +222,7 @@ class ChooseActionViewModel2 @Inject constructor(
                 }
 
                 ActionId.APP -> {
-                    configActionState = ConfigActionState.Screen.ChooseApp
+                    configActionState = ConfigActionState.Screen.ChooseApp.ForAppAction
                 }
 
                 ActionId.APP_SHORTCUT -> {
@@ -322,31 +353,45 @@ class ChooseActionViewModel2 @Inject constructor(
                 ActionId.PAUSE_MEDIA -> {
                     configActionState = ConfigActionState.Finished(ActionData.ControlMedia.Pause)
                 }
-                ActionId.PAUSE_MEDIA_PACKAGE -> TODO()
+                ActionId.PAUSE_MEDIA_PACKAGE -> {
+                    configActionState = ConfigActionState.Screen.ChooseApp.ForPauseMediaAction
+                }
                 ActionId.PLAY_MEDIA -> {
                     configActionState = ConfigActionState.Finished(ActionData.ControlMedia.Play)
                 }
-                ActionId.PLAY_MEDIA_PACKAGE -> TODO()
+                ActionId.PLAY_MEDIA_PACKAGE -> {
+                    configActionState = ConfigActionState.Screen.ChooseApp.ForPlayMediaAction
+                }
                 ActionId.PLAY_PAUSE_MEDIA -> {
                     configActionState = ConfigActionState.Finished(ActionData.ControlMedia.PlayPause)
                 }
-                ActionId.PLAY_PAUSE_MEDIA_PACKAGE -> TODO()
+                ActionId.PLAY_PAUSE_MEDIA_PACKAGE -> {
+                    configActionState = ConfigActionState.Screen.ChooseApp.ForPlayPauseMediaAction
+                }
                 ActionId.NEXT_TRACK -> {
                     configActionState = ConfigActionState.Finished(ActionData.ControlMedia.NextTrack)
                 }
-                ActionId.NEXT_TRACK_PACKAGE -> TODO()
+                ActionId.NEXT_TRACK_PACKAGE -> {
+                    configActionState = ConfigActionState.Screen.ChooseApp.ForNextTrackAction
+                }
                 ActionId.PREVIOUS_TRACK -> {
                     configActionState = ConfigActionState.Finished(ActionData.ControlMedia.PreviousTrack)
                 }
-                ActionId.PREVIOUS_TRACK_PACKAGE -> TODO()
+                ActionId.PREVIOUS_TRACK_PACKAGE -> {
+                    configActionState = ConfigActionState.Screen.ChooseApp.ForPreviousTrackAction
+                }
                 ActionId.FAST_FORWARD -> {
                     configActionState = ConfigActionState.Finished(ActionData.ControlMedia.FastForward)
                 }
-                ActionId.FAST_FORWARD_PACKAGE -> TODO()
+                ActionId.FAST_FORWARD_PACKAGE -> {
+                    configActionState = ConfigActionState.Screen.ChooseApp.ForFastForwardAction
+                }
                 ActionId.REWIND -> {
                     configActionState = ConfigActionState.Finished(ActionData.ControlMedia.Rewind)
                 }
-                ActionId.REWIND_PACKAGE -> TODO()
+                ActionId.REWIND_PACKAGE -> {
+                    configActionState = ConfigActionState.Screen.ChooseApp.ForRewindAction
+                }
                 ActionId.GO_BACK -> {
                     configActionState = ConfigActionState.Finished(ActionData.GoBack)
                 }
@@ -561,14 +606,24 @@ sealed class ConfigActionState {
         /**
          * The user has navigated away to the other screen.
          */
-        object Navigated : Screen()
+        data class Navigated(val screen: Screen) : Screen()
 
         /**
          * The user should be taken to the screen to choose a key code.
          */
         object ChooseKeycode : Screen()
 
-        object ChooseApp : Screen()
+        sealed class ChooseApp : Screen() {
+            object ForAppAction : ChooseApp()
+            object ForPauseMediaAction : ChooseApp()
+            object ForPlayMediaAction : ChooseApp()
+            object ForPlayPauseMediaAction : ChooseApp()
+            object ForNextTrackAction : ChooseApp()
+            object ForPreviousTrackAction : ChooseApp()
+            object ForFastForwardAction : ChooseApp()
+            object ForRewindAction : ChooseApp()
+        }
+
         object ChooseAppShortcut : Screen()
         object CreateTapScreenAction : Screen()
         object ChooseSound : Screen()

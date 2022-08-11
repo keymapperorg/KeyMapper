@@ -199,16 +199,15 @@ private fun ChooseActionScreen(
     val configActionState = viewModel.configActionState
 
     if (configActionState is ConfigActionState.Finished) {
-        setResult(configActionState.action)
         navigateBack()
+        setResult(configActionState.action)
     }
 
     if (configActionState is ConfigActionState.Screen) {
         when (configActionState) {
-            ConfigActionState.Screen.Navigated -> {}
-
-            is ConfigActionState.Screen.ChooseKeycode -> navigateToChooseKeyCode()
-            ConfigActionState.Screen.ChooseApp -> navigateToChooseApp()
+            is ConfigActionState.Screen.Navigated -> {}
+            ConfigActionState.Screen.ChooseKeycode -> navigateToChooseKeyCode()
+            is ConfigActionState.Screen.ChooseApp -> navigateToChooseApp()
             ConfigActionState.Screen.ChooseAppShortcut -> navigateToChooseAppShortcut()
             ConfigActionState.Screen.CreateTapScreenAction -> navigateToCreateTapScreenAction()
             ConfigActionState.Screen.ChooseSound -> navigateToChooseSound()
