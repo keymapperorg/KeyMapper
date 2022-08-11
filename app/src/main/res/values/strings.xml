@@ -554,7 +554,6 @@
 
     <string name="dialog_title_choose_to_show_volume_ui">Show volume UI?</string>
     <string name="dialog_title_choose_dnd_mode">Choose do not disturb mode</string>
-    <string name="dialog_title_choose_ringer_mode">Choose ringer mode</string>
     <string name="dialog_title_choose_camera_flash">Choose camera flash</string>
     <string name="dialog_title_choose_keyboard">Choose keyboard</string>
     <string name="dialog_title_choose_wifi_network">Choose network</string>
@@ -1366,6 +1365,7 @@
     <string name="choose_action_config_volume_toggle_mute_action_dialog_title">Create toggle mute action</string>
     <string name="choose_action_config_show_volume_ui_checkbox">Show volume dialog</string>
     <string name="choose_action_config_volume_stream_header">Volume stream to change</string>
+    <string name="choose_action_choose_ringer_mode_dialog_title">Choose ringer mode</string>
     <!-- Choose action screen -->
 
     <!-- Choose app shortcut screen -->

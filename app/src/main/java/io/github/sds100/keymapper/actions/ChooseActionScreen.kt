@@ -31,6 +31,7 @@ import io.github.sds100.keymapper.destinations.*
 import io.github.sds100.keymapper.system.apps.ChooseAppShortcutResult
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
+import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeStream
 import io.github.sds100.keymapper.system.volume.VolumeStreamUtils
 import io.github.sds100.keymapper.util.ui.*
@@ -235,7 +236,8 @@ private fun ChooseActionScreen(
         onCreateUrlAction = viewModel::onCreateUrlAction,
         onCreatePhoneCallAction = viewModel::onCreatePhoneCallAction,
         onConfigCycleRotationsAction = viewModel::onConfigCycleRotations,
-        onConfigVolumeAction = viewModel::onConfigVolumeAction
+        onConfigVolumeAction = viewModel::onConfigVolumeAction,
+        onChooseRingerMode = viewModel::onChooseRingerMode
     )
 }
 
@@ -255,7 +257,8 @@ private fun ChooseActionScreen(
     onCreateUrlAction: (String) -> Unit = {},
     onCreatePhoneCallAction: (String) -> Unit = {},
     onConfigCycleRotationsAction: (List<Orientation>) -> Unit = {},
-    onConfigVolumeAction: (Boolean, VolumeStream) -> Unit = { _, _ -> }
+    onConfigVolumeAction: (Boolean, VolumeStream) -> Unit = { _, _ -> },
+    onChooseRingerMode: (RingerMode) -> Unit = {}
 ) {
     Scaffold(modifier, bottomBar = {
         SearchAppBar(onBack, searchState, setSearchState) {
@@ -355,6 +358,12 @@ private fun ChooseActionScreen(
                 ConfigVolumeActionDialog(
                     title = stringResource(titleRes),
                     onConfirm = onConfigVolumeAction,
+                    onDismiss = onDismissConfiguringAction
+                )
+            }
+            ConfigActionState.Dialog.RingerMode -> {
+                ChooseRingerModeDialog(
+                    onConfirm = onChooseRingerMode,
                     onDismiss = onDismissConfiguringAction
                 )
             }
@@ -602,5 +611,56 @@ private fun ConfigVolumeActionDialogPreview() {
         ConfigVolumeActionDialog(
             title = stringResource(R.string.choose_action_config_volume_down_action_dialog_title)
         )
+    }
+}
+
+@Composable
+private fun ChooseRingerModeDialog(
+    onConfirm: (RingerMode) -> Unit = { _ -> },
+    onDismiss: () -> Unit = {}
+) {
+    var selectedRingerMode: RingerMode? by rememberSaveable { mutableStateOf(null) }
+
+    CustomDialog(
+        title = stringResource(R.string.choose_action_choose_ringer_mode_dialog_title),
+        confirmButton = {
+            TextButton(onClick = { onConfirm(selectedRingerMode!!) }) {
+                Text(stringResource(R.string.pos_confirm))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.neg_cancel))
+            }
+        }
+    ) {
+        Column(Modifier.fillMaxWidth()) {
+            RadioButtonWithText(
+                modifier = Modifier.fillMaxWidth(),
+                isSelected = selectedRingerMode == RingerMode.NORMAL,
+                text = stringResource(R.string.ringer_mode_normal),
+                onClick = { selectedRingerMode = RingerMode.NORMAL }
+            )
+            RadioButtonWithText(
+                modifier = Modifier.fillMaxWidth(),
+                isSelected = selectedRingerMode == RingerMode.VIBRATE,
+                text = stringResource(R.string.ringer_mode_vibrate),
+                onClick = { selectedRingerMode = RingerMode.VIBRATE }
+            )
+            RadioButtonWithText(
+                modifier = Modifier.fillMaxWidth(),
+                isSelected = selectedRingerMode == RingerMode.SILENT,
+                text = stringResource(R.string.ringer_mode_silent),
+                onClick = { selectedRingerMode = RingerMode.SILENT }
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun ChooseRingerModeDialogPreview() {
+    MaterialTheme {
+        ChooseRingerModeDialog()
     }
 }

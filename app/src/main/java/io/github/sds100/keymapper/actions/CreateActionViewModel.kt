@@ -114,7 +114,10 @@ class CreateActionViewModelImpl @Inject constructor(
                 val items = RingerMode.values()
                     .map { it to getString(RingerModeUtils.getLabel(it)) }
 
-                val dialog = PopupUi.SingleChoice(title = getString(R.string.dialog_title_choose_ringer_mode), items)
+                val dialog = PopupUi.SingleChoice(
+                    title = getString(R.string.choose_action_choose_ringer_mode_dialog_title),
+                    items
+                )
                 val ringerMode = showPopup("pick_ringer_mode", dialog) ?: return null
 
                 return ActionData.SetRingerMode(ringerMode)

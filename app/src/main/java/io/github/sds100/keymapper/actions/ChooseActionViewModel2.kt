@@ -11,6 +11,7 @@ import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.system.apps.ChooseAppShortcutResult
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
+import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeStream
 import io.github.sds100.keymapper.util.containsQuery
 import io.github.sds100.keymapper.util.ui.KMIcon
@@ -134,6 +135,10 @@ class ChooseActionViewModel2 @Inject constructor(
 
     fun onConfigCycleRotations(orientations: List<Orientation>) {
         configActionState = ConfigActionState.Finished(ActionData.Rotation.CycleRotations(orientations))
+    }
+
+    fun onChooseRingerMode(mode: RingerMode) {
+        configActionState = ConfigActionState.Finished(ActionData.SetRingerMode(mode))
     }
 
     fun onConfigVolumeAction(showVolumeDialog: Boolean, stream: VolumeStream) {
@@ -272,15 +277,18 @@ class ChooseActionViewModel2 @Inject constructor(
                 ActionId.CYCLE_RINGER_MODE -> {
                     configActionState = ConfigActionState.Finished(ActionData.CycleRingerMode)
                 }
-                ActionId.CHANGE_RINGER_MODE -> TODO()
+                ActionId.CHANGE_RINGER_MODE -> {
+                    configActionState = ConfigActionState.Dialog.RingerMode
+                }
                 ActionId.CYCLE_VIBRATE_RING -> {
                     configActionState = ConfigActionState.Finished(ActionData.CycleVibrateRing)
                 }
                 ActionId.TOGGLE_DND_MODE -> TODO()
                 ActionId.ENABLE_DND_MODE -> TODO()
 
-                //TODO dont select dnd mode
-                ActionId.DISABLE_DND_MODE -> TODO()
+                ActionId.DISABLE_DND_MODE -> {
+                    configActionState = ConfigActionState.Finished(ActionData.DoNotDisturb.Disable)
+                }
                 ActionId.EXPAND_NOTIFICATION_DRAWER -> {
                     configActionState = ConfigActionState.Finished(ActionData.StatusBar.ExpandNotifications)
                 }
@@ -520,6 +528,8 @@ sealed class ConfigActionState {
             object Unmute : Volume()
             object ToggleMute : Volume()
         }
+
+        object RingerMode : Dialog()
 
         object Hidden : Dialog()
     }
