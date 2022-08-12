@@ -124,10 +124,8 @@ android {
         correctErrorTypes = true
     }
 
-    kotlinOptions.useIR = false
-
     composeOptions {
-        kotlinCompilerExtensionVersion '1.1.1'
+        kotlinCompilerExtensionVersion '1.2.0'
     }
 }
 
@@ -162,9 +160,9 @@ android.applicationVariants.all { variant ->
 }
 
 dependencies {
-    def room_version = "2.4.2"
-    def coroutinesVersion = "1.6.2"
-    def nav_version = '2.5.0'
+    def room_version = "2.4.3"
+    def coroutinesVersion = "1.6.3"
+    def nav_version = '2.5.1'
     def work_version = "2.7.1"
     def epoxy_version = "4.6.2"
     def splitties_version = "3.0.0-beta01"
@@ -180,7 +178,7 @@ dependencies {
 
     // random stuff
     implementation 'com.google.android.material:material:1.6.1'
-    implementation 'com.google.android.material:compose-theme-adapter-3:1.0.14'
+    implementation 'com.google.android.material:compose-theme-adapter-3:1.0.16'
     implementation 'com.github.salomonbrys.kotson:kotson:2.5.0'
     implementation "com.airbnb.android:epoxy:$epoxy_version"
     implementation 'com.github.AppIntro:AppIntro:6.1.0'
@@ -197,7 +195,7 @@ dependencies {
     implementation 'org.lsposed.hiddenapibypass:hiddenapibypass:4.3'
     implementation 'com.google.dagger:hilt-android:2.42'
     kapt 'com.google.dagger:hilt-compiler:2.42'
-    implementation 'com.google.devtools.ksp:symbol-processing-api:1.6.10-1.0.4'
+    implementation 'com.google.devtools.ksp:symbol-processing-api:1.7.0-1.0.6'
     implementation 'io.github.raamcosta.compose-destinations:core:1.5.14-beta'
     ksp 'io.github.raamcosta.compose-destinations:ksp:1.5.14-beta'
 
@@ -213,17 +211,17 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-core-ui:1.0.0'
     implementation 'androidx.core:core-ktx:1.8.0'
 
-    implementation 'androidx.fragment:fragment-ktx:1.5.0'
+    implementation 'androidx.fragment:fragment-ktx:1.5.2'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.0'
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.0'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.0'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
     implementation "androidx.room:room-ktx:$room_version"
     implementation "androidx.work:work-runtime-ktx:$work_version"
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
     implementation "androidx.multidex:multidex:$multidex_version"
     implementation "androidx.browser:browser:1.4.0"
-    implementation 'androidx.appcompat:appcompat:1.4.2'
+    implementation 'androidx.appcompat:appcompat:1.5.0'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'androidx.preference:preference-ktx:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
@@ -231,21 +229,21 @@ dependencies {
     implementation "androidx.room:room-runtime:$room_version"
     implementation "androidx.viewpager2:viewpager2:1.0.0"
     implementation "androidx.datastore:datastore-preferences:1.0.0"
-    implementation "androidx.core:core-splashscreen:1.0.0-rc01"
+    implementation "androidx.core:core-splashscreen:1.0.0"
     implementation "androidx.hilt:hilt-navigation-fragment:1.0.0"
     implementation "androidx.hilt:hilt-navigation-compose:1.0.0"
     kapt "androidx.room:room-compiler:$room_version"
 
-    implementation "androidx.navigation:navigation-compose:2.5.0"
-    implementation 'androidx.activity:activity-compose:1.5.0'
-    implementation 'androidx.compose.material3:material3:1.0.0-alpha14'
-    implementation 'androidx.compose.material3:material3-window-size-class:1.0.0-alpha14'
-    implementation 'androidx.compose.animation:animation:1.1.1'
-    implementation 'androidx.compose.ui:ui-tooling:1.1.1'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.5.0'
-    implementation "androidx.compose.material:material-icons-extended:1.1.1"
+    implementation "androidx.navigation:navigation-compose:2.5.1"
+    implementation 'androidx.activity:activity-compose:1.5.1'
+    implementation 'androidx.compose.material3:material3:1.0.0-alpha16'
+    implementation 'androidx.compose.material3:material3-window-size-class:1.0.0-alpha16'
+    implementation 'androidx.compose.animation:animation:1.2.1'
+    implementation 'androidx.compose.ui:ui-tooling:1.2.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1'
+    implementation "androidx.compose.material:material-icons-extended:1.2.1"
     implementation "com.google.accompanist:accompanist-drawablepainter:0.23.1"
-    implementation "androidx.compose.runtime:runtime-livedata:1.1.1"
+    implementation "androidx.compose.runtime:runtime-livedata:1.2.1"
 
 //    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.6'
 
@@ -275,6 +273,6 @@ dependencies {
     androidTestImplementation "androidx.navigation:navigation-testing:$nav_version"
     androidTestImplementation 'android.arch.persistence.room:testing:1.1.1'
     androidTestImplementation "org.mockito:mockito-android:4.6.1"
-    debugImplementation "androidx.fragment:fragment-testing:1.5.0"
+    debugImplementation "androidx.fragment:fragment-testing:1.5.2"
     implementation "androidx.test:core:$androidXTestCoreVersion"
 }
