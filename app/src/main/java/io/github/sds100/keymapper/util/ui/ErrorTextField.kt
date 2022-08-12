@@ -6,10 +6,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ErrorOutline
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -20,6 +17,7 @@ import androidx.compose.ui.unit.dp
  * Created by sds100 on 08/08/2022.
  */
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ErrorTextField(
     modifier: Modifier = Modifier,
@@ -42,7 +40,7 @@ fun ErrorTextField(
             keyboardActions = keyboardActions,
             trailingIcon = {
                 if (isError) {
-                    androidx.compose.material3.Icon(
+                    Icon(
                         imageVector = Icons.Outlined.ErrorOutline,
                         contentDescription = null
                     )

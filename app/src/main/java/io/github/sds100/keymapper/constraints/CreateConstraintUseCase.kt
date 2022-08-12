@@ -33,6 +33,8 @@ class CreateConstraintUseCaseImpl @Inject constructor(
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP_MR1) {
                     return Error.SdkVersionTooLow(minSdk = Build.VERSION_CODES.LOLLIPOP_MR1)
                 }
+
+            else -> return null
         }
 
         return null

@@ -123,7 +123,7 @@ private fun CreateTapScreenActionScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         bottomBar = {
             BottomAppBar(
-                icons = {
+                actions = {
                     IconButton(onClick = onBackClick) {
                         Icon(
                             Icons.Outlined.ArrowBack,
@@ -133,7 +133,12 @@ private fun CreateTapScreenActionScreen(
                 },
                 floatingActionButton = {
                     AnimatedVisibility(state.isDoneButtonEnabled, enter = fadeIn(), exit = fadeOut()) {
-                        BottomAppBarDefaults.FloatingActionButton(onClick = onDoneClick) {
+                        FloatingActionButton(
+                            onClick = onDoneClick,
+                            containerColor = BottomAppBarDefaults.containerColor,
+                            elevation = BottomAppBarDefaults.BottomAppBarFabElevation,
+                            contentColor = BottomAppBarDefaults.bottomAppBarFabColor
+                        ) {
                             Icon(
                                 Icons.Outlined.Check,
                                 contentDescription = stringResource(R.string.content_description_done_configuring_coordinate)
@@ -158,6 +163,7 @@ private fun CreateTapScreenActionScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Content(
     modifier: Modifier,

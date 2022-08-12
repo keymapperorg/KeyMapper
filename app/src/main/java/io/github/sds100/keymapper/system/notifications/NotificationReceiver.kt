@@ -56,6 +56,7 @@ class NotificationReceiver : NotificationListenerService(), LifecycleOwner {
                 when (event) {
                     Event.DismissLastNotification -> cancelNotification(lastNotificationKey)
                     Event.DismissAllNotifications -> cancelAllNotifications()
+                    else -> {}
                 }
             }.launchIn(lifecycleScope)
     }

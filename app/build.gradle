@@ -8,7 +8,7 @@ apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: 'com.google.devtools.ksp'
 
 android {
-    compileSdkVersion 32
+    compileSdkVersion 33
     buildToolsVersion = '32.1.0-rc1'
 
     def versionProperties = new Properties()
@@ -17,7 +17,7 @@ android {
     defaultConfig {
         applicationId "io.github.sds100.keymapper"
         minSdkVersion 21
-        targetSdkVersion 32
+        targetSdkVersion 33
         versionCode versionProperties.getProperty("VERSION_CODE").toInteger()
         versionName versionProperties.getProperty("VERSION_NAME")
         multiDexEnabled true
@@ -212,7 +212,7 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.8.0'
 
     implementation 'androidx.fragment:fragment-ktx:1.5.2'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
     implementation "androidx.room:room-ktx:$room_version"

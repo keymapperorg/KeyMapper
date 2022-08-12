@@ -564,6 +564,8 @@ object ActionUtils {
             ActionId.DISABLE_WIFI,
             -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 return listOf(Permission.ROOT)
+            } else {
+                return emptyList()
             }
 
             ActionId.TOGGLE_MOBILE_DATA,
@@ -623,23 +625,31 @@ object ActionUtils {
             ActionId.SHOW_KEYBOARD_PICKER ->
                 if (Build.VERSION.SDK_INT in Build.VERSION_CODES.O_MR1..Build.VERSION_CODES.P) {
                     return listOf(Permission.ROOT)
+                } else {
+                    return emptyList()
                 }
 
             ActionId.SWITCH_KEYBOARD -> if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
                 return listOf(Permission.WRITE_SECURE_SETTINGS)
+            } else {
+                return emptyList()
             }
 
             ActionId.TOGGLE_AIRPLANE_MODE,
             ActionId.ENABLE_AIRPLANE_MODE,
             ActionId.DISABLE_AIRPLANE_MODE,
-            -> Permission.ROOT
+            -> return listOf(Permission.ROOT)
 
             ActionId.SCREENSHOT -> if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
                 return listOf(Permission.ROOT)
+            } else {
+                return emptyList()
             }
 
             ActionId.LOCK_DEVICE -> if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
                 return listOf(Permission.ROOT)
+            } else {
+                return emptyList()
             }
 
             ActionId.SECURE_LOCK_DEVICE -> return listOf(Permission.DEVICE_ADMIN)
@@ -651,9 +661,9 @@ object ActionUtils {
 
             ActionId.ANSWER_PHONE_CALL,
             ActionId.END_PHONE_CALL -> return listOf(Permission.ANSWER_PHONE_CALL)
-        }
 
-        return emptyList()
+            else -> return emptyList()
+        }
     }
 }
 

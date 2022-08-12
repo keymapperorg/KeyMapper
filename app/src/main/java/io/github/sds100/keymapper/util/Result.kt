@@ -160,16 +160,16 @@ inline infix fun <T> Result<T>.valueIfFailure(f: (error: Error) -> T): T =
     }
 
 fun <T> Result<T>.errorOrNull(): Error? {
-    when (this) {
-        is Error -> return this
+    if (this is Error) {
+        return this
     }
 
     return null
 }
 
 fun <T> Result<T>.valueOrNull(): T? {
-    when (this) {
-        is Success -> return this.value
+    if (this is Success) {
+        return this.value
     }
 
     return null

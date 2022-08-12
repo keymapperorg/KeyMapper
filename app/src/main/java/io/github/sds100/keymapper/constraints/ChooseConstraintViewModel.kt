@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.constraints
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
@@ -291,6 +290,8 @@ class ChooseConstraintViewModel @Inject constructor(
 
             ChooseConstraintType.WIFI_DISCONNECTED ->
                 _returnResult.emit(Constraint.WifiDisconnected(chosenSSID))
+
+            else -> {}
         }
     }
 
@@ -309,6 +310,8 @@ class ChooseConstraintViewModel @Inject constructor(
 
             ChooseConstraintType.IME_NOT_CHOSEN ->
                 _returnResult.emit(Constraint.ImeNotChosen(imeInfo.id, imeInfo.label))
+
+            else -> {}
         }
     }
 

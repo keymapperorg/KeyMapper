@@ -10,7 +10,7 @@ buildscript {
 
 
     dependencies {
-        def nav_version = '2.4.1'
+        def nav_version = '2.5.1'
 
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
         classpath 'com.android.tools.build:gradle:7.4.0-alpha09'

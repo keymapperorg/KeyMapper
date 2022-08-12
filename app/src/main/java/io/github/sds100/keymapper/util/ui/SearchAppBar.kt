@@ -27,7 +27,7 @@ import io.github.sds100.keymapper.R
 /**
  * Created by sds100 on 30/07/2022.
  */
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalAnimationApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SearchAppBar(
     navigateBack: () -> Unit,
@@ -50,7 +50,7 @@ fun SearchAppBar(
     val keyboardController = LocalSoftwareKeyboardController.current
 
     BottomAppBar(
-        icons = {
+        actions = {
             // only show normal icons if not searching.
             AnimatedVisibility(visible = !isSearching) {
                 defaultIcons()
@@ -99,8 +99,11 @@ fun SearchAppBar(
         },
         floatingActionButton = {
             AnimatedVisibility(visible = !isSearching) {
-                BottomAppBarDefaults.FloatingActionButton(
-                    onClick = { setSearchState(SearchState.Searching("")) }
+                FloatingActionButton(
+                    onClick = { setSearchState(SearchState.Searching("")) },
+                    containerColor = BottomAppBarDefaults.containerColor,
+                    elevation = BottomAppBarDefaults.BottomAppBarFabElevation,
+                    contentColor = BottomAppBarDefaults.bottomAppBarFabColor
                 ) {
                     Icon(
                         Icons.Outlined.Search,

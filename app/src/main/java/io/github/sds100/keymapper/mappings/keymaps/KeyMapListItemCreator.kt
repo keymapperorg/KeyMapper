@@ -47,6 +47,7 @@ class KeyMapListItemCreator(
                 when (key.clickType) {
                     ClickType.LONG_PRESS -> append(longPressString).append(" ")
                     ClickType.DOUBLE_PRESS -> append(doublePressString).append(" ")
+                    else -> {}
                 }
 
                 append(KeyEventUtils.keyCodeToString(key.keyCode))

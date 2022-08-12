@@ -89,19 +89,17 @@ class AutoSwitchImeController(
         }.launchIn(coroutineScope)
 
         accessibilityServiceAdapter.eventReceiver.onEach { event ->
-            when (event) {
-                is Event.OnInputFocusChange -> {
-                    if (!changeImeOnInputFocus) {
-                        return@onEach
-                    }
+            if (event is Event.OnInputFocusChange) {
+                if (!changeImeOnInputFocus) {
+                    return@onEach
+                }
 
-                    if (event.isFocussed) {
-                        Timber.d("Choose normal keyboard because got input focus")
-                        chooseIncompatibleIme(imePickerAllowed = false)
-                    } else {
-                        Timber.d("Choose key mapper keyboard because lost input focus")
-                        chooseCompatibleIme(imePickerAllowed = false)
-                    }
+                if (event.isFocussed) {
+                    Timber.d("Choose normal keyboard because got input focus")
+                    chooseIncompatibleIme(imePickerAllowed = false)
+                } else {
+                    Timber.d("Choose key mapper keyboard because lost input focus")
+                    chooseCompatibleIme(imePickerAllowed = false)
                 }
             }
         }.launchIn(coroutineScope)
