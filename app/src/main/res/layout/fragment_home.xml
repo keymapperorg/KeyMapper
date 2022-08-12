@@ -27,8 +27,7 @@
             android:id="@+id/listLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="?attr/actionBarSize"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            android:paddingBottom="100dp">
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardViewRecyclerViewErrors"
@@ -108,6 +107,15 @@
             </com.google.android.material.card.MaterialCardView>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <com.google.android.material.bottomappbar.BottomAppBar
+            android:id="@+id/appBar"
+            style="@style/BottomAppBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            app:menu="@menu/menu_home"
+            app:navigationIcon='@{viewModel.appBarState == HomeAppBarState.MULTI_SELECTING ? @drawable/ic_baseline_arrow_back_24 : @drawable/ic_baseline_menu_24}' />
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"
             android:layout_width="wrap_content"
@@ -116,16 +124,6 @@
             android:onClick="@{() -> viewModel.onFabPressed()}"
             android:src='@{viewModel.appBarState == HomeAppBarState.MULTI_SELECTING ? @drawable/ic_baseline_delete_outline_24 : @drawable/ic_baseline_add_24}'
             app:layout_anchor="@id/appBar" />
-
-        <com.google.android.material.bottomappbar.BottomAppBar
-            android:id="@+id/appBar"
-            style="@style/BottomAppBar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            app:fabAnimationMode="slide"
-            app:menu="@menu/menu_home"
-            app:navigationIcon='@{viewModel.appBarState == HomeAppBarState.MULTI_SELECTING ? @drawable/ic_baseline_arrow_back_24 : @drawable/ic_baseline_menu_24}' />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

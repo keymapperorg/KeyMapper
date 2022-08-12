@@ -16,8 +16,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.bottomappbar.BottomAppBar.FAB_ALIGNMENT_MODE_CENTER
-import com.google.android.material.bottomappbar.BottomAppBar.FAB_ALIGNMENT_MODE_END
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.R
@@ -185,11 +183,9 @@ class HomeFragment : Fragment() {
                 Do not use setFabAlignmentModeAndReplaceMenu because then there is big jank.
                  */
                 if (it == HomeAppBarState.MULTI_SELECTING) {
-                    binding.appBar.fabAlignmentMode = FAB_ALIGNMENT_MODE_END
                     binding.appBar.replaceMenu(R.menu.menu_multi_select)
 
                 } else {
-                    binding.appBar.fabAlignmentMode = FAB_ALIGNMENT_MODE_CENTER
                     binding.appBar.replaceMenu(R.menu.menu_home)
                 }
             }
