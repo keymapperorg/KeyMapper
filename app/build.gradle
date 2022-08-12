@@ -244,7 +244,7 @@ dependencies {
     implementation "androidx.compose.material:material-icons-extended:1.2.1"
     implementation "com.google.accompanist:accompanist-drawablepainter:0.23.1"
     implementation "androidx.compose.runtime:runtime-livedata:1.2.1"
-
+    implementation "com.google.accompanist:accompanist-flowlayout:0.26.1-alpha"
 //    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.6'
 
     def junitVersion = "4.13.2"

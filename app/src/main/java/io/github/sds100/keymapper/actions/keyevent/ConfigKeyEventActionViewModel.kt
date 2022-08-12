@@ -217,7 +217,7 @@ class ConfigKeyEventActionViewModel @Inject constructor(
         }
 
         val chosenDeviceName: String = when {
-            chosenDevice == null -> getString(R.string.from_no_device)
+            chosenDevice == null -> getString(R.string.create_key_event_screen_no_device)
             showDeviceDescriptors -> InputDeviceUtils.appendDeviceDescriptorToName(
                 chosenDevice.descriptor,
                 chosenDevice.name

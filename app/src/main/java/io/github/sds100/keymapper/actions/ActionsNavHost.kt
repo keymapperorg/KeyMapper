@@ -11,6 +11,7 @@ import com.ramcosta.composedestinations.scope.resultBackNavigator
 import com.ramcosta.composedestinations.scope.resultRecipient
 import com.ramcosta.composedestinations.utils.composable
 import io.github.sds100.keymapper.actions.keyevent.ChooseKeyCodeScreen
+import io.github.sds100.keymapper.actions.keyevent.ConfigKeyEventScreen
 import io.github.sds100.keymapper.actions.sound.ChooseSoundScreen
 import io.github.sds100.keymapper.actions.tapscreen.CreateTapScreenActionScreen
 import io.github.sds100.keymapper.destinations.*
@@ -45,6 +46,7 @@ fun ActionsNavHost(
                 appShortcutResultRecipient = resultRecipient(),
                 tapScreenActionResultRecipient = resultRecipient(),
                 chooseSoundResultRecipient = resultRecipient(),
+                configKeyEventResultRecipient = resultRecipient(),
                 setResult = { setResult(bundleOf(ActionsFragment.EXTRA_ACTION to Json.encodeToString(it))) },
                 navigateBack = navigateBack
             )
@@ -82,6 +84,15 @@ fun ActionsNavHost(
             ChooseSoundScreen(
                 viewModel = hiltViewModel(),
                 resultBackNavigator = resultBackNavigator(navHostController)
+            )
+        }
+
+        composable(ConfigKeyEventScreenDestination) {
+            ConfigKeyEventScreen(
+                viewModel = hiltViewModel(),
+                resultBackNavigator = resultBackNavigator(navHostController),
+                navigator = destinationsNavigator(navHostController),
+                keyCodeResultRecipient = resultRecipient()
             )
         }
     }

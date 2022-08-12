@@ -111,7 +111,7 @@ private fun CreateTapScreenActionScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     if (state.showIncorrectResolutionSnackBar) {
-        val message = stringResource(R.string.create_tap_screen_incorrect_resolution_error)
+        val message = stringResource(R.string.create_tap_screen_action_incorrect_resolution_error)
         LaunchedEffect(state.showIncorrectResolutionSnackBar) {
             snackbarHostState.showSnackbar(message)
             onDismissIncorrectResolutionSnackbar()
@@ -135,13 +135,11 @@ private fun CreateTapScreenActionScreen(
                     AnimatedVisibility(state.isDoneButtonEnabled, enter = fadeIn(), exit = fadeOut()) {
                         FloatingActionButton(
                             onClick = onDoneClick,
-                            containerColor = BottomAppBarDefaults.containerColor,
-                            elevation = BottomAppBarDefaults.BottomAppBarFabElevation,
-                            contentColor = BottomAppBarDefaults.bottomAppBarFabColor
+                            elevation = BottomAppBarDefaults.BottomAppBarFabElevation
                         ) {
                             Icon(
                                 Icons.Outlined.Check,
-                                contentDescription = stringResource(R.string.content_description_done_configuring_coordinate)
+                                contentDescription = stringResource(R.string.create_tap_screen_action_done_content_description)
                             )
                         }
                     }
@@ -174,12 +172,12 @@ private fun Content(
     onXTextChange: (String) -> Unit,
     onYTextChange: (String) -> Unit,
 ) {
-    Column(modifier.padding(8.dp)) {
+    Column(modifier.padding(16.dp)) {
         TextField(
             modifier = Modifier.fillMaxWidth(),
             value = state.description,
             onValueChange = onDescriptionChange,
-            label = { Text(stringResource(R.string.create_tap_screen_description_label)) }
+            label = { Text(stringResource(R.string.create_tap_screen_action_description_label)) }
         )
 
         Spacer(Modifier.height(8.dp))
@@ -227,7 +225,8 @@ private fun Content(
 
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = stringResource(R.string.create_tap_screen_explanation)
+            text = stringResource(R.string.create_tap_screen_action_explanation),
+            style = MaterialTheme.typography.bodyMedium
         )
 
         Spacer(Modifier.height(16.dp))

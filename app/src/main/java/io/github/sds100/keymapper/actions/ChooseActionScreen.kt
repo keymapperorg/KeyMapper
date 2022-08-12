@@ -49,6 +49,7 @@ fun ChooseActionScreen(
     appShortcutResultRecipient: ResultRecipient<ChooseAppShortcutScreenDestination, ChooseAppShortcutResult>,
     tapScreenActionResultRecipient: ResultRecipient<CreateTapScreenActionScreenDestination, PickCoordinateResult>,
     chooseSoundResultRecipient: ResultRecipient<ChooseSoundScreenDestination, ChooseSoundResult>,
+    configKeyEventResultRecipient: ResultRecipient<ConfigKeyEventScreenDestination, ActionData.InputKeyEvent>,
     setResult: (ActionData) -> Unit,
     navigateBack: () -> Unit
 ) {
@@ -112,6 +113,18 @@ fun ChooseActionScreen(
         }
     }
 
+    configKeyEventResultRecipient.onNavResult { result ->
+        when (result) {
+            is NavResult.Canceled -> {
+                viewModel.dismissConfiguringAction()
+            }
+
+            is NavResult.Value -> {
+                viewModel.onConfigKeyEvent(result.value)
+            }
+        }
+    }
+
     ChooseActionScreen(
         viewModel = viewModel,
         setResult = setResult,
@@ -135,6 +148,10 @@ fun ChooseActionScreen(
         navigateToChooseSound = {
             viewModel.onNavigateToConfigScreen()
             navigator.navigate(ChooseSoundScreenDestination)
+        },
+        navigateToConfigKeyEvent = {
+            viewModel.onNavigateToConfigScreen()
+            navigator.navigate(ConfigKeyEventScreenDestination)
         }
     )
 }
@@ -194,7 +211,8 @@ private fun ChooseActionScreen(
     navigateToChooseApp: () -> Unit,
     navigateToChooseAppShortcut: () -> Unit,
     navigateToCreateTapScreenAction: () -> Unit,
-    navigateToChooseSound: () -> Unit
+    navigateToChooseSound: () -> Unit,
+    navigateToConfigKeyEvent: () -> Unit
 ) {
     val searchState by viewModel.searchState.collectAsState()
     val configActionState = viewModel.configActionState
@@ -212,6 +230,7 @@ private fun ChooseActionScreen(
             ConfigActionState.Screen.ChooseAppShortcut -> navigateToChooseAppShortcut()
             ConfigActionState.Screen.CreateTapScreenAction -> navigateToCreateTapScreenAction()
             ConfigActionState.Screen.ChooseSound -> navigateToChooseSound()
+            ConfigActionState.Screen.ConfigKeyEvent -> navigateToConfigKeyEvent()
         }
     }
 

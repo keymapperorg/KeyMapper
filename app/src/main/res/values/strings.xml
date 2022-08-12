@@ -61,11 +61,8 @@
     <string name="tap_constraints_to_fix">Tap constraints to fix!</string>
     <string name="shortcut_label_action">Perform actions</string>
     <string name="hold_down_until_trigger_is_dot_dot_dot">Hold down until trigger is…</string>
-    <string name="from_no_device">No device</string>
     <string name="intent_extras_recycler_view_placeholder">¯\\_(ツ)_/¯\n\nNo extras!</string>
     <string name="content_description_fab_new_keymap">Create a new key map</string>
-    <string name="content_description_done_configuring_key_event">Done configuring key event action</string>
-    <string name="content_description_done_configuring_coordinate">Done picking coordinate</string>
     <string name="clip_key_mapper_log">Key Mapper log</string>
     <string name="sharesheet_title">Send to</string>
 
@@ -1382,16 +1379,30 @@
     <string name="create_tap_screen_action_not_an_integer_error">Must be an integer!</string>
     <string name="create_tap_screen_action_x_label" translatable="false">X</string>
     <string name="create_tap_screen_action_y_label" translatable="false">Y</string>
-    <string name="create_tap_screen_explanation">These coordinates are only correct when your display is in the same orientation as the screenshot! This action will cancel any touches or gestures you are doing on the screen.\n\nIf you need help finding the coordinates of a point on your screen take a screenshot and then tap on the screenshot where you want this action to press.</string>
-    <string name="create_tap_screen_incorrect_resolution_error">Screenshot resolution must match the display\'s resolution!</string>
-    <string name="create_tap_screen_description_label">Description (optional)</string>
+    <string name="create_tap_screen_action_explanation">These coordinates are only correct when your display is in the same orientation as the screenshot! This action will cancel any touches or gestures you are doing on the screen.\n\nIf you need help finding the coordinates of a point on your screen take a screenshot and then tap on the screenshot where you want this action to press.</string>
+    <string name="create_tap_screen_action_incorrect_resolution_error">Screenshot resolution must match the display\'s resolution!</string>
+    <string name="create_tap_screen_action_description_label">Description (optional)</string>
+    <string name="create_tap_screen_action_done_content_description">Done picking coordinate</string>
     <!-- Create tap screen action screen -->
 
-    <!-- Choose sound file action -->
+    <!-- Choose sound file action screen -->
     <string name="choose_sound_file_caption">The sound file will be copied to Key Mapper\'s private data folder, which means your actions will still work even if the file is moved or deleted. It will also be backed up with your key maps in the zip folder.
     You can delete saved sound files in the settings.</string>
     <string name="choose_sound_file_button">Choose new sound file</string>
     <string name="choose_sound_file_description_title">Create sound name</string>
     <string name="choose_sound_file_description_label">Sound name</string>
-    <!-- Choose sound file action -->
+    <!-- Choose sound file action screen -->
+
+    <!-- Config key event screen -->
+    <string name="config_key_event_screen_done_content_description">Done configuring key event action</string>
+    <string name="config_key_event_screen_key_code_title">Key code</string>
+    <string name="config_key_event_screen_choose_key_code_button">Choose key code</string>
+    <string name="config_key_event_screen_devices_title">Device (optional)</string>
+    <string name="config_key_event_screen_devices_refresh_content_description">Refresh devices</string>
+    <string name="config_key_event_screen_devices_explanation">"Some apps will only respond to key events if they appear to come from a specific device, for example a game controller. With this option Key Mapper can make it look like the key event came from a real device. The device must be connected for this to work."</string>
+    <string name="config_key_event_screen_modifiers_title">Modifiers (optional)</string>
+    <string name="create_key_event_screen_empty_error">Must not be empty!</string>
+    <string name="create_key_event_screen_not_an_integer_error">Must be an integer!</string>
+    <string name="create_key_event_screen_no_device">None</string>
+    <!-- Config key event screen -->
 </resources>

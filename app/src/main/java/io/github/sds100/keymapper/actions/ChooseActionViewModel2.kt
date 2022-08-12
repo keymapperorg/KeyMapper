@@ -174,6 +174,10 @@ class ChooseActionViewModel2 @Inject constructor(
         configActionState = ConfigActionState.Finished(ActionData.SetRingerMode(mode))
     }
 
+    fun onConfigKeyEvent(action: ActionData.InputKeyEvent) {
+        configActionState = ConfigActionState.Finished(action)
+    }
+
     fun onConfigVolumeAction(showVolumeDialog: Boolean, stream: VolumeStream) {
         val volumeConfig = (configActionState as? ConfigActionState.Dialog.Volume) ?: return
         val action = when (volumeConfig) {
@@ -241,7 +245,9 @@ class ChooseActionViewModel2 @Inject constructor(
                 ActionId.APP_SHORTCUT -> {
                     configActionState = ConfigActionState.Screen.ChooseAppShortcut
                 }
-                ActionId.KEY_EVENT -> TODO()
+                ActionId.KEY_EVENT -> {
+                    configActionState = ConfigActionState.Screen.ConfigKeyEvent
+                }
                 ActionId.TAP_SCREEN -> {
                     configActionState = ConfigActionState.Screen.CreateTapScreenAction
                 }
@@ -652,6 +658,7 @@ sealed class ConfigActionState {
         object ChooseAppShortcut : Screen()
         object CreateTapScreenAction : Screen()
         object ChooseSound : Screen()
+        object ConfigKeyEvent : Screen()
     }
 
     data class Finished(val action: ActionData) : ConfigActionState()

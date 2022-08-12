@@ -764,7 +764,7 @@ object KeyEventUtils {
         else -> throw Exception("can't convert modifier $modifier to meta state")
     }
 
-    val MODIFIER_LABELS = mapOf(
+    val MODIFIER_LABELS: Map<Int, Int> = mapOf(
         KeyEvent.META_CTRL_ON to R.string.meta_state_ctrl,
         KeyEvent.META_CTRL_LEFT_ON to R.string.meta_state_ctrl_left,
         KeyEvent.META_CTRL_RIGHT_ON to R.string.meta_state_ctrl_right,

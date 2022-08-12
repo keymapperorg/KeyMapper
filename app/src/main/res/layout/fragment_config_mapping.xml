@@ -66,7 +66,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/content_description_fab_new_keymap"
-            android:onClick="@{() -> viewModel.save()}"
             android:src="@drawable/ic_outline_save_24"
             app:layout_anchor="@id/appBar" />
 
