@@ -16,8 +16,7 @@ Input a simple key event with this key code.
 
 This will tap a point on your screen.
 
-!!! warning
-    Android restricts what apps can do with this so you won't be able to tap the screen at the same time as Key Mapper and Key Mapper can't tap multiple places at once.
+!!! warning Android restricts what apps can do with this so you won't be able to tap the screen at the same time as Key Mapper and Key Mapper can't tap multiple places at once.
 
 ### Input key event (2.1.0+)
 
@@ -52,7 +51,7 @@ Opening the WiFi settings on the device. These are the only fields that you need
 
 1. Select "Intent Received" event.
 2. You only need to fill in the "Action" field. The action can be anything you want but since the action must be unique on the device it is recommended to start it with `net.dinglish.android.tasker`. In Key Mapper you will have to use the exact same action.
-    ![](../images/intent-event-tasker.jpg)
+   ![](../images/intent-event-tasker.jpg)
 
 ##### 2. Setting up Key Mapper
 
@@ -64,9 +63,7 @@ Send a broadcast to launch a Tasker action. These are the only fields that you n
 - Action = The exact same action that you used in Tasker. In my example this would be `net.dinglish.android.tasker.MY_ACTION`.
 
 !!! attention "Launching Termux command intents"
-    You need to open the app info page for Key Mapper in your device settings and grant it the "run commands in termux environment" permission.
-    On Android 12+ you must also turn off battery optimisation for Termux so that Android allows Termux to be started from the
-    background.
+You need to open the app info page for Key Mapper in your device settings and grant it the "run commands in termux environment" permission. On Android 12+ you must also turn off battery optimisation for Termux so that Android allows Termux to be started from the background.
 
 ### Phone call (2.3.0+)
 
@@ -79,11 +76,7 @@ This action will play a sound. Key Mapper will copy the sound file to its own fo
 ### Toggle/enable/disable WiFi
 
 !!! attention "Requires ROOT permission on Android 10+"
-    If you aren't rooted then you must install the [WyFy](https://github.com/x13a/WyFy) app. You must then use the Intent
-    action in Key Mapper to send a broadcast that tells this app to change the WiFi state. In the WyFy's README it outlines
-    the Intent parameters. This app works around the issue by targeting API 28 (Android 9), which means the app doesn't need
-    to follow the new restrictions in API 29 (Android 10). But this means it can't be approved in the Play Store so you must
-    install the apk manually from GitHub or through F-Droid.
+If you aren't rooted then you must install the [WyFy](https://github.com/x13a/WyFy) app. You must then use the Intent action in Key Mapper to send a broadcast that tells this app to change the WiFi state. In the WyFy's README it outlines the Intent parameters. This app works around the issue by targeting API 28 (Android 9), which means the app doesn't need to follow the new restrictions in API 29 (Android 10). But this means it can't be approved in the Play Store so you must install the apk manually from GitHub or through F-Droid.
 
 ### Toggle/enable/disable Bluetooth
 
@@ -106,7 +99,7 @@ This action will play a sound. Key Mapper will copy the sound file to its own fo
 ### Volume up/down
 
 !!! tip "Change specific volume stream"
-    Before Key Mapper 2.5.0 this option only worked with the "Increase/decrease volume stream" actions.
+Before Key Mapper 2.5.0 this option only worked with the "Increase/decrease volume stream" actions.
 
     You can choose one of these volume streams that the action should change. If you select "Default" the action will let the system decide which stream to change.
 
@@ -122,7 +115,7 @@ This action will play a sound. Key Mapper will copy the sound file to its own fo
 ### Mute/un-mute/toggle volume (Android 6.0+)
 
 !!! tip "Mute specific volume stream (Key Mapper 2.5.0+)"
-    You can choose one of these volume streams that the action should change. If you select "Default" the action will let the system decide which stream to change.
+You can choose one of these volume streams that the action should change. If you select "Default" the action will let the system decide which stream to change.
 
     - Alarm
     - DTMF
@@ -211,8 +204,7 @@ This action will play a sound. Key Mapper will copy the sound file to its own fo
 
 ### Secure lock device
 
-This is different to 'lock device' because this will force you to unlock your device with your PIN or password and not
-with biometrics.
+This is different to 'lock device' because this will force you to unlock your device with your PIN or password and not with biometrics.
 
 ### Turn on/off device
 
@@ -224,7 +216,8 @@ with biometrics.
 
 If your phone is ringing then this action will answer the phone or if you are in a call then it will end it. Selecting this action will automatically add the constraint to your key map when your device is ringing or is in a call respectively.
 
-!!! attention If you are using a volume button trigger with these actions then this key map will only work if you are using on of the Key Mapper keyboards! This is because Android doesn't tell accessibility services when the volume buttons are being pressed when your device is ringing or is in a phone call. But it does tell input methods when they are being pressed so you must use a Key Mapper keyboard that tells Key Mapper when the buttons are being pressed.
+!!! attention
+    If you are using a volume button trigger with these actions then this key map will only work if you are using on of the Key Mapper keyboards! This is because Android doesn't tell accessibility services when the volume buttons are being pressed when your device is ringing or is in a phone call. But it does tell input methods when they are being pressed so you must use a Key Mapper keyboard that tells Key Mapper when the buttons are being pressed.
 
 ### Do nothing
 
