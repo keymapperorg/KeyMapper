@@ -1,4 +1,4 @@
-:fontawesome-solid-check-square:{: .accent-light } &nbsp; Hold down
+:material-checkbox-marked:{: .accent-light } &nbsp; Hold down
 
 !!! info "Key Mapper 2.1.0+"
 
