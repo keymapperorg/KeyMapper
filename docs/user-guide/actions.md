@@ -222,14 +222,9 @@ with biometrics.
 
 ### Answer/end phone call (2.4.0+)
 
-If your phone is ringing then this action will answer the phone or if you are in a call then it will end it. Selecting
-this action will automatically add the constraint to your key map when your device is ringing or is in a call
-respectively.
+If your phone is ringing then this action will answer the phone or if you are in a call then it will end it. Selecting this action will automatically add the constraint to your key map when your device is ringing or is in a call respectively.
 
-!!! attention If you are using a volume button trigger with these actions then this key map will only work if you are
-using on of the Key Mapper keyboards! This is because Android doesn't tell accessibility services when the volume
-buttons are being pressed when your device is ringing or is in a phone call. But it does tell input methods when they
-are being pressed so you must use a Key Mapper keyboard that tells Key Mapper when the buttons are being pressed.
+!!! attention If you are using a volume button trigger with these actions then this key map will only work if you are using on of the Key Mapper keyboards! This is because Android doesn't tell accessibility services when the volume buttons are being pressed when your device is ringing or is in a phone call. But it does tell input methods when they are being pressed so you must use a Key Mapper keyboard that tells Key Mapper when the buttons are being pressed.
 
 ### Do nothing
 
