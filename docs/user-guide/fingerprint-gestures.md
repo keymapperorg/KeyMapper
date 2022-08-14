@@ -30,11 +30,11 @@ Make sure to save :fontawesome-solid-save: your fingerprint gesture map after ap
 
 ## Customising actions
 
-If you would like to customise how the actions are performed you can tap the 3 dot menu :fontawesome-solid-ellipsis-v: to the right of an action.
+If you would like to customise how the actions are performed you can tap the 3 dot menu :material-dots-vertical: to the right of an action.
 
 On this screen you can choose from the following options:
 
-:fontawesome-solid-check-square:{: .accent-light } &nbsp; Hold down until swiped again
+:material-checkbox-marked:{: .accent-light } &nbsp; Hold down until swiped again
 
 This option allows for keycode actions to be 'held', much like you could hold down a physical keyboard key. The action will continue until the same gesture is performed a second time.
 ___
@@ -45,7 +45,7 @@ ___
 --8<-- "action-options/action-count.md"
 ___
 
-:fontawesome-solid-check-square:{: .accent-light } &nbsp; Repeat until swiped again
+:material-checkbox-marked:{: .accent-light } &nbsp; Repeat until swiped again
 
 When this is turned on, Key Mapper will execute your actions repeatedly. This is particularly useful when emulating a keyboard key press, where in most applications holding down the key would result in a repeating output. 
 

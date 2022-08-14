@@ -25,7 +25,7 @@ Tap 'Back up everything' this will back up all your mappings. Key maps, fingerpr
 
 On the Key Mapper home screen, press and hold on a key map. You can then select the key maps you wish to back up.
 
-Tap the 3 dot :fontawesome-solid-ellipsis-v: menu in the bottom left. Choose 'back up'. Your file manager will then ask you to choose a folder to save your key maps.
+Tap the 3 dot :material-dots-vertical: menu in the bottom left. Choose 'back up'. Your file manager will then ask you to choose a folder to save your key maps.
 
 #### Just fingerprint gesture maps
 

@@ -26,7 +26,7 @@ You must press the keys down and up one after another to trigger the key map in 
 
 There are 3 click types: short press, long press and double press.
 
-Parallel triggers can only be short pressed or long pressed. The click type can be customised for each key in a sequence trigger by pressing on the 3 dot :fontawesome-solid-ellipsis-v: button on each key.
+Parallel triggers can only be short pressed or long pressed. The click type can be customised for each key in a sequence trigger by pressing on the 3 dot :material-dots-vertical: button on each key.
 
 #### Short press
 
@@ -50,7 +50,7 @@ External devices are only listed if they are connected to your Android device wh
 
 ![](../images/hg-trigger-key-options-sequence.png)
 
-This menu pops up if you press the 3 dot :fontawesome-solid-ellipsis-v: button on a key.
+This menu pops up if you press the 3 dot :material-dots-vertical: button on a key.
 
 #### Do not remap
 

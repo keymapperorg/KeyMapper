@@ -122,7 +122,7 @@ You may wish to customise your triggers and actions to have specific behaviours.
 
 ### Trigger settings
 
-Starting with the triggers, tap the 3 dot :fontawesome-solid-ellipsis-v: menu to the right of the trigger's name to bring up the following menu.
+Starting with the triggers, tap the 3 dot :material-dots-vertical: menu to the right of the trigger's name to bring up the following menu.
 
 ![](images/hg-trigger-settings.png)
 
@@ -132,7 +132,7 @@ One trigger can have three different click types. Choose from short press, long 
 
 ### Customising actions
 
-Next, tap the 3 stacked dots :fontawesome-solid-ellipsis-v: to the right of the action's name to bring up the following menu.
+Next, tap the 3 stacked dots :material-dots-vertical: to the right of the action's name to bring up the following menu.
 
 ![](images/hg-action-settings.png)
 
