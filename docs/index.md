@@ -26,6 +26,6 @@ This wiki aims to provide users with a comprehensive guide to using and setting 
 
 ### Translators
 
-- [TrollServer (Czech)](https://youtube.com/channel/UCljg1FH1B_ju2D_NfqAYjDw)
+- [HowToWhy (Czech)](https://youtube.com/channel/UCljg1FH1B_ju2D_NfqAYjDw)
 - [Katie Frogs (Polish)](https://github.com/KatieFrogs)
 - [Darío B. C. (bydariogamer)](https://github.com/bydariogamer)
