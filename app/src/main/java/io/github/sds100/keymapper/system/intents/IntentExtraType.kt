@@ -22,7 +22,7 @@ sealed class IntentExtraType {
 }
 
 class BoolExtraType : IntentExtraType() {
-    override val labelStringRes = R.string.intent_type_bool_header
+    override val labelStringRes = R.string.config_intent_screen_extra_boolean_title
     override val exampleStringRes = R.string.intent_type_bool_example
 
     override fun putInIntent(intent: Intent, name: String, value: String) {
@@ -98,7 +98,7 @@ class IntArrayExtraType : IntentExtraType() {
 }
 
 class StringExtraType : IntentExtraType() {
-    override val labelStringRes = R.string.intent_type_string_header
+    override val labelStringRes = R.string.config_intent_screen_extra_string_title
     override val exampleStringRes = R.string.intent_type_string_example
 
     override fun putInIntent(intent: Intent, name: String, value: String) {

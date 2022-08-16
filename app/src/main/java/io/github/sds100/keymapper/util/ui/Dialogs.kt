@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.util.ui
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
@@ -20,24 +21,16 @@ fun CustomDialog(
 ) {
     Dialog(onDismissRequest = onDismissRequest) {
         Surface(color = MaterialTheme.colorScheme.surface, shape = MaterialTheme.shapes.extraLarge) {
-            Column(Modifier.padding(24.dp)) {
+            Column(Modifier.padding(24.dp).wrapContentHeight().animateContentSize()) {
                 Text(
-                    modifier = Modifier
-                        .wrapContentSize(),
                     text = title,
                     style = MaterialTheme.typography.headlineSmall
                 )
-                Box(
-                    Modifier
-                        .weight(1f, fill = false)
-                        .padding(top = 16.dp)
-                ) {
+                Box(Modifier.padding(top = 16.dp)) {
                     content()
                 }
                 Row(
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End
                 ) {
                     dismissButton()

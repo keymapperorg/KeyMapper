@@ -186,7 +186,7 @@ private fun Content(
             val focusManager = LocalFocusManager.current
             ErrorTextField(
                 modifier = Modifier.weight(0.5f),
-                text = state.x,
+                value = state.x,
                 onValueChange = onXTextChange,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(
@@ -200,7 +200,7 @@ private fun Content(
             Spacer(Modifier.width(16.dp))
             ErrorTextField(
                 modifier = Modifier.weight(0.5f),
-                text = state.y,
+                value = state.y,
                 onValueChange = onYTextChange,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(

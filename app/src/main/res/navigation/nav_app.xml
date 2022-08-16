@@ -18,7 +18,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_app"
-    app:startDestination="@id/home_fragment">
+    app:startDestination="@id/actionsFragment">
     <fragment
         android:id="@+id/home_fragment"
         android:name="io.github.sds100.keymapper.home.HomeFragment"
@@ -342,6 +342,6 @@
         <argument
             android:name="destination"
             app:argType="string"
-            android:defaultValue="config_key_event_screen" />
+            android:defaultValue="config_intent_screen" />
     </fragment>
 </navigation>

@@ -126,15 +126,15 @@
     <string name="hint_create_text_action">Text k zadání</string>
     <string name="hint_create_url_action">Adresa URL, kterou chcete otevřít</string>
     <string name="hint_create_phone_call_action">Telefonní číslo, na které chcete zavolat</string>
-    <string name="hint_intent_action">Akce</string>
-    <string name="hint_intent_categories">Kategorie</string>
-    <string name="hint_intent_data">Údaje</string>
-    <string name="hint_intent_package">Balík</string>
-    <string name="hint_intent_class">Třída:</string>
+    <string name="config_intent_screen_action_label">Akce</string>
+    <string name="config_intent_screen_category_header">Kategorie</string>
+    <string name="config_intent_screen_data_header">Údaje</string>
+    <string name="config_intent_screen_package_header">Balík</string>
+    <string name="config_intent_screen_class_header">Třída:</string>
     <string name="hint_intent_extra_name">Název</string>
     <string name="hint_intent_extra_value_with_type">Hodnota (%s)</string>
-    <string name="hint_intent_description">Popis pro hlavní mapu (povinné)</string>
-    <string name="hint_intent_flags">Vlajky</string>
+    <string name="config_intent_screen_description_label">Popis pro hlavní mapu (povinné)</string>
+    <string name="config_intent_screen_flags_header">Vlajky</string>
     <string name="choose_sound_file_description_title">Popis zvukového souboru</string>
     <string name="hint_wifi_ssid">WiFi síť SSID</string>
     <!--  Hints  -->
@@ -146,11 +146,11 @@
     <string name="radio_button_short_press">Krátký stisk</string>
     <string name="radio_button_long_press">Dlouhý stisk</string>
     <string name="radio_button_double_press">Dvojitý stisk</string>
-    <string name="radio_button_intent_extra_value_true">Pravda</string>
-    <string name="radio_button_intent_extra_value_false">Nepravda</string>
-    <string name="radio_button_intent_target_activity">Aktivita</string>
-    <string name="radio_button_intent_target_service">Servis</string>
-    <string name="radio_button_intent_target_broadcast_receiver">Vysílací přijímač</string>
+    <string name="config_intent_screen_extra_boolean_true">Pravda</string>
+    <string name="config_intent_screen_extra_boolean_false">Nepravda</string>
+    <string name="config_intent_screen_activity_target">Aktivita</string>
+    <string name="config_intent_screen_service_target">Servis</string>
+    <string name="config_intent_screen_broadcast_receiver_target">Vysílací přijímač</string>
     <!--  Radio buttons  -->
     <!--  Tabs  -->
     <string name="tab_trigger_and_actions">Spouštěč a akce</string>
@@ -938,11 +938,11 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <string name="action_cat_notifications">Oznámení</string>
     <!-- action category labels -->
     <!--  Intent action type strings  -->
-    <string name="intent_type_bool_header">Boolean</string>
+    <string name="config_intent_screen_extra_boolean_title">Boolean</string>
     <string name="intent_type_bool_array_header">Logické pole</string>
     <string name="intent_type_int_header">Celé číslo</string>
     <string name="intent_type_int_array_header">Celé pole</string>
-    <string name="intent_type_string_header">Řetězec</string>
+    <string name="config_intent_screen_extra_string_title">Řetězec</string>
     <string name="intent_type_string_array_header">Pole řetězce</string>
     <string name="intent_type_long_header">Dlouhá</string>
     <string name="intent_type_long_array_header">Dlouhé pole</string>
@@ -975,7 +975,7 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <string name="intent_type_float_array_example">Čárkami oddělený seznam platných plováků v programovacím jazyce Java. např. 1241.123</string>
     <string name="intent_type_short_example">Platný krátký programovací jazyk Java. Např. 2342</string>
     <string name="intent_type_short_array_example">Čárkou oddělený seznam platných Krátků v programovacím jazyce Java. Např. 3242,12354</string>
-    <string name="intent_flags_example">Příznaky záměru jsou uloženy jako bitové vlajky. Tyto vlajky mění způsob nakládání s tímto záměrem. Pokud je toto prázdné pro záměr aktivity, pak klíčová mapa bude ve výchozím nastavení používat FLAG_ACTIVITY_NEW_TASK. Pro mnohem více informací klepněte na \'dokumentace\' pro zobrazení dokumentace vývojářů systému Android.</string>
+    <string name="config_intent_screen_flags_help_dialog_text">Příznaky záměru jsou uloženy jako bitové vlajky. Tyto vlajky mění způsob nakládání s tímto záměrem. Pokud je toto prázdné pro záměr aktivity, pak klíčová mapa bude ve výchozím nastavení používat FLAG_ACTIVITY_NEW_TASK. Pro mnohem více informací klepněte na \'dokumentace\' pro zobrazení dokumentace vývojářů systému Android.</string>
     <!--  Intent action type strings  -->
     <!--  Tap targets  -->
     <string name="tap_target_quick_start_guide_primary">Příručka pro rychlý start</string>

@@ -67,24 +67,13 @@ android {
         }
 
         ci {
-            debuggable = true
-
-            postprocessing {
-                removeUnusedCode true
-                removeUnusedResources true
-                obfuscate false
-                optimizeCode true
-                proguardFiles 'proguard-rules.pro'
-            }
-
-            /*
-            This is required because the splitties library doesn't have a ci build type.
-             */
-            matchingFallbacks = ['debug']
-
             applicationIdSuffix ".ci"
-            versionNameSuffix "-ci." + versionProperties.getProperty("VERSION_NUM")
+            versionNameSuffix "-ci"
             signingConfig signingConfigs.debug
+            matchingFallbacks = ['release']
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            debuggable false
+            minifyEnabled true
         }
     }
 

@@ -127,15 +127,15 @@
     <string name="hint_create_text_action">Tekst do wprowadzenia</string>
     <string name="hint_create_url_action">URL do otwarcia</string>
     <string name="hint_create_phone_call_action">Numer telefonu, pod który należy zadzwonić</string>
-    <string name="hint_intent_action">Działanie</string>
-    <string name="hint_intent_categories">Kategorie</string>
-    <string name="hint_intent_data">Dane</string>
-    <string name="hint_intent_package">Pakiet</string>
-    <string name="hint_intent_class">Klasa</string>
+    <string name="config_intent_screen_action_label">Działanie</string>
+    <string name="config_intent_screen_category_header">Kategorie</string>
+    <string name="config_intent_screen_data_header">Dane</string>
+    <string name="config_intent_screen_package_header">Pakiet</string>
+    <string name="config_intent_screen_class_header">Klasa</string>
     <string name="hint_intent_extra_name">Nazwa</string>
     <string name="hint_intent_extra_value_with_type">Wartość (%s)</string>
-    <string name="hint_intent_description">Opis dla Key Mapper (wymagane)</string>
-    <string name="hint_intent_flags">Flagi</string>
+    <string name="config_intent_screen_description_label">Opis dla Key Mapper (wymagane)</string>
+    <string name="config_intent_screen_flags_header">Flagi</string>
     <string name="choose_sound_file_description_title">Opis pliku dźwiękowego</string>
     <string name="hint_wifi_ssid">SSID sieci Wi-Fi</string>
     <!--  Hints  -->
@@ -147,11 +147,11 @@
     <string name="radio_button_short_press">Krótkie naciśnięcie</string>
     <string name="radio_button_long_press">Przytrzymanie</string>
     <string name="radio_button_double_press">Podwójne naciśnięcie</string>
-    <string name="radio_button_intent_extra_value_true">Prawda</string>
-    <string name="radio_button_intent_extra_value_false">Fałsz</string>
-    <string name="radio_button_intent_target_activity">Aktywność</string>
-    <string name="radio_button_intent_target_service">Usługa</string>
-    <string name="radio_button_intent_target_broadcast_receiver">Odbiornik transmisji</string>
+    <string name="config_intent_screen_extra_boolean_true">Prawda</string>
+    <string name="config_intent_screen_extra_boolean_false">Fałsz</string>
+    <string name="config_intent_screen_activity_target">Aktywność</string>
+    <string name="config_intent_screen_service_target">Usługa</string>
+    <string name="config_intent_screen_broadcast_receiver_target">Odbiornik transmisji</string>
     <!--  Radio buttons  -->
     <!--  Tabs  -->
     <string name="tab_trigger_and_actions">Wyzwalacz i działania</string>
@@ -985,11 +985,11 @@
     <string name="action_cat_notifications">Powiadomienia</string>
     <!-- action category labels -->
     <!--  Intent action type strings  -->
-    <string name="intent_type_bool_header">Wartość logiczna</string>
+    <string name="config_intent_screen_extra_boolean_title">Wartość logiczna</string>
     <string name="intent_type_bool_array_header">Tablica logiczna</string>
     <string name="intent_type_int_header">Liczba całkowita</string>
     <string name="intent_type_int_array_header">Tablica liczb całkowitych</string>
-    <string name="intent_type_string_header">Ciąg</string>
+    <string name="config_intent_screen_extra_string_title">Ciąg</string>
     <string name="intent_type_string_array_header">Tablica ciągów</string>
     <string name="intent_type_long_header">Long</string>
     <string name="intent_type_long_array_header">Tablica typu long</string>
@@ -1022,7 +1022,7 @@
     <string name="intent_type_float_array_example">Rozdzielana przecinkami lista prawidłowych liczb Float w języku programowania Java, np. 1241.123</string>
     <string name="intent_type_short_example">Poprawna liczba Short w języku programowania Java, np. 2342</string>
     <string name="intent_type_short_array_example">Rozdzielana przecinkami lista prawidłowych liczb Short w języku programowania Java, np. 3242,12354</string>
-    <string name="intent_flags_example">Flagi Intencji są przechowywane jako flagi bitowe. Te flagi zmieniają sposób obsługi Intencji. Jeśli to pole jest puste dla Intencji aktywności, Key Mapper domyślnie użyje FLAG_ACTIVITY_NEW_TASK. Aby uzyskać bardziej szczegółowe informacje, kliknij przycisk \"Dokumentacja\", aby zapoznać się z dokumentacją dla programistów Androida.</string>
+    <string name="config_intent_screen_flags_help_dialog_text">Flagi Intencji są przechowywane jako flagi bitowe. Te flagi zmieniają sposób obsługi Intencji. Jeśli to pole jest puste dla Intencji aktywności, Key Mapper domyślnie użyje FLAG_ACTIVITY_NEW_TASK. Aby uzyskać bardziej szczegółowe informacje, kliknij przycisk \"Dokumentacja\", aby zapoznać się z dokumentacją dla programistów Androida.</string>
     <!--  Intent action type strings  -->
     <!--  Tap targets  -->
     <string name="tap_target_quick_start_guide_primary">Przewodnik szybkiego startu</string>

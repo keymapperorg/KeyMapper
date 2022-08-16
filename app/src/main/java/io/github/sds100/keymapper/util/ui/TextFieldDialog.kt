@@ -12,8 +12,8 @@ import io.github.sds100.keymapper.R
 
 @Composable
 fun TextFieldDialog(
-    text: String,
     title: String,
+    text: String,
     label: String = "",
     error: String? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
@@ -36,7 +36,7 @@ fun TextFieldDialog(
         onDismissRequest = onDismiss
     ) {
         ErrorTextField(
-            text = text,
+            value = text,
             label = label,
             errorMessage = error ?: "",
             isError = error != null,

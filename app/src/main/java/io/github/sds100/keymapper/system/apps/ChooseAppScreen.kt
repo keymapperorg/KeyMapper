@@ -119,7 +119,7 @@ private fun LoadedUi(
             CheckBoxWithText(
                 modifier = Modifier.fillMaxWidth(),
                 isChecked = isHiddenAppsChecked,
-                text = stringResource(R.string.show_hidden_apps),
+                text = { Text(stringResource(R.string.show_hidden_apps)) },
                 onCheckedChange = onHiddenAppsCheckedChange
             )
         }

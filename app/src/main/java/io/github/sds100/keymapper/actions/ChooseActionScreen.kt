@@ -234,12 +234,10 @@ private fun ChooseActionScreen(
         }
     }
 
-    val dialogState by derivedStateOf {
-        if (configActionState is ConfigActionState.Dialog) {
-            configActionState
-        } else {
-            ConfigActionState.Dialog.Hidden
-        }
+    val dialogState = if (configActionState is ConfigActionState.Dialog) {
+        configActionState
+    } else {
+        ConfigActionState.Dialog.Hidden
     }
 
     ChooseActionScreen(
@@ -305,10 +303,12 @@ private fun ChooseActionScreen(
             ConfigActionState.Dialog.Text -> {
                 var text by rememberSaveable { mutableStateOf("") }
                 val emptyErrorString = stringResource(R.string.choose_action_text_empty_error)
-                val error by derivedStateOf {
-                    when {
-                        text.isEmpty() -> emptyErrorString
-                        else -> null
+                val error by remember {
+                    derivedStateOf {
+                        when {
+                            text.isEmpty() -> emptyErrorString
+                            else -> null
+                        }
                     }
                 }
 
@@ -325,10 +325,12 @@ private fun ChooseActionScreen(
             ConfigActionState.Dialog.Url -> {
                 var text by rememberSaveable { mutableStateOf("") }
                 val emptyErrorString = stringResource(R.string.choose_action_url_empty_error)
-                val error by derivedStateOf {
-                    when {
-                        text.isEmpty() -> emptyErrorString
-                        else -> null
+                val error by remember {
+                    derivedStateOf {
+                        when {
+                            text.isEmpty() -> emptyErrorString
+                            else -> null
+                        }
                     }
                 }
 
@@ -346,10 +348,12 @@ private fun ChooseActionScreen(
             ConfigActionState.Dialog.PhoneCall -> {
                 var text by rememberSaveable { mutableStateOf("") }
                 val emptyErrorString = stringResource(R.string.choose_action_phone_empty_error)
-                val error by derivedStateOf {
-                    when {
-                        text.isEmpty() -> emptyErrorString
-                        else -> null
+                val error by remember {
+                    derivedStateOf {
+                        when {
+                            text.isEmpty() -> emptyErrorString
+                            else -> null
+                        }
                     }
                 }
 
@@ -503,7 +507,7 @@ private fun ConfigCycleRotationDialog(
             CheckBoxWithText(
                 modifier = Modifier.fillMaxWidth(),
                 isChecked = orientations.contains(Orientation.ORIENTATION_0),
-                text = stringResource(R.string.orientation_0),
+                text = { Text(stringResource(R.string.orientation_0)) },
                 onCheckedChange = { isChecked ->
                     if (isChecked) {
                         orientations = orientations + Orientation.ORIENTATION_0
@@ -515,7 +519,7 @@ private fun ConfigCycleRotationDialog(
             CheckBoxWithText(
                 modifier = Modifier.fillMaxWidth(),
                 isChecked = orientations.contains(Orientation.ORIENTATION_90),
-                text = stringResource(R.string.orientation_90),
+                text = { Text(stringResource(R.string.orientation_90)) },
                 onCheckedChange = { isChecked ->
                     if (isChecked) {
                         orientations = orientations + Orientation.ORIENTATION_90
@@ -527,7 +531,7 @@ private fun ConfigCycleRotationDialog(
             CheckBoxWithText(
                 modifier = Modifier.fillMaxWidth(),
                 isChecked = orientations.contains(Orientation.ORIENTATION_180),
-                text = stringResource(R.string.orientation_180),
+                text = { Text(stringResource(R.string.orientation_180)) },
                 onCheckedChange = { isChecked ->
                     if (isChecked) {
                         orientations = orientations + Orientation.ORIENTATION_180
@@ -539,7 +543,7 @@ private fun ConfigCycleRotationDialog(
             CheckBoxWithText(
                 modifier = Modifier.fillMaxWidth(),
                 isChecked = orientations.contains(Orientation.ORIENTATION_270),
-                text = stringResource(R.string.orientation_270),
+                text = { Text(stringResource(R.string.orientation_270)) },
                 onCheckedChange = { isChecked ->
                     if (isChecked) {
                         orientations = orientations + Orientation.ORIENTATION_270
@@ -627,7 +631,7 @@ private fun ConfigVolumeActionDialog(
         Column {
             CheckBoxWithText(
                 isChecked = showVolumeDialog,
-                text = stringResource(R.string.choose_action_config_show_volume_ui_checkbox),
+                text = { Text(stringResource(R.string.choose_action_config_show_volume_ui_checkbox)) },
                 onCheckedChange = { showVolumeDialog = it }
             )
 

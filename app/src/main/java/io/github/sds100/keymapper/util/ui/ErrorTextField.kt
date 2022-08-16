@@ -22,34 +22,35 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ErrorOutlinedTextField(
     modifier: Modifier = Modifier,
-    text: String,
+    value: String,
     label: String = "",
     keyboardOptions: KeyboardOptions = KeyboardOptions(),
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     errorMessage: String,
     isError: Boolean,
-    onValueChange: (String) -> Unit = {}
+    onValueChange: (String) -> Unit = {},
+    trailingIcon: @Composable () -> Unit = {
+        if (isError) {
+            Icon(
+                imageVector = Icons.Outlined.ErrorOutline,
+                contentDescription = null
+            )
+        }
+    }
 ) {
     ErrorTextField(
         modifier = modifier,
         textField = {
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = text,
+                value = value,
                 onValueChange = onValueChange,
                 singleLine = true,
                 label = { Text(label) },
                 isError = isError,
                 keyboardOptions = keyboardOptions,
                 keyboardActions = keyboardActions,
-                trailingIcon = {
-                    if (isError) {
-                        Icon(
-                            imageVector = Icons.Outlined.ErrorOutline,
-                            contentDescription = null
-                        )
-                    }
-                }
+                trailingIcon = trailingIcon
             )
         },
         errorMessage = errorMessage,
@@ -61,7 +62,7 @@ fun ErrorOutlinedTextField(
 @Composable
 fun ErrorTextField(
     modifier: Modifier = Modifier,
-    text: String,
+    value: String,
     label: String,
     keyboardOptions: KeyboardOptions = KeyboardOptions(),
     keyboardActions: KeyboardActions = KeyboardActions.Default,
@@ -73,7 +74,7 @@ fun ErrorTextField(
         modifier = modifier,
         textField = {
             TextField(
-                value = text,
+                value = value,
                 onValueChange = onValueChange,
                 singleLine = true,
                 label = { Text(label) },
@@ -123,7 +124,7 @@ private fun Preview() {
     MaterialTheme {
         Surface {
             ErrorTextField(
-                text = "Text",
+                value = "Text",
                 label = "Label",
                 errorMessage = "Error",
                 isError = true

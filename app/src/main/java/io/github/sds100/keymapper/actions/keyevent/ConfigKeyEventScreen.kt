@@ -204,7 +204,7 @@ private fun KeyCodeSection(
 
         ErrorOutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
-            text = keyCodeText,
+            value = keyCodeText,
             errorMessage = errorMessage,
             isError = error != KeyCodeError.NONE,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -322,7 +322,7 @@ private fun ModifierSection(
                 CheckBoxWithText(
                     modifier = Modifier.width(itemWidthDp),
                     isChecked = selectedModifiers.contains(modifier),
-                    text = stringResource(label),
+                    text = {Text(stringResource(label))},
                     onCheckedChange = { onCheckedChange(modifier, it) }
                 )
             }

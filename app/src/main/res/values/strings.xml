@@ -150,15 +150,7 @@
     <string name="hint_create_url_action">Url to open</string>
     <string name="hint_create_phone_call_action">Phone number to call</string>
 
-    <string name="hint_intent_action">Action</string>
-    <string name="hint_intent_categories">Categories</string>
-    <string name="hint_intent_data">Data</string>
-    <string name="hint_intent_package">Package</string>
-    <string name="hint_intent_class">Class</string>
-    <string name="hint_intent_extra_name">Name</string>
     <string name="hint_intent_extra_value_with_type">Value (%s)</string>
-    <string name="hint_intent_description">Description for Key Mapper (required)</string>
-    <string name="hint_intent_flags">Flags</string>
     <string name="hint_wifi_ssid">WiFi network SSID</string>
     <!--  Hints  -->
 
@@ -170,11 +162,6 @@
     <string name="radio_button_short_press">Short press</string>
     <string name="radio_button_long_press">Long press</string>
     <string name="radio_button_double_press">Double press</string>
-    <string name="radio_button_intent_extra_value_true">True</string>
-    <string name="radio_button_intent_extra_value_false">False</string>
-    <string name="radio_button_intent_target_activity">Activity</string>
-    <string name="radio_button_intent_target_service">Service</string>
-    <string name="radio_button_intent_target_broadcast_receiver">Broadcast receiver</string>
     <!--  Radio buttons  -->
 
     <!--  Tabs  -->
@@ -348,7 +335,6 @@
     <string name="url_shizuku_setting_benefits" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/shizuku-benefits</string>
     <string name="url_settings_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/settings</string>
     <string name="url_report_issues_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/report-issues</string>
-    <string name="url_intent_set_flags_help" translatable="false">https://developer.android.com/reference/android/content/Intent#setFlags(int)</string>
     <string name="url_github_repo" translatable="false">https://github.com/sds100/KeyMapper</string>
     <string name="url_rate" translatable="false">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper</string>
     <string name="url_website" translatable="false">https://keymapperorg.github.io/KeyMapper</string>
@@ -1249,25 +1235,6 @@
     <!-- action category labels -->
 
     <!--  Intent action type strings  -->
-    <string name="intent_type_bool_header">Boolean</string>
-    <string name="intent_type_bool_array_header">Boolean array</string>
-    <string name="intent_type_int_header">Integer</string>
-    <string name="intent_type_int_array_header">Integer array</string>
-    <string name="intent_type_string_header">String</string>
-    <string name="intent_type_string_array_header">String array</string>
-    <string name="intent_type_long_header">Long</string>
-    <string name="intent_type_long_array_header">Long array</string>
-    <string name="intent_type_byte_header">Byte</string>
-    <string name="intent_type_byte_array_header">Byte array</string>
-    <string name="intent_type_double_header">Double</string>
-    <string name="intent_type_double_array_header">Double array</string>
-    <string name="intent_type_char_header">Char</string>
-    <string name="intent_type_char_array_header">Char array</string>
-    <string name="intent_type_float_header">Float</string>
-    <string name="intent_type_float_array_header">Float array</string>
-    <string name="intent_type_short_header">Short</string>
-    <string name="intent_type_short_array_header">Short array</string>
-
     <string name="intent_type_bool_example">Can only be \"true\" or \"false\"</string>
     <string name="intent_type_bool_array_example">A comma-separated list of "true" and "false". E.g true,false,true</string>
     <string name="intent_type_int_example">A valid Integer in the Java programming language.</string>
@@ -1288,7 +1255,6 @@
     <string name="intent_type_short_example">A valid Short in the Java programming language. E.g 2342</string>
     <string name="intent_type_short_array_example">A comma-separated list of valid Shorts in the Java programming language. E.g 3242,12354</string>
 
-    <string name="intent_flags_example">The flags for an Intent are stored as bit flags. These flags alter how the Intent is handled. If this is blank for an Activity Intent then Key Mapper will use FLAG_ACTIVITY_NEW_TASK by default. For much more information tap \'docs\' to see the Android developers documentation.</string>
     <!--  Intent action type strings  -->
 
     <!--  Tap targets  -->
@@ -1405,4 +1371,71 @@
     <string name="create_key_event_screen_not_an_integer_error">Must be an integer!</string>
     <string name="create_key_event_screen_no_device">None</string>
     <!-- Config key event screen -->
+
+    <!-- Config intent screen -->
+    <string name="config_intent_screen_done_content_description">Done configuring intent</string>
+    <string name="config_intent_screen_description_label">Description for Key Mapper (required)</string>
+    <string name="config_intent_screen_empty_description_error">Must not be empty!</string>
+    <string name="config_intent_screen_activity_target">Activity</string>
+    <string name="config_intent_screen_service_target">Service</string>
+    <string name="config_intent_screen_broadcast_receiver_target">Broadcast receiver</string>
+    <string name="config_intent_screen_delete_category_content_description">Delete category</string>
+    <string name="config_intent_screen_edit_category_content_description">Edit category</string>
+    <string name="config_intent_screen_add_category_button">Add category</string>
+    <string name="config_intent_screen_add_category_dialog_title">Add category</string>
+    <string name="config_intent_screen_edit_category_dialog_title">Edit category</string>
+    <string name="config_intent_screen_empty_category_error">Must not be empty!</string>
+    <string name="config_intent_screen_category_exists_error">This category already exists!</string>
+    <string name="config_intent_screen_category_name_label">Category name</string>
+    <string name="config_intent_screen_category_header">Categories</string>
+    
+    <string name="config_intent_screen_extras_header">Extras</string>
+    <string name="config_intent_screen_add_extra_button">Add extra</string>
+    <string name="config_intent_screen_add_extra_dialog_title">Add extra</string>
+    <string name="config_intent_screen_edit_extra_dialog_title">Edit extra</string>
+    <string name="config_intent_screen_edit_extra_content_description">Edit extra</string>
+    <string name="config_intent_screen_delete_extra_content_description">Delete extra</string>
+    <string name="config_intent_screen_empty_extra_key_error">Must not be empty!</string>
+    <string name="config_intent_screen_extra_exists_error">An extra with this key already exists!</string>
+    <string name="config_intent_screen_empty_extra_value_error">Must not be empty!</string>
+    <string name="config_intent_screen_extra_key_label">Key</string>
+    <string name="config_intent_screen_extra_boolean_true">True</string>
+    <string name="config_intent_screen_extra_boolean_false">False</string>
+    <string name="config_intent_screen_extra_boolean_title">Boolean</string>
+    <string name="intent_type_bool_array_header">Boolean array</string>
+    <string name="intent_type_int_header">Integer</string>
+    <string name="intent_type_int_array_header">Integer array</string>
+    <string name="config_intent_screen_extra_string_title">String</string>
+    <string name="intent_type_string_array_header">String array</string>
+    <string name="intent_type_long_header">Long</string>
+    <string name="intent_type_long_array_header">Long array</string>
+    <string name="intent_type_byte_header">Byte</string>
+    <string name="intent_type_byte_array_header">Byte array</string>
+    <string name="intent_type_double_header">Double</string>
+    <string name="intent_type_double_array_header">Double array</string>
+    <string name="intent_type_char_header">Char</string>
+    <string name="intent_type_char_array_header">Char array</string>
+    <string name="intent_type_float_header">Float</string>
+    <string name="intent_type_float_array_header">Float array</string>
+    <string name="intent_type_short_header">Short</string>
+    <string name="intent_type_short_array_header">Short array</string>
+    <string name="config_intent_screen_extra_value_label">Value</string>
+
+    <string name="config_intent_screen_data_header">Data</string>
+    <string name="config_intent_screen_package_header">Package</string>
+    <string name="config_intent_screen_class_header">Class</string>
+    <string name="config_intent_screen_choose_component_button">Choose component</string>
+    <string name="hint_intent_extra_name">Name</string>
+    <string name="config_intent_screen_flags_header">Flags</string>
+    <string name="config_intent_screen_flags_help_content_description">Show flags explanation</string>
+    <string name="config_intent_screen_flags_help_dialog_title">Flags explanation</string>
+    <string name="config_intent_screen_flags_help_dialog_text_1">The flags for an Intent are stored as bit flags. These flags alter how the Intent is handled. If this is blank for an Activity Intent then Key Mapper will use FLAG_ACTIVITY_NEW_TASK by default. For more info view the</string>
+    <string name="config_intent_screen_flags_help_dialog_text_2">&#160;docs here</string>
+    <string name="config_intent_screen_flags_help_dialog_text_3">.</string>
+    <string name="url_intent_set_flags_help" translatable="false">https://developer.android.com/reference/android/content/Intent#setFlags(int)</string>
+    <string name="config_intent_screen_choose_flags_button">Choose flags</string>
+    <string name="config_intent_screen_action_label">Action</string>
+    <string name="config_intent_screen_flags_not_a_number_error">Must be an integer!</string>
+    <string name="config_intent_screen_choose_flags_dialog_title">Choose flags</string>
+    <!-- Config intent screen -->
 </resources>

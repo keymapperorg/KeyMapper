@@ -74,7 +74,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
                     android:checked="@{model.value}"
-                    android:text="@string/radio_button_intent_extra_value_true" />
+                    android:text="@string/config_intent_screen_extra_boolean_true" />
 
                 <com.google.android.material.radiobutton.MaterialRadioButton
                     android:id="@+id/radioButtonFalse"
@@ -82,7 +82,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
                     android:checked="@{!model.value}"
-                    android:text="@string/radio_button_intent_extra_value_false" />
+                    android:text="@string/config_intent_screen_extra_boolean_false" />
             </RadioGroup>
 
             <androidx.appcompat.widget.AppCompatImageButton

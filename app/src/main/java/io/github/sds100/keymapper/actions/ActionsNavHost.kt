@@ -17,6 +17,7 @@ import io.github.sds100.keymapper.actions.tapscreen.CreateTapScreenActionScreen
 import io.github.sds100.keymapper.destinations.*
 import io.github.sds100.keymapper.system.apps.ChooseAppScreen
 import io.github.sds100.keymapper.system.apps.ChooseAppShortcutScreen
+import io.github.sds100.keymapper.system.intents.ConfigIntentScreen
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -93,6 +94,13 @@ fun ActionsNavHost(
                 resultBackNavigator = resultBackNavigator(navHostController),
                 navigator = destinationsNavigator(navHostController),
                 keyCodeResultRecipient = resultRecipient()
+            )
+        }
+
+        composable(ConfigIntentScreenDestination) {
+            ConfigIntentScreen(
+                viewModel = hiltViewModel(),
+                resultBackNavigator = resultBackNavigator(navHostController)
             )
         }
     }
