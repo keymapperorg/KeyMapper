@@ -1,16 +1,18 @@
 package io.github.sds100.keymapper.util.ui
 
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun CustomDialog(
     title: String,
@@ -19,18 +21,27 @@ fun CustomDialog(
     onDismissRequest: () -> Unit = {},
     content: @Composable BoxScope.() -> Unit
 ) {
-    Dialog(onDismissRequest = onDismissRequest) {
-        Surface(color = MaterialTheme.colorScheme.surface, shape = MaterialTheme.shapes.extraLarge) {
-            Column(Modifier.padding(24.dp).wrapContentHeight().animateContentSize()) {
+    Dialog(onDismissRequest = onDismissRequest,
+        //must be set false so that the dialog resizes when content changes
+        properties = DialogProperties(usePlatformDefaultWidth = false)) {
+        Surface(
+            modifier = Modifier.padding(50.dp),
+            color = MaterialTheme.colorScheme.surface, shape = MaterialTheme.shapes.extraLarge) {
+            Column(Modifier.padding(24.dp)) {
                 Text(
+                    modifier = Modifier.wrapContentSize(),
                     text = title,
                     style = MaterialTheme.typography.headlineSmall
                 )
-                Box(Modifier.padding(top = 16.dp)) {
+                Box(Modifier
+                    .weight(1f, fill = false)
+                    .padding(top = 16.dp)) {
                     content()
                 }
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.End),
                     horizontalArrangement = Arrangement.End
                 ) {
                     dismissButton()

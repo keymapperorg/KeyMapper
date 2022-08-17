@@ -37,7 +37,7 @@ class BoolExtraType : IntentExtraType() {
 }
 
 class BoolArrayExtraType : IntentExtraType() {
-    override val labelStringRes = R.string.intent_type_bool_array_header
+    override val labelStringRes = R.string.config_intent_screen_extra_boolean_array_title
     override val exampleStringRes = R.string.intent_type_bool_array_example
 
     override fun putInIntent(intent: Intent, name: String, value: String) {
@@ -60,7 +60,7 @@ class BoolArrayExtraType : IntentExtraType() {
 }
 
 class IntExtraType : IntentExtraType() {
-    override val labelStringRes = R.string.intent_type_int_header
+    override val labelStringRes = R.string.config_intent_screen_extra_integer_title
     override val exampleStringRes = R.string.intent_type_int_example
 
     override fun putInIntent(intent: Intent, name: String, value: String) {
@@ -75,7 +75,7 @@ class IntExtraType : IntentExtraType() {
 }
 
 class IntArrayExtraType : IntentExtraType() {
-    override val labelStringRes = R.string.intent_type_int_array_header
+    override val labelStringRes = R.string.config_intent_screen_extra_integer_array_title
     override val exampleStringRes = R.string.intent_type_int_array_example
 
     override fun putInIntent(intent: Intent, name: String, value: String) {
@@ -109,7 +109,7 @@ class StringExtraType : IntentExtraType() {
 }
 
 class StringArrayExtraType : IntentExtraType() {
-    override val labelStringRes = R.string.intent_type_string_array_header
+    override val labelStringRes = R.string.config_intent_screen_extra_string_array_title
     override val exampleStringRes = R.string.intent_type_string_array_example
 
     override fun putInIntent(intent: Intent, name: String, value: String) {
@@ -128,7 +128,7 @@ class StringArrayExtraType : IntentExtraType() {
 }
 
 class LongExtraType : IntentExtraType() {
-    override val labelStringRes = R.string.intent_type_long_header
+    override val labelStringRes = R.string.config_intent_screen_extra_long_title
     override val exampleStringRes = R.string.intent_type_long_example
 
     override fun putInIntent(intent: Intent, name: String, value: String) {
@@ -143,7 +143,7 @@ class LongExtraType : IntentExtraType() {
 }
 
 class LongArrayExtraType : IntentExtraType() {
-    override val labelStringRes = R.string.intent_type_long_array_header
+    override val labelStringRes = R.string.config_intent_screen_extra_long_array_title
     override val exampleStringRes = R.string.intent_type_long_array_example
 
     override fun putInIntent(intent: Intent, name: String, value: String) {
@@ -166,7 +166,7 @@ class LongArrayExtraType : IntentExtraType() {
 }
 
 class ByteExtraType : IntentExtraType() {
-    override val labelStringRes = R.string.intent_type_byte_header
+    override val labelStringRes = R.string.config_intent_screen_extra_byte_title
     override val exampleStringRes = R.string.intent_type_byte_example
 
     override fun putInIntent(intent: Intent, name: String, value: String) {
@@ -181,7 +181,7 @@ class ByteExtraType : IntentExtraType() {
 }
 
 class ByteArrayExtraType : IntentExtraType() {
-    override val labelStringRes = R.string.intent_type_byte_array_header
+    override val labelStringRes = R.string.config_intent_screen_extra_byte_array_title
     override val exampleStringRes = R.string.intent_type_byte_array_example
 
     override fun putInIntent(intent: Intent, name: String, value: String) {
@@ -204,7 +204,7 @@ class ByteArrayExtraType : IntentExtraType() {
 }
 
 class DoubleExtraType : IntentExtraType() {
-    override val labelStringRes = R.string.intent_type_double_header
+    override val labelStringRes = R.string.config_intent_screen_extra_double_title
     override val exampleStringRes = R.string.intent_type_double_example
 
     override fun putInIntent(intent: Intent, name: String, value: String) {
@@ -219,7 +219,7 @@ class DoubleExtraType : IntentExtraType() {
 }
 
 class DoubleArrayExtraType : IntentExtraType() {
-    override val labelStringRes = R.string.intent_type_double_array_header
+    override val labelStringRes = R.string.config_intent_screen_extra_double_array_title
     override val exampleStringRes = R.string.intent_type_double_array_example
 
     override fun putInIntent(intent: Intent, name: String, value: String) {
@@ -242,7 +242,7 @@ class DoubleArrayExtraType : IntentExtraType() {
 }
 
 class CharExtraType : IntentExtraType() {
-    override val labelStringRes = R.string.intent_type_char_header
+    override val labelStringRes = R.string.config_intent_screen_extra_char_title
     override val exampleStringRes = R.string.intent_type_char_example
 
     override fun putInIntent(intent: Intent, name: String, value: String) {
@@ -257,7 +257,7 @@ class CharExtraType : IntentExtraType() {
 }
 
 class CharArrayExtraType : IntentExtraType() {
-    override val labelStringRes = R.string.intent_type_char_array_header
+    override val labelStringRes = R.string.config_intent_screen_extra_char_array_title
     override val exampleStringRes = R.string.intent_type_char_array_example
 
     override fun putInIntent(intent: Intent, name: String, value: String) {
@@ -280,7 +280,7 @@ class CharArrayExtraType : IntentExtraType() {
 }
 
 class FloatExtraType : IntentExtraType() {
-    override val labelStringRes = R.string.intent_type_float_header
+    override val labelStringRes = R.string.config_intent_screen_extra_float_title
     override val exampleStringRes = R.string.intent_type_float_example
 
     override fun putInIntent(intent: Intent, name: String, value: String) {
@@ -295,7 +295,7 @@ class FloatExtraType : IntentExtraType() {
 }
 
 class FloatArrayExtraType : IntentExtraType() {
-    override val labelStringRes = R.string.intent_type_float_array_header
+    override val labelStringRes = R.string.config_intent_screen_extra_float_array_title
     override val exampleStringRes = R.string.intent_type_float_array_example
 
     override fun putInIntent(intent: Intent, name: String, value: String) {
@@ -318,7 +318,7 @@ class FloatArrayExtraType : IntentExtraType() {
 }
 
 class ShortExtraType : IntentExtraType() {
-    override val labelStringRes = R.string.intent_type_short_header
+    override val labelStringRes = R.string.config_intent_screen_extra_short_title
     override val exampleStringRes = R.string.intent_type_short_example
 
     override fun putInIntent(intent: Intent, name: String, value: String) {
@@ -333,7 +333,7 @@ class ShortExtraType : IntentExtraType() {
 }
 
 class ShortArrayExtraType : IntentExtraType() {
-    override val labelStringRes = R.string.intent_type_short_array_header
+    override val labelStringRes = R.string.config_intent_screen_extra_short_array_title
     override val exampleStringRes = R.string.intent_type_short_array_example
 
     override fun putInIntent(intent: Intent, name: String, value: String) {

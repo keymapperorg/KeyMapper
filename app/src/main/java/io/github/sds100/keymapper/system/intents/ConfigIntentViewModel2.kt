@@ -1,12 +1,11 @@
 package io.github.sds100.keymapper.system.intents
 
-import android.os.Parcelable
+import android.content.Intent
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.parcelize.Parcelize
 import splitties.bitflags.withFlag
 import javax.inject.Inject
 
@@ -88,50 +87,176 @@ class ConfigIntentViewModel2 @Inject constructor() : ViewModel() {
     }
 
     fun onAddExtra(extra: IntentExtraRow) {
-        state = state.copy(extras = state.extras.plus(extra))
+        state = state.copy(extraRows = state.extraRows.plus(extra))
     }
 
-    fun onEditExtra(key: String, newExtra: IntentExtraRow) {
-        val newExtras = state.extras.map {
-            if (it.key == key) {
+    fun onEditExtra(name: String, newExtra: IntentExtraRow) {
+        val newExtras = state.extraRows.map {
+            if (it.name == name) {
                 newExtra
             } else {
                 it
             }
         }
 
-        state = state.copy(extras = newExtras)
+        state = state.copy(extraRows = newExtras)
     }
 
-    fun onDeleteExtra(key: String) {
-        val newExtras = state.extras
+    fun onDeleteExtra(name: String) {
+        val newExtras = state.extraRows
             .toMutableList()
-            .also { list -> list.removeAll { it.key == key } }
+            .also { list -> list.removeAll { it.name == name } }
 
-        state = state.copy(extras = newExtras)
+        state = state.copy(extraRows = newExtras)
     }
 
     fun buildResult(): ConfigIntentResult? {
-        return null
-    }
-}
+        val intent = Intent()
 
-sealed class IntentExtraRow : Parcelable {
-    abstract val key: String
-    abstract val valueString: String
+        state.extraRows.forEach { extraRow ->
+            when (extraRow) {
+                is IntentExtraRow.BooleanArrayExtra -> {
+                    val booleanArray = extraRow
+                        .value
+                        .split(',')
+                        .map { it.trim() }
+                        .map { it == "true" }
+                        .toBooleanArray()
 
-    @Parcelize
-    data class BooleanExtra(override val key: String, val value: Boolean = true) : IntentExtraRow() {
-        override val valueString: String = if (value) {
-            "true"
-        } else {
-            "false"
+                    intent.putExtra(extraRow.name, booleanArray)
+                }
+
+                is IntentExtraRow.BooleanExtra -> {
+                    intent.putExtra(extraRow.name, extraRow.value)
+                }
+
+                is IntentExtraRow.IntegerExtra -> {
+                    val integer = extraRow.value.toIntOrNull() ?: return@forEach
+                    intent.putExtra(extraRow.name, integer)
+                }
+
+                is IntentExtraRow.StringExtra -> {
+                    intent.putExtra(extraRow.name, extraRow.value)
+                }
+
+                is IntentExtraRow.ByteArrayExtra -> {
+                    val byteArray = extraRow
+                        .value
+                        .split(',')
+                        .map { it.trim() }
+                        .map { it.toByte() }
+                        .toByteArray()
+
+                    intent.putExtra(extraRow.name, byteArray)
+                }
+
+                is IntentExtraRow.ByteExtra -> {
+                    val byte = extraRow.value.toByteOrNull() ?: return@forEach
+                    intent.putExtra(extraRow.name, byte)
+                }
+
+                is IntentExtraRow.CharArrayExtra -> {
+                    val charArray = extraRow
+                        .value
+                        .split(',')
+                        .map { it.trim() }
+                        .map { it[0] }
+                        .toCharArray()
+
+                    intent.putExtra(extraRow.name, charArray)
+                }
+
+                is IntentExtraRow.CharExtra -> {
+                    intent.putExtra(extraRow.name, extraRow.value)
+                }
+
+                is IntentExtraRow.DoubleArrayExtra -> {
+                    val doubleArray = extraRow
+                        .value
+                        .split(',')
+                        .map { it.trim() }
+                        .map { it.toDouble() }
+                        .toDoubleArray()
+
+                    intent.putExtra(extraRow.name, doubleArray)
+                }
+                is IntentExtraRow.DoubleExtra -> {
+                    val double = extraRow.value.toDoubleOrNull() ?: return@forEach
+                    intent.putExtra(extraRow.name, double)
+                }
+
+                is IntentExtraRow.FloatArrayExtra -> {
+                    val floatArray = extraRow
+                        .value
+                        .split(',')
+                        .map { it.trim() }
+                        .map { it.toFloat() }
+                        .toFloatArray()
+
+                    intent.putExtra(extraRow.name, floatArray)
+                }
+
+                is IntentExtraRow.FloatExtra -> {
+                    val float = extraRow.value.toFloatOrNull() ?: return@forEach
+                    intent.putExtra(extraRow.name, float)
+                }
+
+                is IntentExtraRow.IntegerArrayExtra -> {
+                    val intArray = extraRow
+                        .value
+                        .split(',')
+                        .map { it.trim() }
+                        .map { it.toInt() }
+                        .toIntArray()
+
+                    intent.putExtra(extraRow.name, intArray)
+                }
+
+                is IntentExtraRow.LongArrayExtra -> {
+                    val longArray = extraRow
+                        .value
+                        .split(',')
+                        .map { it.trim() }
+                        .map { it.toLong() }
+                        .toLongArray()
+
+                    intent.putExtra(extraRow.name, longArray)
+                }
+
+                is IntentExtraRow.LongExtra -> {
+                    val long = extraRow.value.toLongOrNull() ?: return@forEach
+                    intent.putExtra(extraRow.name, long)
+                }
+
+                is IntentExtraRow.ShortArrayExtra -> {
+                    val shortArray = extraRow
+                        .value
+                        .split(',')
+                        .map { it.trim() }
+                        .map { it.toShort() }
+                        .toShortArray()
+
+                    intent.putExtra(extraRow.name, shortArray)
+                }
+
+                is IntentExtraRow.ShortExtra -> {
+                    val short = extraRow.value.toShortOrNull() ?: return@forEach
+                    intent.putExtra(extraRow.name, short)
+                }
+
+                is IntentExtraRow.StringArrayExtra -> {
+                    val stringArray = extraRow
+                        .value
+                        .split(',')
+                        .toTypedArray()
+
+                    intent.putExtra(extraRow.name, stringArray)
+                }
+            }
         }
-    }
 
-    @Parcelize
-    data class StringExtra(override val key: String, val value: String = "") : IntentExtraRow() {
-        override val valueString: String = value
+        //TODO
+        return null
     }
 }
 
@@ -155,7 +280,7 @@ data class ConfigIntentState(
     val flags: Set<Int>,
     val flagsError: IntentFlagsError,
     val categories: Set<String>,
-    val extras: List<IntentExtraRow>,
+    val extraRows: List<IntentExtraRow>,
     val componentPackage: String,
     val componentClass: String,
     val isDoneButtonEnabled: Boolean
@@ -171,7 +296,7 @@ data class ConfigIntentState(
             flags = emptySet(),
             flagsError = IntentFlagsError.NONE,
             categories = emptySet(),
-            extras = emptyList(),
+            extraRows = emptyList(),
             componentPackage = "",
             componentClass = "",
             isDoneButtonEnabled = false

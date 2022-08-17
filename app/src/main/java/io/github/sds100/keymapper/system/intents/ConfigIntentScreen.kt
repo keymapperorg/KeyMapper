@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.system.intents
 
 import android.annotation.SuppressLint
-import android.net.ipsec.ike.IkeSessionConnectionInfo
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -219,7 +218,7 @@ private fun ConfigIntentScreen(
 
             ExtrasSection(
                 modifier = Modifier.fillMaxWidth(),
-                extras = state.extras,
+                extras = state.extraRows,
                 onAdd = onAddExtra,
                 onEdit = onEditExtra,
                 onRemove = onDeleteExtra)
@@ -240,7 +239,7 @@ private fun Preview() {
                     data = "data",
                     action = "action",
                     categories = setOf("CATEGORY_DEFAULT"),
-                    extras = listOf(IntentExtraRow.BooleanExtra("io.github.sds100.keymapper.KEY", true)),
+                    extraRows = listOf(IntentExtraRow.BooleanExtra("io.github.sds100.keymapper.KEY", true)),
                     flagsText = "123",
                     flags = emptySet(),
                     flagsError = IntentFlagsError.NOT_NUMBER,
@@ -538,19 +537,21 @@ private fun ExtrasSection(
 
         if (showAddExtraDialog) {
             var state: IntentExtraRow by rememberSaveable { mutableStateOf(IntentExtraRow.BooleanExtra("", true)) }
-            val alreadyExists by remember(state.key) {
-                derivedStateOf { extras.any { it.key == state.key } }
+            val alreadyExists by remember(state.name) {
+                derivedStateOf { extras.any { it.name == state.name } }
             }
 
-            AddExtraDialog(
+            EditExtraDialog(
+                title = stringResource(R.string.config_intent_screen_add_extra_dialog_title),
                 state = state,
-                alreadyExists = alreadyExists,
+                keyExists = alreadyExists,
                 onChange = { state = it },
                 onConfirm = {
                     onAdd(state)
                     showAddExtraDialog = false
                 },
-                onDismiss = { showAddExtraDialog = false })
+                onDismiss = { showAddExtraDialog = false }
+            )
         }
 
         OutlinedButton(
@@ -561,92 +562,204 @@ private fun ExtrasSection(
             Text(stringResource(R.string.config_intent_screen_add_extra_button))
         }
 
+        var showEditExtraDialog by rememberSaveable { mutableStateOf(false) }
+        var oldExtra: IntentExtraRow? by rememberSaveable { mutableStateOf(null) }
+        var newExtra: IntentExtraRow? by rememberSaveable { mutableStateOf(null) }
+
+        if (showEditExtraDialog) {
+            val alreadyExists by remember(newExtra!!.name) {
+                derivedStateOf {
+                    extras.any { extra ->
+                        extra.name != oldExtra!!.name && extra.name == newExtra!!.name
+                    }
+                }
+            }
+
+            EditExtraDialog(
+                title = stringResource(R.string.config_intent_screen_edit_extra_dialog_title),
+                state = newExtra!!,
+                keyExists = alreadyExists,
+                onChange = { newExtra = it },
+                onConfirm = {
+                    onEdit(oldExtra!!.name, newExtra!!)
+                    showEditExtraDialog = false
+                },
+                onDismiss = { showEditExtraDialog = false }
+            )
+        }
+
         extras.forEach { extra ->
             ExtraRow(
                 modifier = Modifier.fillMaxWidth(),
                 state = extra,
                 onEditClick = {
-
+                    oldExtra = extra
+                    newExtra = extra
+                    showEditExtraDialog = true
                 },
-                onRemoveClick = { onRemove(extra.key) }
+                onRemoveClick = { onRemove(extra.name) }
             )
         }
     }
 }
 
 @Composable
-private fun AddExtraDialog(
+private fun EditExtraDialog(
+    title: String,
     state: IntentExtraRow,
     onChange: (IntentExtraRow) -> Unit,
-    alreadyExists: Boolean,
+    keyExists: Boolean,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
 ) {
-    val type by remember {
-        derivedStateOf {
-            when (state) {
-                is IntentExtraRow.BooleanExtra -> IntentExtraType2.BOOLEAN
-                is IntentExtraRow.StringExtra -> IntentExtraType2.STRING
-            }
-        }
+    val type = IntentExtraRow.toType(state)
+
+    val keyError = when {
+        state.name.isEmpty() -> stringResource(R.string.config_intent_screen_empty_extra_key_error)
+        keyExists -> stringResource(R.string.config_intent_screen_extra_exists_error)
+        else -> null
     }
 
+    val valueError: String? = getExtraValueError(state)
+    val isValid: Boolean = keyError == null && valueError == null
+
     EditExtraDialog(
-        title = stringResource(R.string.config_intent_screen_add_extra_dialog_title),
-        key = state.key,
+        title = title,
+        name = state.name,
+        nameError = keyError,
         type = type,
-        alreadyExists = alreadyExists,
+        isConfirmButtonEnabled = isValid,
         value = {
             when (state) {
-                is IntentExtraRow.BooleanExtra ->
+                is IntentExtraRow.BooleanExtra -> {
                     EditBooleanExtraValue(
                         value = state.value,
                         onChange = {
                             onChange(state.copy(value = it))
                         }
                     )
-                is IntentExtraRow.StringExtra ->
-                    EditStringExtraValue(
-                        modifier = Modifier.wrapContentHeight(),
+                }
+                is IntentExtraRow.StringExtra -> {
+                    EditExtraTextValue(
                         value = state.value,
+                        error = valueError,
                         onChange = {
                             onChange(state.copy(value = it))
                         }
                     )
+                }
+                is IntentExtraRow.BooleanArrayExtra -> {
+                    EditExtraTextValue(
+                        value = state.value,
+                        error = valueError,
+                        caption = stringResource(R.string.config_intent_screen_extra_boolean_array_help),
+                        onChange = { onChange(state.copy(value = it)) })
+                }
+                is IntentExtraRow.ByteArrayExtra -> {
+                    EditExtraTextValue(
+                        value = state.value,
+                        error = valueError,
+                        caption = stringResource(R.string.config_intent_screen_extra_byte_array_help),
+                        onChange = { onChange(state.copy(value = it)) })
+                }
+                is IntentExtraRow.ByteExtra -> {
+                    EditExtraTextValue(
+                        value = state.value,
+                        error = valueError,
+                        onChange = { onChange(state.copy(value = it)) },
+                        keyboardType = KeyboardType.Number)
+                }
+                is IntentExtraRow.CharArrayExtra -> {
+                    EditExtraTextValue(
+                        value = state.value,
+                        error = valueError,
+                        caption = stringResource(R.string.config_intent_screen_extra_char_array_help),
+                        onChange = { onChange(state.copy(value = it)) })
+                }
+                is IntentExtraRow.CharExtra -> {
+                    EditCharExtraValue(char = state.value, onChange = { onChange(state.copy(value = it)) })
+                }
+                is IntentExtraRow.DoubleArrayExtra -> {
+                    EditExtraTextValue(
+                        value = state.value,
+                        error = valueError,
+                        caption = stringResource(R.string.config_intent_screen_extra_double_array_help),
+                        onChange = { onChange(state.copy(value = it)) })
+                }
+                is IntentExtraRow.DoubleExtra -> {
+                    EditExtraTextValue(
+                        value = state.value,
+                        error = valueError,
+                        onChange = { onChange(state.copy(value = it)) },
+                        keyboardType = KeyboardType.Number)
+                }
+                is IntentExtraRow.FloatArrayExtra -> {
+                    EditExtraTextValue(
+                        value = state.value,
+                        error = valueError,
+                        caption = stringResource(R.string.config_intent_screen_extra_float_array_help),
+                        onChange = { onChange(state.copy(value = it)) })
+                }
+                is IntentExtraRow.FloatExtra -> {
+                    EditExtraTextValue(
+                        value = state.value,
+                        error = valueError,
+                        onChange = { onChange(state.copy(value = it)) },
+                        keyboardType = KeyboardType.Number)
+                }
+                is IntentExtraRow.IntegerArrayExtra -> {
+                    EditExtraTextValue(
+                        value = state.value,
+                        error = valueError,
+                        caption = stringResource(R.string.config_intent_screen_extra_integer_array_help),
+                        onChange = { onChange(state.copy(value = it)) })
+                }
+                is IntentExtraRow.IntegerExtra -> {
+                    EditExtraTextValue(
+                        value = state.value,
+                        error = valueError,
+                        onChange = { onChange(state.copy(value = it)) },
+                        keyboardType = KeyboardType.Number)
+                }
+                is IntentExtraRow.LongArrayExtra -> {
+                    EditExtraTextValue(
+                        value = state.value,
+                        error = valueError,
+                        caption = stringResource(R.string.config_intent_screen_extra_long_array_help),
+                        onChange = { onChange(state.copy(value = it)) })
+                }
+                is IntentExtraRow.LongExtra -> {
+                    EditExtraTextValue(
+                        value = state.value,
+                        error = valueError,
+                        onChange = { onChange(state.copy(value = it)) },
+                        keyboardType = KeyboardType.Number)
+                }
+                is IntentExtraRow.ShortArrayExtra -> {
+                    EditExtraTextValue(
+                        value = state.value,
+                        error = valueError,
+                        caption = stringResource(R.string.config_intent_screen_extra_short_array_help),
+                        onChange = { onChange(state.copy(value = it)) })
+                }
+                is IntentExtraRow.ShortExtra -> {
+                    EditExtraTextValue(
+                        value = state.value,
+                        error = valueError,
+                        onChange = { onChange(state.copy(value = it)) },
+                        keyboardType = KeyboardType.Number)
+                }
+                is IntentExtraRow.StringArrayExtra -> {
+                    EditExtraTextValue(
+                        value = state.value,
+                        error = valueError,
+                        caption = stringResource(R.string.config_intent_screen_extra_string_array_help),
+                        onChange = { onChange(state.copy(value = it)) })
+                }
             }
         },
-        onKeyChange = { key ->
-            val newState = when (state) {
-                is IntentExtraRow.BooleanExtra -> state.copy(key = key)
-                is IntentExtraRow.StringExtra -> state.copy(key = key)
-            }
-
-            onChange(newState)
-        },
-        onSelectType = { type ->
-            val newState = when (type) {
-                IntentExtraType2.BOOLEAN -> IntentExtraRow.BooleanExtra(key = state.key)
-                IntentExtraType2.BOOLEAN_ARRAY -> TODO()
-                IntentExtraType2.INTEGER -> TODO()
-                IntentExtraType2.INTEGER_ARRAY -> TODO()
-                IntentExtraType2.STRING -> IntentExtraRow.StringExtra(key = state.key)
-                IntentExtraType2.STRING_ARRAY -> TODO()
-                IntentExtraType2.LONG -> TODO()
-                IntentExtraType2.LONG_ARRAY -> TODO()
-                IntentExtraType2.BYTE -> TODO()
-                IntentExtraType2.BYTE_ARRAY -> TODO()
-                IntentExtraType2.DOUBLE -> TODO()
-                IntentExtraType2.DOUBLE_ARRAY -> TODO()
-                IntentExtraType2.CHAR -> TODO()
-                IntentExtraType2.CHAR_ARRAY -> TODO()
-                IntentExtraType2.FLOAT -> TODO()
-                IntentExtraType2.FLOAT_ARRAY -> TODO()
-                IntentExtraType2.SHORT -> TODO()
-                IntentExtraType2.SHORT_ARRAY -> TODO()
-            }
-
-            onChange(newState)
-        },
+        onNameChange = { name -> onChange(setIntentExtraName(state, name)) },
+        onSelectType = { type -> onChange(IntentExtraRow.fromType(type, state.name)) },
         onConfirm = onConfirm,
         onDismiss = onDismiss
     )
@@ -656,25 +769,20 @@ private fun AddExtraDialog(
 @Composable
 private fun EditExtraDialog(
     title: String,
-    key: String,
+    name: String,
+    nameError: String?,
+    isConfirmButtonEnabled: Boolean,
     type: IntentExtraType2,
-    alreadyExists: Boolean,
     value: @Composable ColumnScope.() -> Unit,
-    onKeyChange: (String) -> Unit,
+    onNameChange: (String) -> Unit,
     onSelectType: (IntentExtraType2) -> Unit,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
 ) {
-    val keyError = when {
-        key.isEmpty() -> stringResource(R.string.config_intent_screen_empty_extra_key_error)
-        alreadyExists -> stringResource(R.string.config_intent_screen_extra_exists_error)
-        else -> null
-    }
-
     CustomDialog(
         title = title,
         confirmButton = {
-            TextButton(onClick = onConfirm, enabled = keyError == null) {
+            TextButton(onClick = onConfirm, enabled = isConfirmButtonEnabled) {
                 Text(stringResource(R.string.pos_confirm))
             }
         },
@@ -684,17 +792,17 @@ private fun EditExtraDialog(
             }
         },
         onDismissRequest = onDismiss) {
-        Column {
+        Column(Modifier.verticalScroll(rememberScrollState())) {
             var expanded by remember { mutableStateOf(false) }
             val focusManager = LocalFocusManager.current
 
             ErrorOutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = key,
-                errorMessage = keyError ?: "",
-                isError = keyError != null,
-                label = stringResource(R.string.config_intent_screen_extra_key_label),
-                onValueChange = onKeyChange,
+                value = name,
+                errorMessage = nameError ?: "",
+                isError = nameError != null,
+                label = stringResource(R.string.config_intent_screen_extra_name_label),
+                onValueChange = onNameChange,
                 keyboardActions = KeyboardActions {
                     focusManager.clearFocus()
                 })
@@ -703,9 +811,7 @@ private fun EditExtraDialog(
 
             ExposedDropdownMenuBox(
                 expanded = expanded,
-                onExpandedChange = {
-                    expanded = it
-                }) {
+                onExpandedChange = { expanded = it }) {
 
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth(),
@@ -718,17 +824,19 @@ private fun EditExtraDialog(
                     colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
                 )
 
-                ExposedDropdownMenu(expanded = expanded, onDismissRequest = {
-                    expanded = false
-                    focusManager.clearFocus()
-                }) {
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = {
+                        expanded = false
+                        focusManager.clearFocus()
+                    }) {
                     IntentExtraType2.values().forEach { extraType ->
-                        DropdownMenuItem(text = {
-                            Text(stringResource(getIntentExtraTypeTitle(extraType)))
-                        }, onClick = {
-                            onSelectType(extraType)
-                            expanded = false
-                        })
+                        DropdownMenuItem(
+                            text = { Text(stringResource(getIntentExtraTypeTitle(extraType))) },
+                            onClick = {
+                                expanded = false
+                                onSelectType(extraType)
+                            })
                     }
                 }
             }
@@ -754,14 +862,57 @@ private fun EditBooleanExtraValue(modifier: Modifier = Modifier, value: Boolean,
     }
 }
 
+@Composable
+private fun EditExtraTextValue(modifier: Modifier = Modifier,
+                               value: String,
+                               error: String?,
+                               caption: String = "",
+                               onChange: (String) -> Unit,
+                               keyboardType: KeyboardType = KeyboardType.Text) {
+    val focusManager = LocalFocusManager.current
+
+    Column {
+        ErrorOutlinedTextField(
+            modifier = modifier,
+            value = value,
+            onValueChange = onChange,
+            label = stringResource(R.string.config_intent_screen_extra_value_label),
+            errorMessage = error ?: "",
+            isError = error != null,
+            keyboardActions = KeyboardActions {
+                focusManager.clearFocus()
+            },
+            keyboardOptions = KeyboardOptions(keyboardType = keyboardType)
+        )
+        Spacer(Modifier.height(8.dp))
+        Text(
+            text = caption,
+            style = MaterialTheme.typography.bodySmall
+        )
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun EditStringExtraValue(modifier: Modifier = Modifier, value: String, onChange: (String) -> Unit) {
+private fun EditCharExtraValue(modifier: Modifier = Modifier,
+                               char: Char?,
+                               onChange: (Char?) -> Unit) {
+    val focusManager = LocalFocusManager.current
+
     OutlinedTextField(
         modifier = modifier,
-        value = value,
-        onValueChange = onChange,
-        label = { Text(stringResource(R.string.config_intent_screen_extra_value_label)) })
+        value = char?.toString() ?: "",
+        onValueChange = { value ->
+            when {
+                value.isEmpty() -> onChange(null)
+                value.length == 1 -> onChange(value[0])
+            }
+        },
+        label = { Text(stringResource(R.string.config_intent_screen_extra_value_label)) },
+        keyboardActions = KeyboardActions {
+            focusManager.clearFocus()
+        }
+    )
 }
 
 @Preview
@@ -770,15 +921,16 @@ private fun EditExtraDialogPreview() {
     MaterialTheme {
         EditExtraDialog(
             title = stringResource(R.string.config_intent_screen_add_extra_dialog_title),
-            key = "io.github.sds100.keymapper.KEY",
-            alreadyExists = true,
+            name = "io.github.sds100.keymapper.KEY",
+            nameError = stringResource(R.string.config_intent_screen_empty_extra_key_error),
+            isConfirmButtonEnabled = true,
             value = {
                 EditBooleanExtraValue(value = true, onChange = {})
             },
             type = IntentExtraType2.BOOLEAN,
             onConfirm = {},
             onDismiss = {},
-            onKeyChange = {},
+            onNameChange = {},
             onSelectType = {}
         )
     }
@@ -798,7 +950,7 @@ private fun ExtraRow(
 
                 Text(header, style = MaterialTheme.typography.titleLarge)
                 Spacer(Modifier.height(8.dp))
-                Text(modifier = Modifier.fillMaxWidth(), text = state.key)
+                Text(modifier = Modifier.fillMaxWidth(), text = state.name)
                 Spacer(Modifier.height(8.dp))
                 Text(state.valueString)
             }
@@ -824,7 +976,7 @@ private fun ExtraRowPreview() {
         Surface {
             ExtraRow(
                 state = IntentExtraRow.BooleanExtra(
-                    key = "io.github.sds100.keymapper.KEY",
+                    name = "io.github.sds100.keymapper.KEY",
                     value = true,
                 ),
                 onEditClick = {},
@@ -834,27 +986,66 @@ private fun ExtraRowPreview() {
     }
 }
 
+@Composable
+private fun getExtraValueError(extraRow: IntentExtraRow): String? {
+    val formattedIncorrectlyMessage = when (extraRow) {
+        is IntentExtraRow.BooleanArrayExtra,
+        is IntentExtraRow.ByteArrayExtra,
+        is IntentExtraRow.CharArrayExtra,
+        is IntentExtraRow.DoubleArrayExtra,
+        is IntentExtraRow.FloatArrayExtra,
+        is IntentExtraRow.IntegerArrayExtra,
+        is IntentExtraRow.LongArrayExtra,
+        is IntentExtraRow.ShortArrayExtra ->
+            stringResource(R.string.config_intent_screen_extra_boolean_array_incorrect_format_error)
+
+        is IntentExtraRow.ByteExtra ->
+            stringResource(R.string.config_intent_screen_extra_byte_incorrect_format_error)
+        is IntentExtraRow.DoubleExtra ->
+            stringResource(R.string.config_intent_screen_extra_double_incorrect_format_error)
+        is IntentExtraRow.FloatExtra ->
+            stringResource(R.string.config_intent_screen_extra_float_incorrect_format_error)
+        is IntentExtraRow.IntegerExtra ->
+            stringResource(R.string.config_intent_screen_extra_integer_incorrect_format_error)
+        is IntentExtraRow.LongExtra ->
+            stringResource(R.string.config_intent_screen_extra_long_incorrect_format_error)
+        is IntentExtraRow.ShortExtra ->
+            stringResource(R.string.config_intent_screen_extra_short_incorrect_format_error)
+
+        is IntentExtraRow.BooleanExtra,
+        is IntentExtraRow.CharExtra,
+        is IntentExtraRow.StringExtra,
+        is IntentExtraRow.StringArrayExtra -> null
+    }
+
+    if (!extraRow.isFormattedCorrectly) {
+        return formattedIncorrectlyMessage
+    } else {
+        return null
+    }
+}
+
 @StringRes
 private fun getIntentExtraTypeTitle(type: IntentExtraType2): Int {
     return when (type) {
         IntentExtraType2.BOOLEAN -> R.string.config_intent_screen_extra_boolean_title
-        IntentExtraType2.BOOLEAN_ARRAY -> R.string.intent_type_bool_array_header
-        IntentExtraType2.INTEGER -> R.string.intent_type_int_header
-        IntentExtraType2.INTEGER_ARRAY -> R.string.intent_type_int_array_header
+        IntentExtraType2.BOOLEAN_ARRAY -> R.string.config_intent_screen_extra_boolean_array_title
+        IntentExtraType2.INTEGER -> R.string.config_intent_screen_extra_integer_title
+        IntentExtraType2.INTEGER_ARRAY -> R.string.config_intent_screen_extra_integer_array_title
         IntentExtraType2.STRING -> R.string.config_intent_screen_extra_string_title
-        IntentExtraType2.STRING_ARRAY -> R.string.intent_type_string_array_header
-        IntentExtraType2.LONG -> R.string.intent_type_long_header
-        IntentExtraType2.LONG_ARRAY -> R.string.intent_type_long_array_header
-        IntentExtraType2.BYTE -> R.string.intent_type_byte_header
-        IntentExtraType2.BYTE_ARRAY -> R.string.intent_type_byte_array_header
-        IntentExtraType2.DOUBLE -> R.string.intent_type_double_header
-        IntentExtraType2.DOUBLE_ARRAY -> R.string.intent_type_double_array_header
-        IntentExtraType2.CHAR -> R.string.intent_type_char_header
-        IntentExtraType2.CHAR_ARRAY -> R.string.intent_type_char_array_header
-        IntentExtraType2.FLOAT -> R.string.intent_type_float_header
-        IntentExtraType2.FLOAT_ARRAY -> R.string.intent_type_float_array_header
-        IntentExtraType2.SHORT -> R.string.intent_type_short_header
-        IntentExtraType2.SHORT_ARRAY -> R.string.intent_type_short_array_header
+        IntentExtraType2.STRING_ARRAY -> R.string.config_intent_screen_extra_string_array_title
+        IntentExtraType2.LONG -> R.string.config_intent_screen_extra_long_title
+        IntentExtraType2.LONG_ARRAY -> R.string.config_intent_screen_extra_long_array_title
+        IntentExtraType2.BYTE -> R.string.config_intent_screen_extra_byte_title
+        IntentExtraType2.BYTE_ARRAY -> R.string.config_intent_screen_extra_byte_array_title
+        IntentExtraType2.DOUBLE -> R.string.config_intent_screen_extra_double_title
+        IntentExtraType2.DOUBLE_ARRAY -> R.string.config_intent_screen_extra_double_array_title
+        IntentExtraType2.CHAR -> R.string.config_intent_screen_extra_char_title
+        IntentExtraType2.CHAR_ARRAY -> R.string.config_intent_screen_extra_char_array_title
+        IntentExtraType2.FLOAT -> R.string.config_intent_screen_extra_float_title
+        IntentExtraType2.FLOAT_ARRAY -> R.string.config_intent_screen_extra_float_array_title
+        IntentExtraType2.SHORT -> R.string.config_intent_screen_extra_short_title
+        IntentExtraType2.SHORT_ARRAY -> R.string.config_intent_screen_extra_short_array_title
     }
 }
 
@@ -863,6 +1054,45 @@ private fun getIntentExtraTypeTitle(extra: IntentExtraRow): Int {
     return when (extra) {
         is IntentExtraRow.BooleanExtra -> R.string.config_intent_screen_extra_boolean_title
         is IntentExtraRow.StringExtra -> R.string.config_intent_screen_extra_string_title
+        is IntentExtraRow.BooleanArrayExtra -> R.string.config_intent_screen_extra_boolean_array_title
+        is IntentExtraRow.ByteArrayExtra -> R.string.config_intent_screen_extra_byte_array_title
+        is IntentExtraRow.ByteExtra -> R.string.config_intent_screen_extra_byte_title
+        is IntentExtraRow.CharArrayExtra -> R.string.config_intent_screen_extra_char_array_title
+        is IntentExtraRow.CharExtra -> R.string.config_intent_screen_extra_char_title
+        is IntentExtraRow.DoubleArrayExtra -> R.string.config_intent_screen_extra_double_array_title
+        is IntentExtraRow.DoubleExtra -> R.string.config_intent_screen_extra_double_title
+        is IntentExtraRow.FloatArrayExtra -> R.string.config_intent_screen_extra_float_array_title
+        is IntentExtraRow.FloatExtra -> R.string.config_intent_screen_extra_float_title
+        is IntentExtraRow.IntegerArrayExtra -> R.string.config_intent_screen_extra_integer_array_title
+        is IntentExtraRow.IntegerExtra -> R.string.config_intent_screen_extra_integer_title
+        is IntentExtraRow.LongArrayExtra -> R.string.config_intent_screen_extra_long_array_title
+        is IntentExtraRow.LongExtra -> R.string.config_intent_screen_extra_long_title
+        is IntentExtraRow.ShortArrayExtra -> R.string.config_intent_screen_extra_short_array_title
+        is IntentExtraRow.ShortExtra -> R.string.config_intent_screen_extra_short_title
+        is IntentExtraRow.StringArrayExtra -> R.string.config_intent_screen_extra_string_array_title
+    }
+}
+
+private fun setIntentExtraName(extra: IntentExtraRow, name: String): IntentExtraRow {
+    return when (extra) {
+        is IntentExtraRow.BooleanExtra -> extra.copy(name = name)
+        is IntentExtraRow.StringExtra -> extra.copy(name = name)
+        is IntentExtraRow.BooleanArrayExtra -> extra.copy(name = name)
+        is IntentExtraRow.ByteArrayExtra -> extra.copy(name = name)
+        is IntentExtraRow.ByteExtra -> extra.copy(name = name)
+        is IntentExtraRow.CharArrayExtra -> extra.copy(name = name)
+        is IntentExtraRow.CharExtra -> extra.copy(name = name)
+        is IntentExtraRow.DoubleArrayExtra -> extra.copy(name = name)
+        is IntentExtraRow.DoubleExtra -> extra.copy(name = name)
+        is IntentExtraRow.FloatArrayExtra -> extra.copy(name = name)
+        is IntentExtraRow.FloatExtra -> extra.copy(name = name)
+        is IntentExtraRow.IntegerArrayExtra -> extra.copy(name = name)
+        is IntentExtraRow.IntegerExtra -> extra.copy(name = name)
+        is IntentExtraRow.LongArrayExtra -> extra.copy(name = name)
+        is IntentExtraRow.LongExtra -> extra.copy(name = name)
+        is IntentExtraRow.ShortArrayExtra -> extra.copy(name = name)
+        is IntentExtraRow.ShortExtra -> extra.copy(name = name)
+        is IntentExtraRow.StringArrayExtra -> extra.copy(name = name)
     }
 }
 
