@@ -12,6 +12,7 @@ import io.github.sds100.keymapper.system.apps.ChooseAppShortcutResult
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
+import io.github.sds100.keymapper.system.intents.ConfigIntentResult
 import io.github.sds100.keymapper.system.volume.DndMode
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeStream
@@ -178,6 +179,11 @@ class ChooseActionViewModel2 @Inject constructor(
         configActionState = ConfigActionState.Finished(action)
     }
 
+    fun onConfigIntent(result: ConfigIntentResult) {
+        val action = ActionData.Intent(result.description, result.target, result.uri)
+        configActionState = ConfigActionState.Finished(action)
+    }
+
     fun onConfigVolumeAction(showVolumeDialog: Boolean, stream: VolumeStream) {
         val volumeConfig = (configActionState as? ConfigActionState.Dialog.Volume) ?: return
         val action = when (volumeConfig) {
@@ -257,7 +263,9 @@ class ChooseActionViewModel2 @Inject constructor(
                 ActionId.URL -> {
                     configActionState = ConfigActionState.Dialog.Url
                 }
-                ActionId.INTENT -> TODO()
+                ActionId.INTENT -> {
+                    configActionState = ConfigActionState.Screen.ConfigIntent
+                }
                 ActionId.PHONE_CALL -> {
                     configActionState = ConfigActionState.Dialog.PhoneCall
                 }
@@ -659,6 +667,7 @@ sealed class ConfigActionState {
         object CreateTapScreenAction : Screen()
         object ChooseSound : Screen()
         object ConfigKeyEvent : Screen()
+        object ConfigIntent : Screen()
     }
 
     data class Finished(val action: ActionData) : ConfigActionState()

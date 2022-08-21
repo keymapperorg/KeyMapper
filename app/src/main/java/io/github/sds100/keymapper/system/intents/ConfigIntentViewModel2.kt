@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import splitties.bitflags.withFlag
@@ -15,7 +16,12 @@ class ConfigIntentViewModel2 @Inject constructor() : ViewModel() {
         private set
 
     fun onDescriptionChange(text: String) {
-        state = state.copy(description = text, descriptionError = validateDescription(text))
+        val error = validateDescription(text)
+        state = state.copy(
+            description = text,
+            descriptionError = error,
+            isDoneButtonEnabled = error == IntentDescriptionError.NONE
+        )
     }
 
     private fun validateDescription(text: String): IntentDescriptionError {
@@ -113,150 +119,179 @@ class ConfigIntentViewModel2 @Inject constructor() : ViewModel() {
     fun buildResult(): ConfigIntentResult? {
         val intent = Intent()
 
-        state.extraRows.forEach { extraRow ->
-            when (extraRow) {
-                is IntentExtraRow.BooleanArrayExtra -> {
-                    val booleanArray = extraRow
-                        .value
-                        .split(',')
-                        .map { it.trim() }
-                        .map { it == "true" }
-                        .toBooleanArray()
+        val state = state
 
-                    intent.putExtra(extraRow.name, booleanArray)
-                }
+        require(state.description.isNotEmpty())
 
-                is IntentExtraRow.BooleanExtra -> {
-                    intent.putExtra(extraRow.name, extraRow.value)
-                }
+        if (state.action.isNotEmpty()) {
+            intent.action = state.action
+        }
 
-                is IntentExtraRow.IntegerExtra -> {
-                    val integer = extraRow.value.toIntOrNull() ?: return@forEach
-                    intent.putExtra(extraRow.name, integer)
-                }
+        state.categories.forEach { intent.addCategory(it) }
 
-                is IntentExtraRow.StringExtra -> {
-                    intent.putExtra(extraRow.name, extraRow.value)
-                }
+        if (state.data.isNotEmpty()) {
+            intent.data = state.data.toUri()
+        }
 
-                is IntentExtraRow.ByteArrayExtra -> {
-                    val byteArray = extraRow
-                        .value
-                        .split(',')
-                        .map { it.trim() }
-                        .map { it.toByte() }
-                        .toByteArray()
+        var flags = 0
 
-                    intent.putExtra(extraRow.name, byteArray)
-                }
+        state.flags.forEach { flags = flags.withFlag(it) }
 
-                is IntentExtraRow.ByteExtra -> {
-                    val byte = extraRow.value.toByteOrNull() ?: return@forEach
-                    intent.putExtra(extraRow.name, byte)
-                }
+        if (state.componentPackage.isNotEmpty()) {
+            intent.`package` = state.componentPackage
 
-                is IntentExtraRow.CharArrayExtra -> {
-                    val charArray = extraRow
-                        .value
-                        .split(',')
-                        .map { it.trim() }
-                        .map { it[0] }
-                        .toCharArray()
-
-                    intent.putExtra(extraRow.name, charArray)
-                }
-
-                is IntentExtraRow.CharExtra -> {
-                    intent.putExtra(extraRow.name, extraRow.value)
-                }
-
-                is IntentExtraRow.DoubleArrayExtra -> {
-                    val doubleArray = extraRow
-                        .value
-                        .split(',')
-                        .map { it.trim() }
-                        .map { it.toDouble() }
-                        .toDoubleArray()
-
-                    intent.putExtra(extraRow.name, doubleArray)
-                }
-                is IntentExtraRow.DoubleExtra -> {
-                    val double = extraRow.value.toDoubleOrNull() ?: return@forEach
-                    intent.putExtra(extraRow.name, double)
-                }
-
-                is IntentExtraRow.FloatArrayExtra -> {
-                    val floatArray = extraRow
-                        .value
-                        .split(',')
-                        .map { it.trim() }
-                        .map { it.toFloat() }
-                        .toFloatArray()
-
-                    intent.putExtra(extraRow.name, floatArray)
-                }
-
-                is IntentExtraRow.FloatExtra -> {
-                    val float = extraRow.value.toFloatOrNull() ?: return@forEach
-                    intent.putExtra(extraRow.name, float)
-                }
-
-                is IntentExtraRow.IntegerArrayExtra -> {
-                    val intArray = extraRow
-                        .value
-                        .split(',')
-                        .map { it.trim() }
-                        .map { it.toInt() }
-                        .toIntArray()
-
-                    intent.putExtra(extraRow.name, intArray)
-                }
-
-                is IntentExtraRow.LongArrayExtra -> {
-                    val longArray = extraRow
-                        .value
-                        .split(',')
-                        .map { it.trim() }
-                        .map { it.toLong() }
-                        .toLongArray()
-
-                    intent.putExtra(extraRow.name, longArray)
-                }
-
-                is IntentExtraRow.LongExtra -> {
-                    val long = extraRow.value.toLongOrNull() ?: return@forEach
-                    intent.putExtra(extraRow.name, long)
-                }
-
-                is IntentExtraRow.ShortArrayExtra -> {
-                    val shortArray = extraRow
-                        .value
-                        .split(',')
-                        .map { it.trim() }
-                        .map { it.toShort() }
-                        .toShortArray()
-
-                    intent.putExtra(extraRow.name, shortArray)
-                }
-
-                is IntentExtraRow.ShortExtra -> {
-                    val short = extraRow.value.toShortOrNull() ?: return@forEach
-                    intent.putExtra(extraRow.name, short)
-                }
-
-                is IntentExtraRow.StringArrayExtra -> {
-                    val stringArray = extraRow
-                        .value
-                        .split(',')
-                        .toTypedArray()
-
-                    intent.putExtra(extraRow.name, stringArray)
-                }
+            if (state.componentClass.isNotEmpty()) {
+                intent.setClassName(state.componentPackage, state.componentClass)
             }
         }
 
-        //TODO
-        return null
+        state.extraRows.forEach { extraRow -> addExtraToIntent(extraRow, intent) }
+
+        val intentUri = intent.toUri(0)
+
+        return ConfigIntentResult(intentUri, state.target, state.description)
+    }
+
+    private fun addExtraToIntent(extraRow: IntentExtraRow, intent: Intent) {
+        when (extraRow) {
+            is IntentExtraRow.BooleanArrayExtra -> {
+                val booleanArray = extraRow
+                    .value
+                    .split(',')
+                    .map { it.trim() }
+                    .map { it == "true" }
+                    .toBooleanArray()
+
+                intent.putExtra(extraRow.name, booleanArray)
+            }
+
+            is IntentExtraRow.BooleanExtra -> {
+                intent.putExtra(extraRow.name, extraRow.value)
+            }
+
+            is IntentExtraRow.IntegerExtra -> {
+                val integer = extraRow.value.toIntOrNull() ?: return
+                intent.putExtra(extraRow.name, integer)
+            }
+
+            is IntentExtraRow.StringExtra -> {
+                intent.putExtra(extraRow.name, extraRow.value)
+            }
+
+            is IntentExtraRow.ByteArrayExtra -> {
+                val byteArray = extraRow
+                    .value
+                    .split(',')
+                    .map { it.trim() }
+                    .map { it.toByte() }
+                    .toByteArray()
+
+                intent.putExtra(extraRow.name, byteArray)
+            }
+
+            is IntentExtraRow.ByteExtra -> {
+                val byte = extraRow.value.toByteOrNull() ?: return
+                intent.putExtra(extraRow.name, byte)
+            }
+
+            is IntentExtraRow.CharArrayExtra -> {
+                val charArray = extraRow
+                    .value
+                    .split(',')
+                    .map { it.trim() }
+                    .map { it[0] }
+                    .toCharArray()
+
+                intent.putExtra(extraRow.name, charArray)
+            }
+
+            is IntentExtraRow.CharExtra -> {
+                intent.putExtra(extraRow.name, extraRow.value)
+            }
+
+            is IntentExtraRow.DoubleArrayExtra -> {
+                val doubleArray = extraRow
+                    .value
+                    .split(',')
+                    .map { it.trim() }
+                    .map { it.toDouble() }
+                    .toDoubleArray()
+
+                intent.putExtra(extraRow.name, doubleArray)
+            }
+            is IntentExtraRow.DoubleExtra -> {
+                val double = extraRow.value.toDoubleOrNull() ?: return
+                intent.putExtra(extraRow.name, double)
+            }
+
+            is IntentExtraRow.FloatArrayExtra -> {
+                val floatArray = extraRow
+                    .value
+                    .split(',')
+                    .map { it.trim() }
+                    .map { it.toFloat() }
+                    .toFloatArray()
+
+                intent.putExtra(extraRow.name, floatArray)
+            }
+
+            is IntentExtraRow.FloatExtra -> {
+                val float = extraRow.value.toFloatOrNull() ?: return
+                intent.putExtra(extraRow.name, float)
+            }
+
+            is IntentExtraRow.IntegerArrayExtra -> {
+                val intArray = extraRow
+                    .value
+                    .split(',')
+                    .map { it.trim() }
+                    .map { it.toInt() }
+                    .toIntArray()
+
+                intent.putExtra(extraRow.name, intArray)
+            }
+
+            is IntentExtraRow.LongArrayExtra -> {
+                val longArray = extraRow
+                    .value
+                    .split(',')
+                    .map { it.trim() }
+                    .map { it.toLong() }
+                    .toLongArray()
+
+                intent.putExtra(extraRow.name, longArray)
+            }
+
+            is IntentExtraRow.LongExtra -> {
+                val long = extraRow.value.toLongOrNull() ?: return
+                intent.putExtra(extraRow.name, long)
+            }
+
+            is IntentExtraRow.ShortArrayExtra -> {
+                val shortArray = extraRow
+                    .value
+                    .split(',')
+                    .map { it.trim() }
+                    .map { it.toShort() }
+                    .toShortArray()
+
+                intent.putExtra(extraRow.name, shortArray)
+            }
+
+            is IntentExtraRow.ShortExtra -> {
+                val short = extraRow.value.toShortOrNull() ?: return
+                intent.putExtra(extraRow.name, short)
+            }
+
+            is IntentExtraRow.StringArrayExtra -> {
+                val stringArray = extraRow
+                    .value
+                    .split(',')
+                    .toTypedArray()
+
+                intent.putExtra(extraRow.name, stringArray)
+            }
+        }
     }
 }
 

@@ -91,10 +91,10 @@ private fun ConfigIntentScreen(
         bottomBar = {
             BottomAppBar(
                 floatingActionButton = {
-                    AnimatedVisibility(true, enter = fadeIn(), exit = fadeOut()) {
+                    AnimatedVisibility(state.isDoneButtonEnabled, enter = fadeIn(), exit = fadeOut()) {
                         FloatingActionButton(
                             onClick = onDoneClick,
-                            elevation = BottomAppBarDefaults.BottomAppBarFabElevation
+                            elevation = BottomAppBarDefaults.BottomAppBarFabElevation,
                         ) {
                             Icon(
                                 Icons.Outlined.Check,

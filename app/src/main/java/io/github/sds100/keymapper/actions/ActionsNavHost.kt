@@ -48,6 +48,7 @@ fun ActionsNavHost(
                 tapScreenActionResultRecipient = resultRecipient(),
                 chooseSoundResultRecipient = resultRecipient(),
                 configKeyEventResultRecipient = resultRecipient(),
+                configIntentResultRecipient = resultRecipient(),
                 setResult = { setResult(bundleOf(ActionsFragment.EXTRA_ACTION to Json.encodeToString(it))) },
                 navigateBack = navigateBack
             )

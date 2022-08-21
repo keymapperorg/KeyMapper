@@ -32,6 +32,7 @@ import io.github.sds100.keymapper.system.apps.ChooseAppShortcutResult
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
+import io.github.sds100.keymapper.system.intents.ConfigIntentResult
 import io.github.sds100.keymapper.system.volume.DndMode
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeStream
@@ -50,6 +51,7 @@ fun ChooseActionScreen(
     tapScreenActionResultRecipient: ResultRecipient<CreateTapScreenActionScreenDestination, PickCoordinateResult>,
     chooseSoundResultRecipient: ResultRecipient<ChooseSoundScreenDestination, ChooseSoundResult>,
     configKeyEventResultRecipient: ResultRecipient<ConfigKeyEventScreenDestination, ActionData.InputKeyEvent>,
+    configIntentResultRecipient: ResultRecipient<ConfigIntentScreenDestination, ConfigIntentResult>,
     setResult: (ActionData) -> Unit,
     navigateBack: () -> Unit
 ) {
@@ -125,6 +127,18 @@ fun ChooseActionScreen(
         }
     }
 
+    configIntentResultRecipient.onNavResult { result ->
+        when (result) {
+            is NavResult.Canceled -> {
+                viewModel.dismissConfiguringAction()
+            }
+
+            is NavResult.Value -> {
+                viewModel.onConfigIntent(result.value)
+            }
+        }
+    }
+
     ChooseActionScreen(
         viewModel = viewModel,
         setResult = setResult,
@@ -152,6 +166,10 @@ fun ChooseActionScreen(
         navigateToConfigKeyEvent = {
             viewModel.onNavigateToConfigScreen()
             navigator.navigate(ConfigKeyEventScreenDestination)
+        },
+        navigateToConfigIntent = {
+            viewModel.onNavigateToConfigScreen()
+            navigator.navigate(ConfigIntentScreenDestination)
         }
     )
 }
@@ -212,7 +230,8 @@ private fun ChooseActionScreen(
     navigateToChooseAppShortcut: () -> Unit,
     navigateToCreateTapScreenAction: () -> Unit,
     navigateToChooseSound: () -> Unit,
-    navigateToConfigKeyEvent: () -> Unit
+    navigateToConfigKeyEvent: () -> Unit,
+    navigateToConfigIntent: () -> Unit,
 ) {
     val searchState by viewModel.searchState.collectAsState()
     val configActionState = viewModel.configActionState
@@ -231,6 +250,7 @@ private fun ChooseActionScreen(
             ConfigActionState.Screen.CreateTapScreenAction -> navigateToCreateTapScreenAction()
             ConfigActionState.Screen.ChooseSound -> navigateToChooseSound()
             ConfigActionState.Screen.ConfigKeyEvent -> navigateToConfigKeyEvent()
+            ConfigActionState.Screen.ConfigIntent -> navigateToConfigIntent()
         }
     }
 
