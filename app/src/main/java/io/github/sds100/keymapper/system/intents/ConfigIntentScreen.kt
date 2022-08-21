@@ -33,16 +33,28 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.flowlayout.FlowRow
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
+import com.ramcosta.composedestinations.result.ResultRecipient
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.destinations.ChooseActivityScreenDestination
+import io.github.sds100.keymapper.system.apps.ActivityInfo
 import io.github.sds100.keymapper.util.ui.*
 
 @Composable
 @Destination
 fun ConfigIntentScreen(
     viewModel: ConfigIntentViewModel2,
-    resultBackNavigator: ResultBackNavigator<ConfigIntentResult>
+    resultBackNavigator: ResultBackNavigator<ConfigIntentResult>,
+    navigator: DestinationsNavigator,
+    activityResultRecipient: ResultRecipient<ChooseActivityScreenDestination, ActivityInfo>,
 ) {
+    activityResultRecipient.onNavResult { result ->
+        if (result is com.ramcosta.composedestinations.result.NavResult.Value) {
+            viewModel.onChooseActivity(result.value)
+        }
+    }
+
     ConfigIntentScreen(
         state = viewModel.state,
         onDescriptionChange = viewModel::onDescriptionChange,
@@ -54,6 +66,9 @@ fun ConfigIntentScreen(
         onActionChange = viewModel::onActionChange,
         onDataChange = viewModel::onDataChange,
         onPackageChange = viewModel::onPackageChange,
+        onChooseActivityClick = {
+            navigator.navigate(ChooseActivityScreenDestination)
+        },
         onClassChange = viewModel::onClassChange,
         onFlagsTextChange = viewModel::onFlagsTextChange,
         onChooseFlags = viewModel::onChooseFlags,
@@ -78,6 +93,7 @@ private fun ConfigIntentScreen(
     onDataChange: (String) -> Unit = {},
     onPackageChange: (String) -> Unit = {},
     onClassChange: (String) -> Unit = {},
+    onChooseActivityClick: () -> Unit = {},
     onFlagsTextChange: (String) -> Unit = {},
     onChooseFlags: (Set<Int>) -> Unit = {},
     onAddCategory: (String) -> Unit = {},
@@ -200,7 +216,7 @@ private fun ConfigIntentScreen(
 
             OutlinedButton(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = { /*TODO*/ }) {
+                onClick = onChooseActivityClick) {
                 Text(stringResource(R.string.config_intent_screen_choose_component_button))
             }
 

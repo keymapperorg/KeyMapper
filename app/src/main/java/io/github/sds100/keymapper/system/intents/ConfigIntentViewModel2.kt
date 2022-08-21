@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.sds100.keymapper.system.apps.ActivityInfo
 import splitties.bitflags.withFlag
 import javax.inject.Inject
 
@@ -42,6 +43,10 @@ class ConfigIntentViewModel2 @Inject constructor() : ViewModel() {
 
     fun onClassChange(text: String) {
         state = state.copy(componentClass = text)
+    }
+
+    fun onChooseActivity(activity: ActivityInfo) {
+        state = state.copy(componentPackage = activity.packageName, componentClass = activity.activityName)
     }
 
     fun onDataChange(text: String) {

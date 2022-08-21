@@ -29,9 +29,8 @@ class ChooseAppViewModel2 @Inject constructor(private val useCase: DisplayAppsUs
         useCase.installedPackages
             .dropWhile { it is State.Loading }
             .map { (it as State.Data).data }
-            .map { packages ->
-                createListItems(packages)
-            }.flowOn(Dispatchers.Default)
+            .map { packages -> createListItems(packages) }
+            .flowOn(Dispatchers.Default)
 
     private val launchableAppListItems: Flow<List<ChooseAppListItem>> =
         useCase.installedPackages

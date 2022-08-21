@@ -15,6 +15,7 @@ import io.github.sds100.keymapper.actions.keyevent.ConfigKeyEventScreen
 import io.github.sds100.keymapper.actions.sound.ChooseSoundScreen
 import io.github.sds100.keymapper.actions.tapscreen.CreateTapScreenActionScreen
 import io.github.sds100.keymapper.destinations.*
+import io.github.sds100.keymapper.system.apps.ChooseActivityScreen
 import io.github.sds100.keymapper.system.apps.ChooseAppScreen
 import io.github.sds100.keymapper.system.apps.ChooseAppShortcutScreen
 import io.github.sds100.keymapper.system.intents.ConfigIntentScreen
@@ -101,8 +102,16 @@ fun ActionsNavHost(
         composable(ConfigIntentScreenDestination) {
             ConfigIntentScreen(
                 viewModel = hiltViewModel(),
-                resultBackNavigator = resultBackNavigator(navHostController)
+                resultBackNavigator = resultBackNavigator(navHostController),
+                navigator = destinationsNavigator(navHostController),
+                activityResultRecipient = resultRecipient()
             )
+        }
+
+        composable(ChooseActivityScreenDestination) {
+            ChooseActivityScreen(
+                viewModel = hiltViewModel(),
+                resultBackNavigator = resultBackNavigator(navHostController))
         }
     }
 }
