@@ -965,7 +965,6 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <string name="intent_type_float_array_example">Čárkami oddělený seznam platných plováků v programovacím jazyce Java. např. 1241.123</string>
     <string name="intent_type_short_example">Platný krátký programovací jazyk Java. Např. 2342</string>
     <string name="intent_type_short_array_example">Čárkou oddělený seznam platných Krátků v programovacím jazyce Java. Např. 3242,12354</string>
-    <string name="config_intent_screen_flags_help_dialog_text">Příznaky záměru jsou uloženy jako bitové vlajky. Tyto vlajky mění způsob nakládání s tímto záměrem. Pokud je toto prázdné pro záměr aktivity, pak klíčová mapa bude ve výchozím nastavení používat FLAG_ACTIVITY_NEW_TASK. Pro mnohem více informací klepněte na \'dokumentace\' pro zobrazení dokumentace vývojářů systému Android.</string>
     <!--  Intent action type strings  -->
     <!--  Tap targets  -->
     <string name="tap_target_quick_start_guide_primary">Příručka pro rychlý start</string>
