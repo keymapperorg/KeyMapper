@@ -10,6 +10,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Keyboard
+import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -244,8 +245,28 @@ private fun ChooseActionScreen(
     val configActionState = viewModel.configActionState
 
     if (configActionState is ConfigActionState.Finished) {
-        navigateBack()
-        setResult(configActionState.action)
+        if (configActionState.warning != null) {
+            AlertDialog(onDismissRequest = viewModel::dismissConfiguringAction,
+                icon = { Icon(Icons.Outlined.Warning, contentDescription = null) },
+                title = { Text(stringResource(R.string.choose_action_warning_title)) },
+                text = { Text(configActionState.warning) },
+                confirmButton = {
+                    TextButton(onClick = {
+                        navigateBack()
+                        setResult(configActionState.action)
+                    }) {
+                        Text(stringResource(R.string.pos_ok))
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = viewModel::dismissConfiguringAction) {
+                        Text(stringResource(R.string.neg_cancel))
+                    }
+                })
+        } else {
+            navigateBack()
+            setResult(configActionState.action)
+        }
     }
 
     if (configActionState is ConfigActionState.Screen) {

@@ -116,33 +116,37 @@ class ChooseActionViewModel2 @Inject constructor(
             ?: return
         val chooseAppConfig = (navigatedScreen as? ConfigActionState.Screen.ChooseApp) ?: return
 
-        val action = when (chooseAppConfig) {
+        val finishedState = when (chooseAppConfig) {
             ConfigActionState.Screen.ChooseApp.ForAppAction ->
-                ActionData.App(packageName)
+                ConfigActionState.Finished(ActionData.App(packageName))
 
             ConfigActionState.Screen.ChooseApp.ForNextTrackAction ->
-                ActionData.ControlMediaForApp.NextTrack(packageName)
+                ConfigActionState.Finished(ActionData.ControlMediaForApp.NextTrack(packageName))
 
             ConfigActionState.Screen.ChooseApp.ForPauseMediaAction ->
-                ActionData.ControlMediaForApp.Pause(packageName)
+                ConfigActionState.Finished(ActionData.ControlMediaForApp.Pause(packageName))
 
             ConfigActionState.Screen.ChooseApp.ForPlayMediaAction ->
-                ActionData.ControlMediaForApp.Play(packageName)
+                ConfigActionState.Finished(ActionData.ControlMediaForApp.Play(packageName))
 
             ConfigActionState.Screen.ChooseApp.ForPlayPauseMediaAction ->
-                ActionData.ControlMediaForApp.PlayPause(packageName)
+                ConfigActionState.Finished(ActionData.ControlMediaForApp.PlayPause(packageName))
 
             ConfigActionState.Screen.ChooseApp.ForPreviousTrackAction ->
-                ActionData.ControlMediaForApp.PreviousTrack(packageName)
+                ConfigActionState.Finished(ActionData.ControlMediaForApp.PreviousTrack(packageName))
 
             ConfigActionState.Screen.ChooseApp.ForFastForwardAction ->
-                ActionData.ControlMediaForApp.FastForward(packageName)
+                ConfigActionState.Finished(
+                    action = ActionData.ControlMediaForApp.FastForward(packageName),
+                    warning = resourceProvider.getString(R.string.choose_action_fast_forward_warning)
+                )
 
             ConfigActionState.Screen.ChooseApp.ForRewindAction ->
-                ActionData.ControlMediaForApp.Rewind(packageName)
+                ConfigActionState.Finished(ActionData.ControlMediaForApp.Rewind(packageName),
+                    warning = resourceProvider.getString(R.string.choose_action_rewind_warning))
         }
 
-        configActionState = ConfigActionState.Finished(action)
+        configActionState = finishedState
     }
 
     fun onChooseAppShortcut(result: ChooseAppShortcutResult) {
@@ -413,13 +417,18 @@ class ChooseActionViewModel2 @Inject constructor(
                     configActionState = ConfigActionState.Screen.ChooseApp.ForPreviousTrackAction
                 }
                 ActionId.FAST_FORWARD -> {
-                    configActionState = ConfigActionState.Finished(ActionData.ControlMedia.FastForward)
+                    configActionState =
+                        ConfigActionState.Finished(
+                            ActionData.ControlMedia.FastForward,
+                            warning = resourceProvider.getString(R.string.choose_action_fast_forward_warning)
+                        )
                 }
                 ActionId.FAST_FORWARD_PACKAGE -> {
                     configActionState = ConfigActionState.Screen.ChooseApp.ForFastForwardAction
                 }
                 ActionId.REWIND -> {
-                    configActionState = ConfigActionState.Finished(ActionData.ControlMedia.Rewind)
+                    configActionState = ConfigActionState.Finished(ActionData.ControlMedia.Rewind,
+                        warning = resourceProvider.getString(R.string.choose_action_rewind_warning))
                 }
                 ActionId.REWIND_PACKAGE -> {
                     configActionState = ConfigActionState.Screen.ChooseApp.ForRewindAction
@@ -461,16 +470,20 @@ class ChooseActionViewModel2 @Inject constructor(
                     configActionState = ConfigActionState.Finished(ActionData.Nfc.Toggle)
                 }
                 ActionId.MOVE_CURSOR_TO_END -> {
-                    configActionState = ConfigActionState.Finished(ActionData.MoveCursorToEnd)
+                    configActionState = ConfigActionState.Finished(ActionData.MoveCursorToEnd,
+                        warning = resourceProvider.getString(R.string.choose_action_move_to_end_of_text_warning))
                 }
                 ActionId.TOGGLE_KEYBOARD -> {
-                    configActionState = ConfigActionState.Finished(ActionData.ToggleKeyboard)
+                    configActionState = ConfigActionState.Finished(ActionData.ToggleKeyboard,
+                        warning = resourceProvider.getString(R.string.choose_action_toggle_keyboard_warning))
                 }
                 ActionId.SHOW_KEYBOARD -> {
-                    configActionState = ConfigActionState.Finished(ActionData.ShowKeyboard)
+                    configActionState = ConfigActionState.Finished(ActionData.ShowKeyboard,
+                        warning = resourceProvider.getString(R.string.choose_action_toggle_keyboard_warning))
                 }
                 ActionId.HIDE_KEYBOARD -> {
-                    configActionState = ConfigActionState.Finished(ActionData.HideKeyboard)
+                    configActionState = ConfigActionState.Finished(ActionData.HideKeyboard,
+                        warning = resourceProvider.getString(R.string.choose_action_toggle_keyboard_warning))
                 }
                 ActionId.SHOW_KEYBOARD_PICKER -> {
                     configActionState = ConfigActionState.Finished(ActionData.ShowKeyboardPicker)
@@ -512,10 +525,12 @@ class ChooseActionViewModel2 @Inject constructor(
                     configActionState = ConfigActionState.Finished(ActionData.LockDevice)
                 }
                 ActionId.POWER_ON_OFF_DEVICE -> {
-                    configActionState = ConfigActionState.Finished(ActionData.ScreenOnOff)
+                    configActionState = ConfigActionState.Finished(ActionData.ScreenOnOff,
+                        warning = resourceProvider.getString(R.string.choose_action_power_on_off_device_warning))
                 }
                 ActionId.SECURE_LOCK_DEVICE -> {
-                    configActionState = ConfigActionState.Finished(ActionData.SecureLock)
+                    configActionState = ConfigActionState.Finished(ActionData.SecureLock,
+                        warning = resourceProvider.getString(R.string.choose_action_secure_lock_device_warning))
                 }
                 ActionId.CONSUME_KEY_EVENT -> {
                     configActionState = ConfigActionState.Finished(ActionData.ConsumeKeyEvent)
@@ -689,5 +704,5 @@ sealed class ConfigActionState {
         object ConfigIntent : Screen()
     }
 
-    data class Finished(val action: ActionData) : ConfigActionState()
+    data class Finished(val action: ActionData, val warning: String? = null) : ConfigActionState()
 }

@@ -1137,12 +1137,10 @@
     <string name="action_fast_forward">Fast forward</string>
     <string name="action_fast_forward_package">Fast forward for an app</string>
     <string name="action_fast_forward_package_formatted">Fast forward for %s</string>
-    <string name="action_fast_forward_message">Not all media apps support fast forwarding. E.g Google Play Music.</string>
 
     <string name="action_rewind">Rewind</string>
     <string name="action_rewind_package">Rewind for an app</string>
     <string name="action_rewind_package_formatted">Rewind for %s</string>>
-    <string name="action_rewind_message">Not all media apps support rewinding. E.g Google Play Music.</string>
 
     <string name="action_go_back">Go back</string>
     <string name="action_go_home">Go home</string>
@@ -1171,17 +1169,13 @@
     <string name="action_lock_device">Lock device</string>
 
     <string name="action_secure_lock_device">Secure lock device</string>
-    <string name="action_secure_lock_device_message">You will only be able to log back in with your PIN. The fingerprint scanner and face unlock will be disabled. This is the only reliable way I have found to lock non-rooted devices before Android Pie 9.0.</string>
 
     <string name="action_power_on_off_device">Sleep/wake device</string>
-    <string name="action_power_on_off_device_message">You must turn on the option to detect the trigger when the screen is off!</string>
 
     <string name="action_consume_keyevent">Do nothing</string>
 
     <string name="action_move_to_end_of_text">Move cursor to the end</string>
-    <string name="action_move_to_end_of_text_message">This action may not work as intended in some apps.</string>
     <string name="action_toggle_keyboard">Toggle keyboard</string>
-    <string name="action_toggle_keyboard_message">This action will only work if you have tapped on an input field where the keyboard is supposed to be shown.</string>
     <string name="action_show_keyboard">Show keyboard</string>
     <string name="action_hide_keyboard">Hide keyboard</string>
     <string name="action_show_keyboard_picker">Show keyboard picker</string>
@@ -1334,6 +1328,13 @@
     <string name="choose_action_choose_enable_flashlight_dialog_title">Choose flashlight to enable</string>
     <string name="choose_action_choose_disable_flashlight_dialog_title">Choose flashlight to disable</string>
     <string name="choose_action_choose_toggle_flashlight_dialog_title">Choose flashlight to toggle</string>
+    <string name="choose_action_fast_forward_warning">Not all media apps support fast forwarding. E.g Google Play Music.</string>
+    <string name="choose_action_rewind_warning">Not all media apps support rewinding. E.g Google Play Music.</string>
+    <string name="choose_action_warning_title">Warning</string>
+    <string name="choose_action_move_to_end_of_text_warning">This action may not work as intended in some apps.</string>
+    <string name="choose_action_toggle_keyboard_warning">This action will only work if you have tapped on an input field where the keyboard is supposed to be shown.</string>
+    <string name="choose_action_secure_lock_device_warning">You will only be able to log back in with your PIN. The fingerprint scanner and face unlock will be disabled. This is the only reliable way I have found to lock non-rooted devices before Android Pie 9.0.</string>
+    <string name="choose_action_power_on_off_device_warning">You must turn on the option to detect the trigger when the screen is off!</string>
     <!-- Choose action screen -->
 
     <!-- Choose app shortcut screen -->
