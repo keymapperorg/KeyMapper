@@ -1409,7 +1409,7 @@
     <string name="config_intent_screen_extra_boolean_array_help">Formatting should be a comma separated list of "true" and "false". Spaces are optional. E.g "true, false, true".</string>
     <string name="config_intent_screen_extra_integer_title">Integer</string>
     <string name="config_intent_screen_extra_integer_array_title">Integer array</string>
-    <string name="config_intent_screen_extra_integer_incorrect_format_error">Must be a integer!</string>
+    <string name="config_intent_screen_extra_integer_incorrect_format_error">Must be an integer!</string>
     <string name="config_intent_screen_extra_integer_array_help">Formatting should be a comma separated list of integers. Spaces are optional. E.g "1, 2, -123".</string>
     <string name="config_intent_screen_extra_string_title">String</string>
     <string name="config_intent_screen_extra_string_array_title">String array</string>
