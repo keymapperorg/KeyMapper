@@ -1886,6 +1886,7 @@ class KeyMapControllerTest {
             when (trigger.mode) {
                 is TriggerMode.Parallel -> mockParallelTrigger(trigger, delay = 2000L)
                 TriggerMode.Undefined -> mockTriggerKeyInput(trigger.keys[0], delay = 2000L)
+                TriggerMode.Sequence -> {}
             }
 
             verify(performActionsUseCase, atLeast(10)).perform(action.data)
@@ -3164,6 +3165,7 @@ class KeyMapControllerTest {
             when ((trigger.mode as TriggerMode.Parallel).clickType) {
                 ClickType.SHORT_PRESS -> delay(50)
                 ClickType.LONG_PRESS -> delay(LONG_PRESS_DELAY + 100L)
+                ClickType.DOUBLE_PRESS -> {}
             }
         }
 
