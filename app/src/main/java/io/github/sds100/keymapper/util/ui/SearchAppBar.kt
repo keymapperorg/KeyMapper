@@ -101,7 +101,8 @@ fun SearchAppBar(
             AnimatedVisibility(visible = !isSearching) {
                 FloatingActionButton(
                     onClick = { setSearchState(SearchState.Searching("")) },
-                    elevation = BottomAppBarDefaults.BottomAppBarFabElevation
+                    elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(),
+                    containerColor = BottomAppBarDefaults.bottomAppBarFabColor
                 ) {
                     Icon(
                         Icons.Outlined.Search,

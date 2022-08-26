@@ -135,7 +135,8 @@ private fun CreateTapScreenActionScreen(
                     AnimatedVisibility(state.isDoneButtonEnabled, enter = fadeIn(), exit = fadeOut()) {
                         FloatingActionButton(
                             onClick = onDoneClick,
-                            elevation = BottomAppBarDefaults.BottomAppBarFabElevation
+                            elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(),
+                            containerColor = BottomAppBarDefaults.bottomAppBarFabColor
                         ) {
                             Icon(
                                 Icons.Outlined.Check,
