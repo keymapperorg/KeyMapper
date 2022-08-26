@@ -9,14 +9,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.bottomappbar.BottomAppBar.FAB_ALIGNMENT_MODE_CENTER
-import com.google.android.material.bottomappbar.BottomAppBar.FAB_ALIGNMENT_MODE_END
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.R
@@ -33,7 +32,6 @@ import io.github.sds100.keymapper.util.strArray
 import io.github.sds100.keymapper.util.ui.TextListItem
 import io.github.sds100.keymapper.util.ui.setupNavigation
 import io.github.sds100.keymapper.util.ui.showPopups
-import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.flow.collectLatest
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt
 
@@ -50,21 +48,21 @@ class HomeFragment : Fragment() {
         get() = _binding!!
 
     private val backupMappingsLauncher =
-        registerForActivityResult(ActivityResultContracts.CreateDocument()) {
+        registerForActivityResult(CreateDocument("todo/todo")) {
             it ?: return@registerForActivityResult
 
             homeViewModel.onChoseBackupFile(it.toString())
         }
 
     private val backupFingerprintMapsLauncher =
-        registerForActivityResult(ActivityResultContracts.CreateDocument()) {
+        registerForActivityResult(CreateDocument("todo/todo")) {
             it ?: return@registerForActivityResult
 
             homeViewModel.backupFingerprintMaps(it.toString())
         }
 
     private val backupKeyMapsLauncher =
-        registerForActivityResult(ActivityResultContracts.CreateDocument()) {
+        registerForActivityResult(CreateDocument("todo/todo")) {
             it ?: return@registerForActivityResult
 
             homeViewModel.backupSelectedKeyMaps(it.toString())
@@ -80,9 +78,9 @@ class HomeFragment : Fragment() {
     private val onPageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
             if (position == 0) {
-                fab.show()
+                binding.fab.show()
             } else {
-                fab.hide()
+                binding.fab.hide()
             }
         }
     }
@@ -122,17 +120,17 @@ class HomeFragment : Fragment() {
         //set the initial tabs so that the current tab is remembered on rotate
         pagerAdapter.invalidateFragments(homeViewModel.tabsState.value.tabs)
 
-        viewPager.adapter = pagerAdapter
+        binding.viewPager.adapter = pagerAdapter
 
-        TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             tab.text = strArray(R.array.home_tab_titles)[position]
         }.apply {
             attach()
         }
 
-        viewPager.registerOnPageChangeCallback(onPageChangeCallback)
+        binding.viewPager.registerOnPageChangeCallback(onPageChangeCallback)
 
-        appBar.setOnMenuItemClickListener {
+        binding.appBar.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.action_help -> {
                     UrlUtils.launchCustomTab(
@@ -175,7 +173,7 @@ class HomeFragment : Fragment() {
             homeViewModel.onBackPressed()
         }
 
-        appBar.setNavigationOnClickListener {
+        binding.appBar.setNavigationOnClickListener {
             homeViewModel.onAppBarNavigationButtonClick()
         }
 
@@ -185,11 +183,9 @@ class HomeFragment : Fragment() {
                 Do not use setFabAlignmentModeAndReplaceMenu because then there is big jank.
                  */
                 if (it == HomeAppBarState.MULTI_SELECTING) {
-                    binding.appBar.fabAlignmentMode = FAB_ALIGNMENT_MODE_END
                     binding.appBar.replaceMenu(R.menu.menu_multi_select)
 
                 } else {
-                    binding.appBar.fabAlignmentMode = FAB_ALIGNMENT_MODE_CENTER
                     binding.appBar.replaceMenu(R.menu.menu_home)
                 }
             }

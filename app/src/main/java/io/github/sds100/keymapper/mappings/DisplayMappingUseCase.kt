@@ -72,6 +72,8 @@ class DisplaySimpleMappingUseCaseImpl @Inject constructor(
                     inputMethodAdapter.showImePicker(fromForeground = true)
                 }
             }
+
+            else -> {}
         }
     }
 

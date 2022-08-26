@@ -52,7 +52,7 @@
 
     <action
         android:id="@+id/to_chooseActionFragment"
-        app:destination="@id/chooseActionFragment"
+        app:destination="@id/actionsFragment"
         app:enterAnim="@anim/slide_in_right"
         app:exitAnim="@anim/slide_out_left"
         app:popEnterAnim="@anim/slide_in_left"
@@ -332,11 +332,16 @@
         android:name="io.github.sds100.keymapper.settings.ShizukuSettingsFragment"
         android:label="ShizukuSettingsFragment" />
     <fragment
-        android:id="@+id/chooseActionFragment"
-        android:name="io.github.sds100.keymapper.actions.ChooseActionFragment"
-        android:label="ChooseActionFragmentNew">
+        android:id="@+id/actionsFragment"
+        android:name="io.github.sds100.keymapper.actions.ActionsFragment"
+        android:label="ComposeActionsFragment">
         <argument
             android:name="requestKey"
-            app:argType="string" />
+            app:argType="string"
+            android:defaultValue="choose_action"/>
+        <argument
+            android:name="destination"
+            app:argType="string"
+            android:defaultValue="config_intent_screen" />
     </fragment>
 </navigation>

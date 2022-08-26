@@ -17,7 +17,6 @@ import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
 import io.github.sds100.keymapper.system.permissions.RequestPermissionDelegate
 import io.github.sds100.keymapper.util.ui.ResourceProviderImpl
 import io.github.sds100.keymapper.util.ui.showPopups
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
@@ -57,9 +56,9 @@ class MainActivity : AppCompatActivity() {
             resourceProvider.onThemeChange()
         }
 
-        DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
+        val binding = DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
 
-        viewModel.showPopups(this, coordinatorLayout)
+        viewModel.showPopups(this, binding.coordinatorLayout)
 
         requestPermissionDelegate =
             RequestPermissionDelegate(this, showDialogs = true, permissionAdapter, notificationReceiverAdapter)

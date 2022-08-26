@@ -1,5 +1,7 @@
 package io.github.sds100.keymapper.system.intents
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
 /**
@@ -7,8 +9,9 @@ import kotlinx.serialization.Serializable
  */
 
 @Serializable
+@Parcelize
 data class ConfigIntentResult(
     val uri: String,
     val target: IntentTarget,
     val description: String
-)
+) : Parcelable

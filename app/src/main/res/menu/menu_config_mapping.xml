@@ -8,9 +8,4 @@
         android:title="@string/action_help"
         app:showAsAction="ifRoom|withText" />
 
-    <item
-        android:id="@+id/action_save"
-        android:icon="@drawable/ic_outline_save_24"
-        android:title="@string/action_save"
-        app:showAsAction="always|withText" />
 </menu>

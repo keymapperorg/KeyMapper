@@ -43,17 +43,17 @@
     <string name="show_hidden_apps">Zobrazit schované aplikace</string>
     <string name="modifiers">Modifikátory</string>
     <string name="toggle">Přepnout</string>
-    <string name="tap_coordinate_screenshot_message">DŮLEŽITÉ!!! Tyto souřadnice jsou správné pouze tehdy, když je obrazovka ve stejné orientaci jako snímek obrazovky! Tato akce zruší všechna gesta, která na obrazovce děláte.\n\nPokud potřebujete pomoci najít souřadnice bodu na obrazovce, pořídí snímek obrazovky a klepněte na snímek obrazovky, kde chcete tuto akci stisknout.</string>
+    <string name="create_tap_screen_action_explanation">DŮLEŽITÉ!!! Tyto souřadnice jsou správné pouze tehdy, když je obrazovka ve stejné orientaci jako snímek obrazovky! Tato akce zruší všechna gesta, která na obrazovce děláte.\n\nPokud potřebujete pomoci najít souřadnice bodu na obrazovce, pořídí snímek obrazovky a klepněte na snímek obrazovky, kde chcete tuto akci stisknout.</string>
     <string name="dont_know_device_name">Neznám jméno zařízení!</string>
     <string name="tap_actions_to_fix">Klepnutím na akce opravíte!</string>
     <string name="tap_constraints_to_fix">Klepnutím na vazby opravíte!</string>
     <string name="shortcut_label_action">Provést akce</string>
     <string name="hold_down_until_trigger_is_dot_dot_dot">Podržte dokud není spouštěč…</string>
-    <string name="from_no_device">Žádné zařízení</string>
+    <string name="create_key_event_screen_no_device">Žádné zařízení</string>
     <string name="intent_extras_recycler_view_placeholder">&lt;unk&gt; \\_(&lt;unk&gt;)_/ &lt;unk&gt;\n\nŽádné extrakce!</string>
     <string name="content_description_fab_new_keymap">Vytvořit novou mapu klíče</string>
-    <string name="content_description_done_configuring_key_event">Byla provedena konfigurace klíčové akce události</string>
-    <string name="content_description_done_configuring_coordinate">Hotovo vyskladnění souřadnice</string>
+    <string name="config_key_event_screen_done_content_description">Byla provedena konfigurace klíčové akce události</string>
+    <string name="create_tap_screen_action_done_content_description">Hotovo vyskladnění souřadnice</string>
     <string name="clip_key_mapper_log">Protokol Mapperu klíče</string>
     <string name="sharesheet_title">Poslat do</string>
     <string name="whats_new">Co je nového</string>
@@ -126,16 +126,16 @@
     <string name="hint_create_text_action">Text k zadání</string>
     <string name="hint_create_url_action">Adresa URL, kterou chcete otevřít</string>
     <string name="hint_create_phone_call_action">Telefonní číslo, na které chcete zavolat</string>
-    <string name="hint_intent_action">Akce</string>
-    <string name="hint_intent_categories">Kategorie</string>
-    <string name="hint_intent_data">Údaje</string>
-    <string name="hint_intent_package">Balík</string>
-    <string name="hint_intent_class">Třída:</string>
+    <string name="config_intent_screen_action_label">Akce</string>
+    <string name="config_intent_screen_category_header">Kategorie</string>
+    <string name="config_intent_screen_data_header">Údaje</string>
+    <string name="config_intent_screen_package_header">Balík</string>
+    <string name="config_intent_screen_class_header">Třída:</string>
     <string name="hint_intent_extra_name">Název</string>
     <string name="hint_intent_extra_value_with_type">Hodnota (%s)</string>
-    <string name="hint_intent_description">Popis pro hlavní mapu (povinné)</string>
-    <string name="hint_intent_flags">Vlajky</string>
-    <string name="hint_sound_file_description">Popis zvukového souboru</string>
+    <string name="config_intent_screen_description_label">Popis pro hlavní mapu (povinné)</string>
+    <string name="config_intent_screen_flags_header">Vlajky</string>
+    <string name="choose_sound_file_description_title">Popis zvukového souboru</string>
     <string name="hint_wifi_ssid">WiFi síť SSID</string>
     <!--  Hints  -->
     <!--  Radio buttons  -->
@@ -146,11 +146,11 @@
     <string name="radio_button_short_press">Krátký stisk</string>
     <string name="radio_button_long_press">Dlouhý stisk</string>
     <string name="radio_button_double_press">Dvojitý stisk</string>
-    <string name="radio_button_intent_extra_value_true">Pravda</string>
-    <string name="radio_button_intent_extra_value_false">Nepravda</string>
-    <string name="radio_button_intent_target_activity">Aktivita</string>
-    <string name="radio_button_intent_target_service">Servis</string>
-    <string name="radio_button_intent_target_broadcast_receiver">Vysílací přijímač</string>
+    <string name="config_intent_screen_extra_boolean_true">Pravda</string>
+    <string name="config_intent_screen_extra_boolean_false">Nepravda</string>
+    <string name="config_intent_screen_activity_target">Aktivita</string>
+    <string name="config_intent_screen_service_target">Servis</string>
+    <string name="config_intent_screen_broadcast_receiver_target">Vysílací přijímač</string>
     <!--  Radio buttons  -->
     <!--  Tabs  -->
     <string name="tab_trigger_and_actions">Spouštěč a akce</string>
@@ -177,7 +177,7 @@
     <string name="toast_automatic_backup_failed">Automatické zálohování selhalo!</string>
     <string name="toast_screenshot_taken">Snímek obrazovky pořízen</string>
     <string name="toast_io_exception_shrug">IO výjimka &lt;unk&gt; \\_(&lt;unk&gt;)_/ &lt;unk&gt;</string>
-    <string name="toast_incorrect_screenshot_resolution">Rozlišení snímku neodpovídá rozlišení tohoto zařízení!</string>
+    <string name="create_tap_screen_action_incorrect_resolution_error">Rozlišení snímku neodpovídá rozlišení tohoto zařízení!</string>
     <string name="toast_copied_keymap_uid_to_clipboard">UUID klíče zkopírováno do schránky</string>
     <string name="toast_triggered_keymap">Aktivovali jste mapování</string>
     <string name="toast_copied_log">Protokol zkopírován</string>
@@ -330,7 +330,7 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <string name="button_config_intent_set_flags">Nastavit vlajky</string>
     <string name="button_copy_log">Kopírovat</string>
     <string name="button_slider_repeat_no_limit">Bez omezení</string>
-    <string name="button_choose_sound_file">Vyberte zvukový soubor</string>
+    <string name="choose_sound_file_button">Vyberte zvukový soubor</string>
     <string name="button_edit_action">Upravit akci</string>
     <string name="button_replace_action">Nahradit akci</string>
     <!-- Button titles -->
@@ -859,11 +859,11 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <string name="action_fast_forward">Přetočit vpřed</string>
     <string name="action_fast_forward_package">Rychlé přesměrování aplikace</string>
     <string name="action_fast_forward_package_formatted">Rychlé vpřed pro %s</string>
-    <string name="action_fast_forward_message">Ne všechny mediální aplikace podporují rychlé přesměrování. Např. Google Play Music.</string>
+    <string name="choose_action_fast_forward_warning">Ne všechny mediální aplikace podporují rychlé přesměrování. Např. Google Play Music.</string>
     <string name="action_rewind">Přetočit zpět</string>
     <string name="action_rewind_package">Přepněte aplikaci</string>
     <string name="action_rewind_package_formatted">Přepněte za %s</string>
-    <string name="action_rewind_message">Ne všechny mediální aplikace podporují rewinding. Např. Google Play Music.</string>
+    <string name="choose_action_rewind_warning">Ne všechny mediální aplikace podporují rewinding. Např. Google Play Music.</string>
     <string name="action_go_back">Zpět</string>
     <string name="action_go_home">Na začátek</string>
     <string name="action_open_recents">Open recents</string>
@@ -885,14 +885,14 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <string name="action_open_camera">Otevřít kameru</string>
     <string name="action_lock_device">Zamknutí zařízení</string>
     <string name="action_secure_lock_device">Zabezpečené zamykací zařízení</string>
-    <string name="action_secure_lock_device_message">Budete se moci přihlásit pouze pomocí kódu PIN. Odemknutí snímače otisků prstů a obličeje bude zakázáno. Toto je jediný spolehlivý způsob, jak jsem našel uzamknout nerootovaná zařízení před Androidem Pie 9.0.</string>
+    <string name="choose_action_secure_lock_device_warning">Budete se moci přihlásit pouze pomocí kódu PIN. Odemknutí snímače otisků prstů a obličeje bude zakázáno. Toto je jediný spolehlivý způsob, jak jsem našel uzamknout nerootovaná zařízení před Androidem Pie 9.0.</string>
     <string name="action_power_on_off_device">Uspánek/probuzení zařízení</string>
-    <string name="action_power_on_off_device_message">Musíte zapnout možnost pro detekci spouštěče při vypnuté obrazovce!</string>
+    <string name="choose_action_power_on_off_device_warning">Musíte zapnout možnost pro detekci spouštěče při vypnuté obrazovce!</string>
     <string name="action_consume_keyevent">Nic nedělat</string>
     <string name="action_move_to_end_of_text">Přesunout kurzor na konec</string>
-    <string name="action_move_to_end_of_text_message">Tato akce nemusí v některých aplikacích fungovat tak, jak bylo zamýšleno.</string>
+    <string name="choose_action_move_to_end_of_text_warning">Tato akce nemusí v některých aplikacích fungovat tak, jak bylo zamýšleno.</string>
     <string name="action_toggle_keyboard">Přepnout klávesnici</string>
-    <string name="action_toggle_keyboard_message">Tato akce bude fungovat pouze v případě, že jste klepli na vstupní pole, kde má být zobrazena klávesnice.</string>
+    <string name="choose_action_toggle_keyboard_warning">Tato akce bude fungovat pouze v případě, že jste klepli na vstupní pole, kde má být zobrazena klávesnice.</string>
     <string name="action_show_keyboard">Zobrazit klávesnici</string>
     <string name="action_hide_keyboard">Skrýt klávesnici</string>
     <string name="action_show_keyboard_picker">Zobrazit výběr klávesnice</string>
@@ -936,24 +936,24 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <string name="action_cat_notifications">Oznámení</string>
     <!-- action category labels -->
     <!--  Intent action type strings  -->
-    <string name="intent_type_bool_header">Boolean</string>
-    <string name="intent_type_bool_array_header">Logické pole</string>
-    <string name="intent_type_int_header">Celé číslo</string>
-    <string name="intent_type_int_array_header">Celé pole</string>
-    <string name="intent_type_string_header">Řetězec</string>
-    <string name="intent_type_string_array_header">Pole řetězce</string>
-    <string name="intent_type_long_header">Dlouhá</string>
-    <string name="intent_type_long_array_header">Dlouhé pole</string>
-    <string name="intent_type_byte_header">Byte</string>
-    <string name="intent_type_byte_array_header">Pole bajtů</string>
-    <string name="intent_type_double_header">Dvojité</string>
-    <string name="intent_type_double_array_header">Dvojité pole</string>
-    <string name="intent_type_char_header">Písmeno</string>
-    <string name="intent_type_char_array_header">Pole znaku</string>
-    <string name="intent_type_float_header">Plovoucí</string>
-    <string name="intent_type_float_array_header">Plovoucí pole</string>
-    <string name="intent_type_short_header">Krátce</string>
-    <string name="intent_type_short_array_header">Krátké pole</string>
+    <string name="config_intent_screen_extra_boolean_title">Boolean</string>
+    <string name="config_intent_screen_extra_boolean_array_title">Logické pole</string>
+    <string name="config_intent_screen_extra_integer_title">Celé číslo</string>
+    <string name="config_intent_screen_extra_integer_array_title">Celé pole</string>
+    <string name="config_intent_screen_extra_string_title">Řetězec</string>
+    <string name="config_intent_screen_extra_string_array_title">Pole řetězce</string>
+    <string name="config_intent_screen_extra_long_title">Dlouhá</string>
+    <string name="config_intent_screen_extra_long_array_title">Dlouhé pole</string>
+    <string name="config_intent_screen_extra_byte_title">Byte</string>
+    <string name="config_intent_screen_extra_byte_array_title">Pole bajtů</string>
+    <string name="config_intent_screen_extra_double_title">Dvojité</string>
+    <string name="config_intent_screen_extra_double_array_title">Dvojité pole</string>
+    <string name="config_intent_screen_extra_char_title">Písmeno</string>
+    <string name="config_intent_screen_extra_char_array_title">Pole znaku</string>
+    <string name="config_intent_screen_extra_float_title">Plovoucí</string>
+    <string name="config_intent_screen_extra_float_array_title">Plovoucí pole</string>
+    <string name="config_intent_screen_extra_short_title">Krátce</string>
+    <string name="config_intent_screen_extra_short_array_title">Krátké pole</string>
     <string name="intent_type_bool_example">Může být pouze \"pravda\" nebo \"nepravda\"</string>
     <string name="intent_type_bool_array_example">Čárkou oddělený seznam \"true\" a \"false\". Např. pravda,false,true.</string>
     <string name="intent_type_int_example">Platné celé číslo v programovacím jazyce Java.</string>
@@ -973,7 +973,7 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <string name="intent_type_float_array_example">Čárkami oddělený seznam platných plováků v programovacím jazyce Java. např. 1241.123</string>
     <string name="intent_type_short_example">Platný krátký programovací jazyk Java. Např. 2342</string>
     <string name="intent_type_short_array_example">Čárkou oddělený seznam platných Krátků v programovacím jazyce Java. Např. 3242,12354</string>
-    <string name="intent_flags_example">Příznaky záměru jsou uloženy jako bitové vlajky. Tyto vlajky mění způsob nakládání s tímto záměrem. Pokud je toto prázdné pro záměr aktivity, pak klíčová mapa bude ve výchozím nastavení používat FLAG_ACTIVITY_NEW_TASK. Pro mnohem více informací klepněte na \'dokumentace\' pro zobrazení dokumentace vývojářů systému Android.</string>
+    <string name="config_intent_screen_flags_help_dialog_text">Příznaky záměru jsou uloženy jako bitové vlajky. Tyto vlajky mění způsob nakládání s tímto záměrem. Pokud je toto prázdné pro záměr aktivity, pak klíčová mapa bude ve výchozím nastavení používat FLAG_ACTIVITY_NEW_TASK. Pro mnohem více informací klepněte na \'dokumentace\' pro zobrazení dokumentace vývojářů systému Android.</string>
     <!--  Intent action type strings  -->
     <!--  Tap targets  -->
     <string name="tap_target_quick_start_guide_primary">Příručka pro rychlý start</string>

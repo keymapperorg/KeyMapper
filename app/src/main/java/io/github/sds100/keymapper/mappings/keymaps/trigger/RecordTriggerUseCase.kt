@@ -39,6 +39,8 @@ class RecordTriggerUseCaseImpl @Inject constructor(
 
                 is Event.OnIncrementRecordTriggerTimer -> state.value =
                     RecordTriggerState.CountingDown(event.timeLeft)
+
+                else -> {}
             }
         }.launchIn(coroutineScope)
     }

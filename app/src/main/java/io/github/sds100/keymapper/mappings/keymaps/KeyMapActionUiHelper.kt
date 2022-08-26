@@ -51,6 +51,8 @@ class KeyMapActionUiHelper(
                     RepeatMode.TRIGGER_PRESSED_AGAIN -> {
                         append(getString(R.string.flag_repeat_build_description_until_pressed_again))
                     }
+
+                    else -> {}
                 }
             }
 

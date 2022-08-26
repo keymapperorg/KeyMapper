@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.actions
 
 import android.text.InputType
-import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.system.camera.CameraLens
@@ -115,7 +114,10 @@ class CreateActionViewModelImpl @Inject constructor(
                 val items = RingerMode.values()
                     .map { it to getString(RingerModeUtils.getLabel(it)) }
 
-                val dialog = PopupUi.SingleChoice(title = getString(R.string.dialog_title_choose_ringer_mode), items)
+                val dialog = PopupUi.SingleChoice(
+                    title = getString(R.string.choose_action_choose_ringer_mode_dialog_title),
+                    items
+                )
                 val ringerMode = showPopup("pick_ringer_mode", dialog) ?: return null
 
                 return ActionData.SetRingerMode(ringerMode)
@@ -127,7 +129,8 @@ class CreateActionViewModelImpl @Inject constructor(
                 val items = DndMode.values()
                     .map { it to getString(DndModeUtils.getLabel(it)) }
 
-                val dialog = PopupUi.SingleChoice(title = getString(R.string.dialog_title_choose_dnd_mode), items)
+                val dialog =
+                    PopupUi.SingleChoice(title = getString(R.string.choose_action_choose_dnd_mode_dialog_title), items)
                 val dndMode = showPopup("pick_dnd_mode", dialog) ?: return null
 
                 val action = when (actionId) {
@@ -156,7 +159,7 @@ class CreateActionViewModelImpl @Inject constructor(
                 }
 
                 val dialog = PopupUi.MultiChoice(
-                    title = getString(R.string.dialog_title_choose_orientations_to_cycle),
+                    title = getString(R.string.choose_action_cycle_orientations_dialog_title),
                     items
                 )
                 val orientations = showPopup("pick_orientations", dialog) ?: return null
@@ -339,7 +342,7 @@ class CreateActionViewModelImpl @Inject constructor(
 
                 return ActionData.Sound(
                     soundUid = result.soundUid,
-                    soundDescription = result.description
+                    soundDescription = result.name
                 )
             }
 

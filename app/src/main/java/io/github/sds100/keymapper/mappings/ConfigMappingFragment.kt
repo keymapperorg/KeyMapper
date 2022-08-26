@@ -111,15 +111,13 @@ abstract class ConfigMappingFragment : Fragment() {
         binding.appBar.menu.findItem(R.id.action_help).isVisible =
             fragmentInfoList[binding.viewPager.currentItem].second.supportUrl != null
 
+        binding.fab.setOnClickListener {
+            viewModel.save()
+            findNavController().navigateUp()
+        }
+
         binding.appBar.setOnMenuItemClickListener {
             when (it.itemId) {
-                R.id.action_save -> {
-                    viewModel.save()
-                    findNavController().navigateUp()
-
-                    true
-                }
-
                 R.id.action_help -> {
                     fragmentInfoList[binding.viewPager.currentItem].second.supportUrl?.let { url ->
                         UrlUtils.openUrl(requireContext(), str(url))

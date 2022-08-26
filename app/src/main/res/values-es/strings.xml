@@ -31,12 +31,12 @@ Los servicios de accesibilidad solo detectan las teclas y eventos de las aplicac
     <string name="show_hidden_apps">Mostrar aplicaciones ocultas</string>
     <string name="modifiers">Modificadores</string>
     <string name="toggle">Cambiar</string>
-    <string name="tap_coordinate_screenshot_message">¡¡¡¡IMPORTANTE!!! Estas coordenadas solo son correctas cuando su pantalla está en la misma orientación que la captura de pantalla! Esta acción cancelará cualquier toque o gesto que estés haciendo en la pantalla.\n\nSi necesitas ayuda para encontrar las coordenadas de un punto en tu pantalla toma una captura de pantalla y pulsa en la captura de pantalla donde quieres que ocurra el toque.</string>
+    <string name="create_tap_screen_action_explanation">¡¡¡¡IMPORTANTE!!! Estas coordenadas solo son correctas cuando su pantalla está en la misma orientación que la captura de pantalla! Esta acción cancelará cualquier toque o gesto que estés haciendo en la pantalla.\n\nSi necesitas ayuda para encontrar las coordenadas de un punto en tu pantalla toma una captura de pantalla y pulsa en la captura de pantalla donde quieres que ocurra el toque.</string>
     <string name="dont_know_device_name">¡No se conoce el nombre del dispositivo!</string>
     <string name="tap_actions_to_fix">¡Toca las acciones para arreglar!</string>
     <string name="shortcut_label_action">Realizar acciones</string>
     <string name="hold_down_until_trigger_is_dot_dot_dot">Mantén presionado hasta que el disparador…</string>
-    <string name="from_no_device">Sin dispositivos</string>
+    <string name="create_key_event_screen_no_device">Sin dispositivos</string>
     <string name="intent_extras_recycler_view_placeholder">¯\\_(ツ)_/¯\n\n¡Sin extras!</string>
     <string name="content_description_fab_new_keymap">Crear un nuevo mapa</string>
     <string name="whats_new">Novedades</string>
@@ -80,7 +80,7 @@ Los servicios de accesibilidad solo detectan las teclas y eventos de las aplicac
     <!--  Toasts  -->
     <string name="toast_screenshot_taken">Captura de pantalla hecha</string>
     <string name="toast_io_exception_shrug">Excepción IO ¯\\_(ツ)_/¯</string>
-    <string name="toast_incorrect_screenshot_resolution">¡La resolución de la captura de pantalla no coincide con la resolución de este dispositivo!</string>
+    <string name="create_tap_screen_action_incorrect_resolution_error">¡La resolución de la captura de pantalla no coincide con la resolución de este dispositivo!</string>
     <string name="toast_copied_keymap_uid_to_clipboard">UUID del mapeado de teclas copiado al portapapeles</string>
     <!--  Toasts  -->
     <!-- Extra labels -->

@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="io.github.sds100.keymapper">
 
+    <uses-sdk tools:overrideLibrary="rikka.shizuku.provider, rikka.shizuku.api, rikka.shizuku.shared, rikka.shizuku.aidl" />
+
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
@@ -20,21 +22,19 @@
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
-    <uses-permission android:name="com.termux.permission.RUN_COMMAND"  />
-    <!--    This permission is in each build variant's AndroidManifest -->
-    <!--    <permission android:name="io.github.sds100.keymapper.KEY_EVENT_RECEIVER">-->
-    <!--    </permission>-->
+    <uses-permission android:name="com.termux.permission.RUN_COMMAND" />
+
+    <!-- This permission is in each build variant's AndroidManifest -->
+    <!-- <permission android:name="io.github.sds100.keymapper.KEY_EVENT_RECEIVER"> -->
+    <!-- </permission> -->
 
     <uses-permission
         android:name="android.permission.QUERY_ALL_PACKAGES"
         tools:ignore="QueryAllPackagesPermission" />
-
     <uses-permission android:name="android.permission.CALL_PHONE" />
-
     <uses-permission
         android:name="android.permission.WRITE_SETTINGS"
         tools:ignore="ProtectedPermissions" />
-
     <uses-permission
         android:name="android.permission.WRITE_SECURE_SETTINGS"
         tools:ignore="ProtectedPermissions" />
@@ -42,32 +42,24 @@
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
-
     <uses-feature
         android:name="android.software.leanback"
         android:required="false" />
-
     <uses-feature
         android:name="android.hardware.touchscreen"
         android:required="false" />
-
     <uses-feature
         android:name="android.hardware.wifi"
         android:required="false" />
-
     <uses-feature
         android:name="android.hardware.telephony"
         android:required="false" />
-    
     <uses-feature
         android:name="android.hardware.bluetooth"
         android:required="false" />
-
     <uses-feature
         android:name="android.hardware.location.gps"
         android:required="false" />
-
-    <uses-sdk tools:overrideLibrary="rikka.shizuku.provider, rikka.shizuku.api, rikka.shizuku.shared, rikka.shizuku.aidl" />
 
     <application
         android:name="io.github.sds100.keymapper.KeyMapperApp"
@@ -78,7 +70,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
         tools:ignore="GoogleAppIndexingWarning">
-
         <activity
             android:name=".SplashActivity"
             android:exported="true"
@@ -92,31 +83,28 @@
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity android:name=".onboarding.AppIntroActivity" />
-        <activity android:name=".MainActivity" />
+        <activity
+            android:name=".MainActivity"
+            android:windowSoftInputMode="adjustResize" />
         <activity android:name=".reportbug.ReportBugActivity" />
-        <activity android:name=".home.FixAppKillingActivity" />
-
-        <!-- Use a different task affinity so this activity doesn't close other activities -->
+        <activity android:name=".home.FixAppKillingActivity" /> <!-- Use a different task affinity so this activity doesn't close other activities -->
         <activity
             android:name=".api.LaunchKeyMapShortcutActivity"
             android:excludeFromRecents="true"
+            android:exported="true"
             android:finishOnTaskLaunch="true"
             android:launchMode="singleInstance"
             android:taskAffinity=""
-            android:exported="true"
             android:theme="@android:style/Theme.NoDisplay">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
-        </activity>
-
-        <!-- Use a different task affinity so this activity can be opened at the same time as others -->
+        </activity> <!-- Use a different task affinity so this activity can be opened at the same time as others -->
         <activity
             android:name=".mappings.keymaps.CreateKeyMapShortcutActivity"
-            android:label="@string/shortcut_label_action"
             android:exported="true"
+            android:label="@string/shortcut_label_action"
             android:taskAffinity="">
             <intent-filter>
                 <action android:name="android.intent.action.CREATE_SHORTCUT" />
@@ -133,7 +121,6 @@
                 android:name="android.hardware.input.metadata.KEYBOARD_LAYOUTS"
                 android:resource="@xml/keyboard_layouts" />
         </receiver>
-
         <receiver
             android:name=".system.BootBroadcastReceiver"
             android:exported="true">
@@ -141,7 +128,6 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-
         <receiver
             android:name=".api.PauseMappingsBroadcastReceiver"
             android:exported="true">
@@ -151,7 +137,6 @@
                 <action android:name="io.github.sds100.keymapper.ACTION_TOGGLE_MAPPINGS" />
             </intent-filter>
         </receiver>
-
         <receiver
             android:name=".system.bluetooth.BluetoothBroadcastReceiver"
             android:exported="true">
@@ -160,7 +145,6 @@
                 <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED" />
             </intent-filter>
         </receiver>
-
         <receiver
             android:name=".system.DeviceAdmin"
             android:exported="true"
@@ -186,65 +170,58 @@
                 android:name="android.accessibilityservice"
                 android:resource="@xml/config_accessibility_service" />
         </service>
-
         <service
             android:name=".system.inputmethod.KeyMapperImeService"
-            android:label="@string/ime_service_label"
             android:exported="true"
+            android:label="@string/ime_service_label"
             android:permission="android.permission.BIND_INPUT_METHOD">
             <intent-filter>
                 <action android:name="android.view.InputMethod" />
             </intent-filter>
+
             <meta-data
                 android:name="android.view.im"
                 android:resource="@xml/input_method" />
         </service>
-
         <service
             android:name=".system.tiles.ToggleMappingsTile"
+            android:exported="true"
             android:icon="@drawable/ic_tile_pause"
             android:label="@string/tile_pause"
-            android:exported="true"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
         </service>
-
         <service
             android:name=".system.tiles.ToggleKeyMapperKeyboardTile"
+            android:exported="true"
             android:icon="@drawable/ic_tile_keyboard"
             android:label="@string/tile_toggle_keymapper_keyboard"
-            android:exported="true"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
         </service>
-
         <service
             android:name="io.github.sds100.keymapper.system.notifications.NotificationReceiver"
-            android:label="Key Mapper Notification Receiver"
             android:exported="true"
+            android:label="Key Mapper Notification Receiver"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
         </service>
-
         <service
             android:name=".system.accessibility.ObserveEnabledAccessibilityServicesJob"
             android:permission="android.permission.BIND_JOB_SERVICE" />
-
         <service
             android:name=".api.KeyEventReceiver"
             android:exported="true"
             android:permission="io.github.sds100.keymapper.KEY_EVENT_RECEIVER" />
-
         <service
             android:name=".system.inputmethod.ObserveInputMethodsJob"
             android:permission="android.permission.BIND_JOB_SERVICE" />
-
         <service
             android:name=".system.notifications.ObserveNotificationListenersJob"
             android:permission="android.permission.BIND_JOB_SERVICE" />
@@ -257,4 +234,5 @@
             android:multiprocess="false"
             android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
     </application>
+
 </manifest>

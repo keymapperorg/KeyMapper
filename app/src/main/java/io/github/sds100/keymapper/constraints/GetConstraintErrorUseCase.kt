@@ -101,6 +101,8 @@ class GetConstraintErrorUseCaseImpl @Inject constructor(
                     return Error.PermissionDenied(Permission.READ_PHONE_STATE)
                 }
             }
+
+            else -> return null
         }
 
         return null

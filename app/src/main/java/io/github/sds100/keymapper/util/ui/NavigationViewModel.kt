@@ -9,15 +9,16 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.actions.ActionData
-import io.github.sds100.keymapper.actions.ChooseActionFragment
+import io.github.sds100.keymapper.actions.ActionsFragment
 import io.github.sds100.keymapper.actions.keyevent.ChooseKeyCodeFragment
 import io.github.sds100.keymapper.actions.keyevent.ConfigKeyEventActionFragment
 import io.github.sds100.keymapper.actions.sound.ChooseSoundFileFragment
-import io.github.sds100.keymapper.actions.sound.ChooseSoundFileResult
+import io.github.sds100.keymapper.actions.sound.ChooseSoundResult
 import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.actions.tapscreen.PickDisplayCoordinateFragment
 import io.github.sds100.keymapper.constraints.ChooseConstraintFragment
 import io.github.sds100.keymapper.constraints.Constraint
+import io.github.sds100.keymapper.destinations.ChooseActionScreenDestination
 import io.github.sds100.keymapper.system.apps.*
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import io.github.sds100.keymapper.system.bluetooth.ChooseBluetoothDeviceFragment
@@ -131,7 +132,7 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
         }
 
         val direction = when (destination) {
-           is NavDestination.ChooseApp -> NavAppDirections.chooseApp(destination.allowHiddenApps, requestKey)
+            is NavDestination.ChooseApp -> NavAppDirections.chooseApp(destination.allowHiddenApps, requestKey)
             NavDestination.ChooseAppShortcut -> NavAppDirections.chooseAppShortcut(requestKey)
             NavDestination.ChooseKeyCode -> NavAppDirections.chooseKeyCode(requestKey)
             is NavDestination.ConfigKeyEventAction -> {
@@ -157,7 +158,10 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
             }
             is NavDestination.ChooseActivity -> NavAppDirections.chooseActivity(requestKey)
             is NavDestination.ChooseSound -> NavAppDirections.chooseSoundFile(requestKey)
-            NavDestination.ChooseAction -> NavAppDirections.toChooseActionFragment(requestKey)
+            NavDestination.ChooseAction -> NavAppDirections.toChooseActionFragment(
+                requestKey,
+                ChooseActionScreenDestination.route
+            )
             is NavDestination.ChooseConstraint -> NavAppDirections.chooseConstraint(
                 supportedConstraints = Json.encodeToString(destination.supportedConstraints),
                 requestKey = requestKey
@@ -237,13 +241,13 @@ fun NavigationViewModel.sendNavResultFromBundle(
 
         NavDestination.ID_CHOOSE_SOUND -> {
             val json = bundle.getString(ChooseSoundFileFragment.EXTRA_RESULT)!!
-            val result = Json.decodeFromString<ChooseSoundFileResult>(json)
+            val result = Json.decodeFromString<ChooseSoundResult>(json)
 
             onNavResult(NavResult(requestKey, result))
         }
 
         NavDestination.ID_CHOOSE_ACTION -> {
-            val json = bundle.getString(ChooseActionFragment.EXTRA_ACTION)!!
+            val json = bundle.getString(ActionsFragment.EXTRA_ACTION)!!
             val action = Json.decodeFromString<ActionData>(json)
 
             onNavResult(NavResult(requestKey, action))

@@ -42,17 +42,17 @@
     <string name="show_hidden_apps">Pokaż ukryte aplikacje</string>
     <string name="modifiers">Modyfikatory</string>
     <string name="toggle">Włącz/wyłącz</string>
-    <string name="tap_coordinate_screenshot_message">UWAGA!!! Te współrzędne są poprawne tylko wtedy, gdy urządzenie i zrzut ekranu są w tej samej orientacji! To działanie spowoduje anulowanie wszelkich kliknięć lub gestów, które wykonujesz na ekranie.\n\nJeśli potrzebujesz pomocy w znalezieniu współrzędnych punktu na ekranie, zrób zrzut ekranu, a następnie dotknij go w miejscu, w którym ma zostać wykonane to działanie.</string>
+    <string name="create_tap_screen_action_explanation">UWAGA!!! Te współrzędne są poprawne tylko wtedy, gdy urządzenie i zrzut ekranu są w tej samej orientacji! To działanie spowoduje anulowanie wszelkich kliknięć lub gestów, które wykonujesz na ekranie.\n\nJeśli potrzebujesz pomocy w znalezieniu współrzędnych punktu na ekranie, zrób zrzut ekranu, a następnie dotknij go w miejscu, w którym ma zostać wykonane to działanie.</string>
     <string name="dont_know_device_name">Nie znam nazwy urządzenia!</string>
     <string name="tap_actions_to_fix">Kliknij działania, aby naprawić!</string>
     <string name="tap_constraints_to_fix">Kliknij ograniczenia, aby naprawić!</string>
     <string name="shortcut_label_action">Wykonaj działania</string>
     <string name="hold_down_until_trigger_is_dot_dot_dot">Przytrzymaj klawisz, aż…</string>
-    <string name="from_no_device">Brak urządzenia</string>
+    <string name="create_key_event_screen_no_device">Brak urządzenia</string>
     <string name="intent_extras_recycler_view_placeholder">¯\\_(ツ)_/¯\n\nBrak dodatków!</string>
     <string name="content_description_fab_new_keymap">Utwórz nową mapę klawiszy</string>
-    <string name="content_description_done_configuring_key_event">Konfiguracja funkcji zdarzenia klawiszy została zakończona</string>
-    <string name="content_description_done_configuring_coordinate">Wybór współrzędnych został zakończony</string>
+    <string name="config_key_event_screen_done_content_description">Konfiguracja funkcji zdarzenia klawiszy została zakończona</string>
+    <string name="create_tap_screen_action_done_content_description">Wybór współrzędnych został zakończony</string>
     <string name="clip_key_mapper_log">Dziennik Key Mapper</string>
     <string name="sharesheet_title">Wyślij do</string>
     <string name="whats_new">Co nowego</string>
@@ -127,16 +127,16 @@
     <string name="hint_create_text_action">Tekst do wprowadzenia</string>
     <string name="hint_create_url_action">URL do otwarcia</string>
     <string name="hint_create_phone_call_action">Numer telefonu, pod który należy zadzwonić</string>
-    <string name="hint_intent_action">Działanie</string>
-    <string name="hint_intent_categories">Kategorie</string>
-    <string name="hint_intent_data">Dane</string>
-    <string name="hint_intent_package">Pakiet</string>
-    <string name="hint_intent_class">Klasa</string>
+    <string name="config_intent_screen_action_label">Działanie</string>
+    <string name="config_intent_screen_category_header">Kategorie</string>
+    <string name="config_intent_screen_data_header">Dane</string>
+    <string name="config_intent_screen_package_header">Pakiet</string>
+    <string name="config_intent_screen_class_header">Klasa</string>
     <string name="hint_intent_extra_name">Nazwa</string>
     <string name="hint_intent_extra_value_with_type">Wartość (%s)</string>
-    <string name="hint_intent_description">Opis dla Key Mapper (wymagane)</string>
-    <string name="hint_intent_flags">Flagi</string>
-    <string name="hint_sound_file_description">Opis pliku dźwiękowego</string>
+    <string name="config_intent_screen_description_label">Opis dla Key Mapper (wymagane)</string>
+    <string name="config_intent_screen_flags_header">Flagi</string>
+    <string name="choose_sound_file_description_title">Opis pliku dźwiękowego</string>
     <string name="hint_wifi_ssid">SSID sieci Wi-Fi</string>
     <!--  Hints  -->
     <!--  Radio buttons  -->
@@ -147,11 +147,11 @@
     <string name="radio_button_short_press">Krótkie naciśnięcie</string>
     <string name="radio_button_long_press">Przytrzymanie</string>
     <string name="radio_button_double_press">Podwójne naciśnięcie</string>
-    <string name="radio_button_intent_extra_value_true">Prawda</string>
-    <string name="radio_button_intent_extra_value_false">Fałsz</string>
-    <string name="radio_button_intent_target_activity">Aktywność</string>
-    <string name="radio_button_intent_target_service">Usługa</string>
-    <string name="radio_button_intent_target_broadcast_receiver">Odbiornik transmisji</string>
+    <string name="config_intent_screen_extra_boolean_true">Prawda</string>
+    <string name="config_intent_screen_extra_boolean_false">Fałsz</string>
+    <string name="config_intent_screen_activity_target">Aktywność</string>
+    <string name="config_intent_screen_service_target">Usługa</string>
+    <string name="config_intent_screen_broadcast_receiver_target">Odbiornik transmisji</string>
     <!--  Radio buttons  -->
     <!--  Tabs  -->
     <string name="tab_trigger_and_actions">Wyzwalacz i działania</string>
@@ -178,7 +178,7 @@
     <string name="toast_automatic_backup_failed">Tworzenie automatycznej kopii zapasowej nie powiodło się!</string>
     <string name="toast_screenshot_taken">Wykonano zrzut ekranu</string>
     <string name="toast_io_exception_shrug">Wyjątek wejścia/wyjścia ¯\\_(ツ)_/¯</string>
-    <string name="toast_incorrect_screenshot_resolution">Rozdzielczość zrzutu ekranu nie pasuje do rozdzielczości tego urządzenia!</string>
+    <string name="create_tap_screen_action_incorrect_resolution_error">Rozdzielczość zrzutu ekranu nie pasuje do rozdzielczości tego urządzenia!</string>
     <string name="toast_copied_keymap_uid_to_clipboard">Skopiowano UUID mapy klawiszy do schowka</string>
     <string name="toast_triggered_keymap">Wywołałeś(-aś) mapę klawiszy</string>
     <string name="toast_copied_log">Dziennik został skopiowany</string>
@@ -341,7 +341,7 @@
     <string name="button_config_intent_set_flags">Ustaw flagi</string>
     <string name="button_copy_log">Kopiuj</string>
     <string name="button_slider_repeat_no_limit">Bez ograniczeń</string>
-    <string name="button_choose_sound_file">Wybierz plik dźwiękowy</string>
+    <string name="choose_sound_file_button">Wybierz plik dźwiękowy</string>
     <string name="button_edit_action">Edytuj działanie</string>
     <string name="button_replace_action">Zastąp działanie</string>
     <!-- Button titles -->
@@ -429,9 +429,9 @@
     <string name="dialog_title_fix_dnd_trigger_error">Udziel dostęp do trybu Nie przeszkadzać</string>
     <string name="dialog_message_fix_dnd_trigger_error">Spowoduje to przejście do strony ustawień urządzenia, na której możesz zarządzać aplikacjami, które mogą zmieniać stan Nie przeszkadzać. To <b>nie występuje na niektórych urządzeniach</b>, więc możesz kliknąć Nie wyświetlaj ponownie, jeśli nie widzisz aplikacji Key Mapper na tej liście.</string>
     <string name="dialog_title_choose_to_show_volume_ui">Pokazać interfejs głośności?</string>
-    <string name="dialog_title_choose_orientations_to_cycle">Wybierz orientacje do przełączenia</string>
-    <string name="dialog_title_choose_dnd_mode">Wybierz tryb Nie przeszkadzać</string>
-    <string name="dialog_title_choose_ringer_mode">Wybierz tryb dzwonka</string>
+    <string name="choose_action_cycle_orientations_dialog_title">Wybierz orientacje do przełączenia</string>
+    <string name="choose_action_choose_dnd_mode_dialog_title">Wybierz tryb Nie przeszkadzać</string>
+    <string name="choose_action_choose_ringer_mode_dialog_title">Wybierz tryb dzwonka</string>
     <string name="dialog_title_choose_camera_flash">Wybierz lampę błyskową aparatu</string>
     <string name="dialog_title_choose_keyboard">Wybierz klawiaturę</string>
     <string name="dialog_title_choose_wifi_network">Wybierz sieć</string>
@@ -908,11 +908,11 @@
     <string name="action_fast_forward">Przewiń do przodu</string>
     <string name="action_fast_forward_package">Przewiń do przodu dla aplikacji</string>
     <string name="action_fast_forward_package_formatted">Przewiń do przodu dla %s</string>
-    <string name="action_fast_forward_message">Nie wszystkie aplikacje multimedialne obsługują przewijanie, np. Muzyka Google Play.</string>
+    <string name="choose_action_fast_forward_warning">Nie wszystkie aplikacje multimedialne obsługują przewijanie, np. Muzyka Google Play.</string>
     <string name="action_rewind">Przewiń do tyłu</string>
     <string name="action_rewind_package">Przewiń do tyłu dla aplikacji</string>
     <string name="action_rewind_package_formatted">Przewiń do %s</string>
-    <string name="action_rewind_message">Nie wszystkie aplikacje multimedialne obsługują przewijanie, np. Muzyka Google Play.</string>
+    <string name="choose_action_rewind_warning">Nie wszystkie aplikacje multimedialne obsługują przewijanie, np. Muzyka Google Play.</string>
     <string name="action_go_back">Naciśnij Wstecz</string>
     <string name="action_go_home">Naciśnij przycisk ekranu głównego</string>
     <string name="action_open_recents">Naciśnij Przegląd</string>
@@ -934,14 +934,14 @@
     <string name="action_open_camera">Uruchom aplikację aparatu</string>
     <string name="action_lock_device">Zablokuj urządzenie</string>
     <string name="action_secure_lock_device">Bezpiecznie zablokuj urządzenie</string>
-    <string name="action_secure_lock_device_message">Odblokowywanie urządzenia będzie możliwe tylko za pomocą kodu PIN. Odblokowywanie za pomocą odcisku palca lub twarzy zostanie wyłączone. Jest to jedyny niezawodny sposób, w jaki znalazłem zablokowanie niezrootowanych urządzeń przed wersją Android Pie 9.0.</string>
+    <string name="choose_action_secure_lock_device_warning">Odblokowywanie urządzenia będzie możliwe tylko za pomocą kodu PIN. Odblokowywanie za pomocą odcisku palca lub twarzy zostanie wyłączone. Jest to jedyny niezawodny sposób, w jaki znalazłem zablokowanie niezrootowanych urządzeń przed wersją Android Pie 9.0.</string>
     <string name="action_power_on_off_device">Uśpij/obudź urządzenie</string>
-    <string name="action_power_on_off_device_message">Musisz włączyć opcję wykrywania wyzwalacza gdy ekran jest wyłączony!</string>
+    <string name="choose_action_power_on_off_device_warning">Musisz włączyć opcję wykrywania wyzwalacza gdy ekran jest wyłączony!</string>
     <string name="action_consume_keyevent">Nic nie rób</string>
     <string name="action_move_to_end_of_text">Przenieś kursor na koniec pliku</string>
-    <string name="action_move_to_end_of_text_message">Ta czynność może nie działać zgodnie z przeznaczeniem w niektórych aplikacjach.</string>
+    <string name="choose_action_move_to_end_of_text_warning">Ta czynność może nie działać zgodnie z przeznaczeniem w niektórych aplikacjach.</string>
     <string name="action_toggle_keyboard">Pokaż/ukryj klawiaturę</string>
-    <string name="action_toggle_keyboard_message">Ta czynność zadziała tylko wtedy, gdy klikniesz pola wprowadzania, w którym ma być wyświetlana klawiatura.</string>
+    <string name="choose_action_toggle_keyboard_warning">Ta czynność zadziała tylko wtedy, gdy klikniesz pola wprowadzania, w którym ma być wyświetlana klawiatura.</string>
     <string name="action_show_keyboard">Pokaż klawiaturę</string>
     <string name="action_hide_keyboard">Ukryj klawiaturę</string>
     <string name="action_show_keyboard_picker">Pokaż wybór klawiatury</string>
@@ -987,24 +987,24 @@
     <string name="action_cat_notifications">Powiadomienia</string>
     <!-- action category labels -->
     <!--  Intent action type strings  -->
-    <string name="intent_type_bool_header">Wartość logiczna</string>
-    <string name="intent_type_bool_array_header">Tablica logiczna</string>
-    <string name="intent_type_int_header">Liczba całkowita</string>
-    <string name="intent_type_int_array_header">Tablica liczb całkowitych</string>
-    <string name="intent_type_string_header">Ciąg</string>
-    <string name="intent_type_string_array_header">Tablica ciągów</string>
-    <string name="intent_type_long_header">Long</string>
-    <string name="intent_type_long_array_header">Tablica typu long</string>
-    <string name="intent_type_byte_header">Bajt</string>
-    <string name="intent_type_byte_array_header">Tablica typu bajt</string>
-    <string name="intent_type_double_header">Double</string>
-    <string name="intent_type_double_array_header">Tablica typu double</string>
-    <string name="intent_type_char_header">Char</string>
-    <string name="intent_type_char_array_header">Tablica typu char</string>
-    <string name="intent_type_float_header">Float</string>
-    <string name="intent_type_float_array_header">Tablica typu float</string>
-    <string name="intent_type_short_header">Short</string>
-    <string name="intent_type_short_array_header">Tablica typu short</string>
+    <string name="config_intent_screen_extra_boolean_title">Wartość logiczna</string>
+    <string name="config_intent_screen_extra_boolean_array_title">Tablica logiczna</string>
+    <string name="config_intent_screen_extra_integer_title">Liczba całkowita</string>
+    <string name="config_intent_screen_extra_integer_array_title">Tablica liczb całkowitych</string>
+    <string name="config_intent_screen_extra_string_title">Ciąg</string>
+    <string name="config_intent_screen_extra_string_array_title">Tablica ciągów</string>
+    <string name="config_intent_screen_extra_long_title">Long</string>
+    <string name="config_intent_screen_extra_long_array_title">Tablica typu long</string>
+    <string name="config_intent_screen_extra_byte_title">Bajt</string>
+    <string name="config_intent_screen_extra_byte_array_title">Tablica typu bajt</string>
+    <string name="config_intent_screen_extra_double_title">Double</string>
+    <string name="config_intent_screen_extra_double_array_title">Tablica typu double</string>
+    <string name="config_intent_screen_extra_char_title">Char</string>
+    <string name="config_intent_screen_extra_char_array_title">Tablica typu char</string>
+    <string name="config_intent_screen_extra_float_title">Float</string>
+    <string name="config_intent_screen_extra_float_array_title">Tablica typu float</string>
+    <string name="config_intent_screen_extra_short_title">Short</string>
+    <string name="config_intent_screen_extra_short_array_title">Tablica typu short</string>
     <string name="intent_type_bool_example">Może być tylko \"true\" lub \"false\"</string>
     <string name="intent_type_bool_array_example">Rozdzielona przecinkami lista \"true\" i \"false\", np. true,false,true</string>
     <string name="intent_type_int_example">Poprawna liczba całkowita w języku programowania Java.</string>
@@ -1024,7 +1024,7 @@
     <string name="intent_type_float_array_example">Rozdzielana przecinkami lista prawidłowych liczb Float w języku programowania Java, np. 1241.123</string>
     <string name="intent_type_short_example">Poprawna liczba Short w języku programowania Java, np. 2342</string>
     <string name="intent_type_short_array_example">Rozdzielana przecinkami lista prawidłowych liczb Short w języku programowania Java, np. 3242,12354</string>
-    <string name="intent_flags_example">Flagi Intencji są przechowywane jako flagi bitowe. Te flagi zmieniają sposób obsługi Intencji. Jeśli to pole jest puste dla Intencji aktywności, Key Mapper domyślnie użyje FLAG_ACTIVITY_NEW_TASK. Aby uzyskać bardziej szczegółowe informacje, kliknij przycisk \"Dokumentacja\", aby zapoznać się z dokumentacją dla programistów Androida.</string>
+    <string name="config_intent_screen_flags_help_dialog_text">Flagi Intencji są przechowywane jako flagi bitowe. Te flagi zmieniają sposób obsługi Intencji. Jeśli to pole jest puste dla Intencji aktywności, Key Mapper domyślnie użyje FLAG_ACTIVITY_NEW_TASK. Aby uzyskać bardziej szczegółowe informacje, kliknij przycisk \"Dokumentacja\", aby zapoznać się z dokumentacją dla programistów Androida.</string>
     <!--  Intent action type strings  -->
     <!--  Tap targets  -->
     <string name="tap_target_quick_start_guide_primary">Przewodnik szybkiego startu</string>

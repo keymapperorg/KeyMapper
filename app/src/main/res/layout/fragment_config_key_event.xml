@@ -174,7 +174,7 @@
             android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:contentDescription="@string/content_description_done_configuring_key_event"
+            android:contentDescription="@string/config_key_event_screen_done_content_description"
             android:enabled="@{viewModel.uiState.isDoneButtonEnabled}"
             android:onClick="@{() -> viewModel.onDoneClick()}"
             android:src="@drawable/ic_baseline_done_24"

@@ -116,7 +116,7 @@ class ConfigKeyEventActionFragment : Fragment() {
                     mutableListOf()
                 ).apply {
                     clear()
-                    add(str(R.string.from_no_device))
+                    add(str(R.string.create_key_event_screen_no_device))
 
                     state.deviceListItems.forEach {
                         add(it.name)
@@ -131,7 +131,7 @@ class ConfigKeyEventActionFragment : Fragment() {
 
         binding.dropdownDeviceId.apply {
             //set the default value
-            setText(str(R.string.from_no_device), false)
+            setText(str(R.string.create_key_event_screen_no_device), false)
 
             setOnItemClickListener { _, _, position, _ ->
                 if (position == 0) {

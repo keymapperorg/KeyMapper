@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.util.ui
 
 import io.github.sds100.keymapper.actions.ActionData
-import io.github.sds100.keymapper.actions.sound.ChooseSoundFileResult
+import io.github.sds100.keymapper.actions.sound.ChooseSoundResult
 import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.constraints.ChooseConstraintType
 import io.github.sds100.keymapper.constraints.Constraint
@@ -76,7 +76,7 @@ sealed class NavDestination<R> {
         NavDestination<ConfigIntentResult>()
 
     object ChooseActivity : NavDestination<ActivityInfo>()
-    object ChooseSound : NavDestination<ChooseSoundFileResult>()
+    object ChooseSound : NavDestination<ChooseSoundResult>()
     object ChooseAction : NavDestination<ActionData>()
     data class ChooseConstraint(val supportedConstraints: List<ChooseConstraintType>) :
         NavDestination<Constraint>()

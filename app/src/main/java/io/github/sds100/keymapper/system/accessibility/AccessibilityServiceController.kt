@@ -7,18 +7,12 @@ import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import io.github.sds100.keymapper.actions.ActionData
-import io.github.sds100.keymapper.mappings.detection.PerformActionsUseCase
-import io.github.sds100.keymapper.mappings.detection.DetectConstraintsUseCase
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
-import io.github.sds100.keymapper.mappings.detection.DetectFingerprintMapsUseCase
-import io.github.sds100.keymapper.mappings.detection.FingerprintGestureMapController
+import io.github.sds100.keymapper.mappings.detection.*
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapId
 import io.github.sds100.keymapper.mappings.keymaps.TriggerKeyMapFromOtherAppsController
-import io.github.sds100.keymapper.mappings.detection.DetectKeyMapsUseCase
-import io.github.sds100.keymapper.mappings.detection.DetectScreenOffKeyEventsController
-import io.github.sds100.keymapper.mappings.detection.KeyMapController
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsController
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsUseCase
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
@@ -441,6 +435,7 @@ class AccessibilityServiceController constructor(
             is Event.ShowKeyboard -> accessibilityService.showKeyboard()
             is Event.ChangeIme -> accessibilityService.switchIme(event.imeId)
             is Event.DisableService -> accessibilityService.disableSelf()
+            else -> {}
         }
     }
 

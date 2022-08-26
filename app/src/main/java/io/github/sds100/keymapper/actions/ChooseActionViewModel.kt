@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.actions
 
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
@@ -154,19 +153,19 @@ class ChooseActionViewModel @Inject constructor(
     private suspend fun showMessageForAction(id: ActionId): Boolean {
         @StringRes val messageToShow: Int? = when (id) {
             ActionId.FAST_FORWARD_PACKAGE,
-            ActionId.FAST_FORWARD -> R.string.action_fast_forward_message
+            ActionId.FAST_FORWARD -> R.string.choose_action_fast_forward_warning
 
             ActionId.REWIND_PACKAGE,
-            ActionId.REWIND -> R.string.action_rewind_message
+            ActionId.REWIND -> R.string.choose_action_rewind_warning
 
-            ActionId.MOVE_CURSOR_TO_END -> R.string.action_move_to_end_of_text_message
+            ActionId.MOVE_CURSOR_TO_END -> R.string.choose_action_move_to_end_of_text_warning
 
             ActionId.TOGGLE_KEYBOARD,
             ActionId.SHOW_KEYBOARD,
-            ActionId.HIDE_KEYBOARD -> R.string.action_toggle_keyboard_message
+            ActionId.HIDE_KEYBOARD -> R.string.choose_action_toggle_keyboard_warning
 
-            ActionId.SECURE_LOCK_DEVICE -> R.string.action_secure_lock_device_message
-            ActionId.POWER_ON_OFF_DEVICE -> R.string.action_power_on_off_device_message
+            ActionId.SECURE_LOCK_DEVICE -> R.string.choose_action_secure_lock_device_warning
+            ActionId.POWER_ON_OFF_DEVICE -> R.string.choose_action_power_on_off_device_warning
 
             else -> null
         }

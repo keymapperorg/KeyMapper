@@ -17,8 +17,8 @@ class ChooseSoundFileUseCaseImpl @Inject constructor(
 ) : ChooseSoundFileUseCase {
     override val soundFiles = soundsManager.soundFiles
 
-    override suspend fun saveSound(uri: String): Result<String> {
-        return soundsManager.saveNewSound(uri)
+    override suspend fun saveSound(uri: String, name: String): Result<String> {
+        return soundsManager.saveNewSound(uri, name)
     }
 
     override fun getSoundFileName(uri: String): Result<String> {
@@ -37,7 +37,7 @@ interface ChooseSoundFileUseCase {
     /**
      * @return the sound file uid
      */
-    suspend fun saveSound(uri: String): Result<String>
+    suspend fun saveSound(uri: String, name: String): Result<String>
     val soundFiles: StateFlow<List<SoundFileInfo>>
     fun getSoundFileName(uri: String): Result<String>
 }

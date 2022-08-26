@@ -404,7 +404,7 @@ class ConfigIntentViewModel @Inject constructor(resourceProvider: ResourceProvid
     fun onShowFlagsExampleClick() {
         viewModelScope.launch {
             val dialog = PopupUi.Dialog(
-                message = getString(R.string.intent_flags_example),
+                message = getString(R.string.config_intent_screen_flags_help_dialog_text_1),
                 positiveButtonText = getString(R.string.pos_ok),
                 neutralButtonText = getString(R.string.neutral_intent_docs)
             )

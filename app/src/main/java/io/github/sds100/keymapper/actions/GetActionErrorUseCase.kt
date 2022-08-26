@@ -138,6 +138,7 @@ class GetActionErrorUseCaseImpl @Inject constructor(
                     return Error.PermissionDenied(Permission.FIND_NEARBY_DEVICES)
                 }
 
+            else -> return null
         }
 
         return null
