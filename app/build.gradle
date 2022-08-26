@@ -185,8 +185,8 @@ dependencies {
     implementation 'com.google.dagger:hilt-android:2.42'
     kapt 'com.google.dagger:hilt-compiler:2.42'
     implementation 'com.google.devtools.ksp:symbol-processing-api:1.7.0-1.0.6'
-    implementation 'io.github.raamcosta.compose-destinations:core:1.5.14-beta'
-    ksp 'io.github.raamcosta.compose-destinations:ksp:1.5.14-beta'
+    implementation 'io.github.raamcosta.compose-destinations:core:1.7.16-beta'
+    ksp 'io.github.raamcosta.compose-destinations:ksp:1.7.16-beta'
 
     // splitties
     implementation "com.louiscad.splitties:splitties-bitflags:$splitties_version"
