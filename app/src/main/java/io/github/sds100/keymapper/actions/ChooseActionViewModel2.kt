@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.sound.ChooseSoundResult
 import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.system.apps.ChooseAppShortcutResult
@@ -13,10 +14,12 @@ import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.intents.ConfigIntentResult
+import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.volume.DndMode
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeStream
 import io.github.sds100.keymapper.util.containsQuery
+import io.github.sds100.keymapper.util.getFullMessage
 import io.github.sds100.keymapper.util.ui.KMIcon
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.SearchState
@@ -35,7 +38,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ChooseActionViewModel2 @Inject constructor(
     private val resourceProvider: ResourceProvider,
-    private val useCase: CreateActionUseCase
+    private val useCase: CreateActionUseCase,
+    private val isActionSupported: IsActionSupportedUseCase
 ) : ViewModel() {
     companion object {
         private val CATEGORY_ORDER = arrayOf(
@@ -108,7 +112,8 @@ class ChooseActionViewModel2 @Inject constructor(
     }
 
     fun onChooseApp(packageName: String) {
-        val navigatedScreen = (configActionState as? ConfigActionState.Screen.Navigated)?.screen ?: return
+        val navigatedScreen = (configActionState as? ConfigActionState.Screen.Navigated)?.screen
+            ?: return
         val chooseAppConfig = (navigatedScreen as? ConfigActionState.Screen.ChooseApp) ?: return
 
         val action = when (chooseAppConfig) {
@@ -569,10 +574,21 @@ class ChooseActionViewModel2 @Inject constructor(
             val headerListItem = ChooseActionListItem.Header(resourceProvider.getString(headerLabelRes))
 
             val actionListItems = actionIds.map { actionId ->
+                val isSupportedError = isActionSupported(actionId)
+                val requiresRoot = ActionUtils.getRequiredPermissions(actionId).contains(Permission.ROOT)
+
+                val errorMessage = when {
+                    isSupportedError != null -> isSupportedError.getFullMessage(resourceProvider)
+                    requiresRoot -> resourceProvider.getString(R.string.choose_action_warning_requires_root)
+                    else -> null
+                }
+
                 ChooseActionListItem.Action(
-                    actionId,
-                    resourceProvider.getString(ActionUtils.getTitle(actionId)),
-                    ActionUtils.getNewIcon(actionId)
+                    id = actionId,
+                    title = resourceProvider.getString(ActionUtils.getTitle(actionId)),
+                    icon = ActionUtils.getNewIcon(actionId),
+                    error = errorMessage,
+                    isEnabled = isSupportedError == null
                 )
             }
 
@@ -582,7 +598,6 @@ class ChooseActionViewModel2 @Inject constructor(
 
         return groups
     }
-
 }
 
 data class ChooseActionListGroup(
@@ -592,7 +607,11 @@ data class ChooseActionListGroup(
 
 sealed class ChooseActionListItem {
     data class Header(val header: String) : ChooseActionListItem()
-    data class Action(val id: ActionId, val title: String, val icon: KMIcon) : ChooseActionListItem()
+    data class Action(val id: ActionId,
+                      val title: String,
+                      val icon: KMIcon,
+                      val error: String?,
+                      val isEnabled: Boolean) : ChooseActionListItem()
 }
 
 /**

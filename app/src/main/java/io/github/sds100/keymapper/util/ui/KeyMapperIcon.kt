@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.util.ui
 
 import androidx.annotation.DrawableRes
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,14 +18,21 @@ sealed class KMIcon {
 }
 
 @Composable
-fun Icon(modifier: Modifier = Modifier, icon: KMIcon) {
+fun Icon(modifier: Modifier = Modifier,
+         icon: KMIcon,
+         tint: Color = if (icon is KMIcon.Drawable) {
+             Color.Unspecified
+         } else {
+             LocalContentColor.current
+         }
+) {
     when (icon) {
         is KMIcon.DrawableResource -> {
-            Icon(modifier = modifier, painter = painterResource(icon.id), contentDescription = null)
+            Icon(modifier = modifier, painter = painterResource(icon.id), contentDescription = null, tint = tint)
         }
         is KMIcon.ImageVector -> {
             val painter = rememberVectorPainter(icon.imageVector)
-            Icon(modifier = modifier, painter = painter, contentDescription = null)
+            Icon(modifier = modifier, painter = painter, contentDescription = null, tint = tint)
         }
         is KMIcon.Drawable -> {
             val painter = rememberDrawablePainter(icon.drawable)

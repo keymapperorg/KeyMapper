@@ -13,6 +13,7 @@ import androidx.compose.material.icons.outlined.Keyboard
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -188,12 +189,16 @@ private fun ChooseActionScreenPreview() {
                 ChooseActionListItem.Action(
                     ActionId.SWITCH_KEYBOARD,
                     "Switch keyboard",
-                    KMIcon.ImageVector(Icons.Outlined.Keyboard)
+                    KMIcon.ImageVector(Icons.Outlined.Keyboard),
+                    error = null,
+                    isEnabled = true
                 ),
                 ChooseActionListItem.Action(
                     ActionId.SHOW_KEYBOARD,
                     "Show keyboard",
-                    KMIcon.ImageVector(Icons.Outlined.Keyboard)
+                    KMIcon.ImageVector(Icons.Outlined.Keyboard),
+                    error = "Requires Android 11",
+                    isEnabled = false
                 )
             ),
             searchState = SearchState.Idle
@@ -211,7 +216,9 @@ private fun ChooseActionScreenPreview_Searching() {
                 ChooseActionListItem.Action(
                     ActionId.SWITCH_KEYBOARD,
                     "Switch keyboard",
-                    KMIcon.ImageVector(Icons.Outlined.Keyboard)
+                    KMIcon.ImageVector(Icons.Outlined.Keyboard),
+                    error = null,
+                    isEnabled = true
                 )
             ),
             searchState = SearchState.Searching("Search")
@@ -464,7 +471,8 @@ private fun ChooseActionList(
     LazyColumn(
         modifier = modifier,
         contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp),
-        state = listState
+        state = listState,
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         items(
             listItems,
@@ -483,12 +491,10 @@ private fun ChooseActionList(
         ) { listItem ->
             when (listItem) {
                 is ChooseActionListItem.Action ->
-                    SimpleListItem(
+                    ActionListItem(
                         modifier = Modifier.fillMaxWidth(),
-                        icon = listItem.icon,
-                        title = listItem.title,
-                        onClick = { onActionClick(listItem.id) }
-                    )
+                        listItem = listItem,
+                        onClick = { onActionClick(listItem.id) })
 
                 is ChooseActionListItem.Header ->
                     HeaderListItem(
@@ -497,6 +503,40 @@ private fun ChooseActionList(
                     )
             }
         }
+    }
+}
+
+@Composable
+private fun ActionListItem(modifier: Modifier, listItem: ChooseActionListItem.Action, onClick: () -> Unit) {
+    if (listItem.error == null) {
+        SimpleListItem(
+            modifier = modifier,
+            icon = listItem.icon,
+            title = listItem.title,
+            onClick = onClick
+        )
+    } else {
+        SimpleListItem(
+            modifier = modifier,
+            icon = {
+                Icon(
+                    modifier = Modifier
+                        .size(24.dp)
+                        .align(Alignment.CenterVertically),
+                    icon = listItem.icon
+                )
+
+                Spacer(Modifier.width(16.dp))
+            },
+            title = {
+                Text(listItem.title, style = MaterialTheme.typography.bodyMedium)
+            },
+            subtitle = {
+                Text(listItem.error, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+            },
+            enabled = listItem.isEnabled,
+            onClick = onClick
+        )
     }
 }
 

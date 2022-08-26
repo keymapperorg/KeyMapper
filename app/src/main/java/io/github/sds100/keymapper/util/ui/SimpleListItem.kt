@@ -21,13 +21,84 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun SimpleListItem(
     modifier: Modifier = Modifier,
+    icon: @Composable RowScope.() -> Unit,
+    title: @Composable ColumnScope.() -> Unit,
+    subtitle: @Composable ColumnScope.() -> Unit,
+    onClick: () -> Unit = {},
+    enabled: Boolean = true
+) {
+    OutlinedCard(modifier = modifier, onClick = onClick, enabled = enabled) {
+        CardContents(
+            modifier = Modifier.padding(top = 8.dp, bottom = 8.dp, start = 16.dp, end = 16.dp),
+            icon = icon,
+            title = title,
+            subtitle = subtitle
+        )
+    }
+}
+
+@Composable
+fun SimpleListItem(
+    modifier: Modifier = Modifier,
+    icon: @Composable RowScope.() -> Unit,
+    title: @Composable ColumnScope.() -> Unit,
+    subtitle: @Composable ColumnScope.() -> Unit
+) {
+    OutlinedCard(modifier = modifier) {
+        CardContents(
+            modifier = Modifier.padding(top = 8.dp, bottom = 8.dp, start = 16.dp, end = 16.dp),
+            icon = icon,
+            title = title,
+            subtitle = subtitle
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SimpleListItem(
+    modifier: Modifier = Modifier,
     icon: KMIcon? = null,
     title: String,
     subtitle: String? = null,
     onClick: () -> Unit = {}
 ) {
     OutlinedCard(modifier = modifier, onClick = onClick) {
-        Row(Modifier.padding(top = 8.dp, bottom = 8.dp, start = 16.dp, end = 16.dp)) {
+        CardContents(
+            modifier = Modifier.padding(top = 8.dp, bottom = 8.dp, start = 16.dp, end = 16.dp),
+            icon = icon,
+            title = title,
+            subtitle = subtitle
+        )
+    }
+}
+
+@Composable
+fun SimpleListItem(
+    modifier: Modifier = Modifier,
+    icon: KMIcon? = null,
+    title: String,
+    subtitle: String? = null
+) {
+    OutlinedCard(modifier = modifier) {
+        CardContents(
+            modifier = Modifier.padding(top = 8.dp, bottom = 8.dp, start = 16.dp, end = 16.dp),
+            icon = icon,
+            title = title,
+            subtitle = subtitle
+        )
+    }
+}
+
+@Composable
+private fun CardContents(
+    modifier: Modifier = Modifier,
+    icon: KMIcon? = null,
+    title: String,
+    subtitle: String? = null,
+) {
+    CardContents(modifier,
+        icon = {
             if (icon != null) {
                 Icon(
                     modifier = Modifier
@@ -38,19 +109,35 @@ fun SimpleListItem(
 
                 Spacer(Modifier.width(16.dp))
             }
-
-            Column(
-                Modifier
-                    .align(Alignment.CenterVertically)
-                    .defaultMinSize(minHeight = 24.dp),
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(title, style = MaterialTheme.typography.bodyMedium)
-
-                if (subtitle != null) {
-                    Text(subtitle, style = MaterialTheme.typography.bodySmall)
-                }
+        },
+        title = {
+            Text(title, style = MaterialTheme.typography.bodyMedium)
+        },
+        subtitle = {
+            if (subtitle != null) {
+                Text(subtitle, style = MaterialTheme.typography.bodySmall)
             }
+        })
+}
+
+@Composable
+private fun CardContents(
+    modifier: Modifier = Modifier,
+    icon: @Composable RowScope.() -> Unit,
+    title: @Composable ColumnScope.() -> Unit,
+    subtitle: @Composable ColumnScope.() -> Unit
+) {
+    Row(modifier) {
+        icon()
+
+        Column(
+            Modifier
+                .align(Alignment.CenterVertically)
+                .defaultMinSize(minHeight = 24.dp),
+            verticalArrangement = Arrangement.Center
+        ) {
+            title()
+            subtitle()
         }
     }
 }
