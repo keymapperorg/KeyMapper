@@ -546,7 +546,6 @@
     <string name="dialog_title_choose_intent_flags">Choose intent flags</string>
 
     <string name="pos_yes">Yes</string>
-    <string name="pos_confirm">Confirm</string>
     <string name="pos_done">Done</string>
     <string name="pos_opt_in">Opt in</string>
     <string name="pos_grant_write_secure_settings_guide">Guide</string>
