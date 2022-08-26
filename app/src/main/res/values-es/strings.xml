@@ -40,14 +40,6 @@ Los servicios de accesibilidad solo detectan las teclas y eventos de las aplicac
     <string name="intent_extras_recycler_view_placeholder">¯\\_(ツ)_/¯\n\n¡Sin extras!</string>
     <string name="content_description_fab_new_keymap">Crear un nuevo mapa</string>
     <string name="whats_new">Novedades</string>
-    <string name="caption_action_type_key">Haga clic en la tecla del dispositivo que desea que se introduzca.
-            \n\n¡IMPORTANTE!
-            Configurar esta tecla como una acción solo funcionará si está usando un teclado compatible con Key Mapper.</string>
-    <string name="caption_action_type_keycode">¡IMPORTANTE!
-            Introduce este código de tecla como una acción solo funcionará si estás usando un teclado compatible con Key Mapper.</string>
-    <string name="caption_action_type_text">Escribe el texto que quieres que se ingrese cuando realices esta acción.</string>
-    <string name="caption_action_type_phone_call">Introduce el número de teléfono.</string>
-    <string name="caption_action_type_url">Escribe la URL que quieres abrir. El http://, https:// o el www. no son necesarios.</string>
     <string name="caption_no_paired_bt_devices">No se han encontrado dispositivos emparejados. ¿Está activado Bluetooth?</string>
     <string name="caption_create_keymap_shortcut">La opción \"trigger from other apps\" se activará para el mapeado de teclas que seleccione si no lo estaba ya. Si desactiva esta opción más adelante, cualquier atajo o intento de activar este mapeado de teclas no funcionará.</string>
     <string name="switch_enabled">Activado</string>

@@ -56,16 +56,9 @@
     <string name="clip_key_mapper_log">Dziennik Key Mapper</string>
     <string name="sharesheet_title">Wyślij do</string>
     <string name="whats_new">Co nowego</string>
-    <string name="caption_action_type_key">Kliknij klawisz na urządzeniu, który chcesz wprowadzić.
-            \n\nUWAGA!
-            Wprowadzenie tego kodu klawisza będzie działać tylko wtedy, gdy używasz klawiatury kompatybilnej z Key Mapper.</string>
-    <string name="caption_action_type_keycode">UWAGA!
-            Wprowadzenie tego kodu klawisza będzie działać tylko wtedy, gdy używasz klawiatury kompatybilnej z Key Mapper.</string>
-    <string name="caption_action_type_sound">Plik dźwiękowy zostanie skopiowany do prywatnego folderu danych Key Mapper, co oznacza, że Twoje działania będą nadal działać, nawet jeśli plik zostanie przeniesiony lub usunięty. Kopia zapasowa zostanie utworzona wraz z mapami klawiszy w folderze zip.
+
+    <string name="choose_sound_file_caption">Plik dźwiękowy zostanie skopiowany do prywatnego folderu danych Key Mapper, co oznacza, że Twoje działania będą nadal działać, nawet jeśli plik zostanie przeniesiony lub usunięty. Kopia zapasowa zostanie utworzona wraz z mapami klawiszy w folderze zip.
     Zapisane pliki dźwiękowe można usunąć w ustawieniach.</string>
-    <string name="caption_action_type_text">Wpisz tekst, który należy wkleić podczas wykonywania tego działania.</string>
-    <string name="caption_action_type_phone_call">Wprowadź numer telefonu.</string>
-    <string name="caption_action_type_url">Wpisz adres URL, który chcesz otworzyć. http://, https:// lub www. nie jest wymagane.</string>
     <string name="caption_no_paired_bt_devices">Nie można znaleźć sparowanych urządzeń. Czy Bluetooth jest włączony?</string>
     <string name="caption_create_keymap_shortcut">Opcja \"Zezwalaj innym aplikacjom na wyzwalanie tej mapy klawiszy\" zostanie włączona dla wybranej mapy klawiszy, jeśli była wyłączona. Jeśli później wyłączysz tę opcję, skróty i intencje uruchamiające tę mapę klawiszy nie będą działać.</string>
     <string name="switch_enabled">Włączone</string>

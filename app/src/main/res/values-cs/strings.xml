@@ -57,16 +57,8 @@
     <string name="clip_key_mapper_log">Protokol Mapperu klíče</string>
     <string name="sharesheet_title">Poslat do</string>
     <string name="whats_new">Co je nového</string>
-    <string name="caption_action_type_key">Klikněte na klávesu na zařízení, kterou chcete vložit.
-            \n\nDŮLEŽITÉ!
-            Přidání tohoto klíče jako akce bude fungovat pouze v případě, že používáte klávesovou mapu kompatibilní s klávesou.</string>
-    <string name="caption_action_type_keycode">DŮLEŽITÉ!
-            Vložením tohoto klíče jako akce bude fungovat pouze v případě, že používáte kompatibilní klávesnici klávesové mapy.</string>
-    <string name="caption_action_type_sound">Zvukový soubor bude zkopírován do složky soukromých dat klíče Mapper, což znamená, že vaše akce budou stále fungovat, i když je soubor přesunut nebo odstraněn. Bude také zálohován s vašimi klíčovými mapami ve složce zip.
+    <string name="choose_sound_file_caption">Zvukový soubor bude zkopírován do složky soukromých dat klíče Mapper, což znamená, že vaše akce budou stále fungovat, i když je soubor přesunut nebo odstraněn. Bude také zálohován s vašimi klíčovými mapami ve složce zip.
     Uložené zvukové soubory můžete odstranit v nastavení.</string>
-    <string name="caption_action_type_text">Zadejte text, který chcete vložit, když provedete tuto akci.</string>
-    <string name="caption_action_type_phone_call">Zadejte telefonní číslo.</string>
-    <string name="caption_action_type_url">Zadejte URL, kterou chcete otevřít. Není vyžadováno http://, https://, https://// nebo www.</string>
     <string name="caption_no_paired_bt_devices">Nelze najít žádná spárovaná zařízení. Je Bluetooth zapnuto?</string>
     <string name="caption_create_keymap_shortcut">Volba \"spouštěč z jiných aplikací\" bude zapnuta pro klíčovou mapu, kterou vyberete, pokud již není aktivní. Pokud tuto možnost později vypnete, žádné zkratky nebo záměry spustit tuto klávesovou mapu nebudou fungovat.</string>
     <string name="switch_enabled">Povoleno</string>
