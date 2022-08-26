@@ -67,15 +67,6 @@
     <string name="sharesheet_title">Send to</string>
 
     <string name="whats_new">What\'s New</string>
-    <string name="caption_action_type_key">Click the key on the device which you want to be entered.
-            \n\nIMPORTANT!
-            Inputting this key as an action will only work if you are using a Key Mapper compatible keyboard.</string>
-    <string name="caption_action_type_keycode">IMPORTANT!
-            Inputting this key code as an action will only work if you are using a Key Mapper compatible keyboard.</string>
-
-    <string name="caption_action_type_text">Type some text you want to be inserted when you perform this action.</string>
-    <string name="caption_action_type_phone_call">Enter the phone number.</string>
-    <string name="caption_action_type_url">Type a URL which you want to be opened. The http://, https:// or www. isn\'t required.</string>
     <string name="caption_no_paired_bt_devices">Can\'t find any paired devices. Is Bluetooth turned on?</string>
     <string name="caption_create_keymap_shortcut">The \"Allow other apps to trigger this key map\" option will be turned on for the key map that you select if it isn\'t already. If you turn this option off later then any shortcuts or Intents to trigger this key map will not work.</string>
 
