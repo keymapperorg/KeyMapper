@@ -123,7 +123,7 @@
     <string name="config_intent_screen_action_label">Działanie</string>
     <string name="config_intent_screen_category_header">Kategorie</string>
     <string name="config_intent_screen_data_header">Dane</string>
-    <string name="config_intent_screen_package_header">Pakiet</string>
+    <string name="config_intent_screen_pa.ckage_header">Pakiet</string>
     <string name="config_intent_screen_class_header">Klasa</string>
     <string name="hint_intent_extra_name">Nazwa</string>
     <string name="hint_intent_extra_value_with_type">Wartość (%s)</string>
@@ -1017,7 +1017,6 @@
     <string name="intent_type_float_array_example">Rozdzielana przecinkami lista prawidłowych liczb Float w języku programowania Java, np. 1241.123</string>
     <string name="intent_type_short_example">Poprawna liczba Short w języku programowania Java, np. 2342</string>
     <string name="intent_type_short_array_example">Rozdzielana przecinkami lista prawidłowych liczb Short w języku programowania Java, np. 3242,12354</string>
-    <string name="config_intent_screen_flags_help_dialog_text">Flagi Intencji są przechowywane jako flagi bitowe. Te flagi zmieniają sposób obsługi Intencji. Jeśli to pole jest puste dla Intencji aktywności, Key Mapper domyślnie użyje FLAG_ACTIVITY_NEW_TASK. Aby uzyskać bardziej szczegółowe informacje, kliknij przycisk \"Dokumentacja\", aby zapoznać się z dokumentacją dla programistów Androida.</string>
     <!--  Intent action type strings  -->
     <!--  Tap targets  -->
     <string name="tap_target_quick_start_guide_primary">Przewodnik szybkiego startu</string>
