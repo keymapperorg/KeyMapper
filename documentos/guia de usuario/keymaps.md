@@ -95,7 +95,7 @@ ___
 ___
 
 <sup><sub>&nbsp;Stop repeating when...</sup></sub><br />
-&nbsp;&nbsp;&nbsp;:radiobox-marked:{: .accent-light } <sup><sub>Trigger is released</sup></sub>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:radiobox-marked:{: .accent-light } <sup><sub>Trigger is pressed again</sup></sub>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:radiobox-marked:{: .accent-light } <sup><sub>Limit reached</sup></sub>
+    :radiobox-marked: {: .accent-light } < sup >< sub > O gatilho foi liberado </ sup > </ sub >             ;             :radiobox-marked: {: .accent-light } < sup >< sub > O gatilho é pressionado novamente </ sup > </ sub >    &:radiobox-marked: {: .accent-light } < sup >< sub > Limite atingido </ sup > </ sub >
 
 - **Trigger is released**. You will need to hold down the trigger in order for the keys to repeat. If you let go of the trigger, the repeating will stop.
 
