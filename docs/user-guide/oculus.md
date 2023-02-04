@@ -1,4 +1,4 @@
-# Installing Keymapper on the Oculus Quest v40+
+# Installing Keymapper on Oculus Quest v40+ Software
 
 ### About
 The Oculus Quest v40 software broke accessibility permissions for a lot of apps, Key Mapper included. These steps should allow you to use Key Mapper on the Oculus Quest freely. For this, you will need your Quest up and connected to ADB. You will likely need the ADB drivers for the ADB shell to pick it up.
