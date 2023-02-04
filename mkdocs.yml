@@ -19,6 +19,7 @@ nav:
       - ADB Permissions: user-guide/adb-permissions.md
       - Setup a Key Mapper keyboard: user-guide/key-mapper-keyboard.md
       - Controlling your mappings: user-guide/controlling-mappings.md
+      - Installing on Oculus Quest: user-guide/oculus.md
       - Shizuku support (2.4.0+, Android 6.0+): user-guide/shizuku.md
       - API: user-guide/api.md
   - Contributing: contributing.md
