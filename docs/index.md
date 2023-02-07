@@ -1,5 +1,9 @@
 # Welcome to  Key Mapper Documentation
 
+!!! warning "MAINTENANCE NOTICE!"
+
+    DEVELOPMENT STOPPED - LOOKING FOR MAINTAINER
+
 [Key Mapper](http://code.keymapper.club) is a free and open source Android app that can map single or multiple key events to a custom action. 
 
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/keymapperorg/KeyMapper.svg)
@@ -12,6 +16,8 @@ This wiki aims to provide users with a comprehensive guide to using and setting 
 [Get help :fontawesome-brands-discord:](http://keymapper.club){: .md-button .md-button--primary }
 [Support the project :fontawesome-solid-heart:](https://ko-fi.com/sethschroeder){: .md-button }
 [Share your key maps :material-hand-heart:](sharing.md){: .md-button .md-button--md-primary-bg-color }
+
+
 
 ## Our team 🧑‍💻
 
