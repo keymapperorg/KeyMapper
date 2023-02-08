@@ -5,8 +5,8 @@ See the [Quick Start Guide](quick-start.md) for more general help with using Key
 
 No. Here is why:
 
-Joysticks are complicated to remap because they are axes, so their inputs are a range depending on how much you press the stick. It would be a lot of work to integrate them into Key Mapper. <!--- The developer has found a way that might be able to remap them. Therefore, you can consider this a planned feature. --->
-<!--- currently, (as of end of 2022, early 2023) Key Mapper is no longer in development, and users should not be expecting features that will not come to fruition. --->
+Joysticks are complicated to remap because they are axes, so their inputs are a range depending on how much you press the stick. It would be a lot of work to integrate them into Key Mapper. Currently, the developer cannot implement this feature. See [here](https://github.com/keymapperorg/KeyMapper/blob/master/README.md) for more information. <!--- The developer has found a way that might be able to remap them. Therefore, you can consider this a planned feature. --->
+<!--- as of end of 2022, early 2023, Key Mapper is no longer in development, and users should not be expecting features that will not come to fruition. --->
 
 The D-pad is interpreted differently by Android to other keys. That makes it hard to remap. However, the developer has found a way that might be able to remap them. Therefore, you can consider this a planned feature.
 
