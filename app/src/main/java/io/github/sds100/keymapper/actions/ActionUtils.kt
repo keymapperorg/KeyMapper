@@ -550,6 +550,7 @@ object ActionUtils {
 
             ActionId.ANSWER_PHONE_CALL,
             ActionId.END_PHONE_CALL -> return listOf(Permission.ANSWER_PHONE_CALL)
+            else -> Unit
         }
 
         return emptyList()

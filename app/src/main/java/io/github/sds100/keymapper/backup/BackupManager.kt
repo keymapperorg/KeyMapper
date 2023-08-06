@@ -275,10 +275,16 @@ class BackupManagerImpl(
                     outputVersion = AppDatabase.DATABASE_VERSION
                 )
                 val keyMapEntity: KeyMapEntity = gson.fromJson(migratedKeyMap)
-                val keyMapWithNewId = keyMapEntity.copy(id = 0, uid = UUID.randomUUID().toString())
+                val keyMapWithNewId = keyMapEntity.copy(id = 0)
 
                 migratedKeyMapList.add(keyMapWithNewId)
             }
+
+            // Key maps with the same uid must be overwritten when restoring
+            // so delete all key maps with the same uid as the ones being
+            // restored
+            val keyMapUids = migratedKeyMapList.map { it.uid }
+            keyMapRepository.delete(*keyMapUids.toTypedArray())
 
             keyMapRepository.insert(*migratedKeyMapList.toTypedArray())
 

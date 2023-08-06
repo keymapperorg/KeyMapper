@@ -82,5 +82,6 @@ class ToggleKeyMapperKeyboardTile : TileService(), LifecycleOwner {
         }
     }
 
-    override fun getLifecycle() = lifecycleRegistry
+    override val lifecycle: Lifecycle
+        get() = lifecycleRegistry
 }

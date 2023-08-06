@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="io.github.sds100.keymapper">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <permission android:name="io.github.sds100.keymapper.KEY_EVENT_RECEIVER">
         <!--    I would make this have signature protection level

@@ -38,6 +38,8 @@ class RecordTriggerController(
 
                 is Event.OnIncrementRecordTriggerTimer -> state.value =
                     RecordTriggerState.CountingDown(event.timeLeft)
+
+                else -> Unit
             }
         }.launchIn(coroutineScope)
     }
