@@ -1,3 +1,10 @@
+## [2.4.5](https://github.com/sds100/KeyMapper/releases/tag/v2.4.5)
+
+#### 5 August 2023
+
+### Changed
+- [#1120](https://github.com/keymapperorg/KeyMapper/issues/1120) Do not change the UIDs of key maps when importing them.
+
 ## [2.4.4](https://github.com/sds100/KeyMapper/releases/tag/v2.4.4)
 
 #### 21 July 2022
