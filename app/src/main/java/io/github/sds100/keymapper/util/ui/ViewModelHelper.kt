@@ -45,6 +45,8 @@ object ViewModelHelper {
                     handleCantFindAccessibilitySettings(resourceProvider, popupViewModel)
                 }
             }
+
+            else -> Unit
         }
     }
 

@@ -71,6 +71,7 @@ class DisplaySimpleMappingUseCaseImpl(
                     inputMethodAdapter.showImePicker(fromForeground = true)
                 }
             }
+            else -> Unit
         }
     }
 

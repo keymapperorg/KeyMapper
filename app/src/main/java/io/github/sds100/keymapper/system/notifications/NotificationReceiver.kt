@@ -55,6 +55,7 @@ class NotificationReceiver : NotificationListenerService(), LifecycleOwner {
                 when (event) {
                     Event.DismissLastNotification -> cancelNotification(lastNotificationKey)
                     Event.DismissAllNotifications -> cancelAllNotifications()
+                    else -> Unit
                 }
             }.launchIn(lifecycleScope)
     }
@@ -109,7 +110,6 @@ class NotificationReceiver : NotificationListenerService(), LifecycleOwner {
         super.onListenerDisconnected()
     }
 
-    override fun getLifecycle(): Lifecycle {
-        return lifecycleRegistry
-    }
+    override val lifecycle: Lifecycle
+        get() = lifecycleRegistry
 }

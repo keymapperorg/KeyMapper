@@ -1,13 +1,15 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: "androidx.navigation.safeargs.kotlin"
 apply plugin: "kotlinx-serialization"
+apply plugin: "org.jetbrains.kotlin.plugin.parcelize"
 
 android {
-    compileSdkVersion 32
-    buildToolsVersion = '32.1.0-rc1'
+
+    namespace 'io.github.sds100.keymapper'
+    compileSdkVersion 33
+    buildToolsVersion = '33.0.1'
 
     def versionProperties = new Properties()
     file("version.properties").withInputStream { versionProperties.load(it) }
@@ -15,7 +17,7 @@ android {
     defaultConfig {
         applicationId "io.github.sds100.keymapper"
         minSdkVersion 21
-        targetSdkVersion 32
+        targetSdkVersion 33
         versionCode versionProperties.getProperty("VERSION_CODE").toInteger()
         versionName versionProperties.getProperty("VERSION_NAME")
         multiDexEnabled true
@@ -94,23 +96,23 @@ android {
 
     buildFeatures {
         dataBinding true
+        viewBinding true
+        aidl true
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     // work-runtime-ktx 2.1.0 and above now requires Java 8
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
 
     kapt {
         correctErrorTypes = true
     }
-
-    kotlinOptions.useIR = false
 }
 
 android.sourceSets {
@@ -132,9 +134,9 @@ android.applicationVariants.all { variant ->
 }
 
 dependencies {
-    def room_version = "2.4.1"
+    def room_version = "2.5.2"
     def coroutinesVersion = "1.5.0"
-    def nav_version = '2.3.5' //Don't upgrade to 2.4.0 - work to migrate
+    def nav_version = '2.6.0'
     def work_version = "2.7.1"
     def epoxy_version = "4.6.2"
     def splitties_version = "3.0.0-beta01"

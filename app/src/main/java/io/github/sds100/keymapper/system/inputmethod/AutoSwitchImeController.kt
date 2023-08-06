@@ -103,6 +103,7 @@ class AutoSwitchImeController(
                         chooseCompatibleIme(imePickerAllowed = false)
                     }
                 }
+                else -> Unit
             }
         }.launchIn(coroutineScope)
     }

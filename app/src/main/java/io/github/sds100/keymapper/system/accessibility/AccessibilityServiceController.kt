@@ -443,6 +443,7 @@ class AccessibilityServiceController(
             is Event.ShowKeyboard -> accessibilityService.showKeyboard()
             is Event.ChangeIme -> accessibilityService.switchIme(event.imeId)
             is Event.DisableService -> accessibilityService.disableSelf()
+            else -> Unit
         }
     }
 

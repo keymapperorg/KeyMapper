@@ -288,6 +288,7 @@ class ChooseConstraintViewModel(
 
             ChooseConstraintType.WIFI_DISCONNECTED ->
                 _returnResult.emit(Constraint.WifiDisconnected(chosenSSID))
+            else -> Unit
         }
     }
 
@@ -306,6 +307,7 @@ class ChooseConstraintViewModel(
 
             ChooseConstraintType.IME_NOT_CHOSEN ->
                 _returnResult.emit(Constraint.ImeNotChosen(imeInfo.id, imeInfo.label))
+            else -> Unit
         }
     }
 

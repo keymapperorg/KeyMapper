@@ -100,6 +100,7 @@ class GetConstraintErrorUseCaseImpl(
                     return Error.PermissionDenied(Permission.READ_PHONE_STATE)
                 }
             }
+            else -> Unit
         }
 
         return null

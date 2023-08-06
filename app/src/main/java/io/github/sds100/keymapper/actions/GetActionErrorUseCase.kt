@@ -137,6 +137,7 @@ class GetActionErrorUseCaseImpl(
                     return Error.PermissionDenied(Permission.FIND_NEARBY_DEVICES)
                 }
 
+            else -> Unit
         }
 
         return null
