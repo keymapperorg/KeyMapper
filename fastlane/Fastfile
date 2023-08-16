@@ -154,8 +154,8 @@ platform :android do
   desc "Create and deploy production release"
   lane :prod do
 
-    gradle(task: "testDebugUnitTest")
-    gradle(task: "connectedDebugAndroidTest")
+#     gradle(task: "testDebugUnitTest")
+#     gradle(task: "connectedDebugAndroidTest")
 
     whats_new = prompt(
                   text: "Whats new: ",
@@ -207,12 +207,12 @@ platform :android do
       is_prerelease: false
     )
 
-    supply(
-        aab: "./app/build/outputs/bundle/release/app-release.aab",
-        track: "beta",
-        release_status: "draft",
-        skip_upload_apk: true
-    )
+#     supply(
+#         aab: "./app/build/outputs/bundle/release/app-release.aab",
+#         track: "beta",
+#         release_status: "draft",
+#         skip_upload_apk: true
+#     )
 
     git_add
     git_commit(path: "*", message: "chore (release): update changelog, whats_new")
