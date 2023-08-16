@@ -58,3 +58,7 @@
 -keepclasseswithmembers class io.github.sds100.keymapper.** { # <-- change package name to your app's
     kotlinx.serialization.KSerializer serializer(...);
 }
+
+-keep class com.google.gson.reflect.TypeToken
+-keep class * extends com.google.gson.reflect.TypeToken
+-keep public class * implements java.lang.reflect.Type
