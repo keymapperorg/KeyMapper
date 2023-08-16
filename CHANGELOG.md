@@ -1,3 +1,10 @@
+## [2.4.6](https://github.com/sds100/KeyMapper/releases/tag/v2.4.6)
+
+#### 16 August 2023
+
+### Changed
+- [#1148](https://github.com/keymapperorg/KeyMapper/issues/1148) Fix crash when accessibility service started.
+
 ## [2.4.5](https://github.com/sds100/KeyMapper/releases/tag/v2.4.5)
 
 #### 5 August 2023
