@@ -130,6 +130,8 @@
     <string name="description_url">Open %s</string>
     <string name="description_tap_coordinate_default">Tap coordinates %d, %d</string>
     <string name="description_tap_coordinate_with_description">Tap coordinates %d, %d (%s)</string>
+    <string name="description_swipe_coordinate_default">Swipe coordinates from %d, %d to %d, %d in %dms</string>
+    <string name="description_swipe_coordinate_with_description">Swipe coordinates from %d, %d to %d, %d in %dms (%s)</string>
     <string name="description_phone_call">Call %s</string>
     <string name="description_sound">Play sound: %s</string>
     <!--  Action descriptions  -->
@@ -150,6 +152,10 @@
     <!--  Hints  -->
     <string name="hint_coordinate_x" translatable="false">X</string>
     <string name="hint_coordinate_y" translatable="false">Y</string>
+    <string name="hint_coordinate_x_start" translatable="false">Start X</string>
+    <string name="hint_coordinate_y_start" translatable="false">Start Y</string>
+    <string name="hint_coordinate_x_end" translatable="false">End X</string>
+    <string name="hint_coordinate_y_end" translatable="false">End Y</string>
     <string name="hint_keycode">Key code</string>
     <string name="hint_from_device">From device</string>
     <string name="hint_shortcut_name">Shortcut name</string>
@@ -245,6 +251,7 @@
     <string name="extra_label_action_multiplier_with_repeat">How many times every repeat</string>
     <string name="extra_label_delay_before_next_action">Delay before next action (ms)</string>
     <string name="extra_label_hold_down_duration">Hold down duration (ms)</string>
+    <string name="extra_label_swipe_duration">Swipe duration (ms)</string>
     <!-- Extra labels -->
 
     <!-- Constraints -->
@@ -446,6 +453,8 @@
     <string name="button_open_trigger_keymap_from_intent_guide">Intent guide</string>
     <string name="button_help">Help</string>
     <string name="button_pick_coordinate_select_screenshot">Select Screenshot (optional)</string>
+    <string name="button_pick_coordinate_select_screenshot_start">Select Screenshot Start (optional)</string>
+    <string name="button_pick_coordinate_select_screenshot_end">Select Screenshot End (optional)</string>
     <string name="button_config_intent_choose_activity">Choose activity</string>
     <string name="button_config_intent_set_flags">Set flags</string>
     <string name="button_copy_log">Copy</string>
@@ -1221,6 +1230,7 @@
     <string name="action_input_key_event">Input key event</string>
 
     <string name="action_tap_screen">Tap screen</string>
+    <string name="action_swipe_screen">Swipe screen</string>
     <string name="action_input_text">Input text</string>
     <string name="action_open_url">Open URL</string>
     <string name="action_send_intent">Send intent</string>

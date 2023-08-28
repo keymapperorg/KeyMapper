@@ -298,6 +298,18 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
                 )
             }
 
+            is ActionData.SwipeScreen -> if (action.description.isNullOrBlank()) {
+                getString(
+                    R.string.description_swipe_coordinate_default,
+                    arrayOf(action.xStart, action.yStart, action.xEnd, action.yEnd, action.duration)
+                )
+            } else {
+                getString(
+                    R.string.description_swipe_coordinate_with_description,
+                    arrayOf(action.xStart, action.yStart, action.xEnd, action.yEnd, action.duration, action.description)
+                )
+            }
+
             is ActionData.Text -> getString(R.string.description_text_block, action.text)
             is ActionData.Url -> getString(R.string.description_url, action.url)
             is ActionData.Sound -> getString(R.string.description_sound, action.soundDescription)

@@ -1,7 +1,9 @@
 package io.github.sds100.keymapper.actions
 
 import android.text.InputType
+import android.util.Log
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.actions.swipescreen.SwipePickCoordinateResult
 import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.camera.CameraLensUtils
@@ -10,6 +12,7 @@ import io.github.sds100.keymapper.system.display.OrientationUtils
 import io.github.sds100.keymapper.system.intents.ConfigIntentResult
 import io.github.sds100.keymapper.system.volume.*
 import io.github.sds100.keymapper.util.ui.*
+import timber.log.Timber
 
 /**
  * Created by sds100 on 26/07/2021.
@@ -307,6 +310,41 @@ class CreateActionViewModelImpl(
                 return ActionData.TapScreen(
                     result.x,
                     result.y,
+                    description
+                )
+            }
+
+            ActionId.SWIPE_SCREEN -> {
+                val oldResult = if (oldData is ActionData.SwipeScreen) {
+                    SwipePickCoordinateResult(
+                        oldData.xStart,
+                        oldData.yStart,
+                        oldData.xEnd,
+                        oldData.yEnd,
+                        oldData.duration,
+                        oldData.description ?: ""
+                    )
+                } else {
+                    null
+                }
+
+                val result = navigate(
+                    "pick_swipe_coordinate_for_action",
+                    NavDestination.PickSwipeCoordinate(oldResult)
+                ) ?: return null
+
+                val description = if (result.description.isEmpty()) {
+                    null
+                } else {
+                    result.description
+                }
+
+                return ActionData.SwipeScreen(
+                    result.xStart,
+                    result.yStart,
+                    result.xEnd,
+                    result.yEnd,
+                    result.duration,
                     description
                 )
             }
