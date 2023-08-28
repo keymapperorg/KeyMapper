@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.util.ui
 
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.sound.ChooseSoundFileResult
+import io.github.sds100.keymapper.actions.swipescreen.SwipePickCoordinateResult
 import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.constraints.ChooseConstraintType
 import io.github.sds100.keymapper.constraints.Constraint
@@ -10,6 +11,7 @@ import io.github.sds100.keymapper.system.apps.ActivityInfo
 import io.github.sds100.keymapper.system.apps.ChooseAppShortcutResult
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import io.github.sds100.keymapper.system.intents.ConfigIntentResult
+import timber.log.Timber
 
 /**
  * Created by sds100 on 25/07/2021.
@@ -21,6 +23,7 @@ sealed class NavDestination<R> {
         const val ID_KEY_CODE = "key_code"
         const val ID_KEY_EVENT = "key_event"
         const val ID_PICK_COORDINATE = "pick_coordinate"
+        const val ID_PICK_SWIPE_COORDINATE = "pick_swipe_coordinate"
         const val ID_CONFIG_INTENT = "config_intent"
         const val ID_CHOOSE_ACTIVITY = "choose_activity"
         const val ID_CHOOSE_SOUND = "choose_sound"
@@ -35,12 +38,14 @@ sealed class NavDestination<R> {
         const val ID_CONFIG_FINGERPRINT_MAP = "config_fingerprint_map"
 
         fun NavDestination<*>.getId(): String {
+            Timber.d("NavDestination: %s", this.toString())
             return when (this) {
                 is ChooseApp -> ID_CHOOSE_APP
                 ChooseAppShortcut -> ID_CHOOSE_APP_SHORTCUT
                 ChooseKeyCode -> ID_KEY_CODE
                 is ConfigKeyEventAction -> ID_KEY_EVENT
                 is PickCoordinate -> ID_PICK_COORDINATE
+                is PickSwipeCoordinate -> ID_PICK_SWIPE_COORDINATE
                 is ConfigIntent -> ID_CONFIG_INTENT
                 ChooseActivity -> ID_CHOOSE_ACTIVITY
                 ChooseSound -> ID_CHOOSE_SOUND
@@ -71,6 +76,9 @@ sealed class NavDestination<R> {
 
     data class PickCoordinate(val result: PickCoordinateResult? = null) :
         NavDestination<PickCoordinateResult>()
+
+    data class PickSwipeCoordinate(val result: SwipePickCoordinateResult? = null) :
+        NavDestination<SwipePickCoordinateResult>()
 
     data class ConfigIntent(val result: ConfigIntentResult? = null) :
         NavDestination<ConfigIntentResult>()

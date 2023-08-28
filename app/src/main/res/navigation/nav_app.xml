@@ -216,6 +216,29 @@
     </fragment>
 
     <action
+        android:id="@+id/swipePickDisplayCoordinate"
+        app:destination="@id/swipeDisplayCoordinateSwipeFragment"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right" />
+
+    <fragment
+        android:id="@+id/swipeDisplayCoordinateSwipeFragment"
+        android:name="io.github.sds100.keymapper.actions.swipescreen.SwipePickDisplayCoordinateFragment"
+        tools:layout="@layout/fragment_simple_recyclerview">
+
+        <argument
+            android:name="requestKey"
+            app:argType="string" />
+
+        <argument
+            android:name="result"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+
+    <action
         android:id="@+id/configIntent"
         app:destination="@id/configIntentFragment"
         app:enterAnim="@anim/slide_in_right"
