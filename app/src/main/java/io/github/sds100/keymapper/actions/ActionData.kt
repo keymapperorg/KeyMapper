@@ -308,6 +308,18 @@ sealed class ActionData {
     }
 
     @Serializable
+    data class SwipeScreen(
+        val xStart: Int,
+        val yStart: Int,
+        val xEnd: Int,
+        val yEnd: Int,
+        val duration: Int,
+        val description: String?
+    ) : ActionData() {
+        override val id = ActionId.SWIPE_SCREEN
+    }
+
+    @Serializable
     data class PhoneCall(
         val number: String
     ) : ActionData() {

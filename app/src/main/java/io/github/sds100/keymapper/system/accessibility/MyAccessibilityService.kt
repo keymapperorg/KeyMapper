@@ -3,12 +3,14 @@ package io.github.sds100.keymapper.system.accessibility
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.FingerprintGestureController
 import android.accessibilityservice.GestureDescription
+import android.accessibilityservice.GestureDescription.StrokeDescription
 import android.app.ActivityManager
 import android.app.Service
 import android.content.*
 import android.graphics.Path
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import androidx.core.content.getSystemService
@@ -26,6 +28,7 @@ import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import timber.log.Timber
+
 
 /**
  * Created by sds100 on 05/04/2020.
@@ -386,6 +389,30 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
                 } else {
                     Error.FailedToDispatchGesture
                 }
+            }
+        }
+
+        return Error.SdkVersionTooLow(Build.VERSION_CODES.N)
+    }
+
+    override fun swipeScreen(xStart: Int, yStart: Int, xEnd: Int, yEnd: Int, duration: Int, inputEventType: InputEventType): Result<*> {
+        Timber.d("ACCESSIBILITY SWIPE SCREEN %d, %d, %d, %d, %d, %s", xStart, yStart, xEnd, yEnd, duration, inputEventType);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            val gestureBuilder = GestureDescription.Builder()
+            val path = Path()
+
+            path.moveTo(xStart.toFloat(), yStart.toFloat())
+            path.lineTo(xEnd.toFloat(), yEnd.toFloat())
+
+            gestureBuilder.addStroke(StrokeDescription(path, 0, duration.toLong()))
+
+            val success = dispatchGesture(gestureBuilder.build(), null, null);
+
+            if (success) {
+                return Success(Unit)
+            } else {
+                Error.FailedToDispatchGesture
             }
         }
 
