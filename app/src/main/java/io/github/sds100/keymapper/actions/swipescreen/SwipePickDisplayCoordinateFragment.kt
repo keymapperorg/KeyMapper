@@ -29,21 +29,12 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-
-enum class ScreenshotType {
-    START,
-    END
-}
+import timber.log.Timber
 
 class SwipePickDisplayCoordinateFragment : Fragment() {
     companion object {
         const val EXTRA_RESULT = "extra_result"
     }
-
-    private var currentScreenshotType: ScreenshotType = ScreenshotType.START;
-
-    private val isStartScreenshot: Boolean = false;
-    private val isEndScreenshot: Boolean = false;
 
     private val args: SwipePickDisplayCoordinateFragmentArgs by navArgs()
     private val requestKey: String by lazy { args.requestKey }
@@ -128,17 +119,10 @@ class SwipePickDisplayCoordinateFragment : Fragment() {
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             binding.imageViewScreenshot.pointCoordinates.collectLatest { point ->
                 if (point != null) {
-                    if (currentScreenshotType == ScreenshotType.START) {
-                        viewModel.onScreenshotStartTouch(
-                            point.x.toFloat() / binding.imageViewScreenshot.width,
-                            point.y.toFloat() / binding.imageViewScreenshot.height
-                        )
-                    } else if (currentScreenshotType == ScreenshotType.END) {
-                        viewModel.onScreenshotEndTouch(
-                            point.x.toFloat() / binding.imageViewScreenshot.width,
-                            point.y.toFloat() / binding.imageViewScreenshot.height
-                        )
-                    }
+                    viewModel.onScreenshotTouch(
+                        point.x.toFloat() / binding.imageViewScreenshot.width,
+                        point.y.toFloat() / binding.imageViewScreenshot.height
+                    )
                 }
             }
         }
@@ -154,13 +138,7 @@ class SwipePickDisplayCoordinateFragment : Fragment() {
             }
         }
 
-        binding.setOnSelectScreenshotStartClick {
-            currentScreenshotType = ScreenshotType.START
-            screenshotLauncher.launch(FileUtils.MIME_TYPE_IMAGES)
-        }
-
-        binding.setOnSelectScreenshotEndClick {
-            currentScreenshotType = ScreenshotType.END
+        binding.setOnSelectScreenshotClick {
             screenshotLauncher.launch(FileUtils.MIME_TYPE_IMAGES)
         }
     }

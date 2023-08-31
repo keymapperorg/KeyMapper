@@ -108,6 +108,7 @@ object ActionDataEntityMapper {
                 var yStart = 0;
                 var xEnd = 0;
                 var yEnd = 0;
+                var fingerCount = 1;
                 var duration = 250;
 
                 if (splitData.isNotEmpty()) {
@@ -127,7 +128,11 @@ object ActionDataEntityMapper {
                 }
 
                 if (splitData.size >= 5) {
-                    duration = splitData[4].trim().toInt()
+                    fingerCount = splitData[4].trim().toInt()
+                }
+
+                if (splitData.size >= 6) {
+                    duration = splitData[5].trim().toInt()
                 }
 
                 val description = entity.extras.getData(ActionEntity.EXTRA_COORDINATE_DESCRIPTION)
@@ -138,6 +143,7 @@ object ActionDataEntityMapper {
                     yStart = yStart,
                     xEnd = xEnd,
                     yEnd = yEnd,
+                    fingerCount = fingerCount,
                     duration = duration,
                     description = description
                 )
@@ -450,7 +456,7 @@ object ActionDataEntityMapper {
         is ActionData.AppShortcut -> data.uri
         is ActionData.PhoneCall -> data.number
         is ActionData.TapScreen -> "${data.x},${data.y}"
-        is ActionData.SwipeScreen -> "${data.xStart},${data.yStart},${data.xEnd},${data.yEnd},${data.duration}"
+        is ActionData.SwipeScreen -> "${data.xStart},${data.yStart},${data.xEnd},${data.yEnd},${data.fingerCount},${data.duration}"
         is ActionData.Text -> data.text
         is ActionData.Url -> data.url
         is ActionData.Sound -> data.soundUid

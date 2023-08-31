@@ -313,6 +313,7 @@ sealed class ActionData {
         val yStart: Int,
         val xEnd: Int,
         val yEnd: Int,
+        val fingerCount: Int,
         val duration: Int,
         val description: String?
     ) : ActionData() {

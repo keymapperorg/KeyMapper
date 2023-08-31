@@ -270,7 +270,7 @@ class PerformActionsUseCaseImpl(
             }
 
             is ActionData.SwipeScreen -> {
-                result = accessibilityService.swipeScreen(action.xStart, action.yStart, action.xEnd, action.yEnd, action.duration, inputEventType)
+                result = accessibilityService.swipeScreen(action.xStart, action.yStart, action.xEnd, action.yEnd, action.fingerCount, action.duration, inputEventType)
             }
 
             is ActionData.Text -> {
