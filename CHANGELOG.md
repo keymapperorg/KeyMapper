@@ -3,7 +3,7 @@
 #### 9 September 2023
 
 ### Added
-- [#1157](https://github.com/keymapperorg/KeyMapper/pull/1157) Action for doing swipe gestures on the screen with 1 or more fingers.
+- [#1157](https://github.com/keymapperorg/KeyMapper/pull/1157) Action for doing swipe gestures on the screen with 1 or more fingers. Many thanks to Tino (@pixel-shock) for working on this feature. 😊
 
 
 ## [2.4.6](https://github.com/sds100/KeyMapper/releases/tag/v2.4.6)
