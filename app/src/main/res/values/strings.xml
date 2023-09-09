@@ -130,8 +130,8 @@
     <string name="description_url">Open %s</string>
     <string name="description_tap_coordinate_default">Tap coordinates %d, %d</string>
     <string name="description_tap_coordinate_with_description">Tap coordinates %d, %d (%s)</string>
-    <string name="description_swipe_coordinate_default">Swipe coordinates from %d, %d to %d, %d in %dms</string>
-    <string name="description_swipe_coordinate_with_description">Swipe coordinates from %d, %d to %d, %d in %dms (%s)</string>
+    <string name="description_swipe_coordinate_default">Swipe with %d finger(s) from coordinates %d/%d to %d/%d in %dms</string>
+    <string name="description_swipe_coordinate_with_description">Swipe with %d finger(s) from coordinates %d/%d to %d/%d in %dms (%s)</string>
     <string name="description_phone_call">Call %s</string>
     <string name="description_sound">Play sound: %s</string>
     <!--  Action descriptions  -->
@@ -252,6 +252,10 @@
     <string name="extra_label_delay_before_next_action">Delay before next action (ms)</string>
     <string name="extra_label_hold_down_duration">Hold down duration (ms)</string>
     <string name="extra_label_swipe_duration">Swipe duration (ms)</string>
+    <string name="extra_label_swipe_finger_count">Finger Count</string>
+    <string name="extra_label_swipe_select_start_end_label">Coordinates to set with screenshot</string>
+    <string name="extra_label_swipe_select_start_end_start">Start</string>
+    <string name="extra_label_swipe_select_start_end_end">End</string>
     <!-- Extra labels -->
 
     <!-- Constraints -->
@@ -453,8 +457,6 @@
     <string name="button_open_trigger_keymap_from_intent_guide">Intent guide</string>
     <string name="button_help">Help</string>
     <string name="button_pick_coordinate_select_screenshot">Select screenshot (optional)</string>
-    <string name="button_pick_coordinate_select_screenshot_start">Select screenshot start (optional)</string>
-    <string name="button_pick_coordinate_select_screenshot_end">Select screenshot end (optional)</string>
     <string name="button_config_intent_choose_activity">Choose activity</string>
     <string name="button_config_intent_set_flags">Set flags</string>
     <string name="button_copy_log">Copy</string>
