@@ -2,14 +2,29 @@ package io.github.sds100.keymapper.actions
 
 import android.text.InputType
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.actions.swipescreen.SwipePickCoordinateResult
 import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.camera.CameraLensUtils
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.system.display.OrientationUtils
 import io.github.sds100.keymapper.system.intents.ConfigIntentResult
-import io.github.sds100.keymapper.system.volume.*
-import io.github.sds100.keymapper.util.ui.*
+import io.github.sds100.keymapper.system.volume.DndMode
+import io.github.sds100.keymapper.system.volume.DndModeUtils
+import io.github.sds100.keymapper.system.volume.RingerMode
+import io.github.sds100.keymapper.system.volume.RingerModeUtils
+import io.github.sds100.keymapper.system.volume.VolumeStream
+import io.github.sds100.keymapper.system.volume.VolumeStreamUtils
+import io.github.sds100.keymapper.util.ui.MultiChoiceItem
+import io.github.sds100.keymapper.util.ui.NavDestination
+import io.github.sds100.keymapper.util.ui.NavigationViewModel
+import io.github.sds100.keymapper.util.ui.NavigationViewModelImpl
+import io.github.sds100.keymapper.util.ui.PopupUi
+import io.github.sds100.keymapper.util.ui.PopupViewModel
+import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
+import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.util.ui.navigate
+import io.github.sds100.keymapper.util.ui.showPopup
 
 /**
  * Created by sds100 on 26/07/2021.
@@ -307,6 +322,43 @@ class CreateActionViewModelImpl(
                 return ActionData.TapScreen(
                     result.x,
                     result.y,
+                    description
+                )
+            }
+
+            ActionId.SWIPE_SCREEN -> {
+                val oldResult = if (oldData is ActionData.SwipeScreen) {
+                    SwipePickCoordinateResult(
+                        oldData.xStart,
+                        oldData.yStart,
+                        oldData.xEnd,
+                        oldData.yEnd,
+                        oldData.fingerCount,
+                        oldData.duration,
+                        oldData.description ?: ""
+                    )
+                } else {
+                    null
+                }
+
+                val result = navigate(
+                    "pick_swipe_coordinate_for_action",
+                    NavDestination.PickSwipeCoordinate(oldResult)
+                ) ?: return null
+
+                val description = if (result.description.isEmpty()) {
+                    null
+                } else {
+                    result.description
+                }
+
+                return ActionData.SwipeScreen(
+                    result.xStart,
+                    result.yStart,
+                    result.xEnd,
+                    result.yEnd,
+                    result.fingerCount,
+                    result.duration,
                     description
                 )
             }

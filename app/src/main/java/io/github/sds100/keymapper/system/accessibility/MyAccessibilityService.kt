@@ -3,10 +3,12 @@ package io.github.sds100.keymapper.system.accessibility
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.FingerprintGestureController
 import android.accessibilityservice.GestureDescription
+import android.accessibilityservice.GestureDescription.StrokeDescription
 import android.app.ActivityManager
 import android.app.Service
 import android.content.*
 import android.graphics.Path
+import android.graphics.Point
 import android.os.Build
 import android.os.IBinder
 import android.view.KeyEvent
@@ -26,6 +28,7 @@ import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import timber.log.Timber
+
 
 /**
  * Created by sds100 on 05/04/2020.
@@ -381,11 +384,81 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
 
                 val success = dispatchGesture(gestureDescription, null, null)
 
-                if (success) {
-                    return Success(Unit)
+                return if (success) {
+                    Success(Unit)
                 } else {
                     Error.FailedToDispatchGesture
                 }
+            }
+        }
+
+        return Error.SdkVersionTooLow(Build.VERSION_CODES.N)
+    }
+
+    override fun swipeScreen(xStart: Int, yStart: Int, xEnd: Int, yEnd: Int, fingerCount: Int, duration: Int, inputEventType: InputEventType): Result<*> {
+        Timber.d("ACCESSIBILITY SWIPE SCREEN %d, %d, %d, %d, %s, %d, %s", xStart, yStart, xEnd, yEnd, fingerCount, duration, inputEventType);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            val pStart = Point(xStart, yStart)
+            val pEnd = Point(xEnd, yEnd)
+
+            val gestureBuilder = GestureDescription.Builder()
+
+            if (fingerCount == 1) {
+                val p = Path()
+                p.moveTo(pStart.x.toFloat(), pStart.y.toFloat())
+                p.lineTo(pEnd.x.toFloat(), pEnd.y.toFloat())
+                gestureBuilder.addStroke(StrokeDescription(p, 0, duration.toLong()))
+            } else {
+                // virtual distance between the fingers
+                val fingerDistance = 10L
+                // segments between fingers
+                val segmentCount = fingerCount - 1
+                // the line of the perpendicular line which will be created to place the virtual fingers on it
+                val perpendicularLineLength = (fingerDistance * fingerCount).toInt()
+                // the length of each segment between fingers
+                val segmentLength = perpendicularLineLength / segmentCount
+                // perpendicular line of the start swipe point
+                val perpendicularLineStart = getPerpendicularOfLine(pStart, pEnd,
+                    perpendicularLineLength
+                );
+                // perpendicular line of the end swipe point
+                val perpendicularLineEnd = getPerpendicularOfLine(pEnd, pStart,
+                    perpendicularLineLength, true);
+
+
+                val startFingerCoordinatesList = mutableListOf<Point>()
+                val endFingerCoordinatesList = mutableListOf<Point>()
+                // this is the angle between start and end point to rotate all virtual fingers on the perpendicular lines in the same direction
+                val angle = angleBetweenPoints(Point(xStart, yStart), Point(xEnd, yEnd)) - 90;
+
+                // create the virtual fingers
+                for (index in 0..segmentCount) {
+                    // offset of each finger
+                    val fingerOffsetLength = index * segmentLength * 2;
+                    // move the coordinates of the current virtual finger on the perpendicular line for the start coordinates
+                    val startFingerCoordinateWithOffset = movePointByDistanceAndAngle(perpendicularLineStart.start, fingerOffsetLength, angle)
+                    // move the coordinates of the current virtual finger on the perpendicular line for the end coordinates
+                    val endFingerCoordinateWithOffset = movePointByDistanceAndAngle(perpendicularLineEnd.start, fingerOffsetLength, angle)
+
+                    // create a path for each finger, move the the coordinates on the perpendicular line and draw it to the end coordinates of the perpendicular line of the end swipe point
+                    val p = Path()
+                    p.moveTo(startFingerCoordinateWithOffset.x.toFloat(), startFingerCoordinateWithOffset.y.toFloat())
+                    p.lineTo(endFingerCoordinateWithOffset.x.toFloat(), endFingerCoordinateWithOffset.y.toFloat())
+
+                    //startFingerCoordinatesList.add(startFingerCoordinateWithOffset)
+                    //endFingerCoordinatesList.add(endFingerCoordinateWithOffset)
+                    gestureBuilder.addStroke(StrokeDescription(p, 0, duration.toLong()))
+                }
+
+            }
+
+            val success = dispatchGesture(gestureBuilder.build(), null, null);
+
+            return if (success) {
+                Success(Unit)
+            } else {
+                Error.FailedToDispatchGesture
             }
         }
 

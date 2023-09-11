@@ -29,6 +29,7 @@ object ActionDataEntityMapper {
             ActionEntity.Type.TEXT_BLOCK -> ActionId.TEXT
             ActionEntity.Type.URL -> ActionId.URL
             ActionEntity.Type.TAP_COORDINATE -> ActionId.TAP_SCREEN
+            ActionEntity.Type.SWIPE_COORDINATE -> ActionId.SWIPE_SCREEN
             ActionEntity.Type.INTENT -> ActionId.INTENT
             ActionEntity.Type.PHONE_CALL -> ActionId.PHONE_CALL
             ActionEntity.Type.SOUND -> ActionId.SOUND
@@ -89,7 +90,9 @@ object ActionDataEntityMapper {
             }
 
             ActionId.TEXT -> ActionData.Text(text = entity.data)
+
             ActionId.URL -> ActionData.Url(url = entity.data)
+
             ActionId.TAP_SCREEN -> {
                 val x = entity.data.split(',')[0].toInt()
                 val y = entity.data.split(',')[1].toInt()
@@ -97,6 +100,53 @@ object ActionDataEntityMapper {
                     .valueOrNull()
 
                 ActionData.TapScreen(x = x, y = y, description = description)
+            }
+
+            ActionId.SWIPE_SCREEN -> {
+                val splitData = entity.data.trim().split(',')
+                var xStart = 0;
+                var yStart = 0;
+                var xEnd = 0;
+                var yEnd = 0;
+                var fingerCount = 1;
+                var duration = 250;
+
+                if (splitData.isNotEmpty()) {
+                    xStart = splitData[0].trim().toInt()
+                }
+
+                if (splitData.size >= 2) {
+                    yStart = splitData[1].trim().toInt()
+                }
+
+                if (splitData.size >= 3) {
+                    xEnd = splitData[2].trim().toInt()
+                }
+
+                if (splitData.size >= 4) {
+                    yEnd = splitData[3].trim().toInt()
+                }
+
+                if (splitData.size >= 5) {
+                    fingerCount = splitData[4].trim().toInt()
+                }
+
+                if (splitData.size >= 6) {
+                    duration = splitData[5].trim().toInt()
+                }
+
+                val description = entity.extras.getData(ActionEntity.EXTRA_COORDINATE_DESCRIPTION)
+                    .valueOrNull()
+
+                ActionData.SwipeScreen(
+                    xStart = xStart,
+                    yStart = yStart,
+                    xEnd = xEnd,
+                    yEnd = yEnd,
+                    fingerCount = fingerCount,
+                    duration = duration,
+                    description = description
+                )
             }
 
             ActionId.INTENT -> {
@@ -366,6 +416,7 @@ object ActionDataEntityMapper {
             is ActionData.AppShortcut -> ActionEntity.Type.APP_SHORTCUT
             is ActionData.PhoneCall -> ActionEntity.Type.PHONE_CALL
             is ActionData.TapScreen -> ActionEntity.Type.TAP_COORDINATE
+            is ActionData.SwipeScreen -> ActionEntity.Type.SWIPE_COORDINATE
             is ActionData.Text -> ActionEntity.Type.TEXT_BLOCK
             is ActionData.Url -> ActionEntity.Type.URL
             is ActionData.Sound -> ActionEntity.Type.SOUND
@@ -405,6 +456,7 @@ object ActionDataEntityMapper {
         is ActionData.AppShortcut -> data.uri
         is ActionData.PhoneCall -> data.number
         is ActionData.TapScreen -> "${data.x},${data.y}"
+        is ActionData.SwipeScreen -> "${data.xStart},${data.yStart},${data.xEnd},${data.yEnd},${data.fingerCount},${data.duration}"
         is ActionData.Text -> data.text
         is ActionData.Url -> data.url
         is ActionData.Sound -> data.soundUid
@@ -491,6 +543,12 @@ object ActionDataEntityMapper {
                 else -> emptyList()
             }
         is ActionData.TapScreen -> sequence {
+            if (!data.description.isNullOrBlank()) {
+                yield(Extra(ActionEntity.EXTRA_COORDINATE_DESCRIPTION, data.description))
+            }
+        }.toList()
+
+        is ActionData.SwipeScreen -> sequence {
             if (!data.description.isNullOrBlank()) {
                 yield(Extra(ActionEntity.EXTRA_COORDINATE_DESCRIPTION, data.description))
             }
