@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.actions
 
+import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.Extra
 import io.github.sds100.keymapper.data.entities.getData
@@ -14,6 +15,7 @@ import io.github.sds100.keymapper.util.success
 import io.github.sds100.keymapper.util.then
 import io.github.sds100.keymapper.util.valueOrNull
 import splitties.bitflags.hasFlag
+import timber.log.Timber
 
 /**
  * Created by sds100 on 13/03/2021.
@@ -30,6 +32,7 @@ object ActionDataEntityMapper {
             ActionEntity.Type.URL -> ActionId.URL
             ActionEntity.Type.TAP_COORDINATE -> ActionId.TAP_SCREEN
             ActionEntity.Type.SWIPE_COORDINATE -> ActionId.SWIPE_SCREEN
+            ActionEntity.Type.PINCH_COORDINATE -> ActionId.PINCH_SCREEN
             ActionEntity.Type.INTENT -> ActionId.INTENT
             ActionEntity.Type.PHONE_CALL -> ActionId.PHONE_CALL
             ActionEntity.Type.SOUND -> ActionId.SOUND
@@ -143,6 +146,60 @@ object ActionDataEntityMapper {
                     yStart = yStart,
                     xEnd = xEnd,
                     yEnd = yEnd,
+                    fingerCount = fingerCount,
+                    duration = duration,
+                    description = description
+                )
+            }
+
+            ActionId.PINCH_SCREEN -> {
+                val splitData = entity.data.trim().split(',')
+
+                var x = 0;
+                var y = 0;
+                var pinchType = PinchScreenType.PINCH_IN;
+                var radius = 0;
+                var fingerCount = 2;
+                var duration = 250;
+
+                if (splitData.isNotEmpty()) {
+                    x = splitData[0].trim().toInt()
+                }
+
+                if (splitData.size >= 2) {
+                    y = splitData[1].trim().toInt()
+                }
+
+                if (splitData.size >= 3) {
+                    radius = splitData[2].trim().toInt()
+                }
+
+                if (splitData.size >= 4) {
+                    val tempType = splitData[3].trim();
+
+                    pinchType = if (tempType == PinchScreenType.PINCH_IN.name) {
+                        PinchScreenType.PINCH_IN;
+                    } else {
+                        PinchScreenType.PINCH_OUT;
+                    }
+                }
+
+                if (splitData.size >= 5) {
+                    fingerCount = splitData[4].trim().toInt().coerceAtLeast(2)
+                }
+
+                if (splitData.size >= 6) {
+                    duration = splitData[5].trim().toInt()
+                }
+
+                val description = entity.extras.getData(ActionEntity.EXTRA_COORDINATE_DESCRIPTION)
+                    .valueOrNull()
+
+                ActionData.PinchScreen(
+                    x = x,
+                    y = y,
+                    radius = radius,
+                    pinchType = pinchType,
                     fingerCount = fingerCount,
                     duration = duration,
                     description = description
@@ -417,6 +474,7 @@ object ActionDataEntityMapper {
             is ActionData.PhoneCall -> ActionEntity.Type.PHONE_CALL
             is ActionData.TapScreen -> ActionEntity.Type.TAP_COORDINATE
             is ActionData.SwipeScreen -> ActionEntity.Type.SWIPE_COORDINATE
+            is ActionData.PinchScreen -> ActionEntity.Type.PINCH_COORDINATE
             is ActionData.Text -> ActionEntity.Type.TEXT_BLOCK
             is ActionData.Url -> ActionEntity.Type.URL
             is ActionData.Sound -> ActionEntity.Type.SOUND
@@ -457,6 +515,7 @@ object ActionDataEntityMapper {
         is ActionData.PhoneCall -> data.number
         is ActionData.TapScreen -> "${data.x},${data.y}"
         is ActionData.SwipeScreen -> "${data.xStart},${data.yStart},${data.xEnd},${data.yEnd},${data.fingerCount},${data.duration}"
+        is ActionData.PinchScreen -> "${data.x},${data.y},${data.radius},${data.pinchType},${data.fingerCount},${data.duration}"
         is ActionData.Text -> data.text
         is ActionData.Url -> data.url
         is ActionData.Sound -> data.soundUid
@@ -549,6 +608,12 @@ object ActionDataEntityMapper {
         }.toList()
 
         is ActionData.SwipeScreen -> sequence {
+            if (!data.description.isNullOrBlank()) {
+                yield(Extra(ActionEntity.EXTRA_COORDINATE_DESCRIPTION, data.description))
+            }
+        }.toList()
+
+        is ActionData.PinchScreen -> sequence {
             if (!data.description.isNullOrBlank()) {
                 yield(Extra(ActionEntity.EXTRA_COORDINATE_DESCRIPTION, data.description))
             }

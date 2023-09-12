@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.actions
 
 import android.view.KeyEvent
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
 import io.github.sds100.keymapper.mappings.DisplayActionUseCase
 import io.github.sds100.keymapper.mappings.Mapping
 import io.github.sds100.keymapper.system.camera.CameraLensUtils
@@ -307,6 +308,30 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
                 getString(
                     R.string.description_swipe_coordinate_with_description,
                     arrayOf(action.fingerCount, action.xStart, action.yStart, action.xEnd, action.yEnd, action.duration, action.description)
+                )
+            }
+
+            is ActionData.PinchScreen -> if (action.description.isNullOrBlank()) {
+                val pinchTypeDisplayName = if (action.pinchType == PinchScreenType.PINCH_IN) {
+                    getString(R.string.hint_coordinate_type_PINCH_IN)
+                } else {
+                    getString(R.string.hint_coordinate_type_PINCH_OUT)
+                }
+
+                getString(
+                    R.string.description_pinch_coordinate_default,
+                    arrayOf(pinchTypeDisplayName, action.fingerCount, action.x, action.y, action.radius, action.duration)
+                )
+            } else {
+                val pinchTypeDisplayName = if (action.pinchType == PinchScreenType.PINCH_IN) {
+                    getString(R.string.hint_coordinate_type_PINCH_IN)
+                } else {
+                    getString(R.string.hint_coordinate_type_PINCH_OUT)
+                }
+
+                getString(
+                    R.string.description_pinch_coordinate_with_description,
+                    arrayOf(pinchTypeDisplayName, action.fingerCount, action.x, action.y, action.radius, action.duration, action.description)
                 )
             }
 

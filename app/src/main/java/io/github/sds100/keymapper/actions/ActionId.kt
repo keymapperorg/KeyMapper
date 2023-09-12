@@ -10,6 +10,7 @@ enum class ActionId {
     KEY_EVENT,
     TAP_SCREEN,
     SWIPE_SCREEN,
+    PINCH_SCREEN,
     TEXT,
     URL,
     INTENT,

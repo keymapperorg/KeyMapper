@@ -1,7 +1,10 @@
-package io.github.sds100.keymapper.actions.swipescreen
+package io.github.sds100.keymapper.actions.pinchscreen
 
 import android.graphics.Bitmap
 import android.graphics.Point
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -11,52 +14,49 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
-enum class ScreenshotTouchType {
-    START,
-    END
-}
-class SwipePickDisplayCoordinateViewModel(
+class PinchPickDisplayCoordinateViewModel(
     resourceProvider: ResourceProvider
 ) : ViewModel(), ResourceProvider by resourceProvider, PopupViewModel by PopupViewModelImpl() {
 
-    val screenshotTouchTypeStart = ScreenshotTouchType.START
-    val screenshotTouchTypeEnd = ScreenshotTouchType.END
-    private val xStart = MutableStateFlow<Int?>(null)
-    private val yStart = MutableStateFlow<Int?>(null)
-    private val xEnd = MutableStateFlow<Int?>(null)
-    private val yEnd = MutableStateFlow<Int?>(null)
-    private val fingerCount = MutableStateFlow<Int?>(1)
+    private val pinchTypes = arrayOf(PinchScreenType.PINCH_IN.name, PinchScreenType.PINCH_OUT.name)
+    private val pinchTypesDisplayValues = arrayOf(getString(R.string.hint_coordinate_type_PINCH_IN), getString(R.string.hint_coordinate_type_PINCH_OUT))
+    val pinchTypeSpinnerAdapter = ArrayAdapter(getContext(), android.R.layout.simple_spinner_dropdown_item, pinchTypesDisplayValues)
+
+    private val x = MutableStateFlow<Int?>(null)
+    private val y = MutableStateFlow<Int?>(null)
+    private val radius = MutableStateFlow<Int?>(null)
+    private val pinchType = MutableStateFlow<PinchScreenType?>(PinchScreenType.PINCH_IN)
+    private val fingerCount = MutableStateFlow<Int?>(2)
     private val duration = MutableStateFlow<Int?>(null)
 
     private val _bitmap = MutableStateFlow<Bitmap?>(null)
-    private val _returnResult = MutableSharedFlow<SwipePickCoordinateResult>()
-    private val _screenshotTouchType = MutableStateFlow(ScreenshotTouchType.START)
+    private val _returnResult = MutableSharedFlow<PinchPickCoordinateResult>()
 
     private val description: MutableStateFlow<String?> = MutableStateFlow(null)
 
-    val xStartString = xStart.map {
+    val xString = x.map {
         it ?: return@map ""
 
         it.toString()
     }.stateIn(viewModelScope, SharingStarted.Lazily, null)
 
-    val yStartString = yStart.map {
+    val yString = y.map {
         it ?: return@map ""
 
         it.toString()
     }.stateIn(viewModelScope, SharingStarted.Lazily, null)
 
-    val xEndString = xEnd.map {
+    val radiusString = radius.map {
         it ?: return@map ""
 
         it.toString()
     }.stateIn(viewModelScope, SharingStarted.Lazily, null)
 
-    val yEndString = yEnd.map {
-        it ?: return@map ""
+    val pinchTypeSpinnerSelection = pinchType.map {
+        it ?: return@map 0
 
-        it.toString()
-    }.stateIn(viewModelScope, SharingStarted.Lazily, null)
+        this.pinchTypes.indexOf(it.name)
+    }.stateIn(viewModelScope, SharingStarted.Lazily, 0)
 
     val fingerCountString = fingerCount.map {
         it ?: return@map ""
@@ -77,20 +77,20 @@ class SwipePickDisplayCoordinateViewModel(
         bitmap?.value != null
     }.stateIn(viewModelScope, SharingStarted.Lazily, false)
 
-    private val isCoordinatesValid: StateFlow<Boolean> = combine(xStart, yStart, xEnd, yEnd) { xStart, yStart, xEnd, yEnd ->
-        xStart ?: return@combine false
-        yStart ?: return@combine false
-        xEnd ?: return@combine false
-        yEnd ?: return@combine false
+    private val isCoordinatesValid: StateFlow<Boolean> = combine(x, y, radius, pinchType) { x, y, radius, pinchType ->
+        x ?: return@combine false
+        y ?: return@combine false
+        radius ?: return@combine false
+        pinchType ?: return@combine false
 
-        xStart >= 0 && yStart >= 0 && xEnd >= 0 && yEnd >= 0
+        x >= 0 && y >= 0 && radius >= 0 && (pinchType == PinchScreenType.PINCH_IN || pinchType == PinchScreenType.PINCH_OUT)
     }.stateIn(viewModelScope, SharingStarted.Lazily, false)
 
     private val isOptionsValid: StateFlow<Boolean> = combine(fingerCount, duration) { fingerCount, duration ->
         fingerCount ?: return@combine false
         duration ?: return@combine false
 
-        fingerCount in 1..9 && duration > 0
+        fingerCount in 2..9 && duration > 0
     }.stateIn(viewModelScope, SharingStarted.Lazily, false)
 
     val isDoneButtonEnabled: StateFlow<Boolean> = combine(isCoordinatesValid, isOptionsValid) { isCoordinatesValid, isOptionsValid ->
@@ -98,9 +98,6 @@ class SwipePickDisplayCoordinateViewModel(
     }.stateIn(viewModelScope, SharingStarted.Lazily, false)
 
     fun selectedScreenshot(newBitmap: Bitmap, displaySize: Point) {
-
-        _screenshotTouchType.value = ScreenshotTouchType.START
-
         //check whether the height and width of the bitmap match the display size, even when it is rotated.
         if (
             (displaySize.x != newBitmap.width
@@ -123,20 +120,24 @@ class SwipePickDisplayCoordinateViewModel(
         _bitmap.value = newBitmap
     }
 
-    fun setXStart(x: String) {
-        this.xStart.value = x.toIntOrNull()
+    fun setX(x: String) {
+        this.x.value = x.toIntOrNull()
     }
 
-    fun setYStart(y: String) {
-        this.yStart.value = y.toIntOrNull()
+    fun setY(y: String) {
+        this.y.value = y.toIntOrNull()
     }
 
-    fun setXEnd(x: String) {
-        this.xEnd.value = x.toIntOrNull()
+    fun setRadius(radius: String) {
+        this.radius.value = radius.toIntOrNull()
     }
 
-    fun setYEnd(y: String) {
-        this.yEnd.value = y.toIntOrNull()
+    private fun setPinchType(type: String) {
+        if (type == PinchScreenType.PINCH_IN.name) {
+            this.pinchType.value = PinchScreenType.PINCH_IN
+        } else {
+            this.pinchType.value = PinchScreenType.PINCH_OUT
+        }
     }
 
     fun setFingerCount(fingerCount: String) {
@@ -145,10 +146,6 @@ class SwipePickDisplayCoordinateViewModel(
 
     fun setDuration(duration: String) {
         this.duration.value = duration.toIntOrNull()
-    }
-
-    fun setStartOrEndCoordinates(isChecked:Boolean, type: ScreenshotTouchType) {
-        if (isChecked) this._screenshotTouchType.value = type
     }
 
     /**
@@ -161,22 +158,17 @@ class SwipePickDisplayCoordinateViewModel(
             val displayX = it.width * screenshotXRatio
             val displayY = it.height * screenshotYRatio
 
-            if (_screenshotTouchType.value == ScreenshotTouchType.START) {
-                xStart.value = displayX.roundToInt()
-                yStart.value = displayY.roundToInt()
-            } else {
-                xEnd.value = displayX.roundToInt()
-                yEnd.value = displayY.roundToInt()
-            }
+            x.value = displayX.roundToInt()
+            y.value = displayY.roundToInt()
         }
     }
 
     fun onDoneClick() {
         viewModelScope.launch {
-            val xStart = xStart.value ?: return@launch
-            val yStart = yStart.value ?: return@launch
-            val xEnd = xEnd.value ?: return@launch
-            val yEnd = yEnd.value ?: return@launch
+            val x = x.value ?: return@launch
+            val y = y.value ?: return@launch
+            val radius = radius.value ?: return@launch
+            val pinchType = pinchType.value ?: return@launch
             val fingerCount = fingerCount.value ?: return@launch
             val duration = duration.value ?: return@launch
 
@@ -189,16 +181,20 @@ class SwipePickDisplayCoordinateViewModel(
                 )
             ) ?: return@launch
 
-            _returnResult.emit(SwipePickCoordinateResult(xStart, yStart, xEnd, yEnd, fingerCount, duration, description))
+            _returnResult.emit(PinchPickCoordinateResult(x, y, radius, pinchType, fingerCount, duration, description))
         }
     }
 
-    fun loadResult(result: SwipePickCoordinateResult) {
+    fun onPinchTypeSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        this.setPinchType(pinchTypes[position])
+    }
+
+    fun loadResult(result: PinchPickCoordinateResult) {
         viewModelScope.launch {
-            xStart.value = result.xStart
-            yStart.value = result.yStart
-            xEnd.value = result.xEnd
-            yEnd.value = result.yEnd
+            x.value = result.x
+            y.value = result.y
+            radius.value = result.radius
+            pinchType.value = result.pinchType
             fingerCount.value = result.fingerCount
             duration.value = result.duration
             description.value = result.description
@@ -218,7 +214,7 @@ class SwipePickDisplayCoordinateViewModel(
     ) : ViewModelProvider.NewInstanceFactory() {
 
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return SwipePickDisplayCoordinateViewModel(resourceProvider) as T
+            return PinchPickDisplayCoordinateViewModel(resourceProvider) as T
         }
     }
 }

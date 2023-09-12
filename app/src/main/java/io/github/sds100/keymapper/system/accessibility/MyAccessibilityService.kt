@@ -18,6 +18,7 @@ import androidx.core.os.bundleOf
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
+import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
 import io.github.sds100.keymapper.api.Api
 import io.github.sds100.keymapper.api.IKeyEventReceiver
 import io.github.sds100.keymapper.api.IKeyEventReceiverCallback
@@ -35,6 +36,9 @@ import timber.log.Timber
  */
 
 class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessibilityService {
+
+    // virtual distance between fingers on multitouch gestures
+    private val fingerGestureDistance = 10L
 
     /**
      * Broadcast receiver for all intents sent from within the app.
@@ -396,7 +400,6 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
     }
 
     override fun swipeScreen(xStart: Int, yStart: Int, xEnd: Int, yEnd: Int, fingerCount: Int, duration: Int, inputEventType: InputEventType): Result<*> {
-        Timber.d("ACCESSIBILITY SWIPE SCREEN %d, %d, %d, %d, %s, %d, %s", xStart, yStart, xEnd, yEnd, fingerCount, duration, inputEventType);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             val pStart = Point(xStart, yStart)
@@ -410,12 +413,10 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
                 p.lineTo(pEnd.x.toFloat(), pEnd.y.toFloat())
                 gestureBuilder.addStroke(StrokeDescription(p, 0, duration.toLong()))
             } else {
-                // virtual distance between the fingers
-                val fingerDistance = 10L
                 // segments between fingers
                 val segmentCount = fingerCount - 1
                 // the line of the perpendicular line which will be created to place the virtual fingers on it
-                val perpendicularLineLength = (fingerDistance * fingerCount).toInt()
+                val perpendicularLineLength = (fingerGestureDistance * fingerCount).toInt()
                 // the length of each segment between fingers
                 val segmentLength = perpendicularLineLength / segmentCount
                 // perpendicular line of the start swipe point
@@ -426,9 +427,6 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
                 val perpendicularLineEnd = getPerpendicularOfLine(pEnd, pStart,
                     perpendicularLineLength, true);
 
-
-                val startFingerCoordinatesList = mutableListOf<Point>()
-                val endFingerCoordinatesList = mutableListOf<Point>()
                 // this is the angle between start and end point to rotate all virtual fingers on the perpendicular lines in the same direction
                 val angle = angleBetweenPoints(Point(xStart, yStart), Point(xEnd, yEnd)) - 90;
 
@@ -446,8 +444,6 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
                     p.moveTo(startFingerCoordinateWithOffset.x.toFloat(), startFingerCoordinateWithOffset.y.toFloat())
                     p.lineTo(endFingerCoordinateWithOffset.x.toFloat(), endFingerCoordinateWithOffset.y.toFloat())
 
-                    //startFingerCoordinatesList.add(startFingerCoordinateWithOffset)
-                    //endFingerCoordinatesList.add(endFingerCoordinateWithOffset)
                     gestureBuilder.addStroke(StrokeDescription(p, 0, duration.toLong()))
                 }
 
@@ -460,6 +456,55 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
             } else {
                 Error.FailedToDispatchGesture
             }
+        }
+
+        return Error.SdkVersionTooLow(Build.VERSION_CODES.N)
+    }
+
+    override fun pinchScreen(
+        x: Int,
+        y: Int,
+        radius: Int,
+        pinchType: PinchScreenType,
+        fingerCount: Int,
+        duration: Int,
+        inputEventType: InputEventType
+    ): Result<*> {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+
+            val gestureBuilder = GestureDescription.Builder()
+
+            var startCoordinates = arrayListOf<Point>()
+            var endCoordinates = arrayListOf<Point>()
+
+            if (pinchType == PinchScreenType.PINCH_IN) {
+                for (index in 0..fingerCount) {
+                    endCoordinates.add(Point(x, y));
+                }
+                startCoordinates = distributePointsOnCircle(Point(x, y), radius.toFloat(), fingerCount)
+            } else {
+                for (index in 0..fingerCount) {
+                    startCoordinates.add(Point(x, y));
+                }
+                endCoordinates = distributePointsOnCircle(Point(x, y), radius.toFloat(), fingerCount)
+            }
+
+            for (index in 0 until startCoordinates.size) {
+                val p = Path()
+                p.moveTo(startCoordinates[index].x.toFloat(), startCoordinates[index].y.toFloat())
+                p.lineTo(endCoordinates[index].x.toFloat(), endCoordinates[index].y.toFloat())
+
+                gestureBuilder.addStroke(StrokeDescription(p, 0, duration.toLong()))
+            }
+
+            val success = dispatchGesture(gestureBuilder.build(), null, null);
+
+            return if (success) {
+                Success(Unit)
+            } else {
+                Error.FailedToDispatchGesture
+            }
+
         }
 
         return Error.SdkVersionTooLow(Build.VERSION_CODES.N)

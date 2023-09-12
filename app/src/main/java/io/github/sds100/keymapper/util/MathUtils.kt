@@ -1,10 +1,12 @@
 package io.github.sds100.keymapper.util
 
+import android.R.attr
 import android.graphics.Point
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.hypot
 import kotlin.math.sin
+
 
 data class Line(
     val start: Point,
@@ -51,4 +53,22 @@ fun movePointByDistanceAndAngle(p: Point, distance: Int, degrees: Double): Point
 
 fun angleBetweenPoints(p1: Point, p2: Point): Double {
     return rad2deg(atan2((p2.y - p1.y).toDouble(), (p2.x - p1.x).toDouble()))
+}
+
+fun distributePointsOnCircle(circleCenter: Point, circleRadius: Float, numPoints: Int): ArrayList<Point> {
+
+    val points = arrayListOf<Point>()
+    var angle: Double = 0.0
+    val step = (2 * Math.PI) / numPoints
+
+    for (index in 0 .. numPoints) {
+        points.add(Point(
+            (circleCenter.x + circleRadius * cos(angle)).toInt().coerceAtLeast(0),
+            (circleCenter.y + circleRadius * sin(angle)).toInt().coerceAtLeast(0)
+        ))
+        angle += step;
+    }
+
+    return points;
+
 }

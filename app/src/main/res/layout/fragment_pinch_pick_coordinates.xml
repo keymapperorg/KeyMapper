@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+        <import type="android.widget.AdapterView" />
+
+        <variable
+            name="viewModel"
+            type="io.github.sds100.keymapper.actions.pinchscreen.PinchPickDisplayCoordinateViewModel" />
+
+        <variable
+            name="onSelectScreenshotClick"
+            type="View.OnClickListener" />
+    </data>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/coordinatorLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scrollView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="?attr/actionBarSize"
+            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:id="@+id/startLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:baselineAligned="true"
+                    android:orientation="horizontal"
+                    android:weightSum="1.0"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutXStart"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight=".5"
+                        android:hint="@string/hint_coordinate_x"
+                        android:padding="8dp"
+                        app:errorWhenEmpty="@{true}">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number"
+                            android:onTextChanged="@{(string, start, before, count) -> viewModel.setX(string.toString())}"
+                            android:text="@{viewModel.xString}"
+                            tools:text="241" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutYStart"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight=".5"
+                        android:hint="@string/hint_coordinate_y"
+                        android:padding="8dp"
+                        app:errorWhenEmpty="@{true}">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number"
+                            android:onTextChanged="@{(string, start, before, count) -> viewModel.setY(string.toString())}"
+                            android:text="@{viewModel.yString}"
+                            tools:text="241" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/radiusTypeLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:baselineAligned="true"
+                    android:orientation="horizontal"
+                    android:weightSum="1.0"
+                    app:layout_constraintBottom_toTopOf="@+id/xyHintTextView"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/startLayout">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutRadius"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight=".5"
+                        android:hint="@string/hint_coordinate_radius"
+                        android:padding="8dp"
+                        app:errorWhenEmpty="@{true}">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number"
+                            android:onTextChanged="@{(string, start, before, count) -> viewModel.setRadius(string.toString())}"
+                            android:text="@{viewModel.radiusString}"
+                            tools:text="241" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <Spinner
+                        android:id="@+id/pinchTypeSwitch"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight=".5"
+                        android:adapter="@{viewModel.pinchTypeSpinnerAdapter}"
+                        android:hint="@string/hint_coordinate_pinch_type"
+                        android:minHeight="48dp"
+                        android:onItemSelected="@{(parent, view, position, id) -> viewModel.onPinchTypeSelected(parent, view, position, id)}"
+                        android:selectedItemPosition="@{viewModel.pinchTypeSpinnerSelection}" />
+
+                </LinearLayout>
+
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/xyHintTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/pinch_screen_x_y_note"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/radiusTypeLayout" />
+
+                <LinearLayout
+                    android:id="@+id/optionsLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:baselineAligned="true"
+                    android:orientation="horizontal"
+                    android:weightSum="1.0"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/xyHintTextView">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutDuration"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:hint="@string/extra_label_pinch_duration"
+                        android:padding="8dp"
+                        app:errorWhenEmpty="@{true}"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="parent">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number"
+                            android:onTextChanged="@{(string, start, before, count) -> viewModel.setDuration(string.toString())}"
+                            android:text="@{viewModel.durationString}"
+                            tools:text="250" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutFingerCount"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:hint="@string/extra_label_pinch_finger_count"
+                        android:padding="8dp"
+                        app:errorWhenEmpty="@{true}"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="parent">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number"
+                            android:onTextChanged="@{(string, start, before, count) -> viewModel.setFingerCount(string.toString())}"
+                            android:text="@{viewModel.fingerCountString}"
+                            tools:text="1" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/buttonSelectScreenshotStart"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:onClick="@{onSelectScreenshotClick}"
+                    android:text="@string/button_pick_coordinate_select_screenshot"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/optionsLayout" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/textView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="8dp"
+                    android:text="@string/tap_coordinate_screenshot_message"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/buttonSelectScreenshotStart" />
+
+                <io.github.sds100.keymapper.actions.tapscreen.PickCoordinateImageView
+                    android:id="@+id/imageViewScreenshot"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="32dp"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitStart"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/textView"
+                    tools:srcCompat="@tools:sample/backgrounds/scenic[1]" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/content_description_done_configuring_coordinate"
+            android:enabled="@{viewModel.isDoneButtonEnabled()}"
+            android:onClick="@{() -> viewModel.onDoneClick()}"
+            android:src="@drawable/ic_baseline_done_24"
+            app:layout_anchor="@id/appBar" />
+
+        <com.google.android.material.bottomappbar.BottomAppBar
+            android:id="@+id/appBar"
+            style="@style/BottomAppBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            app:fabAlignmentMode="end"
+            app:fabAnimationMode="slide"
+            app:navigationIcon="@drawable/ic_baseline_arrow_back_24" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+</layout>

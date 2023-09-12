@@ -12,6 +12,8 @@ import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.ChooseActionFragment
 import io.github.sds100.keymapper.actions.keyevent.ChooseKeyCodeFragment
 import io.github.sds100.keymapper.actions.keyevent.ConfigKeyEventActionFragment
+import io.github.sds100.keymapper.actions.pinchscreen.PinchPickCoordinateResult
+import io.github.sds100.keymapper.actions.pinchscreen.PinchPickDisplayCoordinateFragment
 import io.github.sds100.keymapper.actions.sound.ChooseSoundFileFragment
 import io.github.sds100.keymapper.actions.sound.ChooseSoundFileResult
 import io.github.sds100.keymapper.actions.swipescreen.SwipePickCoordinateResult
@@ -157,6 +159,13 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
 
                 NavAppDirections.swipePickDisplayCoordinate(requestKey, json)
             }
+            is NavDestination.PickPinchCoordinate -> {
+                val json = destination.result?.let {
+                    Json.encodeToString(it)
+                }
+
+                NavAppDirections.pinchPickDisplayCoordinate(requestKey, json)
+            }
             is NavDestination.ConfigIntent -> {
                 val json = destination.result?.let {
                     Json.encodeToString(it)
@@ -233,6 +242,13 @@ fun NavigationViewModel.sendNavResultFromBundle(
         NavDestination.ID_PICK_SWIPE_COORDINATE -> {
             val json = bundle.getString(SwipePickDisplayCoordinateFragment.EXTRA_RESULT)!!
             val result = Json.decodeFromString<SwipePickCoordinateResult>(json)
+
+            onNavResult(NavResult(requestKey, result))
+        }
+
+        NavDestination.ID_PICK_PINCH_COORDINATE -> {
+            val json = bundle.getString(PinchPickDisplayCoordinateFragment.EXTRA_RESULT)!!
+            val result = Json.decodeFromString<PinchPickCoordinateResult>(json)
 
             onNavResult(NavResult(requestKey, result))
         }

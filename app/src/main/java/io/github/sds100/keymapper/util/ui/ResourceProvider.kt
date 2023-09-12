@@ -49,6 +49,10 @@ class ResourceProviderImpl(
         return ctx.color(color)
     }
 
+    override fun getContext(): Context {
+        return ctx;
+    }
+
     fun onThemeChange() {
         coroutineScope.launch {
             onThemeChange.emit(Unit)
@@ -65,4 +69,5 @@ interface ResourceProvider {
     fun getText(@StringRes resId: Int): CharSequence
     fun getDrawable(@DrawableRes resId: Int): Drawable
     fun getColor(@ColorRes color: Int): Int
+    fun getContext(): Context;
 }

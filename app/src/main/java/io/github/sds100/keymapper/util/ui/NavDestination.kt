@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.util.ui
 
 import io.github.sds100.keymapper.actions.ActionData
+import io.github.sds100.keymapper.actions.pinchscreen.PinchPickCoordinateResult
 import io.github.sds100.keymapper.actions.sound.ChooseSoundFileResult
 import io.github.sds100.keymapper.actions.swipescreen.SwipePickCoordinateResult
 import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
@@ -24,6 +25,7 @@ sealed class NavDestination<R> {
         const val ID_KEY_EVENT = "key_event"
         const val ID_PICK_COORDINATE = "pick_coordinate"
         const val ID_PICK_SWIPE_COORDINATE = "pick_swipe_coordinate"
+        const val ID_PICK_PINCH_COORDINATE = "pick_pinch_coordinate"
         const val ID_CONFIG_INTENT = "config_intent"
         const val ID_CHOOSE_ACTIVITY = "choose_activity"
         const val ID_CHOOSE_SOUND = "choose_sound"
@@ -46,6 +48,7 @@ sealed class NavDestination<R> {
                 is ConfigKeyEventAction -> ID_KEY_EVENT
                 is PickCoordinate -> ID_PICK_COORDINATE
                 is PickSwipeCoordinate -> ID_PICK_SWIPE_COORDINATE
+                is PickPinchCoordinate -> ID_PICK_PINCH_COORDINATE
                 is ConfigIntent -> ID_CONFIG_INTENT
                 ChooseActivity -> ID_CHOOSE_ACTIVITY
                 ChooseSound -> ID_CHOOSE_SOUND
@@ -79,6 +82,9 @@ sealed class NavDestination<R> {
 
     data class PickSwipeCoordinate(val result: SwipePickCoordinateResult? = null) :
         NavDestination<SwipePickCoordinateResult>()
+
+    data class PickPinchCoordinate(val result: PinchPickCoordinateResult? = null) :
+        NavDestination<PinchPickCoordinateResult>()
 
     data class ConfigIntent(val result: ConfigIntentResult? = null) :
         NavDestination<ConfigIntentResult>()
