@@ -402,6 +402,13 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
     override fun swipeScreen(xStart: Int, yStart: Int, xEnd: Int, yEnd: Int, fingerCount: Int, duration: Int, inputEventType: InputEventType): Result<*> {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            if (fingerCount >= GestureDescription.getMaxStrokeCount()) {
+                return Error.GestureStrokeCountTooHigh
+            }
+            if (duration >= GestureDescription.getMaxGestureDuration()) {
+                return Error.GestureDurationTooHigh
+            }
+
             val pStart = Point(xStart, yStart)
             val pEnd = Point(xEnd, yEnd)
 
@@ -471,6 +478,12 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
         inputEventType: InputEventType
     ): Result<*> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            if (fingerCount >= GestureDescription.getMaxStrokeCount()) {
+                return Error.GestureStrokeCountTooHigh
+            }
+            if (duration >= GestureDescription.getMaxGestureDuration()) {
+                return Error.GestureDurationTooHigh
+            }
 
             val gestureBuilder = GestureDescription.Builder()
 

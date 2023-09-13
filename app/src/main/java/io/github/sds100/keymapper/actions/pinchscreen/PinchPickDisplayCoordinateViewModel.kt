@@ -90,7 +90,7 @@ class PinchPickDisplayCoordinateViewModel(
         fingerCount ?: return@combine false
         duration ?: return@combine false
 
-        fingerCount in 2..9 && duration > 0
+        fingerCount >= 2 && duration > 0
     }.stateIn(viewModelScope, SharingStarted.Lazily, false)
 
     val isDoneButtonEnabled: StateFlow<Boolean> = combine(isCoordinatesValid, isOptionsValid) { isCoordinatesValid, isOptionsValid ->

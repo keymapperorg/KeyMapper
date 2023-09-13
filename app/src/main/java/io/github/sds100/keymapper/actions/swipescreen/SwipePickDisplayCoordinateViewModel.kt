@@ -90,7 +90,7 @@ class SwipePickDisplayCoordinateViewModel(
         fingerCount ?: return@combine false
         duration ?: return@combine false
 
-        fingerCount in 1..9 && duration > 0
+        fingerCount > 0 && duration > 0
     }.stateIn(viewModelScope, SharingStarted.Lazily, false)
 
     val isDoneButtonEnabled: StateFlow<Boolean> = combine(isCoordinatesValid, isOptionsValid) { isCoordinatesValid, isOptionsValid ->

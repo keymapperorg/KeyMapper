@@ -126,6 +126,8 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider) = when (this) {
     Error.ShizukuNotStarted -> resourceProvider.getString(R.string.error_shizuku_not_started)
     Error.NoFileName -> resourceProvider.getString(R.string.error_no_file_name)
     Error.CantDetectKeyEventsInPhoneCall -> resourceProvider.getString(R.string.trigger_error_cant_detect_in_phone_call_explanation)
+    Error.GestureStrokeCountTooHigh -> resourceProvider.getString(R.string.trigger_error_gesture_stroke_count_too_high)
+    Error.GestureDurationTooHigh -> resourceProvider.getString(R.string.trigger_error_gesture_duration_too_high)
 }
 
 val Error.isFixable: Boolean

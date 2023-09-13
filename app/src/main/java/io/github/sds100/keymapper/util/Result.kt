@@ -53,6 +53,8 @@ sealed class Error : Result<Nothing>() {
 
     object CantShowImePickerInBackground : Error()
     object CantFindImeSettings : Error()
+    object GestureStrokeCountTooHigh: Error()
+    object GestureDurationTooHigh: Error()
 
     data class PermissionDenied(val permission: Permission) : Error() {
         companion object {

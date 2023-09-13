@@ -110,6 +110,8 @@
     <string name="trigger_error_screen_off_root_permission_denied_short">The option to trigger when the screen is off will not work!</string>
     <string name="trigger_error_cant_detect_in_phone_call">This trigger won\'t work while ringing or in a phone call!</string>
     <string name="trigger_error_cant_detect_in_phone_call_explanation">Android doesn\'t let accessibility services detect volume button presses while your phone is ringing or it is in a phone call but it does let input method services detect them. Therefore, you must use one of the Key Mapper keyboards if you want this trigger to work.</string>
+    <string name="trigger_error_gesture_stroke_count_too_high">Too many fingers to perform gesture due to android limitations.</string>
+    <string name="trigger_error_gesture_duration_too_high">Gesture duration is too high due to android limitations.</string>
 
     <string name="home_error_is_battery_optimised">Your mappings will stop working randomly!</string>
     <string name="home_error_key_maps_paused">Your mappings are paused!</string>
@@ -259,12 +261,12 @@
     <string name="extra_label_delay_before_next_action">Delay before next action (ms)</string>
     <string name="extra_label_hold_down_duration">Hold down duration (ms)</string>
     <string name="extra_label_swipe_duration">Swipe duration (ms)</string>
-    <string name="extra_label_swipe_finger_count">Finger Count (max. 9)</string>
+    <string name="extra_label_swipe_finger_count">Finger Count</string>
     <string name="extra_label_swipe_select_start_end_label">Coordinates to set with screenshot</string>
     <string name="extra_label_swipe_select_start_end_start">Start</string>
     <string name="extra_label_swipe_select_start_end_end">End</string>
     <string name="extra_label_pinch_duration">Pinch duration (ms)</string>
-    <string name="extra_label_pinch_finger_count">Finger Count (max. 9)</string>
+    <string name="extra_label_pinch_finger_count">Finger Count</string>
     <!-- Extra labels -->
 
     <!-- Constraints -->
