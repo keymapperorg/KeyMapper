@@ -321,6 +321,16 @@ sealed class ActionData {
     }
 
     @Serializable
+    data class TapScreenElement(
+        val elementId: String,
+        val packageName: String,
+        val fullName: String,
+        val description: String?,
+    ): ActionData() {
+        override val id = ActionId.TAP_SCREEN_ELEMENT
+    }
+
+    @Serializable
     data class PhoneCall(
         val number: String
     ) : ActionData() {

@@ -11,6 +11,7 @@ import io.github.sds100.keymapper.data.db.AppDatabase.Companion.DATABASE_VERSION
 import io.github.sds100.keymapper.data.db.dao.FingerprintMapDao
 import io.github.sds100.keymapper.data.db.dao.KeyMapDao
 import io.github.sds100.keymapper.data.db.dao.LogEntryDao
+import io.github.sds100.keymapper.data.db.dao.ViewIdDao
 import io.github.sds100.keymapper.data.db.typeconverter.ActionListTypeConverter
 import io.github.sds100.keymapper.data.db.typeconverter.ConstraintListTypeConverter
 import io.github.sds100.keymapper.data.db.typeconverter.ExtraListTypeConverter
@@ -19,12 +20,13 @@ import io.github.sds100.keymapper.data.entities.LogEntryEntity
 import io.github.sds100.keymapper.data.migration.*
 import io.github.sds100.keymapper.data.entities.FingerprintMapEntity
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
+import io.github.sds100.keymapper.data.entities.ViewIdEntity
 
 /**
  * Created by sds100 on 24/01/2020.
  */
 @Database(
-    entities = [KeyMapEntity::class, FingerprintMapEntity::class, LogEntryEntity::class],
+    entities = [KeyMapEntity::class, FingerprintMapEntity::class, LogEntryEntity::class, ViewIdEntity::class],
     version = DATABASE_VERSION,
     exportSchema = true
 )
@@ -37,7 +39,7 @@ import io.github.sds100.keymapper.data.entities.KeyMapEntity
 abstract class AppDatabase : RoomDatabase() {
     companion object {
         const val DATABASE_NAME = "key_map_database"
-        const val DATABASE_VERSION = 13
+        const val DATABASE_VERSION = 14
 
         val MIGRATION_1_2 = object : Migration(1, 2) {
 
@@ -106,6 +108,12 @@ abstract class AppDatabase : RoomDatabase() {
                 database.execSQL("CREATE TABLE `log` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `time` INTEGER NOT NULL, `severity` INTEGER NOT NULL, `message` TEXT NOT NULL)")
             }
         }
+
+        val MIGRATION_13_14 = object: Migration(13, 14) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("CREATE TABLE `viewids` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `view_id` VARCHAR(250) NOT NULL, `package_name` VARCHAR(250) NOT NULL), `full_name` TEXT NOT NULL")
+            }
+        }
     }
 
     class RoomMigration_11_12(
@@ -119,4 +127,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun keymapDao(): KeyMapDao
     abstract fun fingerprintMapDao(): FingerprintMapDao
     abstract fun logEntryDao(): LogEntryDao
+
+    abstract  fun viewIdDao(): ViewIdDao
 }

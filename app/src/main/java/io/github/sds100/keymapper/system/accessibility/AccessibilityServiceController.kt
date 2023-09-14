@@ -1,16 +1,20 @@
 package io.github.sds100.keymapper.system.accessibility
 
 import android.accessibilityservice.AccessibilityServiceInfo
+import android.annotation.SuppressLint
 import android.os.Build
 import android.os.SystemClock
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
+import io.github.sds100.keymapper.BuildConfig
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.data.Keys
+import io.github.sds100.keymapper.data.entities.ViewIdEntity
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.data.repositories.ViewIdRepository
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
 import io.github.sds100.keymapper.mappings.fingerprintmaps.DetectFingerprintMapsUseCase
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintGestureMapController
@@ -21,12 +25,17 @@ import io.github.sds100.keymapper.mappings.keymaps.detection.DetectScreenOffKeyE
 import io.github.sds100.keymapper.mappings.keymaps.detection.KeyMapController
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsController
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsUseCase
+import io.github.sds100.keymapper.system.apps.PackageInfo
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.firstBlocking
+import io.github.sds100.keymapper.util.isSuccess
+import io.github.sds100.keymapper.util.success
+import io.github.sds100.keymapper.util.then
+import io.github.sds100.keymapper.util.valueOrNull
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import splitties.bitflags.hasFlag
@@ -51,7 +60,8 @@ class AccessibilityServiceController(
     private val devicesAdapter: DevicesAdapter,
     private val suAdapter: SuAdapter,
     private val inputMethodAdapter: InputMethodAdapter,
-    private val settingsRepository: PreferenceRepository
+    private val settingsRepository: PreferenceRepository,
+    private val viewIdRepository: ViewIdRepository
 ) {
 
     companion object {
@@ -120,13 +130,25 @@ class AccessibilityServiceController(
         var flags = AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS
             .withFlag(AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS)
             .withFlag(AccessibilityServiceInfo.DEFAULT)
+            .withFlag(AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS)
             .withFlag(AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS)
+            .withFlag(AccessibilityServiceInfo.FEEDBACK_ALL_MASK)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             flags = flags.withFlag(AccessibilityServiceInfo.FLAG_ENABLE_ACCESSIBILITY_VOLUME)
         }
 
         return@lazy flags
+    }
+
+    private val initialFeedbackFlags: Int by lazy {
+
+        return@lazy AccessibilityServiceInfo.FEEDBACK_ALL_MASK
+    }
+
+    private val initialEventTypes: Int by lazy {
+
+        return@lazy AccessibilityEvent.TYPE_WINDOWS_CHANGED.withFlag(AccessibilityEvent.TYPES_ALL_MASK)
     }
 
     /*
@@ -137,8 +159,8 @@ class AccessibilityServiceController(
         */
     private var serviceFlags: MutableStateFlow<Int> = MutableStateFlow(initialServiceFlags)
 
-    private var serviceFeedbackType: MutableStateFlow<Int> = MutableStateFlow(0)
-    private var serviceEventTypes: MutableStateFlow<Int> = MutableStateFlow(0)
+    private var serviceFeedbackType: MutableStateFlow<Int> = MutableStateFlow(initialFeedbackFlags)
+    private var serviceEventTypes: MutableStateFlow<Int> = MutableStateFlow(initialEventTypes)
 
     init {
         serviceFlags.onEach { flags ->
@@ -390,8 +412,44 @@ class AccessibilityServiceController(
         )
     }
 
-    fun onAccessibilityEvent(event: AccessibilityEventModel?) {
+    fun onAccessibilityEvent(event: AccessibilityEventModel?, originalEvent: AccessibilityEvent?) {
         Timber.d("OnAccessibilityEvent $event")
+
+        if (
+            originalEvent != null &&
+            intArrayOf(
+                AccessibilityEvent.TYPE_WINDOWS_CHANGED,
+                AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
+                AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
+            ).contains(originalEvent.eventType)
+        ) {
+            val foundViewIds = accessibilityService.fetchAvailableUIElements()
+
+            if (foundViewIds.isNotEmpty()) {
+                foundViewIds.forEachIndexed { index, item ->
+                    val splittedViewInfo = item.split("/")
+
+                    if (splittedViewInfo.size == 2) {
+                        val elementId = splittedViewInfo[1]
+                        val packageName = splittedViewInfo[0]
+
+                        if (packageName != "${BuildConfig.APPLICATION_ID}:id") {
+                            viewIdRepository.insert(
+                                ViewIdEntity(
+                                    id = 0,
+                                    viewId = elementId,
+                                    packageName = packageName,
+                                    fullName = item
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+
+        }
+
+
         val focussedNode = accessibilityService.findFocussedNode(AccessibilityNodeInfo.FOCUS_INPUT)
 
         if (focussedNode?.isEditable == true && focussedNode.isFocused) {
@@ -415,6 +473,7 @@ class AccessibilityServiceController(
         triggerKeyMapFromOtherAppsController.onDetected(uid)
     }
 
+    @SuppressLint("NewApi")
     private fun onEventFromUi(event: Event) {
         Timber.d("Service received event from UI: $event")
         when (event) {

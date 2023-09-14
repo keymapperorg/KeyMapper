@@ -6,13 +6,19 @@ import android.accessibilityservice.GestureDescription
 import android.accessibilityservice.GestureDescription.StrokeDescription
 import android.app.ActivityManager
 import android.app.Service
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.content.ServiceConnection
 import android.graphics.Path
 import android.graphics.Point
 import android.os.Build
 import android.os.IBinder
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityNodeInfo
 import androidx.core.content.getSystemService
 import androidx.core.os.bundleOf
 import androidx.lifecycle.Lifecycle
@@ -24,7 +30,14 @@ import io.github.sds100.keymapper.api.IKeyEventReceiverCallback
 import io.github.sds100.keymapper.api.KeyEventReceiver
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapId
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.Error
+import io.github.sds100.keymapper.util.Inject
+import io.github.sds100.keymapper.util.InputEventType
+import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.util.Success
+import io.github.sds100.keymapper.util.angleBetweenPoints
+import io.github.sds100.keymapper.util.getPerpendicularOfLine
+import io.github.sds100.keymapper.util.movePointByDistanceAndAngle
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import timber.log.Timber
@@ -35,6 +48,9 @@ import timber.log.Timber
  */
 
 class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessibilityService {
+
+    private var _lastKnownRoot: AccessibilityNodeInfo? = null
+    private var _availableNodes: MutableList<String>? = null
 
     /**
      * Broadcast receiver for all intents sent from within the app.
@@ -270,7 +286,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        controller?.onAccessibilityEvent(event?.toModel())
+        controller?.onAccessibilityEvent(event?.toModel(), event)
     }
 
     override fun onKeyEvent(event: KeyEvent?): Boolean {
@@ -395,6 +411,68 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
         return Error.SdkVersionTooLow(Build.VERSION_CODES.N)
     }
 
+    override fun fetchAvailableUIElements(): List<String> {
+        val viewIds = arrayListOf<String>()
+
+        if (this.rootInActiveWindow != null) {
+            viewIds.addAll(findViewIdResourceNames(this.rootInActiveWindow))
+        } else {
+            Timber.d("fetchAvailableUIElements NO ROOT WINDOW")
+        }
+
+        val sorted = viewIds.distinct().sorted()
+
+        return sorted.ifEmpty {
+            emptyList()
+        }
+    }
+    private fun findViewIdResourceNames(node: AccessibilityNodeInfo): List<String> {
+        val list = arrayListOf<String>()
+
+        for (i in 0 until node.childCount) {
+            val child = node.getChild(i)
+
+            if (child != null) {
+                try {
+                    if (child.viewIdResourceName != null) {
+                        list.add(child.viewIdResourceName)
+                    }
+                } catch (error: kotlin.Error) {
+                    Timber.d("Could not add child to list: %s", error.message)
+                }
+
+                list.addAll(findViewIdResourceNames(child))
+            }
+        }
+
+        return list
+    }
+
+    override fun clickOnElementWithId(id: String): Result<*> {
+        val activeWindows = this.rootInActiveWindow;
+
+        if (activeWindows != null) {
+            activeWindows.refresh()
+            val nodeList = activeWindows.findAccessibilityNodeInfosByViewId(id);
+            if (nodeList != null && nodeList.size > 0) {
+                for (index in 0 until nodeList.size) {
+                    val node = nodeList[index];
+                    if (node.viewIdResourceName == id && node.isClickable) {
+                        val result = node.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+
+                        if (result) {
+                            return Success(Unit)
+                        }
+                    }
+                }
+            }
+        } else {
+            Timber.d("rootInActiveWindow is NULL")
+        }
+
+        return Error.FailedToDispatchGesture
+    }
+
     override fun swipeScreen(xStart: Int, yStart: Int, xEnd: Int, yEnd: Int, fingerCount: Int, duration: Int, inputEventType: InputEventType): Result<*> {
         Timber.d("ACCESSIBILITY SWIPE SCREEN %d, %d, %d, %d, %s, %d, %s", xStart, yStart, xEnd, yEnd, fingerCount, duration, inputEventType);
 
@@ -459,6 +537,29 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
                 Success(Unit)
             } else {
                 Error.FailedToDispatchGesture
+            }
+        }
+
+        return Error.SdkVersionTooLow(Build.VERSION_CODES.N)
+    }
+
+    override fun tapScreenElement(fullName: String, inputEventType: InputEventType): Result<*> {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+
+            Timber.d("tapScreenElement ID: %s", fullName)
+
+            if (this.rootInActiveWindow != null) {
+                val node = this.rootInActiveWindow.findAccessibilityNodeInfosByViewId(fullName)
+
+                if (node.size > 0) {
+                    val success = node.first().performAction(AccessibilityNodeInfo.ACTION_CLICK)
+
+                    if (success) {
+                        return Success(Unit)
+                    } else {
+                        Error.FailedToDispatchGesture
+                    }
+                }
             }
         }
 

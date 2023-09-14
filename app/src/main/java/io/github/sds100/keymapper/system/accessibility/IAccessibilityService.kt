@@ -14,6 +14,10 @@ interface IAccessibilityService {
 
     fun tapScreen(x: Int, y: Int, inputEventType: InputEventType): Result<*>
     fun swipeScreen(xStart: Int, yStart: Int, xEnd: Int, yEnd: Int, fingerCount: Int, duration: Int, inputEventType: InputEventType): Result<*>
+    fun tapScreenElement(fullName: String, inputEventType: InputEventType): Result<*>
+
+    fun fetchAvailableUIElements(): List<String>
+    fun clickOnElementWithId(id: String): Result<*>
 
     val isFingerprintGestureDetectionAvailable: Boolean
 

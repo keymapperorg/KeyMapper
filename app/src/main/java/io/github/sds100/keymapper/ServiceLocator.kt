@@ -119,6 +119,20 @@ object ServiceLocator {
     }
 
     @Volatile
+    private var IRoomViewIdRepository: ViewIdRepository? = null
+
+    fun viewIdRepository(context: Context): ViewIdRepository {
+        synchronized(this) {
+            return IRoomViewIdRepository ?: RoomViewIdRepository(
+                database(context).viewIdDao(),
+                (context.applicationContext as KeyMapperApp).appCoroutineScope,
+            ).also {
+                this.IRoomViewIdRepository = it
+            }
+        }
+    }
+
+    @Volatile
     private var backupManager: BackupManager? = null
 
     fun backupManager(context: Context): BackupManager {
@@ -134,7 +148,7 @@ object ServiceLocator {
             roomKeymapRepository(context),
             settingsRepository(context),
             fingerprintMapRepository(context),
-            soundsManager(context)
+            soundsManager(context),
         ).also {
             this.backupManager = it
         }
@@ -295,7 +309,8 @@ object ServiceLocator {
             AppDatabase.MIGRATION_9_10,
             AppDatabase.MIGRATION_10_11,
             AppDatabase.RoomMigration_11_12(context.applicationContext.legacyFingerprintMapDataStore),
-            AppDatabase.MIGRATION_12_13
+            AppDatabase.MIGRATION_12_13,
+            AppDatabase.MIGRATION_13_14
         ).build()
     }
 }

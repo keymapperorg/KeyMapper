@@ -30,6 +30,7 @@ object ActionDataEntityMapper {
             ActionEntity.Type.URL -> ActionId.URL
             ActionEntity.Type.TAP_COORDINATE -> ActionId.TAP_SCREEN
             ActionEntity.Type.SWIPE_COORDINATE -> ActionId.SWIPE_SCREEN
+            ActionEntity.Type.TAP_SCREEN_ELEMENT -> ActionId.TAP_SCREEN_ELEMENT
             ActionEntity.Type.INTENT -> ActionId.INTENT
             ActionEntity.Type.PHONE_CALL -> ActionId.PHONE_CALL
             ActionEntity.Type.SOUND -> ActionId.SOUND
@@ -145,6 +146,22 @@ object ActionDataEntityMapper {
                     yEnd = yEnd,
                     fingerCount = fingerCount,
                     duration = duration,
+                    description = description
+                )
+            }
+
+            ActionId.TAP_SCREEN_ELEMENT -> {
+                val splitData = entity.data.trim().split(',')
+                val elementId = splitData[0];
+                val packageName = splitData[1];
+                val fullName = splitData[2];
+                val description = entity.extras.getData(ActionEntity.EXTRA_ELEMENT_DESCRIPTION)
+                    .valueOrNull()
+
+                ActionData.TapScreenElement(
+                    elementId = elementId,
+                    packageName = packageName,
+                    fullName = fullName,
                     description = description
                 )
             }
@@ -417,6 +434,7 @@ object ActionDataEntityMapper {
             is ActionData.PhoneCall -> ActionEntity.Type.PHONE_CALL
             is ActionData.TapScreen -> ActionEntity.Type.TAP_COORDINATE
             is ActionData.SwipeScreen -> ActionEntity.Type.SWIPE_COORDINATE
+            is ActionData.TapScreenElement -> ActionEntity.Type.TAP_SCREEN_ELEMENT
             is ActionData.Text -> ActionEntity.Type.TEXT_BLOCK
             is ActionData.Url -> ActionEntity.Type.URL
             is ActionData.Sound -> ActionEntity.Type.SOUND
@@ -457,6 +475,7 @@ object ActionDataEntityMapper {
         is ActionData.PhoneCall -> data.number
         is ActionData.TapScreen -> "${data.x},${data.y}"
         is ActionData.SwipeScreen -> "${data.xStart},${data.yStart},${data.xEnd},${data.yEnd},${data.fingerCount},${data.duration}"
+        is ActionData.TapScreenElement -> "${data.elementId},${data.packageName},${data.fullName}"
         is ActionData.Text -> data.text
         is ActionData.Url -> data.url
         is ActionData.Sound -> data.soundUid
@@ -551,6 +570,12 @@ object ActionDataEntityMapper {
         is ActionData.SwipeScreen -> sequence {
             if (!data.description.isNullOrBlank()) {
                 yield(Extra(ActionEntity.EXTRA_COORDINATE_DESCRIPTION, data.description))
+            }
+        }.toList()
+
+        is ActionData.TapScreenElement -> sequence {
+            if (!data.description.isNullOrBlank()) {
+                yield(Extra(ActionEntity.EXTRA_ELEMENT_DESCRIPTION, data.description))
             }
         }.toList()
 

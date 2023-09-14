@@ -10,6 +10,7 @@ import io.github.sds100.keymapper.actions.TestActionUseCaseImpl
 import io.github.sds100.keymapper.actions.keyevent.ChooseKeyCodeViewModel
 import io.github.sds100.keymapper.actions.keyevent.ConfigKeyEventActionViewModel
 import io.github.sds100.keymapper.actions.keyevent.ConfigKeyEventUseCaseImpl
+import io.github.sds100.keymapper.actions.tapscreenelement.PickScreenElementViewModel
 import io.github.sds100.keymapper.actions.sound.ChooseSoundFileUseCaseImpl
 import io.github.sds100.keymapper.actions.sound.ChooseSoundFileViewModel
 import io.github.sds100.keymapper.actions.swipescreen.SwipePickDisplayCoordinateViewModel
@@ -130,6 +131,12 @@ object Inject {
     fun swipeCoordinateActionTypeViewModel(context: Context): SwipePickDisplayCoordinateViewModel.Factory {
         return SwipePickDisplayCoordinateViewModel.Factory(
             ServiceLocator.resourceProvider(context)
+        )
+    }
+    fun pickScreenElementActionTypeViewModel(context: Context): PickScreenElementViewModel.Factory {
+        return PickScreenElementViewModel.Factory(
+            ServiceLocator.resourceProvider(context),
+            ServiceLocator.viewIdRepository(context)
         )
     }
 
@@ -274,7 +281,8 @@ object Inject {
             suAdapter = ServiceLocator.suAdapter(service),
             rerouteKeyEventsUseCase = UseCases.rerouteKeyEvents(service),
             inputMethodAdapter = ServiceLocator.inputMethodAdapter(service),
-            settingsRepository = ServiceLocator.settingsRepository(service)
+            settingsRepository = ServiceLocator.settingsRepository(service),
+            viewIdRepository = ServiceLocator.viewIdRepository(service)
         )
     }
 

@@ -132,6 +132,8 @@
     <string name="description_tap_coordinate_with_description">Tap coordinates %d, %d (%s)</string>
     <string name="description_swipe_coordinate_default">Swipe with %d finger(s) from coordinates %d/%d to %d/%d in %dms</string>
     <string name="description_swipe_coordinate_with_description">Swipe with %d finger(s) from coordinates %d/%d to %d/%d in %dms (%s)</string>
+    <string name="description_tap_screen_element_default">Tap screen element with ID %s</string>
+    <string name="description_tap_screen_element_with_description">Tap screen element with ID %s (%s)</string>
     <string name="description_phone_call">Call %s</string>
     <string name="description_sound">Play sound: %s</string>
     <!--  Action descriptions  -->
@@ -1233,6 +1235,7 @@
 
     <string name="action_tap_screen">Tap screen</string>
     <string name="action_swipe_screen">Swipe screen</string>
+    <string name="action_tap_screen_element">Tap screen element</string>
     <string name="action_input_text">Input text</string>
     <string name="action_open_url">Open URL</string>
     <string name="action_send_intent">Send intent</string>

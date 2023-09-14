@@ -40,6 +40,7 @@ object ActionUtils {
             ActionId.KEY_EVENT -> ActionCategory.INPUT
             ActionId.TAP_SCREEN -> ActionCategory.INPUT
             ActionId.SWIPE_SCREEN -> ActionCategory.INPUT
+            ActionId.TAP_SCREEN_ELEMENT -> ActionCategory.INPUT
             ActionId.TEXT -> ActionCategory.INPUT
 
             ActionId.OPEN_VOICE_ASSISTANT -> ActionCategory.APPS
@@ -257,6 +258,7 @@ object ActionUtils {
             ActionId.KEY_EVENT -> R.string.action_input_key_event
             ActionId.TAP_SCREEN -> R.string.action_tap_screen
             ActionId.SWIPE_SCREEN -> R.string.action_swipe_screen
+            ActionId.TAP_SCREEN_ELEMENT -> R.string.action_tap_screen_element
             ActionId.TEXT -> R.string.action_input_text
             ActionId.URL -> R.string.action_open_url
             ActionId.INTENT -> R.string.action_send_intent
@@ -367,6 +369,7 @@ object ActionUtils {
             ActionId.KEY_EVENT -> R.drawable.ic_q_24
             ActionId.TAP_SCREEN -> R.drawable.ic_outline_touch_app_24
             ActionId.SWIPE_SCREEN -> R.drawable.ic_outline_touch_app_24
+            ActionId.TAP_SCREEN_ELEMENT -> R.drawable.ic_outline_touch_app_24
             ActionId.TEXT -> R.drawable.ic_outline_short_text_24
             ActionId.URL -> R.drawable.ic_outline_link_24
             ActionId.INTENT -> null
@@ -603,6 +606,7 @@ fun ActionData.isEditable(): Boolean = when (this) {
     is ActionData.Flashlight.Disable,
     is ActionData.TapScreen,
     is ActionData.SwipeScreen,
+    is ActionData.TapScreenElement,
     is ActionData.Text,
     is ActionData.Url,
     is ActionData.PhoneCall,

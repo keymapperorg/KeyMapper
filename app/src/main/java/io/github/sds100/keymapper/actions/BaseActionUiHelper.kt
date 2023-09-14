@@ -310,6 +310,12 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
                 )
             }
 
+            is ActionData.TapScreenElement -> if (action.description.isNullOrBlank()) {
+                getString(R.string.description_tap_screen_element_default, arrayOf(action.elementId))
+            } else {
+                getString(R.string.description_swipe_coordinate_with_description, arrayOf(action.elementId, action.description))
+            }
+
             is ActionData.Text -> getString(R.string.description_text_block, action.text)
             is ActionData.Url -> getString(R.string.description_url, action.url)
             is ActionData.Sound -> getString(R.string.description_sound, action.soundDescription)
