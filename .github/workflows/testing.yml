@@ -59,7 +59,7 @@ jobs:
           git config user.email noreply@github.com
 
       - name: Build apk with fastlane
-        run: bundle exec fastlane ci_alpha_apk
+        run: bundle exec fastlane testing
 
       - name: set apk name env
         run: echo "APK_NAME=$(basename app/build/outputs/apk/ci/*.apk .apk)" >> $GITHUB_ENV
