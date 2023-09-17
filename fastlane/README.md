@@ -13,36 +13,18 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 # Available Actions
 
-## Android
-
-### android ci_alpha_apk
+### testing
 
 ```sh
-[bundle exec] fastlane android ci_alpha_apk
+[bundle exec] fastlane testing
 ```
 
+Create and deploy testing release
 
-
-### android testing
-
-```sh
-[bundle exec] fastlane android testing
-```
-
-
-
-### android beta
+### prod
 
 ```sh
-[bundle exec] fastlane android beta
-```
-
-Create and deploy beta release
-
-### android prod
-
-```sh
-[bundle exec] fastlane android prod
+[bundle exec] fastlane prod
 ```
 
 Create and deploy production release

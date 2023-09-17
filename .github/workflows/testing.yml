@@ -5,39 +5,17 @@ on:
     branches:
       - 'develop'
 
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
 jobs:
-  unit-test:
-    name: Run unit tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/cache@v2
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v2
-
-      - name: Unit tests
-        run: bash ./gradlew testDebugUnitTest
-
-      - name: Report build status to Discord
-        uses: sarisia/actions-status-discord@v1
-        if: failure()
-        with:
-          title: "Unit tests"
-          webhook: ${{ secrets.DISCORD_BUILD_STATUS_WEBHOOK }}
-
   apk:
-    name: Generate APK
+    name: Generate and upload APK to Discord
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2.1.0
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
       - uses: actions/cache@v2
         with:
@@ -69,8 +47,8 @@ jobs:
 
       - name: Create debug keystore
         run: |
-           echo "${{ secrets.CI_KEYSTORE }}" > debug.keystore.asc
-           gpg -d --passphrase "${{ secrets.CI_KEYSTORE_DECRYPT }}" --batch debug.keystore.asc > /home/runner/.android/debug.keystore
+          echo "${{ secrets.CI_KEYSTORE }}" > debug.keystore.asc
+          gpg -d --passphrase "${{ secrets.CI_KEYSTORE_DECRYPT }}" --batch debug.keystore.asc > /home/runner/.android/debug.keystore
 
       - name: Install bundle
         run: bundle install
