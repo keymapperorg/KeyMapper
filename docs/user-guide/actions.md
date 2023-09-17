@@ -18,6 +18,20 @@ This will tap a point on your screen.
 
 !!! warning Android restricts what apps can do with this so you won't be able to tap the screen at the same time as Key Mapper and Key Mapper can't tap multiple places at once.
 
+### Swipe screen (2.5.0+, Android 7.0+)
+
+Thia will swipe from a start point to and end point on your screen. You can also setup the amount of "fingers" to simulate and the duration for the gesture, **but** this is limitied due to your Android Version. 
+
+See: [getMaxStrokeCount](https://developer.android.com/reference/android/accessibilityservice/GestureDescription#getMaxStrokeCount()) and [getMaxStrokeDuration](https://developer.android.com/reference/android/accessibilityservice/GestureDescription#getMaxGestureDuration()) for more information.
+
+### Pinch screen (2.5.0+, Android 7.0+)
+
+Thia will simulate a pinch gesture from a start point to and end point on your screen. You can choose between *pinch in* and *pinch out*.
+You can also setup the amount of "fingers" to simulate and the duration for the gesture, **but** this is limitied due to your Android Version. 
+
+See: [getMaxStrokeCount](https://developer.android.com/reference/android/accessibilityservice/GestureDescription#getMaxStrokeCount()) and [getMaxStrokeDuration](https://developer.android.com/reference/android/accessibilityservice/GestureDescription#getMaxGestureDuration()) for more information.
+
+
 ### Input key event (2.1.0+)
 
 --8<-- "requires-key-mapper-keyboard-or-shizuku.md"
