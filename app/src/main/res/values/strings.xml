@@ -161,8 +161,8 @@
     <string name="hint_coordinate_y_start">Start Y</string>
     <string name="hint_coordinate_x_end">End X</string>
     <string name="hint_coordinate_y_end">End Y</string>
-    <string name="hint_coordinate_radius">Pinch Distance</string>
-    <string name="hint_coordinate_pinch_type">Pinch Type</string>
+    <string name="hint_coordinate_radius">Pinch distance</string>
+    <string name="hint_coordinate_pinch_type">Pinch type</string>
     <string name="hint_coordinate_type_PINCH_IN">Pinch in</string>
     <string name="hint_coordinate_type_PINCH_OUT">Pinch out</string>
     <string name="hint_keycode">Key code</string>
@@ -261,12 +261,12 @@
     <string name="extra_label_delay_before_next_action">Delay before next action (ms)</string>
     <string name="extra_label_hold_down_duration">Hold down duration (ms)</string>
     <string name="extra_label_swipe_duration">Swipe duration (ms)</string>
-    <string name="extra_label_swipe_finger_count">Finger Count</string>
+    <string name="extra_label_swipe_finger_count">Finger count</string>
     <string name="extra_label_swipe_select_start_end_label">Coordinates to set with screenshot</string>
     <string name="extra_label_swipe_select_start_end_start">Start</string>
     <string name="extra_label_swipe_select_start_end_end">End</string>
     <string name="extra_label_pinch_duration">Pinch duration (ms)</string>
-    <string name="extra_label_pinch_finger_count">Finger Count</string>
+    <string name="extra_label_pinch_finger_count">Finger count</string>
     <!-- Extra labels -->
 
     <!-- Constraints -->
