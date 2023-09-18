@@ -51,7 +51,7 @@ jobs:
       - name: Create Google Play service account key
         env:
           GOOGLE_PLAY_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}
-        run: echo "$GOOGLE_PLAY_SERVICE_ACCOUNT" > google-play-service-account.json
+        run: echo "$GOOGLE_PLAY_SERVICE_ACCOUNT" > app/play-service-account-key.json
 
       - name: Build apk with fastlane
         run: bundle exec fastlane prod github_token:${{ secrets.GITHUB_TOKEN }}
