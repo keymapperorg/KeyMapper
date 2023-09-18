@@ -54,8 +54,7 @@ jobs:
         run: echo "$GOOGLE_PLAY_SERVICE_ACCOUNT" > google-play-service-account.json
 
       - name: Build apk with fastlane
-        run: bundle exec fastlane prod
+        run: bundle exec fastlane prod github_token:${{ secrets.GITHUB_TOKEN }}
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
           KEY_PASSWORD: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
