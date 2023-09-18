@@ -55,19 +55,4 @@ lane :prod do |options|
         release_status: "draft",
         skip_upload_apk: true
     )
-
-    ensure_git_status_clean
-    sh "git checkout develop"
-    sh "git pull"
-
-    # increment version code in develop
-    increment_version_code_in_properties_file(
-        key: "VERSION_CODE",
-        path: "./app/version.properties"
-      )
-
-    sh("git config user.name github-actions")
-    sh("git config user.email noreply@github.com")
-    git_commit(path: "./app/version.properties", message: "chore (release): version bump")
-    push_to_git_remote
 end
