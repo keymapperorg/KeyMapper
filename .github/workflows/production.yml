@@ -53,13 +53,8 @@ jobs:
           GOOGLE_PLAY_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}
         run: echo "$GOOGLE_PLAY_SERVICE_ACCOUNT" > google-play-service-account.json
 
-      - name: Save keystore credentials
+      - name: Build apk with fastlane
+        run: bundle exec fastlane prod
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
           KEY_PASSWORD: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
-        run: |
-          export KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD
-          export KEY_PASSWORD=$KEY_PASSWORD
-
-      - name: Build apk with fastlane
-        run: bundle exec fastlane prod
