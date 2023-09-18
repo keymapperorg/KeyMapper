@@ -13,6 +13,10 @@
             type="io.github.sds100.keymapper.actions.pinchscreen.PinchPickDisplayCoordinateViewModel" />
 
         <variable
+            name="pinchTypeSpinnerAdapter"
+            type="android.widget.ArrayAdapter" />
+
+        <variable
             name="onSelectScreenshotClick"
             type="View.OnClickListener" />
     </data>
@@ -129,7 +133,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight=".5"
-                        android:adapter="@{viewModel.pinchTypeSpinnerAdapter}"
+                        android:adapter="@{pinchTypeSpinnerAdapter}"
                         android:hint="@string/hint_coordinate_pinch_type"
                         android:minHeight="48dp"
                         android:onItemSelected="@{(parent, view, position, id) -> viewModel.onPinchTypeSelected(parent, view, position, id)}"

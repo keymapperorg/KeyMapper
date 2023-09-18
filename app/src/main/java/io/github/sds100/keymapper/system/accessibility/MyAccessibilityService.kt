@@ -487,19 +487,19 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
 
             val gestureBuilder = GestureDescription.Builder()
 
-            var startCoordinates = arrayListOf<Point>()
-            var endCoordinates = arrayListOf<Point>()
+            var startCoordinates = mutableListOf<Point>()
+            var endCoordinates = mutableListOf<Point>()
 
             if (pinchType == PinchScreenType.PINCH_IN) {
                 for (index in 0..fingerCount) {
                     endCoordinates.add(Point(x, y));
                 }
-                startCoordinates = distributePointsOnCircle(Point(x, y), radius.toFloat(), fingerCount)
+                startCoordinates = distributePointsOnCircle(Point(x, y), radius.toFloat(), fingerCount).toMutableList()
             } else {
                 for (index in 0..fingerCount) {
                     startCoordinates.add(Point(x, y));
                 }
-                endCoordinates = distributePointsOnCircle(Point(x, y), radius.toFloat(), fingerCount)
+                endCoordinates = distributePointsOnCircle(Point(x, y), radius.toFloat(), fingerCount).toMutableList()
             }
 
             for (index in 0 until startCoordinates.size) {

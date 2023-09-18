@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.ArrayAdapter
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.getSystemService
@@ -37,6 +38,7 @@ class PinchPickDisplayCoordinateFragment : Fragment() {
 
     private val args: PinchPickDisplayCoordinateFragmentArgs by navArgs()
     private val requestKey: String by lazy { args.requestKey }
+    private var pinchTypesDisplayValues = mutableListOf<String>()
 
     private val viewModel: PinchPickDisplayCoordinateViewModel by viewModels {
         Inject.pinchCoordinateActionTypeViewModel(requireContext())
@@ -71,6 +73,8 @@ class PinchPickDisplayCoordinateFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        pinchTypesDisplayValues = arrayOf(getString(io.github.sds100.keymapper.R.string.hint_coordinate_type_PINCH_IN), getString(io.github.sds100.keymapper.R.string.hint_coordinate_type_PINCH_OUT)).toMutableList();
+
         args.result?.let {
             viewModel.loadResult(Json.decodeFromString(it))
         }
@@ -94,7 +98,7 @@ class PinchPickDisplayCoordinateFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.viewModel = viewModel
-
+        binding.pinchTypeSpinnerAdapter = ArrayAdapter(this.requireActivity(), android.R.layout.simple_spinner_dropdown_item, pinchTypesDisplayValues)
         viewModel.showPopups(this, binding)
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {

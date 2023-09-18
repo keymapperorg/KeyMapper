@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import android.graphics.Point
 import android.view.View
 import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -19,8 +18,6 @@ class PinchPickDisplayCoordinateViewModel(
 ) : ViewModel(), ResourceProvider by resourceProvider, PopupViewModel by PopupViewModelImpl() {
 
     private val pinchTypes = arrayOf(PinchScreenType.PINCH_IN.name, PinchScreenType.PINCH_OUT.name)
-    private val pinchTypesDisplayValues = arrayOf(getString(R.string.hint_coordinate_type_PINCH_IN), getString(R.string.hint_coordinate_type_PINCH_OUT))
-    val pinchTypeSpinnerAdapter = ArrayAdapter(getContext(), android.R.layout.simple_spinner_dropdown_item, pinchTypesDisplayValues)
 
     private val x = MutableStateFlow<Int?>(null)
     private val y = MutableStateFlow<Int?>(null)
