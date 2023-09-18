@@ -135,8 +135,8 @@
     <string name="description_tap_coordinate_with_description">Tap coordinates %d, %d (%s)</string>
     <string name="description_swipe_coordinate_default">Swipe with %d finger(s) from coordinates %d/%d to %d/%d in %dms</string>
     <string name="description_swipe_coordinate_with_description">Swipe with %d finger(s) from coordinates %d/%d to %d/%d in %dms (%s)</string>
-    <string name="description_pinch_coordinate_default">%s with %d finger(s) on coordinates %d/%d with radius of %dpx in %dms</string>
-    <string name="description_pinch_coordinate_with_description">%s with %d finger(s) on coordinates %d/%d to with radius of %dpx %dms (%s)</string>
+    <string name="description_pinch_coordinate_default">%s with %d finger(s) on coordinates %d/%d with a pinch distance of %dpx in %dms</string>
+    <string name="description_pinch_coordinate_with_description">%s with %d finger(s) on coordinates %d/%d to with a pinch distance of %dpx %dms (%s)</string>
     <string name="description_phone_call">Call %s</string>
     <string name="description_sound">Play sound: %s</string>
     <!--  Action descriptions  -->
@@ -161,7 +161,7 @@
     <string name="hint_coordinate_y_start">Start Y</string>
     <string name="hint_coordinate_x_end">End X</string>
     <string name="hint_coordinate_y_end">End Y</string>
-    <string name="hint_coordinate_radius">Radius</string>
+    <string name="hint_coordinate_radius">Pinch Distance</string>
     <string name="hint_coordinate_pinch_type">Pinch Type</string>
     <string name="hint_coordinate_type_PINCH_IN">Pinch in</string>
     <string name="hint_coordinate_type_PINCH_OUT">Pinch out</string>
