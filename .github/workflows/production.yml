@@ -1,4 +1,4 @@
-name: Build and release app to production
+name: Production - build and release app
 
 on:
   push:
