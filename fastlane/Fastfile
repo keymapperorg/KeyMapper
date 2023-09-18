@@ -13,7 +13,6 @@
 # Uncomment the line if you want fastlane to automatically update itself
 # update_fastlane
 
-update_fastlane
 sh("bundle install")
 
 default_platform(:android)
@@ -24,11 +23,9 @@ lane :testing do
 end
 
 desc "Create and deploy production release"
-lane :prod do
+lane :prod do |options|
     version_code = get_properties_value(key: "VERSION_CODE", path: "./app/version.properties")
     version_name = get_properties_value(key: "VERSION_NAME", path: "./app/version.properties")
-
-    github_token = ENV["GITHUB_TOKEN"]
 
     whats_new = File.read("../app/src/main/assets/whats-new.txt")
     File.write("metadata/android/en-US/changelogs/" + version_code + ".txt", whats_new)
@@ -42,7 +39,7 @@ lane :prod do
 
     github_release = set_github_release(
       repository_name: "keymapperorg/KeyMapper",
-      api_token: github_token,
+      api_token: options[:github_token],
       name: version_name,
       tag_name: "v" + version_name,
       description: whats_new,
