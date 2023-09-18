@@ -8,7 +8,7 @@ apply plugin: "org.jetbrains.kotlin.plugin.parcelize"
 android {
 
     namespace 'io.github.sds100.keymapper'
-    compileSdkVersion 33
+    compileSdk 33
     buildToolsVersion = '33.0.1'
 
     def versionProperties = new Properties()
