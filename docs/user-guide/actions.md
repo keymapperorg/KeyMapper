@@ -20,13 +20,13 @@ This will tap a point on your screen.
 
 ### Swipe screen (2.5.0+, Android 7.0+)
 
-Thia will swipe from a start point to and end point on your screen. You can also setup the amount of "fingers" to simulate and the duration for the gesture, **but** this is limitied due to your Android Version. 
+This will swipe from a start point to and end point on your screen. You can also setup the amount of "fingers" to simulate and the duration for the gesture, **but** this is limitied due to your Android Version. 
 
 See: [getMaxStrokeCount](https://developer.android.com/reference/android/accessibilityservice/GestureDescription#getMaxStrokeCount()) and [getMaxStrokeDuration](https://developer.android.com/reference/android/accessibilityservice/GestureDescription#getMaxGestureDuration()) for more information.
 
 ### Pinch screen (2.5.0+, Android 7.0+)
 
-Thia will simulate a pinch gesture from a start point to and end point on your screen. You can choose between *pinch in* and *pinch out*.
+This will simulate a pinch gesture from a start point to and end point on your screen. You can choose between *pinch in* and *pinch out* and also the "radius" for the pinch gesture. The radius is like the distance between the start and the end point. The higher the radius, the stronger the pinch gesture, so you may want to start with a lower value for the pinch with max. 100. Later on you can adjust this by your needs.
 You can also setup the amount of "fingers" to simulate and the duration for the gesture, **but** this is limitied due to your Android Version. 
 
 See: [getMaxStrokeCount](https://developer.android.com/reference/android/accessibilityservice/GestureDescription#getMaxStrokeCount()) and [getMaxStrokeDuration](https://developer.android.com/reference/android/accessibilityservice/GestureDescription#getMaxGestureDuration()) for more information.
