@@ -369,7 +369,7 @@ class CreateActionViewModelImpl(
                     PinchPickCoordinateResult(
                         oldData.x,
                         oldData.y,
-                        oldData.radius,
+                        oldData.distance,
                         oldData.pinchType,
                         oldData.fingerCount,
                         oldData.duration,
@@ -393,7 +393,7 @@ class CreateActionViewModelImpl(
                 return ActionData.PinchScreen(
                     result.x,
                     result.y,
-                    result.radius,
+                    result.distance,
                     result.pinchType,
                     result.fingerCount,
                     result.duration,

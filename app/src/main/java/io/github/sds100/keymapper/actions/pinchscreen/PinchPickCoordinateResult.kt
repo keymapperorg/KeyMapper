@@ -11,7 +11,7 @@ enum class PinchScreenType {
 data class PinchPickCoordinateResult(
     val x: Int,
     val y: Int,
-    val radius: Int,
+    val distance: Int,
     val pinchType: PinchScreenType,
     val fingerCount: Int,
     val duration: Int,

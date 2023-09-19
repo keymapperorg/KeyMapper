@@ -94,7 +94,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/radiusTypeLayout"
+                    android:id="@+id/distancePinchTypeLayout"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginStart="8dp"
@@ -109,12 +109,12 @@
                     app:layout_constraintTop_toBottomOf="@+id/startLayout">
 
                     <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/textInputLayoutRadius"
+                        android:id="@+id/textInputLayoutDistance"
                         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight=".5"
-                        android:hint="@string/hint_coordinate_radius"
+                        android:hint="@string/hint_coordinate_distance"
                         android:padding="8dp"
                         app:errorWhenEmpty="@{true}">
 
@@ -122,8 +122,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="number"
-                            android:onTextChanged="@{(string, start, before, count) -> viewModel.setRadius(string.toString())}"
-                            android:text="@{viewModel.radiusString}"
+                            android:onTextChanged="@{(string, start, before, count) -> viewModel.setDistance(string.toString())}"
+                            android:text="@{viewModel.distanceString}"
                             tools:text="241" />
 
                     </com.google.android.material.textfield.TextInputLayout>
@@ -152,7 +152,7 @@
                     android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/radiusTypeLayout" />
+                    app:layout_constraintTop_toBottomOf="@+id/distancePinchTypeLayout" />
 
                 <LinearLayout
                     android:id="@+id/optionsLayout"

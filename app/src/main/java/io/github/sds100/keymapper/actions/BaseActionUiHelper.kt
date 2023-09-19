@@ -320,7 +320,7 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
 
                 getString(
                     R.string.description_pinch_coordinate_default,
-                    arrayOf(pinchTypeDisplayName, action.fingerCount, action.x, action.y, action.radius, action.duration)
+                    arrayOf(pinchTypeDisplayName, action.fingerCount, action.x, action.y, action.distance, action.duration)
                 )
             } else {
                 val pinchTypeDisplayName = if (action.pinchType == PinchScreenType.PINCH_IN) {
@@ -331,7 +331,7 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
 
                 getString(
                     R.string.description_pinch_coordinate_with_description,
-                    arrayOf(pinchTypeDisplayName, action.fingerCount, action.x, action.y, action.radius, action.duration, action.description)
+                    arrayOf(pinchTypeDisplayName, action.fingerCount, action.x, action.y, action.distance, action.duration, action.description)
                 )
             }
 

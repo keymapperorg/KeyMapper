@@ -15,7 +15,6 @@ import io.github.sds100.keymapper.util.success
 import io.github.sds100.keymapper.util.then
 import io.github.sds100.keymapper.util.valueOrNull
 import splitties.bitflags.hasFlag
-import timber.log.Timber
 
 /**
  * Created by sds100 on 13/03/2021.
@@ -158,7 +157,7 @@ object ActionDataEntityMapper {
                 var x = 0;
                 var y = 0;
                 var pinchType = PinchScreenType.PINCH_IN;
-                var radius = 0;
+                var distance = 0;
                 var fingerCount = 2;
                 var duration = 250;
 
@@ -171,7 +170,7 @@ object ActionDataEntityMapper {
                 }
 
                 if (splitData.size >= 3) {
-                    radius = splitData[2].trim().toInt()
+                    distance = splitData[2].trim().toInt()
                 }
 
                 if (splitData.size >= 4) {
@@ -198,7 +197,7 @@ object ActionDataEntityMapper {
                 ActionData.PinchScreen(
                     x = x,
                     y = y,
-                    radius = radius,
+                    distance = distance,
                     pinchType = pinchType,
                     fingerCount = fingerCount,
                     duration = duration,
@@ -515,7 +514,7 @@ object ActionDataEntityMapper {
         is ActionData.PhoneCall -> data.number
         is ActionData.TapScreen -> "${data.x},${data.y}"
         is ActionData.SwipeScreen -> "${data.xStart},${data.yStart},${data.xEnd},${data.yEnd},${data.fingerCount},${data.duration}"
-        is ActionData.PinchScreen -> "${data.x},${data.y},${data.radius},${data.pinchType},${data.fingerCount},${data.duration}"
+        is ActionData.PinchScreen -> "${data.x},${data.y},${data.distance},${data.pinchType},${data.fingerCount},${data.duration}"
         is ActionData.Text -> data.text
         is ActionData.Url -> data.url
         is ActionData.Sound -> data.soundUid

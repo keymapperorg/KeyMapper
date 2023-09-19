@@ -21,7 +21,7 @@ class PinchPickDisplayCoordinateViewModel(
 
     private val x = MutableStateFlow<Int?>(null)
     private val y = MutableStateFlow<Int?>(null)
-    private val radius = MutableStateFlow<Int?>(null)
+    private val distance = MutableStateFlow<Int?>(null)
     private val pinchType = MutableStateFlow<PinchScreenType?>(PinchScreenType.PINCH_IN)
     private val fingerCount = MutableStateFlow<Int?>(2)
     private val duration = MutableStateFlow<Int?>(null)
@@ -43,7 +43,7 @@ class PinchPickDisplayCoordinateViewModel(
         it.toString()
     }.stateIn(viewModelScope, SharingStarted.Lazily, null)
 
-    val radiusString = radius.map {
+    val distanceString = distance.map {
         it ?: return@map ""
 
         it.toString()
@@ -74,13 +74,13 @@ class PinchPickDisplayCoordinateViewModel(
         bitmap?.value != null
     }.stateIn(viewModelScope, SharingStarted.Lazily, false)
 
-    private val isCoordinatesValid: StateFlow<Boolean> = combine(x, y, radius, pinchType) { x, y, radius, pinchType ->
+    private val isCoordinatesValid: StateFlow<Boolean> = combine(x, y, distance, pinchType) { x, y, distance, pinchType ->
         x ?: return@combine false
         y ?: return@combine false
-        radius ?: return@combine false
+        distance ?: return@combine false
         pinchType ?: return@combine false
 
-        x >= 0 && y >= 0 && radius >= 0 && (pinchType == PinchScreenType.PINCH_IN || pinchType == PinchScreenType.PINCH_OUT)
+        x >= 0 && y >= 0 && distance >= 0 && (pinchType == PinchScreenType.PINCH_IN || pinchType == PinchScreenType.PINCH_OUT)
     }.stateIn(viewModelScope, SharingStarted.Lazily, false)
 
     private val isOptionsValid: StateFlow<Boolean> = combine(fingerCount, duration) { fingerCount, duration ->
@@ -125,8 +125,8 @@ class PinchPickDisplayCoordinateViewModel(
         this.y.value = y.toIntOrNull()
     }
 
-    fun setRadius(radius: String) {
-        this.radius.value = radius.toIntOrNull()
+    fun setDistance(distance: String) {
+        this.distance.value = distance.toIntOrNull()
     }
 
     private fun setPinchType(type: String) {
@@ -164,7 +164,7 @@ class PinchPickDisplayCoordinateViewModel(
         viewModelScope.launch {
             val x = x.value ?: return@launch
             val y = y.value ?: return@launch
-            val radius = radius.value ?: return@launch
+            val distance = distance.value ?: return@launch
             val pinchType = pinchType.value ?: return@launch
             val fingerCount = fingerCount.value ?: return@launch
             val duration = duration.value ?: return@launch
@@ -178,7 +178,7 @@ class PinchPickDisplayCoordinateViewModel(
                 )
             ) ?: return@launch
 
-            _returnResult.emit(PinchPickCoordinateResult(x, y, radius, pinchType, fingerCount, duration, description))
+            _returnResult.emit(PinchPickCoordinateResult(x, y, distance, pinchType, fingerCount, duration, description))
         }
     }
 
@@ -190,7 +190,7 @@ class PinchPickDisplayCoordinateViewModel(
         viewModelScope.launch {
             x.value = result.x
             y.value = result.y
-            radius.value = result.radius
+            distance.value = result.distance
             pinchType.value = result.pinchType
             fingerCount.value = result.fingerCount
             duration.value = result.duration

@@ -471,7 +471,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
     override fun pinchScreen(
         x: Int,
         y: Int,
-        radius: Int,
+        distance: Int,
         pinchType: PinchScreenType,
         fingerCount: Int,
         duration: Int,
@@ -494,12 +494,12 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
                 for (index in 0..fingerCount) {
                     endCoordinates.add(Point(x, y));
                 }
-                startCoordinates = distributePointsOnCircle(Point(x, y), radius.toFloat(), fingerCount).toMutableList()
+                startCoordinates = distributePointsOnCircle(Point(x, y), distance.toFloat() / 2, fingerCount).toMutableList()
             } else {
                 for (index in 0..fingerCount) {
                     startCoordinates.add(Point(x, y));
                 }
-                endCoordinates = distributePointsOnCircle(Point(x, y), radius.toFloat(), fingerCount).toMutableList()
+                endCoordinates = distributePointsOnCircle(Point(x, y), distance.toFloat() / 2, fingerCount).toMutableList()
             }
 
             for (index in 0 until startCoordinates.size) {

@@ -325,7 +325,7 @@ sealed class ActionData {
     data class PinchScreen(
         val x: Int,
         val y: Int,
-        val radius: Int,
+        val distance: Int,
         val pinchType: PinchScreenType,
         val fingerCount: Int,
         val duration: Int,

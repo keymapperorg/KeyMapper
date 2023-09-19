@@ -161,7 +161,7 @@
     <string name="hint_coordinate_y_start">Start Y</string>
     <string name="hint_coordinate_x_end">End X</string>
     <string name="hint_coordinate_y_end">End Y</string>
-    <string name="hint_coordinate_radius">Pinch distance</string>
+    <string name="hint_coordinate_distance">Pinch distance (px)</string>
     <string name="hint_coordinate_pinch_type">Pinch type</string>
     <string name="hint_coordinate_type_PINCH_IN">Pinch in</string>
     <string name="hint_coordinate_type_PINCH_OUT">Pinch out</string>

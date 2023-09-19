@@ -274,7 +274,7 @@ class PerformActionsUseCaseImpl(
             }
 
             is ActionData.PinchScreen -> {
-                result = accessibilityService.pinchScreen(action.x, action.y, action.radius, action.pinchType, action.fingerCount, action.duration, inputEventType)
+                result = accessibilityService.pinchScreen(action.x, action.y, action.distance, action.pinchType, action.fingerCount, action.duration, inputEventType)
             }
 
             is ActionData.Text -> {
