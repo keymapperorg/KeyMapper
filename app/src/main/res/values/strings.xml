@@ -1352,5 +1352,6 @@
     <string name="about_team_bydario_name" translatable="false">Darío B. C. (bydariogamer)</string>
     <string name="about_team_bydario_url" translatable="false">https://github.com/bydariogamer</string>
     <string name="about_team_bydario_role">Translator (Spanish)</string>
+    <string name="header_pick_screen_element">Pick a screen element</string>
     <!--  About  -->
 </resources>

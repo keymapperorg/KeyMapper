@@ -239,17 +239,17 @@
     </fragment>
 
     <action
-        android:id="@+id/tapPickScreenElement"
-        app:destination="@id/tapPickScreenElementFragment"
+        android:id="@+id/pickScreenElement"
+        app:destination="@id/pickScreenElementFragment"
         app:enterAnim="@anim/slide_in_right"
         app:exitAnim="@anim/slide_out_left"
         app:popEnterAnim="@anim/slide_in_left"
         app:popExitAnim="@anim/slide_out_right" />
 
     <fragment
-        android:id="@+id/tapPickScreenElementFragment"
+        android:id="@+id/pickScreenElementFragment"
         android:name="io.github.sds100.keymapper.actions.tapscreenelement.PickScreenElementFragment"
-        tools:layout="@layout/fragment_simple_recyclerview">
+        tools:layout="@layout/fragment_pick_screen_element">
 
         <argument
             android:name="requestKey"

@@ -164,7 +164,7 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
                     Json.encodeToString(it)
                 }
 
-                NavAppDirections.tapPickScreenElement(requestKey, json)
+                NavAppDirections.pickScreenElement(requestKey, json)
             }
             is NavDestination.ConfigIntent -> {
                 val json = destination.result?.let {

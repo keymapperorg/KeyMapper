@@ -3,23 +3,29 @@ package io.github.sds100.keymapper.actions.tapscreenelement
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.repositories.ViewIdRepository
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.dataOrNull
-import io.github.sds100.keymapper.util.success
 import io.github.sds100.keymapper.util.ui.DefaultSimpleListItem
 import io.github.sds100.keymapper.util.ui.NavigationViewModel
 import io.github.sds100.keymapper.util.ui.NavigationViewModelImpl
+import io.github.sds100.keymapper.util.ui.PopupUi
 import io.github.sds100.keymapper.util.ui.PopupViewModel
 import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.SimpleListItem
+import io.github.sds100.keymapper.util.ui.showPopup
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -39,10 +45,49 @@ class PickScreenElementViewModel(
     private val _returnResult = MutableSharedFlow<PickScreenElementResult>()
     val returnResult = _returnResult.asSharedFlow()
 
-    fun onListItemClick(elementId: String, packageName: String) {
-        Timber.d("onListItemClick %s", elementId)
+    private val _elementId = MutableStateFlow<String?>(null)
+    private val _packageName = MutableStateFlow<String?>(null)
+    private val _fullName = MutableStateFlow<String?>(null)
+    private val _description: MutableStateFlow<String?> = MutableStateFlow(null)
 
-        viewModelScope.launch {
+    val elementId = _elementId.map {
+        it ?: return@map ""
+
+        it.toString()
+    }.stateIn(viewModelScope, SharingStarted.Lazily, null)
+
+    val packageName = _packageName.map {
+        it ?: return@map ""
+
+        it.toString()
+    }.stateIn(viewModelScope, SharingStarted.Lazily, null)
+
+    val fullName = _fullName.map {
+        it ?: return@map ""
+
+        it.toString()
+    }.stateIn(viewModelScope, SharingStarted.Lazily, null)
+
+    private fun setElementId(id: String) {
+        this._elementId.value = id
+    }
+
+    private fun setPackageName(name: String) {
+        this._packageName.value = name
+    }
+
+    private fun setFullName(name: String) {
+        this._fullName.value = name
+    }
+
+    fun onListItemClick(elementId: String, packageName: String) {
+        Timber.d("onListItemClick %s %s", elementId, packageName)
+
+        this.setElementId(elementId)
+        this.setPackageName(packageName)
+        this.setFullName("${packageName}/${elementId}")
+
+        /*viewModelScope.launch {
             _returnResult.emit(
                 PickScreenElementResult(
                     elementId = elementId,
@@ -51,7 +96,7 @@ class PickScreenElementViewModel(
                     description = ""
                 )
             )
-        }
+        }*/
     }
 
     init {
@@ -82,6 +127,33 @@ class PickScreenElementViewModel(
         }
 
         return arrayListOf()
+    }
+
+    val isDoneButtonEnabled: StateFlow<Boolean> = combine(_elementId, _packageName, _fullName) { elementId, packageName, fullName ->
+        elementId ?: return@combine false
+        packageName ?: return@combine false
+        fullName ?: return@combine false
+
+        elementId.isNotEmpty()&& packageName.isNotEmpty() && fullName.isNotEmpty()
+    }.stateIn(viewModelScope, SharingStarted.Lazily, false)
+
+    fun onDoneClick() {
+        viewModelScope.launch {
+            val elementId = _elementId.value ?: return@launch
+            val packageName = _packageName.value ?: return@launch
+            val fullName = _fullName.value ?: return@launch
+
+            val description = showPopup(
+                "coordinate_description",
+                PopupUi.Text(
+                    getString(R.string.hint_tap_coordinate_title),
+                    allowEmpty = true,
+                    text = _description.value ?: ""
+                )
+            ) ?: return@launch
+
+            _returnResult.emit(PickScreenElementResult(elementId, packageName, fullName, description))
+        }
     }
 
     @Suppress("UNCHECKED_CAST")
