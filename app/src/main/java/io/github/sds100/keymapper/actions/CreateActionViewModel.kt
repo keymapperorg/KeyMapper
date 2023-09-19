@@ -370,6 +370,7 @@ class CreateActionViewModelImpl(
                         oldData.elementId,
                         oldData.packageName,
                         oldData.fullName,
+                        oldData.onlyIfVisible,
                         oldData.description ?: ""
                     )
                 } else {
@@ -381,16 +382,15 @@ class CreateActionViewModelImpl(
                     NavDestination.PickScreenElement(oldResult)
                 ) ?: return null
 
-                val description = if (result.description.isEmpty()) {
+                val description = result.description.ifEmpty {
                     null
-                } else {
-                    result.description
                 }
 
                 return ActionData.TapScreenElement(
                     result.elementId,
                     result.packageName,
                     result.fullName,
+                    result.onlyIfVisible,
                     description
                 )
             }

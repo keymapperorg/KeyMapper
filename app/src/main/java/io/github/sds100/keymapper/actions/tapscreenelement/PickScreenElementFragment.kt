@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import androidx.activity.addCallback
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -26,13 +27,14 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-class PickScreenElementFragment: Fragment() {
+class PickScreenElementFragment : Fragment() {
     companion object {
         const val EXTRA_ELEMENT_ID = "extra_element_id"
     }
 
     private val args: PickScreenElementFragmentArgs by navArgs()
     private val requestKey: String by lazy { args.requestKey }
+    private var interactionTypesDisplayValues = mutableListOf<String>()
 
     private val viewModel: PickScreenElementViewModel by viewModels {
         Inject.pickScreenElementActionTypeViewModel(requireContext())
@@ -54,12 +56,26 @@ class PickScreenElementFragment: Fragment() {
         }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        interactionTypesDisplayValues = arrayOf(
+            str(R.string.extra_label_pick_screen_element_interaction_type_click),
+            str(R.string.extra_label_pick_screen_element_interaction_type_long_click)
+        ).toMutableList();
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.viewModel = viewModel
         binding.caption = str(R.string.header_pick_screen_element)
         binding.emptyListPlaceholder = str(R.string.recyclerview_placeholder)
+        binding.interactionTypeSpinnerAdapter = ArrayAdapter(
+            this.requireActivity(),
+            android.R.layout.simple_spinner_dropdown_item,
+            interactionTypesDisplayValues
+        )
 
         viewModel.showPopups(this, binding)
 

@@ -325,6 +325,7 @@ sealed class ActionData {
         val elementId: String,
         val packageName: String,
         val fullName: String,
+        val onlyIfVisible: Boolean,
         val description: String?,
     ): ActionData() {
         override val id = ActionId.TAP_SCREEN_ELEMENT

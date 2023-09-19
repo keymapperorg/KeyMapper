@@ -51,6 +51,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
 
     private var _lastKnownRoot: AccessibilityNodeInfo? = null
     private var _availableNodes: MutableList<String>? = null
+    private var _shoudlRecordUIElemnts: Boolean = false
 
     /**
      * Broadcast receiver for all intents sent from within the app.
@@ -426,6 +427,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
             emptyList()
         }
     }
+
     private fun findViewIdResourceNames(node: AccessibilityNodeInfo): List<String> {
         val list = arrayListOf<String>()
 
@@ -543,10 +545,10 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
         return Error.SdkVersionTooLow(Build.VERSION_CODES.N)
     }
 
-    override fun tapScreenElement(fullName: String, inputEventType: InputEventType): Result<*> {
+    override fun tapScreenElement(fullName: String, onlyIfVisible: Boolean, inputEventType: InputEventType): Result<*> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 
-            Timber.d("tapScreenElement ID: %s", fullName)
+            Timber.d("tapScreenElement ID: %s %s", fullName, onlyIfVisible.toString())
 
             if (this.rootInActiveWindow != null) {
                 val node = this.rootInActiveWindow.findAccessibilityNodeInfosByViewId(fullName)

@@ -155,6 +155,7 @@ object ActionDataEntityMapper {
                 val elementId = splitData[0];
                 val packageName = splitData[1];
                 val fullName = splitData[2];
+                val onlyIfVisible = splitData[3].toBoolean();
                 val description = entity.extras.getData(ActionEntity.EXTRA_ELEMENT_DESCRIPTION)
                     .valueOrNull()
 
@@ -162,6 +163,7 @@ object ActionDataEntityMapper {
                     elementId = elementId,
                     packageName = packageName,
                     fullName = fullName,
+                    onlyIfVisible = onlyIfVisible,
                     description = description
                 )
             }

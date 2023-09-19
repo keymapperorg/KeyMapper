@@ -126,6 +126,9 @@ class AccessibilityServiceController(
             }
         }
 
+    private var shouldRecordUIElements = MutableStateFlow(false)
+    private var recordingOfUIElementsPossible = MutableStateFlow(false)
+
     private val initialServiceFlags: Int by lazy {
         var flags = AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS
             .withFlag(AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS)
@@ -277,6 +280,8 @@ class AccessibilityServiceController(
         accessibilityService.serviceFeedbackType = serviceFeedbackType.value
         accessibilityService.serviceEventTypes = serviceEventTypes.value
 
+        recordingOfUIElementsPossible.value = true
+
         //check if fingerprint gestures are supported
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val isFingerprintGestureRequested =
@@ -415,7 +420,10 @@ class AccessibilityServiceController(
     fun onAccessibilityEvent(event: AccessibilityEventModel?, originalEvent: AccessibilityEvent?) {
         Timber.d("OnAccessibilityEvent $event")
 
+        Timber.d("onAccessibilityEvent: shouldRecordUIElements: %s", shouldRecordUIElements.value.toString())
+
         if (
+            shouldRecordUIElements.value &&
             originalEvent != null &&
             intArrayOf(
                 AccessibilityEvent.TYPE_WINDOWS_CHANGED,
@@ -474,7 +482,7 @@ class AccessibilityServiceController(
     }
 
     @SuppressLint("NewApi")
-    private fun onEventFromUi(event: Event) {
+    private suspend fun onEventFromUi(event: Event) {
         Timber.d("Service received event from UI: $event")
         when (event) {
             is Event.StartRecordingTrigger ->
@@ -502,8 +510,17 @@ class AccessibilityServiceController(
             is Event.ShowKeyboard -> accessibilityService.showKeyboard()
             is Event.ChangeIme -> accessibilityService.switchIme(event.imeId)
             is Event.DisableService -> accessibilityService.disableSelf()
+            is Event.ToggleRecordUIElements -> toggleRecordUIElements()
             else -> Unit
         }
+    }
+
+    private suspend fun toggleRecordUIElements() {
+        if (recordingOfUIElementsPossible.value) {
+            shouldRecordUIElements.value = !shouldRecordUIElements.value
+        }
+
+        outputEvents.emit(Event.OnToggleRecordUIElements(shouldRecordUIElements.value))
     }
 
     private fun recordTriggerJob() = coroutineScope.launch {

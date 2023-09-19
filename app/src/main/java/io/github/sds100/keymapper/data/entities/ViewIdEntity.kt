@@ -9,7 +9,7 @@ import io.github.sds100.keymapper.data.db.dao.ViewIdDao
 data class ViewIdEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int,
-    @ColumnInfo(name = ViewIdDao.KEY_VIEW_ID)
+    @ColumnInfo(name = ViewIdDao.KEY_ELEMENT_ID)
     val viewId: String,
     @ColumnInfo(name = ViewIdDao.KEY_PACKAGE_NAME)
     val packageName: String,

@@ -37,6 +37,7 @@ import io.github.sds100.keymapper.settings.ConfigSettingsUseCaseImpl
 import io.github.sds100.keymapper.settings.SettingsViewModel
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceController
 import io.github.sds100.keymapper.system.accessibility.MyAccessibilityService
+import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.apps.ChooseActivityViewModel
 import io.github.sds100.keymapper.system.apps.ChooseAppShortcutViewModel
 import io.github.sds100.keymapper.system.apps.ChooseAppViewModel
@@ -136,7 +137,8 @@ object Inject {
     fun pickScreenElementActionTypeViewModel(context: Context): PickScreenElementViewModel.Factory {
         return PickScreenElementViewModel.Factory(
             ServiceLocator.resourceProvider(context),
-            ServiceLocator.viewIdRepository(context)
+            ServiceLocator.viewIdRepository(context),
+            ServiceLocator.accessibilityServiceAdapter(context)
         )
     }
 

@@ -18,6 +18,10 @@
         <variable
             name="emptyListPlaceholder"
             type="String" />
+
+        <variable
+            name="interactionTypeSpinnerAdapter"
+            type="android.widget.ArrayAdapter" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -66,7 +70,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
-                        android:text="@string/action_disable" />
+                        android:onClick="@{() -> viewModel.onRecordButtonClick()}"
+                        android:text="@{viewModel.recordButtonText}" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -78,93 +83,76 @@
                     android:layout_marginEnd="8dp"
                     android:layout_marginBottom="8dp"
                     android:baselineAligned="false"
-                    android:orientation="horizontal"
-                    android:weightSum="1.0"
-                    app:layout_constraintBottom_toTopOf="@+id/inputFieldsLayout2"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/headerLayout">
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/textInputLayoutElementId"
-                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
-                        android:hint="@string/extra_label_swipe_duration"
-                        android:padding="8dp"
-                        app:errorWhenEmpty="@{true}"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="parent">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="text"
-                            android:text="@{viewModel.elementId}"
-                            tools:text="250" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/textInputLayoutPackageName"
-                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
-                        android:hint="@string/extra_label_swipe_duration"
-                        android:padding="8dp"
-                        app:errorWhenEmpty="@{true}"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="parent">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="text"
-                            android:text="@{viewModel.packageName}"
-                            tools:text="250" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/inputFieldsLayout2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:baselineAligned="false"
-                    android:orientation="horizontal"
+                    android:orientation="vertical"
                     android:weightSum="1.0"
                     app:layout_constraintBottom_toTopOf="@+id/listLayout"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/inputFieldsLayout">
+                    app:layout_constraintTop_toBottomOf="@id/headerLayout">
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/textInputLayoutFullName"
-                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                        android:layout_width="0dp"
+                    <LinearLayout
+                        android:id="@+id/inputFieldsLayoutSub1"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
-                        android:hint="@string/extra_label_swipe_duration"
-                        android:padding="8dp"
-                        app:errorWhenEmpty="@{true}"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="parent">
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:baselineAligned="false"
+                        android:orientation="horizontal">
 
-                        <com.google.android.material.textfield.TextInputEditText
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/textInputLayoutElementId"
+                            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="text"
-                            android:text="@{viewModel.fullName}"
-                            tools:text="250" />
-                    </com.google.android.material.textfield.TextInputLayout>
+                            android:hint="@string/extra_label_pick_screen_element_id"
+                            android:padding="8dp"
+                            app:errorWhenEmpty="@{true}"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="parent">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="text"
+                                android:text="@{viewModel.fullName}"
+                                tools:text="250" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/inputFieldsLayoutSub2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:baselineAligned="false"
+                        android:orientation="horizontal"
+                        android:weightSum="1.0">
+
+                        <Spinner
+                            android:id="@+id/interactionTypeSpinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5"
+                            android:adapter="@{interactionTypeSpinnerAdapter}"
+                            android:hint="@string/extra_label_pick_screen_element_interaction_type"
+                            android:minHeight="48dp"
+                            android:onItemSelected="@{(parent, view, position, id) -> viewModel.onInteractionTypeSelected(parent, view, position, id)}"
+                            android:selectedItemPosition="@{viewModel.interactionTypeSpinnerSelection}" />
+
+                        <CheckBox
+                            android:id="@+id/checkBox2"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5"
+                            android:text="@string/extra_label_pick_screen_element_only_if_visible_checkbox" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
@@ -179,7 +167,7 @@
                     app:layout_behavior="@string/appbar_scrolling_view_behavior"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/inputFieldsLayout2">
+                    app:layout_constraintTop_toBottomOf="@id/inputFieldsLayout">
 
                     <com.airbnb.epoxy.EpoxyRecyclerView
                         android:id="@+id/epoxyRecyclerView"

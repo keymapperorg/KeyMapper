@@ -12,12 +12,12 @@ interface ViewIdDao {
     companion object {
         const val TABLE_NAME = "viewids"
         const val KEY_ID = "id"
-        const val KEY_VIEW_ID = "view_id"
+        const val KEY_ELEMENT_ID = "view_id"
         const val KEY_PACKAGE_NAME = "package_name"
         const val KEY_FULL_NAME = "full_name"
     }
 
-    @Query("SELECT * FROM $TABLE_NAME ORDER BY $KEY_PACKAGE_NAME ASC, $KEY_VIEW_ID ASC")
+    @Query("SELECT * FROM $TABLE_NAME ORDER BY $KEY_PACKAGE_NAME ASC, $KEY_ELEMENT_ID ASC")
     fun getAll(): Flow<List<ViewIdEntity>>
 
     @Query("SELECT * FROM $TABLE_NAME WHERE $KEY_ID = :id")
