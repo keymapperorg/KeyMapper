@@ -25,17 +25,12 @@ import io.github.sds100.keymapper.mappings.keymaps.detection.DetectScreenOffKeyE
 import io.github.sds100.keymapper.mappings.keymaps.detection.KeyMapController
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsController
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsUseCase
-import io.github.sds100.keymapper.system.apps.PackageInfo
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.firstBlocking
-import io.github.sds100.keymapper.util.isSuccess
-import io.github.sds100.keymapper.util.success
-import io.github.sds100.keymapper.util.then
-import io.github.sds100.keymapper.util.valueOrNull
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import splitties.bitflags.hasFlag
@@ -69,6 +64,19 @@ class AccessibilityServiceController(
          * How long should the accessibility service record a trigger in seconds.
          */
         private const val RECORD_TRIGGER_TIMER_LENGTH = 5
+
+        /**
+         * How long should the accessibility service record UI elements in seconds
+         */
+        private const val RECORD_UI_ELEMENTS_TIMER_LENGTH = 5 * 60
+        /**
+         * On which events we want to record UI Elements?
+         */
+        private val RECORD_UI_ELEMENTS_EVENT_TYPES = intArrayOf(
+            AccessibilityEvent.TYPE_WINDOWS_CHANGED,
+            AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
+            AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
+        )
     }
 
     private val triggerKeyMapFromOtherAppsController = TriggerKeyMapFromOtherAppsController(
@@ -126,8 +134,9 @@ class AccessibilityServiceController(
             }
         }
 
-    private var shouldRecordUIElements = MutableStateFlow(false)
-    private var recordingOfUIElementsPossible = MutableStateFlow(false)
+    private var recordingUiElementsJob: Job? = null
+    private val recordingUiElements: Boolean
+        get() = recordingUiElementsJob != null && recordingUiElementsJob?.isActive == true
 
     private val initialServiceFlags: Int by lazy {
         var flags = AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS
@@ -280,8 +289,6 @@ class AccessibilityServiceController(
         accessibilityService.serviceFeedbackType = serviceFeedbackType.value
         accessibilityService.serviceEventTypes = serviceEventTypes.value
 
-        recordingOfUIElementsPossible.value = true
-
         //check if fingerprint gestures are supported
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val isFingerprintGestureRequested =
@@ -420,17 +427,10 @@ class AccessibilityServiceController(
     fun onAccessibilityEvent(event: AccessibilityEventModel?, originalEvent: AccessibilityEvent?) {
         Timber.d("OnAccessibilityEvent $event")
 
-        Timber.d("onAccessibilityEvent: shouldRecordUIElements: %s", shouldRecordUIElements.value.toString())
-
-        if (
-            shouldRecordUIElements.value &&
-            originalEvent != null &&
-            intArrayOf(
-                AccessibilityEvent.TYPE_WINDOWS_CHANGED,
-                AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
-                AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
-            ).contains(originalEvent.eventType)
-        ) {
+        /**
+         * Record UI elements and store them into the DB
+         */
+        if (recordingUiElements && originalEvent != null && RECORD_UI_ELEMENTS_EVENT_TYPES.contains(originalEvent.eventType)) {
             val foundViewIds = accessibilityService.fetchAvailableUIElements()
 
             if (foundViewIds.isNotEmpty()) {
@@ -504,23 +504,30 @@ class AccessibilityServiceController(
             }
 
             is Event.TestAction -> performActionsUseCase.perform(event.action)
-
             is Event.Ping -> coroutineScope.launch { outputEvents.emit(Event.Pong(event.key)) }
             is Event.HideKeyboard -> accessibilityService.hideKeyboard()
             is Event.ShowKeyboard -> accessibilityService.showKeyboard()
             is Event.ChangeIme -> accessibilityService.switchIme(event.imeId)
             is Event.DisableService -> accessibilityService.disableSelf()
-            is Event.ToggleRecordUIElements -> toggleRecordUIElements()
+            is Event.StartRecordingUiElements ->
+                if (!recordingUiElements) {
+                    recordingUiElementsJob = recordUiElementsJob()
+                }
+            is Event.StopRecordingUiElements -> coroutineScope.launch { outputEvents.emit(Event.OnStoppedRecordingTrigger) }
+            is Event.OnStoppedRecordingUiElements -> {
+                val wasRecordingUiElements = recordingUiElements
+
+                recordingUiElementsJob?.cancel()
+                recordingUiElementsJob = null
+
+                if (wasRecordingUiElements) {
+                    coroutineScope.launch {
+                        outputEvents.emit(Event.OnStoppedRecordingUiElements)
+                    }
+                }
+            }
             else -> Unit
         }
-    }
-
-    private suspend fun toggleRecordUIElements() {
-        if (recordingOfUIElementsPossible.value) {
-            shouldRecordUIElements.value = !shouldRecordUIElements.value
-        }
-
-        outputEvents.emit(Event.OnToggleRecordUIElements(shouldRecordUIElements.value))
     }
 
     private fun recordTriggerJob() = coroutineScope.launch {
@@ -534,6 +541,19 @@ class AccessibilityServiceController(
         }
 
         outputEvents.emit(Event.OnStoppedRecordingTrigger)
+    }
+
+    private fun recordUiElementsJob() = coroutineScope.launch {
+        repeat(RECORD_UI_ELEMENTS_TIMER_LENGTH) {iteration ->
+            if (isActive) {
+                val timeLeft = RECORD_UI_ELEMENTS_TIMER_LENGTH - iteration
+                outputEvents.emit(Event.OnIncrementRecordUiElementsTimer(timeLeft))
+
+                delay(1000)
+            }
+        }
+
+        outputEvents.emit(Event.OnStoppedRecordingUiElements)
     }
 
     private fun requestFingerprintGestureDetection() {

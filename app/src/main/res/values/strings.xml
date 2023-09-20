@@ -259,8 +259,8 @@
     <string name="extra_label_swipe_select_start_end_start">Start</string>
     <string name="extra_label_swipe_select_start_end_end">End</string>
     <string name="extra_label_pick_screen_element_id">Element ID</string>
-    <string name="extra_label_pick_screen_element_start_record">Start Record</string>
-    <string name="extra_label_pick_screen_element_stop_record">Stop Record</string>
+    <string name="extra_label_pick_screen_element_record_button_text_start">Start Record</string>
+    <string name="extra_label_pick_screen_element_record_button_text_active">Recording for %s min</string>
     <string name="extra_label_pick_screen_element_only_if_visible_checkbox">Only if visible</string>
     <string name="extra_label_pick_screen_element_interaction_type">Interaction Type</string>
     <string name="extra_label_pick_screen_element_interaction_type_click">Click</string>

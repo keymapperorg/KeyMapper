@@ -80,7 +80,14 @@ sealed class Event {
     data class OnInputFocusChange(val isFocussed: Boolean) : Event()
 
     @Serializable
-    object ToggleRecordUIElements: Event()
+    object StartRecordingUiElements: Event()
+
     @Serializable
-    data class OnToggleRecordUIElements(val isRecording: Boolean): Event()
+    object StopRecordingUiElements: Event()
+
+    @Serializable
+    data class OnIncrementRecordUiElementsTimer(val timeLeft: Int) : Event()
+
+    @Serializable
+    object OnStoppedRecordingUiElements : Event()
 }

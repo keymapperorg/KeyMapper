@@ -138,7 +138,8 @@ object Inject {
         return PickScreenElementViewModel.Factory(
             ServiceLocator.resourceProvider(context),
             ServiceLocator.viewIdRepository(context),
-            ServiceLocator.accessibilityServiceAdapter(context)
+            ServiceLocator.accessibilityServiceAdapter(context),
+            (context.applicationContext as KeyMapperApp).recordUiElementsController,
         )
     }
 

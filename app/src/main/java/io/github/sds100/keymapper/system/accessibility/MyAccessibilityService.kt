@@ -49,10 +49,6 @@ import timber.log.Timber
 
 class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessibilityService {
 
-    private var _lastKnownRoot: AccessibilityNodeInfo? = null
-    private var _availableNodes: MutableList<String>? = null
-    private var _shoudlRecordUIElemnts: Boolean = false
-
     /**
      * Broadcast receiver for all intents sent from within the app.
      */

@@ -9,6 +9,7 @@ import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.multidex.MultiDexApplication
 import com.google.android.material.color.DynamicColors
+import io.github.sds100.keymapper.actions.tapscreenelement.RecordUiElementsController
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.entities.LogEntryEntity
 import io.github.sds100.keymapper.logging.KeyMapperLoggingTree
@@ -140,6 +141,10 @@ class KeyMapperApp : MultiDexApplication() {
 
     val recordTriggerController by lazy {
         RecordTriggerController(appCoroutineScope, accessibilityServiceAdapter)
+    }
+
+    val recordUiElementsController by lazy {
+        RecordUiElementsController(appCoroutineScope, accessibilityServiceAdapter)
     }
 
     val autoGrantPermissionController by lazy {

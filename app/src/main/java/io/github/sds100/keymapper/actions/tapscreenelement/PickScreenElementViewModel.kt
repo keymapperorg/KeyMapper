@@ -8,11 +8,12 @@ import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.repositories.ViewIdRepository
 import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerState
+import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerUseCase
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.dataOrNull
-import io.github.sds100.keymapper.util.then
+import io.github.sds100.keymapper.util.formatSeconds
 import io.github.sds100.keymapper.util.ui.DefaultSimpleListItem
 import io.github.sds100.keymapper.util.ui.NavigationViewModel
 import io.github.sds100.keymapper.util.ui.NavigationViewModelImpl
@@ -22,6 +23,7 @@ import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.SimpleListItem
 import io.github.sds100.keymapper.util.ui.showPopup
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,17 +32,23 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 class PickScreenElementViewModel(
     resourceProvider: ResourceProvider,
     viewIdRepository: ViewIdRepository,
-    serviceAdapter: ServiceAdapter
+    serviceAdapter: ServiceAdapter,
+    recordUiElements: RecordUiElementsUseCase
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
     PopupViewModel by PopupViewModelImpl(),
@@ -63,7 +71,7 @@ class PickScreenElementViewModel(
     private val _description: MutableStateFlow<String?> = MutableStateFlow(null)
     private val _interactionType: MutableStateFlow<INTERACTION_TYPES?> = MutableStateFlow(INTERACTION_TYPES.CLICK)
 
-    val recordButtonText: MutableStateFlow<String> = MutableStateFlow(getString(R.string.extra_label_pick_screen_element_start_record))
+    // val recordButtonText: MutableStateFlow<String> = MutableStateFlow(getString(R.string.extra_label_pick_screen_element_record_button_text_start))
 
     val elementId = _elementId.map {
         it ?: return@map ""
@@ -117,33 +125,33 @@ class PickScreenElementViewModel(
     fun onListItemClick(elementId: String, packageName: String) {
         Timber.d("onListItemClick %s %s", elementId, packageName)
 
-        this.setElementId(elementId)
-        this.setPackageName(packageName)
-        this.setFullName("${packageName}/${elementId}")
-
-        /*viewModelScope.launch {
-            _returnResult.emit(
-                PickScreenElementResult(
-                    elementId = elementId,
-                    packageName = packageName,
-                    fullName = "${packageName}/${elementId}",
-                    description = ""
-                )
-            )
-        }*/
+        setElementId(elementId)
+        setPackageName(packageName)
+        setFullName("${packageName}/${elementId}")
     }
 
-    private fun setRecordButtonText(isRecording: Boolean) {
-        if (isRecording) {
-            this.recordButtonText.value = getString(R.string.extra_label_pick_screen_element_stop_record)
-        } else {
-            this.recordButtonText.value = getString(R.string.extra_label_pick_screen_element_start_record)
+    val recordButtonText: StateFlow<String> = recordUiElements.state.map { recordUiElementsState ->
+        when (recordUiElementsState) {
+            is RecordUiElementsState.CountingDown -> getString(R.string.extra_label_pick_screen_element_record_button_text_active, formatSeconds(recordUiElementsState.timeLeft))
+            RecordUiElementsState.Stopped -> getString(R.string.button_record_trigger)
         }
-    }
+    }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.Lazily, "")
+
+    /*private fun updateRecordButtonTextAndStyle(timeLeft: Int) {
+        Timber.d("setRecordButtonText: %d", timeLeft)
+        if (timeLeft > 0) {
+            recordButtonText.value = getString(R.string.extra_label_pick_screen_element_record_button_text_active, formatSeconds(timeLeft))
+        } else {
+            recordButtonText.value = getString(R.string.extra_label_pick_screen_element_record_button_text_start)
+        }
+    }*/
 
     fun onRecordButtonClick() {
         viewModelScope.launch(Dispatchers.Default) {
-            _serviceAdapter.send(Event.ToggleRecordUIElements)
+            _serviceAdapter.send(Event.StopRecordingUiElements)
+        }
+        viewModelScope.launch(Dispatchers.Default) {
+            _serviceAdapter.send(Event.StartRecordingUiElements)
         }
     }
 
@@ -152,12 +160,13 @@ class PickScreenElementViewModel(
             _listItems.value = State.Data(buildListItems())
         }
 
-        _serviceAdapter.eventReceiver.onEach { event ->
+        /*_serviceAdapter.eventReceiver.onEach { event ->
             when (event) {
-                is Event.OnToggleRecordUIElements -> setRecordButtonText(event.isRecording)
+                is Event.OnIncrementRecordUiElementsTimer -> updateRecordButtonTextAndStyle(event.timeLeft)
+                is Event.OnStoppedRecordingUiElements -> updateRecordButtonTextAndStyle(-1)
                 else -> Unit
             }
-        }.launchIn(viewModelScope)
+        }.launchIn(viewModelScope)*/
     }
 
     private suspend fun buildListItems(): List<SimpleListItem> {
@@ -189,10 +198,14 @@ class PickScreenElementViewModel(
         packageName ?: return@combine false
         fullName ?: return@combine false
 
-        elementId.isNotEmpty()&& packageName.isNotEmpty() && fullName.isNotEmpty()
+        elementId.isNotEmpty() && packageName.isNotEmpty() && fullName.isNotEmpty()
     }.stateIn(viewModelScope, SharingStarted.Lazily, false)
 
     fun onDoneClick() {
+        viewModelScope.launch(Dispatchers.Default) {
+            _serviceAdapter.send(Event.StopRecordingUiElements)
+        }
+
         viewModelScope.launch {
             val elementId = _elementId.value ?: return@launch
             val packageName = _packageName.value ?: return@launch
@@ -212,15 +225,24 @@ class PickScreenElementViewModel(
         }
     }
 
+    override fun onCleared() {
+        super.onCleared()
+
+        viewModelScope.launch(Dispatchers.Default) {
+            _serviceAdapter.send(Event.StopRecordingUiElements)
+        }
+    }
+
     @Suppress("UNCHECKED_CAST")
     class Factory(
         private val resourceProvider: ResourceProvider,
         private val viewIdRepository: ViewIdRepository,
-        private val serviceAdapter: ServiceAdapter
+        private val serviceAdapter: ServiceAdapter,
+        private val recordUiElements: RecordUiElementsUseCase
     ) : ViewModelProvider.NewInstanceFactory() {
 
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return PickScreenElementViewModel(resourceProvider, viewIdRepository, serviceAdapter) as T
+            return PickScreenElementViewModel(resourceProvider, viewIdRepository, serviceAdapter, recordUiElements) as T
         }
     }
 }
