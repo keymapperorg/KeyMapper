@@ -265,6 +265,8 @@
     <string name="extra_label_pick_screen_element_interaction_type">Interaction Type</string>
     <string name="extra_label_pick_screen_element_interaction_type_click">Click</string>
     <string name="extra_label_pick_screen_element_interaction_type_long_click">Long Click</string>
+    <string name="extra_label_pick_screen_element_record_description_text_start">Click the record button and switch to the app from where you want to receive UI elements and navigate through the app to fetch as much elements as possible.</string>
+    <string name="extra_label_pick_screen_element_record_description_text_active">You can now switch to the desired app. The recording will automatically stop but you can always resume the recording.</string>
     <!-- Extra labels -->
 
     <!-- Constraints -->

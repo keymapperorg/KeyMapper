@@ -23,11 +23,11 @@ class RecordUiElementsController(
     }
 
     override suspend fun startRecording(): Result<*> {
-        return serviceAdapter.send(Event.StartRecordingTrigger)
+        return serviceAdapter.send(Event.StartRecordingUiElements)
     }
 
     override suspend fun stopRecording(): Result<*> {
-        return serviceAdapter.send(Event.StopRecordingTrigger)
+        return serviceAdapter.send(Event.StopRecordingUiElements)
     }
 }
 

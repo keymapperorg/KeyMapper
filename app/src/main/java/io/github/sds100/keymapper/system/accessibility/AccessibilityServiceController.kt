@@ -513,8 +513,7 @@ class AccessibilityServiceController(
                 if (!recordingUiElements) {
                     recordingUiElementsJob = recordUiElementsJob()
                 }
-            is Event.StopRecordingUiElements -> coroutineScope.launch { outputEvents.emit(Event.OnStoppedRecordingTrigger) }
-            is Event.OnStoppedRecordingUiElements -> {
+            is Event.StopRecordingUiElements -> {
                 val wasRecordingUiElements = recordingUiElements
 
                 recordingUiElementsJob?.cancel()

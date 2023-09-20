@@ -60,6 +60,7 @@ class PickScreenElementViewModel(
 
     private val _listItems = MutableStateFlow<State<List<SimpleListItem>>>(State.Loading)
     val listItems = _listItems.asStateFlow()
+    val listItemsSearchQuery: MutableStateFlow<String?> = MutableStateFlow<String?>(null)
 
     private val _returnResult = MutableSharedFlow<PickScreenElementResult>()
     val returnResult = _returnResult.asSharedFlow()
@@ -70,8 +71,6 @@ class PickScreenElementViewModel(
     private val _onlyIfVisible: MutableStateFlow<Boolean?> = MutableStateFlow(true)
     private val _description: MutableStateFlow<String?> = MutableStateFlow(null)
     private val _interactionType: MutableStateFlow<INTERACTION_TYPES?> = MutableStateFlow(INTERACTION_TYPES.CLICK)
-
-    // val recordButtonText: MutableStateFlow<String> = MutableStateFlow(getString(R.string.extra_label_pick_screen_element_record_button_text_start))
 
     val elementId = _elementId.map {
         it ?: return@map ""
@@ -130,46 +129,51 @@ class PickScreenElementViewModel(
         setFullName("${packageName}/${elementId}")
     }
 
+    private val _isRecording: StateFlow<Boolean> = recordUiElements.state.map { recordUiElementsState ->
+        when (recordUiElementsState) {
+            is RecordUiElementsState.CountingDown -> true
+            is RecordUiElementsState.Stopped -> false
+        }
+    }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
     val recordButtonText: StateFlow<String> = recordUiElements.state.map { recordUiElementsState ->
         when (recordUiElementsState) {
             is RecordUiElementsState.CountingDown -> getString(R.string.extra_label_pick_screen_element_record_button_text_active, formatSeconds(recordUiElementsState.timeLeft))
-            RecordUiElementsState.Stopped -> getString(R.string.button_record_trigger)
+            is RecordUiElementsState.Stopped -> getString(R.string.extra_label_pick_screen_element_record_button_text_start)
         }
-    }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.Lazily, "")
+    }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.Eagerly, getString(R.string.extra_label_pick_screen_element_record_button_text_start))
 
-    /*private fun updateRecordButtonTextAndStyle(timeLeft: Int) {
-        Timber.d("setRecordButtonText: %d", timeLeft)
-        if (timeLeft > 0) {
-            recordButtonText.value = getString(R.string.extra_label_pick_screen_element_record_button_text_active, formatSeconds(timeLeft))
-        } else {
-            recordButtonText.value = getString(R.string.extra_label_pick_screen_element_record_button_text_start)
+    val recordDescriptionText: StateFlow<String> = recordUiElements.state.map {recordUiElementsState ->
+        when  (recordUiElementsState) {
+            is RecordUiElementsState.CountingDown -> getString(R.string.extra_label_pick_screen_element_record_description_text_active)
+            is RecordUiElementsState.Stopped -> getString(R.string.extra_label_pick_screen_element_record_description_text_start)
         }
-    }*/
+    }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.Eagerly, getString(R.string.extra_label_pick_screen_element_record_description_text_start))
 
     fun onRecordButtonClick() {
-        viewModelScope.launch(Dispatchers.Default) {
-            _serviceAdapter.send(Event.StopRecordingUiElements)
+        if (_isRecording.value) {
+            viewModelScope.launch(Dispatchers.Default) {
+                _serviceAdapter.send(Event.StopRecordingUiElements)
+            }
+        } else {
+            viewModelScope.launch(Dispatchers.Default) {
+                _serviceAdapter.send(Event.StartRecordingUiElements)
+            }
         }
-        viewModelScope.launch(Dispatchers.Default) {
-            _serviceAdapter.send(Event.StartRecordingUiElements)
-        }
+    }
+
+    fun onSearchInputChange() {
+        Timber.d("onSearchInputChange")
     }
 
     init {
         viewModelScope.launch(Dispatchers.Default) {
             _listItems.value = State.Data(buildListItems())
         }
-
-        /*_serviceAdapter.eventReceiver.onEach { event ->
-            when (event) {
-                is Event.OnIncrementRecordUiElementsTimer -> updateRecordButtonTextAndStyle(event.timeLeft)
-                is Event.OnStoppedRecordingUiElements -> updateRecordButtonTextAndStyle(-1)
-                else -> Unit
-            }
-        }.launchIn(viewModelScope)*/
     }
 
     private suspend fun buildListItems(): List<SimpleListItem> {
+        Timber.d("buildListItems: Query: %s", listItemsSearchQuery.value.toString())
         _viewIdRepository.viewIdList.collect { data ->
 
             val listItems = arrayListOf<DefaultSimpleListItem>()

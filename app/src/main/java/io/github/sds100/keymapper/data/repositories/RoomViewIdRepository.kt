@@ -27,9 +27,9 @@ class RoomViewIdRepository(
 
     init {
         // clean up the DB on every app start
-        coroutineScope.launch(Dispatchers.Default) {
+        /*coroutineScope.launch(Dispatchers.Default) {
             dao.deleteAll()
-        }
+        }*/
     }
 
     override fun insert(entry: ViewIdEntity) {

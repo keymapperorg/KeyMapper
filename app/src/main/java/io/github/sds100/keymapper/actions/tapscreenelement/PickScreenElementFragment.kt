@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.SearchView
 import androidx.activity.addCallback
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -26,6 +27,7 @@ import io.github.sds100.keymapper.util.ui.showPopups
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import timber.log.Timber
 
 class PickScreenElementFragment : Fragment() {
     companion object {
@@ -76,6 +78,21 @@ class PickScreenElementFragment : Fragment() {
             android.R.layout.simple_spinner_dropdown_item,
             interactionTypesDisplayValues
         )
+
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                Timber.d("onQueryTextSubmit: %s", query)
+                viewModel.listItemsSearchQuery.value = query
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                Timber.d("onQueryTextChange: %s", newText)
+                viewModel.listItemsSearchQuery.value = newText
+                return true
+            }
+
+        })
 
         viewModel.showPopups(this, binding)
 

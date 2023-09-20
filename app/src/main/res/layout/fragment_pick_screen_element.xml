@@ -29,182 +29,163 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/scrollView"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="?attr/actionBarSize"
-            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|start|fill_vertical"
+            android:layout_marginBottom="@dimen/appintro_bottombar_height">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <LinearLayout
+                android:id="@+id/headerLayout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:baselineAligned="true"
+                android:orientation="vertical"
+                android:weightSum="1.0"
+                app:layout_constraintBottom_toTopOf="@+id/inputFieldsLayout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-                <LinearLayout
-                    android:id="@+id/headerLayout"
-                    android:layout_width="0dp"
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/textViewCaption"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:baselineAligned="true"
-                    android:orientation="vertical"
-                    android:weightSum="1.0"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    android:text="@{caption}"
+                    android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                    android:visibility='@{caption == null || caption == "" ? View.GONE : View.VISIBLE}'
+                    tools:text="Here is a caption."
+                    tools:visibility="visible" />
 
-                    <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/textViewCaption"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_margin="8dp"
-                        android:text="@{caption}"
-                        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
-                        android:visibility='@{caption == null || caption == "" ? View.GONE : View.VISIBLE}'
-                        tools:text="Here is a caption."
-                        tools:visibility="visible" />
-
-                    <com.google.android.material.button.MaterialButton
-                        style="@style/Widget.Button.Red"
-                        android:id="@+id/recordButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        android:onClick="@{() -> viewModel.onRecordButtonClick()}"
-                        android:text="@{viewModel.recordButtonText}"
-                        tools:text="Start Record" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/inputFieldsLayout"
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/recordButton"
+                    style="@style/Widget.Button.Red"
+                    android:layout_margin="16dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
+                    android:onClick="@{() -> viewModel.onRecordButtonClick()}"
+                    android:text="@{viewModel.recordButtonText}"
+                    tools:text="Start Record" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/textViewRecordDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text='@{viewModel.recordDescriptionText}'
+                    android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                    tools:text="Here is a description for the record button." />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/inputFieldsLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:baselineAligned="false"
+                android:orientation="vertical"
+                android:weightSum="1.0"
+                app:layout_constraintStart_toEndOf="@+id/headerLayout"
+                app:layout_constraintTop_toBottomOf="@id/headerLayout">
+
+                <LinearLayout
+                    android:id="@+id/inputFieldsLayoutSub1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
                     android:baselineAligned="false"
-                    android:orientation="vertical"
-                    android:weightSum="1.0"
-                    app:layout_constraintBottom_toTopOf="@+id/listLayout"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/headerLayout">
+                    android:orientation="horizontal">
 
-                    <LinearLayout
-                        android:id="@+id/inputFieldsLayoutSub1"
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutElementId"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginBottom="8dp"
-                        android:baselineAligned="false"
-                        android:orientation="horizontal">
+                        android:hint="@string/extra_label_pick_screen_element_id"
+                        app:errorWhenEmpty="@{true}"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="parent">
 
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/textInputLayoutElementId"
-                            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                        <com.google.android.material.textfield.TextInputEditText
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="@string/extra_label_pick_screen_element_id"
-                            android:padding="8dp"
-                            app:errorWhenEmpty="@{true}"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="parent">
+                            android:inputType="text"
+                            android:text="@{viewModel.fullName}"
+                            tools:text="250" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
 
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:inputType="text"
-                                android:text="@{viewModel.fullName}"
-                                tools:text="250" />
-                        </com.google.android.material.textfield.TextInputLayout>
-                    </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/inputFieldsLayoutSub2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal"
+                    android:weightSum="1.0">
 
-                    <LinearLayout
-                        android:id="@+id/inputFieldsLayoutSub2"
+                    <Spinner
+                        android:id="@+id/interactionTypeSpinner"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginBottom="8dp"
-                        android:baselineAligned="false"
-                        android:orientation="horizontal"
-                        android:weightSum="1.0">
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.5"
+                        android:adapter="@{interactionTypeSpinnerAdapter}"
+                        android:hint="@string/extra_label_pick_screen_element_interaction_type"
+                        android:minHeight="48dp"
+                        android:onItemSelected="@{(parent, view, position, id) -> viewModel.onInteractionTypeSelected(parent, view, position, id)}"
+                        android:selectedItemPosition="@{viewModel.interactionTypeSpinnerSelection}" />
 
-                        <Spinner
-                            android:id="@+id/interactionTypeSpinner"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="0.5"
-                            android:adapter="@{interactionTypeSpinnerAdapter}"
-                            android:hint="@string/extra_label_pick_screen_element_interaction_type"
-                            android:minHeight="48dp"
-                            android:onItemSelected="@{(parent, view, position, id) -> viewModel.onInteractionTypeSelected(parent, view, position, id)}"
-                            android:selectedItemPosition="@{viewModel.interactionTypeSpinnerSelection}" />
-
-                        <CheckBox
-                            android:id="@+id/checkBox2"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="0.5"
-                            android:text="@string/extra_label_pick_screen_element_only_if_visible_checkbox" />
-
-                    </LinearLayout>
+                    <CheckBox
+                        android:id="@+id/checkBox2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.5"
+                        android:text="@string/extra_label_pick_screen_element_only_if_visible_checkbox" />
 
                 </LinearLayout>
 
-                <FrameLayout
-                    android:id="@+id/listLayout"
+            </LinearLayout>
+
+            <SearchView
+                android:id="@+id/searchView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toTopOf="@+id/scrollView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/inputFieldsLayout"
+                app:layout_constraintTop_toBottomOf="@+id/inputFieldsLayout" />
+
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/scrollView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+                app:layout_constrainedHeight="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/searchView"
+                app:layout_constraintTop_toBottomOf="@+id/searchView">
+
+                <com.airbnb.epoxy.EpoxyRecyclerView
+                    android:id="@+id/epoxyRecyclerView"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginBottom="32dp"
-                    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/inputFieldsLayout">
+                    android:layout_height="match_parent"
+                    android:clipToPadding="true"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/list_item_simple" />
 
-                    <com.airbnb.epoxy.EpoxyRecyclerView
-                        android:id="@+id/epoxyRecyclerView"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:clipToPadding="false"
-                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                        tools:listitem="@layout/list_item_simple" />
+            </androidx.core.widget.NestedScrollView>
 
-                    <ProgressBar
-                        android:id="@+id/progressBar"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="16dp"
-                        android:layout_marginEnd="16dp"
-                        android:layout_marginBottom="16dp"
-                        tools:visibility="gone" />
 
-                    <TextView
-                        android:id="@+id/textViewEmptyListPlaceholder"
-                        style="@style/RecyclerViewPlaceholderTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="16dp"
-                        android:layout_marginEnd="16dp"
-                        android:layout_marginBottom="16dp"
-                        android:text="@{emptyListPlaceholder}"
-                        android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
-                </FrameLayout>
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.core.widget.NestedScrollView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"
