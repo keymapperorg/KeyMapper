@@ -1,8 +1,5 @@
-package io.github.sds100.keymapper.actions.tapscreenelement
+package io.github.sds100.keymapper.system.ui
 
-/**
- * Created by sds100 on 04/03/2021.
- */
 sealed class RecordUiElementsState {
     data class CountingDown(
         /**

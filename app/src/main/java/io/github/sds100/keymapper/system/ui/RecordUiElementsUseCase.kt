@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.actions.tapscreenelement
+package io.github.sds100.keymapper.system.ui
 
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.util.Event
@@ -16,7 +16,8 @@ class RecordUiElementsController(
         serviceAdapter.eventReceiver.onEach { event ->
             when (event) {
                 is Event.OnStoppedRecordingUiElements -> state.value = RecordUiElementsState.Stopped
-                is Event.OnIncrementRecordUiElementsTimer -> state.value = RecordUiElementsState.CountingDown(event.timeLeft)
+                is Event.OnIncrementRecordUiElementsTimer -> state.value =
+                    RecordUiElementsState.CountingDown(event.timeLeft)
                 else -> Unit
             }
         }.launchIn(coroutineScope)

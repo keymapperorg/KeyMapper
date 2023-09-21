@@ -328,7 +328,7 @@ sealed class ActionData {
         val onlyIfVisible: Boolean,
         val description: String?,
     ): ActionData() {
-        override val id = ActionId.TAP_SCREEN_ELEMENT
+        override val id = ActionId.INTERACT_WITH_SCREEN_ELEMENT
     }
 
     @Serializable

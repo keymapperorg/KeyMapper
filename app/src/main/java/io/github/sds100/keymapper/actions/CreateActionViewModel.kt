@@ -4,7 +4,7 @@ import android.text.InputType
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.swipescreen.SwipePickCoordinateResult
 import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
-import io.github.sds100.keymapper.actions.tapscreenelement.PickScreenElementResult
+import io.github.sds100.keymapper.actions.uielementinteraction.InteractWithScreenElementResult
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.camera.CameraLensUtils
 import io.github.sds100.keymapper.system.display.Orientation
@@ -364,9 +364,9 @@ class CreateActionViewModelImpl(
                 )
             }
 
-            ActionId.TAP_SCREEN_ELEMENT -> {
+            ActionId.INTERACT_WITH_SCREEN_ELEMENT -> {
                 val oldResult = if (oldData is ActionData.TapScreenElement) {
-                    PickScreenElementResult(
+                    InteractWithScreenElementResult(
                         oldData.elementId,
                         oldData.packageName,
                         oldData.fullName,
@@ -379,7 +379,7 @@ class CreateActionViewModelImpl(
 
                 val result = navigate(
                     "pick_screen_element_for_action",
-                    NavDestination.PickScreenElement(oldResult)
+                    NavDestination.InteractWithScreenElement(oldResult)
                 ) ?: return null
 
                 val description = result.description.ifEmpty {

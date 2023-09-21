@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import timber.log.Timber
 
 class ChooseUiElementFragment : RecyclerViewFragment<SimpleListItem, FragmentChooseUiElementBinding>() {
     companion object {
@@ -43,7 +42,7 @@ class ChooseUiElementFragment : RecyclerViewFragment<SimpleListItem, FragmentCho
 
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.returnResult.collectLatest {
-                returnResult(ChooseUiElementFragment.EXTRA_UI_ELEMENT_ID to Json.encodeToString(it))
+                returnResult(EXTRA_UI_ELEMENT_ID to Json.encodeToString(it))
             }
         }
 

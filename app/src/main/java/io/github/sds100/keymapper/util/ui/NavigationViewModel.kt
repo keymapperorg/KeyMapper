@@ -18,8 +18,8 @@ import io.github.sds100.keymapper.actions.swipescreen.SwipePickCoordinateResult
 import io.github.sds100.keymapper.actions.swipescreen.SwipePickDisplayCoordinateFragment
 import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.actions.tapscreen.PickDisplayCoordinateFragment
-import io.github.sds100.keymapper.actions.tapscreenelement.PickScreenElementFragment
-import io.github.sds100.keymapper.actions.tapscreenelement.PickScreenElementResult
+import io.github.sds100.keymapper.actions.uielementinteraction.InteractWithScreenElementFragment
+import io.github.sds100.keymapper.actions.uielementinteraction.InteractWithScreenElementResult
 import io.github.sds100.keymapper.constraints.ChooseConstraintFragment
 import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.system.apps.*
@@ -161,7 +161,7 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
 
                 NavAppDirections.swipePickDisplayCoordinate(requestKey, json)
             }
-            is NavDestination.PickScreenElement -> {
+            is NavDestination.InteractWithScreenElement -> {
                 val json = destination.result?.let {
                     Json.encodeToString(it)
                 }
@@ -249,9 +249,9 @@ fun NavigationViewModel.sendNavResultFromBundle(
             onNavResult(NavResult(requestKey, result))
         }
 
-        NavDestination.ID_PICK_SCREEN_ELEMENT -> {
-            val json = bundle.getString(PickScreenElementFragment.EXTRA_ELEMENT_ID)!!
-            val result = Json.decodeFromString<PickScreenElementResult>(json)
+        NavDestination.ID_INTERACT_WITH_SCREEN_ELEMENT -> {
+            val json = bundle.getString(InteractWithScreenElementFragment.EXTRA_ELEMENT_ID)!!
+            val result = Json.decodeFromString<InteractWithScreenElementResult>(json)
 
             onNavResult(NavResult(requestKey, result))
         }

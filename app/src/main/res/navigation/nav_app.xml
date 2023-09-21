@@ -271,8 +271,8 @@
 
     <fragment
         android:id="@+id/pickScreenElementFragment"
-        android:name="io.github.sds100.keymapper.actions.tapscreenelement.PickScreenElementFragment"
-        tools:layout="@layout/fragment_pick_screen_element">
+        android:name="io.github.sds100.keymapper.actions.uielementinteraction.InteractWithScreenElementFragment"
+        tools:layout="@layout/fragment_interact_with_screen_element">
 
         <argument
             android:name="requestKey"

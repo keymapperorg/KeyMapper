@@ -10,7 +10,7 @@ import io.github.sds100.keymapper.actions.TestActionUseCaseImpl
 import io.github.sds100.keymapper.actions.keyevent.ChooseKeyCodeViewModel
 import io.github.sds100.keymapper.actions.keyevent.ConfigKeyEventActionViewModel
 import io.github.sds100.keymapper.actions.keyevent.ConfigKeyEventUseCaseImpl
-import io.github.sds100.keymapper.actions.tapscreenelement.PickScreenElementViewModel
+import io.github.sds100.keymapper.actions.uielementinteraction.InteractWithScreenElementViewModel
 import io.github.sds100.keymapper.actions.sound.ChooseSoundFileUseCaseImpl
 import io.github.sds100.keymapper.actions.sound.ChooseSoundFileViewModel
 import io.github.sds100.keymapper.actions.swipescreen.SwipePickDisplayCoordinateViewModel
@@ -37,7 +37,6 @@ import io.github.sds100.keymapper.settings.ConfigSettingsUseCaseImpl
 import io.github.sds100.keymapper.settings.SettingsViewModel
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceController
 import io.github.sds100.keymapper.system.accessibility.MyAccessibilityService
-import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.apps.ChooseActivityViewModel
 import io.github.sds100.keymapper.system.apps.ChooseAppShortcutViewModel
 import io.github.sds100.keymapper.system.apps.ChooseAppViewModel
@@ -144,8 +143,8 @@ object Inject {
             ServiceLocator.resourceProvider(context)
         )
     }
-    fun pickScreenElementActionTypeViewModel(context: Context): PickScreenElementViewModel.Factory {
-        return PickScreenElementViewModel.Factory(
+    fun pickScreenElementActionTypeViewModel(context: Context): InteractWithScreenElementViewModel.Factory {
+        return InteractWithScreenElementViewModel.Factory(
             ServiceLocator.resourceProvider(context)
         )
     }

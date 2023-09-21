@@ -30,7 +30,7 @@ object ActionDataEntityMapper {
             ActionEntity.Type.URL -> ActionId.URL
             ActionEntity.Type.TAP_COORDINATE -> ActionId.TAP_SCREEN
             ActionEntity.Type.SWIPE_COORDINATE -> ActionId.SWIPE_SCREEN
-            ActionEntity.Type.TAP_SCREEN_ELEMENT -> ActionId.TAP_SCREEN_ELEMENT
+            ActionEntity.Type.TAP_SCREEN_ELEMENT -> ActionId.INTERACT_WITH_SCREEN_ELEMENT
             ActionEntity.Type.INTENT -> ActionId.INTENT
             ActionEntity.Type.PHONE_CALL -> ActionId.PHONE_CALL
             ActionEntity.Type.SOUND -> ActionId.SOUND
@@ -150,7 +150,7 @@ object ActionDataEntityMapper {
                 )
             }
 
-            ActionId.TAP_SCREEN_ELEMENT -> {
+            ActionId.INTERACT_WITH_SCREEN_ELEMENT -> {
                 val splitData = entity.data.trim().split(',')
                 val elementId = splitData[0];
                 val packageName = splitData[1];

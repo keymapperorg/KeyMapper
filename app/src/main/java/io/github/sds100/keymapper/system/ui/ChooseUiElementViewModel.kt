@@ -4,8 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.actions.tapscreenelement.RecordUiElementsState
-import io.github.sds100.keymapper.actions.tapscreenelement.RecordUiElementsUseCase
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.apps.PACKAGE_INFO_TYPES
 import io.github.sds100.keymapper.system.apps.PackageUtils
@@ -65,17 +63,17 @@ class ChooseUiElementViewModel constructor(
 
     val recordButtonText: StateFlow<String> = recordUiElements.state.map { recordUiElementsState ->
         when (recordUiElementsState) {
-            is RecordUiElementsState.CountingDown -> getString(R.string.extra_label_pick_screen_element_record_button_text_active, formatSeconds(recordUiElementsState.timeLeft))
-            is RecordUiElementsState.Stopped -> getString(R.string.extra_label_pick_screen_element_record_button_text_start)
+            is RecordUiElementsState.CountingDown -> getString(R.string.extra_label_interact_with_screen_element_record_button_text_active, formatSeconds(recordUiElementsState.timeLeft))
+            is RecordUiElementsState.Stopped -> getString(R.string.extra_label_interact_with_screen_element_record_button_text_start)
         }
-    }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.Eagerly, getString(R.string.extra_label_pick_screen_element_record_button_text_start))
+    }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.Eagerly, getString(R.string.extra_label_interact_with_screen_element_record_button_text_start))
 
     val recordDescriptionText: StateFlow<String> = recordUiElements.state.map { recordUiElementsState ->
         when  (recordUiElementsState) {
-            is RecordUiElementsState.CountingDown -> getString(R.string.extra_label_pick_screen_element_record_description_text_active)
-            is RecordUiElementsState.Stopped -> getString(R.string.extra_label_pick_screen_element_record_description_text_start)
+            is RecordUiElementsState.CountingDown -> getString(R.string.extra_label_interact_with_screen_element_record_description_text_active)
+            is RecordUiElementsState.Stopped -> getString(R.string.extra_label_interact_with_screen_element_record_description_text_start)
         }
-    }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.Eagerly, getString(R.string.extra_label_pick_screen_element_record_description_text_start))
+    }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.Eagerly, getString(R.string.extra_label_interact_with_screen_element_record_description_text_start))
 
     private val _isRecording: StateFlow<Boolean> = recordUiElements.state.map { recordUiElementsState ->
         when (recordUiElementsState) {

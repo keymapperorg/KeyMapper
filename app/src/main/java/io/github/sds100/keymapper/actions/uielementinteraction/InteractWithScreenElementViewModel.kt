@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.actions.tapscreenelement
+package io.github.sds100.keymapper.actions.uielementinteraction
 
 import android.view.View
 import android.widget.AdapterView
@@ -6,19 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.data.repositories.ViewIdRepository
-import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerState
-import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerUseCase
-import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
-import io.github.sds100.keymapper.system.ui.UiElementInfo
-import io.github.sds100.keymapper.util.Event
-import io.github.sds100.keymapper.util.State
-import io.github.sds100.keymapper.util.dataOrNull
-import io.github.sds100.keymapper.util.filterByQuery
-import io.github.sds100.keymapper.util.formatSeconds
-import io.github.sds100.keymapper.util.ifIsData
-import io.github.sds100.keymapper.util.mapData
-import io.github.sds100.keymapper.util.ui.DefaultSimpleListItem
 import io.github.sds100.keymapper.util.ui.NavDestination
 import io.github.sds100.keymapper.util.ui.NavigationViewModel
 import io.github.sds100.keymapper.util.ui.NavigationViewModelImpl
@@ -26,46 +13,28 @@ import io.github.sds100.keymapper.util.ui.PopupUi
 import io.github.sds100.keymapper.util.ui.PopupViewModel
 import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.util.ui.ResourceProvider
-import io.github.sds100.keymapper.util.ui.SimpleListItem
 import io.github.sds100.keymapper.util.ui.navigate
 import io.github.sds100.keymapper.util.ui.showPopup
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import timber.log.Timber
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.seconds
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 
-class PickScreenElementViewModel(
+class InteractWithScreenElementViewModel(
     resourceProvider: ResourceProvider,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
     PopupViewModel by PopupViewModelImpl(),
     NavigationViewModel by NavigationViewModelImpl() {
 
-    private val _interactionTypes = arrayOf(INTERACTION_TYPES.CLICK.name, INTERACTION_TYPES.LONG_CLICK.name )
+    private val _interactionTypes = arrayOf(INTERACTIONTYPE.CLICK.name, INTERACTIONTYPE.LONG_CLICK.name )
 
-    private val _returnResult = MutableSharedFlow<PickScreenElementResult>()
+    private val _returnResult = MutableSharedFlow<InteractWithScreenElementResult>()
     val returnResult = _returnResult.asSharedFlow()
 
     private val _elementId = MutableStateFlow<String?>(null)
@@ -73,7 +42,7 @@ class PickScreenElementViewModel(
     private val _fullName = MutableStateFlow<String?>(null)
     private val _onlyIfVisible: MutableStateFlow<Boolean?> = MutableStateFlow(true)
     private val _description: MutableStateFlow<String?> = MutableStateFlow(null)
-    private val _interactionType: MutableStateFlow<INTERACTION_TYPES?> = MutableStateFlow(INTERACTION_TYPES.CLICK)
+    private val _interactionType: MutableStateFlow<INTERACTIONTYPE?> = MutableStateFlow(INTERACTIONTYPE.CLICK)
 
     val elementId = _elementId.map {
         it ?: return@map ""
@@ -114,9 +83,9 @@ class PickScreenElementViewModel(
     private fun setInteractionType(type: String) {
 
         when (type) {
-            INTERACTION_TYPES.CLICK.name -> _interactionType.value = INTERACTION_TYPES.CLICK
-            INTERACTION_TYPES.LONG_CLICK.name -> _interactionType.value = INTERACTION_TYPES.LONG_CLICK
-            else -> _interactionType.value = INTERACTION_TYPES.CLICK
+            INTERACTIONTYPE.CLICK.name -> _interactionType.value = INTERACTIONTYPE.CLICK
+            INTERACTIONTYPE.LONG_CLICK.name -> _interactionType.value = INTERACTIONTYPE.LONG_CLICK
+            else -> _interactionType.value = INTERACTIONTYPE.CLICK
         }
     }
 
@@ -153,15 +122,15 @@ class PickScreenElementViewModel(
             val onlyIfVisible = _onlyIfVisible.value ?: return@launch
 
             val description = showPopup(
-                "coordinate_description",
+                "ui_element_description",
                 PopupUi.Text(
-                    getString(R.string.hint_tap_coordinate_title),
+                    getString(R.string.hint_interact_with_screen_element_description),
                     allowEmpty = true,
                     text = _description.value ?: ""
                 )
             ) ?: return@launch
 
-            _returnResult.emit(PickScreenElementResult(elementId, packageName, fullName, onlyIfVisible, description))
+            _returnResult.emit(InteractWithScreenElementResult(elementId, packageName, fullName, onlyIfVisible, description))
         }
     }
 
@@ -171,7 +140,7 @@ class PickScreenElementViewModel(
     ) : ViewModelProvider.NewInstanceFactory() {
 
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return PickScreenElementViewModel(resourceProvider) as T
+            return InteractWithScreenElementViewModel(resourceProvider) as T
         }
     }
 }

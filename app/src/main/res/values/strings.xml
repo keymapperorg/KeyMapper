@@ -177,6 +177,7 @@
     <string name="hint_intent_flags">Flags</string>
     <string name="hint_sound_file_description">Sound file description</string>
     <string name="hint_wifi_ssid">WiFi network SSID</string>
+    <string name="hint_interact_with_screen_element_description">Description (optional)</string>
     <!--  Hints  -->
 
     <!--  Radio buttons  -->
@@ -258,15 +259,15 @@
     <string name="extra_label_swipe_select_start_end_label">Coordinates to set with screenshot</string>
     <string name="extra_label_swipe_select_start_end_start">Start</string>
     <string name="extra_label_swipe_select_start_end_end">End</string>
-    <string name="extra_label_pick_screen_element_id">Element ID</string>
-    <string name="extra_label_pick_screen_element_record_button_text_start">Start Record</string>
-    <string name="extra_label_pick_screen_element_record_button_text_active">Recording for %s min</string>
-    <string name="extra_label_pick_screen_element_only_if_visible_checkbox">Only if visible</string>
-    <string name="extra_label_pick_screen_element_interaction_type">Interaction Type</string>
-    <string name="extra_label_pick_screen_element_interaction_type_click">Click</string>
-    <string name="extra_label_pick_screen_element_interaction_type_long_click">Long Click</string>
-    <string name="extra_label_pick_screen_element_record_description_text_start">Click the record button and switch to the app from where you want to receive UI elements and navigate through the app to fetch as much elements as possible.</string>
-    <string name="extra_label_pick_screen_element_record_description_text_active">You can now switch to the desired app. The recording will automatically stop but you can always resume the recording.</string>
+    <string name="extra_label_interact_with_screen_element_id">Element ID</string>
+    <string name="extra_label_interact_with_screen_element_record_button_text_start">Start Record</string>
+    <string name="extra_label_interact_with_screen_element_record_button_text_active">Recording for %s min</string>
+    <string name="extra_label_interact_with_screen_element_only_if_visible_checkbox">Only if visible</string>
+    <string name="extra_label_interact_with_screen_element_interaction_type">Interaction Type</string>
+    <string name="extra_label_interact_with_screen_element_interaction_type_click">Click</string>
+    <string name="extra_label_interact_with_screen_element_interaction_type_long_click">Long Click</string>
+    <string name="extra_label_interact_with_screen_element_record_description_text_start">Click the record button and switch to the app from where you want to receive UI elements and navigate through the app to fetch as much elements as possible.</string>
+    <string name="extra_label_interact_with_screen_element_record_description_text_active">You can now switch to the desired app. The recording will automatically stop but you can always resume the recording.</string>
     <!-- Extra labels -->
 
     <!-- Constraints -->
@@ -1245,7 +1246,7 @@
 
     <string name="action_tap_screen">Tap screen</string>
     <string name="action_swipe_screen">Swipe screen</string>
-    <string name="action_tap_screen_element">Tap screen element</string>
+    <string name="action_interact_with_screen_element">Interact with screen element</string>
     <string name="action_input_text">Input text</string>
     <string name="action_open_url">Open URL</string>
     <string name="action_send_intent">Send intent</string>
@@ -1362,6 +1363,5 @@
     <string name="about_team_bydario_name" translatable="false">Darío B. C. (bydariogamer)</string>
     <string name="about_team_bydario_url" translatable="false">https://github.com/bydariogamer</string>
     <string name="about_team_bydario_role">Translator (Spanish)</string>
-    <string name="header_pick_screen_element">Pick a screen element</string>
     <!--  About  -->
 </resources>

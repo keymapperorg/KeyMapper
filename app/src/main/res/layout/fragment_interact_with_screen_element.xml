@@ -13,7 +13,7 @@
 
         <variable
             name="viewModel"
-            type="io.github.sds100.keymapper.actions.tapscreenelement.PickScreenElementViewModel" />
+            type="io.github.sds100.keymapper.actions.uielementinteraction.InteractWithScreenElementViewModel" />
 
         <variable
             name="emptyListPlaceholder"
@@ -62,7 +62,7 @@
                         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/extra_label_pick_screen_element_id"
+                        android:hint="@string/extra_label_interact_with_screen_element_id"
                         app:errorWhenEmpty="@{true}"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -92,7 +92,7 @@
                         android:layout_height="match_parent"
                         android:layout_weight="0.5"
                         android:adapter="@{interactionTypeSpinnerAdapter}"
-                        android:hint="@string/extra_label_pick_screen_element_interaction_type"
+                        android:hint="@string/extra_label_interact_with_screen_element_interaction_type"
                         android:minHeight="48dp"
                         android:onItemSelected="@{(parent, view, position, id) -> viewModel.onInteractionTypeSelected(parent, view, position, id)}"
                         android:selectedItemPosition="@{viewModel.interactionTypeSpinnerSelection}" />
@@ -102,7 +102,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="0.5"
-                        android:text="@string/extra_label_pick_screen_element_only_if_visible_checkbox" />
+                        android:text="@string/extra_label_interact_with_screen_element_only_if_visible_checkbox" />
 
                 </LinearLayout>
 
