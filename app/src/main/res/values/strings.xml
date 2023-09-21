@@ -269,6 +269,14 @@
     <string name="extra_label_interact_with_screen_element_interaction_type">Interaction Type</string>
     <string name="extra_label_interact_with_screen_element_interaction_type_click">Click</string>
     <string name="extra_label_interact_with_screen_element_interaction_type_long_click">Long Click</string>
+    <string name="extra_label_interact_with_screen_element_interaction_type_select">Long Click</string>
+    <string name="extra_label_interact_with_screen_element_interaction_type_focus">Focus</string>
+    <string name="extra_label_interact_with_screen_element_interaction_type_clear_focus">Clear Focus</string>
+    <string name="extra_label_interact_with_screen_element_interaction_type_collapse">Collapse</string>
+    <string name="extra_label_interact_with_screen_element_interaction_type_expand">Expand</string>
+    <string name="extra_label_interact_with_screen_element_interaction_type_dismiss">Dismiss</string>
+    <string name="extra_label_interact_with_screen_element_interaction_type_scroll_forward">Scroll Forward</string>
+    <string name="extra_label_interact_with_screen_element_interaction_type_scroll_backward">Scroll Backward</string>
     <string name="extra_label_interact_with_screen_element_record_description_text_start">Click the record button and switch to the app from where you want to receive UI elements and navigate through the app to fetch as much elements as possible.</string>
     <string name="extra_label_interact_with_screen_element_record_description_text_active">You can now switch to the desired app. The recording will automatically stop but you can always resume the recording.</string>
     <!-- Extra labels -->

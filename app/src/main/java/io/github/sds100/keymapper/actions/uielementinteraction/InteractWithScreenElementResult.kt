@@ -4,7 +4,15 @@ import kotlinx.serialization.Serializable
 
 enum class INTERACTIONTYPE {
     CLICK,
-    LONG_CLICK
+    LONG_CLICK,
+    SELECT,
+    FOCUS,
+    CLEAR_FOCUS,
+    COLLAPSE,
+    EXPAND,
+    DISMISS,
+    SCROLL_FORWARD,
+    SCROLL_BACKWARD,
 }
 
 @Serializable

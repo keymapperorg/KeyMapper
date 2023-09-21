@@ -34,8 +34,7 @@ class InteractWithScreenElementViewModel(
     PopupViewModel by PopupViewModelImpl(),
     NavigationViewModel by NavigationViewModelImpl() {
 
-    private val _interactionTypes =
-        arrayOf(INTERACTIONTYPE.CLICK.name, INTERACTIONTYPE.LONG_CLICK.name)
+    private val _interactionTypes = INTERACTIONTYPE.values().map { it.name }
 
     private val _returnResult = MutableSharedFlow<InteractWithScreenElementResult>()
     val returnResult = _returnResult.asSharedFlow()

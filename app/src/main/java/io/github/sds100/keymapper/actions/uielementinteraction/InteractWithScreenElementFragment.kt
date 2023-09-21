@@ -66,7 +66,14 @@ class InteractWithScreenElementFragment : Fragment() {
 
         interactionTypesDisplayValues = arrayOf(
             str(R.string.extra_label_interact_with_screen_element_interaction_type_click),
-            str(R.string.extra_label_interact_with_screen_element_interaction_type_long_click)
+            str(R.string.extra_label_interact_with_screen_element_interaction_type_long_click),
+            str(R.string.extra_label_interact_with_screen_element_interaction_type_focus),
+            str(R.string.extra_label_interact_with_screen_element_interaction_type_clear_focus),
+            str(R.string.extra_label_interact_with_screen_element_interaction_type_collapse),
+            str(R.string.extra_label_interact_with_screen_element_interaction_type_expand),
+            str(R.string.extra_label_interact_with_screen_element_interaction_type_dismiss),
+            str(R.string.extra_label_interact_with_screen_element_interaction_type_scroll_forward),
+            str(R.string.extra_label_interact_with_screen_element_interaction_type_scroll_backward),
         ).toMutableList();
     }
 

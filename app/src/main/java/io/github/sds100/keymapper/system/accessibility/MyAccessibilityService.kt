@@ -24,6 +24,7 @@ import androidx.core.os.bundleOf
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
+import io.github.sds100.keymapper.actions.uielementinteraction.INTERACTIONTYPE
 import io.github.sds100.keymapper.api.Api
 import io.github.sds100.keymapper.api.IKeyEventReceiver
 import io.github.sds100.keymapper.api.IKeyEventReceiverCallback
@@ -446,31 +447,6 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
         return list
     }
 
-    override fun clickOnElementWithId(id: String): Result<*> {
-        val activeWindows = this.rootInActiveWindow;
-
-        if (activeWindows != null) {
-            activeWindows.refresh()
-            val nodeList = activeWindows.findAccessibilityNodeInfosByViewId(id);
-            if (nodeList != null && nodeList.size > 0) {
-                for (index in 0 until nodeList.size) {
-                    val node = nodeList[index];
-                    if (node.viewIdResourceName == id && node.isClickable) {
-                        val result = node.performAction(AccessibilityNodeInfo.ACTION_CLICK)
-
-                        if (result) {
-                            return Success(Unit)
-                        }
-                    }
-                }
-            }
-        } else {
-            Timber.d("rootInActiveWindow is NULL")
-        }
-
-        return Error.FailedToDispatchGesture
-    }
-
     override fun swipeScreen(xStart: Int, yStart: Int, xEnd: Int, yEnd: Int, fingerCount: Int, duration: Int, inputEventType: InputEventType): Result<*> {
         Timber.d("ACCESSIBILITY SWIPE SCREEN %d, %d, %d, %d, %s, %d, %s", xStart, yStart, xEnd, yEnd, fingerCount, duration, inputEventType);
 
@@ -541,22 +517,44 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
         return Error.SdkVersionTooLow(Build.VERSION_CODES.N)
     }
 
-    override fun tapScreenElement(fullName: String, onlyIfVisible: Boolean, inputEventType: InputEventType): Result<*> {
+    override fun interactWithScreenElement(fullName: String, onlyIfVisible: Boolean, interactiontype: INTERACTIONTYPE, inputEventType: InputEventType): Result<*> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 
-            Timber.d("tapScreenElement ID: %s %s", fullName, onlyIfVisible.toString())
+            Timber.d("interactWithScreenElement ID: %s %s %s", fullName, onlyIfVisible.toString(), interactiontype.name)
 
             if (this.rootInActiveWindow != null) {
-                val node = this.rootInActiveWindow.findAccessibilityNodeInfosByViewId(fullName)
+                val nodeList = rootInActiveWindow.findAccessibilityNodeInfosByViewId(fullName)
 
-                if (node.size > 0) {
-                    val success = node.first().performAction(AccessibilityNodeInfo.ACTION_CLICK)
+                if (nodeList.isNotEmpty()) {
+                    val nodeToInteractWith = nodeList.first()
 
-                    if (success) {
-                        return Success(Unit)
+                    if (nodeToInteractWith != null && nodeToInteractWith.isVisibleToUser == onlyIfVisible) {
+                        val success = nodeToInteractWith.performAction(
+                            when (interactiontype) {
+                                INTERACTIONTYPE.LONG_CLICK -> AccessibilityNodeInfo.ACTION_LONG_CLICK
+                                INTERACTIONTYPE.SELECT -> AccessibilityNodeInfo.ACTION_SELECT
+                                INTERACTIONTYPE.FOCUS -> AccessibilityNodeInfo.ACTION_FOCUS
+                                INTERACTIONTYPE.CLEAR_FOCUS -> AccessibilityNodeInfo.ACTION_CLEAR_FOCUS
+                                INTERACTIONTYPE.COLLAPSE -> AccessibilityNodeInfo.ACTION_COLLAPSE
+                                INTERACTIONTYPE.EXPAND -> AccessibilityNodeInfo.ACTION_EXPAND
+                                INTERACTIONTYPE.DISMISS -> AccessibilityNodeInfo.ACTION_DISMISS
+                                INTERACTIONTYPE.SCROLL_FORWARD -> AccessibilityNodeInfo.ACTION_SCROLL_FORWARD
+                                INTERACTIONTYPE.SCROLL_BACKWARD -> AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD
+                                else -> AccessibilityNodeInfo.ACTION_CLICK
+                            }
+                        );
+
+                        if (success) {
+                            return Success(Unit)
+                        } else {
+                            Error.FailedToDispatchGesture
+                        }
+
                     } else {
-                        Error.FailedToDispatchGesture
+                        return Error.FailedToFindAccessibilityNode
                     }
+                } else {
+                    return Error.FailedToFindAccessibilityNode
                 }
             }
         }

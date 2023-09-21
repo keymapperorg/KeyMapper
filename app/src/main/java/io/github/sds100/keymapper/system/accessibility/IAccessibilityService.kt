@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.system.accessibility
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import io.github.sds100.keymapper.actions.uielementinteraction.INTERACTIONTYPE
 import io.github.sds100.keymapper.util.InputEventType
 import io.github.sds100.keymapper.util.Result
 import kotlinx.coroutines.flow.Flow
@@ -14,10 +15,9 @@ interface IAccessibilityService {
 
     fun tapScreen(x: Int, y: Int, inputEventType: InputEventType): Result<*>
     fun swipeScreen(xStart: Int, yStart: Int, xEnd: Int, yEnd: Int, fingerCount: Int, duration: Int, inputEventType: InputEventType): Result<*>
-    fun tapScreenElement(fullName: String, onlyIfVisible: Boolean, inputEventType: InputEventType): Result<*>
+    fun interactWithScreenElement(fullName: String, onlyIfVisible: Boolean, interactiontype: INTERACTIONTYPE, inputEventType: InputEventType): Result<*>
 
     fun fetchAvailableUIElements(): List<String>
-    fun clickOnElementWithId(id: String): Result<*>
 
     val isFingerprintGestureDetectionAvailable: Boolean
 
