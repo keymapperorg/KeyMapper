@@ -113,6 +113,10 @@ class InteractWithScreenElementViewModel(
         }
     }
 
+    fun onOnlyIfVisibleCheckboxChange(checked: Boolean) {
+        this.setOnlyIfVisible(checked)
+    }
+
     fun loadResult(result: InteractWithScreenElementResult) {
 
         Timber.d("loadResult %s", result.toString())

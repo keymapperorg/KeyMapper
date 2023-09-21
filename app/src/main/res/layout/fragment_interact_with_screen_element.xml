@@ -94,7 +94,7 @@
                         android:layout_weight="0.5"
                         android:adapter="@{interactionTypeSpinnerAdapter}"
                         android:hint="@string/extra_label_interact_with_screen_element_interaction_type"
-                        android:minHeight="48dp"
+                        android:enabled="@{viewModel.isDoneButtonEnabled()}"
                         android:onItemSelected="@{(parent, view, position, id) -> viewModel.onInteractionTypeSelected(parent, view, position, id)}"
                         android:selectedItemPosition="@{viewModel.interactionTypeSpinnerSelection}" />
 
@@ -104,6 +104,8 @@
                         android:layout_height="match_parent"
                         android:layout_weight="0.5"
                         android:checked="@{viewModel.onlyIfVisible}"
+                        android:enabled="@{viewModel.isDoneButtonEnabled()}"
+                        android:onCheckedChanged="@{(checkbox, isChecked) -> viewModel.onOnlyIfVisibleCheckboxChange(isChecked)}"
                         android:text="@string/extra_label_interact_with_screen_element_only_if_visible_checkbox" />
 
                 </LinearLayout>
