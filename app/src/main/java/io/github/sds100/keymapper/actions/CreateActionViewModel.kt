@@ -26,6 +26,7 @@ import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.navigate
 import io.github.sds100.keymapper.util.ui.showPopup
+import timber.log.Timber
 
 /**
  * Created by sds100 on 26/07/2021.
@@ -365,12 +366,13 @@ class CreateActionViewModelImpl(
             }
 
             ActionId.INTERACT_WITH_SCREEN_ELEMENT -> {
-                val oldResult = if (oldData is ActionData.TapScreenElement) {
+                val oldResult = if (oldData is ActionData.InteractWithScreenElement) {
                     InteractWithScreenElementResult(
                         oldData.elementId,
                         oldData.packageName,
                         oldData.fullName,
                         oldData.onlyIfVisible,
+                        oldData.interactiontype,
                         oldData.description ?: ""
                     )
                 } else {
@@ -378,7 +380,7 @@ class CreateActionViewModelImpl(
                 }
 
                 val result = navigate(
-                    "pick_screen_element_for_action",
+                    "interact_with_screen_element",
                     NavDestination.InteractWithScreenElement(oldResult)
                 ) ?: return null
 
@@ -386,11 +388,12 @@ class CreateActionViewModelImpl(
                     null
                 }
 
-                return ActionData.TapScreenElement(
+                return ActionData.InteractWithScreenElement(
                     result.elementId,
                     result.packageName,
                     result.fullName,
                     result.onlyIfVisible,
+                    result.interactionType,
                     description
                 )
             }

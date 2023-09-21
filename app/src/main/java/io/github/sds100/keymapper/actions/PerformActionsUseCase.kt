@@ -273,7 +273,7 @@ class PerformActionsUseCaseImpl(
                 result = accessibilityService.swipeScreen(action.xStart, action.yStart, action.xEnd, action.yEnd, action.fingerCount, action.duration, inputEventType)
             }
 
-            is ActionData.TapScreenElement -> {
+            is ActionData.InteractWithScreenElement -> {
                 Timber.d("ActionData.TapScreenElement: %s", action.toString())
                 result = accessibilityService.tapScreenElement(action.fullName, action.onlyIfVisible, inputEventType)
             }

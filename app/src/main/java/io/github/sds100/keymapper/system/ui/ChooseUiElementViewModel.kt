@@ -82,6 +82,12 @@ class ChooseUiElementViewModel constructor(
         }
     }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
+    fun stopRecording() {
+        viewModelScope.launch(Dispatchers.Default) {
+            _serviceAdapter.send(Event.StopRecordingUiElements)
+        }
+    }
+
     init {
 
         viewModelScope.launch {
@@ -106,6 +112,8 @@ class ChooseUiElementViewModel constructor(
 
     fun onListItemClick(id: String) {
         Timber.d("onListItemClick: %s", id)
+
+        stopRecording()
 
         val elementViewId = PackageUtils.getInfoFromFullViewId(id, PACKAGE_INFO_TYPES.TYPE_VIEW_ID)
         val elementPackageName = PackageUtils.getInfoFromFullViewId(id, PACKAGE_INFO_TYPES.TYPE_PACKAGE_NAME)
@@ -151,9 +159,7 @@ class ChooseUiElementViewModel constructor(
     override fun onCleared() {
         super.onCleared()
 
-        viewModelScope.launch(Dispatchers.Default) {
-            _serviceAdapter.send(Event.StopRecordingUiElements)
-        }
+        stopRecording()
     }
 
     class Factory(

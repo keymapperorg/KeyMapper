@@ -310,10 +310,10 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
                 )
             }
 
-            is ActionData.TapScreenElement -> if (action.description.isNullOrBlank()) {
-                getString(R.string.description_tap_screen_element_default, arrayOf(action.elementId))
+            is ActionData.InteractWithScreenElement -> if (action.description.isNullOrBlank()) {
+                getString(R.string.description_interact_with_screen_element_default, arrayOf(action.interactiontype, action.elementId, action.packageName))
             } else {
-                getString(R.string.description_swipe_coordinate_with_description, arrayOf(action.elementId, action.description))
+                getString(R.string.description_interact_with_screen_element_default_with_description, arrayOf(action.interactiontype, action.elementId, action.packageName, action.description))
             }
 
             is ActionData.Text -> getString(R.string.description_text_block, action.text)

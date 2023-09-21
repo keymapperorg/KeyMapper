@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.actions
 
+import io.github.sds100.keymapper.actions.uielementinteraction.INTERACTIONTYPE
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.Extra
 import io.github.sds100.keymapper.data.entities.getData
@@ -14,6 +15,7 @@ import io.github.sds100.keymapper.util.success
 import io.github.sds100.keymapper.util.then
 import io.github.sds100.keymapper.util.valueOrNull
 import splitties.bitflags.hasFlag
+import timber.log.Timber
 
 /**
  * Created by sds100 on 13/03/2021.
@@ -30,7 +32,7 @@ object ActionDataEntityMapper {
             ActionEntity.Type.URL -> ActionId.URL
             ActionEntity.Type.TAP_COORDINATE -> ActionId.TAP_SCREEN
             ActionEntity.Type.SWIPE_COORDINATE -> ActionId.SWIPE_SCREEN
-            ActionEntity.Type.TAP_SCREEN_ELEMENT -> ActionId.INTERACT_WITH_SCREEN_ELEMENT
+            ActionEntity.Type.INTERACT_WITH_SCREEN_ELEMENT -> ActionId.INTERACT_WITH_SCREEN_ELEMENT
             ActionEntity.Type.INTENT -> ActionId.INTENT
             ActionEntity.Type.PHONE_CALL -> ActionId.PHONE_CALL
             ActionEntity.Type.SOUND -> ActionId.SOUND
@@ -151,19 +153,25 @@ object ActionDataEntityMapper {
             }
 
             ActionId.INTERACT_WITH_SCREEN_ELEMENT -> {
+                Timber.d("ActionId.INTERACT_WITH_SCREEN_ELEMENT %s", entity.data)
+
                 val splitData = entity.data.trim().split(',')
-                val elementId = splitData[0];
-                val packageName = splitData[1];
-                val fullName = splitData[2];
-                val onlyIfVisible = splitData[3].toBoolean();
+
+                val elementId = splitData[0]
+                val packageName = splitData[1]
+                val fullName = splitData[2]
+                val onlyIfVisible = splitData[3].toBoolean()
+                val interactiontype = splitData[4]
+
                 val description = entity.extras.getData(ActionEntity.EXTRA_ELEMENT_DESCRIPTION)
                     .valueOrNull()
 
-                ActionData.TapScreenElement(
+                ActionData.InteractWithScreenElement(
                     elementId = elementId,
                     packageName = packageName,
                     fullName = fullName,
                     onlyIfVisible = onlyIfVisible,
+                    interactiontype = INTERACTIONTYPE.valueOf(interactiontype),
                     description = description
                 )
             }
@@ -436,7 +444,7 @@ object ActionDataEntityMapper {
             is ActionData.PhoneCall -> ActionEntity.Type.PHONE_CALL
             is ActionData.TapScreen -> ActionEntity.Type.TAP_COORDINATE
             is ActionData.SwipeScreen -> ActionEntity.Type.SWIPE_COORDINATE
-            is ActionData.TapScreenElement -> ActionEntity.Type.TAP_SCREEN_ELEMENT
+            is ActionData.InteractWithScreenElement -> ActionEntity.Type.INTERACT_WITH_SCREEN_ELEMENT
             is ActionData.Text -> ActionEntity.Type.TEXT_BLOCK
             is ActionData.Url -> ActionEntity.Type.URL
             is ActionData.Sound -> ActionEntity.Type.SOUND
@@ -477,7 +485,7 @@ object ActionDataEntityMapper {
         is ActionData.PhoneCall -> data.number
         is ActionData.TapScreen -> "${data.x},${data.y}"
         is ActionData.SwipeScreen -> "${data.xStart},${data.yStart},${data.xEnd},${data.yEnd},${data.fingerCount},${data.duration}"
-        is ActionData.TapScreenElement -> "${data.elementId},${data.packageName},${data.fullName}"
+        is ActionData.InteractWithScreenElement -> "${data.elementId},${data.packageName},${data.fullName},${data.onlyIfVisible},${data.interactiontype}"
         is ActionData.Text -> data.text
         is ActionData.Url -> data.url
         is ActionData.Sound -> data.soundUid
@@ -575,7 +583,7 @@ object ActionDataEntityMapper {
             }
         }.toList()
 
-        is ActionData.TapScreenElement -> sequence {
+        is ActionData.InteractWithScreenElement -> sequence {
             if (!data.description.isNullOrBlank()) {
                 yield(Extra(ActionEntity.EXTRA_ELEMENT_DESCRIPTION, data.description))
             }

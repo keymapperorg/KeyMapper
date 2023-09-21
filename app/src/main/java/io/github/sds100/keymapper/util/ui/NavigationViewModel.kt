@@ -36,6 +36,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import timber.log.Timber
 
 /**
  * Created by sds100 on 25/07/2021.
@@ -250,9 +251,8 @@ fun NavigationViewModel.sendNavResultFromBundle(
         }
 
         NavDestination.ID_INTERACT_WITH_SCREEN_ELEMENT -> {
-            val json = bundle.getString(InteractWithScreenElementFragment.EXTRA_ELEMENT_ID)!!
+            val json = bundle.getString(InteractWithScreenElementFragment.EXTRA_RESULT)!!
             val result = Json.decodeFromString<InteractWithScreenElementResult>(json)
-
             onNavResult(NavResult(requestKey, result))
         }
 

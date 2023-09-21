@@ -13,5 +13,6 @@ data class InteractWithScreenElementResult(
     val packageName: String,
     val fullName: String,
     val onlyIfVisible: Boolean,
+    val interactionType: INTERACTIONTYPE,
     val description: String
 )

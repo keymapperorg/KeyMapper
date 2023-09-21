@@ -21,12 +21,14 @@ import io.github.sds100.keymapper.util.str
 import io.github.sds100.keymapper.util.ui.setupNavigation
 import io.github.sds100.keymapper.util.ui.showPopups
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import timber.log.Timber
 
 class InteractWithScreenElementFragment : Fragment() {
     companion object {
-        const val EXTRA_ELEMENT_ID = "extra_element_id"
+        const val EXTRA_RESULT = "extra_result"
     }
 
     private val args: InteractWithScreenElementFragmentArgs by navArgs()
@@ -58,6 +60,10 @@ class InteractWithScreenElementFragment : Fragment() {
 
         viewModel.setupNavigation(this)
 
+        args.result?.let {
+            viewModel.loadResult(Json.decodeFromString(it))
+        }
+
         interactionTypesDisplayValues = arrayOf(
             str(R.string.extra_label_interact_with_screen_element_interaction_type_click),
             str(R.string.extra_label_interact_with_screen_element_interaction_type_long_click)
@@ -86,9 +92,10 @@ class InteractWithScreenElementFragment : Fragment() {
 
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.returnResult.collectLatest { result ->
+                Timber.d("RESULT: %s", result.toString())
                 setFragmentResult(
                     requestKey,
-                    bundleOf(EXTRA_ELEMENT_ID to Json.encodeToString(result))
+                    bundleOf(EXTRA_RESULT to Json.encodeToString(result))
                 )
                 findNavController().navigateUp()
             }

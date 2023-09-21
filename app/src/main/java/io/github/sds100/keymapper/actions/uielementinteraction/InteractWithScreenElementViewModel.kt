@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.util.ui.NavDestination
 import io.github.sds100.keymapper.util.ui.NavigationViewModel
 import io.github.sds100.keymapper.util.ui.NavigationViewModelImpl
@@ -24,6 +25,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class InteractWithScreenElementViewModel(
     resourceProvider: ResourceProvider,
@@ -32,7 +34,8 @@ class InteractWithScreenElementViewModel(
     PopupViewModel by PopupViewModelImpl(),
     NavigationViewModel by NavigationViewModelImpl() {
 
-    private val _interactionTypes = arrayOf(INTERACTIONTYPE.CLICK.name, INTERACTIONTYPE.LONG_CLICK.name )
+    private val _interactionTypes =
+        arrayOf(INTERACTIONTYPE.CLICK.name, INTERACTIONTYPE.LONG_CLICK.name)
 
     private val _returnResult = MutableSharedFlow<InteractWithScreenElementResult>()
     val returnResult = _returnResult.asSharedFlow()
@@ -41,8 +44,9 @@ class InteractWithScreenElementViewModel(
     private val _packageName = MutableStateFlow<String?>(null)
     private val _fullName = MutableStateFlow<String?>(null)
     private val _onlyIfVisible: MutableStateFlow<Boolean?> = MutableStateFlow(true)
+    private val _interactionType: MutableStateFlow<INTERACTIONTYPE?> =
+        MutableStateFlow(INTERACTIONTYPE.CLICK)
     private val _description: MutableStateFlow<String?> = MutableStateFlow(null)
-    private val _interactionType: MutableStateFlow<INTERACTIONTYPE?> = MutableStateFlow(INTERACTIONTYPE.CLICK)
 
     val elementId = _elementId.map {
         it ?: return@map ""
@@ -68,6 +72,8 @@ class InteractWithScreenElementViewModel(
         this._interactionTypes.indexOf(it.name)
     }.stateIn(viewModelScope, SharingStarted.Lazily, 0)
 
+    val onlyIfVisible = _onlyIfVisible.stateIn(viewModelScope, SharingStarted.Lazily, false)
+
     private fun setElementId(id: String) {
         this._elementId.value = id
     }
@@ -89,6 +95,14 @@ class InteractWithScreenElementViewModel(
         }
     }
 
+    private fun setDescription(description: String) {
+        this._description.value = description
+    }
+
+    private fun setOnlyIfVisible(onlyIfVisible: Boolean) {
+        this._onlyIfVisible.value = onlyIfVisible
+    }
+
     fun onInteractionTypeSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         this.setInteractionType(_interactionTypes[position])
     }
@@ -99,20 +113,36 @@ class InteractWithScreenElementViewModel(
         }
     }
 
+    fun loadResult(result: InteractWithScreenElementResult) {
+
+        Timber.d("loadResult %s", result.toString())
+
+        viewModelScope.launch {
+            setElementId(result.elementId)
+            setPackageName(result.packageName)
+            setFullName(result.fullName)
+            setInteractionType(result.interactionType.name)
+            setOnlyIfVisible(result.onlyIfVisible)
+            setDescription(result.description)
+        }
+    }
+
     private suspend fun onSelectUiElement() {
-        val uiElementInfo = navigate(NavDestination.ID_CHOOSE_UI_ELEMENT, NavDestination.ChooseUiElement) ?:return
+        val uiElementInfo =
+            navigate(NavDestination.ID_CHOOSE_UI_ELEMENT, NavDestination.ChooseUiElement) ?: return
         setElementId(uiElementInfo.elementName)
         setPackageName(uiElementInfo.packageName)
         setFullName(uiElementInfo.fullName)
     }
 
-    val isDoneButtonEnabled: StateFlow<Boolean> = combine(_elementId, _packageName, _fullName) { elementId, packageName, fullName ->
-        elementId ?: return@combine false
-        packageName ?: return@combine false
-        fullName ?: return@combine false
+    val isDoneButtonEnabled: StateFlow<Boolean> =
+        combine(_elementId, _packageName, _fullName) { elementId, packageName, fullName ->
+            elementId ?: return@combine false
+            packageName ?: return@combine false
+            fullName ?: return@combine false
 
-        elementId.isNotEmpty() && packageName.isNotEmpty() && fullName.isNotEmpty()
-    }.stateIn(viewModelScope, SharingStarted.Lazily, false)
+            elementId.isNotEmpty() && packageName.isNotEmpty() && fullName.isNotEmpty()
+        }.stateIn(viewModelScope, SharingStarted.Lazily, false)
 
     fun onDoneClick() {
         viewModelScope.launch {
@@ -120,6 +150,7 @@ class InteractWithScreenElementViewModel(
             val packageName = _packageName.value ?: return@launch
             val fullName = _fullName.value ?: return@launch
             val onlyIfVisible = _onlyIfVisible.value ?: return@launch
+            val interactiontype = _interactionType.value ?: return@launch
 
             val description = showPopup(
                 "ui_element_description",
@@ -130,7 +161,16 @@ class InteractWithScreenElementViewModel(
                 )
             ) ?: return@launch
 
-            _returnResult.emit(InteractWithScreenElementResult(elementId, packageName, fullName, onlyIfVisible, description))
+            _returnResult.emit(
+                InteractWithScreenElementResult(
+                    elementId,
+                    packageName,
+                    fullName,
+                    onlyIfVisible,
+                    interactiontype,
+                    description
+                )
+            )
         }
     }
 

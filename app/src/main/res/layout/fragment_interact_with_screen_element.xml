@@ -64,6 +64,7 @@
                         android:layout_height="wrap_content"
                         android:hint="@string/extra_label_interact_with_screen_element_id"
                         app:errorWhenEmpty="@{true}"
+                        android:enabled="false"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="parent">
@@ -98,10 +99,11 @@
                         android:selectedItemPosition="@{viewModel.interactionTypeSpinnerSelection}" />
 
                     <CheckBox
-                        android:id="@+id/checkBox2"
+                        android:id="@+id/onlyIfVisibleCheckbox"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="0.5"
+                        android:checked="@{viewModel.onlyIfVisible}"
                         android:text="@string/extra_label_interact_with_screen_element_only_if_visible_checkbox" />
 
                 </LinearLayout>

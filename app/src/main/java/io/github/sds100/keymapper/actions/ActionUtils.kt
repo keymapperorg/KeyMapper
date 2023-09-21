@@ -606,7 +606,7 @@ fun ActionData.isEditable(): Boolean = when (this) {
     is ActionData.Flashlight.Disable,
     is ActionData.TapScreen,
     is ActionData.SwipeScreen,
-    is ActionData.TapScreenElement,
+    is ActionData.InteractWithScreenElement,
     is ActionData.Text,
     is ActionData.Url,
     is ActionData.PhoneCall,

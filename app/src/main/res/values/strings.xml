@@ -136,6 +136,8 @@
     <string name="description_tap_screen_element_with_description">Tap screen element with ID %s (%s)</string>
     <string name="description_phone_call">Call %s</string>
     <string name="description_sound">Play sound: %s</string>
+    <string name="description_interact_with_screen_element_default">%s on element \"%s\" in package \"%s\"</string>
+    <string name="description_interact_with_screen_element_default_with_description">%s on element \"%s\" in package \"%s\" (%s)</string>
     <!--  Action descriptions  -->
 
     <!--  Headers  -->
