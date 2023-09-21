@@ -144,6 +144,13 @@ class ChooseUiElementViewModel constructor(
         }
     }
 
+    fun onClearListButtonClick() {
+        viewModelScope.launch(Dispatchers.Default) {
+            _serviceAdapter.send(Event.StopRecordingUiElements)
+            _serviceAdapter.send(Event.ClearRecordedUiElements)
+        }
+    }
+
     private suspend fun List<UiElementInfo>.buildListItems(): List<SimpleListItem> = flow {
         forEach { uiElementInfo ->
             val listItem = DefaultSimpleListItem(

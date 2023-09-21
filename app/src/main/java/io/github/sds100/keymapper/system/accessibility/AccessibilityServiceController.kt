@@ -525,6 +525,9 @@ class AccessibilityServiceController(
                     }
                 }
             }
+            is Event.ClearRecordedUiElements -> coroutineScope.launch {
+                viewIdRepository.deleteAll()
+            }
             else -> Unit
         }
     }

@@ -26,18 +26,37 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/recordButton"
-                style="@style/Widget.Button.Red"
+            <LinearLayout
+                android:id="@+id/headerButtonsLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@{viewModel.recordButtonText}"
-                app:layout_constraintBottom_toTopOf="@+id/listLayout"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:orientation="horizontal"
+                android:weightSum="1.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:onClick="@{() -> viewModel.onRecordButtonClick()}"
-                tools:text="Start Record" />
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/recordButton"
+                    style="@style/Widget.Button.Red"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{viewModel.recordButtonText}"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="0.5"
+                    android:onClick="@{() -> viewModel.onRecordButtonClick()}"
+                    tools:text="Start Record" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/clearDbButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="@string/extra_label_interact_with_screen_element_clear_list_button_text"
+                    android:layout_weight="0.5"
+                    android:onClick="@{() -> viewModel.onClearListButtonClick()}"
+                    tools:text="Clear List" />
+
+            </LinearLayout>
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textViewRecordDescription"

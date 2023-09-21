@@ -90,4 +90,7 @@ sealed class Event {
 
     @Serializable
     object OnStoppedRecordingUiElements : Event()
+
+    @Serializable
+    object ClearRecordedUiElements: Event()
 }
