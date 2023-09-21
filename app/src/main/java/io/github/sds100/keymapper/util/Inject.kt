@@ -45,6 +45,7 @@ import io.github.sds100.keymapper.system.apps.DisplayAppShortcutsUseCaseImpl
 import io.github.sds100.keymapper.system.bluetooth.ChooseBluetoothDeviceUseCaseImpl
 import io.github.sds100.keymapper.system.bluetooth.ChooseBluetoothDeviceViewModel
 import io.github.sds100.keymapper.system.intents.ConfigIntentViewModel
+import io.github.sds100.keymapper.system.ui.ChooseUiElementViewModel
 
 /**
  * Created by sds100 on 26/01/2020.
@@ -92,6 +93,15 @@ object Inject {
         )
     }
 
+    fun chooseUiElementViewModel(context: Context): ChooseUiElementViewModel.Factory {
+        return ChooseUiElementViewModel.Factory(
+            UseCases.displayUiElements(context),
+            ServiceLocator.resourceProvider(context),
+            (context.applicationContext as KeyMapperApp).recordUiElementsController,
+            ServiceLocator.accessibilityServiceAdapter(context),
+        )
+    }
+
     fun configKeyEventViewModel(
         context: Context
     ): ConfigKeyEventActionViewModel.Factory {
@@ -136,10 +146,7 @@ object Inject {
     }
     fun pickScreenElementActionTypeViewModel(context: Context): PickScreenElementViewModel.Factory {
         return PickScreenElementViewModel.Factory(
-            ServiceLocator.resourceProvider(context),
-            ServiceLocator.viewIdRepository(context),
-            ServiceLocator.accessibilityServiceAdapter(context),
-            (context.applicationContext as KeyMapperApp).recordUiElementsController,
+            ServiceLocator.resourceProvider(context)
         )
     }
 

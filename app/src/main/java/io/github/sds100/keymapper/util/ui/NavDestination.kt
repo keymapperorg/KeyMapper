@@ -12,6 +12,7 @@ import io.github.sds100.keymapper.system.apps.ActivityInfo
 import io.github.sds100.keymapper.system.apps.ChooseAppShortcutResult
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import io.github.sds100.keymapper.system.intents.ConfigIntentResult
+import io.github.sds100.keymapper.system.ui.UiElementInfo
 import timber.log.Timber
 
 /**
@@ -26,6 +27,7 @@ sealed class NavDestination<R> {
         const val ID_PICK_COORDINATE = "pick_coordinate"
         const val ID_PICK_SWIPE_COORDINATE = "pick_swipe_coordinate"
         const val ID_PICK_SCREEN_ELEMENT = "pick_screen_element"
+        const val ID_CHOOSE_UI_ELEMENT = "choose_ui_element"
         const val ID_CONFIG_INTENT = "config_intent"
         const val ID_CHOOSE_ACTIVITY = "choose_activity"
         const val ID_CHOOSE_SOUND = "choose_sound"
@@ -43,22 +45,23 @@ sealed class NavDestination<R> {
             Timber.d("NavDestination: %s", this.toString())
             return when (this) {
                 is ChooseApp -> ID_CHOOSE_APP
-                ChooseAppShortcut -> ID_CHOOSE_APP_SHORTCUT
-                ChooseKeyCode -> ID_KEY_CODE
+                is ChooseAppShortcut -> ID_CHOOSE_APP_SHORTCUT
+                is ChooseKeyCode -> ID_KEY_CODE
                 is ConfigKeyEventAction -> ID_KEY_EVENT
                 is PickCoordinate -> ID_PICK_COORDINATE
                 is PickSwipeCoordinate -> ID_PICK_SWIPE_COORDINATE
                 is PickScreenElement -> ID_PICK_SCREEN_ELEMENT
+                is ChooseUiElement -> ID_CHOOSE_UI_ELEMENT
                 is ConfigIntent -> ID_CONFIG_INTENT
-                ChooseActivity -> ID_CHOOSE_ACTIVITY
-                ChooseSound -> ID_CHOOSE_SOUND
-                ChooseAction -> ID_CHOOSE_ACTION
+                is ChooseActivity -> ID_CHOOSE_ACTIVITY
+                is ChooseSound -> ID_CHOOSE_SOUND
+                is ChooseAction -> ID_CHOOSE_ACTION
                 is ChooseConstraint -> ID_CHOOSE_CONSTRAINT
-                ChooseBluetoothDevice -> ID_CHOOSE_BLUETOOTH_DEVICE
-                FixAppKilling -> ID_FIX_APP_KILLING
-                ReportBug -> ID_REPORT_BUG
-                Settings -> ID_SETTINGS
-                About -> ID_ABOUT
+                is ChooseBluetoothDevice -> ID_CHOOSE_BLUETOOTH_DEVICE
+                is FixAppKilling -> ID_FIX_APP_KILLING
+                is ReportBug -> ID_REPORT_BUG
+                is Settings -> ID_SETTINGS
+                is About -> ID_ABOUT
                 is ConfigKeyMap -> ID_CONFIG_KEY_MAP
                 is ConfigFingerprintMap -> ID_CONFIG_FINGERPRINT_MAP
             }
@@ -85,6 +88,8 @@ sealed class NavDestination<R> {
 
     data class PickScreenElement(val result: PickScreenElementResult? = null) :
         NavDestination<PickScreenElementResult>()
+
+    object ChooseUiElement: NavDestination<UiElementInfo>()
 
     data class ConfigIntent(val result: ConfigIntentResult? = null) :
         NavDestination<ConfigIntentResult>()

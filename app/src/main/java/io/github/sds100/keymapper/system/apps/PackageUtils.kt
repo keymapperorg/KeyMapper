@@ -1,13 +1,15 @@
 package io.github.sds100.keymapper.system.apps
 
-import android.content.ActivityNotFoundException
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
 
 /**
  * Created by sds100 on 27/10/2018.
  */
+
+enum class PACKAGE_INFO_TYPES {
+    TYPE_PACKAGE_NAME,
+    TYPE_VIEW_ID
+}
 
 object PackageUtils {
 
@@ -20,5 +22,19 @@ object PackageUtils {
         } catch (e: Exception) {
             return false
         }
+    }
+
+    fun getInfoFromFullViewId(name: String, infoType: PACKAGE_INFO_TYPES): String? {
+        val splitted = name.split('/')
+
+        if (splitted.isNotEmpty() && splitted.size == 2) {
+            if (infoType.name == PACKAGE_INFO_TYPES.TYPE_VIEW_ID.name) {
+                return splitted[1]
+            } else if (infoType.name == PACKAGE_INFO_TYPES.TYPE_PACKAGE_NAME.name) {
+                return splitted[0]
+            }
+        }
+
+        return null
     }
 }

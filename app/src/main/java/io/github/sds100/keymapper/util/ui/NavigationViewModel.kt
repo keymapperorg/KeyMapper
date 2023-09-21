@@ -27,6 +27,8 @@ import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import io.github.sds100.keymapper.system.bluetooth.ChooseBluetoothDeviceFragment
 import io.github.sds100.keymapper.system.intents.ConfigIntentFragment
 import io.github.sds100.keymapper.system.intents.ConfigIntentResult
+import io.github.sds100.keymapper.system.ui.ChooseUiElementFragment
+import io.github.sds100.keymapper.system.ui.UiElementInfo
 import io.github.sds100.keymapper.ui.utils.getJsonSerializable
 import io.github.sds100.keymapper.util.ui.NavDestination.Companion.getId
 import kotlinx.coroutines.flow.*
@@ -166,6 +168,7 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
 
                 NavAppDirections.pickScreenElement(requestKey, json)
             }
+            is NavDestination.ChooseUiElement -> NavAppDirections.chooseUiElement(requestKey)
             is NavDestination.ConfigIntent -> {
                 val json = destination.result?.let {
                     Json.encodeToString(it)
@@ -250,6 +253,13 @@ fun NavigationViewModel.sendNavResultFromBundle(
             val json = bundle.getString(PickScreenElementFragment.EXTRA_ELEMENT_ID)!!
             val result = Json.decodeFromString<PickScreenElementResult>(json)
 
+            onNavResult(NavResult(requestKey, result))
+        }
+
+        NavDestination.ID_CHOOSE_UI_ELEMENT -> {
+            val result = bundle.getJsonSerializable<UiElementInfo>(
+                ChooseUiElementFragment.EXTRA_UI_ELEMENT_ID
+            )
             onNavResult(NavResult(requestKey, result))
         }
 

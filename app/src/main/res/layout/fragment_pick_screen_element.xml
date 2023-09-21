@@ -37,57 +37,17 @@
             android:layout_marginBottom="@dimen/appintro_bottombar_height">
 
             <LinearLayout
-                android:id="@+id/headerLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:baselineAligned="true"
-                android:orientation="vertical"
-                android:weightSum="1.0"
-                app:layout_constraintBottom_toTopOf="@+id/inputFieldsLayout"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/textViewCaption"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="@{caption}"
-                    android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
-                    android:visibility='@{caption == null || caption == "" ? View.GONE : View.VISIBLE}'
-                    tools:text="Here is a caption."
-                    tools:visibility="visible" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/recordButton"
-                    style="@style/Widget.Button.Red"
-                    android:layout_margin="16dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:onClick="@{() -> viewModel.onRecordButtonClick()}"
-                    android:text="@{viewModel.recordButtonText}"
-                    tools:text="Start Record" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/textViewRecordDescription"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text='@{viewModel.recordDescriptionText}'
-                    android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
-                    tools:text="Here is a description for the record button." />
-            </LinearLayout>
-
-            <LinearLayout
                 android:id="@+id/inputFieldsLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="150dp"
                 android:baselineAligned="false"
                 android:orientation="vertical"
                 android:weightSum="1.0"
-                app:layout_constraintStart_toEndOf="@+id/headerLayout"
-                app:layout_constraintTop_toBottomOf="@id/headerLayout">
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <LinearLayout
                     android:id="@+id/inputFieldsLayoutSub1"
@@ -113,7 +73,7 @@
                             android:layout_height="wrap_content"
                             android:inputType="text"
                             android:text="@{viewModel.fullName}"
-                            tools:text="250" />
+                            tools:text="com.package.name/element_id" />
                     </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
 
@@ -148,41 +108,14 @@
 
             </LinearLayout>
 
-            <SearchView
-                android:id="@+id/searchView"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/chooseUiElementButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="16dp"
-                android:orientation="horizontal"
-                app:layout_constraintBottom_toTopOf="@+id/scrollView"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/inputFieldsLayout"
+                android:layout_margin="16dp"
+                android:onClick="@{() -> viewModel.onChooseUiElementButtonClick()}"
+                android:text="@string/button_select_ui_element"
                 app:layout_constraintTop_toBottomOf="@+id/inputFieldsLayout" />
-
-            <androidx.core.widget.NestedScrollView
-                android:id="@+id/scrollView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
-                app:layout_constrainedHeight="true"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/searchView"
-                app:layout_constraintTop_toBottomOf="@+id/searchView">
-
-                <com.airbnb.epoxy.EpoxyRecyclerView
-                    android:id="@+id/epoxyRecyclerView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:clipToPadding="true"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    tools:listitem="@layout/list_item_simple" />
-
-            </androidx.core.widget.NestedScrollView>
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

@@ -475,6 +475,7 @@
     <string name="button_choose_sound_file">Choose sound file</string>
     <string name="button_edit_action">Edit action</string>
     <string name="button_replace_action">Replace action</string>
+    <string name="button_select_ui_element">Select UI Element</string>
     <!-- Button titles -->
 
     <!-- Dialog stuff -->

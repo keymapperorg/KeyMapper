@@ -9,27 +9,64 @@
 
         <variable
             name="viewModel"
-            type="io.github.sds100.keymapper.system.apps.ChooseAppViewModel" />
+            type="io.github.sds100.keymapper.system.ui.ChooseUiElementViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_gravity="top|start|fill_vertical">
+
+        <LinearLayout
+            android:id="@+id/headerLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/recordButton"
+                style="@style/Widget.Button.Red"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{viewModel.recordButtonText}"
+                app:layout_constraintBottom_toTopOf="@+id/listLayout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:onClick="@{() -> viewModel.onRecordButtonClick()}"
+                tools:text="Start Record" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/textViewRecordDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text='@{viewModel.recordDescriptionText}'
+                android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                tools:text="Here is a description for the record button." />
+
+        </LinearLayout>
+
 
         <FrameLayout
             android:id="@+id/listLayout"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constrainedHeight="true"
+            android:layout_gravity="top|start|fill"
+            app:layout_constraintBottom_toTopOf="@+id/coordinatorLayout"
+            app:layout_constraintTop_toBottomOf="@+id/headerLayout">
 
             <com.airbnb.epoxy.EpoxyRecyclerView
                 android:id="@+id/epoxyRecyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:clipToPadding="false"
+                android:layout_gravity="top|start|fill"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/list_item_simple" />
 

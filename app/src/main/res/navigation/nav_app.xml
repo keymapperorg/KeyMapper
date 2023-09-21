@@ -170,6 +170,29 @@
     </fragment>
 
     <action
+        android:id="@+id/chooseUiElement"
+        app:destination="@id/chooseUiElementFragment"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right">
+
+        <argument
+            android:name="requestKey"
+            app:argType="string" />
+    </action>
+
+    <fragment
+        android:id="@+id/chooseUiElementFragment"
+        android:name="io.github.sds100.keymapper.system.ui.ChooseUiElementFragment"
+        tools:layout="@layout/fragment_simple_recyclerview">
+
+        <argument
+            android:name="requestKey"
+            app:argType="string" />
+    </fragment>
+
+    <action
         android:id="@+id/configKeyEvent"
         app:destination="@id/configKeyEventFragment"
         app:enterAnim="@anim/slide_in_right"
