@@ -45,6 +45,7 @@ class InteractWithScreenElementViewModel(
     private val _elementId = MutableStateFlow<String?>(null)
     private val _packageName = MutableStateFlow<String?>(null)
     private val _fullName = MutableStateFlow<String?>(null)
+    private val _appName = MutableStateFlow<String?>(null)
     var onlyIfVisible: MutableStateFlow<Boolean?> = MutableStateFlow(true)
 
     private val _description: MutableStateFlow<String?> = MutableStateFlow(null)
@@ -55,13 +56,19 @@ class InteractWithScreenElementViewModel(
         it.toString()
     }.stateIn(viewModelScope, SharingStarted.Lazily, null)
 
-    val packageNameDisplayValue = _fullName.map {
+    val packageNameDisplayValue = _packageName.map {
         it ?: return@map ""
 
-        PackageUtils.getInfoFromFullyQualifiedViewName(it, PACKAGE_INFO_TYPES.TYPE_PACKAGE_NAME)
+        it.toString()
     }.stateIn(viewModelScope, SharingStarted.Lazily, null)
 
     val fullNameDisplayValue = _fullName.map {
+        it ?: return@map ""
+
+        it.toString()
+    }.stateIn(viewModelScope, SharingStarted.Lazily, null)
+
+    val appNameDisplayValue = _appName.map {
         it ?: return@map ""
 
         it.toString()
@@ -99,6 +106,7 @@ class InteractWithScreenElementViewModel(
             _elementId.value = result.elementId
             _packageName.value = result.packageName
             _fullName.value = result.fullName
+            _appName.value = result.appName
             _interactionType.value = result.interactionType
             onlyIfVisible.value = result.onlyIfVisible
             _description.value = result.description
@@ -110,15 +118,17 @@ class InteractWithScreenElementViewModel(
         _elementId.value = uiElementInfo.elementName
         _packageName.value = uiElementInfo.packageName
         _fullName.value = uiElementInfo.fullName
+        _appName.value = uiElementInfo.appName
     }
 
     val isDoneButtonEnabled: StateFlow<Boolean> =
-        combine(_elementId, _packageName, _fullName) { elementId, packageName, fullName ->
+        combine(_elementId, _packageName, _fullName, _appName) { elementId, packageName, fullName, appName ->
             elementId ?: return@combine false
             packageName ?: return@combine false
             fullName ?: return@combine false
+            appName ?: return@combine false
 
-            elementId.isNotEmpty() && packageName.isNotEmpty() && fullName.isNotEmpty()
+            elementId.isNotEmpty() && packageName.isNotEmpty() && fullName.isNotEmpty() && appName.isNotEmpty()
         }.stateIn(viewModelScope, SharingStarted.Lazily, false)
 
     fun onDoneClick() {
@@ -126,6 +136,7 @@ class InteractWithScreenElementViewModel(
             val elementId = _elementId.value ?: return@launch
             val packageName = _packageName.value ?: return@launch
             val fullName = _fullName.value ?: return@launch
+            val appName = _appName.value ?: return@launch
             val onlyIfVisible = onlyIfVisible.value ?: return@launch
             val interactiontype = _interactionType.value ?: return@launch
 
@@ -143,6 +154,7 @@ class InteractWithScreenElementViewModel(
                     elementId,
                     packageName,
                     fullName,
+                    appName,
                     onlyIfVisible,
                     interactiontype,
                     description

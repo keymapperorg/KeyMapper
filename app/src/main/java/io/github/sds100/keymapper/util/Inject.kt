@@ -41,6 +41,8 @@ import io.github.sds100.keymapper.system.apps.ChooseActivityViewModel
 import io.github.sds100.keymapper.system.apps.ChooseAppShortcutViewModel
 import io.github.sds100.keymapper.system.apps.ChooseAppViewModel
 import io.github.sds100.keymapper.system.apps.DisplayAppShortcutsUseCaseImpl
+import io.github.sds100.keymapper.system.apps.DisplayAppsUseCase
+import io.github.sds100.keymapper.system.apps.DisplayAppsUseCaseImpl
 import io.github.sds100.keymapper.system.bluetooth.ChooseBluetoothDeviceUseCaseImpl
 import io.github.sds100.keymapper.system.bluetooth.ChooseBluetoothDeviceViewModel
 import io.github.sds100.keymapper.system.intents.ConfigIntentViewModel
@@ -98,6 +100,7 @@ object Inject {
             ServiceLocator.resourceProvider(context),
             (context.applicationContext as KeyMapperApp).recordUiElementsController,
             ServiceLocator.accessibilityServiceAdapter(context),
+            UseCases.displayPackages(context)
         )
     }
 

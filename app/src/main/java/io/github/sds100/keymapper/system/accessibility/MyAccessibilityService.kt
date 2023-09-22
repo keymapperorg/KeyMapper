@@ -354,10 +354,10 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
     override fun doGlobalAction(action: Int): Result<*> {
         val success = performGlobalAction(action)
 
-        if (success) {
-            return Success(Unit)
+        return if (success) {
+            Success(Unit)
         } else {
-            return Error.FailedToPerformAccessibilityGlobalAction(action)
+            Error.FailedToPerformAccessibilityGlobalAction(action)
         }
     }
 
@@ -373,7 +373,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
             val strokeDescription =
                     when {
                         inputEventType == InputEventType.DOWN && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ->
-                            GestureDescription.StrokeDescription(
+                            StrokeDescription(
                                     path,
                                     0,
                                     duration,
@@ -381,14 +381,14 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
                             )
 
                         inputEventType == InputEventType.UP && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ->
-                            GestureDescription.StrokeDescription(
+                            StrokeDescription(
                                     path,
                                     59999,
                                     duration,
                                     false
                             )
 
-                        else -> GestureDescription.StrokeDescription(path, 0, duration)
+                        else -> StrokeDescription(path, 0, duration)
                     }
 
             strokeDescription.let {
@@ -412,8 +412,8 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
     override fun fetchAvailableUIElements(): List<String> {
         val viewIds = arrayListOf<String>()
 
-        if (this.rootInActiveWindow != null) {
-            viewIds.addAll(findViewIdResourceNames(this.rootInActiveWindow))
+        if (rootInActiveWindow != null) {
+            viewIds.addAll(findViewIdResourceNames(rootInActiveWindow))
         } else {
             Timber.d("fetchAvailableUIElements NO ROOT WINDOW")
         }
@@ -447,8 +447,53 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
         return list
     }
 
+    private fun findNodeByFullyQualifiedName(name: String, parent: AccessibilityNodeInfo): AccessibilityNodeInfo? {
+        val nodes = arrayListOf<AccessibilityNodeInfo>()
+        var result: AccessibilityNodeInfo? = null
+
+        if (rootInActiveWindow != null) {
+            nodes.addAll(getChildNodes(name, parent))
+
+            if (nodes.isNotEmpty()) {
+                nodes.forEach{
+                    if (it.viewIdResourceName !== null && it.viewIdResourceName == name) {
+                        result = it
+                        return@forEach
+                    }
+                }
+            }
+        } else {
+            Timber.d("findNodeByFullyQualifiedName NO ROOT WINDOW")
+        }
+
+        return result
+    }
+
+    private fun getChildNodes(name: String, parent: AccessibilityNodeInfo): List<AccessibilityNodeInfo> {
+        val list = arrayListOf<AccessibilityNodeInfo>()
+
+        for (i in 0 until parent.childCount) {
+            val child = parent.getChild(i)
+
+            if (child != null) {
+                try {
+                    if (child.viewIdResourceName != null) {
+                        list.add(child)
+                        if (child.viewIdResourceName == name) return list
+                    }
+                } catch (error: kotlin.Error) {
+                    Timber.d("Could not add child to list: %s", error.message)
+                }
+
+                list.addAll(getChildNodes(name, child))
+            }
+        }
+
+        return list
+    }
+
     override fun swipeScreen(xStart: Int, yStart: Int, xEnd: Int, yEnd: Int, fingerCount: Int, duration: Int, inputEventType: InputEventType): Result<*> {
-        Timber.d("ACCESSIBILITY SWIPE SCREEN %d, %d, %d, %d, %s, %d, %s", xStart, yStart, xEnd, yEnd, fingerCount, duration, inputEventType);
+        Timber.d("ACCESSIBILITY SWIPE SCREEN %d, %d, %d, %d, %s, %d, %s", xStart, yStart, xEnd, yEnd, fingerCount, duration, inputEventType)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             val pStart = Point(xStart, yStart)
@@ -473,21 +518,18 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
                 // perpendicular line of the start swipe point
                 val perpendicularLineStart = getPerpendicularOfLine(pStart, pEnd,
                     perpendicularLineLength
-                );
+                )
                 // perpendicular line of the end swipe point
                 val perpendicularLineEnd = getPerpendicularOfLine(pEnd, pStart,
-                    perpendicularLineLength, true);
+                    perpendicularLineLength, true)
 
-
-                val startFingerCoordinatesList = mutableListOf<Point>()
-                val endFingerCoordinatesList = mutableListOf<Point>()
                 // this is the angle between start and end point to rotate all virtual fingers on the perpendicular lines in the same direction
-                val angle = angleBetweenPoints(Point(xStart, yStart), Point(xEnd, yEnd)) - 90;
+                val angle = angleBetweenPoints(Point(xStart, yStart), Point(xEnd, yEnd)) - 90
 
                 // create the virtual fingers
                 for (index in 0..segmentCount) {
                     // offset of each finger
-                    val fingerOffsetLength = index * segmentLength * 2;
+                    val fingerOffsetLength = index * segmentLength * 2
                     // move the coordinates of the current virtual finger on the perpendicular line for the start coordinates
                     val startFingerCoordinateWithOffset = movePointByDistanceAndAngle(perpendicularLineStart.start, fingerOffsetLength, angle)
                     // move the coordinates of the current virtual finger on the perpendicular line for the end coordinates
@@ -498,14 +540,12 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
                     p.moveTo(startFingerCoordinateWithOffset.x.toFloat(), startFingerCoordinateWithOffset.y.toFloat())
                     p.lineTo(endFingerCoordinateWithOffset.x.toFloat(), endFingerCoordinateWithOffset.y.toFloat())
 
-                    //startFingerCoordinatesList.add(startFingerCoordinateWithOffset)
-                    //endFingerCoordinatesList.add(endFingerCoordinateWithOffset)
                     gestureBuilder.addStroke(StrokeDescription(p, 0, duration.toLong()))
                 }
 
             }
 
-            val success = dispatchGesture(gestureBuilder.build(), null, null);
+            val success = dispatchGesture(gestureBuilder.build(), null, null)
 
             return if (success) {
                 Success(Unit)
@@ -518,44 +558,46 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
     }
 
     override fun interactWithScreenElement(fullName: String, onlyIfVisible: Boolean, interactiontype: INTERACTIONTYPE, inputEventType: InputEventType): Result<*> {
+
+        Timber.d("interactWithScreenElement fullName: %s, onlyIfVisible: %s, interactionType: %s", fullName, onlyIfVisible.toString(), interactiontype.name)
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            if (rootInActiveWindow != null) {
+                // Use a custom function because "findAccessibilityNodeInfosByViewId" does not iterate through all children sometimes
+                val nodeToInteractWith = findNodeByFullyQualifiedName(fullName, rootInActiveWindow)
 
-            Timber.d("interactWithScreenElement ID: %s %s %s", fullName, onlyIfVisible.toString(), interactiontype.name)
-
-            if (this.rootInActiveWindow != null) {
-                val nodeList = rootInActiveWindow.findAccessibilityNodeInfosByViewId(fullName)
-
-                if (nodeList.isNotEmpty()) {
-                    val nodeToInteractWith = nodeList.first()
-
-                    if (nodeToInteractWith != null && nodeToInteractWith.isVisibleToUser == onlyIfVisible) {
-                        val success = nodeToInteractWith.performAction(
-                            when (interactiontype) {
-                                INTERACTIONTYPE.LONG_CLICK -> AccessibilityNodeInfo.ACTION_LONG_CLICK
-                                INTERACTIONTYPE.SELECT -> AccessibilityNodeInfo.ACTION_SELECT
-                                INTERACTIONTYPE.FOCUS -> AccessibilityNodeInfo.ACTION_FOCUS
-                                INTERACTIONTYPE.CLEAR_FOCUS -> AccessibilityNodeInfo.ACTION_CLEAR_FOCUS
-                                INTERACTIONTYPE.COLLAPSE -> AccessibilityNodeInfo.ACTION_COLLAPSE
-                                INTERACTIONTYPE.EXPAND -> AccessibilityNodeInfo.ACTION_EXPAND
-                                INTERACTIONTYPE.DISMISS -> AccessibilityNodeInfo.ACTION_DISMISS
-                                INTERACTIONTYPE.SCROLL_FORWARD -> AccessibilityNodeInfo.ACTION_SCROLL_FORWARD
-                                INTERACTIONTYPE.SCROLL_BACKWARD -> AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD
-                                else -> AccessibilityNodeInfo.ACTION_CLICK
-                            }
-                        );
-
-                        if (success) {
-                            return Success(Unit)
-                        } else {
-                            Error.FailedToDispatchGesture
-                        }
-
-                    } else {
-                        return Error.FailedToFindAccessibilityNode
+                if (nodeToInteractWith != null) {
+                    if (onlyIfVisible && !nodeToInteractWith.isVisibleToUser) {
+                        return Error.AccessibilityNodeNotVisible
                     }
+
+                    val success = nodeToInteractWith.performAction(
+                        when (interactiontype) {
+                            INTERACTIONTYPE.LONG_CLICK -> AccessibilityNodeInfo.ACTION_LONG_CLICK
+                            INTERACTIONTYPE.SELECT -> AccessibilityNodeInfo.ACTION_SELECT
+                            INTERACTIONTYPE.FOCUS -> AccessibilityNodeInfo.ACTION_FOCUS
+                            INTERACTIONTYPE.CLEAR_FOCUS -> AccessibilityNodeInfo.ACTION_CLEAR_FOCUS
+                            INTERACTIONTYPE.COLLAPSE -> AccessibilityNodeInfo.ACTION_COLLAPSE
+                            INTERACTIONTYPE.EXPAND -> AccessibilityNodeInfo.ACTION_EXPAND
+                            INTERACTIONTYPE.DISMISS -> AccessibilityNodeInfo.ACTION_DISMISS
+                            INTERACTIONTYPE.SCROLL_FORWARD -> AccessibilityNodeInfo.ACTION_SCROLL_FORWARD
+                            INTERACTIONTYPE.SCROLL_BACKWARD -> AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD
+                            else -> AccessibilityNodeInfo.ACTION_CLICK
+                        }
+                    )
+
+                    if (success) {
+                        return Success(Unit)
+                    } else {
+                        Error.FailedToDispatchGesture
+                    }
+
                 } else {
+                    Timber.d("interactWithScreenElement: nodeToInteractWith is null")
                     return Error.FailedToFindAccessibilityNode
                 }
+            } else {
+                Timber.d("interactWithScreenElement: rootInActiveWindow is NULL")
             }
         }
 

@@ -153,15 +153,14 @@ object ActionDataEntityMapper {
             }
 
             ActionId.INTERACT_WITH_SCREEN_ELEMENT -> {
-                Timber.d("ActionId.INTERACT_WITH_SCREEN_ELEMENT %s", entity.data)
-
                 val splitData = entity.data.trim().split(',')
 
                 val elementId = splitData[0]
                 val packageName = splitData[1]
                 val fullName = splitData[2]
-                val onlyIfVisible = splitData[3].toBoolean()
-                val interactiontype = splitData[4]
+                val appName = splitData[3]
+                val onlyIfVisible = splitData[4].toBoolean()
+                val interactiontype = splitData[5]
 
                 val description = entity.extras.getData(ActionEntity.EXTRA_ELEMENT_DESCRIPTION)
                     .valueOrNull()
@@ -170,6 +169,7 @@ object ActionDataEntityMapper {
                     elementId = elementId,
                     packageName = packageName,
                     fullName = fullName,
+                    appName = appName,
                     onlyIfVisible = onlyIfVisible,
                     interactiontype = INTERACTIONTYPE.valueOf(interactiontype),
                     description = description
@@ -485,7 +485,7 @@ object ActionDataEntityMapper {
         is ActionData.PhoneCall -> data.number
         is ActionData.TapScreen -> "${data.x},${data.y}"
         is ActionData.SwipeScreen -> "${data.xStart},${data.yStart},${data.xEnd},${data.yEnd},${data.fingerCount},${data.duration}"
-        is ActionData.InteractWithScreenElement -> "${data.elementId},${data.packageName},${data.fullName},${data.onlyIfVisible},${data.interactiontype}"
+        is ActionData.InteractWithScreenElement -> "${data.elementId},${data.packageName},${data.fullName},${data.appName},${data.onlyIfVisible},${data.interactiontype}"
         is ActionData.Text -> data.text
         is ActionData.Url -> data.url
         is ActionData.Sound -> data.soundUid

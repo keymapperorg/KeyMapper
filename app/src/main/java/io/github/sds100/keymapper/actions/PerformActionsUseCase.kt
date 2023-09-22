@@ -274,7 +274,6 @@ class PerformActionsUseCaseImpl(
             }
 
             is ActionData.InteractWithScreenElement -> {
-                Timber.d("ActionData.TapScreenElement: %s", action.toString())
                 result = accessibilityService.interactWithScreenElement(action.fullName, action.onlyIfVisible, action.interactiontype, inputEventType)
             }
 

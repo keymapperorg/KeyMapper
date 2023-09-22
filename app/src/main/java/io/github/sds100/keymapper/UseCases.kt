@@ -73,7 +73,8 @@ object UseCases {
 
     fun displayUiElements(ctx: Context): DisplayUiElementsUseCase {
         return DisplayUiElementsUseCaseImpl(
-            ServiceLocator.viewIdRepository(ctx)
+            ServiceLocator.viewIdRepository(ctx),
+            displayPackages(ctx)
         )
     }
 

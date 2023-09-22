@@ -371,6 +371,7 @@ class CreateActionViewModelImpl(
                         oldData.elementId,
                         oldData.packageName,
                         oldData.fullName,
+                        oldData.appName,
                         oldData.onlyIfVisible,
                         oldData.interactiontype,
                         oldData.description ?: ""
@@ -392,6 +393,7 @@ class CreateActionViewModelImpl(
                     result.elementId,
                     result.packageName,
                     result.fullName,
+                    result.appName,
                     result.onlyIfVisible,
                     result.interactionType,
                     description

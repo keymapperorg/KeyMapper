@@ -13,6 +13,7 @@ import io.github.sds100.keymapper.util.valueOrNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.util.*
 
 /**
@@ -104,6 +105,8 @@ class ChooseAppViewModel constructor(
 
     private suspend fun List<PackageInfo>.buildListItems(): List<SimpleListItem> = flow {
         forEach { packageInfo ->
+            Timber.d("buildListItems::packageInfo %s", packageInfo.packageName)
+
             val name = useCase.getAppName(packageInfo.packageName)
                 .valueOrNull() ?: return@forEach
 

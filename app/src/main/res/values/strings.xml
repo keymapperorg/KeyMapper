@@ -136,8 +136,8 @@
     <string name="description_tap_screen_element_with_description">Tap screen element with ID %s (%s)</string>
     <string name="description_phone_call">Call %s</string>
     <string name="description_sound">Play sound: %s</string>
-    <string name="description_interact_with_screen_element_default">%s element \"%s\" in package \"%s\"</string>
-    <string name="description_interact_with_screen_element_default_with_description">%s element \"%s\" in package \"%s\" (%s)</string>
+    <string name="description_interact_with_screen_element_default">%s element \"%s\" in app \"%s\"</string>
+    <string name="description_interact_with_screen_element_default_with_description">%s element \"%s\" in app \"%s\" (%s)</string>
     <!--  Action descriptions  -->
 
     <!--  Headers  -->
@@ -1050,6 +1050,7 @@
     <string name="error_ime_not_found">Can\'t find the %s input method</string>
     <string name="error_cant_show_ime_picker_in_background">The input method picker can\'t be shown!</string>
     <string name="error_failed_to_find_accessibility_node">Failed to find accessibility node!</string>
+    <string name="error_accessibility_node_not_visible">Accessibility node not visible to user!</string>
     <string name="error_failed_to_perform_accessibility_global_action">Failed perform global action %s!</string>
 
     <string name="error_the_app_wont_work">Your key maps won\'t work! Some things need fixing!</string>

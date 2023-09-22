@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
+import io.github.sds100.keymapper.system.apps.DisplayAppsUseCase
 import io.github.sds100.keymapper.system.apps.PACKAGE_INFO_TYPES
 import io.github.sds100.keymapper.system.apps.PackageUtils
 import io.github.sds100.keymapper.util.Event
@@ -13,8 +14,10 @@ import io.github.sds100.keymapper.util.filterByQuery
 import io.github.sds100.keymapper.util.formatSeconds
 import io.github.sds100.keymapper.util.mapData
 import io.github.sds100.keymapper.util.ui.DefaultSimpleListItem
+import io.github.sds100.keymapper.util.ui.IconInfo
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.SimpleListItem
+import io.github.sds100.keymapper.util.valueOrNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,8 +42,10 @@ class ChooseUiElementViewModel constructor(
     resourceProvider: ResourceProvider,
     recordUiElements: RecordUiElementsUseCase,
     serviceAdapter: ServiceAdapter,
+    displayAppsUseCase: DisplayAppsUseCase,
 ) : ViewModel(),
-    ResourceProvider by resourceProvider
+    ResourceProvider by resourceProvider,
+    DisplayAppsUseCase by displayAppsUseCase
 {
 
     private val _serviceAdapter = serviceAdapter
@@ -124,7 +129,8 @@ class ChooseUiElementViewModel constructor(
                     UiElementInfo(
                         elementName = elementViewId,
                         packageName = elementPackageName,
-                        fullName = id
+                        fullName = id,
+                        appName = getAppName(elementPackageName).valueOrNull()
                     )
                 )
             }
@@ -132,7 +138,6 @@ class ChooseUiElementViewModel constructor(
     }
 
     fun onRecordButtonClick() {
-        Timber.d("onRecordButtonClick isRecording: %s", _isRecording.value.toString())
         if (_isRecording.value) {
             viewModelScope.launch(Dispatchers.Default) {
                 _serviceAdapter.send(Event.StopRecordingUiElements)
@@ -152,11 +157,15 @@ class ChooseUiElementViewModel constructor(
     }
 
     private suspend fun List<UiElementInfo>.buildListItems(): List<SimpleListItem> = flow {
+
         forEach { uiElementInfo ->
+            val icon = getAppIcon(uiElementInfo.packageName).valueOrNull()
+
             val listItem = DefaultSimpleListItem(
                 id = uiElementInfo.fullName,
                 title = uiElementInfo.elementName,
-                subtitle = uiElementInfo.packageName,
+                subtitle = uiElementInfo.appName ?: uiElementInfo.packageName,
+                icon = if (icon != null) IconInfo(icon) else null
             )
 
             emit(listItem)
@@ -174,11 +183,12 @@ class ChooseUiElementViewModel constructor(
         private val resourceProvider: ResourceProvider,
         private val recordUiElements: RecordUiElementsUseCase,
         private val serviceAdapter: ServiceAdapter,
+        private val displayAppsUseCase: DisplayAppsUseCase,
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>) =
-            ChooseUiElementViewModel(useCase, resourceProvider, recordUiElements, serviceAdapter) as T
+            ChooseUiElementViewModel(useCase, resourceProvider, recordUiElements, serviceAdapter, displayAppsUseCase) as T
     }
 }
 

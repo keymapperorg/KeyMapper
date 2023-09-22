@@ -326,6 +326,7 @@ sealed class ActionData {
         val elementId: String,
         val packageName: String,
         val fullName: String,
+        val appName: String?,
         val onlyIfVisible: Boolean,
         val interactiontype: INTERACTIONTYPE,
         val description: String?,

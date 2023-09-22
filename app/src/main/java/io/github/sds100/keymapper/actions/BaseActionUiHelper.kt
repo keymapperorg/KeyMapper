@@ -318,7 +318,7 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
                         "extra_label_interact_with_screen_element_interaction_type_${action.interactiontype}"
                         ),
                         action.elementId,
-                        action.packageName
+                        action.appName ?: action.packageName
                     )
                 )
             } else {
@@ -329,7 +329,7 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
                             "extra_label_interact_with_screen_element_interaction_type_${action.interactiontype}"
                         ),
                         action.elementId,
-                        action.packageName,
+                        action.appName ?: action.packageName,
                         action.description
                     )
                 )

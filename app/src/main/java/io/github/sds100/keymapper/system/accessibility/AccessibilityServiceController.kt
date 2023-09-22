@@ -25,6 +25,8 @@ import io.github.sds100.keymapper.mappings.keymaps.detection.DetectScreenOffKeyE
 import io.github.sds100.keymapper.mappings.keymaps.detection.KeyMapController
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsController
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsUseCase
+import io.github.sds100.keymapper.system.apps.PACKAGE_INFO_TYPES
+import io.github.sds100.keymapper.system.apps.PackageUtils
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
@@ -436,23 +438,19 @@ class AccessibilityServiceController(
             val foundViewIds = accessibilityService.fetchAvailableUIElements()
 
             if (foundViewIds.isNotEmpty()) {
-                foundViewIds.forEachIndexed { index, item ->
-                    val splittedViewInfo = item.split("/")
+                foundViewIds.forEachIndexed { _, item ->
+                    val elementId = PackageUtils.getInfoFromFullyQualifiedViewName(item, PACKAGE_INFO_TYPES.TYPE_VIEW_ID)
+                    val packageName = PackageUtils.getInfoFromFullyQualifiedViewName(item, PACKAGE_INFO_TYPES.TYPE_PACKAGE_NAME)
 
-                    if (splittedViewInfo.size == 2) {
-                        val elementId = splittedViewInfo[1]
-                        val packageName = splittedViewInfo[0]
-
-                        if (packageName != "${BuildConfig.APPLICATION_ID}:id") {
-                            viewIdRepository.insert(
-                                ViewIdEntity(
-                                    id = 0,
-                                    viewId = elementId,
-                                    packageName = packageName,
-                                    fullName = item
-                                )
+                    if (elementId != null && packageName != null && packageName != BuildConfig.APPLICATION_ID) {
+                        viewIdRepository.insert(
+                            ViewIdEntity(
+                                id = 0,
+                                viewId = elementId,
+                                packageName = packageName,
+                                fullName = item
                             )
-                        }
+                        )
                     }
                 }
             }

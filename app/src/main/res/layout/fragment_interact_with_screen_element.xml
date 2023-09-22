@@ -115,8 +115,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="text"
-                            android:text="@{viewModel.fullNameDisplayValue}"
-                            tools:text="com.package.name" />
+                            android:text="@{viewModel.appNameDisplayValue}"
+                            tools:text="app name OR package name" />
                     </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
 

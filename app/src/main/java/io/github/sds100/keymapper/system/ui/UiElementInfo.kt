@@ -6,5 +6,6 @@ import kotlinx.serialization.Serializable
 data class UiElementInfo (
     val elementName: String,
     val packageName: String,
-    val fullName: String
+    val fullName: String,
+    val appName: String?
 )
