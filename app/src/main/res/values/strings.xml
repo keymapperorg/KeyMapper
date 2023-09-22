@@ -136,8 +136,8 @@
     <string name="description_tap_screen_element_with_description">Tap screen element with ID %s (%s)</string>
     <string name="description_phone_call">Call %s</string>
     <string name="description_sound">Play sound: %s</string>
-    <string name="description_interact_with_screen_element_default">%s on element \"%s\" in package \"%s\"</string>
-    <string name="description_interact_with_screen_element_default_with_description">%s on element \"%s\" in package \"%s\" (%s)</string>
+    <string name="description_interact_with_screen_element_default">%s element \"%s\" in package \"%s\"</string>
+    <string name="description_interact_with_screen_element_default_with_description">%s element \"%s\" in package \"%s\" (%s)</string>
     <!--  Action descriptions  -->
 
     <!--  Headers  -->
@@ -262,21 +262,23 @@
     <string name="extra_label_swipe_select_start_end_start">Start</string>
     <string name="extra_label_swipe_select_start_end_end">End</string>
     <string name="extra_label_interact_with_screen_element_id">Element ID</string>
+    <string name="extra_label_interact_with_screen_package_name">Package Name</string>
+    <string name="extra_label_interact_with_screen_app_name">App Name</string>
     <string name="extra_label_interact_with_screen_element_record_button_text_start">Start Record</string>
     <string name="extra_label_interact_with_screen_element_record_button_text_active">Recording for %s min</string>
     <string name="extra_label_interact_with_screen_element_clear_list_button_text">Clear List</string>
     <string name="extra_label_interact_with_screen_element_only_if_visible_checkbox">Only if visible</string>
     <string name="extra_label_interact_with_screen_element_interaction_type">Interaction Type</string>
-    <string name="extra_label_interact_with_screen_element_interaction_type_click">Click</string>
-    <string name="extra_label_interact_with_screen_element_interaction_type_long_click">Long Click</string>
-    <string name="extra_label_interact_with_screen_element_interaction_type_select">Long Click</string>
-    <string name="extra_label_interact_with_screen_element_interaction_type_focus">Focus</string>
-    <string name="extra_label_interact_with_screen_element_interaction_type_clear_focus">Clear Focus</string>
-    <string name="extra_label_interact_with_screen_element_interaction_type_collapse">Collapse</string>
-    <string name="extra_label_interact_with_screen_element_interaction_type_expand">Expand</string>
-    <string name="extra_label_interact_with_screen_element_interaction_type_dismiss">Dismiss</string>
-    <string name="extra_label_interact_with_screen_element_interaction_type_scroll_forward">Scroll Forward</string>
-    <string name="extra_label_interact_with_screen_element_interaction_type_scroll_backward">Scroll Backward</string>
+    <string name="extra_label_interact_with_screen_element_interaction_type_CLICK">Click</string>
+    <string name="extra_label_interact_with_screen_element_interaction_type_LONG_CLICK">Long Click</string>
+    <string name="extra_label_interact_with_screen_element_interaction_type_SELECT">Select</string>
+    <string name="extra_label_interact_with_screen_element_interaction_type_FOCUS">Focus</string>
+    <string name="extra_label_interact_with_screen_element_interaction_type_CLEAR_FOCUS">Clear Focus</string>
+    <string name="extra_label_interact_with_screen_element_interaction_type_COLLAPSE">Collapse</string>
+    <string name="extra_label_interact_with_screen_element_interaction_type_EXPAND">Expand</string>
+    <string name="extra_label_interact_with_screen_element_interaction_type_DISMISS">Dismiss</string>
+    <string name="extra_label_interact_with_screen_element_interaction_type_SCROLL_FORWARD">Scroll Forward</string>
+    <string name="extra_label_interact_with_screen_element_interaction_type_SCROLL_BACKWARD">Scroll Backward</string>
     <string name="extra_label_interact_with_screen_element_record_description_text_start">Click the record button and switch to the app from where you want to receive UI elements and navigate through the app to fetch as much elements as possible.</string>
     <string name="extra_label_interact_with_screen_element_record_description_text_active">You can now switch to the desired app. The recording will automatically stop but you can always resume the recording.</string>
     <!-- Extra labels -->

@@ -311,9 +311,28 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
             }
 
             is ActionData.InteractWithScreenElement -> if (action.description.isNullOrBlank()) {
-                getString(R.string.description_interact_with_screen_element_default, arrayOf(action.interactiontype, action.elementId, action.packageName))
+                getString(
+                    R.string.description_interact_with_screen_element_default,
+                    arrayOf(
+                        getDynamicStringValue(
+                        "extra_label_interact_with_screen_element_interaction_type_${action.interactiontype}"
+                        ),
+                        action.elementId,
+                        action.packageName
+                    )
+                )
             } else {
-                getString(R.string.description_interact_with_screen_element_default_with_description, arrayOf(action.interactiontype, action.elementId, action.packageName, action.description))
+                getString(
+                    R.string.description_interact_with_screen_element_default_with_description,
+                    arrayOf(
+                        getDynamicStringValue(
+                            "extra_label_interact_with_screen_element_interaction_type_${action.interactiontype}"
+                        ),
+                        action.elementId,
+                        action.packageName,
+                        action.description
+                    )
+                )
             }
 
             is ActionData.Text -> getString(R.string.description_text_block, action.text)

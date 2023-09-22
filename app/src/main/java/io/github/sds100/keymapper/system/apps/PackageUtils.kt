@@ -24,17 +24,18 @@ object PackageUtils {
         }
     }
 
-    fun getInfoFromFullViewId(name: String, infoType: PACKAGE_INFO_TYPES): String? {
+    fun getInfoFromFullyQualifiedViewName(name: String, infoType: PACKAGE_INFO_TYPES): String? {
         val splitted = name.split('/')
 
         if (splitted.isNotEmpty() && splitted.size == 2) {
             if (infoType.name == PACKAGE_INFO_TYPES.TYPE_VIEW_ID.name) {
                 return splitted[1]
             } else if (infoType.name == PACKAGE_INFO_TYPES.TYPE_PACKAGE_NAME.name) {
-                return splitted[0]
+                return splitted[0].replace(":id", "", true )
             }
         }
 
         return null
     }
+
 }

@@ -115,8 +115,8 @@ class ChooseUiElementViewModel constructor(
 
         stopRecording()
 
-        val elementViewId = PackageUtils.getInfoFromFullViewId(id, PACKAGE_INFO_TYPES.TYPE_VIEW_ID)
-        val elementPackageName = PackageUtils.getInfoFromFullViewId(id, PACKAGE_INFO_TYPES.TYPE_PACKAGE_NAME)
+        val elementViewId = PackageUtils.getInfoFromFullyQualifiedViewName(id, PACKAGE_INFO_TYPES.TYPE_VIEW_ID)
+        val elementPackageName = PackageUtils.getInfoFromFullyQualifiedViewName(id, PACKAGE_INFO_TYPES.TYPE_PACKAGE_NAME)
 
         if (elementViewId != null && elementPackageName != null) {
             viewModelScope.launch {

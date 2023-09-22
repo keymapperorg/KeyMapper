@@ -427,6 +427,8 @@ class AccessibilityServiceController(
     fun onAccessibilityEvent(event: AccessibilityEventModel?, originalEvent: AccessibilityEvent?) {
         Timber.d("OnAccessibilityEvent $event")
 
+        // TODO: DECREASE EVENTS!!!
+
         /**
          * Record UI elements and store them into the DB
          */

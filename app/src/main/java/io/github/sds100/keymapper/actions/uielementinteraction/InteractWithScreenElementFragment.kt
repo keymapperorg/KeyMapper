@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.actions.uielementinteraction
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,18 +14,17 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentInteractWithScreenElementBinding
 import io.github.sds100.keymapper.util.Inject
+import io.github.sds100.keymapper.util.getDynamicStringValue
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
-import io.github.sds100.keymapper.util.str
 import io.github.sds100.keymapper.util.ui.setupNavigation
 import io.github.sds100.keymapper.util.ui.showPopups
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import timber.log.Timber
+import java.util.Locale
 
 class InteractWithScreenElementFragment : Fragment() {
     companion object {
@@ -55,6 +55,7 @@ class InteractWithScreenElementFragment : Fragment() {
         }
     }
 
+    @SuppressLint("DiscouragedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -64,17 +65,15 @@ class InteractWithScreenElementFragment : Fragment() {
             viewModel.loadResult(Json.decodeFromString(it))
         }
 
-        interactionTypesDisplayValues = arrayOf(
-            str(R.string.extra_label_interact_with_screen_element_interaction_type_click),
-            str(R.string.extra_label_interact_with_screen_element_interaction_type_long_click),
-            str(R.string.extra_label_interact_with_screen_element_interaction_type_focus),
-            str(R.string.extra_label_interact_with_screen_element_interaction_type_clear_focus),
-            str(R.string.extra_label_interact_with_screen_element_interaction_type_collapse),
-            str(R.string.extra_label_interact_with_screen_element_interaction_type_expand),
-            str(R.string.extra_label_interact_with_screen_element_interaction_type_dismiss),
-            str(R.string.extra_label_interact_with_screen_element_interaction_type_scroll_forward),
-            str(R.string.extra_label_interact_with_screen_element_interaction_type_scroll_backward),
-        ).toMutableList();
+        interactionTypesDisplayValues = INTERACTIONTYPE.values().map {
+            val stringName = "extra_label_interact_with_screen_element_interaction_type_${
+                it.name.uppercase(
+                    Locale.ROOT
+                )
+            }"
+
+            getDynamicStringValue(stringName)
+        }.toMutableList()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -99,7 +98,6 @@ class InteractWithScreenElementFragment : Fragment() {
 
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.returnResult.collectLatest { result ->
-                Timber.d("RESULT: %s", result.toString())
                 setFragmentResult(
                     requestKey,
                     bundleOf(EXTRA_RESULT to Json.encodeToString(result))
