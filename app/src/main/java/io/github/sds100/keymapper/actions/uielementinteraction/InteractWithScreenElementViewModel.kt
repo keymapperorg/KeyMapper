@@ -1,13 +1,18 @@
 package io.github.sds100.keymapper.actions.uielementinteraction
 
+import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.AdapterView
+import androidx.core.graphics.drawable.IconCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.system.apps.DisplayAppsUseCase
+import io.github.sds100.keymapper.system.apps.DisplayAppsUseCaseImpl
 import io.github.sds100.keymapper.system.apps.PACKAGE_INFO_TYPES
 import io.github.sds100.keymapper.system.apps.PackageUtils
+import io.github.sds100.keymapper.util.ui.IconInfo
 import io.github.sds100.keymapper.util.ui.NavDestination
 import io.github.sds100.keymapper.util.ui.NavigationViewModel
 import io.github.sds100.keymapper.util.ui.NavigationViewModelImpl
@@ -17,6 +22,7 @@ import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.navigate
 import io.github.sds100.keymapper.util.ui.showPopup
+import io.github.sds100.keymapper.util.valueOrNull
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -31,10 +37,12 @@ import java.util.Locale
 
 class InteractWithScreenElementViewModel(
     resourceProvider: ResourceProvider,
+    displayAppsUseCase: DisplayAppsUseCase,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
     PopupViewModel by PopupViewModelImpl(),
-    NavigationViewModel by NavigationViewModelImpl() {
+    NavigationViewModel by NavigationViewModelImpl(),
+    DisplayAppsUseCase by displayAppsUseCase {
 
     private val _interactionTypes = INTERACTIONTYPE.values().map { it.name }
     private val _interactionType: MutableStateFlow<INTERACTIONTYPE?> = MutableStateFlow(INTERACTIONTYPE.values().first())
@@ -46,38 +54,31 @@ class InteractWithScreenElementViewModel(
     private val _packageName = MutableStateFlow<String?>(null)
     private val _fullName = MutableStateFlow<String?>(null)
     private val _appName = MutableStateFlow<String?>(null)
+    var appIcon: MutableStateFlow<Drawable?> = MutableStateFlow(null)
     var onlyIfVisible: MutableStateFlow<Boolean?> = MutableStateFlow(true)
 
     private val _description: MutableStateFlow<String?> = MutableStateFlow(null)
 
     val elementIdDisplayValue = _elementId.map {
-        it ?: return@map ""
+        it ?: return@map resourceProvider.getString(R.string.extra_label_interact_with_screen_element_id_placeholder)
 
         it.toString()
     }.stateIn(viewModelScope, SharingStarted.Lazily, null)
 
     val packageNameDisplayValue = _packageName.map {
-        it ?: return@map ""
-
-        it.toString()
-    }.stateIn(viewModelScope, SharingStarted.Lazily, null)
-
-    val fullNameDisplayValue = _fullName.map {
-        it ?: return@map ""
+        it ?: return@map resourceProvider.getString(R.string.extra_label_interact_with_screen_package_name_placeholder)
 
         it.toString()
     }.stateIn(viewModelScope, SharingStarted.Lazily, null)
 
     val appNameDisplayValue = _appName.map {
-        it ?: return@map ""
+        it ?: return@map resourceProvider.getString(R.string.extra_label_interact_with_screen_app_name_placeholder)
 
         it.toString()
     }.stateIn(viewModelScope, SharingStarted.Lazily, null)
 
     val interactionTypeSpinnerSelection = _interactionType.map {
         it ?: return@map 0
-
-        Timber.d("interactionTypeSpinnerSelection %s", it)
 
         this._interactionTypes.indexOf(it.name)
     }.stateIn(viewModelScope, SharingStarted.Lazily, 0)
@@ -110,6 +111,7 @@ class InteractWithScreenElementViewModel(
             _interactionType.value = result.interactionType
             onlyIfVisible.value = result.onlyIfVisible
             _description.value = result.description
+            appIcon.value = getAppIcon(result.packageName).valueOrNull()
         }
     }
 
@@ -119,6 +121,7 @@ class InteractWithScreenElementViewModel(
         _packageName.value = uiElementInfo.packageName
         _fullName.value = uiElementInfo.fullName
         _appName.value = uiElementInfo.appName
+        appIcon.value = getAppIcon(uiElementInfo.packageName).valueOrNull()
     }
 
     val isDoneButtonEnabled: StateFlow<Boolean> =
@@ -165,11 +168,12 @@ class InteractWithScreenElementViewModel(
 
     @Suppress("UNCHECKED_CAST")
     class Factory(
-        private val resourceProvider: ResourceProvider
+        private val resourceProvider: ResourceProvider,
+        private val displayAppsUseCase: DisplayAppsUseCase
     ) : ViewModelProvider.NewInstanceFactory() {
 
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return InteractWithScreenElementViewModel(resourceProvider) as T
+            return InteractWithScreenElementViewModel(resourceProvider, displayAppsUseCase) as T
         }
     }
 }

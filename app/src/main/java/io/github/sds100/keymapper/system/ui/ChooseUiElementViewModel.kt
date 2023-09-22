@@ -68,10 +68,10 @@ class ChooseUiElementViewModel constructor(
 
     val recordButtonText: StateFlow<String> = recordUiElements.state.map { recordUiElementsState ->
         when (recordUiElementsState) {
-            is RecordUiElementsState.CountingDown -> getString(R.string.extra_label_interact_with_screen_element_record_button_text_active, formatSeconds(recordUiElementsState.timeLeft))
-            is RecordUiElementsState.Stopped -> getString(R.string.extra_label_interact_with_screen_element_record_button_text_start)
+            is RecordUiElementsState.CountingDown -> getString(R.string.button_label_choose_ui_element_record_button_text_active, formatSeconds(recordUiElementsState.timeLeft))
+            is RecordUiElementsState.Stopped -> getString(R.string.button_label_choose_ui_element_record_button_text_start)
         }
-    }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.Eagerly, getString(R.string.extra_label_interact_with_screen_element_record_button_text_start))
+    }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.Eagerly, getString(R.string.button_label_choose_ui_element_record_button_text_start))
 
     val recordDescriptionText: StateFlow<String> = recordUiElements.state.map { recordUiElementsState ->
         when  (recordUiElementsState) {

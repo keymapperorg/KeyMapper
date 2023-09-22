@@ -75,8 +75,8 @@ class AccessibilityServiceController(
          * On which events we want to record UI Elements?
          */
         private val RECORD_UI_ELEMENTS_EVENT_TYPES = intArrayOf(
-            AccessibilityEvent.TYPE_WINDOWS_CHANGED,
-            AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
+            //AccessibilityEvent.TYPE_WINDOWS_CHANGED,
+            //AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
             AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
         )
     }
@@ -146,7 +146,6 @@ class AccessibilityServiceController(
             .withFlag(AccessibilityServiceInfo.DEFAULT)
             .withFlag(AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS)
             .withFlag(AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS)
-            .withFlag(AccessibilityServiceInfo.FEEDBACK_ALL_MASK)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             flags = flags.withFlag(AccessibilityServiceInfo.FLAG_ENABLE_ACCESSIBILITY_VOLUME)
@@ -162,7 +161,7 @@ class AccessibilityServiceController(
 
     private val initialEventTypes: Int by lazy {
 
-        return@lazy AccessibilityEvent.TYPE_WINDOWS_CHANGED.withFlag(AccessibilityEvent.TYPES_ALL_MASK)
+        return@lazy AccessibilityEvent.TYPE_WINDOWS_CHANGED.withFlag(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED).withFlag(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED)
     }
 
     /*

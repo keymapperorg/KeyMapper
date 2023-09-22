@@ -563,6 +563,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             if (rootInActiveWindow != null) {
+                // TODO: Find a way to get the "SystemView" as "rootInActiveWindow"
                 // Use a custom function because "findAccessibilityNodeInfosByViewId" does not iterate through all children sometimes
                 val nodeToInteractWith = findNodeByFullyQualifiedName(fullName, rootInActiveWindow)
 

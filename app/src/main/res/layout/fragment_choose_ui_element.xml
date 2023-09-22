@@ -51,7 +51,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:text="@string/extra_label_interact_with_screen_element_clear_list_button_text"
+                    android:text="@string/button_label_choose_ui_element_clear_list_button_text"
                     android:layout_weight="0.5"
                     android:onClick="@{() -> viewModel.onClearListButtonClick()}"
                     tools:text="Clear List" />

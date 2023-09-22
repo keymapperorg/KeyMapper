@@ -36,7 +36,7 @@ class InteractWithScreenElementFragment : Fragment() {
     private var interactionTypesDisplayValues = mutableListOf<String>()
 
     private val viewModel: InteractWithScreenElementViewModel by viewModels {
-        Inject.pickScreenElementActionTypeViewModel(requireContext())
+        Inject.interactWithScreenElementActionTypeViewModel(requireContext())
     }
 
     private var _binding: FragmentInteractWithScreenElementBinding? = null
