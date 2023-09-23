@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-class ChooseUiElementFragment : RecyclerViewFragment<SimpleListItem, FragmentChooseUiElementBinding>() {
+class ChooseUiElementFragment : RecyclerViewFragment<UiElementInfoListItem, FragmentChooseUiElementBinding>() {
     companion object {
         const val EXTRA_UI_ELEMENT_ID = "extra_ui_element_id"
         const val SEARCH_STATE_KEY = "key_ui_element_search_state"
@@ -38,7 +38,7 @@ class ChooseUiElementFragment : RecyclerViewFragment<SimpleListItem, FragmentCho
         Inject.chooseUiElementViewModel(requireContext())
     }
 
-    override val listItems: Flow<State<List<SimpleListItem>>>
+    override val listItems: Flow<State<List<UiElementInfoListItem>>>
         get() = viewModel.state.map { it.listItems }
 
     override fun subscribeUi(binding: FragmentChooseUiElementBinding) {
@@ -62,7 +62,7 @@ class ChooseUiElementFragment : RecyclerViewFragment<SimpleListItem, FragmentCho
             lifecycleOwner = viewLifecycleOwner
         }
 
-    override fun populateList(recyclerView: EpoxyRecyclerView, listItems: List<SimpleListItem>) {
+    override fun populateList(recyclerView: EpoxyRecyclerView, listItems: List<UiElementInfoListItem>) {
         binding.epoxyRecyclerView.withModels {
             listItems.forEach {
                 simple {

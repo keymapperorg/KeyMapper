@@ -156,12 +156,12 @@ class ChooseUiElementViewModel constructor(
         }
     }
 
-    private suspend fun List<UiElementInfo>.buildListItems(): List<SimpleListItem> = flow {
+    private suspend fun List<UiElementInfo>.buildListItems(): List<UiElementInfoListItem> = flow {
 
         forEach { uiElementInfo ->
             val icon = getAppIcon(uiElementInfo.packageName).valueOrNull()
 
-            val listItem = DefaultSimpleListItem(
+            val listItem = UiElementInfoListItem(
                 id = uiElementInfo.fullName,
                 title = uiElementInfo.elementName,
                 subtitle = uiElementInfo.appName ?: uiElementInfo.packageName,
@@ -194,5 +194,5 @@ class ChooseUiElementViewModel constructor(
 
 
 data class UiElementsListState(
-    val listItems: State<List<SimpleListItem>>
+    val listItems: State<List<UiElementInfoListItem>>
 )
