@@ -13,11 +13,11 @@ data class Line(
 )
 
 fun deg2rad(degrees: Double): Double {
-    return degrees * Math.PI / 180;
+    return degrees * Math.PI / 180
 }
 
 fun rad2deg(radians: Double): Double {
-    return radians * 180 / Math.PI;
+    return radians * 180 / Math.PI
 }
 
 fun getPerpendicularOfLine(
@@ -44,8 +44,8 @@ fun getPerpendicularOfLine(
 }
 
 fun movePointByDistanceAndAngle(p: Point, distance: Int, degrees: Double): Point {
-    val newX = (p.x + cos(deg2rad(degrees)) * distance).toInt();
-    val newY = (p.y + sin(deg2rad(degrees)) * distance).toInt();
+    val newX = (p.x + cos(deg2rad(degrees)) * distance).toInt()
+    val newY = (p.y + sin(deg2rad(degrees)) * distance).toInt()
 
     return Point(newX, newY)
 }

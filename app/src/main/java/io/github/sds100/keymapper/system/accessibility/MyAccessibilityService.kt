@@ -6,7 +6,12 @@ import android.accessibilityservice.GestureDescription
 import android.accessibilityservice.GestureDescription.StrokeDescription
 import android.app.ActivityManager
 import android.app.Service
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.content.ServiceConnection
 import android.graphics.Path
 import android.graphics.Point
 import android.os.Build
@@ -25,7 +30,14 @@ import io.github.sds100.keymapper.api.IKeyEventReceiverCallback
 import io.github.sds100.keymapper.api.KeyEventReceiver
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapId
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.Error
+import io.github.sds100.keymapper.util.Inject
+import io.github.sds100.keymapper.util.InputEventType
+import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.util.Success
+import io.github.sds100.keymapper.util.angleBetweenPoints
+import io.github.sds100.keymapper.util.getPerpendicularOfLine
+import io.github.sds100.keymapper.util.movePointByDistanceAndAngle
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import timber.log.Timber
@@ -60,7 +72,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
     private lateinit var lifecycleRegistry: LifecycleRegistry
 
     private var fingerprintGestureCallback:
-            FingerprintGestureController.FingerprintGestureCallback? = null
+        FingerprintGestureController.FingerprintGestureCallback? = null
 
     override val rootNode: AccessibilityNodeModel?
         get() {
@@ -288,12 +300,12 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
 
         if (controller != null) {
             return controller!!.onKeyEvent(
-                    event.keyCode,
-                    event.action,
-                    device,
-                    event.metaState,
-                    event.scanCode,
-                    event.eventTime
+                event.keyCode,
+                event.action,
+                device,
+                event.metaState,
+                event.scanCode,
+                event.eventTime
             )
         }
 
@@ -322,8 +334,8 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
     }
 
     override fun performActionOnNode(
-            findNode: (node: AccessibilityNodeModel) -> Boolean,
-            performAction: (node: AccessibilityNodeModel) -> AccessibilityNodeAction?
+        findNode: (node: AccessibilityNodeModel) -> Boolean,
+        performAction: (node: AccessibilityNodeModel) -> AccessibilityNodeAction?
     ): Result<*> {
         val node = rootInActiveWindow.findNodeRecursively {
             findNode(it.toModel())
@@ -361,25 +373,25 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
             }
 
             val strokeDescription =
-                    when {
-                        inputEventType == InputEventType.DOWN && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ->
-                            GestureDescription.StrokeDescription(
-                                    path,
-                                    0,
-                                    duration,
-                                    true
-                            )
+                when {
+                    inputEventType == InputEventType.DOWN && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ->
+                        StrokeDescription(
+                            path,
+                            0,
+                            duration,
+                            true
+                        )
 
-                        inputEventType == InputEventType.UP && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ->
-                            GestureDescription.StrokeDescription(
-                                    path,
-                                    59999,
-                                    duration,
-                                    false
-                            )
+                    inputEventType == InputEventType.UP && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ->
+                        StrokeDescription(
+                            path,
+                            59999,
+                            duration,
+                            false
+                        )
 
-                        else -> GestureDescription.StrokeDescription(path, 0, duration)
-                    }
+                    else -> StrokeDescription(path, 0, duration)
+                }
 
             strokeDescription.let {
                 val gestureDescription = GestureDescription.Builder().apply {
@@ -399,7 +411,15 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
         return Error.SdkVersionTooLow(Build.VERSION_CODES.N)
     }
 
-    override fun swipeScreen(xStart: Int, yStart: Int, xEnd: Int, yEnd: Int, fingerCount: Int, duration: Int, inputEventType: InputEventType): Result<*> {
+    override fun swipeScreen(
+        xStart: Int,
+        yStart: Int,
+        xEnd: Int,
+        yEnd: Int,
+        fingerCount: Int,
+        duration: Int,
+        inputEventType: InputEventType
+    ): Result<*> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             if (fingerCount >= GestureDescription.getMaxStrokeCount()) {
                 return Error.GestureStrokeCountTooHigh
@@ -427,24 +447,29 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
                 // the length of each segment between fingers
                 val segmentLength = perpendicularLineLength / segmentCount
                 // perpendicular line of the start swipe point
-                val perpendicularLineStart = getPerpendicularOfLine(pStart, pEnd,
+                val perpendicularLineStart = getPerpendicularOfLine(
+                    pStart, pEnd,
                     perpendicularLineLength
-                );
+                )
                 // perpendicular line of the end swipe point
-                val perpendicularLineEnd = getPerpendicularOfLine(pEnd, pStart,
-                    perpendicularLineLength, true);
+                val perpendicularLineEnd = getPerpendicularOfLine(
+                    pEnd, pStart,
+                    perpendicularLineLength, true
+                )
 
                 // this is the angle between start and end point to rotate all virtual fingers on the perpendicular lines in the same direction
-                val angle = angleBetweenPoints(Point(xStart, yStart), Point(xEnd, yEnd)) - 90;
+                val angle = angleBetweenPoints(Point(xStart, yStart), Point(xEnd, yEnd)) - 90
 
                 // create the virtual fingers
                 for (index in 0..segmentCount) {
                     // offset of each finger
-                    val fingerOffsetLength = index * segmentLength * 2;
+                    val fingerOffsetLength = index * segmentLength * 2
                     // move the coordinates of the current virtual finger on the perpendicular line for the start coordinates
-                    val startFingerCoordinateWithOffset = movePointByDistanceAndAngle(perpendicularLineStart.start, fingerOffsetLength, angle)
+                    val startFingerCoordinateWithOffset =
+                        movePointByDistanceAndAngle(perpendicularLineStart.start, fingerOffsetLength, angle)
                     // move the coordinates of the current virtual finger on the perpendicular line for the end coordinates
-                    val endFingerCoordinateWithOffset = movePointByDistanceAndAngle(perpendicularLineEnd.start, fingerOffsetLength, angle)
+                    val endFingerCoordinateWithOffset =
+                        movePointByDistanceAndAngle(perpendicularLineEnd.start, fingerOffsetLength, angle)
 
                     // create a path for each finger, move the the coordinates on the perpendicular line and draw it to the end coordinates of the perpendicular line of the end swipe point
                     val p = Path()
@@ -456,7 +481,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
 
             }
 
-            val success = dispatchGesture(gestureBuilder.build(), null, null);
+            val success = dispatchGesture(gestureBuilder.build(), null, null)
 
             return if (success) {
                 Success(Unit)

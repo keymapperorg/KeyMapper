@@ -157,17 +157,17 @@ sealed class ActionData {
     sealed class DoNotDisturb : ActionData() {
 
         @Serializable
-        data class Toggle(val dndMode: DndMode) : ActionData.DoNotDisturb() {
+        data class Toggle(val dndMode: DndMode) : DoNotDisturb() {
             override val id: ActionId = ActionId.TOGGLE_DND_MODE
         }
 
         @Serializable
-        data class Enable(val dndMode: DndMode) : ActionData.DoNotDisturb() {
+        data class Enable(val dndMode: DndMode) : DoNotDisturb() {
             override val id: ActionId = ActionId.ENABLE_DND_MODE
         }
 
         @Serializable
-        object Disable : ActionData.DoNotDisturb() {
+        object Disable : DoNotDisturb() {
             override val id = ActionId.DISABLE_DND_MODE
         }
     }
@@ -255,37 +255,37 @@ sealed class ActionData {
     @Serializable
     sealed class ControlMedia : ActionData() {
         @Serializable
-        object Pause : ActionData.ControlMedia() {
+        object Pause : ControlMedia() {
             override val id = ActionId.PAUSE_MEDIA
         }
 
         @Serializable
-        object Play : ActionData.ControlMedia() {
+        object Play : ControlMedia() {
             override val id = ActionId.PLAY_MEDIA
         }
 
         @Serializable
-        object PlayPause : ActionData.ControlMedia() {
+        object PlayPause : ControlMedia() {
             override val id = ActionId.PLAY_PAUSE_MEDIA
         }
 
         @Serializable
-        object NextTrack : ActionData.ControlMedia() {
+        object NextTrack : ControlMedia() {
             override val id = ActionId.NEXT_TRACK
         }
 
         @Serializable
-        object PreviousTrack : ActionData.ControlMedia() {
+        object PreviousTrack : ControlMedia() {
             override val id = ActionId.PREVIOUS_TRACK
         }
 
         @Serializable
-        object FastForward : ActionData.ControlMedia() {
+        object FastForward : ControlMedia() {
             override val id = ActionId.FAST_FORWARD
         }
 
         @Serializable
-        object Rewind : ActionData.ControlMedia() {
+        object Rewind : ControlMedia() {
             override val id = ActionId.REWIND
         }
     }
@@ -448,27 +448,27 @@ sealed class ActionData {
     @Serializable
     sealed class Brightness : ActionData() {
         @Serializable
-        object EnableAuto : ActionData.Brightness() {
+        object EnableAuto : Brightness() {
             override val id = ActionId.ENABLE_AUTO_BRIGHTNESS
         }
 
         @Serializable
-        object DisableAuto : ActionData.Brightness() {
+        object DisableAuto : Brightness() {
             override val id = ActionId.DISABLE_AUTO_BRIGHTNESS
         }
 
         @Serializable
-        object ToggleAuto : ActionData.Brightness() {
+        object ToggleAuto : Brightness() {
             override val id = ActionId.TOGGLE_AUTO_BRIGHTNESS
         }
 
         @Serializable
-        object Increase : ActionData.Brightness() {
+        object Increase : Brightness() {
             override val id = ActionId.INCREASE_BRIGHTNESS
         }
 
         @Serializable
-        object Decrease : ActionData.Brightness() {
+        object Decrease : Brightness() {
             override val id = ActionId.DECREASE_BRIGHTNESS
         }
     }
@@ -476,27 +476,27 @@ sealed class ActionData {
     @Serializable
     sealed class StatusBar : ActionData() {
         @Serializable
-        object ExpandNotifications : ActionData.StatusBar() {
+        object ExpandNotifications : StatusBar() {
             override val id = ActionId.EXPAND_NOTIFICATION_DRAWER
         }
 
         @Serializable
-        object ToggleNotifications : ActionData.StatusBar() {
+        object ToggleNotifications : StatusBar() {
             override val id = ActionId.TOGGLE_NOTIFICATION_DRAWER
         }
 
         @Serializable
-        object ExpandQuickSettings : ActionData.StatusBar() {
+        object ExpandQuickSettings : StatusBar() {
             override val id = ActionId.EXPAND_QUICK_SETTINGS
         }
 
         @Serializable
-        object ToggleQuickSettings : ActionData.StatusBar() {
+        object ToggleQuickSettings : StatusBar() {
             override val id = ActionId.TOGGLE_QUICK_SETTINGS
         }
 
         @Serializable
-        object Collapse : ActionData.StatusBar() {
+        object Collapse : StatusBar() {
             override val id = ActionId.COLLAPSE_STATUS_BAR
         }
     }
@@ -636,14 +636,14 @@ sealed class ActionData {
     object DismissAllNotifications : ActionData() {
         override val id: ActionId = ActionId.DISMISS_ALL_NOTIFICATIONS
     }
-    
+
     @Serializable
-    object AnswerCall : ActionData(){
+    object AnswerCall : ActionData() {
         override val id: ActionId = ActionId.ANSWER_PHONE_CALL
     }
-    
+
     @Serializable
-    object EndCall : ActionData(){
+    object EndCall : ActionData() {
         override val id: ActionId = ActionId.END_PHONE_CALL
     }
 }

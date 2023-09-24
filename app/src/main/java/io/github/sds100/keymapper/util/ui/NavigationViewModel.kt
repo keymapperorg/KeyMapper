@@ -22,14 +22,26 @@ import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.actions.tapscreen.PickDisplayCoordinateFragment
 import io.github.sds100.keymapper.constraints.ChooseConstraintFragment
 import io.github.sds100.keymapper.constraints.Constraint
-import io.github.sds100.keymapper.system.apps.*
+import io.github.sds100.keymapper.system.apps.ActivityInfo
+import io.github.sds100.keymapper.system.apps.ChooseActivityFragment
+import io.github.sds100.keymapper.system.apps.ChooseAppFragment
+import io.github.sds100.keymapper.system.apps.ChooseAppShortcutFragment
+import io.github.sds100.keymapper.system.apps.ChooseAppShortcutResult
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import io.github.sds100.keymapper.system.bluetooth.ChooseBluetoothDeviceFragment
 import io.github.sds100.keymapper.system.intents.ConfigIntentFragment
 import io.github.sds100.keymapper.system.intents.ConfigIntentResult
 import io.github.sds100.keymapper.ui.utils.getJsonSerializable
 import io.github.sds100.keymapper.util.ui.NavDestination.Companion.getId
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.dropWhile
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -135,7 +147,7 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
         }
 
         val direction = when (destination) {
-           is NavDestination.ChooseApp -> NavAppDirections.chooseApp(destination.allowHiddenApps, requestKey)
+            is NavDestination.ChooseApp -> NavAppDirections.chooseApp(destination.allowHiddenApps, requestKey)
             NavDestination.ChooseAppShortcut -> NavAppDirections.chooseAppShortcut(requestKey)
             NavDestination.ChooseKeyCode -> NavAppDirections.chooseKeyCode(requestKey)
             is NavDestination.ConfigKeyEventAction -> {
@@ -145,6 +157,7 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
 
                 NavAppDirections.configKeyEvent(requestKey, json)
             }
+
             is NavDestination.PickCoordinate -> {
                 val json = destination.result?.let {
                     Json.encodeToString(it)
@@ -152,6 +165,7 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
 
                 NavAppDirections.pickDisplayCoordinate(requestKey, json)
             }
+
             is NavDestination.PickSwipeCoordinate -> {
                 val json = destination.result?.let {
                     Json.encodeToString(it)
@@ -159,13 +173,15 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
 
                 NavAppDirections.swipePickDisplayCoordinate(requestKey, json)
             }
-            is NavDestination.PickPinchCoordinate -> {
+
+          is NavDestination.PickPinchCoordinate -> {
                 val json = destination.result?.let {
                     Json.encodeToString(it)
                 }
 
                 NavAppDirections.pinchPickDisplayCoordinate(requestKey, json)
             }
+
             is NavDestination.ConfigIntent -> {
                 val json = destination.result?.let {
                     Json.encodeToString(it)
@@ -173,6 +189,7 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
 
                 NavAppDirections.configIntent(requestKey, json)
             }
+
             is NavDestination.ChooseActivity -> NavAppDirections.chooseActivity(requestKey)
             is NavDestination.ChooseSound -> NavAppDirections.chooseSoundFile(requestKey)
             NavDestination.ChooseAction -> NavAppDirections.toChooseActionFragment(requestKey)
@@ -180,9 +197,11 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
                 supportedConstraints = Json.encodeToString(destination.supportedConstraints),
                 requestKey = requestKey
             )
+
             is NavDestination.ChooseBluetoothDevice -> NavAppDirections.chooseBluetoothDevice(
                 requestKey
             )
+
             NavDestination.FixAppKilling -> NavAppDirections.goToFixAppKillingActivity()
             NavDestination.ReportBug -> NavAppDirections.goToReportBugActivity()
             NavDestination.About -> NavAppDirections.actionGlobalAboutFragment()

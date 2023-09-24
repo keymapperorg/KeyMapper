@@ -60,6 +60,7 @@ class ConstraintSnapshotImpl(
             ConstraintMode.AND -> {
                 constraintState.constraints.all { isSatisfied(it) }
             }
+
             ConstraintMode.OR -> {
                 constraintState.constraints.any { isSatisfied(it) }
             }
@@ -73,21 +74,27 @@ class ConstraintSnapshotImpl(
             is Constraint.AppNotInForeground -> appInForeground != constraint.packageName
             is Constraint.AppPlayingMedia ->
                 appsPlayingMedia.contains(constraint.packageName)
+
             is Constraint.AppNotPlayingMedia ->
                 appsPlayingMedia.none { it == constraint.packageName }
+
             Constraint.MediaPlaying -> appsPlayingMedia.isNotEmpty()
             Constraint.NoMediaPlaying -> appsPlayingMedia.isEmpty()
             is Constraint.BtDeviceConnected -> {
                 connectedBluetoothDevices.any { it.address == constraint.bluetoothAddress }
             }
+
             is Constraint.BtDeviceDisconnected -> {
                 connectedBluetoothDevices.none { it.address == constraint.bluetoothAddress }
             }
+
             is Constraint.OrientationCustom -> orientation == constraint.orientation
             Constraint.OrientationLandscape ->
                 orientation == Orientation.ORIENTATION_90 || orientation == Orientation.ORIENTATION_270
+
             Constraint.OrientationPortrait ->
                 orientation == Orientation.ORIENTATION_0 || orientation == Orientation.ORIENTATION_180
+
             Constraint.ScreenOff -> !isScreenOn
             Constraint.ScreenOn -> isScreenOn
             is Constraint.FlashlightOff -> !cameraAdapter.isFlashlightOn(constraint.lens)
@@ -101,6 +108,7 @@ class ConstraintSnapshotImpl(
                     connectedWifiSSID == constraint.ssid
                 }
             }
+
             is Constraint.WifiDisconnected ->
                 if (constraint.ssid == null) {
                     //connected to no network

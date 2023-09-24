@@ -6,17 +6,20 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.os.Bundle
 import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
 import androidx.core.graphics.drawable.toBitmap
 import io.github.sds100.keymapper.api.LaunchKeyMapShortcutActivity
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.Error
+import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.Success
+import io.github.sds100.keymapper.util.success
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import java.util.*
+import java.util.UUID
 
 /**
  * Created by sds100 on 20/03/2021.
@@ -109,7 +112,7 @@ class AndroidAppShortcutAdapter(context: Context) : AppShortcutAdapter {
 
         try {
             val pendingIntent =
-                    PendingIntent.getActivity(ctx, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+                PendingIntent.getActivity(ctx, 0, intent, PendingIntent.FLAG_IMMUTABLE)
 
             pendingIntent.send()
             return Success(Unit)

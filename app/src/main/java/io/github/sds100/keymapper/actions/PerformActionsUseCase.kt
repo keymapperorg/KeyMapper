@@ -43,7 +43,21 @@ import io.github.sds100.keymapper.system.url.OpenUrlAdapter
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import io.github.sds100.keymapper.system.volume.VolumeStream
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.Error
+import io.github.sds100.keymapper.util.Event
+import io.github.sds100.keymapper.util.InputEventType
+import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.util.Success
+import io.github.sds100.keymapper.util.dataOrNull
+import io.github.sds100.keymapper.util.firstBlocking
+import io.github.sds100.keymapper.util.getFullMessage
+import io.github.sds100.keymapper.util.getWordBoundaries
+import io.github.sds100.keymapper.util.ifIsData
+import io.github.sds100.keymapper.util.onFailure
+import io.github.sds100.keymapper.util.onSuccess
+import io.github.sds100.keymapper.util.otherwise
+import io.github.sds100.keymapper.util.success
+import io.github.sds100.keymapper.util.then
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -113,9 +127,11 @@ class PerformActionsUseCaseImpl(
             is ActionData.App -> {
                 result = packageManagerAdapter.openApp(action.packageName)
             }
+
             is ActionData.AppShortcut -> {
                 result = appShortcutAdapter.launchShortcut(action.uri)
             }
+
             is ActionData.Intent -> {
                 result = intentAdapter.send(action.target, action.uri)
             }
@@ -153,6 +169,7 @@ class PerformActionsUseCaseImpl(
             is ActionData.DoNotDisturb.Enable -> {
                 result = volumeAdapter.enableDndMode(action.dndMode)
             }
+
             is ActionData.DoNotDisturb.Toggle -> {
                 result = if (volumeAdapter.isDndEnabled()) {
                     volumeAdapter.disableDndMode()
@@ -168,21 +185,27 @@ class PerformActionsUseCaseImpl(
             is ActionData.ControlMediaForApp.FastForward -> {
                 result = mediaAdapter.fastForward(action.packageName)
             }
+
             is ActionData.ControlMediaForApp.NextTrack -> {
                 result = mediaAdapter.nextTrack(action.packageName)
             }
+
             is ActionData.ControlMediaForApp.Pause -> {
                 result = mediaAdapter.pause(action.packageName)
             }
+
             is ActionData.ControlMediaForApp.Play -> {
                 result = mediaAdapter.play(action.packageName)
             }
+
             is ActionData.ControlMediaForApp.PlayPause -> {
                 result = mediaAdapter.playPause(action.packageName)
             }
+
             is ActionData.ControlMediaForApp.PreviousTrack -> {
                 result = mediaAdapter.previousTrack(action.packageName)
             }
+
             is ActionData.ControlMediaForApp.Rewind -> {
                 result = mediaAdapter.rewind(action.packageName)
             }
@@ -235,6 +258,7 @@ class PerformActionsUseCaseImpl(
             is ActionData.Volume.Down -> {
                 result = volumeAdapter.lowerVolume(showVolumeUi = action.showVolumeUi)
             }
+
             is ActionData.Volume.Up -> {
                 result = volumeAdapter.raiseVolume(showVolumeUi = action.showVolumeUi)
             }
@@ -270,7 +294,15 @@ class PerformActionsUseCaseImpl(
             }
 
             is ActionData.SwipeScreen -> {
-                result = accessibilityService.swipeScreen(action.xStart, action.yStart, action.xEnd, action.yEnd, action.fingerCount, action.duration, inputEventType)
+                result = accessibilityService.swipeScreen(
+                    action.xStart,
+                    action.yStart,
+                    action.xEnd,
+                    action.yEnd,
+                    action.fingerCount,
+                    action.duration,
+                    inputEventType
+                )
             }
 
             is ActionData.PinchScreen -> {
@@ -355,9 +387,11 @@ class PerformActionsUseCaseImpl(
             is ActionData.Brightness.EnableAuto -> {
                 result = displayAdapter.enableAutoBrightness()
             }
+
             is ActionData.Brightness.Increase -> {
                 result = displayAdapter.increaseBrightness()
             }
+
             is ActionData.Brightness.Decrease -> {
                 result = displayAdapter.decreaseBrightness()
             }
@@ -429,7 +463,7 @@ class PerformActionsUseCaseImpl(
             is ActionData.StatusBar.ToggleNotifications -> {
                 result =
                     if (accessibilityService.rootNode?.packageName == "com.android.systemui") {
-                       closeStatusBarShade()
+                        closeStatusBarShade()
                     } else {
                         val globalAction = AccessibilityService.GLOBAL_ACTION_NOTIFICATIONS
 
@@ -468,21 +502,27 @@ class PerformActionsUseCaseImpl(
             is ActionData.ControlMedia.Pause -> {
                 result = mediaAdapter.pause()
             }
+
             is ActionData.ControlMedia.Play -> {
                 result = mediaAdapter.play()
             }
+
             is ActionData.ControlMedia.PlayPause -> {
                 result = mediaAdapter.playPause()
             }
+
             is ActionData.ControlMedia.NextTrack -> {
                 result = mediaAdapter.nextTrack()
             }
+
             is ActionData.ControlMedia.PreviousTrack -> {
                 result = mediaAdapter.previousTrack()
             }
+
             is ActionData.ControlMedia.FastForward -> {
                 result = mediaAdapter.fastForward()
             }
+
             is ActionData.ControlMedia.Rewind -> {
                 result = mediaAdapter.rewind()
             }
@@ -491,6 +531,7 @@ class PerformActionsUseCaseImpl(
                 result =
                     accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
             }
+
             is ActionData.GoHome -> {
                 result =
                     accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME)
@@ -527,9 +568,11 @@ class PerformActionsUseCaseImpl(
             is ActionData.Nfc.Enable -> {
                 result = nfcAdapter.enable()
             }
+
             is ActionData.Nfc.Disable -> {
                 result = nfcAdapter.disable()
             }
+
             is ActionData.Nfc.Toggle -> {
                 result = if (nfcAdapter.isEnabled()) {
                     nfcAdapter.disable()
@@ -590,6 +633,7 @@ class PerformActionsUseCaseImpl(
                     AccessibilityNodeAction(AccessibilityNodeInfo.ACTION_COPY)
                 }
             }
+
             is ActionData.PasteText -> {
                 result = accessibilityService.performActionOnNode({ it.isFocused }) {
                     AccessibilityNodeAction(AccessibilityNodeInfo.ACTION_PASTE)
@@ -631,9 +675,11 @@ class PerformActionsUseCaseImpl(
                     airplaneModeAdapter.enable()
                 }
             }
+
             is ActionData.AirplaneMode.Enable -> {
                 result = airplaneModeAdapter.enable()
             }
+
             is ActionData.AirplaneMode.Disable -> {
                 result = airplaneModeAdapter.disable()
             }
@@ -665,9 +711,11 @@ class PerformActionsUseCaseImpl(
             is ActionData.VoiceAssistant -> {
                 result = packageManagerAdapter.launchVoiceAssistant()
             }
+
             is ActionData.DeviceAssistant -> {
                 result = packageManagerAdapter.launchDeviceAssistant()
             }
+
             is ActionData.OpenCamera -> {
                 result = packageManagerAdapter.launchCameraApp()
             }
@@ -720,13 +768,13 @@ class PerformActionsUseCaseImpl(
 
                 result = null
             }
-            
-            ActionData.AnswerCall ->{
+
+            ActionData.AnswerCall -> {
                 phoneAdapter.answerCall()
                 result = success()
             }
-            
-            ActionData.EndCall ->{
+
+            ActionData.EndCall -> {
                 phoneAdapter.endCall()
                 result = success()
             }

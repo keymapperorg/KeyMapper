@@ -119,7 +119,7 @@ data class ActionEntity(
 
             ActionEntity(
                 type, data, extraList.toMutableList(), flags, uid
-                ?: UUID.randomUUID().toString()
+                    ?: UUID.randomUUID().toString()
             )
         }
     }

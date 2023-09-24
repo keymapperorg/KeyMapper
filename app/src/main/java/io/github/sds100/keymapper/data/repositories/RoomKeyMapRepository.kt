@@ -3,16 +3,26 @@ package io.github.sds100.keymapper.data.repositories
 import io.github.sds100.keymapper.data.db.dao.KeyMapDao
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.Extra
-import io.github.sds100.keymapper.data.entities.TriggerEntity
-import io.github.sds100.keymapper.data.migration.*
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
+import io.github.sds100.keymapper.data.entities.TriggerEntity
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapRepository
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.DefaultDispatcherProvider
+import io.github.sds100.keymapper.util.DispatcherProvider
+import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.ifIsData
+import io.github.sds100.keymapper.util.splitIntoBatches
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.util.*
+import java.util.UUID
 
 /**
  * Created by sds100 on 18/03/2021.

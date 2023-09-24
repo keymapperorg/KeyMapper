@@ -42,17 +42,17 @@ class OnboardingUseCaseImpl(
             packageManagerAdapter.isAppInstalled(KeyMapperImeHelper.KEY_MAPPER_GUI_IME_PACKAGE)
 
         val isShizukuInstalled = shizukuAdapter.isInstalled.value
-        
+
         return (acknowledged == null || !acknowledged)
-                && !isGuiKeyboardInstalled 
-                && !isShizukuInstalled
-                && action.canUseImeToPerform()
+            && !isGuiKeyboardInstalled
+            && !isShizukuInstalled
+            && action.canUseImeToPerform()
     }
 
     override suspend fun showInstallShizukuPrompt(action: ActionData): Boolean {
         return !shizukuAdapter.isInstalled.value
-                && ShizukuUtils.isRecommendedForSdkVersion()
-                && action.canUseShizukuToPerform()
+            && ShizukuUtils.isRecommendedForSdkVersion()
+            && action.canUseShizukuToPerform()
     }
 
     override fun neverShowGuiKeyboardPromptsAgain() {
@@ -97,9 +97,9 @@ class OnboardingUseCaseImpl(
             val handledUpdateInHomeScreen = !showWhatsNew
 
             oldVersionCode < VersionHelper.FINGERPRINT_GESTURES_MIN_VERSION
-                    && !handledUpdateInHomeScreen
-                    && !approvedPrompt
-                    && shownAppIntro
+                && !handledUpdateInHomeScreen
+                && !approvedPrompt
+                && shownAppIntro
         }
     }
 

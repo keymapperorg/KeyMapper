@@ -288,6 +288,7 @@ class ChooseConstraintViewModel(
 
             ChooseConstraintType.WIFI_DISCONNECTED ->
                 _returnResult.emit(Constraint.WifiDisconnected(chosenSSID))
+
             else -> Unit
         }
     }
@@ -307,6 +308,7 @@ class ChooseConstraintViewModel(
 
             ChooseConstraintType.IME_NOT_CHOSEN ->
                 _returnResult.emit(Constraint.ImeNotChosen(imeInfo.id, imeInfo.label))
+
             else -> Unit
         }
     }
@@ -351,10 +353,12 @@ class ChooseConstraintViewModel(
                 device.address,
                 device.name
             )
+
             ChooseConstraintType.BT_DEVICE_DISCONNECTED -> Constraint.BtDeviceDisconnected(
                 device.address,
                 device.name
             )
+
             else -> throw IllegalArgumentException("Don't know how to create $type constraint after choosing app")
         }
 
@@ -370,12 +374,15 @@ class ChooseConstraintViewModel(
             ChooseConstraintType.APP_IN_FOREGROUND -> Constraint.AppInForeground(
                 packageName
             )
+
             ChooseConstraintType.APP_NOT_IN_FOREGROUND -> Constraint.AppNotInForeground(
                 packageName
             )
+
             ChooseConstraintType.APP_PLAYING_MEDIA -> Constraint.AppPlayingMedia(
                 packageName
             )
+
             ChooseConstraintType.APP_NOT_PLAYING_MEDIA -> Constraint.AppNotPlayingMedia(
                 packageName
             )

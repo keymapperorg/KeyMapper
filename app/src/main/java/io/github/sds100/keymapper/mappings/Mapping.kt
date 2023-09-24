@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.mappings
 
-import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.actions.Action
+import io.github.sds100.keymapper.constraints.ConstraintState
 
 /**
  * Created by sds100 on 04/04/2021.

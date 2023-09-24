@@ -14,9 +14,10 @@ import io.github.sds100.keymapper.util.str
 /**
  * Created by sds100 on 04/06/20.
  */
-class SliderWithLabel(context: Context,
-                      attrs: AttributeSet?,
-                      defStyleAttr: Int
+class SliderWithLabel(
+    context: Context,
+    attrs: AttributeSet?,
+    defStyleAttr: Int
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -126,7 +127,7 @@ class SliderWithLabel(context: Context,
     private fun setSliderValueTextViewText(value: Float) {
         //Set text to "default" if the slider is in the "default" step position.
         if (isDefaultStepEnabled && value == slider.valueFrom) {
-            sliderValue.setText(buttonDefaultText)
+            sliderValue.text = buttonDefaultText
         } else {
             val text = try {
                 value.toInt().toString()

@@ -145,6 +145,7 @@ class AndroidPackageManagerAdapter(
                     return Success(appPackage.isEnabled)
                 }
             }
+
             State.Loading -> return try {
                 Success(packageManager.getApplicationInfo(packageName, 0).enabled)
             } catch (e: PackageManager.NameNotFoundException) {
@@ -164,6 +165,7 @@ class AndroidPackageManagerAdapter(
 
                 return appPackage != null
             }
+
             State.Loading -> return try {
                 packageManager.getApplicationInfo(packageName, 0)
                 true

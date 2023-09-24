@@ -16,14 +16,16 @@ class AutoGrantPermissionController(
     private val coroutineScope: CoroutineScope,
     private val permissionAdapter: PermissionAdapter,
     private val popupAdapter: PopupMessageAdapter,
-    private val resourceProvider: ResourceProvider) {
+    private val resourceProvider: ResourceProvider
+) {
 
     fun start() {
         //automatically grant WRITE_SECURE_SETTINGS if Key Mapper has root or shizuku permission
         combine(
             permissionAdapter.isGrantedFlow(Permission.ROOT),
             permissionAdapter.isGrantedFlow(Permission.SHIZUKU),
-            permissionAdapter.isGrantedFlow(Permission.WRITE_SECURE_SETTINGS)) { isRootGranted, isShizukuGranted, isWriteSecureSettingsGranted ->
+            permissionAdapter.isGrantedFlow(Permission.WRITE_SECURE_SETTINGS)
+        ) { isRootGranted, isShizukuGranted, isWriteSecureSettingsGranted ->
 
             if (!isWriteSecureSettingsGranted && (isRootGranted || isShizukuGranted)) {
                 permissionAdapter.grant(Manifest.permission.WRITE_SECURE_SETTINGS).onSuccess {

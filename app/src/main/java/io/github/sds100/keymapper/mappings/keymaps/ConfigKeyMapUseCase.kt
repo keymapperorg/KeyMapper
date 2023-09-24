@@ -16,7 +16,12 @@ import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.Defaultable
+import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.dataOrNull
+import io.github.sds100.keymapper.util.firstBlocking
+import io.github.sds100.keymapper.util.ifIsData
+import io.github.sds100.keymapper.util.moveElement
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -362,7 +367,7 @@ class ConfigKeyMapUseCaseImpl(
                 repeat = true
             }
         }
-        
+
         if (data is ActionData.AnswerCall) {
             addConstraint(Constraint.PhoneRinging)
         }

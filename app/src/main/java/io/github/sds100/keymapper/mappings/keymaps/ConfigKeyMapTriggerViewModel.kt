@@ -4,7 +4,14 @@ import android.os.Build
 import android.view.KeyEvent
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.ClickType
-import io.github.sds100.keymapper.mappings.keymaps.trigger.*
+import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTrigger
+import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTriggerError
+import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerState
+import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerUseCase
+import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
+import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyLinkType
+import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyListItem
+import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
@@ -13,10 +20,35 @@ import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.dataOrNull
 import io.github.sds100.keymapper.util.mapData
-import io.github.sds100.keymapper.util.ui.*
+import io.github.sds100.keymapper.util.ui.NavigationViewModel
+import io.github.sds100.keymapper.util.ui.NavigationViewModelImpl
+import io.github.sds100.keymapper.util.ui.PopupUi
+import io.github.sds100.keymapper.util.ui.PopupViewModel
+import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
+import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.util.ui.TextListItem
+import io.github.sds100.keymapper.util.ui.ViewModelHelper
+import io.github.sds100.keymapper.util.ui.showPopup
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
@@ -25,22 +57,22 @@ import kotlinx.coroutines.runBlocking
  */
 
 class ConfigKeyMapTriggerViewModel(
-        private val coroutineScope: CoroutineScope,
-        private val onboarding: OnboardingUseCase,
-        private val config: ConfigKeyMapUseCase,
-        private val recordTrigger: RecordTriggerUseCase,
-        private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
-        private val displayKeyMap: DisplayKeyMapUseCase,
-        resourceProvider: ResourceProvider
+    private val coroutineScope: CoroutineScope,
+    private val onboarding: OnboardingUseCase,
+    private val config: ConfigKeyMapUseCase,
+    private val recordTrigger: RecordTriggerUseCase,
+    private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
+    private val displayKeyMap: DisplayKeyMapUseCase,
+    resourceProvider: ResourceProvider
 ) : ResourceProvider by resourceProvider,
-        PopupViewModel by PopupViewModelImpl(),
-        NavigationViewModel by NavigationViewModelImpl() {
+    PopupViewModel by PopupViewModelImpl(),
+    NavigationViewModel by NavigationViewModelImpl() {
 
     val optionsViewModel = ConfigKeyMapTriggerOptionsViewModel(
-            coroutineScope,
-            config,
-            createKeyMapShortcut,
-            resourceProvider
+        coroutineScope,
+        config,
+        createKeyMapShortcut,
+        resourceProvider
     )
 
     private val _openEditOptions = MutableSharedFlow<String>()
@@ -53,9 +85,10 @@ class ConfigKeyMapTriggerViewModel(
     val recordTriggerButtonText: StateFlow<String> = recordTrigger.state.map { recordTriggerState ->
         when (recordTriggerState) {
             is RecordTriggerState.CountingDown -> getString(
-                    R.string.button_recording_trigger_countdown,
-                    recordTriggerState.timeLeft
+                R.string.button_recording_trigger_countdown,
+                recordTriggerState.timeLeft
             )
+
             RecordTriggerState.Stopped -> getString(R.string.button_record_trigger)
         }
     }.flowOn(Dispatchers.Default).stateIn(coroutineScope, SharingStarted.Lazily, "")
@@ -78,19 +111,19 @@ class ConfigKeyMapTriggerViewModel(
             State.Loading -> R.id.radioButtonUndefined
         }
     }.flowOn(Dispatchers.Default)
-            .stateIn(coroutineScope, SharingStarted.Eagerly, R.id.radioButtonUndefined)
+        .stateIn(coroutineScope, SharingStarted.Eagerly, R.id.radioButtonUndefined)
 
     val triggerKeyListItems: StateFlow<State<List<TriggerKeyListItem>>> =
-            combine(
-                    config.mapping,
-                    displayKeyMap.showDeviceDescriptors
-            ) { mappingState, showDeviceDescriptors ->
+        combine(
+            config.mapping,
+            displayKeyMap.showDeviceDescriptors
+        ) { mappingState, showDeviceDescriptors ->
 
-                mappingState.mapData { keyMap ->
-                    createListItems(keyMap.trigger, showDeviceDescriptors)
-                }
+            mappingState.mapData { keyMap ->
+                createListItems(keyMap.trigger, showDeviceDescriptors)
+            }
 
-            }.flowOn(Dispatchers.Default).stateIn(coroutineScope, SharingStarted.Eagerly, State.Loading)
+        }.flowOn(Dispatchers.Default).stateIn(coroutineScope, SharingStarted.Eagerly, State.Loading)
 
     val clickTypeRadioButtonsVisible: StateFlow<Boolean> = config.mapping.map { state ->
         when (state) {
@@ -99,6 +132,7 @@ class ConfigKeyMapTriggerViewModel(
 
                 trigger.mode is TriggerMode.Parallel || trigger.keys.size == 1
             }
+
             State.Loading -> false
         }
     }.flowOn(Dispatchers.Default).stateIn(coroutineScope, SharingStarted.Eagerly, false)
@@ -128,10 +162,11 @@ class ConfigKeyMapTriggerViewModel(
                     null -> R.id.radioButtonShortPress
                 }
             }
+
             State.Loading -> R.id.radioButtonShortPress
         }
     }.flowOn(Dispatchers.Default)
-            .stateIn(coroutineScope, SharingStarted.Eagerly, R.id.radioButtonShortPress)
+        .stateIn(coroutineScope, SharingStarted.Eagerly, R.id.radioButtonShortPress)
 
     private val _errorListItems = MutableStateFlow<List<TextListItem.Error>>(emptyList())
     val errorListItems = _errorListItems.asStateFlow()
@@ -174,7 +209,7 @@ class ConfigKeyMapTriggerViewModel(
         recordTrigger.onRecordKey.onEach {
             if (it.keyCode == KeyEvent.KEYCODE_CAPS_LOCK) {
                 val dialog = PopupUi.Ok(
-                        message = getString(R.string.dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout)
+                    message = getString(R.string.dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout)
                 )
 
                 showPopup("caps_lock_message", dialog)
@@ -182,7 +217,7 @@ class ConfigKeyMapTriggerViewModel(
 
             if (it.keyCode == KeyEvent.KEYCODE_BACK) {
                 val dialog = PopupUi.Ok(
-                        message = getString(R.string.dialog_message_screen_pinning_warning)
+                    message = getString(R.string.dialog_message_screen_pinning_warning)
                 )
 
                 showPopup("screen_pinning_message", dialog)
@@ -193,57 +228,57 @@ class ConfigKeyMapTriggerViewModel(
 
         coroutineScope.launch {
             config.mapping
-                    .mapNotNull { it.dataOrNull()?.trigger?.mode }
-                    .distinctUntilChanged()
-                    .drop(1)
-                    .collectLatest { mode ->
-                        if (mode is TriggerMode.Parallel) {
-                            if (onboarding.shownParallelTriggerOrderExplanation) return@collectLatest
+                .mapNotNull { it.dataOrNull()?.trigger?.mode }
+                .distinctUntilChanged()
+                .drop(1)
+                .collectLatest { mode ->
+                    if (mode is TriggerMode.Parallel) {
+                        if (onboarding.shownParallelTriggerOrderExplanation) return@collectLatest
 
-                            val dialog = PopupUi.Ok(
-                                    message = getString(R.string.dialog_message_parallel_trigger_order)
-                            )
+                        val dialog = PopupUi.Ok(
+                            message = getString(R.string.dialog_message_parallel_trigger_order)
+                        )
 
-                            showPopup("parallel_trigger_order", dialog) ?: return@collectLatest
+                        showPopup("parallel_trigger_order", dialog) ?: return@collectLatest
 
-                            onboarding.shownParallelTriggerOrderExplanation = true
-                        }
-
-                        if (mode is TriggerMode.Sequence) {
-                            if (onboarding.shownSequenceTriggerExplanation) return@collectLatest
-
-                            val dialog = PopupUi.Ok(
-                                    message = getString(R.string.dialog_message_sequence_trigger_explanation)
-                            )
-
-                            showPopup("sequence_trigger_explanation", dialog)
-                                    ?: return@collectLatest
-
-                            onboarding.shownSequenceTriggerExplanation = true
-                        }
+                        onboarding.shownParallelTriggerOrderExplanation = true
                     }
+
+                    if (mode is TriggerMode.Sequence) {
+                        if (onboarding.shownSequenceTriggerExplanation) return@collectLatest
+
+                        val dialog = PopupUi.Ok(
+                            message = getString(R.string.dialog_message_sequence_trigger_explanation)
+                        )
+
+                        showPopup("sequence_trigger_explanation", dialog)
+                            ?: return@collectLatest
+
+                        onboarding.shownSequenceTriggerExplanation = true
+                    }
+                }
         }
     }
 
     private fun buildTriggerErrorListItems(triggerErrors: List<KeyMapTriggerError>) =
-            triggerErrors.map { error ->
-                when (error) {
-                    KeyMapTriggerError.DND_ACCESS_DENIED -> TextListItem.Error(
-                            id = error.toString(),
-                            text = getString(R.string.trigger_error_dnd_access_denied),
-                    )
+        triggerErrors.map { error ->
+            when (error) {
+                KeyMapTriggerError.DND_ACCESS_DENIED -> TextListItem.Error(
+                    id = error.toString(),
+                    text = getString(R.string.trigger_error_dnd_access_denied),
+                )
 
-                    KeyMapTriggerError.SCREEN_OFF_ROOT_DENIED -> TextListItem.Error(
-                            id = error.toString(),
-                            text = getString(R.string.trigger_error_screen_off_root_permission_denied)
-                    )
+                KeyMapTriggerError.SCREEN_OFF_ROOT_DENIED -> TextListItem.Error(
+                    id = error.toString(),
+                    text = getString(R.string.trigger_error_screen_off_root_permission_denied)
+                )
 
-                    KeyMapTriggerError.CANT_DETECT_IN_PHONE_CALL -> TextListItem.Error(
-                            id = error.toString(),
-                            text = getString(R.string.trigger_error_cant_detect_in_phone_call)
-                    )
-                }
+                KeyMapTriggerError.CANT_DETECT_IN_PHONE_CALL -> TextListItem.Error(
+                    id = error.toString(),
+                    text = getString(R.string.trigger_error_cant_detect_in_phone_call)
+                )
             }
+        }
 
     fun onParallelRadioButtonCheckedChange(isChecked: Boolean) {
         if (isChecked) {
@@ -286,8 +321,8 @@ class ConfigKeyMapTriggerViewModel(
                     is TriggerKeyDevice.External -> {
                         if (showDeviceDescriptors) {
                             val name = InputDeviceUtils.appendDeviceDescriptorToName(
-                                    device.descriptor,
-                                    device.name
+                                device.descriptor,
+                                device.name
                             )
                             device.descriptor to name
                         } else {
@@ -298,8 +333,8 @@ class ConfigKeyMapTriggerViewModel(
             }
 
             val triggerKeyDeviceId = showPopup(
-                    "pick_trigger_key_device",
-                    PopupUi.SingleChoice(listItems)
+                "pick_trigger_key_device",
+                PopupUi.SingleChoice(listItems)
             ) ?: return@launch
 
             val selectedTriggerKeyDevice = when (triggerKeyDeviceId) {
@@ -406,7 +441,7 @@ class ConfigKeyMapTriggerViewModel(
                 linkType = linkDrawable,
                 isDragDropEnabled = trigger.keys.size > 1
             )
-            }
+        }
 
     private fun getTriggerKeyDeviceName(
         device: TriggerKeyDevice,
