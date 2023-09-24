@@ -7,7 +7,6 @@ import kotlin.math.cos
 import kotlin.math.hypot
 import kotlin.math.sin
 
-
 data class Line(
     val start: Point,
     val end: Point

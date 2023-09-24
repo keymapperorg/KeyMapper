@@ -9,6 +9,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.ui.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import kotlin.math.roundToInt
 
 enum class ScreenshotTouchType {
@@ -21,6 +22,8 @@ class SwipePickDisplayCoordinateViewModel(
 
     val screenshotTouchTypeStart = ScreenshotTouchType.START
     val screenshotTouchTypeEnd = ScreenshotTouchType.END
+    public val screenshotTouchTypeStart = ScreenshotTouchType.START;
+    public val screenshotTouchTypeEnd = ScreenshotTouchType.END;
     private val xStart = MutableStateFlow<Int?>(null)
     private val yStart = MutableStateFlow<Int?>(null)
     private val xEnd = MutableStateFlow<Int?>(null)
@@ -98,7 +101,6 @@ class SwipePickDisplayCoordinateViewModel(
     }.stateIn(viewModelScope, SharingStarted.Lazily, false)
 
     fun selectedScreenshot(newBitmap: Bitmap, displaySize: Point) {
-
         _screenshotTouchType.value = ScreenshotTouchType.START
 
         //check whether the height and width of the bitmap match the display size, even when it is rotated.

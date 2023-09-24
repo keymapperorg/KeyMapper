@@ -13,79 +13,22 @@
 # Uncomment the line if you want fastlane to automatically update itself
 # update_fastlane
 
+sh("bundle install")
+
 default_platform(:android)
 
-platform :android do
-
-  lane :ci_alpha_apk do
+desc "Create and deploy testing release"
+lane :testing do
     gradle(task: "clean assembleCi")
-  end
+end
 
-  lane :testing do
-
-    git_add
-    git_commit(path: "*", message: "chore (release): update changelog, whats_new and version")
-
-    ensure_git_status_clean
-
-    sh "git checkout develop"
-    sh "git pull"
-
-    # increment version code in develop
-        increment_version_code_in_properties_file(
-            key: "VERSION_CODE",
-            path: "./app/version.properties"
-          )
-
-    git_commit(path: "./app/version.properties", message: "chore (release): version bump")
-
-  end
-
-  desc "Create and deploy beta release"
-  lane :beta do
-
-    gradle(task: "testDebugUnitTest")
-    gradle(task: "connectedDebugAndroidTest")
-
-    whats_new = prompt(
-                  text: "Whats new: ",
-                  multi_line_end_keyword: "END"
-                )
-
-    File.write("../app/src/main/assets/whats-new.txt", whats_new)
-
+desc "Create and deploy production release"
+lane :prod do |options|
     version_code = get_properties_value(key: "VERSION_CODE", path: "./app/version.properties")
     version_name = get_properties_value(key: "VERSION_NAME", path: "./app/version.properties")
 
+    whats_new = File.read("../app/src/main/assets/whats-new.txt")
     File.write("metadata/android/en-US/changelogs/" + version_code + ".txt", whats_new)
-
-    github_token = prompt(
-                    text: "Github token: ",
-                    secure_text: true
-                   )
-
-    pre_release = prompt(
-                    text: "Pre release?: ",
-                    boolean: true
-                   )
-
-    ENV["KEYSTORE_PASSWORD"] = prompt(
-                    text: "Key store password: ",
-                    secure_text: true
-                   )
-
-    ENV["KEY_PASSWORD"] = prompt(
-                    text: "Key password: ",
-                    secure_text: true
-                   )
-
-    release_name = prompt(
-                    text: "Release name: ",
-                   )
-
-    next_version_name = prompt(
-                    text: "Next version name: ",
-                   )
 
     gradle(task: "assembleDebug")
     gradle(task: "assembleRelease")
@@ -96,14 +39,14 @@ platform :android do
 
     github_release = set_github_release(
       repository_name: "keymapperorg/KeyMapper",
-      api_token: github_token,
-      name: release_name,
+      api_bearer: options[:github_token],
+      name: version_name,
       tag_name: "v" + version_name,
       description: whats_new,
-      commitish: git_branch,
+      commitish: "master",
       upload_assets: [apk_path_debug, apk_path_release],
-      is_draft: true,
-      is_prerelease: pre_release
+      is_draft: false,
+      is_prerelease: false
     )
 
     supply(
@@ -112,114 +55,4 @@ platform :android do
         release_status: "draft",
         skip_upload_apk: true
     )
-
-    git_add
-    git_commit(path: "*", message: "chore (release): update changelog, whats_new")
-
-    pushBeforePublish = prompt(
-            text: "Push committed whats_new and changelog before publishing GitHub release.",
-            boolean: true
-           )
-
-    set_properties_value(
-        path: "./app/version.properties",
-        key: "VERSION_NAME",
-        value: next_version_name
-    )
-
-    # increment version code for next build
-    increment_version_code_in_properties_file(
-        key: "VERSION_CODE",
-        path: "./app/version.properties"
-      )
-
-    git_add
-    git_commit(path: "*", message: "chore (release): update version")
-
-    ensure_git_status_clean
-
-    sh "git checkout develop"
-    sh "git pull"
-
-    # increment version code in develop
-    increment_version_code_in_properties_file(
-        key: "VERSION_CODE",
-        path: "./app/version.properties"
-      )
-
-    git_commit(path: "./app/version.properties", message: "chore (release): version bump")
-
-  end
-  
-  desc "Create and deploy production release"
-  lane :prod do
-
-#     gradle(task: "testDebugUnitTest")
-#     gradle(task: "connectedDebugAndroidTest")
-
-    whats_new = prompt(
-                  text: "Whats new: ",
-                  multi_line_end_keyword: "END"
-                )
-
-    File.write("../app/src/main/assets/whats-new.txt", whats_new)
-
-    version_code = get_properties_value(key: "VERSION_CODE", path: "./app/version.properties")
-    version_name = get_properties_value(key: "VERSION_NAME", path: "./app/version.properties")
-
-    File.write("metadata/android/en-US/changelogs/" + version_code + ".txt", whats_new)
-
-    github_token = prompt(
-                    text: "Github token: ",
-                    secure_text: true
-                   )
-
-    ENV["KEYSTORE_PASSWORD"] = prompt(
-                    text: "Key store password: ",
-                    secure_text: true
-                   )
-
-    ENV["KEY_PASSWORD"] = prompt(
-                    text: "Key password: ",
-                    secure_text: true
-                   )
-
-    release_name = prompt(
-                    text: "Release name: ",
-                   )
-
-    gradle(task: "assembleDebug")
-    gradle(task: "assembleRelease")
-    gradle(task: "bundleRelease")
-
-    apk_path_debug="app/build/outputs/apk/debug/keymapper-" + version_name + "-debug.apk"
-    apk_path_release="app/build/outputs/apk/release/keymapper-" + version_name + ".apk"
-
-    github_release = set_github_release(
-      repository_name: "keymapperorg/KeyMapper",
-      api_token: github_token,
-      name: release_name,
-      tag_name: "v" + version_name,
-      description: whats_new,
-      commitish: git_branch,
-      upload_assets: [apk_path_debug, apk_path_release],
-      is_draft: true,
-      is_prerelease: false
-    )
-
-#     supply(
-#         aab: "./app/build/outputs/bundle/release/app-release.aab",
-#         track: "beta",
-#         release_status: "draft",
-#         skip_upload_apk: true
-#     )
-
-    git_add
-    git_commit(path: "*", message: "chore (release): update changelog, whats_new")
-
-    pushBeforePublish = prompt(
-            text: "Push committed whats_new and changelog before publishing GitHub release.",
-            boolean: true
-           )
-  end
 end

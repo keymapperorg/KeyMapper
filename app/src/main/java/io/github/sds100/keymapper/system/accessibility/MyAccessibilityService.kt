@@ -400,7 +400,6 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
     }
 
     override fun swipeScreen(xStart: Int, yStart: Int, xEnd: Int, yEnd: Int, fingerCount: Int, duration: Int, inputEventType: InputEventType): Result<*> {
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             if (fingerCount >= GestureDescription.getMaxStrokeCount()) {
                 return Error.GestureStrokeCountTooHigh
@@ -408,7 +407,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
             if (duration >= GestureDescription.getMaxGestureDuration()) {
                 return Error.GestureDurationTooHigh
             }
-
+            
             val pStart = Point(xStart, yStart)
             val pEnd = Point(xEnd, yEnd)
 
@@ -424,6 +423,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
                 val segmentCount = fingerCount - 1
                 // the line of the perpendicular line which will be created to place the virtual fingers on it
                 val perpendicularLineLength = (fingerGestureDistance * fingerCount).toInt()
+                
                 // the length of each segment between fingers
                 val segmentLength = perpendicularLineLength / segmentCount
                 // perpendicular line of the start swipe point
