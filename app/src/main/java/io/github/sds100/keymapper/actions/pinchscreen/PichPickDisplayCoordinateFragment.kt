@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import io.github.sds100.keymapper.R
 
 class PinchPickDisplayCoordinateFragment : Fragment() {
     companion object {
@@ -73,7 +74,10 @@ class PinchPickDisplayCoordinateFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        pinchTypesDisplayValues = arrayOf(getString(io.github.sds100.keymapper.R.string.hint_coordinate_type_PINCH_IN), getString(io.github.sds100.keymapper.R.string.hint_coordinate_type_PINCH_OUT)).toMutableList();
+        pinchTypesDisplayValues = arrayOf(
+            str(R.string.hint_coordinate_type_pinch_in),
+            str(R.string.hint_coordinate_type_pinch_out)
+        ).toMutableList();
 
         args.result?.let {
             viewModel.loadResult(Json.decodeFromString(it))

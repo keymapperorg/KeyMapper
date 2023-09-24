@@ -313,9 +313,9 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
 
             is ActionData.PinchScreen -> if (action.description.isNullOrBlank()) {
                 val pinchTypeDisplayName = if (action.pinchType == PinchScreenType.PINCH_IN) {
-                    getString(R.string.hint_coordinate_type_PINCH_IN)
+                    getString(R.string.hint_coordinate_type_pinch_in)
                 } else {
-                    getString(R.string.hint_coordinate_type_PINCH_OUT)
+                    getString(R.string.hint_coordinate_type_pinch_out)
                 }
 
                 getString(
@@ -324,9 +324,9 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
                 )
             } else {
                 val pinchTypeDisplayName = if (action.pinchType == PinchScreenType.PINCH_IN) {
-                    getString(R.string.hint_coordinate_type_PINCH_IN)
+                    getString(R.string.hint_coordinate_type_pinch_in)
                 } else {
-                    getString(R.string.hint_coordinate_type_PINCH_OUT)
+                    getString(R.string.hint_coordinate_type_pinch_out)
                 }
 
                 getString(

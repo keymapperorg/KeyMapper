@@ -163,8 +163,8 @@
     <string name="hint_coordinate_y_end">End Y</string>
     <string name="hint_coordinate_distance">Pinch distance (px)</string>
     <string name="hint_coordinate_pinch_type">Pinch type</string>
-    <string name="hint_coordinate_type_PINCH_IN">Pinch in</string>
-    <string name="hint_coordinate_type_PINCH_OUT">Pinch out</string>
+    <string name="hint_coordinate_type_pinch_in">Pinch in</string>
+    <string name="hint_coordinate_type_pinch_out">Pinch out</string>
     <string name="hint_keycode">Key code</string>
     <string name="hint_from_device">From device</string>
     <string name="hint_shortcut_name">Shortcut name</string>

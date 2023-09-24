@@ -486,26 +486,17 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
             }
 
             val gestureBuilder = GestureDescription.Builder()
+            val distributedPoints: List<Point> = distributePointsOnCircle(Point(x, y), distance.toFloat() / 2, fingerCount)
 
-            var startCoordinates = mutableListOf<Point>()
-            var endCoordinates = mutableListOf<Point>()
-
-            if (pinchType == PinchScreenType.PINCH_IN) {
-                for (index in 0..fingerCount) {
-                    endCoordinates.add(Point(x, y));
-                }
-                startCoordinates = distributePointsOnCircle(Point(x, y), distance.toFloat() / 2, fingerCount).toMutableList()
-            } else {
-                for (index in 0..fingerCount) {
-                    startCoordinates.add(Point(x, y));
-                }
-                endCoordinates = distributePointsOnCircle(Point(x, y), distance.toFloat() / 2, fingerCount).toMutableList()
-            }
-
-            for (index in 0 until startCoordinates.size) {
+            for (index in distributedPoints.indices) {
                 val p = Path()
-                p.moveTo(startCoordinates[index].x.toFloat(), startCoordinates[index].y.toFloat())
-                p.lineTo(endCoordinates[index].x.toFloat(), endCoordinates[index].y.toFloat())
+                if (pinchType == PinchScreenType.PINCH_IN) {
+                    p.moveTo(x.toFloat(), y.toFloat())
+                    p.lineTo(distributedPoints[index].x.toFloat(), distributedPoints[index].y.toFloat())
+                } else {
+                    p.moveTo(distributedPoints[index].x.toFloat(), distributedPoints[index].y.toFloat())
+                    p.lineTo(x.toFloat(), y.toFloat())
+                }
 
                 gestureBuilder.addStroke(StrokeDescription(p, 0, duration.toLong()))
             }
