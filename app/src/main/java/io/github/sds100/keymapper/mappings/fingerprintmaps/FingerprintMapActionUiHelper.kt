@@ -46,6 +46,7 @@ class FingerprintMapActionUiHelper(
                     RepeatMode.TRIGGER_PRESSED_AGAIN -> {
                         append(getString(R.string.flag_repeat_build_description_until_swiped_again))
                     }
+
                     else -> Unit
                 }
             }

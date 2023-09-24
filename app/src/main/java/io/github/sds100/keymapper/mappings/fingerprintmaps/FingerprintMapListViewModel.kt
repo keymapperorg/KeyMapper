@@ -1,12 +1,34 @@
 package io.github.sds100.keymapper.mappings.fingerprintmaps
 
-import androidx.lifecycle.*
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.ui.*
-import io.github.sds100.keymapper.util.*
-import io.github.sds100.keymapper.util.ui.*
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import io.github.sds100.keymapper.util.Error
+import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.getFullMessage
+import io.github.sds100.keymapper.util.isFixable
+import io.github.sds100.keymapper.util.ui.ChipUi
+import io.github.sds100.keymapper.util.ui.DialogResponse
+import io.github.sds100.keymapper.util.ui.NavDestination
+import io.github.sds100.keymapper.util.ui.NavigationViewModel
+import io.github.sds100.keymapper.util.ui.NavigationViewModelImpl
+import io.github.sds100.keymapper.util.ui.PopupUi
+import io.github.sds100.keymapper.util.ui.PopupViewModel
+import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
+import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.util.ui.navigate
+import io.github.sds100.keymapper.util.ui.showPopup
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class FingerprintMapListViewModel(
     private val coroutineScope: CoroutineScope,

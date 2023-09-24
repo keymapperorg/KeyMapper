@@ -14,4 +14,4 @@ data class RadioButtonPairListItem(
     val rightButtonId: String,
     val rightButtonText: String,
     val rightButtonChecked: Boolean
-): ListItem
+) : ListItem

@@ -1,10 +1,9 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
-import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
+import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.mappings.SimpleMappingController
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCase
-import io.github.sds100.keymapper.util.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -42,7 +41,7 @@ class TriggerKeyMapFromOtherAppsController(
             onDetected(keyMap.uid, keyMap)
 
             Timber.d("Triggered key map successfully from Intent, $keyMap")
-        }else{
+        } else {
             Timber.d("Failed to trigger key map from intent because key map doesn't exist, uid = $uid")
         }
     }

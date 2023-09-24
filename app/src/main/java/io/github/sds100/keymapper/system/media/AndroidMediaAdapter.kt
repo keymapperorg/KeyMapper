@@ -7,8 +7,6 @@ import android.media.MediaPlayer
 import android.media.session.MediaController
 import android.media.session.PlaybackState
 import android.net.Uri
-import android.os.Build
-import android.telecom.TelecomManager
 import android.view.KeyEvent
 import androidx.core.content.getSystemService
 import io.github.sds100.keymapper.system.volume.VolumeStream

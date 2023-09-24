@@ -7,12 +7,16 @@ import io.github.sds100.keymapper.logging.LogRepository
 import io.github.sds100.keymapper.logging.LogUtils
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.files.IFile
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.Error
+import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.ifIsData
+import io.github.sds100.keymapper.util.onFailure
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-import java.util.*
+import java.util.UUID
 
 /**
  * Created by sds100 on 30/06/2021.

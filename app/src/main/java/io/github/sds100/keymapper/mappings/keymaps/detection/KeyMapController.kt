@@ -880,7 +880,7 @@ class KeyMapController(
                     return true
                 }
             }
-            }
+        }
 
         return false
     }
@@ -1146,37 +1146,37 @@ class KeyMapController(
                     }
                 }
 
-                    //long press
-                    if (keyAwaitingRelease && trigger.matchingEventAtIndex(
-                            event.withLongPress,
-                            keyIndex
-                        )
-                    ) {
-                        parallelTriggerEventsAwaitingRelease[triggerIndex][keyIndex] = false
+                //long press
+                if (keyAwaitingRelease && trigger.matchingEventAtIndex(
+                        event.withLongPress,
+                        keyIndex
+                    )
+                ) {
+                    parallelTriggerEventsAwaitingRelease[triggerIndex][keyIndex] = false
 
-                        parallelTriggerLongPressJobs[triggerIndex]?.cancel()
+                    parallelTriggerLongPressJobs[triggerIndex]?.cancel()
 
-                        if (triggers[triggerIndex].keys[keyIndex].consumeKeyEvent) {
-                            consumeEvent = true
-                        }
+                    if (triggers[triggerIndex].keys[keyIndex].consumeKeyEvent) {
+                        consumeEvent = true
+                    }
 
-                        val lastMatchedIndex = lastMatchedEventIndices[triggerIndex]
+                    val lastMatchedIndex = lastMatchedEventIndices[triggerIndex]
 
-                        if (isSingleKeyTrigger && successfulLongPressTrigger) {
-                            longPressSingleKeyTriggerJustReleased = true
-                        }
+                    if (isSingleKeyTrigger && successfulLongPressTrigger) {
+                        longPressSingleKeyTriggerJustReleased = true
+                    }
 
-                        if (!imitateDownUpKeyEvent) {
-                            if (isSingleKeyTrigger && !successfulLongPressTrigger && !releasedSuccessfulTrigger) {
-                                imitateDownUpKeyEvent = true
-                            } else if (lastMatchedIndex > -1
-                                && lastMatchedIndex < triggers[triggerIndex].keys.lastIndex
-                                && !releasedSuccessfulTrigger
-                            ) {
-                                imitateDownUpKeyEvent = true
-                            }
+                    if (!imitateDownUpKeyEvent) {
+                        if (isSingleKeyTrigger && !successfulLongPressTrigger && !releasedSuccessfulTrigger) {
+                            imitateDownUpKeyEvent = true
+                        } else if (lastMatchedIndex > -1
+                            && lastMatchedIndex < triggers[triggerIndex].keys.lastIndex
+                            && !releasedSuccessfulTrigger
+                        ) {
+                            imitateDownUpKeyEvent = true
                         }
                     }
+                }
 
                 if (parallelTriggerEventsAwaitingRelease[triggerIndex][keyIndex] &&
                     lastHeldDownEventIndex == keyIndex - 1

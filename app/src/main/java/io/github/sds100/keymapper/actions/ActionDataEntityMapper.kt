@@ -104,12 +104,12 @@ object ActionDataEntityMapper {
 
             ActionId.SWIPE_SCREEN -> {
                 val splitData = entity.data.trim().split(',')
-                var xStart = 0;
-                var yStart = 0;
-                var xEnd = 0;
-                var yEnd = 0;
-                var fingerCount = 1;
-                var duration = 250;
+                var xStart = 0
+                var yStart = 0
+                var xEnd = 0
+                var yEnd = 0
+                var fingerCount = 1
+                var duration = 250
 
                 if (splitData.isNotEmpty()) {
                     xStart = splitData[0].trim().toInt()
@@ -210,6 +210,7 @@ object ActionDataEntityMapper {
                     ActionId.VOLUME_TOGGLE_MUTE -> ActionData.Volume.ToggleMute(
                         showVolumeUi
                     )
+
                     ActionId.VOLUME_UNMUTE -> ActionData.Volume.UnMute(showVolumeUi)
                     ActionId.VOLUME_MUTE -> ActionData.Volume.Mute(showVolumeUi)
 
@@ -273,16 +274,22 @@ object ActionDataEntityMapper {
                 when (actionId) {
                     ActionId.PAUSE_MEDIA_PACKAGE ->
                         ActionData.ControlMediaForApp.Pause(packageName)
+
                     ActionId.PLAY_MEDIA_PACKAGE ->
                         ActionData.ControlMediaForApp.Play(packageName)
+
                     ActionId.PLAY_PAUSE_MEDIA_PACKAGE ->
                         ActionData.ControlMediaForApp.PlayPause(packageName)
+
                     ActionId.NEXT_TRACK_PACKAGE ->
                         ActionData.ControlMediaForApp.NextTrack(packageName)
+
                     ActionId.PREVIOUS_TRACK_PACKAGE ->
                         ActionData.ControlMediaForApp.PreviousTrack(packageName)
+
                     ActionId.FAST_FORWARD_PACKAGE ->
                         ActionData.ControlMediaForApp.FastForward(packageName)
+
                     ActionId.REWIND_PACKAGE ->
                         ActionData.ControlMediaForApp.Rewind(packageName)
 
@@ -542,6 +549,7 @@ object ActionDataEntityMapper {
 
                 else -> emptyList()
             }
+
         is ActionData.TapScreen -> sequence {
             if (!data.description.isNullOrBlank()) {
                 yield(Extra(ActionEntity.EXTRA_COORDINATE_DESCRIPTION, data.description))
@@ -715,7 +723,7 @@ object ActionDataEntityMapper {
 
         ActionId.DISMISS_MOST_RECENT_NOTIFICATION to "dismiss_most_recent_notification",
         ActionId.DISMISS_ALL_NOTIFICATIONS to "dismiss_all_notifications",
-        
+
         ActionId.ANSWER_PHONE_CALL to "answer_phone_call",
         ActionId.END_PHONE_CALL to "end_phone_call"
     )

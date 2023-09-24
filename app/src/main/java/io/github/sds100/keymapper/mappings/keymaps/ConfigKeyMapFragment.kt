@@ -16,7 +16,11 @@ import io.github.sds100.keymapper.mappings.ConfigMappingFragment
 import io.github.sds100.keymapper.mappings.keymaps.trigger.ConfigTriggerOptionsFragment
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerFragment
 import io.github.sds100.keymapper.ui.utils.getJsonSerializable
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.FragmentInfo
+import io.github.sds100.keymapper.util.Inject
+import io.github.sds100.keymapper.util.int
+import io.github.sds100.keymapper.util.intArray
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.FourFragments
 import io.github.sds100.keymapper.util.ui.TwoFragments
 import io.github.sds100.keymapper.util.ui.setupNavigation

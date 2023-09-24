@@ -40,6 +40,7 @@ class OpenMenuHelper(
 
                 return success()
             }
+
             suAdapter.isGranted.firstBlocking() ->
                 return suAdapter.execute("input keyevent ${KeyEvent.KEYCODE_MENU}\n")
 

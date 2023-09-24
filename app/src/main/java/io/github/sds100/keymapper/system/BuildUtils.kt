@@ -1,7 +1,22 @@
 package io.github.sds100.keymapper.system
 
 import android.os.Build
-import android.os.Build.VERSION_CODES.*
+import android.os.Build.VERSION_CODES.JELLY_BEAN
+import android.os.Build.VERSION_CODES.JELLY_BEAN_MR1
+import android.os.Build.VERSION_CODES.JELLY_BEAN_MR2
+import android.os.Build.VERSION_CODES.KITKAT
+import android.os.Build.VERSION_CODES.LOLLIPOP
+import android.os.Build.VERSION_CODES.LOLLIPOP_MR1
+import android.os.Build.VERSION_CODES.M
+import android.os.Build.VERSION_CODES.N
+import android.os.Build.VERSION_CODES.N_MR1
+import android.os.Build.VERSION_CODES.O
+import android.os.Build.VERSION_CODES.O_MR1
+import android.os.Build.VERSION_CODES.P
+import android.os.Build.VERSION_CODES.Q
+import android.os.Build.VERSION_CODES.R
+import android.os.Build.VERSION_CODES.S
+import android.os.Build.VERSION_CODES.S_V2
 
 /**
  * Created by sds100 on 12/01/2019.

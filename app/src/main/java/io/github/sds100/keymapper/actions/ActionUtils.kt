@@ -553,6 +553,7 @@ object ActionUtils {
 
             ActionId.ANSWER_PHONE_CALL,
             ActionId.END_PHONE_CALL -> return listOf(Permission.ANSWER_PHONE_CALL)
+
             else -> Unit
         }
 
@@ -607,5 +608,6 @@ fun ActionData.isEditable(): Boolean = when (this) {
     is ActionData.Url,
     is ActionData.PhoneCall,
     -> true
+
     else -> false
 }

@@ -25,6 +25,7 @@ class IntentAdapterImpl(context: Context) : IntentAdapter {
 
                     ctx.startActivity(intent)
                 }
+
                 IntentTarget.BROADCAST_RECEIVER -> ctx.sendBroadcast(intent)
                 IntentTarget.SERVICE -> ctx.startService(intent)
             }

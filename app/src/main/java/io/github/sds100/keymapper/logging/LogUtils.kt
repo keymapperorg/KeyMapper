@@ -3,7 +3,8 @@ package io.github.sds100.keymapper.logging
 import io.github.sds100.keymapper.data.entities.LogEntryEntity
 import io.github.sds100.keymapper.system.files.FileUtils
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 /**
  * Created by sds100 on 14/05/2021.

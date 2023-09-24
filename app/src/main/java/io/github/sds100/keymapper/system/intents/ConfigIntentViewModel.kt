@@ -429,43 +429,43 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
                         InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED
 
                     is IntArrayExtraType -> InputType.TYPE_CLASS_NUMBER or
-                            InputType.TYPE_NUMBER_FLAG_SIGNED or InputType.TYPE_CLASS_TEXT
+                        InputType.TYPE_NUMBER_FLAG_SIGNED or InputType.TYPE_CLASS_TEXT
 
                     is LongExtraType ->
                         InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED
 
                     is LongArrayExtraType -> InputType.TYPE_CLASS_NUMBER or
-                            InputType.TYPE_NUMBER_FLAG_SIGNED or InputType.TYPE_CLASS_TEXT
+                        InputType.TYPE_NUMBER_FLAG_SIGNED or InputType.TYPE_CLASS_TEXT
 
                     is ByteExtraType ->
                         InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED
 
                     is ByteArrayExtraType -> InputType.TYPE_CLASS_NUMBER or
-                            InputType.TYPE_NUMBER_FLAG_SIGNED or InputType.TYPE_CLASS_TEXT
+                        InputType.TYPE_NUMBER_FLAG_SIGNED or InputType.TYPE_CLASS_TEXT
 
                     is DoubleExtraType ->
                         InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED or
-                                InputType.TYPE_NUMBER_FLAG_DECIMAL
+                            InputType.TYPE_NUMBER_FLAG_DECIMAL
 
                     is DoubleArrayExtraType -> InputType.TYPE_CLASS_NUMBER or
-                            InputType.TYPE_NUMBER_FLAG_DECIMAL or
-                            InputType.TYPE_NUMBER_FLAG_SIGNED or
-                            InputType.TYPE_CLASS_TEXT
+                        InputType.TYPE_NUMBER_FLAG_DECIMAL or
+                        InputType.TYPE_NUMBER_FLAG_SIGNED or
+                        InputType.TYPE_CLASS_TEXT
 
                     is FloatExtraType ->
                         InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED or
-                                InputType.TYPE_NUMBER_FLAG_DECIMAL
+                            InputType.TYPE_NUMBER_FLAG_DECIMAL
 
                     is FloatArrayExtraType -> InputType.TYPE_CLASS_NUMBER or
-                            InputType.TYPE_NUMBER_FLAG_DECIMAL or
-                            InputType.TYPE_NUMBER_FLAG_SIGNED or
-                            InputType.TYPE_CLASS_TEXT
+                        InputType.TYPE_NUMBER_FLAG_DECIMAL or
+                        InputType.TYPE_NUMBER_FLAG_SIGNED or
+                        InputType.TYPE_CLASS_TEXT
 
                     is ShortExtraType ->
                         InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED
 
                     is ShortArrayExtraType -> InputType.TYPE_CLASS_NUMBER or
-                            InputType.TYPE_NUMBER_FLAG_SIGNED or InputType.TYPE_CLASS_TEXT
+                        InputType.TYPE_NUMBER_FLAG_SIGNED or InputType.TYPE_CLASS_TEXT
 
                     else -> InputType.TYPE_CLASS_TEXT
                 }

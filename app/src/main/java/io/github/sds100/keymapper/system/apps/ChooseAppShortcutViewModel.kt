@@ -59,6 +59,7 @@ class ChooseAppShortcutViewModel internal constructor(
                         _state.value = it
                     }
                 }
+
                 State.Loading -> _state.value = State.Loading
             }
         }.launchIn(viewModelScope)

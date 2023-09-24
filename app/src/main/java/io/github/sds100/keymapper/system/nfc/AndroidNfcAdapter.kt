@@ -9,8 +9,10 @@ import io.github.sds100.keymapper.util.Result
 /**
  * Created by sds100 on 24/04/2021.
  */
-class AndroidNfcAdapter(context: Context,
-private val suAdapter: SuAdapter) : NfcAdapter {
+class AndroidNfcAdapter(
+    context: Context,
+    private val suAdapter: SuAdapter
+) : NfcAdapter {
     private val ctx = context.applicationContext
 
     private val nfcManager: NfcManager by lazy { ctx.getSystemService()!! }

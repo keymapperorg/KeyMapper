@@ -21,8 +21,8 @@ import java.io.InputStream
  */
 
 class SuAdapterImpl(
-        coroutineScope: CoroutineScope,
-        private val preferenceRepository: PreferenceRepository
+    coroutineScope: CoroutineScope,
+    private val preferenceRepository: PreferenceRepository
 ) : SuAdapter {
     private var process: Process? = null
 

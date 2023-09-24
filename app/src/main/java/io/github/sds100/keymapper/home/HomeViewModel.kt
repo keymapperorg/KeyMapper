@@ -89,6 +89,7 @@ class HomeViewModel(
                 isVisible = false,
                 text = ""
             )
+
             is SelectionState.Selecting<*> -> SelectionCountViewState(
                 isVisible = true,
                 text = getString(R.string.selection_count, it.selectedIds.size)
@@ -173,6 +174,7 @@ class HomeViewModel(
                             getString(R.string.home_error_accessibility_service_is_crashed)
                         )
                     )
+
                 ServiceState.DISABLED ->
                     yield(
                         TextListItem.Error(
@@ -180,6 +182,7 @@ class HomeViewModel(
                             getString(R.string.home_error_accessibility_service_is_disabled)
                         )
                     )
+
                 ServiceState.ENABLED ->
                     yield(
                         TextListItem.Success(

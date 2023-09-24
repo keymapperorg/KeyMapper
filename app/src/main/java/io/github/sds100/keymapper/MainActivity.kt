@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val ACTION_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG =
-                "$PACKAGE_NAME.ACTION_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG"
+            "$PACKAGE_NAME.ACTION_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG"
     }
 
     private val viewModel by viewModels<ActivityViewModel> {
@@ -51,14 +51,14 @@ class MainActivity : AppCompatActivity() {
         requestPermissionDelegate = RequestPermissionDelegate(this, showDialogs = true)
 
         ServiceLocator.permissionAdapter(this@MainActivity).request
-                .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
-                .onEach { permission ->
-                    requestPermissionDelegate.requestPermission(
-                            permission,
-                            findNavController(R.id.container)
-                    )
-                }
-                .launchIn(lifecycleScope)
+            .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+            .onEach { permission ->
+                requestPermissionDelegate.requestPermission(
+                    permission,
+                    findNavController(R.id.container)
+                )
+            }
+            .launchIn(lifecycleScope)
 
         if (intent.action == ACTION_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG) {
             viewModel.onCantFindAccessibilitySettings()

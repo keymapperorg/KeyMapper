@@ -35,7 +35,8 @@ object Migration_1_2 {
     private const val MODE_SEQUENCE = 1
 
     fun migrate(database: SupportSQLiteDatabase) = database.apply {
-        execSQL("""
+        execSQL(
+            """
                 CREATE TABLE IF NOT EXISTS `new_keymaps` (
                 `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                 `trigger` TEXT NOT NULL,
@@ -45,11 +46,22 @@ object Migration_1_2 {
                 `flags` INTEGER NOT NULL,
                 `folder_name` TEXT,
                 `is_enabled` INTEGER NOT NULL)
-                """.trimIndent())
+                """.trimIndent()
+        )
 
         val query = SupportSQLiteQueryBuilder
             .builder("keymaps")
-            .columns(arrayOf("id", "trigger_list", "flags", "is_enabled", "action_type", "action_data", "action_extras"))
+            .columns(
+                arrayOf(
+                    "id",
+                    "trigger_list",
+                    "flags",
+                    "is_enabled",
+                    "action_type",
+                    "action_data",
+                    "action_extras"
+                )
+            )
             .create()
 
         query(query).apply {
@@ -126,12 +138,12 @@ object Migration_1_2 {
 
                         actionListNew.add(
                             createAction2(
-                            actionTypeNew,
-                            actionDataOld,
-                            actionExtrasOld
-                                ?: JsonArray(),
-                            actionFlags
-                        )
+                                actionTypeNew,
+                                actionDataOld,
+                                actionExtrasOld
+                                    ?: JsonArray(),
+                                actionFlags
+                            )
                         )
                     }
 
@@ -143,7 +155,8 @@ object Migration_1_2 {
                             """
                             INSERT INTO 'new_keymaps' ('id', 'trigger', 'action_list', 'constraint_list', 'constraint_mode', 'flags', 'folder_name', 'is_enabled')
                             VALUES ($id, '${gson.toJson(it)}', '${gson.toJson(actionListNew)}', '[]', 1, '$flagsNew', 'NULL', ${isEnabledOld})
-                            """.trimIndent())
+                            """.trimIndent()
+                        )
                         id++
                     }
                 }
