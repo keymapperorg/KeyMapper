@@ -209,10 +209,12 @@ class NotificationController(
                 }.onFailure {
                     _showToast.emit(it.getFullMessage(this))
                 }
+
                 ACTION_FINGERPRINT_GESTURE_FEATURE -> {
                     onboardingUseCase.approvedFingerprintFeaturePrompt = true
                     _openApp.emit(null)
                 }
+
                 ACTION_ON_SETUP_CHOSEN_DEVICES_AGAIN -> {
                     onboardingUseCase.approvedSetupChosenDevicesAgainNotification()
                     _openApp.emit(null)

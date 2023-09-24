@@ -104,6 +104,7 @@ class ConstraintUiHelper(
                 getString(R.string.constraint_wifi_connected_description, constraint.ssid)
             }
         }
+
         is Constraint.WifiDisconnected -> {
             if (constraint.ssid == null) {
                 getString(R.string.constraint_wifi_disconnected_any_description)
@@ -111,6 +112,7 @@ class ConstraintUiHelper(
                 getString(R.string.constraint_wifi_disconnected_description, constraint.ssid)
             }
         }
+
         Constraint.WifiOff -> getString(R.string.constraint_wifi_off)
         Constraint.WifiOn -> getString(R.string.constraint_wifi_on)
 
@@ -129,6 +131,7 @@ class ConstraintUiHelper(
 
             getString(R.string.constraint_ime_not_chosen_description, label)
         }
+
         Constraint.DeviceIsLocked -> getString(R.string.constraint_device_is_locked)
         Constraint.DeviceIsUnlocked -> getString(R.string.constraint_device_is_unlocked)
         Constraint.InPhoneCall -> getString(R.string.constraint_in_phone_call)
@@ -211,14 +214,17 @@ class ConstraintUiHelper(
             drawable = getDrawable(R.drawable.ic_outline_wifi_24),
             tintType = TintType.OnSurface
         )
+
         is Constraint.WifiDisconnected -> IconInfo(
             drawable = getDrawable(R.drawable.ic_outline_signal_wifi_statusbar_null_24),
             tintType = TintType.OnSurface
         )
+
         Constraint.WifiOff -> IconInfo(
             drawable = getDrawable(R.drawable.ic_outline_wifi_off_24),
             tintType = TintType.OnSurface
         )
+
         Constraint.WifiOn -> IconInfo(
             drawable = getDrawable(R.drawable.ic_outline_wifi_24),
             tintType = TintType.OnSurface
@@ -243,22 +249,27 @@ class ConstraintUiHelper(
             drawable = getDrawable(R.drawable.ic_outline_lock_open_24),
             tintType = TintType.OnSurface
         )
+
         Constraint.InPhoneCall -> IconInfo(
             drawable = getDrawable(R.drawable.ic_outline_call_24),
             tintType = TintType.OnSurface
         )
+
         Constraint.NotInPhoneCall -> IconInfo(
             drawable = getDrawable(R.drawable.ic_baseline_call_end_24),
             tintType = TintType.OnSurface
         )
+
         Constraint.PhoneRinging -> IconInfo(
             drawable = getDrawable(R.drawable.ic_baseline_ring_volume_24),
             tintType = TintType.OnSurface
         )
+
         Constraint.Charging -> IconInfo(
             drawable = getDrawable(R.drawable.ic_baseline_battery_charging_full_24),
             tintType = TintType.OnSurface
         )
+
         Constraint.Discharging -> IconInfo(
             drawable = getDrawable(R.drawable.ic_battery_70),
             tintType = TintType.OnSurface

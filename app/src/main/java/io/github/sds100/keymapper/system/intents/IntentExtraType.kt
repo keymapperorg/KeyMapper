@@ -116,7 +116,7 @@ class StringArrayExtraType : IntentExtraType() {
         intent.putExtra(name, parse(value))
     }
 
-    override fun parse(value: String): Array<String>? {
+    override fun parse(value: String): Array<String> {
         return value
             .trim()
             .split(',')

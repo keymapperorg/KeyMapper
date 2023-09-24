@@ -1,6 +1,12 @@
 package io.github.sds100.keymapper.util
 
-import androidx.datastore.preferences.core.*
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.doublePreferencesKey
+import androidx.datastore.preferences.core.floatPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.preference.PreferenceDataStore
 import io.github.sds100.keymapper.settings.ConfigSettingsUseCase
 import kotlinx.coroutines.flow.first
@@ -33,16 +39,22 @@ class SharedPrefsDataStoreWrapper(
             when (default) {
                 is String? -> configSettingsUseCase.getPreference(stringPreferencesKey(key)).first()
                     ?: default
+
                 is Boolean? -> configSettingsUseCase.getPreference(booleanPreferencesKey(key))
                     .first() ?: default
+
                 is Int? -> configSettingsUseCase.getPreference(intPreferencesKey(key)).first()
                     ?: default
+
                 is Long? -> configSettingsUseCase.getPreference(longPreferencesKey(key)).first()
                     ?: default
+
                 is Float? -> configSettingsUseCase.getPreference(floatPreferencesKey(key)).first()
                     ?: default
+
                 is Double? -> configSettingsUseCase.getPreference(doublePreferencesKey(key)).first()
                     ?: default
+
                 else -> {
                     val type = T::class.java.name
                     throw IllegalArgumentException("Don't know how to set a value in shared preferences for this type $type")

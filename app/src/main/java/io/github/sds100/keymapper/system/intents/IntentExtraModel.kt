@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.system.intents
 
-import java.util.*
+import java.util.UUID
 
 /**
  * Created by sds100 on 01/01/21.

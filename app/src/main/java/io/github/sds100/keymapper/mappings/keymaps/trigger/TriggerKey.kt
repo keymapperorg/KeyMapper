@@ -5,7 +5,7 @@ import io.github.sds100.keymapper.mappings.ClickType
 import kotlinx.serialization.Serializable
 import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag
-import java.util.*
+import java.util.UUID
 
 /**
  * Created by sds100 on 21/02/2021.

@@ -37,11 +37,11 @@ class ShizukuSettingsFragment : BaseSettingsFragment() {
 
     private fun populatePreferenceScreen() = preferenceScreen.apply {
         //summary
-        Preference(requireContext()).apply { 
+        Preference(requireContext()).apply {
             setSummary(R.string.summary_pref_category_shizuku_follow_steps)
             addPreference(this)
         }
-        
+
         //install shizuku
         Preference(requireContext()).apply {
             viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {

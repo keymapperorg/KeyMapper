@@ -16,12 +16,12 @@ class ToggleCompatibleImeUseCaseImpl(
         inputMethodAdapter.isUserInputRequiredToChangeIme
 
     override suspend fun toggle(): Result<ImeInfo> {
-       return keyMapperImeHelper.toggleCompatibleInputMethod()
+        return keyMapperImeHelper.toggleCompatibleInputMethod()
     }
 }
 
 interface ToggleCompatibleImeUseCase {
     val sufficientPermissions: Flow<Boolean>
 
-   suspend fun toggle(): Result<ImeInfo>
+    suspend fun toggle(): Result<ImeInfo>
 }

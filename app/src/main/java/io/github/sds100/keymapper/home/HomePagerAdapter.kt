@@ -24,6 +24,7 @@ class HomePagerAdapter(
                         }
                     }
                 }
+
                 HomeTab.FINGERPRINT_MAPS -> {
                     {
                         FingerprintMapListFragment().apply {

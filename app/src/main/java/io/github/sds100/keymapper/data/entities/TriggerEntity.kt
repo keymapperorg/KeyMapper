@@ -121,7 +121,7 @@ data class TriggerEntity(
                 val flags by it.json.byNullableInt(NAME_FLAGS)
                 val uid by it.json.byNullableString(NAME_UID)
 
-                KeyEntity(keycode, deviceId, deviceName, clickType,flags ?: 0, uid ?: UUID.randomUUID().toString())
+                KeyEntity(keycode, deviceId, deviceName, clickType, flags ?: 0, uid ?: UUID.randomUUID().toString())
             }
         }
     }

@@ -5,11 +5,15 @@ import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.data.PreferenceDefaults
-import io.github.sds100.keymapper.util.*
-import kotlinx.coroutines.*
+import io.github.sds100.keymapper.util.InputEventType
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 /**
  * Created by sds100 on 10/01/21.
@@ -160,7 +164,8 @@ abstract class SimpleMappingController(
             repeatCount++
 
             if (action.repeatLimit != null) {
-                continueRepeating = repeatCount < action.repeatLimit!! + 1 //this value is how many times it should REPEAT. The first repeat happens after the first time it is performed
+                continueRepeating =
+                    repeatCount < action.repeatLimit!! + 1 //this value is how many times it should REPEAT. The first repeat happens after the first time it is performed
             }
 
             delay(repeatRate)

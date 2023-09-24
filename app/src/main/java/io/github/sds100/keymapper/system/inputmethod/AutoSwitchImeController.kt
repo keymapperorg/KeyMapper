@@ -8,7 +8,13 @@ import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.popup.PopupMessageAdapter
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.Event
+import io.github.sds100.keymapper.util.PrefDelegate
+import io.github.sds100.keymapper.util.Success
+import io.github.sds100.keymapper.util.getFullMessage
+import io.github.sds100.keymapper.util.onFailure
+import io.github.sds100.keymapper.util.onSuccess
+import io.github.sds100.keymapper.util.otherwise
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.launchIn
@@ -103,6 +109,7 @@ class AutoSwitchImeController(
                         chooseCompatibleIme(imePickerAllowed = false)
                     }
                 }
+
                 else -> Unit
             }
         }.launchIn(coroutineScope)

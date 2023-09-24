@@ -78,18 +78,18 @@ class KeyMapperApp : MultiDexApplication() {
 
     val packageManagerAdapter by lazy {
         AndroidPackageManagerAdapter(
-                this,
+            this,
             appCoroutineScope
         )
     }
 
     val inputMethodAdapter by lazy {
         AndroidInputMethodAdapter(
-                this,
-                appCoroutineScope,
-                accessibilityServiceAdapter,
-                permissionAdapter,
-                suAdapter
+            this,
+            appCoroutineScope,
+            accessibilityServiceAdapter,
+            permissionAdapter,
+            suAdapter
         )
     }
     val devicesAdapter by lazy {
@@ -103,10 +103,10 @@ class KeyMapperApp : MultiDexApplication() {
     val cameraAdapter by lazy { AndroidCameraAdapter(this) }
     val permissionAdapter by lazy {
         AndroidPermissionAdapter(
-                this,
-                appCoroutineScope,
-                suAdapter,
-                notificationReceiverAdapter
+            this,
+            appCoroutineScope,
+            suAdapter,
+            notificationReceiverAdapter
         )
     }
 
@@ -144,18 +144,18 @@ class KeyMapperApp : MultiDexApplication() {
 
     val autoGrantPermissionController by lazy {
         AutoGrantPermissionController(
-                appCoroutineScope,
-                permissionAdapter,
-                popupMessageAdapter,
-                resourceProvider
+            appCoroutineScope,
+            permissionAdapter,
+            popupMessageAdapter,
+            resourceProvider
         )
     }
 
     private val loggingTree by lazy {
         KeyMapperLoggingTree(
-                appCoroutineScope,
-                ServiceLocator.settingsRepository(this),
-                ServiceLocator.logRepository(this)
+            appCoroutineScope,
+            ServiceLocator.settingsRepository(this),
+            ServiceLocator.logRepository(this)
         )
     }
 
@@ -167,10 +167,10 @@ class KeyMapperApp : MultiDexApplication() {
         Thread.setDefaultUncaughtExceptionHandler { thread, exception ->
             //log in a blocking manner and always log regardless of whether the setting is turned on
             val entry = LogEntryEntity(
-                    id = 0,
-                    time = Calendar.getInstance().timeInMillis,
-                    severity = LogEntryEntity.SEVERITY_ERROR,
-                    message = exception.stackTraceToString()
+                id = 0,
+                time = Calendar.getInstance().timeInMillis,
+                severity = LogEntryEntity.SEVERITY_ERROR,
+                message = exception.stackTraceToString()
             )
 
             runBlocking {
@@ -195,8 +195,8 @@ class KeyMapperApp : MultiDexApplication() {
                     else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
                 }
             }
-                .onEach { mode -> AppCompatDelegate.setDefaultNightMode(mode) }
-                .launchIn(appCoroutineScope)
+            .onEach { mode -> AppCompatDelegate.setDefaultNightMode(mode) }
+            .launchIn(appCoroutineScope)
 
         if (BuildConfig.BUILD_TYPE == "debug" || BuildConfig.BUILD_TYPE == "debug_release") {
             Timber.plant(Timber.DebugTree())
@@ -222,14 +222,14 @@ class KeyMapperApp : MultiDexApplication() {
         )
 
         autoSwitchImeController = AutoSwitchImeController(
-                appCoroutineScope,
-                ServiceLocator.settingsRepository(this),
-                ServiceLocator.inputMethodAdapter(this),
-                UseCases.pauseMappings(this),
-                devicesAdapter,
-                popupMessageAdapter,
-                resourceProvider,
-                ServiceLocator.accessibilityServiceAdapter(this)
+            appCoroutineScope,
+            ServiceLocator.settingsRepository(this),
+            ServiceLocator.inputMethodAdapter(this),
+            UseCases.pauseMappings(this),
+            devicesAdapter,
+            popupMessageAdapter,
+            resourceProvider,
+            ServiceLocator.accessibilityServiceAdapter(this)
         )
 
         processLifecycleOwner.lifecycle.addObserver(object : LifecycleObserver {

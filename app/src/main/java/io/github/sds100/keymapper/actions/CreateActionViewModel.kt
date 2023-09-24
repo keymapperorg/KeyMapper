@@ -80,18 +80,25 @@ class CreateActionViewModelImpl(
                 val action = when (actionId) {
                     ActionId.PAUSE_MEDIA_PACKAGE ->
                         ActionData.ControlMediaForApp.Pause(packageName)
+
                     ActionId.PLAY_MEDIA_PACKAGE ->
                         ActionData.ControlMediaForApp.Play(packageName)
+
                     ActionId.PLAY_PAUSE_MEDIA_PACKAGE ->
                         ActionData.ControlMediaForApp.PlayPause(packageName)
+
                     ActionId.NEXT_TRACK_PACKAGE ->
                         ActionData.ControlMediaForApp.NextTrack(packageName)
+
                     ActionId.PREVIOUS_TRACK_PACKAGE ->
                         ActionData.ControlMediaForApp.PreviousTrack(packageName)
+
                     ActionId.FAST_FORWARD_PACKAGE ->
                         ActionData.ControlMediaForApp.FastForward(packageName)
+
                     ActionId.REWIND_PACKAGE ->
                         ActionData.ControlMediaForApp.Rewind(packageName)
+
                     else -> throw Exception("don't know how to create action for $actionId")
                 }
 
@@ -137,6 +144,7 @@ class CreateActionViewModelImpl(
                     ActionId.VOLUME_TOGGLE_MUTE -> ActionData.Volume.ToggleMute(
                         showVolumeUi
                     )
+
                     else -> throw Exception("don't know how to create action for $actionId")
                 }
 

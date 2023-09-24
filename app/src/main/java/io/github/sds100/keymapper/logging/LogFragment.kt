@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewTreeObserver
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
@@ -43,16 +44,16 @@ class LogFragment : SimpleRecyclerViewFragment<LogEntryListItem>() {
     private val recyclerViewController by lazy { RecyclerViewController() }
 
     private val saveLogToFileLauncher =
-            registerForActivityResult(ActivityResultContracts.CreateDocument()) {
-                it ?: return@registerForActivityResult
+        registerForActivityResult(CreateDocument("todo/todo")) {
+            it ?: return@registerForActivityResult
 
-                viewModel.onPickFileToSaveTo(it.toString())
+            viewModel.onPickFileToSaveTo(it.toString())
 
-                val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION or
-                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                Intent.FLAG_GRANT_WRITE_URI_PERMISSION
 
-                requireContext().contentResolver.takePersistableUriPermission(it, takeFlags)
-            }
+            requireContext().contentResolver.takePersistableUriPermission(it, takeFlags)
+        }
 
     private lateinit var dragSelectTouchListener: DragSelectTouchListener
 
@@ -97,10 +98,10 @@ class LogFragment : SimpleRecyclerViewFragment<LogEntryListItem>() {
         }
 
         val dragSelectionProcessor = DragSelectionProcessor(viewModel.dragSelectionHandler)
-                .withMode(DragSelectionProcessor.Mode.Simple)
+            .withMode(DragSelectionProcessor.Mode.Simple)
 
         dragSelectTouchListener = DragSelectTouchListener()
-                .withSelectListener(dragSelectionProcessor)
+            .withSelectListener(dragSelectionProcessor)
 
         binding.epoxyRecyclerView.addOnItemTouchListener(dragSelectTouchListener)
 
@@ -125,7 +126,7 @@ class LogFragment : SimpleRecyclerViewFragment<LogEntryListItem>() {
                 currentData?.also { currentData ->
                     if (!scrolledToBottomInitially) {
                         recyclerView?.viewTreeObserver?.addOnGlobalLayoutListener(object :
-                                ViewTreeObserver.OnGlobalLayoutListener {
+                            ViewTreeObserver.OnGlobalLayoutListener {
                             override fun onGlobalLayout() {
                                 recyclerView?.scrollToPosition(currentData.size - 1)
                                 recyclerView?.viewTreeObserver?.removeOnGlobalLayoutListener(this)

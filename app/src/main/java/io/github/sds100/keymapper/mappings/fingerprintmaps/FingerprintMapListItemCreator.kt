@@ -1,9 +1,9 @@
 package io.github.sds100.keymapper.mappings.fingerprintmaps
 
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.util.ui.ResourceProvider
-import io.github.sds100.keymapper.mappings.DisplaySimpleMappingUseCase
 import io.github.sds100.keymapper.mappings.BaseMappingListItemCreator
+import io.github.sds100.keymapper.mappings.DisplaySimpleMappingUseCase
+import io.github.sds100.keymapper.util.ui.ResourceProvider
 
 /**
  * Created by sds100 on 19/03/2021.

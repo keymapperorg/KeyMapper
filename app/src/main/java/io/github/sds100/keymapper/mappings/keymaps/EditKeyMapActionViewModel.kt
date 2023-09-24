@@ -7,7 +7,16 @@ import io.github.sds100.keymapper.mappings.EditActionViewModel
 import io.github.sds100.keymapper.mappings.OptionMinimums
 import io.github.sds100.keymapper.mappings.isDelayBeforeNextActionAllowed
 import io.github.sds100.keymapper.util.Defaultable
-import io.github.sds100.keymapper.util.ui.*
+import io.github.sds100.keymapper.util.ui.CheckBoxListItem
+import io.github.sds100.keymapper.util.ui.DividerListItem
+import io.github.sds100.keymapper.util.ui.ListItem
+import io.github.sds100.keymapper.util.ui.RadioButtonPairListItem
+import io.github.sds100.keymapper.util.ui.RadioButtonTripleListItem
+import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.util.ui.SliderListItem
+import io.github.sds100.keymapper.util.ui.SliderMaximums
+import io.github.sds100.keymapper.util.ui.SliderModel
+import io.github.sds100.keymapper.util.ui.SliderStepSizes
 import kotlinx.coroutines.CoroutineScope
 
 /**
@@ -84,6 +93,7 @@ class EditKeyMapActionViewModel(
                 actionUid,
                 value.nullIfDefault()
             )
+
             ID_MULTIPLIER -> config.setActionMultiplier(actionUid, value.nullIfDefault())
             ID_DELAY_BEFORE_NEXT_ACTION -> config.setDelayBeforeNextAction(
                 actionUid,
