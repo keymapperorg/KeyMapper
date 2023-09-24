@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.reportbug
 
 import android.os.Bundle
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
 import androidx.activity.viewModels
 import androidx.core.os.bundleOf

@@ -22,6 +22,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentPinchPickCoordinatesBinding
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.util.*
@@ -30,7 +31,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import io.github.sds100.keymapper.R
 
 class PinchPickDisplayCoordinateFragment : Fragment() {
     companion object {
@@ -77,7 +77,7 @@ class PinchPickDisplayCoordinateFragment : Fragment() {
         pinchTypesDisplayValues = arrayOf(
             str(R.string.hint_coordinate_type_pinch_in),
             str(R.string.hint_coordinate_type_pinch_out)
-        ).toMutableList();
+        ).toMutableList()
 
         args.result?.let {
             viewModel.loadResult(Json.decodeFromString(it))
@@ -102,7 +102,8 @@ class PinchPickDisplayCoordinateFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.viewModel = viewModel
-        binding.pinchTypeSpinnerAdapter = ArrayAdapter(this.requireActivity(), android.R.layout.simple_spinner_dropdown_item, pinchTypesDisplayValues)
+        binding.pinchTypeSpinnerAdapter =
+            ArrayAdapter(this.requireActivity(), android.R.layout.simple_spinner_dropdown_item, pinchTypesDisplayValues)
         viewModel.showPopups(this, binding)
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {

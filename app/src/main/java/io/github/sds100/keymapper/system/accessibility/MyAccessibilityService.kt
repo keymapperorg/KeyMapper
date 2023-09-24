@@ -525,7 +525,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
                 gestureBuilder.addStroke(StrokeDescription(p, 0, duration.toLong()))
             }
 
-            val success = dispatchGesture(gestureBuilder.build(), null, null);
+            val success = dispatchGesture(gestureBuilder.build(), null, null)
 
             return if (success) {
                 Success(Unit)

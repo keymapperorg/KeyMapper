@@ -154,12 +154,12 @@ object ActionDataEntityMapper {
             ActionId.PINCH_SCREEN -> {
                 val splitData = entity.data.trim().split(',')
 
-                var x = 0;
-                var y = 0;
-                var pinchType = PinchScreenType.PINCH_IN;
-                var distance = 0;
-                var fingerCount = 2;
-                var duration = 250;
+                var x = 0
+                var y = 0
+                var pinchType = PinchScreenType.PINCH_IN
+                var distance = 0
+                var fingerCount = 2
+                var duration = 250
 
                 if (splitData.isNotEmpty()) {
                     x = splitData[0].trim().toInt()
@@ -174,12 +174,12 @@ object ActionDataEntityMapper {
                 }
 
                 if (splitData.size >= 4) {
-                    val tempType = splitData[3].trim();
+                    val tempType = splitData[3].trim()
 
                     pinchType = if (tempType == PinchScreenType.PINCH_IN.name) {
-                        PinchScreenType.PINCH_IN;
+                        PinchScreenType.PINCH_IN
                     } else {
-                        PinchScreenType.PINCH_OUT;
+                        PinchScreenType.PINCH_OUT
                     }
                 }
 

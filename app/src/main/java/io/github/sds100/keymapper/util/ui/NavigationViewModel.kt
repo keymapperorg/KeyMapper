@@ -174,7 +174,7 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
                 NavAppDirections.swipePickDisplayCoordinate(requestKey, json)
             }
 
-          is NavDestination.PickPinchCoordinate -> {
+            is NavDestination.PickPinchCoordinate -> {
                 val json = destination.result?.let {
                     Json.encodeToString(it)
                 }

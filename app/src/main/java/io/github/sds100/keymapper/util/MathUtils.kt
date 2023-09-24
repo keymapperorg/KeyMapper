@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.util
 
-import android.R.attr
 import android.graphics.Point
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -68,10 +67,10 @@ object MathUtils {
                     (circleCenter.y + circleRadius * sin(angle)).toInt().coerceAtLeast(0)
                 )
             )
-            angle += step;
+            angle += step
         }
 
-        return points;
+        return points
 
     }
 }

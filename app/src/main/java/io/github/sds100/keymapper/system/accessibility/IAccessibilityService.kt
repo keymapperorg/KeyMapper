@@ -14,7 +14,7 @@ interface IAccessibilityService {
     fun doGlobalAction(action: Int): Result<*>
 
     fun tapScreen(x: Int, y: Int, inputEventType: InputEventType): Result<*>
-  
+
     fun swipeScreen(
         xStart: Int,
         yStart: Int,
@@ -24,7 +24,16 @@ interface IAccessibilityService {
         duration: Int,
         inputEventType: InputEventType
     ): Result<*>
-    fun pinchScreen(x: Int, y: Int, distance: Int, pinchType: PinchScreenType, fingerCount: Int, duration: Int, inputEventType: InputEventType): Result<*>
+
+    fun pinchScreen(
+        x: Int,
+        y: Int,
+        distance: Int,
+        pinchType: PinchScreenType,
+        fingerCount: Int,
+        duration: Int,
+        inputEventType: InputEventType
+    ): Result<*>
 
     val isFingerprintGestureDetectionAvailable: Boolean
 
