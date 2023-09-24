@@ -33,11 +33,9 @@ import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.InputEventType
+import io.github.sds100.keymapper.util.MathUtils
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
-import io.github.sds100.keymapper.util.angleBetweenPoints
-import io.github.sds100.keymapper.util.getPerpendicularOfLine
-import io.github.sds100.keymapper.util.movePointByDistanceAndAngle
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import timber.log.Timber
@@ -427,7 +425,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
             if (duration >= GestureDescription.getMaxGestureDuration()) {
                 return Error.GestureDurationTooHigh
             }
-            
+
             val pStart = Point(xStart, yStart)
             val pEnd = Point(xEnd, yEnd)
 
@@ -443,22 +441,22 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
                 val segmentCount = fingerCount - 1
                 // the line of the perpendicular line which will be created to place the virtual fingers on it
                 val perpendicularLineLength = (fingerGestureDistance * fingerCount).toInt()
-                
+
                 // the length of each segment between fingers
                 val segmentLength = perpendicularLineLength / segmentCount
                 // perpendicular line of the start swipe point
-                val perpendicularLineStart = getPerpendicularOfLine(
+                val perpendicularLineStart = MathUtils.getPerpendicularOfLine(
                     pStart, pEnd,
                     perpendicularLineLength
                 )
                 // perpendicular line of the end swipe point
-                val perpendicularLineEnd = getPerpendicularOfLine(
+                val perpendicularLineEnd = MathUtils.getPerpendicularOfLine(
                     pEnd, pStart,
                     perpendicularLineLength, true
                 )
 
                 // this is the angle between start and end point to rotate all virtual fingers on the perpendicular lines in the same direction
-                val angle = angleBetweenPoints(Point(xStart, yStart), Point(xEnd, yEnd)) - 90
+                val angle = MathUtils.angleBetweenPoints(Point(xStart, yStart), Point(xEnd, yEnd)) - 90
 
                 // create the virtual fingers
                 for (index in 0..segmentCount) {
@@ -466,10 +464,10 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
                     val fingerOffsetLength = index * segmentLength * 2
                     // move the coordinates of the current virtual finger on the perpendicular line for the start coordinates
                     val startFingerCoordinateWithOffset =
-                        movePointByDistanceAndAngle(perpendicularLineStart.start, fingerOffsetLength, angle)
+                        MathUtils.movePointByDistanceAndAngle(perpendicularLineStart.start, fingerOffsetLength, angle)
                     // move the coordinates of the current virtual finger on the perpendicular line for the end coordinates
                     val endFingerCoordinateWithOffset =
-                        movePointByDistanceAndAngle(perpendicularLineEnd.start, fingerOffsetLength, angle)
+                        MathUtils.movePointByDistanceAndAngle(perpendicularLineEnd.start, fingerOffsetLength, angle)
 
                     // create a path for each finger, move the the coordinates on the perpendicular line and draw it to the end coordinates of the perpendicular line of the end swipe point
                     val p = Path()
@@ -511,7 +509,8 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
             }
 
             val gestureBuilder = GestureDescription.Builder()
-            val distributedPoints: List<Point> = distributePointsOnCircle(Point(x, y), distance.toFloat() / 2, fingerCount)
+            val distributedPoints: List<Point> =
+                MathUtils.distributePointsOnCircle(Point(x, y), distance.toFloat() / 2, fingerCount)
 
             for (index in distributedPoints.indices) {
                 val p = Path()
