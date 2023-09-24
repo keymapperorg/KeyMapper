@@ -24,7 +24,7 @@ class PinchPickDisplayCoordinateViewModel(
     private val distance = MutableStateFlow<Int?>(null)
     private val pinchType = MutableStateFlow<PinchScreenType?>(PinchScreenType.PINCH_IN)
     private val fingerCount = MutableStateFlow<Int?>(2)
-    private val duration = MutableStateFlow<Int?>(null)
+    private val duration = MutableStateFlow<Int?>(200)
 
     private val _bitmap = MutableStateFlow<Bitmap?>(null)
     private val _returnResult = MutableSharedFlow<PinchPickCoordinateResult>()
