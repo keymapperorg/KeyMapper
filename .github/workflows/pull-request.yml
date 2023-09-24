@@ -1,4 +1,4 @@
-name: Pull request - build apk
+name: Pull request
 
 on:
   pull_request:
