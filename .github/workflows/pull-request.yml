@@ -1,4 +1,4 @@
-name: Testing - build and release app
+name: Pull request - build apk
 
 on:
   pull_request:
