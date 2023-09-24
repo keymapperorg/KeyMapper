@@ -17,7 +17,7 @@ sh("bundle install")
 
 default_platform(:android)
 
-desc "Create and deploy testing release"
+desc "Create testing release"
 lane :testing do
     gradle(task: "clean assembleCi")
 end
