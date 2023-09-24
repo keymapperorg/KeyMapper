@@ -61,38 +61,61 @@ class PinchPickDisplayCoordinateViewModel(
         it.toString()
     }.stateIn(viewModelScope, SharingStarted.Lazily, null)
 
+    val fingerCountError: StateFlow<String?> = fingerCount.map { count ->
+        if (count == null) {
+            return@map resourceProvider.getString(R.string.error_cant_be_empty)
+        }
+
+        if (count < 2) {
+            return@map resourceProvider.getString(R.string.error_pinch_screen_must_be_two_or_more_fingers)
+        }
+
+        if (count > 10) {
+            return@map resourceProvider.getString(R.string.error_pinch_screen_must_be_ten_or_less_fingers)
+        }
+
+        null
+    }.stateIn(viewModelScope, SharingStarted.Lazily, null)
+
     val durationString = duration.map {
         it ?: return@map ""
 
         it.toString()
     }.stateIn(viewModelScope, SharingStarted.Lazily, null)
 
+    val durationError: StateFlow<String?> = duration.map { d ->
+        if (d == null) {
+            return@map resourceProvider.getString(R.string.error_cant_be_empty)
+        }
+
+        if (d <= 0) {
+            return@map resourceProvider.getString(R.string.error_pinch_screen_duration_must_be_more_than_zero)
+        }
+
+        null
+    }.stateIn(viewModelScope, SharingStarted.Lazily, null)
+
     val bitmap = _bitmap.asStateFlow()
     val returnResult = _returnResult.asSharedFlow()
 
-    val isSelectStartEndSwitchEnabled:StateFlow<Boolean> = combine(bitmap) {
-        bitmap?.value != null
-    }.stateIn(viewModelScope, SharingStarted.Lazily, false)
+    private val isCoordinatesValid: StateFlow<Boolean> =
+        combine(x, y, distance, pinchType) { x, y, distance, pinchType ->
+            x ?: return@combine false
+            y ?: return@combine false
+            distance ?: return@combine false
+            pinchType ?: return@combine false
 
-    private val isCoordinatesValid: StateFlow<Boolean> = combine(x, y, distance, pinchType) { x, y, distance, pinchType ->
-        x ?: return@combine false
-        y ?: return@combine false
-        distance ?: return@combine false
-        pinchType ?: return@combine false
+            x >= 0 && y >= 0 && distance >= 0 && (pinchType == PinchScreenType.PINCH_IN || pinchType == PinchScreenType.PINCH_OUT)
+        }.stateIn(viewModelScope, SharingStarted.Lazily, false)
 
-        x >= 0 && y >= 0 && distance >= 0 && (pinchType == PinchScreenType.PINCH_IN || pinchType == PinchScreenType.PINCH_OUT)
-    }.stateIn(viewModelScope, SharingStarted.Lazily, false)
-
-    private val isOptionsValid: StateFlow<Boolean> = combine(fingerCount, duration) { fingerCount, duration ->
-        fingerCount ?: return@combine false
-        duration ?: return@combine false
-
-        fingerCount >= 2 && duration > 0
-    }.stateIn(viewModelScope, SharingStarted.Lazily, false)
-
-    val isDoneButtonEnabled: StateFlow<Boolean> = combine(isCoordinatesValid, isOptionsValid) { isCoordinatesValid, isOptionsValid ->
-        isCoordinatesValid && isOptionsValid
-    }.stateIn(viewModelScope, SharingStarted.Lazily, false)
+    val isDoneButtonEnabled: StateFlow<Boolean> =
+        combine(
+            isCoordinatesValid,
+            fingerCountError,
+            durationError
+        ) { isCoordinatesValid, fingerCountError, durationError ->
+            isCoordinatesValid && fingerCountError == null && durationError == null
+        }.stateIn(viewModelScope, SharingStarted.Lazily, false)
 
     fun selectedScreenshot(newBitmap: Bitmap, displaySize: Point) {
         //check whether the height and width of the bitmap match the display size, even when it is rotated.

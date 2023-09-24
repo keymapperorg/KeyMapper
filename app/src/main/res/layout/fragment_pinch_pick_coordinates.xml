@@ -6,6 +6,7 @@
     <data>
 
         <import type="android.view.View" />
+
         <import type="android.widget.AdapterView" />
 
         <variable
@@ -176,7 +177,8 @@
                         android:layout_weight="0.5"
                         android:hint="@string/extra_label_pinch_duration"
                         android:padding="8dp"
-                        app:errorWhenEmpty="@{true}"
+                        app:error="@{viewModel.durationError}"
+                        app:errorEnabled="@{viewModel.durationError != null}"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="parent">
@@ -199,7 +201,8 @@
                         android:layout_weight="0.5"
                         android:hint="@string/extra_label_pinch_finger_count"
                         android:padding="8dp"
-                        app:errorWhenEmpty="@{true}"
+                        app:error="@{viewModel.fingerCountError}"
+                        app:errorEnabled="@{viewModel.fingerCountError != null}"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="parent">
