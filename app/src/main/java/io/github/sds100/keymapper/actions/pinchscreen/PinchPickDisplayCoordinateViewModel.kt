@@ -1,7 +1,9 @@
 package io.github.sds100.keymapper.actions.pinchscreen
 
+import android.accessibilityservice.GestureDescription
 import android.graphics.Bitmap
 import android.graphics.Point
+import android.os.Build
 import android.view.View
 import android.widget.AdapterView
 import androidx.lifecycle.ViewModel
@@ -49,6 +51,18 @@ class PinchPickDisplayCoordinateViewModel(
         it.toString()
     }.stateIn(viewModelScope, SharingStarted.Lazily, null)
 
+    val distanceError: StateFlow<String?> = distance.map { distance ->
+        if (distance == null) {
+            return@map resourceProvider.getString(R.string.error_cant_be_empty)
+        }
+
+        if (distance <= 0) {
+            return@map resourceProvider.getString(R.string.error_pinch_screen_distance_too_low)
+        }
+
+        null
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
+
     val pinchTypeSpinnerSelection = pinchType.map {
         it ?: return@map 0
 
@@ -70,8 +84,17 @@ class PinchPickDisplayCoordinateViewModel(
             return@map resourceProvider.getString(R.string.error_pinch_screen_must_be_two_or_more_fingers)
         }
 
-        if (count > 10) {
-            return@map resourceProvider.getString(R.string.error_pinch_screen_must_be_ten_or_less_fingers)
+        var maxFingerCount = 10
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            maxFingerCount = GestureDescription.getMaxStrokeCount()
+        }
+
+        if (count > maxFingerCount) {
+            return@map resourceProvider.getString(
+                R.string.error_pinch_screen_must_be_ten_or_less_fingers,
+                arrayOf(maxFingerCount)
+            )
         }
 
         null
@@ -105,7 +128,7 @@ class PinchPickDisplayCoordinateViewModel(
             distance ?: return@combine false
             pinchType ?: return@combine false
 
-            x >= 0 && y >= 0 && distance >= 0 && (pinchType == PinchScreenType.PINCH_IN || pinchType == PinchScreenType.PINCH_OUT)
+            x >= 0 && y >= 0 && distance > 0 && (pinchType == PinchScreenType.PINCH_IN || pinchType == PinchScreenType.PINCH_OUT)
         }.stateIn(viewModelScope, SharingStarted.Lazily, false)
 
     val isDoneButtonEnabled: StateFlow<Boolean> =
@@ -121,10 +144,10 @@ class PinchPickDisplayCoordinateViewModel(
         //check whether the height and width of the bitmap match the display size, even when it is rotated.
         if (
             (displaySize.x != newBitmap.width
-                && displaySize.y != newBitmap.height) &&
+                    && displaySize.y != newBitmap.height) &&
 
             (displaySize.y != newBitmap.width
-                && displaySize.x != newBitmap.height)
+                    && displaySize.x != newBitmap.height)
         ) {
             viewModelScope.launch {
                 val snackBar = PopupUi.SnackBar(
@@ -201,7 +224,17 @@ class PinchPickDisplayCoordinateViewModel(
                 )
             ) ?: return@launch
 
-            _returnResult.emit(PinchPickCoordinateResult(x, y, distance, pinchType, fingerCount, duration, description))
+            _returnResult.emit(
+                PinchPickCoordinateResult(
+                    x,
+                    y,
+                    distance,
+                    pinchType,
+                    fingerCount,
+                    duration,
+                    description
+                )
+            )
         }
     }
 

@@ -54,7 +54,11 @@ object MathUtils {
         return rad2deg(atan2((p2.y - p1.y).toDouble(), (p2.x - p1.x).toDouble()))
     }
 
-    fun distributePointsOnCircle(circleCenter: Point, circleRadius: Float, numPoints: Int): List<Point> {
+    fun distributePointsOnCircle(
+        circleCenter: Point,
+        circleRadius: Float,
+        numPoints: Int
+    ): List<Point> {
 
         val points = arrayListOf<Point>()
         var angle: Double = 0.0
@@ -73,4 +77,5 @@ object MathUtils {
         return points
 
     }
+
 }

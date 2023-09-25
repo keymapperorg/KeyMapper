@@ -1,7 +1,9 @@
 package io.github.sds100.keymapper.actions.swipescreen
 
+import android.accessibilityservice.GestureDescription
 import android.graphics.Bitmap
 import android.graphics.Point
+import android.os.Build
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -27,7 +29,7 @@ class SwipePickDisplayCoordinateViewModel(
     private val xEnd = MutableStateFlow<Int?>(null)
     private val yEnd = MutableStateFlow<Int?>(null)
     private val fingerCount = MutableStateFlow<Int?>(1)
-    private val duration = MutableStateFlow<Int?>(null)
+    private val duration = MutableStateFlow<Int?>(200)
 
     private val _bitmap = MutableStateFlow<Bitmap?>(null)
     private val _returnResult = MutableSharedFlow<SwipePickCoordinateResult>()
@@ -65,10 +67,47 @@ class SwipePickDisplayCoordinateViewModel(
         it.toString()
     }.stateIn(viewModelScope, SharingStarted.Lazily, null)
 
+    val fingerCountError: StateFlow<String?> = fingerCount.map { count ->
+        if (count == null) {
+            return@map resourceProvider.getString(R.string.error_cant_be_empty)
+        }
+
+        if (count <= 0) {
+            return@map resourceProvider.getString(R.string.error_swipe_screen_fingercount_must_be_more_than_zero)
+        }
+
+        var maxFingerCount = 10
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            maxFingerCount = GestureDescription.getMaxStrokeCount()
+        }
+
+        if (count > maxFingerCount) {
+            return@map resourceProvider.getString(
+                R.string.error_swipe_screen_must_be_ten_or_less_fingers,
+                arrayOf(maxFingerCount)
+            )
+        }
+
+        null
+    }.stateIn(viewModelScope, SharingStarted.Lazily, null)
+
     val durationString = duration.map {
         it ?: return@map ""
 
         it.toString()
+    }.stateIn(viewModelScope, SharingStarted.Lazily, null)
+
+    val durationError: StateFlow<String?> = duration.map { d ->
+        if (d == null) {
+            return@map resourceProvider.getString(R.string.error_cant_be_empty)
+        }
+
+        if (d <= 0) {
+            return@map resourceProvider.getString(R.string.error_swipe_screen_duration_must_be_more_than_zero)
+        }
+
+        null
     }.stateIn(viewModelScope, SharingStarted.Lazily, null)
 
     val bitmap = _bitmap.asStateFlow()
@@ -88,12 +127,13 @@ class SwipePickDisplayCoordinateViewModel(
             xStart >= 0 && yStart >= 0 && xEnd >= 0 && yEnd >= 0
         }.stateIn(viewModelScope, SharingStarted.Lazily, false)
 
-    private val isOptionsValid: StateFlow<Boolean> = combine(fingerCount, duration) { fingerCount, duration ->
-        fingerCount ?: return@combine false
-        duration ?: return@combine false
+    private val isOptionsValid: StateFlow<Boolean> =
+        combine(fingerCount, duration) { fingerCount, duration ->
+            fingerCount ?: return@combine false
+            duration ?: return@combine false
 
-        fingerCount > 0 && duration > 0
-    }.stateIn(viewModelScope, SharingStarted.Lazily, false)
+            fingerCount > 0 && duration > 0
+        }.stateIn(viewModelScope, SharingStarted.Lazily, false)
 
     val isDoneButtonEnabled: StateFlow<Boolean> =
         combine(isCoordinatesValid, isOptionsValid) { isCoordinatesValid, isOptionsValid ->
@@ -106,10 +146,10 @@ class SwipePickDisplayCoordinateViewModel(
         //check whether the height and width of the bitmap match the display size, even when it is rotated.
         if (
             (displaySize.x != newBitmap.width
-                && displaySize.y != newBitmap.height) &&
+                    && displaySize.y != newBitmap.height) &&
 
             (displaySize.y != newBitmap.width
-                && displaySize.x != newBitmap.height)
+                    && displaySize.x != newBitmap.height)
         ) {
             viewModelScope.launch {
                 val snackBar = PopupUi.SnackBar(

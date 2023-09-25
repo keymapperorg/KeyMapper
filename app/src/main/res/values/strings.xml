@@ -1095,8 +1095,12 @@
     <string name="error_answer_end_phone_call_permission_denied">Denied permission to answer and end phone calls!</string>
     <string name="error_find_nearby_devices_permission_denied">Denied permission to see paired Bluetooth devices!</string>
     <string name="error_pinch_screen_must_be_two_or_more_fingers">Must be 2 or more!</string>
-    <string name="error_pinch_screen_must_be_ten_or_less_fingers">Must be 10 or less!</string>
+    <string name="error_pinch_screen_must_be_ten_or_less_fingers">Must be %d or less!</string>
     <string name="error_pinch_screen_duration_must_be_more_than_zero">Must be greater than 0!</string>
+    <string name="error_pinch_screen_distance_too_low">Must be greater than 0!</string>
+    <string name="error_swipe_screen_fingercount_must_be_more_than_zero">Must be greater than 0!</string>
+    <string name="error_swipe_screen_duration_must_be_more_than_zero">Must be greater than 0!</string>
+    <string name="error_swipe_screen_must_be_ten_or_less_fingers">Must be %d or less!</string>
     <!-- Error messages -->
 
     <!-- action labels -->

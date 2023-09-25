@@ -116,6 +116,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight=".5"
                         android:hint="@string/hint_coordinate_distance"
+                        app:error="@{viewModel.distanceError}"
                         android:padding="8dp"
                         app:errorWhenEmpty="@{true}">
 
