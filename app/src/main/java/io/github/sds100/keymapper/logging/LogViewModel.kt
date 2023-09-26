@@ -108,9 +108,11 @@ class LogViewModel(
                     useCase.copyToClipboard(getSelectedLogEntries())
                     showPopup("copied", PopupUi.Toast(getString(R.string.toast_copied_log)))
                 }
+
                 R.id.action_short_messages -> {
                     showShortMessages.value = !showShortMessages.value
                 }
+
                 R.id.action_save ->
                     _pickFileToSaveTo.emit(Unit)
             }

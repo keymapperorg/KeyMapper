@@ -8,7 +8,7 @@ import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.util.getKey
 import io.github.sds100.keymapper.util.valueOrNull
 import kotlinx.serialization.Serializable
-import java.util.*
+import java.util.UUID
 
 /**
  * Created by sds100 on 03/03/2021.
@@ -284,6 +284,7 @@ object ConstraintEntityMapper {
             ConstraintEntity.FLASHLIGHT_OFF,
             Extra(ConstraintEntity.EXTRA_FLASHLIGHT_CAMERA_LENS, LENS_MAP[constraint.lens]!!)
         )
+
         is Constraint.FlashlightOn -> ConstraintEntity(
             ConstraintEntity.FLASHLIGHT_ON,
             Extra(ConstraintEntity.EXTRA_FLASHLIGHT_CAMERA_LENS, LENS_MAP[constraint.lens]!!)

@@ -10,14 +10,16 @@ import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapTriggerOptionsVie
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapViewModel
 import io.github.sds100.keymapper.system.url.UrlUtils
 import io.github.sds100.keymapper.triggerFromOtherApps
-import io.github.sds100.keymapper.ui.*
 import io.github.sds100.keymapper.ui.utils.configuredCheckBox
 import io.github.sds100.keymapper.ui.utils.configuredSlider
 import io.github.sds100.keymapper.util.FragmentInfo
 import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.str
-import io.github.sds100.keymapper.util.ui.*
+import io.github.sds100.keymapper.util.ui.CheckBoxListItem
+import io.github.sds100.keymapper.util.ui.ListItem
+import io.github.sds100.keymapper.util.ui.SimpleRecyclerViewFragment
+import io.github.sds100.keymapper.util.ui.SliderListItem
 import kotlinx.coroutines.flow.Flow
 import splitties.toast.toast
 

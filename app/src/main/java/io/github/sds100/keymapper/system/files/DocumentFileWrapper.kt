@@ -4,7 +4,13 @@ import android.content.Context
 import android.webkit.MimeTypeMap
 import androidx.documentfile.provider.DocumentFile
 import com.anggrayudi.storage.callback.FileCallback
-import com.anggrayudi.storage.file.*
+import com.anggrayudi.storage.file.MimeType
+import com.anggrayudi.storage.file.copyFileTo
+import com.anggrayudi.storage.file.getAbsolutePath
+import com.anggrayudi.storage.file.isRawFile
+import com.anggrayudi.storage.file.openInputStream
+import com.anggrayudi.storage.file.openOutputStream
+import com.anggrayudi.storage.file.recreateFile
 import com.anggrayudi.storage.media.FileDescription
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
@@ -48,7 +54,7 @@ class DocumentFileWrapper(
     override val isFile: Boolean
         get() = file.isFile || toJavaFile().isFile
 
-    override fun listFiles(): List<IFile>? {
+    override fun listFiles(): List<IFile> {
         return file.listFiles()
             .toList()
             .map { DocumentFileWrapper(it, ctx) }

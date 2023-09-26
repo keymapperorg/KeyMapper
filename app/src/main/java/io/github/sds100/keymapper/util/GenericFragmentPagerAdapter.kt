@@ -7,8 +7,9 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
  * Created by sds100 on 26/01/2020.
  */
 
-class GenericFragmentPagerAdapter(fragment: Fragment,
-                                  private val fragmentCreatorsList: List<Pair<Long, () -> Fragment>>
+class GenericFragmentPagerAdapter(
+    fragment: Fragment,
+    private val fragmentCreatorsList: List<Pair<Long, () -> Fragment>>
 ) : FragmentStateAdapter(fragment) {
 
     private val itemIds = fragmentCreatorsList.map { it.first }

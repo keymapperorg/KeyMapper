@@ -52,7 +52,7 @@ data class KeyMapEntity(
     @SerializedName(NAME_UID)
     @ColumnInfo(name = KeyMapDao.KEY_UID)
     val uid: String = UUID.randomUUID().toString()
-)  {
+) {
     companion object {
 
         //DON'T CHANGE THESE. Used for JSON serialization and parsing.

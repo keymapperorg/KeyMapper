@@ -3,21 +3,25 @@ package io.github.sds100.keymapper.mappings.keymaps
 import android.app.Activity
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import com.airbnb.epoxy.EpoxyRecyclerView
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
 import io.github.sds100.keymapper.keymap
-import io.github.sds100.keymapper.util.ui.ChipUi
-import io.github.sds100.keymapper.util.State
-import io.github.sds100.keymapper.util.ui.SimpleRecyclerViewFragment
-import io.github.sds100.keymapper.util.ui.OnChipClickCallback
-import io.github.sds100.keymapper.util.ui.showPopups
 import io.github.sds100.keymapper.util.Inject
+import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.str
+import io.github.sds100.keymapper.util.ui.ChipUi
+import io.github.sds100.keymapper.util.ui.OnChipClickCallback
+import io.github.sds100.keymapper.util.ui.SimpleRecyclerViewFragment
+import io.github.sds100.keymapper.util.ui.showPopups
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
-import splitties.alertdialog.appcompat.*
+import splitties.alertdialog.appcompat.alertDialog
+import splitties.alertdialog.appcompat.messageResource
+import splitties.alertdialog.appcompat.negativeButton
+import splitties.alertdialog.appcompat.positiveButton
+import splitties.alertdialog.appcompat.titleResource
 
 /**
  * Created by sds100 on 08/09/20.

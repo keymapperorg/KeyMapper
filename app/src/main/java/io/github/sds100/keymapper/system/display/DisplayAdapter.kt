@@ -16,8 +16,8 @@ interface DisplayAdapter {
     fun setOrientation(orientation: Orientation): Result<*>
 
     fun isAutoBrightnessEnabled(): Boolean
-    fun increaseBrightness():Result<*>
-    fun decreaseBrightness():Result<*>
-    fun enableAutoBrightness():Result<*>
-    fun disableAutoBrightness():Result<*>
+    fun increaseBrightness(): Result<*>
+    fun decreaseBrightness(): Result<*>
+    fun enableAutoBrightness(): Result<*>
+    fun disableAutoBrightness(): Result<*>
 }

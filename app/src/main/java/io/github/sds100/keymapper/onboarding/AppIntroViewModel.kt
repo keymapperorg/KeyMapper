@@ -43,11 +43,13 @@ class AppIntroViewModel(
                 AppIntroSlide.BATTERY_OPTIMISATION -> batteryOptimisationSlide(isBatteryOptimised)
                 AppIntroSlide.FINGERPRINT_GESTURE_SUPPORT ->
                     fingerprintGestureSupportSlide(fingerprintGesturesSupported)
+
                 AppIntroSlide.CONTRIBUTING -> contributingSlide()
                 AppIntroSlide.SETUP_CHOSEN_DEVICES_AGAIN -> setupChosenDevicesAgainSlide()
                 AppIntroSlide.GRANT_SHIZUKU_PERMISSION -> requestShizukuPermissionSlide(
                     isShizukuPermissionGranted
                 )
+
                 else -> throw Exception("Unknown slide $slide")
             }
         }
@@ -67,6 +69,7 @@ class AppIntroViewModel(
                     PopupUi.OpenUrl(getString(R.string.url_dont_kill_my_app))
                 )
             }
+
             ID_BUTTON_DISABLE_BATTERY_OPTIMISATION -> useCase.ignoreBatteryOptimisation()
             ID_BUTTON_MORE_SHIZUKU_INFO -> runBlocking {
                 showPopup(

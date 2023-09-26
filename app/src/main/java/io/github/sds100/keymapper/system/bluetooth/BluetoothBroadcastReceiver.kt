@@ -1,12 +1,10 @@
 package io.github.sds100.keymapper.system.bluetooth
 
-import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import io.github.sds100.keymapper.KeyMapperApp
-import timber.log.Timber
 
 /**
  * Created by sds100 on 28/12/2018.

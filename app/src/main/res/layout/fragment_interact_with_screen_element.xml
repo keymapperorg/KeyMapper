@@ -62,7 +62,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:text='@{viewModel.appNameDisplayValue}'
+                    android:text='@{viewModel.appName}'
                     android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/imageViewIcon"
@@ -106,7 +106,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:text='@{viewModel.elementIdDisplayValue}'
+                        android:text='@{viewModel.elementId}'
                         android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
                         tools:text="Element Id will be here" />
 
@@ -124,7 +124,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:text='@{viewModel.packageNameDisplayValue}'
+                        android:text='@{viewModel.packageName}'
                         android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
                         tools:text="Packagename will be here" />
 

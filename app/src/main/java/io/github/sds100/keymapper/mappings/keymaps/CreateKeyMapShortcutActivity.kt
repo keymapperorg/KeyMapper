@@ -4,12 +4,12 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
-import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import androidx.navigation.findNavController
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.databinding.ActivityCreateKeymapShortcutBinding
 import io.github.sds100.keymapper.system.permissions.RequestPermissionDelegate
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import kotlinx.coroutines.flow.collectLatest
 
 /**

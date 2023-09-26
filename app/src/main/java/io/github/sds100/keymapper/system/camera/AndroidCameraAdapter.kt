@@ -37,6 +37,7 @@ class AndroidCameraAdapter(context: Context) : CameraAdapter {
                         when (lensFacing) {
                             CameraCharacteristics.LENS_FACING_FRONT -> isFlashEnabledMap[CameraLens.FRONT] =
                                 enabled
+
                             CameraCharacteristics.LENS_FACING_BACK -> isFlashEnabledMap[CameraLens.BACK] =
                                 enabled
                         }

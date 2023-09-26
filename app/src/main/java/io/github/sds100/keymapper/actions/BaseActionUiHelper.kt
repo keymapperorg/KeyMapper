@@ -24,19 +24,19 @@ import splitties.bitflags.hasFlag
  */
 
 abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
-    displayActionUseCase: DisplayActionUseCase,
-    resourceProvider: ResourceProvider
-) : ActionUiHelper<MAPPING, A>,
-    ResourceProvider by resourceProvider,
+    displayActionUseCase: DisplayActionUseCase, resourceProvider: ResourceProvider
+) : ActionUiHelper<MAPPING, A>, ResourceProvider by resourceProvider,
     DisplayActionUseCase by displayActionUseCase {
 
     override fun getTitle(action: ActionData, showDeviceDescriptors: Boolean): String =
         when (action) {
-            is ActionData.App ->
-                getAppName(action.packageName).handle(
-                    onSuccess = { getString(R.string.description_open_app, it) },
-                    onError = { getString(R.string.description_open_app, action.packageName) }
+            is ActionData.App -> getAppName(action.packageName).handle(onSuccess = {
+                getString(
+                    R.string.description_open_app,
+                    it
                 )
+            },
+                onError = { getString(R.string.description_open_app, action.packageName) })
 
             is ActionData.AppShortcut -> action.shortcutTitle
 
@@ -75,8 +75,7 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
 
                         val nameToShow = if (showDeviceDescriptors) {
                             InputDeviceUtils.appendDeviceDescriptorToName(
-                                action.device.descriptor,
-                                name
+                                action.device.descriptor, name
                             )
                         } else {
                             name
@@ -98,16 +97,14 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
             is ActionData.DoNotDisturb.Enable -> {
                 val dndModeString = getString(DndModeUtils.getLabel(action.dndMode))
                 getString(
-                    R.string.action_enable_dnd_mode_formatted,
-                    dndModeString
+                    R.string.action_enable_dnd_mode_formatted, dndModeString
                 )
             }
 
             is ActionData.DoNotDisturb.Toggle -> {
                 val dndModeString = getString(DndModeUtils.getLabel(action.dndMode))
                 getString(
-                    R.string.action_toggle_dnd_mode_formatted,
-                    dndModeString
+                    R.string.action_toggle_dnd_mode_formatted, dndModeString
                 )
             }
 
@@ -135,13 +132,11 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
 
                         string = when (action) {
                             is ActionData.Volume.Stream.Decrease -> getString(
-                                R.string.action_decrease_stream_formatted,
-                                streamString
+                                R.string.action_decrease_stream_formatted, streamString
                             )
 
                             is ActionData.Volume.Stream.Increase -> getString(
-                                R.string.action_increase_stream_formatted,
-                                streamString
+                                R.string.action_increase_stream_formatted, streamString
                             )
                         }
                     }
@@ -204,8 +199,7 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
                             getString(RingerModeUtils.getLabel(action.ringerMode))
 
                         string = getString(
-                            R.string.action_change_ringer_mode_formatted,
-                            ringerModeString
+                            R.string.action_change_ringer_mode_formatted, ringerModeString
                         )
                     }
 
@@ -222,35 +216,31 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
                 }
             }
 
-            is ActionData.ControlMediaForApp ->
-                getAppName(action.packageName).handle(
-                    onSuccess = { appName ->
-                        val resId = when (action) {
-                            is ActionData.ControlMediaForApp.Play -> R.string.action_play_media_package_formatted
-                            is ActionData.ControlMediaForApp.FastForward -> R.string.action_fast_forward_package_formatted
-                            is ActionData.ControlMediaForApp.NextTrack -> R.string.action_next_track_package_formatted
-                            is ActionData.ControlMediaForApp.Pause -> R.string.action_pause_media_package_formatted
-                            is ActionData.ControlMediaForApp.PlayPause -> R.string.action_play_pause_media_package_formatted
-                            is ActionData.ControlMediaForApp.PreviousTrack -> R.string.action_previous_track_package_formatted
-                            is ActionData.ControlMediaForApp.Rewind -> R.string.action_rewind_package_formatted
-                        }
+            is ActionData.ControlMediaForApp -> getAppName(action.packageName).handle(onSuccess = { appName ->
+                val resId = when (action) {
+                    is ActionData.ControlMediaForApp.Play -> R.string.action_play_media_package_formatted
+                    is ActionData.ControlMediaForApp.FastForward -> R.string.action_fast_forward_package_formatted
+                    is ActionData.ControlMediaForApp.NextTrack -> R.string.action_next_track_package_formatted
+                    is ActionData.ControlMediaForApp.Pause -> R.string.action_pause_media_package_formatted
+                    is ActionData.ControlMediaForApp.PlayPause -> R.string.action_play_pause_media_package_formatted
+                    is ActionData.ControlMediaForApp.PreviousTrack -> R.string.action_previous_track_package_formatted
+                    is ActionData.ControlMediaForApp.Rewind -> R.string.action_rewind_package_formatted
+                }
 
-                        getString(resId, appName)
-                    },
-                    onError = {
-                        val resId = when (action) {
-                            is ActionData.ControlMediaForApp.Play -> R.string.action_play_media_package
-                            is ActionData.ControlMediaForApp.FastForward -> R.string.action_fast_forward_package
-                            is ActionData.ControlMediaForApp.NextTrack -> R.string.action_next_track_package
-                            is ActionData.ControlMediaForApp.Pause -> R.string.action_pause_media_package
-                            is ActionData.ControlMediaForApp.PlayPause -> R.string.action_play_pause_media_package
-                            is ActionData.ControlMediaForApp.PreviousTrack -> R.string.action_previous_track_package
-                            is ActionData.ControlMediaForApp.Rewind -> R.string.action_rewind_package
-                        }
+                getString(resId, appName)
+            }, onError = {
+                val resId = when (action) {
+                    is ActionData.ControlMediaForApp.Play -> R.string.action_play_media_package
+                    is ActionData.ControlMediaForApp.FastForward -> R.string.action_fast_forward_package
+                    is ActionData.ControlMediaForApp.NextTrack -> R.string.action_next_track_package
+                    is ActionData.ControlMediaForApp.Pause -> R.string.action_pause_media_package
+                    is ActionData.ControlMediaForApp.PlayPause -> R.string.action_play_pause_media_package
+                    is ActionData.ControlMediaForApp.PreviousTrack -> R.string.action_previous_track_package
+                    is ActionData.ControlMediaForApp.Rewind -> R.string.action_rewind_package
+                }
 
-                        getString(resId)
-                    }
-                )
+                getString(resId)
+            })
 
             is ActionData.Flashlight -> {
                 val resId = when (action) {
@@ -264,15 +254,17 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
                 getString(resId, lensString)
             }
 
-            is ActionData.SwitchKeyboard -> getInputMethodLabel(action.imeId).handle(
-                onSuccess = { getString(R.string.action_switch_keyboard_formatted, it) },
+            is ActionData.SwitchKeyboard -> getInputMethodLabel(action.imeId).handle(onSuccess = {
+                getString(
+                    R.string.action_switch_keyboard_formatted,
+                    it
+                )
+            },
                 onError = {
                     getString(
-                        R.string.action_switch_keyboard_formatted,
-                        action.savedImeName
+                        R.string.action_switch_keyboard_formatted, action.savedImeName
                     )
-                }
-            )
+                })
 
             is ActionData.Intent -> {
                 val resId = when (action.target) {
@@ -288,8 +280,7 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
 
             is ActionData.TapScreen -> if (action.description.isNullOrBlank()) {
                 getString(
-                    R.string.description_tap_coordinate_default,
-                    arrayOf(action.x, action.y)
+                    R.string.description_tap_coordinate_default, arrayOf(action.x, action.y)
                 )
             } else {
                 getString(
@@ -300,25 +291,37 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
 
             is ActionData.SwipeScreen -> if (action.description.isNullOrBlank()) {
                 getString(
-                    R.string.description_swipe_coordinate_default,
-                    arrayOf(action.fingerCount, action.xStart, action.yStart, action.xEnd, action.yEnd, action.duration)
+                    R.string.description_swipe_coordinate_default, arrayOf(
+                        action.fingerCount,
+                        action.xStart,
+                        action.yStart,
+                        action.xEnd,
+                        action.yEnd,
+                        action.duration
+                    )
                 )
             } else {
                 getString(
-                    R.string.description_swipe_coordinate_with_description,
-                    arrayOf(action.fingerCount, action.xStart, action.yStart, action.xEnd, action.yEnd, action.duration, action.description)
+                    R.string.description_swipe_coordinate_with_description, arrayOf(
+                        action.fingerCount,
+                        action.xStart,
+                        action.yStart,
+                        action.xEnd,
+                        action.yEnd,
+                        action.duration,
+                        action.description
+                    )
                 )
             }
 
             is ActionData.InteractWithScreenElement -> if (action.description.isNullOrBlank()) {
                 getString(
-                    R.string.description_interact_with_screen_element_default,
-                    arrayOf(
+                    R.string.description_interact_with_screen_element_default, arrayOf(
                         getDynamicStringValue(
-                        "extra_label_interact_with_screen_element_interaction_type_${action.interactiontype}"
-                        ),
-                        action.elementId,
-                        action.appName ?: action.packageName
+                            "extra_label_interact_with_screen_element_interaction_type_${
+                                action.interactiontype.toString().lowercase()
+                            }"
+                        ), action.elementId, action.appName ?: action.packageName
                     )
                 )
             } else {
@@ -326,7 +329,9 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
                     R.string.description_interact_with_screen_element_default_with_description,
                     arrayOf(
                         getDynamicStringValue(
-                            "extra_label_interact_with_screen_element_interaction_type_${action.interactiontype}"
+                            "extra_label_interact_with_screen_element_interaction_type_${
+                                action.interactiontype.toString().lowercase()
+                            }"
                         ),
                         action.elementId,
                         action.appName ?: action.packageName,
@@ -397,10 +402,10 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
                 }
 
                 getString(
-                    R.string.action_cycle_rotations_formatted,
-                    orientationStrings.joinToString()
+                    R.string.action_cycle_rotations_formatted, orientationStrings.joinToString()
                 )
             }
+
             ActionData.Rotation.DisableAuto -> getString(R.string.action_disable_auto_rotate)
             ActionData.Rotation.EnableAuto -> getString(R.string.action_enable_auto_rotate)
             ActionData.Rotation.Landscape -> getString(R.string.action_landscape_mode)
@@ -431,7 +436,7 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
             ActionData.Wifi.Toggle -> getString(R.string.action_toggle_wifi)
             ActionData.DismissAllNotifications -> getString(R.string.action_dismiss_all_notifications)
             ActionData.DismissLastNotification -> getString(R.string.action_dismiss_most_recent_notification)
-            
+
             ActionData.AnswerCall -> getString(R.string.action_answer_call)
             ActionData.EndCall -> getString(R.string.action_end_call)
         }
@@ -439,47 +444,41 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
     override fun getIcon(action: ActionData): IconInfo? = when (action) {
         is ActionData.InputKeyEvent -> null
 
-        is ActionData.App ->
-            getAppIcon(action.packageName).handle(
-                onSuccess = { IconInfo(it, TintType.None) },
-                onError = { null }
+        is ActionData.App -> getAppIcon(action.packageName).handle(onSuccess = {
+            IconInfo(
+                it,
+                TintType.None
             )
+        }, onError = { null })
 
         is ActionData.AppShortcut -> {
             if (action.packageName.isNullOrBlank()) {
                 null
             } else {
-                getAppIcon(action.packageName).handle(
-                    onSuccess = { IconInfo(it, TintType.None) },
-                    onError = { null }
-                )
+                getAppIcon(action.packageName).handle(onSuccess = { IconInfo(it, TintType.None) },
+                    onError = { null })
             }
         }
 
         is ActionData.Intent -> null
 
-        is ActionData.PhoneCall ->
-            IconInfo(
-                getDrawable(R.drawable.ic_outline_call_24),
-                tintType = TintType.OnSurface
-            )
+        is ActionData.PhoneCall -> IconInfo(
+            getDrawable(R.drawable.ic_outline_call_24), tintType = TintType.OnSurface
+        )
 
         is ActionData.TapScreen -> IconInfo(
-            getDrawable(R.drawable.ic_outline_touch_app_24),
-            TintType.OnSurface
+            getDrawable(R.drawable.ic_outline_touch_app_24), TintType.OnSurface
         )
 
         is ActionData.Text -> null
         is ActionData.Url -> null
         is ActionData.Sound -> IconInfo(
-            getDrawable(R.drawable.ic_outline_volume_up_24),
-            TintType.OnSurface
+            getDrawable(R.drawable.ic_outline_volume_up_24), TintType.OnSurface
         )
 
         else -> ActionUtils.getIcon(action.id)?.let { iconRes ->
             IconInfo(
-                getDrawable(iconRes),
-                TintType.OnSurface
+                getDrawable(iconRes), TintType.OnSurface
             )
         }
     }

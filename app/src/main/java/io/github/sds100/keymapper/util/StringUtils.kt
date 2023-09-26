@@ -39,6 +39,6 @@ fun String.getWordBoundaries(@IntRange(from = 0L) cursorPosition: Int): Pair<Int
             firstBoundary = lastSpaceIndex?.plus(1)
         }
     }
-    
+
     return Pair(firstBoundary ?: 0, secondBoundary ?: lastIndex)
 }

@@ -75,18 +75,22 @@ class MenuFragment : BottomSheetDialogFragment() {
                         text = str(R.string.action_tap_to_resume_keymaps)
                         color = color(R.color.green, harmonize = true)
                     }
+
                     ToggleMappingsButtonState.RESUMED -> {
                         text = str(R.string.action_tap_to_pause_keymaps)
                         color = color(R.color.red, harmonize = true)
                     }
+
                     ToggleMappingsButtonState.SERVICE_DISABLED -> {
                         text = str(R.string.button_enable_accessibility_service)
                         color = color(R.color.red, harmonize = true)
                     }
+
                     ToggleMappingsButtonState.SERVICE_CRASHED -> {
                         text = str(R.string.button_restart_accessibility_service)
                         color = color(R.color.red, harmonize = true)
                     }
+
                     else -> return@collectLatest
                 }
 

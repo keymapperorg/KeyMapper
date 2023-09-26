@@ -3,7 +3,6 @@ package io.github.sds100.keymapper.data.entities
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.data.db.dao.LogEntryDao
 
 /**
@@ -19,8 +18,8 @@ data class LogEntryEntity(
     val severity: Int,
     @ColumnInfo(name = LogEntryDao.KEY_MESSAGE)
     val message: String
-){
-    companion object{
+) {
+    companion object {
         const val SEVERITY_ERROR = 0
         const val SEVERITY_DEBUG = 1
         const val SEVERITY_INFO = 2

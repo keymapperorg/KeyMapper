@@ -8,7 +8,13 @@ import io.github.sds100.keymapper.actions.sound.SoundsManagerImpl
 import io.github.sds100.keymapper.backup.BackupManager
 import io.github.sds100.keymapper.backup.BackupManagerImpl
 import io.github.sds100.keymapper.data.db.AppDatabase
-import io.github.sds100.keymapper.data.repositories.*
+import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.data.repositories.RoomFingerprintMapRepository
+import io.github.sds100.keymapper.data.repositories.RoomKeyMapRepository
+import io.github.sds100.keymapper.data.repositories.RoomLogRepository
+import io.github.sds100.keymapper.data.repositories.RoomViewIdRepository
+import io.github.sds100.keymapper.data.repositories.SettingsPreferenceRepository
+import io.github.sds100.keymapper.data.repositories.ViewIdRepository
 import io.github.sds100.keymapper.logging.LogRepository
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapRepository
 import io.github.sds100.keymapper.shizuku.ShizukuAdapter

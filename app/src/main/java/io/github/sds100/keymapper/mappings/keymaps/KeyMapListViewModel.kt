@@ -4,10 +4,28 @@ import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.mapData
-import io.github.sds100.keymapper.util.ui.*
+import io.github.sds100.keymapper.util.ui.ChipUi
+import io.github.sds100.keymapper.util.ui.MultiSelectProvider
+import io.github.sds100.keymapper.util.ui.NavDestination
+import io.github.sds100.keymapper.util.ui.NavigationViewModel
+import io.github.sds100.keymapper.util.ui.NavigationViewModelImpl
+import io.github.sds100.keymapper.util.ui.PopupViewModel
+import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
+import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.util.ui.SelectionState
+import io.github.sds100.keymapper.util.ui.ViewModelHelper
+import io.github.sds100.keymapper.util.ui.navigate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
 
 open class KeyMapListViewModel constructor(
@@ -150,9 +168,9 @@ open class KeyMapListViewModel constructor(
     private fun showDialogAndFixError(error: Error) {
         coroutineScope.launch {
             ViewModelHelper.showFixErrorDialog(
-                    resourceProvider = this@KeyMapListViewModel,
-                    popupViewModel = this@KeyMapListViewModel,
-                    error
+                resourceProvider = this@KeyMapListViewModel,
+                popupViewModel = this@KeyMapListViewModel,
+                error
             ) {
                 useCase.fixError(error)
             }

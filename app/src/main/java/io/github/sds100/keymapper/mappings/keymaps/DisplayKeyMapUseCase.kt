@@ -10,7 +10,11 @@ import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 
 /**
  * Created by sds100 on 04/04/2021.
@@ -24,8 +28,8 @@ class DisplayKeyMapUseCaseImpl(
 ) : DisplayKeyMapUseCase, DisplaySimpleMappingUseCase by displaySimpleMappingUseCase {
     private companion object {
         val keysThatRequireDndAccess = arrayOf(
-                KeyEvent.KEYCODE_VOLUME_DOWN,
-                KeyEvent.KEYCODE_VOLUME_UP
+            KeyEvent.KEYCODE_VOLUME_DOWN,
+            KeyEvent.KEYCODE_VOLUME_UP
         )
     }
 

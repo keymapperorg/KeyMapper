@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.reportbug
 
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
 import androidx.activity.viewModels
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -27,7 +28,7 @@ class ReportBugActivity : AppIntro2() {
     private lateinit var requestPermissionDelegate: RequestPermissionDelegate
 
     private val chooseReportLocationLauncher =
-        registerForActivityResult(ActivityResultContracts.CreateDocument()) {
+        registerForActivityResult(CreateDocument("todo/todo")) {
             it ?: return@registerForActivityResult
 
             viewModel.onChooseBugReportLocation(it.toString())
