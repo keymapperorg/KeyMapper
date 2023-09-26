@@ -72,7 +72,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
     private lateinit var lifecycleRegistry: LifecycleRegistry
 
     private var fingerprintGestureCallback:
-        FingerprintGestureController.FingerprintGestureCallback? = null
+            FingerprintGestureController.FingerprintGestureCallback? = null
 
     override val rootNode: AccessibilityNodeModel?
         get() {
@@ -286,7 +286,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        controller?.onAccessibilityEvent(event?.toModel())
+        controller?.onAccessibilityEvent(event?.toModel(), event)
     }
 
     override fun onKeyEvent(event: KeyEvent?): Boolean {
@@ -457,7 +457,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
             nodes.addAll(getChildNodes(name, parent))
 
             if (nodes.isNotEmpty()) {
-                nodes.forEach{
+                nodes.forEach {
                     if (it.viewIdResourceName !== null && it.viewIdResourceName == name) {
                         result = it
                         return@forEach

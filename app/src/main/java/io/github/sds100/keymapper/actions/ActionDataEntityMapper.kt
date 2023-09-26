@@ -16,7 +16,6 @@ import io.github.sds100.keymapper.util.success
 import io.github.sds100.keymapper.util.then
 import io.github.sds100.keymapper.util.valueOrNull
 import splitties.bitflags.hasFlag
-import timber.log.Timber
 
 /**
  * Created by sds100 on 13/03/2021.
