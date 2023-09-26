@@ -137,8 +137,12 @@
     <string name="description_swipe_coordinate_with_description">Swipe with %d finger(s) from coordinates %d/%d to %d/%d in %dms (%s)</string>
     <string name="description_pinch_coordinate_default">%s with %d finger(s) on coordinates %d/%d with a pinch distance of %dpx in %dms</string>
     <string name="description_pinch_coordinate_with_description">%s with %d finger(s) on coordinates %d/%d to with a pinch distance of %dpx %dms (%s)</string>
+    <string name="description_tap_screen_element_default">Tap screen element with ID %s</string>
+    <string name="description_tap_screen_element_with_description">Tap screen element with ID %s (%s)</string>
     <string name="description_phone_call">Call %s</string>
     <string name="description_sound">Play sound: %s</string>
+    <string name="description_interact_with_screen_element_default">Do \"%s\" on element \"%s\" in app \"%s\"</string>
+    <string name="description_interact_with_screen_element_default_with_description">Do \"%s\" on element \"%s\" in app \"%s\" (%s)</string>
     <!--  Action descriptions  -->
 
     <!--  Headers  -->
@@ -184,6 +188,7 @@
     <string name="hint_intent_flags">Flags</string>
     <string name="hint_sound_file_description">Sound file description</string>
     <string name="hint_wifi_ssid">WiFi network SSID</string>
+    <string name="hint_interact_with_screen_element_description">Description (optional)</string>
     <!--  Hints  -->
 
     <!--  Radio buttons  -->
@@ -267,6 +272,32 @@
     <string name="extra_label_swipe_select_start_end_end">End</string>
     <string name="extra_label_pinch_duration">Pinch duration (ms)</string>
     <string name="extra_label_pinch_finger_count">Finger count</string>
+    <string name="extra_label_interact_with_screen_element_id">Element ID</string>
+    <string name="extra_label_interact_with_screen_element_id_placeholder">Please select an UI element first</string>
+    <string name="extra_label_interact_with_screen_package_name">Package Name</string>
+    <string name="extra_label_interact_with_screen_package_name_placeholder">Please select an UI element first</string>
+    <string name="extra_label_interact_with_screen_app_name">App Name</string>
+    <string name="extra_label_interact_with_screen_app_name_placeholder">No App Selected</string>
+    <string name="extra_label_interact_with_screen_options_layout_header">Options</string>
+    <string name="extra_label_interact_with_screen_options_interaction_type_header">Interaction Type</string>
+    <string name="extra_label_interact_with_screen_options_interaction_only_if_visible_header">Perform Action</string>
+    <string name="button_label_choose_ui_element_record_button_text_start">Start Record</string>
+    <string name="button_label_choose_ui_element_record_button_text_active">Recording for %s min</string>
+    <string name="button_label_choose_ui_element_clear_list_button_text">Clear List</string>
+    <string name="extra_label_interact_with_screen_element_only_if_visible_checkbox">only if visible</string>
+    <string name="extra_label_interact_with_screen_element_interaction_type">Interaction Type</string>
+    <string name="extra_label_interact_with_screen_element_interaction_type_click">Click</string>
+    <string name="extra_label_interact_with_screen_element_interaction_type_long_click">Long Click</string>
+    <string name="extra_label_interact_with_screen_element_interaction_type_select">Select</string>
+    <string name="extra_label_interact_with_screen_element_interaction_type_focus">Focus</string>
+    <string name="extra_label_interact_with_screen_element_interaction_type_clear_focus">Clear Focus</string>
+    <string name="extra_label_interact_with_screen_element_interaction_type_collapse">Collapse</string>
+    <string name="extra_label_interact_with_screen_element_interaction_type_expand">Expand</string>
+    <string name="extra_label_interact_with_screen_element_interaction_type_dismiss">Dismiss</string>
+    <string name="extra_label_interact_with_screen_element_interaction_type_scroll_forward">Scroll Forward</string>
+    <string name="extra_label_interact_with_screen_element_interaction_type_scroll_backward">Scroll Backward</string>
+    <string name="extra_label_interact_with_screen_element_record_description_text_start">Click the record button and switch to the app from where you want to receive UI elements and navigate through the app to fetch as much elements as possible.</string>
+    <string name="extra_label_interact_with_screen_element_record_description_text_active">You can now switch to the desired app. The recording will automatically stop but you can always resume the recording.</string>
     <!-- Extra labels -->
 
     <!-- Constraints -->
@@ -475,6 +506,7 @@
     <string name="button_choose_sound_file">Choose sound file</string>
     <string name="button_edit_action">Edit action</string>
     <string name="button_replace_action">Replace action</string>
+    <string name="button_select_ui_element">Select UI Element</string>
     <!-- Button titles -->
 
     <!-- Dialog stuff -->
@@ -1035,6 +1067,7 @@
     <string name="error_ime_not_found">Can\'t find the %s input method</string>
     <string name="error_cant_show_ime_picker_in_background">The input method picker can\'t be shown!</string>
     <string name="error_failed_to_find_accessibility_node">Failed to find accessibility node!</string>
+    <string name="error_accessibility_node_not_visible">Accessibility node not visible to user!</string>
     <string name="error_failed_to_perform_accessibility_global_action">Failed perform global action %s!</string>
 
     <string name="error_the_app_wont_work">Your key maps won\'t work! Some things need fixing!</string>
@@ -1252,6 +1285,7 @@
     <string name="action_tap_screen">Tap screen</string>
     <string name="action_swipe_screen">Swipe screen</string>
     <string name="action_pinch_screen">Pinch screen</string>
+    <string name="action_interact_with_screen_element">Interact with screen element</string>
     <string name="action_input_text">Input text</string>
     <string name="action_open_url">Open URL</string>
     <string name="action_send_intent">Send intent</string>

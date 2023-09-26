@@ -33,6 +33,8 @@ import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeMessengerImpl
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCaseImpl
 import io.github.sds100.keymapper.system.inputmethod.ToggleCompatibleImeUseCaseImpl
+import io.github.sds100.keymapper.system.ui.DisplayUiElementsUseCase
+import io.github.sds100.keymapper.system.ui.DisplayUiElementsUseCaseImpl
 
 /**
  * Created by sds100 on 03/03/2021.
@@ -70,6 +72,13 @@ object UseCases {
             ServiceLocator.accessibilityServiceAdapter(ctx),
             getActionError(ctx),
             getConstraintError(ctx)
+        )
+    }
+
+    fun displayUiElements(ctx: Context): DisplayUiElementsUseCase {
+        return DisplayUiElementsUseCaseImpl(
+            ServiceLocator.viewIdRepository(ctx),
+            displayPackages(ctx)
         )
     }
 

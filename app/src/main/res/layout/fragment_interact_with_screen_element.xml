@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="caption"
+            type="String" />
+
+        <variable
+            name="viewModel"
+            type="io.github.sds100.keymapper.actions.uielementinteraction.InteractWithScreenElementViewModel" />
+
+        <variable
+            name="emptyListPlaceholder"
+            type="String" />
+
+        <variable
+            name="interactionTypeSpinnerAdapter"
+            type="android.widget.ArrayAdapter" />
+    </data>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/coordinatorLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|start|fill_vertical"
+            android:layout_marginBottom="@dimen/appintro_bottombar_height">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/appIconTitleLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/imageViewIcon"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@{viewModel.appIcon}"
+                    android:visibility="@{viewModel.appIcon == null ? View.GONE : View.VISIBLE}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_outline_wifi_24"
+                    tools:tint="?attr/colorOnSurface"
+                    tools:visibility="visible" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/textInputLayoutAppName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text='@{viewModel.appName}'
+                    android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/imageViewIcon"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="App Name" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <LinearLayout
+                android:id="@+id/inputFieldsLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="150dp"
+                android:baselineAligned="false"
+                android:orientation="vertical"
+                android:weightSum="1.0"
+                app:layout_constraintStart_toEndOf="@+id/appIconTitleLayout"
+                app:layout_constraintTop_toBottomOf="@+id/appIconTitleLayout">
+
+                <LinearLayout
+                    android:id="@+id/packageInfoLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="32dp"
+                    android:baselineAligned="false"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/textInputLayoutElementIdHeadline"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text='@string/extra_label_interact_with_screen_element_id'
+                        android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+                        tools:text="Element Id" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/textInputLayoutElementId"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text='@{viewModel.elementId}'
+                        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                        tools:text="Element Id will be here" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/textInputLayoutPackageNameHeadline"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text='@string/extra_label_interact_with_screen_package_name'
+                        android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+                        tools:text="Package Name" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/textInputLayoutPackageName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text='@{viewModel.packageName}'
+                        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                        tools:text="Packagename will be here" />
+
+                </LinearLayout>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/textInputLayoutOptionsHeader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/extra_label_interact_with_screen_options_layout_header"
+                    android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+                    tools:text="Options" />
+
+                <LinearLayout
+                    android:id="@+id/inputFieldsLayoutSub2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:baselineAligned="false"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/textInputLayoutInteractionTypeHeader"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="16dp"
+                        android:text="@string/extra_label_interact_with_screen_options_interaction_type_header"
+                        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                        tools:text="Interaction Type" />
+
+                    <Spinner
+                        android:id="@+id/interactionTypeSpinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:adapter="@{interactionTypeSpinnerAdapter}"
+                        android:hint="@string/extra_label_interact_with_screen_element_interaction_type"
+                        android:enabled="@{viewModel.isDoneButtonEnabled()}"
+                        android:onItemSelected="@{(parent, view, position, id) -> viewModel.onInteractionTypeSelected(parent, view, position, id)}"
+                        android:selectedItemPosition="@{viewModel.interactionTypeSpinnerSelection}" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/textInputLayoutOnlyIfVisibleHeader"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="32dp"
+                        android:layout_marginBottom="16dp"
+                        android:text="@string/extra_label_interact_with_screen_options_interaction_only_if_visible_header"
+                        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                        tools:text="Perform Action" />
+
+                    <CheckBox
+                        android:id="@+id/onlyIfVisibleCheckbox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:checked="@{viewModel.onlyIfVisible}"
+                        android:enabled="@{viewModel.isDoneButtonEnabled()}"
+                        android:onCheckedChanged="@{(checkbox, isChecked) -> viewModel.onOnlyIfVisibleCheckboxChange(isChecked)}"
+                        android:text="@string/extra_label_interact_with_screen_element_only_if_visible_checkbox" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/chooseUiElementButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:onClick="@{() -> viewModel.onChooseUiElementButtonClick()}"
+                android:text="@string/button_select_ui_element"
+                app:layout_constraintTop_toBottomOf="@+id/inputFieldsLayout" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/content_description_done_configuring_coordinate"
+            android:enabled="@{viewModel.isDoneButtonEnabled()}"
+            android:onClick="@{() -> viewModel.onDoneClick()}"
+            android:src="@drawable/ic_baseline_done_24"
+            app:layout_anchor="@id/appBar" />
+
+        <com.google.android.material.bottomappbar.BottomAppBar
+            android:id="@+id/appBar"
+            style="@style/BottomAppBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            app:fabAlignmentMode="end"
+            app:fabAnimationMode="slide"
+            app:navigationIcon="@drawable/ic_baseline_arrow_back_24" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>

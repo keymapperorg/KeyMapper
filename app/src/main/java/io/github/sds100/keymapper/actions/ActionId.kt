@@ -11,6 +11,7 @@ enum class ActionId {
     TAP_SCREEN,
     SWIPE_SCREEN,
     PINCH_SCREEN,
+    INTERACT_WITH_SCREEN_ELEMENT,
     TEXT,
     URL,
     INTENT,

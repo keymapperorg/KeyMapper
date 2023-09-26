@@ -170,6 +170,29 @@
     </fragment>
 
     <action
+        android:id="@+id/chooseUiElement"
+        app:destination="@id/chooseUiElementFragment"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right">
+
+        <argument
+            android:name="requestKey"
+            app:argType="string" />
+    </action>
+
+    <fragment
+        android:id="@+id/chooseUiElementFragment"
+        android:name="io.github.sds100.keymapper.system.ui.ChooseUiElementFragment"
+        tools:layout="@layout/fragment_simple_recyclerview">
+
+        <argument
+            android:name="requestKey"
+            app:argType="string" />
+    </fragment>
+
+    <action
         android:id="@+id/configKeyEvent"
         app:destination="@id/configKeyEventFragment"
         app:enterAnim="@anim/slide_in_right"
@@ -250,6 +273,29 @@
         android:id="@+id/pinchDisplayCoordinateFragment"
         android:name="io.github.sds100.keymapper.actions.pinchscreen.PinchPickDisplayCoordinateFragment"
         tools:layout="@layout/fragment_simple_recyclerview">
+
+        <argument
+            android:name="requestKey"
+            app:argType="string" />
+
+        <argument
+            android:name="result"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+
+    <action
+        android:id="@+id/pickScreenElement"
+        app:destination="@id/pickScreenElementFragment"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right" />
+
+    <fragment
+        android:id="@+id/pickScreenElementFragment"
+        android:name="io.github.sds100.keymapper.actions.uielementinteraction.InteractWithScreenElementFragment"
+        tools:layout="@layout/fragment_interact_with_screen_element">
 
         <argument
             android:name="requestKey"

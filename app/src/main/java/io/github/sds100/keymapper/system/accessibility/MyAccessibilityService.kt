@@ -18,12 +18,14 @@ import android.os.Build
 import android.os.IBinder
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityNodeInfo
 import androidx.core.content.getSystemService
 import androidx.core.os.bundleOf
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
+import io.github.sds100.keymapper.actions.uielementinteraction.INTERACTIONTYPE
 import io.github.sds100.keymapper.api.Api
 import io.github.sds100.keymapper.api.IKeyEventReceiver
 import io.github.sds100.keymapper.api.IKeyEventReceiverCallback
@@ -409,6 +411,89 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
         return Error.SdkVersionTooLow(Build.VERSION_CODES.N)
     }
 
+    override fun fetchAvailableUIElements(): List<String> {
+        val viewIds = arrayListOf<String>()
+
+        if (rootInActiveWindow != null) {
+            viewIds.addAll(findViewIdResourceNames(rootInActiveWindow))
+        } else {
+            Timber.d("fetchAvailableUIElements NO ROOT WINDOW")
+        }
+
+        val sorted = viewIds.distinct().sorted()
+
+        return sorted.ifEmpty {
+            emptyList()
+        }
+    }
+
+    private fun findViewIdResourceNames(node: AccessibilityNodeInfo): List<String> {
+        val list = arrayListOf<String>()
+
+        for (i in 0 until node.childCount) {
+            val child = node.getChild(i)
+
+            if (child != null) {
+                try {
+                    if (child.viewIdResourceName != null) {
+                        list.add(child.viewIdResourceName)
+                    }
+                } catch (error: kotlin.Error) {
+                    Timber.d("Could not add child to list: %s", error.message)
+                }
+
+                list.addAll(findViewIdResourceNames(child))
+            }
+        }
+
+        return list
+    }
+
+    private fun findNodeByFullyQualifiedName(name: String, parent: AccessibilityNodeInfo): AccessibilityNodeInfo? {
+        val nodes = arrayListOf<AccessibilityNodeInfo>()
+        var result: AccessibilityNodeInfo? = null
+
+        if (rootInActiveWindow != null) {
+            nodes.addAll(getChildNodes(name, parent))
+
+            if (nodes.isNotEmpty()) {
+                nodes.forEach{
+                    if (it.viewIdResourceName !== null && it.viewIdResourceName == name) {
+                        result = it
+                        return@forEach
+                    }
+                }
+            }
+        } else {
+            Timber.d("findNodeByFullyQualifiedName NO ROOT WINDOW")
+        }
+
+        return result
+    }
+
+    private fun getChildNodes(name: String, parent: AccessibilityNodeInfo): List<AccessibilityNodeInfo> {
+        val list = arrayListOf<AccessibilityNodeInfo>()
+
+        for (i in 0 until parent.childCount) {
+            val child = parent.getChild(i)
+
+            if (child != null) {
+                try {
+                    if (child.viewIdResourceName != null) {
+                        list.add(child)
+                        if (child.viewIdResourceName == name) return list
+                    }
+                } catch (error: kotlin.Error) {
+                    Timber.d("Could not add child to list: %s", error.message)
+                }
+
+                list.addAll(getChildNodes(name, child))
+            }
+        }
+
+        return list
+    }
+
     override fun swipeScreen(
         xStart: Int,
         yStart: Int,
@@ -532,7 +617,54 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
             } else {
                 Error.FailedToDispatchGesture
             }
+        }
 
+        return Error.SdkVersionTooLow(Build.VERSION_CODES.N)
+    }
+
+    override fun interactWithScreenElement(fullName: String, onlyIfVisible: Boolean, interactiontype: INTERACTIONTYPE, inputEventType: InputEventType): Result<*> {
+
+        Timber.d("interactWithScreenElement fullName: %s, onlyIfVisible: %s, interactionType: %s", fullName, onlyIfVisible.toString(), interactiontype.name)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            if (rootInActiveWindow != null) {
+                // TODO: Find a way to get the "SystemView" as "rootInActiveWindow"
+                // Use a custom function because "findAccessibilityNodeInfosByViewId" does not iterate through all children sometimes
+                val nodeToInteractWith = findNodeByFullyQualifiedName(fullName, rootInActiveWindow)
+
+                if (nodeToInteractWith != null) {
+                    if (onlyIfVisible && !nodeToInteractWith.isVisibleToUser) {
+                        return Error.AccessibilityNodeNotVisible
+                    }
+
+                    val success = nodeToInteractWith.performAction(
+                        when (interactiontype) {
+                            INTERACTIONTYPE.LONG_CLICK -> AccessibilityNodeInfo.ACTION_LONG_CLICK
+                            INTERACTIONTYPE.SELECT -> AccessibilityNodeInfo.ACTION_SELECT
+                            INTERACTIONTYPE.FOCUS -> AccessibilityNodeInfo.ACTION_FOCUS
+                            INTERACTIONTYPE.CLEAR_FOCUS -> AccessibilityNodeInfo.ACTION_CLEAR_FOCUS
+                            INTERACTIONTYPE.COLLAPSE -> AccessibilityNodeInfo.ACTION_COLLAPSE
+                            INTERACTIONTYPE.EXPAND -> AccessibilityNodeInfo.ACTION_EXPAND
+                            INTERACTIONTYPE.DISMISS -> AccessibilityNodeInfo.ACTION_DISMISS
+                            INTERACTIONTYPE.SCROLL_FORWARD -> AccessibilityNodeInfo.ACTION_SCROLL_FORWARD
+                            INTERACTIONTYPE.SCROLL_BACKWARD -> AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD
+                            else -> AccessibilityNodeInfo.ACTION_CLICK
+                        }
+                    )
+
+                    if (success) {
+                        return Success(Unit)
+                    } else {
+                        Error.FailedToDispatchGesture
+                    }
+
+                } else {
+                    Timber.d("interactWithScreenElement: nodeToInteractWith is null")
+                    return Error.FailedToFindAccessibilityNode
+                }
+            } else {
+                Timber.d("interactWithScreenElement: rootInActiveWindow is NULL")
+            }
         }
 
         return Error.SdkVersionTooLow(Build.VERSION_CODES.N)

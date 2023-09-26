@@ -75,6 +75,7 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider) = when (this) {
     Error.CantFindImeSettings -> resourceProvider.getString(R.string.error_cant_find_ime_settings)
     Error.CantShowImePickerInBackground -> resourceProvider.getString(R.string.error_cant_show_ime_picker_in_background)
     Error.FailedToFindAccessibilityNode -> resourceProvider.getString(R.string.error_failed_to_find_accessibility_node)
+    Error.AccessibilityNodeNotVisible -> resourceProvider.getString(R.string.error_accessibility_node_not_visible)
     is Error.FailedToPerformAccessibilityGlobalAction -> resourceProvider.getString(
         R.string.error_failed_to_perform_accessibility_global_action,
         action

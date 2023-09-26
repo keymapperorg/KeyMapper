@@ -25,10 +25,8 @@ import splitties.bitflags.hasFlag
  */
 
 abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
-    displayActionUseCase: DisplayActionUseCase,
-    resourceProvider: ResourceProvider
-) : ActionUiHelper<MAPPING, A>,
-    ResourceProvider by resourceProvider,
+    displayActionUseCase: DisplayActionUseCase, resourceProvider: ResourceProvider
+) : ActionUiHelper<MAPPING, A>, ResourceProvider by resourceProvider,
     DisplayActionUseCase by displayActionUseCase {
 
     override fun getTitle(action: ActionData, showDeviceDescriptors: Boolean): String =
@@ -353,6 +351,32 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
                         action.y,
                         action.distance,
                         action.duration,
+                        action.description
+                    )
+                )
+            }
+
+            is ActionData.InteractWithScreenElement -> if (action.description.isNullOrBlank()) {
+                getString(
+                    R.string.description_interact_with_screen_element_default, arrayOf(
+                        getDynamicStringValue(
+                            "extra_label_interact_with_screen_element_interaction_type_${
+                                action.interactiontype.toString().lowercase()
+                            }"
+                        ), action.elementId, action.appName ?: action.packageName
+                    )
+                )
+            } else {
+                getString(
+                    R.string.description_interact_with_screen_element_default_with_description,
+                    arrayOf(
+                        getDynamicStringValue(
+                            "extra_label_interact_with_screen_element_interaction_type_${
+                                action.interactiontype.toString().lowercase()
+                            }"
+                        ),
+                        action.elementId,
+                        action.appName ?: action.packageName,
                         action.description
                     )
                 )

@@ -86,6 +86,9 @@ sealed class Error : Result<Nothing>() {
     }
 
     object FailedToFindAccessibilityNode : Error()
+
+    object AccessibilityNodeNotVisible: Error()
+
     data class FailedToPerformAccessibilityGlobalAction(val action: Int) : Error()
     object FailedToDispatchGesture : Error()
 

@@ -5,6 +5,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.pinchscreen.PinchPickCoordinateResult
 import io.github.sds100.keymapper.actions.swipescreen.SwipePickCoordinateResult
 import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
+import io.github.sds100.keymapper.actions.uielementinteraction.InteractWithScreenElementResult
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.camera.CameraLensUtils
 import io.github.sds100.keymapper.system.display.Orientation
@@ -405,6 +406,41 @@ class CreateActionViewModelImpl(
                     result.pinchType,
                     result.fingerCount,
                     result.duration,
+                    description
+                )
+            }
+
+            ActionId.INTERACT_WITH_SCREEN_ELEMENT -> {
+                val oldResult = if (oldData is ActionData.InteractWithScreenElement) {
+                    InteractWithScreenElementResult(
+                        oldData.elementId,
+                        oldData.packageName,
+                        oldData.fullName,
+                        oldData.appName,
+                        oldData.onlyIfVisible,
+                        oldData.interactiontype,
+                        oldData.description ?: ""
+                    )
+                } else {
+                    null
+                }
+
+                val result = navigate(
+                    "interact_with_screen_element",
+                    NavDestination.InteractWithScreenElement(oldResult)
+                ) ?: return null
+
+                val description = result.description.ifEmpty {
+                    null
+                }
+
+                return ActionData.InteractWithScreenElement(
+                    result.elementId,
+                    result.packageName,
+                    result.fullName,
+                    result.appName,
+                    result.onlyIfVisible,
+                    result.interactionType,
                     description
                 )
             }

@@ -11,6 +11,7 @@ import io.github.sds100.keymapper.actions.keyevent.ChooseKeyCodeViewModel
 import io.github.sds100.keymapper.actions.keyevent.ConfigKeyEventActionViewModel
 import io.github.sds100.keymapper.actions.keyevent.ConfigKeyEventUseCaseImpl
 import io.github.sds100.keymapper.actions.pinchscreen.PinchPickDisplayCoordinateViewModel
+import io.github.sds100.keymapper.actions.uielementinteraction.InteractWithScreenElementViewModel
 import io.github.sds100.keymapper.actions.sound.ChooseSoundFileUseCaseImpl
 import io.github.sds100.keymapper.actions.sound.ChooseSoundFileViewModel
 import io.github.sds100.keymapper.actions.swipescreen.SwipePickDisplayCoordinateViewModel
@@ -44,6 +45,7 @@ import io.github.sds100.keymapper.system.apps.DisplayAppShortcutsUseCaseImpl
 import io.github.sds100.keymapper.system.bluetooth.ChooseBluetoothDeviceUseCaseImpl
 import io.github.sds100.keymapper.system.bluetooth.ChooseBluetoothDeviceViewModel
 import io.github.sds100.keymapper.system.intents.ConfigIntentViewModel
+import io.github.sds100.keymapper.system.ui.ChooseUiElementViewModel
 
 /**
  * Created by sds100 on 26/01/2020.
@@ -88,6 +90,16 @@ object Inject {
                 ServiceLocator.settingsRepository(ctx)
             ),
             ServiceLocator.resourceProvider(ctx)
+        )
+    }
+
+    fun chooseUiElementViewModel(context: Context): ChooseUiElementViewModel.Factory {
+        return ChooseUiElementViewModel.Factory(
+            UseCases.displayUiElements(context),
+            ServiceLocator.resourceProvider(context),
+            (context.applicationContext as KeyMapperApp).recordUiElementsController,
+            ServiceLocator.accessibilityServiceAdapter(context),
+            UseCases.displayPackages(context)
         )
     }
 
@@ -137,6 +149,12 @@ object Inject {
     fun pinchCoordinateActionTypeViewModel(context: Context): PinchPickDisplayCoordinateViewModel.Factory {
         return PinchPickDisplayCoordinateViewModel.Factory(
             ServiceLocator.resourceProvider(context)
+        )
+    }
+    fun interactWithScreenElementActionTypeViewModel(context: Context): InteractWithScreenElementViewModel.Factory {
+        return InteractWithScreenElementViewModel.Factory(
+            ServiceLocator.resourceProvider(context),
+            UseCases.displayPackages(context)
         )
     }
 
@@ -281,7 +299,8 @@ object Inject {
             suAdapter = ServiceLocator.suAdapter(service),
             rerouteKeyEventsUseCase = UseCases.rerouteKeyEvents(service),
             inputMethodAdapter = ServiceLocator.inputMethodAdapter(service),
-            settingsRepository = ServiceLocator.settingsRepository(service)
+            settingsRepository = ServiceLocator.settingsRepository(service),
+            viewIdRepository = ServiceLocator.viewIdRepository(service)
         )
     }
 
