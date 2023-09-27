@@ -448,24 +448,22 @@ class AccessibilityServiceController(
          * Record UI elements and store them into the DB
          */
         if (recordingUiElements && originalEvent != null && RECORD_UI_ELEMENTS_EVENT_TYPES.contains(originalEvent.eventType)) {
-            coroutineScope.launch {
-                val foundViewIds = accessibilityService.fetchAvailableUIElements()
+            val foundViewIds = accessibilityService.fetchAvailableUIElements()
 
-                if (foundViewIds.isNotEmpty()) {
-                    foundViewIds.forEachIndexed { _, item ->
-                        val elementId = PackageUtils.getInfoFromFullyQualifiedViewName(item, PACKAGE_INFO_TYPES.TYPE_VIEW_ID)
-                        val packageName = PackageUtils.getInfoFromFullyQualifiedViewName(item, PACKAGE_INFO_TYPES.TYPE_PACKAGE_NAME)
+            if (foundViewIds.isNotEmpty()) {
+                foundViewIds.forEachIndexed { _, item ->
+                    val elementId = PackageUtils.getInfoFromFullyQualifiedViewName(item, PACKAGE_INFO_TYPES.TYPE_VIEW_ID)
+                    val packageName = PackageUtils.getInfoFromFullyQualifiedViewName(item, PACKAGE_INFO_TYPES.TYPE_PACKAGE_NAME)
 
-                        if (elementId != null && packageName != null && packageName != BuildConfig.APPLICATION_ID) {
-                            viewIdRepository.insert(
-                                ViewIdEntity(
-                                    id = 0,
-                                    viewId = elementId,
-                                    packageName = packageName,
-                                    fullName = item
-                                )
+                    if (elementId != null && packageName != null && packageName != BuildConfig.APPLICATION_ID) {
+                        viewIdRepository.insert(
+                            ViewIdEntity(
+                                id = 0,
+                                viewId = elementId,
+                                packageName = packageName,
+                                fullName = item
                             )
-                        }
+                        )
                     }
                 }
             }
