@@ -4,6 +4,8 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.RawQuery
+import androidx.sqlite.db.SupportSQLiteQuery
 import io.github.sds100.keymapper.data.entities.ViewIdEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -28,6 +30,9 @@ interface ViewIdDao {
 
     @Query("DELETE FROM $TABLE_NAME")
     suspend fun deleteAll()
+
+    @Query("UPDATE sqlite_sequence SET seq=0 WHERE name='$TABLE_NAME'")
+    suspend fun resetDb()
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insert(vararg entry: ViewIdEntity)

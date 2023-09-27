@@ -92,8 +92,7 @@ class AccessibilityServiceController(
          * On which events we want to record UI Elements?
          */
         private val RECORD_UI_ELEMENTS_EVENT_TYPES = intArrayOf(
-            //AccessibilityEvent.TYPE_WINDOWS_CHANGED,
-            //AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
+            AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
             AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
         )
     }
@@ -445,32 +444,31 @@ class AccessibilityServiceController(
     fun onAccessibilityEvent(event: AccessibilityEventModel?, originalEvent: AccessibilityEvent?) {
         Timber.d("OnAccessibilityEvent $event")
 
-        // TODO: DECREASE EVENTS!!!
-
         /**
          * Record UI elements and store them into the DB
          */
         if (recordingUiElements && originalEvent != null && RECORD_UI_ELEMENTS_EVENT_TYPES.contains(originalEvent.eventType)) {
-            val foundViewIds = accessibilityService.fetchAvailableUIElements()
+            coroutineScope.launch {
+                val foundViewIds = accessibilityService.fetchAvailableUIElements()
 
-            if (foundViewIds.isNotEmpty()) {
-                foundViewIds.forEachIndexed { _, item ->
-                    val elementId = PackageUtils.getInfoFromFullyQualifiedViewName(item, PACKAGE_INFO_TYPES.TYPE_VIEW_ID)
-                    val packageName = PackageUtils.getInfoFromFullyQualifiedViewName(item, PACKAGE_INFO_TYPES.TYPE_PACKAGE_NAME)
+                if (foundViewIds.isNotEmpty()) {
+                    foundViewIds.forEachIndexed { _, item ->
+                        val elementId = PackageUtils.getInfoFromFullyQualifiedViewName(item, PACKAGE_INFO_TYPES.TYPE_VIEW_ID)
+                        val packageName = PackageUtils.getInfoFromFullyQualifiedViewName(item, PACKAGE_INFO_TYPES.TYPE_PACKAGE_NAME)
 
-                    if (elementId != null && packageName != null && packageName != BuildConfig.APPLICATION_ID) {
-                        viewIdRepository.insert(
-                            ViewIdEntity(
-                                id = 0,
-                                viewId = elementId,
-                                packageName = packageName,
-                                fullName = item
+                        if (elementId != null && packageName != null && packageName != BuildConfig.APPLICATION_ID) {
+                            viewIdRepository.insert(
+                                ViewIdEntity(
+                                    id = 0,
+                                    viewId = elementId,
+                                    packageName = packageName,
+                                    fullName = item
+                                )
                             )
-                        )
+                        }
                     }
                 }
             }
-
         }
 
 

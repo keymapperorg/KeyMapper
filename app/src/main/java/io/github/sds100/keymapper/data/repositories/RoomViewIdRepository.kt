@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.data.repositories
 
+import androidx.sqlite.db.SimpleSQLiteQuery
 import io.github.sds100.keymapper.data.db.dao.ViewIdDao
 import io.github.sds100.keymapper.data.entities.ViewIdEntity
 import io.github.sds100.keymapper.util.DefaultDispatcherProvider
@@ -43,6 +44,7 @@ class RoomViewIdRepository(
     override fun deleteAll() {
         coroutineScope.launch(Dispatchers.Default) {
             dao.deleteAll()
+            dao.resetDb()
         }
     }
 

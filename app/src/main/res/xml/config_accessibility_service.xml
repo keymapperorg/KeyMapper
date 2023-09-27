@@ -7,7 +7,7 @@
     android:notificationTimeout="0"
     android:interactiveUiTimeout="0"
     android:nonInteractiveUiTimeout="0"
-    android:accessibilityFlags="flagDefault|flagRequestFilterKeyEvents|flagIncludeNotImportantViews|flagReportViewIds|flagEnableAccessibilityVolume|flagInputMethodEditor|flagRequestAccessibilityButton|flagRequestEnhancedWebAccessibility|flagRequestFingerprintGestures|flagRequestMultiFingerGestures|flagRequestShortcutWarningDialogSpokenFeedback|flagRequestTouchExplorationMode|flagRetrieveInteractiveWindows|flagSendMotionEvents|flagServiceHandlesDoubleTap"
-    android:accessibilityEventTypes="typeAllMask"
+    android:accessibilityFlags="flagDefault|flagRequestFilterKeyEvents|flagIncludeNotImportantViews|flagReportViewIds|flagEnableAccessibilityVolume|flagInputMethodEditor|flagRequestEnhancedWebAccessibility|flagRequestFingerprintGestures|flagRequestMultiFingerGestures|flagRequestShortcutWarningDialogSpokenFeedback|flagRequestTouchExplorationMode|flagRetrieveInteractiveWindows|flagSendMotionEvents|flagServiceHandlesDoubleTap"
+    android:accessibilityEventTypes="typeWindowContentChanged|typeWindowStateChanged"
     android:accessibilityFeedbackType="feedbackAllMask"
     android:description="@string/accessibility_service_explanation" />
