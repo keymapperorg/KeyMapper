@@ -64,7 +64,7 @@ object MathUtils {
         var angle: Double = 0.0
         val step = (2 * Math.PI) / numPoints
 
-        for (index in 0..numPoints) {
+        for (index in 0 until numPoints) {
             points.add(
                 Point(
                     (circleCenter.x + circleRadius * cos(angle)).toInt().coerceAtLeast(0),
