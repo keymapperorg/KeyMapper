@@ -12,6 +12,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.ServiceConnection
+import android.content.res.Configuration
 import android.graphics.Path
 import android.graphics.Point
 import android.os.Build
@@ -41,6 +42,7 @@ import io.github.sds100.keymapper.util.Success
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import timber.log.Timber
+import kotlin.math.max
 
 
 /**
@@ -514,6 +516,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
             val pStart = Point(xStart, yStart)
             val pEnd = Point(xEnd, yEnd)
 
+            val maxCoordinates = getGestureMaxCoordinates()
             val gestureBuilder = GestureDescription.Builder()
 
             if (fingerCount == 1) {
@@ -549,10 +552,10 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
                     val fingerOffsetLength = index * segmentLength * 2
                     // move the coordinates of the current virtual finger on the perpendicular line for the start coordinates
                     val startFingerCoordinateWithOffset =
-                        MathUtils.movePointByDistanceAndAngle(perpendicularLineStart.start, fingerOffsetLength, angle)
+                        MathUtils.movePointByDistanceAndAngle(perpendicularLineStart.start, fingerOffsetLength, angle, 0, 0, maxCoordinates.x, maxCoordinates.y)
                     // move the coordinates of the current virtual finger on the perpendicular line for the end coordinates
                     val endFingerCoordinateWithOffset =
-                        MathUtils.movePointByDistanceAndAngle(perpendicularLineEnd.start, fingerOffsetLength, angle)
+                        MathUtils.movePointByDistanceAndAngle(perpendicularLineEnd.start, fingerOffsetLength, angle, 0, 0, maxCoordinates.x, maxCoordinates.y)
 
                     // create a path for each finger, move the the coordinates on the perpendicular line and draw it to the end coordinates of the perpendicular line of the end swipe point
                     val p = Path()
@@ -576,6 +579,11 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
         return Error.SdkVersionTooLow(Build.VERSION_CODES.N)
     }
 
+    private fun getGestureMaxCoordinates(): Point {
+        // width and height seems to be orientated which means we don't have to check device orientation for that?!?
+        return Point(resources.displayMetrics.widthPixels, resources.displayMetrics.heightPixels)
+    }
+
     override fun pinchScreen(
         x: Int,
         y: Int,
@@ -593,9 +601,11 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
                 return Error.GestureDurationTooHigh
             }
 
+            val maxCoordinates = getGestureMaxCoordinates()
+
             val gestureBuilder = GestureDescription.Builder()
             val distributedPoints: List<Point> =
-                MathUtils.distributePointsOnCircle(Point(x, y), distance.toFloat() / 2, fingerCount)
+                MathUtils.distributePointsOnCircle(Point(x, y), distance.toFloat() / 2, fingerCount, 0, 0, maxCoordinates.x, maxCoordinates.y)
 
             for (index in distributedPoints.indices) {
                 val p = Path()

@@ -43,9 +43,19 @@ object MathUtils {
         }
     }
 
-    fun movePointByDistanceAndAngle(p: Point, distance: Int, degrees: Double): Point {
-        val newX = (p.x + cos(deg2rad(degrees)) * distance).toInt()
-        val newY = (p.y + sin(deg2rad(degrees)) * distance).toInt()
+    fun movePointByDistanceAndAngle(
+        p: Point,
+        distance: Int,
+        degrees: Double,
+        minX: Int,
+        minY: Int,
+        maxX: Int,
+        maxY: Int
+    ): Point {
+        val newX =
+            (p.x + cos(deg2rad(degrees)) * distance).toInt().coerceAtLeast(minX).coerceAtMost(maxX)
+        val newY =
+            (p.y + sin(deg2rad(degrees)) * distance).toInt().coerceAtLeast(minY).coerceAtMost(maxY)
 
         return Point(newX, newY)
     }
@@ -57,7 +67,11 @@ object MathUtils {
     fun distributePointsOnCircle(
         circleCenter: Point,
         circleRadius: Float,
-        numPoints: Int
+        numPoints: Int,
+        minX: Int,
+        minY: Int,
+        maxX: Int,
+        maxY: Int
     ): List<Point> {
 
         val points = arrayListOf<Point>()
@@ -67,8 +81,10 @@ object MathUtils {
         for (index in 0 until numPoints) {
             points.add(
                 Point(
-                    (circleCenter.x + circleRadius * cos(angle)).toInt().coerceAtLeast(0),
-                    (circleCenter.y + circleRadius * sin(angle)).toInt().coerceAtLeast(0)
+                    (circleCenter.x + circleRadius * cos(angle)).toInt().coerceAtLeast(minX)
+                        .coerceAtMost(maxX),
+                    (circleCenter.y + circleRadius * sin(angle)).toInt().coerceAtLeast(minY)
+                        .coerceAtMost(maxY)
                 )
             )
             angle += step
