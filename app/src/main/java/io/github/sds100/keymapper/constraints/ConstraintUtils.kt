@@ -7,6 +7,8 @@ object ConstraintUtils {
     private val COMMON_SUPPORTED_CONSTRAINTS = listOf(
         ChooseConstraintType.APP_IN_FOREGROUND,
         ChooseConstraintType.APP_NOT_IN_FOREGROUND,
+        ChooseConstraintType.SCREEN_ELEMENT_VISIBLE,
+        ChooseConstraintType.SCREEN_ELEMENT_NOT_VISIBLE,
         ChooseConstraintType.APP_PLAYING_MEDIA,
         ChooseConstraintType.APP_NOT_PLAYING_MEDIA,
         ChooseConstraintType.MEDIA_PLAYING,

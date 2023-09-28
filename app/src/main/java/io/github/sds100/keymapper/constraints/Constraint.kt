@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.util.getKey
 import io.github.sds100.keymapper.util.valueOrNull
 import kotlinx.serialization.Serializable
+import timber.log.Timber
 import java.util.UUID
 
 /**
@@ -23,6 +24,12 @@ sealed class Constraint {
 
     @Serializable
     data class AppNotInForeground(val packageName: String) : Constraint()
+
+    @Serializable
+    data class ScreenElementVisible(val fullyQualifiedViewId: String) : Constraint()
+
+    @Serializable
+    data class ScreenElementNotVisible(val fullyQualifiedViewId: String) : Constraint()
 
     @Serializable
     data class AppPlayingMedia(val packageName: String) : Constraint()
@@ -146,6 +153,11 @@ object ConstraintEntityMapper {
             return entity.extras.getData(ConstraintEntity.EXTRA_PACKAGE_NAME).valueOrNull()!!
         }
 
+        fun getFullyQualifiedViewId(): String {
+            return entity.extras.getData(ConstraintEntity.EXTRA_FULLY_QUALIFIED_VIEW_ID)
+                .valueOrNull()!!
+        }
+
         fun getBluetoothAddress(): String {
             return entity.extras.getData(ConstraintEntity.EXTRA_BT_ADDRESS).valueOrNull()!!
         }
@@ -181,6 +193,14 @@ object ConstraintEntityMapper {
         return when (entity.type) {
             ConstraintEntity.APP_FOREGROUND -> Constraint.AppInForeground(getPackageName())
             ConstraintEntity.APP_NOT_FOREGROUND -> Constraint.AppNotInForeground(getPackageName())
+            ConstraintEntity.SCREEN_ELEMENT_VISIBLE -> Constraint.ScreenElementVisible(
+                getFullyQualifiedViewId()
+            )
+
+            ConstraintEntity.SCREEN_ELEMENT_NOT_VISIBLE -> Constraint.ScreenElementNotVisible(
+                getFullyQualifiedViewId()
+            )
+
             ConstraintEntity.APP_PLAYING_MEDIA -> Constraint.AppPlayingMedia(getPackageName())
             ConstraintEntity.APP_NOT_PLAYING_MEDIA -> Constraint.AppNotPlayingMedia(getPackageName())
             ConstraintEntity.MEDIA_PLAYING -> Constraint.MediaPlaying
@@ -237,6 +257,26 @@ object ConstraintEntityMapper {
         is Constraint.AppNotInForeground -> ConstraintEntity(
             type = ConstraintEntity.APP_NOT_FOREGROUND,
             extras = listOf(Extra(ConstraintEntity.EXTRA_PACKAGE_NAME, constraint.packageName))
+        )
+
+        is Constraint.ScreenElementVisible -> ConstraintEntity(
+            type = ConstraintEntity.SCREEN_ELEMENT_VISIBLE,
+            extras = listOf(
+                Extra(
+                    ConstraintEntity.EXTRA_FULLY_QUALIFIED_VIEW_ID,
+                    constraint.fullyQualifiedViewId
+                )
+            )
+        )
+
+        is Constraint.ScreenElementNotVisible -> ConstraintEntity(
+            type = ConstraintEntity.SCREEN_ELEMENT_NOT_VISIBLE,
+            extras = listOf(
+                Extra(
+                    ConstraintEntity.EXTRA_FULLY_QUALIFIED_VIEW_ID,
+                    constraint.fullyQualifiedViewId
+                )
+            )
         )
 
         is Constraint.AppPlayingMedia -> ConstraintEntity(

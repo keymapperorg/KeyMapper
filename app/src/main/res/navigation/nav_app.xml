@@ -305,6 +305,10 @@
             android:name="result"
             app:argType="string"
             app:nullable="true" />
+
+        <argument
+            android:name="showPackageInfoOnly"
+            app:argType="boolean" />
     </fragment>
 
     <action

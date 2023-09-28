@@ -31,6 +31,8 @@ data class ConstraintEntity(
         //types
         const val APP_FOREGROUND = "constraint_app_foreground"
         const val APP_NOT_FOREGROUND = "constraint_app_not_foreground"
+        const val SCREEN_ELEMENT_VISIBLE = "constraint_screen_element_visible"
+        const val SCREEN_ELEMENT_NOT_VISIBLE = "constraint_screen_element_not_visible"
         const val APP_PLAYING_MEDIA = "constraint_app_playing_media"
         const val APP_NOT_PLAYING_MEDIA = "constraint_app_not_playing_media"
         const val MEDIA_PLAYING = "constraint_media_playing"
@@ -71,6 +73,7 @@ data class ConstraintEntity(
         const val DISCHARGING = "discharging"
 
         const val EXTRA_PACKAGE_NAME = "extra_package_name"
+        const val EXTRA_FULLY_QUALIFIED_VIEW_ID = "extra_fqvid"
         const val EXTRA_BT_ADDRESS = "extra_bluetooth_device_address"
         const val EXTRA_BT_NAME = "extra_bluetooth_device_name"
         const val EXTRA_FLASHLIGHT_CAMERA_LENS = "extra_flashlight_camera_lens"

@@ -125,21 +125,22 @@
 
                     </LinearLayout>
 
-                    <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/textInputLayoutOptionsHeader"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/extra_label_interact_with_screen_options_layout_header"
-                        android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
-                        tools:text="Options" />
-
                     <LinearLayout
                         android:id="@+id/inputFieldsLayoutSub2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="8dp"
                         android:baselineAligned="false"
+                        android:visibility="@{viewModel.showPackageInfoOnly ? View.GONE : View.VISIBLE}"
                         android:orientation="vertical">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/textInputLayoutOptionsHeader"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/extra_label_interact_with_screen_options_layout_header"
+                            android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+                            tools:text="Options" />
 
                         <com.google.android.material.textview.MaterialTextView
                             android:id="@+id/textInputLayoutInteractionTypeHeader"

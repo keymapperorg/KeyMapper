@@ -38,7 +38,7 @@ interface IAccessibilityService {
 
     fun interactWithScreenElement(fullName: String, onlyIfVisible: Boolean, interactiontype: INTERACTIONTYPE, inputEventType: InputEventType): Result<*>
 
-    fun fetchAvailableUIElements(): List<String>
+    fun fetchAvailableUIElements(onlyVisibleElements: Boolean = false): List<String>
 
     val isFingerprintGestureDetectionAvailable: Boolean
 

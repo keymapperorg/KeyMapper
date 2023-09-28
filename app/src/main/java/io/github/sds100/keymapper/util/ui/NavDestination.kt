@@ -29,6 +29,7 @@ sealed class NavDestination<R> {
         const val ID_PICK_SWIPE_COORDINATE = "pick_swipe_coordinate"
         const val ID_PICK_PINCH_COORDINATE = "pick_pinch_coordinate"
         const val ID_INTERACT_WITH_SCREEN_ELEMENT = "interact_with_screen_element"
+        const val ID_INTERACT_WITH_SCREEN_ELEMENT_SIMPLE = "interact_with_screen_element_simple"
         const val ID_CHOOSE_UI_ELEMENT = "choose_ui_element"
         const val ID_CONFIG_INTENT = "config_intent"
         const val ID_CHOOSE_ACTIVITY = "choose_activity"
@@ -54,6 +55,7 @@ sealed class NavDestination<R> {
                 is PickSwipeCoordinate -> ID_PICK_SWIPE_COORDINATE
                 is PickPinchCoordinate -> ID_PICK_PINCH_COORDINATE
                 is InteractWithScreenElement -> ID_INTERACT_WITH_SCREEN_ELEMENT
+                is InteractWithScreenElementSimple -> ID_INTERACT_WITH_SCREEN_ELEMENT_SIMPLE
                 is ChooseUiElement -> ID_CHOOSE_UI_ELEMENT
                 is ConfigIntent -> ID_CONFIG_INTENT
                 is ChooseActivity -> ID_CHOOSE_ACTIVITY
@@ -93,6 +95,9 @@ sealed class NavDestination<R> {
         NavDestination<PinchPickCoordinateResult>()
 
     data class InteractWithScreenElement(val result: InteractWithScreenElementResult? = null) :
+        NavDestination<InteractWithScreenElementResult>()
+
+    data class InteractWithScreenElementSimple(val result: InteractWithScreenElementResult? = null) :
         NavDestination<InteractWithScreenElementResult>()
 
     object ChooseUiElement: NavDestination<UiElementInfo>()

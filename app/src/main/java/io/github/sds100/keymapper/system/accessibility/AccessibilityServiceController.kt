@@ -88,6 +88,7 @@ class AccessibilityServiceController(
          * How long should the accessibility service record UI elements in seconds
          */
         private const val RECORD_UI_ELEMENTS_TIMER_LENGTH = 5 * 60
+
         /**
          * On which events we want to record UI Elements?
          */
@@ -177,7 +178,8 @@ class AccessibilityServiceController(
 
     private val initialEventTypes: Int by lazy {
 
-        return@lazy AccessibilityEvent.TYPE_WINDOWS_CHANGED.withFlag(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED).withFlag(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED)
+        return@lazy AccessibilityEvent.TYPE_WINDOWS_CHANGED.withFlag(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED)
+            .withFlag(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED)
     }
 
     /*
@@ -447,13 +449,22 @@ class AccessibilityServiceController(
         /**
          * Record UI elements and store them into the DB
          */
-        if (recordingUiElements && originalEvent != null && RECORD_UI_ELEMENTS_EVENT_TYPES.contains(originalEvent.eventType)) {
-            val foundViewIds = accessibilityService.fetchAvailableUIElements()
+        if (recordingUiElements && originalEvent != null && RECORD_UI_ELEMENTS_EVENT_TYPES.contains(
+                originalEvent.eventType
+            )
+        ) {
+            val foundViewIds = accessibilityService.fetchAvailableUIElements(false)
 
             if (foundViewIds.isNotEmpty()) {
                 foundViewIds.forEachIndexed { _, item ->
-                    val elementId = PackageUtils.getInfoFromFullyQualifiedViewName(item, PACKAGE_INFO_TYPES.TYPE_VIEW_ID)
-                    val packageName = PackageUtils.getInfoFromFullyQualifiedViewName(item, PACKAGE_INFO_TYPES.TYPE_PACKAGE_NAME)
+                    val elementId = PackageUtils.getInfoFromFullyQualifiedViewName(
+                        item,
+                        PACKAGE_INFO_TYPES.TYPE_VIEW_ID
+                    )
+                    val packageName = PackageUtils.getInfoFromFullyQualifiedViewName(
+                        item,
+                        PACKAGE_INFO_TYPES.TYPE_PACKAGE_NAME
+                    )
 
                     if (elementId != null && packageName != null && packageName != BuildConfig.APPLICATION_ID) {
                         viewIdRepository.insert(
@@ -525,6 +536,7 @@ class AccessibilityServiceController(
                 if (!recordingUiElements) {
                     recordingUiElementsJob = recordUiElementsJob()
                 }
+
             is Event.StopRecordingUiElements -> {
                 val wasRecordingUiElements = recordingUiElements
 
@@ -537,9 +549,11 @@ class AccessibilityServiceController(
                     }
                 }
             }
+
             is Event.ClearRecordedUiElements -> coroutineScope.launch {
                 viewIdRepository.deleteAll()
             }
+
             else -> Unit
         }
     }
@@ -558,7 +572,7 @@ class AccessibilityServiceController(
     }
 
     private fun recordUiElementsJob() = coroutineScope.launch {
-        repeat(RECORD_UI_ELEMENTS_TIMER_LENGTH) {iteration ->
+        repeat(RECORD_UI_ELEMENTS_TIMER_LENGTH) { iteration ->
             if (isActive) {
                 val timeLeft = RECORD_UI_ELEMENTS_TIMER_LENGTH - iteration
                 outputEvents.emit(Event.OnIncrementRecordUiElementsTimer(timeLeft))

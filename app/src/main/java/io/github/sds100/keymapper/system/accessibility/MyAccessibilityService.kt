@@ -129,30 +129,31 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
             }
         }
 
-    private val keyEventReceiverCallback: IKeyEventReceiverCallback = object : IKeyEventReceiverCallback.Stub() {
-        override fun onKeyEvent(event: KeyEvent?): Boolean {
-            event ?: return false
+    private val keyEventReceiverCallback: IKeyEventReceiverCallback =
+        object : IKeyEventReceiverCallback.Stub() {
+            override fun onKeyEvent(event: KeyEvent?): Boolean {
+                event ?: return false
 
-            val device = if (event.device == null) {
-                null
-            } else {
-                InputDeviceUtils.createInputDeviceInfo(event.device)
+                val device = if (event.device == null) {
+                    null
+                } else {
+                    InputDeviceUtils.createInputDeviceInfo(event.device)
+                }
+
+                if (controller != null) {
+                    return controller!!.onKeyEventFromIme(
+                        event.keyCode,
+                        event.action,
+                        device,
+                        event.metaState,
+                        event.scanCode,
+                        event.eventTime
+                    )
+                }
+
+                return false
             }
-
-            if (controller != null) {
-                return controller!!.onKeyEventFromIme(
-                    event.keyCode,
-                    event.action,
-                    device,
-                    event.metaState,
-                    event.scanCode,
-                    event.eventTime
-                )
-            }
-
-            return false
         }
-    }
 
     private val keyEventReceiverLock: Any = Any()
     private var keyEventReceiverBinder: IKeyEventReceiver? = null
@@ -217,28 +218,29 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
-            fingerprintGestureCallback = object : FingerprintGestureController.FingerprintGestureCallback() {
-                override fun onGestureDetected(gesture: Int) {
-                    super.onGestureDetected(gesture)
+            fingerprintGestureCallback =
+                object : FingerprintGestureController.FingerprintGestureCallback() {
+                    override fun onGestureDetected(gesture: Int) {
+                        super.onGestureDetected(gesture)
 
-                    val id: FingerprintMapId = when (gesture) {
-                        FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_DOWN ->
-                            FingerprintMapId.SWIPE_DOWN
+                        val id: FingerprintMapId = when (gesture) {
+                            FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_DOWN ->
+                                FingerprintMapId.SWIPE_DOWN
 
-                        FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_UP ->
-                            FingerprintMapId.SWIPE_UP
+                            FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_UP ->
+                                FingerprintMapId.SWIPE_UP
 
-                        FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_LEFT ->
-                            FingerprintMapId.SWIPE_LEFT
+                            FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_LEFT ->
+                                FingerprintMapId.SWIPE_LEFT
 
-                        FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_RIGHT ->
-                            FingerprintMapId.SWIPE_RIGHT
+                            FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_RIGHT ->
+                                FingerprintMapId.SWIPE_RIGHT
 
-                        else -> return
+                            else -> return
+                        }
+                        controller?.onFingerprintGesture(id)
                     }
-                    controller?.onFingerprintGesture(id)
                 }
-            }
 
             fingerprintGestureCallback?.let {
                 fingerprintGestureController.registerFingerprintGestureCallback(it, null)
@@ -413,11 +415,11 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
         return Error.SdkVersionTooLow(Build.VERSION_CODES.N)
     }
 
-    override fun fetchAvailableUIElements(): List<String> {
+    override fun fetchAvailableUIElements(onlyVisibleElements: Boolean): List<String> {
         val viewIds = arrayListOf<String>()
 
         if (rootInActiveWindow != null) {
-            viewIds.addAll(findViewIdResourceNames(rootInActiveWindow))
+            viewIds.addAll(findViewIdResourceNames(rootInActiveWindow, onlyVisibleElements))
         } else {
             Timber.d("fetchAvailableUIElements NO ROOT WINDOW")
         }
@@ -429,7 +431,10 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
         }
     }
 
-    private fun findViewIdResourceNames(node: AccessibilityNodeInfo): List<String> {
+    private fun findViewIdResourceNames(
+        node: AccessibilityNodeInfo,
+        onlyVisibleElements: Boolean
+    ): List<String> {
         val list = arrayListOf<String>()
 
         for (i in 0 until node.childCount) {
@@ -438,20 +443,27 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
             if (child != null) {
                 try {
                     if (child.viewIdResourceName != null) {
-                        list.add(child.viewIdResourceName)
+                        if (onlyVisibleElements && child.isVisibleToUser) {
+                            list.add(child.viewIdResourceName)
+                        } else if (!onlyVisibleElements) {
+                            list.add(child.viewIdResourceName)
+                        }
                     }
                 } catch (error: kotlin.Error) {
                     Timber.d("Could not add child to list: %s", error.message)
                 }
 
-                list.addAll(findViewIdResourceNames(child))
+                list.addAll(findViewIdResourceNames(child, onlyVisibleElements))
             }
         }
 
         return list
     }
 
-    private fun findNodeByFullyQualifiedName(name: String, parent: AccessibilityNodeInfo): AccessibilityNodeInfo? {
+    private fun findNodeByFullyQualifiedName(
+        name: String,
+        parent: AccessibilityNodeInfo
+    ): AccessibilityNodeInfo? {
         val nodes = arrayListOf<AccessibilityNodeInfo>()
         var result: AccessibilityNodeInfo? = null
 
@@ -473,7 +485,10 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
         return result
     }
 
-    private fun getChildNodes(name: String, parent: AccessibilityNodeInfo): List<AccessibilityNodeInfo> {
+    private fun getChildNodes(
+        name: String,
+        parent: AccessibilityNodeInfo
+    ): List<AccessibilityNodeInfo> {
         val list = arrayListOf<AccessibilityNodeInfo>()
 
         for (i in 0 until parent.childCount) {
@@ -544,7 +559,8 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
                 )
 
                 // this is the angle between start and end point to rotate all virtual fingers on the perpendicular lines in the same direction
-                val angle = MathUtils.angleBetweenPoints(Point(xStart, yStart), Point(xEnd, yEnd)) - 90
+                val angle =
+                    MathUtils.angleBetweenPoints(Point(xStart, yStart), Point(xEnd, yEnd)) - 90
 
                 // create the virtual fingers
                 for (index in 0..segmentCount) {
@@ -552,15 +568,37 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
                     val fingerOffsetLength = index * segmentLength * 2
                     // move the coordinates of the current virtual finger on the perpendicular line for the start coordinates
                     val startFingerCoordinateWithOffset =
-                        MathUtils.movePointByDistanceAndAngle(perpendicularLineStart.start, fingerOffsetLength, angle, 0, 0, maxCoordinates.x, maxCoordinates.y)
+                        MathUtils.movePointByDistanceAndAngle(
+                            perpendicularLineStart.start,
+                            fingerOffsetLength,
+                            angle,
+                            0,
+                            0,
+                            maxCoordinates.x,
+                            maxCoordinates.y
+                        )
                     // move the coordinates of the current virtual finger on the perpendicular line for the end coordinates
                     val endFingerCoordinateWithOffset =
-                        MathUtils.movePointByDistanceAndAngle(perpendicularLineEnd.start, fingerOffsetLength, angle, 0, 0, maxCoordinates.x, maxCoordinates.y)
+                        MathUtils.movePointByDistanceAndAngle(
+                            perpendicularLineEnd.start,
+                            fingerOffsetLength,
+                            angle,
+                            0,
+                            0,
+                            maxCoordinates.x,
+                            maxCoordinates.y
+                        )
 
                     // create a path for each finger, move the the coordinates on the perpendicular line and draw it to the end coordinates of the perpendicular line of the end swipe point
                     val p = Path()
-                    p.moveTo(startFingerCoordinateWithOffset.x.toFloat(), startFingerCoordinateWithOffset.y.toFloat())
-                    p.lineTo(endFingerCoordinateWithOffset.x.toFloat(), endFingerCoordinateWithOffset.y.toFloat())
+                    p.moveTo(
+                        startFingerCoordinateWithOffset.x.toFloat(),
+                        startFingerCoordinateWithOffset.y.toFloat()
+                    )
+                    p.lineTo(
+                        endFingerCoordinateWithOffset.x.toFloat(),
+                        endFingerCoordinateWithOffset.y.toFloat()
+                    )
 
                     gestureBuilder.addStroke(StrokeDescription(p, 0, duration.toLong()))
                 }
@@ -605,15 +643,29 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
 
             val gestureBuilder = GestureDescription.Builder()
             val distributedPoints: List<Point> =
-                MathUtils.distributePointsOnCircle(Point(x, y), distance.toFloat() / 2, fingerCount, 0, 0, maxCoordinates.x, maxCoordinates.y)
+                MathUtils.distributePointsOnCircle(
+                    Point(x, y),
+                    distance.toFloat() / 2,
+                    fingerCount,
+                    0,
+                    0,
+                    maxCoordinates.x,
+                    maxCoordinates.y
+                )
 
             for (index in distributedPoints.indices) {
                 val p = Path()
                 if (pinchType == PinchScreenType.PINCH_IN) {
                     p.moveTo(x.toFloat(), y.toFloat())
-                    p.lineTo(distributedPoints[index].x.toFloat(), distributedPoints[index].y.toFloat())
+                    p.lineTo(
+                        distributedPoints[index].x.toFloat(),
+                        distributedPoints[index].y.toFloat()
+                    )
                 } else {
-                    p.moveTo(distributedPoints[index].x.toFloat(), distributedPoints[index].y.toFloat())
+                    p.moveTo(
+                        distributedPoints[index].x.toFloat(),
+                        distributedPoints[index].y.toFloat()
+                    )
                     p.lineTo(x.toFloat(), y.toFloat())
                 }
 
@@ -632,9 +684,19 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
         return Error.SdkVersionTooLow(Build.VERSION_CODES.N)
     }
 
-    override fun interactWithScreenElement(fullName: String, onlyIfVisible: Boolean, interactiontype: INTERACTIONTYPE, inputEventType: InputEventType): Result<*> {
+    override fun interactWithScreenElement(
+        fullName: String,
+        onlyIfVisible: Boolean,
+        interactiontype: INTERACTIONTYPE,
+        inputEventType: InputEventType
+    ): Result<*> {
 
-        Timber.d("interactWithScreenElement fullName: %s, onlyIfVisible: %s, interactionType: %s", fullName, onlyIfVisible.toString(), interactiontype.name)
+        Timber.d(
+            "interactWithScreenElement fullName: %s, onlyIfVisible: %s, interactionType: %s",
+            fullName,
+            onlyIfVisible.toString(),
+            interactiontype.name
+        )
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             if (rootInActiveWindow != null) {
@@ -683,4 +745,5 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
     override fun findFocussedNode(focus: Int): AccessibilityNodeModel? {
         return findFocus(focus)?.toModel()
     }
+
 }

@@ -171,7 +171,14 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
                     Json.encodeToString(it)
                 }
 
-                NavAppDirections.pickScreenElement(requestKey, json)
+                NavAppDirections.pickScreenElement(requestKey, json, false)
+            }
+            is NavDestination.InteractWithScreenElementSimple -> {
+                val json = destination.result?.let {
+                    Json.encodeToString(it)
+                }
+
+                NavAppDirections.pickScreenElement(requestKey, json, true)
             }
             is NavDestination.ChooseUiElement -> NavAppDirections.chooseUiElement(requestKey)
 
@@ -274,6 +281,12 @@ fun NavigationViewModel.sendNavResultFromBundle(
         }
 
         NavDestination.ID_INTERACT_WITH_SCREEN_ELEMENT -> {
+            val json = bundle.getString(InteractWithScreenElementFragment.EXTRA_RESULT)!!
+            val result = Json.decodeFromString<InteractWithScreenElementResult>(json)
+            onNavResult(NavResult(requestKey, result))
+        }
+
+        NavDestination.ID_INTERACT_WITH_SCREEN_ELEMENT_SIMPLE -> {
             val json = bundle.getString(InteractWithScreenElementFragment.EXTRA_RESULT)!!
             val result = Json.decodeFromString<InteractWithScreenElementResult>(json)
             onNavResult(NavResult(requestKey, result))

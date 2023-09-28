@@ -45,6 +45,8 @@ class InteractWithScreenElementViewModel(
     private val _returnResult = MutableSharedFlow<InteractWithScreenElementResult>()
     val returnResult = _returnResult.asSharedFlow()
 
+    var showPackageInfoOnly = false
+
     val elementId = MutableStateFlow<String?>(null)
     val packageName = MutableStateFlow<String?>(null)
     val fullName = MutableStateFlow<String?>(null)
