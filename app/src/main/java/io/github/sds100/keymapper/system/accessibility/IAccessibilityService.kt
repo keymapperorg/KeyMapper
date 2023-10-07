@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.system.accessibility
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
 import io.github.sds100.keymapper.util.InputEventType
 import io.github.sds100.keymapper.util.Result
 import kotlinx.coroutines.flow.Flow
@@ -13,11 +14,22 @@ interface IAccessibilityService {
     fun doGlobalAction(action: Int): Result<*>
 
     fun tapScreen(x: Int, y: Int, inputEventType: InputEventType): Result<*>
+
     fun swipeScreen(
         xStart: Int,
         yStart: Int,
         xEnd: Int,
         yEnd: Int,
+        fingerCount: Int,
+        duration: Int,
+        inputEventType: InputEventType
+    ): Result<*>
+
+    fun pinchScreen(
+        x: Int,
+        y: Int,
+        distance: Int,
+        pinchType: PinchScreenType,
         fingerCount: Int,
         duration: Int,
         inputEventType: InputEventType

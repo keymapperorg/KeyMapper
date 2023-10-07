@@ -57,6 +57,7 @@
     <string name="chip_fdroid" translatable="false">F-Droid</string>
     <string name="chip_github" translatable="false">GitHub</string>
     <string name="tap_coordinate_screenshot_message">IMPORTANT!!! These coordinates are only correct when your display is in the same orientation as the screenshot! This action will cancel any touches or gestures you are doing on the screen.\n\nIf you need help finding the coordinates of a point on your screen take a screenshot and then tap on the screenshot where you want this action to press.</string>
+    <string name="pinch_screen_x_y_note">Note: When using \"pinch in\" X and Y are the END coordinates, when using \"pinch out\" X and Y are the START coordinates.</string>
     <string name="dont_know_device_name">Don\'t know device name!</string>
     <string name="tap_actions_to_fix">Tap actions to fix!</string>
     <string name="tap_constraints_to_fix">Tap constraints to fix!</string>
@@ -109,6 +110,8 @@
     <string name="trigger_error_screen_off_root_permission_denied_short">The option to trigger when the screen is off will not work!</string>
     <string name="trigger_error_cant_detect_in_phone_call">This trigger won\'t work while ringing or in a phone call!</string>
     <string name="trigger_error_cant_detect_in_phone_call_explanation">Android doesn\'t let accessibility services detect volume button presses while your phone is ringing or it is in a phone call but it does let input method services detect them. Therefore, you must use one of the Key Mapper keyboards if you want this trigger to work.</string>
+    <string name="trigger_error_gesture_stroke_count_too_high">Too many fingers to perform gesture due to android limitations.</string>
+    <string name="trigger_error_gesture_duration_too_high">Gesture duration is too high due to android limitations.</string>
 
     <string name="home_error_is_battery_optimised">Your mappings will stop working randomly!</string>
     <string name="home_error_key_maps_paused">Your mappings are paused!</string>
@@ -132,6 +135,8 @@
     <string name="description_tap_coordinate_with_description">Tap coordinates %d, %d (%s)</string>
     <string name="description_swipe_coordinate_default">Swipe with %d finger(s) from coordinates %d/%d to %d/%d in %dms</string>
     <string name="description_swipe_coordinate_with_description">Swipe with %d finger(s) from coordinates %d/%d to %d/%d in %dms (%s)</string>
+    <string name="description_pinch_coordinate_default">%s with %d finger(s) on coordinates %d/%d with a pinch distance of %dpx in %dms</string>
+    <string name="description_pinch_coordinate_with_description">%s with %d finger(s) on coordinates %d/%d to with a pinch distance of %dpx %dms (%s)</string>
     <string name="description_phone_call">Call %s</string>
     <string name="description_sound">Play sound: %s</string>
     <!--  Action descriptions  -->
@@ -152,10 +157,14 @@
     <!--  Hints  -->
     <string name="hint_coordinate_x" translatable="false">X</string>
     <string name="hint_coordinate_y" translatable="false">Y</string>
-    <string name="hint_coordinate_x_start" translatable="false">Start X</string>
-    <string name="hint_coordinate_y_start" translatable="false">Start Y</string>
-    <string name="hint_coordinate_x_end" translatable="false">End X</string>
-    <string name="hint_coordinate_y_end" translatable="false">End Y</string>
+    <string name="hint_coordinate_x_start">Start X</string>
+    <string name="hint_coordinate_y_start">Start Y</string>
+    <string name="hint_coordinate_x_end">End X</string>
+    <string name="hint_coordinate_y_end">End Y</string>
+    <string name="hint_coordinate_distance">Pinch distance (px)</string>
+    <string name="hint_coordinate_pinch_type">Pinch type</string>
+    <string name="hint_coordinate_type_pinch_in">Pinch in</string>
+    <string name="hint_coordinate_type_pinch_out">Pinch out</string>
     <string name="hint_keycode">Key code</string>
     <string name="hint_from_device">From device</string>
     <string name="hint_shortcut_name">Shortcut name</string>
@@ -252,10 +261,12 @@
     <string name="extra_label_delay_before_next_action">Delay before next action (ms)</string>
     <string name="extra_label_hold_down_duration">Hold down duration (ms)</string>
     <string name="extra_label_swipe_duration">Swipe duration (ms)</string>
-    <string name="extra_label_swipe_finger_count">Finger Count</string>
+    <string name="extra_label_swipe_finger_count">Finger count</string>
     <string name="extra_label_swipe_select_start_end_label">Coordinates to set with screenshot</string>
     <string name="extra_label_swipe_select_start_end_start">Start</string>
     <string name="extra_label_swipe_select_start_end_end">End</string>
+    <string name="extra_label_pinch_duration">Pinch duration (ms)</string>
+    <string name="extra_label_pinch_finger_count">Finger count</string>
     <!-- Extra labels -->
 
     <!-- Constraints -->
@@ -1083,6 +1094,13 @@
     <string name="error_access_fine_location_permission_denied">Denied permission to read fine location!</string>
     <string name="error_answer_end_phone_call_permission_denied">Denied permission to answer and end phone calls!</string>
     <string name="error_find_nearby_devices_permission_denied">Denied permission to see paired Bluetooth devices!</string>
+    <string name="error_pinch_screen_must_be_two_or_more_fingers">Must be 2 or more!</string>
+    <string name="error_pinch_screen_must_be_ten_or_less_fingers">Must be %d or less!</string>
+    <string name="error_pinch_screen_duration_must_be_more_than_zero">Must be greater than 0!</string>
+    <string name="error_pinch_screen_distance_too_low">Must be greater than 0!</string>
+    <string name="error_swipe_screen_fingercount_must_be_more_than_zero">Must be greater than 0!</string>
+    <string name="error_swipe_screen_duration_must_be_more_than_zero">Must be greater than 0!</string>
+    <string name="error_swipe_screen_must_be_ten_or_less_fingers">Must be %d or less!</string>
     <!-- Error messages -->
 
     <!-- action labels -->
@@ -1233,6 +1251,7 @@
 
     <string name="action_tap_screen">Tap screen</string>
     <string name="action_swipe_screen">Swipe screen</string>
+    <string name="action_pinch_screen">Pinch screen</string>
     <string name="action_input_text">Input text</string>
     <string name="action_open_url">Open URL</string>
     <string name="action_send_intent">Send intent</string>

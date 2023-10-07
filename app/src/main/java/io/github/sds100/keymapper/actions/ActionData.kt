@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.actions
 
+import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.system.intents.IntentTarget
@@ -318,6 +319,19 @@ sealed class ActionData {
         val description: String?
     ) : ActionData() {
         override val id = ActionId.SWIPE_SCREEN
+    }
+
+    @Serializable
+    data class PinchScreen(
+        val x: Int,
+        val y: Int,
+        val distance: Int,
+        val pinchType: PinchScreenType,
+        val fingerCount: Int,
+        val duration: Int,
+        val description: String?
+    ) : ActionData() {
+        override val id = ActionId.PINCH_SCREEN
     }
 
     @Serializable
