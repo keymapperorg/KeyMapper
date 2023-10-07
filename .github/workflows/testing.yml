@@ -46,9 +46,10 @@ jobs:
           ruby-version: '2.7'
 
       - name: Create debug keystore
+        env:
+          CI_KEYSTORE: ${{ secrets.CI_KEYSTORE }}
         run: |
-          echo "${{ secrets.CI_KEYSTORE }}" > debug.keystore.asc
-          gpg -d --passphrase "${{ secrets.CI_KEYSTORE_DECRYPT }}" --batch debug.keystore.asc > /home/runner/.android/debug.keystore
+          echo "$CI_KEYSTORE" | base64 --decode > /home/runner/.android/debug.keystore
 
       - name: Install bundle
         run: bundle install
