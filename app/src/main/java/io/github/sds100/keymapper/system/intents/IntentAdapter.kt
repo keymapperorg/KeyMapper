@@ -13,8 +13,12 @@ import io.github.sds100.keymapper.util.Success
 class IntentAdapterImpl(context: Context) : IntentAdapter {
     private val ctx = context.applicationContext
 
-    override fun send(target: IntentTarget, uri: String): Result<*> {
+    override fun send(target: IntentTarget, uri: String, extras: List<IntentExtraModel>): Result<*> {
         val intent = Intent.parseUri(uri, 0)
+
+        extras.forEach { e ->
+            e.type.putInIntent(intent, e.name, e.value)
+        }
 
         try {
             when (target) {
@@ -37,5 +41,5 @@ class IntentAdapterImpl(context: Context) : IntentAdapter {
 }
 
 interface IntentAdapter {
-    fun send(target: IntentTarget, uri: String): Result<*>
+    fun send(target: IntentTarget, uri: String, extras: List<IntentExtraModel>): Result<*>
 }
