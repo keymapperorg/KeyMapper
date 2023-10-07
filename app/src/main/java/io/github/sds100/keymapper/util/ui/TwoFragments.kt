@@ -13,7 +13,8 @@ import io.github.sds100.keymapper.util.FragmentInfo
  */
 abstract class TwoFragments(
     private val top: FragmentInfo,
-    private val bottom: FragmentInfo) : Fragment() {
+    private val bottom: FragmentInfo
+) : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,7 +32,8 @@ abstract class TwoFragments(
 
     private fun addFragment(
         container: FragmentContainerView,
-        instantiateFragment: () -> Fragment) {
+        instantiateFragment: () -> Fragment
+    ) {
 
         if (childFragmentManager.findFragmentById(container.id) == null) {
             childFragmentManager.beginTransaction()

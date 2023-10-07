@@ -15,10 +15,19 @@ import io.github.sds100.keymapper.data.db.typeconverter.ActionListTypeConverter
 import io.github.sds100.keymapper.data.db.typeconverter.ConstraintListTypeConverter
 import io.github.sds100.keymapper.data.db.typeconverter.ExtraListTypeConverter
 import io.github.sds100.keymapper.data.db.typeconverter.TriggerTypeConverter
-import io.github.sds100.keymapper.data.entities.LogEntryEntity
-import io.github.sds100.keymapper.data.migration.*
 import io.github.sds100.keymapper.data.entities.FingerprintMapEntity
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
+import io.github.sds100.keymapper.data.entities.LogEntryEntity
+import io.github.sds100.keymapper.data.migration.Migration_10_11
+import io.github.sds100.keymapper.data.migration.Migration_11_12
+import io.github.sds100.keymapper.data.migration.Migration_1_2
+import io.github.sds100.keymapper.data.migration.Migration_2_3
+import io.github.sds100.keymapper.data.migration.Migration_3_4
+import io.github.sds100.keymapper.data.migration.Migration_4_5
+import io.github.sds100.keymapper.data.migration.Migration_5_6
+import io.github.sds100.keymapper.data.migration.Migration_6_7
+import io.github.sds100.keymapper.data.migration.Migration_8_9
+import io.github.sds100.keymapper.data.migration.Migration_9_10
 
 /**
  * Created by sds100 on 24/01/2020.

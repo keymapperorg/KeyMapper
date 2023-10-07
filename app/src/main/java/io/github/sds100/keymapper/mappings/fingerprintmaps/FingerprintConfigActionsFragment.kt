@@ -2,8 +2,8 @@ package io.github.sds100.keymapper.mappings.fingerprintmaps
 
 import androidx.navigation.navGraphViewModels
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.actions.ConfigActionsViewModel
 import io.github.sds100.keymapper.actions.ConfigActionsFragment
+import io.github.sds100.keymapper.actions.ConfigActionsViewModel
 import io.github.sds100.keymapper.util.FragmentInfo
 import io.github.sds100.keymapper.util.Inject
 

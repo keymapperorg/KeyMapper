@@ -1,7 +1,12 @@
 package io.github.sds100.keymapper.system.inputmethod
 
 import android.app.Service
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.content.ServiceConnection
 import android.inputmethodservice.InputMethodService
 import android.os.IBinder
 import android.view.KeyEvent
@@ -16,10 +21,14 @@ class KeyMapperImeService : InputMethodService() {
     companion object {
 
         //DON'T CHANGE THESE!!!
-        private const val KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN_UP = "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_DOWN_UP"
-        private const val KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN = "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_DOWN"
-        private const val KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_UP = "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_UP"
-        private const val KEY_MAPPER_INPUT_METHOD_ACTION_TEXT = "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_TEXT"
+        private const val KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN_UP =
+            "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_DOWN_UP"
+        private const val KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN =
+            "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_DOWN"
+        private const val KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_UP =
+            "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_UP"
+        private const val KEY_MAPPER_INPUT_METHOD_ACTION_TEXT =
+            "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_TEXT"
 
         private const val KEY_MAPPER_INPUT_METHOD_EXTRA_TEXT = "io.github.sds100.keymapper.inputmethod.EXTRA_TEXT"
         const val KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT = "io.github.sds100.keymapper.inputmethod.EXTRA_KEY_EVENT"
@@ -39,7 +48,7 @@ class KeyMapperImeService : InputMethodService() {
                 KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN_UP -> {
 
                     val downEvent = intent.getParcelableExtra<KeyEvent>(
-                            KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT
+                        KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT
                     )
                     currentInputConnection?.sendKeyEvent(downEvent)
 
@@ -49,7 +58,7 @@ class KeyMapperImeService : InputMethodService() {
 
                 KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN -> {
                     var downEvent = intent.getParcelableExtra<KeyEvent>(
-                            KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT
+                        KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT
                     )
 
                     downEvent = KeyEvent.changeAction(downEvent, KeyEvent.ACTION_DOWN)

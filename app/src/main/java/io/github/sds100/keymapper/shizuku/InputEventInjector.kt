@@ -3,7 +3,6 @@ package io.github.sds100.keymapper.shizuku
 import android.annotation.SuppressLint
 import android.content.Context
 import android.hardware.input.IInputManager
-import android.os.IBinder
 import android.os.SystemClock
 import android.view.KeyEvent
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel

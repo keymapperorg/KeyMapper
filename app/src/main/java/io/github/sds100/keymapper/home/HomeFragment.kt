@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -28,7 +29,11 @@ import io.github.sds100.keymapper.fixError
 import io.github.sds100.keymapper.success
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.system.url.UrlUtils
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.Inject
+import io.github.sds100.keymapper.util.QuickStartGuideTapTarget
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
+import io.github.sds100.keymapper.util.str
+import io.github.sds100.keymapper.util.strArray
 import io.github.sds100.keymapper.util.ui.TextListItem
 import io.github.sds100.keymapper.util.ui.setupNavigation
 import io.github.sds100.keymapper.util.ui.showPopups
@@ -49,21 +54,21 @@ class HomeFragment : Fragment() {
         get() = _binding!!
 
     private val backupMappingsLauncher =
-        registerForActivityResult(ActivityResultContracts.CreateDocument()) {
+        registerForActivityResult(CreateDocument("todo/todo")) {
             it ?: return@registerForActivityResult
 
             homeViewModel.onChoseBackupFile(it.toString())
         }
 
     private val backupFingerprintMapsLauncher =
-        registerForActivityResult(ActivityResultContracts.CreateDocument()) {
+        registerForActivityResult(CreateDocument("todo/todo")) {
             it ?: return@registerForActivityResult
 
             homeViewModel.backupFingerprintMaps(it.toString())
         }
 
     private val backupKeyMapsLauncher =
-        registerForActivityResult(ActivityResultContracts.CreateDocument()) {
+        registerForActivityResult(CreateDocument("todo/todo")) {
             it ?: return@registerForActivityResult
 
             homeViewModel.backupSelectedKeyMaps(it.toString())

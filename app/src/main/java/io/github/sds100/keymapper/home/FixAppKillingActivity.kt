@@ -26,7 +26,7 @@ class FixAppKillingActivity : AppIntro2() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+
         viewModel.showPopups(this, findViewById(R.id.background))
 
         isSkipButtonEnabled = false

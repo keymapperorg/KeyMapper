@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.system.camera
 
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.system.camera.CameraLens
 
 /**
  * Created by sds100 on 23/03/2021.

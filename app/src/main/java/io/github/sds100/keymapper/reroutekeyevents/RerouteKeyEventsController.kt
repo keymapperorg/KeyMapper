@@ -4,7 +4,11 @@ import android.view.KeyEvent
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.util.InputEventType
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
 /**
  * Created by sds100 on 27/04/2021.

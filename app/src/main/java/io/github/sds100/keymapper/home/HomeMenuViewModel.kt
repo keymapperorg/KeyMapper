@@ -4,9 +4,24 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
 import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
-import io.github.sds100.keymapper.util.ui.*
+import io.github.sds100.keymapper.util.ui.NavDestination
+import io.github.sds100.keymapper.util.ui.NavigationViewModel
+import io.github.sds100.keymapper.util.ui.NavigationViewModelImpl
+import io.github.sds100.keymapper.util.ui.PopupUi
+import io.github.sds100.keymapper.util.ui.PopupViewModel
+import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
+import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.util.ui.ViewModelHelper
+import io.github.sds100.keymapper.util.ui.navigate
+import io.github.sds100.keymapper.util.ui.showPopup
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
@@ -35,6 +50,7 @@ class HomeMenuViewModel(
                     } else {
                         ToggleMappingsButtonState.RESUMED
                     }
+
                 ServiceState.CRASHED -> ToggleMappingsButtonState.SERVICE_CRASHED
 
                 ServiceState.DISABLED -> ToggleMappingsButtonState.SERVICE_DISABLED
@@ -128,7 +144,7 @@ class HomeMenuViewModel(
             message = getString(R.string.dialog_message_no_app_found_to_create_file),
             positiveButtonText = getString(R.string.pos_ok)
         )
-        
+
         coroutineScope.launch {
             showPopup("create_document_activity_not_found", dialog)
         }

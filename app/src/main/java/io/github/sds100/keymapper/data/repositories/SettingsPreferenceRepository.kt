@@ -13,8 +13,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class SettingsPreferenceRepository(
-        context: Context,
-        private val coroutineScope: CoroutineScope
+    context: Context,
+    private val coroutineScope: CoroutineScope
 ) : PreferenceRepository {
 
     companion object {
@@ -24,13 +24,13 @@ class SettingsPreferenceRepository(
     private val ctx = context.applicationContext
 
     private val sharedPreferencesMigration = SharedPreferencesMigration(
-            ctx,
-            DEFAULT_SHARED_PREFS_NAME
+        ctx,
+        DEFAULT_SHARED_PREFS_NAME
     )
 
     private val Context.dataStore by preferencesDataStore(
-            name = "preferences",
-            produceMigrations = { listOf(sharedPreferencesMigration) }
+        name = "preferences",
+        produceMigrations = { listOf(sharedPreferencesMigration) }
     )
 
     private val dataStore = ctx.dataStore

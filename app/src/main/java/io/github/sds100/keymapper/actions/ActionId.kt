@@ -10,6 +10,7 @@ enum class ActionId {
     KEY_EVENT,
     TAP_SCREEN,
     SWIPE_SCREEN,
+    PINCH_SCREEN,
     TEXT,
     URL,
     INTENT,
@@ -123,7 +124,7 @@ enum class ActionId {
 
     DISMISS_MOST_RECENT_NOTIFICATION,
     DISMISS_ALL_NOTIFICATIONS,
-    
+
     ANSWER_PHONE_CALL,
     END_PHONE_CALL
 }

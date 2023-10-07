@@ -1,9 +1,6 @@
 package io.github.sds100.keymapper.system.apps
 
-import android.content.ActivityNotFoundException
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
 
 /**
  * Created by sds100 on 27/10/2018.

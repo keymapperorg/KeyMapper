@@ -19,7 +19,7 @@
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
-    <uses-permission android:name="com.termux.permission.RUN_COMMAND"  />
+    <uses-permission android:name="com.termux.permission.RUN_COMMAND" />
 
     <!--    This permission is in each build variant's AndroidManifest -->
     <!--    <permission android:name="io.github.sds100.keymapper.KEY_EVENT_RECEIVER">-->
@@ -58,7 +58,7 @@
     <uses-feature
         android:name="android.hardware.telephony"
         android:required="false" />
-    
+
     <uses-feature
         android:name="android.hardware.bluetooth"
         android:required="false" />
@@ -102,10 +102,10 @@
         <activity
             android:name=".api.LaunchKeyMapShortcutActivity"
             android:excludeFromRecents="true"
+            android:exported="true"
             android:finishOnTaskLaunch="true"
             android:launchMode="singleInstance"
             android:taskAffinity=""
-            android:exported="true"
             android:theme="@android:style/Theme.NoDisplay">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -115,8 +115,8 @@
         <!-- Use a different task affinity so this activity can be opened at the same time as others -->
         <activity
             android:name=".mappings.keymaps.CreateKeyMapShortcutActivity"
-            android:label="@string/shortcut_label_action"
             android:exported="true"
+            android:label="@string/shortcut_label_action"
             android:taskAffinity="">
             <intent-filter>
                 <action android:name="android.intent.action.CREATE_SHORTCUT" />
@@ -189,8 +189,8 @@
 
         <service
             android:name=".system.inputmethod.KeyMapperImeService"
-            android:label="@string/ime_service_label"
             android:exported="true"
+            android:label="@string/ime_service_label"
             android:permission="android.permission.BIND_INPUT_METHOD">
             <intent-filter>
                 <action android:name="android.view.InputMethod" />
@@ -202,9 +202,9 @@
 
         <service
             android:name=".system.tiles.ToggleMappingsTile"
+            android:exported="true"
             android:icon="@drawable/ic_tile_pause"
             android:label="@string/tile_pause"
-            android:exported="true"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
@@ -213,9 +213,9 @@
 
         <service
             android:name=".system.tiles.ToggleKeyMapperKeyboardTile"
+            android:exported="true"
             android:icon="@drawable/ic_tile_keyboard"
             android:label="@string/tile_toggle_keymapper_keyboard"
-            android:exported="true"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
@@ -224,8 +224,8 @@
 
         <service
             android:name="io.github.sds100.keymapper.system.notifications.NotificationReceiver"
-            android:label="Key Mapper Notification Receiver"
             android:exported="true"
+            android:label="Key Mapper Notification Receiver"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
                 <action android:name="android.service.notification.NotificationListenerService" />

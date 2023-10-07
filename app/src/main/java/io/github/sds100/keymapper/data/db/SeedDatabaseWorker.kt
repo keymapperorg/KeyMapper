@@ -24,11 +24,11 @@ class SeedDatabaseWorker(
                 for (i in 1..100) {
                     yield(
                         KeyMapEntity(
-                        id = 0,
-                        trigger = createRandomTrigger(),
-                        actionList = createRandomActionList(),
-                        flags = 0
-                    )
+                            id = 0,
+                            trigger = createRandomTrigger(),
+                            actionList = createRandomActionList(),
+                            flags = 0
+                        )
                     )
                 }
             }.toList().toTypedArray()
@@ -45,25 +45,28 @@ class SeedDatabaseWorker(
         val keys = sequence {
             yield(
                 TriggerEntity.KeyEntity(
-                KeyEvent.KEYCODE_CTRL_LEFT,
-                TriggerEntity.KeyEntity.DEVICE_ID_THIS_DEVICE,
+                    KeyEvent.KEYCODE_CTRL_LEFT,
+                    TriggerEntity.KeyEntity.DEVICE_ID_THIS_DEVICE,
                     null,
-                TriggerEntity.SHORT_PRESS
-            ))
+                    TriggerEntity.SHORT_PRESS
+                )
+            )
             yield(
                 TriggerEntity.KeyEntity(
-                KeyEvent.KEYCODE_ALT_LEFT,
-                TriggerEntity.KeyEntity.DEVICE_ID_ANY_DEVICE,
+                    KeyEvent.KEYCODE_ALT_LEFT,
+                    TriggerEntity.KeyEntity.DEVICE_ID_ANY_DEVICE,
                     null,
-                TriggerEntity.LONG_PRESS
-            ))
+                    TriggerEntity.LONG_PRESS
+                )
+            )
             yield(
                 TriggerEntity.KeyEntity(
-                KeyEvent.KEYCODE_DEL,
-                TriggerEntity.KeyEntity.DEVICE_ID_THIS_DEVICE,
+                    KeyEvent.KEYCODE_DEL,
+                    TriggerEntity.KeyEntity.DEVICE_ID_THIS_DEVICE,
                     null,
-                TriggerEntity.SHORT_PRESS
-            ))
+                    TriggerEntity.SHORT_PRESS
+                )
+            )
         }.toList()
 
         return TriggerEntity(keys, mode = TriggerEntity.SEQUENCE, flags = TriggerEntity.TRIGGER_FLAG_VIBRATE)
@@ -73,15 +76,15 @@ class SeedDatabaseWorker(
         return sequence {
             yield(
                 ActionEntity(
-                type = ActionEntity.Type.APP,
-                data = Constants.PACKAGE_NAME
-            )
+                    type = ActionEntity.Type.APP,
+                    data = Constants.PACKAGE_NAME
+                )
             )
             yield(
                 ActionEntity(
-                type = ActionEntity.Type.APP,
-                data = "this.app.doesnt.exist"
-            )
+                    type = ActionEntity.Type.APP,
+                    data = "this.app.doesnt.exist"
+                )
             )
         }.toList()
     }

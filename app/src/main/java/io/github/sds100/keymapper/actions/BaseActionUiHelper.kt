@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.actions
 
 import android.view.KeyEvent
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
 import io.github.sds100.keymapper.mappings.DisplayActionUseCase
 import io.github.sds100.keymapper.mappings.Mapping
 import io.github.sds100.keymapper.system.camera.CameraLensUtils
@@ -306,7 +307,54 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
             } else {
                 getString(
                     R.string.description_swipe_coordinate_with_description,
-                    arrayOf(action.fingerCount, action.xStart, action.yStart, action.xEnd, action.yEnd, action.duration, action.description)
+                    arrayOf(
+                        action.fingerCount,
+                        action.xStart,
+                        action.yStart,
+                        action.xEnd,
+                        action.yEnd,
+                        action.duration,
+                        action.description
+                    )
+                )
+            }
+
+            is ActionData.PinchScreen -> if (action.description.isNullOrBlank()) {
+                val pinchTypeDisplayName = if (action.pinchType == PinchScreenType.PINCH_IN) {
+                    getString(R.string.hint_coordinate_type_pinch_in)
+                } else {
+                    getString(R.string.hint_coordinate_type_pinch_out)
+                }
+
+                getString(
+                    R.string.description_pinch_coordinate_default,
+                    arrayOf(
+                        pinchTypeDisplayName,
+                        action.fingerCount,
+                        action.x,
+                        action.y,
+                        action.distance,
+                        action.duration
+                    )
+                )
+            } else {
+                val pinchTypeDisplayName = if (action.pinchType == PinchScreenType.PINCH_IN) {
+                    getString(R.string.hint_coordinate_type_pinch_in)
+                } else {
+                    getString(R.string.hint_coordinate_type_pinch_out)
+                }
+
+                getString(
+                    R.string.description_pinch_coordinate_with_description,
+                    arrayOf(
+                        pinchTypeDisplayName,
+                        action.fingerCount,
+                        action.x,
+                        action.y,
+                        action.distance,
+                        action.duration,
+                        action.description
+                    )
                 )
             }
 
@@ -376,6 +424,7 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
                     orientationStrings.joinToString()
                 )
             }
+
             ActionData.Rotation.DisableAuto -> getString(R.string.action_disable_auto_rotate)
             ActionData.Rotation.EnableAuto -> getString(R.string.action_enable_auto_rotate)
             ActionData.Rotation.Landscape -> getString(R.string.action_landscape_mode)
@@ -406,7 +455,7 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
             ActionData.Wifi.Toggle -> getString(R.string.action_toggle_wifi)
             ActionData.DismissAllNotifications -> getString(R.string.action_dismiss_all_notifications)
             ActionData.DismissLastNotification -> getString(R.string.action_dismiss_most_recent_notification)
-            
+
             ActionData.AnswerCall -> getString(R.string.action_answer_call)
             ActionData.EndCall -> getString(R.string.action_end_call)
         }

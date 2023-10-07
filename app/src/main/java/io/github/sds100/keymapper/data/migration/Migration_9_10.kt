@@ -67,8 +67,10 @@ object Migration_9_10 {
         return keyMap
     }
 
-    private fun migrate(trigger: JsonElement,
-                        actionList: JsonArray): MigrateModel {
+    private fun migrate(
+        trigger: JsonElement,
+        actionList: JsonArray
+    ): MigrateModel {
         var showToast = false
 
         actionList.forEach {

@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.preference.*
@@ -39,7 +39,7 @@ class MainSettingsFragment : BaseSettingsFragment() {
     }
 
     private val chooseAutomaticBackupLocationLauncher =
-        registerForActivityResult(ActivityResultContracts.CreateDocument()) {
+        registerForActivityResult(CreateDocument("todo/todo")) {
             it ?: return@registerForActivityResult
 
             viewModel.setAutomaticBackupLocation(it.toString())

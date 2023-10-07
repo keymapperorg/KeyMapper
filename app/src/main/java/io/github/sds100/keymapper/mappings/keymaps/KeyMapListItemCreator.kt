@@ -18,25 +18,25 @@ import io.github.sds100.keymapper.util.ui.ResourceProvider
  * Created by sds100 on 19/03/2021.
  */
 class KeyMapListItemCreator(
-        private val displayMapping: DisplayKeyMapUseCase,
-        resourceProvider: ResourceProvider
+    private val displayMapping: DisplayKeyMapUseCase,
+    resourceProvider: ResourceProvider
 ) : BaseMappingListItemCreator<KeyMap, KeyMapAction>(
-        displayMapping,
-        KeyMapActionUiHelper(displayMapping, resourceProvider),
-        resourceProvider
+    displayMapping,
+    KeyMapActionUiHelper(displayMapping, resourceProvider),
+    resourceProvider
 ) {
 
-   suspend fun create(keyMap: KeyMap, showDeviceDescriptors: Boolean): KeyMapListItem.KeyMapUiState {
-       val midDot = getString(R.string.middot)
+    suspend fun create(keyMap: KeyMap, showDeviceDescriptors: Boolean): KeyMapListItem.KeyMapUiState {
+        val midDot = getString(R.string.middot)
 
-       val triggerDescription = buildString {
-           val separator = when (keyMap.trigger.mode) {
-               is TriggerMode.Parallel -> getString(R.string.plus)
-               is TriggerMode.Sequence -> getString(R.string.arrow)
-               is TriggerMode.Undefined -> null
-           }
+        val triggerDescription = buildString {
+            val separator = when (keyMap.trigger.mode) {
+                is TriggerMode.Parallel -> getString(R.string.plus)
+                is TriggerMode.Sequence -> getString(R.string.arrow)
+                is TriggerMode.Undefined -> null
+            }
 
-           val longPressString = getString(R.string.clicktype_long_press)
+            val longPressString = getString(R.string.clicktype_long_press)
             val doublePressString = getString(R.string.clicktype_double_press)
 
             keyMap.trigger.keys.forEachIndexed { index, key ->
@@ -58,8 +58,8 @@ class KeyMapListItemCreator(
                     is TriggerKeyDevice.External -> {
                         if (showDeviceDescriptors) {
                             InputDeviceUtils.appendDeviceDescriptorToName(
-                                    key.device.descriptor,
-                                    key.device.name
+                                key.device.descriptor,
+                                key.device.name
                             )
                         } else {
                             key.device.name
@@ -110,33 +110,33 @@ class KeyMapListItemCreator(
             when (it) {
                 KeyMapTriggerError.DND_ACCESS_DENIED ->
                     ChipUi.Error(
-                            id = KeyMapTriggerError.DND_ACCESS_DENIED.toString(),
-                            text = getString(R.string.trigger_error_dnd_access_denied_short),
-                            error = Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)
+                        id = KeyMapTriggerError.DND_ACCESS_DENIED.toString(),
+                        text = getString(R.string.trigger_error_dnd_access_denied_short),
+                        error = Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)
                     )
 
                 KeyMapTriggerError.SCREEN_OFF_ROOT_DENIED -> ChipUi.Error(
-                        id = KeyMapTriggerError.SCREEN_OFF_ROOT_DENIED.toString(),
-                        text = getString(R.string.trigger_error_screen_off_root_permission_denied_short),
-                        error = Error.PermissionDenied(Permission.ROOT)
+                    id = KeyMapTriggerError.SCREEN_OFF_ROOT_DENIED.toString(),
+                    text = getString(R.string.trigger_error_screen_off_root_permission_denied_short),
+                    error = Error.PermissionDenied(Permission.ROOT)
                 )
-                
+
                 KeyMapTriggerError.CANT_DETECT_IN_PHONE_CALL -> ChipUi.Error(
-                        id = KeyMapTriggerError.SCREEN_OFF_ROOT_DENIED.toString(),
-                        text = getString(R.string.trigger_error_cant_detect_in_phone_call),
-                        error = Error.CantDetectKeyEventsInPhoneCall
+                    id = KeyMapTriggerError.SCREEN_OFF_ROOT_DENIED.toString(),
+                    text = getString(R.string.trigger_error_cant_detect_in_phone_call),
+                    error = Error.CantDetectKeyEventsInPhoneCall
                 )
             }
         }
 
         return KeyMapListItem.KeyMapUiState(
-                uid = keyMap.uid,
-                actionChipList = actionChipList,
-                constraintChipList = constraintChipList,
-                triggerDescription = triggerDescription,
-                optionsDescription = optionsDescription,
-                extraInfo = extraInfo,
-                triggerErrorChipList = triggerErrorChips
+            uid = keyMap.uid,
+            actionChipList = actionChipList,
+            constraintChipList = constraintChipList,
+            triggerDescription = triggerDescription,
+            optionsDescription = optionsDescription,
+            extraInfo = extraInfo,
+            triggerErrorChipList = triggerErrorChips
         )
     }
 

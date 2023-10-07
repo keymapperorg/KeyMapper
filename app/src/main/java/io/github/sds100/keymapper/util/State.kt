@@ -1,8 +1,5 @@
 package io.github.sds100.keymapper.util
 
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-
 /**
  * Created by sds100 on 17/03/2021.
  */

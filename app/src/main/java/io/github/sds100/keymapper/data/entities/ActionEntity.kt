@@ -119,14 +119,14 @@ data class ActionEntity(
 
             ActionEntity(
                 type, data, extraList.toMutableList(), flags, uid
-                ?: UUID.randomUUID().toString()
+                    ?: UUID.randomUUID().toString()
             )
         }
     }
 
     enum class Type {
         //DONT CHANGE THESE
-        APP, APP_SHORTCUT, KEY_EVENT, TEXT_BLOCK, URL, SYSTEM_ACTION, TAP_COORDINATE, SWIPE_COORDINATE, INTENT, PHONE_CALL, SOUND
+        APP, APP_SHORTCUT, KEY_EVENT, TEXT_BLOCK, URL, SYSTEM_ACTION, TAP_COORDINATE, SWIPE_COORDINATE, PINCH_COORDINATE, INTENT, PHONE_CALL, SOUND
     }
 
     constructor(

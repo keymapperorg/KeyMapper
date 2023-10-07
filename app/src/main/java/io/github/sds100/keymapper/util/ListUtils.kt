@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.util
 
-import java.util.*
+import java.util.Collections
 
 /**
  * Created by sds100 on 11/03/2021.

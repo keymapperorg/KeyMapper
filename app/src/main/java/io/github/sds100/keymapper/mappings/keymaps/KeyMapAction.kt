@@ -14,7 +14,7 @@ import io.github.sds100.keymapper.util.valueOrNull
 import kotlinx.serialization.Serializable
 import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag
-import java.util.*
+import java.util.UUID
 
 /**
  * Created by sds100 on 09/03/2021.
@@ -113,7 +113,7 @@ object KeymapActionEntityMapper {
     }
 
     fun toEntity(keyMap: KeyMap): List<ActionEntity> = keyMap.actionList.mapNotNull { action ->
-        val base = ActionDataEntityMapper.toEntity(action.data) ?: return@mapNotNull null
+        val base = ActionDataEntityMapper.toEntity(action.data)
 
         val extras = mutableListOf<Extra>().apply {
             if (keyMap.isDelayBeforeNextActionAllowed() && action.delayBeforeNextAction != null) {

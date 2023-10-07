@@ -12,7 +12,11 @@ import io.github.sds100.keymapper.simpleGrid
 import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
-import io.github.sds100.keymapper.util.ui.*
+import io.github.sds100.keymapper.util.ui.RecyclerViewUtils
+import io.github.sds100.keymapper.util.ui.SimpleListItem
+import io.github.sds100.keymapper.util.ui.SimpleRecyclerViewFragment
+import io.github.sds100.keymapper.util.ui.setupNavigation
+import io.github.sds100.keymapper.util.ui.showPopups
 import io.github.sds100.keymapper.util.viewLifecycleScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
