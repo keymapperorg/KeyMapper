@@ -78,6 +78,7 @@ data class ActionEntity(
         const val EXTRA_INTENT_TARGET = "extra_intent_target"
         const val EXTRA_INTENT_DESCRIPTION = "extra_intent_description"
         const val EXTRA_SOUND_FILE_DESCRIPTION = "extra_sound_file_description"
+        const val EXTRA_INTENT_EXTRAS = "extra_intent_extras"
 
         //DON'T CHANGE THESE. Used for JSON serialization and parsing.
         const val NAME_ACTION_TYPE = "type"

@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.actions
 import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.display.Orientation
+import io.github.sds100.keymapper.system.intents.IntentExtraModel
 import io.github.sds100.keymapper.system.intents.IntentTarget
 import io.github.sds100.keymapper.system.volume.DndMode
 import io.github.sds100.keymapper.system.volume.RingerMode
@@ -294,7 +295,8 @@ sealed class ActionData {
     data class Intent(
         val description: String,
         val target: IntentTarget,
-        val uri: String
+        val uri: String,
+        val extras: List<IntentExtraModel>
     ) : ActionData() {
         override val id = ActionId.INTENT
     }

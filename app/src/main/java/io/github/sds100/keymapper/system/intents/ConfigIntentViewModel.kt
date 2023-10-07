@@ -241,7 +241,8 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
                 ConfigIntentResult(
                     uri = uri,
                     target = target.value,
-                    description = description.value
+                    description = description.value,
+                    extras = extras.value
                 )
             )
         }
@@ -356,12 +357,21 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
 
         val extrasBundle = intent.extras ?: Bundle.EMPTY
 
-        extras.value = extrasBundle.keySet().mapNotNull { key ->
-            val value = extrasBundle.get(key)
+        val intentExtras: MutableList<IntentExtraModel> = result.extras.toMutableList()
 
-            if (value == null) {
-                return@mapNotNull null
+        /**
+         * See issue #1171. Until version 2.6.1, the extras were assumed to be stored in
+         * the URI representation of the intent. But the array extras were never saved.
+         * So to maintain backwards compatibility with old intent actions that stored the arrays
+         * in the URI, also add the extras from the URI.
+         */
+        for (key in extrasBundle.keySet()) {
+            // skip the extra if the list already contains it.
+            if (intentExtras.any { it.name == key }) {
+                continue
             }
+
+            val value = extrasBundle.get(key) ?: continue
 
             val extraType = when (value) {
                 is Boolean -> BoolExtraType()
@@ -379,15 +389,20 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
                 is Short -> ShortExtraType()
                 is ShortArray -> ShortArrayExtraType()
                 is String -> StringExtraType()
-                else -> throw IllegalArgumentException("Don't know how to conver this extra (${value.javaClass.name}) to an IntentExtraType")
+                is Array<*> -> StringArrayExtraType()
+                else -> throw IllegalArgumentException("Don't know how to convert this extra (${value.javaClass.name}) to an IntentExtraType")
             }
 
-            IntentExtraModel(
+            val extra = IntentExtraModel(
                 type = extraType,
                 name = key,
                 value = value.toString()
             )
+
+            intentExtras.add(extra)
         }
+
+        this.extras.value = intentExtras
     }
 
     fun setActivity(activityInfo: ActivityInfo) {

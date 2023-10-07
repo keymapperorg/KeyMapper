@@ -10,5 +10,6 @@ import kotlinx.serialization.Serializable
 data class ConfigIntentResult(
     val uri: String,
     val target: IntentTarget,
-    val description: String
+    val description: String,
+    val extras: List<IntentExtraModel>
 )
