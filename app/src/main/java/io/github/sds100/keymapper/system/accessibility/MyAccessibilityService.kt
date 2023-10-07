@@ -23,6 +23,7 @@ import androidx.core.os.bundleOf
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
+import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
 import io.github.sds100.keymapper.api.Api
 import io.github.sds100.keymapper.api.IKeyEventReceiver
 import io.github.sds100.keymapper.api.IKeyEventReceiverCallback
@@ -32,11 +33,9 @@ import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.InputEventType
+import io.github.sds100.keymapper.util.MathUtils
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
-import io.github.sds100.keymapper.util.angleBetweenPoints
-import io.github.sds100.keymapper.util.getPerpendicularOfLine
-import io.github.sds100.keymapper.util.movePointByDistanceAndAngle
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import timber.log.Timber
@@ -47,6 +46,9 @@ import timber.log.Timber
  */
 
 class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessibilityService {
+
+    // virtual distance between fingers on multitouch gestures
+    private val fingerGestureDistance = 10L
 
     /**
      * Broadcast receiver for all intents sent from within the app.
@@ -416,18 +418,14 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
         duration: Int,
         inputEventType: InputEventType
     ): Result<*> {
-        Timber.d(
-            "ACCESSIBILITY SWIPE SCREEN %d, %d, %d, %d, %s, %d, %s",
-            xStart,
-            yStart,
-            xEnd,
-            yEnd,
-            fingerCount,
-            duration,
-            inputEventType
-        )
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            if (fingerCount >= GestureDescription.getMaxStrokeCount()) {
+                return Error.GestureStrokeCountTooHigh
+            }
+            if (duration >= GestureDescription.getMaxGestureDuration()) {
+                return Error.GestureDurationTooHigh
+            }
+
             val pStart = Point(xStart, yStart)
             val pEnd = Point(xEnd, yEnd)
 
@@ -439,30 +437,26 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
                 p.lineTo(pEnd.x.toFloat(), pEnd.y.toFloat())
                 gestureBuilder.addStroke(StrokeDescription(p, 0, duration.toLong()))
             } else {
-                // virtual distance between the fingers
-                val fingerDistance = 10L
                 // segments between fingers
                 val segmentCount = fingerCount - 1
                 // the line of the perpendicular line which will be created to place the virtual fingers on it
-                val perpendicularLineLength = (fingerDistance * fingerCount).toInt()
+                val perpendicularLineLength = (fingerGestureDistance * fingerCount).toInt()
+
                 // the length of each segment between fingers
                 val segmentLength = perpendicularLineLength / segmentCount
                 // perpendicular line of the start swipe point
-                val perpendicularLineStart = getPerpendicularOfLine(
+                val perpendicularLineStart = MathUtils.getPerpendicularOfLine(
                     pStart, pEnd,
                     perpendicularLineLength
                 )
                 // perpendicular line of the end swipe point
-                val perpendicularLineEnd = getPerpendicularOfLine(
+                val perpendicularLineEnd = MathUtils.getPerpendicularOfLine(
                     pEnd, pStart,
                     perpendicularLineLength, true
                 )
 
-
-                val startFingerCoordinatesList = mutableListOf<Point>()
-                val endFingerCoordinatesList = mutableListOf<Point>()
                 // this is the angle between start and end point to rotate all virtual fingers on the perpendicular lines in the same direction
-                val angle = angleBetweenPoints(Point(xStart, yStart), Point(xEnd, yEnd)) - 90
+                val angle = MathUtils.angleBetweenPoints(Point(xStart, yStart), Point(xEnd, yEnd)) - 90
 
                 // create the virtual fingers
                 for (index in 0..segmentCount) {
@@ -470,18 +464,16 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
                     val fingerOffsetLength = index * segmentLength * 2
                     // move the coordinates of the current virtual finger on the perpendicular line for the start coordinates
                     val startFingerCoordinateWithOffset =
-                        movePointByDistanceAndAngle(perpendicularLineStart.start, fingerOffsetLength, angle)
+                        MathUtils.movePointByDistanceAndAngle(perpendicularLineStart.start, fingerOffsetLength, angle)
                     // move the coordinates of the current virtual finger on the perpendicular line for the end coordinates
                     val endFingerCoordinateWithOffset =
-                        movePointByDistanceAndAngle(perpendicularLineEnd.start, fingerOffsetLength, angle)
+                        MathUtils.movePointByDistanceAndAngle(perpendicularLineEnd.start, fingerOffsetLength, angle)
 
                     // create a path for each finger, move the the coordinates on the perpendicular line and draw it to the end coordinates of the perpendicular line of the end swipe point
                     val p = Path()
                     p.moveTo(startFingerCoordinateWithOffset.x.toFloat(), startFingerCoordinateWithOffset.y.toFloat())
                     p.lineTo(endFingerCoordinateWithOffset.x.toFloat(), endFingerCoordinateWithOffset.y.toFloat())
 
-                    //startFingerCoordinatesList.add(startFingerCoordinateWithOffset)
-                    //endFingerCoordinatesList.add(endFingerCoordinateWithOffset)
                     gestureBuilder.addStroke(StrokeDescription(p, 0, duration.toLong()))
                 }
 
@@ -494,6 +486,53 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
             } else {
                 Error.FailedToDispatchGesture
             }
+        }
+
+        return Error.SdkVersionTooLow(Build.VERSION_CODES.N)
+    }
+
+    override fun pinchScreen(
+        x: Int,
+        y: Int,
+        distance: Int,
+        pinchType: PinchScreenType,
+        fingerCount: Int,
+        duration: Int,
+        inputEventType: InputEventType
+    ): Result<*> {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            if (fingerCount >= GestureDescription.getMaxStrokeCount()) {
+                return Error.GestureStrokeCountTooHigh
+            }
+            if (duration >= GestureDescription.getMaxGestureDuration()) {
+                return Error.GestureDurationTooHigh
+            }
+
+            val gestureBuilder = GestureDescription.Builder()
+            val distributedPoints: List<Point> =
+                MathUtils.distributePointsOnCircle(Point(x, y), distance.toFloat() / 2, fingerCount)
+
+            for (index in distributedPoints.indices) {
+                val p = Path()
+                if (pinchType == PinchScreenType.PINCH_IN) {
+                    p.moveTo(x.toFloat(), y.toFloat())
+                    p.lineTo(distributedPoints[index].x.toFloat(), distributedPoints[index].y.toFloat())
+                } else {
+                    p.moveTo(distributedPoints[index].x.toFloat(), distributedPoints[index].y.toFloat())
+                    p.lineTo(x.toFloat(), y.toFloat())
+                }
+
+                gestureBuilder.addStroke(StrokeDescription(p, 0, duration.toLong()))
+            }
+
+            val success = dispatchGesture(gestureBuilder.build(), null, null)
+
+            return if (success) {
+                Success(Unit)
+            } else {
+                Error.FailedToDispatchGesture
+            }
+
         }
 
         return Error.SdkVersionTooLow(Build.VERSION_CODES.N)

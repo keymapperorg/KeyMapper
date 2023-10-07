@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.actions
 
 import android.text.InputType
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.actions.pinchscreen.PinchPickCoordinateResult
 import io.github.sds100.keymapper.actions.swipescreen.SwipePickCoordinateResult
 import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.system.camera.CameraLens
@@ -365,6 +366,43 @@ class CreateActionViewModelImpl(
                     result.yStart,
                     result.xEnd,
                     result.yEnd,
+                    result.fingerCount,
+                    result.duration,
+                    description
+                )
+            }
+
+            ActionId.PINCH_SCREEN -> {
+                val oldResult = if (oldData is ActionData.PinchScreen) {
+                    PinchPickCoordinateResult(
+                        oldData.x,
+                        oldData.y,
+                        oldData.distance,
+                        oldData.pinchType,
+                        oldData.fingerCount,
+                        oldData.duration,
+                        oldData.description ?: ""
+                    )
+                } else {
+                    null
+                }
+
+                val result = navigate(
+                    "pick_pinch_coordinate_for_action",
+                    NavDestination.PickPinchCoordinate(oldResult)
+                ) ?: return null
+
+                val description = if (result.description.isEmpty()) {
+                    null
+                } else {
+                    result.description
+                }
+
+                return ActionData.PinchScreen(
+                    result.x,
+                    result.y,
+                    result.distance,
+                    result.pinchType,
                     result.fingerCount,
                     result.duration,
                     description

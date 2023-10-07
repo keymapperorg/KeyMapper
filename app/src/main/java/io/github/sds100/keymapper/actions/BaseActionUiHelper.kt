@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.actions
 
 import android.view.KeyEvent
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
 import io.github.sds100.keymapper.mappings.DisplayActionUseCase
 import io.github.sds100.keymapper.mappings.Mapping
 import io.github.sds100.keymapper.system.camera.CameraLensUtils
@@ -312,6 +313,45 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
                         action.yStart,
                         action.xEnd,
                         action.yEnd,
+                        action.duration,
+                        action.description
+                    )
+                )
+            }
+
+            is ActionData.PinchScreen -> if (action.description.isNullOrBlank()) {
+                val pinchTypeDisplayName = if (action.pinchType == PinchScreenType.PINCH_IN) {
+                    getString(R.string.hint_coordinate_type_pinch_in)
+                } else {
+                    getString(R.string.hint_coordinate_type_pinch_out)
+                }
+
+                getString(
+                    R.string.description_pinch_coordinate_default,
+                    arrayOf(
+                        pinchTypeDisplayName,
+                        action.fingerCount,
+                        action.x,
+                        action.y,
+                        action.distance,
+                        action.duration
+                    )
+                )
+            } else {
+                val pinchTypeDisplayName = if (action.pinchType == PinchScreenType.PINCH_IN) {
+                    getString(R.string.hint_coordinate_type_pinch_in)
+                } else {
+                    getString(R.string.hint_coordinate_type_pinch_out)
+                }
+
+                getString(
+                    R.string.description_pinch_coordinate_with_description,
+                    arrayOf(
+                        pinchTypeDisplayName,
+                        action.fingerCount,
+                        action.x,
+                        action.y,
+                        action.distance,
                         action.duration,
                         action.description
                     )
