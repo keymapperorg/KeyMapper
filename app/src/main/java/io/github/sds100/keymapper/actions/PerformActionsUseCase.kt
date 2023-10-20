@@ -119,7 +119,7 @@ class PerformActionsUseCaseImpl(
             }
 
             is ActionData.Intent -> {
-                result = intentAdapter.send(action.target, action.uri)
+                result = intentAdapter.send(action.target, action.uri, action.extras)
             }
 
             is ActionData.InputKeyEvent -> {

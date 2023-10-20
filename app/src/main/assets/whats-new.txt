@@ -1,1 +1,1 @@
-Action for doing swipe gestures on the screen with 1 or more fingers. Many thanks to Tino (@pixel-shock) for working on this feature. 😊
+Action for doing pinches and swipes on the screen with 2 or more fingers. Many thanks to Tino (@pixel-shock) for working on this feature. 😊

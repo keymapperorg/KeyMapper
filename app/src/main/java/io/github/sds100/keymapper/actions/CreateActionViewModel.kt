@@ -487,7 +487,8 @@ class CreateActionViewModelImpl(
                     ConfigIntentResult(
                         oldData.uri,
                         oldData.target,
-                        oldData.description
+                        oldData.description,
+                        oldData.extras
                     )
                 } else {
                     null
@@ -501,7 +502,8 @@ class CreateActionViewModelImpl(
                 return ActionData.Intent(
                     description = result.description,
                     target = result.target,
-                    uri = result.uri
+                    uri = result.uri,
+                    extras = result.extras
                 )
             }
 

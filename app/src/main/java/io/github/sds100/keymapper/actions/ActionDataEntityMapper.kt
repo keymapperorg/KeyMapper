@@ -7,6 +7,7 @@ import io.github.sds100.keymapper.data.entities.Extra
 import io.github.sds100.keymapper.data.entities.getData
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.display.Orientation
+import io.github.sds100.keymapper.system.intents.IntentExtraModel
 import io.github.sds100.keymapper.system.intents.IntentTarget
 import io.github.sds100.keymapper.system.volume.DndMode
 import io.github.sds100.keymapper.system.volume.RingerMode
@@ -15,6 +16,9 @@ import io.github.sds100.keymapper.util.getKey
 import io.github.sds100.keymapper.util.success
 import io.github.sds100.keymapper.util.then
 import io.github.sds100.keymapper.util.valueOrNull
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import splitties.bitflags.hasFlag
 
 /**
@@ -240,10 +244,15 @@ object ActionDataEntityMapper {
                     entity.extras.getData(ActionEntity.EXTRA_INTENT_DESCRIPTION).valueOrNull()
                         ?: return null
 
+                val intentExtras = entity.extras.getData(ActionEntity.EXTRA_INTENT_EXTRAS).then {
+                    Json.decodeFromString<List<IntentExtraModel>>(it).success()
+                }.valueOrNull()
+
                 return ActionData.Intent(
                     target = target,
                     description = description,
-                    uri = entity.data
+                    uri = entity.data,
+                    extras = intentExtras ?: emptyList()
                 )
             }
 
@@ -560,7 +569,8 @@ object ActionDataEntityMapper {
         is ActionData.Intent ->
             listOf(
                 Extra(ActionEntity.EXTRA_INTENT_DESCRIPTION, data.description),
-                Extra(ActionEntity.EXTRA_INTENT_TARGET, INTENT_TARGET_MAP[data.target]!!)
+                Extra(ActionEntity.EXTRA_INTENT_TARGET, INTENT_TARGET_MAP[data.target]!!),
+                Extra(ActionEntity.EXTRA_INTENT_EXTRAS, Json.encodeToString(data.extras))
             )
 
         is ActionData.InputKeyEvent -> sequence {
