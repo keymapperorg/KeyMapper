@@ -41,6 +41,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@{viewModel.recordButtonText}"
+                    android:enabled="@{viewModel.recordButtonEnabled}"
+                    android:alpha="@{viewModel.recordButtonAlpha}"
                     android:layout_marginEnd="8dp"
                     android:layout_weight="0.5"
                     android:onClick="@{() -> viewModel.onRecordButtonClick()}"

@@ -7,7 +7,6 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import io.github.sds100.keymapper.util.color
 import io.github.sds100.keymapper.util.drawable
-import io.github.sds100.keymapper.util.getDynamicStringValue
 import io.github.sds100.keymapper.util.str
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -50,10 +49,6 @@ class ResourceProviderImpl(
         return ctx.color(color)
     }
 
-    override fun getDynamicStringValue(name: String): String {
-        return ctx.getDynamicStringValue(name)
-    }
-
     fun onThemeChange() {
         coroutineScope.launch {
             onThemeChange.emit(Unit)
@@ -71,5 +66,4 @@ interface ResourceProvider {
     fun getDrawable(@DrawableRes resId: Int): Drawable
     fun getColor(@ColorRes color: Int): Int
 
-    fun getDynamicStringValue(name: String): String
 }

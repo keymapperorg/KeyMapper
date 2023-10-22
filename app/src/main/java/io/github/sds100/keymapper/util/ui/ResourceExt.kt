@@ -191,13 +191,3 @@ fun Context.obtainStyledAttr(@AttrRes attrRes: Int): TypedArray = if (isMainThre
     cachedAttrArray[0] = attrRes
     obtainStyledAttributes(cachedAttrArray)
 }
-
-fun Context.getDynamicStringValue(name: String): String {
-    val stringId = resources.getIdentifier(name, "string", packageName)
-    return str(stringId)
-}
-
-fun Fragment.getDynamicStringValue(name: String): String {
-    val stringId = resources.getIdentifier(name, "string", context?.packageName)
-    return str(stringId)
-}
