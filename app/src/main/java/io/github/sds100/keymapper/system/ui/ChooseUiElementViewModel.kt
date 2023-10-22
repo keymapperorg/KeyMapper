@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
+import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.apps.DisplayAppsUseCase
 import io.github.sds100.keymapper.system.apps.PACKAGE_INFO_TYPES
 import io.github.sds100.keymapper.system.apps.PackageUtils
@@ -13,10 +14,8 @@ import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.filterByQuery
 import io.github.sds100.keymapper.util.formatSeconds
 import io.github.sds100.keymapper.util.mapData
-import io.github.sds100.keymapper.util.ui.DefaultSimpleListItem
 import io.github.sds100.keymapper.util.ui.IconInfo
 import io.github.sds100.keymapper.util.ui.ResourceProvider
-import io.github.sds100.keymapper.util.ui.SimpleListItem
 import io.github.sds100.keymapper.util.valueOrNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -86,6 +85,17 @@ class ChooseUiElementViewModel constructor(
             is RecordUiElementsState.Stopped -> false
         }
     }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+    val recordButtonEnabled: StateFlow<Boolean> = serviceAdapter.state.map{ accessibilityServiceState ->
+        accessibilityServiceState == ServiceState.ENABLED
+    }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.Eagerly,  false)
+
+    val recordButtonAlpha: StateFlow<Float> = serviceAdapter.state.map{ accessibilityServiceState ->
+        when (accessibilityServiceState) {
+            ServiceState.ENABLED -> 1f
+            else -> 0.5f
+        }
+    }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.Eagerly,  1f)
 
     fun stopRecording() {
         viewModelScope.launch(Dispatchers.Default) {
