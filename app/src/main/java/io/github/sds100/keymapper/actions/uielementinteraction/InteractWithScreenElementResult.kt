@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.actions.uielementinteraction
 
 import kotlinx.serialization.Serializable
 
-enum class INTERACTIONTYPE {
+enum class InteractionType {
     CLICK,
     LONG_CLICK,
     SELECT,
@@ -22,6 +22,6 @@ data class InteractWithScreenElementResult(
     val fullName: String,
     val appName: String?,
     val onlyIfVisible: Boolean,
-    val interactionType: INTERACTIONTYPE,
+    val interactionType: InteractionType,
     val description: String
 )

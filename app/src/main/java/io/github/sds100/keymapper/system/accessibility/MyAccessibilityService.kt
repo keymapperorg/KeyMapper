@@ -26,7 +26,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
-import io.github.sds100.keymapper.actions.uielementinteraction.INTERACTIONTYPE
+import io.github.sds100.keymapper.actions.uielementinteraction.InteractionType
 import io.github.sds100.keymapper.api.Api
 import io.github.sds100.keymapper.api.IKeyEventReceiver
 import io.github.sds100.keymapper.api.IKeyEventReceiverCallback
@@ -687,7 +687,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
     override fun interactWithScreenElement(
         fullName: String,
         onlyIfVisible: Boolean,
-        interactiontype: INTERACTIONTYPE,
+        interactiontype: InteractionType,
         inputEventType: InputEventType
     ): Result<*> {
 
@@ -711,15 +711,15 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
 
                     val success = nodeToInteractWith.performAction(
                         when (interactiontype) {
-                            INTERACTIONTYPE.LONG_CLICK -> AccessibilityNodeInfo.ACTION_LONG_CLICK
-                            INTERACTIONTYPE.SELECT -> AccessibilityNodeInfo.ACTION_SELECT
-                            INTERACTIONTYPE.FOCUS -> AccessibilityNodeInfo.ACTION_FOCUS
-                            INTERACTIONTYPE.CLEAR_FOCUS -> AccessibilityNodeInfo.ACTION_CLEAR_FOCUS
-                            INTERACTIONTYPE.COLLAPSE -> AccessibilityNodeInfo.ACTION_COLLAPSE
-                            INTERACTIONTYPE.EXPAND -> AccessibilityNodeInfo.ACTION_EXPAND
-                            INTERACTIONTYPE.DISMISS -> AccessibilityNodeInfo.ACTION_DISMISS
-                            INTERACTIONTYPE.SCROLL_FORWARD -> AccessibilityNodeInfo.ACTION_SCROLL_FORWARD
-                            INTERACTIONTYPE.SCROLL_BACKWARD -> AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD
+                            InteractionType.LONG_CLICK -> AccessibilityNodeInfo.ACTION_LONG_CLICK
+                            InteractionType.SELECT -> AccessibilityNodeInfo.ACTION_SELECT
+                            InteractionType.FOCUS -> AccessibilityNodeInfo.ACTION_FOCUS
+                            InteractionType.CLEAR_FOCUS -> AccessibilityNodeInfo.ACTION_CLEAR_FOCUS
+                            InteractionType.COLLAPSE -> AccessibilityNodeInfo.ACTION_COLLAPSE
+                            InteractionType.EXPAND -> AccessibilityNodeInfo.ACTION_EXPAND
+                            InteractionType.DISMISS -> AccessibilityNodeInfo.ACTION_DISMISS
+                            InteractionType.SCROLL_FORWARD -> AccessibilityNodeInfo.ACTION_SCROLL_FORWARD
+                            InteractionType.SCROLL_BACKWARD -> AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD
                             else -> AccessibilityNodeInfo.ACTION_CLICK
                         }
                     )

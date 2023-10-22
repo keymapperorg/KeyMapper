@@ -69,7 +69,7 @@ class InteractWithScreenElementFragment : Fragment() {
             viewModel.showPackageInfoOnly = it
         }
 
-        interactionTypesDisplayValues = INTERACTIONTYPE.values().map {
+        interactionTypesDisplayValues = InteractionType.values().map {
             val stringName = "extra_label_interact_with_screen_element_interaction_type_${
                 it.name.lowercase(
                     Locale.ROOT

@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.actions
 
 import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
-import io.github.sds100.keymapper.actions.uielementinteraction.INTERACTIONTYPE
+import io.github.sds100.keymapper.actions.uielementinteraction.InteractionType
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.Extra
 import io.github.sds100.keymapper.data.entities.getData
@@ -230,7 +230,7 @@ object ActionDataEntityMapper {
                     fullName = fullName,
                     appName = appName,
                     onlyIfVisible = onlyIfVisible,
-                    interactiontype = INTERACTIONTYPE.valueOf(interactiontype),
+                    interactiontype = InteractionType.valueOf(interactiontype),
                     description = description
                 )
             }

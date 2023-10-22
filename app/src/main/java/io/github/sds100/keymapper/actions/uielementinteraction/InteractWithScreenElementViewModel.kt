@@ -38,9 +38,9 @@ class InteractWithScreenElementViewModel(
     NavigationViewModel by NavigationViewModelImpl(),
     DisplayAppsUseCase by displayAppsUseCase {
 
-    private val _interactionTypes = INTERACTIONTYPE.values().map { it.name }
-    private val _interactionType: MutableStateFlow<INTERACTIONTYPE?> =
-        MutableStateFlow(INTERACTIONTYPE.values().first())
+    private val _interactionTypes = InteractionType.values().map { it.name }
+    private val _interactionType: MutableStateFlow<InteractionType?> =
+        MutableStateFlow(InteractionType.values().first())
 
     private val _returnResult = MutableSharedFlow<InteractWithScreenElementResult>()
     val returnResult = _returnResult.asSharedFlow()
@@ -63,7 +63,7 @@ class InteractWithScreenElementViewModel(
     }.stateIn(viewModelScope, SharingStarted.Lazily, 0)
 
     private fun setInteractionType(type: String) {
-        _interactionType.value = INTERACTIONTYPE.valueOf(type.uppercase(Locale.ROOT))
+        _interactionType.value = InteractionType.valueOf(type.uppercase(Locale.ROOT))
     }
 
     fun onInteractionTypeSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
