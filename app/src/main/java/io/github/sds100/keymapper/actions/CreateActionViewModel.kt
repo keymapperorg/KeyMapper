@@ -418,7 +418,7 @@ class CreateActionViewModelImpl(
                         oldData.fullName,
                         oldData.appName,
                         oldData.onlyIfVisible,
-                        oldData.interactiontype,
+                        oldData.interactionType,
                         oldData.description ?: ""
                     )
                 } else {

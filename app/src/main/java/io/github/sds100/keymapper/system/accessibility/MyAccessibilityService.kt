@@ -12,7 +12,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.ServiceConnection
-import android.content.res.Configuration
 import android.graphics.Path
 import android.graphics.Point
 import android.os.Build
@@ -42,7 +41,6 @@ import io.github.sds100.keymapper.util.Success
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import timber.log.Timber
-import kotlin.math.max
 
 
 /**

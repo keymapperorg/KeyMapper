@@ -344,7 +344,7 @@ sealed class ActionData {
         val fullName: String,
         val appName: String?,
         val onlyIfVisible: Boolean,
-        val interactiontype: InteractionType,
+        val interactionType: InteractionType,
         val description: String?,
     ) : ActionData() {
         override val id = ActionId.INTERACT_WITH_SCREEN_ELEMENT

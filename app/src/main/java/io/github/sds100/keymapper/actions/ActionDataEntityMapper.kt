@@ -230,7 +230,7 @@ object ActionDataEntityMapper {
                     fullName = fullName,
                     appName = appName,
                     onlyIfVisible = onlyIfVisible,
-                    interactiontype = InteractionType.valueOf(interactiontype),
+                    interactionType = InteractionType.valueOf(interactiontype),
                     description = description
                 )
             }
@@ -558,7 +558,7 @@ object ActionDataEntityMapper {
         is ActionData.TapScreen -> "${data.x},${data.y}"
         is ActionData.SwipeScreen -> "${data.xStart},${data.yStart},${data.xEnd},${data.yEnd},${data.fingerCount},${data.duration}"
         is ActionData.PinchScreen -> "${data.x},${data.y},${data.distance},${data.pinchType},${data.fingerCount},${data.duration}"
-        is ActionData.InteractWithScreenElement -> "${data.elementId},${data.packageName},${data.fullName},${data.appName},${data.onlyIfVisible},${data.interactiontype}"
+        is ActionData.InteractWithScreenElement -> "${data.elementId},${data.packageName},${data.fullName},${data.appName},${data.onlyIfVisible},${data.interactionType}"
         is ActionData.Text -> data.text
         is ActionData.Url -> data.url
         is ActionData.Sound -> data.soundUid

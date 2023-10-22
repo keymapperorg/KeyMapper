@@ -304,7 +304,7 @@ class PerformActionsUseCaseImpl(
             }
 
             is ActionData.InteractWithScreenElement -> {
-                result = accessibilityService.interactWithScreenElement(action.fullName, action.onlyIfVisible, action.interactiontype, inputEventType)
+                result = accessibilityService.interactWithScreenElement(action.fullName, action.onlyIfVisible, action.interactionType, inputEventType)
             }
 
             is ActionData.Text -> {

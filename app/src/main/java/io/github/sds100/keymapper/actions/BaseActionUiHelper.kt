@@ -361,7 +361,7 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
                     R.string.description_interact_with_screen_element_default, arrayOf(
                         getDynamicStringValue(
                             "extra_label_interact_with_screen_element_interaction_type_${
-                                action.interactiontype.toString().lowercase()
+                                action.interactionType.toString().lowercase()
                             }"
                         ), action.elementId, action.appName ?: action.packageName
                     )
@@ -372,7 +372,7 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
                     arrayOf(
                         getDynamicStringValue(
                             "extra_label_interact_with_screen_element_interaction_type_${
-                                action.interactiontype.toString().lowercase()
+                                action.interactionType.toString().lowercase()
                             }"
                         ),
                         action.elementId,
