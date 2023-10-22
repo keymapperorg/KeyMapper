@@ -41,7 +41,3 @@ fun AccessibilityNodeInfo.toModel(): AccessibilityNodeModel {
         isEditable = isEditable
     )
 }
-
-fun AccessibilityEvent.toModel(): AccessibilityEventModel {
-    return AccessibilityEventModel(eventTime)
-}

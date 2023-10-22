@@ -443,14 +443,14 @@ class AccessibilityServiceController(
         )
     }
 
-    fun onAccessibilityEvent(event: AccessibilityEventModel?, originalEvent: AccessibilityEvent?) {
+    fun onAccessibilityEvent(event: AccessibilityEvent?) {
         Timber.d("OnAccessibilityEvent $event")
 
         /**
          * Record UI elements and store them into the DB
          */
-        if (recordingUiElements && originalEvent != null && RECORD_UI_ELEMENTS_EVENT_TYPES.contains(
-                originalEvent.eventType
+        if (recordingUiElements && event != null && RECORD_UI_ELEMENTS_EVENT_TYPES.contains(
+                event.eventType
             )
         ) {
             val foundViewIds = accessibilityService.fetchAvailableUIElements(false)
