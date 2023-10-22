@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.actions
 import android.view.KeyEvent
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
+import io.github.sds100.keymapper.actions.uielementinteraction.InteractionType
 import io.github.sds100.keymapper.mappings.DisplayActionUseCase
 import io.github.sds100.keymapper.mappings.Mapping
 import io.github.sds100.keymapper.system.camera.CameraLensUtils
@@ -357,24 +358,48 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
             }
 
             is ActionData.InteractWithScreenElement -> if (action.description.isNullOrBlank()) {
+
+                val interactionTypeDisplayValue = InteractionType.values().map {
+                    when (action.interactionType)  {
+                        InteractionType.CLICK -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_click)
+                        InteractionType.LONG_CLICK -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_long_click)
+                        InteractionType.SELECT -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_select)
+                        InteractionType.FOCUS -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_focus)
+                        InteractionType.CLEAR_FOCUS -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_clear_focus)
+                        InteractionType.COLLAPSE -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_collapse)
+                        InteractionType.EXPAND -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_expand)
+                        InteractionType.DISMISS -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_dismiss)
+                        InteractionType.SCROLL_FORWARD -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_scroll_forward)
+                        InteractionType.SCROLL_BACKWARD -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_scroll_backward)
+                    }
+                }
+
                 getString(
                     R.string.description_interact_with_screen_element_default, arrayOf(
-                        getDynamicStringValue(
-                            "extra_label_interact_with_screen_element_interaction_type_${
-                                action.interactionType.toString().lowercase()
-                            }"
-                        ), action.elementId, action.appName ?: action.packageName
+                        interactionTypeDisplayValue, action.elementId, action.appName ?: action.packageName
                     )
                 )
             } else {
+
+                val interactionTypeDisplayValue = InteractionType.values().map {
+                    when (action.interactionType)  {
+                        InteractionType.CLICK -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_click)
+                        InteractionType.LONG_CLICK -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_long_click)
+                        InteractionType.SELECT -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_select)
+                        InteractionType.FOCUS -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_focus)
+                        InteractionType.CLEAR_FOCUS -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_clear_focus)
+                        InteractionType.COLLAPSE -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_collapse)
+                        InteractionType.EXPAND -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_expand)
+                        InteractionType.DISMISS -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_dismiss)
+                        InteractionType.SCROLL_FORWARD -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_scroll_forward)
+                        InteractionType.SCROLL_BACKWARD -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_scroll_backward)
+                    }
+                }
+
                 getString(
                     R.string.description_interact_with_screen_element_default_with_description,
                     arrayOf(
-                        getDynamicStringValue(
-                            "extra_label_interact_with_screen_element_interaction_type_${
-                                action.interactionType.toString().lowercase()
-                            }"
-                        ),
+                        interactionTypeDisplayValue,
                         action.elementId,
                         action.appName ?: action.packageName,
                         action.description

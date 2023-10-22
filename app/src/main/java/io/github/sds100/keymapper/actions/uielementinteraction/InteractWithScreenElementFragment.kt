@@ -16,7 +16,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import io.github.sds100.keymapper.databinding.FragmentInteractWithScreenElementBinding
 import io.github.sds100.keymapper.util.Inject
-import io.github.sds100.keymapper.util.getDynamicStringValue
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.setupNavigation
 import io.github.sds100.keymapper.util.ui.showPopups
@@ -24,7 +23,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import java.util.Locale
+import io.github.sds100.keymapper.R
 
 class InteractWithScreenElementFragment : Fragment() {
     companion object {
@@ -70,13 +69,18 @@ class InteractWithScreenElementFragment : Fragment() {
         }
 
         interactionTypesDisplayValues = InteractionType.values().map {
-            val stringName = "extra_label_interact_with_screen_element_interaction_type_${
-                it.name.lowercase(
-                    Locale.ROOT
-                )
-            }"
-
-            getDynamicStringValue(stringName)
+            when (it)  {
+                InteractionType.CLICK -> resources.getString(R.string.extra_label_interact_with_screen_element_interaction_type_click)
+                InteractionType.LONG_CLICK -> resources.getString(R.string.extra_label_interact_with_screen_element_interaction_type_long_click)
+                InteractionType.SELECT -> resources.getString(R.string.extra_label_interact_with_screen_element_interaction_type_select)
+                InteractionType.FOCUS -> resources.getString(R.string.extra_label_interact_with_screen_element_interaction_type_focus)
+                InteractionType.CLEAR_FOCUS -> resources.getString(R.string.extra_label_interact_with_screen_element_interaction_type_clear_focus)
+                InteractionType.COLLAPSE -> resources.getString(R.string.extra_label_interact_with_screen_element_interaction_type_collapse)
+                InteractionType.EXPAND -> resources.getString(R.string.extra_label_interact_with_screen_element_interaction_type_expand)
+                InteractionType.DISMISS -> resources.getString(R.string.extra_label_interact_with_screen_element_interaction_type_dismiss)
+                InteractionType.SCROLL_FORWARD -> resources.getString(R.string.extra_label_interact_with_screen_element_interaction_type_scroll_forward)
+                InteractionType.SCROLL_BACKWARD -> resources.getString(R.string.extra_label_interact_with_screen_element_interaction_type_scroll_backward)
+            }
         }.toMutableList()
     }
 
