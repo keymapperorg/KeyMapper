@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name" translatable="false">Key Mapper</string>
-    <string name="developer_email" translatable="false">developer.sds100@gmail.com</string>
     <string name="slogan">Unleash your keys!</string>
 
     <string name="no_action_chosen">No action chosen</string>
