@@ -36,7 +36,12 @@ interface IAccessibilityService {
         inputEventType: InputEventType
     ): Result<*>
 
-    fun interactWithScreenElement(fullName: String, onlyIfVisible: Boolean, interactiontype: InteractionType, inputEventType: InputEventType): Result<*>
+    fun interactWithScreenElement(
+        fullName: String,
+        onlyIfVisible: Boolean,
+        interactionType: InteractionType,
+        inputEventType: InputEventType
+    ): Result<*>
 
     fun fetchAvailableUIElements(onlyVisibleElements: Boolean = false): List<String>
 

@@ -19,6 +19,7 @@ import io.github.sds100.keymapper.util.handle
 import io.github.sds100.keymapper.util.ui.IconInfo
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.TintType
+import io.github.sds100.keymapper.util.valueOrNull
 import splitties.bitflags.hasFlag
 
 /**
@@ -357,7 +358,9 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
                 )
             }
 
-            is ActionData.InteractWithScreenElement -> if (action.description.isNullOrBlank()) {
+            is ActionData.InteractWithScreenElement -> {
+                val appName = getAppName(action.uiElement.packageName).valueOrNull() ?: action.uiElement.packageName
+                if (action.description.isNullOrBlank()) {
 
                 val interactionTypeDisplayValue = when (action.interactionType)  {
                     InteractionType.CLICK -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_click)
@@ -372,12 +375,12 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
                     InteractionType.SCROLL_BACKWARD -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_scroll_backward)
                 }
 
-                getString(
-                    R.string.description_interact_with_screen_element_default, arrayOf(
-                        interactionTypeDisplayValue, action.elementId, action.appName ?: action.packageName
+                    getString(
+                        R.string.description_interact_with_screen_element_default, arrayOf(
+                            interactionTypeDisplayValue, action.uiElement.elementName, appName
+                        )
                     )
-                )
-            } else {
+                } else {
 
                 val interactionTypeDisplayValue = when (action.interactionType)  {
                     InteractionType.CLICK -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_click)
@@ -392,15 +395,16 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
                     InteractionType.SCROLL_BACKWARD -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_scroll_backward)
                 }
 
-                getString(
-                    R.string.description_interact_with_screen_element_default_with_description,
-                    arrayOf(
-                        interactionTypeDisplayValue,
-                        action.elementId,
-                        action.appName ?: action.packageName,
-                        action.description
+                    getString(
+                        R.string.description_interact_with_screen_element_default_with_description,
+                        arrayOf(
+                            interactionTypeDisplayValue,
+                            action.uiElement.elementName,
+                            appName,
+                            action.description
+                        )
                     )
-                )
+                }
             }
 
             is ActionData.Text -> getString(R.string.description_text_block, action.text)

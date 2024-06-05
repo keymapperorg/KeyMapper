@@ -43,7 +43,21 @@ import io.github.sds100.keymapper.system.url.OpenUrlAdapter
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import io.github.sds100.keymapper.system.volume.VolumeStream
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.Error
+import io.github.sds100.keymapper.util.Event
+import io.github.sds100.keymapper.util.InputEventType
+import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.util.Success
+import io.github.sds100.keymapper.util.dataOrNull
+import io.github.sds100.keymapper.util.firstBlocking
+import io.github.sds100.keymapper.util.getFullMessage
+import io.github.sds100.keymapper.util.getWordBoundaries
+import io.github.sds100.keymapper.util.ifIsData
+import io.github.sds100.keymapper.util.onFailure
+import io.github.sds100.keymapper.util.onSuccess
+import io.github.sds100.keymapper.util.otherwise
+import io.github.sds100.keymapper.util.success
+import io.github.sds100.keymapper.util.then
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -304,7 +318,12 @@ class PerformActionsUseCaseImpl(
             }
 
             is ActionData.InteractWithScreenElement -> {
-                result = accessibilityService.interactWithScreenElement(action.fullName, action.onlyIfVisible, action.interactionType, inputEventType)
+                result = accessibilityService.interactWithScreenElement(
+                    action.uiElement.fullName,
+                    action.onlyIfVisible,
+                    action.interactionType,
+                    inputEventType
+                )
             }
 
             is ActionData.Text -> {

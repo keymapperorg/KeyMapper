@@ -11,11 +11,11 @@ import io.github.sds100.keymapper.actions.keyevent.ChooseKeyCodeViewModel
 import io.github.sds100.keymapper.actions.keyevent.ConfigKeyEventActionViewModel
 import io.github.sds100.keymapper.actions.keyevent.ConfigKeyEventUseCaseImpl
 import io.github.sds100.keymapper.actions.pinchscreen.PinchPickDisplayCoordinateViewModel
-import io.github.sds100.keymapper.actions.uielementinteraction.InteractWithScreenElementViewModel
 import io.github.sds100.keymapper.actions.sound.ChooseSoundFileUseCaseImpl
 import io.github.sds100.keymapper.actions.sound.ChooseSoundFileViewModel
 import io.github.sds100.keymapper.actions.swipescreen.SwipePickDisplayCoordinateViewModel
 import io.github.sds100.keymapper.actions.tapscreen.PickDisplayCoordinateViewModel
+import io.github.sds100.keymapper.actions.uielementinteraction.InteractWithScreenElementViewModel
 import io.github.sds100.keymapper.backup.BackupRestoreMappingsUseCaseImpl
 import io.github.sds100.keymapper.constraints.ChooseConstraintViewModel
 import io.github.sds100.keymapper.constraints.CreateConstraintUseCaseImpl
@@ -95,7 +95,6 @@ object Inject {
 
     fun chooseUiElementViewModel(context: Context): ChooseUiElementViewModel.Factory {
         return ChooseUiElementViewModel.Factory(
-            UseCases.displayUiElements(context),
             ServiceLocator.resourceProvider(context),
             (context.applicationContext as KeyMapperApp).recordUiElementsController,
             ServiceLocator.accessibilityServiceAdapter(context),
@@ -298,9 +297,7 @@ object Inject {
             devicesAdapter = ServiceLocator.devicesAdapter(service),
             suAdapter = ServiceLocator.suAdapter(service),
             rerouteKeyEventsUseCase = UseCases.rerouteKeyEvents(service),
-            inputMethodAdapter = ServiceLocator.inputMethodAdapter(service),
             settingsRepository = ServiceLocator.settingsRepository(service),
-            viewIdRepository = ServiceLocator.viewIdRepository(service)
         )
     }
 

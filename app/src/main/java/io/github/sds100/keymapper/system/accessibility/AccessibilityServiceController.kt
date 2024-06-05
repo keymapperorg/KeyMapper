@@ -7,14 +7,12 @@ import android.os.SystemClock
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
-import io.github.sds100.keymapper.BuildConfig
+import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.data.Keys
-import io.github.sds100.keymapper.data.entities.ViewIdEntity
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.data.repositories.ViewIdRepository
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
 import io.github.sds100.keymapper.mappings.fingerprintmaps.DetectFingerprintMapsUseCase
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintGestureMapController
@@ -29,8 +27,8 @@ import io.github.sds100.keymapper.system.apps.PACKAGE_INFO_TYPES
 import io.github.sds100.keymapper.system.apps.PackageUtils
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
-import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
+import io.github.sds100.keymapper.system.ui.UiElementInfo
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.firstBlocking
 import kotlinx.coroutines.CoroutineScope
@@ -73,9 +71,7 @@ class AccessibilityServiceController(
     private val pauseMappingsUseCase: PauseMappingsUseCase,
     private val devicesAdapter: DevicesAdapter,
     private val suAdapter: SuAdapter,
-    private val inputMethodAdapter: InputMethodAdapter,
-    private val settingsRepository: PreferenceRepository,
-    private val viewIdRepository: ViewIdRepository
+    private val settingsRepository: PreferenceRepository
 ) {
 
     companion object {
@@ -449,32 +445,38 @@ class AccessibilityServiceController(
         /**
          * Record UI elements and store them into the DB
          */
-        if (recordingUiElements && event != null && RECORD_UI_ELEMENTS_EVENT_TYPES.contains(
-                event.eventType
-            )
+        if (recordingUiElements
+            && event != null
+            && RECORD_UI_ELEMENTS_EVENT_TYPES.contains(event.eventType)
         ) {
             val foundViewIds = accessibilityService.fetchAvailableUIElements(false)
 
             if (foundViewIds.isNotEmpty()) {
-                foundViewIds.forEachIndexed { _, item ->
-                    val elementId = PackageUtils.getInfoFromFullyQualifiedViewName(
-                        item,
-                        PACKAGE_INFO_TYPES.TYPE_VIEW_ID
-                    )
+                for (viewId in foundViewIds) {
                     val packageName = PackageUtils.getInfoFromFullyQualifiedViewName(
-                        item,
+                        viewId,
                         PACKAGE_INFO_TYPES.TYPE_PACKAGE_NAME
+                    ) ?: continue
+
+                    // Do not record events within Key Mapper to prevent infinite loops
+                    // when the list of UI elements changes in response to this feature.
+                    if (packageName == Constants.PACKAGE_NAME) {
+                        continue
+                    }
+
+                    val elementId = PackageUtils.getInfoFromFullyQualifiedViewName(
+                        viewId,
+                        PACKAGE_INFO_TYPES.TYPE_VIEW_ID
+                    ) ?: continue
+
+                    val model = UiElementInfo(
+                        elementName = elementId,
+                        packageName = packageName,
+                        fullName = viewId
                     )
 
-                    if (elementId != null && packageName != null && packageName != BuildConfig.APPLICATION_ID) {
-                        viewIdRepository.insert(
-                            ViewIdEntity(
-                                id = 0,
-                                viewId = elementId,
-                                packageName = packageName,
-                                fullName = item
-                            )
-                        )
+                    coroutineScope.launch {
+                        outputEvents.emit(Event.OnRecordUiElement(model))
                     }
                 }
             }
@@ -548,10 +550,6 @@ class AccessibilityServiceController(
                         outputEvents.emit(Event.OnStoppedRecordingUiElements)
                     }
                 }
-            }
-
-            is Event.ClearRecordedUiElements -> coroutineScope.launch {
-                viewIdRepository.deleteAll()
             }
 
             else -> Unit

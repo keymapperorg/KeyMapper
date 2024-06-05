@@ -4,14 +4,24 @@ import android.accessibilityservice.GestureDescription
 import android.graphics.Bitmap
 import android.graphics.Point
 import android.os.Build
-import android.view.View
-import android.widget.AdapterView
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.util.ui.*
-import kotlinx.coroutines.flow.*
+import io.github.sds100.keymapper.util.ui.PopupUi
+import io.github.sds100.keymapper.util.ui.PopupViewModel
+import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
+import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.util.ui.showPopup
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -238,7 +248,7 @@ class PinchPickDisplayCoordinateViewModel(
         }
     }
 
-    fun onPinchTypeSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+    fun onPinchTypeSelected(position: Int) {
         this.setPinchType(pinchTypes[position])
     }
 

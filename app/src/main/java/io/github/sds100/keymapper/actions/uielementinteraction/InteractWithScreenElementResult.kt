@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.actions.uielementinteraction
 
+import io.github.sds100.keymapper.system.ui.UiElementInfo
 import kotlinx.serialization.Serializable
 
 enum class InteractionType {
@@ -17,10 +18,7 @@ enum class InteractionType {
 
 @Serializable
 data class InteractWithScreenElementResult(
-    val elementId: String,
-    val packageName: String,
-    val fullName: String,
-    val appName: String?,
+    val uiElement: UiElementInfo,
     val onlyIfVisible: Boolean,
     val interactionType: InteractionType,
     val description: String

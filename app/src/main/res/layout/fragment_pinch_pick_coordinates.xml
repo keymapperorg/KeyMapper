@@ -138,7 +138,7 @@
                         android:adapter="@{pinchTypeSpinnerAdapter}"
                         android:hint="@string/hint_coordinate_pinch_type"
                         android:minHeight="48dp"
-                        android:onItemSelected="@{(parent, view, position, id) -> viewModel.onPinchTypeSelected(parent, view, position, id)}"
+                        android:onItemSelected="@{(parent, view, position, id) -> viewModel.onPinchTypeSelected(position)}"
                         android:selectedItemPosition="@{viewModel.pinchTypeSpinnerSelection}" />
 
                 </LinearLayout>

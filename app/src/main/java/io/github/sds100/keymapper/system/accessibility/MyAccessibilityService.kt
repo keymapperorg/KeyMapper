@@ -288,7 +288,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        controller?.onAccessibilityEvent(event?.toModel(), event)
+        controller?.onAccessibilityEvent(event)
     }
 
     override fun onKeyEvent(event: KeyEvent?): Boolean {
@@ -414,26 +414,21 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
     }
 
     override fun fetchAvailableUIElements(onlyVisibleElements: Boolean): List<String> {
-        val viewIds = arrayListOf<String>()
-
-        if (rootInActiveWindow != null) {
-            viewIds.addAll(findViewIdResourceNames(rootInActiveWindow, onlyVisibleElements))
-        } else {
+        if (rootInActiveWindow == null) {
             Timber.d("fetchAvailableUIElements NO ROOT WINDOW")
+            return emptyList()
         }
 
-        val sorted = viewIds.distinct().sorted()
+        val viewIds = findViewIdResourceNames(rootInActiveWindow, onlyVisibleElements)
 
-        return sorted.ifEmpty {
-            emptyList()
-        }
+        return viewIds.distinct().sorted()
     }
 
     private fun findViewIdResourceNames(
         node: AccessibilityNodeInfo,
         onlyVisibleElements: Boolean
     ): List<String> {
-        val list = arrayListOf<String>()
+        val list = mutableListOf<String>()
 
         for (i in 0 until node.childCount) {
             val child = node.getChild(i)
@@ -685,7 +680,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
     override fun interactWithScreenElement(
         fullName: String,
         onlyIfVisible: Boolean,
-        interactiontype: InteractionType,
+        interactionType: InteractionType,
         inputEventType: InputEventType
     ): Result<*> {
 
@@ -693,7 +688,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
             "interactWithScreenElement fullName: %s, onlyIfVisible: %s, interactionType: %s",
             fullName,
             onlyIfVisible.toString(),
-            interactiontype.name
+            interactionType.name
         )
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -708,7 +703,7 @@ class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessib
                     }
 
                     val success = nodeToInteractWith.performAction(
-                        when (interactiontype) {
+                        when (interactionType) {
                             InteractionType.LONG_CLICK -> AccessibilityNodeInfo.ACTION_LONG_CLICK
                             InteractionType.SELECT -> AccessibilityNodeInfo.ACTION_SELECT
                             InteractionType.FOCUS -> AccessibilityNodeInfo.ACTION_FOCUS

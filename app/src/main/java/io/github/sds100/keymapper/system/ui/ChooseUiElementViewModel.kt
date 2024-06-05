@@ -7,17 +7,15 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.apps.DisplayAppsUseCase
-import io.github.sds100.keymapper.system.apps.PACKAGE_INFO_TYPES
-import io.github.sds100.keymapper.system.apps.PackageUtils
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.filterByQuery
 import io.github.sds100.keymapper.util.formatSeconds
-import io.github.sds100.keymapper.util.mapData
 import io.github.sds100.keymapper.util.ui.IconInfo
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.valueOrNull
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -36,16 +34,14 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.Locale
 
-class ChooseUiElementViewModel constructor(
-    useCase: DisplayUiElementsUseCase,
+class ChooseUiElementViewModel(
     resourceProvider: ResourceProvider,
-    recordUiElements: RecordUiElementsUseCase,
+    private val recordUiElements: RecordUiElementsUseCase,
     serviceAdapter: ServiceAdapter,
     displayAppsUseCase: DisplayAppsUseCase,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
-    DisplayAppsUseCase by displayAppsUseCase
-{
+    DisplayAppsUseCase by displayAppsUseCase {
 
     private val _serviceAdapter = serviceAdapter
 
@@ -56,10 +52,8 @@ class ChooseUiElementViewModel constructor(
     )
     val state = _state.asStateFlow()
 
-    private val allAppListItems = useCase.uiElements.map { state ->
-        state.mapData { uiElements ->
-            uiElements.buildListItems()
-        }
+    private val allUiElementListItems: Flow<List<UiElementInfoListItem>> = recordUiElements.uiElements.map { model ->
+        buildListItems(model)
     }.flowOn(Dispatchers.Default)
 
     private val _returnResult = MutableSharedFlow<UiElementInfo>()
@@ -67,7 +61,11 @@ class ChooseUiElementViewModel constructor(
 
     val recordButtonText: StateFlow<String> = recordUiElements.state.map { recordUiElementsState ->
         when (recordUiElementsState) {
-            is RecordUiElementsState.CountingDown -> getString(R.string.button_label_choose_ui_element_record_button_text_active, formatSeconds(recordUiElementsState.timeLeft))
+            is RecordUiElementsState.CountingDown -> getString(
+                R.string.button_label_choose_ui_element_record_button_text_active,
+                formatSeconds(recordUiElementsState.timeLeft)
+            )
+
             is RecordUiElementsState.Stopped -> getString(R.string.button_label_choose_ui_element_record_button_text_start)
         }
     }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.Eagerly, getString(R.string.button_label_choose_ui_element_record_button_text_start))
@@ -104,23 +102,12 @@ class ChooseUiElementViewModel constructor(
     }
 
     init {
-
-        viewModelScope.launch {
-            useCase.updateUiElementsList()
-        }
-
         combine(
-            allAppListItems,
+            allUiElementListItems,
             searchQuery
-        ) { allAppListItems, query ->
-            when (allAppListItems) {
-                is State.Data -> {
-                    allAppListItems.data.filterByQuery(query).collectLatest { filteredListItems ->
-                        _state.value = UiElementsListState(filteredListItems)
-                    }
-                }
-
-                is State.Loading -> _state.value = UiElementsListState(State.Loading)
+        ) { listItems, query ->
+            listItems.filterByQuery(query).collectLatest { filteredListItems ->
+                _state.value = UiElementsListState(filteredListItems)
             }
         }.launchIn(viewModelScope)
     }
@@ -130,19 +117,11 @@ class ChooseUiElementViewModel constructor(
 
         stopRecording()
 
-        val elementViewId = PackageUtils.getInfoFromFullyQualifiedViewName(id, PACKAGE_INFO_TYPES.TYPE_VIEW_ID)
-        val elementPackageName = PackageUtils.getInfoFromFullyQualifiedViewName(id, PACKAGE_INFO_TYPES.TYPE_PACKAGE_NAME)
+        val model = recordUiElements.uiElements.value.find { it.fullName == id }
 
-        if (elementViewId != null && elementPackageName != null) {
+        if (model != null) {
             viewModelScope.launch {
-                _returnResult.emit(
-                    UiElementInfo(
-                        elementName = elementViewId,
-                        packageName = elementPackageName,
-                        fullName = id,
-                        appName = getAppName(elementPackageName).valueOrNull()
-                    )
-                )
+                _returnResult.emit(model)
             }
         }
     }
@@ -161,20 +140,20 @@ class ChooseUiElementViewModel constructor(
 
     fun onClearListButtonClick() {
         viewModelScope.launch(Dispatchers.Default) {
-            _serviceAdapter.send(Event.StopRecordingUiElements)
-            _serviceAdapter.send(Event.ClearRecordedUiElements)
+            recordUiElements.stopRecording()
+            recordUiElements.clearElements()
         }
     }
 
-    private suspend fun List<UiElementInfo>.buildListItems(): List<UiElementInfoListItem> = flow {
-
-        forEach { uiElementInfo ->
+    private suspend fun buildListItems(model: List<UiElementInfo>): List<UiElementInfoListItem> = flow {
+        for (uiElementInfo in model) {
             val icon = getAppIcon(uiElementInfo.packageName).valueOrNull()
+            val appName = getAppName(uiElementInfo.packageName).valueOrNull()
 
             val listItem = UiElementInfoListItem(
                 id = uiElementInfo.fullName,
                 title = uiElementInfo.elementName,
-                subtitle = uiElementInfo.appName ?: uiElementInfo.packageName,
+                subtitle = appName ?: uiElementInfo.packageName,
                 icon = if (icon != null) IconInfo(icon) else null
             )
 
@@ -189,7 +168,6 @@ class ChooseUiElementViewModel constructor(
     }
 
     class Factory(
-        private val useCase: DisplayUiElementsUseCase,
         private val resourceProvider: ResourceProvider,
         private val recordUiElements: RecordUiElementsUseCase,
         private val serviceAdapter: ServiceAdapter,
@@ -198,7 +176,7 @@ class ChooseUiElementViewModel constructor(
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>) =
-            ChooseUiElementViewModel(useCase, resourceProvider, recordUiElements, serviceAdapter, displayAppsUseCase) as T
+            ChooseUiElementViewModel(resourceProvider, recordUiElements, serviceAdapter, displayAppsUseCase) as T
     }
 }
 

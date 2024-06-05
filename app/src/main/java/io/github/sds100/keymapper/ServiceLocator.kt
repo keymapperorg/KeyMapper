@@ -12,9 +12,7 @@ import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.data.repositories.RoomFingerprintMapRepository
 import io.github.sds100.keymapper.data.repositories.RoomKeyMapRepository
 import io.github.sds100.keymapper.data.repositories.RoomLogRepository
-import io.github.sds100.keymapper.data.repositories.RoomViewIdRepository
 import io.github.sds100.keymapper.data.repositories.SettingsPreferenceRepository
-import io.github.sds100.keymapper.data.repositories.ViewIdRepository
 import io.github.sds100.keymapper.logging.LogRepository
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapRepository
 import io.github.sds100.keymapper.shizuku.ShizukuAdapter
@@ -120,20 +118,6 @@ object ServiceLocator {
                 database(context).logEntryDao(),
             ).also {
                 this.logRepository = it
-            }
-        }
-    }
-
-    @Volatile
-    private var IRoomViewIdRepository: ViewIdRepository? = null
-
-    fun viewIdRepository(context: Context): ViewIdRepository {
-        synchronized(this) {
-            return IRoomViewIdRepository ?: RoomViewIdRepository(
-                database(context).viewIdDao(),
-                (context.applicationContext as KeyMapperApp).appCoroutineScope,
-            ).also {
-                this.IRoomViewIdRepository = it
             }
         }
     }
@@ -315,8 +299,7 @@ object ServiceLocator {
             AppDatabase.MIGRATION_9_10,
             AppDatabase.MIGRATION_10_11,
             AppDatabase.RoomMigration_11_12(context.applicationContext.legacyFingerprintMapDataStore),
-            AppDatabase.MIGRATION_12_13,
-            AppDatabase.MIGRATION_13_14
+            AppDatabase.MIGRATION_12_13
         ).build()
     }
 }

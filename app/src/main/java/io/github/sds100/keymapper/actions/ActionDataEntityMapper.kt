@@ -9,6 +9,7 @@ import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.system.intents.IntentExtraModel
 import io.github.sds100.keymapper.system.intents.IntentTarget
+import io.github.sds100.keymapper.system.ui.UiElementInfo
 import io.github.sds100.keymapper.system.volume.DndMode
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeStream
@@ -217,20 +218,20 @@ object ActionDataEntityMapper {
                 val elementId = splitData[0]
                 val packageName = splitData[1]
                 val fullName = splitData[2]
-                val appName = splitData[3]
-                val onlyIfVisible = splitData[4].toBoolean()
-                val interactiontype = splitData[5]
+                val onlyIfVisible = splitData[3].toBoolean()
+                val interactionType = splitData[4]
 
                 val description = entity.extras.getData(ActionEntity.EXTRA_ELEMENT_DESCRIPTION)
                     .valueOrNull()
 
                 ActionData.InteractWithScreenElement(
-                    elementId = elementId,
-                    packageName = packageName,
-                    fullName = fullName,
-                    appName = appName,
+                    UiElementInfo(
+                        elementName = elementId,
+                        packageName = packageName,
+                        fullName = fullName,
+                    ),
                     onlyIfVisible = onlyIfVisible,
-                    interactionType = InteractionType.valueOf(interactiontype),
+                    interactionType = InteractionType.valueOf(interactionType),
                     description = description
                 )
             }
@@ -558,7 +559,7 @@ object ActionDataEntityMapper {
         is ActionData.TapScreen -> "${data.x},${data.y}"
         is ActionData.SwipeScreen -> "${data.xStart},${data.yStart},${data.xEnd},${data.yEnd},${data.fingerCount},${data.duration}"
         is ActionData.PinchScreen -> "${data.x},${data.y},${data.distance},${data.pinchType},${data.fingerCount},${data.duration}"
-        is ActionData.InteractWithScreenElement -> "${data.elementId},${data.packageName},${data.fullName},${data.appName},${data.onlyIfVisible},${data.interactionType}"
+        is ActionData.InteractWithScreenElement -> "${data.uiElement.elementName},${data.uiElement.packageName},${data.uiElement.fullName},${data.onlyIfVisible},${data.interactionType}"
         is ActionData.Text -> data.text
         is ActionData.Url -> data.url
         is ActionData.Sound -> data.soundUid

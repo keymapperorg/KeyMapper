@@ -8,9 +8,25 @@ import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.getFullMessage
-import io.github.sds100.keymapper.util.ui.*
+import io.github.sds100.keymapper.util.ui.DefaultSimpleListItem
+import io.github.sds100.keymapper.util.ui.NavDestination
+import io.github.sds100.keymapper.util.ui.NavigationViewModel
+import io.github.sds100.keymapper.util.ui.NavigationViewModelImpl
+import io.github.sds100.keymapper.util.ui.PopupUi
+import io.github.sds100.keymapper.util.ui.PopupViewModel
+import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
+import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.util.ui.SimpleListItem
+import io.github.sds100.keymapper.util.ui.TintType
+import io.github.sds100.keymapper.util.ui.navigate
+import io.github.sds100.keymapper.util.ui.showPopup
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -95,9 +111,7 @@ class ChooseConstraintViewModel(
 
     fun onListItemClick(id: String) {
         viewModelScope.launch {
-            val constraintType = ChooseConstraintType.valueOf(id)
-
-            when (constraintType) {
+            when (val constraintType = ChooseConstraintType.valueOf(id)) {
                 ChooseConstraintType.APP_IN_FOREGROUND,
                 ChooseConstraintType.APP_NOT_IN_FOREGROUND,
                 ChooseConstraintType.APP_PLAYING_MEDIA,
@@ -416,11 +430,11 @@ class ChooseConstraintViewModel(
 
         val constraint = when (type) {
             ChooseConstraintType.SCREEN_ELEMENT_VISIBLE -> Constraint.ScreenElementVisible(
-                fullyQualifiedViewId.fullName
+                fullyQualifiedViewId.uiElement.fullName
             )
 
             ChooseConstraintType.SCREEN_ELEMENT_NOT_VISIBLE -> Constraint.ScreenElementNotVisible(
-                fullyQualifiedViewId.fullName
+                fullyQualifiedViewId.uiElement.fullName
             )
 
             else -> throw IllegalArgumentException("Don't know how to create $type constraint after choosing screen element")

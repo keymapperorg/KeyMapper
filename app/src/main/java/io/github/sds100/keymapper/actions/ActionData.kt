@@ -6,6 +6,7 @@ import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.system.intents.IntentExtraModel
 import io.github.sds100.keymapper.system.intents.IntentTarget
+import io.github.sds100.keymapper.system.ui.UiElementInfo
 import io.github.sds100.keymapper.system.volume.DndMode
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeStream
@@ -339,10 +340,7 @@ sealed class ActionData {
 
     @Serializable
     data class InteractWithScreenElement(
-        val elementId: String,
-        val packageName: String,
-        val fullName: String,
-        val appName: String?,
+        val uiElement: UiElementInfo,
         val onlyIfVisible: Boolean,
         val interactionType: InteractionType,
         val description: String?,

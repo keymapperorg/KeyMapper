@@ -18,6 +18,7 @@ package io.github.sds100.keymapper.util
 import android.os.Parcelable
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
+import io.github.sds100.keymapper.system.ui.UiElementInfo
 import kotlinx.android.parcel.Parcelize
 import kotlinx.serialization.Serializable
 
@@ -91,6 +92,5 @@ sealed class Event {
     @Serializable
     object OnStoppedRecordingUiElements : Event()
 
-    @Serializable
-    object ClearRecordedUiElements: Event()
+    data class OnRecordUiElement(val element: UiElementInfo) : Event()
 }

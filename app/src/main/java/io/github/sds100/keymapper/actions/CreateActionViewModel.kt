@@ -413,10 +413,7 @@ class CreateActionViewModelImpl(
             ActionId.INTERACT_WITH_SCREEN_ELEMENT -> {
                 val oldResult = if (oldData is ActionData.InteractWithScreenElement) {
                     InteractWithScreenElementResult(
-                        oldData.elementId,
-                        oldData.packageName,
-                        oldData.fullName,
-                        oldData.appName,
+                        oldData.uiElement,
                         oldData.onlyIfVisible,
                         oldData.interactionType,
                         oldData.description ?: ""
@@ -435,10 +432,7 @@ class CreateActionViewModelImpl(
                 }
 
                 return ActionData.InteractWithScreenElement(
-                    result.elementId,
-                    result.packageName,
-                    result.fullName,
-                    result.appName,
+                    result.uiElement,
                     result.onlyIfVisible,
                     result.interactionType,
                     description

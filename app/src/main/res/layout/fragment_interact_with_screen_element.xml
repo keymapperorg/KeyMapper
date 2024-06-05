@@ -159,7 +159,7 @@
                             android:adapter="@{interactionTypeSpinnerAdapter}"
                             android:enabled="@{viewModel.isDoneButtonEnabled()}"
                             android:hint="@string/extra_label_interact_with_screen_element_interaction_type"
-                            android:onItemSelected="@{(parent, view, position, id) -> viewModel.onInteractionTypeSelected(parent, view, position, id)}"
+                            android:onItemSelected="@{(parent, view, position, id) -> viewModel.onInteractionTypeSelected(position)}"
                             android:selectedItemPosition="@{viewModel.interactionTypeSpinnerSelection}" />
 
                         <com.google.android.material.textview.MaterialTextView
@@ -176,7 +176,7 @@
                             android:id="@+id/onlyIfVisibleCheckbox"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:checked="@{viewModel.onlyIfVisible}"
+                            android:checked="@{viewModel.interactOnlyIfVisible}"
                             android:enabled="@{viewModel.isDoneButtonEnabled()}"
                             android:onCheckedChanged="@{(checkbox, isChecked) -> viewModel.onOnlyIfVisibleCheckboxChange(isChecked)}"
                             android:text="@string/extra_label_interact_with_screen_element_only_if_visible_checkbox" />
