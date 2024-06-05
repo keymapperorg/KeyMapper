@@ -126,15 +126,7 @@ class InteractWithScreenElementViewModel(
             val appName = appName.value ?: return@launch
             val onlyIfVisible = onlyIfVisible.value ?: return@launch
             val interactiontype = _interactionType.value ?: return@launch
-
-            val description = showPopup(
-                "ui_element_description",
-                PopupUi.Text(
-                    getString(R.string.hint_interact_with_screen_element_description),
-                    allowEmpty = true,
-                    text = description.value ?: ""
-                )
-            ) ?: return@launch
+            val description = description.value ?: return@launch
 
             _returnResult.emit(
                 InteractWithScreenElementResult(
