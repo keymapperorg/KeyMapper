@@ -45,7 +45,7 @@ jobs:
       - name: set up Ruby for fastlane
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '2.7'
+          ruby-version: '3.3'
 
       - name: Create debug keystore
         env:
