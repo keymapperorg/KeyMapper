@@ -26,19 +26,14 @@ You can get the apks for the pre-release versions in 2 ways:
 
 1. Fork the KeyMapper repository (repo).
 2. Clone the repo to your device. It will clone to a folder called KeyMapper by default.
-3. [Install](https://developer.android.com/studio/install) Android Studio if you don't have it already. It is available
-   for Windows, Linux and macOS.
-4. Open the cloned KeyMapper folder in Android Studio. Install anything Android Studio prompts you to install. E.g the
-   gradle wrapper version used by KeyMapper or older Android SDK versions.
-5. Create a new branch off develop which begins with "feature/" if it is a new feature or "fix/" if it is a bug fix.
-   Then put a brief description of the feature/bug fix.
+3. [Install](https://developer.android.com/studio/install) Android Studio if you don't have it already. It is available for Windows, Linux and macOS.
+4. Open the cloned KeyMapper folder in Android Studio. Install anything Android Studio prompts you to install. E.g the gradle wrapper version used by KeyMapper or older Android SDK versions.
+5. Create a new branch off develop which begins with "feature/" if it is a new feature or "fix/" if it is a bug fix. Then put a brief description of the feature/bug fix.
 6. Make any changes then commit them to your forked repo then make a pull request!
 
 !!! info
-To build the documentation website you need to
-install [mkdocs-material](https://squidfunk.github.io/mkdocs-material/getting-started/) with Python. Just
-run `pip install -r requirements.txt` in the root of the project to install it.
-Then run `mkdocs serve` in the project root.
+    To build the documentation website you need to install [mkdocs-material](https://squidfunk.github.io/mkdocs-material/getting-started/) with Python. Just run `pip install -r requirements.txt` in the root of the project to install it.
+    Then run `mkdocs serve` in the project root.
 
 ### Introduction to the structure
 
@@ -52,7 +47,7 @@ All data structures that are persisted are passed around as one of two objects:
 
 2. **Entity**. This models how the data should be stored. The class name has an ...Entity suffix. E.g KeyMapEntity. The data is more optimised for storing and the code required to get the data from these models isn't very concise or elegant. The developer took some strange decisions in the first versions of this app. 😆
 
-Every screen in the app has a view model and the view model interacts   with one or multiple *use cases* (more below). The view model converts data that needs to be shown to the user into something that can populate the user interface. For example, the data values in the Action object isn't very useful to the user so this needs to be converted into strings and images that do mean something to the user. All the view models have a ResourceProvider dependency which is how they get strings, Drawables and colours from the resources without having to use a Context. This isn't a problem for configuration changes (e.g locale change) because the activity is recreated, which means all the resources are re-fetched in the view model.
+Every screen in the app has a view model and the view model interacts with one or multiple *use cases* (more below). The view model converts data that needs to be shown to the user into something that can populate the user interface. For example, the data values in the Action object isn't very useful to the user so this needs to be converted into strings and images that do mean something to the user. All the view models have a ResourceProvider dependency which is how they get strings, Drawables and colours from the resources without having to use a Context. This isn't a problem for configuration changes (e.g locale change) because the activity is recreated, which means all the resources are re-fetched in the view model.
 
 The use cases contains all the business logic in the app. A *use case*  interacts with the adapters and repositories mentioned below. A use case is made for everything that can be done in the app. E.g configuring a key map, displaying a mapping, configuring settings, onboarding the user. Most use cases correspond to something that *the user can do* in the app but some do not because they contain complicated code that is used in multiple use cases. E.g the GetActionErrorUseCase which determines if an action can be performed successfully.
 
