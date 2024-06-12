@@ -22,9 +22,27 @@ You can get the apks for the pre-release versions in 2 ways:
 
 ## Contributing code
 
+### Setting up the environment
+
+1. Fork the KeyMapper repository (repo).
+2. Clone the repo to your device. It will clone to a folder called KeyMapper by default.
+3. [Install](https://developer.android.com/studio/install) Android Studio if you don't have it already. It is available
+   for Windows, Linux and macOS.
+4. Open the cloned KeyMapper folder in Android Studio. Install anything Android Studio prompts you to install. E.g the
+   gradle wrapper version used by KeyMapper or older Android SDK versions.
+5. Create a new branch off develop which begins with "feature/" if it is a new feature or "fix/" if it is a bug fix.
+   Then put a brief description of the feature/bug fix.
+6. Make any changes then commit them to your forked repo then make a pull request!
+
+!!! info
+To build the documentation website you need to
+install [mkdocs-material](https://squidfunk.github.io/mkdocs-material/getting-started/) with Python. Just
+run `pip install -r requirements.txt` in the root of the project to install it.
+Then run `mkdocs serve` in the project root.
+
 ### Introduction to the structure
 
-This app follows Clean Architecture and package-by-feature.
+This app follows something inspired from Clean Architecture and package-by-feature.
 
 #### Architecture
 
@@ -47,15 +65,6 @@ The only package which isn't a feature is the `data` package because it is usefu
 The `system` package bundles all the packages which are related to the Android framework because there are so many.
 
 ![contributing-app-structure](images/contributing-app-structure.png)
-
-### Setting up the environment
-
-1. Fork the KeyMapper repository (repo).
-2. Clone the repo to your device. It will clone to a folder called KeyMapper by default.
-3. [Install](https://developer.android.com/studio/install) Android Studio if you don't have it already. It is available for Windows, Linux and macOS.
-4. Open the cloned KeyMapper folder in Android Studio. Install anything Android Studio prompts you to install. E.g the gradle wrapper version used by KeyMapper or older Android SDK versions.
-5. Create a new branch off develop which begins with "feature/" if it is a new feature or "fix/" if it is a bug fix. Then put a brief description of the feature/bug fix.
-6. Make any changes then commit them to your forked repo then make a pull request!
 
 ### Branches 🌴
 

@@ -2,7 +2,7 @@
 
 !!! warning "MAINTENANCE NOTICE!"
 
-    DEVELOPMENT STOPPED - LOOKING FOR MAINTAINER
+    Feature development has stopped.
 
 [Key Mapper](http://code.keymapper.club) is a free and open source Android app that can map single or multiple key events to a custom action. 
 
