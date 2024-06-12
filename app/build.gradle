@@ -98,6 +98,7 @@ android {
         dataBinding true
         viewBinding true
         aidl true
+        buildConfig true
     }
 
     compileOptions {
