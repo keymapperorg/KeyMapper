@@ -17,7 +17,9 @@ This wiki aims to provide users with a comprehensive guide to using and setting 
 [Support the project :fontawesome-solid-heart:](https://ko-fi.com/sethschroeder){: .md-button }
 [Share your key maps :material-hand-heart:](sharing.md){: .md-button .md-button--md-primary-bg-color }
 
+## Star History
 
+[![Star History Chart](https://api.star-history.com/svg?repos=keymapperorg/KeyMapper&type=Date)](https://star-history.com/#keymapperorg/KeyMapper&Date)
 
 ## Our team 🧑‍💻
 
