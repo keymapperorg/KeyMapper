@@ -69,7 +69,7 @@ object Migration2To3 {
                 "volume_up",
                 "volume_mute",
                 "volume_toggle_mute",
-            "volume_unmute",
+                "volume_unmute",
             )
     } &&
         performActionOnDown(trigger["keys"].asJsonArray, trigger["mode"].asInt)

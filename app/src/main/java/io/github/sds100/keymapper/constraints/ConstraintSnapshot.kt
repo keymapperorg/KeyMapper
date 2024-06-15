@@ -64,7 +64,7 @@ class ConstraintSnapshotImpl(
             ConstraintMode.OR -> {
                 constraintState.constraints.any { isSatisfied(it) }
             }
-    }
+        }
 
     private fun isSatisfied(constraint: Constraint): Boolean {
         val isSatisfied = when (constraint) {

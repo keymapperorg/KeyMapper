@@ -212,7 +212,7 @@ class BackupManagerImpl(
 
             backupAsync(outputFile, keyMaps.data, fingerprintMaps.data).await()
                 .then { Success(uri) }
-    }
+        }
 
     @Suppress("BlockingMethodInNonBlockingContext")
     override suspend fun restoreMappings(uri: String): Result<*> {
