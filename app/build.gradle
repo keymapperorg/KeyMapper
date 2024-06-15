@@ -4,6 +4,7 @@ apply plugin: 'kotlin-kapt'
 apply plugin: "androidx.navigation.safeargs.kotlin"
 apply plugin: "kotlinx-serialization"
 apply plugin: "org.jetbrains.kotlin.plugin.parcelize"
+apply plugin: "org.jlleitschuh.gradle.ktlint"
 
 android {
 
@@ -217,13 +218,13 @@ dependencies {
     testImplementation "androidx.arch.core:core-testing:2.1.0"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
     testImplementation "pl.pragmatists:JUnitParams:1.1.1"
-    testImplementation "org.mockito.kotlin:mockito-kotlin:3.1.0"
-    testImplementation "org.mockito:mockito-core:3.8.0"
-    testImplementation 'org.mockito:mockito-inline:3.8.0'
+    testImplementation "org.mockito.kotlin:mockito-kotlin:4.0.0"
+    testImplementation "org.mockito:mockito-core:5.1.1"
+    testImplementation 'org.mockito:mockito-inline:5.0.0'
     
     androidTestImplementation "androidx.test.ext:junit:$androidXTestExtKotlinRunnerVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
-    androidTestImplementation "androidx.arch.core:core-testing:2.1.0"
+    androidTestImplementation "androidx.arch.core:core-testing:2.2.0"
     androidTestImplementation "androidx.test.espresso:espresso-contrib:$espressoVersion"
     androidTestImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.navigation:navigation-testing:$nav_version"
