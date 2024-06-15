@@ -25,9 +25,8 @@ class ConfigTriggerKeyFragment : OptionsBottomSheetFragment<FragmentOptionsBindi
     override val helpUrl: String
         get() = str(R.string.url_trigger_key_options_guide)
 
-    override fun bind(inflater: LayoutInflater, container: ViewGroup?): FragmentOptionsBinding {
-        return FragmentOptionsBinding.inflate(inflater, container, false)
-    }
+    override fun bind(inflater: LayoutInflater, container: ViewGroup?): FragmentOptionsBinding =
+        FragmentOptionsBinding.inflate(inflater, container, false)
 
     override fun getRecyclerView(binding: FragmentOptionsBinding) = binding.epoxyRecyclerView
     override fun getProgressBar(binding: FragmentOptionsBinding) = binding.progressBar

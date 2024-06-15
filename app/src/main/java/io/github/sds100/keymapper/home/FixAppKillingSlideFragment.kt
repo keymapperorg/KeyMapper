@@ -34,7 +34,7 @@ class FixAppKillingSlideFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         FragmentAppIntroSlideBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner

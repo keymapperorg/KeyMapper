@@ -15,5 +15,5 @@ data class InputDeviceInfo(
     val name: String,
     val id: Int,
     val isExternal: Boolean,
-    val isGameController: Boolean
+    val isGameController: Boolean,
 ) : Parcelable

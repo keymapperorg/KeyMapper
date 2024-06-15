@@ -13,17 +13,17 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider) = when (this) {
     is Error.PermissionDenied ->
         Error.PermissionDenied.getMessageForPermission(
             resourceProvider,
-            permission
+            permission,
         )
 
     is Error.AppNotFound -> resourceProvider.getString(
         R.string.error_app_isnt_installed,
-        packageName
+        packageName,
     )
 
     is Error.AppDisabled -> resourceProvider.getString(
         R.string.error_app_is_disabled_package_name,
-        this.packageName
+        this.packageName,
     )
 
     is Error.NoCompatibleImeEnabled -> resourceProvider.getString(R.string.error_key_mapper_ime_service_disabled)
@@ -43,17 +43,17 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider) = when (this) {
     is Error.ExtraNotFound -> resourceProvider.getString(R.string.error_extra_not_found, extraId)
     is Error.SdkVersionTooLow -> resourceProvider.getString(
         R.string.error_sdk_version_too_low,
-        BuildUtils.getSdkVersionName(minSdk)
+        BuildUtils.getSdkVersionName(minSdk),
     )
 
     is Error.SdkVersionTooHigh -> resourceProvider.getString(
         R.string.error_sdk_version_too_high,
-        BuildUtils.getSdkVersionName(maxSdk)
+        BuildUtils.getSdkVersionName(maxSdk),
     )
 
     is Error.InputMethodNotFound -> resourceProvider.getString(
         R.string.error_ime_not_found,
-        imeLabel
+        imeLabel,
     )
 
     is Error.FrontFlashNotFound -> resourceProvider.getString(R.string.error_front_flash_not_found)
@@ -77,7 +77,7 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider) = when (this) {
     Error.FailedToFindAccessibilityNode -> resourceProvider.getString(R.string.error_failed_to_find_accessibility_node)
     is Error.FailedToPerformAccessibilityGlobalAction -> resourceProvider.getString(
         R.string.error_failed_to_perform_accessibility_global_action,
-        action
+        action,
     )
 
     Error.FailedToDispatchGesture -> resourceProvider.getString(R.string.error_failed_to_dispatch_gesture)
@@ -92,7 +92,7 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider) = when (this) {
     Error.MaxCamerasInUse -> resourceProvider.getString(R.string.error_max_cameras_in_use)
     is Error.FailedToModifySystemSetting -> resourceProvider.getString(
         R.string.error_failed_to_modify_system_setting,
-        setting
+        setting,
     )
 
     is Error.ImeDisabled -> resourceProvider.getString(R.string.error_ime_disabled, this.ime.label)
@@ -107,32 +107,32 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider) = when (this) {
 
     is Error.CannotCreateFileInTarget -> resourceProvider.getString(
         R.string.error_file_access_denied,
-        uri
+        uri,
     )
 
     Error.FileOperationCancelled -> resourceProvider.getString(R.string.error_file_operation_cancelled)
     is Error.NoSpaceLeftOnTarget -> resourceProvider.getString(
         R.string.error_no_space_left_at_target,
-        uri
+        uri,
     )
 
     is Error.NotADirectory -> resourceProvider.getString(R.string.error_not_a_directory, uri)
     is Error.NotAFile -> resourceProvider.getString(R.string.error_not_a_file, uri)
     is Error.SourceFileNotFound -> resourceProvider.getString(
         R.string.error_source_file_not_found,
-        uri
+        uri,
     )
 
     Error.StoragePermissionDenied -> resourceProvider.getString(R.string.error_storage_permission_denied)
     Error.TargetDirectoryMatchesSourceDirectory -> resourceProvider.getString(R.string.error_matching_source_and_target_paths)
     is Error.TargetDirectoryNotFound -> resourceProvider.getString(
         R.string.error_directory_not_found,
-        uri
+        uri,
     )
 
     is Error.TargetFileNotFound -> resourceProvider.getString(
         R.string.error_target_file_not_found,
-        uri
+        uri,
     )
 
     Error.UnknownIOError -> resourceProvider.getString(R.string.error_io_error)
@@ -154,7 +154,7 @@ val Error.isFixable: Boolean
         Error.AccessibilityServiceCrashed,
         is Error.PermissionDenied,
         is Error.ShizukuNotStarted,
-        is Error.CantDetectKeyEventsInPhoneCall
+        is Error.CantDetectKeyEventsInPhoneCall,
         -> true
 
         else -> false

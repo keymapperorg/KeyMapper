@@ -17,7 +17,7 @@ object LogEntryEntityMapper {
             model.id,
             model.time,
             severity,
-            model.message
+            model.message,
         )
     }
 
@@ -34,7 +34,7 @@ object LogEntryEntityMapper {
             model.id,
             model.time,
             severity,
-            model.message
+            model.message,
         )
     }
 }

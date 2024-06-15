@@ -33,7 +33,7 @@ class HomeMenuViewModel(
     private val alertsUseCase: ShowHomeScreenAlertsUseCase,
     private val pauseMappings: PauseMappingsUseCase,
     private val showImePicker: ShowInputMethodPickerUseCase,
-    resourceProvider: ResourceProvider
+    resourceProvider: ResourceProvider,
 ) : ResourceProvider by resourceProvider,
     PopupViewModel by PopupViewModelImpl(),
     NavigationViewModel by NavigationViewModelImpl() {
@@ -41,7 +41,7 @@ class HomeMenuViewModel(
     val toggleMappingsButtonState: StateFlow<ToggleMappingsButtonState?> =
         combine(
             pauseMappings.isPaused,
-            alertsUseCase.accessibilityServiceState
+            alertsUseCase.accessibilityServiceState,
         ) { isPaused, serviceState ->
             when (serviceState) {
                 ServiceState.ENABLED ->
@@ -55,7 +55,6 @@ class HomeMenuViewModel(
 
                 ServiceState.DISABLED -> ToggleMappingsButtonState.SERVICE_DISABLED
             }
-
         }.stateIn(coroutineScope, SharingStarted.Eagerly, null)
 
     private val _chooseBackupFile = MutableSharedFlow<Unit>()
@@ -78,7 +77,7 @@ class HomeMenuViewModel(
                     if (!alertsUseCase.restartAccessibilityService()) {
                         ViewModelHelper.handleCantFindAccessibilitySettings(
                             this@HomeMenuViewModel,
-                            this@HomeMenuViewModel
+                            this@HomeMenuViewModel,
                         )
                     }
 
@@ -86,7 +85,7 @@ class HomeMenuViewModel(
                     if (!alertsUseCase.startAccessibilityService()) {
                         ViewModelHelper.handleCantFindAccessibilitySettings(
                             resourceProvider = this@HomeMenuViewModel,
-                            popupViewModel = this@HomeMenuViewModel
+                            popupViewModel = this@HomeMenuViewModel,
                         )
                     }
 
@@ -104,7 +103,7 @@ class HomeMenuViewModel(
     }
 
     fun onOpenSettingsClick() {
-        //dismiss afterwards so it is more responsive
+        // dismiss afterwards so it is more responsive
         coroutineScope.launch {
             navigate("settings", NavDestination.Settings)
             _dismiss.emit(Unit)
@@ -142,7 +141,7 @@ class HomeMenuViewModel(
     fun onCreateBackupFileActivityNotFound() {
         val dialog = PopupUi.Dialog(
             message = getString(R.string.dialog_message_no_app_found_to_create_file),
-            positiveButtonText = getString(R.string.pos_ok)
+            positiveButtonText = getString(R.string.pos_ok),
         )
 
         coroutineScope.launch {
@@ -153,7 +152,7 @@ class HomeMenuViewModel(
     fun onChooseRestoreFileActivityNotFound() {
         val dialog = PopupUi.Dialog(
             message = getString(R.string.dialog_message_no_app_found_to_choose_a_file),
-            positiveButtonText = getString(R.string.pos_ok)
+            positiveButtonText = getString(R.string.pos_ok),
         )
 
         coroutineScope.launch {
@@ -163,5 +162,8 @@ class HomeMenuViewModel(
 }
 
 enum class ToggleMappingsButtonState {
-    PAUSED, RESUMED, SERVICE_DISABLED, SERVICE_CRASHED
+    PAUSED,
+    RESUMED,
+    SERVICE_DISABLED,
+    SERVICE_CRASHED,
 }

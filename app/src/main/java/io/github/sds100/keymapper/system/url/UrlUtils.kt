@@ -19,7 +19,7 @@ object UrlUtils {
             .build()
             .launchUrl(
                 ctx,
-                Uri.parse(url)
+                Uri.parse(url),
             )
     }
 

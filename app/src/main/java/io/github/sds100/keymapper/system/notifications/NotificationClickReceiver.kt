@@ -16,7 +16,7 @@ class NotificationClickReceiver : BroadcastReceiver() {
 
         ServiceLocator.notificationAdapter(context).onReceiveNotificationActionIntent(intent)
 
-        //dismiss the notification drawer after tapping on the notification. This is deprecated on S+
+        // dismiss the notification drawer after tapping on the notification. This is deprecated on S+
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
             Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS).apply {
                 context.sendBroadcast(this)

@@ -17,7 +17,7 @@ import splitties.bitflags.withFlag
  * Created by sds100 on 25/06/20.
  */
 
-object Migration_6_7 {
+object Migration6To7 {
 
     private const val TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION = 8
 
@@ -47,7 +47,7 @@ object Migration_6_7 {
                 }
 
                 val newTriggerFlags = trigger.flags.minusFlag(
-                    TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION
+                    TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION,
                 )
                 val newTrigger = trigger.copy(keys = newTriggerKeys, flags = newTriggerFlags)
 

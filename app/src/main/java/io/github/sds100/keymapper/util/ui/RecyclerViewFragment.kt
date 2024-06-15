@@ -70,7 +70,7 @@ abstract class RecyclerViewFragment<T, BINDING : ViewDataBinding> : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         _binding = bind(inflater, container)
         return binding.root
@@ -80,7 +80,7 @@ abstract class RecyclerViewFragment<T, BINDING : ViewDataBinding> : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.apply {
-            //initially only show the progress bar
+            // initially only show the progress bar
             getProgressBar(binding).isVisible = true
             getRecyclerView(binding).isVisible = true
             getEmptyListPlaceHolderTextView(binding).isVisible = false
@@ -88,7 +88,7 @@ abstract class RecyclerViewFragment<T, BINDING : ViewDataBinding> : Fragment() {
             if (searchStateKey != null) {
                 findNavController().observeCurrentDestinationLiveData<String>(
                     viewLifecycleOwner,
-                    searchStateKey!!
+                    searchStateKey!!,
                 ) {
                     onSearchQuery(it)
                 }
@@ -107,7 +107,7 @@ abstract class RecyclerViewFragment<T, BINDING : ViewDataBinding> : Fragment() {
             setupSearchView(binding)
 
             if (!requireActivity().onBackPressedDispatcher.hasEnabledCallbacks()) {
-                //don't override back button if another fragment is controlling the app bar
+                // don't override back button if another fragment is controlling the app bar
                 requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
                     if (isAppBarVisible) {
                         onBackPressed()
@@ -135,9 +135,8 @@ abstract class RecyclerViewFragment<T, BINDING : ViewDataBinding> : Fragment() {
                              Don't clear the recyclerview here because if a custom epoxy controller is set then
                              it will be cleared which means no items are shown when a request to populate it
                              is made again.
-                              */
+                             */
                             populateList(recyclerView, emptyList())
-
                         } else {
                             getProgressBar(binding).visibility = View.VISIBLE
                             getEmptyListPlaceHolderTextView(binding).visibility = View.INVISIBLE
@@ -151,7 +150,7 @@ abstract class RecyclerViewFragment<T, BINDING : ViewDataBinding> : Fragment() {
 
                             getProgressBar(binding).visibility = View.INVISIBLE
 
-                            //show the recyclerview once it has been populated
+                            // show the recyclerview once it has been populated
                             recyclerView.visibility = View.VISIBLE
                         }
                     }
@@ -201,17 +200,13 @@ abstract class RecyclerViewFragment<T, BINDING : ViewDataBinding> : Fragment() {
     }
 
     open fun onSearchQuery(query: String?) {}
-    open fun getBottomAppBar(binding: BINDING): BottomAppBar? {
-        return null
-    }
+    open fun getBottomAppBar(binding: BINDING): BottomAppBar? = null
 
     open fun onBackPressed() {
         findNavController().navigateUp()
     }
 
-    open fun getRequestKey(): String {
-        throw IllegalStateException("No request key is set")
-    }
+    open fun getRequestKey(): String = throw IllegalStateException("No request key is set")
 
     abstract fun getRecyclerView(binding: BINDING): EpoxyRecyclerView
     abstract fun getProgressBar(binding: BINDING): View

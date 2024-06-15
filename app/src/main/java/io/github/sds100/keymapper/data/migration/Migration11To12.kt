@@ -10,18 +10,22 @@ import androidx.sqlite.db.SupportSQLiteQueryBuilder
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.set
 import com.github.salomonbrys.kotson.toJsonArray
-import com.google.gson.*
+import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonElement
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import io.github.sds100.keymapper.util.firstBlocking
 
 /**
  * Move fingerprint maps from data store into sqlite database and move device info list information
  * into key maps and fingerprint maps.
  */
-object Migration_11_12 {
+object Migration11To12 {
 
     fun migrateDatabase(
         database: SupportSQLiteDatabase,
-        fingerprintMapDataStore: DataStore<Preferences>
+        fingerprintMapDataStore: DataStore<Preferences>,
     ) {
         val parser = JsonParser()
         val gson = Gson()
@@ -36,7 +40,6 @@ object Migration_11_12 {
         )
 
         val deviceInfoList: JsonArray = sequence {
-
             val deviceInfoQuery = SupportSQLiteQueryBuilder
                 .builder("deviceinfo")
                 .columns(arrayOf("descriptor", "name"))
@@ -121,9 +124,8 @@ object Migration_11_12 {
     fun migrateFingerprintMap(
         fingerprintMapId: String,
         fingerprintMap: JsonObject,
-        deviceInfoList: JsonArray
+        deviceInfoList: JsonArray,
     ): JsonObject {
-
         val legacyFingerprintIdMap = mapOf(
             "swipe_down" to 0,
             "swipe_up" to 1,
@@ -151,16 +153,15 @@ object Migration_11_12 {
 
     private fun migrateKeyMapTrigger(
         trigger: JsonElement,
-        deviceInfoList: JsonArray
+        deviceInfoList: JsonArray,
     ): JsonElement {
-
         val oldTriggerKeys = trigger["keys"].asJsonArray
 
         val newTriggerKeys = oldTriggerKeys.map { triggerKey ->
             val deviceId = triggerKey["deviceId"].asString
 
-            if (deviceId != "io.github.sds100.keymapper.THIS_DEVICE"
-                || deviceId != "io.github.sds100.keymapper.ANY_DEVICE"
+            if (deviceId != "io.github.sds100.keymapper.THIS_DEVICE" ||
+                deviceId != "io.github.sds100.keymapper.ANY_DEVICE"
             ) {
                 val deviceDescriptor = deviceId
 
@@ -183,7 +184,7 @@ object Migration_11_12 {
 
     private fun migrateActionList(
         actionList: JsonArray,
-        deviceInfoList: JsonArray
+        deviceInfoList: JsonArray,
     ): JsonArray {
         return actionList.map { action ->
             if (action["type"].asString == "KEY_EVENT") {

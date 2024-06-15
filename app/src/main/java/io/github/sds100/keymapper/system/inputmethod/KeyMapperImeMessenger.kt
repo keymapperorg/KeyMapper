@@ -14,11 +14,11 @@ import timber.log.Timber
 
 class KeyMapperImeMessengerImpl(
     context: Context,
-    private val inputMethodAdapter: InputMethodAdapter
+    private val inputMethodAdapter: InputMethodAdapter,
 ) : KeyMapperImeMessenger {
 
     companion object {
-        //DON'T CHANGE THESE!!!
+        // DON'T CHANGE THESE!!!
         private const val KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN_UP =
             "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_DOWN_UP"
         private const val KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN =
@@ -70,7 +70,7 @@ class KeyMapperImeMessengerImpl(
                 model.repeat,
                 model.metaState,
                 model.deviceId,
-                model.scanCode
+                model.scanCode,
             )
 
             putExtra(KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT, keyEvent)

@@ -11,7 +11,7 @@ import kotlinx.coroutines.runBlocking
  */
 
 class ShowHideInputMethodUseCaseImpl(
-    private val serviceAdapter: ServiceAdapter
+    private val serviceAdapter: ServiceAdapter,
 ) : ShowHideInputMethodUseCase {
     override val onHiddenChange: Flow<Boolean> = serviceAdapter.eventReceiver.mapNotNull {
         when (it) {

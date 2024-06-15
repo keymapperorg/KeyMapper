@@ -19,7 +19,7 @@ class AppIntroUseCaseImpl(
     private val serviceAdapter: ServiceAdapter,
     private val preferenceRepository: PreferenceRepository,
     private val fingerprintGesturesSupportedUseCase: AreFingerprintGesturesSupportedUseCase,
-    private val shizukuAdapter: ShizukuAdapter
+    private val shizukuAdapter: ShizukuAdapter,
 ) : AppIntroUseCase {
     override val serviceState: Flow<ServiceState> = serviceAdapter.state
 
@@ -29,7 +29,8 @@ class AppIntroUseCaseImpl(
     override val fingerprintGesturesSupported: Flow<Boolean?> =
         fingerprintGesturesSupportedUseCase.isSupported
 
-    override val isShizukuPermissionGranted: Flow<Boolean> = permissionAdapter.isGrantedFlow(Permission.SHIZUKU)
+    override val isShizukuPermissionGranted: Flow<Boolean> =
+        permissionAdapter.isGrantedFlow(Permission.SHIZUKU)
 
     override val isShizukuStarted: Boolean
         get() = shizukuAdapter.isStarted.value

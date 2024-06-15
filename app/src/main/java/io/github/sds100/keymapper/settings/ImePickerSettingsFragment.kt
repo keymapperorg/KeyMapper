@@ -33,9 +33,9 @@ class ImePickerSettingsFragment : BaseSettingsFragment() {
     }
 
     private fun populatePreferenceScreen() = preferenceScreen.apply {
-        //show keyboard picker notification
+        // show keyboard picker notification
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            //show a preference linking to the notification management screen
+            // show a preference linking to the notification management screen
             Preference(requireContext()).apply {
                 key = Keys.showImePickerNotification.name
 
@@ -46,7 +46,7 @@ class ImePickerSettingsFragment : BaseSettingsFragment() {
                 setOnPreferenceClickListener {
                     NotificationUtils.openChannelSettings(
                         requireContext(),
-                        NotificationController.CHANNEL_IME_PICKER
+                        NotificationController.CHANNEL_IME_PICKER,
                     )
 
                     true
@@ -67,7 +67,7 @@ class ImePickerSettingsFragment : BaseSettingsFragment() {
             }
         }
 
-        //auto show keyboard picker
+        // auto show keyboard picker
         SwitchPreferenceCompat(requireContext()).apply {
             key = Keys.showImePickerOnDeviceConnect.name
             setDefaultValue(false)
@@ -83,8 +83,8 @@ class ImePickerSettingsFragment : BaseSettingsFragment() {
             SettingsUtils.createChooseDevicesPreference(
                 requireContext(),
                 viewModel,
-                Keys.devicesThatShowImePicker
-            )
+                Keys.devicesThatShowImePicker,
+            ),
         )
     }
 }

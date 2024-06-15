@@ -12,14 +12,16 @@ import io.github.sds100.keymapper.util.ui.ResourceProvider
 
 class FingerprintMapActionUiHelper(
     displayActionUseCase: DisplayActionUseCase,
-    resourceProvider: ResourceProvider
+    resourceProvider: ResourceProvider,
 ) : BaseActionUiHelper<FingerprintMap, FingerprintMapAction>(
     displayActionUseCase,
-    resourceProvider
+    resourceProvider,
 ) {
 
-    override fun getOptionLabels(mapping: FingerprintMap, action: FingerprintMapAction): List<String> = sequence {
-
+    override fun getOptionLabels(
+        mapping: FingerprintMap,
+        action: FingerprintMapAction,
+    ): List<String> = sequence {
         if (mapping.isRepeatingActionsAllowed() && action.repeat) {
             val repeatDescription = buildString {
                 append(getString(R.string.flag_repeat_build_description_start))
@@ -37,7 +39,12 @@ class FingerprintMapActionUiHelper(
 
                 if (action.repeatRate != null) {
                     append(" ")
-                    append(getString(R.string.flag_repeat_build_description_repeat_rate, action.repeatRate))
+                    append(
+                        getString(
+                            R.string.flag_repeat_build_description_repeat_rate,
+                            action.repeatRate,
+                        ),
+                    )
                 }
 
                 append(" ")
@@ -57,6 +64,5 @@ class FingerprintMapActionUiHelper(
         if (mapping.isHoldingDownActionUntilSwipedAgainAllowed(action) && action.holdDownUntilSwipedAgain) {
             yield(getString(R.string.flag_hold_down_until_swiped_again))
         }
-
     }.toList()
 }

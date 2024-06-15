@@ -47,5 +47,5 @@ enum class ChooseConstraintType {
     PHONE_RINGING,
 
     CHARGING,
-    DISCHARGING
+    DISCHARGING,
 }

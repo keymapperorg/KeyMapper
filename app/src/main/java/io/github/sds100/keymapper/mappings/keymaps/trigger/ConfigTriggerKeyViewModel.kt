@@ -25,8 +25,9 @@ import kotlinx.coroutines.flow.stateIn
 class ConfigTriggerKeyViewModel(
     coroutineScope: CoroutineScope,
     val config: ConfigKeyMapUseCase,
-    resourceProvider: ResourceProvider
-) : OptionsViewModel, ResourceProvider by resourceProvider {
+    resourceProvider: ResourceProvider,
+) : OptionsViewModel,
+    ResourceProvider by resourceProvider {
     companion object {
         private const val ID_DONT_CONSUME_KEY_EVENT = "consume_key_event"
         private const val ID_SHORT_PRESS = "short_press"
@@ -44,7 +45,7 @@ class ConfigTriggerKeyViewModel(
 
                 DefaultOptionsUiState(
                     showProgressBar = false,
-                    listItems = createListItems(mapping.data.trigger.mode, key)
+                    listItems = createListItems(mapping.data.trigger.mode, key),
                 )
             }
 
@@ -55,7 +56,7 @@ class ConfigTriggerKeyViewModel(
         .stateIn(
             coroutineScope,
             SharingStarted.Lazily,
-            DefaultOptionsUiState(showProgressBar = true)
+            DefaultOptionsUiState(showProgressBar = true),
         )
 
     override fun setRadioButtonValue(id: String, value: Boolean) {
@@ -89,8 +90,8 @@ class ConfigTriggerKeyViewModel(
                 CheckBoxListItem(
                     id = ID_DONT_CONSUME_KEY_EVENT,
                     isChecked = !key.consumeKeyEvent,
-                    label = getString(R.string.flag_dont_override_default_action)
-                )
+                    label = getString(R.string.flag_dont_override_default_action),
+                ),
             )
 
             if (triggerMode is TriggerMode.Sequence) {
@@ -110,9 +111,8 @@ class ConfigTriggerKeyViewModel(
                         rightButtonId = ID_DOUBLE_PRESS,
                         rightButtonText = getString(R.string.clicktype_double_press),
                         rightButtonChecked = key.clickType == ClickType.DOUBLE_PRESS,
-                    )
+                    ),
                 )
             }
-
         }.toList()
 }

@@ -36,7 +36,7 @@ data class KeyMapAction(
     override val holdDownDuration: Int? = null,
 
     override val multiplier: Int? = null,
-    override val delayBeforeNextAction: Int? = null
+    override val delayBeforeNextAction: Int? = null,
 ) : Action {
     companion object {
         const val REPEAT_DELAY_MIN = 0
@@ -108,7 +108,7 @@ object KeymapActionEntityMapper {
             repeatLimit = repeatLimit,
             holdDownDuration = holdDownDuration,
             delayBeforeNextAction = delayBeforeNextAction,
-            multiplier = multiplier
+            multiplier = multiplier,
         )
     }
 
@@ -120,8 +120,8 @@ object KeymapActionEntityMapper {
                 add(
                     Extra(
                         ActionEntity.EXTRA_DELAY_BEFORE_NEXT_ACTION,
-                        action.delayBeforeNextAction.toString()
-                    )
+                        action.delayBeforeNextAction.toString(),
+                    ),
                 )
             }
 
@@ -133,8 +133,8 @@ object KeymapActionEntityMapper {
                 add(
                     Extra(
                         ActionEntity.EXTRA_HOLD_DOWN_DURATION,
-                        action.holdDownDuration.toString()
-                    )
+                        action.holdDownDuration.toString(),
+                    ),
                 )
             }
 
@@ -155,8 +155,8 @@ object KeymapActionEntityMapper {
                 add(
                     Extra(
                         ActionEntity.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR,
-                        ActionEntity.STOP_REPEAT_BEHAVIOUR_TRIGGER_PRESSED_AGAIN.toString()
-                    )
+                        ActionEntity.STOP_REPEAT_BEHAVIOUR_TRIGGER_PRESSED_AGAIN.toString(),
+                    ),
                 )
             }
 
@@ -164,19 +164,19 @@ object KeymapActionEntityMapper {
                 add(
                     Extra(
                         ActionEntity.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR,
-                        ActionEntity.STOP_REPEAT_BEHAVIOUR_LIMIT_REACHED.toString()
-                    )
+                        ActionEntity.STOP_REPEAT_BEHAVIOUR_LIMIT_REACHED.toString(),
+                    ),
                 )
             }
 
-            if (keyMap.isStopHoldingDownActionWhenTriggerPressedAgainAllowed(action)
-                && action.stopHoldDownWhenTriggerPressedAgain
+            if (keyMap.isStopHoldingDownActionWhenTriggerPressedAgainAllowed(action) &&
+                action.stopHoldDownWhenTriggerPressedAgain
             ) {
                 add(
                     Extra(
                         ActionEntity.EXTRA_CUSTOM_HOLD_DOWN_BEHAVIOUR,
-                        ActionEntity.STOP_HOLD_DOWN_BEHAVIOR_TRIGGER_PRESSED_AGAIN.toString()
-                    )
+                        ActionEntity.STOP_HOLD_DOWN_BEHAVIOR_TRIGGER_PRESSED_AGAIN.toString(),
+                    ),
                 )
             }
         }
@@ -196,7 +196,7 @@ object KeymapActionEntityMapper {
             data = base.data,
             extras = base.extras.plus(extras),
             flags = base.flags.withFlag(flags),
-            uid = action.uid
+            uid = action.uid,
         )
     }
 }

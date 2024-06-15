@@ -34,8 +34,9 @@ sealed class Event {
     @Serializable
     data class RecordedTriggerKey(
         val keyCode: Int,
-        val device: InputDeviceInfo?
-    ) : Event(), Parcelable
+        val device: InputDeviceInfo?,
+    ) : Event(),
+        Parcelable
 
     @Serializable
     object StartRecordingTrigger : Event()

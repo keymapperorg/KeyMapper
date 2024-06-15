@@ -10,7 +10,7 @@ object MigrationUtils {
         migrations: List<JsonMigration>,
         inputVersion: Int,
         inputJson: JsonObject,
-        outputVersion: Int
+        outputVersion: Int,
     ): JsonObject {
         var version = inputVersion
         var outputJson = inputJson

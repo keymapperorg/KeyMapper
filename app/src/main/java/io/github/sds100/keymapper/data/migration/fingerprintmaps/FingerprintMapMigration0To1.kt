@@ -1,6 +1,8 @@
 package io.github.sds100.keymapper.data.migration.fingerprintmaps
 
-import com.github.salomonbrys.kotson.*
+import com.github.salomonbrys.kotson.byArray
+import com.github.salomonbrys.kotson.byInt
+import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonObject
 import splitties.bitflags.hasFlag
 import splitties.bitflags.minusFlag
@@ -13,7 +15,7 @@ import splitties.bitflags.withFlag
 /**
  * Move the action option "show performing toast when performing" to a trigger option.
  */
-object FingerprintMapMigration_0_1 {
+object FingerprintMapMigration0To1 {
     private const val NAME_VERSION = "db_version"
     private const val NAME_ACTION_LIST = "action_list"
     private const val FLAG_ACTION_SHOW_PERFORMING_TOAST = 2
@@ -22,7 +24,6 @@ object FingerprintMapMigration_0_1 {
     private const val ACTION_NAME_FLAGS = "flags"
 
     fun migrate(fingerprintMap: JsonObject): JsonObject {
-
         val actionListJsonArray by fingerprintMap.byArray(NAME_ACTION_LIST)
 
         var showToast = false

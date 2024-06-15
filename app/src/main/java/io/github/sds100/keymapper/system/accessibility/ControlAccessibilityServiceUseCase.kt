@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
  */
 
 class ControlAccessibilityServiceUseCaseImpl(
-    private val adapter: ServiceAdapter
+    private val adapter: ServiceAdapter,
 ) : ControlAccessibilityServiceUseCase {
     override val serviceState: Flow<ServiceState> = adapter.state
 
@@ -15,17 +15,13 @@ class ControlAccessibilityServiceUseCaseImpl(
      * @return true if the service could be started of if the accessibility settings could be
      * opened. False if no way can be found to start the service.
      */
-    override fun startService(): Boolean {
-        return adapter.start()
-    }
+    override fun startService(): Boolean = adapter.start()
 
     /**
      * @return true if the service could be restart of if the accessibility settings could be
      * opened. False if no way can be found to start the service.
      */
-    override fun restartService(): Boolean {
-        return adapter.restart()
-    }
+    override fun restartService(): Boolean = adapter.restart()
 
     override fun stopService() {
         adapter.stop()

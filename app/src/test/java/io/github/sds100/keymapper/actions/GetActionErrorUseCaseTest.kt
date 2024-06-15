@@ -9,7 +9,8 @@ import io.github.sds100.keymapper.util.Error
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.TestCoroutineExceptionHandler
+import kotlinx.coroutines.test.createTestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
@@ -30,7 +31,8 @@ import org.mockito.kotlin.whenever
 class GetActionErrorUseCaseTest {
 
     private val testDispatcher = TestCoroutineDispatcher()
-    private val coroutineScope = TestCoroutineScope(testDispatcher)
+    private val coroutineScope =
+        createTestCoroutineScope(TestCoroutineDispatcher() + TestCoroutineExceptionHandler() + testDispatcher)
 
     private lateinit var useCase: GetActionErrorUseCaseImpl
 
@@ -51,7 +53,7 @@ class GetActionErrorUseCaseTest {
             systemFeatureAdapter = mock(),
             cameraAdapter = mock(),
             soundsManager = mock(),
-            shizukuAdapter = mockShizukuAdapter
+            shizukuAdapter = mockShizukuAdapter,
         )
     }
 
@@ -60,24 +62,26 @@ class GetActionErrorUseCaseTest {
      */
     @Test
     fun `dont show Shizuku errors if a compatible ime is selected`() = coroutineScope.runBlockingTest {
-        //GIVEN
+        // GIVEN
         whenever(mockShizukuAdapter.isInstalled).then { MutableStateFlow(true) }
         whenever(mockInputMethodAdapter.chosenIme).then {
-            MutableStateFlow(ImeInfo(
-                id = "ime_id",
-                packageName = "io.github.sds100.keymapper.inputmethod.latin",
-                label = "Key Mapper GUI Keyboard",
-                isEnabled = true,
-                isChosen = true
-            ))
+            MutableStateFlow(
+                ImeInfo(
+                    id = "ime_id",
+                    packageName = "io.github.sds100.keymapper.inputmethod.latin",
+                    label = "Key Mapper GUI Keyboard",
+                    isEnabled = true,
+                    isChosen = true,
+                ),
+            )
         }
 
         val action = ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN)
 
-        //WHEN
+        // WHEN
         val error = useCase.getError(action)
 
-        //THEN
+        // THEN
         assertThat(error, nullValue())
     }
 
@@ -86,25 +90,27 @@ class GetActionErrorUseCaseTest {
      */
     @Test
     fun `show Shizuku errors if a compatible ime is not selected and Shizuku is installed`() = coroutineScope.runBlockingTest {
-        //GIVEN
+        // GIVEN
         whenever(mockShizukuAdapter.isInstalled).then { MutableStateFlow(true) }
         whenever(mockShizukuAdapter.isStarted).then { MutableStateFlow(false) }
 
         whenever(mockInputMethodAdapter.chosenIme).then {
-            MutableStateFlow(ImeInfo(
-                id = "ime_id",
-                packageName = "io.gboard",
-                label = "Gboard",
-                isEnabled = true,
-                isChosen = true
-            ))
+            MutableStateFlow(
+                ImeInfo(
+                    id = "ime_id",
+                    packageName = "io.gboard",
+                    label = "Gboard",
+                    isEnabled = true,
+                    isChosen = true,
+                ),
+            )
         }
 
         val action = ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN)
-        //WHEN
+        // WHEN
         val error = useCase.getError(action)
 
-        //THEN
+        // THEN
         assertThat(error, `is`(Error.ShizukuNotStarted))
     }
 }

@@ -5,5 +5,5 @@ package io.github.sds100.keymapper.mappings.keymaps.trigger
  */
 data class ChooseTriggerKeyDeviceModel(
     val triggerKeyUid: String,
-    val devices: List<TriggerKeyDevice>
+    val devices: List<TriggerKeyDevice>,
 )

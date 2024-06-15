@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
  */
 class AndroidPhoneAdapter(
     context: Context,
-    private val coroutineScope: CoroutineScope
+    private val coroutineScope: CoroutineScope,
 ) : PhoneAdapter {
     private val ctx: Context = context.applicationContext
     private val telecomManager: TelecomManager = ctx.getSystemService()!!
@@ -45,15 +45,16 @@ class AndroidPhoneAdapter(
                 if (subscriptionCount == 0) {
                     telephonyManager.listen(phoneStateListener, PhoneStateListener.LISTEN_NONE)
                 } else {
-                    telephonyManager.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE)
+                    telephonyManager.listen(
+                        phoneStateListener,
+                        PhoneStateListener.LISTEN_CALL_STATE,
+                    )
                 }
             }
         }
     }
 
-    override fun getCallState(): CallState {
-        return callStateConverter(telephonyManager.callState)
-    }
+    override fun getCallState(): CallState = callStateConverter(telephonyManager.callState)
 
     override fun startCall(number: String): Result<*> {
         try {

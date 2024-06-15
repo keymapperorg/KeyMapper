@@ -19,11 +19,11 @@ data class Extra(
     val id: String,
 
     @SerializedName(NAME_DATA)
-    val data: String
+    val data: String,
 ) : Parcelable {
     companion object {
 
-        //DON'T CHANGE THESE. Used for JSON serialization and parsing.
+        // DON'T CHANGE THESE. Used for JSON serialization and parsing.
         const val NAME_ID = "id"
         const val NAME_DATA = "data"
 
@@ -37,7 +37,6 @@ data class Extra(
 }
 
 fun List<Extra>.getData(extraId: String): Result<String> {
-
     return find { it.id == extraId }.let {
         it ?: return@let Error.ExtraNotFound(extraId)
 

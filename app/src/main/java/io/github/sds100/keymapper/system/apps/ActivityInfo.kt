@@ -9,5 +9,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ActivityInfo(
     val activityName: String,
-    val packageName: String
+    val packageName: String,
 )

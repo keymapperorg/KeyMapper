@@ -76,7 +76,7 @@ class ChooseActionFragment : SimpleRecyclerViewFragment<ListItem>() {
 
     override fun populateList(
         recyclerView: EpoxyRecyclerView,
-        listItems: List<ListItem>
+        listItems: List<ListItem>,
     ) {
         recyclerView.setRecycledViewPool(null)
         RecyclerViewUtils.setSpanCountForSimpleListItemGrid(recyclerView)
@@ -110,7 +110,7 @@ class ChooseActionFragment : SimpleRecyclerViewFragment<ListItem>() {
                         id(listItem.id)
                         header(listItem.text)
 
-                        //headers should always go across the whole recycler view.
+                        // headers should always go across the whole recycler view.
                         spanSizeOverride { totalSpanCount, position, itemCount ->
                             totalSpanCount
                         }
@@ -126,7 +126,5 @@ class ChooseActionFragment : SimpleRecyclerViewFragment<ListItem>() {
         viewModel.searchQuery.value = query
     }
 
-    override fun getRequestKey(): String {
-        return args.requestKey
-    }
+    override fun getRequestKey(): String = args.requestKey
 }

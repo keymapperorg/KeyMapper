@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.map
 class CreateConstraintUseCaseImpl(
     private val networkAdapter: NetworkAdapter,
     private val inputMethodAdapter: InputMethodAdapter,
-    private val preferenceRepository: PreferenceRepository
+    private val preferenceRepository: PreferenceRepository,
 ) : CreateConstraintUseCase {
 
     override fun isSupported(constraint: ChooseConstraintType): Error? {
@@ -39,19 +39,14 @@ class CreateConstraintUseCaseImpl(
         return null
     }
 
-    override fun getKnownWiFiSSIDs(): List<String>? {
-        return networkAdapter.getKnownWifiSSIDs()
-    }
+    override fun getKnownWiFiSSIDs(): List<String>? = networkAdapter.getKnownWifiSSIDs()
 
-    override fun getEnabledInputMethods(): List<ImeInfo> {
-        return inputMethodAdapter.inputMethods.value
-    }
+    override fun getEnabledInputMethods(): List<ImeInfo> = inputMethodAdapter.inputMethods.value
 
     override suspend fun saveWifiSSID(ssid: String) {
         val savedWifiSSIDsList = getSavedWifiSSIDs().first().toMutableList()
 
         if (!savedWifiSSIDsList.contains(ssid)) {
-
             if (savedWifiSSIDsList.size == 3) {
                 savedWifiSSIDsList.removeLast()
             }
@@ -65,14 +60,13 @@ class CreateConstraintUseCaseImpl(
 
         preferenceRepository.set(
             Keys.savedWifiSSIDs,
-            savedWifiSSIDsList.toSet()
+            savedWifiSSIDsList.toSet(),
         )
     }
 
-    override fun getSavedWifiSSIDs(): Flow<List<String>> {
-        return preferenceRepository.get(Keys.savedWifiSSIDs)
+    override fun getSavedWifiSSIDs(): Flow<List<String>> =
+        preferenceRepository.get(Keys.savedWifiSSIDs)
             .map { it?.toList() ?: emptyList() }
-    }
 }
 
 interface CreateConstraintUseCase {

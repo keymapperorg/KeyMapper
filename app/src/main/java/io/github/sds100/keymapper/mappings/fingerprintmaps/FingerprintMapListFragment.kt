@@ -18,8 +18,7 @@ import kotlinx.coroutines.flow.Flow
 /**
  * Created by sds100 on 11/12/2020.
  */
-class FingerprintMapListFragment :
-    RecyclerViewFragment<FingerprintMapListItem, FragmentFingerprintMapListBinding>() {
+class FingerprintMapListFragment : RecyclerViewFragment<FingerprintMapListItem, FragmentFingerprintMapListBinding>() {
 
     private val homeViewModel: HomeViewModel by activityViewModels {
         Inject.homeViewModel(requireContext())
@@ -41,7 +40,7 @@ class FingerprintMapListFragment :
 
     override fun populateList(
         recyclerView: EpoxyRecyclerView,
-        listItems: List<FingerprintMapListItem>
+        listItems: List<FingerprintMapListItem>,
     ) {
         recyclerView.withModels {
             listItems.forEach { listItem ->
@@ -55,7 +54,10 @@ class FingerprintMapListFragment :
                     }
 
                     onEnabledSwitchClickListener { view ->
-                        viewModel.onEnabledSwitchChange(listItem.id, (view as SwitchMaterial).isChecked)
+                        viewModel.onEnabledSwitchChange(
+                            listItem.id,
+                            (view as SwitchMaterial).isChecked,
+                        )
                     }
 
                     onActionChipClick(object : OnChipClickCallback {

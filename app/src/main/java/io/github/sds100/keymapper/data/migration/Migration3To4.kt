@@ -18,7 +18,7 @@ import kotlin.collections.set
  * Added UNDEFINED trigger mode if the number of keys is <= 1.
  * Also added migration for the db to support this on older keymaps.
  */
-object Migration_3_4 {
+object Migration3To4 {
 
     fun migrate(database: SupportSQLiteDatabase) = database.apply {
         val query = SupportSQLiteQueryBuilder
@@ -26,7 +26,7 @@ object Migration_3_4 {
             .columns(arrayOf("id", "trigger"))
             .create()
 
-        //maps the new trigger mode to each keymap id
+        // maps the new trigger mode to each keymap id
         val newTriggerMap = mutableMapOf<Long, String>()
 
         query(query).apply {
@@ -39,7 +39,7 @@ object Migration_3_4 {
                 val trigger = parser.parse(getString(1)).asJsonObject
 
                 if (trigger["keys"].asJsonArray.size() <= 1) {
-                    trigger["mode"] = 2 //undefined mode
+                    trigger["mode"] = 2 // undefined mode
                 }
 
                 newTriggerMap[id] = gson.toJson(trigger)

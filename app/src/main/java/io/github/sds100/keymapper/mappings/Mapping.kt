@@ -16,6 +16,4 @@ interface Mapping<ACTION : Action> {
     val vibrateDuration: Int?
 }
 
-fun Mapping<*>.isDelayBeforeNextActionAllowed(): Boolean {
-    return actionList.isNotEmpty()
-}
+fun Mapping<*>.isDelayBeforeNextActionAllowed(): Boolean = actionList.isNotEmpty()

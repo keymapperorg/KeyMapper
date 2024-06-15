@@ -11,5 +11,5 @@ class FakeSimpleMappingController(
     coroutineScope: CoroutineScope,
     detectMappingUseCase: DetectMappingUseCase,
     performActionsUseCase: PerformActionsUseCase,
-    detectConstraintsUseCase: DetectConstraintsUseCase
+    detectConstraintsUseCase: DetectConstraintsUseCase,
 ) : SimpleMappingController(coroutineScope, detectMappingUseCase, performActionsUseCase, detectConstraintsUseCase)

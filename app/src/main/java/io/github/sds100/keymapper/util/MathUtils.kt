@@ -8,23 +8,19 @@ import kotlin.math.sin
 
 data class Line(
     val start: Point,
-    val end: Point
+    val end: Point,
 )
 
 object MathUtils {
-    fun deg2rad(degrees: Double): Double {
-        return degrees * Math.PI / 180
-    }
+    fun deg2rad(degrees: Double): Double = degrees * Math.PI / 180
 
-    fun rad2deg(radians: Double): Double {
-        return radians * 180 / Math.PI
-    }
+    fun rad2deg(radians: Double): Double = radians * 180 / Math.PI
 
     fun getPerpendicularOfLine(
         p1: Point,
         p2: Point,
         length: Int,
-        reverse: Boolean = false
+        reverse: Boolean = false,
     ): Line {
         var px = p1.y - p2.y
         var py = p2.x - p1.x
@@ -50,16 +46,14 @@ object MathUtils {
         return Point(newX, newY)
     }
 
-    fun angleBetweenPoints(p1: Point, p2: Point): Double {
-        return rad2deg(atan2((p2.y - p1.y).toDouble(), (p2.x - p1.x).toDouble()))
-    }
+    fun angleBetweenPoints(p1: Point, p2: Point): Double =
+        rad2deg(atan2((p2.y - p1.y).toDouble(), (p2.x - p1.x).toDouble()))
 
     fun distributePointsOnCircle(
         circleCenter: Point,
         circleRadius: Float,
-        numPoints: Int
+        numPoints: Int,
     ): List<Point> {
-
         val points = arrayListOf<Point>()
         var angle: Double = 0.0
         val step = (2 * Math.PI) / numPoints
@@ -68,14 +62,12 @@ object MathUtils {
             points.add(
                 Point(
                     (circleCenter.x + circleRadius * cos(angle)).toInt().coerceAtLeast(0),
-                    (circleCenter.y + circleRadius * sin(angle)).toInt().coerceAtLeast(0)
-                )
+                    (circleCenter.y + circleRadius * sin(angle)).toInt().coerceAtLeast(0),
+                ),
             )
             angle += step
         }
 
         return points
-
     }
-
 }

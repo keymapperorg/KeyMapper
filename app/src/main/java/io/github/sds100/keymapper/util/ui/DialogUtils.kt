@@ -6,13 +6,25 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
-import androidx.lifecycle.*
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.textfield.TextInputLayout
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.databinding.DialogEdittextNumberBinding
 import io.github.sds100.keymapper.databinding.DialogEdittextStringBinding
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.Error
+import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.util.Success
+import io.github.sds100.keymapper.util.errorOrNull
+import io.github.sds100.keymapper.util.getFullMessage
+import io.github.sds100.keymapper.util.isSuccess
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
+import io.github.sds100.keymapper.util.onSuccess
+import io.github.sds100.keymapper.util.resumeIfNotCompleted
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -31,7 +43,7 @@ import kotlin.coroutines.resume
 
 suspend fun Context.materialAlertDialog(
     lifecycleOwner: LifecycleOwner,
-    model: PopupUi.Dialog
+    model: PopupUi.Dialog,
 ) = suspendCancellableCoroutine<DialogResponse?> { continuation ->
 
     materialAlertDialog {
@@ -68,7 +80,7 @@ suspend fun Context.materialAlertDialogCustomView(
     positiveButtonText: CharSequence? = null,
     neutralButtonText: CharSequence? = null,
     negativeButtonText: CharSequence? = null,
-    view: View
+    view: View,
 ) = suspendCancellableCoroutine<DialogResponse?> { continuation ->
 
     materialAlertDialog {
@@ -102,7 +114,7 @@ suspend fun Context.materialAlertDialogCustomView(
 
 suspend fun Context.multiChoiceDialog(
     lifecycleOwner: LifecycleOwner,
-    items: List<MultiChoiceItem<*>>
+    items: List<MultiChoiceItem<*>>,
 ) = suspendCancellableCoroutine<List<*>?> { continuation ->
     materialAlertDialog {
         val checkedItems = items
@@ -111,7 +123,7 @@ suspend fun Context.multiChoiceDialog(
 
         setMultiChoiceItems(
             items.map { it.label }.toTypedArray(),
-            checkedItems
+            checkedItems,
         ) { _, which, checked ->
             checkedItems[which] = checked
         }
@@ -139,10 +151,10 @@ suspend fun Context.multiChoiceDialog(
 
 suspend fun <ID> Context.singleChoiceDialog(
     lifecycleOwner: LifecycleOwner,
-    items: List<Pair<ID, String>>
+    items: List<Pair<ID, String>>,
 ) = suspendCancellableCoroutine<ID?> { continuation ->
     materialAlertDialog {
-        //message isn't supported
+        // message isn't supported
         setItems(
             items.map { it.second }.toTypedArray(),
         ) { _, position ->
@@ -163,7 +175,7 @@ suspend fun Context.editTextStringAlertDialog(
     initialText: String = "",
     inputType: Int? = null,
     message: CharSequence? = null,
-    autoCompleteEntries: List<String> = emptyList()
+    autoCompleteEntries: List<String> = emptyList(),
 ) = suspendCancellableCoroutine<String?> { continuation ->
 
     val text = MutableStateFlow(initialText)
@@ -189,7 +201,7 @@ suspend fun Context.editTextStringAlertDialog(
             val autoCompleteAdapter = ArrayAdapter(
                 this@editTextStringAlertDialog,
                 R.layout.dropdown_menu_popup_item,
-                autoCompleteEntries
+                autoCompleteEntries,
             )
 
             autoCompleteTextView.setAdapter(autoCompleteAdapter)
@@ -210,7 +222,7 @@ suspend fun Context.editTextStringAlertDialog(
         }
     }
 
-    //this prevents window leak
+    // this prevents window leak
     alertDialog.resumeNullOnDismiss(continuation)
     alertDialog.dismissOnDestroy(lifecycleOwner)
 
@@ -305,7 +317,6 @@ suspend fun Context.okDialog(
 ) = suspendCancellableCoroutine<Unit?> { continuation ->
 
     val alertDialog = materialAlertDialog {
-
         setTitle(title)
         setMessage(message)
 
@@ -316,7 +327,7 @@ suspend fun Context.okDialog(
 
     alertDialog.show()
 
-    //this prevents window leak
+    // this prevents window leak
     alertDialog.resumeNullOnDismiss(continuation)
     alertDialog.dismissOnDestroy(lifecycleOwner)
 }

@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 
 class AndroidBluetoothAdapter(
     context: Context,
-    private val coroutineScope: CoroutineScope
+    private val coroutineScope: CoroutineScope,
 ) : io.github.sds100.keymapper.system.bluetooth.BluetoothAdapter {
 
     private val adapter: BluetoothAdapter? by lazy { BluetoothAdapter.getDefaultAdapter() }
@@ -43,7 +43,7 @@ class AndroidBluetoothAdapter(
 
     init {
         IntentFilter().apply {
-            //these broadcasts can't be received from a manifest declared receiver on Android 8.0+
+            // these broadcasts can't be received from a manifest declared receiver on Android 8.0+
             addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
             addAction(BluetoothAdapter.ACTION_STATE_CHANGED)
 
@@ -65,8 +65,8 @@ class AndroidBluetoothAdapter(
                     onDeviceConnect.emit(
                         BluetoothDeviceInfo(
                             address = device.address,
-                            name = device.name
-                        )
+                            name = device.name,
+                        ),
                     )
                 }
             }
@@ -83,8 +83,8 @@ class AndroidBluetoothAdapter(
                     onDeviceDisconnect.emit(
                         BluetoothDeviceInfo(
                             address = device.address,
-                            name = device.name
-                        )
+                            name = device.name,
+                        ),
                     )
                 }
             }
@@ -101,8 +101,8 @@ class AndroidBluetoothAdapter(
                     onDevicePairedChange.emit(
                         BluetoothDeviceInfo(
                             address = device.address,
-                            name = device.name
-                        )
+                            name = device.name,
+                        ),
                     )
                 }
             }

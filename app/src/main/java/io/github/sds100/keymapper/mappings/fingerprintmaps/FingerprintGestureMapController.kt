@@ -15,12 +15,12 @@ class FingerprintGestureMapController(
     coroutineScope: CoroutineScope,
     detectMappingUseCase: DetectFingerprintMapsUseCase,
     performActionsUseCase: PerformActionsUseCase,
-    detectConstraintsUseCase: DetectConstraintsUseCase
+    detectConstraintsUseCase: DetectConstraintsUseCase,
 ) : SimpleMappingController(
     coroutineScope,
     detectMappingUseCase,
     performActionsUseCase,
-    detectConstraintsUseCase
+    detectConstraintsUseCase,
 ) {
     private var fingerprintMaps: List<FingerprintMap>? = null
 

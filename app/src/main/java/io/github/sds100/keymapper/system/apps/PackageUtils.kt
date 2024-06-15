@@ -13,7 +13,6 @@ object PackageUtils {
             ctx.packageManager.getApplicationInfo(packageName, 0)
 
             return true
-
         } catch (e: Exception) {
             return false
         }

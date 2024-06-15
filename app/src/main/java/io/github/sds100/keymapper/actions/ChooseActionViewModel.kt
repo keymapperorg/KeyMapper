@@ -9,9 +9,23 @@ import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.containsQuery
 import io.github.sds100.keymapper.util.getFullMessage
-import io.github.sds100.keymapper.util.ui.*
+import io.github.sds100.keymapper.util.ui.DefaultSimpleListItem
+import io.github.sds100.keymapper.util.ui.IconInfo
+import io.github.sds100.keymapper.util.ui.ListItem
+import io.github.sds100.keymapper.util.ui.PopupUi
+import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.util.ui.SectionHeaderListItem
+import io.github.sds100.keymapper.util.ui.TintType
+import io.github.sds100.keymapper.util.ui.showPopup
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 /**
@@ -20,7 +34,7 @@ import kotlinx.coroutines.launch
 class ChooseActionViewModel(
     private val useCase: CreateActionUseCase,
     resourceProvider: ResourceProvider,
-    private val isActionSupported: IsActionSupportedUseCase
+    private val isActionSupported: IsActionSupportedUseCase,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
     CreateActionViewModel by CreateActionViewModelImpl(useCase, resourceProvider) {
@@ -39,7 +53,7 @@ class ChooseActionViewModel(
             ActionCategory.CONNECTIVITY,
             ActionCategory.TELEPHONY,
             ActionCategory.CAMERA_SOUND,
-            ActionCategory.NOTIFICATIONS
+            ActionCategory.NOTIFICATIONS,
         )
     }
 
@@ -99,7 +113,7 @@ class ChooseActionViewModel(
 
     private fun createCategoryListItems(
         category: ActionCategory,
-        actionIds: List<ActionId>
+        actionIds: List<ActionId>,
     ): Pair<SectionHeaderListItem, List<DefaultSimpleListItem>> {
         val childrenListItems = mutableListOf<DefaultSimpleListItem>()
 
@@ -112,7 +126,7 @@ class ChooseActionViewModel(
             val icon = ActionUtils.getIcon(actionId)?.let {
                 IconInfo(
                     getDrawable(it),
-                    TintType.OnSurface
+                    TintType.OnSurface,
                 )
             }
 
@@ -132,14 +146,14 @@ class ChooseActionViewModel(
                     subtitle = subtitle,
                     subtitleTint = TintType.Error,
                     icon = icon,
-                    isEnabled = isSupported
-                )
+                    isEnabled = isSupported,
+                ),
             )
         }
 
         val sectionHeader = SectionHeaderListItem(
             id = category.toString(),
-            text = getString(ActionUtils.getCategoryLabel(category))
+            text = getString(ActionUtils.getCategoryLabel(category)),
         )
 
         return sectionHeader to childrenListItems.toList()
@@ -151,16 +165,19 @@ class ChooseActionViewModel(
     private suspend fun showMessageForAction(id: ActionId): Boolean {
         @StringRes val messageToShow: Int? = when (id) {
             ActionId.FAST_FORWARD_PACKAGE,
-            ActionId.FAST_FORWARD -> R.string.action_fast_forward_message
+            ActionId.FAST_FORWARD,
+            -> R.string.action_fast_forward_message
 
             ActionId.REWIND_PACKAGE,
-            ActionId.REWIND -> R.string.action_rewind_message
+            ActionId.REWIND,
+            -> R.string.action_rewind_message
 
             ActionId.MOVE_CURSOR_TO_END -> R.string.action_move_to_end_of_text_message
 
             ActionId.TOGGLE_KEYBOARD,
             ActionId.SHOW_KEYBOARD,
-            ActionId.HIDE_KEYBOARD -> R.string.action_toggle_keyboard_message
+            ActionId.HIDE_KEYBOARD,
+            -> R.string.action_toggle_keyboard_message
 
             ActionId.SECURE_LOCK_DEVICE -> R.string.action_secure_lock_device_message
             ActionId.POWER_ON_OFF_DEVICE -> R.string.action_power_on_off_device_message
@@ -171,7 +188,7 @@ class ChooseActionViewModel(
         if (messageToShow != null) {
             val response = showPopup(
                 "show_action_message",
-                PopupUi.Ok(message = getString(messageToShow))
+                PopupUi.Ok(message = getString(messageToShow)),
             )
 
             return response != null
@@ -184,11 +201,10 @@ class ChooseActionViewModel(
     class Factory(
         private val useCase: CreateActionUseCase,
         private val resourceProvider: ResourceProvider,
-        private val isActionSupported: IsActionSupportedUseCase
+        private val isActionSupported: IsActionSupportedUseCase,
     ) : ViewModelProvider.NewInstanceFactory() {
 
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return ChooseActionViewModel(useCase, resourceProvider, isActionSupported) as T
-        }
+        override fun <T : ViewModel> create(modelClass: Class<T>): T =
+            ChooseActionViewModel(useCase, resourceProvider, isActionSupported) as T
     }
 }

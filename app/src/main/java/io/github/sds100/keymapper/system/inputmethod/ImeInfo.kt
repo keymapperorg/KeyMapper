@@ -8,5 +8,5 @@ data class ImeInfo(
     val packageName: String,
     val label: String,
     val isEnabled: Boolean,
-    val isChosen: Boolean
+    val isChosen: Boolean,
 )

@@ -14,7 +14,7 @@ data class BoolIntentExtraListItem(
     override val uid: String,
     val name: String,
     val value: Boolean,
-    val isValid: Boolean
+    val isValid: Boolean,
 ) : IntentExtraListItem()
 
 data class GenericIntentExtraListItem(
@@ -24,5 +24,5 @@ data class GenericIntentExtraListItem(
     val value: String,
     val isValid: Boolean,
     val exampleString: String,
-    val inputType: Int
+    val inputType: Int,
 ) : IntentExtraListItem()

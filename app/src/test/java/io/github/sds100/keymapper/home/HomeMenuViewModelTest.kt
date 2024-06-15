@@ -7,7 +7,8 @@ import io.github.sds100.keymapper.util.ui.PopupUi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.TestCoroutineExceptionHandler
+import kotlinx.coroutines.test.createTestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.withTimeout
 import org.hamcrest.MatcherAssert.assertThat
@@ -26,33 +27,34 @@ class HomeMenuViewModelTest {
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
     private val testDispatcher = TestCoroutineDispatcher()
-    private val testCoroutineScope = TestCoroutineScope(testDispatcher)
+    private val testCoroutineScope =
+        createTestCoroutineScope(TestCoroutineDispatcher() + TestCoroutineExceptionHandler() + testDispatcher)
 
     private lateinit var fakeResourceProvider: FakeResourceProvider
     private lateinit var viewModel: HomeMenuViewModel
 
     @Before
     fun setUp() {
-        fakeResourceProvider = FakeResourceProvider();
+        fakeResourceProvider = FakeResourceProvider()
         viewModel = HomeMenuViewModel(
             testCoroutineScope,
             alertsUseCase = mock(),
             pauseMappings = mock(),
             showImePicker = mock(),
-            fakeResourceProvider
+            fakeResourceProvider,
         )
     }
 
     @Test
     fun onCreateDocumentActivityNotFound() = runBlockingTest {
-        //given
+        // given
         fakeResourceProvider.stringResourceMap[R.string.dialog_message_no_app_found_to_create_file] = "message"
         fakeResourceProvider.stringResourceMap[R.string.pos_ok] = "ok"
 
-        //when
+        // when
         viewModel.onCreateBackupFileActivityNotFound()
 
-        //then
+        // then
         withTimeout(1000) {
             val popupEvent = viewModel.showPopup.first()
             assertThat(popupEvent.ui, `is`(PopupUi.Dialog(message = "message", positiveButtonText = "ok")))
@@ -61,14 +63,14 @@ class HomeMenuViewModelTest {
 
     @Test
     fun onGetContentActivityNotFound() = runBlockingTest {
-        //given
+        // given
         fakeResourceProvider.stringResourceMap[R.string.dialog_message_no_app_found_to_choose_a_file] = "message"
         fakeResourceProvider.stringResourceMap[R.string.pos_ok] = "ok"
 
-        //when
+        // when
         viewModel.onChooseRestoreFileActivityNotFound()
 
-        //then
+        // then
         withTimeout(1000) {
             val popupEvent = viewModel.showPopup.first()
             assertThat(popupEvent.ui, `is`(PopupUi.Dialog(message = "message", positiveButtonText = "ok")))

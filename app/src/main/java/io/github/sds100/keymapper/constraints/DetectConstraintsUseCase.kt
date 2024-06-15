@@ -25,23 +25,21 @@ class DetectConstraintsUseCaseImpl(
     private val inputMethodAdapter: InputMethodAdapter,
     private val lockScreenAdapter: LockScreenAdapter,
     private val phoneAdapter: PhoneAdapter,
-    private val powerAdapter: PowerAdapter
+    private val powerAdapter: PowerAdapter,
 ) : DetectConstraintsUseCase {
 
-    override fun getSnapshot(): ConstraintSnapshotImpl {
-        return ConstraintSnapshotImpl(
-            accessibilityService,
-            mediaAdapter,
-            devicesAdapter,
-            displayAdapter,
-            networkAdapter,
-            cameraAdapter,
-            inputMethodAdapter,
-            lockScreenAdapter,
-            phoneAdapter,
-            powerAdapter
-        )
-    }
+    override fun getSnapshot(): ConstraintSnapshotImpl = ConstraintSnapshotImpl(
+        accessibilityService,
+        mediaAdapter,
+        devicesAdapter,
+        displayAdapter,
+        networkAdapter,
+        cameraAdapter,
+        inputMethodAdapter,
+        lockScreenAdapter,
+        phoneAdapter,
+        powerAdapter,
+    )
 }
 
 interface DetectConstraintsUseCase {

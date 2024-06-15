@@ -24,7 +24,7 @@ val Fragment.viewLifecycleScope: LifecycleCoroutineScope
 
 fun LifecycleOwner.launchRepeatOnLifecycle(
     state: Lifecycle.State,
-    block: suspend CoroutineScope.() -> Unit
+    block: suspend CoroutineScope.() -> Unit,
 ) {
     lifecycleScope.launch {
         this@launchRepeatOnLifecycle.repeatOnLifecycle(state, block)

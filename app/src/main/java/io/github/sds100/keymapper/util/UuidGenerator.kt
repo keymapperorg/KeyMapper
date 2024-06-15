@@ -7,9 +7,7 @@ import java.util.UUID
  */
 
 class DefaultUuidGenerator : UuidGenerator {
-    override fun random(): String {
-        return UUID.randomUUID().toString()
-    }
+    override fun random(): String = UUID.randomUUID().toString()
 }
 
 interface UuidGenerator {

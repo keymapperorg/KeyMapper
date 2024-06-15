@@ -38,8 +38,10 @@ class ConfigFingerprintMapViewModel(
     private val display: DisplaySimpleMappingUseCase,
     private val onboarding: OnboardingUseCase,
     createActionUseCase: CreateActionUseCase,
-    resourceProvider: ResourceProvider
-) : ViewModel(), ConfigMappingViewModel, PopupViewModel by PopupViewModelImpl() {
+    resourceProvider: ResourceProvider,
+) : ViewModel(),
+    ConfigMappingViewModel,
+    PopupViewModel by PopupViewModelImpl() {
 
     companion object {
         private const val STATE_FINGERPRINT_MAP = "config_fingerprint_map"
@@ -50,7 +52,7 @@ class ConfigFingerprintMapViewModel(
             viewModelScope,
             config,
             createActionUseCase,
-            resourceProvider
+            resourceProvider,
         )
 
     val configOptionsViewModel =
@@ -63,7 +65,7 @@ class ConfigFingerprintMapViewModel(
         config,
         FingerprintMapActionUiHelper(display, resourceProvider),
         onboarding,
-        resourceProvider
+        resourceProvider,
     )
 
     override val configConstraintsViewModel = ConfigConstraintsViewModel(
@@ -71,7 +73,7 @@ class ConfigFingerprintMapViewModel(
         display,
         config,
         ConstraintUtils.FINGERPRINT_MAP_ALLOWED_CONSTRAINTS,
-        resourceProvider
+        resourceProvider,
     )
 
     override val state = MutableStateFlow<ConfigMappingUiState>(buildUiState(State.Loading))
@@ -87,7 +89,7 @@ class ConfigFingerprintMapViewModel(
             }
         }
 
-        runBlocking { rebuildUiState.emit(Unit) } //build the initial state on init
+        runBlocking { rebuildUiState.emit(Unit) } // build the initial state on init
     }
 
     override fun setEnabled(enabled: Boolean) = config.setEnabled(enabled)
@@ -114,12 +116,11 @@ class ConfigFingerprintMapViewModel(
         }
     }
 
-    private fun buildUiState(configState: State<FingerprintMap>): ConfigFingerprintMapUiState {
-        return when (configState) {
+    private fun buildUiState(configState: State<FingerprintMap>): ConfigFingerprintMapUiState =
+        when (configState) {
             is State.Data -> ConfigFingerprintMapUiState(configState.data.isEnabled)
             is State.Loading -> ConfigFingerprintMapUiState(isEnabled = false)
         }
-    }
 
     class Factory(
         private val config: ConfigFingerprintMapUseCase,
@@ -127,7 +128,7 @@ class ConfigFingerprintMapViewModel(
         private val display: DisplaySimpleMappingUseCase,
         private val onboarding: OnboardingUseCase,
         private val createActionUseCase: CreateActionUseCase,
-        private val resourceProvider: ResourceProvider
+        private val resourceProvider: ResourceProvider,
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -138,11 +139,11 @@ class ConfigFingerprintMapViewModel(
                 display,
                 onboarding,
                 createActionUseCase,
-                resourceProvider
+                resourceProvider,
             ) as T
     }
 }
 
 data class ConfigFingerprintMapUiState(
-    override val isEnabled: Boolean
+    override val isEnabled: Boolean,
 ) : ConfigMappingUiState

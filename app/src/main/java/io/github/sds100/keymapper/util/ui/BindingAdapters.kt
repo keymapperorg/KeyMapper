@@ -43,8 +43,7 @@ fun MaterialTextView.tintType(tintType: TintType?) {
 
 @BindingAdapter("app:errorWhenEmpty")
 fun TextInputLayout.errorWhenEmpty(enabled: Boolean) {
-
-    //need to set it up when the view is created
+    // need to set it up when the view is created
     if (editText?.text.isNullOrBlank()) {
         error = if (enabled) {
             str(R.string.error_cant_be_empty)
@@ -110,7 +109,7 @@ fun SquareImageButton.openUrlOnClick(url: Int?) {
 @BindingAdapter("app:chipUiModels", "app:onChipClickCallback", requireAll = true)
 fun ChipGroup.setChipUiModels(
     models: List<ChipUi>,
-    callback: OnChipClickCallback
+    callback: OnChipClickCallback,
 ) {
     removeAllViews()
 
@@ -119,7 +118,6 @@ fun ChipGroup.setChipUiModels(
 
     models.forEach { model ->
         when (model) {
-
             is ChipUi.Error -> {
                 MaterialButton(context, null, R.attr.errorChipButtonStyle).apply {
                     id = View.generateViewId()

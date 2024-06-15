@@ -54,7 +54,7 @@ class ConfigIntentFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         FragmentConfigIntentBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
@@ -93,7 +93,7 @@ class ConfigIntentFragment : Fragment() {
             viewModel.returnResult.collectLatest { result ->
                 setFragmentResult(
                     requestKey,
-                    bundleOf(EXTRA_RESULT to Json.encodeToString(result))
+                    bundleOf(EXTRA_RESULT to Json.encodeToString(result)),
                 )
 
                 findNavController().navigateUp()
@@ -122,7 +122,7 @@ class ConfigIntentFragment : Fragment() {
                 s: CharSequence?,
                 start: Int,
                 count: Int,
-                after: Int
+                after: Int,
             ) {
             }
 
@@ -130,7 +130,7 @@ class ConfigIntentFragment : Fragment() {
                 s: CharSequence?,
                 start: Int,
                 before: Int,
-                count: Int
+                count: Int,
             ) {
             }
 
@@ -141,7 +141,6 @@ class ConfigIntentFragment : Fragment() {
 
         when (model) {
             is GenericIntentExtraListItem -> intentExtraGeneric {
-
                 id(model.uid)
 
                 model(model)
@@ -159,16 +158,15 @@ class ConfigIntentFragment : Fragment() {
                         s: CharSequence?,
                         start: Int,
                         count: Int,
-                        after: Int
+                        after: Int,
                     ) {
-
                     }
 
                     override fun onTextChanged(
                         s: CharSequence?,
                         start: Int,
                         before: Int,
-                        count: Int
+                        count: Int,
                     ) {
                     }
 
@@ -205,5 +203,4 @@ class ConfigIntentFragment : Fragment() {
             }
         }
     }
-
 }

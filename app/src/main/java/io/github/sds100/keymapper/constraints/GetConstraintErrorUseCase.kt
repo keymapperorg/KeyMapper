@@ -19,13 +19,12 @@ class GetConstraintErrorUseCaseImpl(
     private val packageManager: PackageManagerAdapter,
     private val permissionAdapter: PermissionAdapter,
     private val systemFeatureAdapter: SystemFeatureAdapter,
-    private val inputMethodAdapter: InputMethodAdapter
+    private val inputMethodAdapter: InputMethodAdapter,
 ) : GetConstraintErrorUseCase {
 
     override val invalidateConstraintErrors: Flow<Unit> = permissionAdapter.onPermissionsUpdate
 
     override fun getConstraintError(constraint: Constraint): Error? {
-
         when (constraint) {
             is Constraint.AppInForeground -> return getAppError(constraint.packageName)
             is Constraint.AppNotInForeground -> return getAppError(constraint.packageName)
@@ -53,7 +52,8 @@ class GetConstraintErrorUseCaseImpl(
             }
 
             is Constraint.BtDeviceConnected,
-            is Constraint.BtDeviceDisconnected -> {
+            is Constraint.BtDeviceDisconnected,
+            -> {
                 if (!systemFeatureAdapter.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)) {
                     return Error.SystemFeatureNotSupported(PackageManager.FEATURE_BLUETOOTH)
                 }
@@ -65,13 +65,15 @@ class GetConstraintErrorUseCaseImpl(
 
             is Constraint.OrientationCustom,
             Constraint.OrientationLandscape,
-            Constraint.OrientationPortrait ->
+            Constraint.OrientationPortrait,
+            ->
                 if (!permissionAdapter.isGranted(Permission.WRITE_SETTINGS)) {
                     return Error.PermissionDenied(Permission.WRITE_SETTINGS)
                 }
 
             Constraint.ScreenOff,
-            Constraint.ScreenOn -> {
+            Constraint.ScreenOn,
+            -> {
                 if (!permissionAdapter.isGranted(Permission.ROOT)) {
                     return Error.PermissionDenied(Permission.ROOT)
                 }
@@ -120,7 +122,6 @@ class GetConstraintErrorUseCaseImpl(
 
         return null
     }
-
 }
 
 interface GetConstraintErrorUseCase {

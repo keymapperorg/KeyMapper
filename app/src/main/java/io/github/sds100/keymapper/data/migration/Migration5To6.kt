@@ -15,7 +15,7 @@ import com.google.gson.JsonParser
 /**
  * move keymap flags to trigger flags
  */
-object Migration_5_6 {
+object Migration5To6 {
 
     fun migrate(database: SupportSQLiteDatabase) = database.apply {
         val query = SupportSQLiteQueryBuilder

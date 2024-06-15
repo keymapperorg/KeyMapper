@@ -12,11 +12,12 @@ import io.github.sds100.keymapper.util.Inject
  */
 class FingerprintConfigConstraintsFragment : ConfigConstraintsFragment() {
 
-    class Info : FragmentInfo(
-        R.string.constraint_list_header,
-        R.string.url_constraints_guide,
-        { FingerprintConfigConstraintsFragment() }
-    )
+    class Info :
+        FragmentInfo(
+            R.string.constraint_list_header,
+            R.string.url_constraints_guide,
+            { FingerprintConfigConstraintsFragment() },
+        )
 
     override var isAppBarVisible = false
 

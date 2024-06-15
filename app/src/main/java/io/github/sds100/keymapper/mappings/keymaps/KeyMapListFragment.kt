@@ -31,7 +31,7 @@ class KeyMapListFragment : SimpleRecyclerViewFragment<KeyMapListItem>() {
 
     override fun populateList(
         recyclerView: EpoxyRecyclerView,
-        listItems: List<KeyMapListItem>
+        listItems: List<KeyMapListItem>,
     ) {
         recyclerView.withModels {
             listItems.forEach { listItem ->

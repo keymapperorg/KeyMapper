@@ -22,7 +22,7 @@ import java.io.InputStream
 
 class SuAdapterImpl(
     coroutineScope: CoroutineScope,
-    private val preferenceRepository: PreferenceRepository
+    private val preferenceRepository: PreferenceRepository,
 ) : SuAdapter {
     private var process: Process? = null
 
@@ -33,7 +33,7 @@ class SuAdapterImpl(
     override fun requestPermission(): Boolean {
         preferenceRepository.set(Keys.hasRootPermission, true)
 
-        //show the su prompt
+        // show the su prompt
         Shell.run("su")
 
         return true
@@ -46,9 +46,8 @@ class SuAdapterImpl(
 
         try {
             if (block) {
-                //Don't use the long running su process because that will block the thread indefinitely
+                // Don't use the long running su process because that will block the thread indefinitely
                 Shell.run("su", "-c", command, waitFor = true)
-
             } else {
                 if (process == null) {
                     process = ProcessBuilder("su").start()

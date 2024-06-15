@@ -2,7 +2,12 @@ package io.github.sds100.keymapper.system.apps
 
 import android.annotation.SuppressLint
 import android.app.PendingIntent
-import android.content.*
+import android.content.ActivityNotFoundException
+import android.content.BroadcastReceiver
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
@@ -11,7 +16,11 @@ import android.os.Build
 import android.os.TransactionTooLargeException
 import android.provider.MediaStore
 import android.provider.Settings
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.Error
+import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.Success
+import io.github.sds100.keymapper.util.success
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,7 +35,7 @@ import splitties.bitflags.withFlag
  */
 class AndroidPackageManagerAdapter(
     context: Context,
-    coroutineScope: CoroutineScope
+    coroutineScope: CoroutineScope,
 ) : PackageManagerAdapter {
     private val ctx: Context = context.applicationContext
     private val packageManager: PackageManager = ctx.packageManager
@@ -42,7 +51,8 @@ class AndroidPackageManagerAdapter(
                 Intent.ACTION_PACKAGE_CHANGED,
                 Intent.ACTION_PACKAGE_ADDED,
                 Intent.ACTION_PACKAGE_REMOVED,
-                Intent.ACTION_PACKAGE_REPLACED -> {
+                Intent.ACTION_PACKAGE_REPLACED,
+                -> {
                     coroutineScope.launch(Dispatchers.Default) {
                         updatePackageList()
                     }
@@ -53,7 +63,7 @@ class AndroidPackageManagerAdapter(
 
     init {
         coroutineScope.launch(Dispatchers.Default) {
-            //save memory by only storing this stuff as it is needed
+            // save memory by only storing this stuff as it is needed
             installedPackages.subscriptionCount
                 .onEach { count ->
                     if (count == 0) {
@@ -84,7 +94,6 @@ class AndroidPackageManagerAdapter(
             intent.data = Uri.parse("market://details?id=$packageName")
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             ctx.startActivity(intent)
-
         } catch (e: ActivityNotFoundException) {
             val intent = Intent(Intent.ACTION_VIEW)
 
@@ -123,7 +132,7 @@ class AndroidPackageManagerAdapter(
 
     override fun enableApp(packageName: String) {
         Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-            data = Uri.parse("package:${packageName}")
+            data = Uri.parse("package:$packageName")
             flags = Intent.FLAG_ACTIVITY_NO_HISTORY.withFlag(Intent.FLAG_ACTIVITY_NEW_TASK)
 
             ctx.startActivity(this)
@@ -131,9 +140,7 @@ class AndroidPackageManagerAdapter(
     }
 
     override fun isAppEnabled(packageName: String): Result<Boolean> {
-        val packagesState = installedPackages.value
-
-        when (packagesState) {
+        when (val packagesState = installedPackages.value) {
             is State.Data -> {
                 val packages = packagesState.data
 
@@ -155,9 +162,7 @@ class AndroidPackageManagerAdapter(
     }
 
     override fun isAppInstalled(packageName: String): Boolean {
-        val packagesState = installedPackages.value
-
-        when (packagesState) {
+        when (val packagesState = installedPackages.value) {
             is State.Data -> {
                 val packages = packagesState.data
 
@@ -173,10 +178,9 @@ class AndroidPackageManagerAdapter(
                 false
             }
         }
-
     }
 
-    @SuppressLint("UnspecifiedImmutableFlag") //only specify the flag on SDK 23+. SDK 31 is first to enforce it.
+    @SuppressLint("UnspecifiedImmutableFlag") // only specify the flag on SDK 23+. SDK 31 is first to enforce it.
     override fun openApp(packageName: String): Result<*> {
         val leanbackIntent = packageManager.getLeanbackLaunchIntentForPackage(packageName)
 
@@ -184,7 +188,7 @@ class AndroidPackageManagerAdapter(
 
         val intent = leanbackIntent ?: normalIntent
 
-        //intent = null if the app doesn't exist
+        // intent = null if the app doesn't exist
         if (intent != null) {
             val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 PendingIntent.getActivity(ctx, 0, intent, PendingIntent.FLAG_IMMUTABLE)
@@ -194,18 +198,16 @@ class AndroidPackageManagerAdapter(
 
             pendingIntent.send()
             return Success(Unit)
-
         } else {
             try {
                 val appInfo = ctx.packageManager.getApplicationInfo(packageName, 0)
 
-                //if the app is disabled, show an error message because it won't open
+                // if the app is disabled, show an error message because it won't open
                 if (!appInfo.enabled) {
                     return Error.AppDisabled(packageName)
                 }
 
                 return Success(Unit)
-
             } catch (e: Exception) {
                 return Error.AppNotFound(packageName)
             }
@@ -310,7 +312,6 @@ class AndroidPackageManagerAdapter(
         val packageName = applicationInfo.packageName
 
         try {
-
             val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
             val leanbackLaunchIntent = packageManager.getLaunchIntentForPackage(packageName)
 
@@ -318,7 +319,7 @@ class AndroidPackageManagerAdapter(
 
             val activityPackageInfo = packageManager.getPackageInfo(
                 packageName,
-                PackageManager.GET_ACTIVITIES
+                PackageManager.GET_ACTIVITIES,
             )
 
             if (activityPackageInfo == null) {
@@ -340,7 +341,7 @@ class AndroidPackageManagerAdapter(
                 packageName,
                 activities = activityModels,
                 isEnabled = applicationInfo.enabled,
-                isLaunchable = isLaunchable
+                isLaunchable = isLaunchable,
             )
         } catch (e: PackageManager.NameNotFoundException) {
             return null

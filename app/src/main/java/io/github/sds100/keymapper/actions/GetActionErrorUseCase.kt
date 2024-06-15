@@ -30,7 +30,7 @@ class GetActionErrorUseCaseImpl(
     private val systemFeatureAdapter: SystemFeatureAdapter,
     private val cameraAdapter: CameraAdapter,
     private val soundsManager: SoundsManager,
-    private val shizukuAdapter: ShizukuAdapter
+    private val shizukuAdapter: ShizukuAdapter,
 ) : GetActionErrorUseCase {
 
     private val isActionSupported = IsActionSupportedUseCaseImpl(systemFeatureAdapter)
@@ -38,16 +38,16 @@ class GetActionErrorUseCaseImpl(
 
     override val invalidateActionErrors = merge(
         inputMethodAdapter.chosenIme.drop(1).map { },
-        inputMethodAdapter.inputMethods.drop(1).map { }, //invalidate when the input methods change
+        // invalidate when the input methods change
+        inputMethodAdapter.inputMethods.drop(1).map { },
         permissionAdapter.onPermissionsUpdate,
         soundsManager.soundFiles.drop(1).map { },
         shizukuAdapter.isStarted.drop(1).map { },
-        shizukuAdapter.isInstalled.drop(1).map { }
+        shizukuAdapter.isInstalled.drop(1).map { },
     )
 
     override fun getError(action: ActionData): Error? {
         if (action.canUseShizukuToPerform() && shizukuAdapter.isInstalled.value) {
-
             if (!(action.canUseImeToPerform() && keyMapperImeHelper.isCompatibleImeChosen())) {
                 when {
                     !shizukuAdapter.isStarted.value ->
@@ -131,8 +131,8 @@ class GetActionErrorUseCaseImpl(
                 }
 
             is ActionData.Bluetooth ->
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-                    && !permissionAdapter.isGranted(Permission.FIND_NEARBY_DEVICES)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+                    !permissionAdapter.isGranted(Permission.FIND_NEARBY_DEVICES)
                 ) {
                     return Error.PermissionDenied(Permission.FIND_NEARBY_DEVICES)
                 }

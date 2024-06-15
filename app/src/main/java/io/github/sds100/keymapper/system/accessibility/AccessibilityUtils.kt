@@ -13,7 +13,7 @@ import android.view.accessibility.AccessibilityNodeInfo
 fun AccessibilityNodeInfo?.findNodeRecursively(
     nodeInfo: AccessibilityNodeInfo? = this,
     depth: Int = 0,
-    predicate: (node: AccessibilityNodeInfo) -> Boolean
+    predicate: (node: AccessibilityNodeInfo) -> Boolean,
 ): AccessibilityNodeInfo? {
     if (nodeInfo == null) return null
 
@@ -30,18 +30,14 @@ fun AccessibilityNodeInfo?.findNodeRecursively(
     return null
 }
 
-fun AccessibilityNodeInfo.toModel(): AccessibilityNodeModel {
-    return AccessibilityNodeModel(
-        packageName = packageName?.toString(),
-        contentDescription = contentDescription?.toString(),
-        isFocused = isFocused,
-        textSelectionStart = textSelectionStart,
-        textSelectionEnd = textSelectionEnd,
-        text = text?.toString(),
-        isEditable = isEditable
-    )
-}
+fun AccessibilityNodeInfo.toModel(): AccessibilityNodeModel = AccessibilityNodeModel(
+    packageName = packageName?.toString(),
+    contentDescription = contentDescription?.toString(),
+    isFocused = isFocused,
+    textSelectionStart = textSelectionStart,
+    textSelectionEnd = textSelectionEnd,
+    text = text?.toString(),
+    isEditable = isEditable,
+)
 
-fun AccessibilityEvent.toModel(): AccessibilityEventModel {
-    return AccessibilityEventModel(eventTime)
-}
+fun AccessibilityEvent.toModel(): AccessibilityEventModel = AccessibilityEventModel(eventTime)

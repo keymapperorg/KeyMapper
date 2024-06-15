@@ -36,8 +36,9 @@ class ConfigKeyMapTriggerOptionsViewModel(
     private val coroutineScope: CoroutineScope,
     private val config: ConfigKeyMapUseCase,
     private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
-    resourceProvider: ResourceProvider
-) : ResourceProvider by resourceProvider, PopupViewModel by PopupViewModelImpl() {
+    resourceProvider: ResourceProvider,
+) : ResourceProvider by resourceProvider,
+    PopupViewModel by PopupViewModelImpl() {
 
     companion object {
         private const val ID_LONG_PRESS_DELAY = "long_press_delay"
@@ -91,25 +92,24 @@ class ConfigKeyMapTriggerOptionsViewModel(
             val result = if (mapping.actionList.size == 1) {
                 createKeyMapShortcut.pinShortcutForSingleAction(keyMapUid, mapping.actionList[0])
             } else {
-
                 val key = "create_launcher_shortcut"
                 val shortcutLabel = showPopup(
                     key,
                     PopupUi.Text(
                         getString(R.string.hint_shortcut_name),
-                        allowEmpty = false
-                    )
+                        allowEmpty = false,
+                    ),
                 ) ?: return@launch
 
                 createKeyMapShortcut.pinShortcutForMultipleActions(
                     keyMapUid = keyMapUid,
-                    shortcutLabel = shortcutLabel
+                    shortcutLabel = shortcutLabel,
                 )
             }
 
             result.onFailure { error ->
                 val snackBar = PopupUi.SnackBar(
-                    message = error.getFullMessage(this@ConfigKeyMapTriggerOptionsViewModel)
+                    message = error.getFullMessage(this@ConfigKeyMapTriggerOptionsViewModel),
                 )
 
                 showPopup("create_shortcut_result", snackBar)
@@ -117,8 +117,8 @@ class ConfigKeyMapTriggerOptionsViewModel(
         }
     }
 
-    private fun buildUiState(configState: State<KeyMap>): State<List<ListItem>> {
-        return configState.mapData { keyMap ->
+    private fun buildUiState(configState: State<KeyMap>): State<List<ListItem>> =
+        configState.mapData { keyMap ->
             sequence {
                 val trigger = keyMap.trigger
                 val keyMapUid = keyMap.uid
@@ -129,16 +129,16 @@ class ConfigKeyMapTriggerOptionsViewModel(
                         isEnabled = trigger.triggerFromOtherApps,
                         keyMapUid = keyMapUid,
                         label = getString(R.string.flag_trigger_from_other_apps),
-                        isCreateLauncherShortcutButtonEnabled = createKeyMapShortcut.isSupported
-                    )
+                        isCreateLauncherShortcutButtonEnabled = createKeyMapShortcut.isSupported,
+                    ),
                 )
 
                 yield(
                     CheckBoxListItem(
                         id = ID_SHOW_TOAST,
                         isChecked = trigger.showToast,
-                        label = getString(R.string.flag_show_toast)
-                    )
+                        label = getString(R.string.flag_show_toast),
+                    ),
                 )
 
                 if (trigger.isDetectingWhenScreenOffAllowed()) {
@@ -146,8 +146,8 @@ class ConfigKeyMapTriggerOptionsViewModel(
                         CheckBoxListItem(
                             id = ID_SCREEN_OFF_TRIGGER,
                             isChecked = trigger.screenOffTrigger,
-                            label = getString(R.string.flag_detect_triggers_screen_off)
-                        )
+                            label = getString(R.string.flag_detect_triggers_screen_off),
+                        ),
                     )
                 }
 
@@ -156,8 +156,8 @@ class ConfigKeyMapTriggerOptionsViewModel(
                         CheckBoxListItem(
                             id = ID_VIBRATE,
                             isChecked = trigger.vibrate,
-                            label = getString(R.string.flag_vibrate)
-                        )
+                            label = getString(R.string.flag_vibrate),
+                        ),
                     )
                 }
 
@@ -166,8 +166,8 @@ class ConfigKeyMapTriggerOptionsViewModel(
                         CheckBoxListItem(
                             id = ID_LONG_PRESS_DOUBLE_VIBRATION,
                             isChecked = trigger.longPressDoubleVibration,
-                            label = getString(R.string.flag_long_press_double_vibration)
-                        )
+                            label = getString(R.string.flag_long_press_double_vibration),
+                        ),
                     )
                 }
 
@@ -182,8 +182,8 @@ class ConfigKeyMapTriggerOptionsViewModel(
                                 min = OptionMinimums.VIBRATION_DURATION,
                                 max = SliderMaximums.VIBRATION_DURATION,
                                 stepSize = SliderStepSizes.VIBRATION_DURATION,
-                            )
-                        )
+                            ),
+                        ),
                     )
                 }
 
@@ -198,8 +198,8 @@ class ConfigKeyMapTriggerOptionsViewModel(
                                 min = OptionMinimums.TRIGGER_LONG_PRESS_DELAY,
                                 max = SliderMaximums.TRIGGER_LONG_PRESS_DELAY,
                                 stepSize = SliderStepSizes.TRIGGER_LONG_PRESS_DELAY,
-                            )
-                        )
+                            ),
+                        ),
                     )
                 }
 
@@ -214,8 +214,8 @@ class ConfigKeyMapTriggerOptionsViewModel(
                                 min = OptionMinimums.TRIGGER_DOUBLE_PRESS_DELAY,
                                 max = SliderMaximums.TRIGGER_DOUBLE_PRESS_DELAY,
                                 stepSize = SliderStepSizes.TRIGGER_DOUBLE_PRESS_DELAY,
-                            )
-                        )
+                            ),
+                        ),
                     )
                 }
 
@@ -230,11 +230,10 @@ class ConfigKeyMapTriggerOptionsViewModel(
                                 min = OptionMinimums.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT,
                                 max = SliderMaximums.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT,
                                 stepSize = SliderStepSizes.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT,
-                            )
-                        )
+                            ),
+                        ),
                     )
                 }
             }.toList()
         }
-    }
 }

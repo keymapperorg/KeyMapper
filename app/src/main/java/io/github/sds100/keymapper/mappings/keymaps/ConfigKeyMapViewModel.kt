@@ -36,8 +36,10 @@ class ConfigKeyMapViewModel(
     private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
     private val displayMapping: DisplayKeyMapUseCase,
     createActionUseCase: CreateActionUseCase,
-    resourceProvider: ResourceProvider
-) : ViewModel(), ConfigMappingViewModel, ResourceProvider by resourceProvider {
+    resourceProvider: ResourceProvider,
+) : ViewModel(),
+    ConfigMappingViewModel,
+    ResourceProvider by resourceProvider {
 
     companion object {
         private const val STATE_KEY = "config_keymap"
@@ -56,7 +58,7 @@ class ConfigKeyMapViewModel(
         config,
         KeyMapActionUiHelper(displayMapping, resourceProvider),
         onboarding,
-        resourceProvider
+        resourceProvider,
     )
 
     val configTriggerViewModel = ConfigKeyMapTriggerViewModel(
@@ -66,7 +68,7 @@ class ConfigKeyMapViewModel(
         recordTrigger,
         createKeyMapShortcut,
         displayMapping,
-        resourceProvider
+        resourceProvider,
     )
 
     override val configConstraintsViewModel = ConfigConstraintsViewModel(
@@ -74,7 +76,7 @@ class ConfigKeyMapViewModel(
         displayMapping,
         config,
         ConstraintUtils.KEY_MAP_ALLOWED_CONSTRAINTS,
-        resourceProvider
+        resourceProvider,
     )
 
     override val state = MutableStateFlow<ConfigMappingUiState>(buildUiState(State.Loading))
@@ -113,11 +115,9 @@ class ConfigKeyMapViewModel(
         }
     }
 
-    private fun buildUiState(configState: State<KeyMap>): ConfigKeymapUiState {
-        return when (configState) {
-            is State.Data -> ConfigKeymapUiState(configState.data.isEnabled)
-            is State.Loading -> ConfigKeymapUiState(isEnabled = false)
-        }
+    private fun buildUiState(configState: State<KeyMap>): ConfigKeymapUiState = when (configState) {
+        is State.Data -> ConfigKeymapUiState(configState.data.isEnabled)
+        is State.Loading -> ConfigKeymapUiState(isEnabled = false)
     }
 
     class Factory(
@@ -128,7 +128,7 @@ class ConfigKeyMapViewModel(
         private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
         private val displayMapping: DisplayKeyMapUseCase,
         private val createActionUseCase: CreateActionUseCase,
-        private val resourceProvider: ResourceProvider
+        private val resourceProvider: ResourceProvider,
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -141,11 +141,11 @@ class ConfigKeyMapViewModel(
                 createKeyMapShortcut,
                 displayMapping,
                 createActionUseCase,
-                resourceProvider
+                resourceProvider,
             ) as T
     }
 }
 
 data class ConfigKeymapUiState(
-    override val isEnabled: Boolean
+    override val isEnabled: Boolean,
 ) : ConfigMappingUiState

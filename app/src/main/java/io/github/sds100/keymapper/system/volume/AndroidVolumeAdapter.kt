@@ -29,17 +29,15 @@ class AndroidVolumeAdapter(context: Context) : VolumeAdapter {
             else -> throw Exception("Don't know how to convert this ringer moder ${audioManager.ringerMode}")
         }
 
-    override fun raiseVolume(stream: VolumeStream?, showVolumeUi: Boolean): Result<*> {
-        return stream.convert().then { streamType ->
+    override fun raiseVolume(stream: VolumeStream?, showVolumeUi: Boolean): Result<*> =
+        stream.convert().then { streamType ->
             adjustVolume(AudioManager.ADJUST_RAISE, showVolumeUi, streamType)
         }
-    }
 
-    override fun lowerVolume(stream: VolumeStream?, showVolumeUi: Boolean): Result<*> {
-        return stream.convert().then { streamType ->
+    override fun lowerVolume(stream: VolumeStream?, showVolumeUi: Boolean): Result<*> =
+        stream.convert().then { streamType ->
             adjustVolume(AudioManager.ADJUST_LOWER, showVolumeUi, streamType)
         }
-    }
 
     override fun muteVolume(stream: VolumeStream?, showVolumeUi: Boolean): Result<*> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -71,9 +69,8 @@ class AndroidVolumeAdapter(context: Context) : VolumeAdapter {
         }
     }
 
-    override fun showVolumeUi(): Result<*> {
-        return adjustVolume(AudioManager.ADJUST_SAME, showVolumeUi = true)
-    }
+    override fun showVolumeUi(): Result<*> =
+        adjustVolume(AudioManager.ADJUST_SAME, showVolumeUi = true)
 
     override fun setRingerMode(mode: RingerMode): Result<*> {
         try {
@@ -109,47 +106,41 @@ class AndroidVolumeAdapter(context: Context) : VolumeAdapter {
         return Error.SdkVersionTooLow(Build.VERSION_CODES.M)
     }
 
-    override fun isDndEnabled(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            notificationManager.currentInterruptionFilter != NotificationManager.INTERRUPTION_FILTER_ALL
-        } else {
-            false
-        }
+    override fun isDndEnabled(): Boolean = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        notificationManager.currentInterruptionFilter != NotificationManager.INTERRUPTION_FILTER_ALL
+    } else {
+        false
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
-    private fun DndMode.convert(): Int {
-        return when (this) {
-            DndMode.ALARMS -> NotificationManager.INTERRUPTION_FILTER_ALARMS
-            DndMode.PRIORITY -> NotificationManager.INTERRUPTION_FILTER_PRIORITY
-            DndMode.NONE -> NotificationManager.INTERRUPTION_FILTER_NONE
-        }
+    private fun DndMode.convert(): Int = when (this) {
+        DndMode.ALARMS -> NotificationManager.INTERRUPTION_FILTER_ALARMS
+        DndMode.PRIORITY -> NotificationManager.INTERRUPTION_FILTER_PRIORITY
+        DndMode.NONE -> NotificationManager.INTERRUPTION_FILTER_NONE
     }
 
-    private fun VolumeStream?.convert(): Result<Int?> {
-        return when (this) {
-            VolumeStream.ALARM -> Success(AudioManager.STREAM_ALARM)
-            VolumeStream.DTMF -> Success(AudioManager.STREAM_DTMF)
-            VolumeStream.MUSIC -> Success(AudioManager.STREAM_MUSIC)
-            VolumeStream.NOTIFICATION -> Success(AudioManager.STREAM_NOTIFICATION)
-            VolumeStream.RING -> Success(AudioManager.STREAM_RING)
-            VolumeStream.SYSTEM -> Success(AudioManager.STREAM_SYSTEM)
-            VolumeStream.VOICE_CALL -> Success(AudioManager.STREAM_VOICE_CALL)
-            VolumeStream.ACCESSIBILITY ->
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    Success(AudioManager.STREAM_ACCESSIBILITY)
-                } else {
-                    Error.SdkVersionTooLow(minSdk = Build.VERSION_CODES.O)
-                }
+    private fun VolumeStream?.convert(): Result<Int?> = when (this) {
+        VolumeStream.ALARM -> Success(AudioManager.STREAM_ALARM)
+        VolumeStream.DTMF -> Success(AudioManager.STREAM_DTMF)
+        VolumeStream.MUSIC -> Success(AudioManager.STREAM_MUSIC)
+        VolumeStream.NOTIFICATION -> Success(AudioManager.STREAM_NOTIFICATION)
+        VolumeStream.RING -> Success(AudioManager.STREAM_RING)
+        VolumeStream.SYSTEM -> Success(AudioManager.STREAM_SYSTEM)
+        VolumeStream.VOICE_CALL -> Success(AudioManager.STREAM_VOICE_CALL)
+        VolumeStream.ACCESSIBILITY ->
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                Success(AudioManager.STREAM_ACCESSIBILITY)
+            } else {
+                Error.SdkVersionTooLow(minSdk = Build.VERSION_CODES.O)
+            }
 
-            null -> Success(null)
-        }
+        null -> Success(null)
     }
 
     private fun adjustVolume(
         adjustMode: Int,
         showVolumeUi: Boolean = false,
-        streamType: Int? = null
+        streamType: Int? = null,
     ): Result<*> {
         try {
             val flag = if (showVolumeUi) {
@@ -165,7 +156,6 @@ class AndroidVolumeAdapter(context: Context) : VolumeAdapter {
             }
 
             return Success(Unit)
-
         } catch (e: SecurityException) {
             return Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)
         }

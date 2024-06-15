@@ -24,7 +24,5 @@ class AndroidLockScreenAdapter(context: Context) : LockScreenAdapter {
     }
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP_MR1)
-    override fun isLocked(): Boolean {
-        return keyguardManager.isDeviceLocked
-    }
+    override fun isLocked(): Boolean = keyguardManager.isDeviceLocked
 }

@@ -28,12 +28,12 @@ object JobSchedulerHelper {
 
         val contentUri = JobInfo.TriggerContentUri(
             uri,
-            JobInfo.TriggerContentUri.FLAG_NOTIFY_FOR_DESCENDANTS
+            JobInfo.TriggerContentUri.FLAG_NOTIFY_FOR_DESCENDANTS,
         )
 
         val builder = JobInfo.Builder(
             ID_OBSERVE_NOTIFICATION_LISTENERS,
-            ComponentName(ctx, ObserveNotificationListenersJob::class.java)
+            ComponentName(ctx, ObserveNotificationListenersJob::class.java),
         )
             .addTriggerContentUri(contentUri)
             .setTriggerContentUpdateDelay(500)
@@ -51,12 +51,12 @@ object JobSchedulerHelper {
 
         val contentUri = JobInfo.TriggerContentUri(
             uri,
-            JobInfo.TriggerContentUri.FLAG_NOTIFY_FOR_DESCENDANTS
+            JobInfo.TriggerContentUri.FLAG_NOTIFY_FOR_DESCENDANTS,
         )
 
         val builder = JobInfo.Builder(
             ID_OBSERVE_ACCESSIBILITY_SERVICES,
-            ComponentName(ctx, ObserveEnabledAccessibilityServicesJob::class.java)
+            ComponentName(ctx, ObserveEnabledAccessibilityServicesJob::class.java),
         )
             .addTriggerContentUri(contentUri)
             .setTriggerContentUpdateDelay(500)
@@ -70,25 +70,24 @@ object JobSchedulerHelper {
 
     @RequiresApi(Build.VERSION_CODES.N)
     fun observeInputMethods(ctx: Context) {
-
         val enabledContentUri = JobInfo.TriggerContentUri(
             Settings.Secure.getUriFor(Settings.Secure.ENABLED_INPUT_METHODS),
-            JobInfo.TriggerContentUri.FLAG_NOTIFY_FOR_DESCENDANTS
+            JobInfo.TriggerContentUri.FLAG_NOTIFY_FOR_DESCENDANTS,
         )
 
         val defaultImeContentUri = JobInfo.TriggerContentUri(
             Settings.Secure.getUriFor(Settings.Secure.DEFAULT_INPUT_METHOD),
-            JobInfo.TriggerContentUri.FLAG_NOTIFY_FOR_DESCENDANTS
+            JobInfo.TriggerContentUri.FLAG_NOTIFY_FOR_DESCENDANTS,
         )
 
         val historyContentUri = JobInfo.TriggerContentUri(
             Settings.Secure.getUriFor(AndroidInputMethodAdapter.SETTINGS_SECURE_SUBTYPE_HISTORY_KEY),
-            JobInfo.TriggerContentUri.FLAG_NOTIFY_FOR_DESCENDANTS
+            JobInfo.TriggerContentUri.FLAG_NOTIFY_FOR_DESCENDANTS,
         )
 
         val builder = JobInfo.Builder(
             ID_OBSERVE_ENABLED_INPUT_METHODS,
-            ComponentName(ctx, ObserveInputMethodsJob::class.java)
+            ComponentName(ctx, ObserveInputMethodsJob::class.java),
         )
             .addTriggerContentUri(enabledContentUri)
             .addTriggerContentUri(defaultImeContentUri)

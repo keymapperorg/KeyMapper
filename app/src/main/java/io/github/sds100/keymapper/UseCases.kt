@@ -41,37 +41,32 @@ object UseCases {
 
     fun displayPackages(ctx: Context): DisplayAppsUseCase =
         DisplayAppsUseCaseImpl(
-            ServiceLocator.packageManagerAdapter(ctx)
+            ServiceLocator.packageManagerAdapter(ctx),
         )
 
-    fun displayKeyMap(ctx: Context): DisplayKeyMapUseCase {
-        return DisplayKeyMapUseCaseImpl(
-            ServiceLocator.permissionAdapter(ctx),
-            ServiceLocator.inputMethodAdapter(ctx),
-            displaySimpleMapping(ctx),
-            ServiceLocator.settingsRepository(ctx)
-        )
-    }
+    fun displayKeyMap(ctx: Context): DisplayKeyMapUseCase = DisplayKeyMapUseCaseImpl(
+        ServiceLocator.permissionAdapter(ctx),
+        ServiceLocator.inputMethodAdapter(ctx),
+        displaySimpleMapping(ctx),
+        ServiceLocator.settingsRepository(ctx),
+    )
 
-    fun configKeyMap(ctx: Context): ConfigKeyMapUseCase {
-        return ConfigKeyMapUseCaseImpl(
-            ServiceLocator.roomKeymapRepository(ctx),
-            ServiceLocator.devicesAdapter(ctx),
-            ServiceLocator.settingsRepository(ctx)
-        )
-    }
+    fun configKeyMap(ctx: Context): ConfigKeyMapUseCase = ConfigKeyMapUseCaseImpl(
+        ServiceLocator.roomKeymapRepository(ctx),
+        ServiceLocator.devicesAdapter(ctx),
+        ServiceLocator.settingsRepository(ctx),
+    )
 
-    fun displaySimpleMapping(ctx: Context): DisplaySimpleMappingUseCase {
-        return DisplaySimpleMappingUseCaseImpl(
+    fun displaySimpleMapping(ctx: Context): DisplaySimpleMappingUseCase =
+        DisplaySimpleMappingUseCaseImpl(
             ServiceLocator.packageManagerAdapter(ctx),
             ServiceLocator.permissionAdapter(ctx),
             ServiceLocator.inputMethodAdapter(ctx),
             ServiceLocator.settingsRepository(ctx),
             ServiceLocator.accessibilityServiceAdapter(ctx),
             getActionError(ctx),
-            getConstraintError(ctx)
+            getConstraintError(ctx),
         )
-    }
 
     fun getActionError(ctx: Context) = GetActionErrorUseCaseImpl(
         ServiceLocator.packageManagerAdapter(ctx),
@@ -80,14 +75,14 @@ object UseCases {
         ServiceLocator.systemFeatureAdapter(ctx),
         ServiceLocator.cameraAdapter(ctx),
         ServiceLocator.soundsManager(ctx),
-        ServiceLocator.shizukuAdapter(ctx)
+        ServiceLocator.shizukuAdapter(ctx),
     )
 
     fun getConstraintError(ctx: Context) = GetConstraintErrorUseCaseImpl(
         ServiceLocator.packageManagerAdapter(ctx),
         ServiceLocator.permissionAdapter(ctx),
         ServiceLocator.systemFeatureAdapter(ctx),
-        ServiceLocator.inputMethodAdapter(ctx)
+        ServiceLocator.inputMethodAdapter(ctx),
     )
 
     fun onboarding(ctx: Context) = OnboardingUseCaseImpl(
@@ -96,13 +91,13 @@ object UseCases {
         ServiceLocator.leanbackAdapter(ctx),
         ServiceLocator.shizukuAdapter(ctx),
         ServiceLocator.permissionAdapter(ctx),
-        ServiceLocator.packageManagerAdapter(ctx)
+        ServiceLocator.packageManagerAdapter(ctx),
     )
 
     fun createKeymapShortcut(ctx: Context) = CreateKeyMapShortcutUseCaseImpl(
         ServiceLocator.appShortcutAdapter(ctx),
         displayKeyMap(ctx),
-        ServiceLocator.resourceProvider(ctx)
+        ServiceLocator.resourceProvider(ctx),
     )
 
     fun isActionSupported(ctx: Context) =
@@ -114,24 +109,22 @@ object UseCases {
     fun pauseMappings(ctx: Context) =
         PauseMappingsUseCaseImpl(
             ServiceLocator.settingsRepository(ctx),
-            ServiceLocator.mediaAdapter(ctx)
+            ServiceLocator.mediaAdapter(ctx),
         )
 
-    fun showImePicker(ctx: Context): ShowInputMethodPickerUseCase {
-        return ShowInputMethodPickerUseCaseImpl(
-            ServiceLocator.inputMethodAdapter(ctx)
+    fun showImePicker(ctx: Context): ShowInputMethodPickerUseCase =
+        ShowInputMethodPickerUseCaseImpl(
+            ServiceLocator.inputMethodAdapter(ctx),
         )
-    }
 
-    fun controlAccessibilityService(ctx: Context): ControlAccessibilityServiceUseCase {
-        return ControlAccessibilityServiceUseCaseImpl(
-            ServiceLocator.accessibilityServiceAdapter(ctx)
+    fun controlAccessibilityService(ctx: Context): ControlAccessibilityServiceUseCase =
+        ControlAccessibilityServiceUseCaseImpl(
+            ServiceLocator.accessibilityServiceAdapter(ctx),
         )
-    }
 
     fun toggleCompatibleIme(ctx: Context) =
         ToggleCompatibleImeUseCaseImpl(
-            ServiceLocator.inputMethodAdapter(ctx)
+            ServiceLocator.inputMethodAdapter(ctx),
         )
 
     fun detectConstraints(service: MyAccessibilityService) = DetectConstraintsUseCaseImpl(
@@ -144,7 +137,7 @@ object UseCases {
         ServiceLocator.inputMethodAdapter(service),
         ServiceLocator.lockScreenAdapter(service),
         ServiceLocator.phoneAdapter(service),
-        ServiceLocator.powerAdapter(service)
+        ServiceLocator.powerAdapter(service),
     )
 
     fun performActions(ctx: Context, service: IAccessibilityService) =
@@ -178,14 +171,14 @@ object UseCases {
             ServiceLocator.settingsRepository(ctx),
             ServiceLocator.soundsManager(ctx),
             ServiceLocator.permissionAdapter(ctx),
-            ServiceLocator.notificationReceiverAdapter(ctx)
+            ServiceLocator.notificationReceiverAdapter(ctx),
         )
 
     fun detectMappings(ctx: Context) = DetectMappingUseCaseImpl(
         ServiceLocator.vibratorAdapter(ctx),
         ServiceLocator.settingsRepository(ctx),
         ServiceLocator.popupMessageAdapter(ctx),
-        ServiceLocator.resourceProvider(ctx)
+        ServiceLocator.resourceProvider(ctx),
     )
 
     fun detectKeyMaps(service: MyAccessibilityService) = DetectKeyMapsUseCaseImpl(
@@ -200,27 +193,27 @@ object UseCases {
         ShizukuInputEventInjector(),
         ServiceLocator.permissionAdapter(service),
         ServiceLocator.phoneAdapter(service),
-        ServiceLocator.inputMethodAdapter(service)
+        ServiceLocator.inputMethodAdapter(service),
     )
 
     fun detectFingerprintMaps(ctx: Context) = DetectFingerprintMapsUseCaseImpl(
         ServiceLocator.fingerprintMapRepository(ctx),
         fingerprintGesturesSupported(ctx),
-        detectMappings(ctx)
+        detectMappings(ctx),
     )
 
     fun rerouteKeyEvents(ctx: Context) = RerouteKeyEventsUseCaseImpl(
         ServiceLocator.inputMethodAdapter(ctx),
         keyMapperImeMessenger(ctx),
-        ServiceLocator.settingsRepository(ctx)
+        ServiceLocator.settingsRepository(ctx),
     )
 
     fun createAction(ctx: Context) = CreateActionUseCaseImpl(
-        ServiceLocator.inputMethodAdapter(ctx)
+        ServiceLocator.inputMethodAdapter(ctx),
     )
 
     private fun keyMapperImeMessenger(ctx: Context) = KeyMapperImeMessengerImpl(
         ctx,
-        ServiceLocator.inputMethodAdapter(ctx)
+        ServiceLocator.inputMethodAdapter(ctx),
     )
 }

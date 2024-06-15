@@ -21,7 +21,7 @@ object RecyclerViewUtils {
                 outRect: Rect,
                 view: View,
                 parent: RecyclerView,
-                state: RecyclerView.State
+                state: RecyclerView.State,
             ) {
                 outRect.set(itemPadding, itemPadding, itemPadding, itemPadding)
             }

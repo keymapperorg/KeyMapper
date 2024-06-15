@@ -8,7 +8,12 @@ import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
-import androidx.preference.*
+import androidx.preference.DropDownPreference
+import androidx.preference.ListPreference
+import androidx.preference.Preference
+import androidx.preference.PreferenceCategory
+import androidx.preference.SwitchPreferenceCompat
+import androidx.preference.isEmpty
 import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.backup.BackupUtils
@@ -17,7 +22,11 @@ import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.shizuku.ShizukuUtils
 import io.github.sds100.keymapper.system.notifications.NotificationController
 import io.github.sds100.keymapper.system.notifications.NotificationUtils
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.firstBlocking
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
+import io.github.sds100.keymapper.util.str
+import io.github.sds100.keymapper.util.strArray
+import io.github.sds100.keymapper.util.viewLifecycleScope
 import kotlinx.coroutines.flow.collectLatest
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.messageResource
@@ -117,7 +126,7 @@ class MainSettingsFragment : BaseSettingsFragment() {
     }
 
     private fun populatePreferenceScreen() = preferenceScreen.apply {
-        //dark theme
+        // dark theme
         DropDownPreference(requireContext()).apply {
             key = Keys.darkTheme.name
             setDefaultValue(PreferenceDefaults.DARK_THEME)
@@ -131,7 +140,7 @@ class MainSettingsFragment : BaseSettingsFragment() {
             addPreference(this)
         }
 
-        //automatic backup location
+        // automatic backup location
         Preference(requireContext()).apply {
             key = Keys.automaticBackupLocation.name
             setDefaultValue("")
@@ -144,7 +153,6 @@ class MainSettingsFragment : BaseSettingsFragment() {
 
                 if (backupLocation.isBlank()) {
                     chooseAutomaticBackupLocationLauncher.launch(BackupUtils.DEFAULT_AUTOMATIC_BACKUP_NAME)
-
                 } else {
                     requireContext().alertDialog {
                         messageResource = R.string.dialog_message_change_location_or_disable
@@ -166,7 +174,7 @@ class MainSettingsFragment : BaseSettingsFragment() {
             addPreference(this)
         }
 
-        //hide home screen alerts
+        // hide home screen alerts
         SwitchPreferenceCompat(requireContext()).apply {
             key = Keys.hideHomeScreenAlerts.name
             setDefaultValue(false)
@@ -178,7 +186,7 @@ class MainSettingsFragment : BaseSettingsFragment() {
             addPreference(this)
         }
 
-        //force vibrate
+        // force vibrate
         SwitchPreferenceCompat(requireContext()).apply {
             key = Keys.forceVibrate.name
             setDefaultValue(false)
@@ -190,7 +198,7 @@ class MainSettingsFragment : BaseSettingsFragment() {
             addPreference(this)
         }
 
-        //show device descriptors
+        // show device descriptors
         SwitchPreferenceCompat(requireContext()).apply {
             key = Keys.showDeviceDescriptors.name
             setDefaultValue(false)
@@ -202,9 +210,9 @@ class MainSettingsFragment : BaseSettingsFragment() {
             addPreference(this)
         }
 
-        //toggle key maps notification
+        // toggle key maps notification
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            //show a preference linking to the notification management screen
+            // show a preference linking to the notification management screen
             Preference(requireContext()).apply {
                 key = Keys.showToggleKeymapsNotification.name
 
@@ -215,7 +223,7 @@ class MainSettingsFragment : BaseSettingsFragment() {
                 setOnPreferenceClickListener {
                     NotificationUtils.openChannelSettings(
                         requireContext(),
-                        NotificationController.CHANNEL_TOGGLE_KEYMAPS
+                        NotificationController.CHANNEL_TOGGLE_KEYMAPS,
                     )
 
                     true
@@ -223,7 +231,6 @@ class MainSettingsFragment : BaseSettingsFragment() {
 
                 addPreference(this)
             }
-
         } else {
             SwitchPreferenceCompat(requireContext()).apply {
                 key = Keys.showToggleKeymapsNotification.name
@@ -237,7 +244,7 @@ class MainSettingsFragment : BaseSettingsFragment() {
             }
         }
 
-        //default options
+        // default options
         Preference(requireContext()).apply {
             setTitle(R.string.title_pref_default_options)
             setSummary(R.string.summary_pref_default_options)
@@ -253,7 +260,7 @@ class MainSettingsFragment : BaseSettingsFragment() {
             addPreference(this)
         }
 
-        //apps can't show the keyboard picker when in the background from Android 8.1+
+        // apps can't show the keyboard picker when in the background from Android 8.1+
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O_MR1) {
             Preference(requireContext()).apply {
                 setTitle(R.string.title_pref_category_ime_picker)
@@ -271,7 +278,7 @@ class MainSettingsFragment : BaseSettingsFragment() {
             }
         }
 
-        //delete sound files
+        // delete sound files
         Preference(requireContext()).apply {
             setTitle(R.string.title_pref_delete_sound_files)
             setSummary(R.string.summary_pref_delete_sound_files)
@@ -286,12 +293,12 @@ class MainSettingsFragment : BaseSettingsFragment() {
             addPreference(this)
         }
 
-        //link to settings to automatically change the ime
+        // link to settings to automatically change the ime
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             addPreference(automaticallyChangeImeSettingsLink())
         }
 
-        //android 11 device id reset work around
+        // android 11 device id reset work around
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.R) {
             Preference(requireContext()).apply {
                 setTitle(R.string.title_pref_reroute_keyevents_link)
@@ -310,8 +317,8 @@ class MainSettingsFragment : BaseSettingsFragment() {
             }
         }
 
-        //Shizuku
-        //shizuku is only supported on Marhsmallow+
+        // Shizuku
+        // shizuku is only supported on Marhsmallow+
         if (ShizukuUtils.isSupportedForSdkVersion()) {
             Preference(requireContext()).apply {
                 setTitle(R.string.title_pref_category_shizuku)
@@ -330,7 +337,7 @@ class MainSettingsFragment : BaseSettingsFragment() {
             }
         }
 
-        //write secure settings
+        // write secure settings
         PreferenceCategory(requireContext()).apply {
             key = CATEGORY_KEY_GRANT_WRITE_SECURE_SETTINGS
             setTitle(R.string.title_pref_category_write_secure_settings)
@@ -363,16 +370,16 @@ class MainSettingsFragment : BaseSettingsFragment() {
                 addPreference(this)
             }
 
-            //accessibility services can change the ime on Android 11+
+            // accessibility services can change the ime on Android 11+
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
                 addPreference(automaticallyChangeImeSettingsLink())
             }
         }
 
-        //root
+        // root
         createRootCategory()
 
-        //log
+        // log
         createLogCategory()
     }
 
@@ -402,7 +409,7 @@ class MainSettingsFragment : BaseSettingsFragment() {
             addPreference(this)
         }
 
-        //enable logging
+        // enable logging
         SwitchPreferenceCompat(requireContext()).apply {
             key = Keys.log.name
             setDefaultValue(false)
@@ -413,7 +420,7 @@ class MainSettingsFragment : BaseSettingsFragment() {
             addPreference(this)
         }
 
-        //open log fragment
+        // open log fragment
         Preference(requireContext()).apply {
             isSingleLineTitle = false
             setTitle(R.string.title_pref_view_and_share_log)
@@ -427,7 +434,7 @@ class MainSettingsFragment : BaseSettingsFragment() {
             addPreference(this)
         }
 
-        //report issue to developer
+        // report issue to developer
         Preference(requireContext()).apply {
             isSingleLineTitle = false
             setTitle(R.string.title_pref_report_issue)
@@ -454,7 +461,7 @@ class MainSettingsFragment : BaseSettingsFragment() {
             addPreference(this)
         }
 
-        //root permission switch
+        // root permission switch
         SwitchPreferenceCompat(requireContext()).apply {
             key = Keys.hasRootPermission.name
             setDefaultValue(false)
@@ -466,10 +473,9 @@ class MainSettingsFragment : BaseSettingsFragment() {
             addPreference(this)
         }
 
-        //only show the options to show the keyboard picker when rooted in these versions
+        // only show the options to show the keyboard picker when rooted in these versions
         if (Build.VERSION.SDK_INT in Build.VERSION_CODES.O_MR1..Build.VERSION_CODES.P) {
-
-            //show a preference linking to the notification management screen
+            // show a preference linking to the notification management screen
             Preference(requireContext()).apply {
                 key = Keys.showImePickerNotification.name
 
@@ -480,7 +486,7 @@ class MainSettingsFragment : BaseSettingsFragment() {
                 setOnPreferenceClickListener {
                     NotificationUtils.openChannelSettings(
                         requireContext(),
-                        NotificationController.CHANNEL_IME_PICKER
+                        NotificationController.CHANNEL_IME_PICKER,
                     )
 
                     true
@@ -504,8 +510,8 @@ class MainSettingsFragment : BaseSettingsFragment() {
                 SettingsUtils.createChooseDevicesPreference(
                     requireContext(),
                     viewModel,
-                    Keys.devicesThatShowImePicker
-                )
+                    Keys.devicesThatShowImePicker,
+                ),
             )
         }
     }

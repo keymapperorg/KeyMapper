@@ -23,7 +23,9 @@ import kotlinx.coroutines.flow.combine
  */
 
 @RequiresApi(Build.VERSION_CODES.N)
-class ToggleMappingsTile : TileService(), LifecycleOwner {
+class ToggleMappingsTile :
+    TileService(),
+    LifecycleOwner {
 
     private val serviceAdapter by lazy { ServiceLocator.accessibilityServiceAdapter(this) }
     private val useCase by lazy { UseCases.pauseMappings(this) }
@@ -73,20 +75,17 @@ class ToggleMappingsTile : TileService(), LifecycleOwner {
     }
 
     override fun onStartListening() {
-
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
 
         super.onStartListening()
     }
 
     override fun onStopListening() {
-
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
         super.onStopListening()
     }
 
     override fun onDestroy() {
-
         lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
         super.onDestroy()
     }

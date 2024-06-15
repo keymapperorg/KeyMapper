@@ -24,17 +24,16 @@ class DetectScreenOffKeyEventsController(
     private val onKeyEvent: suspend (
         keyCode: Int,
         action: Int,
-        device: InputDeviceInfo
-    ) -> Unit
+        device: InputDeviceInfo,
+    ) -> Unit,
 ) {
 
     companion object {
         private const val REGEX_GET_DEVICE_LOCATION = "/.*(?=:)"
         private const val REGEX_KEY_EVENT_ACTION = "(?<= )(DOWN|UP)"
 
-        fun canDetectKeyWhenScreenOff(keyCode: Int): Boolean {
-            return KeyEventUtils.GET_EVENT_LABEL_TO_KEYCODE.containsValue(keyCode)
-        }
+        fun canDetectKeyWhenScreenOff(keyCode: Int): Boolean =
+            KeyEventUtils.GET_EVENT_LABEL_TO_KEYCODE.containsValue(keyCode)
     }
 
     private var job: Job? = null
@@ -45,7 +44,6 @@ class DetectScreenOffKeyEventsController(
     fun startListening(scope: CoroutineScope): Boolean {
         try {
             job = scope.launch(Dispatchers.IO) {
-
                 val devicesInputStream =
                     suAdapter.getCommandOutput("getevent -i").valueOrNull() ?: return@launch
 
@@ -69,14 +67,15 @@ class DetectScreenOffKeyEventsController(
                 val deviceLocationRegex = Regex(REGEX_GET_DEVICE_LOCATION)
                 val actionRegex = Regex(REGEX_KEY_EVENT_ACTION)
 
-                //use -q option to not initially output the list of devices
+                // use -q option to not initially output the list of devices
                 val inputStream =
                     suAdapter.getCommandOutput("getevent -lq").valueOrNull() ?: return@launch
 
                 var line: String?
 
                 while (inputStream.bufferedReader().readLine()
-                        .also { line = it } != null && isActive
+                        .also { line = it } != null &&
+                    isActive
                 ) {
                     line ?: continue
 
@@ -97,7 +96,7 @@ class DetectScreenOffKeyEventsController(
                                     onKeyEvent.invoke(
                                         keyCode,
                                         KeyEvent.ACTION_UP,
-                                        device
+                                        device,
                                     )
                                 }
 
@@ -105,7 +104,7 @@ class DetectScreenOffKeyEventsController(
                                     onKeyEvent.invoke(
                                         keyCode,
                                         KeyEvent.ACTION_DOWN,
-                                        device
+                                        device,
                                     )
                                 }
                             }
@@ -117,7 +116,6 @@ class DetectScreenOffKeyEventsController(
 
                 inputStream.close()
             }
-
         } catch (e: Exception) {
             Timber.e(e)
             job?.cancel()

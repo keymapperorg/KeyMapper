@@ -17,7 +17,7 @@ data class LogEntryEntity(
     @ColumnInfo(name = LogEntryDao.KEY_SEVERITY)
     val severity: Int,
     @ColumnInfo(name = LogEntryDao.KEY_MESSAGE)
-    val message: String
+    val message: String,
 ) {
     companion object {
         const val SEVERITY_ERROR = 0

@@ -8,7 +8,7 @@ import kotlinx.coroutines.test.TestCoroutineDispatcher
  */
 
 class TestDispatcherProvider(
-    private val testDispatcher: TestCoroutineDispatcher
+    private val testDispatcher: TestCoroutineDispatcher,
 ) : DispatcherProvider {
     override fun main() = testDispatcher
     override fun default() = testDispatcher

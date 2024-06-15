@@ -19,14 +19,17 @@ import io.github.sds100.keymapper.util.ui.ResourceProvider
  */
 class KeyMapListItemCreator(
     private val displayMapping: DisplayKeyMapUseCase,
-    resourceProvider: ResourceProvider
+    resourceProvider: ResourceProvider,
 ) : BaseMappingListItemCreator<KeyMap, KeyMapAction>(
     displayMapping,
     KeyMapActionUiHelper(displayMapping, resourceProvider),
-    resourceProvider
+    resourceProvider,
 ) {
 
-    suspend fun create(keyMap: KeyMap, showDeviceDescriptors: Boolean): KeyMapListItem.KeyMapUiState {
+    suspend fun create(
+        keyMap: KeyMap,
+        showDeviceDescriptors: Boolean,
+    ): KeyMapListItem.KeyMapUiState {
         val midDot = getString(R.string.middot)
 
         val triggerDescription = buildString {
@@ -59,7 +62,7 @@ class KeyMapListItemCreator(
                         if (showDeviceDescriptors) {
                             InputDeviceUtils.appendDeviceDescriptorToName(
                                 key.device.descriptor,
-                                key.device.name
+                                key.device.name,
                             )
                         } else {
                             key.device.name
@@ -112,19 +115,19 @@ class KeyMapListItemCreator(
                     ChipUi.Error(
                         id = KeyMapTriggerError.DND_ACCESS_DENIED.toString(),
                         text = getString(R.string.trigger_error_dnd_access_denied_short),
-                        error = Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)
+                        error = Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY),
                     )
 
                 KeyMapTriggerError.SCREEN_OFF_ROOT_DENIED -> ChipUi.Error(
                     id = KeyMapTriggerError.SCREEN_OFF_ROOT_DENIED.toString(),
                     text = getString(R.string.trigger_error_screen_off_root_permission_denied_short),
-                    error = Error.PermissionDenied(Permission.ROOT)
+                    error = Error.PermissionDenied(Permission.ROOT),
                 )
 
                 KeyMapTriggerError.CANT_DETECT_IN_PHONE_CALL -> ChipUi.Error(
                     id = KeyMapTriggerError.SCREEN_OFF_ROOT_DENIED.toString(),
                     text = getString(R.string.trigger_error_cant_detect_in_phone_call),
-                    error = Error.CantDetectKeyEventsInPhoneCall
+                    error = Error.CantDetectKeyEventsInPhoneCall,
                 )
             }
         }
@@ -136,7 +139,7 @@ class KeyMapListItemCreator(
             triggerDescription = triggerDescription,
             optionsDescription = optionsDescription,
             extraInfo = extraInfo,
-            triggerErrorChipList = triggerErrorChips
+            triggerErrorChipList = triggerErrorChips,
         )
     }
 

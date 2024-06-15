@@ -19,35 +19,24 @@ import kotlinx.coroutines.launch
 
 class ResourceProviderImpl(
     context: Context,
-    private val coroutineScope: CoroutineScope
+    private val coroutineScope: CoroutineScope,
 ) : ResourceProvider {
     private val ctx = context.applicationContext
 
     override val onThemeChange = MutableSharedFlow<Unit>()
 
-    override fun getString(resId: Int, args: Array<Any>): String {
-        return ctx.str(resId, formatArgArray = args)
-    }
+    override fun getString(resId: Int, args: Array<Any>): String =
+        ctx.str(resId, formatArgArray = args)
 
-    override fun getText(resId: Int): CharSequence {
-        return ctx.getText(resId)
-    }
+    override fun getText(resId: Int): CharSequence = ctx.getText(resId)
 
-    override fun getString(resId: Int, arg: Any): String {
-        return ctx.str(resId, arg)
-    }
+    override fun getString(resId: Int, arg: Any): String = ctx.str(resId, arg)
 
-    override fun getString(resId: Int): String {
-        return ctx.str(resId)
-    }
+    override fun getString(resId: Int): String = ctx.str(resId)
 
-    override fun getDrawable(resId: Int): Drawable {
-        return ctx.drawable(resId)
-    }
+    override fun getDrawable(resId: Int): Drawable = ctx.drawable(resId)
 
-    override fun getColor(color: Int): Int {
-        return ctx.color(color)
-    }
+    override fun getColor(color: Int): Int = ctx.color(color)
 
     fun onThemeChange() {
         coroutineScope.launch {

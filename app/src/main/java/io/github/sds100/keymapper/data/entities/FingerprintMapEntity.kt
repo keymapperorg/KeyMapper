@@ -3,7 +3,11 @@ package io.github.sds100.keymapper.data.entities
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.github.salomonbrys.kotson.*
+import com.github.salomonbrys.kotson.byArray
+import com.github.salomonbrys.kotson.byBool
+import com.github.salomonbrys.kotson.byInt
+import com.github.salomonbrys.kotson.byNullableInt
+import com.github.salomonbrys.kotson.jsonDeserializer
 import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.data.db.dao.FingerprintMapDao
 
@@ -39,7 +43,7 @@ data class FingerprintMapEntity(
 
     @SerializedName(NAME_ENABLED)
     @ColumnInfo(name = FingerprintMapDao.KEY_ENABLED)
-    val isEnabled: Boolean = true
+    val isEnabled: Boolean = true,
 ) {
     companion object {
         private const val ID_UNKNOWN = -1
@@ -50,7 +54,7 @@ data class FingerprintMapEntity(
 
         const val NAME_ID = "id"
 
-        //DON'T CHANGE THESE. Used for JSON serialization and parsing.
+        // DON'T CHANGE THESE. Used for JSON serialization and parsing.
         private const val NAME_ACTION_LIST = "action_list"
         private const val NAME_EXTRAS = "extras"
         private const val NAME_FLAGS = "flags"
@@ -84,7 +88,7 @@ data class FingerprintMapEntity(
                 constraintMode,
                 extras,
                 flags,
-                isEnabled
+                isEnabled,
             )
         }
 

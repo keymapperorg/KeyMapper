@@ -10,7 +10,13 @@ import io.github.sds100.keymapper.util.filterByQuery
 import io.github.sds100.keymapper.util.ui.DefaultSimpleListItem
 import io.github.sds100.keymapper.util.ui.SimpleListItem
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -30,7 +36,7 @@ class ChooseKeyCodeViewModel : ViewModel() {
             KeyEventUtils.getKeyCodes().sorted().map { keyCode ->
                 DefaultSimpleListItem(
                     id = keyCode.toString(),
-                    title = "$keyCode \t\t ${KeyEvent.keyCodeToString(keyCode)}"
+                    title = "$keyCode \t\t ${KeyEvent.keyCodeToString(keyCode)}",
                 )
             }
         }.let { emit(it) }
@@ -65,8 +71,6 @@ class ChooseKeyCodeViewModel : ViewModel() {
     @Suppress("UNCHECKED_CAST")
     class Factory : ViewModelProvider.NewInstanceFactory() {
 
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return ChooseKeyCodeViewModel() as T
-        }
+        override fun <T : ViewModel> create(modelClass: Class<T>): T = ChooseKeyCodeViewModel() as T
     }
 }

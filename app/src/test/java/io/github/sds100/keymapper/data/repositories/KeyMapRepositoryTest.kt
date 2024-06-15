@@ -12,13 +12,20 @@ import io.github.sds100.keymapper.util.State
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.TestCoroutineExceptionHandler
+import kotlinx.coroutines.test.createTestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.anyVararg
+import org.mockito.kotlin.inOrder
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 
 /**
  * Created by sds100 on 01/05/2021.
@@ -34,12 +41,13 @@ class KeyMapRepositoryTest {
             name = "fake keyboard",
             id = 1,
             isExternal = true,
-            isGameController = false
+            isGameController = false,
         )
     }
 
     private val testDispatcher = TestCoroutineDispatcher()
-    private val coroutineScope = TestCoroutineScope(testDispatcher)
+    private val coroutineScope =
+        createTestCoroutineScope(TestCoroutineDispatcher() + TestCoroutineExceptionHandler() + testDispatcher)
 
     private lateinit var repository: RoomKeyMapRepository
     private lateinit var devicesAdapter: FakeDevicesAdapter
@@ -60,7 +68,7 @@ class KeyMapRepositoryTest {
             mockDao,
             devicesAdapter,
             coroutineScope,
-            dispatchers = TestDispatcherProvider(testDispatcher)
+            dispatchers = TestDispatcherProvider(testDispatcher),
         )
     }
 
@@ -70,7 +78,7 @@ class KeyMapRepositoryTest {
     @Test
     fun `if modifying a huge number of key maps then split job into batches`() =
         coroutineScope.runBlockingTest {
-            //GIVEN
+            // GIVEN
             val keyMapList = sequence {
                 repeat(991) {
                     yield(KeyMapEntity(id = it.toLong()))
@@ -80,8 +88,8 @@ class KeyMapRepositoryTest {
             keyMaps.emit(keyMapList)
 
             inOrder(mockDao) {
-                //WHEN, THEN
-                //split job up into batches of 200 key maps
+                // WHEN, THEN
+                // split job up into batches of 200 key maps
                 repository.enableById(*keyMapList.map { it.uid }.toTypedArray())
                 verify(mockDao, times(5)).enableKeymapByUid(anyVararg())
 
@@ -105,209 +113,209 @@ class KeyMapRepositoryTest {
     @Test
     fun `key map with key event action from device and proper device name extra, do not update action device name`() =
         coroutineScope.runBlockingTest {
-            //GIVEN
+            // GIVEN
             val action = ActionEntity(
                 type = ActionEntity.Type.KEY_EVENT,
                 data = "1",
                 extras = listOf(
                     Extra(ActionEntity.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR, FAKE_KEYBOARD.descriptor),
                     Extra(ActionEntity.EXTRA_KEY_EVENT_DEVICE_NAME, FAKE_KEYBOARD.name),
-                )
+                ),
             )
 
             val keyMap = KeyMapEntity(id = 0, actionList = listOf(action))
 
             devicesAdapter.connectedInputDevices.value = State.Data(listOf(FAKE_KEYBOARD))
 
-            //WHEN
+            // WHEN
             keyMaps.emit(listOf(keyMap))
 
-            //THEN
+            // THEN
             verify(mockDao, never()).update(any())
         }
 
     @Test
     fun `key map with key event action from device and blank device name extra, if device for action is disconnected, do not update action device name`() =
         coroutineScope.runBlockingTest {
-            //GIVEN
+            // GIVEN
             val action = ActionEntity(
                 type = ActionEntity.Type.KEY_EVENT,
                 data = "1",
                 extras = listOf(
                     Extra(ActionEntity.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR, FAKE_KEYBOARD.descriptor),
                     Extra(ActionEntity.EXTRA_KEY_EVENT_DEVICE_NAME, ""),
-                )
+                ),
             )
 
             val keyMap = KeyMapEntity(id = 0, actionList = listOf(action))
 
             devicesAdapter.connectedInputDevices.value = State.Data(emptyList())
 
-            //WHEN
+            // WHEN
             keyMaps.emit(listOf(keyMap))
 
-            //THEN
+            // THEN
             verify(mockDao, never()).update(any())
         }
 
     @Test
     fun `key map with key event action from device and blank device name extra, if device for action is connected, update action device name`() =
         coroutineScope.runBlockingTest {
-            //GIVEN
+            // GIVEN
             val action = ActionEntity(
                 type = ActionEntity.Type.KEY_EVENT,
                 data = "1",
                 extras = listOf(
                     Extra(ActionEntity.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR, FAKE_KEYBOARD.descriptor),
                     Extra(ActionEntity.EXTRA_KEY_EVENT_DEVICE_NAME, ""),
-                )
+                ),
             )
 
             val keyMap = KeyMapEntity(id = 0, actionList = listOf(action))
 
             devicesAdapter.connectedInputDevices.value = State.Data(
-                listOf(FAKE_KEYBOARD)
+                listOf(FAKE_KEYBOARD),
             )
 
-            //WHEN
+            // WHEN
             keyMaps.emit(listOf(keyMap))
 
             val expectedAction = action.copy(
                 extras = listOf(
                     Extra(ActionEntity.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR, FAKE_KEYBOARD.descriptor),
                     Extra(ActionEntity.EXTRA_KEY_EVENT_DEVICE_NAME, FAKE_KEYBOARD.name),
-                )
+                ),
             )
 
-            //THEN
+            // THEN
             verify(mockDao, times(1)).update(
-                keyMap.copy(actionList = listOf(expectedAction))
+                keyMap.copy(actionList = listOf(expectedAction)),
             )
         }
 
     @Test
     fun `key map with key event action from device and no device name extra, if device for action is connected, update action device name`() =
         coroutineScope.runBlockingTest {
-            //GIVEN
+            // GIVEN
             val action = ActionEntity(
                 type = ActionEntity.Type.KEY_EVENT,
                 data = "1",
                 extra = Extra(
                     ActionEntity.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR,
-                    FAKE_KEYBOARD.descriptor
-                )
+                    FAKE_KEYBOARD.descriptor,
+                ),
             )
 
             val keyMap = KeyMapEntity(id = 0, actionList = listOf(action))
 
             devicesAdapter.connectedInputDevices.value = State.Data(
-                listOf(FAKE_KEYBOARD)
+                listOf(FAKE_KEYBOARD),
             )
 
-            //WHEN
+            // WHEN
             keyMaps.emit(listOf(keyMap))
 
             val expectedAction = action.copy(
                 extras = listOf(
                     Extra(ActionEntity.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR, FAKE_KEYBOARD.descriptor),
                     Extra(ActionEntity.EXTRA_KEY_EVENT_DEVICE_NAME, FAKE_KEYBOARD.name),
-                )
+                ),
             )
 
-            //THEN
+            // THEN
             verify(mockDao, times(1)).update(
-                keyMap.copy(actionList = listOf(expectedAction))
+                keyMap.copy(actionList = listOf(expectedAction)),
             )
         }
 
     @Test
     fun `key map with key event action from device and no device name extra, if device for action is disconnected, update action device name`() =
         coroutineScope.runBlockingTest {
-            //GIVEN
+            // GIVEN
             val action = ActionEntity(
                 type = ActionEntity.Type.KEY_EVENT,
                 data = "1",
                 extra = Extra(
                     ActionEntity.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR,
-                    FAKE_KEYBOARD.descriptor
-                )
+                    FAKE_KEYBOARD.descriptor,
+                ),
             )
 
             val keyMap = KeyMapEntity(id = 0, actionList = listOf(action))
 
             devicesAdapter.connectedInputDevices.value = State.Data(emptyList())
 
-            //WHEN
+            // WHEN
             keyMaps.emit(listOf(keyMap))
 
-            //THEN
+            // THEN
             verify(mockDao, never()).update(any())
         }
 
     @Test
     fun `key map with device name for trigger key, if device for trigger key is connected, do not update trigger key device name`() =
         coroutineScope.runBlockingTest {
-            //GIVEN
+            // GIVEN
             val triggerKey = TriggerEntity.KeyEntity(
                 keyCode = 1,
                 deviceId = FAKE_KEYBOARD.descriptor,
-                deviceName = FAKE_KEYBOARD.name
+                deviceName = FAKE_KEYBOARD.name,
             )
 
             val keyMap = KeyMapEntity(id = 0, trigger = TriggerEntity(keys = listOf(triggerKey)))
 
             devicesAdapter.connectedInputDevices.value = State.Data(
-                listOf(FAKE_KEYBOARD)
+                listOf(FAKE_KEYBOARD),
             )
 
-            //WHEN
+            // WHEN
             keyMaps.emit(listOf(keyMap))
 
-            //THEN
+            // THEN
             verify(mockDao, never()).update(any())
         }
 
     @Test
     fun `key map with device name for trigger key, if device for trigger key is disconnected, do not update trigger key device name`() =
         coroutineScope.runBlockingTest {
-            //GIVEN
+            // GIVEN
             val triggerKey = TriggerEntity.KeyEntity(
                 keyCode = 1,
                 deviceId = FAKE_KEYBOARD.descriptor,
-                deviceName = FAKE_KEYBOARD.name
+                deviceName = FAKE_KEYBOARD.name,
             )
 
             val keyMap = KeyMapEntity(id = 0, trigger = TriggerEntity(keys = listOf(triggerKey)))
 
             devicesAdapter.connectedInputDevices.value = State.Data(emptyList())
 
-            //WHEN
+            // WHEN
             keyMaps.emit(listOf(keyMap))
 
-            //THEN
+            // THEN
             verify(mockDao, never()).update(any())
         }
 
     @Test
     fun `key map with no device name for trigger key, if device for trigger key is connected, update trigger key device name`() =
         coroutineScope.runBlockingTest {
-            //GIVEN
+            // GIVEN
             val triggerKey = TriggerEntity.KeyEntity(
                 keyCode = 1,
                 deviceId = FAKE_KEYBOARD.descriptor,
-                deviceName = ""
+                deviceName = "",
             )
 
             val keyMap = KeyMapEntity(id = 0, trigger = TriggerEntity(keys = listOf(triggerKey)))
 
             devicesAdapter.connectedInputDevices.value = State.Data(
-                listOf(FAKE_KEYBOARD)
+                listOf(FAKE_KEYBOARD),
             )
 
-            //WHEN
+            // WHEN
             keyMaps.emit(listOf(keyMap))
 
-            //THEN
+            // THEN
             val expectedTriggerKey = triggerKey.copy(deviceName = FAKE_KEYBOARD.name)
 
             verify(mockDao, times(1))

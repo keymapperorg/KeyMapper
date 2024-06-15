@@ -35,18 +35,19 @@ class AndroidPowerAdapter(context: Context) : PowerAdapter {
     override val isCharging: StateFlow<Boolean> = _isCharging.asStateFlow()
 
     init {
-        ctx.registerReceiver(receiver, IntentFilter().apply {
-            addAction(Intent.ACTION_POWER_CONNECTED)
-            addAction(Intent.ACTION_POWER_DISCONNECTED)
-        })
+        ctx.registerReceiver(
+            receiver,
+            IntentFilter().apply {
+                addAction(Intent.ACTION_POWER_CONNECTED)
+                addAction(Intent.ACTION_POWER_DISCONNECTED)
+            },
+        )
     }
 
-    private fun getIsCharging(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            batteryManager.isCharging
-        } else {
-            //no other way to synchronously get the information
-            false
-        }
+    private fun getIsCharging(): Boolean = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        batteryManager.isCharging
+    } else {
+        // no other way to synchronously get the information
+        false
     }
 }

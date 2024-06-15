@@ -4,8 +4,11 @@ package io.github.sds100.keymapper.data.migration
 
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.sqlite.db.SupportSQLiteQueryBuilder
-import com.github.salomonbrys.kotson.*
-import com.google.gson.*
+import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonElement
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import splitties.bitflags.hasFlag
 import splitties.bitflags.minusFlag
 import splitties.bitflags.withFlag
@@ -13,7 +16,7 @@ import splitties.bitflags.withFlag
 /**
  * Move the action option "show performing toast when performing" to a trigger option.
  */
-object Migration_9_10 {
+object Migration9To10 {
 
     private const val FLAG_ACTION_SHOW_PERFORMING_TOAST = 2
     private const val FLAG_TRIGGER_SHOW_TOAST = 16
@@ -33,7 +36,6 @@ object Migration_9_10 {
             .create()
 
         query(query).apply {
-
             while (moveToNext()) {
                 val idColumnIndex = getColumnIndex("id")
                 val id = getInt(idColumnIndex)
@@ -69,7 +71,7 @@ object Migration_9_10 {
 
     private fun migrate(
         trigger: JsonElement,
-        actionList: JsonArray
+        actionList: JsonArray,
     ): MigrateModel {
         var showToast = false
 

@@ -5,8 +5,19 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.State
-import io.github.sds100.keymapper.util.ui.*
-import kotlinx.coroutines.flow.*
+import io.github.sds100.keymapper.util.ui.DefaultSimpleListItem
+import io.github.sds100.keymapper.util.ui.ListItem
+import io.github.sds100.keymapper.util.ui.PopupViewModel
+import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
+import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.util.ui.TextListItem
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
 
 /**
@@ -14,7 +25,7 @@ import kotlinx.coroutines.launch
  */
 class ChooseBluetoothDeviceViewModel(
     val useCase: ChooseBluetoothDeviceUseCase,
-    resourceProvider: ResourceProvider
+    resourceProvider: ResourceProvider,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
     PopupViewModel by PopupViewModelImpl() {
@@ -22,14 +33,18 @@ class ChooseBluetoothDeviceViewModel(
     private val _caption = MutableStateFlow<String?>(null)
     val caption: StateFlow<String?> = _caption
 
-    private val _listItems: MutableStateFlow<State<List<ListItem>>> = MutableStateFlow(State.Loading)
+    private val _listItems: MutableStateFlow<State<List<ListItem>>> =
+        MutableStateFlow(State.Loading)
     val listItems: StateFlow<State<List<ListItem>>> = _listItems.asStateFlow()
 
     private val _returnResult = MutableSharedFlow<BluetoothDeviceInfo>()
     val returnResult = _returnResult.asSharedFlow()
 
     private val missingPermissionListItem: TextListItem.Error by lazy {
-        TextListItem.Error("missing_permission", getString(R.string.error_choose_bluetooth_devices_permission_denied))
+        TextListItem.Error(
+            "missing_permission",
+            getString(R.string.error_choose_bluetooth_devices_permission_denied),
+        )
     }
 
     init {
@@ -41,7 +56,7 @@ class ChooseBluetoothDeviceViewModel(
                 val devicesListItems = devices.map { device ->
                     DefaultSimpleListItem(
                         id = device.address,
-                        title = device.name
+                        title = device.name,
                     )
                 }
 
@@ -69,14 +84,14 @@ class ChooseBluetoothDeviceViewModel(
 
     class Factory(
         private val useCase: ChooseBluetoothDeviceUseCase,
-        private val resourceProvider: ResourceProvider
+        private val resourceProvider: ResourceProvider,
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>) =
             ChooseBluetoothDeviceViewModel(
                 useCase,
-                resourceProvider
+                resourceProvider,
             ) as T
     }
 }

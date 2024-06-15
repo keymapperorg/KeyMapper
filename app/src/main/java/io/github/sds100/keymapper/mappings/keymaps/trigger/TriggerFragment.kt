@@ -32,11 +32,12 @@ import kotlinx.coroutines.flow.collectLatest
 
 class TriggerFragment : RecyclerViewFragment<TriggerKeyListItem, FragmentTriggerBinding>() {
 
-    class Info : FragmentInfo(
-        R.string.trigger_header,
-        R.string.url_trigger_guide,
-        { TriggerFragment() }
-    )
+    class Info :
+        FragmentInfo(
+            R.string.trigger_header,
+            R.string.url_trigger_guide,
+            { TriggerFragment() },
+        )
 
     private val configKeyMapTriggerViewModel: ConfigKeyMapTriggerViewModel by lazy {
         navGraphViewModels<ConfigKeyMapViewModel>(R.id.nav_config_keymap) {
@@ -84,7 +85,7 @@ class TriggerFragment : RecyclerViewFragment<TriggerKeyListItem, FragmentTrigger
 
     override fun populateList(
         recyclerView: EpoxyRecyclerView,
-        listItems: List<TriggerKeyListItem>
+        listItems: List<TriggerKeyListItem>,
     ) {
         triggerKeyController.modelList = listItems
     }
@@ -100,22 +101,21 @@ class TriggerFragment : RecyclerViewFragment<TriggerKeyListItem, FragmentTrigger
         configKeyMapTriggerViewModel.stopRecordingTrigger()
     }
 
-    private fun FragmentTriggerBinding.enableTriggerKeyDragging(controller: EpoxyController): ItemTouchHelper {
-        return EpoxyTouchHelper.initDragging(controller)
+    private fun FragmentTriggerBinding.enableTriggerKeyDragging(controller: EpoxyController): ItemTouchHelper =
+        EpoxyTouchHelper.initDragging(controller)
             .withRecyclerView(recyclerViewTriggerKeys)
             .forVerticalList()
             .withTarget(TriggerKeyBindingModel_::class.java)
             .andCallbacks(object : EpoxyTouchHelper.DragCallbacks<TriggerKeyBindingModel_>() {
 
-                override fun isDragEnabledForModel(model: TriggerKeyBindingModel_?): Boolean {
-                    return model?.model()?.isDragDropEnabled ?: false
-                }
+                override fun isDragEnabledForModel(model: TriggerKeyBindingModel_?): Boolean =
+                    model?.model()?.isDragDropEnabled ?: false
 
                 override fun onModelMoved(
                     fromPosition: Int,
                     toPosition: Int,
                     modelBeingMoved: TriggerKeyBindingModel_?,
-                    itemView: View?
+                    itemView: View?,
                 ) {
                     configKeyMapTriggerViewModel.onMoveTriggerKey(fromPosition, toPosition)
                 }
@@ -123,7 +123,7 @@ class TriggerFragment : RecyclerViewFragment<TriggerKeyListItem, FragmentTrigger
                 override fun onDragStarted(
                     model: TriggerKeyBindingModel_?,
                     itemView: View?,
-                    adapterPosition: Int
+                    adapterPosition: Int,
                 ) {
                     itemView?.findViewById<MaterialCardView>(R.id.cardView)?.isDragged = true
                 }
@@ -132,7 +132,6 @@ class TriggerFragment : RecyclerViewFragment<TriggerKeyListItem, FragmentTrigger
                     itemView?.findViewById<MaterialCardView>(R.id.cardView)?.isDragged = false
                 }
             })
-    }
 
     private inner class TriggerKeyController : EpoxyController() {
         var modelList: List<TriggerKeyListItem> = listOf()

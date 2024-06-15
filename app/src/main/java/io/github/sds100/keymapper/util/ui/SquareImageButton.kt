@@ -9,7 +9,7 @@ import androidx.appcompat.widget.AppCompatImageButton
  */
 class SquareImageButton(context: Context, attrs: AttributeSet?) : AppCompatImageButton(context, attrs) {
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        //have equal sides.
+        // have equal sides.
         super.onMeasure(heightMeasureSpec, heightMeasureSpec)
     }
 }

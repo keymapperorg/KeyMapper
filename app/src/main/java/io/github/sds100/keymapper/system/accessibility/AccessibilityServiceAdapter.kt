@@ -37,7 +37,7 @@ import timber.log.Timber
  */
 class AccessibilityServiceAdapter(
     context: Context,
-    private val coroutineScope: CoroutineScope
+    private val coroutineScope: CoroutineScope,
 ) : ServiceAdapter {
 
     private val ctx = context.applicationContext
@@ -50,7 +50,7 @@ class AccessibilityServiceAdapter(
     private val permissionAdapter: PermissionAdapter by lazy { ServiceLocator.permissionAdapter(ctx) }
 
     init {
-        //use job scheduler because there is there is a much shorter delay when the app is in the background
+        // use job scheduler because there is there is a much shorter delay when the app is in the background
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             JobSchedulerHelper.observeEnabledAccessibilityServices(ctx)
         } else {
@@ -78,7 +78,6 @@ class AccessibilityServiceAdapter(
     }
 
     override suspend fun send(event: Event): Result<*> {
-
         state.value = getState()
 
         if (state.value == ServiceState.DISABLED) {
@@ -100,7 +99,6 @@ class AccessibilityServiceAdapter(
 
     override fun start(): Boolean {
         if (permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)) {
-
             enableWithWriteSecureSettings()
 
             /*
@@ -113,7 +111,7 @@ class AccessibilityServiceAdapter(
 
                 val key = "check_is_crashed_then_restart"
 
-                //wait to start collecting
+                // wait to start collecting
                 coroutineScope.launch {
                     delay(100)
 
@@ -174,13 +172,12 @@ class AccessibilityServiceAdapter(
             settingsIntent.addFlags(
                 Intent.FLAG_ACTIVITY_NEW_TASK
                     or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
+                    or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS,
             )
 
             ctx.startActivity(settingsIntent)
 
             return true
-
         } catch (e: ActivityNotFoundException) {
             return false
         }
@@ -203,7 +200,7 @@ class AccessibilityServiceAdapter(
 
             val enabledServices = SettingsUtils.getSecureSetting<String>(
                 ctx,
-                Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
+                Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES,
             )
 
             enabledServices ?: return
@@ -224,7 +221,7 @@ class AccessibilityServiceAdapter(
             SettingsUtils.putSecureSetting(
                 ctx,
                 Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES,
-                newEnabledServices
+                newEnabledServices,
             )
 
             return
@@ -269,7 +266,7 @@ class AccessibilityServiceAdapter(
 
             val enabledServices = SettingsUtils.getSecureSetting<String>(
                 ctx,
-                Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
+                Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES,
             )
 
             val className = MyAccessibilityService::class.java.name
@@ -284,12 +281,14 @@ class AccessibilityServiceAdapter(
 
             SettingsUtils.putSecureSetting(
                 ctx,
-                Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES, newEnabledServices
+                Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES,
+                newEnabledServices,
             )
 
             SettingsUtils.putSecureSetting(
                 ctx,
-                Settings.Secure.ACCESSIBILITY_ENABLED, 1
+                Settings.Secure.ACCESSIBILITY_ENABLED,
+                1,
             )
         }
     }
@@ -300,14 +299,14 @@ class AccessibilityServiceAdapter(
          * list. :(*/
         val settingValue = Settings.Secure.getString(
             ctx.contentResolver,
-            Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
+            Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES,
         )
 
         if (settingValue == null) {
             return ServiceState.DISABLED
         }
 
-        //it can be null if the user has never interacted with accessibility settings before
+        // it can be null if the user has never interacted with accessibility settings before
         /* cant just use .contains because the debug and release accessibility service both contain
            io.github.sds100.keymapper. the enabled_accessibility_services are stored as
 
@@ -315,7 +314,7 @@ class AccessibilityServiceAdapter(
              :io.github.sds100.keymapper/io.github.sds100.keymapper.service.MyAccessibilityService
 
              without the new line before the :
-        */
+         */
         val isEnabled = settingValue.split(':').any { it.split('/')[0] == ctx.packageName }
 
         return when {

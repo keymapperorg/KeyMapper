@@ -5,7 +5,7 @@ package io.github.sds100.keymapper.system.inputmethod
  */
 
 class ShowInputMethodPickerUseCaseImpl(
-    private val inputMethodAdapter: InputMethodAdapter
+    private val inputMethodAdapter: InputMethodAdapter,
 ) : ShowInputMethodPickerUseCase {
     override fun show(fromForeground: Boolean) {
         inputMethodAdapter.showImePicker(fromForeground = fromForeground)

@@ -13,28 +13,25 @@ import io.github.sds100.keymapper.util.FragmentInfo
  */
 abstract class TwoFragments(
     private val top: FragmentInfo,
-    private val bottom: FragmentInfo
+    private val bottom: FragmentInfo,
 ) : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ) = FragmentsTwoBinding.inflate(inflater, container, false).apply {
-
         topFragmentInfo = top
         addFragment(containerTop, top.instantiate)
 
         addFragment(containerBottom, bottom.instantiate)
         bottomFragmentInfo = bottom
-
     }.root
 
     private fun addFragment(
         container: FragmentContainerView,
-        instantiateFragment: () -> Fragment
+        instantiateFragment: () -> Fragment,
     ) {
-
         if (childFragmentManager.findFragmentById(container.id) == null) {
             childFragmentManager.beginTransaction()
                 .setReorderingAllowed(true)

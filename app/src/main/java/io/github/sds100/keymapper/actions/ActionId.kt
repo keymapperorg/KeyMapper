@@ -126,5 +126,5 @@ enum class ActionId {
     DISMISS_ALL_NOTIFICATIONS,
 
     ANSWER_PHONE_CALL,
-    END_PHONE_CALL
+    END_PHONE_CALL,
 }

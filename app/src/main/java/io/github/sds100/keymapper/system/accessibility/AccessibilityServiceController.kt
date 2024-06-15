@@ -68,7 +68,7 @@ class AccessibilityServiceController(
     private val devicesAdapter: DevicesAdapter,
     private val suAdapter: SuAdapter,
     private val inputMethodAdapter: InputMethodAdapter,
-    private val settingsRepository: PreferenceRepository
+    private val settingsRepository: PreferenceRepository,
 ) {
 
     companion object {
@@ -82,26 +82,26 @@ class AccessibilityServiceController(
         coroutineScope,
         detectKeyMapsUseCase,
         performActionsUseCase,
-        detectConstraintsUseCase
+        detectConstraintsUseCase,
     )
 
     private val fingerprintMapController = FingerprintGestureMapController(
         coroutineScope,
         detectFingerprintMapsUseCase,
         performActionsUseCase,
-        detectConstraintsUseCase
+        detectConstraintsUseCase,
     )
 
     private val keymapDetectionDelegate = KeyMapController(
         coroutineScope,
         detectKeyMapsUseCase,
         performActionsUseCase,
-        detectConstraintsUseCase
+        detectConstraintsUseCase,
     )
 
     private val rerouteKeyEventsController = RerouteKeyEventsController(
         coroutineScope,
-        rerouteKeyEventsUseCase
+        rerouteKeyEventsUseCase,
     )
 
     private var recordingTriggerJob: Job? = null
@@ -118,7 +118,7 @@ class AccessibilityServiceController(
     private val detectScreenOffKeyEventsController =
         DetectScreenOffKeyEventsController(
             suAdapter,
-            devicesAdapter
+            devicesAdapter,
         ) { keyCode, action, device ->
 
             if (!isPaused.value) {
@@ -127,7 +127,7 @@ class AccessibilityServiceController(
                         keyCode,
                         action,
                         metaState = 0,
-                        device = device
+                        device = device,
                     )
                 }
             }
@@ -151,7 +151,7 @@ class AccessibilityServiceController(
        The service flags that the controller *expects* will be stored here. Whenever onServiceConnected is called the
        service's flags will to be updated to these. Whenever these change the controller will check if the service is
        bound and then update them in the service.
-        */
+     */
     private var serviceFlags: MutableStateFlow<Int> = MutableStateFlow(initialServiceFlags)
 
     private var serviceFeedbackType: MutableStateFlow<Int> = MutableStateFlow(0)
@@ -159,21 +159,21 @@ class AccessibilityServiceController(
 
     init {
         serviceFlags.onEach { flags ->
-            //check that it isn't null because this can only be called once the service is bound
+            // check that it isn't null because this can only be called once the service is bound
             if (accessibilityService.serviceFlags != null) {
                 accessibilityService.serviceFlags = flags
             }
         }.launchIn(coroutineScope)
 
         serviceFeedbackType.onEach { feedbackType ->
-            //check that it isn't null because this can only be called once the service is bound
+            // check that it isn't null because this can only be called once the service is bound
             if (accessibilityService.serviceFeedbackType != null) {
                 accessibilityService.serviceFeedbackType = feedbackType
             }
         }.launchIn(coroutineScope)
 
         serviceEventTypes.onEach { feedbackType ->
-            //check that it isn't null because this can only be called once the service is bound
+            // check that it isn't null because this can only be called once the service is bound
             if (accessibilityService.serviceEventTypes != null) {
                 accessibilityService.serviceEventTypes = feedbackType
             }
@@ -182,16 +182,16 @@ class AccessibilityServiceController(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             combine(
                 detectFingerprintMapsUseCase.fingerprintMaps,
-                isPaused
+                isPaused,
             ) { fingerprintMaps, isPaused ->
                 if (fingerprintMaps.toList()
-                        .any { it.isEnabled && it.actionList.isNotEmpty() } && !isPaused
+                        .any { it.isEnabled && it.actionList.isNotEmpty() } &&
+                    !isPaused
                 ) {
                     requestFingerprintGestureDetection()
                 } else {
                     denyFingerprintGestureDetection()
                 }
-
             }.launchIn(coroutineScope)
         }
 
@@ -216,7 +216,7 @@ class AccessibilityServiceController(
         }.launchIn(coroutineScope)
 
         accessibilityService.isKeyboardHidden
-            .drop(1) //Don't send it when collecting initially
+            .drop(1) // Don't send it when collecting initially
             .onEach { isHidden ->
                 if (isHidden) {
                     outputEvents.emit(Event.OnHideKeyboardEvent)
@@ -227,7 +227,7 @@ class AccessibilityServiceController(
 
         combine(
             pauseMappingsUseCase.isPaused,
-            merge(detectKeyMapsUseCase.allKeyMapList, detectFingerprintMapsUseCase.fingerprintMaps)
+            merge(detectKeyMapsUseCase.allKeyMapList, detectFingerprintMapsUseCase.fingerprintMaps),
         ) { isPaused, mappings ->
             val enableAccessibilityVolumeStream: Boolean
 
@@ -272,18 +272,18 @@ class AccessibilityServiceController(
         accessibilityService.serviceFeedbackType = serviceFeedbackType.value
         accessibilityService.serviceEventTypes = serviceEventTypes.value
 
-        //check if fingerprint gestures are supported
+        // check if fingerprint gestures are supported
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val isFingerprintGestureRequested =
                 serviceFlags.value.hasFlag(AccessibilityServiceInfo.FLAG_REQUEST_FINGERPRINT_GESTURES)
             requestFingerprintGestureDetection()
 
             /* Don't update whether fingerprint gesture detection is supported if it has
-            * been supported at some point. Just in case the fingerprint reader is being
-            * used while this is called. */
+             * been supported at some point. Just in case the fingerprint reader is being
+             * used while this is called. */
             if (detectFingerprintMapsUseCase.isSupported.firstBlocking() != true) {
                 detectFingerprintMapsUseCase.setSupported(
-                    accessibilityService.isFingerprintGestureDetectionAvailable
+                    accessibilityService.isFingerprintGestureDetectionAvailable,
                 )
             }
 
@@ -299,7 +299,7 @@ class AccessibilityServiceController(
         device: InputDeviceInfo?,
         metaState: Int,
         scanCode: Int = 0,
-        eventTime: Long
+        eventTime: Long,
     ): Boolean {
         val detailedLogInfo =
             "key code: $keyCode, time since event: ${SystemClock.uptimeMillis() - eventTime}ms, device name: ${device?.name}, descriptor: ${device?.descriptor}, device id: ${device?.id}, is external: ${device?.isExternal}, meta state: $metaState, scan code: $scanCode"
@@ -316,8 +316,8 @@ class AccessibilityServiceController(
                     outputEvents.emit(
                         Event.RecordedTriggerKey(
                             keyCode,
-                            device
-                        )
+                            device,
+                        ),
                     )
                 }
             }
@@ -334,7 +334,7 @@ class AccessibilityServiceController(
                     action,
                     metaState,
                     scanCode,
-                    device
+                    device,
                 )
 
                 if (!consume) {
@@ -343,7 +343,7 @@ class AccessibilityServiceController(
                         action,
                         metaState,
                         scanCode,
-                        device
+                        device,
                     )
                 }
 
@@ -353,7 +353,6 @@ class AccessibilityServiceController(
                 }
 
                 return consume
-
             } catch (e: Exception) {
                 Timber.e(e)
             }
@@ -373,7 +372,7 @@ class AccessibilityServiceController(
         device: InputDeviceInfo?,
         metaState: Int,
         scanCode: Int = 0,
-        eventTime: Long
+        eventTime: Long,
     ): Boolean {
         if (!detectKeyMapsUseCase.acceptKeyEventsFromIme) {
             Timber.d("Don't input key event from ime")
@@ -393,7 +392,7 @@ class AccessibilityServiceController(
                 device,
                 metaState,
                 0,
-                eventTime
+                eventTime,
             )
         }
 
@@ -403,7 +402,7 @@ class AccessibilityServiceController(
             device,
             metaState,
             scanCode,
-            eventTime
+            eventTime,
         )
     }
 

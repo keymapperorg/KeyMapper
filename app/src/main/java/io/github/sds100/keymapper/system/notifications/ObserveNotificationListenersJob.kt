@@ -19,7 +19,5 @@ class ObserveNotificationListenersJob : JobService() {
         return false
     }
 
-    override fun onStopJob(params: JobParameters?): Boolean {
-        return false
-    }
+    override fun onStopJob(params: JobParameters?): Boolean = false
 }

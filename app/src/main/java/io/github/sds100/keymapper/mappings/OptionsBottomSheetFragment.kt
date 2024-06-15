@@ -44,7 +44,7 @@ abstract class OptionsBottomSheetFragment<BINDING : ViewDataBinding> : BottomShe
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         _binding = bind(inflater, container)
         return binding.root

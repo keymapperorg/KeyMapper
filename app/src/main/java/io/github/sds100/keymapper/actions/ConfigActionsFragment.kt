@@ -24,8 +24,7 @@ import kotlinx.coroutines.flow.collectLatest
 /**
  * Created by sds100 on 22/11/20.
  */
-abstract class ConfigActionsFragment<A : Action>
-    : RecyclerViewFragment<ActionListItem, FragmentActionListBinding>() {
+abstract class ConfigActionsFragment<A : Action> : RecyclerViewFragment<ActionListItem, FragmentActionListBinding>() {
 
     abstract val configActionsViewModel: ConfigActionsViewModel<A, *>
 
@@ -64,43 +63,38 @@ abstract class ConfigActionsFragment<A : Action>
     override fun getEmptyListPlaceHolderTextView(binding: FragmentActionListBinding) =
         binding.emptyListPlaceHolder
 
-
     private fun FragmentActionListBinding.enableActionDragging(
-        controller: EpoxyController
-    ): ItemTouchHelper {
+        controller: EpoxyController,
+    ): ItemTouchHelper = EpoxyTouchHelper.initDragging(controller)
+        .withRecyclerView(epoxyRecyclerView)
+        .forVerticalList()
+        .withTarget(ActionBindingModel_::class.java)
+        .andCallbacks(object : EpoxyTouchHelper.DragCallbacks<ActionBindingModel_>() {
 
-        return EpoxyTouchHelper.initDragging(controller)
-            .withRecyclerView(epoxyRecyclerView)
-            .forVerticalList()
-            .withTarget(ActionBindingModel_::class.java)
-            .andCallbacks(object : EpoxyTouchHelper.DragCallbacks<ActionBindingModel_>() {
+            override fun isDragEnabledForModel(model: ActionBindingModel_?): Boolean =
+                model?.state()?.dragAndDrop ?: false
 
-                override fun isDragEnabledForModel(model: ActionBindingModel_?): Boolean {
-                    return model?.state()?.dragAndDrop ?: false
-                }
+            override fun onModelMoved(
+                fromPosition: Int,
+                toPosition: Int,
+                modelBeingMoved: ActionBindingModel_?,
+                itemView: View?,
+            ) {
+                configActionsViewModel.moveAction(fromPosition, toPosition)
+            }
 
-                override fun onModelMoved(
-                    fromPosition: Int,
-                    toPosition: Int,
-                    modelBeingMoved: ActionBindingModel_?,
-                    itemView: View?
-                ) {
-                    configActionsViewModel.moveAction(fromPosition, toPosition)
-                }
+            override fun onDragStarted(
+                model: ActionBindingModel_?,
+                itemView: View?,
+                adapterPosition: Int,
+            ) {
+                itemView?.findViewById<MaterialCardView>(R.id.cardView)?.isDragged = true
+            }
 
-                override fun onDragStarted(
-                    model: ActionBindingModel_?,
-                    itemView: View?,
-                    adapterPosition: Int
-                ) {
-                    itemView?.findViewById<MaterialCardView>(R.id.cardView)?.isDragged = true
-                }
-
-                override fun onDragReleased(model: ActionBindingModel_?, itemView: View?) {
-                    itemView?.findViewById<MaterialCardView>(R.id.cardView)?.isDragged = false
-                }
-            })
-    }
+            override fun onDragReleased(model: ActionBindingModel_?, itemView: View?) {
+                itemView?.findViewById<MaterialCardView>(R.id.cardView)?.isDragged = false
+            }
+        })
 
     private inner class ActionListController : EpoxyController() {
         var state: List<ActionListItem> = listOf()

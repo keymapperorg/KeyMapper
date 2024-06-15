@@ -16,32 +16,31 @@ abstract class FourFragments(
     private val topLeft: FragmentInfo,
     private val topRight: FragmentInfo,
     private val bottomLeft: FragmentInfo,
-    private val bottomRight: FragmentInfo
+    private val bottomRight: FragmentInfo,
 ) : Fragment() {
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return FragmentsFourBinding.inflate(inflater, container, false).apply {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View? = FragmentsFourBinding.inflate(inflater, container, false).apply {
+        addFragment(containerTopLeft, topLeft.instantiate)
+        topLeftFragmentInfo = topLeft
 
-            addFragment(containerTopLeft, topLeft.instantiate)
-            topLeftFragmentInfo = topLeft
+        addFragment(containerTopRight, topRight.instantiate)
+        topRightFragmentInfo = topRight
 
-            addFragment(containerTopRight, topRight.instantiate)
-            topRightFragmentInfo = topRight
+        addFragment(containerBottomLeft, bottomLeft.instantiate)
+        bottomLeftFragmentInfo = bottomLeft
 
-            addFragment(containerBottomLeft, bottomLeft.instantiate)
-            bottomLeftFragmentInfo = bottomLeft
-
-            addFragment(containerBottomRight, bottomRight.instantiate)
-            bottomRightFragmentInfo = bottomRight
-
-        }.root
-    }
+        addFragment(containerBottomRight, bottomRight.instantiate)
+        bottomRightFragmentInfo = bottomRight
+    }.root
 
     private fun addFragment(
         container: FragmentContainerView,
-        instantiate: () -> Fragment
+        instantiate: () -> Fragment,
     ) {
-
         if (childFragmentManager.findFragmentById(container.id) == null) {
             childFragmentManager.beginTransaction()
                 .setReorderingAllowed(true)

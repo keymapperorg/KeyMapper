@@ -28,7 +28,7 @@ class RoomFingerprintMapRepository(
     private val dao: FingerprintMapDao,
     private val coroutineScope: CoroutineScope,
     private val devicesAdapter: DevicesAdapter,
-    private val dispatchers: DispatcherProvider = DefaultDispatcherProvider()
+    private val dispatchers: DispatcherProvider = DefaultDispatcherProvider(),
 ) : FingerprintMapRepository {
 
     override val fingerprintMapList: Flow<State<List<FingerprintMapEntity>>> =
@@ -96,10 +96,8 @@ class RoomFingerprintMapRepository(
         }
     }
 
-    override suspend fun get(id: Int): FingerprintMapEntity {
-        return withContext(dispatchers.default()) {
-            dao.getById(id) ?: FingerprintMapEntity(id = id)
-        }
+    override suspend fun get(id: Int): FingerprintMapEntity = withContext(dispatchers.default()) {
+        dao.getById(id) ?: FingerprintMapEntity(id = id)
     }
 
     override fun reset() {
@@ -143,7 +141,6 @@ class RoomFingerprintMapRepository(
                         action.extras.find { it.id == ActionEntity.EXTRA_KEY_EVENT_DEVICE_NAME }?.data
 
                     if (deviceDescriptor != null && oldDeviceName.isNullOrBlank()) {
-
                         val newDeviceName =
                             connectedInputDevices.data.find { it.descriptor == deviceDescriptor }?.name
 

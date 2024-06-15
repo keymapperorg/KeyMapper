@@ -16,7 +16,7 @@ import kotlinx.coroutines.runBlocking
  * Created by sds100 on 19/01/21.
  */
 class SharedPrefsDataStoreWrapper(
-    private val configSettingsUseCase: ConfigSettingsUseCase
+    private val configSettingsUseCase: ConfigSettingsUseCase,
 ) : PreferenceDataStore() {
 
     override fun getBoolean(key: String, defValue: Boolean) = getFromSharedPrefs(key, defValue)
@@ -34,33 +34,31 @@ class SharedPrefsDataStoreWrapper(
     override fun putStringSet(key: String, defValues: MutableSet<String>?) =
         setStringSetFromSharedPrefs(key, defValues)
 
-    private inline fun <reified T> getFromSharedPrefs(key: String, default: T): T {
-        return runBlocking {
-            when (default) {
-                is String? -> configSettingsUseCase.getPreference(stringPreferencesKey(key)).first()
-                    ?: default
+    private inline fun <reified T> getFromSharedPrefs(key: String, default: T): T = runBlocking {
+        when (default) {
+            is String? -> configSettingsUseCase.getPreference(stringPreferencesKey(key)).first()
+                ?: default
 
-                is Boolean? -> configSettingsUseCase.getPreference(booleanPreferencesKey(key))
-                    .first() ?: default
+            is Boolean? -> configSettingsUseCase.getPreference(booleanPreferencesKey(key))
+                .first() ?: default
 
-                is Int? -> configSettingsUseCase.getPreference(intPreferencesKey(key)).first()
-                    ?: default
+            is Int? -> configSettingsUseCase.getPreference(intPreferencesKey(key)).first()
+                ?: default
 
-                is Long? -> configSettingsUseCase.getPreference(longPreferencesKey(key)).first()
-                    ?: default
+            is Long? -> configSettingsUseCase.getPreference(longPreferencesKey(key)).first()
+                ?: default
 
-                is Float? -> configSettingsUseCase.getPreference(floatPreferencesKey(key)).first()
-                    ?: default
+            is Float? -> configSettingsUseCase.getPreference(floatPreferencesKey(key)).first()
+                ?: default
 
-                is Double? -> configSettingsUseCase.getPreference(doublePreferencesKey(key)).first()
-                    ?: default
+            is Double? -> configSettingsUseCase.getPreference(doublePreferencesKey(key)).first()
+                ?: default
 
-                else -> {
-                    val type = T::class.java.name
-                    throw IllegalArgumentException("Don't know how to set a value in shared preferences for this type $type")
-                }
-            } as T
-        }
+            else -> {
+                val type = T::class.java.name
+                throw IllegalArgumentException("Don't know how to set a value in shared preferences for this type $type")
+            }
+        } as T
     }
 
     private inline fun <reified T : Any> setFromSharedPrefs(key: String?, value: T?) {
@@ -80,11 +78,10 @@ class SharedPrefsDataStoreWrapper(
         }
     }
 
-    private fun getStringSetFromSharedPrefs(key: String, default: Set<String>?): Set<String> {
-        return runBlocking {
+    private fun getStringSetFromSharedPrefs(key: String, default: Set<String>?): Set<String> =
+        runBlocking {
             configSettingsUseCase.getPreference(stringSetPreferencesKey(key)).first() ?: emptySet()
         }
-    }
 
     private fun setStringSetFromSharedPrefs(key: String?, value: Set<String>?) {
         key ?: return

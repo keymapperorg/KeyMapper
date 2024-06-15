@@ -30,7 +30,7 @@ data class FingerprintMapAction(
     override val repeatMode: RepeatMode = RepeatMode.TRIGGER_PRESSED_AGAIN,
 
     val holdDownUntilSwipedAgain: Boolean = false,
-    override val holdDownDuration: Int? = null
+    override val holdDownDuration: Int? = null,
 ) : Action {
     override val holdDown: Boolean
         get() = holdDownUntilSwipedAgain
@@ -75,7 +75,7 @@ object FingerprintMapActionEntityMapper {
             when (repeatBehaviourExtra) {
                 ActionEntity.STOP_REPEAT_BEHAVIOUR_LIMIT_REACHED -> RepeatMode.LIMIT_REACHED
                 ActionEntity.STOP_REPEAT_BEHAVIOUR_TRIGGER_PRESSED_AGAIN -> RepeatMode.TRIGGER_PRESSED_AGAIN
-                else -> RepeatMode.TRIGGER_PRESSED_AGAIN //Don't allow until released
+                else -> RepeatMode.TRIGGER_PRESSED_AGAIN // Don't allow until released
             }
         } else {
             RepeatMode.TRIGGER_PRESSED_AGAIN
@@ -91,7 +91,7 @@ object FingerprintMapActionEntityMapper {
             repeatLimit = repeatLimit,
             holdDownDuration = holdDownDuration,
             delayBeforeNextAction = delayBeforeNextAction,
-            multiplier = multiplier
+            multiplier = multiplier,
         )
     }
 
@@ -104,8 +104,8 @@ object FingerprintMapActionEntityMapper {
                     add(
                         Extra(
                             ActionEntity.EXTRA_DELAY_BEFORE_NEXT_ACTION,
-                            action.delayBeforeNextAction.toString()
-                        )
+                            action.delayBeforeNextAction.toString(),
+                        ),
                     )
                 }
 
@@ -117,8 +117,8 @@ object FingerprintMapActionEntityMapper {
                     add(
                         Extra(
                             ActionEntity.EXTRA_HOLD_DOWN_DURATION,
-                            action.holdDownDuration.toString()
-                        )
+                            action.holdDownDuration.toString(),
+                        ),
                     )
                 }
 
@@ -127,8 +127,8 @@ object FingerprintMapActionEntityMapper {
                     add(
                         Extra(
                             ActionEntity.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR,
-                            ActionEntity.STOP_REPEAT_BEHAVIOUR_TRIGGER_PRESSED_AGAIN.toString()
-                        )
+                            ActionEntity.STOP_REPEAT_BEHAVIOUR_TRIGGER_PRESSED_AGAIN.toString(),
+                        ),
                     )
                 }
 
@@ -136,8 +136,8 @@ object FingerprintMapActionEntityMapper {
                     add(
                         Extra(
                             ActionEntity.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR,
-                            ActionEntity.STOP_REPEAT_BEHAVIOUR_LIMIT_REACHED.toString()
-                        )
+                            ActionEntity.STOP_REPEAT_BEHAVIOUR_LIMIT_REACHED.toString(),
+                        ),
                     )
                 }
 
@@ -165,7 +165,7 @@ object FingerprintMapActionEntityMapper {
                 data = base.data,
                 extras = base.extras.plus(extras),
                 flags = base.flags.withFlag(flags),
-                uid = action.uid
+                uid = action.uid,
             )
         }
 }

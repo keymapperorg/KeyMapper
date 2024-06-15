@@ -40,7 +40,7 @@ class FingerprintMapListViewModel(
 
     private val listItemCreator = FingerprintMapListItemCreator(
         useCase,
-        resourceProvider
+        resourceProvider,
     )
 
     private val _state = MutableStateFlow<State<List<FingerprintMapListItem>>>(State.Loading)
@@ -54,7 +54,7 @@ class FingerprintMapListViewModel(
 
         combine(
             rebuildUiState,
-            useCase.showDeviceDescriptors
+            useCase.showDeviceDescriptors,
         ) { fingerprintMaps, showDeviceDescriptors ->
             val listItems =
                 fingerprintMaps.map { listItemCreator.create(it, showDeviceDescriptors) }
@@ -99,7 +99,7 @@ class FingerprintMapListViewModel(
                 title = getString(R.string.dialog_title_reset_fingerprint_maps),
                 message = getString(R.string.dialog_message_reset_fingerprint_maps),
                 positiveButtonText = getString(R.string.pos_yes),
-                negativeButtonText = getString(R.string.neg_cancel)
+                negativeButtonText = getString(R.string.neg_cancel),
             )
 
             val response = showPopup("reset_fingerprintmaps", dialog)
@@ -132,7 +132,7 @@ class FingerprintMapListViewModel(
 
             val snackBar = PopupUi.SnackBar(
                 message = error.getFullMessage(this@FingerprintMapListViewModel),
-                actionText = actionText
+                actionText = actionText,
             )
 
             showPopup("fix_error", snackBar) ?: return@launch

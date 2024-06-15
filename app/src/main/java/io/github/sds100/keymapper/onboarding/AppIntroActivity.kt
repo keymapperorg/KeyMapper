@@ -47,7 +47,7 @@ class AppIntroActivity : AppIntro2() {
             ServiceLocator.permissionAdapter(this@AppIntroActivity).request.collectLatest { permission ->
                 requestPermissionDelegate.requestPermission(
                     permission,
-                    null
+                    null,
                 )
             }
         }
