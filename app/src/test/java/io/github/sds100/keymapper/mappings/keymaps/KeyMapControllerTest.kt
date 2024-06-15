@@ -18,6 +18,10 @@ import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
+import io.github.sds100.keymapper.util.Error
+import io.github.sds100.keymapper.util.InputEventType
+import io.github.sds100.keymapper.util.parallelTrigger
+import io.github.sds100.keymapper.util.sequenceTrigger
 import io.github.sds100.keymapper.util.singleKeyTrigger
 import io.github.sds100.keymapper.util.triggerKey
 import junitparams.JUnitParamsRunner
@@ -28,7 +32,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.TestCoroutineExceptionHandler
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.createTestCoroutineScope
+import kotlinx.coroutines.test.currentTime
 import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
@@ -37,6 +43,17 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.ArgumentMatchers.eq
+import org.mockito.kotlin.any
+import org.mockito.kotlin.atLeast
+import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.inOrder
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import splitties.bitflags.withFlag
 
 /**
@@ -557,7 +574,10 @@ class KeyMapControllerTest {
 
             // WHEN
             mockTriggerKeyInput(keyMap.trigger.keys[0])
-            advanceTimeBy(200)
+            testScheduler.apply {
+                advanceTimeBy(200)
+                runCurrent()
+            }
             mockTriggerKeyInput(keyMap.trigger.keys[0])
 
             // THEN
@@ -587,7 +607,10 @@ class KeyMapControllerTest {
 
             // WHEN
             mockTriggerKeyInput(keyMap.trigger.keys[0])
-            advanceTimeBy(5000)
+            testScheduler.apply {
+                advanceTimeBy(5000)
+                runCurrent()
+            }
             mockTriggerKeyInput(keyMap.trigger.keys[0])
 
             // THEN
@@ -996,7 +1019,10 @@ class KeyMapControllerTest {
             mockTriggerKeyInput(triggerKey(keyCode = 2), delay = 1)
 
             // see if the action repeats
-            coroutineScope.advanceTimeBy(500)
+            coroutineScope.testScheduler.apply {
+                advanceTimeBy(500)
+                runCurrent()
+            }
             controller.reset()
 
             // THEN
@@ -1596,7 +1622,7 @@ class KeyMapControllerTest {
         }
 
     @Test
-    fun `trigger for a specific device, input trigger from a different device, dont detect trigger`() =
+    fun `trigger for a specific device, input trigger from a different device, do not detect trigger`() =
         coroutineScope.runBlockingTest {
             // GIVEN
             val triggerHeadphone = singleKeyTrigger(
@@ -1895,6 +1921,7 @@ class KeyMapControllerTest {
             when (trigger.mode) {
                 is TriggerMode.Parallel -> mockParallelTrigger(trigger, delay = 2000L)
                 TriggerMode.Undefined -> mockTriggerKeyInput(trigger.keys[0], delay = 2000L)
+                TriggerMode.Sequence -> {}
             }
 
             verify(performActionsUseCase, atLeast(10)).perform(action.data)
@@ -1930,8 +1957,11 @@ class KeyMapControllerTest {
     )
 
     @Test
-    @Parameters(method = "params_dualParallelTrigger_input2ndKey_dontConsumeUp")
-    fun dualParallelTrigger_input2ndKey_dontConsumeUp(description: String, trigger: KeyMapTrigger) =
+    @Parameters(method = "params_dualParallelTrigger_input2ndKey_do notConsumeUp")
+    fun dualParallelTrigger_input2ndKey_doNotConsumeUp(
+        description: String,
+        trigger: KeyMapTrigger,
+    ) =
         coroutineScope.runBlockingTest {
             // given
             keyMapListFlow.value =
@@ -1958,7 +1988,7 @@ class KeyMapControllerTest {
             }
         }
 
-    fun params_dualParallelTrigger_input2ndKey_dontConsumeUp() = listOf(
+    fun params_dualParallelTrigger_input2ndKey_doNotConsumeUp() = listOf(
         arrayOf(
             "long press",
             parallelTrigger(
@@ -2088,7 +2118,7 @@ class KeyMapControllerTest {
         }
 
     @Test
-    fun keymappedToSingleShortPressAndLongPress_validShortPress_onlyPerformActionDontImitateKey() =
+    fun keymappedToSingleShortPressAndLongPress_validShortPress_onlyPerformActiondoNotImitateKey() =
         coroutineScope.runBlockingTest {
             // given
             val shortPressTrigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN))
@@ -2150,7 +2180,7 @@ class KeyMapControllerTest {
         }
 
     @Test
-    fun singleKeyTriggerAndShortPressParallelTriggerWithSameInitialKey_validSingleKeyTriggerInput_onlyPerformActionDontImitateKey() =
+    fun singleKeyTriggerAndShortPressParallelTriggerWithSameInitialKey_validSingleKeyTriggerInput_onlyPerformActiondoNotImitateKey() =
         coroutineScope.runBlockingTest {
             // given
             val singleKeyTrigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN))
@@ -2308,9 +2338,9 @@ class KeyMapControllerTest {
         }
 
     @Test
-    @Parameters(method = "params_allTriggerKeyCombinationsDontConsume")
+    @Parameters(method = "params_allTriggerKeyCombinationsdo notConsume")
     @TestCaseName("{0}")
-    fun validInput_dontConsumeFlag_dontConsumeDown(description: String, keyMap: KeyMap) =
+    fun validInput_doNotConsumeFlag_doNotConsumeDown(description: String, keyMap: KeyMap) =
         coroutineScope.runBlockingTest {
             keyMapListFlow.value = listOf(keyMap)
 
@@ -2332,16 +2362,16 @@ class KeyMapControllerTest {
             assertThat(consumedCount, `is`(0))
         }
 
-    fun params_allTriggerKeyCombinationsDontConsume(): List<Array<Any>> {
+    fun params_allTriggerKeyCombinationsdoNotConsume(): List<Array<Any>> {
         val triggerAndDescriptions = listOf(
-            "undefined single short-press this-device, dont consume" to singleKeyTrigger(
+            "undefined single short-press this-device, do not consume" to singleKeyTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
                     TriggerKeyDevice.Internal,
                     consume = false,
                 ),
             ),
-            "undefined single long-press this-device, dont consume" to singleKeyTrigger(
+            "undefined single long-press this-device, do not consume" to singleKeyTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
                     TriggerKeyDevice.Internal,
@@ -2349,7 +2379,7 @@ class KeyMapControllerTest {
                     consume = false,
                 ),
             ),
-            "undefined single double-press this-device, dont consume" to singleKeyTrigger(
+            "undefined single double-press this-device, do not consume" to singleKeyTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
                     TriggerKeyDevice.Internal,
@@ -2358,14 +2388,14 @@ class KeyMapControllerTest {
                 ),
             ),
 
-            "undefined single short-press any-device, dont consume" to singleKeyTrigger(
+            "undefined single short-press any-device, do not consume" to singleKeyTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
                     TriggerKeyDevice.Any,
                     consume = false,
                 ),
             ),
-            "undefined single long-press any-device, dont consume" to singleKeyTrigger(
+            "undefined single long-press any-device, do not consume" to singleKeyTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
                     TriggerKeyDevice.Any,
@@ -2373,7 +2403,7 @@ class KeyMapControllerTest {
                     consume = false,
                 ),
             ),
-            "undefined single double-press any-device, dont consume" to singleKeyTrigger(
+            "undefined single double-press any-device, do not consume" to singleKeyTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
                     TriggerKeyDevice.Any,
@@ -2382,7 +2412,7 @@ class KeyMapControllerTest {
                 ),
             ),
 
-            "sequence multiple short-press this-device, dont consume" to sequenceTrigger(
+            "sequence multiple short-press this-device, do not consume" to sequenceTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
                     TriggerKeyDevice.Internal,
@@ -2403,7 +2433,7 @@ class KeyMapControllerTest {
                 ),
             ),
 
-            "sequence multiple long-press this-device, dont consume" to sequenceTrigger(
+            "sequence multiple long-press this-device, do not consume" to sequenceTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
                     TriggerKeyDevice.Internal,
@@ -2424,7 +2454,7 @@ class KeyMapControllerTest {
                 ),
             ),
 
-            "sequence multiple double-press this-device, dont consume" to sequenceTrigger(
+            "sequence multiple double-press this-device, do not consume" to sequenceTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
                     TriggerKeyDevice.Internal,
@@ -2445,7 +2475,7 @@ class KeyMapControllerTest {
                 ),
             ),
 
-            "sequence multiple mix this-device, dont consume" to sequenceTrigger(
+            "sequence multiple mix this-device, do not consume" to sequenceTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
                     TriggerKeyDevice.Internal,
@@ -2466,7 +2496,7 @@ class KeyMapControllerTest {
                 ),
             ),
 
-            "sequence multiple mix external-device, dont consume" to sequenceTrigger(
+            "sequence multiple mix external-device, do not consume" to sequenceTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
                     FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
@@ -2493,7 +2523,7 @@ class KeyMapControllerTest {
                 ),
             ),
 
-            "sequence multiple short-press mixed-device, dont consume" to sequenceTrigger(
+            "sequence multiple short-press mixed-device, do not consume" to sequenceTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
                     FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
@@ -2514,7 +2544,7 @@ class KeyMapControllerTest {
                 ),
             ),
 
-            "sequence multiple long-press mixed-device, dont consume" to sequenceTrigger(
+            "sequence multiple long-press mixed-device, do not consume" to sequenceTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
                     FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
@@ -2535,7 +2565,7 @@ class KeyMapControllerTest {
                 ),
             ),
 
-            "sequence multiple double-press mixed-device, dont consume" to sequenceTrigger(
+            "sequence multiple double-press mixed-device, do not consume" to sequenceTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
                     FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
@@ -2556,7 +2586,7 @@ class KeyMapControllerTest {
                 ),
             ),
 
-            "sequence multiple mix mixed-device, dont consume" to sequenceTrigger(
+            "sequence multiple mix mixed-device, do not consume" to sequenceTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
                     FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
@@ -2577,7 +2607,7 @@ class KeyMapControllerTest {
                 ),
             ),
 
-            "sequence multiple mix mixed-device, dont consume" to sequenceTrigger(
+            "sequence multiple mix mixed-device, do not consume" to sequenceTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
                     TriggerKeyDevice.Any,
@@ -2604,7 +2634,7 @@ class KeyMapControllerTest {
                 ),
             ),
 
-            "parallel multiple short-press this-device, dont consume" to parallelTrigger(
+            "parallel multiple short-press this-device, do not consume" to parallelTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
                     TriggerKeyDevice.Internal,
@@ -2625,7 +2655,7 @@ class KeyMapControllerTest {
                 ),
             ),
 
-            "parallel multiple long-press this-device, dont consume" to parallelTrigger(
+            "parallel multiple long-press this-device, do not consume" to parallelTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
                     TriggerKeyDevice.Internal,
@@ -2646,7 +2676,7 @@ class KeyMapControllerTest {
                 ),
             ),
 
-            "parallel multiple short-press external-device, dont consume" to parallelTrigger(
+            "parallel multiple short-press external-device, do not consume" to parallelTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
                     FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
@@ -2667,7 +2697,7 @@ class KeyMapControllerTest {
                 ),
             ),
 
-            "parallel multiple long-press external-device, dont consume" to parallelTrigger(
+            "parallel multiple long-press external-device, do not consume" to parallelTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
                     FAKE_HEADPHONE_TRIGGER_KEY_DEVICE,
@@ -2688,7 +2718,7 @@ class KeyMapControllerTest {
                 ),
             ),
 
-            "parallel multiple short-press mix-device, dont consume" to parallelTrigger(
+            "parallel multiple short-press mix-device, do not consume" to parallelTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
                     TriggerKeyDevice.Internal,
@@ -2709,7 +2739,7 @@ class KeyMapControllerTest {
                 ),
             ),
 
-            "parallel multiple long-press mix-device, dont consume" to parallelTrigger(
+            "parallel multiple long-press mix-device, do not consume" to parallelTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
                     TriggerKeyDevice.Internal,
@@ -3174,6 +3204,7 @@ class KeyMapControllerTest {
             when ((trigger.mode as TriggerMode.Parallel).clickType) {
                 ClickType.SHORT_PRESS -> delay(50)
                 ClickType.LONG_PRESS -> delay(LONG_PRESS_DELAY + 100L)
+                ClickType.DOUBLE_PRESS -> {}
             }
         }
 

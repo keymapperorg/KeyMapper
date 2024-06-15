@@ -12,6 +12,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.DelayController
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.TestCoroutineExceptionHandler
 import kotlinx.coroutines.test.createTestCoroutineScope
@@ -26,6 +27,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import kotlin.coroutines.ContinuationInterceptor
 
 /**
  * Created by sds100 on 25/04/2021.
@@ -89,14 +91,14 @@ class NotificationControllerTest {
         coroutineScope.runBlockingTest {
             // WHEN
 
-            pauseDispatcher()
+            (coroutineContext[ContinuationInterceptor]!! as DelayController).pauseDispatcher()
             launch {
                 onActionClick.emit(NotificationController.ACTION_ON_SETUP_CHOSEN_DEVICES_AGAIN)
             }
 
             // THEN
             assertThat(controller.openApp.toListWithTimeout().size, `is`(1))
-            resumeDispatcher()
+            (coroutineContext[ContinuationInterceptor]!! as DelayController).resumeDispatcher()
 
             assertThat(fakeOnboarding.approvedSetupChosenDevicesAgainNotification, `is`(true))
         }

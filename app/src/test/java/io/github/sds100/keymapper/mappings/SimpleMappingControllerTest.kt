@@ -11,12 +11,18 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.TestCoroutineExceptionHandler
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.createTestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.atLeast
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 
 /**
  * Created by sds100 on 15/05/2021.
@@ -159,7 +165,10 @@ class SimpleMappingControllerTest {
 
             // WHEN
             controller.onDetected("id", FakeMapping(actionList = listOf(action)))
-            advanceTimeBy(200)
+            testScheduler.apply {
+                advanceTimeBy(200)
+                runCurrent()
+            }
             controller.onDetected("id", FakeMapping(actionList = listOf(action)))
 
             // THEN
@@ -182,7 +191,10 @@ class SimpleMappingControllerTest {
 
             // WHEN
             controller.onDetected("id", FakeMapping(actionList = listOf(action)))
-            advanceTimeBy(5000)
+            testScheduler.apply {
+                advanceTimeBy(5000)
+                runCurrent()
+            }
             controller.onDetected("id", FakeMapping(actionList = listOf(action)))
 
             // THEN

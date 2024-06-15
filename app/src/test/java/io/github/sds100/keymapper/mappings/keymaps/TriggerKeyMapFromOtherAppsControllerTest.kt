@@ -13,6 +13,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.TestCoroutineExceptionHandler
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.createTestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.After
