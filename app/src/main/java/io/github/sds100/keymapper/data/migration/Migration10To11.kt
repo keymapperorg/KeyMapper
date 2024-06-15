@@ -4,6 +4,9 @@ package io.github.sds100.keymapper.data.migration
 
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.sqlite.db.SupportSQLiteQueryBuilder
+import com.github.salomonbrys.kotson.byArray
+import com.github.salomonbrys.kotson.byString
+import com.github.salomonbrys.kotson.set
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
