@@ -23,9 +23,10 @@ This wiki aims to provide users with a comprehensive guide to using and setting 
 
 ## Our team 🧑‍💻
 
-### Developer
+### Developers
 
-- [Seth Schroeder (sds100)](https://github.com/sds100)
+- [Seth Schroeder (sds100)](https://github.com/sds100): Main developer.
+- [Tino W. (pixel-shock)](https://github.com/pixel-shock): Created the actions for swiping and pinching.
 
 ### Community moderators/support
 
