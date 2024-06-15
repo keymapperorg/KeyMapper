@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
  */
 class RerouteKeyEventsController(
     private val coroutineScope: CoroutineScope,
-    private val useCase: RerouteKeyEventsUseCase
+    private val useCase: RerouteKeyEventsUseCase,
 ) {
     /**
      * The job of the key that should be repeating. This should be a down key event for the last
@@ -30,26 +30,23 @@ class RerouteKeyEventsController(
         action: Int,
         metaState: Int,
         scanCode: Int = 0,
-        device: InputDeviceInfo?
-    ): Boolean {
+        device: InputDeviceInfo?,
+    ): Boolean = when (action) {
+        KeyEvent.ACTION_DOWN -> onKeyDown(
+            keyCode,
+            device,
+            metaState,
+            scanCode,
+        )
 
-        return when (action) {
-            KeyEvent.ACTION_DOWN -> onKeyDown(
-                keyCode,
-                device,
-                metaState,
-                scanCode
-            )
+        KeyEvent.ACTION_UP -> onKeyUp(
+            keyCode,
+            device,
+            metaState,
+            scanCode,
+        )
 
-            KeyEvent.ACTION_UP -> onKeyUp(
-                keyCode,
-                device,
-                metaState,
-                scanCode
-            )
-
-            else -> false
-        }
+        else -> false
     }
 
     /**
@@ -59,9 +56,8 @@ class RerouteKeyEventsController(
         keyCode: Int,
         device: InputDeviceInfo?,
         metaState: Int,
-        scanCode: Int = 0
+        scanCode: Int = 0,
     ): Boolean {
-
         if (device != null && !useCase.shouldRerouteKeyEvent(device.descriptor)) {
             return false
         }
@@ -72,7 +68,7 @@ class RerouteKeyEventsController(
             metaState = metaState,
             deviceId = device?.id ?: 0,
             scanCode = scanCode,
-            repeat = 0
+            repeat = 0,
         )
 
         useCase.inputKeyEvent(inputKeyModel)
@@ -98,9 +94,8 @@ class RerouteKeyEventsController(
         keyCode: Int,
         device: InputDeviceInfo?,
         metaState: Int,
-        scanCode: Int = 0
+        scanCode: Int = 0,
     ): Boolean {
-
         if (device != null && !useCase.shouldRerouteKeyEvent(device.descriptor)) {
             return false
         }
@@ -113,7 +108,7 @@ class RerouteKeyEventsController(
             metaState = metaState,
             deviceId = device?.id ?: 0,
             scanCode = scanCode,
-            repeat = 0
+            repeat = 0,
         )
 
         useCase.inputKeyEvent(inputKeyModel)

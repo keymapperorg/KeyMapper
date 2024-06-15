@@ -2,7 +2,7 @@
 
 !!! warning "MAINTENANCE NOTICE!"
 
-    DEVELOPMENT STOPPED - LOOKING FOR MAINTAINER
+    Feature development has stopped.
 
 [Key Mapper](http://code.keymapper.club) is a free and open source Android app that can map single or multiple key events to a custom action. 
 
@@ -17,13 +17,16 @@ This wiki aims to provide users with a comprehensive guide to using and setting 
 [Support the project :fontawesome-solid-heart:](https://ko-fi.com/sethschroeder){: .md-button }
 [Share your key maps :material-hand-heart:](sharing.md){: .md-button .md-button--md-primary-bg-color }
 
+## Star History
 
+[![Star History Chart](https://api.star-history.com/svg?repos=keymapperorg/KeyMapper&type=Date)](https://star-history.com/#keymapperorg/KeyMapper&Date)
 
 ## Our team 🧑‍💻
 
-### Developer
+### Developers
 
-- [Seth Schroeder (sds100)](https://github.com/sds100)
+- [Seth Schroeder (sds100)](https://github.com/sds100): Main developer.
+- [Tino W. (pixel-shock)](https://github.com/pixel-shock): Created the actions for swiping and pinching.
 
 ### Community moderators/support
 

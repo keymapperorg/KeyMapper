@@ -33,21 +33,21 @@ class ParallelTriggerActionPerformer(
         useCase.defaultHoldDownDuration.stateIn(
             coroutineScope,
             SharingStarted.Eagerly,
-            PreferenceDefaults.HOLD_DOWN_DURATION.toLong()
+            PreferenceDefaults.HOLD_DOWN_DURATION.toLong(),
         )
 
     private val defaultRepeatDelay: StateFlow<Long> =
         useCase.defaultRepeatDelay.stateIn(
             coroutineScope,
             SharingStarted.Eagerly,
-            PreferenceDefaults.REPEAT_DELAY.toLong()
+            PreferenceDefaults.REPEAT_DELAY.toLong(),
         )
 
     private val defaultRepeatRate: StateFlow<Long> =
         useCase.defaultRepeatRate.stateIn(
             coroutineScope,
             SharingStarted.Eagerly,
-            PreferenceDefaults.REPEAT_RATE.toLong()
+            PreferenceDefaults.REPEAT_RATE.toLong(),
         )
 
     fun onTriggered(calledOnTriggerRelease: Boolean, metaState: Int) {
@@ -57,7 +57,6 @@ class ParallelTriggerActionPerformer(
         once before repeating (if configured).
          */
         performActionsJob = coroutineScope.launch {
-
             actionList.forEachIndexed { actionIndex, action ->
                 var performUpAction = false
 
@@ -106,7 +105,7 @@ class ParallelTriggerActionPerformer(
                 return@forEachIndexed
             }
 
-            //don't start repeating if it is already repeating
+            // don't start repeating if it is already repeating
             if (action.repeatMode == RepeatMode.TRIGGER_PRESSED_AGAIN && repeatJobs[actionIndex] != null) {
                 repeatJobs[actionIndex]?.cancel()
                 repeatJobs[actionIndex] = null
@@ -155,7 +154,6 @@ class ParallelTriggerActionPerformer(
 
         actionList.forEachIndexed { actionIndex, action ->
             if (action.holdDown && !action.stopHoldDownWhenTriggerPressedAgain) {
-
                 if (actionIsHeldDown[actionIndex]) {
                     actionIsHeldDown[actionIndex] = false
 
@@ -185,7 +183,11 @@ class ParallelTriggerActionPerformer(
         }
     }
 
-    private fun performAction(action: KeyMapAction, inputEventType: InputEventType, metaState: Int) {
+    private fun performAction(
+        action: KeyMapAction,
+        inputEventType: InputEventType,
+        metaState: Int,
+    ) {
         repeat(action.multiplier ?: 1) {
             useCase.perform(action.data, inputEventType, metaState)
         }

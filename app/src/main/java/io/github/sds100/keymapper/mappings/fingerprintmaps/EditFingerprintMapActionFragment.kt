@@ -10,8 +10,7 @@ import io.github.sds100.keymapper.util.str
 /**
  * Created by sds100 on 27/06/2020.
  */
-class EditFingerprintMapActionFragment :
-    BaseEditActionFragment<FingerprintMap, FingerprintMapAction>() {
+class EditFingerprintMapActionFragment : BaseEditActionFragment<FingerprintMap, FingerprintMapAction>() {
 
     private val configFingerprintMapViewModel: ConfigFingerprintMapViewModel by navGraphViewModels(R.id.nav_config_fingerprint_map) {
         Inject.configFingerprintMapViewModel(requireContext())

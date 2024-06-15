@@ -12,11 +12,9 @@ import java.util.Locale
  */
 
 suspend fun <T : ISearchable> List<T>.filterByQuery(query: String?): Flow<State<List<T>>> = flow {
-
     if (query.isNullOrBlank()) {
         emit(State.Data(this@filterByQuery))
     } else {
-
         emit(State.Loading)
 
         val filteredList = withContext(Dispatchers.Default) {

@@ -22,7 +22,7 @@ import splitties.bitflags.withFlag
 /**
  * #382 feat: unique repeat behaviour for each action
  */
-object Migration_4_5 {
+object Migration4To5 {
 
     private const val OLD_KEYMAP_FLAG_VIBRATE = 1
     private const val OLD_KEYMAP_FLAG_SHOW_PERFORMING_ACTION_TOAST = 2
@@ -75,15 +75,14 @@ object Migration_4_5 {
 
                 if (flags.hasFlag(OLD_KEYMAP_FLAG_LONG_PRESS_DOUBLE_VIBRATION)) {
                     newKeymapFlags = newKeymapFlags.withFlag(
-                        NEW_KEYMAP_FLAG_LONG_PRESS_DOUBLE_VIBRATION
+                        NEW_KEYMAP_FLAG_LONG_PRESS_DOUBLE_VIBRATION,
                     )
                 }
 
                 if (flags.hasFlag(OLD_KEYMAP_FLAG_REPEAT_ACTIONS)) {
-
                     val repeatDelay = trigger["extras"].asJsonArray.getExtraData(EXTRA_REPEAT_DELAY)
                     val holdDownDelay = trigger["extras"].asJsonArray.getExtraData(
-                        EXTRA_HOLD_DOWN_DELAY
+                        EXTRA_HOLD_DOWN_DELAY,
                     )
 
                     actionList.forEach {
@@ -104,25 +103,35 @@ object Migration_4_5 {
                 }
 
                 trigger["extras"].asJsonArray.apply {
-                    removeAll { it["id"].asString in arrayOf(EXTRA_REPEAT_DELAY, EXTRA_HOLD_DOWN_DELAY) }
+                    removeAll {
+                        it["id"].asString in arrayOf(
+                            EXTRA_REPEAT_DELAY,
+                            EXTRA_HOLD_DOWN_DELAY,
+                        )
+                    }
                 }
 
-                execSQL("UPDATE keymaps SET trigger='${gson.toJson(trigger)}', action_list='${gson.toJson(actionList)}', flags='$newKeymapFlags' WHERE id=$id")
+                execSQL(
+                    "UPDATE keymaps SET trigger='${gson.toJson(trigger)}', action_list='${
+                        gson.toJson(
+                            actionList,
+                        )
+                    }', flags='$newKeymapFlags' WHERE id=$id",
+                )
             }
 
             close()
         }
     }
 
-    private fun JsonArray.getExtraData(id: String): String? {
-        return singleOrNull { it["id"].asString == id }?.get("data")?.asString
-    }
+    private fun JsonArray.getExtraData(id: String): String? =
+        singleOrNull { it["id"].asString == id }?.get("data")?.asString
 
     private fun JsonArray.putExtra(id: String, data: String) {
         val obj = JsonObject().apply {
             putAll(
                 "id" to id,
-                "data" to data
+                "data" to data,
             )
         }
 

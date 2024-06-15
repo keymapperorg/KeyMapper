@@ -44,7 +44,8 @@ class MainActivity : AppCompatActivity() {
             ServiceLocator.resourceProvider(this).onThemeChange()
         }
 
-        val binding = DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
+        val binding =
+            DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
 
         viewModel.showPopups(this, binding.coordinatorLayout)
 
@@ -55,7 +56,7 @@ class MainActivity : AppCompatActivity() {
             .onEach { permission ->
                 requestPermissionDelegate.requestPermission(
                     permission,
-                    findNavController(R.id.container)
+                    findNavController(R.id.container),
                 )
             }
             .launchIn(lifecycleScope)

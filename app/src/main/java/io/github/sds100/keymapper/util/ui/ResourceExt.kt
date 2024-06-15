@@ -46,22 +46,21 @@ fun View.bool(
     attributeSet: AttributeSet,
     @StyleableRes styleableId: IntArray,
     @StyleableRes attrId: Int,
-    defaultValue: Boolean = false
+    defaultValue: Boolean = false,
 ) = context.bool(attributeSet, styleableId, attrId, defaultValue)
 
 fun Context.resourceId(
     attributeSet: AttributeSet,
     @StyleableRes styleableId: IntArray,
-    @StyleableRes attrId: Int
+    @StyleableRes attrId: Int,
 ): Int? {
-
     val typedArray = theme.obtainStyledAttributes(attributeSet, styleableId, 0, 0)
     var attrValue: Int?
 
     try {
         attrValue = typedArray.getResourceIdOrThrow(attrId)
     } catch (e: IllegalArgumentException) {
-        //return null if it can't find it
+        // return null if it can't find it
         attrValue = null
     }
 
@@ -77,7 +76,7 @@ fun Context.bool(
     attributeSet: AttributeSet,
     @StyleableRes styleableId: IntArray,
     @StyleableRes attrId: Int,
-    defaultValue: Boolean = false
+    defaultValue: Boolean = false,
 ): Boolean {
     val typedArray = theme.obtainStyledAttributes(attributeSet, styleableId, 0, 0)
 
@@ -100,7 +99,7 @@ fun Context.bool(
 fun Context.str(
     attributeSet: AttributeSet,
     @StyleableRes styleableId: IntArray,
-    @StyleableRes attrId: Int
+    @StyleableRes attrId: Int,
 ): String? {
     val typedArray = theme.obtainStyledAttributes(attributeSet, styleableId, 0, 0)
 
@@ -118,16 +117,15 @@ fun Context.str(
 fun View.str(
     attributeSet: AttributeSet,
     @StyleableRes styleableId: IntArray,
-    @StyleableRes attrId: Int
+    @StyleableRes attrId: Int,
 ) =
     context.str(attributeSet, styleableId, attrId)
 
 /**
  * Get a resource drawable. Can be safely used to get vector drawables on pre-lollipop.
  */
-fun Context.drawable(@DrawableRes resId: Int): Drawable {
-    return AppCompatResources.getDrawable(this, resId)!!
-}
+fun Context.drawable(@DrawableRes resId: Int): Drawable =
+    AppCompatResources.getDrawable(this, resId)!!
 
 fun View.drawable(@DrawableRes resId: Int): Drawable = context.drawable(resId)
 fun Fragment.drawable(@DrawableRes resId: Int): Drawable = requireContext().drawable(resId)
@@ -142,8 +140,11 @@ fun Context.color(@ColorRes resId: Int, harmonize: Boolean = false): Int {
     }
 }
 
-fun View.color(@ColorRes resId: Int, harmonize: Boolean = false): Int = context.color(resId, harmonize)
-fun Fragment.color(@ColorRes resId: Int, harmonize: Boolean = false): Int = requireContext().color(resId, harmonize)
+fun View.color(@ColorRes resId: Int, harmonize: Boolean = false): Int =
+    context.color(resId, harmonize)
+
+fun Fragment.color(@ColorRes resId: Int, harmonize: Boolean = false): Int =
+    requireContext().color(resId, harmonize)
 
 @ColorInt
 fun Context.styledColor(@AttrRes attr: Int) = withStyledAttributes(attr) { getColor(it, 0) }
@@ -179,7 +180,7 @@ private val cachedAttrArray = IntArray(1)
 
 inline fun <T> Context.withStyledAttributes(
     @AttrRes attrRes: Int,
-    func: TypedArray.(firstIndex: Int) -> T
+    func: TypedArray.(firstIndex: Int) -> T,
 ): T = obtainStyledAttr(attrRes).let { styledAttrs ->
     styledAttrs.func(styledAttrs.getIndex(0)).also { styledAttrs.recycle() }
 }
@@ -187,7 +188,9 @@ inline fun <T> Context.withStyledAttributes(
 fun Context.obtainStyledAttr(@AttrRes attrRes: Int): TypedArray = if (isMainThread) {
     uiThreadConfinedCachedAttrArray[0] = attrRes
     obtainStyledAttributes(uiThreadConfinedCachedAttrArray)
-} else synchronized(cachedAttrArray) {
-    cachedAttrArray[0] = attrRes
-    obtainStyledAttributes(cachedAttrArray)
+} else {
+    synchronized(cachedAttrArray) {
+        cachedAttrArray[0] = attrRes
+        obtainStyledAttributes(cachedAttrArray)
+    }
 }

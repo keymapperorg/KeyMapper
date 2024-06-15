@@ -29,6 +29,4 @@ interface IFile {
     suspend fun copyTo(directory: IFile, fileName: String? = null): Result<*>
 }
 
-fun IFile.toJavaFile(): File {
-    return File(path)
-}
+fun IFile.toJavaFile(): File = File(path)

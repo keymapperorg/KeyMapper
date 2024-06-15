@@ -14,7 +14,7 @@ import uk.co.samuelwall.materialtaptargetprompt.extras.focals.CirclePromptFocal
 
 sealed class TapTarget(
     @StringRes val primaryText: Int,
-    @StringRes val secondaryText: Int
+    @StringRes val secondaryText: Int,
 ) {
 
     /**
@@ -25,29 +25,28 @@ sealed class TapTarget(
         fragment: Fragment,
         @IdRes viewId: Int,
         promptFocal: PromptFocal = CirclePromptFocal(),
-        onSuccessfulFinish: () -> Unit
-    ): MaterialTapTargetPrompt? {
-        return MaterialTapTargetPrompt.Builder(fragment).apply {
-            setTarget(viewId)
+        onSuccessfulFinish: () -> Unit,
+    ): MaterialTapTargetPrompt? = MaterialTapTargetPrompt.Builder(fragment).apply {
+        setTarget(viewId)
 
-            focalColour = fragment.color(android.R.color.transparent)
-            setPrimaryText(this@TapTarget.primaryText)
-            setSecondaryText(this@TapTarget.secondaryText)
-            backgroundColour = fragment.styledColor(R.attr.colorPrimary)
-            this.promptFocal = promptFocal
+        focalColour = fragment.color(android.R.color.transparent)
+        setPrimaryText(this@TapTarget.primaryText)
+        setSecondaryText(this@TapTarget.secondaryText)
+        backgroundColour = fragment.styledColor(R.attr.colorPrimary)
+        this.promptFocal = promptFocal
 
-            setPromptStateChangeListener { _, state ->
-                if (state == MaterialTapTargetPrompt.STATE_DISMISSED
-                    || state == MaterialTapTargetPrompt.STATE_FINISHED
-                ) {
-                    onSuccessfulFinish.invoke()
-                }
+        setPromptStateChangeListener { _, state ->
+            if (state == MaterialTapTargetPrompt.STATE_DISMISSED ||
+                state == MaterialTapTargetPrompt.STATE_FINISHED
+            ) {
+                onSuccessfulFinish.invoke()
             }
-        }.show()
-    }
+        }
+    }.show()
 }
 
-class QuickStartGuideTapTarget : TapTarget(
-    R.string.tap_target_quick_start_guide_primary,
-    R.string.tap_target_quick_start_guide_secondary
-)
+class QuickStartGuideTapTarget :
+    TapTarget(
+        R.string.tap_target_quick_start_guide_primary,
+        R.string.tap_target_quick_start_guide_secondary,
+    )

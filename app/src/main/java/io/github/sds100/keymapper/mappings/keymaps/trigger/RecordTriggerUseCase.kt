@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.onEach
  */
 class RecordTriggerController(
     private val coroutineScope: CoroutineScope,
-    private val serviceAdapter: ServiceAdapter
+    private val serviceAdapter: ServiceAdapter,
 ) : RecordTriggerUseCase {
     override val state = MutableStateFlow<RecordTriggerState>(RecordTriggerState.Stopped)
 
@@ -40,21 +40,20 @@ class RecordTriggerController(
             when (event) {
                 is Event.OnStoppedRecordingTrigger -> state.value = RecordTriggerState.Stopped
 
-                is Event.OnIncrementRecordTriggerTimer -> state.value =
-                    RecordTriggerState.CountingDown(event.timeLeft)
+                is Event.OnIncrementRecordTriggerTimer ->
+                    state.value =
+                        RecordTriggerState.CountingDown(event.timeLeft)
 
                 else -> Unit
             }
         }.launchIn(coroutineScope)
     }
 
-    override suspend fun startRecording(): Result<*> {
-        return serviceAdapter.send(Event.StartRecordingTrigger)
-    }
+    override suspend fun startRecording(): Result<*> =
+        serviceAdapter.send(Event.StartRecordingTrigger)
 
-    override suspend fun stopRecording(): Result<*> {
-        return serviceAdapter.send(Event.StopRecordingTrigger)
-    }
+    override suspend fun stopRecording(): Result<*> =
+        serviceAdapter.send(Event.StopRecordingTrigger)
 }
 
 interface RecordTriggerUseCase {

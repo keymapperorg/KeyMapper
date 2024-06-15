@@ -63,7 +63,7 @@ class Android11BugWorkaroundSettingsFragment : BaseSettingsFragment() {
             setOnPreferenceClickListener {
                 UrlUtils.openUrl(
                     requireContext(),
-                    str(R.string.url_android_11_bug_reset_id_work_around_setting_guide)
+                    str(R.string.url_android_11_bug_reset_id_work_around_setting_guide),
                 )
 
                 true
@@ -90,7 +90,7 @@ class Android11BugWorkaroundSettingsFragment : BaseSettingsFragment() {
                             model = ChooseAppStoreModel(
                                 githubLink = getString(R.string.url_github_keymapper_leanback_keyboard),
                             ),
-                            negativeButtonText = str(R.string.neg_cancel)
+                            negativeButtonText = str(R.string.neg_cancel),
                         )
 
                         viewModel.showPopup("download_leanback_ime", chooseAppStoreDialog)
@@ -103,7 +103,7 @@ class Android11BugWorkaroundSettingsFragment : BaseSettingsFragment() {
                                 fdroidLink = getString(R.string.url_fdroid_keymapper_gui_keyboard),
                                 githubLink = getString(R.string.url_github_keymapper_gui_keyboard),
                             ),
-                            negativeButtonText = str(R.string.neg_cancel)
+                            negativeButtonText = str(R.string.neg_cancel),
                         )
 
                         viewModel.showPopup("download_gui_keyboard", chooseAppStoreDialog)
@@ -174,8 +174,8 @@ class Android11BugWorkaroundSettingsFragment : BaseSettingsFragment() {
                 requireContext(),
                 viewModel,
                 Keys.devicesToRerouteKeyEvents,
-                R.string.title_pref_devices_to_reroute_keyevents_choose_devices
-            )
+                R.string.title_pref_devices_to_reroute_keyevents_choose_devices,
+            ),
         )
 
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {

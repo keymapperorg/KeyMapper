@@ -13,15 +13,14 @@ import io.github.sds100.keymapper.util.ifIsData
  * Created by sds100 on 16/02/2021.
  */
 class ConfigFingerprintMapUseCaseImpl(
-    private val repository: FingerprintMapRepository
+    private val repository: FingerprintMapRepository,
 ) : BaseConfigMappingUseCase<FingerprintMapAction, FingerprintMap>(),
     ConfigFingerprintMapUseCase {
 
     override fun setEnabled(enabled: Boolean) = editFingerprintMap { it.copy(isEnabled = enabled) }
 
-    override fun createAction(data: ActionData): FingerprintMapAction {
-        return FingerprintMapAction(data = data)
-    }
+    override fun createAction(data: ActionData): FingerprintMapAction =
+        FingerprintMapAction(data = data)
 
     override fun setActionList(actionList: List<FingerprintMapAction>) {
         editFingerprintMap { it.copy(actionList = actionList) }
@@ -52,7 +51,7 @@ class ConfigFingerprintMapUseCaseImpl(
             }
 
             keyMap.copy(
-                actionList = newActionList
+                actionList = newActionList,
             )
         }
     }
@@ -106,9 +105,7 @@ class ConfigFingerprintMapUseCaseImpl(
         }
     }
 
-    override fun getState(): State<FingerprintMap> {
-        return mapping.value
-    }
+    override fun getState(): State<FingerprintMap> = mapping.value
 
     private fun editFingerprintMap(block: (fingerprintMap: FingerprintMap) -> FingerprintMap) {
         mapping.value.ifIsData { mapping.value = State.Data(block.invoke(it)) }
@@ -116,7 +113,7 @@ class ConfigFingerprintMapUseCaseImpl(
 
     private fun setActionOption(
         uid: String,
-        block: (action: FingerprintMapAction) -> FingerprintMapAction
+        block: (action: FingerprintMapAction) -> FingerprintMapAction,
     ) {
         editFingerprintMap { fingerprintMap ->
             val newActionList = fingerprintMap.actionList.map { action ->
@@ -128,7 +125,7 @@ class ConfigFingerprintMapUseCaseImpl(
             }
 
             fingerprintMap.copy(
-                actionList = newActionList
+                actionList = newActionList,
             )
         }
     }

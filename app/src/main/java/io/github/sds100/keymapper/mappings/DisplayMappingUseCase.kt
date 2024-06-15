@@ -68,7 +68,7 @@ class DisplaySimpleMappingUseCaseImpl(
                     keyMapperImeHelper.enableCompatibleInputMethods()
                 }
 
-                //wait for compatible ime to be enabled then choose it.
+                // wait for compatible ime to be enabled then choose it.
                 keyMapperImeHelper.isCompatibleImeEnabledFlow.first { it }
 
                 keyMapperImeHelper.chooseCompatibleInputMethod().otherwise {
@@ -80,16 +80,14 @@ class DisplaySimpleMappingUseCaseImpl(
         }
     }
 
-    override fun startAccessibilityService(): Boolean {
-        return accessibilityServiceAdapter.start()
-    }
+    override fun startAccessibilityService(): Boolean = accessibilityServiceAdapter.start()
 
-    override fun restartAccessibilityService(): Boolean {
-        return accessibilityServiceAdapter.restart()
-    }
+    override fun restartAccessibilityService(): Boolean = accessibilityServiceAdapter.restart()
 }
 
-interface DisplaySimpleMappingUseCase : DisplayActionUseCase, DisplayConstraintUseCase {
+interface DisplaySimpleMappingUseCase :
+    DisplayActionUseCase,
+    DisplayConstraintUseCase {
     override val showDeviceDescriptors: Flow<Boolean>
 }
 

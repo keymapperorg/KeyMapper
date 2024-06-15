@@ -28,11 +28,12 @@ import splitties.toast.toast
  */
 class ConfigTriggerOptionsFragment : SimpleRecyclerViewFragment<ListItem>() {
 
-    class Info : FragmentInfo(
-        R.string.option_list_header,
-        R.string.url_trigger_options_guide,
-        { ConfigTriggerOptionsFragment() }
-    )
+    class Info :
+        FragmentInfo(
+            R.string.option_list_header,
+            R.string.url_trigger_options_guide,
+            { ConfigTriggerOptionsFragment() },
+        )
 
     private val configKeyMapViewModel: ConfigKeyMapViewModel by navGraphViewModels(R.id.nav_config_keymap) {
         Inject.configKeyMapViewModel(requireContext())
@@ -74,7 +75,7 @@ class ConfigTriggerOptionsFragment : SimpleRecyclerViewFragment<ListItem>() {
                         onCopyClick { _ ->
                             val clipData = ClipData.newPlainText(
                                 str(R.string.clipboard_label_keymap_uid),
-                                listItem.keyMapUid
+                                listItem.keyMapUid,
                             )
 
                             val clipboardManager: ClipboardManager =
@@ -92,7 +93,7 @@ class ConfigTriggerOptionsFragment : SimpleRecyclerViewFragment<ListItem>() {
                         openIntentGuide { _ ->
                             UrlUtils.openUrl(
                                 requireContext(),
-                                str(R.string.url_trigger_by_intent_guide)
+                                str(R.string.url_trigger_by_intent_guide),
                             )
                         }
                     }
@@ -101,4 +102,3 @@ class ConfigTriggerOptionsFragment : SimpleRecyclerViewFragment<ListItem>() {
         }
     }
 }
-

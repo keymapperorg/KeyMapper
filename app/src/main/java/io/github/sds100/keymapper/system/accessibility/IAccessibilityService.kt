@@ -23,7 +23,7 @@ interface IAccessibilityService {
         yEnd: Int,
         fingerCount: Int,
         duration: Int,
-        inputEventType: InputEventType
+        inputEventType: InputEventType,
     ): Result<*>
 
     fun pinchScreen(
@@ -33,7 +33,7 @@ interface IAccessibilityService {
         pinchType: PinchScreenType,
         fingerCount: Int,
         duration: Int,
-        inputEventType: InputEventType
+        inputEventType: InputEventType,
     ): Result<*>
 
     fun interactWithScreenElement(
@@ -53,7 +53,7 @@ interface IAccessibilityService {
 
     fun performActionOnNode(
         findNode: (node: AccessibilityNodeModel) -> Boolean,
-        performAction: (node: AccessibilityNodeModel) -> AccessibilityNodeAction?
+        performAction: (node: AccessibilityNodeModel) -> AccessibilityNodeAction?,
     ): Result<*>
 
     val rootNode: AccessibilityNodeModel?

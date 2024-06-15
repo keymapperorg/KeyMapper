@@ -24,7 +24,7 @@ class CreateKeyMapShortcutActivity : AppCompatActivity() {
 
         DataBindingUtil.setContentView<ActivityCreateKeymapShortcutBinding>(
             this,
-            R.layout.activity_create_keymap_shortcut
+            R.layout.activity_create_keymap_shortcut,
         )
 
         requestPermissionDelegate = RequestPermissionDelegate(this, showDialogs = true)
@@ -34,7 +34,7 @@ class CreateKeyMapShortcutActivity : AppCompatActivity() {
                 .collectLatest { permission ->
                     requestPermissionDelegate.requestPermission(
                         permission,
-                        findNavController(R.id.container)
+                        findNavController(R.id.container),
                     )
                 }
         }

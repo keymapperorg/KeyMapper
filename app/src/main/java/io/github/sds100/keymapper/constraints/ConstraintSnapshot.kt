@@ -35,7 +35,7 @@ class ConstraintSnapshotImpl(
     inputMethodAdapter: InputMethodAdapter,
     lockScreenAdapter: LockScreenAdapter,
     phoneAdapter: PhoneAdapter,
-    powerAdapter: PowerAdapter
+    powerAdapter: PowerAdapter,
 ) : ConstraintSnapshot {
     private val appInForeground: String? by lazy { accessibilityService.rootNode?.packageName }
     private val visibleScreenElements: List<String> by lazy {
@@ -61,8 +61,8 @@ class ConstraintSnapshotImpl(
         }
     }
 
-    override fun isSatisfied(constraintState: ConstraintState): Boolean {
-        return when (constraintState.mode) {
+    override fun isSatisfied(constraintState: ConstraintState): Boolean =
+        when (constraintState.mode) {
             ConstraintMode.AND -> {
                 constraintState.constraints.all { isSatisfied(it) }
             }
@@ -70,11 +70,9 @@ class ConstraintSnapshotImpl(
             ConstraintMode.OR -> {
                 constraintState.constraints.any { isSatisfied(it) }
             }
-        }
     }
 
     private fun isSatisfied(constraint: Constraint): Boolean {
-
         val isSatisfied = when (constraint) {
             is Constraint.AppInForeground -> appInForeground == constraint.packageName
             is Constraint.AppNotInForeground -> appInForeground != constraint.packageName
@@ -118,7 +116,7 @@ class ConstraintSnapshotImpl(
             is Constraint.WifiConnected -> {
                 Timber.d("Connected WiFi ssid = $connectedWifiSSID")
                 if (constraint.ssid == null) {
-                    //connected to any network
+                    // connected to any network
                     connectedWifiSSID != null
                 } else {
                     connectedWifiSSID == constraint.ssid
@@ -127,7 +125,7 @@ class ConstraintSnapshotImpl(
 
             is Constraint.WifiDisconnected ->
                 if (constraint.ssid == null) {
-                    //connected to no network
+                    // connected to no network
                     connectedWifiSSID == null
                 } else {
                     connectedWifiSSID != constraint.ssid

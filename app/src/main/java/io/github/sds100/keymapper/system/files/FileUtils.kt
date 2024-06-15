@@ -2,8 +2,7 @@ package io.github.sds100.keymapper.system.files
 
 import android.annotation.SuppressLint
 import java.text.SimpleDateFormat
-import java.util.*
-
+import java.util.Calendar
 
 /**
  * Created by sds100 on 15/12/2018.

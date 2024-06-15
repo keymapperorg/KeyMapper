@@ -9,7 +9,7 @@ import io.github.sds100.keymapper.util.Error
  */
 
 class IsActionSupportedUseCaseImpl(
-    private val adapter: SystemFeatureAdapter
+    private val adapter: SystemFeatureAdapter,
 ) : IsActionSupportedUseCase {
 
     override fun invoke(id: ActionId): Error? {

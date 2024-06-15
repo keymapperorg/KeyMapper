@@ -6,11 +6,16 @@ import com.github.salomonbrys.kotson.toJsonArray
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonParser
-import io.github.sds100.keymapper.data.migration.*
+import io.github.sds100.keymapper.data.migration.JsonMigration
+import io.github.sds100.keymapper.data.migration.Migration10To11
+import io.github.sds100.keymapper.data.migration.Migration11To12
+import io.github.sds100.keymapper.data.migration.Migration9To10
+import io.github.sds100.keymapper.data.migration.MigrationUtils
 import io.github.sds100.keymapper.util.JsonTestUtils
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.TestCoroutineExceptionHandler
+import kotlinx.coroutines.test.createTestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Rule
@@ -22,15 +27,15 @@ import java.io.InputStream
  */
 
 @ExperimentalCoroutinesApi
-class KeymapJsonMigrationTest {
+class KeyMapJsonMigrationTest {
     companion object {
         private val MIGRATION_9_10_TEST_DATA = listOf(
             "{\"actionList\":[{\"data\":\"com.google.android.contacts\",\"extras\":[],\"flags\":2,\"type\":\"APP\"}],\"constraintList\":[],\"constraintMode\":1,\"flags\":0,\"id\":0,\"isEnabled\":true,\"trigger\":{\"extras\":[],\"flags\":1,\"keys\":[{\"clickType\":0,\"deviceId\":\"io.github.sds100.keymapper.THIS_DEVICE\",\"flags\":0,\"keyCode\":25}],\"mode\":2}}",
-            "{\"actionList\":[{\"data\":\"com.google.android.contacts\",\"extras\":[],\"flags\":6,\"type\":\"APP\"}],\"constraintList\":[],\"constraintMode\":1,\"flags\":0,\"id\":0,\"isEnabled\":true,\"trigger\":{\"extras\":[],\"flags\":0,\"keys\":[{\"clickType\":0,\"deviceId\":\"io.github.sds100.keymapper.THIS_DEVICE\",\"flags\":0,\"keyCode\":25}],\"mode\":2}}"
+            "{\"actionList\":[{\"data\":\"com.google.android.contacts\",\"extras\":[],\"flags\":6,\"type\":\"APP\"}],\"constraintList\":[],\"constraintMode\":1,\"flags\":0,\"id\":0,\"isEnabled\":true,\"trigger\":{\"extras\":[],\"flags\":0,\"keys\":[{\"clickType\":0,\"deviceId\":\"io.github.sds100.keymapper.THIS_DEVICE\",\"flags\":0,\"keyCode\":25}],\"mode\":2}}",
         )
         private val MIGRATION_9_10_EXPECTED_DATA = listOf(
             "{\"actionList\":[{\"data\":\"com.google.android.contacts\",\"extras\":[],\"flags\":0,\"type\":\"APP\"}],\"constraintList\":[],\"constraintMode\":1,\"flags\":0,\"id\":0,\"isEnabled\":true,\"trigger\":{\"extras\":[],\"flags\":17,\"keys\":[{\"clickType\":0,\"deviceId\":\"io.github.sds100.keymapper.THIS_DEVICE\",\"flags\":0,\"keyCode\":25}],\"mode\":2}}",
-            "{\"actionList\":[{\"data\":\"com.google.android.contacts\",\"extras\":[],\"flags\":4,\"type\":\"APP\"}],\"constraintList\":[],\"constraintMode\":1,\"flags\":0,\"id\":0,\"isEnabled\":true,\"trigger\":{\"extras\":[],\"flags\":16,\"keys\":[{\"clickType\":0,\"deviceId\":\"io.github.sds100.keymapper.THIS_DEVICE\",\"flags\":0,\"keyCode\":25}],\"mode\":2}}"
+            "{\"actionList\":[{\"data\":\"com.google.android.contacts\",\"extras\":[],\"flags\":4,\"type\":\"APP\"}],\"constraintList\":[],\"constraintMode\":1,\"flags\":0,\"id\":0,\"isEnabled\":true,\"trigger\":{\"extras\":[],\"flags\":16,\"keys\":[{\"clickType\":0,\"deviceId\":\"io.github.sds100.keymapper.THIS_DEVICE\",\"flags\":0,\"keyCode\":25}],\"mode\":2}}",
         )
     }
 
@@ -38,7 +43,8 @@ class KeymapJsonMigrationTest {
     var instantExecutorRule = InstantTaskExecutorRule()
 
     private val testDispatcher = TestCoroutineDispatcher()
-    private val coroutineScope = TestCoroutineScope(testDispatcher)
+    private val coroutineScope =
+        createTestCoroutineScope(TestCoroutineDispatcher() + TestCoroutineExceptionHandler() + testDispatcher)
 
     private lateinit var parser: JsonParser
     private lateinit var gson: Gson
@@ -57,12 +63,12 @@ class KeymapJsonMigrationTest {
         val deviceInfoList = getDeviceInfoListJsonFromFile("migration-11-12-test-data.json")
 
         testData.forEachIndexed { index, keyMap ->
-            val migratedKeyMap = Migration_11_12.migrateKeyMap(keyMap.asJsonObject, deviceInfoList)
+            val migratedKeyMap = Migration11To12.migrateKeyMap(keyMap.asJsonObject, deviceInfoList)
             JsonTestUtils.compareBothWays(
                 expectedData[index],
                 "expected",
                 migratedKeyMap,
-                "migrated"
+                "migrated",
             )
         }
     }
@@ -72,7 +78,8 @@ class KeymapJsonMigrationTest {
         test(
             getKeymapListJsonFromFile("migration-10-11-test-data.json"),
             getKeymapListJsonFromFile("migration-10-11-expected-data.json"),
-            10, 11
+            10,
+            11,
         )
     }
 
@@ -82,7 +89,7 @@ class KeymapJsonMigrationTest {
             getKeymapListJsonFromFile("migration-9-11-expected-data.json"),
             getKeymapListJsonFromFile("migration-9-11-expected-data.json"),
             9,
-            11
+            11,
         )
     }
 
@@ -103,11 +110,11 @@ class KeymapJsonMigrationTest {
         testData: JsonArray,
         expectedData: JsonArray,
         inputVersion: Int,
-        outputVersion: Int
+        outputVersion: Int,
     ) = coroutineScope.runBlockingTest {
         val migrations = listOf(
-            JsonMigration(9, 10) { json -> Migration_9_10.migrateJson(json) },
-            JsonMigration(10, 11) { json -> Migration_10_11.migrateJson(json) },
+            JsonMigration(9, 10) { json -> Migration9To10.migrateJson(json) },
+            JsonMigration(10, 11) { json -> Migration10To11.migrateJson(json) },
         )
 
         testData.forEachIndexed { index, testKeyMap ->
@@ -116,7 +123,7 @@ class KeymapJsonMigrationTest {
                 migrations,
                 inputVersion,
                 testKeyMap.asJsonObject,
-                outputVersion
+                outputVersion,
             )
 
             val expectedKeyMap = expectedData[index]
@@ -143,7 +150,6 @@ class KeymapJsonMigrationTest {
         return rootElement["device_info"].asJsonArray
     }
 
-    private fun getJson(fileName: String): InputStream {
-        return this.javaClass.classLoader!!.getResourceAsStream("json-migration-test/$fileName")
-    }
+    private fun getJson(fileName: String): InputStream =
+        this.javaClass.classLoader!!.getResourceAsStream("json-migration-test/$fileName")
 }

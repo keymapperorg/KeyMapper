@@ -25,7 +25,13 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.test.*
+import kotlinx.coroutines.test.DelayController
+import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.TestCoroutineExceptionHandler
+import kotlinx.coroutines.test.createTestCoroutineScope
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.setMain
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.core.IsInstanceOf
@@ -36,10 +42,16 @@ import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.anyVararg
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import timber.log.Timber
 import java.io.File
-
+import kotlin.coroutines.ContinuationInterceptor
 
 /**
  * Created by sds100 on 19/04/2021.
@@ -54,7 +66,8 @@ class BackupManagerTest {
     var temporaryFolder = TemporaryFolder()
 
     private val testDispatcher = TestCoroutineDispatcher()
-    private val coroutineScope = TestCoroutineScope(testDispatcher)
+    private val coroutineScope =
+        createTestCoroutineScope(TestCoroutineDispatcher() + TestCoroutineExceptionHandler() + testDispatcher)
 
     private val dispatcherProvider = TestDispatcherProvider(testDispatcher)
 
@@ -100,7 +113,7 @@ class BackupManagerTest {
             throwExceptions = true,
             dispatchers = dispatcherProvider,
             soundsManager = mockSoundsManager,
-            uuidGenerator = mockUuidGenerator
+            uuidGenerator = mockUuidGenerator,
         )
 
         parser = JsonParser()
@@ -119,57 +132,59 @@ class BackupManagerTest {
      * #745
      */
     @Test
-    fun `Don't allow back ups from a newer version of key mapper`() = coroutineScope.runBlockingTest {
-        //GIVEN
-        val dataJsonFile = "restore-app-version-too-big.zip/data.json"
-        val zipFile = fakeFileAdapter.getPrivateFile("backup.zip")
+    fun `Don't allow back ups from a newer version of key mapper`() =
+        coroutineScope.runBlockingTest {
+            // GIVEN
+            val dataJsonFile = "restore-app-version-too-big.zip/data.json"
+            val zipFile = fakeFileAdapter.getPrivateFile("backup.zip")
 
-        copyFileToPrivateFolder(dataJsonFile, destination = "backup.zip/data.json")
+            copyFileToPrivateFolder(dataJsonFile, destination = "backup.zip/data.json")
 
-        //WHEN
-        coroutineScope.pauseDispatcher()
+            // WHEN
+            (coroutineScope.coroutineContext[ContinuationInterceptor]!! as DelayController).pauseDispatcher()
 
-        val result = backupManager.restoreMappings(zipFile.uri)
+            val result = backupManager.restoreMappings(zipFile.uri)
 
-        //THEN
-        assertThat(result, `is`(Error.BackupVersionTooNew))
+            // THEN
+            assertThat(result, `is`(Error.BackupVersionTooNew))
 
-        coroutineScope.resumeDispatcher()
-    }
+            (coroutineScope.coroutineContext[ContinuationInterceptor]!! as DelayController).resumeDispatcher()
+        }
 
     /**
      * #745
      */
     @Test
-    fun `Allow back ups from a back up without a key mapper version in it`() = coroutineScope.runBlockingTest {
-        //GIVEN
-        whenever(mockKeyMapRepository.keyMapList).then {
-            MutableStateFlow(State.Data(emptyList<KeyMapEntity>()))
+    fun `Allow back ups from a back up without a key mapper version in it`() =
+        coroutineScope.runBlockingTest {
+            // GIVEN
+            whenever(mockKeyMapRepository.keyMapList).then {
+                MutableStateFlow(State.Data(emptyList<KeyMapEntity>()))
+            }
+
+            whenever(mockFingerprintMapRepository.fingerprintMapList).then {
+                MutableStateFlow(State.Data(emptyList<FingerprintMapEntity>()))
+            }
+
+            val dataJsonFile = "restore-no-app-version.zip/data.json"
+            val zipFile = fakeFileAdapter.getPrivateFile("backup.zip")
+
+            copyFileToPrivateFolder(dataJsonFile, destination = "backup.zip/data.json")
+
+            // WHEN
+            (coroutineScope.coroutineContext[ContinuationInterceptor]!! as DelayController).pauseDispatcher()
+
+            val result = backupManager.restoreMappings(zipFile.uri)
+
+            // THEN
+            assertThat(result, `is`(Success(Unit)))
+
+            (coroutineScope.coroutineContext[ContinuationInterceptor]!! as DelayController).resumeDispatcher()
         }
-
-        whenever(mockFingerprintMapRepository.fingerprintMapList).then {
-            MutableStateFlow(State.Data(emptyList<FingerprintMapEntity>()))
-        }
-
-        val dataJsonFile = "restore-no-app-version.zip/data.json"
-        val zipFile = fakeFileAdapter.getPrivateFile("backup.zip")
-
-        copyFileToPrivateFolder(dataJsonFile, destination = "backup.zip/data.json")
-
-        //WHEN
-        coroutineScope.pauseDispatcher()
-
-        val result = backupManager.restoreMappings(zipFile.uri)
-
-        //THEN
-        assertThat(result, `is`(Success(Unit)))
-
-        coroutineScope.resumeDispatcher()
-    }
 
     @Test
     fun `don't crash if back up does not contain sounds folder`() = coroutineScope.runBlockingTest {
-        //GIVEN
+        // GIVEN
         whenever(mockKeyMapRepository.keyMapList).then {
             MutableStateFlow(State.Data(emptyList<KeyMapEntity>()))
         }
@@ -183,170 +198,173 @@ class BackupManagerTest {
 
         copyFileToPrivateFolder(dataJsonFile, destination = "backup.zip/data.json")
 
-        //WHEN
-        coroutineScope.pauseDispatcher()
+        // WHEN
+        (coroutineScope.coroutineContext[ContinuationInterceptor]!! as DelayController).pauseDispatcher()
 
         val result = backupManager.restoreMappings(zipFile.uri)
 
-        //THEN
+        // THEN
         assertThat(result, `is`(Success(Unit)))
 
-        coroutineScope.resumeDispatcher()
+        (coroutineScope.coroutineContext[ContinuationInterceptor]!! as DelayController).resumeDispatcher()
     }
 
     @Test
-    fun `successfully restore zip folder with data json and sound files`() = coroutineScope.runBlockingTest {
-        //GIVEN
-        val dataJsonFile = "restore-all.zip/data.json"
-        val soundFile = "restore-all.zip/sounds/sound.ogg"
-        val zipFile = fakeFileAdapter.getPrivateFile("backup.zip")
+    fun `successfully restore zip folder with data json and sound files`() =
+        coroutineScope.runBlockingTest {
+            // GIVEN
+            val dataJsonFile = "restore-all.zip/data.json"
+            val soundFile = "restore-all.zip/sounds/sound.ogg"
+            val zipFile = fakeFileAdapter.getPrivateFile("backup.zip")
 
-        copyFileToPrivateFolder(dataJsonFile, destination = "backup.zip/data.json")
-        copyFileToPrivateFolder(soundFile, destination = "backup.zip/sounds/sound.ogg")
+            copyFileToPrivateFolder(dataJsonFile, destination = "backup.zip/data.json")
+            copyFileToPrivateFolder(soundFile, destination = "backup.zip/sounds/sound.ogg")
 
-        //WHEN
-        coroutineScope.pauseDispatcher()
+            // WHEN
+            (coroutineScope.coroutineContext[ContinuationInterceptor]!! as DelayController).pauseDispatcher()
 
-        val result = backupManager.restoreMappings(zipFile.uri)
+            val result = backupManager.restoreMappings(zipFile.uri)
 
-        //THEN
-        assertThat(result, `is`(Success(Unit)))
+            // THEN
+            assertThat(result, `is`(Success(Unit)))
 
-        coroutineScope.resumeDispatcher()
+            (coroutineScope.coroutineContext[ContinuationInterceptor]!! as DelayController).resumeDispatcher()
 
-        verify(mockKeyMapRepository, times(1)).insert(any(), any())
-        verify(mockFingerprintMapRepository, times(1)).update(any(), any(), any(), any())
-        verify(mockSoundsManager, times(1)).restoreSound(any())
-    }
+            verify(mockKeyMapRepository, times(1)).insert(any(), any())
+            verify(mockFingerprintMapRepository, times(1)).update(any(), any(), any(), any())
+            verify(mockSoundsManager, times(1)).restoreSound(any())
+        }
 
     /**
      * #652. always back up sound files.
      */
     @Test
-    fun `backup sound file even if there is not a key map with a sound action`() = coroutineScope.runBlockingTest {
+    fun `backup sound file even if there is not a key map with a sound action`() =
+        coroutineScope.runBlockingTest {
+            // GIVEN
+            val backupDirUuid = "backup_uid"
+            val soundFileName = "sound.ogg"
+            val soundFileUid = "sound_file_uid"
 
-        //GIVEN
-        val backupDirUuid = "backup_uid"
-        val soundFileName = "sound.ogg"
-        val soundFileUid = "sound_file_uid"
+            val soundFile = fakeFileAdapter.getPrivateFile("sounds/sound.ogg")
+            soundFile.createFile()
 
-        val soundFile = fakeFileAdapter.getPrivateFile("sounds/sound.ogg")
-        soundFile.createFile()
+            whenever(mockKeyMapRepository.keyMapList).then {
+                MutableStateFlow(State.Data(emptyList<KeyMapEntity>()))
+            }
 
-        whenever(mockKeyMapRepository.keyMapList).then {
-            MutableStateFlow(State.Data(emptyList<KeyMapEntity>()))
+            whenever(mockFingerprintMapRepository.fingerprintMapList).then {
+                MutableStateFlow(State.Data(emptyList<FingerprintMapEntity>()))
+            }
+
+            whenever(mockUuidGenerator.random()).then {
+                backupDirUuid
+            }
+
+            whenever(mockSoundsManager.soundFiles).then {
+                MutableStateFlow(listOf(SoundFileInfo(uid = soundFileUid, name = soundFileName)))
+            }
+
+            whenever(mockSoundsManager.getSound(any())).then {
+                Success(fakeFileAdapter.getPrivateFile("sounds/$soundFileName"))
+            }
+
+            // WHEN
+            (coroutineScope.coroutineContext[ContinuationInterceptor]!! as DelayController).pauseDispatcher()
+
+            val backupZip = File(temporaryFolder.root, "backup.zip")
+            backupZip.mkdirs()
+
+            val result = backupManager.backupMappings(uri = backupZip.path)
+
+            // THEN
+
+            assertThat(result, `is`(Success(backupZip.path)))
+
+            (coroutineScope.coroutineContext[ContinuationInterceptor]!! as DelayController).resumeDispatcher()
+
+            // only 2 files have been backed up
+            assertThat(backupZip.listFiles()?.size, `is`(2))
+
+            // only 1 sound file has been backed up
+            val soundsDir = File(backupZip, "sounds")
+            assertThat(soundsDir.listFiles()?.size, `is`(1))
+            assert(File(soundsDir, "sound.ogg").exists())
         }
-
-        whenever(mockFingerprintMapRepository.fingerprintMapList).then {
-            MutableStateFlow(State.Data(emptyList<FingerprintMapEntity>()))
-        }
-
-        whenever(mockUuidGenerator.random()).then {
-            backupDirUuid
-        }
-
-        whenever(mockSoundsManager.soundFiles).then {
-            MutableStateFlow(listOf(SoundFileInfo(uid = soundFileUid, name = soundFileName)))
-        }
-
-        whenever(mockSoundsManager.getSound(any())).then {
-            Success(fakeFileAdapter.getPrivateFile("sounds/$soundFileName"))
-        }
-
-        //WHEN
-        coroutineScope.pauseDispatcher()
-
-        val backupZip = File(temporaryFolder.root, "backup.zip")
-        backupZip.mkdirs()
-
-        val result = backupManager.backupMappings(uri = backupZip.path)
-
-        //THEN
-
-        assertThat(result, `is`(Success(backupZip.path)))
-
-        coroutineScope.resumeDispatcher()
-
-        //only 2 files have been backed up
-        assertThat(backupZip.listFiles()?.size, `is`(2))
-
-        //only 1 sound file has been backed up
-        val soundsDir = File(backupZip, "sounds")
-        assertThat(soundsDir.listFiles()?.size, `is`(1))
-        assert(File(soundsDir, "sound.ogg").exists())
-    }
 
     @Test
-    fun `backup sound file if there is a key map with a sound action`() = coroutineScope.runBlockingTest {
-        //GIVEN
-        val backupDirUuid = "backup_uuid"
-        val soundFileUid = "uid"
-        val soundFileName = "sound.ogg"
+    fun `backup sound file if there is a key map with a sound action`() =
+        coroutineScope.runBlockingTest {
+            // GIVEN
+            val backupDirUuid = "backup_uuid"
+            val soundFileUid = "uid"
+            val soundFileName = "sound.ogg"
 
-        val action = ActionEntity(
-            type = ActionEntity.Type.SOUND, data = soundFileUid,
-            extra = Extra(ActionEntity.EXTRA_SOUND_FILE_DESCRIPTION, "sound_description")
-        )
+            val action = ActionEntity(
+                type = ActionEntity.Type.SOUND,
+                data = soundFileUid,
+                extra = Extra(ActionEntity.EXTRA_SOUND_FILE_DESCRIPTION, "sound_description"),
+            )
 
-        val keyMapList = listOf(KeyMapEntity(id = 0, actionList = listOf(action)))
+            val keyMapList = listOf(KeyMapEntity(id = 0, actionList = listOf(action)))
 
-        whenever(mockKeyMapRepository.keyMapList).then {
-            MutableStateFlow(State.Data(emptyList<KeyMapEntity>()))
+            whenever(mockKeyMapRepository.keyMapList).then {
+                MutableStateFlow(State.Data(emptyList<KeyMapEntity>()))
+            }
+
+            whenever(mockUuidGenerator.random()).then {
+                backupDirUuid
+            }
+
+            whenever(mockSoundsManager.soundFiles).then {
+                MutableStateFlow(listOf(SoundFileInfo(uid = soundFileUid, name = soundFileName)))
+            }
+
+            whenever(mockSoundsManager.getSound(any())).then {
+                Success(fakeFileAdapter.getPrivateFile("sounds/sound.ogg"))
+            }
+
+            val soundFile = fakeFileAdapter.getPrivateFile("sounds/sound.ogg")
+            soundFile.createFile()
+
+            // WHEN
+            (coroutineScope.coroutineContext[ContinuationInterceptor]!! as DelayController).pauseDispatcher()
+
+            val backupZip = File(temporaryFolder.root, "backup.zip")
+            backupZip.mkdirs()
+
+            val result = backupManager.backupKeyMaps(backupZip.path, keyMapList.map { it.uid })
+
+            // THEN
+
+            assertThat(result, `is`(Success(backupZip.path)))
+
+            (coroutineScope.coroutineContext[ContinuationInterceptor]!! as DelayController).resumeDispatcher()
+
+            // only 2 files have been backed up
+            assertThat(backupZip.listFiles()?.size, `is`(2))
+
+            // only 1 sound file has been backed up
+            val soundsDir = File(backupZip, "sounds")
+
+            assertThat(soundsDir.listFiles()?.size, `is`(1))
+            assert(File(soundsDir, "sound.ogg").exists())
         }
-
-        whenever(mockUuidGenerator.random()).then {
-            backupDirUuid
-        }
-
-        whenever(mockSoundsManager.soundFiles).then {
-            MutableStateFlow(listOf(SoundFileInfo(uid = soundFileUid, name = soundFileName)))
-        }
-
-        whenever(mockSoundsManager.getSound(any())).then {
-            Success(fakeFileAdapter.getPrivateFile("sounds/sound.ogg"))
-        }
-
-        val soundFile = fakeFileAdapter.getPrivateFile("sounds/sound.ogg")
-        soundFile.createFile()
-
-        //WHEN
-        coroutineScope.pauseDispatcher()
-
-        val backupZip = File(temporaryFolder.root, "backup.zip")
-        backupZip.mkdirs()
-
-        val result = backupManager.backupKeyMaps(backupZip.path, keyMapList.map { it.uid })
-
-        //THEN
-
-        assertThat(result, `is`(Success(backupZip.path)))
-
-        coroutineScope.resumeDispatcher()
-
-        //only 2 files have been backed up
-        assertThat(backupZip.listFiles()?.size, `is`(2))
-
-        //only 1 sound file has been backed up
-        val soundsDir = File(backupZip, "sounds")
-
-        assertThat(soundsDir.listFiles()?.size, `is`(1))
-        assert(File(soundsDir, "sound.ogg").exists())
-    }
 
     @Test
     fun `restore legacy backup with device info, success`() = coroutineScope.runBlockingTest {
-        //GIVEN
+        // GIVEN
         val fileName = "legacy-backup-test-data.json"
 
-        //WHEN
-        coroutineScope.pauseDispatcher()
+        // WHEN
+        (coroutineScope.coroutineContext[ContinuationInterceptor]!! as DelayController).pauseDispatcher()
 
         val result = backupManager.restoreMappings(copyFileToPrivateFolder(fileName))
 
-        //THEN
+        // THEN
         assertThat(result, `is`(Success(Unit)))
 
-        coroutineScope.resumeDispatcher()
+        (coroutineScope.coroutineContext[ContinuationInterceptor]!! as DelayController).resumeDispatcher()
 
         verify(mockKeyMapRepository, times(1)).insert(any(), any())
         verify(mockFingerprintMapRepository, times(1)).update(any(), any(), any(), any())
@@ -357,13 +375,13 @@ class BackupManagerTest {
         coroutineScope.runBlockingTest {
             val fileName = "restore-keymaps-no-db-version.json"
 
-            coroutineScope.pauseDispatcher()
+            (coroutineScope.coroutineContext[ContinuationInterceptor]!! as DelayController).pauseDispatcher()
 
             val result = backupManager.restoreMappings(copyFileToPrivateFolder(fileName))
 
             assertThat(result, `is`(Success(Unit)))
 
-            coroutineScope.resumeDispatcher()
+            (coroutineScope.coroutineContext[ContinuationInterceptor]!! as DelayController).resumeDispatcher()
 
             verify(mockKeyMapRepository, times(1)).insert(any(), any())
         }
@@ -373,13 +391,13 @@ class BackupManagerTest {
         coroutineScope.runBlockingTest {
             val fileName = "restore-legacy-single-fingerprint-map.json"
 
-            coroutineScope.pauseDispatcher()
+            (coroutineScope.coroutineContext[ContinuationInterceptor]!! as DelayController).pauseDispatcher()
 
             val result = backupManager.restoreMappings(copyFileToPrivateFolder(fileName))
 
             assertThat(result, `is`(Success(Unit)))
 
-            coroutineScope.resumeDispatcher()
+            (coroutineScope.coroutineContext[ContinuationInterceptor]!! as DelayController).resumeDispatcher()
 
             verify(mockFingerprintMapRepository, times(1)).update(any())
         }
@@ -387,16 +405,15 @@ class BackupManagerTest {
     @Test
     fun `restore all legacy fingerprint maps, all fingerprint maps should be restored and a success message`() =
         coroutineScope.runBlockingTest {
-
             val fileName = "restore-all-legacy-fingerprint-maps.json"
 
-            coroutineScope.pauseDispatcher()
+            (coroutineScope.coroutineContext[ContinuationInterceptor]!! as DelayController).pauseDispatcher()
 
             val result = backupManager.restoreMappings(copyFileToPrivateFolder(fileName))
 
             assertThat(result, `is`(Success(Unit)))
 
-            coroutineScope.resumeDispatcher()
+            (coroutineScope.coroutineContext[ContinuationInterceptor]!! as DelayController).resumeDispatcher()
 
             verify(mockFingerprintMapRepository, times(1)).update(any(), any(), any(), any())
         }
@@ -406,13 +423,13 @@ class BackupManagerTest {
         coroutineScope.runBlockingTest {
             val fileName = "restore-many-keymaps.json"
 
-            coroutineScope.pauseDispatcher()
+            (coroutineScope.coroutineContext[ContinuationInterceptor]!! as DelayController).pauseDispatcher()
 
             val result = backupManager.restoreMappings(copyFileToPrivateFolder(fileName))
 
             assertThat(result, `is`(Success(Unit)))
 
-            coroutineScope.resumeDispatcher()
+            (coroutineScope.coroutineContext[ContinuationInterceptor]!! as DelayController).resumeDispatcher()
 
             verify(mockKeyMapRepository, times(1)).insert(any(), any(), any(), any())
         }
@@ -422,12 +439,12 @@ class BackupManagerTest {
         coroutineScope.runBlockingTest {
             val fileName = "restore-keymap-db-version-too-big.json"
 
-            coroutineScope.pauseDispatcher()
+            (coroutineScope.coroutineContext[ContinuationInterceptor]!! as DelayController).pauseDispatcher()
             val result = backupManager.restoreMappings(copyFileToPrivateFolder(fileName))
 
             assertThat(result, `is`(Error.BackupVersionTooNew))
 
-            coroutineScope.resumeDispatcher()
+            (coroutineScope.coroutineContext[ContinuationInterceptor]!! as DelayController).resumeDispatcher()
 
             verify(mockKeyMapRepository, never()).insert(anyVararg())
         }
@@ -437,52 +454,51 @@ class BackupManagerTest {
         coroutineScope.runBlockingTest {
             val fileName = "restore-legacy-fingerprint-map-version-too-big.json"
 
-            coroutineScope.pauseDispatcher()
+            (coroutineScope.coroutineContext[ContinuationInterceptor]!! as DelayController).pauseDispatcher()
             val result = backupManager.restoreMappings(copyFileToPrivateFolder(fileName))
 
             assertThat(result, `is`(Error.BackupVersionTooNew))
 
-            coroutineScope.resumeDispatcher()
+            (coroutineScope.coroutineContext[ContinuationInterceptor]!! as DelayController).resumeDispatcher()
 
             verify(mockFingerprintMapRepository, never()).update(anyVararg())
         }
 
     @Test
     fun `restore empty file, show empty json error message`() = coroutineScope.runBlockingTest {
-
         val fileName = "empty.json"
 
-        coroutineScope.pauseDispatcher()
+        (coroutineScope.coroutineContext[ContinuationInterceptor]!! as DelayController).pauseDispatcher()
         val result = backupManager.restoreMappings(copyFileToPrivateFolder(fileName))
 
         assertThat(result, `is`(Error.EmptyJson))
 
-        coroutineScope.resumeDispatcher()
+        (coroutineScope.coroutineContext[ContinuationInterceptor]!! as DelayController).resumeDispatcher()
     }
 
     @Test
     fun `restore corrupt file, show corrupt json message`() = coroutineScope.runBlockingTest {
         val fileName = "corrupt.json"
 
-        coroutineScope.pauseDispatcher()
+        (coroutineScope.coroutineContext[ContinuationInterceptor]!! as DelayController).pauseDispatcher()
         val result = backupManager.restoreMappings(copyFileToPrivateFolder(fileName))
 
         assertThat(result, IsInstanceOf(Error.CorruptJsonFile::class.java))
 
-        coroutineScope.resumeDispatcher()
+        (coroutineScope.coroutineContext[ContinuationInterceptor]!! as DelayController).resumeDispatcher()
     }
 
     @Test
     fun `backup all fingerprint maps, return list of fingerprint maps and app database version`() =
         coroutineScope.runBlockingTest {
-            //GIVEN
+            // GIVEN
             val backupDirUuid = "backup_uuid"
 
             val fingerprintMapsToBackup = listOf(
                 FingerprintMapEntity(id = FingerprintMapEntity.ID_SWIPE_DOWN),
                 FingerprintMapEntity(id = FingerprintMapEntity.ID_SWIPE_UP),
                 FingerprintMapEntity(id = FingerprintMapEntity.ID_SWIPE_LEFT),
-                FingerprintMapEntity(id = FingerprintMapEntity.ID_SWIPE_RIGHT)
+                FingerprintMapEntity(id = FingerprintMapEntity.ID_SWIPE_RIGHT),
             )
 
             whenever(mockFingerprintMapRepository.fingerprintMapList).then {
@@ -496,17 +512,17 @@ class BackupManagerTest {
             val backupZip = File(temporaryFolder.root, "backup.zip")
             backupZip.mkdirs()
 
-            //WHEN
-            coroutineScope.pauseDispatcher()
+            // WHEN
+            (coroutineScope.coroutineContext[ContinuationInterceptor]!! as DelayController).pauseDispatcher()
 
             val result = backupManager.backupFingerprintMaps(backupZip.path)
-            //THEN
+            // THEN
 
             assertThat(result, `is`(Success(backupZip.path)))
 
-            coroutineScope.resumeDispatcher()
+            (coroutineScope.coroutineContext[ContinuationInterceptor]!! as DelayController).resumeDispatcher()
 
-            //only 1 file has been backed up
+            // only 1 file has been backed up
             assertThat(backupZip.listFiles()?.size, `is`(1))
 
             val dataJson = File(backupZip, "data.json")
@@ -516,19 +532,19 @@ class BackupManagerTest {
 
             assertThat(
                 gson.toJson(rootElement["fingerprint_map_list"]),
-                `is`(gson.toJson(fingerprintMapsToBackup))
+                `is`(gson.toJson(fingerprintMapsToBackup)),
             )
 
             assertThat(
                 rootElement["keymap_db_version"].asInt,
-                `is`(AppDatabase.DATABASE_VERSION)
+                `is`(AppDatabase.DATABASE_VERSION),
             )
         }
 
     @Test
     fun `backup key maps, return list of default key maps, keymap db version should be current database version`() =
         coroutineScope.runBlockingTest {
-            //GIVEN
+            // GIVEN
 
             val backupDirUuid = "backup_uuid"
 
@@ -543,33 +559,33 @@ class BackupManagerTest {
             val backupZip = File(temporaryFolder.root, "backup.zip")
             backupZip.mkdirs()
 
-            //WHEN
-            coroutineScope.pauseDispatcher()
+            // WHEN
+            (coroutineScope.coroutineContext[ContinuationInterceptor]!! as DelayController).pauseDispatcher()
 
             val result = backupManager.backupKeyMaps(backupZip.path, keyMapList.map { it.uid })
 
-            //THEN
+            // THEN
             assertThat(result, `is`(Success(backupZip.path)))
 
-            coroutineScope.resumeDispatcher()
+            (coroutineScope.coroutineContext[ContinuationInterceptor]!! as DelayController).resumeDispatcher()
 
-            //only 1 file has been backed up
+            // only 1 file has been backed up
             assertThat(backupZip.listFiles()?.size, `is`(1))
 
             val dataJson = File(backupZip, "data.json")
             val json = dataJson.inputStream().bufferedReader().use { it.readText() }
             val rootElement = parser.parse(json)
 
-            //the key maps have been backed up
+            // the key maps have been backed up
             assertThat(
                 gson.toJson(rootElement["keymap_list"]),
-                `is`(gson.toJson(keyMapList))
+                `is`(gson.toJson(keyMapList)),
             )
 
-            //the database version has been backed up
+            // the database version has been backed up
             assertThat(
                 rootElement["keymap_db_version"].asInt,
-                `is`(AppDatabase.DATABASE_VERSION)
+                `is`(AppDatabase.DATABASE_VERSION),
             )
         }
 
@@ -577,7 +593,8 @@ class BackupManagerTest {
      * @return a path to the copied file
      */
     private fun copyFileToPrivateFolder(fileName: String, destination: String = fileName): String {
-        val inputStream = this.javaClass.classLoader!!.getResourceAsStream("backup-manager-test/$fileName")
+        val inputStream =
+            this.javaClass.classLoader!!.getResourceAsStream("backup-manager-test/$fileName")
 
         inputStream.use { input ->
             val file = fakeFileAdapter.getPrivateFile(destination)

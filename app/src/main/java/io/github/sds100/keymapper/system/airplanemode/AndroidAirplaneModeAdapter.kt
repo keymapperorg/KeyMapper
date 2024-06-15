@@ -12,25 +12,22 @@ import io.github.sds100.keymapper.util.onSuccess
  */
 class AndroidAirplaneModeAdapter(
     context: Context,
-    val suAdapter: SuAdapter
+    val suAdapter: SuAdapter,
 ) : AirplaneModeAdapter {
     private val ctx = context.applicationContext
 
-    override fun enable(): Result<*> {
-        return suAdapter.execute("settings put global airplane_mode_on 1").onSuccess {
+    override fun enable(): Result<*> =
+        suAdapter.execute("settings put global airplane_mode_on 1").onSuccess {
             broadcastAirplaneModeChanged(false)
         }
-    }
 
-    override fun disable(): Result<*> {
-        return suAdapter.execute("settings put global airplane_mode_on 0").onSuccess {
+    override fun disable(): Result<*> =
+        suAdapter.execute("settings put global airplane_mode_on 0").onSuccess {
             broadcastAirplaneModeChanged(false)
         }
-    }
 
-    override fun isEnabled(): Boolean {
-        return SettingsUtils.getGlobalSetting<Int>(ctx, Settings.Global.AIRPLANE_MODE_ON) == 1
-    }
+    override fun isEnabled(): Boolean =
+        SettingsUtils.getGlobalSetting<Int>(ctx, Settings.Global.AIRPLANE_MODE_ON) == 1
 
     private fun broadcastAirplaneModeChanged(enabled: Boolean) {
         suAdapter.execute("am broadcast -a android.intent.action.AIRPLANE_MODE --ez state $enabled")

@@ -14,7 +14,12 @@ import kotlin.coroutines.resume
  */
 object SnackBarUtils {
 
-    suspend fun show(view: CoordinatorLayout, text: String, actionText: String? = null, long: Boolean = false) =
+    suspend fun show(
+        view: CoordinatorLayout,
+        text: String,
+        actionText: String? = null,
+        long: Boolean = false,
+    ) =
         suspendCancellableCoroutine<Unit?> { continuation ->
 
             val snackBar = if (long) {
@@ -43,7 +48,7 @@ object SnackBarUtils {
                 }
             }
 
-            //if there is no action then there is no point waiting for a user response
+            // if there is no action then there is no point waiting for a user response
             if (actionText == null) {
                 continuation.resume(null)
             }
@@ -54,5 +59,4 @@ object SnackBarUtils {
                 }
             }
         }
-
 }

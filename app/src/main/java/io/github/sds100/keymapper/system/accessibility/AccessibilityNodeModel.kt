@@ -10,5 +10,5 @@ data class AccessibilityNodeModel(
     val text: String?,
     val textSelectionStart: Int,
     val textSelectionEnd: Int,
-    val isEditable: Boolean
+    val isEditable: Boolean,
 )

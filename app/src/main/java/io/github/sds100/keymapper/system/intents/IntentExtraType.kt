@@ -143,15 +143,13 @@ class StringArrayExtraType : IntentExtraType() {
         intent.putExtra(name, parse(value))
     }
 
-    override fun parse(value: String): Array<String> {
-        return value
-            .trim()
-            .split(',')
-            .map {
-                it
-            }
-            .toTypedArray()
-    }
+    override fun parse(value: String): Array<String> = value
+        .trim()
+        .split(',')
+        .map {
+            it
+        }
+        .toTypedArray()
 }
 
 @Serializable

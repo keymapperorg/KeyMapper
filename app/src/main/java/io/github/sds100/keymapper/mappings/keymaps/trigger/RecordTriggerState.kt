@@ -8,7 +8,7 @@ sealed class RecordTriggerState {
         /**
          * The time left in seconds
          */
-        val timeLeft: Int
+        val timeLeft: Int,
     ) : RecordTriggerState()
 
     object Stopped : RecordTriggerState()

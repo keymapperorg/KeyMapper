@@ -25,7 +25,7 @@ import java.util.UUID
 class ReportBugUseCaseImpl(
     private val fileAdapter: FileAdapter,
     private val logRepository: LogRepository,
-    private val backupManager: BackupManager
+    private val backupManager: BackupManager,
 ) : ReportBugUseCase {
 
     companion object {
@@ -41,7 +41,7 @@ class ReportBugUseCaseImpl(
             tempFolder = fileAdapter.getPrivateFile("bug-report-temp/${UUID.randomUUID()}")
             tempFolder.createDirectory()
 
-            //device info
+            // device info
             val infoText = buildString {
                 append("Key Mapper version: ${Constants.VERSION}\n")
 
@@ -68,14 +68,14 @@ class ReportBugUseCaseImpl(
                 }
             }
 
-            //mappings
+            // mappings
             val mappingsFile = fileAdapter.getFile(tempFolder, FILE_MAPPINGS)
 
             backupManager.backupMappings(mappingsFile.uri).onFailure {
                 return it
             }
 
-            //log
+            // log
             val logFile = fileAdapter.getFile(tempFolder, FILE_LOG)
             logFile.createFile()
 
@@ -87,9 +87,10 @@ class ReportBugUseCaseImpl(
                     logFile.outputStream()?.bufferedWriter()?.use { it.write(logText) }
                 }
 
-            //zip
+            // zip
             val zipFile = fileAdapter.getFileFromUri(uri)
-            val result = fileAdapter.createZipFile(zipFile, setOf(deviceInfoFile, logFile, mappingsFile))
+            val result =
+                fileAdapter.createZipFile(zipFile, setOf(deviceInfoFile, logFile, mappingsFile))
 
             return result
         } catch (e: Exception) {

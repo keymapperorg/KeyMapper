@@ -26,8 +26,10 @@ import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 class PinchPickDisplayCoordinateViewModel(
-    resourceProvider: ResourceProvider
-) : ViewModel(), ResourceProvider by resourceProvider, PopupViewModel by PopupViewModelImpl() {
+    resourceProvider: ResourceProvider,
+) : ViewModel(),
+    ResourceProvider by resourceProvider,
+    PopupViewModel by PopupViewModelImpl() {
 
     private val pinchTypes = arrayOf(PinchScreenType.PINCH_IN.name, PinchScreenType.PINCH_OUT.name)
 
@@ -103,7 +105,7 @@ class PinchPickDisplayCoordinateViewModel(
         if (count > maxFingerCount) {
             return@map resourceProvider.getString(
                 R.string.error_pinch_screen_must_be_ten_or_less_fingers,
-                arrayOf(maxFingerCount)
+                arrayOf(maxFingerCount),
             )
         }
 
@@ -145,23 +147,27 @@ class PinchPickDisplayCoordinateViewModel(
         combine(
             isCoordinatesValid,
             fingerCountError,
-            durationError
+            durationError,
         ) { isCoordinatesValid, fingerCountError, durationError ->
             isCoordinatesValid && fingerCountError == null && durationError == null
         }.stateIn(viewModelScope, SharingStarted.Lazily, false)
 
     fun selectedScreenshot(newBitmap: Bitmap, displaySize: Point) {
-        //check whether the height and width of the bitmap match the display size, even when it is rotated.
+        // check whether the height and width of the bitmap match the display size, even when it is rotated.
         if (
-            (displaySize.x != newBitmap.width
-                    && displaySize.y != newBitmap.height) &&
+            (
+                displaySize.x != newBitmap.width &&
+                    displaySize.y != newBitmap.height
+                ) &&
 
-            (displaySize.y != newBitmap.width
-                    && displaySize.x != newBitmap.height)
+            (
+                displaySize.y != newBitmap.width &&
+                    displaySize.x != newBitmap.height
+                )
         ) {
             viewModelScope.launch {
                 val snackBar = PopupUi.SnackBar(
-                    message = getString(R.string.toast_incorrect_screenshot_resolution)
+                    message = getString(R.string.toast_incorrect_screenshot_resolution),
                 )
 
                 showPopup("incorrect_resolution", snackBar)
@@ -207,7 +213,6 @@ class PinchPickDisplayCoordinateViewModel(
      */
     fun onScreenshotTouch(screenshotXRatio: Float, screenshotYRatio: Float) {
         bitmap.value?.let {
-
             val displayX = it.width * screenshotXRatio
             val displayY = it.height * screenshotYRatio
 
@@ -230,8 +235,8 @@ class PinchPickDisplayCoordinateViewModel(
                 PopupUi.Text(
                     getString(R.string.hint_tap_coordinate_title),
                     allowEmpty = true,
-                    text = description.value ?: ""
-                )
+                    text = description.value ?: "",
+                ),
             ) ?: return@launch
 
             _returnResult.emit(
@@ -242,8 +247,8 @@ class PinchPickDisplayCoordinateViewModel(
                     pinchType,
                     fingerCount,
                     duration,
-                    description
-                )
+                    description,
+                ),
             )
         }
     }
@@ -273,11 +278,10 @@ class PinchPickDisplayCoordinateViewModel(
 
     @Suppress("UNCHECKED_CAST")
     class Factory(
-        private val resourceProvider: ResourceProvider
+        private val resourceProvider: ResourceProvider,
     ) : ViewModelProvider.NewInstanceFactory() {
 
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return PinchPickDisplayCoordinateViewModel(resourceProvider) as T
-        }
+        override fun <T : ViewModel> create(modelClass: Class<T>): T =
+            PinchPickDisplayCoordinateViewModel(resourceProvider) as T
     }
 }

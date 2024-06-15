@@ -17,5 +17,5 @@ data class TriggerKeyListItem(
 
     val linkType: TriggerKeyLinkType,
 
-    val isDragDropEnabled: Boolean
+    val isDragDropEnabled: Boolean,
 )

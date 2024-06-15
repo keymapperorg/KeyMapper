@@ -11,5 +11,5 @@ data class ConfigIntentResult(
     val uri: String,
     val target: IntentTarget,
     val description: String,
-    val extras: List<IntentExtraModel>
+    val extras: List<IntentExtraModel>,
 )

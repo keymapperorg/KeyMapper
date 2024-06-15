@@ -17,7 +17,7 @@ import splitties.bitflags.withFlag
 /**
  * #379 feat: add option to repeat for all types of actions
  */
-object Migration_2_3 {
+object Migration2To3 {
 
     private const val KEYMAP_FLAG_REPEAT_ACTIONS = 16
 
@@ -29,7 +29,7 @@ object Migration_2_3 {
 
         val parser = JsonParser()
 
-        //maps the new flags to each keymap id
+        // maps the new flags to each keymap id
         val newFlagsMap = mutableMapOf<Long, Int>()
 
         query(query).apply {
@@ -60,24 +60,23 @@ object Migration_2_3 {
         }
     }
 
-    private fun isRepeatable(trigger: JsonObject, actionList: JsonArray): Boolean {
-        return actionList.any {
-            it["type"].asString in arrayOf("KEY_EVENT", "TEXT_BLOCK")
-                || it["data"].asString in arrayOf(
+    private fun isRepeatable(trigger: JsonObject, actionList: JsonArray): Boolean = actionList.any {
+        it["type"].asString in arrayOf("KEY_EVENT", "TEXT_BLOCK") ||
+            it["data"].asString in arrayOf(
                 "volume_decrease_stream",
                 "volume_increase_stream",
                 "volume_down",
                 "volume_up",
                 "volume_mute",
                 "volume_toggle_mute",
-                "volume_unmute"
+            "volume_unmute",
             )
-        }
-            && performActionOnDown(trigger["keys"].asJsonArray, trigger["mode"].asInt)
-    }
+    } &&
+        performActionOnDown(trigger["keys"].asJsonArray, trigger["mode"].asInt)
 
     private fun performActionOnDown(triggerKeys: JsonArray, triggerMode: Int): Boolean {
-        return (triggerKeys.size() == 1 && triggerKeys[0]["clickType"].asInt != 2) //2 = double press
-            || triggerMode == 0 //parallel mode
+        return (triggerKeys.size() == 1 && triggerKeys[0]["clickType"].asInt != 2) ||
+            // 2 = double press
+            triggerMode == 0 // parallel mode
     }
 }

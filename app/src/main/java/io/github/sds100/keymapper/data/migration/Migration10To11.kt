@@ -4,7 +4,9 @@ package io.github.sds100.keymapper.data.migration
 
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.sqlite.db.SupportSQLiteQueryBuilder
-import com.github.salomonbrys.kotson.*
+import com.github.salomonbrys.kotson.byArray
+import com.github.salomonbrys.kotson.byString
+import com.github.salomonbrys.kotson.set
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -13,7 +15,7 @@ import com.google.gson.JsonParser
 /**
  * #621 replace root-only system action ids with their non-root counterpart.
  */
-object Migration_10_11 {
+object Migration10To11 {
 
     private const val NAME_ACTION_LIST = "actionList"
 
@@ -27,7 +29,6 @@ object Migration_10_11 {
             .create()
 
         query(query).apply {
-
             while (moveToNext()) {
                 val idColumnIndex = getColumnIndex("id")
                 val id = getInt(idColumnIndex)

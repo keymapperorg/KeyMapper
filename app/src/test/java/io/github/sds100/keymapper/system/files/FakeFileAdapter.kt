@@ -11,7 +11,7 @@ import java.io.InputStream
  * Created by sds100 on 29/06/2021.
  */
 class FakeFileAdapter(
-    private val tempFolder: TemporaryFolder
+    private val tempFolder: TemporaryFolder,
 ) : FileAdapter {
 
     val privateFolder = tempFolder.newFolder("private")

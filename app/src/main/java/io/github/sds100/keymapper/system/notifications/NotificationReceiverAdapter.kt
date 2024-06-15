@@ -40,7 +40,7 @@ class NotificationReceiverAdapter(
     val eventsToService = MutableSharedFlow<Event>()
 
     init {
-        //use job scheduler because there is there is a much shorter delay when the app is in the background
+        // use job scheduler because there is there is a much shorter delay when the app is in the background
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             JobSchedulerHelper.observeEnabledNotificationListeners(ctx)
         } else {
@@ -75,21 +75,13 @@ class NotificationReceiverAdapter(
         return Success(Unit)
     }
 
-    override fun start(): Boolean {
-        return openSettingsPage()
-    }
+    override fun start(): Boolean = openSettingsPage()
 
-    override fun restart(): Boolean {
-        return openSettingsPage()
-    }
+    override fun restart(): Boolean = openSettingsPage()
 
-    override fun stop(): Boolean {
-        return openSettingsPage()
-    }
+    override fun stop(): Boolean = openSettingsPage()
 
-    override suspend fun isCrashed(): Boolean {
-        return false
-    }
+    override suspend fun isCrashed(): Boolean = false
 
     private fun openSettingsPage(): Boolean {
         Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS).apply {

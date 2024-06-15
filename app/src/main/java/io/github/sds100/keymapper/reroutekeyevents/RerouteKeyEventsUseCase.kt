@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.map
 class RerouteKeyEventsUseCaseImpl(
     private val inputMethodAdapter: InputMethodAdapter,
     private val keyMapperImeMessenger: KeyMapperImeMessenger,
-    private val preferenceRepository: PreferenceRepository
+    private val preferenceRepository: PreferenceRepository,
 ) : RerouteKeyEventsUseCase {
 
     private val rerouteKeyEvents =
@@ -27,11 +27,10 @@ class RerouteKeyEventsUseCaseImpl(
 
     private val imeHelper by lazy { KeyMapperImeHelper(inputMethodAdapter) }
 
-    override fun shouldRerouteKeyEvent(descriptor: String): Boolean {
-        return imeHelper.isCompatibleImeChosen()
-            && devicesToRerouteKeyEvents.firstBlocking().contains(descriptor)
-            && rerouteKeyEvents.firstBlocking()
-    }
+    override fun shouldRerouteKeyEvent(descriptor: String): Boolean =
+        imeHelper.isCompatibleImeChosen() &&
+            devicesToRerouteKeyEvents.firstBlocking().contains(descriptor) &&
+            rerouteKeyEvents.firstBlocking()
 
     override fun inputKeyEvent(keyModel: InputKeyModel) {
         keyMapperImeMessenger.inputKeyEvent(keyModel)

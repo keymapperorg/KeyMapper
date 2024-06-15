@@ -45,9 +45,9 @@ class SplashActivity : FragmentActivity() {
             }.toList()
         } else {
             appIntroSlides = sequence {
-                if (!onboarding.approvedFingerprintFeaturePrompt
-                    && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                    && systemFeatureAdapter.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)
+                if (!onboarding.approvedFingerprintFeaturePrompt &&
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+                    systemFeatureAdapter.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)
                 ) {
                     yield(AppIntroSlide.FINGERPRINT_GESTURE_SUPPORT)
                 }

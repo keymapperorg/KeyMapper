@@ -13,7 +13,7 @@ import splitties.toast.toast
  * Created by sds100 on 08/09/20.
  */
 
-//DON'T MOVE THIS CLASS TO A DIFFERENT PACKAGE BECAUSE IT BREAKS THE API
+// DON'T MOVE THIS CLASS TO A DIFFERENT PACKAGE BECAUSE IT BREAKS THE API
 class LaunchKeyMapShortcutActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

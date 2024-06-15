@@ -14,7 +14,7 @@ import io.github.sds100.keymapper.util.Success
  */
 class AndroidNetworkAdapter(
     context: Context,
-    private val suAdapter: SuAdapter
+    private val suAdapter: SuAdapter,
 ) : NetworkAdapter {
     private val ctx = context.applicationContext
 
@@ -30,9 +30,7 @@ class AndroidNetworkAdapter(
             }
         }
 
-    override fun isWifiEnabled(): Boolean {
-        return wifiManager.isWifiEnabled
-    }
+    override fun isWifiEnabled(): Boolean = wifiManager.isWifiEnabled
 
     override fun enableWifi(): Result<*> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -60,13 +58,9 @@ class AndroidNetworkAdapter(
         }
     }
 
-    override fun enableMobileData(): Result<*> {
-        return suAdapter.execute("svc data enable")
-    }
+    override fun enableMobileData(): Result<*> = suAdapter.execute("svc data enable")
 
-    override fun disableMobileData(): Result<*> {
-        return suAdapter.execute("svc data disable")
-    }
+    override fun disableMobileData(): Result<*> = suAdapter.execute("svc data disable")
 
     /**
      * @return Null on Android 10+ because there is no API to do this anymore.

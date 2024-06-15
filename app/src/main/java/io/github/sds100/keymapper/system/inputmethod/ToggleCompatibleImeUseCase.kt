@@ -8,16 +8,15 @@ import kotlinx.coroutines.flow.Flow
  */
 
 class ToggleCompatibleImeUseCaseImpl(
-    private val inputMethodAdapter: InputMethodAdapter
+    private val inputMethodAdapter: InputMethodAdapter,
 ) : ToggleCompatibleImeUseCase {
     private val keyMapperImeHelper = KeyMapperImeHelper(inputMethodAdapter)
 
     override val sufficientPermissions: Flow<Boolean> =
         inputMethodAdapter.isUserInputRequiredToChangeIme
 
-    override suspend fun toggle(): Result<ImeInfo> {
-        return keyMapperImeHelper.toggleCompatibleInputMethod()
-    }
+    override suspend fun toggle(): Result<ImeInfo> =
+        keyMapperImeHelper.toggleCompatibleInputMethod()
 }
 
 interface ToggleCompatibleImeUseCase {

@@ -14,7 +14,9 @@ import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.showPopups
 import kotlinx.coroutines.flow.collectLatest
 
-class ReportBugSlideFragment : Fragment(), SlidePolicy {
+class ReportBugSlideFragment :
+    Fragment(),
+    SlidePolicy {
 
     companion object {
         const val KEY_SLIDE = "key_slide"
@@ -41,7 +43,7 @@ class ReportBugSlideFragment : Fragment(), SlidePolicy {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         FragmentAppIntroSlideBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner

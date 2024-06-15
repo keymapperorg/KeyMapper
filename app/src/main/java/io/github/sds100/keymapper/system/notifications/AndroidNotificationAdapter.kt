@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
  */
 class AndroidNotificationAdapter(
     context: Context,
-    private val coroutineScope: CoroutineScope
+    private val coroutineScope: CoroutineScope,
 ) : NotificationAdapter {
 
     private val ctx = context.applicationContext
@@ -29,7 +29,6 @@ class AndroidNotificationAdapter(
 
     override fun showNotification(notification: NotificationModel) {
         val builder = NotificationCompat.Builder(ctx, notification.channel).apply {
-
             if (!DynamicColors.isDynamicColorAvailable()) {
                 color = ctx.color(R.color.md_theme_secondary)
             }
@@ -64,8 +63,8 @@ class AndroidNotificationAdapter(
                     NotificationCompat.Action(
                         0,
                         action.text,
-                        createActionPendingIntent(action.id)
-                    )
+                        createActionPendingIntent(action.id),
+                    ),
                 )
             }
         }
@@ -83,8 +82,8 @@ class AndroidNotificationAdapter(
                 NotificationChannel(
                     channel.id,
                     channel.name,
-                    channel.importance
-                )
+                    channel.importance,
+                ),
             )
         }
     }

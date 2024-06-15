@@ -9,11 +9,9 @@ import kotlinx.coroutines.flow.first
  */
 
 class CreateActionUseCaseImpl(
-    private val inputMethodAdapter: InputMethodAdapter
+    private val inputMethodAdapter: InputMethodAdapter,
 ) : CreateActionUseCase {
-    override suspend fun getInputMethods(): List<ImeInfo> {
-        return inputMethodAdapter.inputMethods.first()
-    }
+    override suspend fun getInputMethods(): List<ImeInfo> = inputMethodAdapter.inputMethods.first()
 }
 
 interface CreateActionUseCase {

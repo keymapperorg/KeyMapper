@@ -12,9 +12,8 @@ import kotlinx.coroutines.flow.StateFlow
 
 class ChooseBluetoothDeviceUseCaseImpl(
     private val devicesAdapter: DevicesAdapter,
-    private val permissionAdapter: PermissionAdapter
-) :
-    ChooseBluetoothDeviceUseCase {
+    private val permissionAdapter: PermissionAdapter,
+) : ChooseBluetoothDeviceUseCase {
     override val devices: StateFlow<List<BluetoothDeviceInfo>> =
         devicesAdapter.pairedBluetoothDevices
 

@@ -40,7 +40,5 @@ class KeyEventReceiver : Service() {
     private val callbackLock: Any = Any()
     private var callback: IKeyEventReceiverCallback? = null
 
-    override fun onBind(intent: Intent?): IBinder? {
-        return binderInterface.asBinder()
-    }
+    override fun onBind(intent: Intent?): IBinder? = binderInterface.asBinder()
 }

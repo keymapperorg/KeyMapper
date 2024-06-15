@@ -63,7 +63,7 @@ class ConfigKeyMapTriggerViewModel(
     private val recordTrigger: RecordTriggerUseCase,
     private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
     private val displayKeyMap: DisplayKeyMapUseCase,
-    resourceProvider: ResourceProvider
+    resourceProvider: ResourceProvider,
 ) : ResourceProvider by resourceProvider,
     PopupViewModel by PopupViewModelImpl(),
     NavigationViewModel by NavigationViewModelImpl() {
@@ -72,7 +72,7 @@ class ConfigKeyMapTriggerViewModel(
         coroutineScope,
         config,
         createKeyMapShortcut,
-        resourceProvider
+        resourceProvider,
     )
 
     private val _openEditOptions = MutableSharedFlow<String>()
@@ -86,7 +86,7 @@ class ConfigKeyMapTriggerViewModel(
         when (recordTriggerState) {
             is RecordTriggerState.CountingDown -> getString(
                 R.string.button_recording_trigger_countdown,
-                recordTriggerState.timeLeft
+                recordTriggerState.timeLeft,
             )
 
             RecordTriggerState.Stopped -> getString(R.string.button_record_trigger)
@@ -116,13 +116,12 @@ class ConfigKeyMapTriggerViewModel(
     val triggerKeyListItems: StateFlow<State<List<TriggerKeyListItem>>> =
         combine(
             config.mapping,
-            displayKeyMap.showDeviceDescriptors
+            displayKeyMap.showDeviceDescriptors,
         ) { mappingState, showDeviceDescriptors ->
 
             mappingState.mapData { keyMap ->
                 createListItems(keyMap.trigger, showDeviceDescriptors)
             }
-
         }.flowOn(Dispatchers.Default).stateIn(coroutineScope, SharingStarted.Eagerly, State.Loading)
 
     val clickTypeRadioButtonsVisible: StateFlow<Boolean> = config.mapping.map { state ->
@@ -209,7 +208,7 @@ class ConfigKeyMapTriggerViewModel(
         recordTrigger.onRecordKey.onEach {
             if (it.keyCode == KeyEvent.KEYCODE_CAPS_LOCK) {
                 val dialog = PopupUi.Ok(
-                    message = getString(R.string.dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout)
+                    message = getString(R.string.dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout),
                 )
 
                 showPopup("caps_lock_message", dialog)
@@ -217,7 +216,7 @@ class ConfigKeyMapTriggerViewModel(
 
             if (it.keyCode == KeyEvent.KEYCODE_BACK) {
                 val dialog = PopupUi.Ok(
-                    message = getString(R.string.dialog_message_screen_pinning_warning)
+                    message = getString(R.string.dialog_message_screen_pinning_warning),
                 )
 
                 showPopup("screen_pinning_message", dialog)
@@ -236,7 +235,7 @@ class ConfigKeyMapTriggerViewModel(
                         if (onboarding.shownParallelTriggerOrderExplanation) return@collectLatest
 
                         val dialog = PopupUi.Ok(
-                            message = getString(R.string.dialog_message_parallel_trigger_order)
+                            message = getString(R.string.dialog_message_parallel_trigger_order),
                         )
 
                         showPopup("parallel_trigger_order", dialog) ?: return@collectLatest
@@ -248,7 +247,7 @@ class ConfigKeyMapTriggerViewModel(
                         if (onboarding.shownSequenceTriggerExplanation) return@collectLatest
 
                         val dialog = PopupUi.Ok(
-                            message = getString(R.string.dialog_message_sequence_trigger_explanation)
+                            message = getString(R.string.dialog_message_sequence_trigger_explanation),
                         )
 
                         showPopup("sequence_trigger_explanation", dialog)
@@ -270,12 +269,12 @@ class ConfigKeyMapTriggerViewModel(
 
                 KeyMapTriggerError.SCREEN_OFF_ROOT_DENIED -> TextListItem.Error(
                     id = error.toString(),
-                    text = getString(R.string.trigger_error_screen_off_root_permission_denied)
+                    text = getString(R.string.trigger_error_screen_off_root_permission_denied),
                 )
 
                 KeyMapTriggerError.CANT_DETECT_IN_PHONE_CALL -> TextListItem.Error(
                     id = error.toString(),
-                    text = getString(R.string.trigger_error_cant_detect_in_phone_call)
+                    text = getString(R.string.trigger_error_cant_detect_in_phone_call),
                 )
             }
         }
@@ -322,7 +321,7 @@ class ConfigKeyMapTriggerViewModel(
                         if (showDeviceDescriptors) {
                             val name = InputDeviceUtils.appendDeviceDescriptorToName(
                                 device.descriptor,
-                                device.name
+                                device.name,
                             )
                             device.descriptor to name
                         } else {
@@ -334,7 +333,7 @@ class ConfigKeyMapTriggerViewModel(
 
             val triggerKeyDeviceId = showPopup(
                 "pick_trigger_key_device",
-                PopupUi.SingleChoice(listItems)
+                PopupUi.SingleChoice(listItems),
             ) ?: return@launch
 
             val selectedTriggerKeyDevice = when (triggerKeyDeviceId) {
@@ -361,7 +360,7 @@ class ConfigKeyMapTriggerViewModel(
                     resourceProvider = this@ConfigKeyMapTriggerViewModel,
                     popupViewModel = this@ConfigKeyMapTriggerViewModel,
                     startService = displayKeyMap::startAccessibilityService,
-                    message = R.string.dialog_message_enable_accessibility_service_to_record_trigger
+                    message = R.string.dialog_message_enable_accessibility_service_to_record_trigger,
                 )
             }
 
@@ -370,7 +369,7 @@ class ConfigKeyMapTriggerViewModel(
                     resourceProvider = this@ConfigKeyMapTriggerViewModel,
                     popupViewModel = this@ConfigKeyMapTriggerViewModel,
                     restartService = displayKeyMap::restartAccessibilityService,
-                    message = R.string.dialog_message_restart_accessibility_service_to_record_trigger
+                    message = R.string.dialog_message_restart_accessibility_service_to_record_trigger,
                 )
             }
         }
@@ -390,7 +389,7 @@ class ConfigKeyMapTriggerViewModel(
                         resourceProvider = this@ConfigKeyMapTriggerViewModel,
                         popupViewModel = this@ConfigKeyMapTriggerViewModel,
                         neverShowDndTriggerErrorAgain = { displayKeyMap.neverShowDndTriggerErrorAgain() },
-                        fixError = { displayKeyMap.fixError(it) }
+                        fixError = { displayKeyMap.fixError(it) },
                     )
                 }
 
@@ -408,7 +407,7 @@ class ConfigKeyMapTriggerViewModel(
 
     private fun createListItems(
         trigger: KeyMapTrigger,
-        showDeviceDescriptors: Boolean
+        showDeviceDescriptors: Boolean,
     ): List<TriggerKeyListItem> =
         trigger.keys.mapIndexed { index, key ->
             val extraInfo = buildString {
@@ -439,13 +438,13 @@ class ConfigKeyMapTriggerViewModel(
                 clickTypeString = clickTypeString,
                 extraInfo = extraInfo,
                 linkType = linkDrawable,
-                isDragDropEnabled = trigger.keys.size > 1
+                isDragDropEnabled = trigger.keys.size > 1,
             )
         }
 
     private fun getTriggerKeyDeviceName(
         device: TriggerKeyDevice,
-        showDeviceDescriptors: Boolean
+        showDeviceDescriptors: Boolean,
     ): String = when (device) {
         is TriggerKeyDevice.Internal -> getString(R.string.this_device)
         is TriggerKeyDevice.Any -> getString(R.string.any_device)
@@ -453,7 +452,7 @@ class ConfigKeyMapTriggerViewModel(
             if (showDeviceDescriptors) {
                 InputDeviceUtils.appendDeviceDescriptorToName(
                     device.descriptor,
-                    device.name
+                    device.name,
                 )
             } else {
                 device.name

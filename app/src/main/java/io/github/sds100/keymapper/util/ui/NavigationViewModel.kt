@@ -52,7 +52,7 @@ class NavigationViewModelImpl : NavigationViewModel {
     override val navigate = _navigate.asSharedFlow()
 
     override suspend fun navigate(event: NavigateEvent) {
-        //wait for the view to collect so navigating can happen
+        // wait for the view to collect so navigating can happen
         _navigate.subscriptionCount.first { it > 0 }
 
         _navigate.emit(event)
@@ -73,7 +73,7 @@ interface NavigationViewModel {
 
 suspend inline fun <reified R> NavigationViewModel.navigate(
     key: String,
-    destination: NavDestination<R>
+    destination: NavDestination<R>,
 ): R? {
     navigate(NavigateEvent(key, destination))
 
@@ -83,7 +83,7 @@ suspend inline fun <reified R> NavigationViewModel.navigate(
      */
     return merge(
         navigate.dropWhile { it.key != key }.map { null },
-        onNavResult.dropWhile { it.result !is R? && it.key != key }.map { it.result }
+        onNavResult.dropWhile { it.result !is R? && it.key != key }.map { it.result },
     ).first() as R?
 }
 
@@ -104,7 +104,7 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
     fragment.savedStateRegistry.registerSavedStateProvider(navigationSavedStateKey) {
         bundleOf(
             pendingResultsKeysExtra to pendingResults.keys.toTypedArray(),
-            pendingResultsDestinationsExtra to pendingResults.values.toTypedArray()
+            pendingResultsDestinationsExtra to pendingResults.values.toTypedArray(),
         )
     }
 
@@ -140,7 +140,11 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
         }
 
         val direction = when (destination) {
-            is NavDestination.ChooseApp -> NavAppDirections.chooseApp(destination.allowHiddenApps, requestKey)
+            is NavDestination.ChooseApp -> NavAppDirections.chooseApp(
+                destination.allowHiddenApps,
+                requestKey,
+            )
+
             NavDestination.ChooseAppShortcut -> NavAppDirections.chooseAppShortcut(requestKey)
             NavDestination.ChooseKeyCode -> NavAppDirections.chooseKeyCode(requestKey)
             is NavDestination.ConfigKeyEventAction -> {
@@ -203,11 +207,11 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
             NavDestination.ChooseAction -> NavAppDirections.toChooseActionFragment(requestKey)
             is NavDestination.ChooseConstraint -> NavAppDirections.chooseConstraint(
                 supportedConstraints = Json.encodeToString(destination.supportedConstraints),
-                requestKey = requestKey
+                requestKey = requestKey,
             )
 
             is NavDestination.ChooseBluetoothDevice -> NavAppDirections.chooseBluetoothDevice(
-                requestKey
+                requestKey,
             )
 
             NavDestination.FixAppKilling -> NavAppDirections.goToFixAppKillingActivity()
@@ -229,7 +233,7 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
 fun NavigationViewModel.sendNavResultFromBundle(
     requestKey: String,
     destinationId: String,
-    bundle: Bundle
+    bundle: Bundle,
 ) {
     when (destinationId) {
         NavDestination.ID_CHOOSE_APP -> {
@@ -240,7 +244,7 @@ fun NavigationViewModel.sendNavResultFromBundle(
 
         NavDestination.ID_CHOOSE_APP_SHORTCUT -> {
             val result = bundle.getJsonSerializable<ChooseAppShortcutResult>(
-                ChooseAppShortcutFragment.EXTRA_RESULT
+                ChooseAppShortcutFragment.EXTRA_RESULT,
             )
 
             onNavResult(NavResult(requestKey, result))

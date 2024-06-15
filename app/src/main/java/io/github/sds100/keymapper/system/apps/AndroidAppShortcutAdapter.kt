@@ -37,7 +37,7 @@ class AndroidAppShortcutAdapter(context: Context) : AppShortcutAdapter {
                 val activityInfo = it.activityInfo
                 AppShortcutInfo(
                     packageName = activityInfo.packageName,
-                    activityName = activityInfo.name
+                    activityName = activityInfo.name,
                 )
             }
 
@@ -51,7 +51,7 @@ class AndroidAppShortcutAdapter(context: Context) : AppShortcutAdapter {
         icon: Drawable,
         label: String,
         intentAction: String,
-        intentExtras: Bundle
+        intentExtras: Bundle,
     ): ShortcutInfoCompat {
         val builder = ShortcutInfoCompat.Builder(ctx, UUID.randomUUID().toString()).apply {
             setIcon(IconCompat.createWithBitmap(icon.toBitmap()))
@@ -79,9 +79,8 @@ class AndroidAppShortcutAdapter(context: Context) : AppShortcutAdapter {
         }
     }
 
-    override fun createShortcutResultIntent(shortcut: ShortcutInfoCompat): Intent {
-        return ShortcutManagerCompat.createShortcutResultIntent(ctx, shortcut)
-    }
+    override fun createShortcutResultIntent(shortcut: ShortcutInfoCompat): Intent =
+        ShortcutManagerCompat.createShortcutResultIntent(ctx, shortcut)
 
     override fun getShortcutName(info: AppShortcutInfo): Result<String> {
         try {

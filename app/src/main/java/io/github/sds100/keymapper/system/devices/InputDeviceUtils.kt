@@ -10,19 +10,16 @@ import java.lang.reflect.Method
  */
 
 object InputDeviceUtils {
-    fun appendDeviceDescriptorToName(descriptor: String, name: String): String {
-        return "$name ${descriptor.substring(0..4)}"
-    }
+    fun appendDeviceDescriptorToName(descriptor: String, name: String): String =
+        "$name ${descriptor.substring(0..4)}"
 
-    fun createInputDeviceInfo(inputDevice: InputDevice): InputDeviceInfo {
-        return InputDeviceInfo(
-            inputDevice.descriptor,
-            inputDevice.name,
-            inputDevice.id,
-            inputDevice.isExternalCompat,
-            isGameController = inputDevice.controllerNumber != 0
-        )
-    }
+    fun createInputDeviceInfo(inputDevice: InputDevice): InputDeviceInfo = InputDeviceInfo(
+        inputDevice.descriptor,
+        inputDevice.name,
+        inputDevice.id,
+        inputDevice.isExternalCompat,
+        isGameController = inputDevice.controllerNumber != 0,
+    )
 }
 
 val InputDevice.isExternalCompat: Boolean

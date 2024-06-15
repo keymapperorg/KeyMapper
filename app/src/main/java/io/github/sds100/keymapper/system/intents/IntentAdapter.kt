@@ -13,7 +13,11 @@ import io.github.sds100.keymapper.util.Success
 class IntentAdapterImpl(context: Context) : IntentAdapter {
     private val ctx = context.applicationContext
 
-    override fun send(target: IntentTarget, uri: String, extras: List<IntentExtraModel>): Result<*> {
+    override fun send(
+        target: IntentTarget,
+        uri: String,
+        extras: List<IntentExtraModel>,
+    ): Result<*> {
         val intent = Intent.parseUri(uri, 0)
 
         extras.forEach { e ->

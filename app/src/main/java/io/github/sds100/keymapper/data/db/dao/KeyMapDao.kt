@@ -1,6 +1,11 @@
 package io.github.sds100.keymapper.data.db.dao
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Update
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import kotlinx.coroutines.flow.Flow
 

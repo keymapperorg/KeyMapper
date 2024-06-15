@@ -61,7 +61,7 @@ sealed class Error : Result<Nothing>() {
 
             fun getMessageForPermission(
                 resourceProvider: ResourceProvider,
-                permission: Permission
+                permission: Permission,
             ): String {
                 val resId = when (permission) {
                     Permission.WRITE_SETTINGS -> R.string.error_action_requires_write_settings_permission
@@ -188,11 +188,10 @@ val <T> Result<T>.isError: Boolean
 val <T> Result<T>.isSuccess: Boolean
     get() = this is Success
 
-fun <T, U> Result<T>.handle(onSuccess: (value: T) -> U, onError: (error: Error) -> U): U {
-    return when (this) {
+fun <T, U> Result<T>.handle(onSuccess: (value: T) -> U, onError: (error: Error) -> U): U =
+    when (this) {
         is Success -> onSuccess(value)
         is Error -> onError(this)
     }
-}
 
 fun <T> T.success() = Success(this)

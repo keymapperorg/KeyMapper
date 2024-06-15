@@ -7,5 +7,5 @@ data class FingerprintMapJsonGroup(
     val swipeDown: String,
     val swipeUp: String,
     val swipeLeft: String,
-    val swipeRight: String
+    val swipeRight: String,
 )

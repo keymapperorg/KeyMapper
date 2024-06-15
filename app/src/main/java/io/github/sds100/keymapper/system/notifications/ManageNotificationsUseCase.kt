@@ -21,7 +21,7 @@ class ManageNotificationsUseCaseImpl(
     override val showImePickerNotification: Flow<Boolean> =
         combine(
             suAdapter.isGranted,
-            preferences.get(Keys.showImePickerNotification)
+            preferences.get(Keys.showImePickerNotification),
         ) { hasRootPermission, show ->
             when {
                 Build.VERSION.SDK_INT < Build.VERSION_CODES.O -> show ?: false
@@ -35,9 +35,11 @@ class ManageNotificationsUseCaseImpl(
                 /*
                 This needs root permission on API 27 and 28
                  */
-                (Build.VERSION.SDK_INT == Build.VERSION_CODES.O_MR1
-                    || Build.VERSION.SDK_INT == Build.VERSION_CODES.P)
-                    && hasRootPermission -> true
+                (
+                    Build.VERSION.SDK_INT == Build.VERSION_CODES.O_MR1 ||
+                        Build.VERSION.SDK_INT == Build.VERSION_CODES.P
+                    ) &&
+                    hasRootPermission -> true
 
                 else -> false
             }
@@ -45,7 +47,7 @@ class ManageNotificationsUseCaseImpl(
 
     override val showToggleKeyboardNotification: Flow<Boolean> =
         preferences.get(Keys.showToggleKeyboardNotification).map {
-            //always show the notification on Oreo+ because the system/user controls whether notifications are shown
+            // always show the notification on Oreo+ because the system/user controls whether notifications are shown
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 true
             } else {
@@ -55,7 +57,7 @@ class ManageNotificationsUseCaseImpl(
 
     override val showToggleMappingsNotification: Flow<Boolean> =
         preferences.get(Keys.showToggleKeymapsNotification).map {
-            //always show the notification on Oreo+ because the system/user controls whether notifications are shown
+            // always show the notification on Oreo+ because the system/user controls whether notifications are shown
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 true
             } else {

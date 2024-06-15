@@ -18,12 +18,13 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.*
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import io.github.sds100.keymapper.databinding.FragmentPickCoordinateBinding
 import io.github.sds100.keymapper.system.files.FileUtils
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.Inject
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.showPopups
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.decodeFromString
@@ -84,7 +85,7 @@ class PickDisplayCoordinateFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         FragmentPickCoordinateBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
@@ -124,7 +125,7 @@ class PickDisplayCoordinateFragment : Fragment() {
                 if (point != null) {
                     viewModel.onScreenshotTouch(
                         point.x.toFloat() / binding.imageViewScreenshot.width,
-                        point.y.toFloat() / binding.imageViewScreenshot.height
+                        point.y.toFloat() / binding.imageViewScreenshot.height,
                     )
                 }
             }
@@ -134,7 +135,7 @@ class PickDisplayCoordinateFragment : Fragment() {
             viewModel.returnResult.collectLatest { result ->
                 setFragmentResult(
                     requestKey,
-                    bundleOf(EXTRA_RESULT to Json.encodeToString(result))
+                    bundleOf(EXTRA_RESULT to Json.encodeToString(result)),
                 )
 
                 findNavController().navigateUp()

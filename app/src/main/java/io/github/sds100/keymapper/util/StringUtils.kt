@@ -9,7 +9,7 @@ import androidx.annotation.IntRange
 fun String.getWordBoundaries(@IntRange(from = 0L) cursorPosition: Int): Pair<Int, Int>? {
     if (this.isBlank()) return null
 
-    //return null if there is just whitespace around the position
+    // return null if there is just whitespace around the position
 
     if (getOrNull(cursorPosition - 1)?.isWhitespace() == true && getOrNull(cursorPosition)?.isWhitespace() == true) {
         return null
@@ -33,8 +33,9 @@ fun String.getWordBoundaries(@IntRange(from = 0L) cursorPosition: Int): Pair<Int
         If the cursor is at the end of the line then it is outside the character index range so check for this case
         check if we are at the end of the line.
          */
-        if (cursorPosition == this.length && index == this.lastIndex
-            || index == cursorPosition
+        if (cursorPosition == this.length &&
+            index == this.lastIndex ||
+            index == cursorPosition
         ) {
             firstBoundary = lastSpaceIndex?.plus(1)
         }

@@ -18,7 +18,7 @@ sealed class ActionData {
 
     @Serializable
     data class App(
-        val packageName: String
+        val packageName: String,
     ) : ActionData() {
         override val id: ActionId = ActionId.APP
     }
@@ -27,7 +27,7 @@ sealed class ActionData {
     data class AppShortcut(
         val packageName: String?,
         val shortcutTitle: String,
-        val uri: String
+        val uri: String,
     ) : ActionData() {
         override val id: ActionId = ActionId.APP_SHORTCUT
     }
@@ -37,7 +37,7 @@ sealed class ActionData {
         val keyCode: Int,
         val metaState: Int = 0,
         val useShell: Boolean = false,
-        val device: Device? = null
+        val device: Device? = null,
     ) : ActionData() {
 
         override val id: ActionId = ActionId.KEY_EVENT
@@ -45,14 +45,14 @@ sealed class ActionData {
         @Serializable
         data class Device(
             val descriptor: String,
-            val name: String
+            val name: String,
         )
     }
 
     @Serializable
     data class Sound(
         val soundUid: String,
-        val soundDescription: String
+        val soundDescription: String,
     ) : ActionData() {
         override val id = ActionId.SOUND
     }
@@ -66,7 +66,7 @@ sealed class ActionData {
             @Serializable
             data class Increase(
                 override val showVolumeUi: Boolean,
-                override val volumeStream: VolumeStream
+                override val volumeStream: VolumeStream,
             ) : Stream() {
                 override val id = ActionId.VOLUME_INCREASE_STREAM
             }
@@ -74,7 +74,7 @@ sealed class ActionData {
             @Serializable
             data class Decrease(
                 override val showVolumeUi: Boolean,
-                override val volumeStream: VolumeStream
+                override val volumeStream: VolumeStream,
             ) : Stream() {
                 override val id = ActionId.VOLUME_DECREASE_STREAM
             }
@@ -107,7 +107,7 @@ sealed class ActionData {
 
         @Serializable
         data class SetRingerMode(
-            val ringerMode: RingerMode
+            val ringerMode: RingerMode,
         ) : Volume() {
             override val id: ActionId = ActionId.CHANGE_RINGER_MODE
         }
@@ -151,7 +151,7 @@ sealed class ActionData {
     @Serializable
     data class SwitchKeyboard(
         val imeId: String,
-        val savedImeName: String
+        val savedImeName: String,
     ) : ActionData() {
         override val id = ActionId.SWITCH_KEYBOARD
     }
@@ -209,7 +209,7 @@ sealed class ActionData {
 
         @Serializable
         data class CycleRotations(
-            val orientations: List<Orientation>
+            val orientations: List<Orientation>,
         ) : Rotation() {
             override val id = ActionId.CYCLE_ROTATIONS
         }
@@ -298,7 +298,7 @@ sealed class ActionData {
         val description: String,
         val target: IntentTarget,
         val uri: String,
-        val extras: List<IntentExtraModel>
+        val extras: List<IntentExtraModel>,
     ) : ActionData() {
         override val id = ActionId.INTENT
     }
@@ -307,7 +307,7 @@ sealed class ActionData {
     data class TapScreen(
         val x: Int,
         val y: Int,
-        val description: String?
+        val description: String?,
     ) : ActionData() {
         override val id = ActionId.TAP_SCREEN
     }
@@ -320,7 +320,7 @@ sealed class ActionData {
         val yEnd: Int,
         val fingerCount: Int,
         val duration: Int,
-        val description: String?
+        val description: String?,
     ) : ActionData() {
         override val id = ActionId.SWIPE_SCREEN
     }
@@ -333,7 +333,7 @@ sealed class ActionData {
         val pinchType: PinchScreenType,
         val fingerCount: Int,
         val duration: Int,
-        val description: String?
+        val description: String?,
     ) : ActionData() {
         override val id = ActionId.PINCH_SCREEN
     }
@@ -350,21 +350,21 @@ sealed class ActionData {
 
     @Serializable
     data class PhoneCall(
-        val number: String
+        val number: String,
     ) : ActionData() {
         override val id = ActionId.PHONE_CALL
     }
 
     @Serializable
     data class Url(
-        val url: String
+        val url: String,
     ) : ActionData() {
         override val id = ActionId.URL
     }
 
     @Serializable
     data class Text(
-        val text: String
+        val text: String,
     ) : ActionData() {
         override val id = ActionId.TEXT
     }
@@ -599,7 +599,6 @@ sealed class ActionData {
     object VoiceAssistant : ActionData() {
         override val id = ActionId.OPEN_VOICE_ASSISTANT
     }
-
 
     @Serializable
     object DeviceAssistant : ActionData() {

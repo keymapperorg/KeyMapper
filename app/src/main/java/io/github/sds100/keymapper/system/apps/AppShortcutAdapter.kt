@@ -20,7 +20,7 @@ interface AppShortcutAdapter {
         icon: Drawable,
         label: String,
         intentAction: String,
-        intentExtras: Bundle
+        intentExtras: Bundle,
     ): ShortcutInfoCompat
 
     fun pinShortcut(shortcut: ShortcutInfoCompat): Result<*>

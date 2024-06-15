@@ -10,7 +10,5 @@ class AndroidOpenUrlAdapter(context: Context) : OpenUrlAdapter {
 
     private val ctx = context.applicationContext
 
-    override fun openUrl(url: String): Result<*> {
-        return UrlUtils.openUrl(ctx, url)
-    }
+    override fun openUrl(url: String): Result<*> = UrlUtils.openUrl(ctx, url)
 }

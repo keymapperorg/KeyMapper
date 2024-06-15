@@ -35,7 +35,7 @@ class ConfigFingerprintMapFragment : ConfigMappingFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        //only load the fingerprint map if opening this fragment for the first time
+        // only load the fingerprint map if opening this fragment for the first time
         if (savedInstanceState == null) {
             viewModel.loadFingerprintMap(FingerprintMapId.valueOf(args.gestureId))
         }
@@ -81,8 +81,9 @@ class ConfigFingerprintMapFragment : ConfigMappingFragment() {
             }
         }
 
-    class ConstraintsAndOptionsFragment : TwoFragments(
-        FingerprintMapOptionsFragment.Info(),
-        FingerprintConfigConstraintsFragment.Info()
-    )
+    class ConstraintsAndOptionsFragment :
+        TwoFragments(
+            FingerprintMapOptionsFragment.Info(),
+            FingerprintConfigConstraintsFragment.Info(),
+        )
 }

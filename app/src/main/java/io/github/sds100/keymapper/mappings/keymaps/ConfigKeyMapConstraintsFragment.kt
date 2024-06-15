@@ -11,11 +11,12 @@ import io.github.sds100.keymapper.util.Inject
  * Created by sds100 on 30/11/20.
  */
 class ConfigKeyMapConstraintsFragment : ConfigConstraintsFragment() {
-    class Info : FragmentInfo(
-        R.string.constraint_list_header,
-        R.string.url_constraints_guide,
-        { ConfigKeyMapConstraintsFragment() }
-    )
+    class Info :
+        FragmentInfo(
+            R.string.constraint_list_header,
+            R.string.url_constraints_guide,
+            { ConfigKeyMapConstraintsFragment() },
+        )
 
     override var isAppBarVisible = false
 

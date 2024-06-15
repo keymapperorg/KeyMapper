@@ -36,7 +36,7 @@ class ConfigSettingsUseCaseImpl(
     private val suAdapter: SuAdapter,
     private val packageManagerAdapter: PackageManagerAdapter,
     private val shizukuAdapter: ShizukuAdapter,
-    private val devicesAdapter: DevicesAdapter
+    private val devicesAdapter: DevicesAdapter,
 ) : ConfigSettingsUseCase {
 
     private val imeHelper by lazy { KeyMapperImeHelper(inputMethodAdapter) }
@@ -85,13 +85,11 @@ class ConfigSettingsUseCaseImpl(
         imeHelper.enableCompatibleInputMethods()
     }
 
-    override suspend fun chooseCompatibleIme(): Result<ImeInfo> {
-        return imeHelper.chooseCompatibleInputMethod()
-    }
+    override suspend fun chooseCompatibleIme(): Result<ImeInfo> =
+        imeHelper.chooseCompatibleInputMethod()
 
-    override suspend fun showImePicker(): Result<*> {
-        return inputMethodAdapter.showImePicker(fromForeground = true)
-    }
+    override suspend fun showImePicker(): Result<*> =
+        inputMethodAdapter.showImePicker(fromForeground = true)
 
     override fun <T> getPreference(key: Preferences.Key<T>) =
         preferenceRepository.get(key)
@@ -159,9 +157,7 @@ class ConfigSettingsUseCaseImpl(
         packageManagerAdapter.openApp(ShizukuUtils.SHIZUKU_PACKAGE)
     }
 
-    override fun getSoundFiles(): List<SoundFileInfo> {
-        return soundsManager.soundFiles.value
-    }
+    override fun getSoundFiles(): List<SoundFileInfo> = soundsManager.soundFiles.value
 
     override fun deleteSoundFiles(uid: List<String>) {
         uid.forEach {

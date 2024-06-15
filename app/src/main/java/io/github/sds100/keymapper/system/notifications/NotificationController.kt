@@ -14,10 +14,22 @@ import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.inputmethod.ShowHideInputMethodUseCase
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
 import io.github.sds100.keymapper.system.inputmethod.ToggleCompatibleImeUseCase
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.DefaultDispatcherProvider
+import io.github.sds100.keymapper.util.DispatcherProvider
+import io.github.sds100.keymapper.util.getFullMessage
+import io.github.sds100.keymapper.util.onFailure
+import io.github.sds100.keymapper.util.onSuccess
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 /**
@@ -35,7 +47,7 @@ class NotificationController(
     private val areFingerprintGesturesSupported: AreFingerprintGesturesSupportedUseCase,
     private val onboardingUseCase: OnboardingUseCase,
     private val resourceProvider: ResourceProvider,
-    private val dispatchers: DispatcherProvider = DefaultDispatcherProvider()
+    private val dispatchers: DispatcherProvider = DefaultDispatcherProvider(),
 ) : ResourceProvider by resourceProvider {
 
     companion object {
@@ -109,7 +121,7 @@ class NotificationController(
         combine(
             manageNotifications.showToggleMappingsNotification,
             controlAccessibilityService.serviceState,
-            pauseMappings.isPaused
+            pauseMappings.isPaused,
         ) { show, serviceState, areMappingsPaused ->
             invalidateToggleMappingsNotification(show, serviceState, areMappingsPaused)
         }.flowOn(dispatchers.default()).launchIn(coroutineScope)
@@ -120,13 +132,13 @@ class NotificationController(
                     NotificationChannelModel(
                         id = CHANNEL_IME_PICKER,
                         name = getString(R.string.notification_channel_ime_picker),
-                        NotificationManagerCompat.IMPORTANCE_MIN
-                    )
+                        NotificationManagerCompat.IMPORTANCE_MIN,
+                    ),
                 )
 
                 manageNotifications.show(imePickerNotification())
             } else {
-                //don't delete the channel because then the user's notification config is lost
+                // don't delete the channel because then the user's notification config is lost
                 manageNotifications.dismiss(ID_IME_PICKER)
             }
         }.flowOn(dispatchers.default()).launchIn(coroutineScope)
@@ -137,13 +149,13 @@ class NotificationController(
                     NotificationChannelModel(
                         id = CHANNEL_TOGGLE_KEYBOARD,
                         name = getString(R.string.notification_channel_toggle_keyboard),
-                        NotificationManagerCompat.IMPORTANCE_MIN
-                    )
+                        NotificationManagerCompat.IMPORTANCE_MIN,
+                    ),
                 )
 
                 manageNotifications.show(toggleImeNotification())
             } else {
-                //don't delete the channel because then the user's notification config is lost
+                // don't delete the channel because then the user's notification config is lost
                 manageNotifications.dismiss(ID_TOGGLE_KEYBOARD)
             }
         }.flowOn(dispatchers.default()).launchIn(coroutineScope)
@@ -151,17 +163,17 @@ class NotificationController(
         coroutineScope.launch(dispatchers.default()) {
             combine(
                 onboardingUseCase.showFingerprintFeatureNotificationIfAvailable,
-                areFingerprintGesturesSupported.isSupported.map { it ?: false }
+                areFingerprintGesturesSupported.isSupported.map { it ?: false },
             ) { showIfAvailable, isSupported ->
                 showIfAvailable && isSupported
-            }.first { it } //suspend until the notification should be shown
+            }.first { it } // suspend until the notification should be shown
 
             manageNotifications.createChannel(
                 NotificationChannelModel(
                     id = CHANNEL_NEW_FEATURES,
                     name = getString(R.string.notification_channel_new_features),
-                    NotificationManagerCompat.IMPORTANCE_LOW
-                )
+                    NotificationManagerCompat.IMPORTANCE_LOW,
+                ),
             )
 
             manageNotifications.show(fingerprintFeatureNotification())
@@ -181,8 +193,8 @@ class NotificationController(
                 NotificationChannelModel(
                     id = CHANNEL_KEYBOARD_HIDDEN,
                     name = getString(R.string.notification_channel_keyboard_hidden),
-                    NotificationManagerCompat.IMPORTANCE_DEFAULT
-                )
+                    NotificationManagerCompat.IMPORTANCE_DEFAULT,
+                ),
             )
 
             if (isHidden) {
@@ -224,13 +236,13 @@ class NotificationController(
     }
 
     fun onOpenApp() {
-        //show the toggle mappings notification when opening the app in case it has been dismissed
+        // show the toggle mappings notification when opening the app in case it has been dismissed
 
         coroutineScope.launch {
             invalidateToggleMappingsNotification(
                 show = manageNotifications.showToggleMappingsNotification.first(),
                 serviceState = controlAccessibilityService.serviceState.first(),
-                areMappingsPaused = pauseMappings.isPaused.first()
+                areMappingsPaused = pauseMappings.isPaused.first(),
             )
         }
     }
@@ -254,14 +266,14 @@ class NotificationController(
     private fun invalidateToggleMappingsNotification(
         show: Boolean,
         serviceState: ServiceState,
-        areMappingsPaused: Boolean
+        areMappingsPaused: Boolean,
     ) {
         manageNotifications.createChannel(
             NotificationChannelModel(
                 id = CHANNEL_TOGGLE_KEYMAPS,
                 name = getString(R.string.notification_channel_toggle_mappings),
-                NotificationManagerCompat.IMPORTANCE_MIN
-            )
+                NotificationManagerCompat.IMPORTANCE_MIN,
+            ),
         )
 
         if (!show) {
@@ -286,155 +298,141 @@ class NotificationController(
         }
     }
 
-    private fun mappingsPausedNotification(): NotificationModel {
-        return NotificationModel(
-            id = ID_TOGGLE_MAPPINGS,
-            channel = CHANNEL_TOGGLE_KEYMAPS,
-            title = getString(R.string.notification_keymaps_paused_title),
-            text = getString(R.string.notification_keymaps_paused_text),
-            icon = R.drawable.ic_notification_play,
-            onClickActionId = ACTION_OPEN_KEY_MAPPER,
-            showOnLockscreen = true,
-            onGoing = true,
-            priority = NotificationCompat.PRIORITY_MIN,
-            actions = listOf(
-                NotificationModel.Action(
-                    ACTION_RESUME_MAPPINGS,
-                    getString(R.string.notification_action_resume)
-                ),
-                NotificationModel.Action(
-                    ACTION_DISMISS_TOGGLE_MAPPINGS,
-                    getString(R.string.notification_action_dismiss)
-                ),
-                NotificationModel.Action(
-                    ACTION_STOP_SERVICE,
-                    getString(R.string.notification_action_stop_acc_service)
-                ),
-            )
-        )
-    }
+    private fun mappingsPausedNotification(): NotificationModel = NotificationModel(
+        id = ID_TOGGLE_MAPPINGS,
+        channel = CHANNEL_TOGGLE_KEYMAPS,
+        title = getString(R.string.notification_keymaps_paused_title),
+        text = getString(R.string.notification_keymaps_paused_text),
+        icon = R.drawable.ic_notification_play,
+        onClickActionId = ACTION_OPEN_KEY_MAPPER,
+        showOnLockscreen = true,
+        onGoing = true,
+        priority = NotificationCompat.PRIORITY_MIN,
+        actions = listOf(
+            NotificationModel.Action(
+                ACTION_RESUME_MAPPINGS,
+                getString(R.string.notification_action_resume),
+            ),
+            NotificationModel.Action(
+                ACTION_DISMISS_TOGGLE_MAPPINGS,
+                getString(R.string.notification_action_dismiss),
+            ),
+            NotificationModel.Action(
+                ACTION_STOP_SERVICE,
+                getString(R.string.notification_action_stop_acc_service),
+            ),
+        ),
+    )
 
-    private fun mappingsResumedNotification(): NotificationModel {
-        return NotificationModel(
-            id = ID_TOGGLE_MAPPINGS,
-            channel = CHANNEL_TOGGLE_KEYMAPS,
-            title = getString(R.string.notification_keymaps_resumed_title),
-            text = getString(R.string.notification_keymaps_resumed_text),
-            icon = R.drawable.ic_notification_pause,
-            onClickActionId = ACTION_OPEN_KEY_MAPPER,
-            showOnLockscreen = true,
-            onGoing = true,
-            priority = NotificationCompat.PRIORITY_MIN,
-            actions = listOf(
-                NotificationModel.Action(
-                    ACTION_PAUSE_MAPPINGS,
-                    getString(R.string.notification_action_pause)
-                ),
-                NotificationModel.Action(
-                    ACTION_DISMISS_TOGGLE_MAPPINGS,
-                    getString(R.string.notification_action_dismiss)
-                ),
-                NotificationModel.Action(
-                    ACTION_STOP_SERVICE,
-                    getString(R.string.notification_action_stop_acc_service)
-                ),
-            )
-        )
-    }
+    private fun mappingsResumedNotification(): NotificationModel = NotificationModel(
+        id = ID_TOGGLE_MAPPINGS,
+        channel = CHANNEL_TOGGLE_KEYMAPS,
+        title = getString(R.string.notification_keymaps_resumed_title),
+        text = getString(R.string.notification_keymaps_resumed_text),
+        icon = R.drawable.ic_notification_pause,
+        onClickActionId = ACTION_OPEN_KEY_MAPPER,
+        showOnLockscreen = true,
+        onGoing = true,
+        priority = NotificationCompat.PRIORITY_MIN,
+        actions = listOf(
+            NotificationModel.Action(
+                ACTION_PAUSE_MAPPINGS,
+                getString(R.string.notification_action_pause),
+            ),
+            NotificationModel.Action(
+                ACTION_DISMISS_TOGGLE_MAPPINGS,
+                getString(R.string.notification_action_dismiss),
+            ),
+            NotificationModel.Action(
+                ACTION_STOP_SERVICE,
+                getString(R.string.notification_action_stop_acc_service),
+            ),
+        ),
+    )
 
-    private fun accessibilityServiceDisabledNotification(): NotificationModel {
-        return NotificationModel(
-            id = ID_TOGGLE_MAPPINGS,
-            channel = CHANNEL_TOGGLE_KEYMAPS,
-            title = getString(R.string.notification_accessibility_service_disabled_title),
-            text = getString(R.string.notification_accessibility_service_disabled_text),
-            icon = R.drawable.ic_notification_pause,
-            onClickActionId = ACTION_START_SERVICE,
-            showOnLockscreen = true,
-            onGoing = true,
-            priority = NotificationCompat.PRIORITY_MIN,
-            actions = listOf(
-                NotificationModel.Action(
-                    ACTION_DISMISS_TOGGLE_MAPPINGS,
-                    getString(R.string.notification_action_dismiss)
-                )
-            )
-        )
-    }
+    private fun accessibilityServiceDisabledNotification(): NotificationModel = NotificationModel(
+        id = ID_TOGGLE_MAPPINGS,
+        channel = CHANNEL_TOGGLE_KEYMAPS,
+        title = getString(R.string.notification_accessibility_service_disabled_title),
+        text = getString(R.string.notification_accessibility_service_disabled_text),
+        icon = R.drawable.ic_notification_pause,
+        onClickActionId = ACTION_START_SERVICE,
+        showOnLockscreen = true,
+        onGoing = true,
+        priority = NotificationCompat.PRIORITY_MIN,
+        actions = listOf(
+            NotificationModel.Action(
+                ACTION_DISMISS_TOGGLE_MAPPINGS,
+                getString(R.string.notification_action_dismiss),
+            ),
+        ),
+    )
 
-    private fun accessibilityServiceCrashedNotification(): NotificationModel {
-        return NotificationModel(
-            id = ID_TOGGLE_MAPPINGS,
-            channel = CHANNEL_TOGGLE_KEYMAPS,
-            title = getString(R.string.notification_accessibility_service_crashed_title),
-            text = getString(R.string.notification_accessibility_service_crashed_text),
-            icon = R.drawable.ic_notification_pause,
-            onClickActionId = ACTION_RESTART_SERVICE,
-            showOnLockscreen = true,
-            onGoing = true,
-            priority = NotificationCompat.PRIORITY_MIN,
-            bigTextStyle = true,
-            actions = listOf(
-                NotificationModel.Action(
-                    ACTION_RESTART_SERVICE,
-                    getString(R.string.notification_action_restart_accessibility_service)
-                )
-            )
-        )
-    }
+    private fun accessibilityServiceCrashedNotification(): NotificationModel = NotificationModel(
+        id = ID_TOGGLE_MAPPINGS,
+        channel = CHANNEL_TOGGLE_KEYMAPS,
+        title = getString(R.string.notification_accessibility_service_crashed_title),
+        text = getString(R.string.notification_accessibility_service_crashed_text),
+        icon = R.drawable.ic_notification_pause,
+        onClickActionId = ACTION_RESTART_SERVICE,
+        showOnLockscreen = true,
+        onGoing = true,
+        priority = NotificationCompat.PRIORITY_MIN,
+        bigTextStyle = true,
+        actions = listOf(
+            NotificationModel.Action(
+                ACTION_RESTART_SERVICE,
+                getString(R.string.notification_action_restart_accessibility_service),
+            ),
+        ),
+    )
 
-    private fun imePickerNotification(): NotificationModel {
-        return NotificationModel(
-            id = ID_IME_PICKER,
-            channel = CHANNEL_IME_PICKER,
-            title = getString(R.string.notification_ime_persistent_title),
-            text = getString(R.string.notification_ime_persistent_text),
-            icon = R.drawable.ic_notification_keyboard,
-            onClickActionId = ACTION_SHOW_IME_PICKER,
-            showOnLockscreen = false,
-            onGoing = true,
-            priority = NotificationCompat.PRIORITY_MIN,
-        )
-    }
+    private fun imePickerNotification(): NotificationModel = NotificationModel(
+        id = ID_IME_PICKER,
+        channel = CHANNEL_IME_PICKER,
+        title = getString(R.string.notification_ime_persistent_title),
+        text = getString(R.string.notification_ime_persistent_text),
+        icon = R.drawable.ic_notification_keyboard,
+        onClickActionId = ACTION_SHOW_IME_PICKER,
+        showOnLockscreen = false,
+        onGoing = true,
+        priority = NotificationCompat.PRIORITY_MIN,
+    )
 
-    private fun toggleImeNotification(): NotificationModel {
-        return NotificationModel(
-            id = ID_TOGGLE_KEYBOARD,
-            channel = CHANNEL_TOGGLE_KEYBOARD,
-            title = getString(R.string.notification_toggle_keyboard_title),
-            text = getString(R.string.notification_toggle_keyboard_text),
-            icon = R.drawable.ic_notification_keyboard,
-            onClickActionId = null,
-            showOnLockscreen = true,
-            onGoing = true,
-            priority = NotificationCompat.PRIORITY_MIN,
-            actions = listOf(
-                NotificationModel.Action(
-                    ACTION_TOGGLE_KEYBOARD,
-                    getString(R.string.notification_toggle_keyboard_action)
-                )
-            )
-        )
-    }
+    private fun toggleImeNotification(): NotificationModel = NotificationModel(
+        id = ID_TOGGLE_KEYBOARD,
+        channel = CHANNEL_TOGGLE_KEYBOARD,
+        title = getString(R.string.notification_toggle_keyboard_title),
+        text = getString(R.string.notification_toggle_keyboard_text),
+        icon = R.drawable.ic_notification_keyboard,
+        onClickActionId = null,
+        showOnLockscreen = true,
+        onGoing = true,
+        priority = NotificationCompat.PRIORITY_MIN,
+        actions = listOf(
+            NotificationModel.Action(
+                ACTION_TOGGLE_KEYBOARD,
+                getString(R.string.notification_toggle_keyboard_action),
+            ),
+        ),
+    )
 
-    private fun fingerprintFeatureNotification(): NotificationModel {
-        return NotificationModel(
-            id = ID_FEATURE_REMAP_FINGERPRINT_GESTURES,
-            channel = CHANNEL_NEW_FEATURES,
-            title = getString(R.string.notification_feature_fingerprint_title),
-            text = getString(R.string.notification_feature_fingerprint_text),
-            icon = R.drawable.ic_notification_fingerprint,
-            onClickActionId = ACTION_FINGERPRINT_GESTURE_FEATURE,
-            priority = NotificationCompat.PRIORITY_LOW,
-            autoCancel = true,
-            onGoing = false,
-            showOnLockscreen = false,
-            bigTextStyle = true
-        )
-    }
+    private fun fingerprintFeatureNotification(): NotificationModel = NotificationModel(
+        id = ID_FEATURE_REMAP_FINGERPRINT_GESTURES,
+        channel = CHANNEL_NEW_FEATURES,
+        title = getString(R.string.notification_feature_fingerprint_title),
+        text = getString(R.string.notification_feature_fingerprint_text),
+        icon = R.drawable.ic_notification_fingerprint,
+        onClickActionId = ACTION_FINGERPRINT_GESTURE_FEATURE,
+        priority = NotificationCompat.PRIORITY_LOW,
+        autoCancel = true,
+        onGoing = false,
+        showOnLockscreen = false,
+        bigTextStyle = true,
+    )
 
-    private fun setupChosenDevicesSettingsAgainNotification(): NotificationModel {
-        return NotificationModel(
+    private fun setupChosenDevicesSettingsAgainNotification(): NotificationModel =
+        NotificationModel(
             id = ID_SETUP_CHOSEN_DEVICES_AGAIN,
             channel = CHANNEL_NEW_FEATURES,
             title = getString(R.string.notification_setup_chosen_devices_again_title),
@@ -445,21 +443,18 @@ class NotificationController(
             autoCancel = true,
             onGoing = false,
             showOnLockscreen = false,
-            bigTextStyle = true
+            bigTextStyle = true,
         )
-    }
 
-    private fun keyboardHiddenNotification(): NotificationModel {
-        return NotificationModel(
-            id = ID_KEYBOARD_HIDDEN,
-            channel = CHANNEL_KEYBOARD_HIDDEN,
-            title = getString(R.string.notification_keyboard_hidden_title),
-            text = getString(R.string.notification_keyboard_hidden_text),
-            icon = R.drawable.ic_notification_keyboard_hide,
-            onClickActionId = ACTION_SHOW_KEYBOARD,
-            showOnLockscreen = false,
-            onGoing = true,
-            priority = NotificationCompat.PRIORITY_LOW,
-        )
-    }
+    private fun keyboardHiddenNotification(): NotificationModel = NotificationModel(
+        id = ID_KEYBOARD_HIDDEN,
+        channel = CHANNEL_KEYBOARD_HIDDEN,
+        title = getString(R.string.notification_keyboard_hidden_title),
+        text = getString(R.string.notification_keyboard_hidden_text),
+        icon = R.drawable.ic_notification_keyboard_hide,
+        onClickActionId = ACTION_SHOW_KEYBOARD,
+        showOnLockscreen = false,
+        onGoing = true,
+        priority = NotificationCompat.PRIORITY_LOW,
+    )
 }

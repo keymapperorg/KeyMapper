@@ -2,10 +2,15 @@ package io.github.sds100.keymapper.data.entities
 
 import android.os.Parcelable
 import androidx.annotation.IntDef
-import com.github.salomonbrys.kotson.*
+import com.github.salomonbrys.kotson.byArray
+import com.github.salomonbrys.kotson.byInt
+import com.github.salomonbrys.kotson.byNullableInt
+import com.github.salomonbrys.kotson.byNullableString
+import com.github.salomonbrys.kotson.byString
+import com.github.salomonbrys.kotson.jsonDeserializer
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
-import java.util.*
+import java.util.UUID
 
 /**
  * Created by sds100 on 16/07/2018.
@@ -27,11 +32,11 @@ data class TriggerEntity(
     val mode: Int = DEFAULT_TRIGGER_MODE,
 
     @SerializedName(NAME_FLAGS)
-    val flags: Int = 0
+    val flags: Int = 0,
 ) : Parcelable {
 
     companion object {
-        //DON'T CHANGE THESE. Used for JSON serialization and parsing.
+        // DON'T CHANGE THESE. Used for JSON serialization and parsing.
         const val NAME_KEYS = "keys"
         const val NAME_EXTRAS = "extras"
         const val NAME_MODE = "mode"
@@ -41,7 +46,7 @@ data class TriggerEntity(
         const val SEQUENCE = 1
         const val UNDEFINED = 2
 
-        //DON'T CHANGE THESE AND THEY MUST BE POWERS OF 2!!
+        // DON'T CHANGE THESE AND THEY MUST BE POWERS OF 2!!
         const val TRIGGER_FLAG_VIBRATE = 1
         const val TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION = 2
         const val TRIGGER_FLAG_SCREEN_OFF_TRIGGERS = 4
@@ -93,11 +98,11 @@ data class TriggerEntity(
         val flags: Int = 0,
 
         @SerializedName(NAME_UID)
-        val uid: String = UUID.randomUUID().toString()
+        val uid: String = UUID.randomUUID().toString(),
     ) : Parcelable {
 
         companion object {
-            //DON'T CHANGE THESE. Used for JSON serialization and parsing.
+            // DON'T CHANGE THESE. Used for JSON serialization and parsing.
             const val NAME_KEYCODE = "keyCode"
             const val NAME_DEVICE_ID = "deviceId"
             const val NAME_DEVICE_NAME = "deviceName"
@@ -105,7 +110,7 @@ data class TriggerEntity(
             const val NAME_FLAGS = "flags"
             const val NAME_UID = "uid"
 
-            //IDS! DON'T CHANGE
+            // IDS! DON'T CHANGE
             const val DEVICE_ID_THIS_DEVICE = "io.github.sds100.keymapper.THIS_DEVICE"
             const val DEVICE_ID_ANY_DEVICE = "io.github.sds100.keymapper.ANY_DEVICE"
 
@@ -117,11 +122,18 @@ data class TriggerEntity(
                 val deviceName by it.json.byNullableString(NAME_DEVICE_NAME)
                 val clickType by it.json.byInt(NAME_CLICK_TYPE)
 
-                //nullable because this property was added after backup and restore was released.
+                // nullable because this property was added after backup and restore was released.
                 val flags by it.json.byNullableInt(NAME_FLAGS)
                 val uid by it.json.byNullableString(NAME_UID)
 
-                KeyEntity(keycode, deviceId, deviceName, clickType, flags ?: 0, uid ?: UUID.randomUUID().toString())
+                KeyEntity(
+                    keycode,
+                    deviceId,
+                    deviceName,
+                    clickType,
+                    flags ?: 0,
+                    uid ?: UUID.randomUUID().toString(),
+                )
             }
         }
     }

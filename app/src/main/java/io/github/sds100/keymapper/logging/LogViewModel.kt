@@ -8,11 +8,30 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ifIsData
 import io.github.sds100.keymapper.util.mapData
-import io.github.sds100.keymapper.util.ui.*
+import io.github.sds100.keymapper.util.ui.MultiSelectProvider
+import io.github.sds100.keymapper.util.ui.MultiSelectProviderImpl
+import io.github.sds100.keymapper.util.ui.PopupUi
+import io.github.sds100.keymapper.util.ui.PopupViewModel
+import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
+import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.util.ui.SelectionState
+import io.github.sds100.keymapper.util.ui.TintType
+import io.github.sds100.keymapper.util.ui.showPopup
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.util.*
+import java.util.Date
 
 /**
  * Created by sds100 on 14/05/2021.
@@ -20,8 +39,10 @@ import java.util.*
 
 class LogViewModel(
     private val useCase: DisplayLogUseCase,
-    resourceProvider: ResourceProvider
-) : ViewModel(), PopupViewModel by PopupViewModelImpl(), ResourceProvider by resourceProvider {
+    resourceProvider: ResourceProvider,
+) : ViewModel(),
+    PopupViewModel by PopupViewModelImpl(),
+    ResourceProvider by resourceProvider {
     private val multiSelectProvider: MultiSelectProvider<Int> = MultiSelectProviderImpl()
 
     private val _listItems = MutableStateFlow<State<List<LogEntryListItem>>>(State.Loading)
@@ -47,9 +68,8 @@ class LogViewModel(
     val goBack = _goBack.asSharedFlow()
 
     val dragSelectionHandler = object : DragSelectionProcessor.ISelectionHandler {
-        override fun getSelection(): MutableSet<Int> {
-            return multiSelectProvider.getSelectedIds().toMutableSet()
-        }
+        override fun getSelection(): MutableSet<Int> =
+            multiSelectProvider.getSelectedIds().toMutableSet()
 
         override fun isSelected(index: Int): Boolean {
             listItems.value.ifIsData {
@@ -61,7 +81,12 @@ class LogViewModel(
             return false
         }
 
-        override fun updateSelection(start: Int, end: Int, isSelected: Boolean, calledFromOnStart: Boolean) {
+        override fun updateSelection(
+            start: Int,
+            end: Int,
+            isSelected: Boolean,
+            calledFromOnStart: Boolean,
+        ) {
             listItems.value.ifIsData { listItems ->
                 val selectedListItems = listItems.slice(start..end)
                 val selectedIds = selectedListItems.map { it.id }.toTypedArray()
@@ -83,7 +108,7 @@ class LogViewModel(
         combine(
             useCase.log,
             showShortMessages,
-            multiSelectProvider.state
+            multiSelectProvider.state,
         ) { log, showShortMessages, selectionState ->
             _listItems.value = log.mapData { logEntries ->
                 logEntries.map { entry ->
@@ -101,7 +126,6 @@ class LogViewModel(
 
     fun onMenuItemClick(itemId: Int) {
         viewModelScope.launch {
-
             when (itemId) {
                 R.id.action_clear -> useCase.clearLog()
                 R.id.action_copy -> {
@@ -139,22 +163,23 @@ class LogViewModel(
         }
     }
 
-    private suspend fun getSelectedLogEntries(): Set<Int> {
-        return if (multiSelectProvider.isSelecting()) {
-            multiSelectProvider.getSelectedIds()
+    private suspend fun getSelectedLogEntries(): Set<Int> = if (multiSelectProvider.isSelecting()) {
+        multiSelectProvider.getSelectedIds()
+    } else {
+        val logState = useCase.log.first()
+
+        if (logState is State.Data) {
+            logState.data.map { it.id }.toSet()
         } else {
-            val logState = useCase.log.first()
-
-            if (logState is State.Data) {
-                logState.data.map { it.id }.toSet()
-            } else {
-                emptySet()
-            }
+            emptySet()
         }
-
     }
 
-    private fun createListItem(logEntry: LogEntry, shortMessage: Boolean, isSelected: Boolean): LogEntryListItem {
+    private fun createListItem(
+        logEntry: LogEntry,
+        shortMessage: Boolean,
+        isSelected: Boolean,
+    ): LogEntryListItem {
         val textTint = if (logEntry.severity == LogSeverity.ERROR) {
             TintType.Error
         } else {
@@ -172,13 +197,13 @@ class LogViewModel(
             time = dateFormat.format(Date(logEntry.time)),
             textTint = textTint,
             message = message,
-            isSelected = isSelected
+            isSelected = isSelected,
         )
     }
 
     class Factory(
         private val useCase: DisplayLogUseCase,
-        private val resourceProvider: ResourceProvider
+        private val resourceProvider: ResourceProvider,
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -188,5 +213,6 @@ class LogViewModel(
 }
 
 enum class LogAppBarState {
-    MULTI_SELECTING, NORMAL
+    MULTI_SELECTING,
+    NORMAL,
 }

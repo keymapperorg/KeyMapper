@@ -25,7 +25,7 @@ data class KeyMap(
     val trigger: KeyMapTrigger = KeyMapTrigger(),
     override val actionList: List<KeyMapAction> = emptyList(),
     override val constraintState: ConstraintState = ConstraintState(),
-    override val isEnabled: Boolean = true
+    override val isEnabled: Boolean = true,
 ) : Mapping<KeyMapAction> {
 
     override val showToast: Boolean
@@ -37,47 +37,37 @@ data class KeyMap(
     override val vibrateDuration: Int?
         get() = trigger.vibrateDuration
 
-    fun isRepeatingActionsAllowed(): Boolean {
-        return KeyMapController.performActionOnDown(trigger)
-    }
+    fun isRepeatingActionsAllowed(): Boolean = KeyMapController.performActionOnDown(trigger)
 
-    fun isChangingActionRepeatRateAllowed(action: KeyMapAction): Boolean {
-        return action.repeat && isRepeatingActionsAllowed()
-    }
+    fun isChangingActionRepeatRateAllowed(action: KeyMapAction): Boolean =
+        action.repeat && isRepeatingActionsAllowed()
 
-    fun isChangingActionRepeatDelayAllowed(action: KeyMapAction): Boolean {
-        return action.repeat && isRepeatingActionsAllowed()
-    }
+    fun isChangingActionRepeatDelayAllowed(action: KeyMapAction): Boolean =
+        action.repeat && isRepeatingActionsAllowed()
 
-    fun isHoldingDownActionAllowed(action: KeyMapAction): Boolean {
-        return KeyMapController.performActionOnDown(trigger) && action.data.canBeHeldDown()
-    }
+    fun isHoldingDownActionAllowed(action: KeyMapAction): Boolean =
+        KeyMapController.performActionOnDown(trigger) && action.data.canBeHeldDown()
 
-    fun isHoldingDownActionBeforeRepeatingAllowed(action: KeyMapAction): Boolean {
-        return action.repeat && action.holdDown
-    }
+    fun isHoldingDownActionBeforeRepeatingAllowed(action: KeyMapAction): Boolean =
+        action.repeat && action.holdDown
 
-    fun isChangingRepeatModeAllowed(action: KeyMapAction): Boolean {
-        return action.repeat && isRepeatingActionsAllowed()
-    }
+    fun isChangingRepeatModeAllowed(action: KeyMapAction): Boolean =
+        action.repeat && isRepeatingActionsAllowed()
 
-    fun isChangingRepeatLimitAllowed(action: KeyMapAction): Boolean {
-        return action.repeat && isRepeatingActionsAllowed()
-    }
+    fun isChangingRepeatLimitAllowed(action: KeyMapAction): Boolean =
+        action.repeat && isRepeatingActionsAllowed()
 
-    fun isStopHoldingDownActionWhenTriggerPressedAgainAllowed(action: KeyMapAction): Boolean {
-        return action.holdDown && !action.repeat
-    }
+    fun isStopHoldingDownActionWhenTriggerPressedAgainAllowed(action: KeyMapAction): Boolean =
+        action.holdDown && !action.repeat
 }
 
 /**
  * @return whether this key map requires an input method to send the key events
  * because otherwise it won't be detected.
  */
-fun KeyMap.requiresImeKeyEventForwarding(): Boolean {
-    return trigger.keys.any { it.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || it.keyCode == KeyEvent.KEYCODE_VOLUME_UP }
-        && actionList.any { it.data is ActionData.AnswerCall || it.data is ActionData.EndCall }
-}
+fun KeyMap.requiresImeKeyEventForwarding(): Boolean =
+    trigger.keys.any { it.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || it.keyCode == KeyEvent.KEYCODE_VOLUME_UP } &&
+        actionList.any { it.data is ActionData.AnswerCall || it.data is ActionData.EndCall }
 
 object KeyMapEntityMapper {
     fun fromEntity(entity: KeyMapEntity): KeyMap {
@@ -94,12 +84,11 @@ object KeyMapEntityMapper {
             trigger = KeymapTriggerEntityMapper.fromEntity(entity.trigger),
             actionList = actionList,
             constraintState = ConstraintState(constraintList, constraintMode),
-            isEnabled = entity.isEnabled
+            isEnabled = entity.isEnabled,
         )
     }
 
     fun toEntity(keyMap: KeyMap, dbId: Long): KeyMapEntity {
-
         val actionEntityList = KeymapActionEntityMapper.toEntity(keyMap)
 
         return KeyMapEntity(
@@ -108,12 +97,12 @@ object KeyMapEntityMapper {
             actionList = actionEntityList,
             constraintList = keyMap.constraintState.constraints.map {
                 ConstraintEntityMapper.toEntity(
-                    it
+                    it,
                 )
             },
             constraintMode = ConstraintModeEntityMapper.toEntity(keyMap.constraintState.mode),
             isEnabled = keyMap.isEnabled,
-            uid = keyMap.uid
+            uid = keyMap.uid,
         )
     }
 }

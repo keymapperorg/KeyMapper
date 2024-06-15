@@ -24,7 +24,7 @@ import timber.log.Timber
 /**
  * Mahoosive update/overhaul from 1.0 to 2.0
  */
-object Migration_1_2 {
+object Migration1To2 {
     private const val FLAG_VIBRATE_1 = 4
     private const val FLAG_LONG_PRESS_1 = 1
     private const val FLAG_SHOW_VOLUME_UI_1 = 2
@@ -46,7 +46,7 @@ object Migration_1_2 {
                 `flags` INTEGER NOT NULL,
                 `folder_name` TEXT,
                 `is_enabled` INTEGER NOT NULL)
-                """.trimIndent()
+            """.trimIndent(),
         )
 
         val query = SupportSQLiteQueryBuilder
@@ -59,8 +59,8 @@ object Migration_1_2 {
                     "is_enabled",
                     "action_type",
                     "action_data",
-                    "action_extras"
-                )
+                    "action_extras",
+                ),
             )
             .create()
 
@@ -103,9 +103,13 @@ object Migration_1_2 {
 
                     triggerListOld.forEach { trigger ->
                         val newTriggerKeys = trigger["keys"].asJsonArray.map {
-                            val clickType = if (isLongPress) 1 else 0 //long press else short press
+                            val clickType = if (isLongPress) 1 else 0 // long press else short press
 
-                            createTriggerKey2(it.asInt, TriggerEntity.KeyEntity.DEVICE_ID_ANY_DEVICE, clickType)
+                            createTriggerKey2(
+                                it.asInt,
+                                TriggerEntity.KeyEntity.DEVICE_ID_ANY_DEVICE,
+                                clickType,
+                            )
                         }
 
                         val newTriggerKeysJsonArray = JsonArray().apply {
@@ -142,25 +146,23 @@ object Migration_1_2 {
                                 actionDataOld,
                                 actionExtrasOld
                                     ?: JsonArray(),
-                                actionFlags
-                            )
+                                actionFlags,
+                            ),
                         )
                     }
 
                     val flagsNew = if (flagsOld.hasFlag(FLAG_VIBRATE_1)) FLAG_VIBRATE_2 else 0
 
                     triggerListNew.forEach {
-
                         execSQL(
                             """
                             INSERT INTO 'new_keymaps' ('id', 'trigger', 'action_list', 'constraint_list', 'constraint_mode', 'flags', 'folder_name', 'is_enabled')
-                            VALUES ($id, '${gson.toJson(it)}', '${gson.toJson(actionListNew)}', '[]', 1, '$flagsNew', 'NULL', ${isEnabledOld})
-                            """.trimIndent()
+                            VALUES ($id, '${gson.toJson(it)}', '${gson.toJson(actionListNew)}', '[]', 1, '$flagsNew', 'NULL', $isEnabledOld)
+                            """.trimIndent(),
                         )
                         id++
                     }
                 }
-
             } catch (e: Exception) {
                 Timber.e(e)
             } finally {
@@ -178,18 +180,18 @@ object Migration_1_2 {
             putAll(
                 "keyCode" to keyCode,
                 "deviceId" to deviceId,
-                "clickType" to clickType
+                "clickType" to clickType,
             )
         }
 
     private fun createTrigger2(
         keys: JsonArray = JsonArray(),
-        mode: Int = MODE_SEQUENCE
+        mode: Int = MODE_SEQUENCE,
     ) = JsonObject().apply {
         putAll(
             "keys" to keys,
             "extras" to JsonArray(),
-            "mode" to mode
+            "mode" to mode,
         )
     }
 
@@ -197,13 +199,13 @@ object Migration_1_2 {
         type: String,
         data: String,
         extras: JsonArray,
-        flags: Int
+        flags: Int,
     ) = JsonObject().apply {
         putAll(
             "type" to type,
             "data" to data,
             "extras" to extras,
-            "flags" to flags
+            "flags" to flags,
         )
     }
 }

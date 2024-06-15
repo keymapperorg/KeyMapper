@@ -15,8 +15,9 @@ import kotlinx.coroutines.flow.mapNotNull
 class DetectFingerprintMapsUseCaseImpl(
     private val repository: FingerprintMapRepository,
     private val areSupportedUseCase: AreFingerprintGesturesSupportedUseCase,
-    detectMappingUseCase: DetectMappingUseCase
-) : DetectFingerprintMapsUseCase, DetectMappingUseCase by detectMappingUseCase {
+    detectMappingUseCase: DetectMappingUseCase,
+) : DetectFingerprintMapsUseCase,
+    DetectMappingUseCase by detectMappingUseCase {
     override val fingerprintMaps: Flow<List<FingerprintMap>> =
         repository.fingerprintMapList
             .mapNotNull { state ->

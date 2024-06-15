@@ -72,7 +72,7 @@ class ChooseAppShortcutFragment : SimpleRecyclerViewFragment<AppShortcutListItem
 
     override fun populateList(
         recyclerView: EpoxyRecyclerView,
-        listItems: List<AppShortcutListItem>
+        listItems: List<AppShortcutListItem>,
     ) {
         binding.epoxyRecyclerView.withModels {
             listItems.forEach {
@@ -92,9 +92,7 @@ class ChooseAppShortcutFragment : SimpleRecyclerViewFragment<AppShortcutListItem
         viewModel.searchQuery.value = query
     }
 
-    override fun getRequestKey(): String {
-        return args.requestKey
-    }
+    override fun getRequestKey(): String = args.requestKey
 
     private fun launchShortcutConfiguration(shortcutInfo: AppShortcutInfo) {
         Intent().apply {

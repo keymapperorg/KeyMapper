@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.map
 
 class ConfigKeyEventUseCaseImpl(
     private val preferenceRepository: PreferenceRepository,
-    private val devicesAdapter: DevicesAdapter
+    private val devicesAdapter: DevicesAdapter,
 ) : ConfigKeyEventUseCase {
     override val inputDevices: Flow<List<InputDeviceInfo>> =
         devicesAdapter.connectedInputDevices.map { state ->

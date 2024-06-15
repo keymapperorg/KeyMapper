@@ -14,5 +14,5 @@ data class SliderModel(
     val min: Int,
     val max: Int,
     val stepSize: Int,
-    val customButtonDefaultText: String? = null
+    val customButtonDefaultText: String? = null,
 )

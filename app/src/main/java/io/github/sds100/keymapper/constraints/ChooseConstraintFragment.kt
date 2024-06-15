@@ -27,8 +27,7 @@ import kotlinx.serialization.json.Json
 /**
  * A placeholder fragment containing a simple view.
  */
-class ChooseConstraintFragment
-    : SimpleRecyclerViewFragment<SimpleListItem>() {
+class ChooseConstraintFragment : SimpleRecyclerViewFragment<SimpleListItem>() {
 
     companion object {
         const val EXTRA_CONSTRAINT = "extra_constraint"
@@ -74,7 +73,7 @@ class ChooseConstraintFragment
 
     override fun populateList(
         recyclerView: EpoxyRecyclerView,
-        listItems: List<SimpleListItem>
+        listItems: List<SimpleListItem>,
     ) {
         RecyclerViewUtils.setSpanCountForSimpleListItemGrid(recyclerView)
 
@@ -103,7 +102,5 @@ class ChooseConstraintFragment
         }
     }
 
-    override fun getRequestKey(): String {
-        return navArgs.requestKey
-    }
+    override fun getRequestKey(): String = navArgs.requestKey
 }

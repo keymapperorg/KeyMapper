@@ -2,13 +2,15 @@
 
 package io.github.sds100.keymapper.data.migration.fingerprintmaps
 
-import com.github.salomonbrys.kotson.*
+import com.github.salomonbrys.kotson.byArray
+import com.github.salomonbrys.kotson.byString
+import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonObject
 
 /**
  * #621 replace root-only system action ids with their non-root counterpart.
  */
-object FingerprintMapMigration_1_2 {
+object FingerprintMapMigration1To2 {
     private const val NAME_VERSION = "db_version"
     private const val NAME_ACTION_LIST = "action_list"
 

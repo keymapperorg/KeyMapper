@@ -25,61 +25,44 @@ data class FingerprintMap(
     override val isEnabled: Boolean = true,
     override val vibrate: Boolean = false,
     override val vibrateDuration: Int? = null,
-    override val showToast: Boolean = false
+    override val showToast: Boolean = false,
 ) : Mapping<FingerprintMapAction> {
 
-    fun isRepeatingActionsAllowed(): Boolean {
-        return true
-    }
+    fun isRepeatingActionsAllowed(): Boolean = true
 
-    fun isChangingRepeatModeAllowed(action: FingerprintMapAction): Boolean {
-        return action.repeat && isRepeatingActionsAllowed()
-    }
+    fun isChangingRepeatModeAllowed(action: FingerprintMapAction): Boolean =
+        action.repeat && isRepeatingActionsAllowed()
 
-    fun isChangingRepeatLimitAllowed(action: FingerprintMapAction): Boolean {
-        return action.repeat
-    }
+    fun isChangingRepeatLimitAllowed(action: FingerprintMapAction): Boolean = action.repeat
 
-    fun isChangingActionRepeatRateAllowed(action: FingerprintMapAction): Boolean {
-        return action.repeat
-    }
+    fun isChangingActionRepeatRateAllowed(action: FingerprintMapAction): Boolean = action.repeat
 
-    fun isHoldingDownActionUntilSwipedAgainAllowed(action: FingerprintMapAction): Boolean {
-        return action.data.canBeHeldDown()
-    }
+    fun isHoldingDownActionUntilSwipedAgainAllowed(action: FingerprintMapAction): Boolean =
+        action.data.canBeHeldDown()
 
-    fun isHoldingDownActionBeforeRepeatingAllowed(action: FingerprintMapAction): Boolean {
-        return action.repeat && action.holdDownUntilSwipedAgain
-    }
+    fun isHoldingDownActionBeforeRepeatingAllowed(action: FingerprintMapAction): Boolean =
+        action.repeat && action.holdDownUntilSwipedAgain
 
-    fun isVibrateAllowed(): Boolean {
-        return true
-    }
+    fun isVibrateAllowed(): Boolean = true
 
-    fun isChangingVibrationDurationAllowed(): Boolean {
-        return vibrate
-    }
+    fun isChangingVibrationDurationAllowed(): Boolean = vibrate
 }
 
 object FingerprintMapIdEntityMapper {
-    fun toEntity(id: FingerprintMapId): Int {
-        return when (id) {
-            FingerprintMapId.SWIPE_DOWN -> FingerprintMapEntity.ID_SWIPE_DOWN
-            FingerprintMapId.SWIPE_UP -> FingerprintMapEntity.ID_SWIPE_UP
-            FingerprintMapId.SWIPE_LEFT -> FingerprintMapEntity.ID_SWIPE_LEFT
-            FingerprintMapId.SWIPE_RIGHT -> FingerprintMapEntity.ID_SWIPE_RIGHT
-        }
+    fun toEntity(id: FingerprintMapId): Int = when (id) {
+        FingerprintMapId.SWIPE_DOWN -> FingerprintMapEntity.ID_SWIPE_DOWN
+        FingerprintMapId.SWIPE_UP -> FingerprintMapEntity.ID_SWIPE_UP
+        FingerprintMapId.SWIPE_LEFT -> FingerprintMapEntity.ID_SWIPE_LEFT
+        FingerprintMapId.SWIPE_RIGHT -> FingerprintMapEntity.ID_SWIPE_RIGHT
     }
 
-    fun fromEntity(id: Int): FingerprintMapId {
-        return when (id) {
-            FingerprintMapEntity.ID_SWIPE_DOWN -> FingerprintMapId.SWIPE_DOWN
-            FingerprintMapEntity.ID_SWIPE_UP -> FingerprintMapId.SWIPE_UP
-            FingerprintMapEntity.ID_SWIPE_LEFT -> FingerprintMapId.SWIPE_LEFT
-            FingerprintMapEntity.ID_SWIPE_RIGHT -> FingerprintMapId.SWIPE_RIGHT
+    fun fromEntity(id: Int): FingerprintMapId = when (id) {
+        FingerprintMapEntity.ID_SWIPE_DOWN -> FingerprintMapId.SWIPE_DOWN
+        FingerprintMapEntity.ID_SWIPE_UP -> FingerprintMapId.SWIPE_UP
+        FingerprintMapEntity.ID_SWIPE_LEFT -> FingerprintMapId.SWIPE_LEFT
+        FingerprintMapEntity.ID_SWIPE_RIGHT -> FingerprintMapId.SWIPE_RIGHT
 
-            else -> throw IllegalArgumentException("Don't know how to get fingerprint map with id $id")
-        }
+        else -> throw IllegalArgumentException("Don't know how to get fingerprint map with id $id")
     }
 }
 
@@ -103,7 +86,7 @@ object FingerprintMapEntityMapper {
             vibrate = entity.flags.hasFlag(FingerprintMapEntity.FLAG_VIBRATE),
             vibrateDuration = entity.extras.getData(FingerprintMapEntity.EXTRA_VIBRATION_DURATION)
                 .valueOrNull()?.toIntOrNull(),
-            showToast = entity.flags.hasFlag(FingerprintMapEntity.FLAG_SHOW_TOAST)
+            showToast = entity.flags.hasFlag(FingerprintMapEntity.FLAG_SHOW_TOAST),
         )
     }
 
@@ -113,8 +96,8 @@ object FingerprintMapEntityMapper {
                 yield(
                     Extra(
                         FingerprintMapEntity.EXTRA_VIBRATION_DURATION,
-                        model.vibrateDuration.toString()
-                    )
+                        model.vibrateDuration.toString(),
+                    ),
                 )
             }
         }.toList()
@@ -134,13 +117,13 @@ object FingerprintMapEntityMapper {
             actionList = FingerprintMapActionEntityMapper.toEntity(model),
             constraintList = model.constraintState.constraints.map {
                 ConstraintEntityMapper.toEntity(
-                    it
+                    it,
                 )
             },
             constraintMode = ConstraintModeEntityMapper.toEntity(model.constraintState.mode),
             extras = extras,
             flags = flags,
-            isEnabled = model.isEnabled
+            isEnabled = model.isEnabled,
         )
     }
 }

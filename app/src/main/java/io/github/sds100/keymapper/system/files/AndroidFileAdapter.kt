@@ -39,13 +39,10 @@ class AndroidFileAdapter(context: Context) : FileAdapter {
         return DocumentFileWrapper(documentFile, ctx)
     }
 
-    override fun openAsset(fileName: String): InputStream {
-        return ctx.assets.open(fileName)
-    }
+    override fun openAsset(fileName: String): InputStream = ctx.assets.open(fileName)
 
-    override fun getPicturesFolder(): String {
-        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).path
-    }
+    override fun getPicturesFolder(): String =
+        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).path
 
     override fun createZipFile(destination: IFile, files: Set<IFile>): Result<*> {
         val zipUid = UUID.randomUUID().toString()
@@ -69,7 +66,6 @@ class AndroidFileAdapter(context: Context) : FileAdapter {
                     input.copyTo(output)
                 }
             }
-
         } finally {
             tempZipFile.delete()
         }

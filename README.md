@@ -1,7 +1,8 @@
-**DEVELOPMENT STOPPED. LOOKING FOR MAINTAINER**
+**DEVELOPMENT STOPPED.**
 > Well, working on this project was a fun ride 🎢! This project has taught me so much about Android, software development and how to collaborate with an online community. It has been my dream to lead a big FOSS project with people from all over the world so a **huge** thank you goes to everyone that spread the word and helped on GitHub along the way ☺. Unfortunately, I do not have any more time to work on this project - I'm now studying Computer Science at university and I have landed software-dev side jobs, which has taken up any free-time I did have to code on the side.
-> 
-> A special thank you goes to everyone in the [Team](https://docs.keymapper.club/#our-team) for their long-term committment to the project and for being so engaged with the community 👏 🎉. 
+>
+> A special thank you goes to everyone in the [Team](https://docs.keymapper.club/#our-team) for their long-term
+> commitment to the project and for being so engaged with the community 👏 🎉.
 > The Discord server, website and app store listing will still be up! So don't worry, you can still map your keys to your heart's content. ❤
 
 <p align="center">
@@ -21,11 +22,14 @@ Key Mapper is a free and open source Android app that can remap your buttons and
 <noscript><a href="https://buy.stripe.com/00g16L9YEabldDWdQQ"><img alt="Donate using Stripe" src="https://img.shields.io/badge/Donate-Stripe-blueviolet?style=for-the-badge&logo=stripe"></a></noscript>
 </p>
 
-[![Discord](https://img.shields.io/discord/717499872219103263)](https://discord.gg/Suj6nyw)
 ![GitHub release](https://img.shields.io/github/release/keymapperorg/KeyMapper.svg)
 ![fdroid release](https://img.shields.io/f-droid/v/io.github.sds100.keymapper.svg)
 
-🎉 Check out the new [website](https://docs.keymapper.club) for more information and help! 🎉
+🎉 Check out the [website](https://docs.keymapper.club) for more information and help! 🎉
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=keymapperorg/KeyMapper&type=Date)](https://star-history.com/#keymapperorg/KeyMapper&Date)
 
 ### How do I contribute?
 There are many ways to help with this project. 😃

@@ -32,28 +32,26 @@ data class TriggerKey(
 
 object KeymapTriggerKeyEntityMapper {
     fun fromEntity(
-        entity: TriggerEntity.KeyEntity
-    ): TriggerKey {
-        return TriggerKey(
-            uid = entity.uid,
-            keyCode = entity.keyCode,
-            device = when (entity.deviceId) {
-                TriggerEntity.KeyEntity.DEVICE_ID_THIS_DEVICE -> TriggerKeyDevice.Internal
-                TriggerEntity.KeyEntity.DEVICE_ID_ANY_DEVICE -> TriggerKeyDevice.Any
-                else -> TriggerKeyDevice.External(
-                    entity.deviceId,
-                    entity.deviceName ?: ""
-                )
-            },
-            clickType = when (entity.clickType) {
-                TriggerEntity.SHORT_PRESS -> ClickType.SHORT_PRESS
-                TriggerEntity.LONG_PRESS -> ClickType.LONG_PRESS
-                TriggerEntity.DOUBLE_PRESS -> ClickType.DOUBLE_PRESS
-                else -> ClickType.SHORT_PRESS
-            },
-            consumeKeyEvent = !entity.flags.hasFlag(TriggerEntity.KeyEntity.FLAG_DO_NOT_CONSUME_KEY_EVENT)
-        )
-    }
+        entity: TriggerEntity.KeyEntity,
+    ): TriggerKey = TriggerKey(
+        uid = entity.uid,
+        keyCode = entity.keyCode,
+        device = when (entity.deviceId) {
+            TriggerEntity.KeyEntity.DEVICE_ID_THIS_DEVICE -> TriggerKeyDevice.Internal
+            TriggerEntity.KeyEntity.DEVICE_ID_ANY_DEVICE -> TriggerKeyDevice.Any
+            else -> TriggerKeyDevice.External(
+                entity.deviceId,
+                entity.deviceName ?: "",
+            )
+        },
+        clickType = when (entity.clickType) {
+            TriggerEntity.SHORT_PRESS -> ClickType.SHORT_PRESS
+            TriggerEntity.LONG_PRESS -> ClickType.LONG_PRESS
+            TriggerEntity.DOUBLE_PRESS -> ClickType.DOUBLE_PRESS
+            else -> ClickType.SHORT_PRESS
+        },
+        consumeKeyEvent = !entity.flags.hasFlag(TriggerEntity.KeyEntity.FLAG_DO_NOT_CONSUME_KEY_EVENT),
+    )
 
     fun toEntity(key: TriggerKey): TriggerEntity.KeyEntity {
         val deviceId = when (key.device) {
@@ -86,7 +84,7 @@ object KeymapTriggerKeyEntityMapper {
             deviceName = deviceName,
             clickType = clickType,
             flags = flags,
-            uid = key.uid
+            uid = key.uid,
         )
     }
 }

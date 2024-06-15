@@ -23,7 +23,8 @@ class ShizukuInputEventInjector : InputEventInjector {
     }
 
     private val iInputManager: IInputManager by lazy {
-        val binder = ShizukuBinderWrapper(SystemServiceHelper.getSystemService(Context.INPUT_SERVICE))
+        val binder =
+            ShizukuBinderWrapper(SystemServiceHelper.getSystemService(Context.INPUT_SERVICE))
         IInputManager.Stub.asInterface(binder)
     }
 
@@ -45,7 +46,7 @@ class ShizukuInputEventInjector : InputEventInjector {
             model.repeat,
             model.metaState,
             model.deviceId,
-            model.scanCode
+            model.scanCode,
         )
 
         iInputManager.injectInputEvent(keyEvent, INJECT_INPUT_EVENT_MODE_ASYNC)

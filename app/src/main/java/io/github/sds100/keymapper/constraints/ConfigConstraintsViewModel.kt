@@ -40,7 +40,7 @@ class ConfigConstraintsViewModel(
     private val display: DisplayConstraintUseCase,
     private val config: ConfigMappingUseCase<*, *>,
     private val allowedConstraints: List<ChooseConstraintType>,
-    resourceProvider: ResourceProvider
+    resourceProvider: ResourceProvider,
 ) : ResourceProvider by resourceProvider,
     PopupViewModel by PopupViewModelImpl(),
     NavigationViewModel by NavigationViewModelImpl() {
@@ -78,7 +78,7 @@ class ConfigConstraintsViewModel(
         if (isDuplicate) {
             coroutineScope.launch {
                 val snackBar = PopupUi.SnackBar(
-                    message = getString(R.string.error_duplicate_constraint)
+                    message = getString(R.string.error_duplicate_constraint),
                 )
 
                 showPopup("duplicate_constraint", snackBar)
@@ -135,28 +135,26 @@ class ConfigConstraintsViewModel(
             tintType = icon?.tintType ?: TintType.Error,
             icon = icon?.drawable ?: getDrawable(R.drawable.ic_baseline_error_outline_24),
             title = title,
-            errorMessage = error?.getFullMessage(this)
+            errorMessage = error?.getFullMessage(this),
         )
     }
 
-    private fun buildState(state: State<ConstraintState>): ConstraintListViewState {
-        return when (state) {
-            is State.Data ->
-                ConstraintListViewState(
-                    constraintList = State.Data(state.data.constraints.map { createListItem(it) }),
-                    showModeRadioButtons = state.data.constraints.size > 1,
-                    isAndModeChecked = state.data.mode == ConstraintMode.AND,
-                    isOrModeChecked = state.data.mode == ConstraintMode.OR
-                )
+    private fun buildState(state: State<ConstraintState>): ConstraintListViewState = when (state) {
+        is State.Data ->
+            ConstraintListViewState(
+                constraintList = State.Data(state.data.constraints.map { createListItem(it) }),
+                showModeRadioButtons = state.data.constraints.size > 1,
+                isAndModeChecked = state.data.mode == ConstraintMode.AND,
+                isOrModeChecked = state.data.mode == ConstraintMode.OR,
+            )
 
-            is State.Loading ->
-                ConstraintListViewState(
-                    constraintList = State.Loading,
-                    showModeRadioButtons = false,
-                    isAndModeChecked = false,
-                    isOrModeChecked = false
-                )
-        }
+        is State.Loading ->
+            ConstraintListViewState(
+                constraintList = State.Loading,
+                showModeRadioButtons = false,
+                isAndModeChecked = false,
+                isOrModeChecked = false,
+            )
     }
 }
 
@@ -164,5 +162,5 @@ data class ConstraintListViewState(
     val constraintList: State<List<ConstraintListItem>>,
     val showModeRadioButtons: Boolean,
     val isAndModeChecked: Boolean,
-    val isOrModeChecked: Boolean
+    val isOrModeChecked: Boolean,
 )

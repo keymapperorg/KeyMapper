@@ -16,7 +16,7 @@ import io.github.sds100.keymapper.util.ui.ResourceProvider
 abstract class BaseMappingListItemCreator<M : Mapping<A>, A : Action>(
     private val displayMapping: DisplaySimpleMappingUseCase,
     private val actionUiHelper: ActionUiHelper<M, A>,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
 ) : ResourceProvider by resourceProvider {
 
     private val constraintUiHelper = ConstraintUiHelper(displayMapping, resourceProvider)
@@ -26,13 +26,17 @@ abstract class BaseMappingListItemCreator<M : Mapping<A>, A : Action>(
 
         mapping.actionList.forEach { action ->
             val actionTitle: String = if (action.multiplier != null) {
-                "${action.multiplier}x ${actionUiHelper.getTitle(action.data, showDeviceDescriptors)}"
+                "${action.multiplier}x ${
+                    actionUiHelper.getTitle(
+                        action.data,
+                        showDeviceDescriptors,
+                    )
+                }"
             } else {
                 actionUiHelper.getTitle(action.data, showDeviceDescriptors)
             }
 
             val chipText = buildString {
-
                 append(actionTitle)
 
                 actionUiHelper.getOptionLabels(mapping, action).forEach { label ->
@@ -49,8 +53,8 @@ abstract class BaseMappingListItemCreator<M : Mapping<A>, A : Action>(
                     append(
                         getString(
                             R.string.action_title_wait,
-                            action.delayBeforeNextAction!!
-                        )
+                            action.delayBeforeNextAction!!,
+                        ),
                     )
                 }
             }
@@ -68,7 +72,6 @@ abstract class BaseMappingListItemCreator<M : Mapping<A>, A : Action>(
                 yield(chip)
             }
         }
-
     }.toList()
 
     fun getConstraintChipList(mapping: M): List<ChipUi> = sequence {
@@ -82,8 +85,8 @@ abstract class BaseMappingListItemCreator<M : Mapping<A>, A : Action>(
                 yield(
                     ChipUi.Transparent(
                         id = constraintSeparatorText,
-                        text = constraintSeparatorText
-                    )
+                        text = constraintSeparatorText,
+                    ),
                 )
             }
 
@@ -95,13 +98,13 @@ abstract class BaseMappingListItemCreator<M : Mapping<A>, A : Action>(
                 ChipUi.Normal(
                     id = constraint.uid,
                     text = text,
-                    icon = icon
+                    icon = icon,
                 )
             } else {
                 ChipUi.Error(
                     constraint.uid,
                     text,
-                    error
+                    error,
                 )
             }
 
@@ -112,7 +115,7 @@ abstract class BaseMappingListItemCreator<M : Mapping<A>, A : Action>(
     fun createExtraInfoString(
         mapping: M,
         actionChipList: List<ChipUi>,
-        constraintChipList: List<ChipUi>
+        constraintChipList: List<ChipUi>,
     ) = buildString {
         val midDot by lazy { getString(R.string.middot) }
 

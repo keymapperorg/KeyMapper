@@ -23,7 +23,7 @@ import io.github.sds100.keymapper.util.viewLifecycleScope
 
 fun EpoxyController.configuredRadioButtonTriple(
     model: RadioButtonTripleListItem,
-    onCheckedChange: (buttonId: String, isChecked: Boolean) -> Unit
+    onCheckedChange: (buttonId: String, isChecked: Boolean) -> Unit,
 ) {
     radioButtonTriple {
         id(model.id)
@@ -41,7 +41,7 @@ fun EpoxyController.configuredRadioButtonTriple(
 
 fun EpoxyController.configuredRadioButtonPair(
     model: RadioButtonPairListItem,
-    onCheckedChange: (buttonId: String, isChecked: Boolean) -> Unit
+    onCheckedChange: (buttonId: String, isChecked: Boolean) -> Unit,
 ) {
     radioButtonPair {
         id(model.id)
@@ -58,7 +58,7 @@ fun EpoxyController.configuredRadioButtonPair(
 
 fun EpoxyController.configuredCheckBox(
     model: CheckBoxListItem,
-    onCheckedChange: (checked: Boolean) -> Unit
+    onCheckedChange: (checked: Boolean) -> Unit,
 ) {
     checkbox {
         id(model.id)
@@ -67,7 +67,7 @@ fun EpoxyController.configuredCheckBox(
         onBind { bindingModel, view, _ ->
 
             (view.dataBinding as ListItemCheckboxBinding).checkBox.apply {
-                //this is very important so checkboxes in other recycler views aren't affected by the checked state changing.
+                // this is very important so checkboxes in other recycler views aren't affected by the checked state changing.
                 setOnCheckedChangeListener(null)
 
                 isChecked = bindingModel.model().isChecked
@@ -84,7 +84,7 @@ fun EpoxyController.configuredCheckBox(
 fun EpoxyController.configuredSlider(
     fragment: Fragment,
     model: SliderListItem,
-    onValueChanged: (newValue: Defaultable<Int>) -> Unit
+    onValueChanged: (newValue: Defaultable<Int>) -> Unit,
 ) {
     fragment.apply {
         slider {
@@ -98,7 +98,6 @@ fun EpoxyController.configuredSlider(
              */
             onSliderTouchListener(object : Slider.OnSliderTouchListener {
                 override fun onStartTrackingTouch(slider: Slider) {
-
                 }
 
                 override fun onStopTrackingTouch(slider: Slider) {
@@ -129,7 +128,7 @@ fun EpoxyController.configuredSlider(
                     val newValue = requireContext().editTextNumberAlertDialog(
                         viewLifecycleOwner,
                         hint = model.label,
-                        min = model.sliderModel.min
+                        min = model.sliderModel.min,
                     ) ?: return@launchWhenResumed
 
                     onValueChanged.invoke(Defaultable.Custom(newValue))

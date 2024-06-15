@@ -32,7 +32,7 @@ class AutoSwitchImeController(
     private val devicesAdapter: DevicesAdapter,
     private val popupMessageAdapter: PopupMessageAdapter,
     private val resourceProvider: ResourceProvider,
-    private val accessibilityServiceAdapter: ServiceAdapter
+    private val accessibilityServiceAdapter: ServiceAdapter,
 ) : PreferenceRepository by preferenceRepository {
     private val imeHelper = KeyMapperImeHelper(inputMethodAdapter)
 
@@ -47,7 +47,7 @@ class AutoSwitchImeController(
 
     private val toggleKeyboardOnToggleKeymaps by PrefDelegate(
         Keys.toggleKeyboardOnToggleKeymaps,
-        false
+        false,
     )
 
     private var changeImeOnInputFocus: Boolean = false
@@ -116,7 +116,7 @@ class AutoSwitchImeController(
     }
 
     private suspend fun chooseIncompatibleIme(imePickerAllowed: Boolean) {
-        //only choose the keyboard if the correct one isn't already chosen
+        // only choose the keyboard if the correct one isn't already chosen
         if (!imeHelper.isCompatibleImeChosen()) {
             return
         }
@@ -142,7 +142,7 @@ class AutoSwitchImeController(
     }
 
     private suspend fun chooseCompatibleIme(imePickerAllowed: Boolean) {
-        //only choose the keyboard if the correct one isn't already chosen
+        // only choose the keyboard if the correct one isn't already chosen
         if (imeHelper.isCompatibleImeChosen()) {
             return
         }

@@ -18,7 +18,6 @@ object SettingsUtils {
 
         return try {
             when (T::class) {
-
                 Int::class -> Settings.System.getInt(contentResolver, name) as T?
                 String::class -> Settings.System.getString(contentResolver, name) as T?
                 Float::class -> Settings.System.getFloat(contentResolver, name) as T?
@@ -41,7 +40,6 @@ object SettingsUtils {
 
         return try {
             when (T::class) {
-
                 Int::class -> Settings.Secure.getInt(contentResolver, name) as T?
                 String::class -> Settings.Secure.getString(contentResolver, name) as T?
                 Float::class -> Settings.Secure.getFloat(contentResolver, name) as T?
@@ -64,7 +62,6 @@ object SettingsUtils {
 
         return try {
             when (T::class) {
-
                 Int::class -> Settings.Global.getInt(contentResolver, name) as T?
                 String::class -> Settings.Global.getString(contentResolver, name) as T?
                 Float::class -> Settings.Global.getFloat(contentResolver, name) as T?
@@ -87,7 +84,6 @@ object SettingsUtils {
         val contentResolver = ctx.contentResolver
 
         return when (T::class) {
-
             Int::class -> Settings.System.putInt(contentResolver, name, value as Int)
             String::class -> Settings.System.putString(contentResolver, name, value as String)
             Float::class -> Settings.System.putFloat(contentResolver, name, value as Float)
@@ -123,7 +119,6 @@ object SettingsUtils {
      */
     @RequiresPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
     inline fun <reified T> putGlobalSetting(ctx: Context, name: String, value: T): Boolean {
-
         val contentResolver = ctx.contentResolver
 
         return when (T::class) {

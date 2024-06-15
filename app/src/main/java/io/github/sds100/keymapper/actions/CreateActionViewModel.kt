@@ -34,7 +34,7 @@ import io.github.sds100.keymapper.util.ui.showPopup
 
 class CreateActionViewModelImpl(
     private val useCase: CreateActionUseCase,
-    resourceProvider: ResourceProvider
+    resourceProvider: ResourceProvider,
 ) : CreateActionViewModel,
     ResourceProvider by resourceProvider,
     PopupViewModel by PopupViewModelImpl(),
@@ -48,9 +48,7 @@ class CreateActionViewModelImpl(
         return configAction(oldData.id, oldData)
     }
 
-    override suspend fun createAction(id: ActionId): ActionData? {
-        return configAction(id)
-    }
+    override suspend fun createAction(id: ActionId): ActionData? = configAction(id)
 
     private suspend fun configAction(actionId: ActionId, oldData: ActionData? = null): ActionData? {
         when (actionId) {
@@ -76,7 +74,10 @@ class CreateActionViewModelImpl(
             ActionId.REWIND_PACKAGE,
             -> {
                 val packageName =
-                    navigate("choose_app_for_media_action", NavDestination.ChooseApp(allowHiddenApps = true))
+                    navigate(
+                        "choose_app_for_media_action",
+                        NavDestination.ChooseApp(allowHiddenApps = true),
+                    )
                         ?: return null
 
                 val action = when (actionId) {
@@ -111,8 +112,8 @@ class CreateActionViewModelImpl(
             ActionId.VOLUME_DOWN,
             ActionId.VOLUME_MUTE,
             ActionId.VOLUME_UNMUTE,
-            ActionId.VOLUME_TOGGLE_MUTE -> {
-
+            ActionId.VOLUME_TOGGLE_MUTE,
+            -> {
                 val showVolumeUiId = 0
                 val isVolumeUiChecked =
                     when (oldData) {
@@ -128,8 +129,8 @@ class CreateActionViewModelImpl(
                     MultiChoiceItem(
                         showVolumeUiId,
                         getString(R.string.flag_show_volume_dialog),
-                        isVolumeUiChecked
-                    )
+                        isVolumeUiChecked,
+                    ),
                 )
 
                 val showVolumeUiDialog = PopupUi.MultiChoice(items = dialogItems)
@@ -144,7 +145,7 @@ class CreateActionViewModelImpl(
                     ActionId.VOLUME_MUTE -> ActionData.Volume.Mute(showVolumeUi)
                     ActionId.VOLUME_UNMUTE -> ActionData.Volume.UnMute(showVolumeUi)
                     ActionId.VOLUME_TOGGLE_MUTE -> ActionData.Volume.ToggleMute(
-                        showVolumeUi
+                        showVolumeUi,
                     )
 
                     else -> throw Exception("don't know how to create action for $actionId")
@@ -154,8 +155,8 @@ class CreateActionViewModelImpl(
             }
 
             ActionId.VOLUME_INCREASE_STREAM,
-            ActionId.VOLUME_DECREASE_STREAM -> {
-
+            ActionId.VOLUME_DECREASE_STREAM,
+            -> {
                 val showVolumeUiId = 0
                 val isVolumeUiChecked = if (oldData is ActionData.Volume.Stream) {
                     oldData.showVolumeUi
@@ -167,8 +168,8 @@ class CreateActionViewModelImpl(
                     MultiChoiceItem(
                         showVolumeUiId,
                         getString(R.string.flag_show_volume_dialog),
-                        isVolumeUiChecked
-                    )
+                        isVolumeUiChecked,
+                    ),
                 )
 
                 val showVolumeUiDialog = PopupUi.MultiChoice(items = dialogItems)
@@ -208,9 +209,10 @@ class CreateActionViewModelImpl(
                 return ActionData.Volume.SetRingerMode(ringerMode)
             }
 
-            //don't need to show options for disabling do not disturb
+            // don't need to show options for disabling do not disturb
             ActionId.TOGGLE_DND_MODE,
-            ActionId.ENABLE_DND_MODE -> {
+            ActionId.ENABLE_DND_MODE,
+            -> {
                 val items = DndMode.values()
                     .map { it to getString(DndModeUtils.getLabel(it)) }
 
@@ -238,8 +240,9 @@ class CreateActionViewModelImpl(
                     }
 
                     MultiChoiceItem(
-                        orientation, getString(OrientationUtils.getLabel(orientation)),
-                        isChecked
+                        orientation,
+                        getString(OrientationUtils.getLabel(orientation)),
+                        isChecked,
                     )
                 }
 
@@ -251,7 +254,8 @@ class CreateActionViewModelImpl(
 
             ActionId.TOGGLE_FLASHLIGHT,
             ActionId.ENABLE_FLASHLIGHT,
-            ActionId.DISABLE_FLASHLIGHT -> {
+            ActionId.DISABLE_FLASHLIGHT,
+            -> {
                 val items = CameraLens.values().map {
                     it to getString(CameraLensUtils.getLabel(it))
                 }
@@ -271,7 +275,10 @@ class CreateActionViewModelImpl(
 
             ActionId.APP -> {
                 val packageName =
-                    navigate("choose_app_for_app_action", NavDestination.ChooseApp(allowHiddenApps = false))
+                    navigate(
+                        "choose_app_for_app_action",
+                        NavDestination.ChooseApp(allowHiddenApps = false),
+                    )
                         ?: return null
 
                 return ActionData.App(packageName)
@@ -285,7 +292,7 @@ class CreateActionViewModelImpl(
                 return ActionData.AppShortcut(
                     appShortcutResult.packageName,
                     appShortcutResult.shortcutName,
-                    appShortcutResult.uri
+                    appShortcutResult.uri,
                 )
             }
 
@@ -312,7 +319,7 @@ class CreateActionViewModelImpl(
                     PickCoordinateResult(
                         oldData.x,
                         oldData.y,
-                        oldData.description ?: ""
+                        oldData.description ?: "",
                     )
                 } else {
                     null
@@ -320,7 +327,7 @@ class CreateActionViewModelImpl(
 
                 val result = navigate(
                     "pick_display_coordinate_for_action",
-                    NavDestination.PickCoordinate(oldResult)
+                    NavDestination.PickCoordinate(oldResult),
                 ) ?: return null
 
                 val description = if (result.description.isEmpty()) {
@@ -332,7 +339,7 @@ class CreateActionViewModelImpl(
                 return ActionData.TapScreen(
                     result.x,
                     result.y,
-                    description
+                    description,
                 )
             }
 
@@ -345,7 +352,7 @@ class CreateActionViewModelImpl(
                         oldData.yEnd,
                         oldData.fingerCount,
                         oldData.duration,
-                        oldData.description ?: ""
+                        oldData.description ?: "",
                     )
                 } else {
                     null
@@ -353,7 +360,7 @@ class CreateActionViewModelImpl(
 
                 val result = navigate(
                     "pick_swipe_coordinate_for_action",
-                    NavDestination.PickSwipeCoordinate(oldResult)
+                    NavDestination.PickSwipeCoordinate(oldResult),
                 ) ?: return null
 
                 val description = if (result.description.isEmpty()) {
@@ -369,7 +376,7 @@ class CreateActionViewModelImpl(
                     result.yEnd,
                     result.fingerCount,
                     result.duration,
-                    description
+                    description,
                 )
             }
 
@@ -382,7 +389,7 @@ class CreateActionViewModelImpl(
                         oldData.pinchType,
                         oldData.fingerCount,
                         oldData.duration,
-                        oldData.description ?: ""
+                        oldData.description ?: "",
                     )
                 } else {
                     null
@@ -390,7 +397,7 @@ class CreateActionViewModelImpl(
 
                 val result = navigate(
                     "pick_pinch_coordinate_for_action",
-                    NavDestination.PickPinchCoordinate(oldResult)
+                    NavDestination.PickPinchCoordinate(oldResult),
                 ) ?: return null
 
                 val description = if (result.description.isEmpty()) {
@@ -406,7 +413,7 @@ class CreateActionViewModelImpl(
                     result.pinchType,
                     result.fingerCount,
                     result.duration,
-                    description
+                    description,
                 )
             }
 
@@ -447,11 +454,12 @@ class CreateActionViewModelImpl(
                 }
 
                 val text = showPopup(
-                    "create_text_action", PopupUi.Text(
+                    "create_text_action",
+                    PopupUi.Text(
                         hint = getString(R.string.hint_create_text_action),
                         allowEmpty = false,
-                        text = oldText
-                    )
+                        text = oldText,
+                    ),
                 ) ?: return null
 
                 return ActionData.Text(text)
@@ -465,12 +473,13 @@ class CreateActionViewModelImpl(
                 }
 
                 val text = showPopup(
-                    "create_url_action", PopupUi.Text(
+                    "create_url_action",
+                    PopupUi.Text(
                         hint = getString(R.string.hint_create_url_action),
                         allowEmpty = false,
                         inputType = InputType.TYPE_TEXT_VARIATION_URI,
-                        text = oldUrl
-                    )
+                        text = oldUrl,
+                    ),
                 ) ?: return null
 
                 return ActionData.Url(text)
@@ -482,7 +491,7 @@ class CreateActionViewModelImpl(
                         oldData.uri,
                         oldData.target,
                         oldData.description,
-                        oldData.extras
+                        oldData.extras,
                     )
                 } else {
                     null
@@ -490,14 +499,14 @@ class CreateActionViewModelImpl(
 
                 val result = navigate(
                     "config_intent",
-                    NavDestination.ConfigIntent(oldIntent)
+                    NavDestination.ConfigIntent(oldIntent),
                 ) ?: return null
 
                 return ActionData.Intent(
                     description = result.description,
                     target = result.target,
                     uri = result.uri,
-                    extras = result.extras
+                    extras = result.extras,
                 )
             }
 
@@ -509,12 +518,13 @@ class CreateActionViewModelImpl(
                 }
 
                 val text = showPopup(
-                    "create_phone_call_action", PopupUi.Text(
+                    "create_phone_call_action",
+                    PopupUi.Text(
                         hint = getString(R.string.hint_create_phone_call_action),
                         allowEmpty = false,
                         inputType = InputType.TYPE_CLASS_PHONE,
                         text = oldText,
-                    )
+                    ),
                 ) ?: return null
 
                 return ActionData.PhoneCall(text)
@@ -523,12 +533,12 @@ class CreateActionViewModelImpl(
             ActionId.SOUND -> {
                 val result = navigate(
                     "choose_sound_file",
-                    NavDestination.ChooseSound
+                    NavDestination.ChooseSound,
                 ) ?: return null
 
                 return ActionData.Sound(
                     soundUid = result.soundUid,
-                    soundDescription = result.description
+                    soundDescription = result.description,
                 )
             }
 
@@ -620,7 +630,9 @@ class CreateActionViewModelImpl(
     }
 }
 
-interface CreateActionViewModel : PopupViewModel, NavigationViewModel {
+interface CreateActionViewModel :
+    PopupViewModel,
+    NavigationViewModel {
     suspend fun editAction(oldData: ActionData): ActionData?
     suspend fun createAction(id: ActionId): ActionData?
 }

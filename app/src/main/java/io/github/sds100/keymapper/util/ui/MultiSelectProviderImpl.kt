@@ -34,14 +34,10 @@ class MultiSelectProviderImpl<T> : MultiSelectProvider<T> {
         }
     }
 
-    override fun isSelected(id: T): Boolean {
-        return state.value is SelectionState.Selecting<*>
-            && (state.value as SelectionState.Selecting<*>).selectedIds.contains(id)
-    }
+    override fun isSelected(id: T): Boolean = state.value is SelectionState.Selecting<*> &&
+        (state.value as SelectionState.Selecting<*>).selectedIds.contains(id)
 
-    override fun isSelecting(): Boolean {
-        return state.value is SelectionState.Selecting<*>
-    }
+    override fun isSelecting(): Boolean = state.value is SelectionState.Selecting<*>
 
     override fun getSelectedIds(): Set<T> {
         val selectionState = state.value

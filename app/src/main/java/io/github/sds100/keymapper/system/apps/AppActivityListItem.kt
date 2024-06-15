@@ -7,10 +7,10 @@ import io.github.sds100.keymapper.util.ui.TintType
 /**
  * Created by sds100 on 27/01/2020.
  */
-data class ActivityListItem(
+data class AppActivityListItem(
     val appName: String,
     val activityInfo: ActivityInfo,
-    override val icon: IconInfo?
+    override val icon: IconInfo?,
 ) : SimpleListItem {
     override val id: String
         get() = "${activityInfo.packageName}${activityInfo.activityName}"

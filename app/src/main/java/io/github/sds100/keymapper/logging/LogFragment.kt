@@ -156,7 +156,7 @@ class LogFragment : SimpleRecyclerViewFragment<LogEntryListItem>() {
             }
 
             if (recyclerView?.scrollState != RecyclerView.SCROLL_STATE_SETTLING) {
-                //only automatically scroll to the bottom if the recyclerview is already scrolled to the button
+                // only automatically scroll to the bottom if the recyclerview is already scrolled to the button
                 val layoutManager = recyclerView?.layoutManager as LinearLayoutManager?
 
                 if (layoutManager != null) {

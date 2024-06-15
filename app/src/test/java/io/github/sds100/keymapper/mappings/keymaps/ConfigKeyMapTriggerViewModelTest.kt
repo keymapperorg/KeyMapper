@@ -11,9 +11,14 @@ import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ui.FakeResourceProvider
 import io.github.sds100.keymapper.util.ui.PopupUi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.TestCoroutineExceptionHandler
+import kotlinx.coroutines.test.createTestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
@@ -34,7 +39,8 @@ import org.mockito.kotlin.mock
 class ConfigKeyMapTriggerViewModelTest {
 
     private val testDispatcher = TestCoroutineDispatcher()
-    private val coroutineScope = TestCoroutineScope(testDispatcher)
+    private val coroutineScope =
+        createTestCoroutineScope(TestCoroutineDispatcher() + TestCoroutineExceptionHandler() + testDispatcher)
     private lateinit var viewModel: ConfigKeyMapTriggerViewModel
     private lateinit var mockConfigKeyMapUseCase: ConfigKeyMapUseCase
     private lateinit var mockRecordTrigger: RecordTriggerUseCase
@@ -43,7 +49,6 @@ class ConfigKeyMapTriggerViewModelTest {
 
     private lateinit var onRecordKey: MutableSharedFlow<RecordedKey>
     private lateinit var keyMap: MutableStateFlow<KeyMap>
-
 
     @Before
     fun init() {
@@ -74,7 +79,7 @@ class ConfigKeyMapTriggerViewModelTest {
                 on { showDeviceDescriptors }.then { flow<Unit> { } }
                 onBlocking { getTriggerErrors(any()) }.thenReturn(emptyList())
             },
-            fakeResourceProvider
+            fakeResourceProvider,
         )
     }
 
@@ -89,18 +94,19 @@ class ConfigKeyMapTriggerViewModelTest {
     @Test
     fun `when create back button trigger key then prompt the user to disable screen pinning`() =
         coroutineScope.runBlockingTest {
-            //GIVEN
-            fakeResourceProvider.stringResourceMap[R.string.dialog_message_screen_pinning_warning] = "bla"
+            // GIVEN
+            fakeResourceProvider.stringResourceMap[R.string.dialog_message_screen_pinning_warning] =
+                "bla"
 
-            //WHEN
+            // WHEN
             onRecordKey.emit(
                 RecordedKey(
                     keyCode = KeyEvent.KEYCODE_BACK,
-                    device = TriggerKeyDevice.Internal
-                )
+                    device = TriggerKeyDevice.Internal,
+                ),
             )
 
-            //THEN
+            // THEN
             assertThat(viewModel.showPopup.first().ui, `is`(PopupUi.Ok("bla")))
         }
 }

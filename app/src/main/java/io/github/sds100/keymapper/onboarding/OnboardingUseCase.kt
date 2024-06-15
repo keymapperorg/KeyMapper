@@ -31,8 +31,9 @@ class OnboardingUseCaseImpl(
     private val leanbackAdapter: LeanbackAdapter,
     private val shizukuAdapter: ShizukuAdapter,
     private val permissionAdapter: PermissionAdapter,
-    private val packageManagerAdapter: PackageManagerAdapter
-) : PreferenceRepository by preferenceRepository, OnboardingUseCase {
+    private val packageManagerAdapter: PackageManagerAdapter,
+) : PreferenceRepository by preferenceRepository,
+    OnboardingUseCase {
 
     override var shownAppIntro by PrefDelegate(Keys.shownAppIntro, false)
 
@@ -43,17 +44,16 @@ class OnboardingUseCaseImpl(
 
         val isShizukuInstalled = shizukuAdapter.isInstalled.value
 
-        return (acknowledged == null || !acknowledged)
-            && !isGuiKeyboardInstalled
-            && !isShizukuInstalled
-            && action.canUseImeToPerform()
+        return (acknowledged == null || !acknowledged) &&
+            !isGuiKeyboardInstalled &&
+            !isShizukuInstalled &&
+            action.canUseImeToPerform()
     }
 
-    override suspend fun showInstallShizukuPrompt(action: ActionData): Boolean {
-        return !shizukuAdapter.isInstalled.value
-            && ShizukuUtils.isRecommendedForSdkVersion()
-            && action.canUseShizukuToPerform()
-    }
+    override suspend fun showInstallShizukuPrompt(action: ActionData): Boolean =
+        !shizukuAdapter.isInstalled.value &&
+            ShizukuUtils.isRecommendedForSdkVersion() &&
+            action.canUseShizukuToPerform()
 
     override fun neverShowGuiKeyboardPromptsAgain() {
         preferenceRepository.set(Keys.acknowledgedGuiKeyboard, true)
@@ -61,16 +61,16 @@ class OnboardingUseCaseImpl(
 
     override var approvedFingerprintFeaturePrompt by PrefDelegate(
         Keys.approvedFingerprintFeaturePrompt,
-        false
+        false,
     )
 
     override var shownParallelTriggerOrderExplanation by PrefDelegate(
         Keys.shownParallelTriggerOrderExplanation,
-        false
+        false,
     )
     override var shownSequenceTriggerExplanation by PrefDelegate(
         Keys.shownSequenceTriggerExplanation,
-        false
+        false,
     )
 
     override val showWhatsNew = get(Keys.lastInstalledVersionCodeHomeScreen)
@@ -80,26 +80,25 @@ class OnboardingUseCaseImpl(
         set(Keys.lastInstalledVersionCodeHomeScreen, Constants.VERSION_CODE)
     }
 
-    override fun getWhatsNewText(): String {
-        return with(fileAdapter.openAsset("whats-new.txt").bufferedReader()) {
+    override fun getWhatsNewText(): String =
+        with(fileAdapter.openAsset("whats-new.txt").bufferedReader()) {
             readText()
         }
-    }
 
     override val showFingerprintFeatureNotificationIfAvailable: Flow<Boolean> by lazy {
         combine(
             get(Keys.lastInstalledVersionCodeBackground).map { it ?: -1 },
             showWhatsNew,
             get(Keys.approvedFingerprintFeaturePrompt).map { it ?: false },
-            get(Keys.shownAppIntro).map { it ?: false }
+            get(Keys.shownAppIntro).map { it ?: false },
         ) { oldVersionCode, showWhatsNew, approvedPrompt, shownAppIntro ->
-            //has the user opened the app and will have already seen that they can remap fingerprint gestures
+            // has the user opened the app and will have already seen that they can remap fingerprint gestures
             val handledUpdateInHomeScreen = !showWhatsNew
 
-            oldVersionCode < VersionHelper.FINGERPRINT_GESTURES_MIN_VERSION
-                && !handledUpdateInHomeScreen
-                && !approvedPrompt
-                && shownAppIntro
+            oldVersionCode < VersionHelper.FINGERPRINT_GESTURES_MIN_VERSION &&
+                !handledUpdateInHomeScreen &&
+                !approvedPrompt &&
+                shownAppIntro
         }
     }
 
@@ -159,17 +158,17 @@ class OnboardingUseCaseImpl(
         preferenceRepository.set(Keys.shownQuickStartGuideHint, true)
     }
 
-    override fun isTvDevice(): Boolean {
-        return leanbackAdapter.isTvDevice()
-    }
+    override fun isTvDevice(): Boolean = leanbackAdapter.isTvDevice()
 
     override val promptForShizukuPermission: Flow<Boolean> = combine(
         preferenceRepository.get(Keys.shownShizukuPermissionPrompt),
         shizukuAdapter.isInstalled,
         permissionAdapter.isGrantedFlow(Permission.SHIZUKU),
-    ) { shownPromptBefore,
-        isShizkuInstalled,
-        isShizukuPermissionGranted ->
+    ) {
+            shownPromptBefore,
+            isShizkuInstalled,
+            isShizukuPermissionGranted,
+        ->
         shownPromptBefore != true && isShizkuInstalled && !isShizukuPermissionGranted
     }
 

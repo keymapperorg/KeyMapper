@@ -14,7 +14,15 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.DialogChooseAppStoreBinding
 import io.github.sds100.keymapper.system.url.UrlUtils
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.dropWhile
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
 import splitties.toast.toast
 
@@ -27,14 +35,14 @@ class PopupViewModelImpl : PopupViewModel {
     private val _onUserResponse by lazy { MutableSharedFlow<OnPopupResponseEvent>() }
     override val onUserResponse by lazy { _onUserResponse.asSharedFlow() }
 
-    private val _getUserResponse by lazy { MutableSharedFlow<ShowPopupEvent>() }
-    override val showPopup by lazy { _getUserResponse.asSharedFlow() }
+    private val getUserResponse by lazy { MutableSharedFlow<ShowPopupEvent>() }
+    override val showPopup by lazy { getUserResponse.asSharedFlow() }
 
     override suspend fun showPopup(event: ShowPopupEvent) {
-        //wait for the view to collect so no dialogs are missed
-        _getUserResponse.subscriptionCount.first { it > 0 }
+        // wait for the view to collect so no dialogs are missed
+        getUserResponse.subscriptionCount.first { it > 0 }
 
-        _getUserResponse.emit(event)
+        getUserResponse.emit(event)
     }
 
     override fun onUserResponse(event: OnPopupResponseEvent) {
@@ -56,7 +64,7 @@ fun PopupViewModel.onUserResponse(key: String, response: Any?) {
 
 suspend inline fun <reified R> PopupViewModel.showPopup(
     key: String,
-    ui: PopupUi<R>
+    ui: PopupUi<R>,
 ): R? {
     showPopup(ShowPopupEvent(key, ui))
 
@@ -66,27 +74,27 @@ suspend inline fun <reified R> PopupViewModel.showPopup(
      */
     return merge(
         showPopup.dropWhile { it.key != key }.map { null },
-        onUserResponse.dropWhile { it.response !is R? && it.key != key }.map { it.response }
+        onUserResponse.dropWhile { it.response !is R? && it.key != key }.map { it.response },
     ).first() as R?
 }
 
 fun PopupViewModel.showPopups(
     fragment: Fragment,
-    binding: ViewDataBinding
+    binding: ViewDataBinding,
 ) {
     showPopups(fragment.requireContext(), fragment.viewLifecycleOwner, binding.root)
 }
 
 fun PopupViewModel.showPopups(
     fragment: Fragment,
-    rootView: View
+    rootView: View,
 ) {
     showPopups(fragment.requireContext(), fragment.viewLifecycleOwner, rootView)
 }
 
 fun PopupViewModel.showPopups(
     activity: FragmentActivity,
-    rootView: View
+    rootView: View,
 ) {
     showPopups(activity, activity, rootView)
 }
@@ -94,9 +102,9 @@ fun PopupViewModel.showPopups(
 fun PopupViewModel.showPopups(
     ctx: Context,
     lifecycleOwner: LifecycleOwner,
-    rootView: View
+    rootView: View,
 ) {
-    //must be onCreate because dismissing in onDestroy
+    // must be onCreate because dismissing in onDestroy
     lifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.CREATED) {
         showPopup.onEach { event ->
             var responded = false
@@ -131,7 +139,7 @@ fun PopupViewModel.showPopups(
                         rootView.findViewById(R.id.coordinatorLayout),
                         event.ui.message,
                         event.ui.actionText,
-                        event.ui.long
+                        event.ui.long,
                     )
 
                 is PopupUi.Text ->
@@ -142,7 +150,7 @@ fun PopupViewModel.showPopups(
                         event.ui.text,
                         event.ui.inputType,
                         event.ui.message,
-                        event.ui.autoCompleteEntries
+                        event.ui.autoCompleteEntries,
                     )
 
                 is PopupUi.Dialog ->
@@ -164,7 +172,7 @@ fun PopupViewModel.showPopups(
                         event.ui.message,
                         positiveButtonText = event.ui.positiveButtonText,
                         negativeButtonText = event.ui.negativeButtonText,
-                        view = view
+                        view = view,
                     )
                 }
 

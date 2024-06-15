@@ -24,12 +24,13 @@ class DisplayKeyMapUseCaseImpl(
     private val permissionAdapter: PermissionAdapter,
     private val inputMethodAdapter: InputMethodAdapter,
     displaySimpleMappingUseCase: DisplaySimpleMappingUseCase,
-    private val preferenceRepository: PreferenceRepository
-) : DisplayKeyMapUseCase, DisplaySimpleMappingUseCase by displaySimpleMappingUseCase {
+    private val preferenceRepository: PreferenceRepository,
+) : DisplayKeyMapUseCase,
+    DisplaySimpleMappingUseCase by displaySimpleMappingUseCase {
     private companion object {
         val keysThatRequireDndAccess = arrayOf(
             KeyEvent.KEYCODE_VOLUME_DOWN,
-            KeyEvent.KEYCODE_VOLUME_UP
+            KeyEvent.KEYCODE_VOLUME_UP,
         )
     }
 
@@ -37,7 +38,7 @@ class DisplayKeyMapUseCaseImpl(
 
     override val invalidateTriggerErrors = merge(
         permissionAdapter.onPermissionsUpdate,
-        preferenceRepository.get(Keys.neverShowDndError).map { }.drop(1)
+        preferenceRepository.get(Keys.neverShowDndError).map { }.drop(1),
     )
 
     override suspend fun getTriggerErrors(keyMap: KeyMap): List<KeyMapTriggerError> {
@@ -50,17 +51,17 @@ class DisplayKeyMapUseCaseImpl(
         }
 
         if (trigger.keys.any { it.keyCode in keysThatRequireDndAccess }) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-                && !permissionAdapter.isGranted(Permission.ACCESS_NOTIFICATION_POLICY)
-                && preferenceRepository.get(Keys.neverShowDndError).first() != true
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                !permissionAdapter.isGranted(Permission.ACCESS_NOTIFICATION_POLICY) &&
+                preferenceRepository.get(Keys.neverShowDndError).first() != true
             ) {
                 errors.add(KeyMapTriggerError.DND_ACCESS_DENIED)
             }
         }
 
-        if (trigger.screenOffTrigger
-            && !permissionAdapter.isGranted(Permission.ROOT)
-            && trigger.isDetectingWhenScreenOffAllowed()
+        if (trigger.screenOffTrigger &&
+            !permissionAdapter.isGranted(Permission.ROOT) &&
+            trigger.isDetectingWhenScreenOffAllowed()
         ) {
             errors.add(KeyMapTriggerError.SCREEN_OFF_ROOT_DENIED)
         }

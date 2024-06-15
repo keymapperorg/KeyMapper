@@ -58,11 +58,11 @@ extra:
     - icon: fontawesome/brands/discord
       link: http://www.keymapper.club
     - icon: fontawesome/solid/envelope
-      link: mailto:developer.sds100@gmail.com
+      link: mailto:contact@keymapper.club
     - icon: fontawesome/brands/google-play
       link: https://play.google.com/store/apps/developer?id=sds100
     - icon: fontawesome/brands/github
-      link: https://github.com/sds100/KeyMapper
+      link: https://github.com/keymapperorg/KeyMapper
     - icon: fdroid
       link: https://www.f-droid.org/en/packages/io.github.sds100.keymapper/
     - icon: kofi
@@ -76,8 +76,8 @@ markdown_extensions:
   - pymdownx.snippets:
       base_path: docs/includes
   - pymdownx.emoji:
-      emoji_index: !!python/name:materialx.emoji.twemoji
-      emoji_generator: !!python/name:materialx.emoji.to_svg
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
       options:
         custom_icons:
           - docs/overrides/.icons

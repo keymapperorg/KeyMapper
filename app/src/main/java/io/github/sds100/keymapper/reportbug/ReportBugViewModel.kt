@@ -12,8 +12,19 @@ import io.github.sds100.keymapper.util.firstBlocking
 import io.github.sds100.keymapper.util.getFullMessage
 import io.github.sds100.keymapper.util.onFailure
 import io.github.sds100.keymapper.util.onSuccess
-import io.github.sds100.keymapper.util.ui.*
-import kotlinx.coroutines.flow.*
+import io.github.sds100.keymapper.util.ui.NavigationViewModel
+import io.github.sds100.keymapper.util.ui.NavigationViewModelImpl
+import io.github.sds100.keymapper.util.ui.PopupUi
+import io.github.sds100.keymapper.util.ui.PopupViewModel
+import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
+import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.util.ui.ViewModelHelper
+import io.github.sds100.keymapper.util.ui.showPopup
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 /**
@@ -23,7 +34,7 @@ import kotlinx.coroutines.launch
 class ReportBugViewModel(
     private val useCase: ReportBugUseCase,
     private val controlService: ControlAccessibilityServiceUseCase,
-    resourceProvider: ResourceProvider
+    resourceProvider: ResourceProvider,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
     PopupViewModel by PopupViewModelImpl(),
@@ -53,22 +64,22 @@ class ReportBugViewModel(
 
                 ID_BUTTON_CREATE_GITHUB_ISSUE -> showPopup(
                     "url_create_github_issue",
-                    PopupUi.OpenUrl(getString(R.string.url_github_create_issue_bug))
+                    PopupUi.OpenUrl(getString(R.string.url_github_create_issue_bug)),
                 )
 
                 ID_BUTTON_DISCORD_SERVER -> showPopup(
                     "url_discord_server",
-                    PopupUi.OpenUrl(getString(R.string.url_discord_server_invite))
+                    PopupUi.OpenUrl(getString(R.string.url_discord_server_invite)),
                 )
 
                 ID_BUTTON_RESTART_ACCESSIBILITY_SERVICE -> {
                     if (!controlService.restartService()) {
                         ViewModelHelper.handleCantFindAccessibilitySettings(
                             resourceProvider = this@ReportBugViewModel,
-                            popupViewModel = this@ReportBugViewModel
+                            popupViewModel = this@ReportBugViewModel,
                         )
                     } else {
-                        controlService.serviceState.first { it == ServiceState.ENABLED } //wait for it to be started
+                        controlService.serviceState.first { it == ServiceState.ENABLED } // wait for it to be started
                         _goToNextSlide.emit(Unit)
                     }
                 }
@@ -87,7 +98,7 @@ class ReportBugViewModel(
                     val dialog = PopupUi.Dialog(
                         title = getString(R.string.dialog_title_failed_to_create_bug_report),
                         message = error.getFullMessage(this@ReportBugViewModel),
-                        positiveButtonText = getString(R.string.pos_ok)
+                        positiveButtonText = getString(R.string.pos_ok),
                     )
 
                     showPopup("failed_to_create_report", dialog)
@@ -95,11 +106,9 @@ class ReportBugViewModel(
         }
     }
 
-    fun canGoToNextSlide(currentSlide: String): Boolean {
-        return when (currentSlide) {
-            ReportBugSlide.CREATE_BUG_REPORT -> bugReportUri != null
-            else -> true
-        }
+    fun canGoToNextSlide(currentSlide: String): Boolean = when (currentSlide) {
+        ReportBugSlide.CREATE_BUG_REPORT -> bugReportUri != null
+        else -> true
     }
 
     private fun createBugReportSlide() = AppIntroSlideUi(
@@ -109,7 +118,7 @@ class ReportBugViewModel(
         title = getString(R.string.slide_title_create_bug_report),
         description = getString(R.string.slide_description_create_bug_report),
         buttonText1 = getString(R.string.slide_button_create_bug_report),
-        buttonId1 = ID_BUTTON_CREATE_BUG_REPORT
+        buttonId1 = ID_BUTTON_CREATE_BUG_REPORT,
     )
 
     private fun shareBugReportSlide() = AppIntroSlideUi(
@@ -121,7 +130,7 @@ class ReportBugViewModel(
         buttonText1 = getString(R.string.slide_button_share_discord),
         buttonId1 = ID_BUTTON_DISCORD_SERVER,
         buttonText2 = getString(R.string.slide_button_share_github),
-        buttonId2 = ID_BUTTON_CREATE_GITHUB_ISSUE
+        buttonId2 = ID_BUTTON_CREATE_GITHUB_ISSUE,
     )
 
     private fun restartServiceSlide() = AppIntroSlideUi(
@@ -131,7 +140,7 @@ class ReportBugViewModel(
         title = getString(R.string.slide_title_restart_accessibility_service),
         description = getString(R.string.slide_description_restart_accessibility_service),
         buttonText1 = getString(R.string.button_restart_accessibility_service),
-        buttonId1 = ID_BUTTON_RESTART_ACCESSIBILITY_SERVICE
+        buttonId1 = ID_BUTTON_RESTART_ACCESSIBILITY_SERVICE,
     )
 
     private fun createSlides(): List<AppIntroSlideUi> = sequence {
@@ -147,11 +156,10 @@ class ReportBugViewModel(
     class Factory(
         private val useCase: ReportBugUseCase,
         private val controlAccessibilityService: ControlAccessibilityServiceUseCase,
-        private val resourceProvider: ResourceProvider
+        private val resourceProvider: ResourceProvider,
     ) : ViewModelProvider.NewInstanceFactory() {
 
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return ReportBugViewModel(useCase, controlAccessibilityService, resourceProvider) as T
-        }
+        override fun <T : ViewModel> create(modelClass: Class<T>): T =
+            ReportBugViewModel(useCase, controlAccessibilityService, resourceProvider) as T
     }
 }

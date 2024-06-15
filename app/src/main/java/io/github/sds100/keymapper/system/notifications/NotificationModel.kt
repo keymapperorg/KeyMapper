@@ -21,7 +21,7 @@ data class NotificationModel(
     val priority: Int,
     val actions: List<Action> = emptyList(),
     val autoCancel: Boolean = false,
-    val bigTextStyle: Boolean = false
+    val bigTextStyle: Boolean = false,
 ) {
 
     data class Action(val id: String, val text: String)

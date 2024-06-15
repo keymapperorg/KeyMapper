@@ -55,9 +55,8 @@ abstract class ConfigMappingFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
-
         FragmentConfigMappingBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
             viewModel = this@ConfigMappingFragment.viewModel
@@ -76,7 +75,7 @@ abstract class ConfigMappingFragment : Fragment() {
 
         binding.viewPager.adapter = GenericFragmentPagerAdapter(
             this,
-            fragmentInfoList.map { it.first.toLong() to it.second.instantiate }
+            fragmentInfoList.map { it.first.toLong() to it.second.instantiate },
         )
 
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
@@ -90,7 +89,7 @@ abstract class ConfigMappingFragment : Fragment() {
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             binding.invalidateHelpMenuItemVisibility(
                 fragmentInfoList,
-                binding.viewPager.currentItem
+                binding.viewPager.currentItem,
             )
         }
 
@@ -154,7 +153,7 @@ abstract class ConfigMappingFragment : Fragment() {
     override fun onDestroyView() {
         _binding = null
 
-        //prevents leaking window if configuration change when the dialog is showing
+        // prevents leaking window if configuration change when the dialog is showing
         onBackPressedDialog?.dismiss()
         onBackPressedDialog = null
         super.onDestroyView()
@@ -162,7 +161,7 @@ abstract class ConfigMappingFragment : Fragment() {
 
     private fun FragmentConfigMappingBinding.invalidateHelpMenuItemVisibility(
         fragmentInfoList: List<Pair<Int, FragmentInfo>>,
-        position: Int
+        position: Int,
     ) {
         val visible = fragmentInfoList[position].second.supportUrl != null
 

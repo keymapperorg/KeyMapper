@@ -22,7 +22,7 @@ abstract class SimpleMappingController(
     private val coroutineScope: CoroutineScope,
     private val detectMappingUseCase: DetectMappingUseCase,
     private val performActionsUseCase: PerformActionsUseCase,
-    private val detectConstraintsUseCase: DetectConstraintsUseCase
+    private val detectConstraintsUseCase: DetectConstraintsUseCase,
 ) {
     private val repeatJobs = mutableMapOf<String, List<RepeatJob>>()
     private val performActionJobs = mutableMapOf<String, Job>()
@@ -32,32 +32,32 @@ abstract class SimpleMappingController(
         performActionsUseCase.defaultRepeatRate.stateIn(
             coroutineScope,
             SharingStarted.Eagerly,
-            PreferenceDefaults.REPEAT_RATE.toLong()
+            PreferenceDefaults.REPEAT_RATE.toLong(),
         )
 
     private val forceVibrate: StateFlow<Boolean> =
         detectMappingUseCase.forceVibrate.stateIn(
             coroutineScope,
             SharingStarted.Eagerly,
-            PreferenceDefaults.FORCE_VIBRATE
+            PreferenceDefaults.FORCE_VIBRATE,
         )
     private val defaultHoldDownDuration: StateFlow<Long> =
         performActionsUseCase.defaultHoldDownDuration.stateIn(
             coroutineScope,
             SharingStarted.Eagerly,
-            PreferenceDefaults.HOLD_DOWN_DURATION.toLong()
+            PreferenceDefaults.HOLD_DOWN_DURATION.toLong(),
         )
 
     private val defaultVibrateDuration: StateFlow<Long> =
         detectMappingUseCase.defaultVibrateDuration.stateIn(
             coroutineScope,
             SharingStarted.Eagerly,
-            PreferenceDefaults.VIBRATION_DURATION.toLong()
+            PreferenceDefaults.VIBRATION_DURATION.toLong(),
         )
 
     fun onDetected(
         mappingId: String,
-        mapping: Mapping<*>
+        mapping: Mapping<*>,
     ) {
         if (!mapping.isEnabled) return
         if (mapping.actionList.isEmpty()) return
@@ -94,7 +94,6 @@ abstract class SimpleMappingController(
                         job.start()
                     }
                 } else {
-
                     val alreadyBeingHeldDown = actionsBeingHeldDown.any { action.uid == it.uid }
 
                     val keyEventAction = when {
@@ -119,7 +118,7 @@ abstract class SimpleMappingController(
 
         if (mapping.vibrate || forceVibrate.value) {
             detectMappingUseCase.vibrate(
-                mapping.vibrateDuration?.toLong() ?: defaultVibrateDuration.value
+                mapping.vibrateDuration?.toLong() ?: defaultVibrateDuration.value,
             )
         }
 
@@ -130,7 +129,7 @@ abstract class SimpleMappingController(
 
     private fun performAction(
         action: Action,
-        inputEventType: InputEventType = InputEventType.DOWN_UP
+        inputEventType: InputEventType = InputEventType.DOWN_UP,
     ) {
         repeat(action.multiplier ?: 1) {
             performActionsUseCase.perform(action.data, inputEventType)
@@ -165,7 +164,7 @@ abstract class SimpleMappingController(
 
             if (action.repeatLimit != null) {
                 continueRepeating =
-                    repeatCount < action.repeatLimit!! + 1 //this value is how many times it should REPEAT. The first repeat happens after the first time it is performed
+                    repeatCount < action.repeatLimit!! + 1 // this value is how many times it should REPEAT. The first repeat happens after the first time it is performed
             }
 
             delay(repeatRate)

@@ -12,7 +12,7 @@ import io.github.sds100.keymapper.util.ui.ResourceProvider
 
 class KeyMapActionUiHelper(
     displayActionUseCase: DisplayActionUseCase,
-    resourceProvider: ResourceProvider
+    resourceProvider: ResourceProvider,
 ) : BaseActionUiHelper<KeyMap, KeyMapAction>(displayActionUseCase, resourceProvider) {
 
     override fun getOptionLabels(mapping: KeyMap, action: KeyMapAction) = sequence {
@@ -33,12 +33,22 @@ class KeyMapActionUiHelper(
 
                 if (action.repeatRate != null) {
                     append(" ")
-                    append(getString(R.string.flag_repeat_build_description_repeat_rate, action.repeatRate))
+                    append(
+                        getString(
+                            R.string.flag_repeat_build_description_repeat_rate,
+                            action.repeatRate,
+                        ),
+                    )
                 }
 
                 if (action.repeatDelay != null) {
                     append(" ")
-                    append(getString(R.string.flag_repeat_build_description_repeat_delay, action.repeatDelay))
+                    append(
+                        getString(
+                            R.string.flag_repeat_build_description_repeat_delay,
+                            action.repeatDelay,
+                        ),
+                    )
                 }
 
                 append(" ")
@@ -59,20 +69,18 @@ class KeyMapActionUiHelper(
             yield(repeatDescription)
         }
 
-        if (mapping.isHoldingDownActionAllowed(action)
-            && action.holdDown
-            && !action.stopHoldDownWhenTriggerPressedAgain
+        if (mapping.isHoldingDownActionAllowed(action) &&
+            action.holdDown &&
+            !action.stopHoldDownWhenTriggerPressedAgain
         ) {
             yield(getString(R.string.flag_hold_down))
         }
 
-        if (mapping.isHoldingDownActionAllowed(action)
-            && action.holdDown
-            && action.stopHoldDownWhenTriggerPressedAgain
+        if (mapping.isHoldingDownActionAllowed(action) &&
+            action.holdDown &&
+            action.stopHoldDownWhenTriggerPressedAgain
         ) {
             yield(getString(R.string.flag_hold_down_until_pressed_again))
         }
-
-
     }.toList()
 }

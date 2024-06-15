@@ -20,7 +20,7 @@ import io.github.sds100.keymapper.api.KeyEventReceiver
 class KeyMapperImeService : InputMethodService() {
     companion object {
 
-        //DON'T CHANGE THESE!!!
+        // DON'T CHANGE THESE!!!
         private const val KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN_UP =
             "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_DOWN_UP"
         private const val KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN =
@@ -30,8 +30,10 @@ class KeyMapperImeService : InputMethodService() {
         private const val KEY_MAPPER_INPUT_METHOD_ACTION_TEXT =
             "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_TEXT"
 
-        private const val KEY_MAPPER_INPUT_METHOD_EXTRA_TEXT = "io.github.sds100.keymapper.inputmethod.EXTRA_TEXT"
-        const val KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT = "io.github.sds100.keymapper.inputmethod.EXTRA_KEY_EVENT"
+        private const val KEY_MAPPER_INPUT_METHOD_EXTRA_TEXT =
+            "io.github.sds100.keymapper.inputmethod.EXTRA_TEXT"
+        const val KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT =
+            "io.github.sds100.keymapper.inputmethod.EXTRA_KEY_EVENT"
     }
 
     private val broadcastReceiver = object : BroadcastReceiver() {
@@ -46,9 +48,8 @@ class KeyMapperImeService : InputMethodService() {
                 }
 
                 KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN_UP -> {
-
                     val downEvent = intent.getParcelableExtra<KeyEvent>(
-                        KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT
+                        KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT,
                     )
                     currentInputConnection?.sendKeyEvent(downEvent)
 
@@ -58,7 +59,7 @@ class KeyMapperImeService : InputMethodService() {
 
                 KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN -> {
                     var downEvent = intent.getParcelableExtra<KeyEvent>(
-                        KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT
+                        KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT,
                     )
 
                     downEvent = KeyEvent.changeAction(downEvent, KeyEvent.ACTION_DOWN)
@@ -68,7 +69,7 @@ class KeyMapperImeService : InputMethodService() {
 
                 KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_UP -> {
                     var upEvent = intent.getParcelableExtra<KeyEvent>(
-                        KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT
+                        KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT,
                     )
 
                     upEvent = KeyEvent.changeAction(upEvent, KeyEvent.ACTION_UP)
@@ -113,13 +114,11 @@ class KeyMapperImeService : InputMethodService() {
         }
     }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        return keyEventReceiverBinder?.onKeyEvent(event) ?: super.onKeyDown(keyCode, event)
-    }
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean =
+        keyEventReceiverBinder?.onKeyEvent(event) ?: super.onKeyDown(keyCode, event)
 
-    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
-        return keyEventReceiverBinder?.onKeyEvent(event) ?: super.onKeyUp(keyCode, event)
-    }
+    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean =
+        keyEventReceiverBinder?.onKeyEvent(event) ?: super.onKeyUp(keyCode, event)
 
     override fun onDestroy() {
         unregisterReceiver(broadcastReceiver)

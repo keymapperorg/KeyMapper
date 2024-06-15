@@ -14,8 +14,7 @@ import kotlinx.coroutines.flow.map
 /**
  * Created by sds100 on 29/11/20.
  */
-abstract class ConfigConstraintsFragment
-    : RecyclerViewFragment<ConstraintListItem, FragmentConstraintListBinding>() {
+abstract class ConfigConstraintsFragment : RecyclerViewFragment<ConstraintListItem, FragmentConstraintListBinding>() {
 
     companion object {
         const val CHOOSE_CONSTRAINT_REQUEST_KEY = "request_choose_constraint"
@@ -28,7 +27,7 @@ abstract class ConfigConstraintsFragment
 
     override fun bind(
         inflater: LayoutInflater,
-        container: ViewGroup?
+        container: ViewGroup?,
     ) = FragmentConstraintListBinding.inflate(inflater, container, false).apply {
         lifecycleOwner = viewLifecycleOwner
     }
@@ -44,7 +43,7 @@ abstract class ConfigConstraintsFragment
 
     override fun populateList(
         recyclerView: EpoxyRecyclerView,
-        listItems: List<ConstraintListItem>
+        listItems: List<ConstraintListItem>,
     ) {
         recyclerView.withModels {
             listItems.forEach { listItem ->

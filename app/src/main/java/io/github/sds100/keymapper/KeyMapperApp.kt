@@ -60,7 +60,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import splitties.toast.toast
 import timber.log.Timber
-import java.util.*
+import java.util.Calendar
 
 /**
  * Created by sds100 on 19/05/2020.
@@ -80,7 +80,7 @@ class KeyMapperApp : MultiDexApplication() {
     val packageManagerAdapter by lazy {
         AndroidPackageManagerAdapter(
             this,
-            appCoroutineScope
+            appCoroutineScope,
         )
     }
 
@@ -90,7 +90,7 @@ class KeyMapperApp : MultiDexApplication() {
             appCoroutineScope,
             accessibilityServiceAdapter,
             permissionAdapter,
-            suAdapter
+            suAdapter,
         )
     }
     val devicesAdapter by lazy {
@@ -98,7 +98,7 @@ class KeyMapperApp : MultiDexApplication() {
             this,
             bluetoothMonitor,
             permissionAdapter,
-            appCoroutineScope
+            appCoroutineScope,
         )
     }
     val cameraAdapter by lazy { AndroidCameraAdapter(this) }
@@ -107,7 +107,7 @@ class KeyMapperApp : MultiDexApplication() {
             this,
             appCoroutineScope,
             suAdapter,
-            notificationReceiverAdapter
+            notificationReceiverAdapter,
         )
     }
 
@@ -123,7 +123,7 @@ class KeyMapperApp : MultiDexApplication() {
     val suAdapter by lazy {
         SuAdapterImpl(
             appCoroutineScope,
-            ServiceLocator.settingsRepository(this)
+            ServiceLocator.settingsRepository(this),
         )
     }
     val phoneAdapter by lazy { AndroidPhoneAdapter(this, appCoroutineScope) }
@@ -152,7 +152,7 @@ class KeyMapperApp : MultiDexApplication() {
             appCoroutineScope,
             permissionAdapter,
             popupMessageAdapter,
-            resourceProvider
+            resourceProvider,
         )
     }
 
@@ -160,7 +160,7 @@ class KeyMapperApp : MultiDexApplication() {
         KeyMapperLoggingTree(
             appCoroutineScope,
             ServiceLocator.settingsRepository(this),
-            ServiceLocator.logRepository(this)
+            ServiceLocator.logRepository(this),
         )
     }
 
@@ -170,12 +170,12 @@ class KeyMapperApp : MultiDexApplication() {
         val priorExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
 
         Thread.setDefaultUncaughtExceptionHandler { thread, exception ->
-            //log in a blocking manner and always log regardless of whether the setting is turned on
+            // log in a blocking manner and always log regardless of whether the setting is turned on
             val entry = LogEntryEntity(
                 id = 0,
                 time = Calendar.getInstance().timeInMillis,
                 severity = LogEntryEntity.SEVERITY_ERROR,
-                message = exception.stackTraceToString()
+                message = exception.stackTraceToString(),
             )
 
             runBlocking {
@@ -214,7 +214,7 @@ class KeyMapperApp : MultiDexApplication() {
             ManageNotificationsUseCaseImpl(
                 ServiceLocator.settingsRepository(this),
                 notificationAdapter,
-                suAdapter
+                suAdapter,
             ),
             UseCases.pauseMappings(this),
             UseCases.showImePicker(this),
@@ -223,7 +223,7 @@ class KeyMapperApp : MultiDexApplication() {
             ShowHideInputMethodUseCaseImpl(ServiceLocator.accessibilityServiceAdapter(this)),
             UseCases.fingerprintGesturesSupported(this),
             UseCases.onboarding(this),
-            ServiceLocator.resourceProvider(this)
+            ServiceLocator.resourceProvider(this),
         )
 
         autoSwitchImeController = AutoSwitchImeController(
@@ -234,13 +234,13 @@ class KeyMapperApp : MultiDexApplication() {
             devicesAdapter,
             popupMessageAdapter,
             resourceProvider,
-            ServiceLocator.accessibilityServiceAdapter(this)
+            ServiceLocator.accessibilityServiceAdapter(this),
         )
 
         processLifecycleOwner.lifecycle.addObserver(object : LifecycleObserver {
             @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
             fun onResume() {
-                //when the user returns to the app let everything know that the permissions could have changed
+                // when the user returns to the app let everything know that the permissions could have changed
                 permissionAdapter.onPermissionsChanged()
                 accessibilityServiceAdapter.updateWhetherServiceIsEnabled()
                 notificationController.onOpenApp()
