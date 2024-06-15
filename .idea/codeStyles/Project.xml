@@ -5,6 +5,9 @@
         <fileSet type="globPattern" pattern="*.md" />
       </list>
     </option>
+    <JetCodeStyleSettings>
+      <option name="CODE_STYLE_DEFAULTS" value="KOTLIN_OFFICIAL" />
+    </JetCodeStyleSettings>
     <Markdown>
       <option name="WRAP_TEXT_IF_LONG" value="false" />
     </Markdown>
@@ -123,6 +126,9 @@
           </section>
         </rules>
       </arrangement>
+    </codeStyleSettings>
+    <codeStyleSettings language="kotlin">
+      <option name="CODE_STYLE_DEFAULTS" value="KOTLIN_OFFICIAL" />
     </codeStyleSettings>
   </code_scheme>
 </component>
