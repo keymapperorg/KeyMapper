@@ -11,19 +11,19 @@ import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
  */
 
 fun singleKeyTrigger(key: TriggerKey): KeyMapTrigger = KeyMapTrigger(
-        keys = listOf(key),
-        mode = TriggerMode.Undefined,
+    keys = listOf(key),
+    mode = TriggerMode.Undefined,
 )
 
 fun parallelTrigger(vararg keys: TriggerKey): KeyMapTrigger = KeyMapTrigger(
     keys = keys.toList(),
-        mode = TriggerMode.Parallel(keys[0].clickType),
+    mode = TriggerMode.Parallel(keys[0].clickType),
 )
 
 fun sequenceTrigger(vararg keys: TriggerKey): KeyMapTrigger = KeyMapTrigger(
     keys = keys.toList(),
     mode = TriggerMode.Sequence,
-    )
+)
 
 fun triggerKey(
     keyCode: Int,
@@ -33,6 +33,6 @@ fun triggerKey(
 ): TriggerKey = TriggerKey(
     keyCode = keyCode,
     device = device,
-        clickType = clickType,
-        consumeKeyEvent = consume,
-    )
+    clickType = clickType,
+    consumeKeyEvent = consume,
+)
