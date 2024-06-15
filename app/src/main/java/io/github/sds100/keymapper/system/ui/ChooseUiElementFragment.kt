@@ -4,23 +4,18 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.navArgs
 import com.airbnb.epoxy.EpoxyRecyclerView
 import io.github.sds100.keymapper.databinding.FragmentChooseUiElementBinding
 import io.github.sds100.keymapper.simple
-import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.RecyclerViewFragment
 import io.github.sds100.keymapper.util.ui.RecyclerViewUtils
-import io.github.sds100.keymapper.util.ui.SimpleListItem
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 

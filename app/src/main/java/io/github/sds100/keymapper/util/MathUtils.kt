@@ -8,7 +8,7 @@ import kotlin.math.sin
 
 data class Line(
     val start: Point,
-    val end: Point
+    val end: Point,
 )
 
 object MathUtils {
@@ -24,7 +24,7 @@ object MathUtils {
         p1: Point,
         p2: Point,
         length: Int,
-        reverse: Boolean = false
+        reverse: Boolean = false,
     ): Line {
         var px = p1.y - p2.y
         var py = p2.x - p1.x
@@ -50,7 +50,7 @@ object MathUtils {
         minX: Int,
         minY: Int,
         maxX: Int,
-        maxY: Int
+        maxY: Int,
     ): Point {
         val newX =
             (p.x + cos(deg2rad(degrees)) * distance).toInt().coerceAtLeast(minX).coerceAtMost(maxX)
@@ -71,9 +71,8 @@ object MathUtils {
         minX: Int,
         minY: Int,
         maxX: Int,
-        maxY: Int
+        maxY: Int,
     ): List<Point> {
-
         val points = arrayListOf<Point>()
         var angle: Double = 0.0
         val step = (2 * Math.PI) / numPoints
@@ -84,14 +83,12 @@ object MathUtils {
                     (circleCenter.x + circleRadius * cos(angle)).toInt().coerceAtLeast(minX)
                         .coerceAtMost(maxX),
                     (circleCenter.y + circleRadius * sin(angle)).toInt().coerceAtLeast(minY)
-                        .coerceAtMost(maxY)
-                )
+                        .coerceAtMost(maxY),
+                ),
             )
             angle += step
         }
 
         return points
-
     }
-
 }

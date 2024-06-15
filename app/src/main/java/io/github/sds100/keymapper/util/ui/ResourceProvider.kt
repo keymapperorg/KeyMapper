@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 
 class ResourceProviderImpl(
     context: Context,
-    private val coroutineScope: CoroutineScope
+    private val coroutineScope: CoroutineScope,
 ) : ResourceProvider {
     private val ctx = context.applicationContext
 
@@ -65,5 +65,4 @@ interface ResourceProvider {
     fun getText(@StringRes resId: Int): CharSequence
     fun getDrawable(@DrawableRes resId: Int): Drawable
     fun getColor(@ColorRes color: Int): Int
-
 }

@@ -322,7 +322,7 @@ class PerformActionsUseCaseImpl(
                     action.uiElement.fullName,
                     action.onlyIfVisible,
                     action.interactionType,
-                    inputEventType
+                    inputEventType,
                 )
             }
 

@@ -16,7 +16,6 @@ import io.github.sds100.keymapper.system.phone.PhoneAdapter
 import io.github.sds100.keymapper.system.power.PowerAdapter
 import io.github.sds100.keymapper.util.firstBlocking
 import timber.log.Timber
-import kotlin.contracts.contract
 
 /**
  * Created by sds100 on 08/05/2021.
@@ -40,7 +39,7 @@ class ConstraintSnapshotImpl(
     private val appInForeground: String? by lazy { accessibilityService.rootNode?.packageName }
     private val visibleScreenElements: List<String> by lazy {
         accessibilityService.fetchAvailableUIElements(
-            true
+            true,
         )
     }
     private val connectedBluetoothDevices: Set<BluetoothDeviceInfo> by lazy { devicesAdapter.connectedBluetoothDevices.value }
@@ -70,7 +69,7 @@ class ConstraintSnapshotImpl(
             ConstraintMode.OR -> {
                 constraintState.constraints.any { isSatisfied(it) }
             }
-    }
+        }
 
     private fun isSatisfied(constraint: Constraint): Boolean {
         val isSatisfied = when (constraint) {

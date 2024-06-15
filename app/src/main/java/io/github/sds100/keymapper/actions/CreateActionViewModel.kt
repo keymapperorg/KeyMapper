@@ -423,7 +423,7 @@ class CreateActionViewModelImpl(
                         oldData.uiElement,
                         oldData.onlyIfVisible,
                         oldData.interactionType,
-                        oldData.description ?: ""
+                        oldData.description ?: "",
                     )
                 } else {
                     null
@@ -431,7 +431,7 @@ class CreateActionViewModelImpl(
 
                 val result = navigate(
                     "interact_with_screen_element",
-                    NavDestination.InteractWithScreenElement(oldResult)
+                    NavDestination.InteractWithScreenElement(oldResult),
                 ) ?: return null
 
                 val description = result.description.ifEmpty {
@@ -442,7 +442,7 @@ class CreateActionViewModelImpl(
                     result.uiElement,
                     result.onlyIfVisible,
                     result.interactionType,
-                    description
+                    description,
                 )
             }
 

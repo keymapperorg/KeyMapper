@@ -232,7 +232,7 @@ object ActionDataEntityMapper {
                     ),
                     onlyIfVisible = onlyIfVisible,
                     interactionType = InteractionType.valueOf(interactionType),
-                    description = description
+                    description = description,
                 )
             }
 

@@ -11,16 +11,26 @@ import io.github.sds100.keymapper.util.ui.IconInfo
 import io.github.sds100.keymapper.util.ui.SimpleListItem
 import io.github.sds100.keymapper.util.valueOrNull
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.*
+import java.util.Locale
 
 /**
  * Created by sds100 on 27/01/2020.
  */
 
-class ChooseAppViewModel constructor(
+class ChooseAppViewModel(
     private val useCase: DisplayAppsUseCase,
 ) : ViewModel() {
 
@@ -32,8 +42,8 @@ class ChooseAppViewModel constructor(
         AppListState(
             State.Loading,
             showHiddenAppsButton = false,
-            isHiddenAppsChecked = false
-        )
+            isHiddenAppsChecked = false,
+        ),
     )
     val state = _state.asStateFlow()
 
@@ -61,7 +71,7 @@ class ChooseAppViewModel constructor(
             allAppListItems,
             launchableAppListItems,
             showHiddenApps,
-            searchQuery
+            searchQuery,
         ) { allAppListItems, launchableAppListItems, showHiddenApps, query ->
 
             val packagesToFilter = if (allowHiddenApps && showHiddenApps) {
@@ -76,17 +86,18 @@ class ChooseAppViewModel constructor(
                         _state.value = AppListState(
                             filteredListItems,
                             showHiddenAppsButton = allowHiddenApps,
-                            isHiddenAppsChecked = showHiddenApps
+                            isHiddenAppsChecked = showHiddenApps,
                         )
                     }
                 }
 
-                is State.Loading -> _state.value =
-                    AppListState(
-                        State.Loading,
-                        showHiddenAppsButton = allowHiddenApps,
-                        isHiddenAppsChecked = showHiddenApps
-                    )
+                is State.Loading ->
+                    _state.value =
+                        AppListState(
+                            State.Loading,
+                            showHiddenAppsButton = allowHiddenApps,
+                            isHiddenAppsChecked = showHiddenApps,
+                        )
             }
         }.launchIn(viewModelScope)
     }
@@ -116,7 +127,7 @@ class ChooseAppViewModel constructor(
             val listItem = DefaultSimpleListItem(
                 id = packageInfo.packageName,
                 title = name,
-                icon = IconInfo(icon)
+                icon = IconInfo(icon),
             )
 
             emit(listItem)
@@ -126,7 +137,7 @@ class ChooseAppViewModel constructor(
         .sortedBy { it.title.lowercase(Locale.getDefault()) }
 
     class Factory(
-        private val useCase: DisplayAppsUseCase
+        private val useCase: DisplayAppsUseCase,
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -138,5 +149,5 @@ class ChooseAppViewModel constructor(
 data class AppListState(
     val listItems: State<List<SimpleListItem>>,
     val showHiddenAppsButton: Boolean,
-    val isHiddenAppsChecked: Boolean
+    val isHiddenAppsChecked: Boolean,
 )

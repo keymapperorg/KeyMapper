@@ -14,6 +14,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentInteractWithScreenElementBinding
 import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
@@ -23,7 +24,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import io.github.sds100.keymapper.R
 
 class InteractWithScreenElementFragment : Fragment() {
     companion object {
@@ -45,7 +45,7 @@ class InteractWithScreenElementFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         FragmentInteractWithScreenElementBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
@@ -64,12 +64,12 @@ class InteractWithScreenElementFragment : Fragment() {
             viewModel.loadResult(Json.decodeFromString(it))
         }
 
-        args.showPackageInfoOnly?.let {
+        args.showPackageInfoOnly.let {
             viewModel.showPackageInfoOnly = it
         }
 
         interactionTypesDisplayValues = InteractionType.values().map {
-            when (it)  {
+            when (it) {
                 InteractionType.CLICK -> resources.getString(R.string.extra_label_interact_with_screen_element_interaction_type_click)
                 InteractionType.LONG_CLICK -> resources.getString(R.string.extra_label_interact_with_screen_element_interaction_type_long_click)
                 InteractionType.SELECT -> resources.getString(R.string.extra_label_interact_with_screen_element_interaction_type_select)
@@ -91,7 +91,7 @@ class InteractWithScreenElementFragment : Fragment() {
         binding.interactionTypeSpinnerAdapter = ArrayAdapter(
             this.requireActivity(),
             android.R.layout.simple_spinner_dropdown_item,
-            interactionTypesDisplayValues
+            interactionTypesDisplayValues,
         )
 
         viewModel.showPopups(this, binding)
@@ -108,7 +108,7 @@ class InteractWithScreenElementFragment : Fragment() {
             viewModel.returnResult.collectLatest { result ->
                 setFragmentResult(
                     requestKey,
-                    bundleOf(EXTRA_RESULT to Json.encodeToString(result))
+                    bundleOf(EXTRA_RESULT to Json.encodeToString(result)),
                 )
                 findNavController().navigateUp()
             }

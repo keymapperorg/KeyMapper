@@ -40,7 +40,7 @@ interface IAccessibilityService {
         fullName: String,
         onlyIfVisible: Boolean,
         interactionType: InteractionType,
-        inputEventType: InputEventType
+        inputEventType: InputEventType,
     ): Result<*>
 
     fun fetchAvailableUIElements(onlyVisibleElements: Boolean = false): List<String>

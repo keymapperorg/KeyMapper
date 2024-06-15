@@ -77,7 +77,7 @@ sealed class NavDestination<R> {
         /**
          * Allow the list to show hidden apps that can't be launched.
          */
-        val allowHiddenApps: Boolean
+        val allowHiddenApps: Boolean,
     ) : NavDestination<String>()
 
     object ChooseAppShortcut : NavDestination<ChooseAppShortcutResult>()
@@ -100,7 +100,7 @@ sealed class NavDestination<R> {
     data class InteractWithScreenElementSimple(val result: InteractWithScreenElementResult? = null) :
         NavDestination<InteractWithScreenElementResult>()
 
-    object ChooseUiElement: NavDestination<UiElementInfo>()
+    object ChooseUiElement : NavDestination<UiElementInfo>()
 
     data class ConfigIntent(val result: ConfigIntentResult? = null) :
         NavDestination<ConfigIntentResult>()

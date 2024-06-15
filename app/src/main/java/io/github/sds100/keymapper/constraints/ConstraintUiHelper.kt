@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.constraints
 
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.DisplayConstraintUseCase
-import io.github.sds100.keymapper.system.apps.PACKAGE_INFO_TYPES
+import io.github.sds100.keymapper.system.apps.PackageInfoTypes
 import io.github.sds100.keymapper.system.apps.PackageUtils
 import io.github.sds100.keymapper.system.camera.CameraLensUtils
 import io.github.sds100.keymapper.system.display.Orientation
@@ -11,7 +11,6 @@ import io.github.sds100.keymapper.util.ui.IconInfo
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.TintType
 import io.github.sds100.keymapper.util.valueIfFailure
-import timber.log.Timber
 
 /**
  * Created by sds100 on 18/03/2021.
@@ -39,8 +38,8 @@ class ConstraintUiHelper(
         is Constraint.ScreenElementVisible -> getAppName(
             PackageUtils.getInfoFromFullyQualifiedViewName(
                 constraint.fullyQualifiedViewId,
-                PACKAGE_INFO_TYPES.TYPE_PACKAGE_NAME
-            ) ?: ""
+                PackageInfoTypes.TYPE_PACKAGE_NAME,
+            ) ?: "",
         ).handle(
             onSuccess = {
                 getString(
@@ -48,19 +47,20 @@ class ConstraintUiHelper(
                     arrayOf(
                         PackageUtils.getInfoFromFullyQualifiedViewName(
                             constraint.fullyQualifiedViewId,
-                            PACKAGE_INFO_TYPES.TYPE_VIEW_ID
-                        ) ?: "", it
-                    )
+                            PackageInfoTypes.TYPE_VIEW_ID,
+                        ) ?: "",
+                        it,
+                    ),
                 )
             },
-            onError = { getString(R.string.constraint_screen_element_visible) }
+            onError = { getString(R.string.constraint_screen_element_visible) },
         )
 
         is Constraint.ScreenElementNotVisible -> getAppName(
             PackageUtils.getInfoFromFullyQualifiedViewName(
                 constraint.fullyQualifiedViewId,
-                PACKAGE_INFO_TYPES.TYPE_PACKAGE_NAME
-            ) ?: ""
+                PackageInfoTypes.TYPE_PACKAGE_NAME,
+            ) ?: "",
         ).handle(
             onSuccess = {
                 getString(
@@ -68,12 +68,13 @@ class ConstraintUiHelper(
                     arrayOf(
                         PackageUtils.getInfoFromFullyQualifiedViewName(
                             constraint.fullyQualifiedViewId,
-                            PACKAGE_INFO_TYPES.TYPE_VIEW_ID
-                        ) ?: "", it
-                    )
+                            PackageInfoTypes.TYPE_VIEW_ID,
+                        ) ?: "",
+                        it,
+                    ),
                 )
             },
-            onError = { getString(R.string.constraint_screen_element_not_visible) }
+            onError = { getString(R.string.constraint_screen_element_not_visible) },
         )
 
         is Constraint.AppPlayingMedia ->
@@ -190,7 +191,8 @@ class ConstraintUiHelper(
         is Constraint.AppNotInForeground -> getAppIconInfo(constraint.packageName)
         is Constraint.ScreenElementVisible -> {
             val packageName = PackageUtils.getInfoFromFullyQualifiedViewName(
-                constraint.fullyQualifiedViewId, PACKAGE_INFO_TYPES.TYPE_PACKAGE_NAME
+                constraint.fullyQualifiedViewId,
+                PackageInfoTypes.TYPE_PACKAGE_NAME,
             )
 
             if (!packageName.isNullOrEmpty()) {
@@ -198,14 +200,15 @@ class ConstraintUiHelper(
             } else {
                 IconInfo(
                     drawable = getDrawable(R.drawable.ic_outline_interact_with_screen_element_app_24),
-                    tintType = TintType.OnSurface
+                    tintType = TintType.OnSurface,
                 )
             }
         }
 
         is Constraint.ScreenElementNotVisible -> {
             val packageName = PackageUtils.getInfoFromFullyQualifiedViewName(
-                constraint.fullyQualifiedViewId, PACKAGE_INFO_TYPES.TYPE_PACKAGE_NAME
+                constraint.fullyQualifiedViewId,
+                PackageInfoTypes.TYPE_PACKAGE_NAME,
             )
 
             if (!packageName.isNullOrEmpty()) {
@@ -213,7 +216,7 @@ class ConstraintUiHelper(
             } else {
                 IconInfo(
                     drawable = getDrawable(R.drawable.ic_outline_interact_with_screen_element_app_24),
-                    tintType = TintType.OnSurface
+                    tintType = TintType.OnSurface,
                 )
             }
         }

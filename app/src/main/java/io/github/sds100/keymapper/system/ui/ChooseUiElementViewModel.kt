@@ -31,24 +31,21 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.util.Locale
 
 class ChooseUiElementViewModel(
     resourceProvider: ResourceProvider,
     private val recordUiElements: RecordUiElementsUseCase,
-    serviceAdapter: ServiceAdapter,
+    private val serviceAdapter: ServiceAdapter,
     displayAppsUseCase: DisplayAppsUseCase,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
     DisplayAppsUseCase by displayAppsUseCase {
 
-    private val _serviceAdapter = serviceAdapter
-
     val searchQuery = MutableStateFlow<String?>(null)
 
     private val _state = MutableStateFlow(
-        UiElementsListState(State.Loading)
+        UiElementsListState(State.Loading),
     )
     val state = _state.asStateFlow()
 
@@ -63,7 +60,7 @@ class ChooseUiElementViewModel(
         when (recordUiElementsState) {
             is RecordUiElementsState.CountingDown -> getString(
                 R.string.button_label_choose_ui_element_record_button_text_active,
-                formatSeconds(recordUiElementsState.timeLeft)
+                formatSeconds(recordUiElementsState.timeLeft),
             )
 
             is RecordUiElementsState.Stopped -> getString(R.string.button_label_choose_ui_element_record_button_text_start)
@@ -71,40 +68,43 @@ class ChooseUiElementViewModel(
     }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.Eagerly, getString(R.string.button_label_choose_ui_element_record_button_text_start))
 
     val recordDescriptionText: StateFlow<String> = recordUiElements.state.map { recordUiElementsState ->
-        when  (recordUiElementsState) {
+        when (recordUiElementsState) {
             is RecordUiElementsState.CountingDown -> getString(R.string.extra_label_interact_with_screen_element_record_description_text_active)
             is RecordUiElementsState.Stopped -> getString(R.string.extra_label_interact_with_screen_element_record_description_text_start)
         }
     }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.Eagerly, getString(R.string.extra_label_interact_with_screen_element_record_description_text_start))
 
-    private val _isRecording: StateFlow<Boolean> = recordUiElements.state.map { recordUiElementsState ->
-        when (recordUiElementsState) {
+    private val isRecording: StateFlow<Boolean> =
+        recordUiElements.state.map { recordUiElementsState ->
+            when (recordUiElementsState) {
             is RecordUiElementsState.CountingDown -> true
             is RecordUiElementsState.Stopped -> false
         }
     }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
-    val recordButtonEnabled: StateFlow<Boolean> = serviceAdapter.state.map{ accessibilityServiceState ->
-        accessibilityServiceState == ServiceState.ENABLED
-    }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.Eagerly,  false)
+    val recordButtonEnabled: StateFlow<Boolean> =
+        serviceAdapter.state.map { accessibilityServiceState ->
+            accessibilityServiceState == ServiceState.ENABLED
+        }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
-    val recordButtonAlpha: StateFlow<Float> = serviceAdapter.state.map{ accessibilityServiceState ->
-        when (accessibilityServiceState) {
+    val recordButtonAlpha: StateFlow<Float> =
+        serviceAdapter.state.map { accessibilityServiceState ->
+            when (accessibilityServiceState) {
             ServiceState.ENABLED -> 1f
             else -> 0.5f
-        }
-    }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.Eagerly,  1f)
+            }
+        }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.Eagerly, 1f)
 
     fun stopRecording() {
-        viewModelScope.launch(Dispatchers.Default) {
-            _serviceAdapter.send(Event.StopRecordingUiElements)
+        viewModelScope.launch {
+            serviceAdapter.send(Event.StopRecordingUiElements)
         }
     }
 
     init {
         combine(
             allUiElementListItems,
-            searchQuery
+            searchQuery,
         ) { listItems, query ->
             listItems.filterByQuery(query).collectLatest { filteredListItems ->
                 _state.value = UiElementsListState(filteredListItems)
@@ -113,8 +113,6 @@ class ChooseUiElementViewModel(
     }
 
     fun onListItemClick(id: String) {
-        Timber.d("onListItemClick: %s", id)
-
         stopRecording()
 
         val model = recordUiElements.uiElements.value.find { it.fullName == id }
@@ -127,13 +125,13 @@ class ChooseUiElementViewModel(
     }
 
     fun onRecordButtonClick() {
-        if (_isRecording.value) {
-            viewModelScope.launch(Dispatchers.Default) {
-                _serviceAdapter.send(Event.StopRecordingUiElements)
+        if (isRecording.value) {
+            viewModelScope.launch {
+                serviceAdapter.send(Event.StopRecordingUiElements)
             }
         } else {
-            viewModelScope.launch(Dispatchers.Default) {
-                _serviceAdapter.send(Event.StartRecordingUiElements)
+            viewModelScope.launch {
+                serviceAdapter.send(Event.StartRecordingUiElements)
             }
         }
     }
@@ -154,7 +152,7 @@ class ChooseUiElementViewModel(
                 id = uiElementInfo.fullName,
                 title = uiElementInfo.elementName,
                 subtitle = appName ?: uiElementInfo.packageName,
-                icon = if (icon != null) IconInfo(icon) else null
+                icon = if (icon != null) IconInfo(icon) else null,
             )
 
             emit(listItem)
@@ -180,7 +178,6 @@ class ChooseUiElementViewModel(
     }
 }
 
-
 data class UiElementsListState(
-    val listItems: State<List<UiElementInfoListItem>>
+    val listItems: State<List<UiElementInfoListItem>>,
 )

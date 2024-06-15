@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.update
 
 class RecordUiElementsController(
     private val coroutineScope: CoroutineScope,
-    private val serviceAdapter: ServiceAdapter
+    private val serviceAdapter: ServiceAdapter,
 ) : RecordUiElementsUseCase {
     override val state = MutableStateFlow<RecordUiElementsState>(RecordUiElementsState.Stopped)
     override val uiElements: MutableStateFlow<List<UiElementInfo>> = MutableStateFlow(emptyList())
@@ -22,8 +22,9 @@ class RecordUiElementsController(
         serviceAdapter.eventReceiver.onEach { event ->
             when (event) {
                 is Event.OnStoppedRecordingUiElements -> state.value = RecordUiElementsState.Stopped
-                is Event.OnIncrementRecordUiElementsTimer -> state.value =
-                    RecordUiElementsState.CountingDown(event.timeLeft)
+                is Event.OnIncrementRecordUiElementsTimer ->
+                    state.value =
+                        RecordUiElementsState.CountingDown(event.timeLeft)
 
                 is Event.OnRecordUiElement -> onRecordUiElement(event.element)
                 else -> Unit

@@ -36,8 +36,8 @@ class InteractWithScreenElementViewModel(
     NavigationViewModel by NavigationViewModelImpl(),
     DisplayAppsUseCase by displayAppsUseCase {
 
-    private val _interactionTypes = InteractionType.values().map { it.name }
-    private val _interactionType: MutableStateFlow<InteractionType?> =
+    private val interactionTypes = InteractionType.values().map { it.name }
+    private val interactionType: MutableStateFlow<InteractionType?> =
         MutableStateFlow(InteractionType.values().first())
 
     private val _returnResult = MutableSharedFlow<InteractWithScreenElementResult>()
@@ -74,18 +74,18 @@ class InteractWithScreenElementViewModel(
     var interactOnlyIfVisible: MutableStateFlow<Boolean?> = MutableStateFlow(true)
     val description: MutableStateFlow<String?> = MutableStateFlow(null)
 
-    val interactionTypeSpinnerSelection = _interactionType.map {
+    val interactionTypeSpinnerSelection = interactionType.map {
         it ?: return@map 0
 
-        this._interactionTypes.indexOf(it.name)
+        this.interactionTypes.indexOf(it.name)
     }.stateIn(viewModelScope, SharingStarted.Lazily, 0)
 
     private fun setInteractionType(type: String) {
-        _interactionType.value = InteractionType.valueOf(type.uppercase(Locale.ROOT))
+        interactionType.value = InteractionType.valueOf(type.uppercase(Locale.ROOT))
     }
 
     fun onInteractionTypeSelected(position: Int) {
-        this.setInteractionType(_interactionTypes[position])
+        this.setInteractionType(interactionTypes[position])
     }
 
     fun onChooseUiElementButtonClick() {
@@ -101,7 +101,7 @@ class InteractWithScreenElementViewModel(
     fun loadResult(result: InteractWithScreenElementResult) {
         viewModelScope.launch {
             uiElement.value = result.uiElement
-            _interactionType.value = result.interactionType
+            interactionType.value = result.interactionType
             interactOnlyIfVisible.value = result.onlyIfVisible
             description.value = result.description
         }
@@ -122,15 +122,15 @@ class InteractWithScreenElementViewModel(
             }
 
             val onlyIfVisible = interactOnlyIfVisible.value ?: return@launch
-            val interactionType = _interactionType.value ?: return@launch
+            val interactionType = interactionType.value ?: return@launch
 
             val description = showPopup(
                 "ui_element_description",
                 PopupUi.Text(
                     getString(R.string.hint_interact_with_screen_element_description),
                     allowEmpty = true,
-                    text = description.value ?: ""
-                )
+                    text = description.value ?: "",
+                ),
             ) ?: return@launch
 
             _returnResult.emit(
@@ -138,8 +138,8 @@ class InteractWithScreenElementViewModel(
                     uiElement.value!!,
                     onlyIfVisible,
                     interactionType,
-                    description
-                )
+                    description,
+                ),
             )
         }
     }
@@ -147,11 +147,10 @@ class InteractWithScreenElementViewModel(
     @Suppress("UNCHECKED_CAST")
     class Factory(
         private val resourceProvider: ResourceProvider,
-        private val displayAppsUseCase: DisplayAppsUseCase
+        private val displayAppsUseCase: DisplayAppsUseCase,
     ) : ViewModelProvider.NewInstanceFactory() {
 
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return InteractWithScreenElementViewModel(resourceProvider, displayAppsUseCase) as T
-        }
+        override fun <T : ViewModel> create(modelClass: Class<T>): T =
+            InteractWithScreenElementViewModel(resourceProvider, displayAppsUseCase) as T
     }
 }

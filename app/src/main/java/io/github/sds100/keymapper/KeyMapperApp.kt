@@ -9,7 +9,6 @@ import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.multidex.MultiDexApplication
 import com.google.android.material.color.DynamicColors
-import io.github.sds100.keymapper.system.ui.RecordUiElementsController
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.entities.LogEntryEntity
 import io.github.sds100.keymapper.logging.KeyMapperLoggingTree
@@ -47,6 +46,7 @@ import io.github.sds100.keymapper.system.phone.AndroidPhoneAdapter
 import io.github.sds100.keymapper.system.popup.AndroidToastAdapter
 import io.github.sds100.keymapper.system.power.AndroidPowerAdapter
 import io.github.sds100.keymapper.system.root.SuAdapterImpl
+import io.github.sds100.keymapper.system.ui.RecordUiElementsController
 import io.github.sds100.keymapper.system.url.AndroidOpenUrlAdapter
 import io.github.sds100.keymapper.system.vibrator.AndroidVibratorAdapter
 import io.github.sds100.keymapper.system.volume.AndroidVolumeAdapter

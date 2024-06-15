@@ -5,7 +5,7 @@ sealed class RecordUiElementsState {
         /**
          * The time left in seconds
          */
-        val timeLeft: Int
+        val timeLeft: Int,
     ) : RecordUiElementsState()
 
     object Stopped : RecordUiElementsState()

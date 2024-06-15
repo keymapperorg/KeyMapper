@@ -27,8 +27,10 @@ import splitties.bitflags.hasFlag
  */
 
 abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
-    displayActionUseCase: DisplayActionUseCase, resourceProvider: ResourceProvider
-) : ActionUiHelper<MAPPING, A>, ResourceProvider by resourceProvider,
+    displayActionUseCase: DisplayActionUseCase,
+    resourceProvider: ResourceProvider,
+) : ActionUiHelper<MAPPING, A>,
+    ResourceProvider by resourceProvider,
     DisplayActionUseCase by displayActionUseCase {
 
     override fun getTitle(action: ActionData, showDeviceDescriptors: Boolean): String =
@@ -36,7 +38,7 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
             is ActionData.App ->
                 getAppName(action.packageName).handle(
                     onSuccess = { getString(R.string.description_open_app, it) },
-                    onError = { getString(R.string.description_open_app, action.packageName) }
+                    onError = { getString(R.string.description_open_app, action.packageName) },
                 )
 
             is ActionData.AppShortcut -> action.shortcutTitle
@@ -48,14 +50,11 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
                     KeyEvent.keyCodeToString(action.keyCode)
                 }
 
-                //only a key code can be inputted through the shell
+                // only a key code can be inputted through the shell
                 if (action.useShell) {
                     getString(R.string.description_keyevent_through_shell, keyCodeString)
-
                 } else {
-
                     val metaStateString = buildString {
-
                         KeyEventUtils.MODIFIER_LABELS.entries.forEach {
                             val modifier = it.key
                             val labelRes = it.value
@@ -67,7 +66,6 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
                     }
 
                     if (action.device != null) {
-
                         val name = if (action.device.name.isBlank()) {
                             getString(R.string.unknown_device_name)
                         } else {
@@ -77,7 +75,7 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
                         val nameToShow = if (showDeviceDescriptors) {
                             InputDeviceUtils.appendDeviceDescriptorToName(
                                 action.device.descriptor,
-                                name
+                                name,
                             )
                         } else {
                             name
@@ -85,12 +83,12 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
 
                         getString(
                             R.string.description_keyevent_from_device,
-                            arrayOf(metaStateString, keyCodeString, nameToShow)
+                            arrayOf(metaStateString, keyCodeString, nameToShow),
                         )
                     } else {
                         getString(
                             R.string.description_keyevent,
-                            args = arrayOf(metaStateString, keyCodeString)
+                            args = arrayOf(metaStateString, keyCodeString),
                         )
                     }
                 }
@@ -100,7 +98,7 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
                 val dndModeString = getString(DndModeUtils.getLabel(action.dndMode))
                 getString(
                     R.string.action_enable_dnd_mode_formatted,
-                    dndModeString
+                    dndModeString,
                 )
             }
 
@@ -108,7 +106,7 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
                 val dndModeString = getString(DndModeUtils.getLabel(action.dndMode))
                 getString(
                     R.string.action_toggle_dnd_mode_formatted,
-                    dndModeString
+                    dndModeString,
                 )
             }
 
@@ -127,7 +125,7 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
                 when (action) {
                     is ActionData.Volume.Stream -> {
                         val streamString = getString(
-                            VolumeStreamUtils.getLabel(action.volumeStream)
+                            VolumeStreamUtils.getLabel(action.volumeStream),
                         )
 
                         if (action.showVolumeUi) {
@@ -137,18 +135,17 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
                         string = when (action) {
                             is ActionData.Volume.Stream.Decrease -> getString(
                                 R.string.action_decrease_stream_formatted,
-                                streamString
+                                streamString,
                             )
 
                             is ActionData.Volume.Stream.Increase -> getString(
                                 R.string.action_increase_stream_formatted,
-                                streamString
+                                streamString,
                             )
                         }
                     }
 
                     is ActionData.Volume.Down -> {
-
                         if (action.showVolumeUi) {
                             hasShowVolumeUiFlag = true
                         }
@@ -157,7 +154,6 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
                     }
 
                     is ActionData.Volume.Mute -> {
-
                         if (action.showVolumeUi) {
                             hasShowVolumeUiFlag = true
                         }
@@ -166,7 +162,6 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
                     }
 
                     is ActionData.Volume.ToggleMute -> {
-
                         if (action.showVolumeUi) {
                             hasShowVolumeUiFlag = true
                         }
@@ -175,7 +170,6 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
                     }
 
                     is ActionData.Volume.UnMute -> {
-
                         if (action.showVolumeUi) {
                             hasShowVolumeUiFlag = true
                         }
@@ -184,7 +178,6 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
                     }
 
                     is ActionData.Volume.Up -> {
-
                         if (action.showVolumeUi) {
                             hasShowVolumeUiFlag = true
                         }
@@ -206,7 +199,7 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
 
                         string = getString(
                             R.string.action_change_ringer_mode_formatted,
-                            ringerModeString
+                            ringerModeString,
                         )
                     }
 
@@ -250,7 +243,7 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
                         }
 
                         getString(resId)
-                    }
+                    },
                 )
 
             is ActionData.Flashlight -> {
@@ -270,9 +263,9 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
                 onError = {
                     getString(
                         R.string.action_switch_keyboard_formatted,
-                        action.savedImeName
+                        action.savedImeName,
                     )
-                }
+                },
             )
 
             is ActionData.Intent -> {
@@ -290,19 +283,26 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
             is ActionData.TapScreen -> if (action.description.isNullOrBlank()) {
                 getString(
                     R.string.description_tap_coordinate_default,
-                    arrayOf(action.x, action.y)
+                    arrayOf(action.x, action.y),
                 )
             } else {
                 getString(
                     R.string.description_tap_coordinate_with_description,
-                    arrayOf(action.x, action.y, action.description)
+                    arrayOf(action.x, action.y, action.description),
                 )
             }
 
             is ActionData.SwipeScreen -> if (action.description.isNullOrBlank()) {
                 getString(
                     R.string.description_swipe_coordinate_default,
-                    arrayOf(action.fingerCount, action.xStart, action.yStart, action.xEnd, action.yEnd, action.duration)
+                    arrayOf(
+                        action.fingerCount,
+                        action.xStart,
+                        action.yStart,
+                        action.xEnd,
+                        action.yEnd,
+                        action.duration,
+                    ),
                 )
             } else {
                 getString(
@@ -314,8 +314,8 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
                         action.xEnd,
                         action.yEnd,
                         action.duration,
-                        action.description
-                    )
+                        action.description,
+                    ),
                 )
             }
 
@@ -334,8 +334,8 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
                         action.x,
                         action.y,
                         action.distance,
-                        action.duration
-                    )
+                        action.duration,
+                    ),
                 )
             } else {
                 val pinchTypeDisplayName = if (action.pinchType == PinchScreenType.PINCH_IN) {
@@ -353,47 +353,48 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
                         action.y,
                         action.distance,
                         action.duration,
-                        action.description
-                    )
+                        action.description,
+                    ),
                 )
             }
 
             is ActionData.InteractWithScreenElement -> {
                 val appName = getAppName(action.uiElement.packageName).valueOrNull() ?: action.uiElement.packageName
                 if (action.description.isNullOrBlank()) {
-
-                val interactionTypeDisplayValue = when (action.interactionType)  {
-                    InteractionType.CLICK -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_click)
-                    InteractionType.LONG_CLICK -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_long_click)
-                    InteractionType.SELECT -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_select)
-                    InteractionType.FOCUS -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_focus)
-                    InteractionType.CLEAR_FOCUS -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_clear_focus)
-                    InteractionType.COLLAPSE -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_collapse)
-                    InteractionType.EXPAND -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_expand)
-                    InteractionType.DISMISS -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_dismiss)
-                    InteractionType.SCROLL_FORWARD -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_scroll_forward)
-                    InteractionType.SCROLL_BACKWARD -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_scroll_backward)
-                }
+                    val interactionTypeDisplayValue = when (action.interactionType) {
+                        InteractionType.CLICK -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_click)
+                        InteractionType.LONG_CLICK -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_long_click)
+                        InteractionType.SELECT -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_select)
+                        InteractionType.FOCUS -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_focus)
+                        InteractionType.CLEAR_FOCUS -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_clear_focus)
+                        InteractionType.COLLAPSE -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_collapse)
+                        InteractionType.EXPAND -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_expand)
+                        InteractionType.DISMISS -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_dismiss)
+                        InteractionType.SCROLL_FORWARD -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_scroll_forward)
+                        InteractionType.SCROLL_BACKWARD -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_scroll_backward)
+                    }
 
                     getString(
-                        R.string.description_interact_with_screen_element_default, arrayOf(
-                            interactionTypeDisplayValue, action.uiElement.elementName, appName
-                        )
+                        R.string.description_interact_with_screen_element_default,
+                        arrayOf(
+                            interactionTypeDisplayValue,
+                            action.uiElement.elementName,
+                            appName,
+                        ),
                     )
                 } else {
-
-                val interactionTypeDisplayValue = when (action.interactionType)  {
-                    InteractionType.CLICK -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_click)
-                    InteractionType.LONG_CLICK -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_long_click)
-                    InteractionType.SELECT -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_select)
-                    InteractionType.FOCUS -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_focus)
-                    InteractionType.CLEAR_FOCUS -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_clear_focus)
-                    InteractionType.COLLAPSE -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_collapse)
-                    InteractionType.EXPAND -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_expand)
-                    InteractionType.DISMISS -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_dismiss)
-                    InteractionType.SCROLL_FORWARD -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_scroll_forward)
-                    InteractionType.SCROLL_BACKWARD -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_scroll_backward)
-                }
+                    val interactionTypeDisplayValue = when (action.interactionType) {
+                        InteractionType.CLICK -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_click)
+                        InteractionType.LONG_CLICK -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_long_click)
+                        InteractionType.SELECT -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_select)
+                        InteractionType.FOCUS -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_focus)
+                        InteractionType.CLEAR_FOCUS -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_clear_focus)
+                        InteractionType.COLLAPSE -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_collapse)
+                        InteractionType.EXPAND -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_expand)
+                        InteractionType.DISMISS -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_dismiss)
+                        InteractionType.SCROLL_FORWARD -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_scroll_forward)
+                        InteractionType.SCROLL_BACKWARD -> getString(R.string.extra_label_interact_with_screen_element_interaction_type_scroll_backward)
+                    }
 
                     getString(
                         R.string.description_interact_with_screen_element_default_with_description,
@@ -401,8 +402,8 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
                             interactionTypeDisplayValue,
                             action.uiElement.elementName,
                             appName,
-                            action.description
-                        )
+                            action.description,
+                        ),
                     )
                 }
             }
@@ -470,7 +471,7 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
 
                 getString(
                     R.string.action_cycle_rotations_formatted,
-                    orientationStrings.joinToString()
+                    orientationStrings.joinToString(),
                 )
             }
 
@@ -515,7 +516,7 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
         is ActionData.App ->
             getAppIcon(action.packageName).handle(
                 onSuccess = { IconInfo(it, TintType.None) },
-                onError = { null }
+                onError = { null },
             )
 
         is ActionData.AppShortcut -> {
@@ -524,7 +525,7 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
             } else {
                 getAppIcon(action.packageName).handle(
                     onSuccess = { IconInfo(it, TintType.None) },
-                    onError = { null }
+                    onError = { null },
                 )
             }
         }
@@ -534,25 +535,25 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
         is ActionData.PhoneCall ->
             IconInfo(
                 getDrawable(R.drawable.ic_outline_call_24),
-                tintType = TintType.OnSurface
+                tintType = TintType.OnSurface,
             )
 
         is ActionData.TapScreen -> IconInfo(
             getDrawable(R.drawable.ic_outline_touch_app_24),
-            TintType.OnSurface
+            TintType.OnSurface,
         )
 
         is ActionData.Text -> null
         is ActionData.Url -> null
         is ActionData.Sound -> IconInfo(
             getDrawable(R.drawable.ic_outline_volume_up_24),
-            TintType.OnSurface
+            TintType.OnSurface,
         )
 
         else -> ActionUtils.getIcon(action.id)?.let { iconRes ->
             IconInfo(
                 getDrawable(iconRes),
-                TintType.OnSurface
+                TintType.OnSurface,
             )
         }
     }

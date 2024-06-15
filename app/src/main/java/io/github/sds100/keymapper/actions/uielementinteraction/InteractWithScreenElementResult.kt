@@ -21,5 +21,5 @@ data class InteractWithScreenElementResult(
     val uiElement: UiElementInfo,
     val onlyIfVisible: Boolean,
     val interactionType: InteractionType,
-    val description: String
+    val description: String,
 )

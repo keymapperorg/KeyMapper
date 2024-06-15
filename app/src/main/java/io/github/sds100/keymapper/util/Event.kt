@@ -35,7 +35,7 @@ sealed class Event {
     @Serializable
     data class RecordedTriggerKey(
         val keyCode: Int,
-        val device: InputDeviceInfo?
+        val device: InputDeviceInfo?,
     ) : Event(), Parcelable
 
     @Serializable
@@ -81,10 +81,10 @@ sealed class Event {
     data class OnInputFocusChange(val isFocussed: Boolean) : Event()
 
     @Serializable
-    object StartRecordingUiElements: Event()
+    object StartRecordingUiElements : Event()
 
     @Serializable
-    object StopRecordingUiElements: Event()
+    object StopRecordingUiElements : Event()
 
     @Serializable
     data class OnIncrementRecordUiElementsTimer(val timeLeft: Int) : Event()
