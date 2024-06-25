@@ -27,7 +27,7 @@ import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
 import io.github.sds100.keymapper.api.Api
 import io.github.sds100.keymapper.api.IKeyEventReceiver
 import io.github.sds100.keymapper.api.IKeyEventReceiverCallback
-import io.github.sds100.keymapper.api.KeyEventReceiver
+import io.github.sds100.keymapper.api.KeyEventRelayService
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapId
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.util.Error
@@ -196,7 +196,7 @@ class MyAccessibilityService :
             }
         }
 
-        Intent(this, KeyEventReceiver::class.java).also { intent ->
+        Intent(this, KeyEventRelayService::class.java).also { intent ->
             bindService(intent, keyEventReceiverConnection, Service.BIND_AUTO_CREATE)
         }
     }

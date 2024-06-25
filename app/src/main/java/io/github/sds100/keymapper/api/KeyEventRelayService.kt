@@ -17,7 +17,7 @@ import timber.log.Timber
  * pass volume down key events to the accessibility service when the phone is ringing or it is
  * in a phone call.
  */
-class KeyEventReceiver : Service() {
+class KeyEventRelayService : Service() {
 
     private val binderInterface: IKeyEventReceiver = object : IKeyEventReceiver.Stub() {
         override fun onKeyEvent(event: KeyEvent?): Boolean {

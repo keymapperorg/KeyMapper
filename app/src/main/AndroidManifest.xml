@@ -238,9 +238,9 @@
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <service
-            android:name=".api.KeyEventReceiver"
+            android:name=".api.KeyEventRelayService"
             android:exported="true"
-            android:permission="io.github.sds100.keymapper.KEY_EVENT_RECEIVER" />
+            android:permission="io.github.sds100.keymapper.KEY_EVENT_RELAY_SERVICE" />
 
         <service
             android:name=".system.inputmethod.ObserveInputMethodsJob"

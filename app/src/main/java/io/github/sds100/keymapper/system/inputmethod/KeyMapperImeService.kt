@@ -11,7 +11,7 @@ import android.inputmethodservice.InputMethodService
 import android.os.IBinder
 import android.view.KeyEvent
 import io.github.sds100.keymapper.api.IKeyEventReceiver
-import io.github.sds100.keymapper.api.KeyEventReceiver
+import io.github.sds100.keymapper.api.KeyEventRelayService
 
 /**
  * Created by sds100 on 31/03/2020.
@@ -109,7 +109,7 @@ class KeyMapperImeService : InputMethodService() {
             registerReceiver(broadcastReceiver, this)
         }
 
-        Intent(this, KeyEventReceiver::class.java).also { intent ->
+        Intent(this, KeyEventRelayService::class.java).also { intent ->
             bindService(intent, keyEventReceiverConnection, Service.BIND_AUTO_CREATE)
         }
     }
