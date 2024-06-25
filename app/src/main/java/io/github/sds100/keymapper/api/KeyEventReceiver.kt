@@ -7,7 +7,15 @@ import android.view.KeyEvent
 import timber.log.Timber
 
 /**
- * Created by sds100 on 30/01/2022.
+ * This service is used as a relay between the accessibility service and input method service to pass
+ * key events back and forth. A separate service has to be used because you can't bind to an
+ * accessibility service. The input method service sends key events to this service by calling
+ * onKeyEvent(), and the accessibility service registers with the callback to receive the
+ * key events being sent.
+ *
+ * This was implemented in issue #850 for the action to answer phone calls because Android doesn't
+ * pass volume down key events to the accessibility service when the phone is ringing or it is
+ * in a phone call.
  */
 class KeyEventReceiver : Service() {
 
