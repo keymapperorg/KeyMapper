@@ -5,6 +5,7 @@ import io.github.sds100.keymapper.actions.pinchscreen.PinchPickCoordinateResult
 import io.github.sds100.keymapper.actions.sound.ChooseSoundFileResult
 import io.github.sds100.keymapper.actions.swipescreen.SwipePickCoordinateResult
 import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
+import io.github.sds100.keymapper.actions.uielementinteraction.InteractWithScreenElementResult
 import io.github.sds100.keymapper.constraints.ChooseConstraintType
 import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapId
@@ -12,6 +13,7 @@ import io.github.sds100.keymapper.system.apps.ActivityInfo
 import io.github.sds100.keymapper.system.apps.ChooseAppShortcutResult
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import io.github.sds100.keymapper.system.intents.ConfigIntentResult
+import io.github.sds100.keymapper.system.ui.UiElementInfo
 import timber.log.Timber
 
 /**
@@ -26,6 +28,9 @@ sealed class NavDestination<R> {
         const val ID_PICK_COORDINATE = "pick_coordinate"
         const val ID_PICK_SWIPE_COORDINATE = "pick_swipe_coordinate"
         const val ID_PICK_PINCH_COORDINATE = "pick_pinch_coordinate"
+        const val ID_INTERACT_WITH_SCREEN_ELEMENT = "interact_with_screen_element"
+        const val ID_INTERACT_WITH_SCREEN_ELEMENT_SIMPLE = "interact_with_screen_element_simple"
+        const val ID_CHOOSE_UI_ELEMENT = "choose_ui_element"
         const val ID_CONFIG_INTENT = "config_intent"
         const val ID_CHOOSE_ACTIVITY = "choose_activity"
         const val ID_CHOOSE_SOUND = "choose_sound"
@@ -43,22 +48,25 @@ sealed class NavDestination<R> {
             Timber.d("NavDestination: %s", this.toString())
             return when (this) {
                 is ChooseApp -> ID_CHOOSE_APP
-                ChooseAppShortcut -> ID_CHOOSE_APP_SHORTCUT
-                ChooseKeyCode -> ID_KEY_CODE
+                is ChooseAppShortcut -> ID_CHOOSE_APP_SHORTCUT
+                is ChooseKeyCode -> ID_KEY_CODE
                 is ConfigKeyEventAction -> ID_KEY_EVENT
                 is PickCoordinate -> ID_PICK_COORDINATE
                 is PickSwipeCoordinate -> ID_PICK_SWIPE_COORDINATE
                 is PickPinchCoordinate -> ID_PICK_PINCH_COORDINATE
+                is InteractWithScreenElement -> ID_INTERACT_WITH_SCREEN_ELEMENT
+                is InteractWithScreenElementSimple -> ID_INTERACT_WITH_SCREEN_ELEMENT_SIMPLE
+                is ChooseUiElement -> ID_CHOOSE_UI_ELEMENT
                 is ConfigIntent -> ID_CONFIG_INTENT
-                ChooseActivity -> ID_CHOOSE_ACTIVITY
-                ChooseSound -> ID_CHOOSE_SOUND
-                ChooseAction -> ID_CHOOSE_ACTION
+                is ChooseActivity -> ID_CHOOSE_ACTIVITY
+                is ChooseSound -> ID_CHOOSE_SOUND
+                is ChooseAction -> ID_CHOOSE_ACTION
                 is ChooseConstraint -> ID_CHOOSE_CONSTRAINT
-                ChooseBluetoothDevice -> ID_CHOOSE_BLUETOOTH_DEVICE
-                FixAppKilling -> ID_FIX_APP_KILLING
-                ReportBug -> ID_REPORT_BUG
-                Settings -> ID_SETTINGS
-                About -> ID_ABOUT
+                is ChooseBluetoothDevice -> ID_CHOOSE_BLUETOOTH_DEVICE
+                is FixAppKilling -> ID_FIX_APP_KILLING
+                is ReportBug -> ID_REPORT_BUG
+                is Settings -> ID_SETTINGS
+                is About -> ID_ABOUT
                 is ConfigKeyMap -> ID_CONFIG_KEY_MAP
                 is ConfigFingerprintMap -> ID_CONFIG_FINGERPRINT_MAP
             }
@@ -74,20 +82,34 @@ sealed class NavDestination<R> {
 
     object ChooseAppShortcut : NavDestination<ChooseAppShortcutResult>()
     object ChooseKeyCode : NavDestination<Int>()
-    data class ConfigKeyEventAction(val action: ActionData.InputKeyEvent? = null) : NavDestination<ActionData.InputKeyEvent>()
+    data class ConfigKeyEventAction(val action: ActionData.InputKeyEvent? = null) :
+        NavDestination<ActionData.InputKeyEvent>()
 
-    data class PickCoordinate(val result: PickCoordinateResult? = null) : NavDestination<PickCoordinateResult>()
+    data class PickCoordinate(val result: PickCoordinateResult? = null) :
+        NavDestination<PickCoordinateResult>()
 
-    data class PickSwipeCoordinate(val result: SwipePickCoordinateResult? = null) : NavDestination<SwipePickCoordinateResult>()
+    data class PickSwipeCoordinate(val result: SwipePickCoordinateResult? = null) :
+        NavDestination<SwipePickCoordinateResult>()
 
-    data class PickPinchCoordinate(val result: PinchPickCoordinateResult? = null) : NavDestination<PinchPickCoordinateResult>()
+    data class PickPinchCoordinate(val result: PinchPickCoordinateResult? = null) :
+        NavDestination<PinchPickCoordinateResult>()
 
-    data class ConfigIntent(val result: ConfigIntentResult? = null) : NavDestination<ConfigIntentResult>()
+    data class InteractWithScreenElement(val result: InteractWithScreenElementResult? = null) :
+        NavDestination<InteractWithScreenElementResult>()
+
+    data class InteractWithScreenElementSimple(val result: InteractWithScreenElementResult? = null) :
+        NavDestination<InteractWithScreenElementResult>()
+
+    object ChooseUiElement : NavDestination<UiElementInfo>()
+
+    data class ConfigIntent(val result: ConfigIntentResult? = null) :
+        NavDestination<ConfigIntentResult>()
 
     object ChooseActivity : NavDestination<ActivityInfo>()
     object ChooseSound : NavDestination<ChooseSoundFileResult>()
     object ChooseAction : NavDestination<ActionData>()
-    data class ChooseConstraint(val supportedConstraints: List<ChooseConstraintType>) : NavDestination<Constraint>()
+    data class ChooseConstraint(val supportedConstraints: List<ChooseConstraintType>) :
+        NavDestination<Constraint>()
 
     object ChooseBluetoothDevice : NavDestination<BluetoothDeviceInfo>()
     object ReportBug : NavDestination<Unit>()

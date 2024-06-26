@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.actions
 
 import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
+import io.github.sds100.keymapper.actions.uielementinteraction.InteractionType
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.Extra
 import io.github.sds100.keymapper.data.entities.getData
@@ -8,6 +9,7 @@ import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.system.intents.IntentExtraModel
 import io.github.sds100.keymapper.system.intents.IntentTarget
+import io.github.sds100.keymapper.system.ui.UiElementInfo
 import io.github.sds100.keymapper.system.volume.DndMode
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeStream
@@ -36,6 +38,7 @@ object ActionDataEntityMapper {
             ActionEntity.Type.TAP_COORDINATE -> ActionId.TAP_SCREEN
             ActionEntity.Type.SWIPE_COORDINATE -> ActionId.SWIPE_SCREEN
             ActionEntity.Type.PINCH_COORDINATE -> ActionId.PINCH_SCREEN
+            ActionEntity.Type.INTERACT_WITH_SCREEN_ELEMENT -> ActionId.INTERACT_WITH_SCREEN_ELEMENT
             ActionEntity.Type.INTENT -> ActionId.INTENT
             ActionEntity.Type.PHONE_CALL -> ActionId.PHONE_CALL
             ActionEntity.Type.SOUND -> ActionId.SOUND
@@ -205,6 +208,30 @@ object ActionDataEntityMapper {
                     pinchType = pinchType,
                     fingerCount = fingerCount,
                     duration = duration,
+                    description = description,
+                )
+            }
+
+            ActionId.INTERACT_WITH_SCREEN_ELEMENT -> {
+                val splitData = entity.data.trim().split(',')
+
+                val elementId = splitData[0]
+                val packageName = splitData[1]
+                val fullName = splitData[2]
+                val onlyIfVisible = splitData[3].toBoolean()
+                val interactionType = splitData[4]
+
+                val description = entity.extras.getData(ActionEntity.EXTRA_ELEMENT_DESCRIPTION)
+                    .valueOrNull()
+
+                ActionData.InteractWithScreenElement(
+                    UiElementInfo(
+                        elementName = elementId,
+                        packageName = packageName,
+                        fullName = fullName,
+                    ),
+                    onlyIfVisible = onlyIfVisible,
+                    interactionType = InteractionType.valueOf(interactionType),
                     description = description,
                 )
             }
@@ -495,6 +522,7 @@ object ActionDataEntityMapper {
             is ActionData.TapScreen -> ActionEntity.Type.TAP_COORDINATE
             is ActionData.SwipeScreen -> ActionEntity.Type.SWIPE_COORDINATE
             is ActionData.PinchScreen -> ActionEntity.Type.PINCH_COORDINATE
+            is ActionData.InteractWithScreenElement -> ActionEntity.Type.INTERACT_WITH_SCREEN_ELEMENT
             is ActionData.Text -> ActionEntity.Type.TEXT_BLOCK
             is ActionData.Url -> ActionEntity.Type.URL
             is ActionData.Sound -> ActionEntity.Type.SOUND
@@ -536,6 +564,7 @@ object ActionDataEntityMapper {
         is ActionData.TapScreen -> "${data.x},${data.y}"
         is ActionData.SwipeScreen -> "${data.xStart},${data.yStart},${data.xEnd},${data.yEnd},${data.fingerCount},${data.duration}"
         is ActionData.PinchScreen -> "${data.x},${data.y},${data.distance},${data.pinchType},${data.fingerCount},${data.duration}"
+        is ActionData.InteractWithScreenElement -> "${data.uiElement.elementName},${data.uiElement.packageName},${data.uiElement.fullName},${data.onlyIfVisible},${data.interactionType}"
         is ActionData.Text -> data.text
         is ActionData.Url -> data.url
         is ActionData.Sound -> data.soundUid
@@ -639,6 +668,12 @@ object ActionDataEntityMapper {
         is ActionData.PinchScreen -> sequence {
             if (!data.description.isNullOrBlank()) {
                 yield(Extra(ActionEntity.EXTRA_COORDINATE_DESCRIPTION, data.description))
+            }
+        }.toList()
+
+        is ActionData.InteractWithScreenElement -> sequence {
+            if (!data.description.isNullOrBlank()) {
+                yield(Extra(ActionEntity.EXTRA_ELEMENT_DESCRIPTION, data.description))
             }
         }.toList()
 

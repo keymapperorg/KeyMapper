@@ -25,6 +25,12 @@ sealed class Constraint {
     data class AppNotInForeground(val packageName: String) : Constraint()
 
     @Serializable
+    data class ScreenElementVisible(val fullyQualifiedViewId: String) : Constraint()
+
+    @Serializable
+    data class ScreenElementNotVisible(val fullyQualifiedViewId: String) : Constraint()
+
+    @Serializable
     data class AppPlayingMedia(val packageName: String) : Constraint()
 
     @Serializable
@@ -37,10 +43,12 @@ sealed class Constraint {
     object NoMediaPlaying : Constraint()
 
     @Serializable
-    data class BtDeviceConnected(val bluetoothAddress: String, val deviceName: String) : Constraint()
+    data class BtDeviceConnected(val bluetoothAddress: String, val deviceName: String) :
+        Constraint()
 
     @Serializable
-    data class BtDeviceDisconnected(val bluetoothAddress: String, val deviceName: String) : Constraint()
+    data class BtDeviceDisconnected(val bluetoothAddress: String, val deviceName: String) :
+        Constraint()
 
     @Serializable
     object ScreenOn : Constraint()
@@ -140,14 +148,22 @@ object ConstraintEntityMapper {
     )
 
     fun fromEntity(entity: ConstraintEntity): Constraint {
-        fun getPackageName(): String =
-            entity.extras.getData(ConstraintEntity.EXTRA_PACKAGE_NAME).valueOrNull()!!
+        fun getPackageName(): String {
+            return entity.extras.getData(ConstraintEntity.EXTRA_PACKAGE_NAME).valueOrNull()!!
+        }
 
-        fun getBluetoothAddress(): String =
-            entity.extras.getData(ConstraintEntity.EXTRA_BT_ADDRESS).valueOrNull()!!
+        fun getFullyQualifiedViewId(): String {
+            return entity.extras.getData(ConstraintEntity.EXTRA_FULLY_QUALIFIED_VIEW_ID)
+                .valueOrNull()!!
+        }
 
-        fun getBluetoothDeviceName(): String =
-            entity.extras.getData(ConstraintEntity.EXTRA_BT_NAME).valueOrNull()!!
+        fun getBluetoothAddress(): String {
+            return entity.extras.getData(ConstraintEntity.EXTRA_BT_ADDRESS).valueOrNull()!!
+        }
+
+        fun getBluetoothDeviceName(): String {
+            return entity.extras.getData(ConstraintEntity.EXTRA_BT_NAME).valueOrNull()!!
+        }
 
         fun getCameraLens(): CameraLens {
             val extraValue =
@@ -176,6 +192,14 @@ object ConstraintEntityMapper {
         return when (entity.type) {
             ConstraintEntity.APP_FOREGROUND -> Constraint.AppInForeground(getPackageName())
             ConstraintEntity.APP_NOT_FOREGROUND -> Constraint.AppNotInForeground(getPackageName())
+            ConstraintEntity.SCREEN_ELEMENT_VISIBLE -> Constraint.ScreenElementVisible(
+                getFullyQualifiedViewId(),
+            )
+
+            ConstraintEntity.SCREEN_ELEMENT_NOT_VISIBLE -> Constraint.ScreenElementNotVisible(
+                getFullyQualifiedViewId(),
+            )
+
             ConstraintEntity.APP_PLAYING_MEDIA -> Constraint.AppPlayingMedia(getPackageName())
             ConstraintEntity.APP_NOT_PLAYING_MEDIA -> Constraint.AppNotPlayingMedia(getPackageName())
             ConstraintEntity.MEDIA_PLAYING -> Constraint.MediaPlaying
@@ -232,6 +256,26 @@ object ConstraintEntityMapper {
         is Constraint.AppNotInForeground -> ConstraintEntity(
             type = ConstraintEntity.APP_NOT_FOREGROUND,
             extras = listOf(Extra(ConstraintEntity.EXTRA_PACKAGE_NAME, constraint.packageName)),
+        )
+
+        is Constraint.ScreenElementVisible -> ConstraintEntity(
+            type = ConstraintEntity.SCREEN_ELEMENT_VISIBLE,
+            extras = listOf(
+                Extra(
+                    ConstraintEntity.EXTRA_FULLY_QUALIFIED_VIEW_ID,
+                    constraint.fullyQualifiedViewId,
+                ),
+            ),
+        )
+
+        is Constraint.ScreenElementNotVisible -> ConstraintEntity(
+            type = ConstraintEntity.SCREEN_ELEMENT_NOT_VISIBLE,
+            extras = listOf(
+                Extra(
+                    ConstraintEntity.EXTRA_FULLY_QUALIFIED_VIEW_ID,
+                    constraint.fullyQualifiedViewId,
+                ),
+            ),
         )
 
         is Constraint.AppPlayingMedia -> ConstraintEntity(

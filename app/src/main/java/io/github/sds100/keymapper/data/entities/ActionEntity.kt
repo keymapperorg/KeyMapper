@@ -79,6 +79,7 @@ data class ActionEntity(
         const val EXTRA_DND_MODE = "extra_do_not_disturb_mode"
         const val EXTRA_ORIENTATIONS = "extra_orientations"
         const val EXTRA_COORDINATE_DESCRIPTION = "extra_coordinate_description"
+        const val EXTRA_ELEMENT_DESCRIPTION = "extra_element_description"
         const val EXTRA_INTENT_TARGET = "extra_intent_target"
         const val EXTRA_INTENT_DESCRIPTION = "extra_intent_description"
         const val EXTRA_SOUND_FILE_DESCRIPTION = "extra_sound_file_description"
@@ -144,6 +145,7 @@ data class ActionEntity(
         TAP_COORDINATE,
         SWIPE_COORDINATE,
         PINCH_COORDINATE,
+        INTERACT_WITH_SCREEN_ELEMENT,
         INTENT,
         PHONE_CALL,
         SOUND,

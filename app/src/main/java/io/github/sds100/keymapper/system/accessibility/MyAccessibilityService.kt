@@ -18,12 +18,14 @@ import android.os.Build
 import android.os.IBinder
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityNodeInfo
 import androidx.core.content.getSystemService
 import androidx.core.os.bundleOf
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
+import io.github.sds100.keymapper.actions.uielementinteraction.InteractionType
 import io.github.sds100.keymapper.api.Api
 import io.github.sds100.keymapper.api.IKeyEventReceiver
 import io.github.sds100.keymapper.api.IKeyEventReceiverCallback
@@ -44,10 +46,7 @@ import timber.log.Timber
  * Created by sds100 on 05/04/2020.
  */
 
-class MyAccessibilityService :
-    AccessibilityService(),
-    LifecycleOwner,
-    IAccessibilityService {
+class MyAccessibilityService : AccessibilityService(), LifecycleOwner, IAccessibilityService {
 
     // virtual distance between fingers on multitouch gestures
     private val fingerGestureDistance = 10L
@@ -285,7 +284,7 @@ class MyAccessibilityService :
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        controller?.onAccessibilityEvent(event?.toModel())
+        controller?.onAccessibilityEvent(event)
     }
 
     override fun onKeyEvent(event: KeyEvent?): Boolean {
@@ -409,6 +408,97 @@ class MyAccessibilityService :
         return Error.SdkVersionTooLow(Build.VERSION_CODES.N)
     }
 
+    override fun fetchAvailableUIElements(onlyVisibleElements: Boolean): List<String> {
+        if (rootInActiveWindow == null) {
+            Timber.d("fetchAvailableUIElements NO ROOT WINDOW")
+            return emptyList()
+        }
+
+        val viewIds = findViewIdResourceNames(rootInActiveWindow, onlyVisibleElements)
+
+        return viewIds.distinct().sorted()
+    }
+
+    private fun findViewIdResourceNames(
+        node: AccessibilityNodeInfo,
+        onlyVisibleElements: Boolean,
+    ): List<String> {
+        val list = mutableListOf<String>()
+
+        for (i in 0 until node.childCount) {
+            val child = node.getChild(i)
+
+            if (child != null) {
+                try {
+                    if (child.viewIdResourceName != null) {
+                        if (onlyVisibleElements && child.isVisibleToUser) {
+                            list.add(child.viewIdResourceName)
+                        } else if (!onlyVisibleElements) {
+                            list.add(child.viewIdResourceName)
+                        }
+                    }
+                } catch (error: kotlin.Error) {
+                    Timber.d("Could not add child to list: %s", error.message)
+                }
+
+                list.addAll(findViewIdResourceNames(child, onlyVisibleElements))
+            }
+        }
+
+        return list
+    }
+
+    private fun findNodeByFullyQualifiedName(
+        name: String,
+        parent: AccessibilityNodeInfo,
+    ): AccessibilityNodeInfo? {
+        val nodes = arrayListOf<AccessibilityNodeInfo>()
+        var result: AccessibilityNodeInfo? = null
+
+        if (rootInActiveWindow != null) {
+            nodes.addAll(getChildNodes(name, parent))
+
+            if (nodes.isNotEmpty()) {
+                nodes.forEach {
+                    if (it.viewIdResourceName !== null && it.viewIdResourceName == name) {
+                        result = it
+                        return@forEach
+                    }
+                }
+            }
+        } else {
+            Timber.d("findNodeByFullyQualifiedName NO ROOT WINDOW")
+        }
+
+        return result
+    }
+
+    private fun getChildNodes(
+        name: String,
+        parent: AccessibilityNodeInfo,
+    ): List<AccessibilityNodeInfo> {
+        val list = arrayListOf<AccessibilityNodeInfo>()
+
+        for (i in 0 until parent.childCount) {
+            val child = parent.getChild(i)
+
+            if (child != null) {
+                try {
+                    if (child.viewIdResourceName != null) {
+                        list.add(child)
+                        if (child.viewIdResourceName == name) return list
+                    }
+                } catch (error: kotlin.Error) {
+                    Timber.d("Could not add child to list: %s", error.message)
+                }
+
+                list.addAll(getChildNodes(name, child))
+            }
+        }
+
+        return list
+    }
+
     override fun swipeScreen(
         xStart: Int,
         yStart: Int,
@@ -429,6 +519,7 @@ class MyAccessibilityService :
             val pStart = Point(xStart, yStart)
             val pEnd = Point(xEnd, yEnd)
 
+            val maxCoordinates = getGestureMaxCoordinates()
             val gestureBuilder = GestureDescription.Builder()
 
             if (fingerCount == 1) {
@@ -472,6 +563,10 @@ class MyAccessibilityService :
                             perpendicularLineStart.start,
                             fingerOffsetLength,
                             angle,
+                            0,
+                            0,
+                            maxCoordinates.x,
+                            maxCoordinates.y,
                         )
                     // move the coordinates of the current virtual finger on the perpendicular line for the end coordinates
                     val endFingerCoordinateWithOffset =
@@ -479,6 +574,10 @@ class MyAccessibilityService :
                             perpendicularLineEnd.start,
                             fingerOffsetLength,
                             angle,
+                            0,
+                            0,
+                            maxCoordinates.x,
+                            maxCoordinates.y,
                         )
 
                     // create a path for each finger, move the the coordinates on the perpendicular line and draw it to the end coordinates of the perpendicular line of the end swipe point
@@ -508,6 +607,11 @@ class MyAccessibilityService :
         return Error.SdkVersionTooLow(Build.VERSION_CODES.N)
     }
 
+    private fun getGestureMaxCoordinates(): Point {
+        // width and height seems to be orientated which means we don't have to check device orientation for that?!?
+        return Point(resources.displayMetrics.widthPixels, resources.displayMetrics.heightPixels)
+    }
+
     override fun pinchScreen(
         x: Int,
         y: Int,
@@ -525,9 +629,19 @@ class MyAccessibilityService :
                 return Error.GestureDurationTooHigh
             }
 
+            val maxCoordinates = getGestureMaxCoordinates()
+
             val gestureBuilder = GestureDescription.Builder()
             val distributedPoints: List<Point> =
-                MathUtils.distributePointsOnCircle(Point(x, y), distance.toFloat() / 2, fingerCount)
+                MathUtils.distributePointsOnCircle(
+                    Point(x, y),
+                    distance.toFloat() / 2,
+                    fingerCount,
+                    0,
+                    0,
+                    maxCoordinates.x,
+                    maxCoordinates.y,
+                )
 
             for (index in distributedPoints.indices) {
                 val p = Path()
@@ -560,5 +674,63 @@ class MyAccessibilityService :
         return Error.SdkVersionTooLow(Build.VERSION_CODES.N)
     }
 
-    override fun findFocussedNode(focus: Int): AccessibilityNodeModel? = findFocus(focus)?.toModel()
+    override fun interactWithScreenElement(
+        fullName: String,
+        onlyIfVisible: Boolean,
+        interactionType: InteractionType,
+        inputEventType: InputEventType,
+    ): Result<*> {
+        Timber.d(
+            "interactWithScreenElement fullName: %s, onlyIfVisible: %s, interactionType: %s",
+            fullName,
+            onlyIfVisible.toString(),
+            interactionType.name,
+        )
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            if (rootInActiveWindow != null) {
+                // TODO: Find a way to get the "SystemView" as "rootInActiveWindow"
+                // Use a custom function because "findAccessibilityNodeInfosByViewId" does not iterate through all children sometimes
+                val nodeToInteractWith = findNodeByFullyQualifiedName(fullName, rootInActiveWindow)
+
+                if (nodeToInteractWith != null) {
+                    if (onlyIfVisible && !nodeToInteractWith.isVisibleToUser) {
+                        return Error.AccessibilityNodeNotVisible
+                    }
+
+                    val success = nodeToInteractWith.performAction(
+                        when (interactionType) {
+                            InteractionType.LONG_CLICK -> AccessibilityNodeInfo.ACTION_LONG_CLICK
+                            InteractionType.SELECT -> AccessibilityNodeInfo.ACTION_SELECT
+                            InteractionType.FOCUS -> AccessibilityNodeInfo.ACTION_FOCUS
+                            InteractionType.CLEAR_FOCUS -> AccessibilityNodeInfo.ACTION_CLEAR_FOCUS
+                            InteractionType.COLLAPSE -> AccessibilityNodeInfo.ACTION_COLLAPSE
+                            InteractionType.EXPAND -> AccessibilityNodeInfo.ACTION_EXPAND
+                            InteractionType.DISMISS -> AccessibilityNodeInfo.ACTION_DISMISS
+                            InteractionType.SCROLL_FORWARD -> AccessibilityNodeInfo.ACTION_SCROLL_FORWARD
+                            InteractionType.SCROLL_BACKWARD -> AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD
+                            else -> AccessibilityNodeInfo.ACTION_CLICK
+                        },
+                    )
+
+                    if (success) {
+                        return Success(Unit)
+                    } else {
+                        Error.FailedToDispatchGesture
+                    }
+                } else {
+                    Timber.d("interactWithScreenElement: nodeToInteractWith is null")
+                    return Error.FailedToFindAccessibilityNode
+                }
+            } else {
+                Timber.d("interactWithScreenElement: rootInActiveWindow is NULL")
+            }
+        }
+
+        return Error.SdkVersionTooLow(Build.VERSION_CODES.N)
+    }
+
+    override fun findFocussedNode(focus: Int): AccessibilityNodeModel? {
+        return findFocus(focus)?.toModel()
+    }
 }

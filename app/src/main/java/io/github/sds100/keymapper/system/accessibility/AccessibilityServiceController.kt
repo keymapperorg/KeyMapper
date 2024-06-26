@@ -1,11 +1,13 @@
 package io.github.sds100.keymapper.system.accessibility
 
 import android.accessibilityservice.AccessibilityServiceInfo
+import android.annotation.SuppressLint
 import android.os.Build
 import android.os.SystemClock
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
+import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
@@ -21,10 +23,12 @@ import io.github.sds100.keymapper.mappings.keymaps.detection.DetectScreenOffKeyE
 import io.github.sds100.keymapper.mappings.keymaps.detection.KeyMapController
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsController
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsUseCase
+import io.github.sds100.keymapper.system.apps.PackageInfoTypes
+import io.github.sds100.keymapper.system.apps.PackageUtils
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
-import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
+import io.github.sds100.keymapper.system.ui.UiElementInfo
 import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.firstBlocking
 import kotlinx.coroutines.CoroutineScope
@@ -67,7 +71,6 @@ class AccessibilityServiceController(
     private val pauseMappingsUseCase: PauseMappingsUseCase,
     private val devicesAdapter: DevicesAdapter,
     private val suAdapter: SuAdapter,
-    private val inputMethodAdapter: InputMethodAdapter,
     private val settingsRepository: PreferenceRepository,
 ) {
 
@@ -76,6 +79,19 @@ class AccessibilityServiceController(
          * How long should the accessibility service record a trigger in seconds.
          */
         private const val RECORD_TRIGGER_TIMER_LENGTH = 5
+
+        /**
+         * How long should the accessibility service record UI elements in seconds
+         */
+        private const val RECORD_UI_ELEMENTS_TIMER_LENGTH = 5 * 60
+
+        /**
+         * On which events we want to record UI Elements?
+         */
+        private val RECORD_UI_ELEMENTS_EVENT_TYPES = intArrayOf(
+            AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
+            AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED,
+        )
     }
 
     private val triggerKeyMapFromOtherAppsController = TriggerKeyMapFromOtherAppsController(
@@ -133,10 +149,15 @@ class AccessibilityServiceController(
             }
         }
 
+    private var recordingUiElementsJob: Job? = null
+    private val recordingUiElements: Boolean
+        get() = recordingUiElementsJob != null && recordingUiElementsJob?.isActive == true
+
     private val initialServiceFlags: Int by lazy {
         var flags = AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS
             .withFlag(AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS)
             .withFlag(AccessibilityServiceInfo.DEFAULT)
+            .withFlag(AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS)
             .withFlag(AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -144,6 +165,17 @@ class AccessibilityServiceController(
         }
 
         return@lazy flags
+    }
+
+    private val initialFeedbackFlags: Int by lazy {
+
+        return@lazy AccessibilityServiceInfo.FEEDBACK_ALL_MASK
+    }
+
+    private val initialEventTypes: Int by lazy {
+
+        return@lazy AccessibilityEvent.TYPE_WINDOWS_CHANGED.withFlag(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED)
+            .withFlag(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED)
     }
 
     /*
@@ -154,8 +186,8 @@ class AccessibilityServiceController(
      */
     private var serviceFlags: MutableStateFlow<Int> = MutableStateFlow(initialServiceFlags)
 
-    private var serviceFeedbackType: MutableStateFlow<Int> = MutableStateFlow(0)
-    private var serviceEventTypes: MutableStateFlow<Int> = MutableStateFlow(0)
+    private var serviceFeedbackType: MutableStateFlow<Int> = MutableStateFlow(initialFeedbackFlags)
+    private var serviceEventTypes: MutableStateFlow<Int> = MutableStateFlow(initialEventTypes)
 
     init {
         serviceFlags.onEach { flags ->
@@ -406,8 +438,49 @@ class AccessibilityServiceController(
         )
     }
 
-    fun onAccessibilityEvent(event: AccessibilityEventModel?) {
+    fun onAccessibilityEvent(event: AccessibilityEvent?) {
         Timber.d("OnAccessibilityEvent $event")
+
+        /**
+         * Record UI elements and store them into the DB
+         */
+        if (recordingUiElements &&
+            event != null &&
+            RECORD_UI_ELEMENTS_EVENT_TYPES.contains(event.eventType)
+        ) {
+            val foundViewIds = accessibilityService.fetchAvailableUIElements(false)
+
+            if (foundViewIds.isNotEmpty()) {
+                for (viewId in foundViewIds) {
+                    val packageName = PackageUtils.getInfoFromFullyQualifiedViewName(
+                        viewId,
+                        PackageInfoTypes.TYPE_PACKAGE_NAME,
+                    ) ?: continue
+
+                    // Do not record events within Key Mapper to prevent infinite loops
+                    // when the list of UI elements changes in response to this feature.
+                    if (packageName == Constants.PACKAGE_NAME) {
+                        continue
+                    }
+
+                    val elementId = PackageUtils.getInfoFromFullyQualifiedViewName(
+                        viewId,
+                        PackageInfoTypes.TYPE_VIEW_ID,
+                    ) ?: continue
+
+                    val model = UiElementInfo(
+                        elementName = elementId,
+                        packageName = packageName,
+                        fullName = viewId,
+                    )
+
+                    coroutineScope.launch {
+                        outputEvents.emit(Event.OnRecordUiElement(model))
+                    }
+                }
+            }
+        }
+
         val focussedNode = accessibilityService.findFocussedNode(AccessibilityNodeInfo.FOCUS_INPUT)
 
         if (focussedNode?.isEditable == true && focussedNode.isFocused) {
@@ -431,7 +504,8 @@ class AccessibilityServiceController(
         triggerKeyMapFromOtherAppsController.onDetected(uid)
     }
 
-    private fun onEventFromUi(event: Event) {
+    @SuppressLint("NewApi")
+    private suspend fun onEventFromUi(event: Event) {
         Timber.d("Service received event from UI: $event")
         when (event) {
             is Event.StartRecordingTrigger ->
@@ -453,12 +527,29 @@ class AccessibilityServiceController(
             }
 
             is Event.TestAction -> performActionsUseCase.perform(event.action)
-
             is Event.Ping -> coroutineScope.launch { outputEvents.emit(Event.Pong(event.key)) }
             is Event.HideKeyboard -> accessibilityService.hideKeyboard()
             is Event.ShowKeyboard -> accessibilityService.showKeyboard()
             is Event.ChangeIme -> accessibilityService.switchIme(event.imeId)
             is Event.DisableService -> accessibilityService.disableSelf()
+            is Event.StartRecordingUiElements ->
+                if (!recordingUiElements) {
+                    recordingUiElementsJob = recordUiElementsJob()
+                }
+
+            is Event.StopRecordingUiElements -> {
+                val wasRecordingUiElements = recordingUiElements
+
+                recordingUiElementsJob?.cancel()
+                recordingUiElementsJob = null
+
+                if (wasRecordingUiElements) {
+                    coroutineScope.launch {
+                        outputEvents.emit(Event.OnStoppedRecordingUiElements)
+                    }
+                }
+            }
+
             else -> Unit
         }
     }
@@ -474,6 +565,19 @@ class AccessibilityServiceController(
         }
 
         outputEvents.emit(Event.OnStoppedRecordingTrigger)
+    }
+
+    private fun recordUiElementsJob() = coroutineScope.launch {
+        repeat(RECORD_UI_ELEMENTS_TIMER_LENGTH) { iteration ->
+            if (isActive) {
+                val timeLeft = RECORD_UI_ELEMENTS_TIMER_LENGTH - iteration
+                outputEvents.emit(Event.OnIncrementRecordUiElementsTimer(timeLeft))
+
+                delay(1000)
+            }
+        }
+
+        outputEvents.emit(Event.OnStoppedRecordingUiElements)
     }
 
     private fun requestFingerprintGestureDetection() {

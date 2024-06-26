@@ -10,6 +10,8 @@ import kotlinx.serialization.Serializable
 enum class ChooseConstraintType {
     APP_IN_FOREGROUND,
     APP_NOT_IN_FOREGROUND,
+    SCREEN_ELEMENT_VISIBLE,
+    SCREEN_ELEMENT_NOT_VISIBLE,
     APP_PLAYING_MEDIA,
     APP_NOT_PLAYING_MEDIA,
     MEDIA_NOT_PLAYING,

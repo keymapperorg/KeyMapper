@@ -20,6 +20,8 @@ import io.github.sds100.keymapper.actions.swipescreen.SwipePickCoordinateResult
 import io.github.sds100.keymapper.actions.swipescreen.SwipePickDisplayCoordinateFragment
 import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.actions.tapscreen.PickDisplayCoordinateFragment
+import io.github.sds100.keymapper.actions.uielementinteraction.InteractWithScreenElementFragment
+import io.github.sds100.keymapper.actions.uielementinteraction.InteractWithScreenElementResult
 import io.github.sds100.keymapper.constraints.ChooseConstraintFragment
 import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.system.apps.ActivityInfo
@@ -31,6 +33,8 @@ import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import io.github.sds100.keymapper.system.bluetooth.ChooseBluetoothDeviceFragment
 import io.github.sds100.keymapper.system.intents.ConfigIntentFragment
 import io.github.sds100.keymapper.system.intents.ConfigIntentResult
+import io.github.sds100.keymapper.system.ui.ChooseUiElementFragment
+import io.github.sds100.keymapper.system.ui.UiElementInfo
 import io.github.sds100.keymapper.ui.utils.getJsonSerializable
 import io.github.sds100.keymapper.util.ui.NavDestination.Companion.getId
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -178,6 +182,24 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
                 NavAppDirections.swipePickDisplayCoordinate(requestKey, json)
             }
 
+            is NavDestination.InteractWithScreenElement -> {
+                val json = destination.result?.let {
+                    Json.encodeToString(it)
+                }
+
+                NavAppDirections.pickScreenElement(requestKey, json, false)
+            }
+
+            is NavDestination.InteractWithScreenElementSimple -> {
+                val json = destination.result?.let {
+                    Json.encodeToString(it)
+                }
+
+                NavAppDirections.pickScreenElement(requestKey, json, true)
+            }
+
+            is NavDestination.ChooseUiElement -> NavAppDirections.chooseUiElement(requestKey)
+
             is NavDestination.PickPinchCoordinate -> {
                 val json = destination.result?.let {
                     Json.encodeToString(it)
@@ -273,6 +295,25 @@ fun NavigationViewModel.sendNavResultFromBundle(
             val json = bundle.getString(PinchPickDisplayCoordinateFragment.EXTRA_RESULT)!!
             val result = Json.decodeFromString<PinchPickCoordinateResult>(json)
 
+            onNavResult(NavResult(requestKey, result))
+        }
+
+        NavDestination.ID_INTERACT_WITH_SCREEN_ELEMENT -> {
+            val json = bundle.getString(InteractWithScreenElementFragment.EXTRA_RESULT)!!
+            val result = Json.decodeFromString<InteractWithScreenElementResult>(json)
+            onNavResult(NavResult(requestKey, result))
+        }
+
+        NavDestination.ID_INTERACT_WITH_SCREEN_ELEMENT_SIMPLE -> {
+            val json = bundle.getString(InteractWithScreenElementFragment.EXTRA_RESULT)!!
+            val result = Json.decodeFromString<InteractWithScreenElementResult>(json)
+            onNavResult(NavResult(requestKey, result))
+        }
+
+        NavDestination.ID_CHOOSE_UI_ELEMENT -> {
+            val result = bundle.getJsonSerializable<UiElementInfo>(
+                ChooseUiElementFragment.EXTRA_UI_ELEMENT_ID,
+            )
             onNavResult(NavResult(requestKey, result))
         }
 

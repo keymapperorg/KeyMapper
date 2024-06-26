@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.util.Locale
 
 /**
@@ -115,6 +116,8 @@ class ChooseAppViewModel(
 
     private suspend fun List<PackageInfo>.buildListItems(): List<SimpleListItem> = flow {
         forEach { packageInfo ->
+            Timber.d("buildListItems::packageInfo %s", packageInfo.packageName)
+
             val name = useCase.getAppName(packageInfo.packageName)
                 .valueOrNull() ?: return@forEach
 

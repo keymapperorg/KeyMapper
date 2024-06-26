@@ -317,6 +317,15 @@ class PerformActionsUseCaseImpl(
                 )
             }
 
+            is ActionData.InteractWithScreenElement -> {
+                result = accessibilityService.interactWithScreenElement(
+                    action.uiElement.fullName,
+                    action.onlyIfVisible,
+                    action.interactionType,
+                    inputEventType,
+                )
+            }
+
             is ActionData.Text -> {
                 keyMapperImeMessenger.inputText(action.text)
                 result = Success(Unit)

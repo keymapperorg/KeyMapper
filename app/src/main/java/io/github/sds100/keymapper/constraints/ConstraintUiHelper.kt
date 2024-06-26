@@ -2,6 +2,8 @@ package io.github.sds100.keymapper.constraints
 
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.DisplayConstraintUseCase
+import io.github.sds100.keymapper.system.apps.PackageInfoTypes
+import io.github.sds100.keymapper.system.apps.PackageUtils
 import io.github.sds100.keymapper.system.camera.CameraLensUtils
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.util.handle
@@ -32,6 +34,48 @@ class ConstraintUiHelper(
                 onSuccess = { getString(R.string.constraint_app_not_foreground_description, it) },
                 onError = { getString(R.string.constraint_choose_app_not_foreground) },
             )
+
+        is Constraint.ScreenElementVisible -> getAppName(
+            PackageUtils.getInfoFromFullyQualifiedViewName(
+                constraint.fullyQualifiedViewId,
+                PackageInfoTypes.TYPE_PACKAGE_NAME,
+            ) ?: "",
+        ).handle(
+            onSuccess = {
+                getString(
+                    R.string.constraint_screen_element_visible_description,
+                    arrayOf(
+                        PackageUtils.getInfoFromFullyQualifiedViewName(
+                            constraint.fullyQualifiedViewId,
+                            PackageInfoTypes.TYPE_VIEW_ID,
+                        ) ?: "",
+                        it,
+                    ),
+                )
+            },
+            onError = { getString(R.string.constraint_screen_element_visible) },
+        )
+
+        is Constraint.ScreenElementNotVisible -> getAppName(
+            PackageUtils.getInfoFromFullyQualifiedViewName(
+                constraint.fullyQualifiedViewId,
+                PackageInfoTypes.TYPE_PACKAGE_NAME,
+            ) ?: "",
+        ).handle(
+            onSuccess = {
+                getString(
+                    R.string.constraint_screen_element_not_visible_description,
+                    arrayOf(
+                        PackageUtils.getInfoFromFullyQualifiedViewName(
+                            constraint.fullyQualifiedViewId,
+                            PackageInfoTypes.TYPE_VIEW_ID,
+                        ) ?: "",
+                        it,
+                    ),
+                )
+            },
+            onError = { getString(R.string.constraint_screen_element_not_visible) },
+        )
 
         is Constraint.AppPlayingMedia ->
             getAppName(constraint.packageName).handle(
@@ -145,6 +189,38 @@ class ConstraintUiHelper(
     fun getIcon(constraint: Constraint): IconInfo? = when (constraint) {
         is Constraint.AppInForeground -> getAppIconInfo(constraint.packageName)
         is Constraint.AppNotInForeground -> getAppIconInfo(constraint.packageName)
+        is Constraint.ScreenElementVisible -> {
+            val packageName = PackageUtils.getInfoFromFullyQualifiedViewName(
+                constraint.fullyQualifiedViewId,
+                PackageInfoTypes.TYPE_PACKAGE_NAME,
+            )
+
+            if (!packageName.isNullOrEmpty()) {
+                getAppIconInfo(packageName)
+            } else {
+                IconInfo(
+                    drawable = getDrawable(R.drawable.ic_outline_interact_with_screen_element_app_24),
+                    tintType = TintType.OnSurface,
+                )
+            }
+        }
+
+        is Constraint.ScreenElementNotVisible -> {
+            val packageName = PackageUtils.getInfoFromFullyQualifiedViewName(
+                constraint.fullyQualifiedViewId,
+                PackageInfoTypes.TYPE_PACKAGE_NAME,
+            )
+
+            if (!packageName.isNullOrEmpty()) {
+                getAppIconInfo(packageName)
+            } else {
+                IconInfo(
+                    drawable = getDrawable(R.drawable.ic_outline_interact_with_screen_element_app_24),
+                    tintType = TintType.OnSurface,
+                )
+            }
+        }
+
         is Constraint.AppPlayingMedia -> getAppIconInfo(constraint.packageName)
         is Constraint.AppNotPlayingMedia -> getAppIconInfo(constraint.packageName)
         Constraint.MediaPlaying -> IconInfo(

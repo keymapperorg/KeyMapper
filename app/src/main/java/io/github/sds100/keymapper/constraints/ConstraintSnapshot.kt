@@ -37,6 +37,11 @@ class ConstraintSnapshotImpl(
     powerAdapter: PowerAdapter,
 ) : ConstraintSnapshot {
     private val appInForeground: String? by lazy { accessibilityService.rootNode?.packageName }
+    private val visibleScreenElements: List<String> by lazy {
+        accessibilityService.fetchAvailableUIElements(
+            true,
+        )
+    }
     private val connectedBluetoothDevices: Set<BluetoothDeviceInfo> by lazy { devicesAdapter.connectedBluetoothDevices.value }
     private val orientation: Orientation by lazy { displayAdapter.orientation }
     private val isScreenOn: Boolean by lazy { displayAdapter.isScreenOn.firstBlocking() }
@@ -70,6 +75,16 @@ class ConstraintSnapshotImpl(
         val isSatisfied = when (constraint) {
             is Constraint.AppInForeground -> appInForeground == constraint.packageName
             is Constraint.AppNotInForeground -> appInForeground != constraint.packageName
+            is Constraint.ScreenElementVisible -> {
+                if (visibleScreenElements.isEmpty()) return false
+                visibleScreenElements.contains(constraint.fullyQualifiedViewId)
+            }
+
+            is Constraint.ScreenElementNotVisible -> {
+                if (visibleScreenElements.isEmpty()) return false
+                !visibleScreenElements.contains(constraint.fullyQualifiedViewId)
+            }
+
             is Constraint.AppPlayingMedia ->
                 appsPlayingMedia.contains(constraint.packageName)
 

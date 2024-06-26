@@ -4,8 +4,6 @@ import android.accessibilityservice.GestureDescription
 import android.graphics.Bitmap
 import android.graphics.Point
 import android.os.Build
-import android.view.View
-import android.widget.AdapterView
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -255,7 +253,7 @@ class PinchPickDisplayCoordinateViewModel(
         }
     }
 
-    fun onPinchTypeSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+    fun onPinchTypeSelected(position: Int) {
         this.setPinchType(pinchTypes[position])
     }
 

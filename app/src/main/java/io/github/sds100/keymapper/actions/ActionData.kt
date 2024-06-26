@@ -1,10 +1,12 @@
 package io.github.sds100.keymapper.actions
 
 import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
+import io.github.sds100.keymapper.actions.uielementinteraction.InteractionType
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.system.intents.IntentExtraModel
 import io.github.sds100.keymapper.system.intents.IntentTarget
+import io.github.sds100.keymapper.system.ui.UiElementInfo
 import io.github.sds100.keymapper.system.volume.DndMode
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeStream
@@ -334,6 +336,16 @@ sealed class ActionData {
         val description: String?,
     ) : ActionData() {
         override val id = ActionId.PINCH_SCREEN
+    }
+
+    @Serializable
+    data class InteractWithScreenElement(
+        val uiElement: UiElementInfo,
+        val onlyIfVisible: Boolean,
+        val interactionType: InteractionType,
+        val description: String?,
+    ) : ActionData() {
+        override val id = ActionId.INTERACT_WITH_SCREEN_ELEMENT
     }
 
     @Serializable

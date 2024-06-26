@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.system.accessibility
 import android.os.Build
 import androidx.annotation.RequiresApi
 import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
+import io.github.sds100.keymapper.actions.uielementinteraction.InteractionType
 import io.github.sds100.keymapper.util.InputEventType
 import io.github.sds100.keymapper.util.Result
 import kotlinx.coroutines.flow.Flow
@@ -34,6 +35,15 @@ interface IAccessibilityService {
         duration: Int,
         inputEventType: InputEventType,
     ): Result<*>
+
+    fun interactWithScreenElement(
+        fullName: String,
+        onlyIfVisible: Boolean,
+        interactionType: InteractionType,
+        inputEventType: InputEventType,
+    ): Result<*>
+
+    fun fetchAvailableUIElements(onlyVisibleElements: Boolean = false): List<String>
 
     val isFingerprintGestureDetectionAvailable: Boolean
 

@@ -46,6 +46,7 @@ import io.github.sds100.keymapper.system.phone.AndroidPhoneAdapter
 import io.github.sds100.keymapper.system.popup.AndroidToastAdapter
 import io.github.sds100.keymapper.system.power.AndroidPowerAdapter
 import io.github.sds100.keymapper.system.root.SuAdapterImpl
+import io.github.sds100.keymapper.system.ui.RecordUiElementsController
 import io.github.sds100.keymapper.system.url.AndroidOpenUrlAdapter
 import io.github.sds100.keymapper.system.vibrator.AndroidVibratorAdapter
 import io.github.sds100.keymapper.system.volume.AndroidVolumeAdapter
@@ -140,6 +141,10 @@ class KeyMapperApp : MultiDexApplication() {
 
     val recordTriggerController by lazy {
         RecordTriggerController(appCoroutineScope, accessibilityServiceAdapter)
+    }
+
+    val recordUiElementsController by lazy {
+        RecordUiElementsController(appCoroutineScope, accessibilityServiceAdapter)
     }
 
     val autoGrantPermissionController by lazy {

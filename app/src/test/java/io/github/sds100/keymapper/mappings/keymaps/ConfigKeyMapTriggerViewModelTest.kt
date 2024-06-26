@@ -2,8 +2,8 @@ package io.github.sds100.keymapper.mappings.keymaps
 
 import android.view.KeyEvent
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerState
 import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerUseCase
+import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordUiElementsState
 import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordedKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.onboarding.FakeOnboardingUseCase
@@ -59,7 +59,7 @@ class ConfigKeyMapTriggerViewModelTest {
 
         mockRecordTrigger = mock {
             on { onRecordKey }.then { onRecordKey }
-            on { state }.then { flow<RecordTriggerState> {} }
+            on { state }.then { flow<RecordUiElementsState> {} }
         }
 
         mockConfigKeyMapUseCase = mock {

@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 /**
  * Created by sds100 on 21/03/2020.
@@ -45,6 +46,8 @@ class ChooseConstraintViewModel(
         private val ALL_CONSTRAINTS_ORDERED: Array<ChooseConstraintType> = arrayOf(
             ChooseConstraintType.APP_IN_FOREGROUND,
             ChooseConstraintType.APP_NOT_IN_FOREGROUND,
+            ChooseConstraintType.SCREEN_ELEMENT_VISIBLE,
+            ChooseConstraintType.SCREEN_ELEMENT_NOT_VISIBLE,
             ChooseConstraintType.APP_PLAYING_MEDIA,
             ChooseConstraintType.APP_NOT_PLAYING_MEDIA,
             ChooseConstraintType.MEDIA_PLAYING,
@@ -114,6 +117,12 @@ class ChooseConstraintViewModel(
                 ChooseConstraintType.APP_PLAYING_MEDIA,
                 ChooseConstraintType.APP_NOT_PLAYING_MEDIA,
                 -> onSelectAppConstraint(constraintType)
+
+                ChooseConstraintType.SCREEN_ELEMENT_VISIBLE,
+                ChooseConstraintType.SCREEN_ELEMENT_NOT_VISIBLE,
+                -> onSelectScreenElementVisibleNotVisibleConstraint(
+                    constraintType,
+                )
 
                 ChooseConstraintType.MEDIA_PLAYING -> _returnResult.emit(Constraint.MediaPlaying)
                 ChooseConstraintType.MEDIA_NOT_PLAYING -> _returnResult.emit(Constraint.NoMediaPlaying)
@@ -212,6 +221,8 @@ class ChooseConstraintViewModel(
             val title: String = when (type) {
                 ChooseConstraintType.APP_IN_FOREGROUND -> getString(R.string.constraint_choose_app_foreground)
                 ChooseConstraintType.APP_NOT_IN_FOREGROUND -> getString(R.string.constraint_choose_app_not_foreground)
+                ChooseConstraintType.SCREEN_ELEMENT_VISIBLE -> getString(R.string.constraint_screen_element_visible)
+                ChooseConstraintType.SCREEN_ELEMENT_NOT_VISIBLE -> getString(R.string.constraint_screen_element_not_visible)
                 ChooseConstraintType.APP_PLAYING_MEDIA -> getString(R.string.constraint_choose_app_playing_media)
                 ChooseConstraintType.APP_NOT_PLAYING_MEDIA -> getString(R.string.constraint_choose_app_not_playing_media)
                 ChooseConstraintType.MEDIA_NOT_PLAYING -> getString(R.string.constraint_choose_media_not_playing)
@@ -414,13 +425,37 @@ class ChooseConstraintViewModel(
         _returnResult.emit(constraint)
     }
 
+    private suspend fun onSelectScreenElementVisibleNotVisibleConstraint(type: ChooseConstraintType) {
+        Timber.d("onSelectScreenElementVisibleNotVisibleConstraint %s", type)
+
+        val fullyQualifiedViewId = navigate(
+            "choose_fully_qualified_view_id_for_constraint",
+            NavDestination.InteractWithScreenElementSimple(),
+        ) ?: return
+
+        val constraint = when (type) {
+            ChooseConstraintType.SCREEN_ELEMENT_VISIBLE -> Constraint.ScreenElementVisible(
+                fullyQualifiedViewId.uiElement.fullName,
+            )
+
+            ChooseConstraintType.SCREEN_ELEMENT_NOT_VISIBLE -> Constraint.ScreenElementNotVisible(
+                fullyQualifiedViewId.uiElement.fullName,
+            )
+
+            else -> throw IllegalArgumentException("Don't know how to create $type constraint after choosing screen element")
+        }
+
+        _returnResult.emit(constraint)
+    }
+
     @Suppress("UNCHECKED_CAST")
     class Factory(
         private val isSupported: CreateConstraintUseCase,
         private val resourceProvider: ResourceProvider,
     ) : ViewModelProvider.NewInstanceFactory() {
 
-        override fun <T : ViewModel> create(modelClass: Class<T>): T =
-            ChooseConstraintViewModel(isSupported, resourceProvider) as T
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            return ChooseConstraintViewModel(isSupported, resourceProvider) as T
+        }
     }
 }
