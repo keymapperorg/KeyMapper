@@ -2,10 +2,10 @@ package io.github.sds100.keymapper.api
 
 import android.app.Service
 import android.content.Intent
+import android.os.Binder
 import android.os.DeadObjectException
 import android.os.IBinder
 import android.view.KeyEvent
-import io.github.sds100.keymapper.api.IKeyEventRelayService.Stub.getCallingPid
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
 import timber.log.Timber
 import java.util.concurrent.ConcurrentHashMap
@@ -88,7 +88,7 @@ class KeyEventRelayService : Service() {
     override fun onBind(intent: Intent?): IBinder? = binderInterface.asBinder()
 
     private fun getCallerPackageName(): String? {
-        val sourcePid = getCallingPid()
-        return applicationContext.packageManager.getNameForUid(sourcePid)
+        val sourceUid = Binder.getCallingUid()
+        return applicationContext.packageManager.getNameForUid(sourceUid)
     }
 }
