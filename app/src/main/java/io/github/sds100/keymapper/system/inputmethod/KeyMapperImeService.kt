@@ -1,21 +1,16 @@
 package io.github.sds100.keymapper.system.inputmethod
 
-import android.app.Service
 import android.content.BroadcastReceiver
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.ServiceConnection
 import android.inputmethodservice.InputMethodService
 import android.os.Build
-import android.os.DeadObjectException
-import android.os.IBinder
 import android.view.KeyEvent
 import io.github.sds100.keymapper.Constants
-import io.github.sds100.keymapper.api.IKeyEventRelayService
 import io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback
-import io.github.sds100.keymapper.api.KeyEventRelayService
+import io.github.sds100.keymapper.api.KeyEventRelayServiceWrapperImpl
+import timber.log.Timber
 
 /**
  * Created by sds100 on 31/03/2020.
@@ -84,12 +79,10 @@ class KeyMapperImeService : InputMethodService() {
         }
     }
 
-    private val keyEventReceiverLock: Any = Any()
-    private var keyEventReceiverBinder: IKeyEventRelayService? = null
-
     private val keyEventReceiverCallback: IKeyEventRelayServiceCallback =
         object : IKeyEventRelayServiceCallback.Stub() {
             override fun onKeyEvent(event: KeyEvent?, sourcePackageName: String?): Boolean {
+                Timber.d("Receive key event")
                 // Only accept key events from Key Mapper
                 if (sourcePackageName != Constants.PACKAGE_NAME) {
                     return false
@@ -99,20 +92,8 @@ class KeyMapperImeService : InputMethodService() {
             }
         }
 
-    private val keyEventReceiverConnection: ServiceConnection = object : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            synchronized(keyEventReceiverLock) {
-                keyEventReceiverBinder = IKeyEventRelayService.Stub.asInterface(service)
-                keyEventReceiverBinder?.registerCallback(keyEventReceiverCallback)
-            }
-        }
-
-        override fun onServiceDisconnected(name: ComponentName?) {
-            synchronized(keyEventReceiverLock) {
-                keyEventReceiverBinder?.unregisterCallback()
-                keyEventReceiverBinder = null
-            }
-        }
+    private val keyEventRelayServiceWrapper: KeyEventRelayServiceWrapperImpl by lazy {
+        KeyEventRelayServiceWrapperImpl(this, keyEventReceiverCallback)
     }
 
     override fun onCreate() {
@@ -132,38 +113,18 @@ class KeyMapperImeService : InputMethodService() {
             }
         }
 
-        Intent(this, KeyEventRelayService::class.java).also { intent ->
-            bindService(intent, keyEventReceiverConnection, Service.BIND_AUTO_CREATE)
-        }
+        keyEventRelayServiceWrapper.bind()
     }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        if (keyEventReceiverBinder == null) {
-            return super.onKeyDown(keyCode, event)
-        }
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean =
+        keyEventRelayServiceWrapper.sendKeyEvent(event, Constants.PACKAGE_NAME)
 
-        try {
-            return keyEventReceiverBinder!!.sendKeyEvent(event, Constants.PACKAGE_NAME)
-        } catch (e: DeadObjectException) {
-            return super.onKeyDown(keyCode, event)
-        }
-    }
-
-    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
-        if (keyEventReceiverBinder == null) {
-            return super.onKeyUp(keyCode, event)
-        }
-
-        try {
-            return keyEventReceiverBinder!!.sendKeyEvent(event, Constants.PACKAGE_NAME)
-        } catch (e: DeadObjectException) {
-            return super.onKeyUp(keyCode, event)
-        }
-    }
+    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean =
+        keyEventRelayServiceWrapper.sendKeyEvent(event, Constants.PACKAGE_NAME)
 
     override fun onDestroy() {
         unregisterReceiver(broadcastReceiver)
-        unbindService(keyEventReceiverConnection)
+        keyEventRelayServiceWrapper.unbind()
 
         super.onDestroy()
     }
