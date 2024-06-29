@@ -13,6 +13,12 @@ import kotlinx.coroutines.launch
 /**
  * Created by sds100 on 27/04/2021.
  */
+
+/**
+ * This is used for the feature created in issue #618 to fix the device IDs of key events
+ * on Android 11. There was a bug in the system where enabling an accessibility service
+ * would reset the device ID of key events to -1.
+ */
 class RerouteKeyEventsController(
     private val coroutineScope: CoroutineScope,
     private val useCase: RerouteKeyEventsUseCase,
