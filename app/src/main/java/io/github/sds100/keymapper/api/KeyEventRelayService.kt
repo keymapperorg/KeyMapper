@@ -29,7 +29,7 @@ class KeyEventRelayService : Service() {
     private val binderInterface: IKeyEventRelayService = object : IKeyEventRelayService.Stub() {
         override fun sendKeyEvent(event: KeyEvent?, targetPackageName: String?): Boolean {
             synchronized(callbackLock) {
-                Timber.d("KeyEventReceiver: onKeyEvent ${event?.keyCode}")
+                Timber.d("KeyEventRelayService: onKeyEvent ${event?.keyCode}")
 
                 val callback = callbacks[targetPackageName]
 
