@@ -5,17 +5,13 @@ import android.accessibilityservice.FingerprintGestureController
 import android.accessibilityservice.GestureDescription
 import android.accessibilityservice.GestureDescription.StrokeDescription
 import android.app.ActivityManager
-import android.app.Service
 import android.content.BroadcastReceiver
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.ServiceConnection
 import android.graphics.Path
 import android.graphics.Point
 import android.os.Build
-import android.os.IBinder
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import androidx.core.content.getSystemService
@@ -25,9 +21,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
 import io.github.sds100.keymapper.api.Api
-import io.github.sds100.keymapper.api.IKeyEventReceiver
-import io.github.sds100.keymapper.api.IKeyEventReceiverCallback
-import io.github.sds100.keymapper.api.KeyEventRelayService
+import io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback
+import io.github.sds100.keymapper.api.KeyEventRelayServiceWrapperImpl
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapId
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.util.Error
@@ -127,10 +122,11 @@ class MyAccessibilityService :
             }
         }
 
-    private val keyEventReceiverCallback: IKeyEventReceiverCallback =
-        object : IKeyEventReceiverCallback.Stub() {
-            override fun onKeyEvent(event: KeyEvent?): Boolean {
+    private val keyEventReceiverCallback: IKeyEventRelayServiceCallback =
+        object : IKeyEventRelayServiceCallback.Stub() {
+            override fun onKeyEvent(event: KeyEvent?, sourcePackageName: String?): Boolean {
                 event ?: return false
+                sourcePackageName ?: return false
 
                 val device = if (event.device == null) {
                     null
@@ -153,23 +149,8 @@ class MyAccessibilityService :
             }
         }
 
-    private val keyEventReceiverLock: Any = Any()
-    private var keyEventReceiverBinder: IKeyEventReceiver? = null
-
-    private val keyEventReceiverConnection: ServiceConnection = object : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            synchronized(keyEventReceiverLock) {
-                keyEventReceiverBinder = IKeyEventReceiver.Stub.asInterface(service)
-                keyEventReceiverBinder?.registerCallback(keyEventReceiverCallback)
-            }
-        }
-
-        override fun onServiceDisconnected(name: ComponentName?) {
-            synchronized(keyEventReceiverLock) {
-                keyEventReceiverBinder?.unregisterCallback(keyEventReceiverCallback)
-                keyEventReceiverBinder = null
-            }
-        }
+    private val keyEventRelayServiceWrapper: KeyEventRelayServiceWrapperImpl by lazy {
+        KeyEventRelayServiceWrapperImpl(this, keyEventReceiverCallback)
     }
 
     private var controller: AccessibilityServiceController? = null
@@ -196,9 +177,7 @@ class MyAccessibilityService :
             }
         }
 
-        Intent(this, KeyEventRelayService::class.java).also { intent ->
-            bindService(intent, keyEventReceiverConnection, Service.BIND_AUTO_CREATE)
-        }
+        keyEventRelayServiceWrapper.bind()
     }
 
     override fun onServiceConnected() {
@@ -211,7 +190,7 @@ class MyAccessibilityService :
         context would return null
          */
         if (controller == null) {
-            controller = Inject.accessibilityServiceController(this)
+            controller = Inject.accessibilityServiceController(this, keyEventRelayServiceWrapper)
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -261,14 +240,12 @@ class MyAccessibilityService :
             lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
         }
 
-        unregisterReceiver(broadcastReceiver)
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             fingerprintGestureController
                 .unregisterFingerprintGestureCallback(fingerprintGestureCallback)
         }
 
-        unbindService(keyEventReceiverConnection)
+        keyEventRelayServiceWrapper.unbind()
 
         Timber.i("Accessibility service: onDestroy")
 

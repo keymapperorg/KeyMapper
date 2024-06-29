@@ -8,9 +8,13 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.ServiceConnection
 import android.inputmethodservice.InputMethodService
+import android.os.Build
+import android.os.DeadObjectException
 import android.os.IBinder
 import android.view.KeyEvent
-import io.github.sds100.keymapper.api.IKeyEventReceiver
+import io.github.sds100.keymapper.Constants
+import io.github.sds100.keymapper.api.IKeyEventRelayService
+import io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback
 import io.github.sds100.keymapper.api.KeyEventRelayService
 
 /**
@@ -81,17 +85,31 @@ class KeyMapperImeService : InputMethodService() {
     }
 
     private val keyEventReceiverLock: Any = Any()
-    private var keyEventReceiverBinder: IKeyEventReceiver? = null
+    private var keyEventReceiverBinder: IKeyEventRelayService? = null
+
+    private val keyEventReceiverCallback: IKeyEventRelayServiceCallback =
+        object : IKeyEventRelayServiceCallback.Stub() {
+            override fun onKeyEvent(event: KeyEvent?, sourcePackageName: String?): Boolean {
+                // Only accept key events from Key Mapper
+                if (sourcePackageName != Constants.PACKAGE_NAME) {
+                    return false
+                }
+
+                return currentInputConnection?.sendKeyEvent(event) ?: false
+            }
+        }
 
     private val keyEventReceiverConnection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             synchronized(keyEventReceiverLock) {
-                keyEventReceiverBinder = IKeyEventReceiver.Stub.asInterface(service)
+                keyEventReceiverBinder = IKeyEventRelayService.Stub.asInterface(service)
+                keyEventReceiverBinder?.registerCallback(keyEventReceiverCallback)
             }
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
             synchronized(keyEventReceiverLock) {
+                keyEventReceiverBinder?.unregisterCallback()
                 keyEventReceiverBinder = null
             }
         }
@@ -106,7 +124,12 @@ class KeyMapperImeService : InputMethodService() {
             addAction(KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_UP)
             addAction(KEY_MAPPER_INPUT_METHOD_ACTION_TEXT)
 
-            registerReceiver(broadcastReceiver, this)
+            // TODO use ContextCompat
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                registerReceiver(broadcastReceiver, this, RECEIVER_NOT_EXPORTED)
+            } else {
+                registerReceiver(broadcastReceiver, this)
+            }
         }
 
         Intent(this, KeyEventRelayService::class.java).also { intent ->
@@ -114,11 +137,29 @@ class KeyMapperImeService : InputMethodService() {
         }
     }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean =
-        keyEventReceiverBinder?.onKeyEvent(event) ?: super.onKeyDown(keyCode, event)
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if (keyEventReceiverBinder == null) {
+            return super.onKeyDown(keyCode, event)
+        }
 
-    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean =
-        keyEventReceiverBinder?.onKeyEvent(event) ?: super.onKeyUp(keyCode, event)
+        try {
+            return keyEventReceiverBinder!!.sendKeyEvent(event, Constants.PACKAGE_NAME)
+        } catch (e: DeadObjectException) {
+            return super.onKeyDown(keyCode, event)
+        }
+    }
+
+    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
+        if (keyEventReceiverBinder == null) {
+            return super.onKeyUp(keyCode, event)
+        }
+
+        try {
+            return keyEventReceiverBinder!!.sendKeyEvent(event, Constants.PACKAGE_NAME)
+        } catch (e: DeadObjectException) {
+            return super.onKeyUp(keyCode, event)
+        }
+    }
 
     override fun onDestroy() {
         unregisterReceiver(broadcastReceiver)

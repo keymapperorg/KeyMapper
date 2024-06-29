@@ -15,6 +15,7 @@ import io.github.sds100.keymapper.actions.sound.ChooseSoundFileUseCaseImpl
 import io.github.sds100.keymapper.actions.sound.ChooseSoundFileViewModel
 import io.github.sds100.keymapper.actions.swipescreen.SwipePickDisplayCoordinateViewModel
 import io.github.sds100.keymapper.actions.tapscreen.PickDisplayCoordinateViewModel
+import io.github.sds100.keymapper.api.KeyEventRelayServiceWrapper
 import io.github.sds100.keymapper.backup.BackupRestoreMappingsUseCaseImpl
 import io.github.sds100.keymapper.constraints.ChooseConstraintViewModel
 import io.github.sds100.keymapper.constraints.CreateConstraintUseCaseImpl
@@ -238,20 +239,34 @@ object Inject {
         UseCases.controlAccessibilityService(context),
     )
 
-    fun accessibilityServiceController(service: MyAccessibilityService): AccessibilityServiceController =
+    fun accessibilityServiceController(
+        service: MyAccessibilityService,
+        keyEventRelayService: KeyEventRelayServiceWrapper,
+    ): AccessibilityServiceController =
         AccessibilityServiceController(
             coroutineScope = service.lifecycleScope,
             accessibilityService = service,
             inputEvents = ServiceLocator.accessibilityServiceAdapter(service).eventsToService,
             outputEvents = ServiceLocator.accessibilityServiceAdapter(service).eventReceiver,
             detectConstraintsUseCase = UseCases.detectConstraints(service),
-            performActionsUseCase = UseCases.performActions(service, service),
-            detectKeyMapsUseCase = UseCases.detectKeyMaps(service),
+            performActionsUseCase = UseCases.performActions(
+                ctx = service,
+                service = service,
+                keyEventRelayService = keyEventRelayService,
+            ),
+            detectKeyMapsUseCase = UseCases.detectKeyMaps(
+                ctx = service,
+                service = service,
+                keyEventRelayService = keyEventRelayService,
+            ),
             detectFingerprintMapsUseCase = UseCases.detectFingerprintMaps(service),
             pauseMappingsUseCase = UseCases.pauseMappings(service),
             devicesAdapter = ServiceLocator.devicesAdapter(service),
             suAdapter = ServiceLocator.suAdapter(service),
-            rerouteKeyEventsUseCase = UseCases.rerouteKeyEvents(service),
+            rerouteKeyEventsUseCase = UseCases.rerouteKeyEvents(
+                ctx = service,
+                keyEventRelayService = keyEventRelayService,
+            ),
             inputMethodAdapter = ServiceLocator.inputMethodAdapter(service),
             settingsRepository = ServiceLocator.settingsRepository(service),
         )

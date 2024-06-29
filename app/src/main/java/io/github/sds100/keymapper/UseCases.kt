@@ -5,6 +5,7 @@ import io.github.sds100.keymapper.actions.CreateActionUseCaseImpl
 import io.github.sds100.keymapper.actions.GetActionErrorUseCaseImpl
 import io.github.sds100.keymapper.actions.IsActionSupportedUseCaseImpl
 import io.github.sds100.keymapper.actions.PerformActionsUseCaseImpl
+import io.github.sds100.keymapper.api.KeyEventRelayServiceWrapper
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCaseImpl
 import io.github.sds100.keymapper.constraints.GetConstraintErrorUseCaseImpl
 import io.github.sds100.keymapper.mappings.DetectMappingUseCaseImpl
@@ -140,7 +141,11 @@ object UseCases {
         ServiceLocator.powerAdapter(service),
     )
 
-    fun performActions(ctx: Context, service: IAccessibilityService) =
+    fun performActions(
+        ctx: Context,
+        service: IAccessibilityService,
+        keyEventRelayService: KeyEventRelayServiceWrapper,
+    ) =
         PerformActionsUseCaseImpl(
             (ctx.applicationContext as KeyMapperApp).appCoroutineScope,
             service,
@@ -150,7 +155,7 @@ object UseCases {
             Shell,
             ServiceLocator.intentAdapter(ctx),
             getActionError(ctx),
-            keyMapperImeMessenger(ctx),
+            keyMapperImeMessenger(ctx, keyEventRelayService),
             ShizukuInputEventInjector(),
             ServiceLocator.packageManagerAdapter(ctx),
             ServiceLocator.appShortcutAdapter(ctx),
@@ -181,19 +186,23 @@ object UseCases {
         ServiceLocator.resourceProvider(ctx),
     )
 
-    fun detectKeyMaps(service: MyAccessibilityService) = DetectKeyMapsUseCaseImpl(
-        detectMappings(service),
-        ServiceLocator.roomKeymapRepository(service),
-        ServiceLocator.settingsRepository(service),
-        ServiceLocator.suAdapter(service),
-        ServiceLocator.displayAdapter(service),
-        ServiceLocator.audioAdapter(service),
-        keyMapperImeMessenger(service),
+    fun detectKeyMaps(
+        ctx: Context,
+        service: IAccessibilityService,
+        keyEventRelayService: KeyEventRelayServiceWrapper,
+    ) = DetectKeyMapsUseCaseImpl(
+        detectMappings(ctx),
+        ServiceLocator.roomKeymapRepository(ctx),
+        ServiceLocator.settingsRepository(ctx),
+        ServiceLocator.suAdapter(ctx),
+        ServiceLocator.displayAdapter(ctx),
+        ServiceLocator.audioAdapter(ctx),
+        keyMapperImeMessenger(ctx, keyEventRelayService),
         service,
         ShizukuInputEventInjector(),
-        ServiceLocator.permissionAdapter(service),
-        ServiceLocator.phoneAdapter(service),
-        ServiceLocator.inputMethodAdapter(service),
+        ServiceLocator.permissionAdapter(ctx),
+        ServiceLocator.phoneAdapter(ctx),
+        ServiceLocator.inputMethodAdapter(ctx),
     )
 
     fun detectFingerprintMaps(ctx: Context) = DetectFingerprintMapsUseCaseImpl(
@@ -202,18 +211,24 @@ object UseCases {
         detectMappings(ctx),
     )
 
-    fun rerouteKeyEvents(ctx: Context) = RerouteKeyEventsUseCaseImpl(
-        ServiceLocator.inputMethodAdapter(ctx),
-        keyMapperImeMessenger(ctx),
-        ServiceLocator.settingsRepository(ctx),
-    )
+    fun rerouteKeyEvents(ctx: Context, keyEventRelayService: KeyEventRelayServiceWrapper) =
+        RerouteKeyEventsUseCaseImpl(
+            ServiceLocator.inputMethodAdapter(ctx),
+            keyMapperImeMessenger(ctx, keyEventRelayService),
+            ServiceLocator.settingsRepository(ctx),
+        )
 
     fun createAction(ctx: Context) = CreateActionUseCaseImpl(
         ServiceLocator.inputMethodAdapter(ctx),
     )
 
-    private fun keyMapperImeMessenger(ctx: Context) = KeyMapperImeMessengerImpl(
-        ctx,
-        ServiceLocator.inputMethodAdapter(ctx),
-    )
+    private fun keyMapperImeMessenger(
+        ctx: Context,
+        keyEventRelayService: KeyEventRelayServiceWrapper,
+    ) =
+        KeyMapperImeMessengerImpl(
+            ctx,
+            keyEventRelayService,
+            ServiceLocator.inputMethodAdapter(ctx),
+        )
 }
