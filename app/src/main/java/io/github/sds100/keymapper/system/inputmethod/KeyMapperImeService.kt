@@ -10,7 +10,6 @@ import android.view.KeyEvent
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback
 import io.github.sds100.keymapper.api.KeyEventRelayServiceWrapperImpl
-import timber.log.Timber
 
 /**
  * Created by sds100 on 31/03/2020.
@@ -82,7 +81,6 @@ class KeyMapperImeService : InputMethodService() {
     private val keyEventReceiverCallback: IKeyEventRelayServiceCallback =
         object : IKeyEventRelayServiceCallback.Stub() {
             override fun onKeyEvent(event: KeyEvent?, sourcePackageName: String?): Boolean {
-                Timber.d("Receive key event")
                 // Only accept key events from Key Mapper
                 if (sourcePackageName != Constants.PACKAGE_NAME) {
                     return false
