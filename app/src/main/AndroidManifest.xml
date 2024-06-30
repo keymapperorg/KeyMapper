@@ -23,7 +23,7 @@
     <uses-permission android:name="com.termux.permission.RUN_COMMAND" />
 
     <!--    This permission is in each build variant's AndroidManifest -->
-    <!--    <permission android:name="io.github.sds100.keymapper.KEY_EVENT_RECEIVER">-->
+    <!--    <permission android:name="io.github.sds100.keymapper.KEY_EVENT_RELAY_SERVICE">-->
     <!--    </permission>-->
 
     <uses-permission
@@ -238,9 +238,9 @@
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <service
-            android:name=".api.KeyEventReceiver"
+            android:name=".api.KeyEventRelayService"
             android:exported="true"
-            android:permission="io.github.sds100.keymapper.KEY_EVENT_RECEIVER" />
+            android:permission="io.github.sds100.keymapper.KEY_EVENT_RELAY_SERVICE" />
 
         <service
             android:name=".system.inputmethod.ObserveInputMethodsJob"
