@@ -30,7 +30,7 @@ This wiki aims to provide users with a comprehensive guide to using and setting 
 
 ### Community moderators/support
 
-- [Jambl3r](https://gitlab.com/jambl3r)
+- [Jack Ambler (jambl3r)](https://linkedin.com/in/jambl3r)
 - [GL513](https://gl513.github.io/)
 
 ### Translators

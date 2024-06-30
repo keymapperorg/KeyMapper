@@ -1348,9 +1348,9 @@
     <string name="about_team_sds100_role">Developer</string>
     <string name="about_team_sds100_url" translatable="false">https://github.com/sds100</string>
 
-    <string name="about_team_jambl3r_name" translatable="false">Jambl3r</string>
+    <string name="about_team_jambl3r_name" translatable="false">Jack Ambler (jambl3r)</string>
     <string name="about_team_jambl3r_role">Community moderator/support</string>
-    <string name="about_team_jambl3r_url" translatable="false">https://gitlab.com/jambl3r</string>
+    <string name="about_team_jambl3r_url" translatable="false">https://linkedin.com/in/jambl3r</string>
 
     <string name="about_team_gl513_name" translatable="false">GL513</string>
     <string name="about_team_gl513_role">Community moderator/support</string>
