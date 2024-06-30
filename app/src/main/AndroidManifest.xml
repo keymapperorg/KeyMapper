@@ -23,7 +23,7 @@
     <uses-permission android:name="com.termux.permission.RUN_COMMAND" />
 
     <!--    This permission is in each build variant's AndroidManifest -->
-    <!--    <permission android:name="io.github.sds100.keymapper.KEY_EVENT_RECEIVER">-->
+    <!--    <permission android:name="io.github.sds100.keymapper.KEY_EVENT_RELAY_SERVICE">-->
     <!--    </permission>-->
 
     <uses-permission
