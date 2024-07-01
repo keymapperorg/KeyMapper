@@ -54,12 +54,12 @@ class AndroidPermissionAdapter(
         const val REQUEST_CODE_SHIZUKU_PERMISSION = 1
     }
 
-    private val iPackageManager: IPackageManager by lazy {
+    private val shizukuPackageManager: IPackageManager by lazy {
         val binder = ShizukuBinderWrapper(SystemServiceHelper.getSystemService("package"))
         IPackageManager.Stub.asInterface(binder)
     }
 
-    private val iPermissionManager: IPermissionManager by lazy {
+    private val shizukuPermissionManager: IPermissionManager by lazy {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             HiddenApiBypass.addHiddenApiExemptions(
                 "Landroid/permission",
@@ -151,19 +151,24 @@ class AndroidPermissionAdapter(
     private fun grantPermissionWithShizuku(permissionName: String) {
         val userId = Process.myUserHandle()!!.getIdentifier()
 
-        // In Android 12 this method was moved from IPackageManager to IPermissionManager
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            iPermissionManager.grantRuntimePermission(
-                Constants.PACKAGE_NAME,
-                permissionName,
-                userId,
-            )
-        } else {
-            iPackageManager.grantRuntimePermission(
-                Constants.PACKAGE_NAME,
-                permissionName,
-                userId,
-            )
+        try {
+            // In Android 12 this method was moved from IPackageManager to IPermissionManager
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                shizukuPermissionManager.grantRuntimePermission(
+                    Constants.PACKAGE_NAME,
+                    permissionName,
+                    userId,
+                )
+            } else {
+                shizukuPackageManager.grantRuntimePermission(
+                    Constants.PACKAGE_NAME,
+                    permissionName,
+                    userId,
+                )
+            }
+            // The API may change in future Android versions so don't crash the whole app
+            // just for this shizuku permission feature.
+        } catch (_: NoSuchMethodError) {
         }
     }
 
