@@ -143,7 +143,7 @@ dependencies {
     def epoxy_version = "4.6.2"
     def splitties_version = "3.0.0-beta01"
     def multidex_version = "2.0.1"
-    def shizuku_version = '12.1.0'
+    def shizuku_version = '13.1.5'
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
