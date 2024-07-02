@@ -7,6 +7,7 @@ import android.content.IntentFilter
 import android.hardware.display.DisplayManager
 import android.provider.Settings
 import android.view.Surface
+import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import io.github.sds100.keymapper.system.SettingsUtils
 import io.github.sds100.keymapper.util.Error
@@ -66,12 +67,16 @@ class AndroidDisplayAdapter(context: Context) : DisplayAdapter {
     override var orientation: Orientation = getDisplayOrientation()
 
     init {
-        IntentFilter().apply {
-            addAction(Intent.ACTION_SCREEN_ON)
-            addAction(Intent.ACTION_SCREEN_OFF)
+        val filter = IntentFilter()
+        filter.addAction(Intent.ACTION_SCREEN_ON)
+        filter.addAction(Intent.ACTION_SCREEN_OFF)
 
-            ctx.registerReceiver(broadcastReceiver, this)
-        }
+        ContextCompat.registerReceiver(
+            ctx,
+            broadcastReceiver,
+            filter,
+            ContextCompat.RECEIVER_NOT_EXPORTED,
+        )
     }
 
     override fun isAutoRotateEnabled(): Boolean =

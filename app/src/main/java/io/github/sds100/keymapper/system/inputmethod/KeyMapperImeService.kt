@@ -5,8 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.inputmethodservice.InputMethodService
-import android.os.Build
 import android.view.KeyEvent
+import androidx.core.content.ContextCompat
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback
 import io.github.sds100.keymapper.api.KeyEventRelayServiceWrapperImpl
@@ -97,20 +97,18 @@ class KeyMapperImeService : InputMethodService() {
     override fun onCreate() {
         super.onCreate()
 
-        IntentFilter().apply {
-            addAction(KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN)
-            addAction(KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN_UP)
-            addAction(KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_UP)
-            addAction(KEY_MAPPER_INPUT_METHOD_ACTION_TEXT)
+        val filter = IntentFilter()
+        filter.addAction(KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN)
+        filter.addAction(KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN_UP)
+        filter.addAction(KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_UP)
+        filter.addAction(KEY_MAPPER_INPUT_METHOD_ACTION_TEXT)
 
-            // TODO use ContextCompat
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                registerReceiver(broadcastReceiver, this, RECEIVER_NOT_EXPORTED)
-            } else {
-                registerReceiver(broadcastReceiver, this)
-            }
-        }
-
+        ContextCompat.registerReceiver(
+            this,
+            broadcastReceiver,
+            filter,
+            ContextCompat.RECEIVER_NOT_EXPORTED,
+        )
         keyEventRelayServiceWrapper.bind()
     }
 

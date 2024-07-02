@@ -50,8 +50,10 @@ class KeyMapperImeMessengerImpl(
             return
         }
 
-        // TODO use Android SDK and get version code properly
-        if (Build.VERSION.SDK_INT >= 34) {
+        // Only use the new key event relay service on Android 14+ because
+        // it introduced a 1 second delay for broadcasts to context-registered
+        // receivers.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             inputKeyEventRelayService(model, imePackageName)
         } else {
             inputKeyEventBroadcast(model, imePackageName)

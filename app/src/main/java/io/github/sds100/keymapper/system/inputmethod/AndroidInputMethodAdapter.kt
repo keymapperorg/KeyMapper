@@ -11,6 +11,7 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
 import android.view.inputmethod.InputMethodManager
+import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import io.github.sds100.keymapper.system.JobSchedulerHelper
 import io.github.sds100.keymapper.system.SettingsUtils
@@ -148,11 +149,15 @@ class AndroidInputMethodAdapter(
             )
         }
 
-        IntentFilter().apply {
-            addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
+        val filter = IntentFilter()
+        filter.addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
 
-            ctx.registerReceiver(broadcastReceiver, this)
-        }
+        ContextCompat.registerReceiver(
+            ctx,
+            broadcastReceiver,
+            filter,
+            ContextCompat.RECEIVER_NOT_EXPORTED,
+        )
     }
 
     override fun showImePicker(fromForeground: Boolean): Result<*> {

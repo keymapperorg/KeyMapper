@@ -109,12 +109,15 @@ class AndroidDevicesAdapter(
         }.launchIn(coroutineScope)
     }
 
-    override fun deviceHasKey(id: Int, keyCode: Int): Boolean =
-        InputDevice.getDevice(id).hasKeys(keyCode)[0]
+    override fun deviceHasKey(id: Int, keyCode: Int): Boolean {
+        val device = InputDevice.getDevice(id) ?: return false
+
+        return device.hasKeys(keyCode)[0]
+    }
 
     override fun getInputDeviceName(descriptor: String): Result<String> {
         InputDevice.getDeviceIds().forEach {
-            val device = InputDevice.getDevice(it)
+            val device = InputDevice.getDevice(it) ?: return@forEach
 
             if (device.descriptor == descriptor) {
                 return Success(device.name)
