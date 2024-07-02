@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.system.apps
 
 import android.annotation.SuppressLint
+import android.app.ActivityOptions
 import android.app.PendingIntent
 import android.content.ActivityNotFoundException
 import android.content.BroadcastReceiver
@@ -188,22 +189,12 @@ class AndroidPackageManagerAdapter(
     @SuppressLint("UnspecifiedImmutableFlag") // only specify the flag on SDK 23+. SDK 31 is first to enforce it.
     override fun openApp(packageName: String): Result<*> {
         val leanbackIntent = packageManager.getLeanbackLaunchIntentForPackage(packageName)
-
         val normalIntent = packageManager.getLaunchIntentForPackage(packageName)
 
         val intent = leanbackIntent ?: normalIntent
 
         // intent = null if the app doesn't exist
-        if (intent != null) {
-            val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                PendingIntent.getActivity(ctx, 0, intent, PendingIntent.FLAG_IMMUTABLE)
-            } else {
-                PendingIntent.getActivity(ctx, 0, intent, 0)
-            }
-
-            pendingIntent.send()
-            return Success(Unit)
-        } else {
+        if (intent == null) {
             try {
                 val appInfo = ctx.packageManager.getApplicationInfo(packageName, 0)
 
@@ -216,6 +207,26 @@ class AndroidPackageManagerAdapter(
             } catch (e: Exception) {
                 return Error.AppNotFound(packageName)
             }
+        } else {
+            val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                PendingIntent.getActivity(ctx, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+            } else {
+                PendingIntent.getActivity(ctx, 0, intent, 0)
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                val bundle = ActivityOptions.makeBasic()
+                    .setPendingIntentBackgroundActivityStartMode(
+                        ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOWED,
+                    )
+                    .toBundle()
+
+                pendingIntent.send(bundle)
+            } else {
+                pendingIntent.send()
+            }
+
+            return Success(Unit)
         }
     }
 
