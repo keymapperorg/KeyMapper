@@ -50,32 +50,12 @@ android {
             signingConfig signingConfigs.release
         }
 
-        debug_release {
-            debuggable = true
-
-            postprocessing {
-                removeUnusedCode true
-                removeUnusedResources true
-                obfuscate false //don't obfuscate so stacktraces are easier to read
-                optimizeCode true
-                proguardFiles 'proguard-rules.pro'
-            }
-
-            /*
-            This is required because the splitties library doesn't have a ci build type.
-             */
-            matchingFallbacks = ['debug']
-            signingConfig signingConfigs.debug
-        }
-
         debug {
             applicationIdSuffix ".debug"
             versionNameSuffix "-debug"
         }
 
         ci {
-            debuggable = true
-
             postprocessing {
                 removeUnusedCode true
                 removeUnusedResources true
