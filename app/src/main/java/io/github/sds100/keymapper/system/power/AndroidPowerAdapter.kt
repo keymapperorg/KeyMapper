@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
 import android.os.Build
+import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -35,12 +36,15 @@ class AndroidPowerAdapter(context: Context) : PowerAdapter {
     override val isCharging: StateFlow<Boolean> = _isCharging.asStateFlow()
 
     init {
-        ctx.registerReceiver(
+        val filter = IntentFilter()
+        filter.addAction(Intent.ACTION_POWER_CONNECTED)
+        filter.addAction(Intent.ACTION_POWER_DISCONNECTED)
+
+        ContextCompat.registerReceiver(
+            ctx,
             receiver,
-            IntentFilter().apply {
-                addAction(Intent.ACTION_POWER_CONNECTED)
-                addAction(Intent.ACTION_POWER_DISCONNECTED)
-            },
+            filter,
+            ContextCompat.RECEIVER_NOT_EXPORTED,
         )
     }
 

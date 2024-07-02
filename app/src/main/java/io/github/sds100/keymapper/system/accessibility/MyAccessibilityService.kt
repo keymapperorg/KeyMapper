@@ -14,6 +14,7 @@ import android.graphics.Point
 import android.os.Build
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
+import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.core.os.bundleOf
 import androidx.lifecycle.Lifecycle
@@ -162,10 +163,16 @@ class MyAccessibilityService :
         lifecycleRegistry = LifecycleRegistry(this)
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
 
-        IntentFilter().apply {
-            addAction(Api.ACTION_TRIGGER_KEYMAP_BY_UID)
-            addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
-            registerReceiver(broadcastReceiver, this)
+        IntentFilter().also { filter ->
+            filter.addAction(Api.ACTION_TRIGGER_KEYMAP_BY_UID)
+            filter.addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
+
+            ContextCompat.registerReceiver(
+                this,
+                broadcastReceiver,
+                filter,
+                ContextCompat.RECEIVER_EXPORTED,
+            )
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {

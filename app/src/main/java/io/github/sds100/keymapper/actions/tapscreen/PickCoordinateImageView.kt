@@ -30,10 +30,8 @@ class PickCoordinateImageView(
         color = context.color(R.color.coordinate_line)
     }
 
-    override fun onDraw(canvas: Canvas?) {
+    override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-
-        if (canvas == null) return
 
         pointCoordinates.value?.let {
             canvas.drawLine(

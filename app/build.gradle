@@ -9,8 +9,8 @@ apply plugin: "org.jlleitschuh.gradle.ktlint"
 android {
 
     namespace 'io.github.sds100.keymapper'
-    compileSdk 33
-    buildToolsVersion = '33.0.1'
+    compileSdk 34
+    buildToolsVersion = '34.0.0'
 
     def versionProperties = new Properties()
     file("version.properties").withInputStream { versionProperties.load(it) }
@@ -18,7 +18,7 @@ android {
     defaultConfig {
         applicationId "io.github.sds100.keymapper"
         minSdkVersion 21
-        targetSdkVersion 33
+        targetSdkVersion 34
         versionCode versionProperties.getProperty("VERSION_CODE").toInteger()
         versionName versionProperties.getProperty("VERSION_NAME")
         multiDexEnabled true
@@ -50,32 +50,12 @@ android {
             signingConfig signingConfigs.release
         }
 
-        debug_release {
-            debuggable = true
-
-            postprocessing {
-                removeUnusedCode true
-                removeUnusedResources true
-                obfuscate false //don't obfuscate so stacktraces are easier to read
-                optimizeCode true
-                proguardFiles 'proguard-rules.pro'
-            }
-
-            /*
-            This is required because the splitties library doesn't have a ci build type.
-             */
-            matchingFallbacks = ['debug']
-            signingConfig signingConfigs.debug
-        }
-
         debug {
             applicationIdSuffix ".debug"
             versionNameSuffix "-debug"
         }
 
         ci {
-            debuggable = true
-
             postprocessing {
                 removeUnusedCode true
                 removeUnusedResources true
@@ -179,7 +159,7 @@ dependencies {
 
     // androidx
     implementation 'androidx.legacy:legacy-support-core-ui:1.0.0'
-    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.core:core-ktx:1.13.1'
 
     implementation 'androidx.fragment:fragment-ktx:1.4.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0'
@@ -191,7 +171,7 @@ dependencies {
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
     implementation "androidx.multidex:multidex:$multidex_version"
     implementation "androidx.browser:browser:1.4.0"
-    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'androidx.preference:preference-ktx:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
