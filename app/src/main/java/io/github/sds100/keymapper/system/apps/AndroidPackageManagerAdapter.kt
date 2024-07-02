@@ -16,6 +16,7 @@ import android.os.Build
 import android.os.TransactionTooLargeException
 import android.provider.MediaStore
 import android.provider.Settings
+import androidx.core.content.ContextCompat
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.State
@@ -77,15 +78,19 @@ class AndroidPackageManagerAdapter(
                 .launchIn(this)
         }
 
-        IntentFilter().apply {
-            addAction(Intent.ACTION_PACKAGE_CHANGED)
-            addAction(Intent.ACTION_PACKAGE_ADDED)
-            addAction(Intent.ACTION_PACKAGE_REMOVED)
-            addAction(Intent.ACTION_PACKAGE_REPLACED)
-            addDataScheme("package")
+        val filter = IntentFilter()
+        filter.addAction(Intent.ACTION_PACKAGE_CHANGED)
+        filter.addAction(Intent.ACTION_PACKAGE_ADDED)
+        filter.addAction(Intent.ACTION_PACKAGE_REMOVED)
+        filter.addAction(Intent.ACTION_PACKAGE_REPLACED)
+        filter.addDataScheme("package")
 
-            ctx.registerReceiver(broadcastReceiver, this)
-        }
+        ContextCompat.registerReceiver(
+            ctx,
+            broadcastReceiver,
+            filter,
+            ContextCompat.RECEIVER_NOT_EXPORTED,
+        )
     }
 
     override fun downloadApp(packageName: String) {
