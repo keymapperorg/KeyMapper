@@ -140,7 +140,25 @@ open class KeyMapListViewModel(
 
     fun onTriggerErrorChipClick(chipModel: ChipUi) {
         if (chipModel is ChipUi.Error) {
-            if (chipModel.error == Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)) {
+            onFixError(chipModel.error)
+        }
+    }
+
+    fun onActionChipClick(chipModel: ChipUi) {
+        if (chipModel is ChipUi.Error) {
+            onFixError(chipModel.error)
+        }
+    }
+
+    fun onConstraintsChipClick(chipModel: ChipUi) {
+        if (chipModel is ChipUi.Error) {
+            onFixError(chipModel.error)
+        }
+    }
+
+    private fun onFixError(error: Error) {
+        coroutineScope.launch {
+            if (error == Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)) {
                 coroutineScope.launch {
                     ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
                         resourceProvider = this@KeyMapListViewModel,
@@ -150,31 +168,13 @@ open class KeyMapListViewModel(
                     )
                 }
             } else {
-                showDialogAndFixError(chipModel.error)
-            }
-        }
-    }
-
-    fun onActionChipClick(chipModel: ChipUi) {
-        if (chipModel is ChipUi.Error) {
-            showDialogAndFixError(chipModel.error)
-        }
-    }
-
-    fun onConstraintsChipClick(chipModel: ChipUi) {
-        if (chipModel is ChipUi.Error) {
-            showDialogAndFixError(chipModel.error)
-        }
-    }
-
-    private fun showDialogAndFixError(error: Error) {
-        coroutineScope.launch {
-            ViewModelHelper.showFixErrorDialog(
-                resourceProvider = this@KeyMapListViewModel,
-                popupViewModel = this@KeyMapListViewModel,
-                error,
-            ) {
-                useCase.fixError(error)
+                ViewModelHelper.showFixErrorDialog(
+                    resourceProvider = this@KeyMapListViewModel,
+                    popupViewModel = this@KeyMapListViewModel,
+                    error,
+                ) {
+                    useCase.fixError(error)
+                }
             }
         }
     }

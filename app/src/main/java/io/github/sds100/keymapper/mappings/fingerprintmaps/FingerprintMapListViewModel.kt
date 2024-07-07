@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.mappings.fingerprintmaps
 
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.getFullMessage
@@ -14,6 +15,7 @@ import io.github.sds100.keymapper.util.ui.PopupUi
 import io.github.sds100.keymapper.util.ui.PopupViewModel
 import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.util.ui.ViewModelHelper
 import io.github.sds100.keymapper.util.ui.navigate
 import io.github.sds100.keymapper.util.ui.showPopup
 import kotlinx.coroutines.CoroutineScope
@@ -138,7 +140,30 @@ class FingerprintMapListViewModel(
             showPopup("fix_error", snackBar) ?: return@launch
 
             if (error.isFixable) {
-                useCase.fixError(error)
+                onFixError(error)
+            }
+        }
+    }
+
+    private fun onFixError(error: Error) {
+        coroutineScope.launch {
+            if (error == Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)) {
+                coroutineScope.launch {
+                    ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
+                        resourceProvider = this@FingerprintMapListViewModel,
+                        popupViewModel = this@FingerprintMapListViewModel,
+                        neverShowDndTriggerErrorAgain = { useCase.neverShowDndTriggerErrorAgain() },
+                        fixError = { useCase.fixError(it) },
+                    )
+                }
+            } else {
+                ViewModelHelper.showFixErrorDialog(
+                    resourceProvider = this@FingerprintMapListViewModel,
+                    popupViewModel = this@FingerprintMapListViewModel,
+                    error,
+                ) {
+                    useCase.fixError(error)
+                }
             }
         }
     }
