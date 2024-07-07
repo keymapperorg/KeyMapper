@@ -578,7 +578,7 @@
 
     <string name="dialog_title_accessibility_service_explanation">Accessibility service must be enabled</string>
     <string name="dialog_message_accessibility_service_explanation">@string/accessibility_service_explanation</string>
-    
+
     <string name="dialog_title_fix_dnd_trigger_error">Grant Do Not Disturb access</string>
     <string name="dialog_message_fix_dnd_trigger_error">You will be taken to your device\'s settings page to manage which apps can modify the Do Not Disturb state. This is <b>not present on some devices</b> so tap don\'t show again if you do not see Key Mapper in the list.</string>
 
@@ -619,12 +619,12 @@
     <string name="dialog_button_install_gui_keyboard">Key Mapper GUI Keyboard</string>
     <string name="dialog_button_install_leanback_keyboard">Key Mapper Leanback Keyboard</string>
     <string name="dialog_button_install_nothing">Do nothing</string>
-    
+
     <string name="dialog_button_fix">Fix</string>
 
     <string name="snackbar_cancel">Cancel</string>
     <string name="snackbar_fix">Fix</string>
-    
+
     <!-- Dialog stuff -->
 
     <!-- Notification strings -->
@@ -900,13 +900,19 @@
     <string name="showcase_grant_shizuku_permission_denied_message">It looks like you have Shizuku installed. It is recommended to grant Key Mapper permission to use Shizuku so that Key Mapper can do more things without user input. For example input button presses without you having to use the \'Key Mapper keyboard\'. Tap \'more info\' to read all the benefits. Tap \'grant\' to grant the permission.</string>
 
     <string name="showcase_grant_shizuku_permission_granted_title">Shizuku permission granted!</string>
-    <string name="showcase_grant_shizuku_permission_granted_message">You have granted Key Mapper Shizuku permission successfully!</string>
+    <string name="showcase_grant_shizuku_permission_granted_message">You have granted Key Mapper Shizuku permission successfully.</string>
     <string name="showcase_more_shizuku_info">More info</string>
     <string name="showcase_request_shizuku_permission">Grant</string>
 
     <string name="showcase_shizuku_not_started_title">Shizuku is not started</string>
     <string name="showcase_shizuku_not_started_message">Shizuku must be started before you grant Key Mapper permission to use it. Tap \'Launch Shizuku\' to open the Shizuku app so that you can start it.</string>
     <string name="showcase_shizuku_launch_shizuku_app">Launch Shizuku</string>
+
+    <string name="showcase_notification_permission_denied_title">Grant notification permission</string>
+    <string name="showcase_notification_permission_denied_message">Some features of Key Mapper require permission to post notifications, for example, there is a notification to pause/resume your key maps. Tap \'grant\' to give permission.</string>
+    <string name="showcase_notification_permission_granted_title">Notifications can be shown!</string>
+    <string name="showcase_notification_permission_granted_message">You have successfully granted Key Mapper permission to show notifications.</string>
+    <string name="showcase_notification_permission_button">Grant</string>
 
     <!-- Showcase -->
 
@@ -1093,6 +1099,7 @@
     <string name="error_access_fine_location_permission_denied">Denied permission to read fine location!</string>
     <string name="error_answer_end_phone_call_permission_denied">Denied permission to answer and end phone calls!</string>
     <string name="error_find_nearby_devices_permission_denied">Denied permission to see paired Bluetooth devices!</string>
+    <string name="error_notifications_permission_denied">Denied permission to show notifications!</string>
     <string name="error_pinch_screen_must_be_two_or_more_fingers">Must be 2 or more!</string>
     <string name="error_pinch_screen_must_be_ten_or_less_fingers">Must be %d or less!</string>
     <string name="error_pinch_screen_duration_must_be_more_than_zero">Must be greater than 0!</string>

@@ -298,6 +298,16 @@ class AndroidPermissionAdapter(
             } else {
                 true
             }
+
+        Permission.POST_NOTIFICATIONS ->
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                ContextCompat.checkSelfPermission(
+                    ctx,
+                    Manifest.permission.POST_NOTIFICATIONS,
+                ) == PERMISSION_GRANTED
+            } else {
+                true
+            }
     }
 
     override fun isGrantedFlow(permission: Permission): Flow<Boolean> = callbackFlow {
