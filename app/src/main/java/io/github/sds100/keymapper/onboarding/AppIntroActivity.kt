@@ -52,7 +52,7 @@ class AppIntroActivity : AppIntro2() {
             }
         }
 
-        viewModel.slidesToShow.forEach {
+        viewModel.slides.forEach {
             val args = bundleOf(AppIntroFragment.KEY_SLIDE to it)
 
             AppIntroFragment().apply {

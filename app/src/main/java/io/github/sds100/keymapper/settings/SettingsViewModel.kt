@@ -132,6 +132,12 @@ class SettingsViewModel(
         useCase.openShizukuApp()
     }
 
+    fun isNotificationPermissionGranted(): Boolean = useCase.isNotificationsPermissionGranted()
+
+    fun requestNotificationsPermission() {
+        useCase.requestNotificationsPermission()
+    }
+
     fun onEnableCompatibleImeClick() {
         useCase.enableCompatibleIme()
     }

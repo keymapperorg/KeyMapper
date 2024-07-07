@@ -56,7 +56,7 @@ class ManageNotificationsUseCaseImpl(
         }
 
     override val showToggleMappingsNotification: Flow<Boolean> =
-        preferences.get(Keys.showToggleKeymapsNotification).map {
+        preferences.get(Keys.showToggleKeyMapsNotification).map {
             // always show the notification on Oreo+ because the system/user controls whether notifications are shown
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 true

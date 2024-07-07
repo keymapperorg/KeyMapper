@@ -157,6 +157,13 @@ class ConfigSettingsUseCaseImpl(
         packageManagerAdapter.openApp(ShizukuUtils.SHIZUKU_PACKAGE)
     }
 
+    override fun requestNotificationsPermission() {
+        permissionAdapter.request(Permission.POST_NOTIFICATIONS)
+    }
+
+    override fun isNotificationsPermissionGranted(): Boolean =
+        permissionAdapter.isGranted(Permission.POST_NOTIFICATIONS)
+
     override fun getSoundFiles(): List<SoundFileInfo> = soundsManager.soundFiles.value
 
     override fun deleteSoundFiles(uid: List<String>) {
@@ -199,6 +206,8 @@ interface ConfigSettingsUseCase {
     fun deleteSoundFiles(uid: List<String>)
     fun resetDefaultMappingOptions()
     fun requestWriteSecureSettingsPermission()
+    fun requestNotificationsPermission()
+    fun isNotificationsPermissionGranted(): Boolean
     fun requestShizukuPermission()
 
     val connectedInputDevices: StateFlow<State<List<InputDeviceInfo>>>

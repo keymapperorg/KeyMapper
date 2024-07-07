@@ -17,6 +17,8 @@ import android.os.Build.VERSION_CODES.Q
 import android.os.Build.VERSION_CODES.R
 import android.os.Build.VERSION_CODES.S
 import android.os.Build.VERSION_CODES.S_V2
+import android.os.Build.VERSION_CODES.TIRAMISU
+import android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE
 
 /**
  * Created by sds100 on 12/01/2019.
@@ -45,6 +47,8 @@ object BuildUtils {
         R -> "11"
         S -> "12"
         S_V2 -> "12L"
+        TIRAMISU -> "13"
+        UPSIDE_DOWN_CAKE -> "14"
         else -> "API $version"
     }
 }

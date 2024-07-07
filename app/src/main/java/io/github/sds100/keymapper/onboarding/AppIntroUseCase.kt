@@ -32,6 +32,9 @@ class AppIntroUseCaseImpl(
     override val isShizukuPermissionGranted: Flow<Boolean> =
         permissionAdapter.isGrantedFlow(Permission.SHIZUKU)
 
+    override val isNotificationPermissionGranted: Flow<Boolean> =
+        permissionAdapter.isGrantedFlow(Permission.POST_NOTIFICATIONS)
+
     override val isShizukuStarted: Boolean
         get() = shizukuAdapter.isStarted.value
 
@@ -61,6 +64,10 @@ class AppIntroUseCaseImpl(
         permissionAdapter.request(Permission.SHIZUKU)
     }
 
+    override fun requestNotificationPermission() {
+        permissionAdapter.request(Permission.POST_NOTIFICATIONS)
+    }
+
     override fun shownShizukuPermissionPrompt() {
         preferenceRepository.set(Keys.shownShizukuPermissionPrompt, true)
     }
@@ -71,6 +78,7 @@ interface AppIntroUseCase {
     val isBatteryOptimised: Flow<Boolean>
     val fingerprintGesturesSupported: Flow<Boolean?>
     val isShizukuPermissionGranted: Flow<Boolean>
+    val isNotificationPermissionGranted: Flow<Boolean>
     val isShizukuStarted: Boolean
 
     fun ignoreBatteryOptimisation()
@@ -78,6 +86,7 @@ interface AppIntroUseCase {
     fun restartAccessibilityService()
     fun requestShizukuPermission()
     fun shownShizukuPermissionPrompt()
+    fun requestNotificationPermission()
     fun openShizuku()
 
     fun shownAppIntro()
