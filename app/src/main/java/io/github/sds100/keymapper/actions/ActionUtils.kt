@@ -422,6 +422,11 @@ object ActionUtils {
         // The global action still fails even though the API exists in SDK 34.
         ActionId.COLLAPSE_STATUS_BAR -> Build.VERSION_CODES.TIRAMISU
 
+        ActionId.ENABLE_BLUETOOTH,
+        ActionId.DISABLE_BLUETOOTH,
+        ActionId.TOGGLE_BLUETOOTH,
+        -> Build.VERSION_CODES.S_V2
+
         else -> Constants.MAX_API
     }
 
