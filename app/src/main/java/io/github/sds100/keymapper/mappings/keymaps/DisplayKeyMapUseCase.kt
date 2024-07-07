@@ -12,7 +12,6 @@ import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 
@@ -52,8 +51,7 @@ class DisplayKeyMapUseCaseImpl(
 
         if (trigger.keys.any { it.keyCode in keysThatRequireDndAccess }) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-                !permissionAdapter.isGranted(Permission.ACCESS_NOTIFICATION_POLICY) &&
-                preferenceRepository.get(Keys.neverShowDndError).first() != true
+                !permissionAdapter.isGranted(Permission.ACCESS_NOTIFICATION_POLICY)
             ) {
                 errors.add(KeyMapTriggerError.DND_ACCESS_DENIED)
             }
@@ -68,14 +66,9 @@ class DisplayKeyMapUseCaseImpl(
 
         return errors
     }
-
-    override fun neverShowDndTriggerErrorAgain() {
-        preferenceRepository.set(Keys.neverShowDndError, true)
-    }
 }
 
 interface DisplayKeyMapUseCase : DisplaySimpleMappingUseCase {
     val invalidateTriggerErrors: Flow<Unit>
     suspend fun getTriggerErrors(keyMap: KeyMap): List<KeyMapTriggerError>
-    fun neverShowDndTriggerErrorAgain()
 }

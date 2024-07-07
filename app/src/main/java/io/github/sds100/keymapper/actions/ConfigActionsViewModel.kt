@@ -7,6 +7,7 @@ import io.github.sds100.keymapper.mappings.DisplayActionUseCase
 import io.github.sds100.keymapper.mappings.Mapping
 import io.github.sds100.keymapper.mappings.isDelayBeforeNextActionAllowed
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
+import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.getFullMessage
@@ -106,7 +107,30 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
 
                 when {
                     error == null -> attemptTestAction(actionData)
-                    error.isFixable -> displayActionUseCase.fixError(error)
+                    error.isFixable -> onFixError(error)
+                }
+            }
+        }
+    }
+
+    private fun onFixError(error: Error) {
+        coroutineScope.launch {
+            if (error == Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)) {
+                coroutineScope.launch {
+                    ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
+                        resourceProvider = this@ConfigActionsViewModel,
+                        popupViewModel = this@ConfigActionsViewModel,
+                        neverShowDndTriggerErrorAgain = { displayActionUseCase.neverShowDndTriggerErrorAgain() },
+                        fixError = { displayActionUseCase.fixError(it) },
+                    )
+                }
+            } else {
+                ViewModelHelper.showFixErrorDialog(
+                    resourceProvider = this@ConfigActionsViewModel,
+                    popupViewModel = this@ConfigActionsViewModel,
+                    error,
+                ) {
+                    displayActionUseCase.fixError(error)
                 }
             }
         }

@@ -107,6 +107,7 @@ class KeyMapperApp : MultiDexApplication() {
             appCoroutineScope,
             suAdapter,
             notificationReceiverAdapter,
+            ServiceLocator.settingsRepository(this),
         )
     }
 
