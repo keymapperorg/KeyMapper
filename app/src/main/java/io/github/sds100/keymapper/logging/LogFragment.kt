@@ -17,6 +17,7 @@ import com.michaelflisar.dragselectrecyclerview.DragSelectionProcessor
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
 import io.github.sds100.keymapper.logEntry
+import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
@@ -43,7 +44,7 @@ class LogFragment : SimpleRecyclerViewFragment<LogEntryListItem>() {
     private val recyclerViewController by lazy { RecyclerViewController() }
 
     private val saveLogToFileLauncher =
-        registerForActivityResult(CreateDocument("todo/todo")) {
+        registerForActivityResult(CreateDocument(FileUtils.MIME_TYPE_ZIP)) {
             it ?: return@registerForActivityResult
 
             viewModel.onPickFileToSaveTo(it.toString())

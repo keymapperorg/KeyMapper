@@ -61,14 +61,14 @@ class HomeFragment : Fragment() {
         }
 
     private val backupFingerprintMapsLauncher =
-        registerForActivityResult(CreateDocument("todo/todo")) {
+        registerForActivityResult(CreateDocument(FileUtils.MIME_TYPE_ZIP)) {
             it ?: return@registerForActivityResult
 
             homeViewModel.backupFingerprintMaps(it.toString())
         }
 
     private val backupKeyMapsLauncher =
-        registerForActivityResult(CreateDocument("todo/todo")) {
+        registerForActivityResult(CreateDocument(FileUtils.MIME_TYPE_ZIP)) {
             it ?: return@registerForActivityResult
 
             homeViewModel.backupSelectedKeyMaps(it.toString())
