@@ -419,6 +419,9 @@ object ActionUtils {
     fun getMaxApi(id: ActionId): Int = when (id) {
         ActionId.SHOW_KEYBOARD_PICKER -> Build.VERSION_CODES.P
 
+        // The global action still fails even though the API exists in SDK 34.
+        ActionId.COLLAPSE_STATUS_BAR -> Build.VERSION_CODES.TIRAMISU
+
         else -> Constants.MAX_API
     }
 

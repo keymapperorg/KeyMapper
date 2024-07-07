@@ -141,7 +141,7 @@ This will increase or decrease a specific one of these volume streams.
 
 ### Expand/toggle quick settings
 
-### Collapse the status bar
+### Collapse the status bar (up to Android 14)
 
 ### Play/pause/toggle media
 
