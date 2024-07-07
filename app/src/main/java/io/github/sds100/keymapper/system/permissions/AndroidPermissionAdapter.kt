@@ -152,8 +152,34 @@ class AndroidPermissionAdapter(
         val userId = Process.myUserHandle()!!.getIdentifier()
 
         try {
-            // In Android 12 this method was moved from IPackageManager to IPermissionManager
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            // In revisions of Android 14 the method to grant permissions changed
+            // so try them all.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                try {
+                    shizukuPermissionManager.grantRuntimePermission(
+                        Constants.PACKAGE_NAME,
+                        permissionName,
+                        ctx.deviceId,
+                        userId,
+                    )
+                } catch (_: NoSuchMethodError) {
+                    try {
+                        shizukuPermissionManager.grantRuntimePermission(
+                            Constants.PACKAGE_NAME,
+                            permissionName,
+                            "0",
+                            userId,
+                        )
+                    } catch (_: NoSuchMethodError) {
+                        shizukuPermissionManager.grantRuntimePermission(
+                            Constants.PACKAGE_NAME,
+                            permissionName,
+                            userId,
+                        )
+                    }
+                }
+                // In Android 11 this method was moved from IPackageManager to IPermissionManager.
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 shizukuPermissionManager.grantRuntimePermission(
                     Constants.PACKAGE_NAME,
                     permissionName,
