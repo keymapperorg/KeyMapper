@@ -9,6 +9,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import com.github.appintro.AppIntro2
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.system.permissions.RequestPermissionDelegate
 import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
@@ -27,7 +28,7 @@ class ReportBugActivity : AppIntro2() {
     private lateinit var requestPermissionDelegate: RequestPermissionDelegate
 
     private val chooseReportLocationLauncher =
-        registerForActivityResult(CreateDocument("todo/todo")) {
+        registerForActivityResult(CreateDocument(FileUtils.MIME_TYPE_ZIP)) {
             it ?: return@registerForActivityResult
 
             viewModel.onChooseBugReportLocation(it.toString())

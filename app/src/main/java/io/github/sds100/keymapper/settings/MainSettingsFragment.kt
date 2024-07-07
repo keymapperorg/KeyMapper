@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.Lifecycle
@@ -21,6 +22,7 @@ import io.github.sds100.keymapper.backup.BackupUtils
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.shizuku.ShizukuUtils
+import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.system.notifications.NotificationController
 import io.github.sds100.keymapper.system.notifications.NotificationUtils
 import io.github.sds100.keymapper.util.firstBlocking
@@ -49,7 +51,7 @@ class MainSettingsFragment : BaseSettingsFragment() {
     }
 
     private val chooseAutomaticBackupLocationLauncher =
-        registerForActivityResult(CreateDocument("todo/todo")) {
+        registerForActivityResult(CreateDocument(FileUtils.MIME_TYPE_ZIP)) {
             it ?: return@registerForActivityResult
 
             viewModel.setAutomaticBackupLocation(it.toString())
