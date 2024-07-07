@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.settings
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.RequiresApi
 import androidx.preference.Preference
 import androidx.preference.SwitchPreferenceCompat
 import androidx.preference.isEmpty
@@ -44,10 +45,7 @@ class ImePickerSettingsFragment : BaseSettingsFragment() {
                 setSummary(R.string.summary_pref_show_ime_picker_notification)
 
                 setOnPreferenceClickListener {
-                    NotificationUtils.openChannelSettings(
-                        requireContext(),
-                        NotificationController.CHANNEL_IME_PICKER,
-                    )
+                    onImePickerNotificationClick()
 
                     true
                 }
@@ -85,6 +83,21 @@ class ImePickerSettingsFragment : BaseSettingsFragment() {
                 viewModel,
                 Keys.devicesThatShowImePicker,
             ),
+        )
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun onImePickerNotificationClick() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            !viewModel.isNotificationPermissionGranted()
+        ) {
+            viewModel.requestNotificationsPermission()
+            return
+        }
+
+        NotificationUtils.openChannelSettings(
+            requireContext(),
+            NotificationController.CHANNEL_IME_PICKER,
         )
     }
 }

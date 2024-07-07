@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.settings
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.RequiresApi
 import androidx.preference.Preference
 import androidx.preference.SwitchPreferenceCompat
 import androidx.preference.isEmpty
@@ -100,10 +101,7 @@ class AutomaticallyChangeImeSettings : BaseSettingsFragment() {
                 setSummary(R.string.summary_pref_show_toggle_keyboard_notification)
 
                 setOnPreferenceClickListener {
-                    NotificationUtils.openChannelSettings(
-                        requireContext(),
-                        NotificationController.CHANNEL_TOGGLE_KEYBOARD,
-                    )
+                    onToggleKeyboardNotificationClick()
 
                     true
                 }
@@ -122,5 +120,20 @@ class AutomaticallyChangeImeSettings : BaseSettingsFragment() {
                 addPreference(this)
             }
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun onToggleKeyboardNotificationClick() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            !viewModel.isNotificationPermissionGranted()
+        ) {
+            viewModel.requestNotificationsPermission()
+            return
+        }
+
+        NotificationUtils.openChannelSettings(
+            requireContext(),
+            NotificationController.CHANNEL_TOGGLE_KEYBOARD,
+        )
     }
 }

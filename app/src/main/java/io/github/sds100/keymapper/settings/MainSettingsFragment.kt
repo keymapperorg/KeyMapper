@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.preference.DropDownPreference
@@ -214,17 +215,14 @@ class MainSettingsFragment : BaseSettingsFragment() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // show a preference linking to the notification management screen
             Preference(requireContext()).apply {
-                key = Keys.showToggleKeymapsNotification.name
+                key = Keys.showToggleKeyMapsNotification.name
 
                 setTitle(R.string.title_pref_show_toggle_keymaps_notification)
                 isSingleLineTitle = false
                 setSummary(R.string.summary_pref_show_toggle_keymaps_notification)
 
                 setOnPreferenceClickListener {
-                    NotificationUtils.openChannelSettings(
-                        requireContext(),
-                        NotificationController.CHANNEL_TOGGLE_KEYMAPS,
-                    )
+                    onToggleKeyMapsNotificationClick()
 
                     true
                 }
@@ -233,7 +231,7 @@ class MainSettingsFragment : BaseSettingsFragment() {
             }
         } else {
             SwitchPreferenceCompat(requireContext()).apply {
-                key = Keys.showToggleKeymapsNotification.name
+                key = Keys.showToggleKeyMapsNotification.name
                 setDefaultValue(true)
 
                 setTitle(R.string.title_pref_show_toggle_keymaps_notification)
@@ -381,6 +379,21 @@ class MainSettingsFragment : BaseSettingsFragment() {
 
         // log
         createLogCategory()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun onToggleKeyMapsNotificationClick() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            !viewModel.isNotificationPermissionGranted()
+        ) {
+            viewModel.requestNotificationsPermission()
+            return
+        }
+
+        NotificationUtils.openChannelSettings(
+            requireContext(),
+            NotificationController.CHANNEL_TOGGLE_KEYMAPS,
+        )
     }
 
     private fun automaticallyChangeImeSettingsLink() = Preference(requireContext()).apply {
