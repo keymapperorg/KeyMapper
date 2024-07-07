@@ -11,4 +11,5 @@ object AppIntroSlide {
     const val CONTRIBUTING = "contributing"
     const val SETUP_CHOSEN_DEVICES_AGAIN = "set_up_chosen_devices_again"
     const val GRANT_SHIZUKU_PERMISSION = "grant_shizuku_permission"
+    const val NOTIFICATION_PERMISSION = "notification_permission"
 }

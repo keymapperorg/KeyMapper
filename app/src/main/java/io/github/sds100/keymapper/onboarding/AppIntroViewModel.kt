@@ -26,7 +26,7 @@ import kotlinx.coroutines.runBlocking
 
 class AppIntroViewModel(
     private val useCase: AppIntroUseCase,
-    slides: List<String>,
+    val slides: List<String>,
     resourceProvider: ResourceProvider,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
@@ -39,6 +39,8 @@ class AppIntroViewModel(
         private const val ID_BUTTON_DONT_KILL_MY_APP = "go_to_dont_kill_my_app"
         private const val ID_BUTTON_MORE_SHIZUKU_INFO = "shizuku_info"
         private const val ID_BUTTON_REQUEST_SHIZUKU_PERMISSION = "request_shizuku_permission"
+        private const val ID_BUTTON_REQUEST_NOTIFICATION_PERMISSION =
+            "request_notification_permission"
     }
 
     private val slideModels: StateFlow<List<AppIntroSlideUi>> = combine(
@@ -46,9 +48,16 @@ class AppIntroViewModel(
         useCase.isBatteryOptimised,
         useCase.fingerprintGesturesSupported,
         useCase.isShizukuPermissionGranted,
-    ) { serviceState, isBatteryOptimised, fingerprintGesturesSupported, isShizukuPermissionGranted ->
+        useCase.isNotificationPermissionGranted,
+    ) {
+            serviceState,
+            isBatteryOptimised,
+            fingerprintGesturesSupported,
+            isShizukuPermissionGranted,
+            isNotificationPermissionGranted,
+        ->
 
-        slidesToShow.map { slide ->
+        slides.map { slide ->
             when (slide) {
                 AppIntroSlide.NOTE_FROM_DEV -> noteFromDeveloperSlide()
                 AppIntroSlide.ACCESSIBILITY_SERVICE -> accessibilityServiceSlide(serviceState)
@@ -58,18 +67,16 @@ class AppIntroViewModel(
 
                 AppIntroSlide.CONTRIBUTING -> contributingSlide()
                 AppIntroSlide.SETUP_CHOSEN_DEVICES_AGAIN -> setupChosenDevicesAgainSlide()
-                AppIntroSlide.GRANT_SHIZUKU_PERMISSION -> requestShizukuPermissionSlide(
-                    isShizukuPermissionGranted,
-                )
+                AppIntroSlide.GRANT_SHIZUKU_PERMISSION ->
+                    requestShizukuPermissionSlide(isShizukuPermissionGranted)
+
+                AppIntroSlide.NOTIFICATION_PERMISSION ->
+                    requestNotificationSlide(isNotificationPermissionGranted)
 
                 else -> throw Exception("Unknown slide $slide")
             }
         }
     }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
-
-    val slidesToShow = slides.mapNotNull { slide ->
-        slide
-    }
 
     fun onButtonClick(id: String) {
         when (id) {
@@ -108,6 +115,8 @@ class AppIntroViewModel(
                     }
                 }
             }
+
+            ID_BUTTON_REQUEST_NOTIFICATION_PERMISSION -> useCase.requestNotificationPermission()
         }
     }
 
@@ -246,6 +255,28 @@ class AppIntroViewModel(
                 buttonText1 = getString(R.string.showcase_more_shizuku_info),
                 buttonId2 = ID_BUTTON_REQUEST_SHIZUKU_PERMISSION,
                 buttonText2 = getString(R.string.showcase_request_shizuku_permission),
+            )
+        }
+    }
+
+    private fun requestNotificationSlide(isPermissionGranted: Boolean): AppIntroSlideUi {
+        if (isPermissionGranted) {
+            return AppIntroSlideUi(
+                id = AppIntroSlide.NOTIFICATION_PERMISSION,
+                image = getDrawable(R.drawable.ic_baseline_check_64),
+                title = getString(R.string.showcase_notification_permission_granted_title),
+                description = getString(R.string.showcase_notification_permission_granted_message),
+                backgroundColor = getColor(R.color.slidePurple),
+            )
+        } else {
+            return AppIntroSlideUi(
+                id = AppIntroSlide.NOTIFICATION_PERMISSION,
+                image = getDrawable(R.drawable.ic_outline_error_outline_64),
+                title = getString(R.string.showcase_notification_permission_denied_title),
+                description = getString(R.string.showcase_notification_permission_denied_message),
+                backgroundColor = getColor(R.color.slidePurple),
+                buttonId1 = ID_BUTTON_REQUEST_NOTIFICATION_PERMISSION,
+                buttonText1 = getString(R.string.showcase_notification_permission_button),
             )
         }
     }
