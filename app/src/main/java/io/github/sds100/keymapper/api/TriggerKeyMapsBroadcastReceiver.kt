@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.util.Event
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 
@@ -16,11 +17,12 @@ class TriggerKeyMapsBroadcastReceiver : BroadcastReceiver() {
         intent ?: return
 
         val serviceAdapter = ServiceLocator.accessibilityServiceAdapter(context)
+        val scope = ServiceLocator.appCoroutineScope(context)
 
         when (intent.action) {
             Api.ACTION_TRIGGER_KEYMAP_BY_UID -> {
                 intent.getStringExtra(Api.EXTRA_KEYMAP_UID)?.let { uid ->
-                    runBlocking {
+                    scope.launch {
                         serviceAdapter.send(Event.TriggerKeyMap(uid))
                     }
                 }
