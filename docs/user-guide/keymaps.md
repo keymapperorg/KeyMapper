@@ -141,7 +141,7 @@ There are many apps that can automate broadcasting Intents such as Tasker and Au
 io.github.sds100.keymapper.ACTION_TRIGGER_KEYMAP_BY_UID
 ```
 
-##### Intent string extra 
+##### Intent string extra
 
 ```
 io.github.sds100.keymapper.EXTRA_KEYMAP_UID
@@ -151,18 +151,18 @@ The extra value is the UUID of the key map. You can copy the UUID in Key Mapper 
 
 ##### Intent package name
 
-The component for the intent must be sent so that the intent is sent specifically to Key Mapper and not any other apps. Android enforces this and will not send the intent to Key Mapper if it is not specified. If you are using a .debug or .ci build then add .debug or .ci to the end of the package name below.
+The component for the intent must be sent so that the intent is sent specifically to Key Mapper and not any other apps. Android enforces this and will not send the intent to Key Mapper if it is not specified. If you are using a .debug or .ci build then add .debug or .ci to the end of the package name below only and **not** the class name.
 
-```
-io.github.sds100.keymapper/.api.TriggerKeyMapsBroadcastReceiver
+```bash
+io.github.sds100.keymapper/io.github.sds100.keymapper.api.TriggerKeyMapsBroadcastReceiver
 ```
 
 #### ADB command
 
 This adb command tests this feature.
 
-```
-adb shell am broadcast -n io.github.sds100.keymapper/.api.TriggerKeyMapsBroadcastReceiver -a io.github.sds100.keymapper.ACTION_TRIGGER_KEYMAP_BY_UID --es io.github.sds100.keymapper.EXTRA_KEYMAP_UID $KEYMAP_UID$
+```bash
+adb shell am broadcast -n io.github.sds100.keymapper/io.github.sds100.keymapper.api.TriggerKeyMapsBroadcastReceiver -a io.github.sds100.keymapper.ACTION_TRIGGER_KEYMAP_BY_UID --es io.github.sds100.keymapper.EXTRA_KEYMAP_UID $KEYMAP_UID$
 ```
 
 ---
