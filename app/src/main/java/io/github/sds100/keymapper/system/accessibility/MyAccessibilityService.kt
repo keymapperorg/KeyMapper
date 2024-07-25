@@ -48,23 +48,6 @@ class MyAccessibilityService :
     // virtual distance between fingers on multitouch gestures
     private val fingerGestureDistance = 10L
 
-    /**
-     * Broadcast receiver for all intents sent from within the app.
-     */
-    private val broadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            intent ?: return
-
-            when (intent.action) {
-                Api.ACTION_TRIGGER_KEYMAP_BY_UID -> {
-                    intent.getStringExtra(Api.EXTRA_KEYMAP_UID)?.let {
-                        controller?.triggerKeyMapFromIntent(it)
-                    }
-                }
-            }
-        }
-    }
-
     private lateinit var lifecycleRegistry: LifecycleRegistry
 
     private var fingerprintGestureCallback:
@@ -162,18 +145,6 @@ class MyAccessibilityService :
 
         lifecycleRegistry = LifecycleRegistry(this)
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
-
-        IntentFilter().also { filter ->
-            filter.addAction(Api.ACTION_TRIGGER_KEYMAP_BY_UID)
-            filter.addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
-
-            ContextCompat.registerReceiver(
-                this,
-                broadcastReceiver,
-                filter,
-                ContextCompat.RECEIVER_EXPORTED,
-            )
-        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             softKeyboardController.addOnShowModeChangedListener { _, showMode ->
