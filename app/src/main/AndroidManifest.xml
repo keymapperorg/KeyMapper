@@ -19,7 +19,6 @@
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="com.termux.permission.RUN_COMMAND" />
 
@@ -151,6 +150,14 @@
                 <action android:name="io.github.sds100.keymapper.ACTION_PAUSE_MAPPINGS" />
                 <action android:name="io.github.sds100.keymapper.ACTION_RESUME_MAPPINGS" />
                 <action android:name="io.github.sds100.keymapper.ACTION_TOGGLE_MAPPINGS" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".api.TriggerKeyMapsBroadcastReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="io.github.sds100.keymapper.ACTION_TRIGGER_KEYMAP_BY_UID" />
             </intent-filter>
         </receiver>
 

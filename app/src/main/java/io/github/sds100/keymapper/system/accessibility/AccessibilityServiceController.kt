@@ -427,7 +427,7 @@ class AccessibilityServiceController(
         fingerprintMapController.onGesture(id)
     }
 
-    fun triggerKeyMapFromIntent(uid: String) {
+    private fun triggerKeyMapFromIntent(uid: String) {
         triggerKeyMapFromOtherAppsController.onDetected(uid)
     }
 
@@ -459,6 +459,8 @@ class AccessibilityServiceController(
             is Event.ShowKeyboard -> accessibilityService.showKeyboard()
             is Event.ChangeIme -> accessibilityService.switchIme(event.imeId)
             is Event.DisableService -> accessibilityService.disableSelf()
+
+            is Event.TriggerKeyMap -> triggerKeyMapFromIntent(event.uid)
             else -> Unit
         }
     }

@@ -46,6 +46,7 @@ import io.github.sds100.keymapper.system.url.OpenUrlAdapter
 import io.github.sds100.keymapper.system.vibrator.VibratorAdapter
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import io.github.sds100.keymapper.util.ui.ResourceProviderImpl
+import kotlinx.coroutines.CoroutineScope
 
 /**
  * Created by sds100 on 17/05/2020.
@@ -248,6 +249,9 @@ object ServiceLocator {
 
     fun powerAdapter(context: Context): PowerAdapter =
         (context.applicationContext as KeyMapperApp).powerAdapter
+
+    fun appCoroutineScope(context: Context): CoroutineScope =
+        (context.applicationContext as KeyMapperApp).appCoroutineScope
 
     private fun createDatabase(context: Context): AppDatabase = Room.databaseBuilder(
         context.applicationContext,

@@ -5,23 +5,18 @@ import android.accessibilityservice.FingerprintGestureController
 import android.accessibilityservice.GestureDescription
 import android.accessibilityservice.GestureDescription.StrokeDescription
 import android.app.ActivityManager
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.graphics.Path
 import android.graphics.Point
 import android.os.Build
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
-import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.core.os.bundleOf
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
-import io.github.sds100.keymapper.api.Api
 import io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback
 import io.github.sds100.keymapper.api.KeyEventRelayServiceWrapperImpl
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapId
@@ -47,23 +42,6 @@ class MyAccessibilityService :
 
     // virtual distance between fingers on multitouch gestures
     private val fingerGestureDistance = 10L
-
-    /**
-     * Broadcast receiver for all intents sent from within the app.
-     */
-    private val broadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            intent ?: return
-
-            when (intent.action) {
-                Api.ACTION_TRIGGER_KEYMAP_BY_UID -> {
-                    intent.getStringExtra(Api.EXTRA_KEYMAP_UID)?.let {
-                        controller?.triggerKeyMapFromIntent(it)
-                    }
-                }
-            }
-        }
-    }
 
     private lateinit var lifecycleRegistry: LifecycleRegistry
 
@@ -162,18 +140,6 @@ class MyAccessibilityService :
 
         lifecycleRegistry = LifecycleRegistry(this)
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
-
-        IntentFilter().also { filter ->
-            filter.addAction(Api.ACTION_TRIGGER_KEYMAP_BY_UID)
-            filter.addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
-
-            ContextCompat.registerReceiver(
-                this,
-                broadcastReceiver,
-                filter,
-                ContextCompat.RECEIVER_EXPORTED,
-            )
-        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             softKeyboardController.addOnShowModeChangedListener { _, showMode ->
