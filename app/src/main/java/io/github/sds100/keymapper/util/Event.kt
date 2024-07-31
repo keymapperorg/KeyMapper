@@ -81,5 +81,5 @@ sealed class Event {
     data class OnInputFocusChange(val isFocussed: Boolean) : Event()
 
     @Serializable
-    data class TriggerKeyMap(val uid: String): Event()
+    data class TriggerKeyMap(val uid: String) : Event()
 }

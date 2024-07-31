@@ -6,8 +6,6 @@ import android.content.Intent
 import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.util.Event
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import timber.log.Timber
 
 // DON'T MOVE THIS CLASS TO A DIFFERENT PACKAGE BECAUSE IT BREAKS THE API
 class TriggerKeyMapsBroadcastReceiver : BroadcastReceiver() {
