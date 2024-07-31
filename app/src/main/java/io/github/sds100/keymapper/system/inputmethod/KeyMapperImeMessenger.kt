@@ -134,8 +134,7 @@ class KeyMapperImeMessengerImpl(
             return
         }
 
-        // TODO use Android SDK and get version code properly
-        if (Build.VERSION.SDK_INT >= 34) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             inputTextRelayService(text, imePackageName)
         } else {
             inputTextBroadcast(text, imePackageName)
