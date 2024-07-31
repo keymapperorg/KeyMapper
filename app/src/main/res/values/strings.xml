@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name" translatable="false">Key Mapper</string>
-    <string name="developer_email" translatable="false">developer.sds100@gmail.com</string>
     <string name="slogan">Unleash your keys!</string>
 
     <string name="no_action_chosen">No action chosen</string>
@@ -56,17 +55,33 @@
     <string name="chip_play_store" translatable="false">Play Store</string>
     <string name="chip_fdroid" translatable="false">F-Droid</string>
     <string name="chip_github" translatable="false">GitHub</string>
+    <string name="tap_coordinate_screenshot_message">IMPORTANT!!! These coordinates are only correct when your display is in the same orientation as the screenshot! This action will cancel any touches or gestures you are doing on the screen.\n\nIf you need help finding the coordinates of a point on your screen take a screenshot and then tap on the screenshot where you want this action to press.</string>
+    <string name="pinch_screen_x_y_note">Note: When using \"pinch in\" X and Y are the END coordinates, when using \"pinch out\" X and Y are the START coordinates.</string>
     <string name="dont_know_device_name">Don\'t know device name!</string>
     <string name="tap_actions_to_fix">Tap actions to fix!</string>
     <string name="tap_constraints_to_fix">Tap constraints to fix!</string>
     <string name="shortcut_label_action">Perform actions</string>
     <string name="hold_down_until_trigger_is_dot_dot_dot">Hold down until trigger is…</string>
+    <string name="from_no_device">No device</string>
     <string name="intent_extras_recycler_view_placeholder">¯\\_(ツ)_/¯\n\nNo extras!</string>
     <string name="content_description_fab_new_keymap">Create a new key map</string>
+    <string name="content_description_done_configuring_key_event">Done configuring key event action</string>
+    <string name="content_description_done_configuring_coordinate">Done picking coordinate</string>
     <string name="clip_key_mapper_log">Key Mapper log</string>
     <string name="sharesheet_title">Send to</string>
 
     <string name="whats_new">What\'s New</string>
+    <string name="caption_action_type_key">Click the key on the device which you want to be entered.
+            \n\nIMPORTANT!
+            Inputting this key as an action will only work if you are using a Key Mapper compatible keyboard.</string>
+    <string name="caption_action_type_keycode">IMPORTANT!
+            Inputting this key code as an action will only work if you are using a Key Mapper compatible keyboard.</string>
+    <string name="caption_action_type_sound">The sound file will be copied to Key Mapper\'s private data folder, which means your actions will still work even if the file is moved or deleted. It will also be backed up with your key maps in the zip folder.
+    You can delete saved sound files in the settings.</string>
+
+    <string name="caption_action_type_text">Type some text you want to be inserted when you perform this action.</string>
+    <string name="caption_action_type_phone_call">Enter the phone number.</string>
+    <string name="caption_action_type_url">Type a URL which you want to be opened. The http://, https:// or www. isn\'t required.</string>
     <string name="caption_no_paired_bt_devices">Can\'t find any paired devices. Is Bluetooth turned on?</string>
     <string name="caption_create_keymap_shortcut">The \"Allow other apps to trigger this key map\" option will be turned on for the key map that you select if it isn\'t already. If you turn this option off later then any shortcuts or Intents to trigger this key map will not work.</string>
 
@@ -94,6 +109,8 @@
     <string name="trigger_error_screen_off_root_permission_denied_short">The option to trigger when the screen is off will not work!</string>
     <string name="trigger_error_cant_detect_in_phone_call">This trigger won\'t work while ringing or in a phone call!</string>
     <string name="trigger_error_cant_detect_in_phone_call_explanation">Android doesn\'t let accessibility services detect volume button presses while your phone is ringing or it is in a phone call but it does let input method services detect them. Therefore, you must use one of the Key Mapper keyboards if you want this trigger to work.</string>
+    <string name="trigger_error_gesture_stroke_count_too_high">Too many fingers to perform gesture due to android limitations.</string>
+    <string name="trigger_error_gesture_duration_too_high">Gesture duration is too high due to android limitations.</string>
 
     <string name="home_error_is_battery_optimised">Your mappings will stop working randomly!</string>
     <string name="home_error_key_maps_paused">Your mappings are paused!</string>
@@ -115,6 +132,10 @@
     <string name="description_url">Open %s</string>
     <string name="description_tap_coordinate_default">Tap coordinates %d, %d</string>
     <string name="description_tap_coordinate_with_description">Tap coordinates %d, %d (%s)</string>
+    <string name="description_swipe_coordinate_default">Swipe with %d finger(s) from coordinates %d/%d to %d/%d in %dms</string>
+    <string name="description_swipe_coordinate_with_description">Swipe with %d finger(s) from coordinates %d/%d to %d/%d in %dms (%s)</string>
+    <string name="description_pinch_coordinate_default">%s with %d finger(s) on coordinates %d/%d with a pinch distance of %dpx in %dms</string>
+    <string name="description_pinch_coordinate_with_description">%s with %d finger(s) on coordinates %d/%d to with a pinch distance of %dpx %dms (%s)</string>
     <string name="description_phone_call">Call %s</string>
     <string name="description_sound">Play sound: %s</string>
     <!--  Action descriptions  -->
@@ -133,6 +154,16 @@
     <!--  Headers  -->
 
     <!--  Hints  -->
+    <string name="hint_coordinate_x" translatable="false">X</string>
+    <string name="hint_coordinate_y" translatable="false">Y</string>
+    <string name="hint_coordinate_x_start">Start X</string>
+    <string name="hint_coordinate_y_start">Start Y</string>
+    <string name="hint_coordinate_x_end">End X</string>
+    <string name="hint_coordinate_y_end">End Y</string>
+    <string name="hint_coordinate_distance">Pinch distance (px)</string>
+    <string name="hint_coordinate_pinch_type">Pinch type</string>
+    <string name="hint_coordinate_type_pinch_in">Pinch in</string>
+    <string name="hint_coordinate_type_pinch_out">Pinch out</string>
     <string name="hint_keycode">Key code</string>
     <string name="hint_from_device">From device</string>
     <string name="hint_shortcut_name">Shortcut name</string>
@@ -141,7 +172,16 @@
     <string name="hint_create_url_action">Url to open</string>
     <string name="hint_create_phone_call_action">Phone number to call</string>
 
+    <string name="hint_intent_action">Action</string>
+    <string name="hint_intent_categories">Categories</string>
+    <string name="hint_intent_data">Data</string>
+    <string name="hint_intent_package">Package</string>
+    <string name="hint_intent_class">Class</string>
+    <string name="hint_intent_extra_name">Name</string>
     <string name="hint_intent_extra_value_with_type">Value (%s)</string>
+    <string name="hint_intent_description">Description for Key Mapper (required)</string>
+    <string name="hint_intent_flags">Flags</string>
+    <string name="hint_sound_file_description">Sound file description</string>
     <string name="hint_wifi_ssid">WiFi network SSID</string>
     <!--  Hints  -->
 
@@ -153,6 +193,11 @@
     <string name="radio_button_short_press">Short press</string>
     <string name="radio_button_long_press">Long press</string>
     <string name="radio_button_double_press">Double press</string>
+    <string name="radio_button_intent_extra_value_true">True</string>
+    <string name="radio_button_intent_extra_value_false">False</string>
+    <string name="radio_button_intent_target_activity">Activity</string>
+    <string name="radio_button_intent_target_service">Service</string>
+    <string name="radio_button_intent_target_broadcast_receiver">Broadcast receiver</string>
     <!--  Radio buttons  -->
 
     <!--  Tabs  -->
@@ -191,6 +236,7 @@
     <string name="toast_automatic_backup_failed">Automatic back up failed!</string>
     <string name="toast_screenshot_taken">Screenshot taken</string>
     <string name="toast_io_exception_shrug">IO exception ¯\\_(ツ)_/¯</string>
+    <string name="toast_incorrect_screenshot_resolution">Screenshot resolution doesn\'t match this device\'s resolution!</string>
     <string name="toast_copied_keymap_uid_to_clipboard">Copied key map UUID to clipboard</string>
     <string name="toast_triggered_keymap">You\'ve triggered a mapping</string>
     <string name="toast_copied_log">Copied log</string>
@@ -213,6 +259,13 @@
     <string name="extra_label_action_multiplier_with_repeat">How many times every repeat</string>
     <string name="extra_label_delay_before_next_action">Delay before next action (ms)</string>
     <string name="extra_label_hold_down_duration">Hold down duration (ms)</string>
+    <string name="extra_label_swipe_duration">Swipe duration (ms)</string>
+    <string name="extra_label_swipe_finger_count">Finger count</string>
+    <string name="extra_label_swipe_select_start_end_label">Coordinates to set with screenshot</string>
+    <string name="extra_label_swipe_select_start_end_start">Start</string>
+    <string name="extra_label_swipe_select_start_end_end">End</string>
+    <string name="extra_label_pinch_duration">Pinch duration (ms)</string>
+    <string name="extra_label_pinch_finger_count">Finger count</string>
     <!-- Extra labels -->
 
     <!-- Constraints -->
@@ -326,6 +379,7 @@
     <string name="url_shizuku_setting_benefits" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/shizuku-benefits</string>
     <string name="url_settings_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/settings</string>
     <string name="url_report_issues_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/report-issues</string>
+    <string name="url_intent_set_flags_help" translatable="false">https://developer.android.com/reference/android/content/Intent#setFlags(int)</string>
     <string name="url_github_repo" translatable="false">https://github.com/sds100/KeyMapper</string>
     <string name="url_rate" translatable="false">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper</string>
     <string name="url_website" translatable="false">https://keymapperorg.github.io/KeyMapper</string>
@@ -417,6 +471,7 @@
     <string name="button_config_intent_set_flags">Set flags</string>
     <string name="button_copy_log">Copy</string>
     <string name="button_slider_repeat_no_limit">No limit</string>
+    <string name="button_choose_sound_file">Choose sound file</string>
     <string name="button_edit_action">Edit action</string>
     <string name="button_replace_action">Replace action</string>
     <!-- Button titles -->
@@ -426,7 +481,7 @@
     <string name="dialog_title_create_shortcut_title">Create shortcut title</string>
     <string name="dialog_title_root_prompt">Root permission needed!</string>
     <string name="dialog_title_flags">More</string>
-    <string name="dialog_title_pick_stream">Choose volume stream</string>
+    <string name="dialog_title_pick_stream">Pick stream</string>
     <string name="dialog_title_choose_flash">Choose flash</string>
     <string name="dialog_title_cant_find_accessibility_settings_page">Can\'t find the accessibility settings page</string>
     <string name="dialog_title_cant_record_trigger">Can\'t record trigger?</string>
@@ -527,16 +582,8 @@
     <string name="dialog_title_fix_dnd_trigger_error">Grant Do Not Disturb access</string>
     <string name="dialog_message_fix_dnd_trigger_error">You will be taken to your device\'s settings page to manage which apps can modify the Do Not Disturb state. This is <b>not present on some devices</b> so tap don\'t show again if you do not see Key Mapper in the list.</string>
 
-    <string name="dialog_title_choose_to_show_volume_ui">Show volume UI?</string>
-    <string name="dialog_title_choose_camera_flash">Choose camera flash</string>
-    <string name="dialog_title_choose_keyboard">Choose keyboard</string>
-    <string name="dialog_title_choose_wifi_network">Choose network</string>
-    <string name="dialog_title_choose_device">Choose device</string>
-    <string name="dialog_title_choose_sound">Choose sound</string>
-    <string name="title_choose_extra_type">Choose the type of the extra</string>
-    <string name="dialog_title_choose_intent_flags">Choose intent flags</string>
-
     <string name="pos_yes">Yes</string>
+    <string name="pos_confirm">Confirm</string>
     <string name="pos_done">Done</string>
     <string name="pos_opt_in">Opt in</string>
     <string name="pos_grant_write_secure_settings_guide">Guide</string>
@@ -552,7 +599,6 @@
     <string name="pos_restart">Restart</string>
     <string name="pos_never_show_again">Never show again</string>
     <string name="pos_go_to_dont_kill_my_app">Open online guide</string>
-    <string name="pos_confirm">Confirm</string>
 
     <string name="neg_turn_off">Turn off</string>
     <string name="neg_stay_out">Stay out</string>
@@ -854,13 +900,19 @@
     <string name="showcase_grant_shizuku_permission_denied_message">It looks like you have Shizuku installed. It is recommended to grant Key Mapper permission to use Shizuku so that Key Mapper can do more things without user input. For example input button presses without you having to use the \'Key Mapper keyboard\'. Tap \'more info\' to read all the benefits. Tap \'grant\' to grant the permission.</string>
 
     <string name="showcase_grant_shizuku_permission_granted_title">Shizuku permission granted!</string>
-    <string name="showcase_grant_shizuku_permission_granted_message">You have granted Key Mapper Shizuku permission successfully!</string>
+    <string name="showcase_grant_shizuku_permission_granted_message">You have granted Key Mapper Shizuku permission successfully.</string>
     <string name="showcase_more_shizuku_info">More info</string>
     <string name="showcase_request_shizuku_permission">Grant</string>
 
     <string name="showcase_shizuku_not_started_title">Shizuku is not started</string>
     <string name="showcase_shizuku_not_started_message">Shizuku must be started before you grant Key Mapper permission to use it. Tap \'Launch Shizuku\' to open the Shizuku app so that you can start it.</string>
     <string name="showcase_shizuku_launch_shizuku_app">Launch Shizuku</string>
+
+    <string name="showcase_notification_permission_denied_title">Grant notification permission</string>
+    <string name="showcase_notification_permission_denied_message">Some features of Key Mapper require permission to post notifications, for example, there is a notification to pause/resume your key maps. Tap \'grant\' to give permission.</string>
+    <string name="showcase_notification_permission_granted_title">Notifications can be shown!</string>
+    <string name="showcase_notification_permission_granted_message">You have successfully granted Key Mapper permission to show notifications.</string>
+    <string name="showcase_notification_permission_button">Grant</string>
 
     <!-- Showcase -->
 
@@ -873,7 +925,6 @@
     <string name="stream_ring">Ring</string>
     <string name="stream_system">System</string>
     <string name="stream_voice_call">Voice call</string>
-    <string name="stream_default">Default</string>
 
     <string name="ringer_mode_normal">Ring</string>
     <string name="ringer_mode_vibrate">Vibrate</string>
@@ -999,7 +1050,6 @@
     <string name="error_duplicate_constraint">You can\'t have duplicate constraints!</string>
     <string name="error_fingerprint_gesture_map_constraint_exists">This gesture already has this constraint!</string>
     <string name="error_cant_be_empty">Can\'t be empty!</string>
-    <string name="error_cant_be_blank">Can\'t only contain whitespace!</string>
     <string name="error_this_is_unsupported">This is unsupported. :(</string>
     <string name="error_device_not_found">Device not found!</string>
     <string name="error_failed_to_pick_file">Failed to pick file</string>
@@ -1049,6 +1099,14 @@
     <string name="error_access_fine_location_permission_denied">Denied permission to read fine location!</string>
     <string name="error_answer_end_phone_call_permission_denied">Denied permission to answer and end phone calls!</string>
     <string name="error_find_nearby_devices_permission_denied">Denied permission to see paired Bluetooth devices!</string>
+    <string name="error_notifications_permission_denied">Denied permission to show notifications!</string>
+    <string name="error_pinch_screen_must_be_two_or_more_fingers">Must be 2 or more!</string>
+    <string name="error_pinch_screen_must_be_ten_or_less_fingers">Must be %d or less!</string>
+    <string name="error_pinch_screen_duration_must_be_more_than_zero">Must be greater than 0!</string>
+    <string name="error_pinch_screen_distance_too_low">Must be greater than 0!</string>
+    <string name="error_swipe_screen_fingercount_must_be_more_than_zero">Must be greater than 0!</string>
+    <string name="error_swipe_screen_duration_must_be_more_than_zero">Must be greater than 0!</string>
+    <string name="error_swipe_screen_must_be_ten_or_less_fingers">Must be %d or less!</string>
     <!-- Error messages -->
 
     <!-- action labels -->
@@ -1061,16 +1119,15 @@
     <string name="action_disable_bluetooth">Disable Bluetooth</string>
 
     <string name="action_volume_up">Volume up</string>
-    <string name="action_volume_up_stream">Increase %s volume</string>
     <string name="action_volume_down">Volume down</string>
-    <string name="action_volume_down_stream">Decrease %s volume</string>
     <string name="action_volume_mute">Mute volume</string>
-    <string name="action_volume_mute_stream">Mute %s volume</string>
     <string name="action_toggle_mute">Toggle mute</string>
-    <string name="action_toggle_mute_stream">Toggle mute %s volume</string>
     <string name="action_volume_unmute">Unmute volume</string>
-    <string name="action_volume_unmute_stream">Unmute %s volume</string>
     <string name="action_volume_show_dialog">Show volume dialog</string>
+    <string name="action_increase_stream">Increase stream</string>
+    <string name="action_increase_stream_formatted">Increase %s stream</string>
+    <string name="action_decrease_stream">Decrease stream</string>
+    <string name="action_decrease_stream_formatted">Decrease %s stream</string>
     <string name="action_cycle_ringer_mode">Cycle through ringer modes (Ring, Vibrate, Silent)</string>
     <string name="action_cycle_vibrate_ring">Cycle through ringer modes (Ring, Vibrate)</string>
     <string name="action_change_ringer_mode">Change ringer mode</string>
@@ -1129,10 +1186,12 @@
     <string name="action_fast_forward">Fast forward</string>
     <string name="action_fast_forward_package">Fast forward for an app</string>
     <string name="action_fast_forward_package_formatted">Fast forward for %s</string>
+    <string name="action_fast_forward_message">Not all media apps support fast forwarding. E.g Google Play Music.</string>
 
     <string name="action_rewind">Rewind</string>
     <string name="action_rewind_package">Rewind for an app</string>
     <string name="action_rewind_package_formatted">Rewind for %s</string>>
+    <string name="action_rewind_message">Not all media apps support rewinding. E.g Google Play Music.</string>
 
     <string name="action_go_back">Go back</string>
     <string name="action_go_home">Go home</string>
@@ -1161,13 +1220,17 @@
     <string name="action_lock_device">Lock device</string>
 
     <string name="action_secure_lock_device">Secure lock device</string>
+    <string name="action_secure_lock_device_message">You will only be able to log back in with your PIN. The fingerprint scanner and face unlock will be disabled. This is the only reliable way I have found to lock non-rooted devices before Android Pie 9.0.</string>
 
     <string name="action_power_on_off_device">Sleep/wake device</string>
+    <string name="action_power_on_off_device_message">You must turn on the option to detect the trigger when the screen is off!</string>
 
     <string name="action_consume_keyevent">Do nothing</string>
 
     <string name="action_move_to_end_of_text">Move cursor to the end</string>
+    <string name="action_move_to_end_of_text_message">This action may not work as intended in some apps.</string>
     <string name="action_toggle_keyboard">Toggle keyboard</string>
+    <string name="action_toggle_keyboard_message">This action will only work if you have tapped on an input field where the keyboard is supposed to be shown.</string>
     <string name="action_show_keyboard">Show keyboard</string>
     <string name="action_hide_keyboard">Hide keyboard</string>
     <string name="action_show_keyboard_picker">Show keyboard picker</string>
@@ -1193,6 +1256,8 @@
     <string name="action_input_key_event">Input key event</string>
 
     <string name="action_tap_screen">Tap screen</string>
+    <string name="action_swipe_screen">Swipe screen</string>
+    <string name="action_pinch_screen">Pinch screen</string>
     <string name="action_input_text">Input text</string>
     <string name="action_open_url">Open URL</string>
     <string name="action_send_intent">Send intent</string>
@@ -1221,6 +1286,25 @@
     <!-- action category labels -->
 
     <!--  Intent action type strings  -->
+    <string name="intent_type_bool_header">Boolean</string>
+    <string name="intent_type_bool_array_header">Boolean array</string>
+    <string name="intent_type_int_header">Integer</string>
+    <string name="intent_type_int_array_header">Integer array</string>
+    <string name="intent_type_string_header">String</string>
+    <string name="intent_type_string_array_header">String array</string>
+    <string name="intent_type_long_header">Long</string>
+    <string name="intent_type_long_array_header">Long array</string>
+    <string name="intent_type_byte_header">Byte</string>
+    <string name="intent_type_byte_array_header">Byte array</string>
+    <string name="intent_type_double_header">Double</string>
+    <string name="intent_type_double_array_header">Double array</string>
+    <string name="intent_type_char_header">Char</string>
+    <string name="intent_type_char_array_header">Char array</string>
+    <string name="intent_type_float_header">Float</string>
+    <string name="intent_type_float_array_header">Float array</string>
+    <string name="intent_type_short_header">Short</string>
+    <string name="intent_type_short_array_header">Short array</string>
+
     <string name="intent_type_bool_example">Can only be \"true\" or \"false\"</string>
     <string name="intent_type_bool_array_example">A comma-separated list of "true" and "false". E.g true,false,true</string>
     <string name="intent_type_int_example">A valid Integer in the Java programming language.</string>
@@ -1241,6 +1325,7 @@
     <string name="intent_type_short_example">A valid Short in the Java programming language. E.g 2342</string>
     <string name="intent_type_short_array_example">A comma-separated list of valid Shorts in the Java programming language. E.g 3242,12354</string>
 
+    <string name="intent_flags_example">The flags for an Intent are stored as bit flags. These flags alter how the Intent is handled. If this is blank for an Activity Intent then Key Mapper will use FLAG_ACTIVITY_NEW_TASK by default. For much more information tap \'docs\' to see the Android developers documentation.</string>
     <!--  Intent action type strings  -->
 
     <!--  Tap targets  -->
@@ -1270,17 +1355,17 @@
     <string name="about_team_sds100_role">Developer</string>
     <string name="about_team_sds100_url" translatable="false">https://github.com/sds100</string>
 
-    <string name="about_team_jambl3r_name" translatable="false">Jambl3r</string>
+    <string name="about_team_jambl3r_name" translatable="false">Jack Ambler (jambl3r)</string>
     <string name="about_team_jambl3r_role">Community moderator/support</string>
-    <string name="about_team_jambl3r_url" translatable="false">https://gitlab.com/jambl3r</string>
+    <string name="about_team_jambl3r_url" translatable="false">https://linkedin.com/in/jambl3r</string>
 
     <string name="about_team_gl513_name" translatable="false">GL513</string>
     <string name="about_team_gl513_role">Community moderator/support</string>
     <string name="about_team_gl513_url" translatable="false">https://gl513.github.io/</string>
 
-    <string name="about_team_kekero_name" translatable="false">Katie Frogs</string>
+    <string name="about_team_kekero_name" translatable="false">Katie (kekero)</string>
     <string name="about_team_kekero_role">Translator (Polish)</string>
-    <string name="about_team_kekero_url" translatable="false">https://github.com/KatieFrogs</string>
+    <string name="about_team_kekero_url" translatable="false">https://github.com/LoveEevee</string>
 
     <string name="about_team_trollserver_name" translatable="false">HowToWhy</string>
     <string name="about_team_trollserver_url" translatable="false">https://youtube.com/channel/UCljg1FH1B_ju2D_NfqAYjDw</string>
@@ -1290,161 +1375,4 @@
     <string name="about_team_bydario_url" translatable="false">https://github.com/bydariogamer</string>
     <string name="about_team_bydario_role">Translator (Spanish)</string>
     <!--  About  -->
-
-    <!-- Choose action screen -->
-    <string name="choose_action_search_content_description">Search</string>
-    <string name="choose_action_back_content_description">Go back</string>
-    <string name="clear_search_query_content_description">Clear</string>
-    <string name="choose_action_choose_keyboard_dialog_title">Choose a keyboard</string>
-    <string name="choose_action_text_action_title">Create text action</string>
-    <string name="choose_action_text_action_label">Text to input</string>
-    <string name="choose_action_text_empty_error">Must not be empty!</string>
-    <string name="choose_action_url_action_title">Create url action</string>
-    <string name="choose_action_url_action_label">Url to open</string>
-    <string name="choose_action_url_empty_error">Must not be empty!</string>
-    <string name="choose_action_phone_action_title">Create phone call action</string>
-    <string name="choose_action_phone_action_label">Phone number to call</string>
-    <string name="choose_action_phone_empty_error">Must not be empty!</string>
-    <string name="choose_action_cycle_orientations_dialog_title">Choose which orientations to cycle through</string>
-    <string name="choose_action_config_volume_up_action_dialog_title">Create volume up action</string>
-    <string name="choose_action_config_volume_down_action_dialog_title">Create volume down action</string>
-    <string name="choose_action_config_volume_unmute_action_dialog_title">Create unmute volume action</string>
-    <string name="choose_action_config_volume_mute_action_dialog_title">Create mute volume action</string>
-    <string name="choose_action_config_volume_toggle_mute_action_dialog_title">Create toggle mute action</string>
-    <string name="choose_action_config_show_volume_ui_checkbox">Show volume dialog</string>
-    <string name="choose_action_config_volume_stream_header">Volume stream to change</string>
-    <string name="choose_action_choose_ringer_mode_dialog_title">Choose ringer mode</string>
-    <string name="choose_action_choose_dnd_mode_dialog_title">Choose do not disturb mode</string>
-    <string name="choose_action_choose_enable_dnd_mode_dialog_title">Choose do not disturb mode to enable</string>
-    <string name="choose_action_choose_toggle_dnd_mode_dialog_title">Choose do not disturb mode to toggle</string>
-    <string name="choose_action_choose_enable_flashlight_dialog_title">Choose flashlight to enable</string>
-    <string name="choose_action_choose_disable_flashlight_dialog_title">Choose flashlight to disable</string>
-    <string name="choose_action_choose_toggle_flashlight_dialog_title">Choose flashlight to toggle</string>
-    <string name="choose_action_fast_forward_warning">Not all media apps support fast forwarding. E.g Google Play Music.</string>
-    <string name="choose_action_rewind_warning">Not all media apps support rewinding. E.g Google Play Music.</string>
-    <string name="choose_action_warning_title">Warning</string>
-    <string name="choose_action_move_to_end_of_text_warning">This action may not work as intended in some apps.</string>
-    <string name="choose_action_toggle_keyboard_warning">This action will only work if you have tapped on an input field where the keyboard is supposed to be shown.</string>
-    <string name="choose_action_secure_lock_device_warning">You will only be able to log back in with your PIN. The fingerprint scanner and face unlock will be disabled. This is the only reliable way I have found to lock non-rooted devices before Android Pie 9.0.</string>
-    <string name="choose_action_power_on_off_device_warning">You must turn on the option to detect the trigger when the screen is off!</string>
-    <!-- Choose action screen -->
-
-    <!-- Choose app shortcut screen -->
-    <string name="choose_app_shortcut_choose_name">Create shortcut name</string>
-    <!-- Choose app shortcut screen -->
-
-    <!-- Create tap screen action screen -->
-    <string name="create_tap_screen_action_empty_error">Must not be empty!</string>
-    <string name="create_tap_screen_action_not_an_integer_error">Must be an integer!</string>
-    <string name="create_tap_screen_action_x_label" translatable="false">X</string>
-    <string name="create_tap_screen_action_y_label" translatable="false">Y</string>
-    <string name="create_tap_screen_action_explanation">These coordinates are only correct when your display is in the same orientation as the screenshot! This action will cancel any touches or gestures you are doing on the screen.\n\nIf you need help finding the coordinates of a point on your screen take a screenshot and then tap on the screenshot where you want this action to press.</string>
-    <string name="create_tap_screen_action_incorrect_resolution_error">Screenshot resolution must match the display\'s resolution!</string>
-    <string name="create_tap_screen_action_description_label">Description (optional)</string>
-    <string name="create_tap_screen_action_done_content_description">Done picking coordinate</string>
-    <!-- Create tap screen action screen -->
-
-    <!-- Choose sound file action screen -->
-    <string name="choose_sound_file_caption">The sound file will be copied to Key Mapper\'s private data folder, which means your actions will still work even if the file is moved or deleted. It will also be backed up with your key maps in the zip folder.
-    You can delete saved sound files in the settings.</string>
-    <string name="choose_sound_file_button">Choose new sound file</string>
-    <string name="choose_sound_file_description_title">Create sound name</string>
-    <string name="choose_sound_file_description_label">Sound name</string>
-    <!-- Choose sound file action screen -->
-
-    <!-- Config key event screen -->
-    <string name="config_key_event_screen_done_content_description">Done configuring key event action</string>
-    <string name="config_key_event_screen_key_code_title">Key code</string>
-    <string name="config_key_event_screen_choose_key_code_button">Choose key code</string>
-    <string name="config_key_event_screen_devices_title">Device (optional)</string>
-    <string name="config_key_event_screen_devices_refresh_content_description">Refresh devices</string>
-    <string name="config_key_event_screen_devices_explanation">"Some apps will only respond to key events if they appear to come from a specific device, for example a game controller. With this option Key Mapper can make it look like the key event came from a real device. The device must be connected for this to work."</string>
-    <string name="config_key_event_screen_modifiers_title">Modifiers (optional)</string>
-    <string name="create_key_event_screen_empty_error">Must not be empty!</string>
-    <string name="create_key_event_screen_not_an_integer_error">Must be an integer!</string>
-    <string name="create_key_event_screen_no_device">None</string>
-    <!-- Config key event screen -->
-
-    <!-- Config intent screen -->
-    <string name="config_intent_screen_done_content_description">Done configuring intent</string>
-    <string name="config_intent_screen_description_label">Description for Key Mapper (required)</string>
-    <string name="config_intent_screen_empty_description_error">Must not be empty!</string>
-    <string name="config_intent_screen_activity_target">Activity</string>
-    <string name="config_intent_screen_service_target">Service</string>
-    <string name="config_intent_screen_broadcast_receiver_target">Broadcast receiver</string>
-    <string name="config_intent_screen_delete_category_content_description">Delete category</string>
-    <string name="config_intent_screen_edit_category_content_description">Edit category</string>
-    <string name="config_intent_screen_add_category_button">Add category</string>
-    <string name="config_intent_screen_add_category_dialog_title">Add category</string>
-    <string name="config_intent_screen_edit_category_dialog_title">Edit category</string>
-    <string name="config_intent_screen_empty_category_error">Must not be empty!</string>
-    <string name="config_intent_screen_category_exists_error">This category already exists!</string>
-    <string name="config_intent_screen_category_name_label">Category name</string>
-    <string name="config_intent_screen_category_header">Categories</string>
-    
-    <string name="config_intent_screen_extras_header">Extras</string>
-    <string name="config_intent_screen_add_extra_button">Add extra</string>
-    <string name="config_intent_screen_add_extra_dialog_title">Add extra</string>
-    <string name="config_intent_screen_edit_extra_dialog_title">Edit extra</string>
-    <string name="config_intent_screen_edit_extra_content_description">Edit extra</string>
-    <string name="config_intent_screen_delete_extra_content_description">Delete extra</string>
-    <string name="config_intent_screen_empty_extra_key_error">Must not be empty!</string>
-    <string name="config_intent_screen_extra_exists_error">An extra with this key already exists!</string>
-    <string name="config_intent_screen_empty_extra_value_error">Must not be empty!</string>
-    <string name="config_intent_screen_extra_name_label">Name</string>
-    <string name="config_intent_screen_extra_boolean_true">True</string>
-    <string name="config_intent_screen_extra_boolean_false">False</string>
-    <string name="config_intent_screen_extra_boolean_title">Boolean</string>
-    <string name="config_intent_screen_extra_boolean_array_title">Boolean array</string>
-    <string name="config_intent_screen_extra_boolean_array_incorrect_format_error">Must be formatted correctly!</string>
-    <string name="config_intent_screen_extra_boolean_array_help">Formatting should be a comma separated list of "true" and "false". Spaces are optional. E.g "true, false, true".</string>
-    <string name="config_intent_screen_extra_integer_title">Integer</string>
-    <string name="config_intent_screen_extra_integer_array_title">Integer array</string>
-    <string name="config_intent_screen_extra_integer_incorrect_format_error">Must be an integer!</string>
-    <string name="config_intent_screen_extra_integer_array_help">Formatting should be a comma separated list of integers. Spaces are optional. E.g "1, 2, -123".</string>
-    <string name="config_intent_screen_extra_string_title">String</string>
-    <string name="config_intent_screen_extra_string_array_title">String array</string>
-    <string name="config_intent_screen_extra_string_array_help">Formatting should be a comma separated list of strings. Spaces are optional. E.g "abc, key mapper, xyz".</string>
-    <string name="config_intent_screen_extra_long_title">Long</string>
-    <string name="config_intent_screen_extra_long_array_title">Long array</string>
-    <string name="config_intent_screen_extra_long_array_help">Formatting should be a comma separated list of longs. Spaces are optional. E.g "12342342, 2234, -13414".</string>
-    <string name="config_intent_screen_extra_long_incorrect_format_error">Must be a long!</string>
-    <string name="config_intent_screen_extra_byte_title">Byte</string>
-    <string name="config_intent_screen_extra_byte_incorrect_format_error">Must be a byte!</string>
-    <string name="config_intent_screen_extra_byte_array_title">Byte array</string>
-    <string name="config_intent_screen_extra_byte_array_help">Formatting should be a comma separated list of bytes. Spaces are optional. E.g "1, 3, 250".</string>
-    <string name="config_intent_screen_extra_double_title">Double</string>
-    <string name="config_intent_screen_extra_double_array_title">Double array</string>
-    <string name="config_intent_screen_extra_double_incorrect_format_error">Must be a double!</string>
-    <string name="config_intent_screen_extra_double_array_help">Formatting should be a comma separated list of doubles with decimal points as \'.\'. Spaces are optional. E.g "1.1, 2.2, -0.5".</string>
-    <string name="config_intent_screen_extra_char_title">Char</string>
-    <string name="config_intent_screen_extra_char_array_title">Char array</string>
-    <string name="config_intent_screen_extra_char_array_help">Formatting should be a comma separated list of characters. Spaces are optional. E.g "a, b, c".</string>
-    <string name="config_intent_screen_extra_float_title">Float</string>
-    <string name="config_intent_screen_extra_float_array_title">Float array</string>
-    <string name="config_intent_screen_extra_float_array_help">Formatting should be a comma separated list of floats with decimal points as \'.\'. Spaces are optional. E.g "0.1, 1.2, 4.4".</string>
-    <string name="config_intent_screen_extra_float_incorrect_format_error">Must be a float!</string>
-    <string name="config_intent_screen_extra_short_title">Short</string>
-    <string name="config_intent_screen_extra_short_array_title">Short array</string>
-    <string name="config_intent_screen_extra_short_array_help">Formatting should be a comma separated list of shorts. Spaces are optional. E.g "1, 3, 250".</string>
-    <string name="config_intent_screen_extra_short_incorrect_format_error">Must be a short!</string>
-    <string name="config_intent_screen_extra_value_label">Value</string>
-
-    <string name="config_intent_screen_data_header">Data</string>
-    <string name="config_intent_screen_package_header">Package</string>
-    <string name="config_intent_screen_class_header">Class</string>
-    <string name="config_intent_screen_choose_component_button">Choose component</string>
-    <string name="hint_intent_extra_name">Name</string>
-    <string name="config_intent_screen_flags_header">Flags</string>
-    <string name="config_intent_screen_flags_help_content_description">Show flags explanation</string>
-    <string name="config_intent_screen_flags_help_dialog_title">Flags explanation</string>
-    <string name="config_intent_screen_flags_help_dialog_text_1">The flags for an Intent are stored as bit flags. These flags alter how the Intent is handled. If this is blank for an Activity Intent then Key Mapper will use FLAG_ACTIVITY_NEW_TASK by default. For more info view the</string>
-    <string name="config_intent_screen_flags_help_dialog_text_2">&#160;docs here</string>
-    <string name="config_intent_screen_flags_help_dialog_text_3">.</string>
-    <string name="url_intent_set_flags_help" translatable="false">https://developer.android.com/reference/android/content/Intent#setFlags(int)</string>
-    <string name="config_intent_screen_choose_flags_button">Choose flags</string>
-    <string name="config_intent_screen_action_label">Action</string>
-    <string name="config_intent_screen_flags_not_a_number_error">Must be an integer!</string>
-    <string name="config_intent_screen_choose_flags_dialog_title">Choose flags</string>
-    <!-- Config intent screen -->
 </resources>
