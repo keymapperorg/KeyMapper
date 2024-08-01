@@ -21,7 +21,7 @@ import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.util.Error
-import io.github.sds100.keymapper.util.Event
+import io.github.sds100.keymapper.util.ServiceEvent
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.onFailure
@@ -204,7 +204,7 @@ class AndroidInputMethodAdapter(
         var failed = true
 
         if (failed && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && serviceAdapter.state.value == ServiceState.ENABLED) {
-            serviceAdapter.send(Event.ChangeIme(imeId)).onSuccess {
+            serviceAdapter.send(ServiceEvent.ChangeIme(imeId)).onSuccess {
                 failed = false
             }
         }

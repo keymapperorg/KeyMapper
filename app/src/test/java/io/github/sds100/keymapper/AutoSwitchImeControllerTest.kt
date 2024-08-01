@@ -9,7 +9,7 @@ import io.github.sds100.keymapper.system.inputmethod.AutoSwitchImeController
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.popup.PopupMessageAdapter
-import io.github.sds100.keymapper.util.Event
+import io.github.sds100.keymapper.util.ServiceEvent
 import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -133,7 +133,7 @@ class AutoSwitchImeControllerTest {
             mockPopupMessageAdapter,
             mockResourceProvider,
             accessibilityServiceAdapter = mock {
-                on { eventReceiver }.then { MutableSharedFlow<Event>() }
+                on { eventReceiver }.then { MutableSharedFlow<ServiceEvent>() }
             },
         )
     }

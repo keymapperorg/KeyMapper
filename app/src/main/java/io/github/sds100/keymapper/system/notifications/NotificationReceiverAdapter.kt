@@ -16,7 +16,7 @@ import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.util.Error
-import io.github.sds100.keymapper.util.Event
+import io.github.sds100.keymapper.util.ServiceEvent
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
 import kotlinx.coroutines.CoroutineScope
@@ -36,8 +36,8 @@ class NotificationReceiverAdapter(
     private val ctx: Context = context.applicationContext
     override val state: MutableStateFlow<ServiceState> = MutableStateFlow(ServiceState.DISABLED)
 
-    override val eventReceiver: MutableSharedFlow<Event> = MutableSharedFlow()
-    val eventsToService = MutableSharedFlow<Event>()
+    override val eventReceiver: MutableSharedFlow<ServiceEvent> = MutableSharedFlow()
+    val eventsToService = MutableSharedFlow<ServiceEvent>()
 
     init {
         // use job scheduler because there is there is a much shorter delay when the app is in the background
@@ -63,7 +63,7 @@ class NotificationReceiverAdapter(
         }
     }
 
-    override suspend fun send(event: Event): Result<*> {
+    override suspend fun send(event: ServiceEvent): Result<*> {
         if (state.value != ServiceState.ENABLED) {
             return Error.PermissionDenied(Permission.NOTIFICATION_LISTENER)
         }

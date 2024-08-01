@@ -31,7 +31,7 @@ import org.mockito.kotlin.mock
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
-class ConfigKeyEventActionViewModelTest {
+class ConfigKeyServiceEventActionViewModelTest {
 
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()

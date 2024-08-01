@@ -44,7 +44,7 @@ import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import io.github.sds100.keymapper.system.volume.VolumeStream
 import io.github.sds100.keymapper.util.Error
-import io.github.sds100.keymapper.util.Event
+import io.github.sds100.keymapper.util.ServiceEvent
 import io.github.sds100.keymapper.util.InputEventType
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
@@ -760,7 +760,7 @@ class PerformActionsUseCaseImpl(
 
             ActionData.DismissAllNotifications -> {
                 coroutineScope.launch {
-                    notificationReceiverAdapter.send(Event.DismissAllNotifications)
+                    notificationReceiverAdapter.send(ServiceEvent.DismissAllNotifications)
                 }
 
                 result = null
@@ -768,7 +768,7 @@ class PerformActionsUseCaseImpl(
 
             ActionData.DismissLastNotification -> {
                 coroutineScope.launch {
-                    notificationReceiverAdapter.send(Event.DismissLastNotification)
+                    notificationReceiverAdapter.send(ServiceEvent.DismissLastNotification)
                 }
 
                 result = null

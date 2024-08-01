@@ -25,7 +25,7 @@ import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
-import io.github.sds100.keymapper.util.Event
+import io.github.sds100.keymapper.util.ServiceEvent
 import io.github.sds100.keymapper.util.firstBlocking
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -57,8 +57,8 @@ import timber.log.Timber
 class AccessibilityServiceController(
     private val coroutineScope: CoroutineScope,
     private val accessibilityService: IAccessibilityService,
-    private val inputEvents: SharedFlow<Event>,
-    private val outputEvents: MutableSharedFlow<Event>,
+    private val inputEvents: SharedFlow<ServiceEvent>,
+    private val outputEvents: MutableSharedFlow<ServiceEvent>,
     private val detectConstraintsUseCase: DetectConstraintsUseCase,
     private val performActionsUseCase: PerformActionsUseCase,
     private val detectKeyMapsUseCase: DetectKeyMapsUseCase,
@@ -219,9 +219,9 @@ class AccessibilityServiceController(
             .drop(1) // Don't send it when collecting initially
             .onEach { isHidden ->
                 if (isHidden) {
-                    outputEvents.emit(Event.OnHideKeyboardEvent)
+                    outputEvents.emit(ServiceEvent.OnHideKeyboardEvent)
                 } else {
-                    outputEvents.emit(Event.OnShowKeyboardEvent)
+                    outputEvents.emit(ServiceEvent.OnShowKeyboardEvent)
                 }
             }.launchIn(coroutineScope)
 
@@ -314,7 +314,7 @@ class AccessibilityServiceController(
                 Timber.d("Recorded key ${KeyEvent.keyCodeToString(keyCode)}, $detailedLogInfo")
                 coroutineScope.launch {
                     outputEvents.emit(
-                        Event.RecordedTriggerKey(
+                        ServiceEvent.RecordedTriggerKey(
                             keyCode,
                             device,
                         ),
@@ -413,12 +413,12 @@ class AccessibilityServiceController(
         if (focussedNode?.isEditable == true && focussedNode.isFocused) {
             Timber.d("Got input focus")
             coroutineScope.launch {
-                outputEvents.emit(Event.OnInputFocusChange(isFocussed = true))
+                outputEvents.emit(ServiceEvent.OnInputFocusChange(isFocussed = true))
             }
         } else {
             Timber.d("Lost input focus")
             coroutineScope.launch {
-                outputEvents.emit(Event.OnInputFocusChange(isFocussed = false))
+                outputEvents.emit(ServiceEvent.OnInputFocusChange(isFocussed = false))
             }
         }
     }
@@ -431,15 +431,15 @@ class AccessibilityServiceController(
         triggerKeyMapFromOtherAppsController.onDetected(uid)
     }
 
-    private fun onEventFromUi(event: Event) {
+    private fun onEventFromUi(event: ServiceEvent) {
         Timber.d("Service received event from UI: $event")
         when (event) {
-            is Event.StartRecordingTrigger ->
+            is ServiceEvent.StartRecordingTrigger ->
                 if (!recordingTrigger) {
                     recordingTriggerJob = recordTriggerJob()
                 }
 
-            is Event.StopRecordingTrigger -> {
+            is ServiceEvent.StopRecordingTrigger -> {
                 val wasRecordingTrigger = recordingTrigger
 
                 recordingTriggerJob?.cancel()
@@ -447,20 +447,20 @@ class AccessibilityServiceController(
 
                 if (wasRecordingTrigger) {
                     coroutineScope.launch {
-                        outputEvents.emit(Event.OnStoppedRecordingTrigger)
+                        outputEvents.emit(ServiceEvent.OnStoppedRecordingTrigger)
                     }
                 }
             }
 
-            is Event.TestAction -> performActionsUseCase.perform(event.action)
+            is ServiceEvent.TestAction -> performActionsUseCase.perform(event.action)
 
-            is Event.Ping -> coroutineScope.launch { outputEvents.emit(Event.Pong(event.key)) }
-            is Event.HideKeyboard -> accessibilityService.hideKeyboard()
-            is Event.ShowKeyboard -> accessibilityService.showKeyboard()
-            is Event.ChangeIme -> accessibilityService.switchIme(event.imeId)
-            is Event.DisableService -> accessibilityService.disableSelf()
+            is ServiceEvent.Ping -> coroutineScope.launch { outputEvents.emit(ServiceEvent.Pong(event.key)) }
+            is ServiceEvent.HideKeyboard -> accessibilityService.hideKeyboard()
+            is ServiceEvent.ShowKeyboard -> accessibilityService.showKeyboard()
+            is ServiceEvent.ChangeIme -> accessibilityService.switchIme(event.imeId)
+            is ServiceEvent.DisableService -> accessibilityService.disableSelf()
 
-            is Event.TriggerKeyMap -> triggerKeyMapFromIntent(event.uid)
+            is ServiceEvent.TriggerKeyMap -> triggerKeyMapFromIntent(event.uid)
             else -> Unit
         }
     }
@@ -469,13 +469,13 @@ class AccessibilityServiceController(
         repeat(RECORD_TRIGGER_TIMER_LENGTH) { iteration ->
             if (isActive) {
                 val timeLeft = RECORD_TRIGGER_TIMER_LENGTH - iteration
-                outputEvents.emit(Event.OnIncrementRecordTriggerTimer(timeLeft))
+                outputEvents.emit(ServiceEvent.OnIncrementRecordTriggerTimer(timeLeft))
 
                 delay(1000)
             }
         }
 
-        outputEvents.emit(Event.OnStoppedRecordingTrigger)
+        outputEvents.emit(ServiceEvent.OnStoppedRecordingTrigger)
     }
 
     private fun requestFingerprintGestureDetection() {

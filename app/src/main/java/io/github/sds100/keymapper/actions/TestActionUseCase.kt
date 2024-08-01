@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.actions
 
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
-import io.github.sds100.keymapper.util.Event
+import io.github.sds100.keymapper.util.ServiceEvent
 import io.github.sds100.keymapper.util.Result
 
 /**
@@ -12,7 +12,7 @@ class TestActionUseCaseImpl(
     private val serviceAdapter: ServiceAdapter,
 ) : TestActionUseCase {
     override suspend fun invoke(action: ActionData): Result<*> =
-        serviceAdapter.send(Event.TestAction(action))
+        serviceAdapter.send(ServiceEvent.TestAction(action))
 }
 
 interface TestActionUseCase {

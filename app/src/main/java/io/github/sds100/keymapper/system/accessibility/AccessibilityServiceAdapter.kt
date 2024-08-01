@@ -16,7 +16,7 @@ import io.github.sds100.keymapper.system.SettingsUtils
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.util.Error
-import io.github.sds100.keymapper.util.Event
+import io.github.sds100.keymapper.util.ServiceEvent
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.onFailure
@@ -41,9 +41,9 @@ class AccessibilityServiceAdapter(
 ) : ServiceAdapter {
 
     private val ctx = context.applicationContext
-    override val eventReceiver = MutableSharedFlow<Event>()
+    override val eventReceiver = MutableSharedFlow<ServiceEvent>()
 
-    val eventsToService = MutableSharedFlow<Event>()
+    val eventsToService = MutableSharedFlow<ServiceEvent>()
 
     override val state = MutableStateFlow(ServiceState.DISABLED)
 
@@ -77,7 +77,7 @@ class AccessibilityServiceAdapter(
         }.launchIn(coroutineScope)
     }
 
-    override suspend fun send(event: Event): Result<*> {
+    override suspend fun send(event: ServiceEvent): Result<*> {
         state.value = getState()
 
         if (state.value == ServiceState.DISABLED) {
@@ -116,11 +116,11 @@ class AccessibilityServiceAdapter(
                     delay(100)
 
                     Timber.d("Ping service to check if crashed")
-                    eventsToService.emit(Event.Ping(key))
+                    eventsToService.emit(ServiceEvent.Ping(key))
                 }
 
-                val pong: Event.Pong? = withTimeoutOrNull(2000L) {
-                    eventReceiver.first { it == Event.Pong(key) } as Event.Pong?
+                val pong: ServiceEvent.Pong? = withTimeoutOrNull(2000L) {
+                    eventReceiver.first { it == ServiceEvent.Pong(key) } as ServiceEvent.Pong?
                 }
 
                 if (pong == null) {
@@ -186,7 +186,7 @@ class AccessibilityServiceAdapter(
     private suspend fun disableServiceSuspend() {
         // disableSelf method only exists in 7.0.0+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            send(Event.DisableService).onSuccess {
+            send(ServiceEvent.DisableService).onSuccess {
                 Timber.i("Disabling service by calling disableSelf()")
 
                 return
@@ -236,19 +236,19 @@ class AccessibilityServiceAdapter(
 
         val pingJob = coroutineScope.launch {
             repeat(20) {
-                eventsToService.emit(Event.Ping(key))
+                eventsToService.emit(ServiceEvent.Ping(key))
                 delay(100)
             }
         }
 
-        val pong: Event.Pong? = withTimeoutOrNull(2000L) {
-            eventReceiver.first { it == Event.Pong(key) } as Event.Pong?
+        val pong: ServiceEvent.Pong? = withTimeoutOrNull(2000L) {
+            eventReceiver.first { it == ServiceEvent.Pong(key) } as ServiceEvent.Pong?
         }
 
         pingJob.cancel()
 
         if (pong == null) {
-            Timber.e("Accessibility service: is crashed")
+            Timber.e("Accessibility service is crashed")
         }
 
         return pong == null
