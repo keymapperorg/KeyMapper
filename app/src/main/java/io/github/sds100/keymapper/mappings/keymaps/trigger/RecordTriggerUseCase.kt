@@ -1,8 +1,8 @@
 package io.github.sds100.keymapper.mappings.keymaps.trigger
 
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
-import io.github.sds100.keymapper.util.ServiceEvent
 import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.util.ServiceEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

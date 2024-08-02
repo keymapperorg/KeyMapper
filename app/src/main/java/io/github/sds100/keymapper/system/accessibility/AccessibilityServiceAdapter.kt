@@ -16,8 +16,8 @@ import io.github.sds100.keymapper.system.SettingsUtils
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.util.Error
-import io.github.sds100.keymapper.util.ServiceEvent
 import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.util.ServiceEvent
 import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.onFailure
 import io.github.sds100.keymapper.util.onSuccess

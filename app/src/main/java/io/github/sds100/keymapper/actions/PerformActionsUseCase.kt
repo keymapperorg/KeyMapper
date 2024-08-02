@@ -44,9 +44,9 @@ import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import io.github.sds100.keymapper.system.volume.VolumeStream
 import io.github.sds100.keymapper.util.Error
-import io.github.sds100.keymapper.util.ServiceEvent
 import io.github.sds100.keymapper.util.InputEventType
 import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.util.ServiceEvent
 import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.dataOrNull
 import io.github.sds100.keymapper.util.firstBlocking

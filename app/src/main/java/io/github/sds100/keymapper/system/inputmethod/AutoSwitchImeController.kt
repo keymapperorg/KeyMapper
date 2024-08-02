@@ -8,8 +8,8 @@ import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.popup.PopupMessageAdapter
-import io.github.sds100.keymapper.util.ServiceEvent
 import io.github.sds100.keymapper.util.PrefDelegate
+import io.github.sds100.keymapper.util.ServiceEvent
 import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.getFullMessage
 import io.github.sds100.keymapper.util.onFailure
