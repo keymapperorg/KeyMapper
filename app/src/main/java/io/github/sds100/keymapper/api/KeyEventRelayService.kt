@@ -85,6 +85,12 @@ class KeyEventRelayService : Service() {
     private var callbacks: ConcurrentHashMap<String, IKeyEventRelayServiceCallback> =
         ConcurrentHashMap()
 
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        // This service is explicitly started and stopped as needed
+        // so the system shouldn't stop it automatically.
+        return START_STICKY
+    }
+
     override fun onBind(intent: Intent?): IBinder? = binderInterface.asBinder()
 
     private fun getCallerPackageName(): String? {
