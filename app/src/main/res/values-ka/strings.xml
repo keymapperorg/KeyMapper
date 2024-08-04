@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="no_action_chosen">მოქმედება არაა არჩეული</string>
+    <string name="selection_count">%d მონიშნულია</string>
+    <string name="enable">ჩართვა</string>
+    <string name="open">გახსნა</string>
+    <string name="recyclerview_placeholder">¯\\_(ツ)_/¯\n\nაქ არაფერია!</string>
+    <string name="triggers_recyclerview_placeholder">ჩაიწერე ტრიგერი!</string>
+    <string name="actions_recyclerview_placeholder">დაამატე მოქმედება!</string>
+    <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nშექმენი ღილაკების რუკა!</string>
+    <string name="action_shortcut_list_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nთქვენ არ აგირჩევიათ მოქმედება ამ მალსახმობისთვის!</string>
+    <string name="no_key_maps">თქვენ არ შეგიქმნიათ ღილაკების რუკა!</string>
+    <string name="everything_looks_good">ყველაფერი კარგად მიდის!</string>
+    <string name="warning_the_app_will_work">აპლიკაცია იმუშავებს, თუმცა ზოგ რამეს შესაძლოა შესწორება დასჭირდეს, იმის მიხედვით, თუ რას აკეთებთ.</string>
+    <string name="your_device_doesnt_support_some_actions">თქვენს მოწყობილობას არ აქვს ზოგი მოქმედების მხარდაჭერა.</string>
+    <string name="tab_unsupported_actions">მხარდაჭერის არმქონე მოქმედებები</string>
+    <string name="press_dot_dot_dot">დააჭირეთ…</string>
+    <string name="no_actions">მოქმედების გარეშე</string>
+    <string name="no_trigger">არ არის ტრიგერი</string>
+    <string name="unknown_keycode">უცნობი ღილაკის კოდი: %s</string>
+    <string name="on">ჩართული</string>
+    <string name="off">გამორთული</string>
+    <string name="follow_system">მისდიე სისტემას</string>
+    <string name="this_device">ეს მოწყობილობა</string>
+    <string name="any_device">ნებისმიერი მოწყობილობა</string>
+    <string name="trigger_device_name_not_found">ამ მოწყობილობის სახელი უცნობია</string>
+    <string name="slider_default">ნაგულისხმევი</string>
+    <string name="button_enable_accessibility_service">ჩართე წვდომის სერვისი</string>
+    <string name="show_hidden_apps">აჩვენე დამალული აპლიკაციები</string>
+    <string name="modifiers">შემცვლელები</string>
+    <string name="toggle">გადართე</string>
+    <string name="tap_coordinate_screenshot_message">მნიშვნელოვანია!!! კოორდინატები მხოლოდ მაშინაა სწორი, როცა თქვენი ეკრანი იმავე ორიენტაციაშია როგორშიც სქრინშოტი! ეს მოქმედება გათიშავს იმ შეხებებს, ან ჟესტებს რასაც ეკრანზე აკეთებთ. \n\nთუ ეკრანზე წერტილის კოორდინატების საპოვნელად დახმარება გჭირდებათ, გადაიღეთ სქრინშოტი და შემდეგ დააჭირეთ სქრინშოტზე იქ, სადაც ამ მოქმედებამ გინდათ რომ დააჭიროს.</string>
+    <string name="dont_know_device_name">მოწყობილობის სახელი უცნობია!</string>
+    <string name="tap_actions_to_fix">დააჭირეთ მოქმედებებს რათა მოაგვაროთ!</string>
+    <string name="shortcut_label_action">შეასრულე მოქმედებები</string>
+    <string name="hold_down_until_trigger_is_dot_dot_dot">დააჭირეთ სანამ ტრიგერი არის…</string>
+    <string name="from_no_device">მოწყობილობები არ არის</string>
+    <string name="intent_extras_recycler_view_placeholder">¯\\_(ツ)_/¯\n\nარანაირი დამატებები!</string>
+    <string name="content_description_fab_new_keymap">შექმენი ახალი ღილაკების რუკა</string>
+    <string name="whats_new">რა არის ახალი</string>
+    <string name="caption_action_type_key">დააჭირეთ მოწყობილობაზე ღილაკს, რომელიც გინდათ რომ შეიყვანოთ.
+            \n\nმნიშვნელოვანია!
+            ამ ღილაკის მოქმედებად შეყვანა იმუშავებს მხოლოდ მაშინ, როცა Key Mapper-თან თავსებად კლავიატურას გამოიყენებთ.</string>
+    <string name="caption_action_type_keycode">მნიშვნელოვანია!
+            ამ ღილაკის კოდის მოქმედებად შეყვანა იმუშავებს მხოლოდ მაშინ, როცა Key Mapper-თან თავსებად კლავიატურას გამოიყენებთ.</string>
+    <string name="caption_action_type_text">აკრიფეთ ტექსტი რომლის შეყვანაც გინდათ ამ მოქმედების შესრულების დროს.</string>
+    <string name="caption_action_type_phone_call">შეიყვანეთ ტელეფონის ნომერი.</string>
+    <string name="caption_action_type_url">დაამატეთ URL რომლის გახსნაც გსურთ. http://, https:// ან www. არაა საჭირო.</string>
+    <!--  Action descriptions  -->
+    <!--  Action descriptions  -->
+    <!--  Headers  -->
+    <string name="trigger_header">ტრიგერი</string>
+    <!--  Headers  -->
+    <!--  Hints  -->
+    <!--  Hints  -->
+    <!--  Radio buttons  -->
+    <string name="radio_button_parallel">ერთდროულად</string>
+    <string name="radio_button_sequence">თანმიმდევრულად</string>
+    <string name="radio_button_and">და</string>
+    <string name="radio_button_or">ან</string>
+    <string name="radio_button_short_press">მოკლეხნიანი დაჭერა</string>
+    <string name="radio_button_long_press">დიდხნიანი დაჭერა</string>
+    <string name="radio_button_double_press">ორმაგი დაჭერა</string>
+    <string name="radio_button_intent_extra_value_true">მართალი</string>
+    <string name="radio_button_intent_extra_value_false">ტყუილი</string>
+    <string name="radio_button_intent_target_activity">მოქმედება</string>
+    <string name="radio_button_intent_target_service">სერვისი</string>
+    <string name="radio_button_intent_target_broadcast_receiver">მაუწყებლობის მიმღები</string>
+    <!--  Radio buttons  -->
+    <!--  Tabs  -->
+    <string name="tab_trigger_and_actions">ტრიგერი და მოქმედებები</string>
+    <string name="tab_constraints_and_more">შეზღუდვები და მეტი</string>
+    <string name="tab_options">პარამეტრები</string>
+    <string name="tab_constraints">შეზღუდვები</string>
+    <string name="tab_actions">მოქმედებები</string>
+    <string name="tab_trigger">ტრიგერი</string>
+    <string name="tab_fingerprint">თითის ანაბეჭდი</string>
+    <!--  Tabs  -->
+    <!--  Navigation argument ids  -->
+    <!--  Navigation argument ids  -->
+    <!--  Toasts  -->
+    <string name="toast_chose_keyboard">აირჩიეთ %s</string>
+    <string name="toast_backup_successful">სარეზერვო ასლის შექმნა დასრულდა წარმატებით!</string>
+    <string name="toast_restore_successful">სარეზერვო ასლის აღდგენა დასრულდა წარმატებით!</string>
+    <string name="toast_automatic_backup_successful">ავტომატური სარეზერვო ასლის შექმნა დასრულდა წარმატებით!</string>
+    <string name="toast_screenshot_taken">სქრინშოტი გადაღებულია</string>
+    <string name="toast_io_exception_shrug">IO გამონაკლისი ¯\\_(ツ)_/¯</string>
+    <string name="toast_incorrect_screenshot_resolution">სქრინშოტის რეზოლუცია არ ემთხვევა მოწყობილობის რეზოლუციას!</string>
+    <string name="toast_copied_keymap_uid_to_clipboard">ღილაკების რუკის UUID დაკოპირდა ბუფერში</string>
+    <!--  Toasts  -->
+    <!-- Extra labels -->
+    <string name="extra_label_sequence_trigger_timeout">თანმიმდევრული ტრიგერების დროის ამოწურვა (მილიწამი)</string>
+    <string name="extra_label_long_press_delay_timeout">დიდხანს დაჭერის დაყოვნება (მილიწამი)</string>
+    <string name="extra_label_double_press_delay_timeout">ორმაგი დაჭერის დროის ამოწურვა (მილიწამი)</string>
+    <string name="extra_label_repeat_delay">დაყოვნება განმეორებამდე (მილიწამი)</string>
+    <string name="extra_label_repeat_rate">გაიმეორე ყოველ… (მილიწამი)</string>
+    <string name="extra_label_vibration_duration">ვიბრაციის ხანგრძლივობა (მილიწამი)</string>
+    <string name="extra_label_delay_before_next_action">დაყოვნება შემდეგ მოქმედებამდე (მილიწამი)</string>
+    <!-- Extra labels -->
+    <!-- Constraints -->
+    <!-- Constraints -->
+    <!-- Click types -->
+    <string name="clicktype_short_press">მოკლეხნიანი დაჭერა</string>
+    <string name="clicktype_double_press">ორმაგი დაჭერა</string>
+    <!-- Click types -->
+    <!-- URLs -->
+    <!-- URLs -->
+    <!-- Activity titles -->
+    <!-- Activity titles -->
+    <!--  Bug report slides-->
+    <!--  Bug report slides-->
+    <!-- Menu action titles-->
+    <string name="action_enable">ჩართვა</string>
+    <!-- Menu action titles-->
+    <!-- Button titles -->
+    <!-- Button titles -->
+    <!-- Dialog stuff -->
+    <!-- Dialog stuff -->
+    <!-- Notification strings -->
+    <!--  remove accessibility from the word because the other notification buttons arent visible on small screens  -->
+    <string name="notification_toggle_keyboard_action">გადართე</string>
+    <!-- Notification strings -->
+    <!--Preference titles and summaries-->
+    <!--Preference titles and summaries-->
+    <!--Preference categories-->
+    <!--Preference categories-->
+    <!-- About activity-->
+    <!-- About activity-->
+    <!--flags-->
+    <!--flags-->
+    <!-- Showcase -->
+    <string name="showcase_fingerprint_gesture_support_button">ჩართვა</string>
+    <!-- Showcase -->
+    <!-- system action options -->
+    <!-- system action options -->
+    <!-- Tiles -->
+    <!-- Tiles -->
+    <!-- Meta States -->
+    <!-- Meta States -->
+    <!-- Error messages -->
+    <!-- Error messages -->
+    <!-- action labels -->
+    <!-- action labels -->
+    <!-- action category labels -->
+    <!-- action category labels -->
+    <!--  Intent action type strings  -->
+    <!--  Intent action type strings  -->
+    <!--  Tap targets  -->
+    <!--  Tap targets  -->
+    <!--  About  -->
+    <!--  About  -->
+</resources>
