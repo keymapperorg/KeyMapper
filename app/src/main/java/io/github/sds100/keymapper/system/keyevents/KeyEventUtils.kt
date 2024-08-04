@@ -644,6 +644,11 @@ object KeyEventUtils {
             KeyEvent.KEYCODE_ALL_APPS,
         )
 
+    /**
+     * These are key code maps for the getevent command. These names aren't the same as the
+     * KeyEvent key codes in the Android SDK so these have to be manually whitelisted
+     * as people need.
+     */
     val GET_EVENT_LABEL_TO_KEYCODE: Map<String, Int>
         get() = mapOf(
             "KEY_VOLUMEDOWN" to KeyEvent.KEYCODE_VOLUME_DOWN,
@@ -652,9 +657,13 @@ object KeyEventUtils {
             "KEY_HEADSETHOOK" to KeyEvent.KEYCODE_HEADSETHOOK,
             "KEY_CAMERA_FOCUS" to KeyEvent.KEYCODE_FOCUS,
             "02fe" to KeyEvent.KEYCODE_CAMERA,
+            "00fa" to KeyEvent.KEYCODE_CAMERA,
             "02bf" to KeyEvent.KEYCODE_MENU,
             "KEY_SEARCH" to KeyEvent.KEYCODE_SEARCH,
         )
+
+    fun canDetectKeyWhenScreenOff(keyCode: Int): Boolean =
+        KeyEventUtils.GET_EVENT_LABEL_TO_KEYCODE.containsValue(keyCode)
 
     val MODIFIER_KEYCODES: Set<Int>
         get() = setOf(

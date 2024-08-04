@@ -31,9 +31,6 @@ class DetectScreenOffKeyEventsController(
     companion object {
         private const val REGEX_GET_DEVICE_LOCATION = "/.*(?=:)"
         private const val REGEX_KEY_EVENT_ACTION = "(?<= )(DOWN|UP)"
-
-        fun canDetectKeyWhenScreenOff(keyCode: Int): Boolean =
-            KeyEventUtils.GET_EVENT_LABEL_TO_KEYCODE.containsValue(keyCode)
     }
 
     private var job: Job? = null

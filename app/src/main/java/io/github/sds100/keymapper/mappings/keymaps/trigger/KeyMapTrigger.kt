@@ -4,7 +4,7 @@ import io.github.sds100.keymapper.data.entities.Extra
 import io.github.sds100.keymapper.data.entities.TriggerEntity
 import io.github.sds100.keymapper.data.entities.getData
 import io.github.sds100.keymapper.mappings.ClickType
-import io.github.sds100.keymapper.mappings.keymaps.detection.DetectScreenOffKeyEventsController
+import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
 import io.github.sds100.keymapper.util.valueOrNull
 import kotlinx.serialization.Serializable
 import splitties.bitflags.hasFlag
@@ -40,14 +40,12 @@ data class KeyMapTrigger(
 
     fun isLongPressDoubleVibrationAllowed(): Boolean =
         (keys.size == 1 || (mode is TriggerMode.Parallel)) &&
-            keys.getOrNull(0)?.clickType == ClickType.LONG_PRESS
+                keys.getOrNull(0)?.clickType == ClickType.LONG_PRESS
 
     fun isDetectingWhenScreenOffAllowed(): Boolean = keys.isNotEmpty() &&
-        keys.all {
-            DetectScreenOffKeyEventsController.canDetectKeyWhenScreenOff(
-                it.keyCode,
-            )
-        }
+            keys.all {
+                KeyEventUtils.canDetectKeyWhenScreenOff(it.keyCode)
+            }
 
     fun isChangingSequenceTriggerTimeoutAllowed(): Boolean =
         !keys.isNullOrEmpty() && keys.size > 1 && mode is TriggerMode.Sequence
