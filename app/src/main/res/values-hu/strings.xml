@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="slogan">Engedd el a kulcsokat!</string>
+    <string name="no_action_chosen">Nincs kiválasztott művelet</string>
+    <string name="accessibility_service_explanation">A Key Mapper egy akadálymentesítési szolgáltatás használatát igényli, hogy érzékelni és megváltoztatni tudja, hogy mit csinálnak a gombnyomások, miközben az alkalmazáson kívül vagy. A billentyű átírások csak akkor fognak működni, ha engedélyezte a akadálymentesítési szolgáltatást. A ravasz létrehozásához is be kell kapcsolni.</string>
+    <string name="selection_count">%d kiválasztva</string>
+    <string name="enable">Engedélyezés</string>
+    <string name="open">Nyitva</string>
+    <string name="recyclerview_placeholder">¯\\\\_(ツ)_\/¯\n\nItt nincs semmi!</string>
     <!--  Action descriptions  -->
     <!--  Action descriptions  -->
     <!--  Headers  -->
@@ -27,6 +34,7 @@
     <!--  Bug report slides-->
     <!--  Bug report slides-->
     <!-- Menu action titles-->
+    <string name="action_enable">Engedélyezés</string>
     <!-- Menu action titles-->
     <!-- Button titles -->
     <!-- Button titles -->
@@ -44,6 +52,7 @@
     <!--flags-->
     <!--flags-->
     <!-- Showcase -->
+    <string name="showcase_fingerprint_gesture_support_button">Engedélyezés</string>
     <!-- Showcase -->
     <!-- system action options -->
     <!-- system action options -->
