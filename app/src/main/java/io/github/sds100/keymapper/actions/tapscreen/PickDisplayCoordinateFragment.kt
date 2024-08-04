@@ -1,18 +1,15 @@
 package io.github.sds100.keymapper.actions.tapscreen
 
 import android.annotation.SuppressLint
-import android.graphics.ImageDecoder
+import android.graphics.Bitmap
 import android.graphics.Point
-import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.decodeBitmap
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
@@ -50,12 +47,10 @@ class PickDisplayCoordinateFragment : Fragment() {
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
             uri ?: return@registerForActivityResult
 
-            val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                ImageDecoder.createSource(requireContext().contentResolver, uri)
-                    .decodeBitmap { _, _ -> }
-            } else {
-                MediaStore.Images.Media.getBitmap(requireContext().contentResolver, uri)
-            }
+            val bitmap: Bitmap? =
+                FileUtils.decodeBitmapFromUri(requireContext().contentResolver, uri)
+
+            bitmap ?: return@registerForActivityResult
 
             val displaySize = Point().apply {
                 @Suppress("DEPRECATION")
