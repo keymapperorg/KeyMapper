@@ -1,38 +1,38 @@
-What can be remapped?
+Nelere yeni tuş atanabilir. 
 
- * Fingerprint gestures on supported devices.
- * Volume buttons.
- * Navigation buttons.
- * Bluetooth/wired keyboards.
- * Buttons on other connected devices should also work.
+ *Desteklenen cihazlarda parmak hareketleri. 
+ *Ses tuşları. 
+ *Gezinme tuşları. 
+ *Bluetooth/kablolu klavyeler. 
+ *Diğer eşleştirilen cihazlardaki tuşlar da çalışır.
 
-ONLY HARDWARE buttons can be remapped.
-There is NO GUARANTEE any of these buttons will work and this app is NOT designed to control games. Your device's OEM/vendor can prevent them from being remapped.
+Sadece DONANIM tuşları yeniden atanabilir.
+Bu düğmelerden herhangi birinin çalışacağından HİÇBİR GARANTİ yoktur ve bu uygulama oyunları kontrol etmek için TASARLANMAMIŞTIR. Cihazınızın OEM/satıcısı tuş atamanızı engelleyebilir.
 
-You can combine multiple keys from a specific device or any device to form a "trigger". Each trigger can have multiple actions. The keys can be set to be pressed at the same time or one after another in a sequence. Keys can be remapped when they are short pressed, long pressed or double pressed. A keymap can have a set of "constraints" so it only has an effect in certain situations.
+Bir "tetikleyici" oluşturmak için belirli bir cihazdan veya herhangi bir cihazdan birden fazla anahtarı birleştirebilirsiniz. 1 tetikleyici bir kaç hesapta kullanılabilir. Tuşlar aynı anda veya sırayla birbiri ardına basılacak şekilde ayarlanabilir. Tuşlar kısa tıklama, çift tıklama ya da uzun tıklama olarak atanabilir. Bir anahtar eşleme bir dizi "kısıtlamaya" sahip olabilir, bu nedenle yalnızca belirli durumlarda bir etkiye sahiptir.
 
-What can’t be remapped?
- * Power button
- * Bixby button
- * Mouse buttons
- * Dpad, thumb sticks or triggers on game controllers
+Neler atanamaz?
+ *Güç Tuşu
+ *Bixby Tuşu
+ *Fare Tuşları
+ *Dpad, Başparmak Çubukları ya da Oyun Kumandası Tuşları
 
-Your key maps don't work if the screen is OFF. This is a limitation in Android. There is nothing the dev can do.
+Ekran kapalıyken atadığın tuşlar çalışmaz. Bu Android'in kısıtlamasıdır. Geliştiricinin yapabileceği bir şey yok. 
 
-What can I remap my keys to do?
-Some actions will only work on rooted devices and specific Android versions.
+Anahtarlarımı ne yapmak için atayabilirim?
+Bazı şeyler sadece kök erişimi olan vihazlar ve özel Android sürümlerimde çalışır.
 
 There are too many features to list here so check out the full list here: https://docs.keymapper.club/user-guide/actions
 
-Permissions
-You don't have to grant all the permissions for the app to work. The app will tell you if a permission needs to be granted for a feature to work.
+İzinler
+İzinlerin hepsini vermek zorunda değilsin. Uygulama vermen gereken izinleri belirtecektir.
 
- * Accessibility Service: Basic requirement for remapping to work. It is needed so the app can listen to and block keyevents.
- * Device Admin: To turn the screen off when using the action to turn off the screen.
- * Modify System Settings: To change the brightness and rotation settings.
- * Camera: To control the flashlight.
+ * Erişilebilirlik Hizmeti: Çalışmak üzere yeniden eşleme için temel gereksinim. Uygulamanın tuş olaylarını dinleyebilmesi ve engelleyebilmesi için gereklidir.
+ * Aygıt Yöneticisi: Ekranı kapatma eylemini kullanırken ekranı kapatmak için.
+ * Sistem Ayarlarını Değiştirme: Parlaklık ve döndürme ayarlarını değiştirmek için.
+ Kamera: El fenerini kontrol etmek için.
 
- On some devices, enabling the accessibility service will disable "enhanced data encryption".
+ Bazı cihazlarda erişilebilirlik hizmetini etkinleştirmek "gelişmiş veri şifrelemeyi" devre dışı bırakır.
 
 Discord: www.keymapper.club
 Website: docs.keymapper.club
