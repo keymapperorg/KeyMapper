@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="no_action_chosen">কোনো কর্ম নির্বাচিত হয় নি</string>
+    <string name="selection_count">%d টি নির্বাচিত</string>
+    <string name="enable">সক্রিয় করুন</string>
+    <string name="open">খুলুন</string>
+    <string name="recyclerview_placeholder">¯\\_(ツ)_/¯\n\nএইখানে তো কিছু নাই!</string>
+    <string name="triggers_recyclerview_placeholder">ট্রিগার রেকর্ড করুন!</string>
+    <string name="actions_recyclerview_placeholder">অ্যাকশন যোগ করুন!</string>
+    <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nকি-ম্যাপ তৈরি করুন!</string>
+    <string name="your_device_doesnt_support_some_actions">আপনার ডিভাইসে কিছু একশন সাপোর্ট করে না।</string>
+    <string name="whats_new">নতুন কি আছে</string>
+    <string name="caption_action_type_url">যে URL e যেতে চান সেটি টাইপ করুন। শুরুতে http://, https:// বা www. লেখার দরকার নেই।</string>
+    <string name="caption_no_paired_bt_devices">কোনও paired device পাওয়া যায়নি, ব্লুটুথ অন করেছেন তো?</string>
+    <string name="switch_enabled">সক্রিয়</string>
+    <string name="disabled">নিষ্ক্রিয়</string>
+    <string name="reset">রিসেট</string>
+    <string name="enable_device_admin_message">যদি আপনি device admin সক্রিয় করে থাকেন তাহলে অ্যাপটি আনইন্সটল করার পুর্বে অবশ্যই তা নিষ্ক্রিয় করতে হবে।</string>
+    <string name="action_title_wait">অপেক্ষা %s মিলিসেকেন্ড</string>
+    <string name="action_title_intent_start_activity">%s কর্ম শুরু করুন</string>
+    <string name="action_title_intent_start_service">%s সেবা শুরু করুন</string>
+    <string name="action_title_intent_send_broadcast">%s broadcast পাঠান</string>
+    <string name="clipboard_label_keymap_uid">কী-ম্যাপ ইউইউআইডি</string>
+    <string name="title_about">পরিচিতি</string>
+    <!--  Action descriptions  -->
+    <string name="description_key">\'%s\' চাপুন</string>
+    <string name="description_text_block">\'%s\' টাইপ করুন</string>
+    <string name="description_url">%s খুলুন</string>
+    <!--  Action descriptions  -->
+    <!--  Headers  -->
+    <string name="option_list_header">অপশন</string>
+    <string name="action_list_header">অ্যাকশন</string>
+    <string name="trigger_header">ট্রিগার</string>
+    <!--  Headers  -->
+    <!--  Hints  -->
+    <!--  Hints  -->
+    <!--  Radio buttons  -->
+    <string name="radio_button_and">এবং</string>
+    <string name="radio_button_or">অথবা</string>
+    <!--  Radio buttons  -->
+    <!--  Tabs  -->
+    <string name="tab_options">অপশন</string>
+    <string name="tab_actions">অ্যাকশন</string>
+    <string name="tab_trigger">ট্রিগার</string>
+    <!--  Tabs  -->
+    <!--  Navigation argument ids  -->
+    <!--  Navigation argument ids  -->
+    <!--  Toasts  -->
+    <string name="toast_chose_keyboard">%s বাছাই করুন</string>
+    <!--  Toasts  -->
+    <!-- Extra labels -->
+    <string name="extra_label_vibration_duration">ভাইব্রেশনের সময়কাল (মি. সে.)</string>
+    <!-- Extra labels -->
+    <!-- Constraints -->
+    <string name="constraint_app_foreground_description">%s ফোরগ্রাউন্ডে রয়েছে</string>
+    <string name="constraint_app_not_foreground_description">%s ফোরগ্রাউন্ডে রয়েছে</string>
+    <string name="constraint_screen_on_description">স্ক্রীন চালু রয়েছে</string>
+    <string name="constraint_screen_off_description">স্ক্রিন বন্ধ</string>
+    <string name="constraint_mode_and">এবং</string>
+    <string name="constraint_mode_or">অথবা</string>
+    <string name="constraint_category_app">অ্যাপ</string>
+    <string name="constraint_category_bluetooth">ব্লুটুথ</string>
+    <string name="constraint_category_screen">স্ক্রিন</string>
+    <string name="constraint_choose_screen_on_description">স্ক্রীন চালু রয়েছে</string>
+    <string name="constraint_choose_screen_off_description">স্ক্রিন বন্ধ</string>
+    <!-- Constraints -->
+    <!-- Click types -->
+    <!-- Click types -->
+    <!-- URLs -->
+    <!-- URLs -->
+    <!-- Activity titles -->
+    <!-- Activity titles -->
+    <!--  Bug report slides-->
+    <!--  Bug report slides-->
+    <!-- Menu action titles-->
+    <string name="action_settings">সেটিংস</string>
+    <string name="action_done">সম্পন্ন হয়েছে</string>
+    <string name="action_select_all">সবগুলি বেছে নিন</string>
+    <string name="action_about">পরিচিতি</string>
+    <string name="action_search">খুঁজুন</string>
+    <string name="action_enable">সক্রিয় করুন</string>
+    <string name="action_disable">নিষ্ক্রিয় করুন</string>
+    <string name="action_disable_all_keymaps">সব নিষ্ক্রিয় করুন</string>
+    <string name="action_enable_all_keymaps">সব সক্রিয় করুন</string>
+    <string name="action_seed_database">ডাটাবেস সিড করুন</string>
+    <string name="action_save">সংরক্ষণ করুন</string>
+    <string name="action_duplicate_keymap">ডুপ্লিকেট</string>
+    <string name="action_restore">পুনঃস্থাপন</string>
+    <string name="action_reset">রিসেট</string>
+    <string name="action_save_log">সংরক্ষণ করুন</string>
+    <!-- Menu action titles-->
+    <!-- Button titles -->
+    <string name="button_done">সম্পন্ন হয়েছে</string>
+    <string name="button_save">সংরক্ষণ করুন</string>
+    <string name="button_fix">ঠিক করুন</string>
+    <string name="button_recording_trigger_countdown">%d…</string>
+    <!-- Button titles -->
+    <!-- Dialog stuff -->
+    <string name="dialog_title_are_you_sure">আপনি কি নিশ্চিত?</string>
+    <string name="dialog_title_root_prompt">রুট পারমিশন ছাড়া অপারেশনটি করা সম্ভব নয়।</string>
+    <string name="dialog_message_downloading">ডাউনলোডিং…</string>
+    <string name="dialog_message_long_press_warning">লং প্রেসিং শুধুমাত্র ফিজিক্যাল ভলিউম ও নেভিগেশন বাটনের জন্য প্রযোজ্য। অন্য কোন বাটনের জন্য এটি সক্রিয় করলে বাটনটি লং প্রেস ছাড়া অন্য কোন ক্ষেত্রে কাজ করবে না।</string>
+    <string name="dialog_message_double_press_restricted_to_single_key">"একাধিক কি একই সময়ে ডাবল প্রেস করা যাবে না।"</string>
+    <string name="dialog_message_bt_constraint_limitation">অ্যান্ড্রয়েড কোন অ্যাপকে এই মুহুর্তে কোন কোন ব্লুটুথ ডিভাইস কানেক্টেড আছে তা দেখার অনুমতি দেয় না। অ্যাপ গুলো শুধুমাত্র কোন ডিভাইস কানেক্টেড অথবা ডিসকানেক্টেড হলে তা ডিটেক্ট করতে পারে। accessibility service স্টার্ট করার পূর্বে যদি কোন ব্লুটথ ডিভাইস কানেক্টে করে থাকেন, তাহলে ব্লুটুথ ডিভাইসটি পুনরায় কানেক্ট না করলে এই অ্যাপটি সেটি ডিটেক্ট করতে পারবে না।</string>
+    <string name="pos_done">সম্পন্ন হয়েছে</string>
+    <string name="neutral_go_to_settings">সেটিংস</string>
+    <string name="dialog_button_fix">ঠিক করুন</string>
+    <string name="snackbar_fix">ঠিক করুন</string>
+    <!-- Dialog stuff -->
+    <!-- Notification strings -->
+    <string name="notification_accessibility_service_disabled_text">accessibility service স্টার্ট করতে ট্যাপ করুন।</string>
+    <!--  remove accessibility from the word because the other notification buttons arent visible on small screens  -->
+    <!-- Notification strings -->
+    <!--Preference titles and summaries-->
+    <string name="title_pref_reset_defaults">রিসেট</string>
+    <!--Preference titles and summaries-->
+    <!--Preference categories-->
+    <string name="title_pref_category_notifications">নোটিফিকেশন</string>
+    <string name="summary_pref_category_root">এই অপশনগুলো শুধুমাত্র Rooted device এর জন্য প্রযোজ্য! আপনার ডিভাইসটি Rooted কি না সেটি জেনে নিন। আপনার ডিভাইসে অপশনগুলো কাজ না করলে অনুগ্রহ করে বাজে রেটিং দেওয়া থেকে বিরত থাকুন। :)</string>
+    <!--Preference categories-->
+    <!-- About activity-->
+    <string name="pref_title_license">লাইসেন্স</string>
+    <string name="pref_title_translate">অনুবাদ</string>
+    <!-- About activity-->
+    <!--flags-->
+    <!--flags-->
+    <!-- Showcase -->
+    <string name="showcase_record_trigger_title">Accessibility service চালু করা হয়নি।</string>
+    <string name="showcase_record_trigger_description">ট্রিগার তৈরি করতে Accessibility service হলে চালু করতে হবে।</string>
+    <string name="showcase_note_from_the_developer_title">ডেভেলপারের খোলা চিঠি</string>
+    <string name="showcase_fingerprint_gesture_support_button">সক্রিয় করুন</string>
+    <!-- Showcase -->
+    <!-- system action options -->
+    <string name="stream_notification">নোটিফিকেশন</string>
+    <!-- system action options -->
+    <!-- Tiles -->
+    <!-- Tiles -->
+    <!-- Meta States -->
+    <!-- Meta States -->
+    <!-- Error messages -->
+    <string name="error_cant_find_ime_settings">Keyboard settings পেজটি পাওয়া যায়নি!</string>
+    <string name="error_cant_find_write_settings_page">WRITE_SETTINGS permission page পাওয়া যায়নি।</string>
+    <!-- Error messages -->
+    <!-- action labels -->
+    <string name="action_switch_keyboard_formatted">%s তে স্যুইচ করুন</string>
+    <!-- action labels -->
+    <!-- action category labels -->
+    <string name="action_cat_notifications">নোটিফিকেশন</string>
+    <!-- action category labels -->
+    <!--  Intent action type strings  -->
+    <!--  Intent action type strings  -->
+    <!--  Tap targets  -->
+    <!--  Tap targets  -->
+    <!--  About  -->
+    <string name="about_license_title">লাইসেন্স</string>
+    <!--  About  -->
+</resources>
