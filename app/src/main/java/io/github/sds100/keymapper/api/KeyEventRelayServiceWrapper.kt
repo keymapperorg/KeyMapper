@@ -12,7 +12,7 @@ import android.view.KeyEvent
 /**
  * This handles connecting to the relay service and exposes an interface
  * so other parts of the app can get a reference to the service even when it isn't
- * bound yet.
+ * bound yet. This class is copied to the Key Mapper GUI Keyboard app as well.
  */
 class KeyEventRelayServiceWrapperImpl(
     context: Context,

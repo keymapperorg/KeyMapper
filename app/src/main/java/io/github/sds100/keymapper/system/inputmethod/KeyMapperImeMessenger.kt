@@ -15,6 +15,10 @@ import timber.log.Timber
  * Created by sds100 on 21/04/2021.
  */
 
+/**
+ * This class handles communicating with the Key Mapper input method services
+ * so key events and text can be inputted.
+ */
 class KeyMapperImeMessengerImpl(
     context: Context,
     private val keyEventRelayService: KeyEventRelayServiceWrapper,

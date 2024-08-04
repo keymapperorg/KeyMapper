@@ -15,15 +15,21 @@ import java.util.concurrent.ConcurrentHashMap
  * key events back and forth. A separate service has to be used because you can't bind to an
  * accessibility or input method service.
  *
- * This is used for key event actions. The input method service registers a callback
+ * This is used for actions that input key events. The input method service registers a callback
  * and the accessibility service sends the key events.
  *
- * This was implemented in issue #850 for the action to answer phone calls because Android doesn't
- * pass volume down key events to the accessibility service when the phone is ringing or it is
- * in a phone call. The accessibility service registers a callback and the input method service
+ * This was originally implemented in issue #850 for the action to answer phone calls
+ * because Android doesn't pass volume down key events to the accessibility service
+ * when the phone is ringing or it is in a phone call.
+ * The accessibility service registers a callback and the input method service
  * sends the key events.
  */
 class KeyEventRelayService : Service() {
+    companion object {
+        const val ACTION_REBIND_RELAY_SERVICE =
+            "io.github.sds100.keymapper.ACTION_REBIND_RELAY_SERVICE"
+    }
+
     val permittedPackages = KeyMapperImeHelper.KEY_MAPPER_IME_PACKAGE_LIST
 
     private val binderInterface: IKeyEventRelayService = object : IKeyEventRelayService.Stub() {
@@ -84,6 +90,13 @@ class KeyEventRelayService : Service() {
     private val callbackLock: Any = Any()
     private var callbacks: ConcurrentHashMap<String, IKeyEventRelayServiceCallback> =
         ConcurrentHashMap()
+
+    override fun onCreate() {
+        super.onCreate()
+
+        val intent = Intent(ACTION_REBIND_RELAY_SERVICE)
+        sendBroadcast(intent)
+    }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         // This service is explicitly started and stopped as needed
