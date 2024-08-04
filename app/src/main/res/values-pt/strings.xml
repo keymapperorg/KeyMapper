@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="slogan">Liberte suas teclas!</string>
+    <string name="no_action_chosen">Sem ação definida</string>
+    <string name="accessibility_service_explanation">Este aplicativo requer o serviço de acessibilidade. Isso detecta suas ações fora do aplicativo. O mapeamento depende disso. Também obrigatório para criar gatilhos.</string>
+    <string name="selection_count">%d selecionado</string>
+    <string name="enable">Habilitar</string>
+    <string name="open">Abrir</string>
+    <string name="recyclerview_placeholder">¯\\_(ツ)_/¯\n\nNada encontrado!</string>
+    <string name="triggers_recyclerview_placeholder">Grave um gatilho!</string>
+    <string name="actions_recyclerview_placeholder">Adicionar ação!</string>
+    <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nCriar mapeamento!</string>
+    <string name="action_shortcut_list_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nNenhuma ação para este atalho!</string>
+    <string name="no_key_maps">Nenhum mapeamento criado!</string>
+    <string name="everything_looks_good">Tudo em ordem!</string>
+    <string name="warning_the_app_will_work">Aplicativo funcional, pode ser necessário ajuste adicional dependendo do uso.</string>
+    <string name="your_device_doesnt_support_some_actions">O seu dispositivo não é compatível com algumas ações.</string>
+    <string name="tab_unsupported_actions">Ações não suportadas</string>
+    <string name="choose_action_warning_requires_root">Requer root</string>
+    <string name="press_dot_dot_dot">Pressione…</string>
+    <string name="no_actions">Sem ação</string>
+    <string name="no_trigger">Sem gatilho</string>
+    <string name="unknown_keycode">Código desconhecido: %s</string>
+    <string name="unknown_device_name">Dispositivo desconhecido</string>
+    <string name="on">Ativo</string>
+    <string name="off">Desligado</string>
+    <string name="follow_system">Padrão do sistema</string>
+    <string name="this_device">Este dispositivo</string>
+    <string name="any_device">Qualquer dispositivo</string>
+    <string name="trigger_device_name_not_found">Nome deste dispositivo desconhecido</string>
+    <string name="slider_default">Padrão</string>
+    <string name="button_enable_accessibility_service">Ativar serviço de acessibilidade</string>
+    <string name="button_restart_accessibility_service">Reiniciar o serviço de acessibilidade</string>
+    <string name="share_backup">Compartilhar</string>
+    <string name="stop_repeating_dot_dot_dot">Parar repetição…</string>
+    <string name="stop_repeating_when_trigger_released">Gatilho liberado</string>
+    <string name="stop_repeating_trigger_pressed_again">Gatilho repetido</string>
+    <string name="stop_repeating_limit_reached">Limite atingido</string>
+    <string name="stop_repeating_when_swiped_again">Desliza novamente</string>
+    <string name="stop_holding_down_when_trigger_released">Gatilho liberado</string>
+    <string name="stop_holding_down_trigger_pressed_again">Gatilho repetido</string>
+    <string name="show_hidden_apps">Mostrar apps ocultos</string>
+    <string name="modifiers">Modificador</string>
+    <string name="toggle">Alternar</string>
+    <string name="dont_know_device_name">Dispositivo desconhecido!</string>
+    <string name="tap_actions_to_fix">Ações para correção!</string>
+    <string name="tap_constraints_to_fix">Eventos para correção!</string>
+    <string name="shortcut_label_action">Realizar ações</string>
+    <string name="hold_down_until_trigger_is_dot_dot_dot">Pressionado até o gatilho…</string>
+    <string name="intent_extras_recycler_view_placeholder">¯\\_(ツ)_/¯\n\nSem extras!</string>
+    <string name="content_description_fab_new_keymap">Criar novo mapa</string>
+    <string name="clip_key_mapper_log">Key Mapper registros</string>
+    <string name="sharesheet_title">Enviar para</string>
+    <string name="whats_new">Novidades</string>
+    <string name="caption_no_paired_bt_devices">Não foi possível encontrar dispositivos pareados. O bluetooth está ligado?</string>
+    <string name="switch_enabled">Ativado</string>
+    <string name="disabled">Desativado</string>
+    <string name="reset">Redefinir</string>
+    <string name="check_box_key_event_option_use_shell">Usar shell (ROOT necessário)</string>
+    <string name="trigger_error_dnd_access_denied">Key Mapper precisa de permissão para modificar o modo Não Perturbar se você quer que os botões funcionem corretamente no modo Não Perturbar!</string>
+    <string name="home_error_key_maps_paused_button">Resumir</string>
+    <string name="home_error_logging_enabled_button">Desligar</string>
+    <string name="title_about">Sobre</string>
+    <!--  Action descriptions  -->
+    <string name="description_key">Pressiona a tecla \'%s\'</string>
+    <string name="description_text_block">Digita \'%s\'</string>
+    <string name="description_sound">Toca o som: %s</string>
+    <!--  Action descriptions  -->
+    <!--  Headers  -->
+    <string name="option_list_header">Opções</string>
+    <string name="action_list_header">Ações</string>
+    <string name="trigger_header">Gatilho</string>
+    <string name="header_intent_extras">Extras</string>
+    <!--  Headers  -->
+    <!--  Hints  -->
+    <string name="hint_keycode">Código da chave</string>
+    <string name="hint_from_device">Do dispositivo</string>
+    <string name="hint_shortcut_name">Nome do atalho</string>
+    <string name="hint_tap_coordinate_title">Descrição coordenada (opcional)</string>
+    <string name="hint_create_text_action">Entrada de texto</string>
+    <string name="hint_create_url_action">Abrir URL</string>
+    <string name="hint_create_phone_call_action">Discar número</string>
+    <string name="hint_intent_extra_value_with_type">Valor (%s)</string>
+    <string name="hint_wifi_ssid">Mostrar SSID da rede WiFi</string>
+    <!--  Hints  -->
+    <!--  Radio buttons  -->
+    <string name="radio_button_parallel">Ao mesmo tempo</string>
+    <string name="radio_button_sequence">Na sequencia</string>
+    <string name="radio_button_and">E</string>
+    <string name="radio_button_or">OU</string>
+    <string name="radio_button_short_press">Pressionar por curto período</string>
+    <string name="radio_button_long_press">Toque longo</string>
+    <string name="radio_button_double_press">Pressione duas vezes</string>
+    <!--  Radio buttons  -->
+    <!--  Tabs  -->
+    <string name="tab_trigger_and_actions">Gatilho e ações</string>
+    <string name="tab_constraints_and_more">Eventos e mais</string>
+    <string name="tab_options">Opções</string>
+    <string name="tab_constraints">Eventos</string>
+    <string name="tab_actions">Ações</string>
+    <string name="tab_trigger">Gatilho</string>
+    <string name="tab_fingerprint">Digital</string>
+    <string-array name="home_tab_titles">
+        <item>@string/tab_keyevents</item>
+        <item>@string/tab_fingerprint</item>
+    </string-array>
+    <!--  Tabs  -->
+    <!--  Navigation argument ids  -->
+    <!--  Navigation argument ids  -->
+    <!--  Toasts  -->
+    <string name="toast_chose_keyboard">Escolha %s</string>
+    <string name="toast_backup_successful">“Backup” concluído!</string>
+    <string name="toast_backup_failed">Backup falhou!</string>
+    <string name="toast_restore_successful">Restauração bem sucedida!</string>
+    <string name="toast_restore_failed">A restauração falhou!</string>
+    <string name="toast_automatic_backup_successful">Backup automático concluído!</string>
+    <string name="toast_automatic_backup_failed">Falha ao realizar o backup automático!</string>
+    <string name="toast_screenshot_taken">Captura feita</string>
+    <string name="toast_io_exception_shrug">Erro de IO ¯\\_(ツ)_/¯</string>
+    <string name="toast_copied_keymap_uid_to_clipboard">Copiou UUID para clipboard</string>
+    <string name="toast_triggered_keymap">Gatilho acionado</string>
+    <string name="toast_copied_log">Copiou registro</string>
+    <string name="toast_root_features_turned_on">Root ativado!</string>
+    <string name="toast_failed_to_choose_sound_file">Falha selecionando som.</string>
+    <string name="toast_no_sound_files">Sem sons salvos!</string>
+    <string name="toast_granted_itself_write_secure_settings_with_shizuku">Key Mapper usou Shizuku para permitir WRITE_SECURE_SETTINGS</string>
+    <string name="toast_granted_itself_write_secure_settings_with_root">Key Mapper usou root para permitir WRITE_SECURE_SETTINGS</string>
+    <!--  Toasts  -->
+    <!-- Extra labels -->
+    <string name="extra_label_sequence_trigger_timeout">Expiração do gatilho (ms)</string>
+    <string name="extra_label_long_press_delay_timeout">Atraso do toque longo (ms)</string>
+    <string name="extra_label_double_press_delay_timeout">Expiração toque duplo (ms)</string>
+    <string name="extra_label_repeat_delay">Atraso repetição (ms)</string>
+    <string name="extra_label_repeat_limit">Limite repetição</string>
+    <string name="extra_label_repeat_rate">Repetir a cada... (ms)</string>
+    <string name="extra_label_vibration_duration">Duração da vibração (ms)</string>
+    <!-- Extra labels -->
+    <!-- Constraints -->
+    <string name="constraint_choose_orientation_0">Retrato (0°)</string>
+    <string name="constraint_choose_orientation_90">Paisagem (90°)</string>
+    <string name="constraint_choose_orientation_180">Retrato (180°)</string>
+    <string name="constraint_choose_orientation_270">Paisagem (270°)</string>
+    <string name="constraint_ime_not_chosen_description">%s Não escolhido</string>
+    <string name="constraint_device_is_locked">O Dispositivo esta bloqueado</string>
+    <string name="constraint_device_is_unlocked">Este dispositivo está desbloqueado</string>
+    <string name="constraint_in_phone_call">Chamada telefônica</string>
+    <string name="constraint_not_in_phone_call">Fora de chamada</string>
+    <string name="constraint_phone_ringing">Tocando</string>
+    <string name="constraint_charging">Carregando</string>
+    <string name="constraint_discharging">Descarregando</string>
+    <string name="orientation_0">Retrato (0°)</string>
+    <string name="orientation_90">Paisagem (90°)</string>
+    <string name="orientation_180">Retrato (180°)</string>
+    <string name="orientation_270">Paisagem (270°)</string>
+    <!-- Constraints -->
+    <!-- Click types -->
+    <string name="clicktype_short_press">Pressionar por curto período</string>
+    <string name="clicktype_long_press">Toque longo</string>
+    <string name="clicktype_double_press">Pressione duas vezes</string>
+    <!-- Click types -->
+    <!-- URLs -->
+    <!-- URLs -->
+    <!-- Activity titles -->
+    <string name="title_choose_action">Selecionar ação</string>
+    <!-- Activity titles -->
+    <!--  Bug report slides-->
+    <string name="slide_title_read_dont_kill_my_app">Desativa bloqueio de app</string>
+    <string name="slide_description_read_dont_kill_my_app">Veja dontkillmyapp.com 
+    \n\nApós ler vá para o próximo slide.</string>
+    <string name="slide_button_read_dont_kill_my_app">Guia do usuário</string>
+    <string name="slide_title_restart_accessibility_service">Reiniciar o serviço de acessibilidade</string>
+    <string name="slide_description_restart_accessibility_service">Desative e ative o serviço de acessibilidade.</string>
+    <string name="slide_button_restart_accessibility_service">Reiniciar</string>
+    <string name="slide_title_create_bug_report">Reportar um erro</string>
+    <string name="slide_description_create_bug_report">Escolha o local tocando em \"criar relatório\". A seguir veja como enviar.</string>
+    <string name="slide_button_create_bug_report">Criar relatório</string>
+    <string name="slide_title_share_bug_report">Compartilhar relatório de erros</string>
+    <string name="slide_description_share_bug_report">Você pode enviar via Discord ou GitHub. Anexe o erro na mensagem!</string>
+    <string name="slide_button_share_discord">Discord</string>
+    <string name="slide_button_share_github">GitHub</string>
+    <!--  Bug report slides-->
+    <!-- Menu action titles-->
+    <string name="action_settings">Configurações</string>
+    <string name="action_done">Concluído</string>
+    <string name="action_select_all">Selecionar tudo</string>
+    <string name="action_about">Sobre</string>
+    <string name="action_search">Pesquisa</string>
+    <string name="action_help_home">Guia rápido de início</string>
+    <string name="action_help">Ajuda</string>
+    <string name="action_enable">Habilitar</string>
+    <string name="action_disable">Desativar</string>
+    <string name="action_disable_all_keymaps">Desativar tudo</string>
+    <string name="action_enable_all_keymaps">Habilitar tudo</string>
+    <string name="action_report_bug">Reportar erro</string>
+    <string name="action_change_keyboard">Mostrar método de entrada</string>
+    <string name="action_seed_database">Adicionar dados</string>
+    <string name="action_save">Salvar</string>
+    <string name="action_duplicate_keymap">Duplicar</string>
+    <string name="action_backup">Backup</string>
+    <string name="action_restore">Restaurar</string>
+    <string name="action_backup_everything">Salvar tudo</string>
+    <string name="action_backup_all">Salvar geral</string>
+    <string name="action_tap_to_pause_keymaps">Toque e pause</string>
+    <string name="action_tap_to_resume_keymaps">Toque para retomar</string>
+    <string name="action_reset">Redefinir</string>
+    <string name="action_save_log">Salvar</string>
+    <!-- Menu action titles-->
+    <!-- Button titles -->
+    <string name="button_done">Concluído</string>
+    <string name="button_save">Salvar</string>
+    <string name="button_choose_action">Selecionar ação</string>
+    <string name="button_help">Ajuda</string>
+    <!-- Button titles -->
+    <!-- Dialog stuff -->
+    <string name="dialog_button_read_dont_kill_my_app_yes">Sim</string>
+    <string name="dialog_button_read_dont_kill_my_app_no">Não</string>
+    <string name="dialog_title_failed_to_create_bug_report">Erro ao gerar relatório de erros</string>
+    <string name="pos_yes">Sim</string>
+    <string name="pos_done">Concluído</string>
+    <string name="pos_opt_in">Assinar</string>
+    <string name="pos_grant_write_secure_settings_guide">Guia</string>
+    <string name="pos_report_issues_guide">Guia</string>
+    <string name="pos_start_service_with_adb_guide">Guia</string>
+    <string name="pos_enable_root_features">Habilitar recursos root</string>
+    <string name="pos_grant">Conceder</string>
+    <string name="pos_join">Participar</string>
+    <string name="pos_change_location">Alterar</string>
+    <string name="neutral_go_to_settings">Configurações</string>
+    <string name="neutral_changelog">O que mudou</string>
+    <string name="neutral_report_bug">Reportar erro</string>
+    <string name="dialog_button_install_nothing">Não fazer nada</string>
+    <string name="dialog_button_fix">Corrigir</string>
+    <string name="snackbar_cancel">Cancelar</string>
+    <string name="snackbar_fix">Corrigir</string>
+    <!-- Dialog stuff -->
+    <!-- Notification strings -->
+    <string name="notification_channel_new_features">Novas funcionalidades</string>
+    <string name="notification_ime_persistent_text">Toque para trocar teclado.</string>
+    <string name="notification_keymaps_resumed_title">Em execução</string>
+    <string name="notification_action_pause">Pausar</string>
+    <string name="notification_keymaps_paused_title">Pausado</string>
+    <string name="notification_action_resume">Retomar</string>
+    <string name="notification_action_dismiss">Descartar</string>
+    <string name="notification_action_restart_accessibility_service">Reiniciar</string>
+    <string name="notification_accessibility_service_disabled_title">O serviço de acessibilidade está desativado</string>
+    <string name="notification_accessibility_service_disabled_text">Iniciar o serviço de acessibilidade.</string>
+    <!--  remove accessibility from the word because the other notification buttons arent visible on small screens  -->
+    <string name="notification_action_stop_acc_service">Parar serviço</string>
+    <string name="notification_toggle_keyboard_action">Alternar</string>
+    <!-- Notification strings -->
+    <!--Preference titles and summaries-->
+    <string name="title_pref_vibration_duration">Vibração padrão (ms)</string>
+    <string name="title_pref_repeat_delay">Atraso repetição (ms)</string>
+    <string name="title_pref_repeat_rate">Atraso repetição (ms)</string>
+    <string name="title_pref_sequence_trigger_timeout">Expiração do gatilho (ms)</string>
+    <string name="title_pref_reset_defaults">Redefinir</string>
+    <string name="title_pref_show_ime_picker_notification">Notificação do Teclado</string>
+    <string name="title_pref_devices_to_reroute_keyevents_choose_devices">Escolha os dispositivos</string>
+    <string name="title_pref_toggle_logging">Ativar o registro de depuração extra</string>
+    <string name="title_pref_view_and_share_log">Visualizar e compartilhar</string>
+    <string name="title_pref_report_issue">Reportar problema</string>
+    <string name="title_pref_delete_sound_files">Apagar som #</string>
+    <string name="title_pref_grant_write_secure_settings_not_granted">Conceder permissão</string>
+    <string name="title_pref_grant_write_secure_settings_granted">Permissão concedida</string>
+    <!--Preference titles and summaries-->
+    <!--Preference categories-->
+    <string name="title_pref_category_notifications">Notificações</string>
+    <string name="title_pref_category_defaults">Padrões</string>
+    <string name="title_pref_category_log">Registros</string>
+    <!--Preference categories-->
+    <!-- About activity-->
+    <string name="pref_title_changelog">O que mudou</string>
+    <string name="pref_title_license">Licença</string>
+    <string name="pref_title_privacy_policy">Política de privacidade</string>
+    <string name="pref_title_credits">Créditos</string>
+    <string name="pref_title_source_code">Código-fonte</string>
+    <!-- About activity-->
+    <!--flags-->
+    <string name="flag_repeat_actions">Repetir</string>
+    <!--flags-->
+    <!-- Showcase -->
+    <string name="showcase_accessibility_service_title_enabled">O serviço de acessibilidade está ativado :)</string>
+    <string name="showcase_accessibility_service_title_crashed">Reiniciar o serviço de acessibilidade</string>
+    <string name="showcase_accessibility_service_button_restart">Reiniciar</string>
+    <string name="showcase_accessibility_service_title_disabled">Ativar serviço de acessibilidade</string>
+    <string name="showcase_accessibility_service_description_disabled">@string/accessibility_service_explanation</string>
+    <string name="showcase_record_trigger_title">O serviço de acessibilidade está desativado</string>
+    <string name="showcase_note_from_the_developer_title">Diretamente dos {developers}</string>
+    <string name="showcase_disable_battery_optimisation_button_turn_off">Desligar</string>
+    <string name="showcase_dnd_access_description_enabled">Tudo certo</string>
+    <string name="showcase_contributing_title">Contribuindo</string>
+    <string name="showcase_fingerprint_gesture_support_button">Habilitar</string>
+    <string name="showcase_more_shizuku_info">Mais informação</string>
+    <string name="showcase_request_shizuku_permission">Conceder</string>
+    <string name="showcase_notification_permission_button">Conceder</string>
+    <!-- Showcase -->
+    <!-- system action options -->
+    <string name="stream_notification">Notificações</string>
+    <string name="dnd_mode_alarms">Alarmes</string>
+    <string name="dnd_mode_priority">Prioridade</string>
+    <string name="dnd_mode_none">Nada</string>
+    <!-- system action options -->
+    <!-- Tiles -->
+    <string name="tile_service_disabled">Serviço desativado</string>
+    <!-- Tiles -->
+    <!-- Meta States -->
+    <string name="meta_state_ctrl">Ctrl</string>
+    <string name="meta_state_ctrl_left">Ctrl+Esquerda</string>
+    <string name="meta_state_ctrl_right">Ctrl+Direita</string>
+    <string name="meta_state_alt">Alt</string>
+    <string name="meta_state_alt_left">Alt + Esquerda</string>
+    <string name="meta_state_alt_right">Alt+Direita</string>
+    <string name="meta_state_shift">Shift</string>
+    <string name="meta_state_shift_left">Shift+Seta para a esquerda</string>
+    <string name="meta_state_shift_right">~Deslocar para a direita</string>
+    <string name="meta_state_meta">Meta</string>
+    <string name="meta_state_sym">Sym</string>
+    <string name="meta_state_function">Func</string>
+    <string name="meta_state_caps_lock">Caps Lock</string>
+    <string name="meta_state_num_lock">Num Lock</string>
+    <string name="meta_state_scroll_lock">Scroll Lock</string>
+    <!-- Meta States -->
+    <!-- Error messages -->
+    <string name="error_must_have_atleast_one_trigger">A regra deve ter pelo menos um gatilho</string>
+    <string name="error_must_choose_action">Você precisa escolher uma ação!</string>
+    <string name="error_app_isnt_installed_brief">A aplicação não está instalada!</string>
+    <string name="error_app_is_disabled">Aplicativo Desativado!</string>
+    <string name="error_app_is_disabled_package_name">Aplicativo %s desativado!</string>
+    <string name="error_sdk_version_too_low">Requer Android %s ou posterior</string>
+    <string name="error_sdk_version_too_high">Requer Android %s ou posterior</string>
+    <string name="error_system_feature_camera_unsupported">Seu dispositivo não possui uma câmera.</string>
+    <string name="error_system_feature_nfc_unsupported">Este dispositivo não oferece suporte ao NFC.</string>
+    <string name="error_system_feature_fingerprint_unsupported">Seu dispositivo não possui um Sensor de Impressão Digital.</string>
+    <string name="error_system_feature_wifi_unsupported">Este dispositivo não suporta wifi.</string>
+    <string name="error_system_feature_bluetooth_unsupported">Seu dispositivo não suporta Bluetooth.</string>
+    <string name="error_system_feature_camera_flash_unsupported">Seu dispositivo não possui uma câmera.</string>
+    <string name="error_flag_not_found">Classe \"%s\" não encontrada!</string>
+    <!-- Error messages -->
+    <!-- action labels -->
+    <!-- action labels -->
+    <!-- action category labels -->
+    <string name="action_cat_notifications">Notificações</string>
+    <!-- action category labels -->
+    <!--  Intent action type strings  -->
+    <!--  Intent action type strings  -->
+    <!--  Tap targets  -->
+    <string name="tap_target_quick_start_guide_primary">Guia rápido de início</string>
+    <!--  Tap targets  -->
+    <!--  About  -->
+    <string name="about_link_changelog">O que mudou</string>
+    <string name="about_link_discord">Discord</string>
+    <string name="about_license_title">Licença</string>
+    <!--  About  -->
+</resources>
