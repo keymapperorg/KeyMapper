@@ -43,7 +43,6 @@
     <string name="modifiers">Модификаторы</string>
     <string name="toggle">Переключить</string>
     <string name="tap_coordinate_screenshot_message">Внимание!!! Эти координаты корректны только если ваш экран в той же ориентации как на скриншоте! Это действие отменит любые касания или жесты которые вы делаете на экране.\n\nЕсли вам нужна помощь в определении координат курсора на экране - сделайте скриншот и затем нажмите на область скриншота где вы хотите произвести это действие.</string>
-    <string name="pinch_screen_x_y_note">Note: When using \"pinch in\" X and Y are the END coordinates, when using \"pinch out\" X and Y are the START coordinates.</string>
     <string name="dont_know_device_name">Неизвестное имя устройства!</string>
     <string name="tap_actions_to_fix">Нажмите на действие для исправления!</string>
     <string name="tap_constraints_to_fix">Нажмите на ограничения, чтобы исправить!</string>
@@ -86,8 +85,6 @@
     <string name="trigger_error_screen_off_root_permission_denied_short">Опция срабатывания при выключенном экране не будет работать!</string>
     <string name="trigger_error_cant_detect_in_phone_call">Этот триггер не будет работать во время звонка!</string>
     <string name="trigger_error_cant_detect_in_phone_call_explanation">Android не позволяет службам спец. возможностей распознавать касания кнопок громкости во время звонка, но позволяет это службам методов ввода. Следовательно, вы должны использовать одну из клавиатур Key Mapper для работы этого триггера.</string>
-    <string name="trigger_error_gesture_stroke_count_too_high">Too many fingers to perform gesture due to android limitations.</string>
-    <string name="trigger_error_gesture_duration_too_high">Gesture duration is too high due to android limitations.</string>
     <string name="home_error_is_battery_optimised">Ваши сопоставления перестанут работать случайным образом!</string>
     <string name="home_error_key_maps_paused">Ваши сопоставления приостановлены!</string>
     <string name="home_error_key_maps_paused_button">Отмена паузы</string>
@@ -107,10 +104,6 @@
     <string name="description_url">Открыть %s</string>
     <string name="description_tap_coordinate_default">Координаты касания %d, %d</string>
     <string name="description_tap_coordinate_with_description">Касание координат %d, %d (%s)</string>
-    <string name="description_swipe_coordinate_default">Swipe with %d finger(s) from coordinates %d/%d to %d/%d in %dms</string>
-    <string name="description_swipe_coordinate_with_description">Swipe with %d finger(s) from coordinates %d/%d to %d/%d in %dms (%s)</string>
-    <string name="description_pinch_coordinate_default">%s with %d finger(s) on coordinates %d/%d with a pinch distance of %dpx in %dms</string>
-    <string name="description_pinch_coordinate_with_description">%s with %d finger(s) on coordinates %d/%d to with a pinch distance of %dpx %dms (%s)</string>
     <string name="description_phone_call">Позвонить %s</string>
     <string name="description_sound">Воспроизведение звука: %s</string>
     <!--  Action descriptions  -->
@@ -127,14 +120,6 @@
     <string name="header_intent_extras">Дополнения</string>
     <!--  Headers  -->
     <!--  Hints  -->
-    <string name="hint_coordinate_x_start">Start X</string>
-    <string name="hint_coordinate_y_start">Start Y</string>
-    <string name="hint_coordinate_x_end">End X</string>
-    <string name="hint_coordinate_y_end">End Y</string>
-    <string name="hint_coordinate_distance">Pinch distance (px)</string>
-    <string name="hint_coordinate_pinch_type">Pinch type</string>
-    <string name="hint_coordinate_type_pinch_in">Pinch in</string>
-    <string name="hint_coordinate_type_pinch_out">Pinch out</string>
     <string name="hint_keycode">Коды клавиши</string>
     <string name="hint_from_device">С устройства</string>
     <string name="hint_shortcut_name">Имя ярлыка</string>
@@ -215,13 +200,6 @@
     <string name="extra_label_action_multiplier_with_repeat">Сколько раз каждый повтор</string>
     <string name="extra_label_delay_before_next_action">Задержка до следующего действия (мс)</string>
     <string name="extra_label_hold_down_duration">Длительность удержания (мс)</string>
-    <string name="extra_label_swipe_duration">Swipe duration (ms)</string>
-    <string name="extra_label_swipe_finger_count">Finger count</string>
-    <string name="extra_label_swipe_select_start_end_label">Coordinates to set with screenshot</string>
-    <string name="extra_label_swipe_select_start_end_start">Start</string>
-    <string name="extra_label_swipe_select_start_end_end">End</string>
-    <string name="extra_label_pinch_duration">Pinch duration (ms)</string>
-    <string name="extra_label_pinch_finger_count">Finger count</string>
     <!-- Extra labels -->
     <!-- Constraints -->
     <string name="constraint_app_foreground_description">%s находится на переднем плане</string>
@@ -679,16 +657,11 @@
     <string name="showcase_grant_shizuku_permission_denied_title">Выдать разрешение Shizuku</string>
     <string name="showcase_grant_shizuku_permission_denied_message">Кажется, что у вас установлен Shizuku. Рекомендуется выдать Key Mapper разрешение на использование Shizuku, чтобы Key Mapper мог делать больше без ввода пользователя. Например, нажимать кнопки без использования клавиатуры Key Mapper. Нажмите \'Больше информации\', чтобы узнать о всех преимуществах. Нажмите \'Предоставить\' для выдачи разрешения.</string>
     <string name="showcase_grant_shizuku_permission_granted_title">Разрешение Shizuku выдано!</string>
-    <string name="showcase_grant_shizuku_permission_granted_message">You have granted Key Mapper Shizuku permission successfully.</string>
     <string name="showcase_more_shizuku_info">Подробнее</string>
     <string name="showcase_request_shizuku_permission">Предоставить</string>
     <string name="showcase_shizuku_not_started_title">Shizuku не запущен</string>
     <string name="showcase_shizuku_not_started_message">Shizuku должен быть запущен перед выдачей Key Mapper разрешение на его использование. Нажмите \'Запустить Shizuku\', чтобы открыть приложение Shizuku для его запуска.</string>
     <string name="showcase_shizuku_launch_shizuku_app">Запустить Shizuku</string>
-    <string name="showcase_notification_permission_denied_title">Grant notification permission</string>
-    <string name="showcase_notification_permission_denied_message">Some features of Key Mapper require permission to post notifications, for example, there is a notification to pause/resume your key maps. Tap \'grant\' to give permission.</string>
-    <string name="showcase_notification_permission_granted_title">Notifications can be shown!</string>
-    <string name="showcase_notification_permission_granted_message">You have successfully granted Key Mapper permission to show notifications.</string>
     <string name="showcase_notification_permission_button">Предоставить</string>
     <!-- Showcase -->
     <!-- system action options -->
@@ -855,14 +828,6 @@
     <string name="error_access_fine_location_permission_denied">Доступ к точному местоположению отказан!</string>
     <string name="error_answer_end_phone_call_permission_denied">Доступ к ответу и завершению телефонных звонков отказан!</string>
     <string name="error_find_nearby_devices_permission_denied">Доступ к списку привязанных устройств Bluetooth отказан!</string>
-    <string name="error_notifications_permission_denied">Denied permission to show notifications!</string>
-    <string name="error_pinch_screen_must_be_two_or_more_fingers">Must be 2 or more!</string>
-    <string name="error_pinch_screen_must_be_ten_or_less_fingers">Must be %d or less!</string>
-    <string name="error_pinch_screen_duration_must_be_more_than_zero">Must be greater than 0!</string>
-    <string name="error_pinch_screen_distance_too_low">Must be greater than 0!</string>
-    <string name="error_swipe_screen_fingercount_must_be_more_than_zero">Must be greater than 0!</string>
-    <string name="error_swipe_screen_duration_must_be_more_than_zero">Must be greater than 0!</string>
-    <string name="error_swipe_screen_must_be_ten_or_less_fingers">Must be %d or less!</string>
     <!-- Error messages -->
     <!-- action labels -->
     <string name="action_toggle_wifi">Переключить состояние Wi-Fi</string>
@@ -982,8 +947,6 @@
     <string name="action_input_key_code">Ввести код клавиши</string>
     <string name="action_input_key_event">Ввести событие клавиши</string>
     <string name="action_tap_screen">Коснуться экрана</string>
-    <string name="action_swipe_screen">Swipe screen</string>
-    <string name="action_pinch_screen">Pinch screen</string>
     <string name="action_input_text">Ввести текст</string>
     <string name="action_open_url">Открыть URL</string>
     <string name="action_send_intent">Отправить интент</string>
