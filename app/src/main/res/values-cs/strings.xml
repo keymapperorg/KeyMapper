@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="slogan">Uvolnite své klíče!</string>
+    <string name="slogan">Uvolněte své klíče!</string>
     <string name="no_action_chosen">Není vybrána žádná akce</string>
-    <string name="accessibility_service_explanation">Klávesová mapa potřebuje použít službu usnadnění přístupu, aby mohla poslouchat stisknutí tlačítek/klávesy a provádět akce, které jste zvolili.
-    Služba přístupnosti poslouchá pouze klíčové události a detekuje aplikaci, ve které se nacházíte. Můžete se podívat na zdrojový kód, který je propojen na obrazovce O zobrazení, a ověřit to.</string>
+    <string name="accessibility_service_explanation">Key Mapper vyžaduje použití služby usnadnění, aby mohl detekovat a měnit, co dělá vaše stisknutí tlačítka, když jste mimo aplikaci. Vaše klíčové mapy budou fungovat, až když povolíte službu usnadnění. Pro vytvoření spouště musí být také zapnuto.</string>
     <string name="selection_count">%d vybrán</string>
     <string name="enable">Povolit</string>
     <string name="open">Otevřít</string>
@@ -38,8 +37,8 @@
     <string name="stop_repeating_trigger_pressed_again">Spouštěč je znovu stisknuty</string>
     <string name="stop_repeating_limit_reached">Dosažen koniec</string>
     <string name="stop_repeating_when_swiped_again">Přejeďte zase</string>
-    <string name="stop_holding_down_when_trigger_released">Spouštěč je povolený</string>
-    <string name="stop_holding_down_trigger_pressed_again">Spouštěč je znovu stlačen</string>
+    <string name="stop_holding_down_when_trigger_released">Spouštěč byl uvolněn</string>
+    <string name="stop_holding_down_trigger_pressed_again">Spouštěč je znovu stisknuty</string>
     <string name="show_hidden_apps">Zobrazit schované aplikace</string>
     <string name="modifiers">Modifikátory</string>
     <string name="toggle">Přepnout</string>
@@ -109,7 +108,7 @@
     <!--  Headers  -->
     <string name="option_list_header">Možnosti</string>
     <string name="action_list_header">Akce</string>
-    <string name="trigger_header">Aktivační událost</string>
+    <string name="trigger_header">Spouštěč</string>
     <string name="constraint_list_header">Omezení</string>
     <string name="header_fingerprint_gesture_up">Přejeďte prstem nahoru</string>
     <string name="header_fingerprint_gesture_down">Přejeďte prstem dolů</string>
@@ -251,6 +250,11 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <string name="constraint_ime_chosen_description">Je vybráno %s</string>
     <string name="constraint_ime_not_chosen">Metoda zadávání není vybrána</string>
     <string name="constraint_ime_not_chosen_description">%s není vybráno</string>
+    <string name="constraint_device_is_locked">Zařízení je uzamčeno</string>
+    <string name="constraint_device_is_unlocked">Zařízení je odemčené</string>
+    <string name="constraint_in_phone_call">V hovoru</string>
+    <string name="constraint_not_in_phone_call">Nevolá</string>
+    <string name="constraint_phone_ringing">Zvonění telefonu</string>
     <string name="orientation_0">Na výšku (0°)</string>
     <string name="orientation_90">Na šířku (90°)</string>
     <string name="orientation_180">Na výšku (180°)</string>
@@ -279,7 +283,7 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <string name="slide_description_create_bug_report">Vyberte umístění pro uložení chybového hlášení klepnutím na \"vytvořit zprávu\". Další snímek ukáže, jak jej můžete poslat vývojáři.</string>
     <string name="slide_button_create_bug_report">Vytvořit report</string>
     <string name="slide_title_share_bug_report">Sdílet zprávu</string>
-    <string name="slide_description_share_bug_report">Existují tři způsoby, jak sdílet hlášení o chybě vývojáři. Buď se připojte na Discord server, vytvořte GitHub, nebo (alespoň pokud možno) pošlete e-mail. Ujistěte se, že připojíte zprávu o chybě k vaší zprávě!</string>
+    <string name="slide_description_share_bug_report">Existují dva způsoby, jak sdílet hlášení o chybě vývojáři. Buď se připojte na Discord server, vytvořte GitHub vlákno. Ujistěte se, že připojíte zprávu o chybě k vaší zprávě!</string>
     <string name="slide_button_share_discord">Discord</string>
     <!--  Bug report slides-->
     <!-- Menu action titles-->
@@ -323,6 +327,7 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <string name="button_yes">Ano!</string>
     <string name="button_choose_action">Vybrat akci</string>
     <string name="button_add_intent_extra">Pridať extra</string>
+    <string name="button_create_keymap_shortcut_in_launcher_enabled">Vytvořit zástupce spouštěče</string>
     <string name="button_open_trigger_keymap_from_intent_guide">Průvodce myšlením</string>
     <string name="button_help">Nápověda</string>
     <string name="button_pick_coordinate_select_screenshot">Vybrat snímek obrazovky (volitelné)</string>
@@ -406,13 +411,17 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <string name="dialog_title_failed_to_create_bug_report">Nepodařilo se vytvořit hlášení o chybě</string>
     <string name="dialog_title_request_shizuku_permission">Požádat o povolení Shizuku</string>
     <string name="dialog_message_request_shizuku_permission">Vzhledem k tomu, že používáte Shizuku, důrazně doporučujeme udělit toto oprávnění, protože některé funkce v Mapovači klíčů lze provést, aniž byste museli cokoli konfigurovat (např. zadávání klíčových kódů bez použití klávesnice Key Mapper).</string>
+    <string name="dialog_title_home_fix_error">Oprav chybu</string>
+    <string name="dialog_title_explain_bluetooth_permission">Požadováno oprávnění</string>
+    <string name="dialog_title_accessibility_service_explanation">Služba Dostupnost musí být povolena</string>
     <string name="pos_yes">Ano</string>
     <string name="pos_done">Hotovo</string>
     <string name="pos_opt_in">Přihlásit se</string>
     <string name="pos_grant_write_secure_settings_guide">Průvodce</string>
     <string name="pos_report_issues_guide">Průvodce</string>
+    <string name="pos_start_service_with_adb_guide">Průvodce</string>
     <string name="pos_enable_root_features">Povolit root funkce</string>
-    <string name="pos_grant">Udělit</string>strings
+    <string name="pos_grant">Udělit</string>
     <string name="pos_join">Připojit se</string>
     <string name="pos_change_location">Změnit</string>
     <string name="pos_turn_off_stock_battery_optimisation">částečně opravit</string>
@@ -429,14 +438,15 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <string name="neutral_go_to_dont_kill_my_app">Online guide</string>
     <string name="neutral_go_to_settings">Nastavení</string>
     <string name="neutral_intent_docs">Dokumentace</string>
-    <string name="neutral_changelog">Změny ve verzích</string>
+    <string name="neutral_changelog">Seznam změn</string>
     <string name="neutral_report_bug">Nahlásit chybu</string>
     <string name="dialog_button_restart_accessibility_service">Restartovat</string>
     <string name="dialog_button_open_guide_to_fix_optimisation">Přejít na průvodce</string>
     <string name="dialog_button_install_shizuku">Shizuku</string>
     <string name="dialog_button_install_gui_keyboard">Klávesa Mapper GUI klávesnice</string>
     <string name="dialog_button_install_leanback_keyboard">Klávesová mapa Leanback</string>
-    <string name="dialog_button_install_nothing">nic nestane</string>
+    <string name="dialog_button_install_nothing">Nic nedělat</string>
+    <string name="dialog_button_fix">Opravit</string>
     <string name="snackbar_cancel">Zrušit</string>
     <string name="snackbar_fix">Opravit</string>
     <!-- Dialog stuff -->
@@ -517,6 +527,7 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <string name="summary_pref_show_device_descriptors">Toto je užitečné pro rozlišení mezi zařízeními, která mají stejný název.</string>
     <string name="title_pref_reroute_keyevents_link">Řešení chyby Android 11</string>
     <string name="summary_pref_reroute_keyevents_link">Tím se opraví klávesnice, které nefungují, když jsou povoleny nějaké služby usnadnění.</string>
+    <string name="title_pref_reroute_keyevents">Řešení chyby Android 11</string>
     <string name="title_pref_devices_to_reroute_keyevents_choose_devices">4. Zvolte zařízení</string>
     <string name="title_pref_devices_to_reroute_keyevents_install_gui_keyboard">1. Nainstalujte klávesu Mapper GUI klíče (volitelné)</string>
     <string name="title_pref_devices_to_reroute_keyevents_install_leanback_keyboard">1. Nainstalujte klávesovou mapu Leanback (volitelné)</string>
@@ -601,7 +612,6 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <string name="showcase_accessibility_service_description_crashed">Služby usnadnění přístupu jsou povoleny, ale byly ukončeny telefonem nebo došlo k pádu. Restartujte je.</string>
     <string name="showcase_accessibility_service_button_restart">Restartovat</string>
     <string name="showcase_accessibility_service_title_disabled">Povolit službu usnadnění přístupu</string>
-    <string name="showcase_accessibility_service_description_disabled">Vaše klíčové mapy budou fungovat pouze po povolení služby přístupu. Také je třeba zapnout pro vytvoření spouštěče.</string>
     <string name="showcase_record_trigger_title">Služba přístupnosti je zakázána</string>
     <string name="showcase_record_trigger_description">Spouštěč můžete nahrávat pouze v případě, že je služba přístupnosti povolena.</string>
     <string name="showcase_note_from_the_developer_title">Poznámka od vývojáře</string>
@@ -636,13 +646,14 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <string name="showcase_shizuku_not_started_title">Shizuku není spuštěn</string>
     <string name="showcase_shizuku_not_started_message">Shizuku musí být spuštěn před udělením oprávnění Key Mapper k jeho použití. Klepnutím na \"Spustit Shizuku\" otevřete aplikaci Shizuku, abyste ji mohli spustit.</string>
     <string name="showcase_shizuku_launch_shizuku_app">Spusťte Shizuku</string>
+    <string name="showcase_notification_permission_button">Udělit</string>
     <!-- Showcase -->
     <!-- system action options -->
     <string name="stream_accessibility">Přístupnost</string>
     <string name="stream_alarm">Alarm</string>
     <string name="stream_dtmf">DTMF</string>
     <string name="stream_music">Hudba</string>
-    <string name="stream_notification">Notifications</string>
+    <string name="stream_notification">Oznámení</string>
     <string name="stream_ring">Vyzvánění</string>
     <string name="stream_system">Systém</string>
     <string name="stream_voice_call">Hlasový hovor</string>
@@ -920,6 +931,7 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <string name="action_open_url">Otevřít adresu URL</string>
     <string name="action_send_intent">Odeslat záměr</string>
     <string name="action_phone_call">Zahájit telefonní hovor</string>
+    <string name="action_answer_call">Příjmout telefoní hovor</string>
     <string name="action_play_sound">Přehrávání zvuku</string>
     <string name="action_dismiss_most_recent_notification">Zavření posledního oznámení</string>
     <string name="action_dismiss_all_notifications">Zrušit všechna Halo upozornění</string>
@@ -980,16 +992,15 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <string name="intent_flags_example">Příznaky záměru jsou uloženy jako bitové vlajky. Tyto vlajky mění způsob nakládání s tímto záměrem. Pokud je toto prázdné pro záměr aktivity, pak klíčová mapa bude ve výchozím nastavení používat FLAG_ACTIVITY_NEW_TASK. Pro mnohem více informací klepněte na \'dokumentace\' pro zobrazení dokumentace vývojářů systému Android.</string>
     <!--  Intent action type strings  -->
     <!--  Tap targets  -->
-    <string name="tap_target_quick_start_guide_primary">Příručka pro rychlý start</string>
+    <string name="tap_target_quick_start_guide_primary">Průvodce rychlým startem</string>
     <string name="tap_target_quick_start_guide_secondary">Pokud se zaseknete, podívejte se do průvodce rychlým startem.</string>
     <!--  Tap targets  -->
     <!--  About  -->
-    <string name="about_link_github">GitHub</string>
     <string name="about_link_website">Web</string>
     <string name="about_link_translations">Překlady</string>
     <string name="about_version">Verze %s</string>
     <string name="about_link_rate">Ohodnoďte</string>
-    <string name="about_link_changelog">Změny ve verzích</string>
+    <string name="about_link_changelog">Seznam změn</string>
     <string name="about_link_discord">Discord</string>
     <string name="about_header_boring_stuff">Skladování věcí</string>
     <string name="about_license_title">Licence</string>
@@ -1002,5 +1013,6 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <string name="about_team_gl513_role">Moderátor/podpora komunity</string>
     <string name="about_team_kekero_role">Překladač (polština)</string>
     <string name="about_team_trollserver_role">Překladatel (česky)</string>
+    <string name="about_team_bydario_role">Překladač (španělština)</string>
     <!--  About  -->
 </resources>
