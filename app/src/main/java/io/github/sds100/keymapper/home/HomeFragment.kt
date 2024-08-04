@@ -54,7 +54,7 @@ class HomeFragment : Fragment() {
         get() = _binding!!
 
     private val backupMappingsLauncher =
-        registerForActivityResult(CreateDocument("todo/todo")) {
+        registerForActivityResult(CreateDocument(FileUtils.MIME_TYPE_ZIP)) {
             it ?: return@registerForActivityResult
 
             homeViewModel.onChoseBackupFile(it.toString())
