@@ -1,8 +1,8 @@
 package io.github.sds100.keymapper.api
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
@@ -14,7 +14,11 @@ import splitties.toast.toast
  */
 
 // DON'T MOVE THIS CLASS TO A DIFFERENT PACKAGE BECAUSE IT BREAKS THE API
-class LaunchKeyMapShortcutActivity : AppCompatActivity() {
+/**
+ * Use basic Activity, NOT AppCompatActivity so the NoDisplay theme works. Otherwise an
+ * exception may be thrown because the theme doesn't extend AppCompat.
+ */
+class LaunchKeyMapShortcutActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
