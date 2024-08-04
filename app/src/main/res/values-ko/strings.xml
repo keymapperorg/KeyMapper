@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="slogan">키를 보다 자유롭게 설정하세요!</string>
+    <string name="no_action_chosen">선택한 동작 없음</string>
+    <string name="selection_count">%d개 선택함</string>
+    <string name="enable">사용</string>
+    <string name="open">열기</string>
+    <string name="recyclerview_placeholder">¯\\_(ツ)_/¯\n\n아무것도 없습니다!</string>
+    <string name="triggers_recyclerview_placeholder">트리거를 기록하세요!</string>
+    <string name="actions_recyclerview_placeholder">동작을 추가하세요!</string>
+    <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\n키 맵을 생성하세요!</string>
+    <string name="action_shortcut_list_recyclerview_placeholder">¯\\_(ツ)_/¯\n\n이 단축키에 아무 동작도 지정하지 않았습니다!</string>
+    <string name="no_key_maps">키 맵을 만들지 않았습니다!</string>
+    <string name="everything_looks_good">모두 잘된 것 같습니다!</string>
+    <string name="your_device_doesnt_support_some_actions">장치에서 일부 동작을 지원하지 않습니다.</string>
+    <string name="tab_unsupported_actions">지원하지 않는 동작</string>
+    <string name="choose_action_warning_requires_root">루트 필요</string>
+    <string name="no_actions">동작 없음</string>
+    <string name="no_trigger">트리거 없음</string>
+    <string name="unknown_keycode">알 수 없는 키 코드: %s</string>
+    <string name="unknown_device_name">알 수 없는 기기 이름</string>
+    <string name="follow_system">시스템 설정에 따름</string>
+    <string name="this_device">이 기기</string>
+    <string name="any_device">모든 기기</string>
+    <string name="trigger_device_name_not_found">이 기기의 이름을 알 수 없습니다</string>
+    <string name="slider_default">기본</string>
+    <string name="button_enable_accessibility_service">접근성 서비스 활성화</string>
+    <string name="button_restart_accessibility_service">접근성 서비스 재시작</string>
+    <string name="share_backup">공유</string>
+    <string name="stop_repeating_dot_dot_dot">반복 중지 조건...</string>
+    <string name="stop_repeating_when_trigger_released">트리거를 놓았을 때</string>
+    <string name="stop_repeating_trigger_pressed_again">트리거를 다시 눌렀을 때</string>
+    <string name="stop_repeating_limit_reached">제한에 도달했을 때</string>
+    <string name="stop_repeating_when_swiped_again">다시 밀었을 때</string>
+    <string name="stop_holding_down_when_trigger_released">트리거를 놓았을 때</string>
+    <string name="stop_holding_down_trigger_pressed_again">트리거를 다시 눌렀을 때</string>
+    <string name="show_hidden_apps">숨긴 앱 표시</string>
+    <string name="modifiers">변경자</string>
+    <string name="dont_know_device_name">기기 이름을 알 수 없습니다!</string>
+    <string name="tap_actions_to_fix">동작을 눌러서 수정하십시오!</string>
+    <string name="tap_constraints_to_fix">제한 조건을 눌러서 수정하십시오!</string>
+    <string name="shortcut_label_action">동작 실행</string>
+    <string name="from_no_device">기기 없음</string>
+    <string name="clip_key_mapper_log">Key Mapper 로그</string>
+    <string name="whats_new">새로운 기능</string>
+    <string name="caption_action_type_phone_call">전화번호를 입력하세요.</string>
+    <string name="switch_enabled">켜짐</string>
+    <string name="disabled">꺼짐</string>
+    <string name="reset">초기화</string>
+    <string name="enable_device_admin_message">한 번 장치 관리자를 활성화하면, Key Mapper를 삭제하고자 할 때 반드시 이를 비활성화해야 합니다.</string>
+    <string name="constraints_recyclerview_placeholder">제한 조건을 추가하세요!</string>
+    <string name="action_title_wait">%sms 대기</string>
+    <string name="action_title_intent_start_activity">액티비티 시작: %s</string>
+    <string name="action_title_intent_start_service">서비스 시작: %s</string>
+    <string name="action_title_intent_send_broadcast">브로드캐스트 전송: %s</string>
+    <string name="clipboard_label_keymap_uid">키 맵 UUID</string>
+    <string name="check_box_key_event_option_use_shell">셸 사용 (루트 전용)</string>
+    <string name="trigger_error_cant_detect_in_phone_call">이 트리거는 전화를 수신하는 중이거나 통화 중일 때 작동하지 않을 것입니다!</string>
+    <string name="trigger_error_cant_detect_in_phone_call_explanation">Android에서는 전화 벨이 울리거나 통화 중일 때 접근성 서비스가 볼륨 버튼 누름을 감지할 수 없도록 합니다. 하지만 입력 방법 서비스로는 이를 감지할 수 있습니다. 따라서 이 트리거가 작동하려면 Key Mapper 키보드 중 하나를 사용해야 합니다.</string>
+    <string name="home_error_is_battery_optimised">매핑이 무작위로 작동을 멈출 수 있습니다!</string>
+    <string name="home_error_key_maps_paused">매핑의 작동이 중지되었습니다!</string>
+    <string name="home_error_key_maps_paused_button">재개</string>
+    <string name="home_error_accessibility_service_is_disabled">매핑이 작동하려면 접근성 서비스가 켜져 있어야 합니다!</string>
+    <string name="home_error_accessibility_service_is_crashed">폰이 백그라운드에서 Key Mapper의 작동을 중지시켰거나 Key Mapper 프로그램이 충돌했습니다!</string>
+    <string name="home_success_accessibility_service_is_enabled">접근성 서비스가 켜졌습니다! 매핑이 작동할 것입니다.</string>
+    <string name="home_error_logging_enabled_button">끄기</string>
+    <string name="title_about">정보</string>
+    <!--  Action descriptions  -->
+    <string name="description_open_app">%s 열기</string>
+    <string name="description_key">\'%s\' 키 누르기</string>
+    <string name="description_text_block">\'%s\' 입력</string>
+    <string name="description_keyevent">입력 %s%s</string>
+    <string name="description_keyevent_through_shell">셸을 통한 입력 %s</string>
+    <string name="description_url">%s 열기</string>
+    <string name="description_phone_call">%s에 전화 걸기</string>
+    <string name="description_sound">소리 재생: %s</string>
+    <!--  Action descriptions  -->
+    <!--  Headers  -->
+    <string name="option_list_header">옵션</string>
+    <string name="action_list_header">동작</string>
+    <string name="trigger_header">트리거</string>
+    <string name="constraint_list_header">제약 조건</string>
+    <string name="header_fingerprint_gesture_up">위로 밀기</string>
+    <string name="header_fingerprint_gesture_down">아래로 밀기</string>
+    <string name="header_fingerprint_gesture_left">왼쪽으로 밀기</string>
+    <string name="header_fingerprint_gesture_right">오른쪽으로 밀기</string>
+    <string name="header_click_type">클릭 유형</string>
+    <!--  Headers  -->
+    <!--  Hints  -->
+    <string name="hint_keycode">키 코드</string>
+    <string name="hint_from_device">장치에서</string>
+    <string name="hint_shortcut_name">단축키 이름</string>
+    <string name="hint_create_text_action">입력할 텍스트</string>
+    <string name="hint_create_url_action">방문할 URL</string>
+    <string name="hint_create_phone_call_action">통화할 전화번호</string>
+    <string name="hint_intent_action">동작</string>
+    <string name="hint_intent_categories">카테고리</string>
+    <string name="hint_intent_data">데이터</string>
+    <string name="hint_intent_package">패키지</string>
+    <string name="hint_intent_class">클래스</string>
+    <string name="hint_intent_extra_name">이름</string>
+    <string name="hint_intent_extra_value_with_type">값 (%s)</string>
+    <string name="hint_intent_flags">플래그</string>
+    <string name="hint_sound_file_description">소리 파일 설명</string>
+    <string name="hint_wifi_ssid">Wi-Fi 네트워크 SSID</string>
+    <!--  Hints  -->
+    <!--  Radio buttons  -->
+    <string name="radio_button_parallel">동시에</string>
+    <string name="radio_button_sequence">순차적으로</string>
+    <string name="radio_button_and">그리고</string>
+    <string name="radio_button_or">또는</string>
+    <string name="radio_button_short_press">짧게 누르기</string>
+    <string name="radio_button_long_press">길게 누르기</string>
+    <string name="radio_button_double_press">두 번 누르기</string>
+    <string name="radio_button_intent_extra_value_true">참</string>
+    <string name="radio_button_intent_extra_value_false">거짓</string>
+    <string name="radio_button_intent_target_activity">액티비티</string>
+    <string name="radio_button_intent_target_service">서비스</string>
+    <string name="radio_button_intent_target_broadcast_receiver">방송 수신기</string>
+    <!--  Radio buttons  -->
+    <!--  Tabs  -->
+    <string name="tab_trigger_and_actions">트리거 및 동작</string>
+    <string name="tab_constraints_and_more">제약 조건 및 기타</string>
+    <string name="tab_options">옵션</string>
+    <string name="tab_constraints">제약 조건</string>
+    <string name="tab_actions">동작</string>
+    <string name="tab_trigger">트리거</string>
+    <string name="tab_fingerprint">지문</string>
+    <string-array name="home_tab_titles">
+        <item>@string/tab_keyevents</item>
+        <item>@string/tab_fingerprint</item>
+    </string-array>
+    <!--  Tabs  -->
+    <!--  Navigation argument ids  -->
+    <!--  Navigation argument ids  -->
+    <!--  Toasts  -->
+    <string name="toast_chose_keyboard">%s 선택</string>
+    <string name="toast_backup_successful">백업 성공!</string>
+    <string name="toast_backup_failed">백업 실패!</string>
+    <string name="toast_restore_successful">복원 성공!</string>
+    <string name="toast_restore_failed">복원 실패!</string>
+    <string name="toast_automatic_backup_successful">자동 백업 성공!</string>
+    <string name="toast_automatic_backup_failed">자동 백업 실패!</string>
+    <string name="toast_screenshot_taken">스크린샷 촬영됨</string>
+    <string name="toast_io_exception_shrug">IO 예외 발생 ¯\\_(ツ)_/¯</string>
+    <string name="toast_incorrect_screenshot_resolution">스크린샷 해상도와 기기 해상도가 맞지 않습니다!</string>
+    <string name="toast_copied_keymap_uid_to_clipboard">키 맵 UUID를 클립보드에 복사함</string>
+    <string name="toast_triggered_keymap">매핑을 트리거했습니다</string>
+    <string name="toast_copied_log">로그를 복사함</string>
+    <string name="toast_root_features_turned_on">이제 루트 기능을 이용할 수 있음</string>
+    <string name="toast_failed_to_choose_sound_file">소리 파일을 선택할 수 없습니다! 로그를 확인하십시오.</string>
+    <string name="toast_no_sound_files">저장한 소리 파일이 없습니다!</string>
+    <string name="toast_granted_itself_write_secure_settings_with_shizuku">Key Mapper에서 Shizuku를 이용해 WRITE_SECURE_SETTINGS 권한을 스스로에게 부여했습니다</string>
+    <string name="toast_granted_itself_write_secure_settings_with_root">Key Mapper에서 루트 권한을 이용해 WRITE_SECURE_SETTINGS 권한을 스스로에게 부여했습니다</string>
+    <!--  Toasts  -->
+    <!-- Extra labels -->
+    <string name="extra_label_sequence_trigger_timeout">시퀀스 트리거 제한 시간 (ms)</string>
+    <string name="extra_label_long_press_delay_timeout">길게 누르기 지연 시간 (ms)</string>
+    <string name="extra_label_double_press_delay_timeout">두 번 누르기 제한 시간 (ms)</string>
+    <string name="extra_label_repeat_delay">반복 주기 (ms)</string>
+    <string name="extra_label_repeat_limit">반복 제한</string>
+    <string name="extra_label_repeat_rate">반복 주기 (ms)</string>
+    <string name="extra_label_vibration_duration">진동 시간 (ms)</string>
+    <string name="extra_label_action_multiplier">횟수</string>
+    <string name="extra_label_action_multiplier_with_repeat">매 반복마다 횟수</string>
+    <string name="extra_label_delay_before_next_action">다음 동작 전 지연 시간 (ms)</string>
+    <!-- Extra labels -->
+    <!-- Constraints -->
+    <string name="constraint_app_foreground_description">%s 앱이 포그라운드 구동 중임</string>
+    <string name="constraint_app_not_foreground_description">%s 앱이 포그라운드에서 구동되지 않음</string>
+    <string name="constraint_app_playing_media_description">%s 앱이 미디어를 재생하는 중임</string>
+    <string name="constraint_app_not_playing_media_description">%s 앱이 미디어를 재생하지 않음</string>
+    <string name="constraint_bt_device_connected_description">%s 기기가 연결됨</string>
+    <string name="constraint_bt_device_disconnected_description">%s 기기가 연결되지 않음</string>
+    <string name="constraint_screen_on_description">화면 켜짐</string>
+    <string name="constraint_screen_off_description">화면 꺼짐</string>
+    <string name="constraint_flashlight_off_description">%s 손전등 꺼짐</string>
+    <string name="constraint_flashlight_on_description">%s 손전등 켜짐</string>
+    <string name="constraint_mode_and">그리고</string>
+    <string name="constraint_mode_or">또는</string>
+    <string name="constraint_category_app">앱</string>
+    <string name="constraint_category_bluetooth">블루투스</string>
+    <string name="constraint_category_screen">화면</string>
+    <string name="constraint_category_orientation">방향</string>
+    <string name="constraint_choose_app_foreground">앱이 포그라운드 구동 중임</string>
+    <string name="constraint_choose_app_not_foreground">앱이 포그라운드에서 구동되지 않음</string>
+    <string name="constraint_choose_bluetooth_device_connected">블루투스 기기 연결됨</string>
+    <string name="constraint_choose_bluetooth_device_disconnected">블루투스 기기 연결 해제됨</string>
+    <string name="constraint_choose_screen_on_description">화면 켜짐</string>
+    <string name="constraint_choose_screen_off_description">화면 꺼짐</string>
+    <string name="constraint_choose_orientation_0">세로 (0°)</string>
+    <string name="constraint_choose_orientation_90">가로 (90°)</string>
+    <string name="constraint_choose_orientation_180">세로 (180°)</string>
+    <string name="constraint_choose_orientation_270">가로 (270°)</string>
+    <string name="constraint_choose_orientation_portrait">세로 (아무거나)</string>
+    <string name="constraint_choose_orientation_landscape">가로 (아무거나)</string>
+    <string name="constraint_choose_app_playing_media">앱이 미디어를 재생하는 중임</string>
+    <string name="constraint_choose_app_not_playing_media">앱이 미디어를 재생하지 않음</string>
+    <string name="constraint_choose_media_playing">미디어 재생 중</string>
+    <string name="constraint_choose_media_not_playing">재생 중인 미디어 없음</string>
+    <string name="constraint_flashlight_on">손전등 켜짐</string>
+    <string name="constraint_flashlight_off">손전등 꺼짐</string>
+    <string name="constraint_wifi_on">Wi-Fi 켜짐</string>
+    <string name="constraint_wifi_off">Wi-Fi 꺼짐</string>
+    <string name="constraint_wifi_connected">Wi-Fi 네트워크에 연결됨</string>
+    <string name="constraint_wifi_disconnected">Wi-Fi 네트워크 연결 해제됨</string>
+    <string name="constraint_wifi_pick_network_any">모두</string>
+    <string name="constraint_wifi_connected_description">%s Wi-Fi에 연결함</string>
+    <string name="constraint_wifi_disconnected_description">%s Wi-Fi와의 연결이 해제됨</string>
+    <string name="constraint_wifi_connected_any_description">아무 Wi-Fi에 연결함</string>
+    <string name="constraint_wifi_disconnected_any_description">모든 Wi-Fi와의 연결이 해제됨</string>
+    <string name="constraint_device_is_locked">기기가 잠겼을 때</string>
+    <string name="constraint_device_is_unlocked">기기가 열렸을 때</string>
+    <string name="constraint_charging">중전 중일 때</string>
+    <string name="constraint_discharging">중전 중이 아닐 때</string>
+    <string name="orientation_0">세로 (0°)</string>
+    <string name="orientation_90">가로 (90°)</string>
+    <string name="orientation_180">세로 (180°)</string>
+    <string name="orientation_270">가로 (270°)</string>
+    <!-- Constraints -->
+    <!-- Click types -->
+    <string name="clicktype_short_press">짧게 누르기</string>
+    <string name="clicktype_long_press">길게 누르기</string>
+    <string name="clicktype_double_press">두 번 누르기</string>
+    <!-- Click types -->
+    <!-- URLs -->
+    <!-- URLs -->
+    <!-- Activity titles -->
+    <string name="title_choose_action">동작 선택</string>
+    <!-- Activity titles -->
+    <!--  Bug report slides-->
+    <string name="slide_title_read_dont_kill_my_app">앱 종료 비활성화</string>
+    <string name="slide_button_read_dont_kill_my_app">도움말 열기</string>
+    <string name="slide_title_restart_accessibility_service">접근성 서비스 재시작</string>
+    <string name="slide_button_restart_accessibility_service">재시작</string>
+    <string name="slide_title_create_bug_report">버그 신고</string>
+    <string name="slide_button_create_bug_report">신고 생성</string>
+    <string name="slide_title_share_bug_report">신고 공유</string>
+    <string name="slide_button_share_discord">Discord</string>
+    <string name="slide_button_share_github">GitHub</string>
+    <!--  Bug report slides-->
+    <!-- Menu action titles-->
+    <string name="action_settings">설정</string>
+    <string name="action_done">완료</string>
+    <string name="action_select_all">모두 선택</string>
+    <string name="action_about">정보</string>
+    <string name="action_search">검색</string>
+    <string name="action_help_home">빠른 시작 가이드</string>
+    <string name="action_help">도움말</string>
+    <string name="action_enable">사용</string>
+    <string name="action_disable">사용 안 함</string>
+    <string name="action_disable_all_keymaps">모두 사용 안 함</string>
+    <string name="action_enable_all_keymaps">모두 사용</string>
+    <string name="action_report_bug">버그 신고</string>
+    <string name="action_change_keyboard">입력 방법 선택기 표시</string>
+    <string name="action_save">저장</string>
+    <string name="action_duplicate_keymap">복제</string>
+    <string name="action_backup">백업</string>
+    <string name="action_restore">복원</string>
+    <string name="action_backup_everything">모두 백업</string>
+    <string name="action_backup_all">모두 백업</string>
+    <string name="action_tap_to_pause_keymaps">눌러서 정지</string>
+    <string name="action_tap_to_resume_keymaps">눌러서 재개</string>
+    <string name="action_reset">초기화</string>
+    <string name="action_save_log">저장</string>
+    <string name="action_copy_log">복사</string>
+    <string name="action_clear_log">지우기</string>
+    <!-- Menu action titles-->
+    <!-- Button titles -->
+    <string name="button_add_action">동작 추가</string>
+    <string name="button_record_trigger">트리거 기록</string>
+    <string name="button_done">완료</string>
+    <string name="button_save">저장</string>
+    <string name="button_fix">수정</string>
+    <string name="button_recording_trigger_countdown">%d…</string>
+    <string name="button_add_constraint">제한 조건 추가</string>
+    <string name="button_choose_keycode">키 코드 선택</string>
+    <string name="button_yes">네!</string>
+    <string name="button_choose_action">동작 선택</string>
+    <string name="button_create_keymap_shortcut_in_launcher_enabled">런처 바로가기 생성</string>
+    <string name="button_help">도움말</string>
+    <string name="button_pick_coordinate_select_screenshot">스크린샷 선택 (선택사항)</string>
+    <string name="button_config_intent_choose_activity">액티비티 선택</string>
+    <string name="button_config_intent_set_flags">플래그 설정</string>
+    <string name="button_copy_log">복사</string>
+    <string name="button_slider_repeat_no_limit">제한 없음</string>
+    <string name="button_choose_sound_file">소리 파일 선택</string>
+    <string name="button_edit_action">동작 수정</string>
+    <string name="button_replace_action">동작 교체</string>
+    <!-- Button titles -->
+    <!-- Dialog stuff -->
+    <string name="dialog_title_are_you_sure">확실합니까?</string>
+    <string name="dialog_title_create_shortcut_title">바로가기 제목 생성</string>
+    <string name="dialog_title_root_prompt">루트 권한이 필요합니다!</string>
+    <string name="dialog_title_flags">더 보기</string>
+    <string name="dialog_title_choose_flash">플래시 선택</string>
+    <string name="dialog_title_cant_find_accessibility_settings_page">접근성 설정 페이지를 찾을 수 없음</string>
+    <string name="dialog_title_cant_record_trigger">트리거를 기록할 수 없습니까?</string>
+    <string name="dialog_message_downloading">다운로드 중...</string>
+    <string name="dialog_title_write_secure_settings">WRITE_SECURE_SETTINGS 권한 부여</string>
+    <string name="dialog_message_write_secure_settings">권한을 부여하려면 PC/Mac이 필요합니다. 온라인 도움말을 읽어보십시오.</string>
+    <string name="dialog_message_cant_find_accessibility_settings_page">기기에 접근성 서비스 설정 페이지가 없는 것 같습니다. \"도움말\"을 눌러 고치는 방법을 설명하는 온라인 도움말을 읽어보십시오.</string>
+    <string name="dialog_message_double_press_restricted_to_single_key">"여러 키를 동시에 두 번 누를 수는 없습니다."</string>
+    <string name="dialog_title_install_leanback_keyboard">Key Mapper Leanback 키보드 설치</string>
+    <string name="dialog_message_install_leanback_keyboard">매우 권장하는 방식입니다! Key Mapper와 사용할 수 있으며 Android TV에 적합한 키보드입니다. Key Mapper 내장 키보드는 (기본 입력 방식) 화상 키보드를 제공하지 않습니다. 설치 파일을 받을 출처를 선택하십시오.</string>
+    <string name="dialog_title_choose_download_gui_keyboard">Key Mapper GUI 키보드 설치</string>
+    <string name="dialog_message_choose_download_gui_keyboard">다운로드 출처를 선택하십시오.</string>
+    <string name="dialog_title_choose_download_leanback_keyboard">Key Mapper Leanback 키보드 설치</string>
+    <string name="dialog_message_choose_download_leanback_keyboard">다운로드 출처를 선택하십시오.</string>
+    <string name="dialog_message_install_shizuku_or_gui_keyboard">이 동작을 사용하기 위해 기기를 설정할 수 있는 방법이 3가지 있습니다. 각자의 장단점을 설명드리겠습니다.
+        
+        \n\n<b>1. Shizuku 다운로드(권장).</b> 이미 사용하고 있는 화상 키보드 대신 다른 화상 키보드를 사용하지 않아도 되지만 기기를 다시 시작할 때마다 가동하는 데 수 분 정도 시간이 걸릴 것입니다.
+        
+        \n\n<b>2. Key Mapper GUI Keyboard 다운로드.</b>Android TV에 최적화되었으며 Key Mapper와 호환되는 화상 키보드이지만 Gboard와 같이 기존에 사용하던 화상 키보드를 사용할 수 없습니다.
+        
+        \n\n<b>3. 아무것도 하지 않고 자체 내장된 Key Mapper 키보드 사용.</b> Key Mapper를 사용할 시 화상 키보드를 사용할 수 <b>없게</b> 되는 방법이므로 권장하지 않습니다! 장점은 없습니다.</string>
+    <string name="dialog_message_install_shizuku_or_leanback_keyboard">이 동작을 사용하기 위해 기기를 설정할 수 있는 방법이 3가지 있습니다. 각자의 장단점을 설명드리겠습니다.
+        
+        \n\n<b>1. Shizuku 다운로드(권장).</b> 이미 사용하고 있는 화상 키보드 대신 다른 화상 키보드를 사용하지 않아도 되지만 기기를 다시 시작할 때마다 가동하는 데 수 분 정도 시간이 걸릴 것입니다.
+        
+        \n\n<b>2. Key Mapper Leanback Keyboard 다운로드.</b>Android TV에 최적화되었으며 Key Mapper와 호환되는 화상 키보드이지만 Gboard와 같이 기존에 사용하던 화상 키보드를 사용할 수 없습니다.
+        
+        \n\n<b>3. 아무것도 하지 않고 자체 내장된 Key Mapper 키보드 사용.</b> Key Mapper를 사용할 시 화상 키보드를 사용할 수 <b>없게</b> 되는 방법이므로 권장하지 않습니다! 장점은 없습니다.</string>
+    <string name="dialog_title_send_feedback">피드백 전송</string>
+    <string name="dialog_message_no_app_found_to_create_file">Key Mapper에서 쓰는 파일을 만들 수 있게 해주는 파일 관리자 앱이 없습니다. 파일 관리자 앱을 설치하여 주십시오.</string>
+    <string name="dialog_message_no_app_found_to_choose_a_file">Key Mapper에서 쓰는 파일을 선택할 수 있게 해주는 파일 관리자 앱이 없습니다. 파일 관리자 앱을 설치하여 주십시오.</string>
+    <string name="dialog_title_fix_dnd_trigger_error">방해 금지 모드 권한 허용</string>
+    <string name="dialog_message_fix_dnd_trigger_error">방해 금지 모드를 변경할 수 있는 앱을 관리하는 설정 페이지로 이동합니다. <b>일부 기기에서는 작동하지 않을 수 있으므로</b> Key Mapper를 목록에서 볼 수 없는 경우 \'다시 보지 않기\'를 누르세요.</string>
+    <string name="pos_done">완료</string>
+    <string name="neg_dont_show_again">다시 보지 않기</string>
+    <string name="neutral_go_to_settings">설정</string>
+    <string name="neutral_changelog">변경 내역</string>
+    <string name="neutral_report_bug">버그 신고</string>
+    <string name="dialog_button_fix">수정</string>
+    <string name="snackbar_fix">수정</string>
+    <!-- Dialog stuff -->
+    <!-- Notification strings -->
+    <!--  remove accessibility from the word because the other notification buttons arent visible on small screens  -->
+    <!-- Notification strings -->
+    <!--Preference titles and summaries-->
+    <string name="title_pref_long_press_delay">기본 길게 누르기 지연 시간 (ms)</string>
+    <string name="title_pref_double_press_delay">기본 두 번 누르기 제한 시간 (ms)</string>
+    <string name="title_pref_vibration_duration">기본 진동 시간 (ms)</string>
+    <string name="title_pref_repeat_rate">기본 반복 주기 (ms)</string>
+    <string name="title_pref_sequence_trigger_timeout">기본 시퀀스 트리거 제한 시간 (ms)</string>
+    <string name="title_pref_reset_defaults">초기화</string>
+    <!--Preference titles and summaries-->
+    <!--Preference categories-->
+    <!--Preference categories-->
+    <!-- About activity-->
+    <string name="pref_title_changelog">변경 내역</string>
+    <!-- About activity-->
+    <!--flags-->
+    <!--flags-->
+    <!-- Showcase -->
+    <string name="showcase_note_from_the_developer_description">당신의 기기에서 모든 동작이 정상 작동하고 모든 버튼을 인식할 수 있을 것이라는 보장은 없습니다. Android에는 다양한 변종이 있고 제조사가 실수 혹은 고의로 기능을 중단할 수 있기 때문입니다. 일부 기능이 제대로 작동하지 않으면 개발자에게 알려 주시고 가끔은 개발자가 해결하기 어려운 문제도 발생하기 때문에 무턱대고 앱에 나쁜 평가를 주지 않으셨으면 좋겠습니다. =)</string>
+    <string name="showcase_fingerprint_gesture_support_button">사용</string>
+    <!-- Showcase -->
+    <!-- system action options -->
+    <string name="stream_dtmf">다이얼음</string>
+    <!-- system action options -->
+    <!-- Tiles -->
+    <!-- Tiles -->
+    <!-- Meta States -->
+    <!-- Meta States -->
+    <!-- Error messages -->
+    <string name="error_battery_optimisation_activity_not_found">배터리 최적화 설정을 찾을 수 없습니다! 만약 존재하면 수동으로 여십시오.</string>
+    <!-- Error messages -->
+    <!-- action labels -->
+    <!-- action labels -->
+    <!-- action category labels -->
+    <!-- action category labels -->
+    <!--  Intent action type strings  -->
+    <!--  Intent action type strings  -->
+    <!--  Tap targets  -->
+    <string name="tap_target_quick_start_guide_primary">빠른 시작 가이드</string>
+    <!--  Tap targets  -->
+    <!--  About  -->
+    <string name="about_link_changelog">변경 내역</string>
+    <string name="about_link_discord">Discord</string>
+    <!--  About  -->
+</resources>
