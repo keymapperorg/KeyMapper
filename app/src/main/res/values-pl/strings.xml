@@ -490,7 +490,7 @@
     <string name="notification_keyboard_hidden_title">Klawiatura jest ukryta!</string>
     <string name="notification_keyboard_hidden_text">Kliknij \'Pokaż klawiaturę\', aby znowu wyświetlić klawiaturę.</string>
     <string name="notification_toggle_keyboard_title">Włącz/wyłącz klawiaturę Key Mapper</string>
-    <string name="notification_toggle_keyboard_text">Kliknij \'przełącz\', aby przełączyć się na i z klawiatury Key Mapper.</string>
+    <string name="notification_toggle_keyboard_text">Kliknij \'włącz/wyłącz\', aby przełączyć się na i z klawiatury Key Mapper.</string>
     <string name="notification_toggle_keyboard_action">Włącz/wyłącz</string>
     <string name="notification_feature_fingerprint_title">Zmień funkcje gestów czytnika linii papilarnych za pomocą Key Mapper!</string>
     <string name="notification_feature_fingerprint_text">Twoje urządzenie obsługuje zmianę funkcji gestów na czytniku linii papilarnych. Kliknij, aby rozpocząć!</string>
@@ -663,6 +663,7 @@
     <string name="showcase_shizuku_not_started_title">Aplikacja Shizuku nie jest uruchomiona</string>
     <string name="showcase_shizuku_not_started_message">Aby udzielić aplikacji Key Mapper uprawnienia do korzystania z aplikacji Shizuku, należy ją uruchomić. Kliknij \"Uruchom Shizuku\", aby otworzyć aplikację Shizuku, w której możesz ją uruchomić.</string>
     <string name="showcase_shizuku_launch_shizuku_app">Uruchom Shizuku</string>
+    <string name="showcase_notification_permission_button">Udziel</string>
     <!-- Showcase -->
     <!-- system action options -->
     <string name="stream_accessibility">Ułatwienia dostępu</string>
