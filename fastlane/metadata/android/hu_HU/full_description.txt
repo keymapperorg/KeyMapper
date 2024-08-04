@@ -1,38 +1,38 @@
-What can be remapped?
+Mit lehet átállítani?
 
- * Fingerprint gestures on supported devices.
- * Volume buttons.
- * Navigation buttons.
- * Bluetooth/wired keyboards.
- * Buttons on other connected devices should also work.
+ * Ujjlenyomat-gesztusok a támogatott eszközökön.
+ * Hangerőszabályzó gombok.
+ * Navigációs gombok.
+ * Bluetooth/vezetékes billentyűzeteket.
+ * Más csatlakoztatott eszközök gombjainak is működniük kell.
 
-ONLY HARDWARE buttons can be remapped.
-There is NO GUARANTEE any of these buttons will work and this app is NOT designed to control games. Your device's OEM/vendor can prevent them from being remapped.
+Kizárólag a HARDVERes gombokat lehet átképezni.
+NINCS GARANCIA, hogy bármelyik gomb működni fog, és ezt az alkalmazást NEM játékok vezérlésére tervezték. A készülék OEM-je/gyártója megakadályozhatja az átállítást.
 
-You can combine multiple keys from a specific device or any device to form a "trigger". Each trigger can have multiple actions. The keys can be set to be pressed at the same time or one after another in a sequence. Keys can be remapped when they are short pressed, long pressed or double pressed. A keymap can have a set of "constraints" so it only has an effect in certain situations.
+Egy adott eszköz vagy bármely eszköz több billentyűjét kombinálhatod aktiválásként. Minden egyes aktiváláshoz több művelet is tartozhat. A billentyűk egyszerre vagy egymás után, sorrendben nyomhatók le. A billentyűk rövid, hosszú vagy dupla megnyomás esetén átállíthatóak. A billentyű-térképnek lehet egy sor "korlátozása", így csak bizonyos helyzetekben van hatása.
 
-What can’t be remapped?
- * Power button
- * Bixby button
- * Mouse buttons
- * Dpad, thumb sticks or triggers on game controllers
+Mit nem lehet átállítani?
+ * Bekapcsoló gomb
+ * Bixby gomb
+ * Egér gombok
+ * Dpad, hüvelykujjas botok vagy ravaszok a játékvezérlőkön
 
-Your key maps don't work if the screen is OFF. This is a limitation in Android. There is nothing the dev can do.
+A billentyűs térképek nem működnek, ha a képernyő ki van kapcsolva. Ez az Android egyik korlátozása. A fejlesztő semmit sem tehet ez ellen.
 
-What can I remap my keys to do?
-Some actions will only work on rooted devices and specific Android versions.
+Mit tudok a billentyűimnek beállítani?
+Egyes műveletek csak rootolt eszközökön és bizonyos Android-verziókon működnek.
 
-There are too many features to list here so check out the full list here: https://docs.keymapper.club/user-guide/actions
+Túl sok funkció van ahhoz, hogy itt felsoroljuk, ezért a teljes listát itt találod: https://docs.keymapper.club/user-guide/actions
 
-Permissions
-You don't have to grant all the permissions for the app to work. The app will tell you if a permission needs to be granted for a feature to work.
+Engedélyek
+Nem kell minden engedélyt megadnod ahhoz, hogy az alkalmazás működjön. Az alkalmazás megmondja, ha egy funkció működéséhez engedélyt kell adni.
 
- * Accessibility Service: Basic requirement for remapping to work. It is needed so the app can listen to and block keyevents.
- * Device Admin: To turn the screen off when using the action to turn off the screen.
- * Modify System Settings: To change the brightness and rotation settings.
- * Camera: To control the flashlight.
+ * Akadálymentesítési szolgáltatás: Alapvető követelmény az átállításhoz. Erre azért van szükség, hogy az alkalmazás figyelni és blokkolni tudja a billentyűlenyomásokat.
+ * Adminisztrátor: A képernyő kikapcsolása a képernyő kikapcsolására szolgáló művelet használatakor.
+ * Rendszerbeállítások módosítása: A fényerő és a forgatási beállítások megváltoztatásához.
+ * Kamera: A zseblámpa vezérléséhez.
 
- On some devices, enabling the accessibility service will disable "enhanced data encryption".
+ Egyes eszközökön a akadálymentesítési szolgáltatás engedélyezése letiltja a "fokozott adattitkosítást".
 
 Discord: www.keymapper.club
 Website: docs.keymapper.club
