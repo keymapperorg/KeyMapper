@@ -40,12 +40,12 @@ data class KeyMapTrigger(
 
     fun isLongPressDoubleVibrationAllowed(): Boolean =
         (keys.size == 1 || (mode is TriggerMode.Parallel)) &&
-                keys.getOrNull(0)?.clickType == ClickType.LONG_PRESS
+            keys.getOrNull(0)?.clickType == ClickType.LONG_PRESS
 
     fun isDetectingWhenScreenOffAllowed(): Boolean = keys.isNotEmpty() &&
-            keys.all {
-                KeyEventUtils.canDetectKeyWhenScreenOff(it.keyCode)
-            }
+        keys.all {
+            KeyEventUtils.canDetectKeyWhenScreenOff(it.keyCode)
+        }
 
     fun isChangingSequenceTriggerTimeoutAllowed(): Boolean =
         !keys.isNullOrEmpty() && keys.size > 1 && mode is TriggerMode.Sequence

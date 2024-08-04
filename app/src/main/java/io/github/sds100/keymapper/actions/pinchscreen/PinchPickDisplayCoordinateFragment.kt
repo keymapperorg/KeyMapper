@@ -9,11 +9,10 @@ import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.ArrayAdapter
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.getSystemService
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.decodeBitmap
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -59,8 +58,8 @@ class PinchPickDisplayCoordinateFragment : Fragment() {
             }
 
             val displaySize = Point().apply {
-                val windowManager: WindowManager = requireContext().getSystemService()!!
-                windowManager.defaultDisplay.getRealSize(this)
+                @Suppress("DEPRECATION")
+                ContextCompat.getDisplayOrDefault(requireContext()).getRealSize(this)
             }
 
             viewModel.selectedScreenshot(bitmap, displaySize)

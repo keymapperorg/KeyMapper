@@ -9,10 +9,9 @@ import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.getSystemService
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.decodeBitmap
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -48,19 +47,19 @@ class PickDisplayCoordinateFragment : Fragment() {
     }
 
     private val screenshotLauncher =
-        registerForActivityResult(ActivityResultContracts.GetContent()) {
-            it ?: return@registerForActivityResult
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            uri ?: return@registerForActivityResult
 
             val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                ImageDecoder.createSource(requireContext().contentResolver, it)
+                ImageDecoder.createSource(requireContext().contentResolver, uri)
                     .decodeBitmap { _, _ -> }
             } else {
-                MediaStore.Images.Media.getBitmap(requireContext().contentResolver, it)
+                MediaStore.Images.Media.getBitmap(requireContext().contentResolver, uri)
             }
 
             val displaySize = Point().apply {
-                val windowManager: WindowManager = requireContext().getSystemService()!!
-                windowManager.defaultDisplay.getRealSize(this)
+                @Suppress("DEPRECATION")
+                ContextCompat.getDisplayOrDefault(requireContext()).getRealSize(this)
             }
 
             viewModel.selectedScreenshot(bitmap, displaySize)

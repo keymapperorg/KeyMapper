@@ -65,16 +65,8 @@ class PickDisplayCoordinateViewModel(
 
     fun selectedScreenshot(newBitmap: Bitmap, displaySize: Point) {
         // check whether the height and width of the bitmap match the display size, even when it is rotated.
-        if (
-            (
-                displaySize.x != newBitmap.width &&
-                    displaySize.y != newBitmap.height
-                ) &&
-
-            (
-                displaySize.y != newBitmap.width &&
-                    displaySize.x != newBitmap.height
-                )
+        if ((displaySize.x != newBitmap.width && displaySize.y != newBitmap.height) &&
+            (displaySize.y != newBitmap.width && displaySize.x != newBitmap.height)
         ) {
             viewModelScope.launch {
                 val snackBar = PopupUi.SnackBar(
