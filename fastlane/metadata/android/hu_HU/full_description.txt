@@ -1,0 +1,38 @@
+Mit lehet átállítani?
+
+ * Ujjlenyomat-gesztusok a támogatott eszközökön.
+ * Hangerőszabályzó gombok.
+ * Navigációs gombok.
+ * Bluetooth/vezetékes billentyűzeteket.
+ * Más csatlakoztatott eszközök gombjainak is működniük kell.
+
+Kizárólag a HARDVERes gombokat lehet átképezni.
+NINCS GARANCIA, hogy bármelyik gomb működni fog, és ezt az alkalmazást NEM játékok vezérlésére tervezték. A készülék OEM-je/gyártója megakadályozhatja az átállítást.
+
+Egy adott eszköz vagy bármely eszköz több billentyűjét kombinálhatod aktiválásként. Minden egyes aktiváláshoz több művelet is tartozhat. A billentyűk egyszerre vagy egymás után, sorrendben nyomhatók le. A billentyűk rövid, hosszú vagy dupla megnyomás esetén átállíthatóak. A billentyű-térképnek lehet egy sor "korlátozása", így csak bizonyos helyzetekben van hatása.
+
+Mit nem lehet átállítani?
+ * Bekapcsoló gomb
+ * Bixby gomb
+ * Egér gombok
+ * Dpad, hüvelykujjas botok vagy ravaszok a játékvezérlőkön
+
+A billentyűs térképek nem működnek, ha a képernyő ki van kapcsolva. Ez az Android egyik korlátozása. A fejlesztő semmit sem tehet ez ellen.
+
+Mit tudok a billentyűimnek beállítani?
+Egyes műveletek csak rootolt eszközökön és bizonyos Android-verziókon működnek.
+
+Túl sok funkció van ahhoz, hogy itt felsoroljuk, ezért a teljes listát itt találod: https://docs.keymapper.club/user-guide/actions
+
+Engedélyek
+Nem kell minden engedélyt megadnod ahhoz, hogy az alkalmazás működjön. Az alkalmazás megmondja, ha egy funkció működéséhez engedélyt kell adni.
+
+ * Akadálymentesítési szolgáltatás: Alapvető követelmény az átállításhoz. Erre azért van szükség, hogy az alkalmazás figyelni és blokkolni tudja a billentyűlenyomásokat.
+ * Adminisztrátor: A képernyő kikapcsolása a képernyő kikapcsolására szolgáló művelet használatakor.
+ * Rendszerbeállítások módosítása: A fényerő és a forgatási beállítások megváltoztatásához.
+ * Kamera: A zseblámpa vezérléséhez.
+
+ Egyes eszközökön a akadálymentesítési szolgáltatás engedélyezése letiltja a "fokozott adattitkosítást".
+
+Discord: www.keymapper.club
+Website: docs.keymapper.club
