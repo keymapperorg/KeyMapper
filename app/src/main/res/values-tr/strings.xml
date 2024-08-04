@@ -1,66 +1,395 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="slogan">Butonlarınızı özgürleştirin!</string>
+    <string name="no_action_chosen">Seçilen etkinlik yok</string>
+    <string name="accessibility_service_explanation">Key Mapper, siz uygulamanın dışındayken düğme basmalarınızın ne yaptığını algılayıp değiştirebilmesi için bir erişilebilirlik hizmetinin kullanılmasını gerektirir. Key map\'leriniz yalnızca erişilebilirlik hizmetini etkinleştirdikten sonra çalışacaktır. Bir tetikleyici oluşturmak için de açık olması gerekir.</string>
+    <string name="selection_count">%d seçildi</string>
+    <string name="enable">Çalıştırma</string>
+    <string name="open">Açık</string>
+    <string name="recyclerview_placeholder">¯ \\ _ (ツ) _ / ¯ \n\nBurada hiçbir şey yok!</string>
+    <string name="triggers_recyclerview_placeholder">Bir tuş belirle!</string>
+    <string name="actions_recyclerview_placeholder">1 tuş belirle!</string>
+    <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nörnek bir anahtar oluştur!</string>
+    <string name="action_shortcut_list_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nBu kısayol için herhangi bir eylem seçmediniz!</string>
+    <string name="no_key_maps">Hiç tuş eşlemedin agam!</string>
+    <string name="everything_looks_good">Herşey iyi görünüyor :) ! </string>
+    <string name="warning_the_app_will_work">Uygulama çalışacaktır ancak ne yaptığınıza bağlı olarak bazı şeylerin düzeltilmesi gerekebilir.</string>
+    <string name="your_device_doesnt_support_some_actions">Cihaz bazı fonksiyonları desteklemiyor.</string>
+    <string name="tab_unsupported_actions">Desteklenmeyen işlemler</string>
+    <string name="choose_action_warning_requires_root">Kök erişimi gerektirir</string>
+    <string name="press_dot_dot_dot">Bura basın…</string>
+    <string name="no_actions">Eylem yok</string>
+    <string name="no_trigger">Etkileyici yok</string>
+    <string name="unknown_keycode">Bilinmeyen anahtar kodu: %s</string>
+    <string name="unknown_device_name">Bilinmeyen cihaz ismi</string>
+    <string name="on">Açık</string>
+    <string name="off">Kapatıldı</string>
+    <string name="follow_system">Sistem yönlendiriyo</string>
+    <string name="this_device">Bu cihaz</string>
+    <string name="any_device">Cihaz farketmez</string>
+    <string name="trigger_device_name_not_found">Bu cihazın adı bilinmiyor</string>
+    <string name="slider_default">Varsayılan</string>
+    <string name="button_enable_accessibility_service">Erişilebilirlik servisi aç</string>
+    <string name="button_restart_accessibility_service">Erişilebilirlik servisini yeniden başlat</string>
+    <string name="share_backup">Paylaş</string>
+    <string name="stop_repeating_dot_dot_dot">… olduğunda tekrarlamayı durdur</string>
+    <string name="stop_repeating_when_trigger_released">Tetikleyici serbest bırakıldı</string>
+    <string name="stop_repeating_trigger_pressed_again">Tetikleyici tekrar tetiklendi</string>
+    <string name="stop_repeating_limit_reached">Sınıra ulaşıldı</string>
+    <string name="stop_repeating_when_swiped_again">Tekrar kaydırıldı</string>
+    <string name="stop_holding_down_when_trigger_released">Tetikleyici serbest bırakıldı</string>
+    <string name="stop_holding_down_trigger_pressed_again">Tetikleyici tekrar tetiklendi</string>
+    <string name="show_hidden_apps">Olmayan uygulamaları göster</string>
+    <string name="modifiers">Değiştiriciler</string>
+    <string name="toggle">Değiştir</string>
+    <string name="tap_coordinate_screenshot_message">ÖNEMLİ!!!  Bu koordinatlar yalnızca ekranınız ekran görüntüsü ile aynı yöndeyse doğrudur!  Bu eylem, ekranda yaptığınız tüm dokunuşları veya hareketleri iptal edecektir. \n\nEkranınızdaki bir noktanın koordinatlarını bulma konusunda yardıma ihtiyacınız varsa, bir ekran görüntüsü alın ve ardından bu eylemin basmasını istediğiniz ekran görüntüsüne dokunun.</string>
+    <string name="dont_know_device_name">Cihaz adını bilmiyorum!</string>
+    <string name="tap_actions_to_fix">Eylemleri düzeltmek için tıkla. </string>
+    <string name="shortcut_label_action">Performans eylemleri</string>
+    <string name="hold_down_until_trigger_is_dot_dot_dot">Başarılı olana kadar basılı tutın. Çeviren: Ali Efe Çolak </string>
+    <string name="from_no_device">Cihaz yok</string>
+    <string name="intent_extras_recycler_view_placeholder">¯\\_(ツ)_/¯\n\n Ekstralar yok! </string>
+    <string name="content_description_fab_new_keymap">Yeni tuş eşle</string>
+    <string name="clip_key_mapper_log">Key Mapper kayıt</string>
+    <string name="sharesheet_title">Şuna gönder</string>
+    <string name="whats_new">Yenilikler :) </string>
+    <string name="caption_action_type_key">Girmek istediğiniz cihazdaki tuşa tıklayın
+            \n\nÖNEMLİ!
+            Bu tuşu bir eşlemek, yalnızca Key Mapper uyumlu bir klavye kullanıyorsanız işe yarar.</string>
+    <string name="caption_action_type_keycode">ÖNEMLİ!
+            Bu anahtar kodunu eşlemek, yalnızca Key Mapper uyumlu bir klavye kullanıyorsanız işe yarar.</string>
+    <string name="caption_action_type_text">Bu eylemi gerçekleştirdiğinizde eklenmesini istediğiniz metni yazın.</string>
+    <string name="caption_action_type_phone_call">Telefon numarasını gir.</string>
+    <string name="caption_action_type_url">Açmak istediğiniz URL\'yi girin. https://, http://, www. koymana gerek yok. </string>
+    <string name="caption_no_paired_bt_devices">Eşleştirilmiş bir cihaz BULUNAMADI. Bluetooth açık mı? </string>
+    <string name="switch_enabled">Etkin </string>
+    <string name="disabled">Pasif </string>
+    <string name="reset">Sıfırla </string>
+    <string name="action_title_wait">Bekle %sms</string>
+    <string name="action_title_intent_start_activity">%s etkinliği başlatılıyor</string>
+    <string name="action_title_intent_start_service">Servisi Başlat %s</string>
+    <string name="action_title_intent_send_broadcast">Yayın gönder:%s</string>
+    <string name="clipboard_label_keymap_uid">Anahtar eşleme UUID\'si</string>
+    <string name="check_box_key_event_option_use_shell">Kabuk kullan (sadece KÖK)</string>
+    <string name="home_error_logging_enabled_button">Kapat</string>
+    <string name="title_about">Hakkında</string>
     <!--  Action descriptions  -->
+    <string name="description_open_app">Aç %s</string>
+    <string name="description_key">%s tuşuna bas</string>
+    <string name="description_text_block">%s yazın</string>
+    <string name="description_keyevent">%s%s\'i girin</string>
+    <string name="description_keyevent_from_device">%s \'den %s%s girişi</string>
+    <string name="description_url">%s\'i Aç</string>
+    <string name="description_phone_call">Ara %s</string>
     <!--  Action descriptions  -->
     <!--  Headers  -->
+    <string name="option_list_header">Ayarlar</string>
+    <string name="action_list_header">Eylemler</string>
+    <string name="trigger_header">Tetikleyici</string>
+    <string name="constraint_list_header">Kısıtlamalar</string>
+    <string name="header_fingerprint_gesture_up">Yukarı kaydır</string>
+    <string name="header_fingerprint_gesture_down">Aşağı kaydır</string>
+    <string name="header_fingerprint_gesture_left">Sola kaydır</string>
+    <string name="header_fingerprint_gesture_right">Sağa kaydır</string>
+    <string name="header_click_type">Tıklama türü</string>
+    <string name="header_intent_extras">Ekstralar</string>
     <!--  Headers  -->
     <!--  Hints  -->
+    <string name="hint_keycode">Anahtar kodu</string>
+    <string name="hint_from_device">Cihazdan</string>
+    <string name="hint_shortcut_name">Kısayol adı</string>
+    <string name="hint_tap_coordinate_title">Koordinat açıklaması (isteğe bağlı)</string>
+    <string name="hint_intent_action">Eylem</string>
+    <string name="hint_intent_categories">Kategoriler</string>
+    <string name="hint_intent_data">Veri</string>
+    <string name="hint_intent_package">Paket</string>
+    <string name="hint_intent_class">Sınıf</string>
+    <string name="hint_intent_extra_name">Ad</string>
+    <string name="hint_intent_extra_value_with_type">Değeri (%s)</string>
+    <string name="hint_intent_description">Keymapper için açıklama (gerekli)</string>
+    <string name="hint_intent_flags">Bayraklar</string>
     <!--  Hints  -->
     <!--  Radio buttons  -->
+    <string name="radio_button_parallel">Aynı Zamanda</string>
+    <string name="radio_button_sequence">Sırayla</string>
+    <string name="radio_button_and">VE</string>
+    <string name="radio_button_or">YA DA</string>
+    <string name="radio_button_short_press">Kısa basma</string>
+    <string name="radio_button_long_press">Uzun basma</string>
+    <string name="radio_button_double_press">Çift basma</string>
+    <string name="radio_button_intent_extra_value_true">Doğru</string>
+    <string name="radio_button_intent_extra_value_false">Yanlış</string>
+    <string name="radio_button_intent_target_activity">Etkinlik</string>
+    <string name="radio_button_intent_target_service">Servis</string>
+    <string name="radio_button_intent_target_broadcast_receiver">Yayın alıcı</string>
     <!--  Radio buttons  -->
     <!--  Tabs  -->
+    <string name="tab_trigger_and_actions">Tetikleyici ve eylemler</string>
+    <string name="tab_constraints_and_more">Kısıtlamalar ve diğerleri</string>
+    <string name="tab_options">Ayarlar</string>
+    <string name="tab_constraints">Kısıtlamalar</string>
+    <string name="tab_actions">Eylemler</string>
+    <string name="tab_trigger">Tetikleyici</string>
+    <string name="tab_fingerprint">Parmak izi</string>
+    <string-array name="home_tab_titles">
+        <item>@string/tab_keyevents</item>
+        <item>@string/tab_fingerprint</item>
+    </string-array>
     <!--  Tabs  -->
     <!--  Navigation argument ids  -->
     <!--  Navigation argument ids  -->
     <!--  Toasts  -->
+    <string name="toast_chose_keyboard">%s\'i seç</string>
+    <string name="toast_backup_successful">Yedekleme başarılı!</string>
+    <string name="toast_restore_successful">Geri yükleme başarılı!</string>
+    <string name="toast_automatic_backup_successful">Otomatik yedekleme başarılı!</string>
+    <string name="toast_screenshot_taken">Ekran görüntüsü alındı</string>
+    <string name="toast_io_exception_shrug">GÇ istisnası ¯ \\ _ (ツ) _ / ¯</string>
+    <string name="toast_incorrect_screenshot_resolution">Ekran görüntüsü kalitesi cihazınki ile eşleşmiyor!</string>
+    <string name="toast_copied_keymap_uid_to_clipboard">Anahtar eşlemesi UUID\'si panoya kopyalandı</string>
     <!--  Toasts  -->
     <!-- Extra labels -->
+    <string name="extra_label_sequence_trigger_timeout">Sıra tetikleme zaman aşımı (ms)</string>
+    <string name="extra_label_long_press_delay_timeout">Uzun basma bekleme süre (ms)</string>
+    <string name="extra_label_double_press_delay_timeout">Çift basış zaman aşımı (ms)</string>
+    <string name="extra_label_repeat_delay">Tekrarlamadan önceki bekleme süresi (ms)</string>
+    <string name="extra_label_repeat_rate">Her… (ms) tekrarla</string>
+    <string name="extra_label_vibration_duration">Titreşim süresi (ms)</string>
+    <string name="extra_label_delay_before_next_action">Bi sonraki eylemden önce bekleme (ms)</string>
+    <string name="extra_label_hold_down_duration">Basılı tutma süresi (ms)</string>
     <!-- Extra labels -->
     <!-- Constraints -->
+    <string name="constraint_app_foreground_description">%s önplanda</string>
+    <string name="constraint_app_not_foreground_description">%s önplanda değil</string>
+    <string name="constraint_app_playing_media_description">%s medya oynatıyor</string>
+    <string name="constraint_bt_device_connected_description">%s bağlandı</string>
+    <string name="constraint_bt_device_disconnected_description">%s bağlantısı kesildi</string>
+    <string name="constraint_screen_on_description">Ekran açık</string>
+    <string name="constraint_screen_off_description">Ekran kapalı</string>
+    <string name="constraint_mode_and">ve</string>
+    <string name="constraint_mode_or">ya da/veya</string>
+    <string name="constraint_category_app">Uygulama</string>
+    <string name="constraint_category_bluetooth">Bluetooth</string>
+    <string name="constraint_category_screen">Ekran</string>
+    <string name="constraint_category_orientation">Oryantasyon</string>
+    <string name="constraint_choose_app_foreground">Uygulama önplanda</string>
+    <string name="constraint_choose_app_not_foreground">Uygulama önplanda değil</string>
+    <string name="constraint_choose_bluetooth_device_connected">Bluetooth cihazı bağlandı</string>
+    <string name="constraint_choose_bluetooth_device_disconnected">Bluetooth cihazı ile bağlantı kesildi</string>
+    <string name="constraint_choose_screen_on_description">Ekran açık</string>
+    <string name="constraint_choose_screen_off_description">Ekran kapalı</string>
+    <string name="constraint_choose_orientation_0">Portre (0°)</string>
+    <string name="constraint_choose_orientation_90">Yatay (90°)</string>
+    <string name="constraint_choose_orientation_180">Portre (180°)</string>
+    <string name="constraint_choose_orientation_270">Yatay (270°)</string>
+    <string name="constraint_choose_orientation_portrait">Portre (hiç)</string>
+    <string name="constraint_choose_orientation_landscape">Yatay (hiç)</string>
+    <string name="constraint_choose_app_playing_media">Özel uygulama medya oynatıyor</string>
+    <string name="orientation_0">Portre (0°)</string>
+    <string name="orientation_90">Yatay (90°)</string>
+    <string name="orientation_180">Portre (180°)</string>
+    <string name="orientation_270">Yatay (270°)</string>
     <!-- Constraints -->
     <!-- Click types -->
+    <string name="clicktype_short_press">Kısa basma</string>
+    <string name="clicktype_long_press">Uzun basma</string>
+    <string name="clicktype_double_press">Çift basma</string>
     <!-- Click types -->
     <!-- URLs -->
     <!-- URLs -->
     <!-- Activity titles -->
+    <string name="title_choose_action">Eylem seç</string>
     <!-- Activity titles -->
     <!--  Bug report slides-->
     <!--  Bug report slides-->
     <!-- Menu action titles-->
+    <string name="action_settings">Ayarlar</string>
+    <string name="action_done">Başarılı</string>
+    <string name="action_select_all">Tümünü seç</string>
+    <string name="action_about">Hakkında</string>
+    <string name="action_search">Ara</string>
+    <string name="action_help_home">Hızlı Başlangıç Rehberi</string>
+    <string name="action_help">Yardım</string>
+    <string name="action_enable">Etkinleştir</string>
+    <string name="action_disable">Devre Dışı Bırak</string>
+    <string name="action_disable_all_keymaps">Tümünü devre dışı bırak</string>
+    <string name="action_enable_all_keymaps">Tümünü etkinleştir</string>
+    <string name="action_change_keyboard">Giriş yöntemi seçicisini göster</string>
+    <string name="action_seed_database">Veri tabanını sınıflandır</string>
+    <string name="action_save">Kaydet</string>
+    <string name="action_duplicate_keymap">Kopyala</string>
+    <string name="action_backup">Yedekle</string>
+    <string name="action_restore">Geri Yükle</string>
+    <string name="action_backup_everything">Her şeyi yedekle</string>
+    <string name="action_backup_all">Tümünü yedekle</string>
+    <string name="action_tap_to_pause_keymaps">Duraklatmak için dokunun</string>
+    <string name="action_tap_to_resume_keymaps">Devam etmek için dokunun</string>
+    <string name="action_reset">Sıfırla</string>
+    <string name="action_save_log">Kaydet</string>
     <!-- Menu action titles-->
     <!-- Button titles -->
+    <string name="button_add_action">Eylem ekle</string>
+    <string name="button_record_trigger">Tetikleyici kaydet</string>
+    <string name="button_done">Başarılı</string>
+    <string name="button_save">Kaydet</string>
+    <string name="button_fix">Düzelt</string>
+    <string name="button_recording_trigger_countdown">%d…</string>
+    <string name="button_add_constraint">Kısıtlama ekle</string>
+    <string name="button_choose_keycode">Tuş kodu seç</string>
+    <string name="button_yes">Evet!</string>
+    <string name="button_choose_action">Eylem seç</string>
+    <string name="button_add_intent_extra">Ekstra ekle</string>
+    <string name="button_create_keymap_shortcut_in_launcher_enabled">Başlatıcı kısayolu oluştur</string>
+    <string name="button_open_trigger_keymap_from_intent_guide">Amaç kılavuzu</string>
+    <string name="button_help">Yardım</string>
+    <string name="button_config_intent_choose_activity">Etkinlik seçin</string>
+    <string name="button_config_intent_set_flags">Bayrakları seç</string>
     <!-- Button titles -->
     <!-- Dialog stuff -->
+    <string name="dialog_title_are_you_sure">Emin misiniz?</string>
+    <string name="dialog_title_create_shortcut_title">Kısayol başlığı oluştur</string>
+    <string name="dialog_title_root_prompt">KÖK ERİŞİMİ gerekiyor!</string>
+    <string name="dialog_title_flags">Daha fazla</string>
+    <string name="dialog_title_pick_stream">Yayını seç</string>
+    <string name="dialog_title_choose_flash">Flaşı seç</string>
+    <string name="dialog_title_cant_find_accessibility_settings_page">Erişilebilirlik hizmeti sayfası bulunamadı agb</string>
+    <string name="dialog_title_cant_record_trigger">Tetikleyici kaydedilemedi?</string>
+    <string name="dialog_message_root_prompt">Telefonunuzun köklü olmadığını biliyorsanız veya kökün ne olduğunu bilmiyorsanız, yalnızca köklü cihazlarda çalışan özellikleri kullanamazsınız.  \'Tamam\'a dokunduğunuzda, ayarlara yönlendirileceksiniz.
+             Ayarlarda, aşağıya kaydırın ve \'Anahtar Eşleştiricinin kök izni var\' seçeneğine dokunun, böylece kök özelliklerini / eylemlerini kullanabilirsiniz.</string>
+    <string name="dialog_message_downloading">Yükleniyor…</string>
+    <string name="dialog_message_long_press_warning">Uzun basma sadece fiziksel ses açma ve navigasyon tuşlarında çalışır. Diğer tuşlarda vunu etkinleştirdiğinizde çalışmayacak.</string>
+    <string name="dialog_message_double_press_restricted_to_single_key">"Bir den çok tetikleyicide çift tıklaysmazsınız."</string>
+    <string name="dialog_message_parallel_trigger_order">Tuşların basılı tutulacakları sırayla yukarıdan aşağı sıralanması gerekir.</string>
+    <string name="dialog_message_sequence_trigger_explanation">Bir \"sekans\" tetikleyicisinin, paralel tetikleyicilerin aksine bir zaman aşımı vardır. Bu, ilk tuşa bastıktan sonra, tetikteki tuşların geri kalanını girmek için belirli bir süreye sahip olacağınız anlamına gelir. Tetikleyiciye eklediğiniz tüm tuşlar, zaman aşımına ulaşılana kadar olağan eylemlerini gerçekleştirmez. Bu zaman aşımını \"Seçenekler\" sekmesinden değiştirebilirsiniz.</string>
+    <string name="dialog_message_bt_constraint_limitation">Android, uygulamaların bağlı (eşlenmemiş) Bluetooth cihazlarının bir listesini almasına izin vermez. Uygulamalar yalnızca bağlı ve bağlantısı kesildiğinde algılayabilir. Dolayısıyla, erişilebilirlik hizmeti başladığında Bluetooth cihazınız cihazınıza zaten bağlıysa, uygulamanın bağlı olduğunu bilmesi için yeniden bağlamanız gerekir.</string>
+    <string name="dialog_message_change_location_or_disable">Konum mu değiştirildi yoksa otomatik yedekleme mi kapandı?</string>
+    <string name="dialog_message_screen_constraints_limitation">Ekran açma / kapama kısıtlamaları yalnızca \"ekran kapalıyken tetiği algıla\" tuş haritası seçeneğini etkinleştirdiyseniz çalışacaktır. Bu seçenek yalnızca bazı tuşlar için (örneğin ses düğmeleri) ve kök erişiminiz iseniz gösterilecektir. Yardım sayfasında desteklenen tuşların listesine bakın.</string>
+    <string name="dialog_message_password_screen_lock_warning">PIN veya Desen gibi seçili başka bir ekran kilidiniz varsa endişelenmenize gerek yok. Ancak bir Parola ekran kilidiniz varsa, Anahtar Eşleyici Temel Giriş Yöntemi\'ni kullanırsanız, bir GUI\'ye sahip olmadığı için telefonunuzun kilidini * AÇAMAZsınız *. Anahtar Eşleştiriciye WRITE_SECURE_SETTINGS izni verebilirsiniz, böylece klavyeye ve klavyeden geçiş yapmak için bir bildirim gösterebilir. Ekranın altındaki soru işaretine dokunursanız, bunun nasıl yapılacağına dair bir kılavuz var.</string>
+    <string name="dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout">Klavyeniz için \"Caps Lock to camera\" klavye düzenini seçmeniz gerekir, aksi takdirde Caps Lock tuşu yine de büyük harfleri kilitler. Bu ayarı cihaz ayarlarınızda bulabilirsiniz -&gt; Diller ve Giriş -&gt; Fiziksel Klavye -&gt; Klavyenize dokunun -&gt; Klavye Düzenlerini Ayarlayın. Bu, Caps Lock tuşunu KEYCODE_CAMERA olarak yeniden eşler, böylece Anahtar Eşleştirici onu düzgün bir şekilde yeniden eşleyebilir. \n \n Bunu yaptıktan sonra Caps Lock tetik tuşunu kaldırmanız ve Caps Lock tuşunu yeniden kaydetmeniz gerekir. Adımları doğru yaptıysanız \"Caps Lock\" yerine \"Kamera\" demelidir.</string>
+    <string name="dialog_message_cant_record_trigger">\"Tetiği kaydet\" düğmesi geri sayıyorsa ve bastığınız düğmeler görünmüyorsa cihazınızı <b> yeniden başlatın </b>. Yeniden başlattıktan sonra düğmeleriniz hala görünmüyorsa, Key Mapper düğmelerinizi desteklemiyor demektir. Bunun için bir düzeltme yok.</string>
+    <string name="dialog_button_read_dont_kill_my_app_yes">Evet</string>
+    <string name="dialog_button_read_dont_kill_my_app_no">Hayır</string>
+    <string name="pos_yes">Evet</string>
+    <string name="pos_done">Başarılı</string>
+    <string name="pos_opt_in">Kaydol</string>
+    <string name="pos_grant_write_secure_settings_guide">Kılavuz</string>
+    <string name="pos_report_issues_guide">Kılavuz</string>
+    <string name="pos_start_service_with_adb_guide">Kılavuz</string>
+    <string name="pos_enable_root_features">Kök erişimi özelliklerini aktifleştir</string>
+    <string name="pos_grant">Yetkilendir</string>
+    <string name="pos_join">Katıl</string>
+    <string name="pos_change_location">Değiştir</string>
+    <string name="neg_turn_off">Kapat</string>
+    <string name="neg_stay_out">Uzak dur</string>
+    <string name="neg_no">Hayır</string>
+    <string name="neg_cancel">İptal</string>
+    <string name="neg_dont_show_again">Bir daha gösterme</string>
+    <string name="neutral_go_to_settings">Ayarlar</string>
+    <string name="neutral_intent_docs">Dokümanlar</string>
+    <string name="neutral_changelog">Değişiklik listesi</string>
+    <string name="dialog_button_fix">Düzelt</string>
+    <string name="snackbar_cancel">İptal</string>
+    <string name="snackbar_fix">Düzelt</string>
     <!-- Dialog stuff -->
     <!-- Notification strings -->
+    <string name="notification_channel_ime_picker">Klavye seçici</string>
+    <string name="notification_channel_keyboard_hidden">Gizli klavye uyarısı</string>
+    <string name="notification_channel_toggle_keyboard">Keymapper klavyesini değiştir</string>
+    <string name="notification_channel_new_features">Yeni özellikler</string>
+    <string name="notification_ime_persistent_text">Klavyeni seçmek için dokun.</string>
+    <string name="notification_ime_persistent_title">Klavye seçici</string>
+    <string name="notification_keymaps_resumed_title">Çalışıyor</string>
+    <string name="notification_keymaps_paused_title">Duraklatıldı</string>
+    <string name="notification_action_dismiss">Yoksay</string>
+    <string name="notification_accessibility_service_disabled_title">Erileşebirlik hizmeti kapalı</string>
+    <string name="notification_accessibility_service_disabled_text">Erişilebilirlik hizmetini başlatmak için dokun.</string>
     <!--  remove accessibility from the word because the other notification buttons arent visible on small screens  -->
+    <string name="notification_action_stop_acc_service">Servisi Durdur</string>
+    <string name="notification_keyboard_hidden_title">Klavye gizli!</string>
+    <string name="notification_toggle_keyboard_title">Keymapper klavyesini değiştir</string>
+    <string name="notification_toggle_keyboard_action">Değiştir</string>
+    <string name="notification_feature_fingerprint_title">Keymapper\'la parmak izi hareketlerini yeniden eşleyin!</string>
     <!-- Notification strings -->
     <!--Preference titles and summaries-->
+    <string name="title_pref_reset_defaults">Sıfırla </string>
     <!--Preference titles and summaries-->
     <!--Preference categories-->
+    <string name="title_pref_category_notifications">Bildirimler</string>
+    <string name="title_pref_category_defaults">Varsayılanlar</string>
+    <string name="summary_pref_category_root">Bu ayarlar sadece kök erişimi ile çalışır. Eğer kök erişimi hakkında bilginiz yoksa, cihazınızda kök erişimi var mı bilmiyorsanız lütfen düşük puan vermeyin. :)</string>
+    <string name="title_pref_category_write_secure_settings">WRITE_SECURE_SETTINGS iznine ihtiyaç var</string>
     <!--Preference categories-->
     <!-- About activity-->
+    <string name="pref_title_changelog">Değişiklik listesi</string>
+    <string name="pref_title_license">Lisans</string>
+    <string name="pref_title_privacy_policy">Gizlilik politikası</string>
+    <string name="pref_title_credits">Kredi</string>
+    <string name="pref_title_source_code">Kaynak kodu</string>
+    <string name="pref_title_developer_github">Geliştiricinin GitHub profili</string>
+    <string name="pref_title_rate_review">Oyla ve değerlendir</string>
+    <string name="pref_title_xda_thread">XDA başlığı</string>
+    <string name="pref_title_version">Versiyon</string>
+    <string name="pref_title_translate">Çevir</string>
+    <string name="pref_title_discord">Discord sunucusu</string>
+    <string name="pref_title_youtube_channel">YouTube kanalı (Öğreticiler)</string>
     <!-- About activity-->
     <!--flags-->
+    <string name="flag_show_volume_dialog">Ses diyaloğunu göster</string>
+    <string name="flag_long_press">Uzun basma</string>
+    <string name="flag_vibrate">Titreşim</string>
+    <string name="flag_show_toast">Ekran üstündeki mesajı göster</string>
+    <string name="flag_long_press_double_vibration">Tuşlara ilk basılışı ve uzun basılışında titret.</string>
     <!--flags-->
     <!-- Showcase -->
+    <string name="showcase_disable_battery_optimisation_button_turn_off">Kapat</string>
+    <string name="showcase_fingerprint_gesture_support_button">Çalıştırma</string>
+    <string name="showcase_request_shizuku_permission">Yetkilendir</string>
+    <string name="showcase_notification_permission_button">Yetkilendir</string>
     <!-- Showcase -->
     <!-- system action options -->
+    <string name="stream_accessibility">Erişilebilirlik</string>
+    <string name="stream_alarm">Alarm</string>
+    <string name="stream_dtmf">DTMF</string>
+    <string name="stream_music">Müzik</string>
+    <string name="stream_notification">Bildirimler</string>
+    <string name="stream_ring">Zil Sesi</string>
+    <string name="stream_system">Sistem</string>
+    <string name="stream_voice_call">Sesli çağrı</string>
+    <string name="ringer_mode_normal">Zil Sesi</string>
+    <string name="ringer_mode_vibrate">Titreşim</string>
     <!-- system action options -->
     <!-- Tiles -->
+    <string name="tile_toggle_keymapper_keyboard">Keymapper klavyesini değiştir</string>
     <!-- Tiles -->
     <!-- Meta States -->
     <!-- Meta States -->
     <!-- Error messages -->
     <!-- Error messages -->
     <!-- action labels -->
+    <string name="action_volume_show_dialog">Ses diyaloğunu göster</string>
     <!-- action labels -->
     <!-- action category labels -->
+    <string name="action_cat_notifications">Bildirimler</string>
     <!-- action category labels -->
     <!--  Intent action type strings  -->
+    <string name="intent_type_bool_header">Boole</string>
+    <string name="intent_type_bool_array_header">Boole dizisi</string>
+    <string name="intent_type_int_header">Integer</string>
+    <string name="intent_type_int_array_header">Tamsayı dizisi</string>
+    <string name="intent_type_string_header">Dizge</string>
+    <string name="intent_type_string_array_header">Dizge dizisi</string>
+    <string name="intent_type_long_header">Uzun</string>
+    <string name="intent_type_long_array_header">Uzun dizisi</string>
+    <string name="intent_type_byte_header">Bayt</string>
+    <string name="intent_type_byte_array_header">Bayt dizisi</string>
+    <string name="intent_type_short_array_example">Java programlama dilinde geçerli Kısaların virgülle ayrılmış listesi. Örneğin 3242,12354</string>
     <!--  Intent action type strings  -->
     <!--  Tap targets  -->
+    <string name="tap_target_quick_start_guide_primary">Basit Başlangıç Kılavuzı</string>
+    <string name="tap_target_quick_start_guide_secondary">Takılırsanız Hızlı Başlangıç ​​Kılavuzuna bakın.</string>
     <!--  Tap targets  -->
     <!--  About  -->
+    <string name="about_link_changelog">Değişiklik listesi</string>
+    <string name="about_license_title">Lisans</string>
     <!--  About  -->
 </resources>
