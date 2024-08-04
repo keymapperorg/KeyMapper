@@ -180,6 +180,17 @@ class SettingsViewModel(
         }
     }
 
+    fun onCreateBackupFileActivityNotFound() {
+        val dialog = PopupUi.Dialog(
+            message = getString(R.string.dialog_message_no_app_found_to_create_file),
+            positiveButtonText = getString(R.string.pos_ok),
+        )
+
+        viewModelScope.launch {
+            showPopup("create_document_activity_not_found", dialog)
+        }
+    }
+
     @Suppress("UNCHECKED_CAST")
     class Factory(
         private val configSettingsUseCase: ConfigSettingsUseCase,

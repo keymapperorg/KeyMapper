@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.settings
 
 import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -154,7 +155,11 @@ class MainSettingsFragment : BaseSettingsFragment() {
                 val backupLocation = viewModel.automaticBackupLocation.firstBlocking()
 
                 if (backupLocation.isBlank()) {
-                    chooseAutomaticBackupLocationLauncher.launch(BackupUtils.DEFAULT_AUTOMATIC_BACKUP_NAME)
+                    try {
+                        chooseAutomaticBackupLocationLauncher.launch(BackupUtils.DEFAULT_AUTOMATIC_BACKUP_NAME)
+                    } catch (e: ActivityNotFoundException) {
+                        viewModel.onCreateBackupFileActivityNotFound()
+                    }
                 } else {
                     requireContext().alertDialog {
                         messageResource = R.string.dialog_message_change_location_or_disable
