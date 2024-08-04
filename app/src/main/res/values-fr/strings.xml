@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="no_action_chosen">Aucune action sélectionnée</string>
+    <string name="selection_count">%d sélectionné</string>
+    <string name="enable">Activer</string>
+    <string name="open">Ouvrir</string>
+    <string name="recyclerview_placeholder">¯\\_(ツ)_/¯\n\nRien ici!</string>
+    <string name="triggers_recyclerview_placeholder">Enregistrer un déclencheur!</string>
+    <string name="actions_recyclerview_placeholder">Ajouter une action!</string>
+    <string name="action_shortcut_list_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nVous n\'avez définis aucune action pour ce raccourci!</string>
+    <string name="everything_looks_good">Tout semble en ordre!</string>
+    <string name="warning_the_app_will_work">L\'application fonctionnera, mais certaines choses devront peut-être être corrigées en fonction de ce que vous faites.</string>
+    <string name="your_device_doesnt_support_some_actions">Certaines actions ne sont pas prises en charge par votre appareil.</string>
+    <string name="tab_unsupported_actions">Actions non prises en charge</string>
+    <string name="choose_action_warning_requires_root">Requière les privilèges administrateur</string>
+    <string name="press_dot_dot_dot">Appuyez sur…</string>
+    <string name="no_actions">Aucune action</string>
+    <string name="no_trigger">Aucun déclencheur</string>
+    <string name="unknown_device_name">Nom du périphérique inconnu</string>
+    <string name="on">Activé</string>
+    <string name="off">Désactivé</string>
+    <string name="follow_system">Suivre les paramètres du système</string>
+    <string name="this_device">Cet appareil</string>
+    <string name="any_device">N’importe quel périphérique</string>
+    <string name="trigger_device_name_not_found">Le nom de ce dispositif est inconnu</string>
+    <string name="slider_default">Défaut</string>
+    <string name="button_enable_accessibility_service">Activer le service d\'accessibilité</string>
+    <string name="button_restart_accessibility_service">Redémarrer le service d\'accessibilité</string>
+    <string name="share_backup">Partager</string>
+    <string name="stop_repeating_limit_reached">Plafonds atteints</string>
+    <string name="show_hidden_apps">Afficher les applications cachées</string>
+    <string name="modifiers">Modificateurs</string>
+    <string name="toggle">Interrupteur</string>
+    <string name="shortcut_label_action">Exécuter les opérations</string>
+    <string name="from_no_device">Aucun périphérique</string>
+    <string name="sharesheet_title">Envoyer à</string>
+    <string name="whats_new">Quoi de Neuf</string>
+    <string name="caption_action_type_phone_call">Saisir un numéro de téléphone.</string>
+    <string name="caption_action_type_url">Tapez l\'URL que vous voulez ouvrir. Le http://, https:// ou www. ne sont pas nécessaire.</string>
+    <string name="caption_no_paired_bt_devices">Impossible de trouver des appareils jumelés. Le Bluetooth est-il activé?</string>
+    <string name="switch_enabled">Activé</string>
+    <string name="disabled">Désactivé</string>
+    <string name="reset">Réinitialiser</string>
+    <string name="enable_device_admin_message">Une fois que vous avez activé l\'administration du dispositif, vous devez le désactiver si vous souhaitez désinstaller Key Mapper.</string>
+    <string name="constraints_recyclerview_placeholder">Ajouter une contrainte!</string>
+    <string name="action_title_intent_start_activity">Démarrage de l\'activité: %s</string>
+    <string name="action_title_intent_start_service">Démarrage du service: %s</string>
+    <string name="action_title_intent_send_broadcast">Envoyer la commande: %s</string>
+    <string name="trigger_error_dnd_access_denied">Key Mapper requiert l\'autorisation de modifier le mode Ne pas déranger si vous voulez que les boutons fonctionnent comme prévu en mode Ne pas déranger!</string>
+    <string name="home_error_key_maps_paused_button">Relancer</string>
+    <string name="home_error_logging_enabled_button">Éteindre</string>
+    <string name="title_about">À Propos</string>
+    <!--  Action descriptions  -->
+    <string name="description_open_app">Ouvrir %s</string>
+    <string name="description_key">Appuyer sur la touche \'%s\'</string>
+    <string name="description_url">Ouvrir %s</string>
+    <string name="description_phone_call">Appeler %s</string>
+    <string name="description_sound">Émettre un son: %s</string>
+    <!--  Action descriptions  -->
+    <!--  Headers  -->
+    <string name="option_list_header">Paramètres</string>
+    <string name="trigger_header">Déclencheur</string>
+    <string name="constraint_list_header">Contraintes</string>
+    <string name="header_fingerprint_gesture_up">Balayer vers le haut</string>
+    <string name="header_fingerprint_gesture_down">Balayer vers le bas</string>
+    <string name="header_fingerprint_gesture_left">Balayer vers la gauche</string>
+    <string name="header_fingerprint_gesture_right">Balayer à droite</string>
+    <string name="header_click_type">Type de clic</string>
+    <!--  Headers  -->
+    <!--  Hints  -->
+    <string name="hint_from_device">Depuis l’appareil</string>
+    <string name="hint_shortcut_name">Nom du raccourci</string>
+    <string name="hint_tap_coordinate_title">Description des coordonnées (facultatif)</string>
+    <string name="hint_create_text_action">Texte à saisir</string>
+    <string name="hint_create_url_action">Url à ouvrir</string>
+    <string name="hint_create_phone_call_action">Numéro de téléphone à appeler</string>
+    <string name="hint_intent_categories">Catégories</string>
+    <string name="hint_intent_data">Données</string>
+    <string name="hint_intent_package">Paquet</string>
+    <string name="hint_intent_class">Classe</string>
+    <string name="hint_intent_extra_name">Nom</string>
+    <string name="hint_intent_extra_value_with_type">Valeur (%s)</string>
+    <string name="hint_sound_file_description">Description du fichier son</string>
+    <string name="hint_wifi_ssid">SSID du réseau Wi-Fi</string>
+    <!--  Hints  -->
+    <!--  Radio buttons  -->
+    <string name="radio_button_parallel">Dans le même temps</string>
+    <string name="radio_button_sequence">En séquence</string>
+    <string name="radio_button_and">ET</string>
+    <string name="radio_button_or">OU</string>
+    <string name="radio_button_short_press">Appui court</string>
+    <string name="radio_button_long_press">Appui prolonger</string>
+    <string name="radio_button_intent_extra_value_true">Vrai</string>
+    <string name="radio_button_intent_extra_value_false">Faux</string>
+    <string name="radio_button_intent_target_activity">Activité</string>
+    <string name="radio_button_intent_target_service">Service</string>
+    <string name="radio_button_intent_target_broadcast_receiver">Récepteur de diffusion</string>
+    <!--  Radio buttons  -->
+    <!--  Tabs  -->
+    <string name="tab_options">Paramètres</string>
+    <string name="tab_constraints">Contraintes</string>
+    <string name="tab_fingerprint">Empreinte digitale</string>
+    <!--  Tabs  -->
+    <!--  Navigation argument ids  -->
+    <!--  Navigation argument ids  -->
+    <!--  Toasts  -->
+    <string name="toast_backup_successful">Sauvegarde réussie!</string>
+    <string name="toast_backup_failed">La sauvegarde a échoué!</string>
+    <string name="toast_restore_successful">Restauration réussie!</string>
+    <string name="toast_restore_failed">Échec de la restauration!</string>
+    <string name="toast_io_exception_shrug">Exception d\'E/S ¯\\_(ツ)_/¯</string>
+    <string name="toast_incorrect_screenshot_resolution">La résolution de la capture d\'écran ne correspond pas à la résolution de cet appareil!</string>
+    <string name="toast_no_sound_files">Vous n\'avez enregistré aucun fichier son!</string>
+    <!--  Toasts  -->
+    <!-- Extra labels -->
+    <string name="extra_label_repeat_limit">Limite de répétition</string>
+    <string name="extra_label_repeat_rate">Répéter toutes les… (ms)</string>
+    <string name="extra_label_vibration_duration">Durée de la vibration (ms)</string>
+    <!-- Extra labels -->
+    <!-- Constraints -->
+    <string name="constraint_app_foreground_description">%s est au premier plan</string>
+    <string name="constraint_app_not_foreground_description">%s n\'est pas au premier plan</string>
+    <string name="constraint_bt_device_connected_description">%s est connecté</string>
+    <string name="constraint_bt_device_disconnected_description">%s est déconnecté</string>
+    <string name="constraint_screen_on_description">L\'écran est allumé</string>
+    <string name="constraint_screen_off_description">L\'écran est éteint</string>
+    <string name="constraint_flashlight_off_description">%s lampe torche désactivée</string>
+    <string name="constraint_flashlight_on_description">%s lampe torche activée</string>
+    <string name="constraint_mode_and">et</string>
+    <string name="constraint_mode_or">ou</string>
+    <string name="constraint_category_app">Application</string>
+    <string name="constraint_category_bluetooth">Bluetooth</string>
+    <string name="constraint_category_screen">Écran</string>
+    <string name="constraint_category_orientation">Orientation</string>
+    <string name="constraint_choose_app_foreground">Application au premier plan</string>
+    <string name="constraint_choose_bluetooth_device_connected">Périphérique bluetooth connecté</string>
+    <string name="constraint_choose_bluetooth_device_disconnected">Périphérique bluetooth déconnecté</string>
+    <string name="constraint_choose_screen_on_description">L\'écran est allumé</string>
+    <string name="constraint_choose_screen_off_description">L\'écran est éteint</string>
+    <string name="constraint_wifi_on">Le WiFi est en fonction</string>
+    <string name="constraint_wifi_off">Le WiFi n\'est pas en fonction</string>
+    <string name="constraint_wifi_connected">Connecté à un réseau WiFi</string>
+    <string name="constraint_wifi_disconnected">Déconnecté d\'un réseau WiFi</string>
+    <string name="constraint_wifi_message_cant_list_networks">Vous devrez saisir le SSID manuellement car les applications ne sont pas autorisées à interroger la liste des réseaux WiFi connus sur Android 10 et les versions plus récentes.
+    
+    Laissez le champ vide si vous souhaitez que n\'importe quel réseau WiFi soit associé.</string>
+    <string name="constraint_device_is_locked">L\'appareil est verrouillé</string>
+    <string name="constraint_device_is_unlocked">L\'appareil est déverrouillé</string>
+    <!-- Constraints -->
+    <!-- Click types -->
+    <string name="clicktype_short_press">Appui court</string>
+    <string name="clicktype_long_press">Appui prolonger</string>
+    <string name="clicktype_double_press">Double appuie</string>
+    <!-- Click types -->
+    <!-- URLs -->
+    <!-- URLs -->
+    <!-- Activity titles -->
+    <!-- Activity titles -->
+    <!--  Bug report slides-->
+    <string name="slide_button_restart_accessibility_service">Redémarrer</string>
+    <string name="slide_title_create_bug_report">Signaler un bogue</string>
+    <string name="slide_button_create_bug_report">Créer un rapport</string>
+    <string name="slide_title_share_bug_report">Partager le rapport</string>
+    <string name="slide_button_share_discord">Discord</string>
+    <string name="slide_button_share_github">GitHub</string>
+    <!--  Bug report slides-->
+    <!-- Menu action titles-->
+    <string name="action_settings">Réglages</string>
+    <string name="action_done">Terminer</string>
+    <string name="action_select_all">Tout sélectionner</string>
+    <string name="action_about">À Propos</string>
+    <string name="action_search">Recherche</string>
+    <string name="action_help">Aide</string>
+    <string name="action_enable">Activer</string>
+    <string name="action_report_bug">Signaler un bogue</string>
+    <string name="action_save">Sauvegarder</string>
+    <string name="action_duplicate_keymap">Dupliquer</string>
+    <string name="action_backup">Sauvegarder</string>
+    <string name="action_restore">Restaurer</string>
+    <string name="action_reset">Réinitialiser</string>
+    <string name="action_save_log">Sauvegarder</string>
+    <string name="action_copy_log">Copier</string>
+    <string name="action_clear_log">Nettoyer</string>
+    <!-- Menu action titles-->
+    <!-- Button titles -->
+    <string name="button_done">Terminer</string>
+    <string name="button_save">Sauvegarder</string>
+    <string name="button_add_constraint">Ajout d\'une contrainte</string>
+    <string name="button_yes">Oui!</string>
+    <string name="button_help">Aide</string>
+    <string name="button_copy_log">Copie</string>
+    <!-- Button titles -->
+    <!-- Dialog stuff -->
+    <string name="dialog_title_flags">Plus</string>
+    <string name="dialog_message_downloading">Téléchargement…</string>
+    <string name="dialog_title_disable_battery_optimisation">Désactiver l\'optimisation de la batterie</string>
+    <string name="dialog_title_send_feedback">Envoyer un commentaire</string>
+    <string name="dialog_title_explain_bluetooth_permission">Une autorisation est nécessaire</string>
+    <string name="pos_done">Terminer</string>
+    <string name="pos_grant">Accorder</string>
+    <string name="neutral_go_to_settings">Réglages</string>
+    <string name="neutral_changelog">Journal des modifications</string>
+    <string name="neutral_report_bug">Signaler un bogue</string>
+    <string name="dialog_button_install_nothing">Ne rien faire</string>
+    <!-- Dialog stuff -->
+    <!-- Notification strings -->
+    <string name="notification_channel_new_features">Nouvelles fonctionnalités</string>
+    <string name="notification_action_pause">Suspendre</string>
+    <string name="notification_keymaps_paused_title">Suspendu</string>
+    <string name="notification_action_resume">Reprendre</string>
+    <string name="notification_action_dismiss">Ignorer</string>
+    <string name="notification_action_restart_accessibility_service">Redémarrer</string>
+    <string name="notification_accessibility_service_crashed_text">Le service d\'accessibilité s\'est crashé! Votre téléphone est peut-être en train de le tuer de manière agressive! Appuyer pour redémarrer le service d\'accessibilité.</string>
+    <!--  remove accessibility from the word because the other notification buttons arent visible on small screens  -->
+    <string name="notification_action_stop_acc_service">Arrêter le service</string>
+    <string name="notification_keyboard_hidden_title">Le clavier est masqué!</string>
+    <string name="notification_keyboard_hidden_text">Appuyez sur \"Afficher le clavier\" pour faire apparaître à nouveau le clavier.</string>
+    <string name="notification_toggle_keyboard_text">Appuyez sur \"basculer\" pour basculer vers et depuis le clavier de Key Mapper.</string>
+    <string name="notification_toggle_keyboard_action">Interrupteur</string>
+    <string name="notification_feature_fingerprint_title">Remappez les gestes d\'empreinte digitale avec Key Mapper!</string>
+    <string name="notification_feature_fingerprint_text">Votre appareil prend en charge le remappage des balayages sur le capteur d\'empreintes digitales. Appuyez pour commencer le remappage!</string>
+    <string name="notification_setup_chosen_devices_again_title">Vous devez configurer à nouveau certains paramètres!</string>
+    <string name="notification_setup_chosen_devices_again_text">Il semble que vous utilisiez un paramètre de changement automatique de clavier ou d\'affichage du sélecteur de méthode de saisie lorsqu\'un périphérique Bluetooth se connecte et se déconnecte. Key Mapper vous permet désormais d\'utiliser n\'importe quel périphérique d\'entrée et pas seulement les périphériques Bluetooth. Il n\'existe aucun moyen de migrer les anciens paramètres de manière à ce que la nouvelle fonctionnalité fonctionne, vous devrez donc choisir à nouveau les appareils dans les paramètres de Key Mapper. Appuyer pour ouvrir Key Mapper.</string>
+    <!-- Notification strings -->
+    <!--Preference titles and summaries-->
+    <string name="title_pref_long_press_delay">Délai d\'appui prolonger par défaut (ms)</string>
+    <string name="title_pref_vibration_duration">Durée de vibration par défaut (ms)</string>
+    <string name="title_pref_repeat_delay">Délai par défaut jusqu\'à la répétition (ms)</string>
+    <string name="title_pref_reset_defaults">Réinitialiser</string>
+    <string name="summary_pref_show_ime_picker_notification">Afficher une notification persistante afin de vous permettre de sélectionner le clavier.</string>
+    <string name="title_pref_show_toggle_keymaps_notification">Notification de pause/reprise des mappages</string>
+    <string name="summary_pref_show_toggle_keymaps_notification">Afficher une notification persistante qui démarre/interrompt vos cartographies.</string>
+    <string name="title_pref_automatic_backup_location">Sauvegarder automatiquement les cartographies à un emplacement spécifié</string>
+    <string name="summary_pref_automatic_backup_location_disabled">Aucun emplacement choisi.</string>
+    <string name="title_pref_choose_devices">Choisir les dispositifs</string>
+    <string name="title_pref_root_permission">Key Mapper a l\'autorisation administrateur</string>
+    <string name="summary_pref_root_permission">Activez cette option si vous souhaitez utiliser des fonctionnalités/actions qui ne fonctionnent que sur les appareils rootés. Key Mapper doit avoir l\'autorisation root de votre application de gestion d\'accès administrateur (par exemple Magisk, SuperSU) pour que ces fonctionnalités fonctionnent.
+             N\'activez cette option que si vous savez que votre appareil est rooté et que vous avez donné l\'autorisation root à Key Mapper.</string>
+    <string name="title_pref_dark_theme">Thème obscur</string>
+    <string name="title_pref_notification_settings">Paramètres de notification</string>
+    <string name="title_pref_grant_write_secure_settings_not_granted">Accorder l’autorisation</string>
+    <string name="title_pref_grant_write_secure_settings_granted">Autorisation accordée</string>
+    <string name="title_pref_default_options">Options de cartographie par défaut</string>
+    <!--Preference titles and summaries-->
+    <!--Preference categories-->
+    <string name="title_pref_category_notifications">Notifications</string>
+    <string name="title_pref_category_root">Paramètres administrateur</string>
+    <string name="summary_pref_category_root">Ces options ne fonctionneront que sur les appareils rootés! Si vous ne savez pas ce que sont les privilèges administrateur ou si votre appareil est rooté, veuillez ne pas laisser une mauvaise critique si cela ne fonctionnent pas. :)</string>
+    <string name="title_pref_category_write_secure_settings">Requiert l\'autorisation WRITE_SECURE_SETTINGS</string>
+    <string name="summary_pref_category_write_secure_settings">Ces options ne sont activées que si Key Mapper dispose de l\'autorisation WRITE_SECURE_SETTINGS. Cliquer sur le bouton ci-dessous pour savoir comment accorder cette autorisation.</string>
+    <!--Preference categories-->
+    <!-- About activity-->
+    <string name="pref_title_changelog">Journal des modifications</string>
+    <string name="pref_title_license">Licence</string>
+    <string name="pref_title_privacy_policy">Politique de confidentialité</string>
+    <string name="pref_title_credits">Crédits</string>
+    <string name="pref_title_source_code">Code source</string>
+    <string name="pref_title_developer_github">Profil GitHub du développeur</string>
+    <string name="pref_title_xda_thread">Fil de discussion sur XDA</string>
+    <string name="pref_title_version">Version</string>
+    <string name="pref_title_translate">Traduire</string>
+    <string name="pref_title_discord">Serveur Discord</string>
+    <string name="pref_title_youtube_channel">Chaîne YouTube (Tutoriels)</string>
+    <!-- About activity-->
+    <!--flags-->
+    <string name="flag_show_toast">Afficher un message à l\'écran</string>
+    <string name="flag_repeat_build_description_repeat_delay">après %dms</string>
+    <string name="flag_dont_override_default_action">Ne pas remapper</string>
+    <!--flags-->
+    <!-- Showcase -->
+    <string name="showcase_accessibility_service_button_restart">Redémarrer</string>
+    <string name="showcase_dnd_access_description_enabled">Tout est bon! :)</string>
+    <string name="showcase_contributing_title">Contribuer</string>
+    <string name="showcase_contributing_description">"Le code source de cette application est ouvert! Vous pouvez commencer à y contribuer en vous rendant sur le référentiel sds100/KeyMapper sur GitHub et en rejoignant le serveur Discord. Même si vous ne savez pas coder, vous pouvez contribuer en aidant les autres et en testant les dernières fonctionnalités."</string>
+    <string name="showcase_fingerprint_gesture_support_button">Activer</string>
+    <string name="showcase_request_shizuku_permission">Accorder</string>
+    <string name="showcase_notification_permission_button">Accorder</string>
+    <!-- Showcase -->
+    <!-- system action options -->
+    <string name="stream_notification">Notifications</string>
+    <string name="stream_system">Système</string>
+    <string name="dnd_mode_priority">Priorité</string>
+    <!-- system action options -->
+    <!-- Tiles -->
+    <!-- Tiles -->
+    <!-- Meta States -->
+    <string name="meta_state_ctrl">Ctrl</string>
+    <string name="meta_state_ctrl_left">Ctrl gauche</string>
+    <string name="meta_state_ctrl_right">Ctrl droit</string>
+    <!-- Meta States -->
+    <!-- Error messages -->
+    <string name="error_app_isnt_installed_brief">L\'application n\'est pas installée!</string>
+    <!-- Error messages -->
+    <!-- action labels -->
+    <!-- action labels -->
+    <!-- action category labels -->
+    <string name="action_cat_notifications">Notifications</string>
+    <!-- action category labels -->
+    <!--  Intent action type strings  -->
+    <!--  Intent action type strings  -->
+    <!--  Tap targets  -->
+    <!--  Tap targets  -->
+    <!--  About  -->
+    <string name="about_link_changelog">Journal des modifications</string>
+    <string name="about_link_discord">Discord</string>
+    <string name="about_license_title">Licence</string>
+    <!--  About  -->
+</resources>
