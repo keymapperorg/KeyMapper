@@ -1,38 +1,38 @@
-What can be remapped?
+ما الذي يمكن إعادة تعيينه؟
 
- * Fingerprint gestures on supported devices.
- * Volume buttons.
- * Navigation buttons.
- * Bluetooth/wired keyboards.
- * Buttons on other connected devices should also work.
+ * إيماءات بصمات الأصابع على الأجهزة المدعومة.
+ * أزرار الصوت.
+ * أزرار التنقل.
+ * بلوتوث / لوحات المفاتيح السلكية.
+ * يجب أن تعمل الأزرار الموجودة على الأجهزة المتصلة الأخرى أيضا.
 
-ONLY HARDWARE buttons can be remapped.
-There is NO GUARANTEE any of these buttons will work and this app is NOT designed to control games. Your device's OEM/vendor can prevent them from being remapped.
+يمكن إعادة تعيين أزرار الأجهزة فقط.
+ليس هناك ما يضمن أن أيا من هذه الأزرار ستعمل وهذا التطبيق أيضا غير مصمم للتحكم في الألعاب. يمكن لمصنعي المعدات الأصلية / البائع الخاص بجهازك منع إعادة تعيين الأزرار.
 
-You can combine multiple keys from a specific device or any device to form a "trigger". Each trigger can have multiple actions. The keys can be set to be pressed at the same time or one after another in a sequence. Keys can be remapped when they are short pressed, long pressed or double pressed. A keymap can have a set of "constraints" so it only has an effect in certain situations.
+يمكنك الجمع بين مفاتيح متعددة من جهاز معين أو أي جهاز لتشكيل "المشغل". يمكن أن يكون لكل مشغل إجراءات متعددة. يمكن ضبط المفاتيح للضغط عليها في نفس الوقت أو واحدة تلو الأخرى في تسلسل. يمكن إعادة تعيين المفاتيح عند الضغط عليها لفترة قصيرة أو الضغط عليها لفترة طويلة أو الضغط عليها مرتين. يمكن أن تحتوي خريطة المفاتيح على مجموعة من "القيود" بحيث يكون لها التأثير فقط في مواقف معينة.
 
-What can’t be remapped?
- * Power button
- * Bixby button
- * Mouse buttons
- * Dpad, thumb sticks or triggers on game controllers
+ما الذي لا يمكن إعادة تعيينه؟
+ * زر الطاقة
+ * زر بيكسبي
+ * أزرار الماوس
+ * * دباد ، عصي الإبهام أو المشغلات على أجهزة التحكم في اللعبة
 
-Your key maps don't work if the screen is OFF. This is a limitation in Android. There is nothing the dev can do.
+لا تعمل خرائط المفاتيح إذا كانت الشاشة متوقفة عن التشغيل. هذا مقيد في Android. لا يوجد شيء يمكن للمطور القيام به حيال ذلك.
 
-What can I remap my keys to do?
-Some actions will only work on rooted devices and specific Android versions.
+ما الذي يمكنني لإعادة تعيين مفاتيحي للقيام به؟
+ستعمل بعض الإجراءات فقط على الأجهزة التي تم عمل روت لها وإصدارات Android محددة.
 
-There are too many features to list here so check out the full list here: https://docs.keymapper.club/user-guide/actions
+هناك الكثير من الميزات التي يجب سردها هنا ، لذا تحقق من القائمة الكاملة هنا: https://docs.keymapper.club/user-guide/actions
 
-Permissions
-You don't have to grant all the permissions for the app to work. The app will tell you if a permission needs to be granted for a feature to work.
+الصلاحيات
+لا يلزمك منح جميع الأذونات حتى يعمل التطبيق. سيخبرك التطبيق ما إذا كان يجب منح إذن حتى تعمل الميزة.
 
- * Accessibility Service: Basic requirement for remapping to work. It is needed so the app can listen to and block keyevents.
- * Device Admin: To turn the screen off when using the action to turn off the screen.
- * Modify System Settings: To change the brightness and rotation settings.
- * Camera: To control the flashlight.
+ * خدمة إمكانية الوصول: الشرط الأساسي لإعادة التعيين لأجل العمل. هناك حاجة إليه حتى يتمكن التطبيق من الاستماع إلى الأحداث الرئيسية وحظرها.
+ * مسؤول الجهاز: لإيقاف تشغيل الشاشة عند استخدام الإجراء لإيقاف تشغيل الشاشة.
+ * تعديل إعدادات النظام: لتغيير إعدادات السطوع والدوران.
+ * الكاميرا: للتحكم في الكشاف.
 
- On some devices, enabling the accessibility service will disable "enhanced data encryption".
+ في بعض الأجهزة ، سيؤدي تمكين خدمة إمكانية الوصول إلى تعطيل "تشفير البيانات المحسن".
 
-Discord: www.keymapper.club
-Website: docs.keymapper.club
+ديسكورد: www.keymapper.club
+الموقع الإلكتروني: docs.keymapper.club
