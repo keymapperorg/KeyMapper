@@ -1,0 +1,38 @@
+Nelere yeni tuş atanabilir. 
+
+ *Desteklenen cihazlarda parmak hareketleri. 
+ *Ses tuşları. 
+ *Gezinme tuşları. 
+ *Bluetooth/kablolu klavyeler. 
+ *Diğer eşleştirilen cihazlardaki tuşlar da çalışır.
+
+Sadece DONANIM tuşları yeniden atanabilir.
+Bu düğmelerden herhangi birinin çalışacağından HİÇBİR GARANTİ yoktur ve bu uygulama oyunları kontrol etmek için TASARLANMAMIŞTIR. Cihazınızın OEM/satıcısı tuş atamanızı engelleyebilir.
+
+Bir "tetikleyici" oluşturmak için belirli bir cihazdan veya herhangi bir cihazdan birden fazla anahtarı birleştirebilirsiniz. 1 tetikleyici bir kaç hesapta kullanılabilir. Tuşlar aynı anda veya sırayla birbiri ardına basılacak şekilde ayarlanabilir. Tuşlar kısa tıklama, çift tıklama ya da uzun tıklama olarak atanabilir. Bir anahtar eşleme bir dizi "kısıtlamaya" sahip olabilir, bu nedenle yalnızca belirli durumlarda bir etkiye sahiptir.
+
+Neler atanamaz?
+ *Güç Tuşu
+ *Bixby Tuşu
+ *Fare Tuşları
+ *Dpad, Başparmak Çubukları ya da Oyun Kumandası Tuşları
+
+Ekran kapalıyken atadığın tuşlar çalışmaz. Bu Android'in kısıtlamasıdır. Geliştiricinin yapabileceği bir şey yok. 
+
+Anahtarlarımı ne yapmak için atayabilirim?
+Bazı şeyler sadece kök erişimi olan vihazlar ve özel Android sürümlerimde çalışır.
+
+There are too many features to list here so check out the full list here: https://docs.keymapper.club/user-guide/actions
+
+İzinler
+İzinlerin hepsini vermek zorunda değilsin. Uygulama vermen gereken izinleri belirtecektir.
+
+ * Erişilebilirlik Hizmeti: Çalışmak üzere yeniden eşleme için temel gereksinim. Uygulamanın tuş olaylarını dinleyebilmesi ve engelleyebilmesi için gereklidir.
+ * Aygıt Yöneticisi: Ekranı kapatma eylemini kullanırken ekranı kapatmak için.
+ * Sistem Ayarlarını Değiştirme: Parlaklık ve döndürme ayarlarını değiştirmek için.
+ Kamera: El fenerini kontrol etmek için.
+
+ Bazı cihazlarda erişilebilirlik hizmetini etkinleştirmek "gelişmiş veri şifrelemeyi" devre dışı bırakır.
+
+Discord: www.keymapper.club
+Website: docs.keymapper.club
