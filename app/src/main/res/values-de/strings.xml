@@ -1,36 +1,137 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="selection_count">%d ausgewählt</string>
+    <string name="enable">Aktivieren</string>
+    <string name="open">Öffnen</string>
+    <string name="recyclerview_placeholder">¯ \ _ (ツ) _ / ¯ \n\nNichts hier!</string>
+    <string name="triggers_recyclerview_placeholder">Trigger aufzeichnen!</string>
+    <string name="actions_recyclerview_placeholder">Aktion hinzufügen!</string>
+    <string name="action_shortcut_list_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nSie haben keine Aktionen für diese Verknüpfung ausgewählt!</string>
+    <string name="everything_looks_good">Alles sieht gut aus!</string>
+    <string name="press_dot_dot_dot">Drücke…</string>
+    <string name="on">An</string>
+    <string name="off">Aus</string>
+    <string name="trigger_device_name_not_found">Der Name für dieses Gerät ist nicht bekannt</string>
+    <string name="dont_know_device_name">Kenne den Gerätenamen nicht!</string>
+    <string name="switch_enabled">Aktiviert</string>
+    <string name="disabled">Deaktiviert</string>
+    <string name="action_title_wait">Warte %sms</string>
+    <string name="title_about">Über</string>
     <!--  Action descriptions  -->
+    <string name="description_url">Öffne %s</string>
     <!--  Action descriptions  -->
     <!--  Headers  -->
+    <string name="action_list_header">Aktionen</string>
+    <string name="trigger_header">Trigger</string>
+    <string name="constraint_list_header">Bedingungen</string>
     <!--  Headers  -->
     <!--  Hints  -->
     <!--  Hints  -->
     <!--  Radio buttons  -->
+    <string name="radio_button_parallel">Gleichzeitig</string>
+    <string name="radio_button_sequence">In Abfolge</string>
+    <string name="radio_button_and">AND</string>
+    <string name="radio_button_or">OR</string>
+    <string name="radio_button_short_press">Kurz drücken</string>
+    <string name="radio_button_long_press">Lange drücken</string>
+    <string name="radio_button_double_press">Doppelt drücken</string>
     <!--  Radio buttons  -->
     <!--  Tabs  -->
+    <string name="tab_options">Einstellungen</string>
+    <string name="tab_constraints">Bedingungen</string>
+    <string name="tab_actions">Aktionen</string>
+    <string name="tab_trigger">Trigger</string>
+    <string name="tab_fingerprint">Fingerabdruck</string>
     <!--  Tabs  -->
     <!--  Navigation argument ids  -->
     <!--  Navigation argument ids  -->
     <!--  Toasts  -->
+    <string name="toast_incorrect_screenshot_resolution">Die Bildschirmauflösung entspricht nicht der Auflösung dieses Gerätes!</string>
     <!--  Toasts  -->
     <!-- Extra labels -->
+    <string name="extra_label_long_press_delay_timeout">Verzögerung für langes Drücken (ms)</string>
+    <string name="extra_label_double_press_delay_timeout">Timeout für doppeltes Drücken (ms)</string>
+    <string name="extra_label_repeat_delay">Verzögerung bis Wiederholung (ms)</string>
+    <string name="extra_label_repeat_rate">Wiederholung alle… (ms)</string>
+    <string name="extra_label_vibration_duration">Vibrationsdauer (ms)</string>
+    <string name="extra_label_delay_before_next_action">Verzögerung vor der nächsten Aktion (ms)</string>
     <!-- Extra labels -->
     <!-- Constraints -->
+    <string name="constraint_app_foreground_description">%s ist im Vordergrund</string>
+    <string name="constraint_app_not_foreground_description">%s ist nicht im Vordergrund</string>
+    <string name="constraint_app_playing_media_description">%s spielt etwas ab</string>
+    <string name="constraint_bt_device_connected_description">%s ist verbunden</string>
+    <string name="constraint_bt_device_disconnected_description">%s ist getrennt</string>
+    <string name="constraint_screen_on_description">Bildschirm an</string>
+    <string name="constraint_screen_off_description">Bildschirm aus</string>
+    <string name="constraint_mode_and">und</string>
+    <string name="constraint_mode_or">oder</string>
+    <string name="constraint_category_app">App</string>
+    <string name="constraint_category_bluetooth">Bluetooth</string>
+    <string name="constraint_category_screen">Bildschirm</string>
+    <string name="constraint_category_orientation">Ausrichtung</string>
+    <string name="constraint_choose_screen_on_description">Bildschirm ist an</string>
+    <string name="constraint_choose_screen_off_description">Bildschirm ist aus</string>
+    <string name="constraint_choose_orientation_0">Hochformat (0°)</string>
+    <string name="constraint_choose_orientation_90">Querformat (90°)</string>
+    <string name="constraint_choose_orientation_180">Hochformat (180°)</string>
+    <string name="constraint_choose_orientation_270">Querformat (270°)</string>
+    <string name="constraint_choose_orientation_portrait">Hochformat (alle)</string>
+    <string name="constraint_choose_orientation_landscape">Querformat (alle)</string>
     <!-- Constraints -->
     <!-- Click types -->
+    <string name="clicktype_short_press">Kurz drücken</string>
+    <string name="clicktype_double_press">Doppelt drücken</string>
     <!-- Click types -->
     <!-- URLs -->
     <!-- URLs -->
     <!-- Activity titles -->
     <!-- Activity titles -->
     <!--  Bug report slides-->
+    <string name="slide_button_share_github">GitHub</string>
     <!--  Bug report slides-->
     <!-- Menu action titles-->
+    <string name="action_settings">Einstellungen</string>
+    <string name="action_done">Fertig</string>
+    <string name="action_select_all">Alle markieren</string>
+    <string name="action_about">Über</string>
+    <string name="action_search">Suche</string>
+    <string name="action_enable">Aktivieren</string>
+    <string name="action_disable">Deaktivieren</string>
+    <string name="action_disable_all_keymaps">Alles deaktivieren</string>
+    <string name="action_enable_all_keymaps">Alles aktivieren</string>
+    <string name="action_seed_database">Initiale-Datenbank</string>
+    <string name="action_save">Speichern</string>
+    <string name="action_duplicate_keymap">Duplizieren</string>
+    <string name="action_restore">Wiederherstellen</string>
+    <string name="action_tap_to_pause_keymaps">Zum Anhalten tippen</string>
+    <string name="action_tap_to_resume_keymaps">Zum Fortsetzen tippen</string>
+    <string name="action_reset">Reset</string>
+    <string name="action_save_log">Speichern</string>
     <!-- Menu action titles-->
     <!-- Button titles -->
+    <string name="button_done">Fertig</string>
+    <string name="button_save">Speichern</string>
+    <string name="button_recording_trigger_countdown">%d…</string>
+    <string name="button_yes">Ja!</string>
     <!-- Button titles -->
     <!-- Dialog stuff -->
+    <string name="dialog_title_are_you_sure">Bist du sicher?</string>
+    <string name="dialog_title_root_prompt">Root-Berechtigung benötigt!</string>
+    <string name="dialog_title_flags">Mehr</string>
+    <string name="dialog_title_pick_stream">Stream auswählen</string>
+    <string name="dialog_title_cant_record_trigger">Kann Trigger nicht aufnehmen?</string>
+    <string name="dialog_message_downloading">Download läuft…</string>
+    <string name="dialog_button_read_dont_kill_my_app_yes">Ja</string>
+    <string name="dialog_button_read_dont_kill_my_app_no">Nein</string>
+    <string name="pos_yes">Ja</string>
+    <string name="pos_done">Fertig</string>
+    <string name="neg_no">Nein</string>
+    <string name="neg_cancel">Abbrechen</string>
+    <string name="neg_dont_show_again">Nicht mehr anzeigen</string>
+    <string name="neutral_go_to_settings">Einstellungen</string>
+    <string name="neutral_changelog">Changelog</string>
+    <string name="snackbar_cancel">Abbrechen</string>
     <!-- Dialog stuff -->
     <!-- Notification strings -->
     <!--  remove accessibility from the word because the other notification buttons arent visible on small screens  -->
@@ -40,18 +141,29 @@
     <!--Preference categories-->
     <!--Preference categories-->
     <!-- About activity-->
+    <string name="pref_title_changelog">Changelog</string>
+    <string name="pref_title_license">Lizenz</string>
+    <string name="pref_title_credits">Credits</string>
+    <string name="pref_title_version">Version</string>
+    <string name="pref_title_translate">Übersetze</string>
     <!-- About activity-->
     <!--flags-->
     <!--flags-->
     <!-- Showcase -->
+    <string name="showcase_fingerprint_gesture_support_button">Aktivieren</string>
     <!-- Showcase -->
     <!-- system action options -->
+    <string name="stream_music">Musik</string>
+    <string name="stream_notification">Benachrichtigungen</string>
     <!-- system action options -->
     <!-- Tiles -->
     <!-- Tiles -->
     <!-- Meta States -->
     <!-- Meta States -->
     <!-- Error messages -->
+    <string name="error_app_is_disabled">App ist deaktiviert!</string>
+    <string name="error_duplicate_constraint">Du kannst keine doppelten Bedingungen haben!</string>
+    <string name="error_fingerprint_gesture_map_constraint_exists">Diese Geste hat bereits diese Bedingung!</string>
     <!-- Error messages -->
     <!-- action labels -->
     <!-- action labels -->
@@ -62,5 +174,8 @@
     <!--  Tap targets  -->
     <!--  Tap targets  -->
     <!--  About  -->
+    <string name="about_link_github">GitHub</string>
+    <string name="about_link_changelog">Changelog</string>
+    <string name="about_license_title">Lizenz</string>
     <!--  About  -->
 </resources>
