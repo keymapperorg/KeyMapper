@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="slogan">أطلق العنان لمفاتيحك!</string>
+    <string name="no_action_chosen">لم يتم اختيار أي إجراء</string>
+    <string name="accessibility_service_explanation">يتطلب Key Mapper استخدام خدمة إمكانية الوصول حتى تتمكن من اكتشاف وتغيير ما تفعله ضغطات الزر أثناء وجودك خارج التطبيق. لن تعمل خرائط المفاتيح الخاصة بك إلا بعد تمكين خدمة إمكانية الوصول. يجب أيضا تشغيله لإنشاء المشغل.</string>
+    <string name="selection_count">تم تحديد %d</string>
+    <string name="enable">تفعيل</string>
+    <string name="open">فتح</string>
+    <string name="recyclerview_placeholder">\n\nلا شيء هنا¯/_(ツ)_\\¯!</string>
+    <string name="triggers_recyclerview_placeholder">سجل محفزا!</string>
+    <string name="actions_recyclerview_placeholder">أضف إجراءا!</string>
+    <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nإنشاء خريطة رئيسية!</string>
+    <string name="action_shortcut_list_recyclerview_placeholder">\n\nلم تقم بإختيار أي إجراء لهذا الإختصار¯/_(ツ)_\\¯!</string>
+    <string name="no_key_maps">لم تقم بإنشاء أي خرائط رئيسية!</string>
+    <string name="everything_looks_good">كل شي على مايرام!</string>
+    <string name="warning_the_app_will_work">سيعمل التطبيق ولكن قد تحتاج بعض الأشياء إلى إصلاح حسب ما تفعله.</string>
+    <string name="your_device_doesnt_support_some_actions">جهازك لايدعم بعض الوظائف.</string>
+    <string name="tab_unsupported_actions">إجراء غير مدعوم</string>
+    <string name="choose_action_warning_requires_root">يتطلب صلاحيات الجذر</string>
+    <string name="press_dot_dot_dot">إضغط…</string>
+    <string name="no_actions">بدون إجراء</string>
+    <string name="no_trigger">لا يوجد مشغل</string>
+    <string name="unknown_keycode">رمز مفتاح غير معروف:%s</string>
+    <string name="unknown_device_name">اسم جهاز غير معروف</string>
+    <string name="on">مفعل</string>
+    <string name="off">معطل</string>
+    <string name="follow_system">اتبع النظام</string>
+    <string name="this_device">هذا الجهاز</string>
+    <string name="any_device">أي جهاز</string>
+    <string name="trigger_device_name_not_found">إسم هذا الجهاز غير معروف</string>
+    <string name="slider_default">العادي</string>
+    <string name="button_enable_accessibility_service">تمكين إمكانية الوصول</string>
+    <string name="button_restart_accessibility_service">إعادة تشغيل إمكانية الوصول</string>
+    <string name="share_backup">مشاركة</string>
+    <string name="stop_repeating_dot_dot_dot">توقف عن التكرار عندما…</string>
+    <string name="show_hidden_apps">أظهر التطبيقات المخفية</string>
+    <string name="modifiers">المعدلات</string>
+    <string name="toggle">تبديل</string>
+    <string name="tap_coordinate_screenshot_message">مهم!! هذه الإحداثيات صحيحة فقط عندما تكون شاشتك في نفس الوضعية كما في الصورة! هذا الإجراء سيقوم بإلغاء أي لمسات أو إيماءات تقوم بها على شاشتك.\n\nإذا كنت بحاجة للمساعدة لإيجاد الإحداثيات نقطة خد صورة لشاشتك ثم قم بالضغط على الصورة في المكان الذي تريد للإجراء بالضغط فيه.</string>
+    <string name="dont_know_device_name">لا أعلم إسم الجهاز!</string>
+    <string name="tap_actions_to_fix">إضغط على الإجراءات للإصلاح!</string>
+    <string name="tap_constraints_to_fix">اضغط على القيود لإصلاحها!</string>
+    <string name="hold_down_until_trigger_is_dot_dot_dot">إضغط حتى يكون المحفز…</string>
+    <string name="whats_new">ما الجديد</string>
+    <string name="caption_action_type_key">إضغط على الزر في الجهاز الذي تريد إدخاله.
+            \n\nمهم!
+            الضغط على هذا الزر لن يعمل على شكل إجراء إلا إذا كنت تستخدم لوحة مفاتيح متوافقة مع Key Mapper.</string>
+    <string name="caption_action_type_text">أكتب نصا ما تريده أن يُكتَب عندما تقوم بهذا الإجراء.</string>
+    <string name="caption_action_type_phone_call">أدخل رقم هاتفٍ.</string>
+    <string name="caption_no_paired_bt_devices">لم أستطع العثور على أجهزة مرتبطة. هل البلوتوث مفعل؟</string>
+    <string name="switch_enabled">مفعل</string>
+    <string name="disabled">معطل</string>
+    <string name="reset">إعادة الضبط</string>
+    <!--  Action descriptions  -->
+    <!--  Action descriptions  -->
+    <!--  Headers  -->
+    <!--  Headers  -->
+    <!--  Hints  -->
+    <string name="hint_intent_action">الإجراء</string>
+    <string name="hint_intent_categories">الفئات</string>
+    <string name="hint_intent_data">البيانات</string>
+    <string name="hint_intent_package">الحزمة</string>
+    <string name="hint_intent_class">الفئة</string>
+    <string name="hint_intent_description">وصف لـKey Mapper  (مطلوب)</string>
+    <string name="hint_sound_file_description">وصف ملف الصوت</string>
+    <!--  Hints  -->
+    <!--  Radio buttons  -->
+    <string name="radio_button_long_press">ضغط مطوّل</string>
+    <string name="radio_button_intent_extra_value_true">صواب</string>
+    <string name="radio_button_intent_extra_value_false">خاطئ</string>
+    <string name="radio_button_intent_target_activity">النشاط</string>
+    <string name="radio_button_intent_target_service">الخدمة</string>
+    <string name="radio_button_intent_target_broadcast_receiver">جهاز استقبال البث</string>
+    <!--  Radio buttons  -->
+    <!--  Tabs  -->
+    <!--  Tabs  -->
+    <!--  Navigation argument ids  -->
+    <!--  Navigation argument ids  -->
+    <!--  Toasts  -->
+    <!--  Toasts  -->
+    <!-- Extra labels -->
+    <!-- Extra labels -->
+    <!-- Constraints -->
+    <!-- Constraints -->
+    <!-- Click types -->
+    <string name="clicktype_long_press">ضغط مطوّل</string>
+    <!-- Click types -->
+    <!-- URLs -->
+    <!-- URLs -->
+    <!-- Activity titles -->
+    <!-- Activity titles -->
+    <!--  Bug report slides-->
+    <!--  Bug report slides-->
+    <!-- Menu action titles-->
+    <string name="action_settings">إعدادات</string>
+    <string name="action_done">تم</string>
+    <string name="action_select_all">تحديد الكل</string>
+    <string name="action_search">بحث</string>
+    <string name="action_enable">تفعيل</string>
+    <string name="action_disable">تعطيل</string>
+    <string name="action_disable_all_keymaps">تعطيل الكل</string>
+    <string name="action_enable_all_keymaps">تفعيل الكل</string>
+    <string name="action_reset">إعادة الضبط</string>
+    <!-- Menu action titles-->
+    <!-- Button titles -->
+    <string name="button_done">تم</string>
+    <!-- Button titles -->
+    <!-- Dialog stuff -->
+    <string name="dialog_title_flags">المزيد</string>
+    <string name="dialog_button_read_dont_kill_my_app_yes">نعم</string>
+    <string name="dialog_button_read_dont_kill_my_app_no">لا</string>
+    <string name="pos_yes">نعم</string>
+    <string name="pos_done">تم</string>
+    <string name="pos_opt_in">الإشتراك</string>
+    <string name="neg_no">لا</string>
+    <string name="neg_cancel">إلغاء</string>
+    <string name="neg_dont_show_again">لا تُظهر مجدّدًا</string>
+    <string name="neutral_go_to_settings">إعدادات</string>
+    <string name="snackbar_cancel">إلغاء</string>
+    <!-- Dialog stuff -->
+    <!-- Notification strings -->
+    <!--  remove accessibility from the word because the other notification buttons arent visible on small screens  -->
+    <string name="notification_toggle_keyboard_action">تبديل</string>
+    <!-- Notification strings -->
+    <!--Preference titles and summaries-->
+    <string name="title_pref_reset_defaults">إعادة الضبط</string>
+    <!--Preference titles and summaries-->
+    <!--Preference categories-->
+    <!--Preference categories-->
+    <!-- About activity-->
+    <string name="pref_title_version">الإصدار</string>
+    <string name="pref_title_translate">ترجمة</string>
+    <!-- About activity-->
+    <!--flags-->
+    <string name="flag_long_press">ضغط مطوّل</string>
+    <string name="flag_vibrate">إهتزاز</string>
+    <!--flags-->
+    <!-- Showcase -->
+    <string name="showcase_fingerprint_gesture_support_button">تفعيل</string>
+    <!-- Showcase -->
+    <!-- system action options -->
+    <string name="stream_accessibility">إمكانية الوصول</string>
+    <string name="stream_music">موسيقى</string>
+    <string name="stream_notification">الإشعارات</string>
+    <string name="stream_ring">رنين</string>
+    <string name="stream_system">النظام</string>
+    <string name="stream_voice_call">مكالمة صوتية</string>
+    <string name="ringer_mode_normal">رنين</string>
+    <string name="ringer_mode_vibrate">إهتزاز</string>
+    <string name="ringer_mode_silent">صامت</string>
+    <!-- system action options -->
+    <!-- Tiles -->
+    <!-- Tiles -->
+    <!-- Meta States -->
+    <!-- Meta States -->
+    <!-- Error messages -->
+    <!-- Error messages -->
+    <!-- action labels -->
+    <!-- action labels -->
+    <!-- action category labels -->
+    <!-- action category labels -->
+    <!--  Intent action type strings  -->
+    <!--  Intent action type strings  -->
+    <!--  Tap targets  -->
+    <!--  Tap targets  -->
+    <!--  About  -->
+    <!--  About  -->
+</resources>
