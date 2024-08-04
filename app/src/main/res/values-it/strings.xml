@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="no_action_chosen">Nessuna azione scelta</string>
+    <string name="selection_count">%d selezionati</string>
+    <string name="enable">Abilita</string>
+    <string name="open">Aperto</string>
+    <string name="recyclerview_placeholder">¯\\_(ツ)_/¯\n\nQui non c\'é nulla!</string>
+    <string name="triggers_recyclerview_placeholder">Registra un trigger!</string>
+    <string name="actions_recyclerview_placeholder">Aggiungi un\'azione!</string>
+    <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nCrea una mappatura!</string>
+    <string name="action_shortcut_list_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nNon hai scelto nessuna azione per questa scorciatoia!</string>
+    <string name="no_key_maps">Non hai creato alcuna mappatura!</string>
+    <string name="everything_looks_good">Sembra tutto apposto!</string>
+    <string name="warning_the_app_will_work">L\'app funzionerà, alcune cose potrebbero aver bisogno di riparazioni, a seconda di che operazione stai svolgendo.</string>
+    <string name="your_device_doesnt_support_some_actions">Il tuo dispositivo non supporta alcune azioni di quest\'app.</string>
+    <!--  Action descriptions  -->
+    <!--  Action descriptions  -->
+    <!--  Headers  -->
+    <!--  Headers  -->
+    <!--  Hints  -->
+    <!--  Hints  -->
+    <!--  Radio buttons  -->
+    <!--  Radio buttons  -->
+    <!--  Tabs  -->
+    <!--  Tabs  -->
+    <!--  Navigation argument ids  -->
+    <!--  Navigation argument ids  -->
+    <!--  Toasts  -->
+    <!--  Toasts  -->
+    <!-- Extra labels -->
+    <!-- Extra labels -->
+    <!-- Constraints -->
+    <!-- Constraints -->
+    <!-- Click types -->
+    <!-- Click types -->
+    <!-- URLs -->
+    <!-- URLs -->
+    <!-- Activity titles -->
+    <!-- Activity titles -->
+    <!--  Bug report slides-->
+    <!--  Bug report slides-->
+    <!-- Menu action titles-->
+    <string name="action_enable">Abilita</string>
+    <!-- Menu action titles-->
+    <!-- Button titles -->
+    <!-- Button titles -->
+    <!-- Dialog stuff -->
+    <!-- Dialog stuff -->
+    <!-- Notification strings -->
+    <!--  remove accessibility from the word because the other notification buttons arent visible on small screens  -->
+    <!-- Notification strings -->
+    <!--Preference titles and summaries-->
+    <!--Preference titles and summaries-->
+    <!--Preference categories-->
+    <!--Preference categories-->
+    <!-- About activity-->
+    <!-- About activity-->
+    <!--flags-->
+    <!--flags-->
+    <!-- Showcase -->
+    <string name="showcase_fingerprint_gesture_support_button">Abilita</string>
+    <!-- Showcase -->
+    <!-- system action options -->
+    <!-- system action options -->
+    <!-- Tiles -->
+    <!-- Tiles -->
+    <!-- Meta States -->
+    <!-- Meta States -->
+    <!-- Error messages -->
+    <!-- Error messages -->
+    <!-- action labels -->
+    <!-- action labels -->
+    <!-- action category labels -->
+    <!-- action category labels -->
+    <!--  Intent action type strings  -->
+    <!--  Intent action type strings  -->
+    <!--  Tap targets  -->
+    <!--  Tap targets  -->
+    <!--  About  -->
+    <!--  About  -->
+</resources>
