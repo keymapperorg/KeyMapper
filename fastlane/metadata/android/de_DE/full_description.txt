@@ -1,0 +1,38 @@
+Welche Tasten können neu zugeordnet werden ?
+
+ * Fingerabdruck-Gesten auf unterstützten Geräten.
+ * Lautstärke-Tasten.
+ * Navigations-Tasten.
+ * Bluetooth und USB Tastaturen.
+ * Die Tasten von anderen verbundenen Geräten sollten auch funktionieren.
+
+Es können nur Hardwaretasten neu zugeordnet werden.
+Es wird NICHT garantiert dass alle diese Tasten funktionieren werden. Diese App ist NICHT designed um Spiele steuern zu können. Dein Gerätehersteller kann verhindern dass diese Tasten neu zugeordnet werden.
+
+Du kannst mehrere Tasten eines Gerätes kombinieren um somit einen "Trigger" zu formen. Jeder Trigger kann mehrere Aktionen zugeteilt bekommen. Es kann eingestellt werden ob bestimmte Tasten gleichzeitig gedrückt gehalten werden oder nacheinander gedrückt werden müssen. Trigger können bei kurzen Tastendrücken, langen Tastendrücken und Doppelklicks ausgelöst werden. Eine Tastenzuordnung kann bestimmte Vorraussetzungen zugeteilt bekommen, sodass sie nur bei bestimmten Situationen ausgelöst werden.
+
+Was kan nicht neu zugeordnet werden ?
+ * Power-Knopf
+ * Bixby-Knopf
+ * Maustasten
+ * Dpads, Daumen-sticks oder Tasten von Controllern
+
+Die Tastenzuordnungen funktionieren nicht wenn der Display ausgeschaltet ist. Dies ist eine Limitierung von Android. Der Entwickler kann da nichts dran ändern.
+
+Was kann ich meine Tastenzuordnungen machen lassen ?
+Einige Aktionen funktionieren nur auf gerooteten Geräten und Geräten mit bestimmten Android Versionen.
+
+There are too many features to list here so check out the full list here: https://docs.keymapper.club/user-guide/actions
+
+Berechtigungen
+Es müssen nicht alle Berechtigungen gewährt werden, damit die app funktioniert. The app will tell you if a permission needs to be granted for a feature to work.
+
+ * Accessibility Service: Basic requirement for remapping to work. It is needed so the app can listen to and block keyevents.
+ * Device Admin: To turn the screen off when using the action to turn off the screen.
+ * Modify System Settings: To change the brightness and rotation settings.
+ * Camera: To control the flashlight.
+
+ On some devices, enabling the accessibility service will disable "enhanced data encryption".
+
+Discord: www.keymapper.club
+Website: docs.keymapper.club
