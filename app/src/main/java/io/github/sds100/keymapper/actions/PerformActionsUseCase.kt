@@ -699,6 +699,9 @@ class PerformActionsUseCaseImpl(
 
                         suAdapter.execute("mkdir -p $screenshotsFolder; screencap -p $screenshotsFolder/Screenshot_$fileDate.png")
                             .onSuccess {
+                                // Wait 3 seconds so the message isn't shown in the screenshot.
+                                delay(3000)
+
                                 popupMessageAdapter.showPopupMessage(
                                     resourceProvider.getString(
                                         R.string.toast_screenshot_taken,
