@@ -43,6 +43,7 @@
     <string name="modifiers">Modyfikatory</string>
     <string name="toggle">Włącz/wyłącz</string>
     <string name="tap_coordinate_screenshot_message">UWAGA!!! Te współrzędne są poprawne tylko wtedy, gdy urządzenie i zrzut ekranu są w tej samej orientacji! To działanie spowoduje anulowanie wszelkich kliknięć lub gestów, które wykonujesz na ekranie.\n\nJeśli potrzebujesz pomocy w znalezieniu współrzędnych punktu na ekranie, zrób zrzut ekranu, a następnie dotknij go w miejscu, w którym ma zostać wykonane to działanie.</string>
+    <string name="pinch_screen_x_y_note">Uwaga: Podczas korzystania z funkcji \"zsuń\", X i Y są współrzędnymi KOŃCOWYMI, a podczas korzystania z funkcji \"rozsuń\", X i Y są współrzędnymi POCZĄTKOWYMI.</string>
     <string name="dont_know_device_name">Nie znam nazwy urządzenia!</string>
     <string name="tap_actions_to_fix">Kliknij działania, aby naprawić!</string>
     <string name="tap_constraints_to_fix">Kliknij ograniczenia, aby naprawić!</string>
@@ -85,6 +86,8 @@
     <string name="trigger_error_screen_off_root_permission_denied_short">Opcja wyzwalania, gdy ekran jest wyłączony, nie będzie działać!</string>
     <string name="trigger_error_cant_detect_in_phone_call">Ten wyzwalacz nie zadziała, gdy telefon dzwoni lub w trakcie rozmowy telefonicznej!</string>
     <string name="trigger_error_cant_detect_in_phone_call_explanation">Android nie pozwala usługom ułatwień dostępu wykrywać naciśnięcia przycisków głośności, gdy telefon dzwoni lub trwa rozmowa telefoniczna, ale umożliwia wykrywanie ich przez metody wprowadzania. Dlatego należy użyć jednej z klawiatur Key Mapper, jeśli chcesz, aby ten wyzwalacz działał w takich sytuacjach.</string>
+    <string name="trigger_error_gesture_stroke_count_too_high">Zbyt wiele palców do wykonania gestu ze względu na ograniczenia systemu Android.</string>
+    <string name="trigger_error_gesture_duration_too_high">Czas trwania gestu jest zbyt długi ze względu na ograniczenia systemu Android.</string>
     <string name="home_error_is_battery_optimised">Twoje działania mogą nagle przestać działać!</string>
     <string name="home_error_key_maps_paused">Twoje działania są wstrzymane!</string>
     <string name="home_error_key_maps_paused_button">Wznów</string>
@@ -104,6 +107,10 @@
     <string name="description_url">Otwórz %s</string>
     <string name="description_tap_coordinate_default">Kliknij współrzędne %d, %d</string>
     <string name="description_tap_coordinate_with_description">Kliknij współrzędne %d, %d (%s)</string>
+    <string name="description_swipe_coordinate_default">Przesuń %d palcem(ami) od współrzędnych %d/%d do %d/%d w ciągu %dms</string>
+    <string name="description_swipe_coordinate_with_description">Przesuń %d palcem(ami) od współrzędnych %d/%d do %d/%d w ciągu %dms (%s)</string>
+    <string name="description_pinch_coordinate_default">%s z %d palcem(ami) na współrzędnych %d/%d z odległością (ro)zsunięcia %dpx w ciągu %dms</string>
+    <string name="description_pinch_coordinate_with_description">%s z %d palcem(ami) na współrzędnych %d/%d z odległością (ro)zsunięcia %dpx %dms (%s)</string>
     <string name="description_phone_call">Zadzwoń do %s</string>
     <string name="description_sound">Odtwórz dźwięk: %s</string>
     <!--  Action descriptions  -->
@@ -120,6 +127,14 @@
     <string name="header_intent_extras">Dodatki</string>
     <!--  Headers  -->
     <!--  Hints  -->
+    <string name="hint_coordinate_x_start">Poz. początkowa X</string>
+    <string name="hint_coordinate_y_start">Poz. początkowa Y</string>
+    <string name="hint_coordinate_x_end">Poz. końcowa X</string>
+    <string name="hint_coordinate_y_end">Poz. końcowa Y</string>
+    <string name="hint_coordinate_distance">Odległość (ro)zsunięcia (px)</string>
+    <string name="hint_coordinate_pinch_type">Typ (ro)zsunięcia</string>
+    <string name="hint_coordinate_type_pinch_in">Zsuń</string>
+    <string name="hint_coordinate_type_pinch_out">Rozsuń</string>
     <string name="hint_keycode">Kod klawisza</string>
     <string name="hint_from_device">Z urządzenia</string>
     <string name="hint_shortcut_name">Nazwa skrótu</string>
@@ -200,6 +215,13 @@
     <string name="extra_label_action_multiplier_with_repeat">Ile razy w każdym powtórzeniu</string>
     <string name="extra_label_delay_before_next_action">Opóźnienie przed następną czynnością (ms)</string>
     <string name="extra_label_hold_down_duration">Czas przytrzymania (ms)</string>
+    <string name="extra_label_swipe_duration">Czas przesuwania (ms)</string>
+    <string name="extra_label_swipe_finger_count">Liczba palców</string>
+    <string name="extra_label_swipe_select_start_end_label">Ustaw współrzędne zrzutu ekranu</string>
+    <string name="extra_label_swipe_select_start_end_start">Na poz. początkowe</string>
+    <string name="extra_label_swipe_select_start_end_end">Na poz. końcowe</string>
+    <string name="extra_label_pinch_duration">Czas (ro)zsunięcia (ms)</string>
+    <string name="extra_label_pinch_finger_count">Liczba palców</string>
     <!-- Extra labels -->
     <!-- Constraints -->
     <string name="constraint_app_foreground_description">%s jest na pierwszym planie</string>
@@ -663,6 +685,10 @@
     <string name="showcase_shizuku_not_started_title">Aplikacja Shizuku nie jest uruchomiona</string>
     <string name="showcase_shizuku_not_started_message">Aby udzielić aplikacji Key Mapper uprawnienia do korzystania z aplikacji Shizuku, należy ją uruchomić. Kliknij \"Uruchom Shizuku\", aby otworzyć aplikację Shizuku, w której możesz ją uruchomić.</string>
     <string name="showcase_shizuku_launch_shizuku_app">Uruchom Shizuku</string>
+    <string name="showcase_notification_permission_denied_title">Udziel uprawnienie na wysyłanie powiadomień</string>
+    <string name="showcase_notification_permission_denied_message">Niektóre funkcje aplikacji Key Mapper wymagają uprawnienie do wysyłania powiadomień. Na przykład, powiadomienie o wstrzymaniu/wznowieniu mapy klawiszy. Kliknij \'udziel\', aby zezwolić.</string>
+    <string name="showcase_notification_permission_granted_title">Powiadomienia mogą być wyświetlane!</string>
+    <string name="showcase_notification_permission_granted_message">Pomyślnie zezwolono aplikacji Key Mapper na wyświetlanie powiadomień.</string>
     <string name="showcase_notification_permission_button">Udziel</string>
     <!-- Showcase -->
     <!-- system action options -->
@@ -829,6 +855,14 @@
     <string name="error_access_fine_location_permission_denied">Odmówiono dostępu do dokładnej lokalizacji!</string>
     <string name="error_answer_end_phone_call_permission_denied">Odmowa uprawnienia na odbieranie i kończenie połączeń telefonicznych!</string>
     <string name="error_find_nearby_devices_permission_denied">Odmowa uprawnienia do wyświetlania sparowanych urządzeń Bluetooth!</string>
+    <string name="error_notifications_permission_denied">Odmowa dostępu na wyświetlanie powiadomień!</string>
+    <string name="error_pinch_screen_must_be_two_or_more_fingers">Musi być 2 lub więcej!</string>
+    <string name="error_pinch_screen_must_be_ten_or_less_fingers">Musi być %d lub mniej!</string>
+    <string name="error_pinch_screen_duration_must_be_more_than_zero">Musi być większe niż 0!</string>
+    <string name="error_pinch_screen_distance_too_low">Musi być większe niż 0!</string>
+    <string name="error_swipe_screen_fingercount_must_be_more_than_zero">Musi być większe niż 0!</string>
+    <string name="error_swipe_screen_duration_must_be_more_than_zero">Musi być większe niż 0!</string>
+    <string name="error_swipe_screen_must_be_ten_or_less_fingers">Musi być %d lub mniej!</string>
     <!-- Error messages -->
     <!-- action labels -->
     <string name="action_toggle_wifi">Włącz/wyłącz Wi-Fi</string>
@@ -948,6 +982,8 @@
     <string name="action_input_key_code">Wprowadź kod klawisza</string>
     <string name="action_input_key_event">Wprowadź klawiszowe wydarzenie</string>
     <string name="action_tap_screen">Kliknij ekran</string>
+    <string name="action_swipe_screen">Gest przesuwania</string>
+    <string name="action_pinch_screen">Gest zsunięcia/rozsunięcia</string>
     <string name="action_input_text">Wprowadź tekst</string>
     <string name="action_open_url">Otwórz adres URL</string>
     <string name="action_send_intent">Wyślij Intencję</string>
