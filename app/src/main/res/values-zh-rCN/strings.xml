@@ -43,6 +43,7 @@
     <string name="modifiers">修改器</string>
     <string name="toggle">切换</string>
     <string name="tap_coordinate_screenshot_message">重要！！！这些坐标只有当你的显示方向与屏幕截图相同时才是正确的！ 此操作将取消您在屏幕上所做的任何触摸或手势。\n\n如果你寻找您屏幕上某点的坐标需要帮助，就采取屏幕截图的方法，然后在屏幕截图上点击您想让此动作按下的地方。</string>
+    <string name="pinch_screen_x_y_note">注意：在使用 “缩小” 时，X和Y是结束坐标，在使用 “放大” 时，X和Y是起始坐标。</string>
     <string name="dont_know_device_name">未知设备名称！</string>
     <string name="tap_actions_to_fix">点击动作以修复！</string>
     <string name="tap_constraints_to_fix">点击约束器以修复！</string>
@@ -85,6 +86,8 @@
     <string name="trigger_error_screen_off_root_permission_denied_short">屏幕关闭时触发的设置将失效！</string>
     <string name="trigger_error_cant_detect_in_phone_call">此触发器在响铃或通话时失效！</string>
     <string name="trigger_error_cant_detect_in_phone_call_explanation">Android 的无障碍服务不会在您的手机响铃或通话时检测音量按钮按下的动作，但可以被输入法服务检测到。 如果您希望此触发器起作用，您必须使用Key Mapper keyboard。</string>
+    <string name="trigger_error_gesture_stroke_count_too_high">由于 Android 的限制，需要多指才能执行手势</string>
+    <string name="trigger_error_gesture_duration_too_high">由于 Android 的限制，手势持续时间不能过长。</string>
     <string name="home_error_is_battery_optimised">您的按键映射将随时会停止工作！</string>
     <string name="home_error_key_maps_paused">映射已暂停！</string>
     <string name="home_error_key_maps_paused_button">取消暂停</string>
@@ -104,6 +107,10 @@
     <string name="description_url">打开 %s</string>
     <string name="description_tap_coordinate_default">点击坐标 %d, %d</string>
     <string name="description_tap_coordinate_with_description">点击坐标 %d, %d (%s)</string>
+    <string name="description_swipe_coordinate_default">使用 %d 根手指从坐标 %d/%d 滑动至 %d/%d，耗时 %d毫秒</string>
+    <string name="description_swipe_coordinate_with_description">使用 %d 根手指从坐标 %d/%d 滑动至 %d/%d，耗时 %d毫秒 (%s)</string>
+    <string name="description_pinch_coordinate_default">%s 使用 %d 根手指在坐标 %d/%d 上进行缩放，距离为 %dpx，持续时间为 %dms</string>
+    <string name="description_pinch_coordinate_with_description">%s 使用 %d 根手指在坐标 %d/%d 上进行缩放，距离为 %dpx %dms（%s）</string>
     <string name="description_phone_call">呼叫 %s</string>
     <string name="description_sound">播放音效：%s</string>
     <!--  Action descriptions  -->
@@ -120,6 +127,14 @@
     <string name="header_intent_extras">扩展</string>
     <!--  Headers  -->
     <!--  Hints  -->
+    <string name="hint_coordinate_x_start">起点 X</string>
+    <string name="hint_coordinate_y_start">起点 Y</string>
+    <string name="hint_coordinate_x_end">终点 X</string>
+    <string name="hint_coordinate_y_end">终点 Y</string>
+    <string name="hint_coordinate_distance">缩放距离 (px)</string>
+    <string name="hint_coordinate_pinch_type">缩放类型</string>
+    <string name="hint_coordinate_type_pinch_in">缩小</string>
+    <string name="hint_coordinate_type_pinch_out">放大</string>
     <string name="hint_keycode">键码</string>
     <string name="hint_from_device">来自设备</string>
     <string name="hint_shortcut_name">快捷方式名称</string>
@@ -200,6 +215,13 @@
     <string name="extra_label_action_multiplier_with_repeat">每次重复多少次</string>
     <string name="extra_label_delay_before_next_action">下一个动作之前的延迟 (ms)</string>
     <string name="extra_label_hold_down_duration">按住时长 (ms)</string>
+    <string name="extra_label_swipe_duration">滑动持续时间 (ms)</string>
+    <string name="extra_label_swipe_finger_count">手指数量</string>
+    <string name="extra_label_swipe_select_start_end_label">使用屏幕截图设置坐标</string>
+    <string name="extra_label_swipe_select_start_end_start">开始</string>
+    <string name="extra_label_swipe_select_start_end_end">结束</string>
+    <string name="extra_label_pinch_duration">缩放持续时间 (ms)</string>
+    <string name="extra_label_pinch_finger_count">手指数量</string>
     <!-- Extra labels -->
     <!-- Constraints -->
     <string name="constraint_app_foreground_description">%s 处于前台状态</string>
@@ -289,6 +311,7 @@
     <string name="slide_title_share_bug_report">分享报告</string>
     <string name="slide_description_share_bug_report">有两种方法可以将错误报告分享给开发人员。 加入 Discord 服务器或创建 GitHub issue。 确保将错误报告附加到您的消息中！</string>
     <string name="slide_button_share_discord">Discord</string>
+    <string name="slide_button_share_github">GitHub</string>
     <!--  Bug report slides-->
     <!-- Menu action titles-->
     <string name="action_settings">设置</string>
@@ -656,11 +679,16 @@
     <string name="showcase_grant_shizuku_permission_denied_title">请求 Shizuku 权限</string>
     <string name="showcase_grant_shizuku_permission_denied_message">看来你已经安装了Shizuku，强烈建议授权Key Mapper使用Shizuku就能做很多不需要用户输入的事了，比如你都不用使用Key Mapper keyboard来输入按钮连击的指令，点击“更多信息”了解所有的好处，点击“授权”以授权</string>
     <string name="showcase_grant_shizuku_permission_granted_title">Shizuku已授权</string>
+    <string name="showcase_grant_shizuku_permission_granted_message">已成功授予键映射器使用Shizuku的权限</string>
     <string name="showcase_more_shizuku_info">更多信息</string>
     <string name="showcase_request_shizuku_permission">授予</string>
     <string name="showcase_shizuku_not_started_title">Shizuku未启动</string>
     <string name="showcase_shizuku_not_started_message">在你授权Key Mapper使用前Shizuku必须首先被启用，点击“启动Shizuku”以打开Shizuku应用，我们就能继续了</string>
     <string name="showcase_shizuku_launch_shizuku_app">启用Shizuku</string>
+    <string name="showcase_notification_permission_denied_title">授权通知权限</string>
+    <string name="showcase_notification_permission_denied_message">键映射器的某些功能需要获得权限才能发布通知，例如你有一个 暂停/恢复 的键映射的通知。 点击 \"授予 \"即可获得权限。</string>
+    <string name="showcase_notification_permission_granted_title">可以显示通知了！</string>
+    <string name="showcase_notification_permission_granted_message">已成功授予键映射器显示通知的权限</string>
     <string name="showcase_notification_permission_button">授予</string>
     <!-- Showcase -->
     <!-- system action options -->
@@ -827,6 +855,14 @@
     <string name="error_access_fine_location_permission_denied">拒绝了读取精确位置的权限</string>
     <string name="error_answer_end_phone_call_permission_denied">拒绝了开始和结束通话的权限</string>
     <string name="error_find_nearby_devices_permission_denied">查看配对蓝牙设备授权终止</string>
+    <string name="error_notifications_permission_denied">已拒绝显示通知的权限！</string>
+    <string name="error_pinch_screen_must_be_two_or_more_fingers">必须是 2 或以上！</string>
+    <string name="error_pinch_screen_must_be_ten_or_less_fingers">必须是 %d 或以下！</string>
+    <string name="error_pinch_screen_duration_must_be_more_than_zero">必须大于 0！</string>
+    <string name="error_pinch_screen_distance_too_low">必须大于 0！</string>
+    <string name="error_swipe_screen_fingercount_must_be_more_than_zero">必须大于 0！</string>
+    <string name="error_swipe_screen_duration_must_be_more_than_zero">必须大于 0！</string>
+    <string name="error_swipe_screen_must_be_ten_or_less_fingers">必须是 %d 或以下！</string>
     <!-- Error messages -->
     <!-- action labels -->
     <string name="action_toggle_wifi">切换 WiFi</string>
@@ -946,6 +982,8 @@
     <string name="action_input_key_code">输入键码</string>
     <string name="action_input_key_event">输入按键事件</string>
     <string name="action_tap_screen">点击屏幕</string>
+    <string name="action_swipe_screen">滑动屏幕</string>
+    <string name="action_pinch_screen">缩放屏幕</string>
     <string name="action_input_text">输入文本</string>
     <string name="action_open_url">打开链接</string>
     <string name="action_send_intent">发送意图</string>
@@ -1016,6 +1054,7 @@
     <string name="tap_target_quick_start_guide_secondary">如果您被卡住，请查看快速启动指南。</string>
     <!--  Tap targets  -->
     <!--  About  -->
+    <string name="about_link_github">GitHub</string>
     <string name="about_link_website">网络</string>
     <string name="about_link_translations">翻译</string>
     <string name="about_version">版本%s</string>
