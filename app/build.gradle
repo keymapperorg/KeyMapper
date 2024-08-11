@@ -75,6 +75,16 @@ android {
         }
     }
 
+    flavorDimensions = ["pro"]
+    productFlavors {
+        free {
+            dimension "pro"
+        }
+        pro {
+            dimension "pro"
+        }
+    }
+
     buildFeatures {
         dataBinding true
         viewBinding true
@@ -116,6 +126,8 @@ android.applicationVariants.all { variant ->
 }
 
 dependencies {
+    proImplementation project(":pro")
+
     def room_version = "2.5.2"
     def coroutinesVersion = "1.5.0"
     def nav_version = '2.6.0'
@@ -148,7 +160,7 @@ dependencies {
     implementation "dev.rikka.shizuku:api:$shizuku_version"
     implementation "dev.rikka.shizuku:provider:$shizuku_version"
     implementation 'org.lsposed.hiddenapibypass:hiddenapibypass:4.3'
-    
+
     // splitties
     implementation "com.louiscad.splitties:splitties-bitflags:$splitties_version"
     implementation "com.louiscad.splitties:splitties-alertdialog-appcompat-coroutines:$splitties_version"
@@ -202,7 +214,7 @@ dependencies {
     testImplementation "org.mockito.kotlin:mockito-kotlin:4.0.0"
     testImplementation "org.mockito:mockito-core:5.1.1"
     testImplementation 'org.mockito:mockito-inline:5.0.0'
-    
+
     androidTestImplementation "androidx.test.ext:junit:$androidXTestExtKotlinRunnerVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
     androidTestImplementation "androidx.arch.core:core-testing:2.2.0"
