@@ -8,4 +8,5 @@
     <dimen name="button_chip_icon_size">20dp</dimen>
     <dimen name="grid_item_min_width">300dp</dimen>
     <dimen name="grid_padding">4dp</dimen>
+    <dimen name="bottom_app_bar_height">80dp</dimen>
 </resources>
