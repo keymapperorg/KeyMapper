@@ -20,7 +20,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="?attr/actionBarSize"
+            android:layout_marginBottom="@dimen/bottom_app_bar_height"
             android:orientation="vertical">
 
             <com.google.android.material.textview.MaterialTextView
@@ -66,7 +66,7 @@
 
         <com.google.android.material.bottomappbar.BottomAppBar
             android:id="@+id/appBar"
-            style="@style/BottomAppBar"
+            app:menuAlignmentMode="auto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"

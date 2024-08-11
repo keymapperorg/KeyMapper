@@ -4,11 +4,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/appBar"
-    style="@style/BottomAppBar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="bottom"
     android:gravity="center"
     app:menu="@menu/menu_recyclerview_fragment"
+    app:menuAlignmentMode="auto"
     app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
     tools:ignore="BottomAppBar" />
