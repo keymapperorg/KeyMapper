@@ -144,7 +144,9 @@ class HomeViewModel(
                 if (showFingerprintMaps) {
                     yield(HomeTab.FINGERPRINT_MAPS)
                 }
-            }.toSet()
+
+                yield(HomeTab.ASSISTANT_TRIGGER)
+            }.toList()
 
             val showTabs = when {
                 tabs.size == 1 -> false
@@ -165,7 +167,7 @@ class HomeViewModel(
                 HomeTabsState(
                     enableViewPagerSwiping = false,
                     showTabs = false,
-                    emptySet(),
+                    emptyList(),
                 ),
             )
 
@@ -541,7 +543,7 @@ enum class HomeAppBarState {
 data class HomeTabsState(
     val enableViewPagerSwiping: Boolean = true,
     val showTabs: Boolean = false,
-    val tabs: Set<HomeTab>,
+    val tabs: List<HomeTab>,
 )
 
 data class HomeErrorListState(

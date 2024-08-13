@@ -2,8 +2,10 @@ package io.github.sds100.keymapper.home
 
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapListFragment
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapListFragment
+import io.github.sds100.keymapperpro.AssistantTriggerFragment
 
 /**
  * Created by sds100 on 26/01/2020.
@@ -13,7 +15,15 @@ class HomePagerAdapter(
     fragment: Fragment,
 ) : FragmentStateAdapter(fragment) {
 
-    private var tabs: Set<HomeTab> = emptySet()
+    companion object {
+        val TAB_NAMES: Map<HomeTab, Int> = mapOf(
+            HomeTab.KEY_EVENTS to R.string.tab_keyevents,
+            HomeTab.FINGERPRINT_MAPS to R.string.tab_fingerprint,
+            HomeTab.ASSISTANT_TRIGGER to R.string.tab_assistant_trigger
+        )
+    }
+
+    private var tabs: List<HomeTab> = emptyList()
     private val tabFragmentsCreators: List<() -> Fragment>
         get() = tabs.map { tab ->
             when (tab) {
@@ -32,6 +42,14 @@ class HomePagerAdapter(
                         }
                     }
                 }
+
+                HomeTab.ASSISTANT_TRIGGER -> {
+                    {
+                        AssistantTriggerFragment().apply {
+                            isAppBarVisible = false
+                        }
+                    }
+                }
             }
         }
 
@@ -39,7 +57,7 @@ class HomePagerAdapter(
 
     override fun createFragment(position: Int) = tabFragmentsCreators[position].invoke()
 
-    fun invalidateFragments(tabs: Set<HomeTab>) {
+    fun invalidateFragments(tabs: List<HomeTab>) {
         if (this.tabs == tabs) return
 
         this.tabs = tabs

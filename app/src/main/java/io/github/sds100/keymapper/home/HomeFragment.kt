@@ -33,7 +33,6 @@ import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.QuickStartGuideTapTarget
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.str
-import io.github.sds100.keymapper.util.strArray
 import io.github.sds100.keymapper.util.ui.TextListItem
 import io.github.sds100.keymapper.util.ui.setupNavigation
 import io.github.sds100.keymapper.util.ui.showPopups
@@ -130,7 +129,8 @@ class HomeFragment : Fragment() {
         binding.viewPager.adapter = pagerAdapter
 
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
-            tab.text = strArray(R.array.home_tab_titles)[position]
+            val tabId = homeViewModel.tabsState.value.tabs[position]
+            tab.text = str(HomePagerAdapter.TAB_NAMES[tabId]!!)
         }.apply {
             attach()
         }
