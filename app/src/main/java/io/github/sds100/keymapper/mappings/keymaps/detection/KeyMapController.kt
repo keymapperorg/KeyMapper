@@ -694,7 +694,6 @@ class KeyMapController(
                         canActionBePerformed.put(actionKey, result)
                         continue@triggerLoop
                     }
-
                 } else if (canActionBePerformed[actionKey] is Error) {
                     continue@triggerLoop
                 }
