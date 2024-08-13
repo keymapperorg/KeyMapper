@@ -125,7 +125,7 @@ dependencies {
     def nav_version = '2.7.7'
     def work_version = "2.9.1"
     def epoxy_version = "4.6.2"
-    def splitties_version = "3.0.0-beta01"
+    def splitties_version = "3.0.0"
     def multidex_version = "2.0.1"
     def shizuku_version = '13.1.5'
 
