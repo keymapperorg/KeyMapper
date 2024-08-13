@@ -57,12 +57,12 @@ class KeyMapController(
          * rather than the up event.
          */
         fun performActionOnDown(trigger: KeyMapTrigger): Boolean = (
-            trigger.keys.size <= 1 &&
-                trigger.keys.getOrNull(0)?.clickType != ClickType.DOUBLE_PRESS &&
-                trigger.mode == TriggerMode.Undefined
-            ) ||
+                trigger.keys.size <= 1 &&
+                        trigger.keys.getOrNull(0)?.clickType != ClickType.DOUBLE_PRESS &&
+                        trigger.mode == TriggerMode.Undefined
+                ) ||
 
-            trigger.mode is TriggerMode.Parallel
+                trigger.mode is TriggerMode.Parallel
     }
 
     /**
@@ -127,9 +127,9 @@ class KeyMapController(
                         }
 
                         if ((
-                                keyMap.trigger.mode == TriggerMode.Sequence ||
-                                    keyMap.trigger.mode == TriggerMode.Undefined
-                                ) &&
+                                    keyMap.trigger.mode == TriggerMode.Sequence ||
+                                            keyMap.trigger.mode == TriggerMode.Undefined
+                                    ) &&
                             key.clickType == ClickType.DOUBLE_PRESS
                         ) {
                             doublePressKeys.add(TriggerKeyLocation(triggerIndex, keyIndex))
@@ -155,9 +155,9 @@ class KeyMapController(
 
                     if (keyMap.actionList.any {
                             it.data is ActionData.InputKeyEvent &&
-                                isModifierKey(
-                                    it.data.keyCode,
-                                )
+                                    isModifierKey(
+                                        it.data.keyCode,
+                                    )
                         }
                     ) {
                         modifierKeyEventActions = true
@@ -165,9 +165,9 @@ class KeyMapController(
 
                     if (keyMap.actionList.any {
                             it.data is ActionData.InputKeyEvent &&
-                                !isModifierKey(
-                                    it.data.keyCode,
-                                )
+                                    !isModifierKey(
+                                        it.data.keyCode,
+                                    )
                         }
                     ) {
                         notModifierKeyEventActions = true
@@ -685,12 +685,17 @@ class KeyMapController(
                     val action = actionMap[actionKey] ?: continue
 
                     val result = performActionsUseCase.getError(action.data)
-                    canActionBePerformed.put(actionKey, result)
 
-                    if (result != null) {
+                    if (result == null) {
+                        canActionBePerformed.remove(actionKey)
+                    } else {
+                        // if there is an error when trying to perform an action then stop handling
+                        // this trigger.
+                        canActionBePerformed.put(actionKey, result)
                         continue@triggerLoop
                     }
-                } else if (canActionBePerformed.get(actionKey, null) is Error) {
+
+                } else if (canActionBePerformed[actionKey] is Error) {
                     continue@triggerLoop
                 }
             }
@@ -1469,30 +1474,30 @@ class KeyMapController(
         TriggerKeyDevice.Any -> this.keyCode == event.keyCode && this.clickType == event.clickType
         is TriggerKeyDevice.External ->
             this.keyCode == event.keyCode &&
-                event.descriptor != null &&
-                event.descriptor == this.device.descriptor &&
-                this.clickType == event.clickType
+                    event.descriptor != null &&
+                    event.descriptor == this.device.descriptor &&
+                    this.clickType == event.clickType
 
         TriggerKeyDevice.Internal ->
             this.keyCode == event.keyCode &&
-                event.descriptor == null &&
-                this.clickType == event.clickType
+                    event.descriptor == null &&
+                    this.clickType == event.clickType
     }
 
     private fun TriggerKey.matchesWithOtherKey(otherKey: TriggerKey): Boolean = when (this.device) {
         TriggerKeyDevice.Any ->
             this.keyCode == otherKey.keyCode &&
-                this.clickType == otherKey.clickType
+                    this.clickType == otherKey.clickType
 
         is TriggerKeyDevice.External ->
             this.keyCode == otherKey.keyCode &&
-                this.device == otherKey.device &&
-                this.clickType == otherKey.clickType
+                    this.device == otherKey.device &&
+                    this.clickType == otherKey.clickType
 
         TriggerKeyDevice.Internal ->
             this.keyCode == otherKey.keyCode &&
-                otherKey.device == TriggerKeyDevice.Internal &&
-                this.clickType == otherKey.clickType
+                    otherKey.device == TriggerKeyDevice.Internal &&
+                    this.clickType == otherKey.clickType
     }
 
     private fun longPressDelay(trigger: KeyMapTrigger): Long =
