@@ -26,7 +26,7 @@ class AssistantTriggerFragment : Fragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MaterialTheme {
-                    Text("I am free build variant.")
+                    Text("This feature is only available in the Play store version of the app because it is behind a paywall.")
                 }
             }
         }
