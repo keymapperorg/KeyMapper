@@ -3,9 +3,9 @@ package io.github.sds100.keymapper.home
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.mappings.assistant.AssistantTriggerFragment
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapListFragment
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapListFragment
-import io.github.sds100.keymapperpro.AssistantTriggerFragment
 
 /**
  * Created by sds100 on 26/01/2020.
@@ -45,9 +45,7 @@ class HomePagerAdapter(
 
                 HomeTab.ASSISTANT_TRIGGER -> {
                     {
-                        AssistantTriggerFragment().apply {
-                            isAppBarVisible = false
-                        }
+                        AssistantTriggerFragment()
                     }
                 }
             }
