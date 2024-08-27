@@ -74,7 +74,7 @@ class DetectScreenOffKeyEventsController(
                     line ?: continue
 
                     KeyEventUtils.GET_EVENT_LABEL_TO_KEYCODE.forEach { (label, keyCode) ->
-                        if (line?.contains(label) == true) {
+                        if (line!!.contains(label)) {
                             val deviceLocation =
                                 deviceLocationRegex.find(line!!)?.value ?: return@forEach
 
@@ -99,8 +99,6 @@ class DetectScreenOffKeyEventsController(
                                     )
                                 }
                             }
-
-                            return@forEach
                         }
                     }
                 }
