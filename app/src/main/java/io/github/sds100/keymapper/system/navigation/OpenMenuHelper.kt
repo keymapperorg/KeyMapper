@@ -21,7 +21,7 @@ class OpenMenuHelper(
     private val suAdapter: SuAdapter,
     private val accessibilityService: IAccessibilityService,
     private val shizukuInputEventInjector: InputEventInjector,
-    private val permissionAdapter: PermissionAdapter
+    private val permissionAdapter: PermissionAdapter,
 ) {
 
     companion object {
@@ -33,7 +33,7 @@ class OpenMenuHelper(
             permissionAdapter.isGranted(Permission.SHIZUKU) -> {
                 val inputKeyModel = InputKeyModel(
                     keyCode = KeyEvent.KEYCODE_MENU,
-                    inputType = InputEventType.DOWN_UP
+                    inputType = InputEventType.DOWN_UP,
                 )
 
                 shizukuInputEventInjector.inputKeyEvent(inputKeyModel)

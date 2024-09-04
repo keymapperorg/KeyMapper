@@ -8,7 +8,7 @@ import io.github.sds100.keymapper.util.ui.ChipUi
 
 data class KeyMapListItem(
     val keyMapUiState: KeyMapUiState,
-    val selectionUiState: SelectionUiState
+    val selectionUiState: SelectionUiState,
 ) {
     data class KeyMapUiState(
         val uid: String,
@@ -17,14 +17,13 @@ data class KeyMapListItem(
         val triggerDescription: String,
         val optionsDescription: String,
         val extraInfo: String,
-        val triggerErrorChipList: List<ChipUi>
+        val triggerErrorChipList: List<ChipUi>,
     ) {
         val hasTrigger: Boolean
             get() = triggerDescription.isNotBlank()
 
         val hasOptions: Boolean
             get() = optionsDescription.isNotBlank()
-
     }
 
     data class SelectionUiState(val isSelected: Boolean, val isSelectable: Boolean)

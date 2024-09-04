@@ -16,8 +16,8 @@ import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.util.Error
-import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.util.ServiceEvent
 import io.github.sds100.keymapper.util.Success
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -36,11 +36,11 @@ class NotificationReceiverAdapter(
     private val ctx: Context = context.applicationContext
     override val state: MutableStateFlow<ServiceState> = MutableStateFlow(ServiceState.DISABLED)
 
-    override val eventReceiver: MutableSharedFlow<Event> = MutableSharedFlow()
-    val eventsToService = MutableSharedFlow<Event>()
+    override val eventReceiver: MutableSharedFlow<ServiceEvent> = MutableSharedFlow()
+    val eventsToService = MutableSharedFlow<ServiceEvent>()
 
     init {
-        //use job scheduler because there is there is a much shorter delay when the app is in the background
+        // use job scheduler because there is there is a much shorter delay when the app is in the background
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             JobSchedulerHelper.observeEnabledNotificationListeners(ctx)
         } else {
@@ -63,7 +63,7 @@ class NotificationReceiverAdapter(
         }
     }
 
-    override suspend fun send(event: Event): Result<*> {
+    override suspend fun send(event: ServiceEvent): Result<*> {
         if (state.value != ServiceState.ENABLED) {
             return Error.PermissionDenied(Permission.NOTIFICATION_LISTENER)
         }
@@ -75,21 +75,13 @@ class NotificationReceiverAdapter(
         return Success(Unit)
     }
 
-    override fun start(): Boolean {
-        return openSettingsPage()
-    }
+    override fun start(): Boolean = openSettingsPage()
 
-    override fun restart(): Boolean {
-        return openSettingsPage()
-    }
+    override fun restart(): Boolean = openSettingsPage()
 
-    override fun stop(): Boolean {
-        return openSettingsPage()
-    }
+    override fun stop(): Boolean = openSettingsPage()
 
-    override suspend fun isCrashed(): Boolean {
-        return false
-    }
+    override suspend fun isCrashed(): Boolean = false
 
     private fun openSettingsPage(): Boolean {
         Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS).apply {

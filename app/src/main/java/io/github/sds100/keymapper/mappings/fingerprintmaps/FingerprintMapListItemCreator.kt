@@ -10,14 +10,17 @@ import io.github.sds100.keymapper.util.ui.ResourceProvider
  */
 class FingerprintMapListItemCreator(
     private val display: DisplaySimpleMappingUseCase,
-    resourceProvider: ResourceProvider
+    resourceProvider: ResourceProvider,
 ) : BaseMappingListItemCreator<FingerprintMap, FingerprintMapAction>(
     display,
     FingerprintMapActionUiHelper(display, resourceProvider),
-    resourceProvider
+    resourceProvider,
 ) {
 
-    fun create(fingerprintMap: FingerprintMap, showDeviceDescriptors: Boolean): FingerprintMapListItem {
+    fun create(
+        fingerprintMap: FingerprintMap,
+        showDeviceDescriptors: Boolean,
+    ): FingerprintMapListItem {
         val header = when (fingerprintMap.id) {
             FingerprintMapId.SWIPE_DOWN -> getString(R.string.header_fingerprint_gesture_down)
             FingerprintMapId.SWIPE_UP -> getString(R.string.header_fingerprint_gesture_up)
@@ -37,7 +40,6 @@ class FingerprintMapListItemCreator(
             }
         }
 
-
         val actionChipList = getActionChipList(fingerprintMap, showDeviceDescriptors)
         val constraintChipList = getConstraintChipList(fingerprintMap)
 
@@ -50,7 +52,7 @@ class FingerprintMapListItemCreator(
             constraintChipList = constraintChipList,
             optionsDescription = optionsDescription,
             isEnabled = fingerprintMap.isEnabled,
-            extraInfo = extraInfo
+            extraInfo = extraInfo,
         )
     }
 

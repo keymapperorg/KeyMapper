@@ -12,5 +12,5 @@ data class FakeMapping(
     override val actionList: List<FakeAction> = emptyList(),
     override val showToast: Boolean = false,
     override val vibrate: Boolean = false,
-    override val vibrateDuration: Int? = null
+    override val vibrateDuration: Int? = null,
 ) : Mapping<FakeAction>

@@ -47,12 +47,12 @@ class AppIntroActivity : AppIntro2() {
             ServiceLocator.permissionAdapter(this@AppIntroActivity).request.collectLatest { permission ->
                 requestPermissionDelegate.requestPermission(
                     permission,
-                    null
+                    null,
                 )
             }
         }
 
-        viewModel.slidesToShow.forEach {
+        viewModel.slides.forEach {
             val args = bundleOf(AppIntroFragment.KEY_SLIDE to it)
 
             AppIntroFragment().apply {

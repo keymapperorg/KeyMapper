@@ -9,7 +9,14 @@ import io.github.sds100.keymapper.util.ui.IconInfo
 import io.github.sds100.keymapper.util.ui.TintType
 import io.github.sds100.keymapper.util.valueOrNull
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 
 /**
  * Created by sds100 on 27/01/2020.
@@ -18,7 +25,7 @@ class ChooseActivityViewModel(private val useCase: DisplayAppsUseCase) : ViewMod
 
     val searchQuery = MutableStateFlow<String?>(null)
 
-    private val unfilteredListItems: Flow<State<List<ActivityListItem>>> =
+    private val unfilteredListItems: Flow<State<List<AppActivityListItem>>> =
         useCase.installedPackages.map { packagesState ->
 
             if (packagesState !is State.Data) {
@@ -36,11 +43,11 @@ class ChooseActivityViewModel(private val useCase: DisplayAppsUseCase) : ViewMod
 
                     packageInfo.activities.forEach { activityInfo ->
                         yield(
-                            ActivityListItem(
+                            AppActivityListItem(
                                 appName = appName,
                                 activityInfo = activityInfo,
-                                icon = appIcon?.let { IconInfo(it, TintType.None) }
-                            )
+                                icon = appIcon?.let { IconInfo(it, TintType.None) },
+                            ),
                         )
                     }
                 }
@@ -51,13 +58,13 @@ class ChooseActivityViewModel(private val useCase: DisplayAppsUseCase) : ViewMod
             return@map State.Data(sortedListItems)
         }.flowOn(Dispatchers.Default)
 
-    private val _listItems = MutableStateFlow<State<List<ActivityListItem>>>(State.Loading)
+    private val _listItems = MutableStateFlow<State<List<AppActivityListItem>>>(State.Loading)
     val listItems = _listItems.asStateFlow()
 
     init {
         combine(
             searchQuery,
-            unfilteredListItems
+            unfilteredListItems,
         ) { searchQuery, unfilteredListItemsState ->
 
             if (unfilteredListItemsState is State.Data) {
@@ -67,12 +74,11 @@ class ChooseActivityViewModel(private val useCase: DisplayAppsUseCase) : ViewMod
             } else {
                 _listItems.value = unfilteredListItemsState
             }
-
         }.flowOn(Dispatchers.Default).launchIn(viewModelScope)
     }
 
     class Factory(
-        private val useCase: DisplayAppsUseCase
+        private val useCase: DisplayAppsUseCase,
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")

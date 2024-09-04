@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.settings
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.RequiresApi
 import androidx.preference.Preference
 import androidx.preference.SwitchPreferenceCompat
 import androidx.preference.isEmpty
@@ -34,8 +35,7 @@ class AutomaticallyChangeImeSettings : BaseSettingsFragment() {
     }
 
     private fun populatePreferenceScreen() = preferenceScreen.apply {
-
-        //show on-screen messages when changing keyboards
+        // show on-screen messages when changing keyboards
         SwitchPreferenceCompat(requireContext()).apply {
             key = Keys.showToastWhenAutoChangingIme.name
 
@@ -46,7 +46,7 @@ class AutomaticallyChangeImeSettings : BaseSettingsFragment() {
             addPreference(this)
         }
 
-        //automatically change ime on input focus
+        // automatically change ime on input focus
         SwitchPreferenceCompat(requireContext()).apply {
             key = Keys.changeImeOnInputFocus.name
 
@@ -58,7 +58,7 @@ class AutomaticallyChangeImeSettings : BaseSettingsFragment() {
             addPreference(this)
         }
 
-        //automatically change the keyboard when a bluetooth device (dis)connects
+        // automatically change the keyboard when a bluetooth device (dis)connects
         SwitchPreferenceCompat(requireContext()).apply {
             key = Keys.changeImeOnDeviceConnect.name
             setDefaultValue(false)
@@ -74,11 +74,11 @@ class AutomaticallyChangeImeSettings : BaseSettingsFragment() {
             SettingsUtils.createChooseDevicesPreference(
                 requireContext(),
                 viewModel,
-                Keys.devicesThatChangeIme
-            )
+                Keys.devicesThatChangeIme,
+            ),
         )
 
-        //toggle keyboard when toggling key maps
+        // toggle keyboard when toggling key maps
         SwitchPreferenceCompat(requireContext()).apply {
             key = Keys.toggleKeyboardOnToggleKeymaps.name
             setDefaultValue(false)
@@ -90,9 +90,9 @@ class AutomaticallyChangeImeSettings : BaseSettingsFragment() {
             addPreference(this)
         }
 
-        //toggle keyboard notification
+        // toggle keyboard notification
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            //show a preference linking to the notification management screen
+            // show a preference linking to the notification management screen
             Preference(requireContext()).apply {
                 key = Keys.showToggleKeyboardNotification.name
 
@@ -101,17 +101,13 @@ class AutomaticallyChangeImeSettings : BaseSettingsFragment() {
                 setSummary(R.string.summary_pref_show_toggle_keyboard_notification)
 
                 setOnPreferenceClickListener {
-                    NotificationUtils.openChannelSettings(
-                        requireContext(),
-                        NotificationController.CHANNEL_TOGGLE_KEYBOARD
-                    )
+                    onToggleKeyboardNotificationClick()
 
                     true
                 }
 
                 addPreference(this)
             }
-
         } else {
             SwitchPreferenceCompat(requireContext()).apply {
                 key = Keys.showToggleKeyboardNotification.name
@@ -124,5 +120,20 @@ class AutomaticallyChangeImeSettings : BaseSettingsFragment() {
                 addPreference(this)
             }
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun onToggleKeyboardNotificationClick() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            !viewModel.isNotificationPermissionGranted()
+        ) {
+            viewModel.requestNotificationsPermission()
+            return
+        }
+
+        NotificationUtils.openChannelSettings(
+            requireContext(),
+            NotificationController.CHANNEL_TOGGLE_KEYBOARD,
+        )
     }
 }

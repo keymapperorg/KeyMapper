@@ -9,7 +9,9 @@ import io.github.sds100.keymapper.home.ChooseAppStoreModel
 sealed class PopupUi<R> {
 
     data class SnackBar(
-        val message: String, val long: Boolean = false, val actionText: String? = null
+        val message: String,
+        val long: Boolean = false,
+        val actionText: String? = null,
     ) : PopupUi<Unit>()
 
     data class Ok(val message: String, val title: String? = null) : PopupUi<Unit>()
@@ -19,7 +21,7 @@ sealed class PopupUi<R> {
         val message: CharSequence,
         val positiveButtonText: CharSequence,
         val neutralButtonText: CharSequence? = null,
-        val negativeButtonText: CharSequence? = null
+        val negativeButtonText: CharSequence? = null,
     ) : PopupUi<DialogResponse>()
 
     data class Text(
@@ -28,11 +30,11 @@ sealed class PopupUi<R> {
         val text: String = "",
         val inputType: Int? = null,
         val message: CharSequence? = null,
-        val autoCompleteEntries: List<String> = emptyList()
+        val autoCompleteEntries: List<String> = emptyList(),
     ) : PopupUi<String>()
 
     data class SingleChoice<ID>(
-        val items: List<Pair<ID, String>>
+        val items: List<Pair<ID, String>>,
     ) : PopupUi<ID>()
 
     data class MultiChoice<ID>(val items: List<MultiChoiceItem<ID>>) : PopupUi<List<ID>>()
@@ -44,12 +46,14 @@ sealed class PopupUi<R> {
         val message: CharSequence,
         val model: ChooseAppStoreModel,
         val positiveButtonText: CharSequence? = null,
-        val negativeButtonText: CharSequence? = null
+        val negativeButtonText: CharSequence? = null,
     ) : PopupUi<DialogResponse>()
 
     data class OpenUrl(val url: String) : PopupUi<Unit>()
 }
 
 enum class DialogResponse {
-    POSITIVE, NEUTRAL, NEGATIVE
+    POSITIVE,
+    NEUTRAL,
+    NEGATIVE,
 }

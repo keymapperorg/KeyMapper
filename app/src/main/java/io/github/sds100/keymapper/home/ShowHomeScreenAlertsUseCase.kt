@@ -18,14 +18,14 @@ class ShowHomeScreenAlertsUseCaseImpl(
     private val preferences: PreferenceRepository,
     private val permissions: PermissionAdapter,
     private val accessibilityServiceAdapter: ServiceAdapter,
-    private val pauseMappingsUseCase: PauseMappingsUseCase
+    private val pauseMappingsUseCase: PauseMappingsUseCase,
 ) : ShowHomeScreenAlertsUseCase {
     override val hideAlerts: Flow<Boolean> =
         preferences.get(Keys.hideHomeScreenAlerts).map { it ?: false }
 
     override val isBatteryOptimised: Flow<Boolean> =
         permissions.isGrantedFlow(Permission.IGNORE_BATTERY_OPTIMISATION)
-            .map { !it } //if granted then battery is NOT optimised
+            .map { !it } // if granted then battery is NOT optimised
 
     override val areMappingsPaused: Flow<Boolean> = pauseMappingsUseCase.isPaused
 
@@ -37,13 +37,9 @@ class ShowHomeScreenAlertsUseCaseImpl(
         permissions.request(Permission.IGNORE_BATTERY_OPTIMISATION)
     }
 
-    override fun startAccessibilityService(): Boolean {
-        return accessibilityServiceAdapter.start()
-    }
+    override fun startAccessibilityService(): Boolean = accessibilityServiceAdapter.start()
 
-    override fun restartAccessibilityService(): Boolean {
-        return accessibilityServiceAdapter.restart()
-    }
+    override fun restartAccessibilityService(): Boolean = accessibilityServiceAdapter.restart()
 
     override fun resumeMappings() {
         pauseMappingsUseCase.resume()

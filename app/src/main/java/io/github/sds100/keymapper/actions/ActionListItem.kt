@@ -14,5 +14,5 @@ data class ActionListItem(
     val icon: Drawable? = null,
     val extraInfo: String? = null,
     val errorMessage: String? = null,
-    val dragAndDrop: Boolean
+    val dragAndDrop: Boolean,
 )

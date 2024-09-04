@@ -82,13 +82,6 @@
     <style name="BottomAppBar.Theme" parent="ThemeOverlay.Material3.BottomAppBar">
     </style>
 
-    <style name="ShapeAppearanceOverlay.BottomSheetMenuItem">
-        <item name="cornerSizeTopRight">0dp</item>
-        <item name="cornerSizeBottomRight">0dp</item>
-        <item name="cornerSizeTopLeft">24dp</item>
-        <item name="cornerSizeBottomLeft">24dp</item>
-    </style>
-
     <style name="BottomSheetMenuItem" parent="Widget.Material3.Button.TextButton">
         <item name="android:gravity">start|center_vertical</item>
         <item name="android:minHeight">64dp</item>
@@ -96,7 +89,6 @@
         <item name="android:paddingLeft">16dp</item>
         <item name="android:textColor">?attr/colorOnSurface</item>
         <item name="iconTint">?attr/colorOnSurface</item>
-        <item name="shapeAppearance">@style/ShapeAppearanceOverlay.BottomSheetMenuItem</item>
     </style>
 
     <style name="ActionButton" parent="Widget.AppCompat.ActionButton">

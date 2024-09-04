@@ -9,10 +9,8 @@ import kotlinx.serialization.json.Json
  * Created by sds100 on 15/03/2021.
  */
 
-inline fun <reified T> Bundle.getJsonSerializable(key: String): T? {
-    return getString(key)?.let { Json.decodeFromString<T>(it) }
-}
+inline fun <reified T> Bundle.getJsonSerializable(key: String): T? =
+    getString(key)?.let { Json.decodeFromString<T>(it) }
 
-inline fun <reified T> Bundle.putJsonSerializable(key: String, value: T) {
-    return putString(key, Json.encodeToString(value))
-}
+inline fun <reified T> Bundle.putJsonSerializable(key: String, value: T) =
+    putString(key, Json.encodeToString(value))

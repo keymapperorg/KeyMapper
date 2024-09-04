@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.system.accessibility
 
-import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.util.ServiceEvent
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -28,6 +28,13 @@ interface ServiceAdapter {
 
     suspend fun isCrashed(): Boolean
 
-    suspend fun send(event: Event): Result<*>
-    val eventReceiver: SharedFlow<Event>
+    /**
+     * Send an event to the service.
+     */
+    suspend fun send(event: ServiceEvent): Result<*>
+
+    /**
+     * A flow of events coming from the service.
+     */
+    val eventReceiver: SharedFlow<ServiceEvent>
 }

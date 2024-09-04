@@ -18,11 +18,9 @@ sealed class TriggerMode {
     @Serializable
     object Undefined : TriggerMode()
 
-    override fun toString(): String {
-        return when (this) {
-            is Parallel -> Parallel(clickType).toString()
-            Sequence -> "Sequence"
-            Undefined -> "Undefined"
-        }
+    override fun toString(): String = when (this) {
+        is Parallel -> Parallel(clickType).toString()
+        Sequence -> "Sequence"
+        Undefined -> "Undefined"
     }
 }

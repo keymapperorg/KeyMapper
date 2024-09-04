@@ -17,9 +17,35 @@ import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.getFullMessage
-import io.github.sds100.keymapper.util.ui.*
+import io.github.sds100.keymapper.util.ui.DialogResponse
+import io.github.sds100.keymapper.util.ui.ListItem
+import io.github.sds100.keymapper.util.ui.MultiSelectProvider
+import io.github.sds100.keymapper.util.ui.MultiSelectProviderImpl
+import io.github.sds100.keymapper.util.ui.NavDestination
+import io.github.sds100.keymapper.util.ui.NavigationViewModel
+import io.github.sds100.keymapper.util.ui.NavigationViewModelImpl
+import io.github.sds100.keymapper.util.ui.PopupUi
+import io.github.sds100.keymapper.util.ui.PopupViewModel
+import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
+import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.util.ui.SelectionState
+import io.github.sds100.keymapper.util.ui.TextListItem
+import io.github.sds100.keymapper.util.ui.ViewModelHelper
+import io.github.sds100.keymapper.util.ui.navigate
+import io.github.sds100.keymapper.util.ui.showPopup
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 /**
@@ -56,7 +82,7 @@ class HomeViewModel(
             showAlertsUseCase,
             pauseMappings,
             showImePicker,
-            resourceProvider
+            resourceProvider,
         )
     }
 
@@ -65,7 +91,7 @@ class HomeViewModel(
             viewModelScope,
             listKeyMaps,
             resourceProvider,
-            multiSelectProvider
+            multiSelectProvider,
         )
     }
 
@@ -73,7 +99,7 @@ class HomeViewModel(
         FingerprintMapListViewModel(
             viewModelScope,
             listFingerprintMaps,
-            resourceProvider
+            resourceProvider,
         )
     }
 
@@ -87,12 +113,12 @@ class HomeViewModel(
         when (it) {
             SelectionState.NotSelecting -> SelectionCountViewState(
                 isVisible = false,
-                text = ""
+                text = "",
             )
 
             is SelectionState.Selecting<*> -> SelectionCountViewState(
                 isVisible = true,
-                text = getString(R.string.selection_count, it.selectedIds.size)
+                text = getString(R.string.selection_count, it.selectedIds.size),
             )
         }
     }
@@ -102,14 +128,14 @@ class HomeViewModel(
             SharingStarted.Lazily,
             SelectionCountViewState(
                 isVisible = false,
-                text = ""
-            )
+                text = "",
+            ),
         )
 
     val tabsState =
         combine(
             multiSelectProvider.state,
-            listFingerprintMaps.showFingerprintMaps
+            listFingerprintMaps.showFingerprintMaps,
         ) { selectionState, showFingerprintMaps ->
 
             val tabs = sequence {
@@ -129,9 +155,8 @@ class HomeViewModel(
             HomeTabsState(
                 enableViewPagerSwiping = showTabs,
                 showTabs = showTabs,
-                tabs = tabs
+                tabs = tabs,
             )
-
         }
             .flowOn(Dispatchers.Default)
             .stateIn(
@@ -140,8 +165,8 @@ class HomeViewModel(
                 HomeTabsState(
                     enableViewPagerSwiping = false,
                     showTabs = false,
-                    emptySet()
-                )
+                    emptySet(),
+                ),
             )
 
     val appBarState = multiSelectProvider.state.map {
@@ -154,7 +179,7 @@ class HomeViewModel(
         .stateIn(
             viewModelScope,
             SharingStarted.Lazily,
-            HomeAppBarState.NORMAL
+            HomeAppBarState.NORMAL,
         )
 
     val errorListState = combine(
@@ -162,7 +187,7 @@ class HomeViewModel(
         showAlertsUseCase.accessibilityServiceState,
         showAlertsUseCase.hideAlerts,
         showAlertsUseCase.areMappingsPaused,
-        showAlertsUseCase.isLoggingEnabled
+        showAlertsUseCase.isLoggingEnabled,
     ) { isBatteryOptimised, serviceState, isHidden, areMappingsPaused, isLoggingEnabled ->
         val listItems = sequence {
 
@@ -171,24 +196,24 @@ class HomeViewModel(
                     yield(
                         TextListItem.Error(
                             ID_ACCESSIBILITY_SERVICE_CRASHED_LIST_ITEM,
-                            getString(R.string.home_error_accessibility_service_is_crashed)
-                        )
+                            getString(R.string.home_error_accessibility_service_is_crashed),
+                        ),
                     )
 
                 ServiceState.DISABLED ->
                     yield(
                         TextListItem.Error(
                             ID_ACCESSIBILITY_SERVICE_DISABLED_LIST_ITEM,
-                            getString(R.string.home_error_accessibility_service_is_disabled)
-                        )
+                            getString(R.string.home_error_accessibility_service_is_disabled),
+                        ),
                     )
 
                 ServiceState.ENABLED ->
                     yield(
                         TextListItem.Success(
                             ID_ACCESSIBILITY_SERVICE_ENABLED_LIST_ITEM,
-                            getString(R.string.home_success_accessibility_service_is_enabled)
-                        )
+                            getString(R.string.home_success_accessibility_service_is_enabled),
+                        ),
                     )
             }
 
@@ -196,8 +221,8 @@ class HomeViewModel(
                 yield(
                     TextListItem.Error(
                         ID_BATTERY_OPTIMISATION_LIST_ITEM,
-                        getString(R.string.home_error_is_battery_optimised)
-                    )
+                        getString(R.string.home_error_is_battery_optimised),
+                    ),
                 )
             } // don't show a success message for this
 
@@ -206,8 +231,8 @@ class HomeViewModel(
                     TextListItem.Error(
                         ID_MAPPINGS_PAUSED_LIST_ITEM,
                         getString(R.string.home_error_key_maps_paused),
-                        customButtonText = getString(R.string.home_error_key_maps_paused_button)
-                    )
+                        customButtonText = getString(R.string.home_error_key_maps_paused_button),
+                    ),
                 )
             }
 
@@ -216,8 +241,8 @@ class HomeViewModel(
                     TextListItem.Error(
                         ID_LOGGING_ENABLED_LIST_ITEM,
                         getString(R.string.home_error_logging_enabled),
-                        customButtonText = getString(R.string.home_error_logging_enabled_button)
-                    )
+                        customButtonText = getString(R.string.home_error_logging_enabled_button),
+                    ),
                 )
             }
         }.toList()
@@ -238,7 +263,7 @@ class HomeViewModel(
                     is Success -> {
                         showPopup(
                             "successful_automatic_backup_result",
-                            PopupUi.SnackBar(getString(R.string.toast_automatic_backup_successful))
+                            PopupUi.SnackBar(getString(R.string.toast_automatic_backup_successful)),
                         )
                     }
 
@@ -249,8 +274,8 @@ class HomeViewModel(
                                 title = getString(R.string.toast_automatic_backup_failed),
                                 message = result.getFullMessage(this@HomeViewModel),
                                 positiveButtonText = getString(R.string.pos_ok),
-                                neutralButtonText = getString(R.string.neutral_go_to_settings)
-                            )
+                                neutralButtonText = getString(R.string.neutral_go_to_settings),
+                            ),
                         ) ?: return@collectLatest
 
                         if (response == DialogResponse.NEUTRAL) {
@@ -263,7 +288,7 @@ class HomeViewModel(
 
         combine(
             onboarding.showWhatsNew,
-            onboarding.showQuickStartGuideHint
+            onboarding.showQuickStartGuideHint,
         ) { showWhatsNew, showQuickStartGuideHint ->
 
             if (showWhatsNew) {
@@ -271,10 +296,10 @@ class HomeViewModel(
                     title = getString(R.string.whats_new),
                     message = onboarding.getWhatsNewText(),
                     positiveButtonText = getString(R.string.pos_ok),
-                    neutralButtonText = getString(R.string.neutral_changelog)
+                    neutralButtonText = getString(R.string.neutral_changelog),
                 )
 
-                //don't return if they dismiss the dialog because this is common behaviour.
+                // don't return if they dismiss the dialog because this is common behaviour.
                 val response = showPopup("whats-new", dialog)
 
                 if (response == DialogResponse.NEUTRAL) {
@@ -285,7 +310,6 @@ class HomeViewModel(
             }
 
             _showQuickStartGuideHint.value = showQuickStartGuideHint
-
         }.flowOn(Dispatchers.Default).launchIn(viewModelScope)
     }
 
@@ -389,10 +413,11 @@ class HomeViewModel(
         viewModelScope.launch {
             when (id) {
                 ID_ACCESSIBILITY_SERVICE_DISABLED_LIST_ITEM -> {
-                    val explanationResponse = ViewModelHelper.showAccessibilityServiceExplanationDialog(
-                        resourceProvider = this@HomeViewModel,
-                        popupViewModel = this@HomeViewModel
-                    )
+                    val explanationResponse =
+                        ViewModelHelper.showAccessibilityServiceExplanationDialog(
+                            resourceProvider = this@HomeViewModel,
+                            popupViewModel = this@HomeViewModel,
+                        )
 
                     if (explanationResponse != DialogResponse.POSITIVE) {
                         return@launch
@@ -401,7 +426,7 @@ class HomeViewModel(
                     if (!showAlertsUseCase.startAccessibilityService()) {
                         ViewModelHelper.handleCantFindAccessibilitySettings(
                             resourceProvider = this@HomeViewModel,
-                            popupViewModel = this@HomeViewModel
+                            popupViewModel = this@HomeViewModel,
                         )
                     }
                 }
@@ -411,7 +436,7 @@ class HomeViewModel(
                         resourceProvider = this@HomeViewModel,
                         navigationViewModel = this@HomeViewModel,
                         popupViewModel = this@HomeViewModel,
-                        restartService = showAlertsUseCase::restartAccessibilityService
+                        restartService = showAlertsUseCase::restartAccessibilityService,
                     )
 
                 ID_BATTERY_OPTIMISATION_LIST_ITEM -> showAlertsUseCase.disableBatteryOptimisation()
@@ -423,13 +448,11 @@ class HomeViewModel(
 
     fun onChoseRestoreFile(uri: String) {
         viewModelScope.launch {
-            val result = backupRestore.restoreMappings(uri)
-
-            when (result) {
+            when (val result = backupRestore.restoreMappings(uri)) {
                 is Success -> {
                     showPopup(
                         "successful_restore_result",
-                        PopupUi.SnackBar(getString(R.string.toast_restore_successful))
+                        PopupUi.SnackBar(getString(R.string.toast_restore_successful)),
                     )
                 }
 
@@ -437,8 +460,8 @@ class HomeViewModel(
                     "restore_error",
                     PopupUi.Ok(
                         title = getString(R.string.toast_restore_failed),
-                        message = result.getFullMessage(this@HomeViewModel)
-                    )
+                        message = result.getFullMessage(this@HomeViewModel),
+                    ),
                 )
             }
         }
@@ -459,8 +482,8 @@ class HomeViewModel(
                     "successful_backup_result",
                     PopupUi.SnackBar(
                         message = getString(R.string.toast_backup_successful),
-                        actionText = getString(R.string.share_backup)
-                    )
+                        actionText = getString(R.string.share_backup),
+                    ),
                 )
 
                 if (response != null) {
@@ -474,8 +497,8 @@ class HomeViewModel(
                 "backup_error",
                 PopupUi.Ok(
                     title = getString(R.string.toast_backup_failed),
-                    message = result.getFullMessage(this@HomeViewModel)
-                )
+                    message = result.getFullMessage(this@HomeViewModel),
+                ),
             )
         }
     }
@@ -492,37 +515,36 @@ class HomeViewModel(
         private val resourceProvider: ResourceProvider,
     ) : ViewModelProvider.NewInstanceFactory() {
 
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return HomeViewModel(
-                listKeyMaps,
-                listFingerprintMaps,
-                pauseMappings,
-                backupRestore,
-                showAlertsUseCase,
-                showImePicker,
-                onboarding,
-                resourceProvider
-            ) as T
-        }
+        override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeViewModel(
+            listKeyMaps,
+            listFingerprintMaps,
+            pauseMappings,
+            backupRestore,
+            showAlertsUseCase,
+            showImePicker,
+            onboarding,
+            resourceProvider,
+        ) as T
     }
 }
 
 data class SelectionCountViewState(
     val isVisible: Boolean,
-    val text: String
+    val text: String,
 )
 
 enum class HomeAppBarState {
-    NORMAL, MULTI_SELECTING
+    NORMAL,
+    MULTI_SELECTING,
 }
 
 data class HomeTabsState(
     val enableViewPagerSwiping: Boolean = true,
     val showTabs: Boolean = false,
-    val tabs: Set<HomeTab>
+    val tabs: Set<HomeTab>,
 )
 
 data class HomeErrorListState(
     val listItems: List<ListItem>,
-    val isVisible: Boolean
+    val isVisible: Boolean,
 )

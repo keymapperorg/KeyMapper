@@ -73,33 +73,25 @@ class AndroidCameraAdapter(context: Context) : CameraAdapter {
         }
     }
 
-    override fun enableFlashlight(lens: CameraLens): Result<*> {
-        return setFlashlightMode(true, lens)
-    }
+    override fun enableFlashlight(lens: CameraLens): Result<*> = setFlashlightMode(true, lens)
 
-    override fun disableFlashlight(lens: CameraLens): Result<*> {
-        return setFlashlightMode(false, lens)
-    }
+    override fun disableFlashlight(lens: CameraLens): Result<*> = setFlashlightMode(false, lens)
 
-    override fun toggleFlashlight(lens: CameraLens): Result<*> {
-        return setFlashlightMode(!isFlashEnabledMap[lens]!!, lens)
-    }
+    override fun toggleFlashlight(lens: CameraLens): Result<*> =
+        setFlashlightMode(!isFlashEnabledMap[lens]!!, lens)
 
-    override fun isFlashlightOn(lens: CameraLens): Boolean {
-        return isFlashEnabledMap[lens] ?: false
-    }
+    override fun isFlashlightOn(lens: CameraLens): Boolean = isFlashEnabledMap[lens] ?: false
 
     private fun setFlashlightMode(
         enabled: Boolean,
-        lens: CameraLens
+        lens: CameraLens,
     ): Result<*> {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return Error.SdkVersionTooLow(minSdk = Build.VERSION_CODES.M)
         }
 
-        //get the CameraManager
+        // get the CameraManager
         cameraManager.apply {
-
             for (cameraId in cameraIdList) {
                 try {
                     val flashAvailable = getCameraCharacteristics(cameraId)
@@ -113,12 +105,11 @@ class AndroidCameraAdapter(context: Context) : CameraAdapter {
                         CameraLens.BACK -> CameraCharacteristics.LENS_FACING_BACK
                     }
 
-                    //try to find a camera with a flash
+                    // try to find a camera with a flash
                     if (flashAvailable && lensFacing == lensSdkValue) {
                         setTorchMode(cameraId, enabled)
                         return Success(Unit)
                     }
-
                 } catch (e: CameraAccessException) {
                     return when (e.reason) {
                         CameraAccessException.CAMERA_IN_USE -> Error.CameraInUse

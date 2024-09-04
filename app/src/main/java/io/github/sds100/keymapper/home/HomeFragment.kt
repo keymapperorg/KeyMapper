@@ -54,21 +54,21 @@ class HomeFragment : Fragment() {
         get() = _binding!!
 
     private val backupMappingsLauncher =
-        registerForActivityResult(CreateDocument("todo/todo")) {
+        registerForActivityResult(CreateDocument(FileUtils.MIME_TYPE_ZIP)) {
             it ?: return@registerForActivityResult
 
             homeViewModel.onChoseBackupFile(it.toString())
         }
 
     private val backupFingerprintMapsLauncher =
-        registerForActivityResult(CreateDocument("todo/todo")) {
+        registerForActivityResult(CreateDocument(FileUtils.MIME_TYPE_ZIP)) {
             it ?: return@registerForActivityResult
 
             homeViewModel.backupFingerprintMaps(it.toString())
         }
 
     private val backupKeyMapsLauncher =
-        registerForActivityResult(CreateDocument("todo/todo")) {
+        registerForActivityResult(CreateDocument(FileUtils.MIME_TYPE_ZIP)) {
             it ?: return@registerForActivityResult
 
             homeViewModel.backupSelectedKeyMaps(it.toString())
@@ -102,8 +102,9 @@ class HomeFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         FragmentHomeBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
@@ -123,7 +124,7 @@ class HomeFragment : Fragment() {
         binding.viewModel = this@HomeFragment.homeViewModel
 
         val pagerAdapter = HomePagerAdapter(this@HomeFragment)
-        //set the initial tabs so that the current tab is remembered on rotate
+        // set the initial tabs so that the current tab is remembered on rotate
         pagerAdapter.invalidateFragments(homeViewModel.tabsState.value.tabs)
 
         binding.viewPager.adapter = pagerAdapter
@@ -139,9 +140,9 @@ class HomeFragment : Fragment() {
         binding.appBar.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.action_help -> {
-                    UrlUtils.launchCustomTab(
+                    UrlUtils.openUrl(
                         requireContext(),
-                        str(R.string.url_quick_start_guide)
+                        str(R.string.url_quick_start_guide),
                     )
                     true
                 }
@@ -197,7 +198,6 @@ class HomeFragment : Fragment() {
                 if (it == HomeAppBarState.MULTI_SELECTING) {
                     binding.appBar.fabAlignmentMode = FAB_ALIGNMENT_MODE_END
                     binding.appBar.replaceMenu(R.menu.menu_multi_select)
-
                 } else {
                     binding.appBar.fabAlignmentMode = FAB_ALIGNMENT_MODE_CENTER
                     binding.appBar.replaceMenu(R.menu.menu_home)

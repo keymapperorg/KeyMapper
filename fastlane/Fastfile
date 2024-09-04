@@ -37,6 +37,13 @@ lane :prod do |options|
     apk_path_debug="app/build/outputs/apk/debug/keymapper-" + version_name + "-debug.apk"
     apk_path_release="app/build/outputs/apk/release/keymapper-" + version_name + ".apk"
 
+    supply(
+        aab: "./app/build/outputs/bundle/release/app-release.aab",
+        track: "beta",
+        release_status: "draft",
+        skip_upload_apk: true
+    )
+
     github_release = set_github_release(
       repository_name: "keymapperorg/KeyMapper",
       api_bearer: options[:github_token],
@@ -47,12 +54,5 @@ lane :prod do |options|
       upload_assets: [apk_path_debug, apk_path_release],
       is_draft: false,
       is_prerelease: false
-    )
-
-    supply(
-        aab: "./app/build/outputs/bundle/release/app-release.aab",
-        track: "beta",
-        release_status: "draft",
-        skip_upload_apk: true
     )
 end

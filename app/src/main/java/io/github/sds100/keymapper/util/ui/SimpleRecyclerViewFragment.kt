@@ -12,8 +12,7 @@ import io.github.sds100.keymapper.util.str
 /**
  * Created by sds100 on 22/02/2020.
  */
-abstract class SimpleRecyclerViewFragment<T>
-    : RecyclerViewFragment<T, FragmentSimpleRecyclerviewBinding>() {
+abstract class SimpleRecyclerViewFragment<T> : RecyclerViewFragment<T, FragmentSimpleRecyclerviewBinding>() {
 
     @MenuRes
     open val appBarMenu: Int = R.menu.menu_recyclerview_fragment
@@ -30,7 +29,7 @@ abstract class SimpleRecyclerViewFragment<T>
         binding.emptyListPlaceholder = str(emptyListPlaceholder)
 
         if (isAppBarVisible) {
-            //only inflate a menu if the app bar is visible because this takes a significant amount of time
+            // only inflate a menu if the app bar is visible because this takes a significant amount of time
             binding.appBar.replaceMenu(appBarMenu)
             binding.appBar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
         }
@@ -43,7 +42,6 @@ abstract class SimpleRecyclerViewFragment<T>
     override fun getEmptyListPlaceHolderTextView(binding: FragmentSimpleRecyclerviewBinding) =
         binding.textViewEmptyListPlaceholder
 
-    override fun getBottomAppBar(binding: FragmentSimpleRecyclerviewBinding): BottomAppBar? {
-        return binding.appBar
-    }
+    override fun getBottomAppBar(binding: FragmentSimpleRecyclerviewBinding): BottomAppBar? =
+        binding.appBar
 }

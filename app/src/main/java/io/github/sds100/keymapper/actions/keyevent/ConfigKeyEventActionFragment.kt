@@ -62,10 +62,9 @@ class ConfigKeyEventActionFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         FragmentConfigKeyEventBinding.inflate(inflater, container, false).apply {
-
             lifecycleOwner = viewLifecycleOwner
             _binding = this
 
@@ -94,7 +93,7 @@ class ConfigKeyEventActionFragment : Fragment() {
             viewModel.returnResult.collectLatest {
                 setFragmentResult(
                     requestKey,
-                    Bundle().apply { putJsonSerializable(EXTRA_RESULT, it) }
+                    Bundle().apply { putJsonSerializable(EXTRA_RESULT, it) },
                 )
 
                 findNavController().navigateUp()
@@ -114,7 +113,7 @@ class ConfigKeyEventActionFragment : Fragment() {
                 ArrayAdapter<String>(
                     requireContext(),
                     R.layout.dropdown_menu_popup_item,
-                    mutableListOf()
+                    mutableListOf(),
                 ).apply {
                     clear()
                     add(str(R.string.from_no_device))
@@ -131,7 +130,7 @@ class ConfigKeyEventActionFragment : Fragment() {
         }
 
         binding.dropdownDeviceId.apply {
-            //set the default value
+            // set the default value
             setText(str(R.string.from_no_device), false)
 
             setOnItemClickListener { _, _, position, _ ->
@@ -140,7 +139,7 @@ class ConfigKeyEventActionFragment : Fragment() {
                     return@setOnItemClickListener
                 }
 
-                //subtract the list item that selects no device
+                // subtract the list item that selects no device
                 viewModel.chooseDevice(position - 1)
             }
 
@@ -149,14 +148,14 @@ class ConfigKeyEventActionFragment : Fragment() {
                     parent: AdapterView<*>?,
                     view: View?,
                     position: Int,
-                    id: Long
+                    id: Long,
                 ) {
                     if (position == 0) {
                         viewModel.chooseNoDevice()
                         return
                     }
 
-                    //subtract the list item that selects no device
+                    // subtract the list item that selects no device
                     viewModel.chooseDevice(position - 1)
                 }
 

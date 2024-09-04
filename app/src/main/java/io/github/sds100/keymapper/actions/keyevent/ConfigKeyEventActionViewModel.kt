@@ -10,9 +10,28 @@ import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
-import io.github.sds100.keymapper.util.*
-import io.github.sds100.keymapper.util.ui.*
-import kotlinx.coroutines.flow.*
+import io.github.sds100.keymapper.util.Error
+import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.util.Success
+import io.github.sds100.keymapper.util.errorOrNull
+import io.github.sds100.keymapper.util.getFullMessage
+import io.github.sds100.keymapper.util.handle
+import io.github.sds100.keymapper.util.isSuccess
+import io.github.sds100.keymapper.util.success
+import io.github.sds100.keymapper.util.ui.CheckBoxListItem
+import io.github.sds100.keymapper.util.ui.NavDestination
+import io.github.sds100.keymapper.util.ui.NavigationViewModel
+import io.github.sds100.keymapper.util.ui.NavigationViewModelImpl
+import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.util.ui.navigate
+import io.github.sds100.keymapper.util.valueOrNull
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import splitties.bitflags.hasFlag
@@ -25,7 +44,7 @@ import splitties.bitflags.withFlag
 
 class ConfigKeyEventActionViewModel(
     private val useCase: ConfigKeyEventUseCase,
-    resourceProvider: ResourceProvider
+    resourceProvider: ResourceProvider,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
     NavigationViewModel by NavigationViewModelImpl() {
@@ -36,8 +55,8 @@ class ConfigKeyEventActionViewModel(
         buildUiState(
             keyEventState.value,
             inputDeviceList = emptyList(),
-            showDeviceDescriptors = false
-        )
+            showDeviceDescriptors = false,
+        ),
     )
     val uiState = _uiState.asStateFlow()
 
@@ -52,7 +71,7 @@ class ConfigKeyEventActionViewModel(
             combine(
                 keyEventState,
                 useCase.inputDevices,
-                useCase.showDeviceDescriptors
+                useCase.showDeviceDescriptors,
             ) { state, inputDevices, showDeviceDescriptors ->
                 buildUiState(state, inputDevices, showDeviceDescriptors)
             }.collectLatest {
@@ -66,11 +85,11 @@ class ConfigKeyEventActionViewModel(
 
         if (isChecked) {
             keyEventState.value = keyEventState.value.copy(
-                metaState = oldMetaState.withFlag(modifier)
+                metaState = oldMetaState.withFlag(modifier),
             )
         } else {
             keyEventState.value = keyEventState.value.copy(
-                metaState = oldMetaState.minusFlag(modifier)
+                metaState = oldMetaState.minusFlag(modifier),
             )
         }
     }
@@ -91,15 +110,15 @@ class ConfigKeyEventActionViewModel(
     fun loadAction(action: ActionData.InputKeyEvent) {
         viewModelScope.launch {
             val inputDevice = useCase.inputDevices.first().find {
-                it.descriptor == action.device?.descriptor
-                    && it.name == action.device.name
+                it.descriptor == action.device?.descriptor &&
+                    it.name == action.device.name
             }
 
             keyEventState.value = KeyEventState(
                 Success(action.keyCode),
                 inputDevice,
                 useShell = action.useShell,
-                metaState = action.metaState
+                metaState = action.metaState,
             )
         }
     }
@@ -132,7 +151,7 @@ class ConfigKeyEventActionViewModel(
             }
 
             keyEventState.value = keyEventState.value.copy(
-                chosenDevice = chosenDevice
+                chosenDevice = chosenDevice,
             )
         }
     }
@@ -144,7 +163,7 @@ class ConfigKeyEventActionViewModel(
             val device = keyEventState.value.chosenDevice?.let {
                 ActionData.InputKeyEvent.Device(
                     descriptor = it.descriptor,
-                    name = it.name
+                    name = it.name,
                 )
             }
 
@@ -153,8 +172,8 @@ class ConfigKeyEventActionViewModel(
                     keyCode = keyCode,
                     metaState = keyEventState.value.metaState,
                     useShell = keyEventState.value.useShell,
-                    device = device
-                )
+                    device = device,
+                ),
             )
         }
     }
@@ -170,7 +189,7 @@ class ConfigKeyEventActionViewModel(
     private fun buildUiState(
         state: KeyEventState,
         inputDeviceList: List<InputDeviceInfo>,
-        showDeviceDescriptors: Boolean
+        showDeviceDescriptors: Boolean,
     ): ConfigKeyEventUiState {
         val keyCode = state.keyCode
         val metaState = state.metaState
@@ -190,14 +209,14 @@ class ConfigKeyEventActionViewModel(
                     KeyEvent.keyCodeToString(it)
                 }
             },
-            onError = { "" }
+            onError = { "" },
         )
 
         val modifierListItems = KeyEventUtils.MODIFIER_LABELS.map { (modifier, label) ->
             CheckBoxListItem(
                 id = modifier.toString(),
                 label = getString(label),
-                isChecked = metaState.hasFlag(modifier)
+                isChecked = metaState.hasFlag(modifier),
             )
         }
 
@@ -206,8 +225,8 @@ class ConfigKeyEventActionViewModel(
                 device.copy(
                     name = InputDeviceUtils.appendDeviceDescriptorToName(
                         device.descriptor,
-                        device.name
-                    )
+                        device.name,
+                    ),
                 )
             } else {
                 device
@@ -218,7 +237,7 @@ class ConfigKeyEventActionViewModel(
             chosenDevice == null -> getString(R.string.from_no_device)
             showDeviceDescriptors -> InputDeviceUtils.appendDeviceDescriptorToName(
                 chosenDevice.descriptor,
-                chosenDevice.name
+                chosenDevice.name,
             )
 
             else -> chosenDevice.name
@@ -235,26 +254,25 @@ class ConfigKeyEventActionViewModel(
             modifierListItems = modifierListItems,
             isDoneButtonEnabled = keyCode.isSuccess,
             deviceListItems = deviceListItems,
-            chosenDeviceName = chosenDeviceName
+            chosenDeviceName = chosenDeviceName,
         )
     }
 
     @Suppress("UNCHECKED_CAST")
     class Factory(
         private val useCase: ConfigKeyEventUseCase,
-        private val resourceProvider: ResourceProvider
+        private val resourceProvider: ResourceProvider,
     ) : ViewModelProvider.NewInstanceFactory() {
 
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return ConfigKeyEventActionViewModel(useCase, resourceProvider) as T
-        }
+        override fun <T : ViewModel> create(modelClass: Class<T>): T =
+            ConfigKeyEventActionViewModel(useCase, resourceProvider) as T
     }
 
     private data class KeyEventState(
         val keyCode: Result<Int> = Error.EmptyText,
         val chosenDevice: InputDeviceInfo? = null,
         val useShell: Boolean = false,
-        val metaState: Int = 0
+        val metaState: Int = 0,
     )
 }
 
@@ -269,5 +287,5 @@ data class ConfigKeyEventUiState(
     val modifierListItems: List<CheckBoxListItem>,
     val isDoneButtonEnabled: Boolean,
     val deviceListItems: List<InputDeviceInfo>,
-    val chosenDeviceName: String
+    val chosenDeviceName: String,
 )

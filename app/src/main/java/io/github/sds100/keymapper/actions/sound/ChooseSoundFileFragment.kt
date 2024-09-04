@@ -53,7 +53,11 @@ class ChooseSoundFileFragment : Fragment() {
     val binding: FragmentChooseSoundFileBinding
         get() = _binding!!
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
         FragmentChooseSoundFileBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
             _binding = this
@@ -85,7 +89,7 @@ class ChooseSoundFileFragment : Fragment() {
             viewModel.returnResult.collectLatest { result ->
                 setFragmentResult(
                     requestKey,
-                    bundleOf(EXTRA_RESULT to Json.encodeToString(result))
+                    bundleOf(EXTRA_RESULT to Json.encodeToString(result)),
                 )
                 findNavController().navigateUp()
             }

@@ -11,6 +11,6 @@ sealed class TintType {
     object Error : TintType()
     data class Color(
         @ColorInt
-        val color: Int
+        val color: Int,
     ) : TintType()
 }

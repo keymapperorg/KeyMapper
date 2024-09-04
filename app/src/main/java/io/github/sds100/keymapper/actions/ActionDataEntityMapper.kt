@@ -6,6 +6,7 @@ import io.github.sds100.keymapper.data.entities.Extra
 import io.github.sds100.keymapper.data.entities.getData
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.display.Orientation
+import io.github.sds100.keymapper.system.intents.IntentExtraModel
 import io.github.sds100.keymapper.system.intents.IntentTarget
 import io.github.sds100.keymapper.system.volume.DndMode
 import io.github.sds100.keymapper.system.volume.RingerMode
@@ -14,6 +15,9 @@ import io.github.sds100.keymapper.util.getKey
 import io.github.sds100.keymapper.util.success
 import io.github.sds100.keymapper.util.then
 import io.github.sds100.keymapper.util.valueOrNull
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import splitties.bitflags.hasFlag
 
 /**
@@ -54,7 +58,7 @@ object ActionDataEntityMapper {
                 ActionData.AppShortcut(
                     packageName = packageName,
                     shortcutTitle = shortcutTitle,
-                    uri = entity.data
+                    uri = entity.data,
                 )
             }
 
@@ -87,7 +91,7 @@ object ActionDataEntityMapper {
                     keyCode = entity.data.toInt(),
                     metaState = metaState,
                     useShell = useShell,
-                    device = device
+                    device = device,
                 )
             }
 
@@ -147,7 +151,7 @@ object ActionDataEntityMapper {
                     yEnd = yEnd,
                     fingerCount = fingerCount,
                     duration = duration,
-                    description = description
+                    description = description,
                 )
             }
 
@@ -201,7 +205,7 @@ object ActionDataEntityMapper {
                     pinchType = pinchType,
                     fingerCount = fingerCount,
                     duration = duration,
-                    description = description
+                    description = description,
                 )
             }
 
@@ -214,10 +218,15 @@ object ActionDataEntityMapper {
                     entity.extras.getData(ActionEntity.EXTRA_INTENT_DESCRIPTION).valueOrNull()
                         ?: return null
 
+                val intentExtras = entity.extras.getData(ActionEntity.EXTRA_INTENT_EXTRAS).then {
+                    Json.decodeFromString<List<IntentExtraModel>>(it).success()
+                }.valueOrNull()
+
                 return ActionData.Intent(
                     target = target,
                     description = description,
-                    uri = entity.data
+                    uri = entity.data,
+                    extras = intentExtras ?: emptyList(),
                 )
             }
 
@@ -232,7 +241,8 @@ object ActionDataEntityMapper {
             }
 
             ActionId.VOLUME_INCREASE_STREAM,
-            ActionId.VOLUME_DECREASE_STREAM -> {
+            ActionId.VOLUME_DECREASE_STREAM,
+            -> {
                 val stream =
                     entity.extras.getData(ActionEntity.EXTRA_STREAM_TYPE).then {
                         VOLUME_STREAM_MAP.getKey(it)!!.success()
@@ -256,7 +266,8 @@ object ActionDataEntityMapper {
             ActionId.VOLUME_DOWN,
             ActionId.VOLUME_TOGGLE_MUTE,
             ActionId.VOLUME_UNMUTE,
-            ActionId.VOLUME_MUTE -> {
+            ActionId.VOLUME_MUTE,
+            -> {
                 val showVolumeUi =
                     entity.flags.hasFlag(ActionEntity.ACTION_FLAG_SHOW_VOLUME_UI)
 
@@ -264,7 +275,7 @@ object ActionDataEntityMapper {
                     ActionId.VOLUME_UP -> ActionData.Volume.Up(showVolumeUi)
                     ActionId.VOLUME_DOWN -> ActionData.Volume.Down(showVolumeUi)
                     ActionId.VOLUME_TOGGLE_MUTE -> ActionData.Volume.ToggleMute(
-                        showVolumeUi
+                        showVolumeUi,
                     )
 
                     ActionId.VOLUME_UNMUTE -> ActionData.Volume.UnMute(showVolumeUi)
@@ -276,7 +287,8 @@ object ActionDataEntityMapper {
 
             ActionId.TOGGLE_FLASHLIGHT,
             ActionId.ENABLE_FLASHLIGHT,
-            ActionId.DISABLE_FLASHLIGHT -> {
+            ActionId.DISABLE_FLASHLIGHT,
+            -> {
                 val lens = entity.extras.getData(ActionEntity.EXTRA_LENS).then {
                     LENS_MAP.getKey(it)!!.success()
                 }.valueOrNull() ?: return null
@@ -296,7 +308,8 @@ object ActionDataEntityMapper {
             }
 
             ActionId.TOGGLE_DND_MODE,
-            ActionId.ENABLE_DND_MODE -> {
+            ActionId.ENABLE_DND_MODE,
+            -> {
                 val dndMode = entity.extras.getData(ActionEntity.EXTRA_DND_MODE).then {
                     DND_MODE_MAP.getKey(it)!!.success()
                 }.valueOrNull() ?: return null
@@ -322,7 +335,8 @@ object ActionDataEntityMapper {
             ActionId.NEXT_TRACK_PACKAGE,
             ActionId.PREVIOUS_TRACK_PACKAGE,
             ActionId.FAST_FORWARD_PACKAGE,
-            ActionId.REWIND_PACKAGE -> {
+            ActionId.REWIND_PACKAGE,
+            -> {
                 val packageName =
                     entity.extras.getData(ActionEntity.EXTRA_PACKAGE_NAME).valueOrNull()
                         ?: return null
@@ -491,7 +505,7 @@ object ActionDataEntityMapper {
             type = type,
             data = getDataString(data),
             extras = getExtras(data),
-            flags = getFlags(data)
+            flags = getFlags(data),
         )
     }
 
@@ -532,7 +546,8 @@ object ActionDataEntityMapper {
         is ActionData.Intent ->
             listOf(
                 Extra(ActionEntity.EXTRA_INTENT_DESCRIPTION, data.description),
-                Extra(ActionEntity.EXTRA_INTENT_TARGET, INTENT_TARGET_MAP[data.target]!!)
+                Extra(ActionEntity.EXTRA_INTENT_TARGET, INTENT_TARGET_MAP[data.target]!!),
+                Extra(ActionEntity.EXTRA_INTENT_EXTRAS, Json.encodeToString(data.extras)),
             )
 
         is ActionData.InputKeyEvent -> sequence {
@@ -551,11 +566,11 @@ object ActionDataEntityMapper {
 
             if (data.device != null) {
                 yield(
-                    Extra(ActionEntity.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR, data.device.descriptor)
+                    Extra(ActionEntity.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR, data.device.descriptor),
                 )
 
                 yield(
-                    Extra(ActionEntity.EXTRA_KEY_EVENT_DEVICE_NAME, data.device.name)
+                    Extra(ActionEntity.EXTRA_KEY_EVENT_DEVICE_NAME, data.device.name),
                 )
             }
         }.toList()
@@ -569,40 +584,41 @@ object ActionDataEntityMapper {
         is ActionData.PhoneCall -> emptyList()
 
         is ActionData.DoNotDisturb.Enable -> listOf(
-            Extra(ActionEntity.EXTRA_DND_MODE, DND_MODE_MAP[data.dndMode]!!)
+            Extra(ActionEntity.EXTRA_DND_MODE, DND_MODE_MAP[data.dndMode]!!),
         )
 
         is ActionData.DoNotDisturb.Toggle -> listOf(
-            Extra(ActionEntity.EXTRA_DND_MODE, DND_MODE_MAP[data.dndMode]!!)
+            Extra(ActionEntity.EXTRA_DND_MODE, DND_MODE_MAP[data.dndMode]!!),
         )
 
         is ActionData.Volume.SetRingerMode -> listOf(
-            Extra(ActionEntity.EXTRA_RINGER_MODE, RINGER_MODE_MAP[data.ringerMode]!!)
+            Extra(ActionEntity.EXTRA_RINGER_MODE, RINGER_MODE_MAP[data.ringerMode]!!),
         )
 
         is ActionData.ControlMediaForApp -> listOf(
-            Extra(ActionEntity.EXTRA_PACKAGE_NAME, data.packageName)
+            Extra(ActionEntity.EXTRA_PACKAGE_NAME, data.packageName),
         )
 
         is ActionData.Rotation.CycleRotations -> listOf(
             Extra(
                 ActionEntity.EXTRA_ORIENTATIONS,
-                data.orientations.joinToString(",") { ORIENTATION_MAP[it]!! })
+                data.orientations.joinToString(",") { ORIENTATION_MAP[it]!! },
+            ),
         )
 
         is ActionData.Flashlight -> listOf(
-            Extra(ActionEntity.EXTRA_LENS, LENS_MAP[data.lens]!!)
+            Extra(ActionEntity.EXTRA_LENS, LENS_MAP[data.lens]!!),
         )
 
         is ActionData.SwitchKeyboard -> listOf(
             Extra(ActionEntity.EXTRA_IME_ID, data.imeId),
-            Extra(ActionEntity.EXTRA_IME_NAME, data.savedImeName)
+            Extra(ActionEntity.EXTRA_IME_NAME, data.savedImeName),
         )
 
         is ActionData.Volume ->
             when (data) {
                 is ActionData.Volume.Stream -> listOf(
-                    Extra(ActionEntity.EXTRA_STREAM_TYPE, VOLUME_STREAM_MAP[data.volumeStream]!!)
+                    Extra(ActionEntity.EXTRA_STREAM_TYPE, VOLUME_STREAM_MAP[data.volumeStream]!!),
                 )
 
                 else -> emptyList()
@@ -646,12 +662,12 @@ object ActionDataEntityMapper {
     private val RINGER_MODE_MAP = mapOf(
         RingerMode.NORMAL to "option_ringer_mode_normal",
         RingerMode.SILENT to "option_ringer_mode_silent",
-        RingerMode.VIBRATE to "option_ringer_mode_vibrate"
+        RingerMode.VIBRATE to "option_ringer_mode_vibrate",
     )
 
     private val LENS_MAP = mapOf(
         CameraLens.BACK to "option_lens_back",
-        CameraLens.FRONT to "option_lens_front"
+        CameraLens.FRONT to "option_lens_front",
     )
 
     private val VOLUME_STREAM_MAP = mapOf(
@@ -662,19 +678,19 @@ object ActionDataEntityMapper {
         VolumeStream.NOTIFICATION to "option_stream_notification",
         VolumeStream.RING to "option_stream_ring",
         VolumeStream.SYSTEM to "option_stream_system",
-        VolumeStream.VOICE_CALL to "option_stream_voice_call"
+        VolumeStream.VOICE_CALL to "option_stream_voice_call",
     )
 
     private val DND_MODE_MAP = mapOf(
         DndMode.ALARMS to "do_not_disturb_alarms",
         DndMode.PRIORITY to "do_not_disturb_priority",
-        DndMode.NONE to "do_not_disturb_none"
+        DndMode.NONE to "do_not_disturb_none",
     )
 
     private val INTENT_TARGET_MAP = mapOf(
         IntentTarget.ACTIVITY to "ACTIVITY",
         IntentTarget.BROADCAST_RECEIVER to "BROADCAST_RECEIVER",
-        IntentTarget.SERVICE to "SERVICE"
+        IntentTarget.SERVICE to "SERVICE",
     )
 
     /**
@@ -789,6 +805,6 @@ object ActionDataEntityMapper {
         ActionId.DISMISS_ALL_NOTIFICATIONS to "dismiss_all_notifications",
 
         ActionId.ANSWER_PHONE_CALL to "answer_phone_call",
-        ActionId.END_PHONE_CALL to "end_phone_call"
+        ActionId.END_PHONE_CALL to "end_phone_call",
     )
 }

@@ -55,11 +55,10 @@ class SoundsManagerImpl(
     }
 
     override suspend fun restoreSound(file: IFile): Result<*> {
-
         val soundsDir = fileAdapter.getPrivateFile(SOUNDS_DIR_NAME)
         soundsDir.createDirectory()
 
-        //Don't copy it if the file already exists
+        // Don't copy it if the file already exists
         if (fileAdapter.getFile(soundsDir, file.name!!).exists()) {
             return Success(Unit)
         } else {
@@ -83,18 +82,16 @@ class SoundsManagerImpl(
         }
     }
 
-    override fun deleteSound(uid: String): Result<*> {
-        return getSound(uid)
-            .then { Success(it.delete()) }
-            .onSuccess { updateSoundFilesFlow() }
-    }
+    override fun deleteSound(uid: String): Result<*> = getSound(uid)
+        .then { Success(it.delete()) }
+        .onSuccess { updateSoundFilesFlow() }
 
     private fun getSoundFileInfo(fileName: String): SoundFileInfo {
         val name = fileName.substringBeforeLast('_')
         val extension = fileName.substringAfterLast('.')
 
         val uid = fileName
-            .substringBeforeLast('.')// e.g "bla_32a3b1289"
+            .substringBeforeLast('.') // e.g "bla_32a3b1289"
             .substringAfterLast('_')
 
         return SoundFileInfo(uid, "$name.$extension")
@@ -109,13 +106,12 @@ class SoundsManagerImpl(
             .map { getSoundFileInfo(it.name!!) }
     }
 
-    private fun createSoundCopyFileName(originalSoundFile: IFile, uid: String): String {
-        return buildString {
+    private fun createSoundCopyFileName(originalSoundFile: IFile, uid: String): String =
+        buildString {
             append(originalSoundFile.baseName)
             append("_$uid")
             append(".${originalSoundFile.extension}")
         }
-    }
 }
 
 interface SoundsManager {

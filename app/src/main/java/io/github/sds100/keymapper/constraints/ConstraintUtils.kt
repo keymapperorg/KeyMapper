@@ -38,7 +38,7 @@ object ConstraintUtils {
 
     val KEY_MAP_ALLOWED_CONSTRAINTS = listOf(
         ChooseConstraintType.SCREEN_ON,
-        ChooseConstraintType.SCREEN_OFF
+        ChooseConstraintType.SCREEN_OFF,
     ).plus(COMMON_SUPPORTED_CONSTRAINTS)
 
     val FINGERPRINT_MAP_ALLOWED_CONSTRAINTS = COMMON_SUPPORTED_CONSTRAINTS

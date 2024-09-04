@@ -14,13 +14,13 @@ data class ConstraintEntity(
     val type: String,
 
     @SerializedName(NAME_EXTRAS)
-    val extras: List<Extra>
+    val extras: List<Extra>,
 ) {
 
     constructor(type: String, vararg extra: Extra) : this(type, extra.toList())
 
     companion object {
-        //DON'T CHANGE THESE. Used for JSON serialization and parsing.
+        // DON'T CHANGE THESE. Used for JSON serialization and parsing.
         const val NAME_TYPE = "type"
         const val NAME_EXTRAS = "extras"
 
@@ -28,7 +28,7 @@ data class ConstraintEntity(
         const val MODE_AND = 1
         const val DEFAULT_MODE = MODE_AND
 
-        //types
+        // types
         const val APP_FOREGROUND = "constraint_app_foreground"
         const val APP_NOT_FOREGROUND = "constraint_app_not_foreground"
         const val APP_PLAYING_MEDIA = "constraint_app_playing_media"
@@ -88,4 +88,3 @@ data class ConstraintEntity(
         }
     }
 }
-

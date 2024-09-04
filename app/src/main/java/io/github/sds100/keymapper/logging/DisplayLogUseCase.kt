@@ -21,7 +21,7 @@ class DisplayLogUseCaseImpl(
     private val repository: LogRepository,
     private val resourceProvider: ResourceProvider,
     private val clipboardAdapter: ClipboardAdapter,
-    private val fileAdapter: FileAdapter
+    private val fileAdapter: FileAdapter,
 ) : DisplayLogUseCase {
     override val log: Flow<State<List<LogEntry>>> = repository.log
         .map { state ->
@@ -34,13 +34,12 @@ class DisplayLogUseCaseImpl(
     }
 
     override suspend fun copyToClipboard(entryId: Set<Int>) {
-
         repository.log.first().ifIsData { logEntries ->
             val logText = LogUtils.createLogText(logEntries.filter { it.id in entryId })
 
             clipboardAdapter.copy(
                 label = resourceProvider.getString(R.string.clip_key_mapper_log),
-                logText
+                logText,
             )
         }
     }

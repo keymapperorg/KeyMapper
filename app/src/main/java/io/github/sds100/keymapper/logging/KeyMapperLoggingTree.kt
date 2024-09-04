@@ -24,7 +24,7 @@ import java.util.Calendar
 class KeyMapperLoggingTree(
     private val coroutineScope: CoroutineScope,
     preferenceRepository: PreferenceRepository,
-    private val logRepository: LogRepository
+    private val logRepository: LogRepository,
 ) : Timber.Tree() {
     private val logEverything: StateFlow<Boolean> = preferenceRepository.get(Keys.log)
         .map { it ?: false }
@@ -32,7 +32,7 @@ class KeyMapperLoggingTree(
 
     private val messagesToLog = MutableSharedFlow<LogEntryEntity>(
         extraBufferCapacity = 1000,
-        onBufferOverflow = BufferOverflow.SUSPEND
+        onBufferOverflow = BufferOverflow.SUSPEND,
     )
 
     init {
@@ -45,7 +45,7 @@ class KeyMapperLoggingTree(
     }
 
     override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
-        //error and info logs should always log even if the user setting is turned off
+        // error and info logs should always log even if the user setting is turned off
         if (!logEverything.value && priority != Log.ERROR && priority != Log.INFO) {
             return
         }
@@ -62,8 +62,8 @@ class KeyMapperLoggingTree(
                 id = 0,
                 time = Calendar.getInstance().timeInMillis,
                 severity = severity,
-                message = message
-            )
+                message = message,
+            ),
         )
     }
 }

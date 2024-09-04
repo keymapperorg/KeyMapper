@@ -21,14 +21,15 @@ import kotlinx.coroutines.launch
  */
 class RoomLogRepository(
     private val coroutineScope: CoroutineScope,
-    private val dao: LogEntryDao
+    private val dao: LogEntryDao,
 ) : LogRepository {
     override val log: Flow<State<List<LogEntryEntity>>> = dao.getAll()
         .map { entityList -> State.Data(entityList) }
         .flowOn(Dispatchers.Default)
         .stateIn(
             coroutineScope,
-            SharingStarted.WhileSubscribed(replayExpirationMillis = 1000L), //save memory by only caching the log when necessary
+            // save memory by only caching the log when necessary
+            SharingStarted.WhileSubscribed(replayExpirationMillis = 1000L),
             State.Loading,
         )
 

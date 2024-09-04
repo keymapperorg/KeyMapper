@@ -19,7 +19,5 @@ class ActionListTypeConverter {
     }
 
     @TypeConverter
-    fun toJsonString(actionList: MutableList<ActionEntity>): String {
-        return Gson().toJson(actionList)!!
-    }
+    fun toJsonString(actionList: MutableList<ActionEntity>): String = Gson().toJson(actionList)!!
 }

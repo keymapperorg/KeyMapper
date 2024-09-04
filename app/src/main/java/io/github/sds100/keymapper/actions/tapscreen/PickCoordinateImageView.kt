@@ -18,7 +18,7 @@ import kotlin.math.roundToInt
 class PickCoordinateImageView(
     context: Context,
     attrs: AttributeSet?,
-    defStyleAttr: Int
+    defStyleAttr: Int,
 ) : AppCompatImageView(context, attrs, defStyleAttr) {
 
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -30,14 +30,24 @@ class PickCoordinateImageView(
         color = context.color(R.color.coordinate_line)
     }
 
-    override fun onDraw(canvas: Canvas?) {
+    override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        if (canvas == null) return
-
         pointCoordinates.value?.let {
-            canvas.drawLine(it.x.toFloat(), 0f, it.x.toFloat(), height.toFloat(), coordinateLinePaint)
-            canvas.drawLine(0f, it.y.toFloat(), width.toFloat(), it.y.toFloat(), coordinateLinePaint)
+            canvas.drawLine(
+                it.x.toFloat(),
+                0f,
+                it.x.toFloat(),
+                height.toFloat(),
+                coordinateLinePaint,
+            )
+            canvas.drawLine(
+                0f,
+                it.y.toFloat(),
+                width.toFloat(),
+                it.y.toFloat(),
+                coordinateLinePaint,
+            )
         }
     }
 

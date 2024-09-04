@@ -31,7 +31,7 @@ class RoomKeyMapRepository(
     private val dao: KeyMapDao,
     private val devicesAdapter: DevicesAdapter,
     private val coroutineScope: CoroutineScope,
-    private val dispatchers: DispatcherProvider = DefaultDispatcherProvider()
+    private val dispatchers: DispatcherProvider = DefaultDispatcherProvider(),
 ) : KeyMapRepository {
 
     companion object {
@@ -79,9 +79,7 @@ class RoomKeyMapRepository(
         }
     }
 
-    override suspend fun get(uid: String): KeyMapEntity? {
-        return dao.getByUid(uid)
-    }
+    override suspend fun get(uid: String): KeyMapEntity? = dao.getByUid(uid)
 
     override fun delete(vararg uid: String) {
         coroutineScope.launch(dispatchers.default()) {
@@ -151,8 +149,8 @@ class RoomKeyMapRepository(
             var updateKeyMap = false
 
             val newTriggerKeys = keyMap.trigger.keys.map { triggerKey ->
-                if (triggerKey.deviceId != TriggerEntity.KeyEntity.DEVICE_ID_THIS_DEVICE
-                    || triggerKey.deviceId != TriggerEntity.KeyEntity.DEVICE_ID_ANY_DEVICE
+                if (triggerKey.deviceId != TriggerEntity.KeyEntity.DEVICE_ID_THIS_DEVICE ||
+                    triggerKey.deviceId != TriggerEntity.KeyEntity.DEVICE_ID_ANY_DEVICE
                 ) {
                     val deviceDescriptor = triggerKey.deviceId
 
@@ -164,7 +162,7 @@ class RoomKeyMapRepository(
                             updateKeyMap = true
 
                             return@map triggerKey.copy(
-                                deviceName = newDeviceName
+                                deviceName = newDeviceName,
                             )
                         }
                     }
@@ -181,7 +179,6 @@ class RoomKeyMapRepository(
                         action.extras.find { it.id == ActionEntity.EXTRA_KEY_EVENT_DEVICE_NAME }?.data
 
                     if (deviceDescriptor != null && oldDeviceName.isNullOrBlank()) {
-
                         val newDeviceName =
                             connectedInputDevices.data.find { it.descriptor == deviceDescriptor }?.name
 
@@ -204,7 +201,7 @@ class RoomKeyMapRepository(
             if (updateKeyMap) {
                 val newKeyMap = keyMap.copy(
                     trigger = keyMap.trigger.copy(keys = newTriggerKeys),
-                    actionList = newActions
+                    actionList = newActions,
                 )
 
                 keyMapsToUpdate.add(newKeyMap)

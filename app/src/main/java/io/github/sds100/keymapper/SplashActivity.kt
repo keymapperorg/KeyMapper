@@ -26,7 +26,27 @@ class SplashActivity : FragmentActivity() {
         val appIntroSlides: List<String>
         val systemFeatureAdapter = ServiceLocator.systemFeatureAdapter(this@SplashActivity)
 
-        if (!onboarding.shownAppIntro) {
+        // If they have seen the app intro before then show
+        // slides to reconfigure some settings when new features are introduced.
+        // Otherwise, show the slides when they are setting up the app for the first time.
+        if (onboarding.shownAppIntro) {
+            appIntroSlides = sequence {
+                if (!onboarding.approvedFingerprintFeaturePrompt &&
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+                    systemFeatureAdapter.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)
+                ) {
+                    yield(AppIntroSlide.FINGERPRINT_GESTURE_SUPPORT)
+                }
+
+                if (onboarding.showSetupChosenDevicesAgainAppIntro.firstBlocking()) {
+                    yield(AppIntroSlide.SETUP_CHOSEN_DEVICES_AGAIN)
+                }
+
+                if (onboarding.promptForShizukuPermission.firstBlocking()) {
+                    yield(AppIntroSlide.GRANT_SHIZUKU_PERMISSION)
+                }
+            }.toList()
+        } else {
             appIntroSlides = sequence {
                 yield(AppIntroSlide.NOTE_FROM_DEV)
 
@@ -41,24 +61,11 @@ class SplashActivity : FragmentActivity() {
                     yield(AppIntroSlide.GRANT_SHIZUKU_PERMISSION)
                 }
 
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    yield(AppIntroSlide.NOTIFICATION_PERMISSION)
+                }
+
                 yield(AppIntroSlide.CONTRIBUTING)
-            }.toList()
-        } else {
-            appIntroSlides = sequence {
-                if (!onboarding.approvedFingerprintFeaturePrompt
-                    && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                    && systemFeatureAdapter.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)
-                ) {
-                    yield(AppIntroSlide.FINGERPRINT_GESTURE_SUPPORT)
-                }
-
-                if (onboarding.showSetupChosenDevicesAgainAppIntro.firstBlocking()) {
-                    yield(AppIntroSlide.SETUP_CHOSEN_DEVICES_AGAIN)
-                }
-
-                if (onboarding.promptForShizukuPermission.firstBlocking()) {
-                    yield(AppIntroSlide.GRANT_SHIZUKU_PERMISSION)
-                }
             }.toList()
         }
 

@@ -4,6 +4,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.ConfigMappingUseCase
 import io.github.sds100.keymapper.mappings.DisplayConstraintUseCase
 import io.github.sds100.keymapper.mappings.Mapping
+import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.getFullMessage
@@ -19,6 +20,7 @@ import io.github.sds100.keymapper.util.ui.PopupViewModel
 import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.TintType
+import io.github.sds100.keymapper.util.ui.ViewModelHelper
 import io.github.sds100.keymapper.util.ui.navigate
 import io.github.sds100.keymapper.util.ui.showPopup
 import kotlinx.coroutines.CoroutineScope
@@ -36,15 +38,15 @@ import kotlinx.coroutines.launch
 
 class ConfigConstraintsViewModel(
     private val coroutineScope: CoroutineScope,
-    private val display: DisplayConstraintUseCase,
-    private val config: ConfigMappingUseCase<*, *>,
+    private val displayUseCase: DisplayConstraintUseCase,
+    private val configMappingUseCase: ConfigMappingUseCase<*, *>,
     private val allowedConstraints: List<ChooseConstraintType>,
-    resourceProvider: ResourceProvider
+    resourceProvider: ResourceProvider,
 ) : ResourceProvider by resourceProvider,
     PopupViewModel by PopupViewModelImpl(),
     NavigationViewModel by NavigationViewModelImpl() {
 
-    private val uiHelper = ConstraintUiHelper(display, resourceProvider)
+    private val uiHelper = ConstraintUiHelper(displayUseCase, resourceProvider)
 
     private val _state by lazy { MutableStateFlow(buildState(State.Loading)) }
     val state by lazy { _state.asStateFlow() }
@@ -59,25 +61,27 @@ class ConfigConstraintsViewModel(
         }
 
         coroutineScope.launch {
-            config.mapping.collectLatest {
+            configMappingUseCase.mapping.collectLatest {
                 rebuildUiState.emit(it)
             }
         }
 
         coroutineScope.launch {
-            display.invalidateConstraintErrors.collectLatest {
-                rebuildUiState.emit(config.mapping.firstOrNull() ?: return@collectLatest)
+            displayUseCase.invalidateConstraintErrors.collectLatest {
+                rebuildUiState.emit(
+                    configMappingUseCase.mapping.firstOrNull() ?: return@collectLatest,
+                )
             }
         }
     }
 
     fun onChosenNewConstraint(constraint: Constraint) {
-        val isDuplicate = !config.addConstraint(constraint)
+        val isDuplicate = !configMappingUseCase.addConstraint(constraint)
 
         if (isDuplicate) {
             coroutineScope.launch {
                 val snackBar = PopupUi.SnackBar(
-                    message = getString(R.string.error_duplicate_constraint)
+                    message = getString(R.string.error_duplicate_constraint),
                 )
 
                 showPopup("duplicate_constraint", snackBar)
@@ -85,30 +89,53 @@ class ConfigConstraintsViewModel(
         }
     }
 
-    fun onRemoveConstraintClick(id: String) = config.removeConstraint(id)
+    fun onRemoveConstraintClick(id: String) = configMappingUseCase.removeConstraint(id)
 
     fun onAndRadioButtonCheckedChange(checked: Boolean) {
         if (checked) {
-            config.setAndMode()
+            configMappingUseCase.setAndMode()
         }
     }
 
     fun onOrRadioButtonCheckedChange(checked: Boolean) {
         if (checked) {
-            config.setOrMode()
+            configMappingUseCase.setOrMode()
         }
     }
 
     fun onListItemClick(id: String) {
         coroutineScope.launch {
-            config.mapping.firstOrNull()?.ifIsData { mapping ->
+            configMappingUseCase.mapping.firstOrNull()?.ifIsData { mapping ->
                 val constraint = mapping.constraintState.constraints.singleOrNull { it.uid == id }
                     ?: return@launch
 
-                val error = display.getConstraintError(constraint) ?: return@launch
+                val error = displayUseCase.getConstraintError(constraint) ?: return@launch
 
                 if (error.isFixable) {
-                    display.fixError(error)
+                    onFixError(error)
+                }
+            }
+        }
+    }
+
+    private fun onFixError(error: Error) {
+        coroutineScope.launch {
+            if (error == Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)) {
+                coroutineScope.launch {
+                    ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
+                        resourceProvider = this@ConfigConstraintsViewModel,
+                        popupViewModel = this@ConfigConstraintsViewModel,
+                        neverShowDndTriggerErrorAgain = { displayUseCase.neverShowDndTriggerErrorAgain() },
+                        fixError = { displayUseCase.fixError(it) },
+                    )
+                }
+            } else {
+                ViewModelHelper.showFixErrorDialog(
+                    resourceProvider = this@ConfigConstraintsViewModel,
+                    popupViewModel = this@ConfigConstraintsViewModel,
+                    error,
+                ) {
+                    displayUseCase.fixError(error)
                 }
             }
         }
@@ -120,42 +147,40 @@ class ConfigConstraintsViewModel(
                 navigate("add_constraint", NavDestination.ChooseConstraint(allowedConstraints))
                     ?: return@launch
 
-            config.addConstraint(constraint)
+            configMappingUseCase.addConstraint(constraint)
         }
     }
 
     private fun createListItem(constraint: Constraint): ConstraintListItem {
         val title: String = uiHelper.getTitle(constraint)
         val icon: IconInfo? = uiHelper.getIcon(constraint)
-        val error: Error? = display.getConstraintError(constraint)
+        val error: Error? = displayUseCase.getConstraintError(constraint)
 
         return ConstraintListItem(
             id = constraint.uid,
             tintType = icon?.tintType ?: TintType.Error,
             icon = icon?.drawable ?: getDrawable(R.drawable.ic_baseline_error_outline_24),
             title = title,
-            errorMessage = error?.getFullMessage(this)
+            errorMessage = error?.getFullMessage(this),
         )
     }
 
-    private fun buildState(state: State<ConstraintState>): ConstraintListViewState {
-        return when (state) {
-            is State.Data ->
-                ConstraintListViewState(
-                    constraintList = State.Data(state.data.constraints.map { createListItem(it) }),
-                    showModeRadioButtons = state.data.constraints.size > 1,
-                    isAndModeChecked = state.data.mode == ConstraintMode.AND,
-                    isOrModeChecked = state.data.mode == ConstraintMode.OR
-                )
+    private fun buildState(state: State<ConstraintState>): ConstraintListViewState = when (state) {
+        is State.Data ->
+            ConstraintListViewState(
+                constraintList = State.Data(state.data.constraints.map { createListItem(it) }),
+                showModeRadioButtons = state.data.constraints.size > 1,
+                isAndModeChecked = state.data.mode == ConstraintMode.AND,
+                isOrModeChecked = state.data.mode == ConstraintMode.OR,
+            )
 
-            is State.Loading ->
-                ConstraintListViewState(
-                    constraintList = State.Loading,
-                    showModeRadioButtons = false,
-                    isAndModeChecked = false,
-                    isOrModeChecked = false
-                )
-        }
+        is State.Loading ->
+            ConstraintListViewState(
+                constraintList = State.Loading,
+                showModeRadioButtons = false,
+                isAndModeChecked = false,
+                isOrModeChecked = false,
+            )
     }
 }
 
@@ -163,5 +188,5 @@ data class ConstraintListViewState(
     val constraintList: State<List<ConstraintListItem>>,
     val showModeRadioButtons: Boolean,
     val isAndModeChecked: Boolean,
-    val isOrModeChecked: Boolean
+    val isOrModeChecked: Boolean,
 )

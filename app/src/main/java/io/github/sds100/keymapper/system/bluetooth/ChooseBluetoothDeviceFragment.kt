@@ -57,7 +57,7 @@ class ChooseBluetoothDeviceFragment : SimpleRecyclerViewFragment<ListItem>() {
 
     override fun populateList(
         recyclerView: EpoxyRecyclerView,
-        listItems: List<ListItem>
+        listItems: List<ListItem>,
     ) {
         recyclerView.withModels {
             listItems.forEach { listItem ->
@@ -83,7 +83,5 @@ class ChooseBluetoothDeviceFragment : SimpleRecyclerViewFragment<ListItem>() {
         }
     }
 
-    override fun getRequestKey(): String {
-        return args.requestKey
-    }
+    override fun getRequestKey(): String = args.requestKey
 }

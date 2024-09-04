@@ -9,5 +9,5 @@ import kotlinx.serialization.Serializable
 data class ChooseAppShortcutResult(
     val packageName: String?,
     val shortcutName: String,
-    val uri: String
+    val uri: String,
 )

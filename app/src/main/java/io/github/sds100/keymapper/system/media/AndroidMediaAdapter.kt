@@ -28,39 +28,30 @@ class AndroidMediaAdapter(context: Context) : MediaAdapter {
     private var mediaPlayerLock = Any()
     private var mediaPlayer: MediaPlayer? = null
 
-    override fun fastForward(packageName: String?): Result<*> {
-        return sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_FAST_FORWARD, packageName)
-    }
+    override fun fastForward(packageName: String?): Result<*> =
+        sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_FAST_FORWARD, packageName)
 
-    override fun rewind(packageName: String?): Result<*> {
-        return sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_REWIND, packageName)
-    }
+    override fun rewind(packageName: String?): Result<*> =
+        sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_REWIND, packageName)
 
-    override fun play(packageName: String?): Result<*> {
-        return sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PLAY, packageName)
-    }
+    override fun play(packageName: String?): Result<*> =
+        sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PLAY, packageName)
 
-    override fun pause(packageName: String?): Result<*> {
-        return sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PAUSE, packageName)
-    }
+    override fun pause(packageName: String?): Result<*> =
+        sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PAUSE, packageName)
 
-    override fun playPause(packageName: String?): Result<*> {
-        return sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE, packageName)
-    }
+    override fun playPause(packageName: String?): Result<*> =
+        sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE, packageName)
 
-    override fun previousTrack(packageName: String?): Result<*> {
-        return sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PREVIOUS, packageName)
-    }
+    override fun previousTrack(packageName: String?): Result<*> =
+        sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PREVIOUS, packageName)
 
-    override fun nextTrack(packageName: String?): Result<*> {
-        return sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_NEXT, packageName)
-    }
+    override fun nextTrack(packageName: String?): Result<*> =
+        sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_NEXT, packageName)
 
-    override fun getPackagesPlayingMedia(): List<String> {
-        return activeMediaSessions
-            .filter { it.playbackState?.state == PlaybackState.STATE_PLAYING }
-            .map { it.packageName }
-    }
+    override fun getPackagesPlayingMedia(): List<String> = activeMediaSessions
+        .filter { it.playbackState?.state == PlaybackState.STATE_PLAYING }
+        .map { it.packageName }
 
     override fun playSoundFile(uri: String, stream: VolumeStream): Result<*> {
         try {
@@ -80,7 +71,7 @@ class AndroidMediaAdapter(context: Context) : MediaAdapter {
                     AudioAttributes.Builder()
                         .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                         .setUsage(usage)
-                        .build()
+                        .build(),
                 )
 
                 setDataSource(ctx, Uri.parse(uri))

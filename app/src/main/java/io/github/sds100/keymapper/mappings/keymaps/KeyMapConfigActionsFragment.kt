@@ -13,11 +13,12 @@ import io.github.sds100.keymapper.util.Inject
 
 class KeyMapConfigActionsFragment : ConfigActionsFragment<KeyMapAction>() {
 
-    class Info : FragmentInfo(
-        R.string.action_list_header,
-        R.string.url_action_guide,
-        { KeyMapConfigActionsFragment() }
-    )
+    class Info :
+        FragmentInfo(
+            R.string.action_list_header,
+            R.string.url_action_guide,
+            { KeyMapConfigActionsFragment() },
+        )
 
     override var isAppBarVisible = false
 

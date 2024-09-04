@@ -17,13 +17,15 @@
     <uses-permission android:name="android.permission.USE_FINGERPRINT" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="com.termux.permission.RUN_COMMAND" />
 
-    <!--    This permission is in each build variant's AndroidManifest -->
-    <!--    <permission android:name="io.github.sds100.keymapper.KEY_EVENT_RECEIVER">-->
-    <!--    </permission>-->
+    <uses-permission
+        android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
+
 
     <uses-permission
         android:name="android.permission.QUERY_ALL_PACKAGES"
@@ -153,6 +155,14 @@
         </receiver>
 
         <receiver
+            android:name=".api.TriggerKeyMapsBroadcastReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="io.github.sds100.keymapper.ACTION_TRIGGER_KEYMAP_BY_UID" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
             android:name=".system.bluetooth.BluetoothBroadcastReceiver"
             android:exported="true">
             <intent-filter>
@@ -236,10 +246,13 @@
             android:name=".system.accessibility.ObserveEnabledAccessibilityServicesJob"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
+        <!-- Don't require a permission because we want other apps to bind
+         to this service. The permission wouldn't be signature-level so
+         if a nefarious app wants to talk to Key Mapper they could add the permission anyway. -->
         <service
-            android:name=".api.KeyEventReceiver"
+            android:name=".api.KeyEventRelayService"
             android:exported="true"
-            android:permission="io.github.sds100.keymapper.KEY_EVENT_RECEIVER" />
+            tools:ignore="ExportedService" />
 
         <service
             android:name=".system.inputmethod.ObserveInputMethodsJob"

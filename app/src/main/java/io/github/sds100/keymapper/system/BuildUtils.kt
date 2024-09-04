@@ -17,6 +17,8 @@ import android.os.Build.VERSION_CODES.Q
 import android.os.Build.VERSION_CODES.R
 import android.os.Build.VERSION_CODES.S
 import android.os.Build.VERSION_CODES.S_V2
+import android.os.Build.VERSION_CODES.TIRAMISU
+import android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE
 
 /**
  * Created by sds100 on 12/01/2019.
@@ -28,25 +30,25 @@ object BuildUtils {
      *
      * E.g 28 = "Pie 9.0"
      */
-    fun getSdkVersionName(version: Int): String {
-        return when (version) {
-            JELLY_BEAN -> "Jelly Bean 4.1"
-            JELLY_BEAN_MR1 -> "Jelly Bean 4.2"
-            JELLY_BEAN_MR2 -> "Jelly Bean 4.3"
-            KITKAT -> "KitKat 4.4"
-            LOLLIPOP -> "Lollipop 5.0"
-            LOLLIPOP_MR1 -> "Lollipop 5.1"
-            M -> "Marshmallow 6.0"
-            N -> "Nougat 7.0"
-            N_MR1 -> "Nougat 7.1"
-            O -> "Oreo 8.0"
-            O_MR1 -> "Oreo 8.1"
-            P -> "Pie 9.0"
-            Q -> "10"
-            R -> "11"
-            S -> "12"
-            S_V2 -> "12L"
-            else -> "API $version"
-        }
+    fun getSdkVersionName(version: Int): String = when (version) {
+        JELLY_BEAN -> "Jelly Bean 4.1"
+        JELLY_BEAN_MR1 -> "Jelly Bean 4.2"
+        JELLY_BEAN_MR2 -> "Jelly Bean 4.3"
+        KITKAT -> "KitKat 4.4"
+        LOLLIPOP -> "Lollipop 5.0"
+        LOLLIPOP_MR1 -> "Lollipop 5.1"
+        M -> "Marshmallow 6.0"
+        N -> "Nougat 7.0"
+        N_MR1 -> "Nougat 7.1"
+        O -> "Oreo 8.0"
+        O_MR1 -> "Oreo 8.1"
+        P -> "Pie 9.0"
+        Q -> "10"
+        R -> "11"
+        S -> "12"
+        S_V2 -> "12L"
+        TIRAMISU -> "13"
+        UPSIDE_DOWN_CAKE -> "14"
+        else -> "API $version"
     }
 }

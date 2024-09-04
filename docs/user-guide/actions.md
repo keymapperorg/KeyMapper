@@ -93,7 +93,7 @@ This action will play a sound. Key Mapper will copy the sound file to its own fo
 !!! attention "Requires ROOT permission on Android 10+"
 If you aren't rooted then you must install the [WyFy](https://github.com/x13a/WyFy) app. You must then use the Intent action in Key Mapper to send a broadcast that tells this app to change the WiFi state. In the WyFy's README it outlines the Intent parameters. This app works around the issue by targeting API 28 (Android 9), which means the app doesn't need to follow the new restrictions in API 29 (Android 10). But this means it can't be approved in the Play Store so you must install the apk manually from GitHub or through F-Droid.
 
-### Toggle/enable/disable Bluetooth
+### Toggle/enable/disable Bluetooth  (up to Android 12L)
 
 ### Toggle/enable/disable mobile data
 
@@ -141,7 +141,7 @@ This will increase or decrease a specific one of these volume streams.
 
 ### Expand/toggle quick settings
 
-### Collapse the status bar
+### Collapse the status bar (up to Android 14)
 
 ### Play/pause/toggle media
 

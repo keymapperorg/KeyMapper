@@ -42,7 +42,7 @@ class CreateKeyMapShortcutFragment : SimpleRecyclerViewFragment<KeyMapListItem>(
         viewModel.showPopups(this, binding)
 
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
-            viewModel.returnUidResult.collectLatest { intent ->
+            viewModel.returnIntentResult.collectLatest { intent ->
                 requireActivity().setResult(Activity.RESULT_OK, intent)
                 requireActivity().finish()
             }
@@ -53,7 +53,7 @@ class CreateKeyMapShortcutFragment : SimpleRecyclerViewFragment<KeyMapListItem>(
 
     override fun populateList(
         recyclerView: EpoxyRecyclerView,
-        listItems: List<KeyMapListItem>
+        listItems: List<KeyMapListItem>,
     ) {
         recyclerView.withModels {
             listItems.forEach { listItem ->

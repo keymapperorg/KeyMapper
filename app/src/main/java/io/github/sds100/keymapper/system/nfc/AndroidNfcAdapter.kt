@@ -11,21 +11,15 @@ import io.github.sds100.keymapper.util.Result
  */
 class AndroidNfcAdapter(
     context: Context,
-    private val suAdapter: SuAdapter
+    private val suAdapter: SuAdapter,
 ) : NfcAdapter {
     private val ctx = context.applicationContext
 
     private val nfcManager: NfcManager by lazy { ctx.getSystemService()!! }
 
-    override fun isEnabled(): Boolean {
-        return nfcManager.defaultAdapter.isEnabled
-    }
+    override fun isEnabled(): Boolean = nfcManager.defaultAdapter.isEnabled
 
-    override fun enable(): Result<*> {
-        return suAdapter.execute("svc nfc enable")
-    }
+    override fun enable(): Result<*> = suAdapter.execute("svc nfc enable")
 
-    override fun disable(): Result<*> {
-        return suAdapter.execute("svc nfc disable")
-    }
+    override fun disable(): Result<*> = suAdapter.execute("svc nfc disable")
 }

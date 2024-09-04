@@ -14,11 +14,12 @@ import io.github.sds100.keymapper.util.singleKeyTrigger
 import io.github.sds100.keymapper.util.triggerKey
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.TestCoroutineExceptionHandler
+import kotlinx.coroutines.test.createTestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.contains
+import org.hamcrest.Matchers.`is`
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -32,7 +33,8 @@ import org.mockito.kotlin.mock
 class ConfigKeyMapUseCaseTest {
 
     private val testDispatcher = TestCoroutineDispatcher()
-    private val coroutineScope = TestCoroutineScope(testDispatcher)
+    private val coroutineScope =
+        createTestCoroutineScope(TestCoroutineDispatcher() + TestCoroutineExceptionHandler() + testDispatcher)
 
     private lateinit var useCase: ConfigKeyMapUseCaseImpl
 
@@ -41,7 +43,7 @@ class ConfigKeyMapUseCaseTest {
         useCase = ConfigKeyMapUseCaseImpl(
             devicesAdapter = mock(),
             keyMapRepository = mock(),
-            preferenceRepository = mock()
+            preferenceRepository = mock(),
         )
     }
 
@@ -69,17 +71,17 @@ class ConfigKeyMapUseCaseTest {
                 KeyEvent.KEYCODE_META_RIGHT,
                 KeyEvent.KEYCODE_SYM,
                 KeyEvent.KEYCODE_NUM,
-                KeyEvent.KEYCODE_FUNCTION
+                KeyEvent.KEYCODE_FUNCTION,
             )
 
             for (modifierKeyCode in modifierKeys) {
-                //GIVEN
+                // GIVEN
                 useCase.mapping.value = State.Data(KeyMap())
 
-                //WHEN
+                // WHEN
                 useCase.addTriggerKey(modifierKeyCode, TriggerKeyDevice.Internal)
 
-                //THEN
+                // THEN
                 val trigger = useCase.mapping.value.dataOrNull()!!.trigger
 
                 assertThat(trigger.keys[0].consumeKeyEvent, `is`(false))
@@ -92,13 +94,13 @@ class ConfigKeyMapUseCaseTest {
     @Test
     fun `when add non-modifier key trigger, do ont enable do not remap option`() =
         coroutineScope.runBlockingTest {
-            //GIVEN
+            // GIVEN
             useCase.mapping.value = State.Data(KeyMap())
 
-            //WHEN
+            // WHEN
             useCase.addTriggerKey(KeyEvent.KEYCODE_A, TriggerKeyDevice.Internal)
 
-            //THEN
+            // THEN
             val trigger = useCase.mapping.value.dataOrNull()!!.trigger
 
             assertThat(trigger.keys[0].consumeKeyEvent, `is`(true))
@@ -111,14 +113,14 @@ class ConfigKeyMapUseCaseTest {
     @Test
     fun `when add answer phone call action, then add phone ringing constraint`() =
         coroutineScope.runBlockingTest {
-            //GIVEN
+            // GIVEN
             useCase.mapping.value = State.Data(KeyMap())
             val action = ActionData.AnswerCall
 
-            //WHEN
+            // WHEN
             useCase.addAction(action)
 
-            //THEN
+            // THEN
             val keyMap = useCase.mapping.value.dataOrNull()!!
             assertThat(keyMap.constraintState.constraints, contains(Constraint.PhoneRinging))
         }
@@ -130,14 +132,14 @@ class ConfigKeyMapUseCaseTest {
     @Test
     fun `when add end phone call action, then add in phone call constraint`() =
         coroutineScope.runBlockingTest {
-            //GIVEN
+            // GIVEN
             useCase.mapping.value = State.Data(KeyMap())
             val action = ActionData.EndCall
 
-            //WHEN
+            // WHEN
             useCase.addAction(action)
 
-            //THEN
+            // THEN
             val keyMap = useCase.mapping.value.dataOrNull()!!
             assertThat(keyMap.constraintState.constraints, contains(Constraint.InPhoneCall))
         }
@@ -148,22 +150,22 @@ class ConfigKeyMapUseCaseTest {
     @Test
     fun `key map with hold down action, load key map, hold down flag shouldn't disappear`() =
         coroutineScope.runBlockingTest {
-            //given
+            // given
             val action = KeyMapAction(
                 data = ActionData.TapScreen(100, 100, null),
-                holdDown = true
+                holdDown = true,
             )
 
             val keyMap = KeyMap(
                 0,
                 trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_0)),
-                actionList = listOf(action)
+                actionList = listOf(action),
             )
 
-            //when
+            // when
             useCase.mapping.value = State.Data(keyMap)
 
-            //then
+            // then
             assertThat(useCase.mapping.value.dataOrNull()!!.actionList, `is`(listOf(action)))
         }
 

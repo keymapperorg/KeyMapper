@@ -10,7 +10,7 @@ import io.github.sds100.keymapper.mappings.keymaps.KeyMapListFragment
  */
 
 class HomePagerAdapter(
-    fragment: Fragment
+    fragment: Fragment,
 ) : FragmentStateAdapter(fragment) {
 
     private var tabs: Set<HomeTab> = emptySet()
@@ -34,7 +34,6 @@ class HomePagerAdapter(
                 }
             }
         }
-
 
     override fun getItemCount() = tabFragmentsCreators.size
 

@@ -1,29 +1,26 @@
 package io.github.sds100.keymapper.actions.swipescreen
 
 import android.annotation.SuppressLint
-import android.graphics.ImageDecoder
+import android.graphics.Bitmap
 import android.graphics.Point
-import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.getSystemService
-import androidx.core.graphics.decodeBitmap
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.*
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import io.github.sds100.keymapper.databinding.FragmentSwipePickCoordinatesBinding
 import io.github.sds100.keymapper.system.files.FileUtils
-import io.github.sds100.keymapper.util.*
+import io.github.sds100.keymapper.util.Inject
+import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.showPopups
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.decodeFromString
@@ -43,19 +40,17 @@ class SwipePickDisplayCoordinateFragment : Fragment() {
     }
 
     private val screenshotLauncher =
-        registerForActivityResult(ActivityResultContracts.GetContent()) {
-            it ?: return@registerForActivityResult
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            uri ?: return@registerForActivityResult
 
-            val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                ImageDecoder.createSource(requireContext().contentResolver, it)
-                    .decodeBitmap { _, _ -> }
-            } else {
-                MediaStore.Images.Media.getBitmap(requireContext().contentResolver, it)
-            }
+            val bitmap: Bitmap? =
+                FileUtils.decodeBitmapFromUri(requireContext().contentResolver, uri)
+
+            bitmap ?: return@registerForActivityResult
 
             val displaySize = Point().apply {
-                val windowManager: WindowManager = requireContext().getSystemService()!!
-                windowManager.defaultDisplay.getRealSize(this)
+                @Suppress("DEPRECATION")
+                ContextCompat.getDisplayOrDefault(requireContext()).getRealSize(this)
             }
 
             viewModel.selectedScreenshot(bitmap, displaySize)
@@ -80,7 +75,7 @@ class SwipePickDisplayCoordinateFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         FragmentSwipePickCoordinatesBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
@@ -120,7 +115,7 @@ class SwipePickDisplayCoordinateFragment : Fragment() {
                 if (point != null) {
                     viewModel.onScreenshotTouch(
                         point.x.toFloat() / binding.imageViewScreenshot.width,
-                        point.y.toFloat() / binding.imageViewScreenshot.height
+                        point.y.toFloat() / binding.imageViewScreenshot.height,
                     )
                 }
             }
@@ -130,7 +125,7 @@ class SwipePickDisplayCoordinateFragment : Fragment() {
             viewModel.returnResult.collectLatest { result ->
                 setFragmentResult(
                     requestKey,
-                    bundleOf(EXTRA_RESULT to Json.encodeToString(result))
+                    bundleOf(EXTRA_RESULT to Json.encodeToString(result)),
                 )
 
                 findNavController().navigateUp()

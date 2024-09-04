@@ -9,7 +9,7 @@ import io.github.sds100.keymapper.system.inputmethod.AutoSwitchImeController
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.popup.PopupMessageAdapter
-import io.github.sds100.keymapper.util.Event
+import io.github.sds100.keymapper.util.ServiceEvent
 import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -17,13 +17,18 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.TestCoroutineExceptionHandler
+import kotlinx.coroutines.test.createTestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
-import org.mockito.kotlin.*
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 /**
  * Created by sds100 on 25/04/2021.
@@ -42,7 +47,7 @@ class AutoSwitchImeControllerTest {
             name = "fake keyboard",
             id = 1,
             isExternal = true,
-            isGameController = false
+            isGameController = false,
         )
 
         private val FAKE_CONTROLLER = InputDeviceInfo(
@@ -50,7 +55,7 @@ class AutoSwitchImeControllerTest {
             name = "fake controller",
             id = 2,
             isExternal = true,
-            isGameController = true
+            isGameController = true,
         )
 
         private val KEY_MAPPER_IME = ImeInfo(
@@ -58,7 +63,7 @@ class AutoSwitchImeControllerTest {
             packageName = Constants.PACKAGE_NAME,
             label = "label",
             isEnabled = true,
-            isChosen = false
+            isChosen = false,
         )
 
         private val NORMAL_IME = ImeInfo(
@@ -66,12 +71,13 @@ class AutoSwitchImeControllerTest {
             packageName = "other.example.app",
             label = "normal keyboard",
             isEnabled = true,
-            isChosen = true
+            isChosen = true,
         )
     }
 
     private val testDispatcher = TestCoroutineDispatcher()
-    private val coroutineScope = TestCoroutineScope(testDispatcher)
+    private val coroutineScope =
+        createTestCoroutineScope(TestCoroutineDispatcher() + TestCoroutineExceptionHandler() + testDispatcher)
 
     private lateinit var controller: AutoSwitchImeController
     private lateinit var fakePreferenceRepository: FakePreferenceRepository
@@ -92,18 +98,18 @@ class AutoSwitchImeControllerTest {
 
             on { inputMethodHistory }.then {
                 MutableStateFlow(
-                    listOf(NORMAL_IME)
+                    listOf(NORMAL_IME),
                 )
             }
 
             onBlocking { chooseImeWithoutUserInput(KEY_MAPPER_IME_ID) }.then {
                 Success(
-                    KEY_MAPPER_IME
+                    KEY_MAPPER_IME,
                 )
             }
             onBlocking { chooseImeWithoutUserInput(NORMAL_IME_ID) }.then {
                 Success(
-                    NORMAL_IME
+                    NORMAL_IME,
                 )
             }
         }
@@ -127,47 +133,47 @@ class AutoSwitchImeControllerTest {
             mockPopupMessageAdapter,
             mockResourceProvider,
             accessibilityServiceAdapter = mock {
-                on { eventReceiver }.then { MutableSharedFlow<Event>() }
-            }
+                on { eventReceiver }.then { MutableSharedFlow<ServiceEvent>() }
+            },
         )
     }
 
     @Test
     fun `choose single device, when device connected, show ime picker`() =
         coroutineScope.runBlockingTest {
-            //GIVEN
+            // GIVEN
             val chosenDevices = setOf(FAKE_KEYBOARD.descriptor)
 
             fakePreferenceRepository.set(Keys.showImePickerOnDeviceConnect, true)
             fakePreferenceRepository.set(Keys.devicesThatShowImePicker, chosenDevices)
 
-            //WHEN
+            // WHEN
             fakeDevicesAdapter.onInputDeviceConnect.emit(FAKE_KEYBOARD)
 
-            //THEN
+            // THEN
             verify(mockInputMethodAdapter, times(1)).showImePicker(fromForeground = false)
         }
 
     @Test
     fun `choose single device, when device disconnected, show ime picker`() =
         coroutineScope.runBlockingTest {
-            //GIVEN
+            // GIVEN
             val chosenDevices = setOf(FAKE_KEYBOARD.descriptor)
 
             fakePreferenceRepository.set(Keys.showImePickerOnDeviceConnect, true)
             fakePreferenceRepository.set(Keys.devicesThatShowImePicker, chosenDevices)
 
-            //WHEN
+            // WHEN
             fakeDevicesAdapter.onInputDeviceDisconnect.emit(FAKE_KEYBOARD)
 
-            //THEN
+            // THEN
             verify(mockInputMethodAdapter, times(1)).showImePicker(fromForeground = false)
         }
 
     @Test
     fun `choose single device, on device disconnect, choose normal keyboard`() =
         coroutineScope.runBlockingTest {
-            //GIVEN
+            // GIVEN
             val chosenDevices = setOf(FAKE_KEYBOARD.descriptor)
             fakePreferenceRepository.set(Keys.devicesThatChangeIme, chosenDevices)
             fakePreferenceRepository.set(Keys.changeImeOnDeviceConnect, true)
@@ -175,17 +181,17 @@ class AutoSwitchImeControllerTest {
 
             whenever(mockInputMethodAdapter.chosenIme).then { MutableStateFlow(KEY_MAPPER_IME) }
 
-            //WHEN
+            // WHEN
             fakeDevicesAdapter.onInputDeviceDisconnect.emit(FAKE_KEYBOARD)
 
-            //THEN
+            // THEN
             verify(mockInputMethodAdapter, times(1)).chooseImeWithoutUserInput(
                 NORMAL_IME_ID,
             )
 
             verify(mockResourceProvider, times(1)).getString(
                 R.string.toast_chose_keyboard,
-                NORMAL_IME.label
+                NORMAL_IME.label,
             )
             verify(mockPopupMessageAdapter, times(1)).showPopupMessage(anyOrNull())
         }
@@ -193,7 +199,7 @@ class AutoSwitchImeControllerTest {
     @Test
     fun `choose single device, when device connected, choose key mapper keyboard`() =
         coroutineScope.runBlockingTest {
-            //GIVEN
+            // GIVEN
             val chosenDevices = setOf(FAKE_KEYBOARD.descriptor)
             fakePreferenceRepository.set(Keys.devicesThatChangeIme, chosenDevices)
             fakePreferenceRepository.set(Keys.changeImeOnDeviceConnect, true)
@@ -201,17 +207,17 @@ class AutoSwitchImeControllerTest {
 
             whenever(mockInputMethodAdapter.chosenIme).then { MutableStateFlow(NORMAL_IME) }
 
-            //WHEN
+            // WHEN
             fakeDevicesAdapter.onInputDeviceConnect.emit(FAKE_KEYBOARD)
 
-            //THEN
+            // THEN
             verify(mockInputMethodAdapter, times(1)).chooseImeWithoutUserInput(
                 KEY_MAPPER_IME_ID,
             )
 
             verify(mockResourceProvider, times(1)).getString(
                 R.string.toast_chose_keyboard,
-                KEY_MAPPER_IME.label
+                KEY_MAPPER_IME.label,
             )
             verify(mockPopupMessageAdapter, times(1)).showPopupMessage(anyOrNull())
         }

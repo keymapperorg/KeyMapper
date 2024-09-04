@@ -15,8 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
  * Created by sds100 on 04/04/2021.
  */
 
-abstract class BaseConfigMappingUseCase<ACTION : Action, T : Mapping<ACTION>> :
-    ConfigMappingUseCase<ACTION, T> {
+abstract class BaseConfigMappingUseCase<ACTION : Action, T : Mapping<ACTION>> : ConfigMappingUseCase<ACTION, T> {
 
     override val mapping = MutableStateFlow<State<T>>(State.Loading)
 

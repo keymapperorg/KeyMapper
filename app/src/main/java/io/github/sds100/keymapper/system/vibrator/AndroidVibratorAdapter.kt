@@ -19,7 +19,7 @@ class AndroidVibratorAdapter(context: Context) : VibratorAdapter {
             val effect =
                 VibrationEffect.createOneShot(
                     duration,
-                    VibrationEffect.DEFAULT_AMPLITUDE
+                    VibrationEffect.DEFAULT_AMPLITUDE,
                 )
 
             vibrator?.vibrate(effect)

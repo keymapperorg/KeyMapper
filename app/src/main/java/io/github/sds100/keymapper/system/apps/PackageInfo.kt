@@ -11,5 +11,5 @@ data class PackageInfo(
     /**
      * Whether this package can be launched.
      */
-    val isLaunchable: Boolean
+    val isLaunchable: Boolean,
 )

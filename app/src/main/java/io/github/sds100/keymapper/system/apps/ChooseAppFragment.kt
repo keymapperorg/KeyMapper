@@ -83,9 +83,7 @@ class ChooseAppFragment : RecyclerViewFragment<SimpleListItem, FragmentChooseApp
         }
     }
 
-    override fun getRequestKey(): String {
-        return args.requestKey
-    }
+    override fun getRequestKey(): String = args.requestKey
 
     override fun getBottomAppBar(binding: FragmentChooseAppBinding) = binding.appBar
     override fun getRecyclerView(binding: FragmentChooseAppBinding) = binding.epoxyRecyclerView

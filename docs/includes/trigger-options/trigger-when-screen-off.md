@@ -12,5 +12,5 @@ also like to be supported.
 * Headset button
 * Camera focus button
 * Camera button
-* Menu button (on some devices the Bixby button is detected by Key Mapper as a menu button)
+* Bixby button - on some ROMs the Bixby button is mapped to the Menu or Assist key code in Android so it will appear as these buttons in the trigger.
 * Search button

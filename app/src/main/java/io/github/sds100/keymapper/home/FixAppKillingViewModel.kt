@@ -7,7 +7,11 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.onboarding.AppIntroSlideUi
 import io.github.sds100.keymapper.system.accessibility.ControlAccessibilityServiceUseCase
 import io.github.sds100.keymapper.system.accessibility.ServiceState
-import io.github.sds100.keymapper.util.ui.*
+import io.github.sds100.keymapper.util.ui.PopupUi
+import io.github.sds100.keymapper.util.ui.PopupViewModel
+import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
+import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.util.ui.showPopup
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
@@ -19,8 +23,10 @@ import kotlinx.coroutines.launch
 
 class FixAppKillingViewModel(
     resourceProvider: ResourceProvider,
-    private val controlAccessibilityService: ControlAccessibilityServiceUseCase
-) : ViewModel(), ResourceProvider by resourceProvider, PopupViewModel by PopupViewModelImpl() {
+    private val controlAccessibilityService: ControlAccessibilityServiceUseCase,
+) : ViewModel(),
+    ResourceProvider by resourceProvider,
+    PopupViewModel by PopupViewModelImpl() {
 
     companion object {
         private const val ID_BUTTON_RESTART_ACCESSIBILITY_SERVICE = "restart_accessibility_service"
@@ -29,7 +35,7 @@ class FixAppKillingViewModel(
 
     val allSlides = listOf(
         goToDontKillMyAppSlide(),
-        restartServiceSlide()
+        restartServiceSlide(),
     )
 
     private val _goToNextSlide = MutableSharedFlow<Unit>()
@@ -41,14 +47,14 @@ class FixAppKillingViewModel(
                 ID_BUTTON_GO_TO_DONT_KILL_MY_APP -> {
                     showPopup(
                         "url_dont_kill_my_app",
-                        PopupUi.OpenUrl(getString(R.string.url_dont_kill_my_app))
+                        PopupUi.OpenUrl(getString(R.string.url_dont_kill_my_app)),
                     )
                 }
 
                 ID_BUTTON_RESTART_ACCESSIBILITY_SERVICE -> {
                     controlAccessibilityService.restartService()
 
-                    controlAccessibilityService.serviceState.first { it == ServiceState.ENABLED } //wait for it to be started
+                    controlAccessibilityService.serviceState.first { it == ServiceState.ENABLED } // wait for it to be started
                     _goToNextSlide.emit(Unit)
                 }
             }
@@ -64,7 +70,7 @@ class FixAppKillingViewModel(
         title = getString(R.string.slide_title_read_dont_kill_my_app),
         description = getString(R.string.slide_description_read_dont_kill_my_app),
         buttonText1 = getString(R.string.slide_button_read_dont_kill_my_app),
-        buttonId1 = ID_BUTTON_GO_TO_DONT_KILL_MY_APP
+        buttonId1 = ID_BUTTON_GO_TO_DONT_KILL_MY_APP,
 
     )
 
@@ -75,17 +81,16 @@ class FixAppKillingViewModel(
         title = getString(R.string.slide_title_restart_accessibility_service),
         description = getString(R.string.slide_description_restart_accessibility_service),
         buttonText1 = getString(R.string.button_restart_accessibility_service),
-        buttonId1 = ID_BUTTON_RESTART_ACCESSIBILITY_SERVICE
+        buttonId1 = ID_BUTTON_RESTART_ACCESSIBILITY_SERVICE,
     )
 
     @Suppress("UNCHECKED_CAST")
     class Factory(
         private val resourceProvider: ResourceProvider,
-        private val controlAccessibilityServiceUseCase: ControlAccessibilityServiceUseCase
+        private val controlAccessibilityServiceUseCase: ControlAccessibilityServiceUseCase,
     ) : ViewModelProvider.NewInstanceFactory() {
 
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return FixAppKillingViewModel(resourceProvider, controlAccessibilityServiceUseCase) as T
-        }
+        override fun <T : ViewModel> create(modelClass: Class<T>): T =
+            FixAppKillingViewModel(resourceProvider, controlAccessibilityServiceUseCase) as T
     }
 }

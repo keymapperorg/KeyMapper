@@ -61,7 +61,7 @@ sealed class Error : Result<Nothing>() {
 
             fun getMessageForPermission(
                 resourceProvider: ResourceProvider,
-                permission: Permission
+                permission: Permission,
             ): String {
                 val resId = when (permission) {
                     Permission.WRITE_SETTINGS -> R.string.error_action_requires_write_settings_permission
@@ -78,6 +78,7 @@ sealed class Error : Result<Nothing>() {
                     Permission.ACCESS_FINE_LOCATION -> R.string.error_access_fine_location_permission_denied
                     Permission.ANSWER_PHONE_CALL -> R.string.error_answer_end_phone_call_permission_denied
                     Permission.FIND_NEARBY_DEVICES -> R.string.error_find_nearby_devices_permission_denied
+                    Permission.POST_NOTIFICATIONS -> R.string.error_notifications_permission_denied
                 }
 
                 return resourceProvider.getString(resId)
@@ -185,11 +186,10 @@ val <T> Result<T>.isError: Boolean
 val <T> Result<T>.isSuccess: Boolean
     get() = this is Success
 
-fun <T, U> Result<T>.handle(onSuccess: (value: T) -> U, onError: (error: Error) -> U): U {
-    return when (this) {
+fun <T, U> Result<T>.handle(onSuccess: (value: T) -> U, onError: (error: Error) -> U): U =
+    when (this) {
         is Success -> onSuccess(value)
         is Error -> onError(this)
     }
-}
 
 fun <T> T.success() = Success(this)

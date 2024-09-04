@@ -10,5 +10,5 @@ data class SwipePickCoordinateResult(
     val yEnd: Int,
     val fingerCount: Int,
     val duration: Int,
-    val description: String
+    val description: String,
 )

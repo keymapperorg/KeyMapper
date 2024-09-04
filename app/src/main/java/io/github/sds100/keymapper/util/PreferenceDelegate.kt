@@ -12,7 +12,7 @@ import kotlin.reflect.KProperty
 
 class FlowPrefDelegate<T>(
     private val key: Preferences.Key<T>,
-    private val defaultValue: T
+    private val defaultValue: T,
 ) {
 
     operator fun getValue(thisRef: PreferenceRepository, prop: KProperty<*>?): Flow<T> =
@@ -21,7 +21,7 @@ class FlowPrefDelegate<T>(
 
 class PrefDelegate<T>(
     private val key: Preferences.Key<T>,
-    private val defaultValue: T
+    private val defaultValue: T,
 ) {
 
     operator fun getValue(thisRef: PreferenceRepository, prop: KProperty<*>?): T =

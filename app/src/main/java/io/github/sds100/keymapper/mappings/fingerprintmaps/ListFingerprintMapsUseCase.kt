@@ -21,8 +21,9 @@ class ListFingerprintMapsUseCaseImpl(
     private val fingerprintMapRepository: FingerprintMapRepository,
     private val backupManager: BackupManager,
     private val preferenceRepository: PreferenceRepository,
-    displaySimpleMappingUseCase: DisplaySimpleMappingUseCase
-) : ListFingerprintMapsUseCase, DisplaySimpleMappingUseCase by displaySimpleMappingUseCase {
+    displaySimpleMappingUseCase: DisplaySimpleMappingUseCase,
+) : ListFingerprintMapsUseCase,
+    DisplaySimpleMappingUseCase by displaySimpleMappingUseCase {
 
     override val fingerprintMaps: Flow<List<FingerprintMap>> =
         fingerprintMapRepository.fingerprintMapList
@@ -57,9 +58,8 @@ class ListFingerprintMapsUseCaseImpl(
         fingerprintMapRepository.disableFingerprintMap(entityId)
     }
 
-    override suspend fun backupFingerprintMaps(uri: String): Result<String> {
-        return backupManager.backupFingerprintMaps(uri)
-    }
+    override suspend fun backupFingerprintMaps(uri: String): Result<String> =
+        backupManager.backupFingerprintMaps(uri)
 }
 
 interface ListFingerprintMapsUseCase : DisplaySimpleMappingUseCase {

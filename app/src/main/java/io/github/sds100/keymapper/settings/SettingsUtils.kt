@@ -15,19 +15,17 @@ object SettingsUtils {
         ctx: Context,
         settingsViewModel: SettingsViewModel,
         key: Preferences.Key<Set<String>>,
-        @StringRes title: Int = R.string.title_pref_choose_devices
-    ): Preference {
-        return Preference(ctx).apply {
-            this.key = key.name
+        @StringRes title: Int = R.string.title_pref_choose_devices,
+    ): Preference = Preference(ctx).apply {
+        this.key = key.name
 
-            setTitle(title)
-            isSingleLineTitle = false
+        setTitle(title)
+        isSingleLineTitle = false
 
-            setOnPreferenceClickListener {
-                settingsViewModel.chooseDevicesForPreference(key)
+        setOnPreferenceClickListener {
+            settingsViewModel.chooseDevicesForPreference(key)
 
-                true
-            }
+            true
         }
     }
 }

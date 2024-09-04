@@ -16,7 +16,7 @@ import kotlinx.serialization.json.Json
 /**
  * Created by sds100 on 22/02/2020.
  */
-class ChooseActivityFragment : SimpleRecyclerViewFragment<ActivityListItem>() {
+class ChooseActivityFragment : SimpleRecyclerViewFragment<AppActivityListItem>() {
 
     companion object {
         const val EXTRA_RESULT = "extra_activity_info"
@@ -31,7 +31,7 @@ class ChooseActivityFragment : SimpleRecyclerViewFragment<ActivityListItem>() {
         Inject.chooseActivityViewModel(requireContext())
     }
 
-    override val listItems: Flow<State<List<ActivityListItem>>>
+    override val listItems: Flow<State<List<AppActivityListItem>>>
         get() = viewModel.listItems
 
     override fun onSearchQuery(query: String?) {
@@ -44,7 +44,10 @@ class ChooseActivityFragment : SimpleRecyclerViewFragment<ActivityListItem>() {
         RecyclerViewUtils.applySimpleListItemDecorations(binding.epoxyRecyclerView)
     }
 
-    override fun populateList(recyclerView: EpoxyRecyclerView, listItems: List<ActivityListItem>) {
+    override fun populateList(
+        recyclerView: EpoxyRecyclerView,
+        listItems: List<AppActivityListItem>,
+    ) {
         recyclerView.withModels {
             listItems.forEach {
                 simple {
@@ -59,7 +62,5 @@ class ChooseActivityFragment : SimpleRecyclerViewFragment<ActivityListItem>() {
         }
     }
 
-    override fun getRequestKey(): String {
-        return args.requestKey
-    }
+    override fun getRequestKey(): String = args.requestKey
 }

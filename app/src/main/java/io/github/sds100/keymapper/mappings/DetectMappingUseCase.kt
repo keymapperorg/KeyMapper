@@ -18,7 +18,7 @@ class DetectMappingUseCaseImpl(
     private val vibrator: VibratorAdapter,
     private val preferenceRepository: PreferenceRepository,
     private val popupMessageAdapter: PopupMessageAdapter,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
 ) : DetectMappingUseCase {
 
     override val forceVibrate: Flow<Boolean> =

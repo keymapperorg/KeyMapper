@@ -285,8 +285,8 @@ object KeyEventUtils {
                     KeyEvent.KEYCODE_TV_CONTENTS_MENU to "TV Contents Menu",
                     KeyEvent.KEYCODE_TV_MEDIA_CONTEXT_MENU to "TV Media Context Menu",
                     KeyEvent.KEYCODE_TV_TIMER_PROGRAMMING to "TV Timer Programming",
-                    KeyEvent.KEYCODE_HELP to "Help"
-                )
+                    KeyEvent.KEYCODE_HELP to "Help",
+                ),
             )
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -299,8 +299,8 @@ object KeyEventUtils {
                         KeyEvent.KEYCODE_MEDIA_SKIP_FORWARD to "Media Skip Forward",
                         KeyEvent.KEYCODE_MEDIA_SKIP_BACKWARD to "Media Skip Backward",
                         KeyEvent.KEYCODE_MEDIA_STEP_FORWARD to "Media Step Forward",
-                        KeyEvent.KEYCODE_MEDIA_STEP_BACKWARD to "Media Step Backward"
-                    )
+                        KeyEvent.KEYCODE_MEDIA_STEP_BACKWARD to "Media Step Backward",
+                    ),
                 )
             }
 
@@ -318,8 +318,8 @@ object KeyEventUtils {
                         KeyEvent.KEYCODE_SOFT_SLEEP to "Soft Sleep",
                         KeyEvent.KEYCODE_CUT to "Cut",
                         KeyEvent.KEYCODE_COPY to "Copy",
-                        KeyEvent.KEYCODE_PASTE to "Paste"
-                    )
+                        KeyEvent.KEYCODE_PASTE to "Paste",
+                    ),
                 )
             }
 
@@ -329,8 +329,8 @@ object KeyEventUtils {
                         KeyEvent.KEYCODE_SYSTEM_NAVIGATION_UP to "System Nav Up",
                         KeyEvent.KEYCODE_SYSTEM_NAVIGATION_DOWN to "System Nav Down",
                         KeyEvent.KEYCODE_SYSTEM_NAVIGATION_LEFT to "System Nav Left",
-                        KeyEvent.KEYCODE_SYSTEM_NAVIGATION_RIGHT to "System Nav Right"
-                    )
+                        KeyEvent.KEYCODE_SYSTEM_NAVIGATION_RIGHT to "System Nav Right",
+                    ),
                 )
             }
 
@@ -600,7 +600,7 @@ object KeyEventUtils {
             KeyEvent.KEYCODE_TV_CONTENTS_MENU,
             KeyEvent.KEYCODE_TV_MEDIA_CONTEXT_MENU,
             KeyEvent.KEYCODE_TV_TIMER_PROGRAMMING,
-            KeyEvent.KEYCODE_HELP
+            KeyEvent.KEYCODE_HELP,
         )
 
     private val KEYCODES_API_23: Set<Int>
@@ -612,7 +612,7 @@ object KeyEventUtils {
             KeyEvent.KEYCODE_MEDIA_SKIP_FORWARD,
             KeyEvent.KEYCODE_MEDIA_SKIP_BACKWARD,
             KeyEvent.KEYCODE_MEDIA_STEP_FORWARD,
-            KeyEvent.KEYCODE_MEDIA_STEP_BACKWARD
+            KeyEvent.KEYCODE_MEDIA_STEP_BACKWARD,
         )
 
     private val KEYCODES_API_24: Set<Int>
@@ -628,7 +628,7 @@ object KeyEventUtils {
             KeyEvent.KEYCODE_SOFT_SLEEP,
             KeyEvent.KEYCODE_CUT,
             KeyEvent.KEYCODE_COPY,
-            KeyEvent.KEYCODE_PASTE
+            KeyEvent.KEYCODE_PASTE,
         )
 
     private val KEYCODES_API_25: Set<Int>
@@ -636,25 +636,39 @@ object KeyEventUtils {
             KeyEvent.KEYCODE_SYSTEM_NAVIGATION_UP,
             KeyEvent.KEYCODE_SYSTEM_NAVIGATION_DOWN,
             KeyEvent.KEYCODE_SYSTEM_NAVIGATION_LEFT,
-            KeyEvent.KEYCODE_SYSTEM_NAVIGATION_RIGHT
+            KeyEvent.KEYCODE_SYSTEM_NAVIGATION_RIGHT,
         )
 
     private val KEYCODES_API_28: Set<Int>
         get() = setOf(
-            KeyEvent.KEYCODE_ALL_APPS
+            KeyEvent.KEYCODE_ALL_APPS,
         )
 
-    val GET_EVENT_LABEL_TO_KEYCODE: Map<String, Int>
-        get() = mapOf(
-            "KEY_VOLUMEDOWN" to KeyEvent.KEYCODE_VOLUME_DOWN,
-            "KEY_VOLUMEUP" to KeyEvent.KEYCODE_VOLUME_UP,
-            "KEY_MEDIA" to KeyEvent.KEYCODE_HEADSETHOOK,
-            "KEY_HEADSETHOOK" to KeyEvent.KEYCODE_HEADSETHOOK,
-            "KEY_CAMERA_FOCUS" to KeyEvent.KEYCODE_FOCUS,
-            "02fe" to KeyEvent.KEYCODE_CAMERA,
-            "02bf" to KeyEvent.KEYCODE_MENU,
-            "KEY_SEARCH" to KeyEvent.KEYCODE_SEARCH
-        )
+    /**
+     * These are key code maps for the getevent command. These names aren't the same as the
+     * KeyEvent key codes in the Android SDK so these have to be manually whitelisted
+     * as people need.
+     */
+    val GET_EVENT_LABEL_TO_KEYCODE: List<Pair<String, Int>> = listOf(
+        "KEY_VOLUMEDOWN" to KeyEvent.KEYCODE_VOLUME_DOWN,
+        "KEY_VOLUMEUP" to KeyEvent.KEYCODE_VOLUME_UP,
+        "KEY_MEDIA" to KeyEvent.KEYCODE_HEADSETHOOK,
+        "KEY_HEADSETHOOK" to KeyEvent.KEYCODE_HEADSETHOOK,
+        "KEY_CAMERA_FOCUS" to KeyEvent.KEYCODE_FOCUS,
+        "02fe" to KeyEvent.KEYCODE_CAMERA,
+        "00fa" to KeyEvent.KEYCODE_CAMERA,
+
+        // This kernel key event code seems to be the Bixby button
+        // but different ROMs have different key maps and so
+        // it is reported as different Android key codes.
+        "02bf" to KeyEvent.KEYCODE_MENU,
+        "02bf" to KeyEvent.KEYCODE_ASSIST,
+
+        "KEY_SEARCH" to KeyEvent.KEYCODE_SEARCH,
+    )
+
+    fun canDetectKeyWhenScreenOff(keyCode: Int): Boolean =
+        GET_EVENT_LABEL_TO_KEYCODE.any { it.second == keyCode }
 
     val MODIFIER_KEYCODES: Set<Int>
         get() = setOf(
@@ -668,22 +682,18 @@ object KeyEventUtils {
             KeyEvent.KEYCODE_META_RIGHT,
             KeyEvent.KEYCODE_SYM,
             KeyEvent.KEYCODE_NUM,
-            KeyEvent.KEYCODE_FUNCTION
+            KeyEvent.KEYCODE_FUNCTION,
         )
 
     /**
      * Create a text representation of a key event. E.g if the control key was pressed,
      * "Ctrl" will be returned
      */
-    fun keyCodeToString(keyCode: Int): String {
-        return NON_CHARACTER_KEY_LABELS[keyCode].let {
-            it ?: "unknown keycode $keyCode"
-        }
+    fun keyCodeToString(keyCode: Int): String = NON_CHARACTER_KEY_LABELS[keyCode].let {
+        it ?: "unknown keycode $keyCode"
     }
 
-    fun isModifierKey(keyCode: Int): Boolean {
-        return keyCode in MODIFIER_KEYCODES
-    }
+    fun isModifierKey(keyCode: Int): Boolean = keyCode in MODIFIER_KEYCODES
 
     fun isGamepadKeyCode(keyCode: Int): Boolean {
         when (keyCode) {
@@ -717,7 +727,8 @@ object KeyEventUtils {
             KeyEvent.KEYCODE_BUTTON_13,
             KeyEvent.KEYCODE_BUTTON_14,
             KeyEvent.KEYCODE_BUTTON_15,
-            KeyEvent.KEYCODE_BUTTON_16 -> return true
+            KeyEvent.KEYCODE_BUTTON_16,
+            -> return true
 
             else -> return false
         }
@@ -789,6 +800,6 @@ object KeyEventUtils {
         KeyEvent.META_CAPS_LOCK_ON to R.string.meta_state_caps_lock,
         KeyEvent.META_NUM_LOCK_ON to R.string.meta_state_num_lock,
         KeyEvent.META_SCROLL_LOCK_ON to R.string.meta_state_scroll_lock,
-        KeyEvent.META_FUNCTION_ON to R.string.meta_state_function
+        KeyEvent.META_FUNCTION_ON to R.string.meta_state_function,
     )
 }

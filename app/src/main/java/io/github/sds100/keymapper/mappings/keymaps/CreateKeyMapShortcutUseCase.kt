@@ -16,38 +16,38 @@ import io.github.sds100.keymapper.util.ui.ResourceProvider
 class CreateKeyMapShortcutUseCaseImpl(
     private val adapter: AppShortcutAdapter,
     displayKeyMap: DisplayKeyMapUseCase,
-    resourceProvider: ResourceProvider
-) : CreateKeyMapShortcutUseCase, ResourceProvider by resourceProvider {
+    resourceProvider: ResourceProvider,
+) : CreateKeyMapShortcutUseCase,
+    ResourceProvider by resourceProvider {
     private val actionUiHelper by lazy { KeyMapActionUiHelper(displayKeyMap, resourceProvider) }
 
     override val isSupported: Boolean
         get() = adapter.areLauncherShortcutsSupported
 
-    override fun pinShortcutForSingleAction(keyMapUid: String, action: KeyMapAction): Result<*> {
-        return adapter.pinShortcut(createShortcutForSingleAction(keyMapUid, action))
-    }
+    override fun pinShortcutForSingleAction(keyMapUid: String, action: KeyMapAction): Result<*> =
+        adapter.pinShortcut(createShortcutForSingleAction(keyMapUid, action))
 
     override fun pinShortcutForMultipleActions(
         keyMapUid: String,
-        shortcutLabel: String
-    ): Result<*> {
-        return adapter.pinShortcut(createShortcutForMultipleActions(keyMapUid, shortcutLabel))
-    }
+        shortcutLabel: String,
+    ): Result<*> = adapter.pinShortcut(createShortcutForMultipleActions(keyMapUid, shortcutLabel))
 
     override fun createIntentForSingleAction(
         keyMapUid: String,
-        action: KeyMapAction
-    ): Intent {
-        return adapter.createShortcutResultIntent(createShortcutForSingleAction(keyMapUid, action))
-    }
+        action: KeyMapAction,
+    ): Intent = adapter.createShortcutResultIntent(createShortcutForSingleAction(keyMapUid, action))
 
-    override fun createIntentForMultipleActions(keyMapUid: String, shortcutLabel: String): Intent {
-        return adapter.createShortcutResultIntent(createShortcutForMultipleActions(keyMapUid, shortcutLabel))
-    }
+    override fun createIntentForMultipleActions(keyMapUid: String, shortcutLabel: String): Intent =
+        adapter.createShortcutResultIntent(
+            createShortcutForMultipleActions(
+                keyMapUid,
+                shortcutLabel,
+            ),
+        )
 
     private fun createShortcutForSingleAction(
         keyMapUid: String,
-        action: KeyMapAction
+        action: KeyMapAction,
     ): ShortcutInfoCompat {
         val icon = actionUiHelper.getIcon(action.data)?.drawable
             ?: getDrawable(R.mipmap.ic_launcher_round)
@@ -56,21 +56,19 @@ class CreateKeyMapShortcutUseCaseImpl(
             icon = icon,
             label = actionUiHelper.getTitle(action.data, showDeviceDescriptors = false),
             intentAction = Api.ACTION_TRIGGER_KEYMAP_BY_UID,
-            bundleOf(Api.EXTRA_KEYMAP_UID to keyMapUid)
+            bundleOf(Api.EXTRA_KEYMAP_UID to keyMapUid),
         )
     }
 
     private fun createShortcutForMultipleActions(
         keyMapUid: String,
-        shortcutLabel: String
-    ): ShortcutInfoCompat {
-        return adapter.createLauncherShortcut(
-            icon = getDrawable(R.mipmap.ic_launcher_round),
-            label = shortcutLabel,
-            intentAction = Api.ACTION_TRIGGER_KEYMAP_BY_UID,
-            bundleOf(Api.EXTRA_KEYMAP_UID to keyMapUid)
-        )
-    }
+        shortcutLabel: String,
+    ): ShortcutInfoCompat = adapter.createLauncherShortcut(
+        icon = getDrawable(R.mipmap.ic_launcher_round),
+        label = shortcutLabel,
+        intentAction = Api.ACTION_TRIGGER_KEYMAP_BY_UID,
+        bundleOf(Api.EXTRA_KEYMAP_UID to keyMapUid),
+    )
 }
 
 interface CreateKeyMapShortcutUseCase {
@@ -78,21 +76,21 @@ interface CreateKeyMapShortcutUseCase {
 
     fun pinShortcutForSingleAction(
         keyMapUid: String,
-        action: KeyMapAction
+        action: KeyMapAction,
     ): Result<*>
 
     fun pinShortcutForMultipleActions(
         keyMapUid: String,
-        shortcutLabel: String
+        shortcutLabel: String,
     ): Result<*>
 
     fun createIntentForSingleAction(
         keyMapUid: String,
-        action: KeyMapAction
+        action: KeyMapAction,
     ): Intent
 
     fun createIntentForMultipleActions(
         keyMapUid: String,
-        shortcutLabel: String
+        shortcutLabel: String,
     ): Intent
 }

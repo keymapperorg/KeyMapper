@@ -69,31 +69,25 @@ sealed class NavDestination<R> {
         /**
          * Allow the list to show hidden apps that can't be launched.
          */
-        val allowHiddenApps: Boolean
+        val allowHiddenApps: Boolean,
     ) : NavDestination<String>()
 
     object ChooseAppShortcut : NavDestination<ChooseAppShortcutResult>()
     object ChooseKeyCode : NavDestination<Int>()
-    data class ConfigKeyEventAction(val action: ActionData.InputKeyEvent? = null) :
-        NavDestination<ActionData.InputKeyEvent>()
+    data class ConfigKeyEventAction(val action: ActionData.InputKeyEvent? = null) : NavDestination<ActionData.InputKeyEvent>()
 
-    data class PickCoordinate(val result: PickCoordinateResult? = null) :
-        NavDestination<PickCoordinateResult>()
+    data class PickCoordinate(val result: PickCoordinateResult? = null) : NavDestination<PickCoordinateResult>()
 
-    data class PickSwipeCoordinate(val result: SwipePickCoordinateResult? = null) :
-        NavDestination<SwipePickCoordinateResult>()
+    data class PickSwipeCoordinate(val result: SwipePickCoordinateResult? = null) : NavDestination<SwipePickCoordinateResult>()
 
-    data class PickPinchCoordinate(val result: PinchPickCoordinateResult? = null) :
-        NavDestination<PinchPickCoordinateResult>()
+    data class PickPinchCoordinate(val result: PinchPickCoordinateResult? = null) : NavDestination<PinchPickCoordinateResult>()
 
-    data class ConfigIntent(val result: ConfigIntentResult? = null) :
-        NavDestination<ConfigIntentResult>()
+    data class ConfigIntent(val result: ConfigIntentResult? = null) : NavDestination<ConfigIntentResult>()
 
     object ChooseActivity : NavDestination<ActivityInfo>()
     object ChooseSound : NavDestination<ChooseSoundFileResult>()
     object ChooseAction : NavDestination<ActionData>()
-    data class ChooseConstraint(val supportedConstraints: List<ChooseConstraintType>) :
-        NavDestination<Constraint>()
+    data class ChooseConstraint(val supportedConstraints: List<ChooseConstraintType>) : NavDestination<Constraint>()
 
     object ChooseBluetoothDevice : NavDestination<BluetoothDeviceInfo>()
     object ReportBug : NavDestination<Unit>()

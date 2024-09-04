@@ -8,8 +8,8 @@ import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.popup.PopupMessageAdapter
-import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.PrefDelegate
+import io.github.sds100.keymapper.util.ServiceEvent
 import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.getFullMessage
 import io.github.sds100.keymapper.util.onFailure
@@ -32,7 +32,7 @@ class AutoSwitchImeController(
     private val devicesAdapter: DevicesAdapter,
     private val popupMessageAdapter: PopupMessageAdapter,
     private val resourceProvider: ResourceProvider,
-    private val accessibilityServiceAdapter: ServiceAdapter
+    private val accessibilityServiceAdapter: ServiceAdapter,
 ) : PreferenceRepository by preferenceRepository {
     private val imeHelper = KeyMapperImeHelper(inputMethodAdapter)
 
@@ -47,7 +47,7 @@ class AutoSwitchImeController(
 
     private val toggleKeyboardOnToggleKeymaps by PrefDelegate(
         Keys.toggleKeyboardOnToggleKeymaps,
-        false
+        false,
     )
 
     private var changeImeOnInputFocus: Boolean = false
@@ -96,7 +96,7 @@ class AutoSwitchImeController(
 
         accessibilityServiceAdapter.eventReceiver.onEach { event ->
             when (event) {
-                is Event.OnInputFocusChange -> {
+                is ServiceEvent.OnInputFocusChange -> {
                     if (!changeImeOnInputFocus) {
                         return@onEach
                     }
@@ -116,7 +116,7 @@ class AutoSwitchImeController(
     }
 
     private suspend fun chooseIncompatibleIme(imePickerAllowed: Boolean) {
-        //only choose the keyboard if the correct one isn't already chosen
+        // only choose the keyboard if the correct one isn't already chosen
         if (!imeHelper.isCompatibleImeChosen()) {
             return
         }
@@ -142,7 +142,7 @@ class AutoSwitchImeController(
     }
 
     private suspend fun chooseCompatibleIme(imePickerAllowed: Boolean) {
-        //only choose the keyboard if the correct one isn't already chosen
+        // only choose the keyboard if the correct one isn't already chosen
         if (imeHelper.isCompatibleImeChosen()) {
             return
         }

@@ -10,6 +10,5 @@ import androidx.fragment.app.Fragment
 open class FragmentInfo(
     @StringRes val header: Int? = null,
     @StringRes val supportUrl: Int? = null,
-    val instantiate: () -> Fragment
+    val instantiate: () -> Fragment,
 )
-

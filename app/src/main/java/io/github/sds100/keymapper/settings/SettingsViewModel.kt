@@ -5,9 +5,23 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.util.*
-import io.github.sds100.keymapper.util.ui.*
-import kotlinx.coroutines.flow.*
+import io.github.sds100.keymapper.util.SharedPrefsDataStoreWrapper
+import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.getFullMessage
+import io.github.sds100.keymapper.util.onFailure
+import io.github.sds100.keymapper.util.onSuccess
+import io.github.sds100.keymapper.util.otherwise
+import io.github.sds100.keymapper.util.ui.MultiChoiceItem
+import io.github.sds100.keymapper.util.ui.PopupUi
+import io.github.sds100.keymapper.util.ui.PopupViewModel
+import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
+import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.util.ui.showPopup
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 /**
@@ -15,8 +29,10 @@ import kotlinx.coroutines.launch
  */
 class SettingsViewModel(
     private val useCase: ConfigSettingsUseCase,
-    resourceProvider: ResourceProvider
-) : ViewModel(), PopupViewModel by PopupViewModelImpl(), ResourceProvider by resourceProvider {
+    resourceProvider: ResourceProvider,
+) : ViewModel(),
+    PopupViewModel by PopupViewModelImpl(),
+    ResourceProvider by resourceProvider {
     val sharedPrefsDataStoreWrapper = SharedPrefsDataStoreWrapper(useCase)
 
     val automaticBackupLocation = useCase.automaticBackupLocation
@@ -65,8 +81,8 @@ class SettingsViewModel(
                         PopupUi.SnackBar(
                             message = getString(
                                 R.string.toast_chose_keyboard,
-                                ime.label
-                            )
+                                ime.label,
+                            ),
                         )
                     showPopup("chose_ime_success", snackBar)
                 }
@@ -91,7 +107,7 @@ class SettingsViewModel(
             }
 
             val dialog = PopupUi.MultiChoice(
-                items = soundFiles.map { MultiChoiceItem(it.uid, it.name) }
+                items = soundFiles.map { MultiChoiceItem(it.uid, it.name) },
             )
 
             val selectedFiles = showPopup("select_sound_files_to_delete", dialog) ?: return@launch
@@ -116,6 +132,12 @@ class SettingsViewModel(
         useCase.openShizukuApp()
     }
 
+    fun isNotificationPermissionGranted(): Boolean = useCase.isNotificationsPermissionGranted()
+
+    fun requestNotificationsPermission() {
+        useCase.requestNotificationsPermission()
+    }
+
     fun onEnableCompatibleImeClick() {
         useCase.enableCompatibleIme()
     }
@@ -134,7 +156,7 @@ class SettingsViewModel(
             if (externalDevices.isEmpty()) {
                 val dialog = PopupUi.Dialog(
                     message = getString(R.string.dialog_message_settings_no_external_devices_connected),
-                    positiveButtonText = getString(R.string.pos_ok)
+                    positiveButtonText = getString(R.string.pos_ok),
                 )
 
                 showPopup("no_external_devices", dialog)
@@ -146,9 +168,9 @@ class SettingsViewModel(
                         MultiChoiceItem(
                             id = device.descriptor,
                             label = device.name,
-                            isChecked = checkedDevices.contains(device.descriptor)
+                            isChecked = checkedDevices.contains(device.descriptor),
                         )
-                    }
+                    },
                 )
 
                 val newCheckedDevices = showPopup("choose_device", dialog) ?: return@launch
@@ -158,17 +180,26 @@ class SettingsViewModel(
         }
     }
 
+    fun onCreateBackupFileActivityNotFound() {
+        val dialog = PopupUi.Dialog(
+            message = getString(R.string.dialog_message_no_app_found_to_create_file),
+            positiveButtonText = getString(R.string.pos_ok),
+        )
+
+        viewModelScope.launch {
+            showPopup("create_document_activity_not_found", dialog)
+        }
+    }
+
     @Suppress("UNCHECKED_CAST")
     class Factory(
         private val configSettingsUseCase: ConfigSettingsUseCase,
-        private val resourceProvider: ResourceProvider
+        private val resourceProvider: ResourceProvider,
     ) : ViewModelProvider.NewInstanceFactory() {
 
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return SettingsViewModel(
-                configSettingsUseCase,
-                resourceProvider
-            ) as T
-        }
+        override fun <T : ViewModel> create(modelClass: Class<T>): T = SettingsViewModel(
+            configSettingsUseCase,
+            resourceProvider,
+        ) as T
     }
 }

@@ -22,7 +22,12 @@ import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.url.UrlUtils
 import io.github.sds100.keymapper.util.str
 import rikka.shizuku.Shizuku
-import splitties.alertdialog.appcompat.*
+import splitties.alertdialog.appcompat.messageResource
+import splitties.alertdialog.appcompat.negativeButton
+import splitties.alertdialog.appcompat.neutralButton
+import splitties.alertdialog.appcompat.okButton
+import splitties.alertdialog.appcompat.positiveButton
+import splitties.alertdialog.appcompat.titleResource
 import splitties.alertdialog.material.materialAlertDialog
 import splitties.toast.longToast
 import splitties.toast.toast
@@ -32,13 +37,13 @@ import splitties.toast.toast
  */
 class RequestPermissionDelegate(
     private val activity: AppCompatActivity,
-    val showDialogs: Boolean
+    val showDialogs: Boolean,
 ) {
     private val startActivityForResultLauncher =
         activity.activityResultRegistry.register(
             "start_activity",
             activity,
-            ActivityResultContracts.StartActivityForResult()
+            ActivityResultContracts.StartActivityForResult(),
         ) {
             ServiceLocator.permissionAdapter(activity).onPermissionsChanged()
         }
@@ -47,7 +52,7 @@ class RequestPermissionDelegate(
         activity.activityResultRegistry.register(
             "request_permission",
             activity,
-            ActivityResultContracts.RequestPermission()
+            ActivityResultContracts.RequestPermission(),
         ) {
             ServiceLocator.permissionAdapter(activity).onPermissionsChanged()
         }
@@ -91,6 +96,10 @@ class RequestPermissionDelegate(
 
             Permission.ACCESS_FINE_LOCATION ->
                 requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+
+            Permission.POST_NOTIFICATIONS -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
         }
     }
 
@@ -122,8 +131,8 @@ class RequestPermissionDelegate(
     }
 
     private fun requestWriteSecureSettings() {
-        if (permissionAdapter.isGranted(Permission.SHIZUKU)
-            || permissionAdapter.isGranted(Permission.ROOT)
+        if (permissionAdapter.isGranted(Permission.SHIZUKU) ||
+            permissionAdapter.isGranted(Permission.ROOT)
         ) {
             permissionAdapter.grant(Manifest.permission.WRITE_SECURE_SETTINGS)
 
@@ -137,7 +146,7 @@ class RequestPermissionDelegate(
             positiveButton(R.string.pos_grant_write_secure_settings_guide) {
                 UrlUtils.openUrl(
                     activity,
-                    activity.str(R.string.url_grant_write_secure_settings_guide)
+                    activity.str(R.string.url_grant_write_secure_settings_guide),
                 )
             }
 
@@ -171,7 +180,6 @@ class RequestPermissionDelegate(
 
     private fun requestDeviceAdmin() {
         activity.materialAlertDialog {
-
             messageResource = R.string.enable_device_admin_message
 
             okButton {
@@ -179,12 +187,12 @@ class RequestPermissionDelegate(
 
                 intent.putExtra(
                     DevicePolicyManager.EXTRA_DEVICE_ADMIN,
-                    ComponentName(activity, DeviceAdmin::class.java)
+                    ComponentName(activity, DeviceAdmin::class.java),
                 )
 
                 intent.putExtra(
                     DevicePolicyManager.EXTRA_ADD_EXPLANATION,
-                    activity.str(R.string.error_need_to_enable_device_admin)
+                    activity.str(R.string.error_need_to_enable_device_admin),
                 )
 
                 startActivityForResultLauncher.launch(intent)
@@ -212,7 +220,7 @@ class RequestPermissionDelegate(
                 neutralButton(R.string.neutral_go_to_dont_kill_my_app) {
                     UrlUtils.openUrl(
                         activity,
-                        activity.str(R.string.url_dont_kill_my_app)
+                        activity.str(R.string.url_dont_kill_my_app),
                     )
                 }
 
@@ -228,7 +236,7 @@ class RequestPermissionDelegate(
         try {
             val intent = Intent(
                 Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-                Uri.parse("package:${Constants.PACKAGE_NAME}")
+                Uri.parse("package:${Constants.PACKAGE_NAME}"),
             )
 
             activity.startActivity(intent)

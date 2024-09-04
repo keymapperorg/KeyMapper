@@ -9,7 +9,6 @@ import io.github.sds100.keymapper.system.permissions.SystemFeatureAdapter
 class AndroidSystemFeatureAdapter(context: Context) : SystemFeatureAdapter {
     private val ctx = context.applicationContext
 
-    override fun hasSystemFeature(feature: String): Boolean {
-        return ctx.packageManager.hasSystemFeature(feature)
-    }
+    override fun hasSystemFeature(feature: String): Boolean =
+        ctx.packageManager.hasSystemFeature(feature)
 }

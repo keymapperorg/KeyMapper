@@ -8,20 +8,33 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.filterByQuery
 import io.github.sds100.keymapper.util.mapData
-import io.github.sds100.keymapper.util.ui.*
+import io.github.sds100.keymapper.util.ui.IconInfo
+import io.github.sds100.keymapper.util.ui.PopupUi
+import io.github.sds100.keymapper.util.ui.PopupViewModel
+import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
+import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.util.ui.showPopup
 import io.github.sds100.keymapper.util.valueOrNull
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import java.util.*
+import java.util.Locale
 
 /**
  * Created by sds100 on 27/01/2020.
  */
 class ChooseAppShortcutViewModel internal constructor(
     private val useCase: DisplayAppShortcutsUseCase,
-    resourceProvider: ResourceProvider
-) : ViewModel(), PopupViewModel by PopupViewModelImpl(),
+    resourceProvider: ResourceProvider,
+) : ViewModel(),
+    PopupViewModel by PopupViewModelImpl(),
     ResourceProvider by resourceProvider {
 
     val searchQuery = MutableStateFlow<String?>(null)
@@ -51,7 +64,7 @@ class ChooseAppShortcutViewModel internal constructor(
     init {
         combine(
             searchQuery,
-            listItems
+            listItems,
         ) { query, listItems ->
             when (listItems) {
                 is State.Data -> {
@@ -69,16 +82,15 @@ class ChooseAppShortcutViewModel internal constructor(
         viewModelScope.launch {
             val uri: String
 
-            //the shortcut intents seem to be returned in 2 different formats.
+            // the shortcut intents seem to be returned in 2 different formats.
             @Suppress("DEPRECATION")
             if (intent.extras != null &&
                 intent.extras!!.containsKey(Intent.EXTRA_SHORTCUT_INTENT)
             ) {
-                //get intent from selected shortcut
+                // get intent from selected shortcut
                 val shortcutIntent =
                     intent.extras!!.get(Intent.EXTRA_SHORTCUT_INTENT) as Intent
                 uri = shortcutIntent.toUri(0)
-
             } else {
                 uri = intent.toUri(0)
             }
@@ -98,8 +110,8 @@ class ChooseAppShortcutViewModel internal constructor(
                     "create_shortcut_name",
                     PopupUi.Text(
                         hint = getString(R.string.hint_shortcut_name),
-                        allowEmpty = false
-                    )
+                        allowEmpty = false,
+                    ),
                 ) ?: return@launch
             }
 
@@ -107,22 +119,22 @@ class ChooseAppShortcutViewModel internal constructor(
                 ChooseAppShortcutResult(
                     packageName = packageName,
                     shortcutName = shortcutName,
-                    uri = uri
-                )
+                    uri = uri,
+                ),
             )
         }
     }
 
     class Factory(
         private val useCase: DisplayAppShortcutsUseCase,
-        private val resourceProvider: ResourceProvider
+        private val resourceProvider: ResourceProvider,
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>) =
             ChooseAppShortcutViewModel(
                 useCase,
-                resourceProvider
+                resourceProvider,
             ) as T
     }
 }

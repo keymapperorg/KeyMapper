@@ -12,15 +12,14 @@ import kotlinx.coroutines.flow.Flow
 class DisplayAppShortcutsUseCaseImpl(
     private val appShortcutAdapter: AppShortcutAdapter,
 ) : DisplayAppShortcutsUseCase {
-    override val shortcuts: Flow<State<List<AppShortcutInfo>>> = appShortcutAdapter.installedAppShortcuts
+    override val shortcuts: Flow<State<List<AppShortcutInfo>>> =
+        appShortcutAdapter.installedAppShortcuts
 
-    override fun getShortcutName(appShortcutInfo: AppShortcutInfo): Result<String> {
-        return appShortcutAdapter.getShortcutName(appShortcutInfo)
-    }
+    override fun getShortcutName(appShortcutInfo: AppShortcutInfo): Result<String> =
+        appShortcutAdapter.getShortcutName(appShortcutInfo)
 
-    override fun getShortcutIcon(appShortcutInfo: AppShortcutInfo): Result<Drawable> {
-        return appShortcutAdapter.getShortcutIcon(appShortcutInfo)
-    }
+    override fun getShortcutIcon(appShortcutInfo: AppShortcutInfo): Result<Drawable> =
+        appShortcutAdapter.getShortcutIcon(appShortcutInfo)
 }
 
 interface DisplayAppShortcutsUseCase {

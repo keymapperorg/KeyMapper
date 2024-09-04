@@ -13,7 +13,7 @@ import timber.log.Timber
 
 class PauseMappingsUseCaseImpl(
     private val preferenceRepository: PreferenceRepository,
-    private val mediaAdapter: MediaAdapter
+    private val mediaAdapter: MediaAdapter,
 ) : PauseMappingsUseCase {
 
     override val isPaused: Flow<Boolean> =

@@ -18,16 +18,16 @@ import io.github.sds100.keymapper.data.db.typeconverter.TriggerTypeConverter
 import io.github.sds100.keymapper.data.entities.FingerprintMapEntity
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.data.entities.LogEntryEntity
-import io.github.sds100.keymapper.data.migration.Migration_10_11
-import io.github.sds100.keymapper.data.migration.Migration_11_12
-import io.github.sds100.keymapper.data.migration.Migration_1_2
-import io.github.sds100.keymapper.data.migration.Migration_2_3
-import io.github.sds100.keymapper.data.migration.Migration_3_4
-import io.github.sds100.keymapper.data.migration.Migration_4_5
-import io.github.sds100.keymapper.data.migration.Migration_5_6
-import io.github.sds100.keymapper.data.migration.Migration_6_7
-import io.github.sds100.keymapper.data.migration.Migration_8_9
-import io.github.sds100.keymapper.data.migration.Migration_9_10
+import io.github.sds100.keymapper.data.migration.Migration10To11
+import io.github.sds100.keymapper.data.migration.Migration11To12
+import io.github.sds100.keymapper.data.migration.Migration1To2
+import io.github.sds100.keymapper.data.migration.Migration2To3
+import io.github.sds100.keymapper.data.migration.Migration3To4
+import io.github.sds100.keymapper.data.migration.Migration4To5
+import io.github.sds100.keymapper.data.migration.Migration5To6
+import io.github.sds100.keymapper.data.migration.Migration6To7
+import io.github.sds100.keymapper.data.migration.Migration8To9
+import io.github.sds100.keymapper.data.migration.Migration9To10
 
 /**
  * Created by sds100 on 24/01/2020.
@@ -35,13 +35,13 @@ import io.github.sds100.keymapper.data.migration.Migration_9_10
 @Database(
     entities = [KeyMapEntity::class, FingerprintMapEntity::class, LogEntryEntity::class],
     version = DATABASE_VERSION,
-    exportSchema = true
+    exportSchema = true,
 )
 @TypeConverters(
     ActionListTypeConverter::class,
     ExtraListTypeConverter::class,
     TriggerTypeConverter::class,
-    ConstraintListTypeConverter::class
+    ConstraintListTypeConverter::class,
 )
 abstract class AppDatabase : RoomDatabase() {
     companion object {
@@ -51,62 +51,62 @@ abstract class AppDatabase : RoomDatabase() {
         val MIGRATION_1_2 = object : Migration(1, 2) {
 
             override fun migrate(database: SupportSQLiteDatabase) {
-                Migration_1_2.migrate(database)
+                Migration1To2.migrate(database)
             }
         }
 
         val MIGRATION_2_3 = object : Migration(2, 3) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                Migration_2_3.migrate(database)
+                Migration2To3.migrate(database)
             }
         }
 
         val MIGRATION_3_4 = object : Migration(3, 4) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                Migration_3_4.migrate(database)
+                Migration3To4.migrate(database)
             }
         }
         val MIGRATION_4_5 = object : Migration(4, 5) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                Migration_4_5.migrate(database)
+                Migration4To5.migrate(database)
             }
         }
 
         val MIGRATION_5_6 = object : Migration(5, 6) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                Migration_5_6.migrate(database)
+                Migration5To6.migrate(database)
             }
         }
 
         val MIGRATION_6_7 = object : Migration(6, 7) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                Migration_6_7.migrate(database)
+                Migration6To7.migrate(database)
             }
         }
 
         val MIGRATION_7_8 = object : Migration(7, 8) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                //DO NOTHING
-                //I added a change and then removed it in a later commit. this will only affect testers so not a big
-                //deal
+                // DO NOTHING
+                // I added a change and then removed it in a later commit. this will only affect testers so not a big
+                // deal
             }
         }
 
         val MIGRATION_8_9 = object : Migration(8, 9) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                Migration_8_9.migrate(database)
+                Migration8To9.migrate(database)
             }
         }
 
         val MIGRATION_9_10 = object : Migration(9, 10) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                Migration_9_10.migrateDatabase(database)
+                Migration9To10.migrateDatabase(database)
             }
         }
 
         val MIGRATION_10_11 = object : Migration(10, 11) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                Migration_10_11.migrateDatabase(database)
+                Migration10To11.migrateDatabase(database)
             }
         }
 
@@ -117,11 +117,11 @@ abstract class AppDatabase : RoomDatabase() {
         }
     }
 
-    class RoomMigration_11_12(
-        private val fingerprintMapDataStore: DataStore<Preferences>
+    class RoomMigration11To12(
+        private val fingerprintMapDataStore: DataStore<Preferences>,
     ) : Migration(11, 12) {
         override fun migrate(database: SupportSQLiteDatabase) {
-            Migration_11_12.migrateDatabase(database, fingerprintMapDataStore)
+            Migration11To12.migrateDatabase(database, fingerprintMapDataStore)
         }
     }
 

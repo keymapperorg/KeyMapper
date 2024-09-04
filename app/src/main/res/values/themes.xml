@@ -37,6 +37,10 @@
         <item name="colorPrimaryInverse">@color/md_theme_primaryInverse</item>
     </style>
 
+    <style name="circularImageView" parent="">
+        <item name="cornerSize">50%</item>
+    </style>
+
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">?android:colorBackground</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>

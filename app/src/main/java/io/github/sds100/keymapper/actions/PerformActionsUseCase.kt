@@ -44,9 +44,9 @@ import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import io.github.sds100.keymapper.system.volume.VolumeStream
 import io.github.sds100.keymapper.util.Error
-import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.InputEventType
 import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.util.ServiceEvent
 import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.dataOrNull
 import io.github.sds100.keymapper.util.firstBlocking
@@ -101,7 +101,7 @@ class PerformActionsUseCaseImpl(
     private val preferenceRepository: PreferenceRepository,
     private val soundsManager: SoundsManager,
     private val permissionAdapter: PermissionAdapter,
-    private val notificationReceiverAdapter: ServiceAdapter
+    private val notificationReceiverAdapter: ServiceAdapter,
 ) : PerformActionsUseCase {
 
     private val openMenuHelper by lazy {
@@ -109,7 +109,7 @@ class PerformActionsUseCaseImpl(
             suAdapter,
             accessibilityService,
             shizukuInputEventInjector,
-            permissionAdapter
+            permissionAdapter,
         )
     }
 
@@ -133,7 +133,7 @@ class PerformActionsUseCaseImpl(
             }
 
             is ActionData.Intent -> {
-                result = intentAdapter.send(action.target, action.uri)
+                result = intentAdapter.send(action.target, action.uri, action.extras)
             }
 
             is ActionData.InputKeyEvent -> {
@@ -143,7 +143,7 @@ class PerformActionsUseCaseImpl(
                     keyCode = action.keyCode,
                     inputType = inputEventType,
                     metaState = keyMetaState.withFlag(action.metaState),
-                    deviceId = deviceId
+                    deviceId = deviceId,
                 )
 
                 result = when {
@@ -245,7 +245,7 @@ class PerformActionsUseCaseImpl(
                         .onSuccess {
                             val message = resourceProvider.getString(
                                 R.string.toast_chose_keyboard,
-                                it.label
+                                it.label,
                             )
                             popupMessageAdapter.showPopupMessage(message)
                         }
@@ -270,14 +270,14 @@ class PerformActionsUseCaseImpl(
             is ActionData.Volume.Stream.Decrease -> {
                 result = volumeAdapter.lowerVolume(
                     stream = action.volumeStream,
-                    showVolumeUi = action.showVolumeUi
+                    showVolumeUi = action.showVolumeUi,
                 )
             }
 
             is ActionData.Volume.Stream.Increase -> {
                 result = volumeAdapter.raiseVolume(
                     stream = action.volumeStream,
-                    showVolumeUi = action.showVolumeUi
+                    showVolumeUi = action.showVolumeUi,
                 )
             }
 
@@ -301,7 +301,7 @@ class PerformActionsUseCaseImpl(
                     action.yEnd,
                     action.fingerCount,
                     action.duration,
-                    inputEventType
+                    inputEventType,
                 )
             }
 
@@ -313,7 +313,7 @@ class PerformActionsUseCaseImpl(
                     action.pinchType,
                     action.fingerCount,
                     action.duration,
-                    inputEventType
+                    inputEventType,
                 )
             }
 
@@ -431,8 +431,8 @@ class PerformActionsUseCaseImpl(
             }
 
             is ActionData.Rotation.SwitchOrientation -> {
-                if (displayAdapter.orientation == Orientation.ORIENTATION_180
-                    || displayAdapter.orientation == Orientation.ORIENTATION_0
+                if (displayAdapter.orientation == Orientation.ORIENTATION_180 ||
+                    displayAdapter.orientation == Orientation.ORIENTATION_0
                 ) {
                     result = displayAdapter.setOrientation(Orientation.ORIENTATION_90)
                 } else {
@@ -615,7 +615,6 @@ class PerformActionsUseCaseImpl(
                 result = Success(Unit)
             }
 
-
             is ActionData.ShowKeyboard -> {
                 accessibilityService.showKeyboard()
                 result = Success(Unit)
@@ -650,7 +649,7 @@ class PerformActionsUseCaseImpl(
 
             is ActionData.SelectWordAtCursor -> {
                 result = accessibilityService.performActionOnNode({ it.isFocused }) { node ->
-                    //it is at the cursor position if they both return the same value
+                    // it is at the cursor position if they both return the same value
                     if (node.textSelectionStart == node.textSelectionEnd) {
                         val cursorPosition = node.textSelectionStart
 
@@ -661,18 +660,17 @@ class PerformActionsUseCaseImpl(
                         val extras = mapOf(
                             AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_START_INT to wordBoundary.first,
 
-                            //The index of the cursor is the index of the last char in the word + 1
-                            AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_END_INT to wordBoundary.second + 1
+                            // The index of the cursor is the index of the last char in the word + 1
+                            AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_END_INT to wordBoundary.second + 1,
                         )
 
                         AccessibilityNodeAction(
                             AccessibilityNodeInfo.ACTION_SET_SELECTION,
-                            extras
+                            extras,
                         )
                     } else {
                         null
                     }
-
                 }
             }
 
@@ -701,15 +699,17 @@ class PerformActionsUseCaseImpl(
 
                         suAdapter.execute("mkdir -p $screenshotsFolder; screencap -p $screenshotsFolder/Screenshot_$fileDate.png")
                             .onSuccess {
+                                // Wait 3 seconds so the message isn't shown in the screenshot.
+                                delay(3000)
+
                                 popupMessageAdapter.showPopupMessage(
                                     resourceProvider.getString(
-                                        R.string.toast_screenshot_taken
-                                    )
+                                        R.string.toast_screenshot_taken,
+                                    ),
                                 )
                             }.showErrorMessageOnFail()
                     }
                     result = null
-
                 } else {
                     result =
                         accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_TAKE_SCREENSHOT)
@@ -763,7 +763,7 @@ class PerformActionsUseCaseImpl(
 
             ActionData.DismissAllNotifications -> {
                 coroutineScope.launch {
-                    notificationReceiverAdapter.send(Event.DismissAllNotifications)
+                    notificationReceiverAdapter.send(ServiceEvent.DismissAllNotifications)
                 }
 
                 result = null
@@ -771,7 +771,7 @@ class PerformActionsUseCaseImpl(
 
             ActionData.DismissLastNotification -> {
                 coroutineScope.launch {
-                    notificationReceiverAdapter.send(Event.DismissLastNotification)
+                    notificationReceiverAdapter.send(ServiceEvent.DismissLastNotification)
                 }
 
                 result = null
@@ -791,16 +791,14 @@ class PerformActionsUseCaseImpl(
         when (result) {
             null, is Success -> Timber.d("Performed action $action, input event type: $inputEventType, key meta state: $keyMetaState")
             is Error -> Timber.d(
-                "Failed to perform action $action, reason: ${result.getFullMessage(resourceProvider)}, action: $action, input event type: $inputEventType, key meta state: $keyMetaState"
+                "Failed to perform action $action, reason: ${result.getFullMessage(resourceProvider)}, action: $action, input event type: $inputEventType, key meta state: $keyMetaState",
             )
         }
 
         result?.showErrorMessageOnFail()
     }
 
-    override fun getError(action: ActionData): Error? {
-        return getActionError.getError(action)
-    }
+    override fun getError(action: ActionData): Error? = getActionError.getError(action)
 
     override val defaultRepeatDelay: Flow<Long> =
         preferenceRepository.get(Keys.defaultRepeatDelay)
@@ -819,7 +817,7 @@ class PerformActionsUseCaseImpl(
 
     private fun getDeviceIdForKeyEventAction(action: ActionData.InputKeyEvent): Int {
         if (action.device?.descriptor == null) {
-            //automatically select a game controller as the input device for game controller key events
+            // automatically select a game controller as the input device for game controller key events
 
             if (KeyEventUtils.isGamepadKeyCode(action.keyCode)) {
                 deviceAdapter.connectedInputDevices.value.ifIsData { inputDevices ->
@@ -888,7 +886,7 @@ interface PerformActionsUseCase {
     fun perform(
         action: ActionData,
         inputEventType: InputEventType = InputEventType.DOWN_UP,
-        keyMetaState: Int = 0
+        keyMetaState: Int = 0,
     )
 
     fun getError(action: ActionData): Error?

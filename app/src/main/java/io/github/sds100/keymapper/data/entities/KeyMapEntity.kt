@@ -3,10 +3,16 @@ package io.github.sds100.keymapper.data.entities
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.github.salomonbrys.kotson.*
+import com.github.salomonbrys.kotson.byArray
+import com.github.salomonbrys.kotson.byBool
+import com.github.salomonbrys.kotson.byInt
+import com.github.salomonbrys.kotson.byNullableString
+import com.github.salomonbrys.kotson.byObject
+import com.github.salomonbrys.kotson.byString
+import com.github.salomonbrys.kotson.jsonDeserializer
 import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.data.db.dao.KeyMapDao
-import java.util.*
+import java.util.UUID
 
 /**
  * Created by sds100 on 12/07/2018.
@@ -34,11 +40,11 @@ data class KeyMapEntity(
     @ColumnInfo(name = KeyMapDao.KEY_CONSTRAINT_MODE)
     val constraintMode: Int = ConstraintEntity.DEFAULT_MODE,
 
-    @SerializedName(NAME_FLAGS)
-    @ColumnInfo(name = KeyMapDao.KEY_FLAGS)
     /**
      * Flags are stored as bits.
      */
+    @SerializedName(NAME_FLAGS)
+    @ColumnInfo(name = KeyMapDao.KEY_FLAGS)
     val flags: Int = 0,
 
     @SerializedName(NAME_FOLDER_NAME)
@@ -51,11 +57,11 @@ data class KeyMapEntity(
 
     @SerializedName(NAME_UID)
     @ColumnInfo(name = KeyMapDao.KEY_UID)
-    val uid: String = UUID.randomUUID().toString()
+    val uid: String = UUID.randomUUID().toString(),
 ) {
     companion object {
 
-        //DON'T CHANGE THESE. Used for JSON serialization and parsing.
+        // DON'T CHANGE THESE. Used for JSON serialization and parsing.
         const val NAME_ID = "id"
         const val NAME_TRIGGER = "trigger"
         const val NAME_ACTION_LIST = "actionList"
@@ -74,7 +80,8 @@ data class KeyMapEntity(
             val trigger = it.context.deserialize<TriggerEntity>(triggerJsonObject)
 
             val constraintListJsonArray by it.json.byArray(NAME_CONSTRAINT_LIST)
-            val constraintList = it.context.deserialize<List<ConstraintEntity>>(constraintListJsonArray)
+            val constraintList =
+                it.context.deserialize<List<ConstraintEntity>>(constraintListJsonArray)
 
             val constraintMode by it.json.byInt(NAME_CONSTRAINT_MODE)
             val flags by it.json.byInt(NAME_FLAGS)
@@ -91,7 +98,7 @@ data class KeyMapEntity(
                 flags,
                 folderName,
                 isEnabled,
-                uid
+                uid,
             )
         }
     }

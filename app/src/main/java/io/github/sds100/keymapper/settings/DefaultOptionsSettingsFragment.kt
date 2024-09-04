@@ -34,7 +34,7 @@ class DefaultOptionsSettingsFragment : BaseSettingsFragment() {
             }
         }
 
-        //these must all start after the preference screen has been populated so that findPreference works.
+        // these must all start after the preference screen has been populated so that findPreference works.
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.defaultLongPressDelay.collectLatest { value ->
                 val preference = findPreference<SeekBarPreference>(Keys.defaultLongPressDelay.name)
@@ -105,7 +105,7 @@ class DefaultOptionsSettingsFragment : BaseSettingsFragment() {
     }
 
     private fun populatePreferenceScreen() = preferenceScreen.apply {
-        //long press delay
+        // long press delay
         SeekBarPreference(requireContext()).apply {
             key = Keys.defaultLongPressDelay.name
             setDefaultValue(PreferenceDefaults.LONG_PRESS_DELAY)
@@ -120,7 +120,7 @@ class DefaultOptionsSettingsFragment : BaseSettingsFragment() {
             addPreference(this)
         }
 
-        //double press delay
+        // double press delay
         SeekBarPreference(requireContext()).apply {
             key = Keys.defaultDoublePressDelay.name
             setDefaultValue(PreferenceDefaults.DOUBLE_PRESS_DELAY)
@@ -135,7 +135,7 @@ class DefaultOptionsSettingsFragment : BaseSettingsFragment() {
             addPreference(this)
         }
 
-        //vibration duration
+        // vibration duration
         SeekBarPreference(requireContext()).apply {
             key = Keys.defaultVibrateDuration.name
             setDefaultValue(PreferenceDefaults.VIBRATION_DURATION)
@@ -150,7 +150,7 @@ class DefaultOptionsSettingsFragment : BaseSettingsFragment() {
             addPreference(this)
         }
 
-        //repeat delay
+        // repeat delay
         SeekBarPreference(requireContext()).apply {
             key = Keys.defaultRepeatDelay.name
             setDefaultValue(PreferenceDefaults.REPEAT_DELAY)
@@ -165,7 +165,7 @@ class DefaultOptionsSettingsFragment : BaseSettingsFragment() {
             addPreference(this)
         }
 
-        //repeat rate
+        // repeat rate
         SeekBarPreference(requireContext()).apply {
             key = Keys.defaultRepeatRate.name
             setDefaultValue(PreferenceDefaults.REPEAT_RATE)
@@ -180,7 +180,7 @@ class DefaultOptionsSettingsFragment : BaseSettingsFragment() {
             addPreference(this)
         }
 
-        //sequence trigger timeout
+        // sequence trigger timeout
         SeekBarPreference(requireContext()).apply {
             key = Keys.defaultSequenceTriggerTimeout.name
             setDefaultValue(PreferenceDefaults.SEQUENCE_TRIGGER_TIMEOUT)

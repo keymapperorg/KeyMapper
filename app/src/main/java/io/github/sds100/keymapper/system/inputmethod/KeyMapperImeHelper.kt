@@ -30,7 +30,7 @@ class KeyMapperImeHelper(private val imeAdapter: InputMethodAdapter) {
             Constants.PACKAGE_NAME,
             KEY_MAPPER_GUI_IME_PACKAGE,
             KEY_MAPPER_LEANBACK_IME_PACKAGE,
-            KEY_MAPPER_HACKERS_KEYBOARD_PACKAGE
+            KEY_MAPPER_HACKERS_KEYBOARD_PACKAGE,
         )
     }
 
@@ -46,41 +46,32 @@ class KeyMapperImeHelper(private val imeAdapter: InputMethodAdapter) {
         }
     }
 
-    suspend fun chooseCompatibleInputMethod(): Result<ImeInfo> {
-        return getLastUsedCompatibleImeId().suspendThen {
+    suspend fun chooseCompatibleInputMethod(): Result<ImeInfo> =
+        getLastUsedCompatibleImeId().suspendThen {
             imeAdapter.chooseImeWithoutUserInput(it)
         }
-    }
 
-    suspend fun chooseLastUsedIncompatibleInputMethod(): Result<ImeInfo> {
-        return getLastUsedIncompatibleImeId().then {
+    suspend fun chooseLastUsedIncompatibleInputMethod(): Result<ImeInfo> =
+        getLastUsedIncompatibleImeId().then {
             imeAdapter.chooseImeWithoutUserInput(it)
         }
+
+    suspend fun toggleCompatibleInputMethod(): Result<ImeInfo> = if (isCompatibleImeChosen()) {
+        chooseLastUsedIncompatibleInputMethod()
+    } else {
+        chooseCompatibleInputMethod()
     }
 
-    suspend fun toggleCompatibleInputMethod(): Result<ImeInfo> {
-        return if (isCompatibleImeChosen()) {
-            chooseLastUsedIncompatibleInputMethod()
-        } else {
-            chooseCompatibleInputMethod()
-        }
-    }
+    fun isCompatibleImeChosen(): Boolean =
+        imeAdapter.chosenIme.value?.packageName in KEY_MAPPER_IME_PACKAGE_LIST
 
-    fun isCompatibleImeChosen(): Boolean {
-        return imeAdapter.chosenIme.value?.packageName in KEY_MAPPER_IME_PACKAGE_LIST
-    }
+    fun isCompatibleImeEnabled(): Boolean = imeAdapter.inputMethods
+        .map { containsCompatibleIme(it) }
+        .firstBlocking()
 
-    fun isCompatibleImeEnabled(): Boolean {
-        return imeAdapter.inputMethods
-            .map { containsCompatibleIme(it) }
-            .firstBlocking()
-    }
-
-    private fun containsCompatibleIme(imeList: List<ImeInfo>): Boolean {
-        return imeList
-            .filter { it.isEnabled }
-            .any { it.packageName in KEY_MAPPER_IME_PACKAGE_LIST }
-    }
+    private fun containsCompatibleIme(imeList: List<ImeInfo>): Boolean = imeList
+        .filter { it.isEnabled }
+        .any { it.packageName in KEY_MAPPER_IME_PACKAGE_LIST }
 
     private fun getLastUsedCompatibleImeId(): Result<String> {
         for (ime in imeAdapter.inputMethodHistory.firstBlocking()) {

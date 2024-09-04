@@ -36,13 +36,13 @@ class ShizukuSettingsFragment : BaseSettingsFragment() {
     }
 
     private fun populatePreferenceScreen() = preferenceScreen.apply {
-        //summary
+        // summary
         Preference(requireContext()).apply {
             setSummary(R.string.summary_pref_category_shizuku_follow_steps)
             addPreference(this)
         }
 
-        //install shizuku
+        // install shizuku
         Preference(requireContext()).apply {
             viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
                 viewModel.isShizukuInstalled.collectLatest { isInstalled ->
@@ -71,12 +71,12 @@ class ShizukuSettingsFragment : BaseSettingsFragment() {
             addPreference(this)
         }
 
-        //start shizuku
+        // start shizuku
         Preference(requireContext()).apply {
             viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
                 combine(
                     viewModel.isShizukuInstalled,
-                    viewModel.isShizukuStarted
+                    viewModel.isShizukuStarted,
                 ) { isInstalled, isStarted ->
                     isEnabled = isInstalled
 
@@ -103,12 +103,12 @@ class ShizukuSettingsFragment : BaseSettingsFragment() {
             addPreference(this)
         }
 
-        //grant shizuku permission
+        // grant shizuku permission
         Preference(requireContext()).apply {
             viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
                 combine(
                     viewModel.isShizukuStarted,
-                    viewModel.isShizukuPermissionGranted
+                    viewModel.isShizukuPermissionGranted,
                 ) { isStarted, isGranted ->
                     isEnabled = isStarted
 

@@ -11,7 +11,7 @@ import io.github.sds100.keymapper.util.ui.TintType
 data class AppShortcutListItem(
     val shortcutInfo: AppShortcutInfo,
     val label: String,
-    override val icon: IconInfo?
+    override val icon: IconInfo?,
 ) : SimpleListItem {
     override val id: String
         get() = shortcutInfo.toString()
@@ -22,7 +22,6 @@ data class AppShortcutListItem(
     override val subtitle: String? = null
     override val subtitleTint: TintType = TintType.None
     override val isEnabled: Boolean = true
-
 
     override fun getSearchableString() = label
 }

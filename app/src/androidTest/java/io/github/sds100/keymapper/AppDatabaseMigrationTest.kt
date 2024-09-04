@@ -11,7 +11,6 @@ import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.salomonbrys.kotson.get
-import com.google.gson.*
 import io.github.sds100.keymapper.data.db.AppDatabase
 import io.github.sds100.keymapper.util.JsonTestUtils
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -46,9 +45,9 @@ class AppDatabaseMigrationTest {
                 1,
                 "SYSTEM_ACTION",
                 "toggle_flashlight",
-                "[{\"data\":\"option_lens_back\",\"id\":\"extra_flash\"}]"
+                "[{\"data\":\"option_lens_back\",\"id\":\"extra_flash\"}]",
             ),
-            arrayOf(6, "[{\"keys\":[4]}]", 3, 1, "SYSTEM_ACTION", "volume_mute", "[]")
+            arrayOf(6, "[{\"keys\":[4]}]", 3, 1, "SYSTEM_ACTION", "volume_mute", "[]"),
         )
 
         private val MIGRATION_1_2_EXPECTED_DATA = arrayOf(
@@ -61,7 +60,7 @@ class AppDatabaseMigrationTest {
                 1,
                 1,
                 "NULL",
-                1
+                1,
             ),
             arrayOf(
                 3,
@@ -71,7 +70,7 @@ class AppDatabaseMigrationTest {
                 1,
                 0,
                 "NULL",
-                1
+                1,
             ),
             arrayOf(
                 4,
@@ -81,7 +80,7 @@ class AppDatabaseMigrationTest {
                 1,
                 0,
                 "NULL",
-                1
+                1,
             ),
             arrayOf(
                 5,
@@ -91,7 +90,7 @@ class AppDatabaseMigrationTest {
                 1,
                 0,
                 "NULL",
-                1
+                1,
             ),
             arrayOf(
                 6,
@@ -101,7 +100,7 @@ class AppDatabaseMigrationTest {
                 1,
                 0,
                 "NULL",
-                1
+                1,
             ),
             arrayOf(
                 7,
@@ -111,8 +110,8 @@ class AppDatabaseMigrationTest {
                 1,
                 0,
                 "NULL",
-                1
-            )
+                1,
+            ),
         )
 
         private val MIGRATION_2_3_TEST_DATA = arrayOf(
@@ -124,7 +123,7 @@ class AppDatabaseMigrationTest {
                 1,
                 1,
                 "NULL",
-                1
+                1,
             ),
             arrayOf(2, "{\"extras\":[],\"keys\":[],\"mode\":1}", "[]", "[]", 1, 0, "NULL", 1),
             arrayOf(
@@ -135,7 +134,7 @@ class AppDatabaseMigrationTest {
                 1,
                 0,
                 "NULL",
-                1
+                1,
             ),
             arrayOf(
                 4,
@@ -145,8 +144,8 @@ class AppDatabaseMigrationTest {
                 1,
                 0,
                 "NULL",
-                1
-            )
+                1,
+            ),
         )
 
         private val MIGRATION_2_3_EXPECTED_DATA = arrayOf(
@@ -158,7 +157,7 @@ class AppDatabaseMigrationTest {
                 1,
                 17,
                 "NULL",
-                1
+                1,
             ),
             arrayOf(2, "{\"extras\":[],\"keys\":[],\"mode\":1}", "[]", "[]", 1, 0, "NULL", 1),
             arrayOf(
@@ -169,7 +168,7 @@ class AppDatabaseMigrationTest {
                 1,
                 0,
                 "NULL",
-                1
+                1,
             ),
             arrayOf(
                 4,
@@ -179,8 +178,8 @@ class AppDatabaseMigrationTest {
                 1,
                 16,
                 "NULL",
-                1
-            )
+                1,
+            ),
         )
 
         private val MIGRATION_3_4_TEST_DATA = arrayOf(
@@ -192,7 +191,7 @@ class AppDatabaseMigrationTest {
                 1,
                 17,
                 "NULL",
-                1
+                1,
             ),
             arrayOf(2, "{\"extras\":[],\"keys\":[],\"mode\":1}", "[]", "[]", 1, 0, "NULL", 1),
             arrayOf(
@@ -203,7 +202,7 @@ class AppDatabaseMigrationTest {
                 1,
                 0,
                 "NULL",
-                1
+                1,
             ),
             arrayOf(
                 4,
@@ -213,8 +212,8 @@ class AppDatabaseMigrationTest {
                 1,
                 16,
                 "NULL",
-                1
-            )
+                1,
+            ),
         )
 
         private val MIGRATION_3_4_EXPECTED_DATA = arrayOf(
@@ -226,7 +225,7 @@ class AppDatabaseMigrationTest {
                 1,
                 17,
                 "NULL",
-                1
+                1,
             ),
             arrayOf(2, "{\"extras\":[],\"keys\":[],\"mode\":2}", "[]", "[]", 1, 0, "NULL", 1),
             arrayOf(
@@ -237,7 +236,7 @@ class AppDatabaseMigrationTest {
                 1,
                 0,
                 "NULL",
-                1
+                1,
             ),
             arrayOf(
                 4,
@@ -247,8 +246,8 @@ class AppDatabaseMigrationTest {
                 1,
                 16,
                 "NULL",
-                1
-            )
+                1,
+            ),
         )
 
         private val MIGRATION_4_5_TEST_DATA = arrayOf(
@@ -260,7 +259,7 @@ class AppDatabaseMigrationTest {
                 1,
                 16,
                 "NULL",
-                1
+                1,
             ),
             arrayOf(
                 2,
@@ -270,8 +269,8 @@ class AppDatabaseMigrationTest {
                 1,
                 19,
                 "NULL",
-                1
-            )
+                1,
+            ),
         )
 
         private val MIGRATION_4_5_EXPECTED_DATA = arrayOf(
@@ -283,7 +282,7 @@ class AppDatabaseMigrationTest {
                 1,
                 0,
                 "NULL",
-                1
+                1,
             ),
             arrayOf(
                 2,
@@ -293,8 +292,8 @@ class AppDatabaseMigrationTest {
                 1,
                 1,
                 "NULL",
-                1
-            )
+                1,
+            ),
         )
 
         private val MIGRATION_5_6_TEST_DATA = arrayOf(
@@ -306,8 +305,8 @@ class AppDatabaseMigrationTest {
                 1,
                 5,
                 "NULL",
-                1
-            )
+                1,
+            ),
         )
 
         private val MIGRATION_5_6_EXPECTED_DATA = arrayOf(
@@ -319,8 +318,8 @@ class AppDatabaseMigrationTest {
                 1,
                 0,
                 "NULL",
-                1
-            )
+                1,
+            ),
         )
 
         private val MIGRATION_9_10_TEST_DATA = arrayOf(
@@ -333,7 +332,7 @@ class AppDatabaseMigrationTest {
                 0,
                 "",
                 1,
-                "d314e9e8-fac9-43e7-b540-0b9c0bfb4238"
+                "d314e9e8-fac9-43e7-b540-0b9c0bfb4238",
             ),
             arrayOf(
                 2,
@@ -344,7 +343,7 @@ class AppDatabaseMigrationTest {
                 0,
                 "",
                 1,
-                "b854ece7-2f0e-45c4-9cf3-bb5aa4fad288"
+                "b854ece7-2f0e-45c4-9cf3-bb5aa4fad288",
             ),
             arrayOf(
                 3,
@@ -355,8 +354,8 @@ class AppDatabaseMigrationTest {
                 0,
                 "",
                 1,
-                "75ab7552-c175-4df4-9f50-1a9b86e717cc"
-            )
+                "75ab7552-c175-4df4-9f50-1a9b86e717cc",
+            ),
         )
 
         private val MIGRATION_9_10_EXPECTED_DATA = arrayOf(
@@ -369,7 +368,7 @@ class AppDatabaseMigrationTest {
                 0,
                 "",
                 1,
-                "d314e9e8-fac9-43e7-b540-0b9c0bfb4238"
+                "d314e9e8-fac9-43e7-b540-0b9c0bfb4238",
             ),
             arrayOf(
                 2,
@@ -380,7 +379,7 @@ class AppDatabaseMigrationTest {
                 0,
                 "",
                 1,
-                "b854ece7-2f0e-45c4-9cf3-bb5aa4fad288"
+                "b854ece7-2f0e-45c4-9cf3-bb5aa4fad288",
             ),
             arrayOf(
                 3,
@@ -391,8 +390,8 @@ class AppDatabaseMigrationTest {
                 0,
                 "",
                 1,
-                "75ab7552-c175-4df4-9f50-1a9b86e717cc"
-            )
+                "75ab7552-c175-4df4-9f50-1a9b86e717cc",
+            ),
         )
     }
 
@@ -400,7 +399,7 @@ class AppDatabaseMigrationTest {
     val helper: MigrationTestHelper = MigrationTestHelper(
         InstrumentationRegistry.getInstrumentation(),
         AppDatabase::class.java.canonicalName,
-        FrameworkSQLiteOpenHelperFactory()
+        FrameworkSQLiteOpenHelperFactory(),
     )
 
     private val coroutineScope = MainScope()
@@ -424,7 +423,7 @@ class AppDatabaseMigrationTest {
             corruptionHandler = null,
             migrations = emptyList(),
             scope = coroutineScope,
-            produceFile = { File.createTempFile("test", ".preferences_pb") }
+            produceFile = { File.createTempFile("test", ".preferences_pb") },
         )
 
         val testDataFileName = "migration-11-12-test-data.json"
@@ -446,7 +445,7 @@ class AppDatabaseMigrationTest {
 
         val fromVersion = 11
         val toVersion = 12
-        val migration = AppDatabase.RoomMigration_11_12(legacyFingerprintMapsDataStore)
+        val migration = AppDatabase.RoomMigration11To12(legacyFingerprintMapsDataStore)
         val keyMapColumnNameToJsonNameMap = mapOf(
             "id" to "id",
             "trigger" to "trigger",
@@ -456,7 +455,7 @@ class AppDatabaseMigrationTest {
             "flags" to "flags",
             "folder_name" to "folderName",
             "is_enabled" to "isEnabled",
-            "uid" to "uid"
+            "uid" to "uid",
         )
         val fingerprintMapColumnNameToJsonNameMap = mapOf(
             "id" to "id",
@@ -468,7 +467,7 @@ class AppDatabaseMigrationTest {
             "is_enabled" to "enabled",
         )
 
-        //do this without using the test() method because fingerprint maps are stored differently in test file
+        // do this without using the test() method because fingerprint maps are stored differently in test file
 
         helper.createDatabase(TEST_DB_NAME, fromVersion).apply {
             val keyMapJsonArray = getKeyMapListJsonFromFile(testDataFileName)
@@ -476,7 +475,7 @@ class AppDatabaseMigrationTest {
                 this,
                 keyMapJsonArray,
                 keyMapColumnNameToJsonNameMap,
-                "keymaps"
+                "keymaps",
             )
 
             val deviceInfoJsonArray = jsonParser.parse(testDataJson)["device_info"].asJsonArray
@@ -489,10 +488,10 @@ class AppDatabaseMigrationTest {
                 this.execSQL(
                     """
                     INSERT INTO deviceinfo (descriptor, name) VALUES ('$descriptor', '$name')
-                    """
+                    """,
                 )
             }
-            //dont insert test data fingerprintmaps into database because they weren't in version 11
+            // dont insert test data fingerprintmaps into database because they weren't in version 11
         }
 
         val db = helper.runMigrationsAndValidate(TEST_DB_NAME, toVersion, true, migration)
@@ -521,7 +520,7 @@ class AppDatabaseMigrationTest {
         testColumnsMatch(
             db,
             tableName = "fingerprintmaps",
-            expectedFingerprintMapJsonList.toTypedArray()
+            expectedFingerprintMapJsonList.toTypedArray(),
         )
     }
 
@@ -531,7 +530,6 @@ class AppDatabaseMigrationTest {
     @Test
     @Throws(IOException::class)
     fun migrate10to11() {
-
         test(
             fromVersion = 10,
             toVersion = 11,
@@ -547,8 +545,8 @@ class AppDatabaseMigrationTest {
                 "flags" to "flags",
                 "folder_name" to "folderName",
                 "is_enabled" to "isEnabled",
-                "uid" to "uid"
-            )
+                "uid" to "uid",
+            ),
         )
     }
 
@@ -557,14 +555,13 @@ class AppDatabaseMigrationTest {
     @Throws(IOException::class)
     fun migrate9to10() {
         var db = helper.createDatabase(TEST_DB_NAME, 9).apply {
-
             MIGRATION_9_10_TEST_DATA.forEach { row ->
 
                 execSQL(
                     """
                     INSERT INTO keymaps (id, trigger, action_list, constraint_list, constraint_mode, flags, folder_name, is_enabled, uid)
                     VALUES (${row.joinToString { "'$it'" }})
-                    """
+                    """,
                 )
             }
             close()
@@ -580,14 +577,13 @@ class AppDatabaseMigrationTest {
     @Throws(IOException::class)
     fun migrate5to6() {
         var db = helper.createDatabase(TEST_DB_NAME, 5).apply {
-
             MIGRATION_5_6_TEST_DATA.forEach { row ->
 
                 execSQL(
                     """
                     INSERT INTO keymaps (id, trigger, action_list, constraint_list, constraint_mode, flags, folder_name, is_enabled)
                     VALUES (${row.joinToString { "'$it'" }})
-                    """
+                    """,
                 )
             }
             close()
@@ -603,14 +599,13 @@ class AppDatabaseMigrationTest {
     @Throws(IOException::class)
     fun migrate4to5() {
         var db = helper.createDatabase(TEST_DB_NAME, 4).apply {
-
             MIGRATION_4_5_TEST_DATA.forEach { row ->
 
                 execSQL(
                     """
                     INSERT INTO keymaps (id, trigger, action_list, constraint_list, constraint_mode, flags, folder_name, is_enabled)
                     VALUES (${row.joinToString { "'$it'" }})
-                    """
+                    """,
                 )
             }
             close()
@@ -626,14 +621,13 @@ class AppDatabaseMigrationTest {
     @Throws(IOException::class)
     fun migrate3to4() {
         var db = helper.createDatabase(TEST_DB_NAME, 3).apply {
-
             MIGRATION_3_4_TEST_DATA.forEach { row ->
 
                 execSQL(
                     """
                     INSERT INTO keymaps (id, trigger, action_list, constraint_list, constraint_mode, flags, folder_name, is_enabled)
                     VALUES (${row.joinToString { "'$it'" }})
-                    """
+                    """,
                 )
             }
             close()
@@ -649,14 +643,13 @@ class AppDatabaseMigrationTest {
     @Throws(IOException::class)
     fun migrate2to3() {
         var db = helper.createDatabase(TEST_DB_NAME, 2).apply {
-
             MIGRATION_2_3_TEST_DATA.forEach { row ->
 
                 execSQL(
                     """
                     INSERT INTO keymaps (id, trigger, action_list, constraint_list, constraint_mode, flags, folder_name, is_enabled)
                     VALUES (${row.joinToString { "'$it'" }})
-                    """
+                    """,
                 )
             }
             close()
@@ -671,16 +664,14 @@ class AppDatabaseMigrationTest {
     @Test
     @Throws(IOException::class)
     fun migrate1to2() {
-
         var db = helper.createDatabase(TEST_DB_NAME, 1).apply {
-
             MIGRATION_1_2_TEST_DATA.forEach { row ->
 
                 execSQL(
                     """
                     INSERT INTO keymaps (id, trigger_list, flags, is_enabled, action_type, action_data, action_extras)
                     VALUES (${row.joinToString { "'$it'" }})
-                    """
+                    """,
                 )
             }
 
@@ -706,7 +697,7 @@ class AppDatabaseMigrationTest {
                 this,
                 keyMapJsonArray,
                 keyMapColumnNameToJsonNameMap,
-                "keymaps"
+                "keymaps",
             )
 
             if (fingerprintMapColumnNameToJsonNameMap != null) {
@@ -715,7 +706,7 @@ class AppDatabaseMigrationTest {
                     this,
                     fingerprintMapJsonArray,
                     fingerprintMapColumnNameToJsonNameMap,
-                    "fingerprintmaps"
+                    "fingerprintmaps",
                 )
             }
         }
@@ -747,7 +738,7 @@ class AppDatabaseMigrationTest {
             testColumnsMatch(
                 db,
                 tableName = "fingerprintmaps",
-                expectedFingerprintMapJsonList.toTypedArray()
+                expectedFingerprintMapJsonList.toTypedArray(),
             )
         }
     }
@@ -756,7 +747,7 @@ class AppDatabaseMigrationTest {
         database: SupportSQLiteDatabase,
         mappingListJson: JsonArray,
         columnNameToJsonMap: Map<String, String>,
-        tableName: String
+        tableName: String,
     ) {
         mappingListJson.forEach { element ->
             val jsonElementNames = columnNameToJsonMap.values
@@ -769,7 +760,7 @@ class AppDatabaseMigrationTest {
                 """
                     INSERT INTO $tableName (${columnNameToJsonMap.keys.joinToString()})
                     VALUES (${values.joinToString { "'$it'" }})
-                    """
+                    """,
             )
         }
     }
@@ -814,13 +805,14 @@ class AppDatabaseMigrationTest {
     private fun testColumnsMatch(
         db: SupportSQLiteDatabase,
         tableName: String,
-        expectedData: Array<out Array<out Any>>
+        expectedData: Array<out Array<out Any>>,
     ) {
         val cursor = db.query("SELECT * FROM $tableName")
 
         ViewMatchers.assertThat("Check the logcat", cursor.count, Matchers.`is`(expectedData.size))
 
-        while (cursor.moveToNext()) { val row = cursor.position
+        while (cursor.moveToNext()) {
+            val row = cursor.position
             val expectedColumnValues: Array<out Any> = expectedData[row]
 
             cursor.columnNames.forEachIndexed { columnIndex, columnName ->
@@ -837,7 +829,7 @@ class AppDatabaseMigrationTest {
                     is Int -> ViewMatchers.assertThat(
                         "$columnName at row $row doesn't match",
                         columnValue,
-                        Matchers.`is`(expectedColumnValue)
+                        Matchers.`is`(expectedColumnValue),
                     )
                     is String -> {
                         try {
@@ -845,14 +837,13 @@ class AppDatabaseMigrationTest {
                                 element = jsonParser.parse(expectedColumnValue),
                                 elementName = "expected $columnName at row $row",
                                 other = jsonParser.parse(columnValue as String),
-                                otherName = "migrated $columnName at row $row"
+                                otherName = "migrated $columnName at row $row",
                             )
-
                         } catch (e: JsonParseException) {
                             ViewMatchers.assertThat(
                                 "$columnName at row $row doesn't match",
                                 columnValue,
-                                Matchers.`is`(expectedColumnValue)
+                                Matchers.`is`(expectedColumnValue),
                             )
                         }
                     }

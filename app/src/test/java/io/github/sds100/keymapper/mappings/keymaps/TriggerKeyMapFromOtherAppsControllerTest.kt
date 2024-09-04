@@ -12,7 +12,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.TestCoroutineExceptionHandler
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.createTestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.After
 import org.junit.Before
@@ -43,7 +45,8 @@ class TriggerKeyMapFromOtherAppsControllerTest {
     }
 
     private val testDispatcher = TestCoroutineDispatcher()
-    private val coroutineScope = TestCoroutineScope(testDispatcher)
+    private val coroutineScope =
+        createTestCoroutineScope(TestCoroutineDispatcher() + TestCoroutineExceptionHandler() + testDispatcher)
 
     private lateinit var controller: TriggerKeyMapFromOtherAppsController
     private lateinit var detectKeyMapsUseCase: DetectKeyMapsUseCase
@@ -88,7 +91,7 @@ class TriggerKeyMapFromOtherAppsControllerTest {
                 inputMethodAdapter = mock(),
                 lockScreenAdapter = mock(),
                 phoneAdapter = mock(),
-                powerAdapter = mock()
+                powerAdapter = mock(),
             )
         }
 
@@ -96,7 +99,7 @@ class TriggerKeyMapFromOtherAppsControllerTest {
             coroutineScope,
             detectKeyMapsUseCase,
             performActionsUseCase,
-            detectConstraintsUseCase
+            detectConstraintsUseCase,
         )
     }
 
@@ -110,25 +113,25 @@ class TriggerKeyMapFromOtherAppsControllerTest {
      */
     @Test
     fun `Key map with repeat option, don't repeat when triggered if repeat until released`() = coroutineScope.runBlockingTest {
-        //GIVEN
+        // GIVEN
         val action =
             KeyMapAction(
                 data = ActionData.InputKeyEvent(keyCode = 1),
                 repeat = true,
-                repeatMode = RepeatMode.TRIGGER_RELEASED
+                repeatMode = RepeatMode.TRIGGER_RELEASED,
             )
         val keyMap = KeyMap(actionList = listOf(action), trigger = KeyMapTrigger(triggerFromOtherApps = true))
         keyMapListFlow.value = listOf(keyMap)
 
         advanceUntilIdle()
 
-        //WHEN
+        // WHEN
         controller.onDetected(keyMap.uid)
         delay(500)
-        controller.reset() //stop any repeating that might be happening
+        controller.reset() // stop any repeating that might be happening
         advanceUntilIdle()
 
-        //THEN
+        // THEN
         verify(performActionsUseCase, times(1)).perform(action.data)
     }
 }

@@ -12,13 +12,11 @@ import kotlinx.coroutines.flow.StateFlow
 
 class ChooseSoundFileUseCaseImpl(
     private val fileAdapter: FileAdapter,
-    private val soundsManager: SoundsManager
+    private val soundsManager: SoundsManager,
 ) : ChooseSoundFileUseCase {
     override val soundFiles = soundsManager.soundFiles
 
-    override suspend fun saveSound(uri: String): Result<String> {
-        return soundsManager.saveNewSound(uri)
-    }
+    override suspend fun saveSound(uri: String): Result<String> = soundsManager.saveNewSound(uri)
 
     override fun getSoundFileName(uri: String): Result<String> {
         val name = fileAdapter.getFileFromUri(uri).name

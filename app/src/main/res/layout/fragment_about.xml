@@ -23,7 +23,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="?attr/actionBarSize">
+            android:layout_marginBottom="@dimen/bottom_app_bar_height">
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guidelineTop"
@@ -283,8 +283,8 @@
                                     android:layout_height="wrap_content"
                                     bind:icon="@{@drawable/ic_outline_account}"
                                     bind:subtitle="@{@string/about_team_trollserver_role}"
-                                    bind:url="@{@string/about_team_trollserver_url}"
-                                    bind:title="@{@string/about_team_trollserver_name}" />
+                                    bind:title="@{@string/about_team_trollserver_name}"
+                                    bind:url="@{@string/about_team_trollserver_url}" />
 
                                 <include
                                     layout="@layout/list_item_about_item"
@@ -362,10 +362,10 @@
 
         <com.google.android.material.bottomappbar.BottomAppBar
             android:id="@+id/appBar"
-            style="@style/BottomAppBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
+            app:menuAlignmentMode="auto"
             app:navigationIcon="@drawable/ic_baseline_arrow_back_24" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

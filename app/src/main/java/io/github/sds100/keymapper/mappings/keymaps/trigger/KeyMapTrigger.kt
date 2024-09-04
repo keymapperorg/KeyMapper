@@ -4,7 +4,7 @@ import io.github.sds100.keymapper.data.entities.Extra
 import io.github.sds100.keymapper.data.entities.TriggerEntity
 import io.github.sds100.keymapper.data.entities.getData
 import io.github.sds100.keymapper.mappings.ClickType
-import io.github.sds100.keymapper.mappings.keymaps.detection.DetectScreenOffKeyEventsController
+import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
 import io.github.sds100.keymapper.util.valueOrNull
 import kotlinx.serialization.Serializable
 import splitties.bitflags.hasFlag
@@ -26,41 +26,34 @@ data class KeyMapTrigger(
     val vibrateDuration: Int? = null,
     val sequenceTriggerTimeout: Int? = null,
     val triggerFromOtherApps: Boolean = false,
-    val showToast: Boolean = false
+    val showToast: Boolean = false,
 ) {
-    fun isVibrateAllowed(): Boolean {
-        return true
-    }
+    fun isVibrateAllowed(): Boolean = true
 
-    fun isChangingVibrationDurationAllowed(): Boolean {
-        return vibrate || longPressDoubleVibration
-    }
+    fun isChangingVibrationDurationAllowed(): Boolean = vibrate || longPressDoubleVibration
 
-    fun isChangingLongPressDelayAllowed(): Boolean {
-        return keys.any { key -> key.clickType == ClickType.LONG_PRESS }
-    }
+    fun isChangingLongPressDelayAllowed(): Boolean =
+        keys.any { key -> key.clickType == ClickType.LONG_PRESS }
 
-    fun isChangingDoublePressDelayAllowed(): Boolean {
-        return keys.any { key -> key.clickType == ClickType.DOUBLE_PRESS }
-    }
+    fun isChangingDoublePressDelayAllowed(): Boolean =
+        keys.any { key -> key.clickType == ClickType.DOUBLE_PRESS }
 
-    fun isLongPressDoubleVibrationAllowed(): Boolean {
-        return (keys.size == 1 || (mode is TriggerMode.Parallel))
-            && keys.getOrNull(0)?.clickType == ClickType.LONG_PRESS
-    }
+    fun isLongPressDoubleVibrationAllowed(): Boolean =
+        (keys.size == 1 || (mode is TriggerMode.Parallel)) &&
+            keys.getOrNull(0)?.clickType == ClickType.LONG_PRESS
 
-    fun isDetectingWhenScreenOffAllowed(): Boolean {
-        return keys.isNotEmpty() && keys.all { DetectScreenOffKeyEventsController.canDetectKeyWhenScreenOff(it.keyCode) }
-    }
+    fun isDetectingWhenScreenOffAllowed(): Boolean = keys.isNotEmpty() &&
+        keys.all {
+            KeyEventUtils.canDetectKeyWhenScreenOff(it.keyCode)
+        }
 
-    fun isChangingSequenceTriggerTimeoutAllowed(): Boolean {
-        return !keys.isNullOrEmpty() && keys.size > 1 && mode is TriggerMode.Sequence
-    }
+    fun isChangingSequenceTriggerTimeoutAllowed(): Boolean =
+        !keys.isNullOrEmpty() && keys.size > 1 && mode is TriggerMode.Sequence
 }
 
 object KeymapTriggerEntityMapper {
     fun fromEntity(
-        entity: TriggerEntity
+        entity: TriggerEntity,
     ): KeyMapTrigger {
         val keys = entity.keys.map { KeymapTriggerKeyEntityMapper.fromEntity(it) }
 
@@ -104,8 +97,8 @@ object KeymapTriggerEntityMapper {
             extras.add(
                 Extra(
                     TriggerEntity.EXTRA_SEQUENCE_TRIGGER_TIMEOUT,
-                    trigger.sequenceTriggerTimeout.toString()
-                )
+                    trigger.sequenceTriggerTimeout.toString(),
+                ),
             )
         }
 
@@ -113,8 +106,8 @@ object KeymapTriggerEntityMapper {
             extras.add(
                 Extra(
                     TriggerEntity.EXTRA_LONG_PRESS_DELAY,
-                    trigger.longPressDelay.toString()
-                )
+                    trigger.longPressDelay.toString(),
+                ),
             )
         }
 
@@ -122,8 +115,8 @@ object KeymapTriggerEntityMapper {
             extras.add(
                 Extra(
                     TriggerEntity.EXTRA_DOUBLE_PRESS_DELAY,
-                    trigger.doublePressDelay.toString()
-                )
+                    trigger.doublePressDelay.toString(),
+                ),
             )
         }
 
@@ -131,8 +124,8 @@ object KeymapTriggerEntityMapper {
             extras.add(
                 Extra(
                     TriggerEntity.EXTRA_VIBRATION_DURATION,
-                    trigger.vibrateDuration.toString()
-                )
+                    trigger.vibrateDuration.toString(),
+                ),
             )
         }
 
@@ -168,7 +161,7 @@ object KeymapTriggerEntityMapper {
             keys = trigger.keys.map { KeymapTriggerKeyEntityMapper.toEntity(it) },
             extras = extras,
             mode = mode,
-            flags = flags
+            flags = flags,
         )
     }
 }

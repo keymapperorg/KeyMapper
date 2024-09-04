@@ -7,6 +7,7 @@ import io.github.sds100.keymapper.mappings.DisplayActionUseCase
 import io.github.sds100.keymapper.mappings.Mapping
 import io.github.sds100.keymapper.mappings.isDelayBeforeNextActionAllowed
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
+import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.getFullMessage
@@ -53,7 +54,7 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
     private val config: ConfigMappingUseCase<A, M>,
     private val uiHelper: ActionUiHelper<M, A>,
     private val onboardingUseCase: OnboardingUseCase,
-    resourceProvider: ResourceProvider
+    resourceProvider: ResourceProvider,
 ) : ResourceProvider by resourceProvider,
     PopupViewModel by PopupViewModelImpl(),
     NavigationViewModel by NavigationViewModelImpl() {
@@ -76,7 +77,7 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
 
         combine(
             rebuildUiState,
-            displayActionUseCase.showDeviceDescriptors
+            displayActionUseCase.showDeviceDescriptors,
         ) { mappingState, showDeviceDescriptors ->
             _state.value = mappingState.mapData { mapping ->
                 createListItems(mapping, showDeviceDescriptors)
@@ -106,7 +107,30 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
 
                 when {
                     error == null -> attemptTestAction(actionData)
-                    error.isFixable -> displayActionUseCase.fixError(error)
+                    error.isFixable -> onFixError(error)
+                }
+            }
+        }
+    }
+
+    private fun onFixError(error: Error) {
+        coroutineScope.launch {
+            if (error == Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)) {
+                coroutineScope.launch {
+                    ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
+                        resourceProvider = this@ConfigActionsViewModel,
+                        popupViewModel = this@ConfigActionsViewModel,
+                        neverShowDndTriggerErrorAgain = { displayActionUseCase.neverShowDndTriggerErrorAgain() },
+                        fixError = { displayActionUseCase.fixError(it) },
+                    )
+                }
+            } else {
+                ViewModelHelper.showFixErrorDialog(
+                    resourceProvider = this@ConfigActionsViewModel,
+                    popupViewModel = this@ConfigActionsViewModel,
+                    error,
+                ) {
+                    displayActionUseCase.fixError(error)
                 }
             }
         }
@@ -151,7 +175,7 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
                     resourceProvider = this,
                     popupViewModel = this,
                     startService = displayActionUseCase::startAccessibilityService,
-                    message = R.string.dialog_message_enable_accessibility_service_to_test_action
+                    message = R.string.dialog_message_enable_accessibility_service_to_test_action,
                 )
             }
 
@@ -160,7 +184,7 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
                     resourceProvider = this,
                     popupViewModel = this,
                     restartService = displayActionUseCase::restartAccessibilityService,
-                    message = R.string.dialog_message_restart_accessibility_service_to_test_action
+                    message = R.string.dialog_message_restart_accessibility_service_to_test_action,
                 )
             }
         }
@@ -168,7 +192,6 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
 
     private suspend fun promptToInstallGuiKeyboard() {
         if (onboardingUseCase.isTvDevice()) {
-
             val appStoreModel = ChooseAppStoreModel(
                 githubLink = getString(R.string.url_github_keymapper_leanback_keyboard),
             )
@@ -178,7 +201,7 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
                 message = getString(R.string.dialog_message_install_leanback_keyboard),
                 appStoreModel,
                 positiveButtonText = getString(R.string.pos_never_show_again),
-                negativeButtonText = getString(R.string.neg_cancel)
+                negativeButtonText = getString(R.string.neg_cancel),
             )
 
             val response = showPopup("download_leanback_ime", dialog) ?: return
@@ -186,12 +209,11 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
             if (response == DialogResponse.POSITIVE) {
                 onboardingUseCase.neverShowGuiKeyboardPromptsAgain()
             }
-
         } else {
             val appStoreModel = ChooseAppStoreModel(
                 playStoreLink = getString(R.string.url_play_store_keymapper_gui_keyboard),
                 fdroidLink = getString(R.string.url_fdroid_keymapper_gui_keyboard),
-                githubLink = getString(R.string.url_github_keymapper_gui_keyboard)
+                githubLink = getString(R.string.url_github_keymapper_gui_keyboard),
             )
 
             val dialog = PopupUi.ChooseAppStore(
@@ -199,7 +221,7 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
                 message = getString(R.string.dialog_message_install_gui_keyboard),
                 appStoreModel,
                 positiveButtonText = getString(R.string.pos_never_show_again),
-                negativeButtonText = getString(R.string.neg_cancel)
+                negativeButtonText = getString(R.string.neg_cancel),
             )
 
             val response = showPopup("download_gui_keyboard", dialog) ?: return
@@ -224,20 +246,20 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
                 showPopup("choose_solution", chooseSolutionDialog) ?: return
 
             when (chooseSolutionResponse) {
-                //install shizuku
+                // install shizuku
                 DialogResponse.POSITIVE -> {
                     _navigateToShizukuSetup.emit(Unit)
                     onboardingUseCase.neverShowGuiKeyboardPromptsAgain()
 
                     return
                 }
-                //do nothing
+                // do nothing
                 DialogResponse.NEUTRAL -> {
                     onboardingUseCase.neverShowGuiKeyboardPromptsAgain()
                     return
                 }
 
-                //download leanback keyboard
+                // download leanback keyboard
                 DialogResponse.NEGATIVE -> {
                     val chooseAppStoreDialog = PopupUi.ChooseAppStore(
                         title = getString(R.string.dialog_title_choose_download_leanback_keyboard),
@@ -246,7 +268,7 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
                             githubLink = getString(R.string.url_github_keymapper_leanback_keyboard),
                         ),
                         positiveButtonText = getString(R.string.pos_never_show_again),
-                        negativeButtonText = getString(R.string.neg_cancel)
+                        negativeButtonText = getString(R.string.neg_cancel),
                     )
 
                     val response = showPopup("install_leanback_keyboard", chooseAppStoreDialog)
@@ -269,20 +291,20 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
                 showPopup("choose_solution", chooseSolutionDialog) ?: return
 
             when (chooseSolutionResponse) {
-                //install shizuku
+                // install shizuku
                 DialogResponse.POSITIVE -> {
                     _navigateToShizukuSetup.emit(Unit)
                     onboardingUseCase.neverShowGuiKeyboardPromptsAgain()
 
                     return
                 }
-                //do nothing
+                // do nothing
                 DialogResponse.NEUTRAL -> {
                     onboardingUseCase.neverShowGuiKeyboardPromptsAgain()
                     return
                 }
 
-                //download gui keyboard
+                // download gui keyboard
                 DialogResponse.NEGATIVE -> {
                     val chooseAppStoreDialog = PopupUi.ChooseAppStore(
                         title = getString(R.string.dialog_title_choose_download_gui_keyboard),
@@ -293,7 +315,7 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
                             githubLink = getString(R.string.url_github_keymapper_gui_keyboard),
                         ),
                         positiveButtonText = getString(R.string.pos_never_show_again),
-                        negativeButtonText = getString(R.string.neg_cancel)
+                        negativeButtonText = getString(R.string.neg_cancel),
                     )
 
                     val response = showPopup("install_gui_keyboard", chooseAppStoreDialog)
@@ -341,8 +363,8 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
                         append(
                             getString(
                                 R.string.action_title_wait,
-                                action.delayBeforeNextAction!!
-                            )
+                                action.delayBeforeNextAction!!,
+                            ),
                         )
                     }
                 }
@@ -363,7 +385,7 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
                 title = title,
                 extraInfo = extraInfo,
                 errorMessage = error?.getFullMessage(this),
-                dragAndDrop = actionCount > 1
+                dragAndDrop = actionCount > 1,
             )
         }
     }

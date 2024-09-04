@@ -13,7 +13,7 @@ data class FingerprintMapListItem(
     val constraintChipList: List<ChipUi>,
     val optionsDescription: String,
     val isEnabled: Boolean,
-    val extraInfo: String
+    val extraInfo: String,
 ) {
     val hasOptions: Boolean
         get() = optionsDescription.isNotBlank()

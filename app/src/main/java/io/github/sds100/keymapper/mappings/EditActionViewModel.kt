@@ -29,7 +29,7 @@ abstract class EditActionViewModel<M : Mapping<A>, A : Action>(
     private val resourceProvider: ResourceProvider,
     private val coroutineScope: CoroutineScope,
     private val configUseCase: ConfigMappingUseCase<A, M>,
-    createActionUseCase: CreateActionUseCase
+    createActionUseCase: CreateActionUseCase,
 ) : OptionsViewModel,
     CreateActionViewModel by CreateActionViewModelImpl(createActionUseCase, resourceProvider) {
     private val _actionUid = MutableStateFlow<String?>(null)
@@ -45,7 +45,7 @@ abstract class EditActionViewModel<M : Mapping<A>, A : Action>(
                 EditActionUiState(
                     listItems = createListItems(mapping.data, action),
                     showProgressBar = false,
-                    isEditButtonVisible = action.data.isEditable()
+                    isEditButtonVisible = action.data.isEditable(),
                 )
             }
 
@@ -56,7 +56,7 @@ abstract class EditActionViewModel<M : Mapping<A>, A : Action>(
         .stateIn(
             coroutineScope,
             SharingStarted.Lazily,
-            EditActionUiState(showProgressBar = true)
+            EditActionUiState(showProgressBar = true),
         )
 
     fun setActionToConfigure(uid: String) {
@@ -105,5 +105,5 @@ abstract class EditActionViewModel<M : Mapping<A>, A : Action>(
 data class EditActionUiState(
     override val showProgressBar: Boolean = false,
     override val listItems: List<ListItem> = emptyList(),
-    val isEditButtonVisible: Boolean = false
+    val isEditButtonVisible: Boolean = false,
 ) : OptionsUiState

@@ -12,8 +12,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.DelayController
 import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.TestCoroutineExceptionHandler
+import kotlinx.coroutines.test.createTestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
@@ -25,6 +27,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import kotlin.coroutines.ContinuationInterceptor
 
 /**
  * Created by sds100 on 25/04/2021.
@@ -35,7 +38,8 @@ import org.mockito.kotlin.whenever
 class NotificationControllerTest {
 
     private val testDispatcher = TestCoroutineDispatcher()
-    private val coroutineScope = TestCoroutineScope(testDispatcher)
+    private val coroutineScope =
+        createTestCoroutineScope(TestCoroutineDispatcher() + TestCoroutineExceptionHandler() + testDispatcher)
 
     private lateinit var controller: NotificationController
     private lateinit var mockManageNotifications: ManageNotificationsUseCase
@@ -78,23 +82,23 @@ class NotificationControllerTest {
             },
             onboardingUseCase = fakeOnboarding,
             resourceProvider = mockResourceProvider,
-            dispatchers = TestDispatcherProvider(testDispatcher)
+            dispatchers = TestDispatcherProvider(testDispatcher),
         )
     }
 
     @Test
     fun `click setup chosen devices notification, open app and approve`() =
         coroutineScope.runBlockingTest {
-            //WHEN
+            // WHEN
 
-            pauseDispatcher()
+            (coroutineContext[ContinuationInterceptor]!! as DelayController).pauseDispatcher()
             launch {
                 onActionClick.emit(NotificationController.ACTION_ON_SETUP_CHOSEN_DEVICES_AGAIN)
             }
 
-            //THEN
+            // THEN
             assertThat(controller.openApp.toListWithTimeout().size, `is`(1))
-            resumeDispatcher()
+            (coroutineContext[ContinuationInterceptor]!! as DelayController).resumeDispatcher()
 
             assertThat(fakeOnboarding.approvedSetupChosenDevicesAgainNotification, `is`(true))
         }
@@ -102,24 +106,24 @@ class NotificationControllerTest {
     @Test
     fun `show setup chosen devices notification`() =
         coroutineScope.runBlockingTest {
-            //GIVEN
+            // GIVEN
             val title = "title"
             val text = "text"
             whenever(mockResourceProvider.getString(R.string.notification_setup_chosen_devices_again_title)).then { title }
             whenever(mockResourceProvider.getString(R.string.notification_setup_chosen_devices_again_text)).then { text }
 
-            //WHEN
+            // WHEN
             fakeOnboarding.showSetupChosenDevicesAgainNotification.value = true
 
-            //THEN
+            // THEN
             verify(
                 mockResourceProvider,
-                times(1)
+                times(1),
             ).getString(R.string.notification_setup_chosen_devices_again_title)
 
             verify(
                 mockResourceProvider,
-                times(1)
+                times(1),
             ).getString(R.string.notification_setup_chosen_devices_again_text)
 
             val expectedNotification = NotificationModel(
@@ -134,12 +138,12 @@ class NotificationControllerTest {
                 priority = NotificationCompat.PRIORITY_LOW,
                 actions = emptyList(),
                 autoCancel = true,
-                bigTextStyle = true
+                bigTextStyle = true,
             )
 
             verify(mockManageNotifications, times(1)).show(expectedNotification)
 
-            //this should be called when the notification is clicked
+            // this should be called when the notification is clicked
             assertThat(fakeOnboarding.approvedSetupChosenDevicesAgainNotification, `is`(false))
         }
 }

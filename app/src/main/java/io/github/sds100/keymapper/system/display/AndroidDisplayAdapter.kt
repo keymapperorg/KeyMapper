@@ -7,6 +7,7 @@ import android.content.IntentFilter
 import android.hardware.display.DisplayManager
 import android.provider.Settings
 import android.view.Surface
+import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import io.github.sds100.keymapper.system.SettingsUtils
 import io.github.sds100.keymapper.util.Error
@@ -45,35 +46,41 @@ class AndroidDisplayAdapter(context: Context) : DisplayAdapter {
     private val displayManager: DisplayManager = ctx.getSystemService()!!
 
     init {
-        displayManager.registerDisplayListener(object : DisplayManager.DisplayListener {
-            override fun onDisplayAdded(displayId: Int) {
-                orientation = getDisplayOrientation()
-            }
+        displayManager.registerDisplayListener(
+            object : DisplayManager.DisplayListener {
+                override fun onDisplayAdded(displayId: Int) {
+                    orientation = getDisplayOrientation()
+                }
 
-            override fun onDisplayRemoved(displayId: Int) {
-                orientation = getDisplayOrientation()
-            }
+                override fun onDisplayRemoved(displayId: Int) {
+                    orientation = getDisplayOrientation()
+                }
 
-            override fun onDisplayChanged(displayId: Int) {
-                orientation = getDisplayOrientation()
-            }
-        }, null)
+                override fun onDisplayChanged(displayId: Int) {
+                    orientation = getDisplayOrientation()
+                }
+            },
+            null,
+        )
     }
 
     override var orientation: Orientation = getDisplayOrientation()
 
     init {
-        IntentFilter().apply {
-            addAction(Intent.ACTION_SCREEN_ON)
-            addAction(Intent.ACTION_SCREEN_OFF)
+        val filter = IntentFilter()
+        filter.addAction(Intent.ACTION_SCREEN_ON)
+        filter.addAction(Intent.ACTION_SCREEN_OFF)
 
-            ctx.registerReceiver(broadcastReceiver, this)
-        }
+        ContextCompat.registerReceiver(
+            ctx,
+            broadcastReceiver,
+            filter,
+            ContextCompat.RECEIVER_NOT_EXPORTED,
+        )
     }
 
-    override fun isAutoRotateEnabled(): Boolean {
-        return SettingsUtils.getSystemSetting<Int>(ctx, Settings.System.ACCELEROMETER_ROTATION) == 1
-    }
+    override fun isAutoRotateEnabled(): Boolean =
+        SettingsUtils.getSystemSetting<Int>(ctx, Settings.System.ACCELEROMETER_ROTATION) == 1
 
     override fun enableAutoRotate(): Result<*> {
         val success = SettingsUtils.putSystemSetting(ctx, Settings.System.ACCELEROMETER_ROTATION, 1)
@@ -113,15 +120,13 @@ class AndroidDisplayAdapter(context: Context) : DisplayAdapter {
         }
     }
 
-    override fun isAutoBrightnessEnabled(): Boolean {
-        return SettingsUtils.getSystemSetting<Int>(
-            ctx,
-            Settings.System.SCREEN_BRIGHTNESS_MODE
-        ) == Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC
-    }
+    override fun isAutoBrightnessEnabled(): Boolean = SettingsUtils.getSystemSetting<Int>(
+        ctx,
+        Settings.System.SCREEN_BRIGHTNESS_MODE,
+    ) == Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC
 
     override fun increaseBrightness(): Result<*> {
-        //auto-brightness must be disabled
+        // auto-brightness must be disabled
         disableAutoBrightness()
 
         val currentBrightness =
@@ -133,7 +138,7 @@ class AndroidDisplayAdapter(context: Context) : DisplayAdapter {
             255
         }
 
-        //the brightness must be between 0 and 255
+        // the brightness must be between 0 and 255
         if (newBrightness > 255) {
             newBrightness = 255
         }
@@ -149,7 +154,7 @@ class AndroidDisplayAdapter(context: Context) : DisplayAdapter {
     }
 
     override fun decreaseBrightness(): Result<*> {
-        //auto-brightness must be disabled
+        // auto-brightness must be disabled
         disableAutoBrightness()
 
         val currentBrightness =
@@ -161,7 +166,7 @@ class AndroidDisplayAdapter(context: Context) : DisplayAdapter {
             255
         }
 
-        //the brightness must be between 0 and 255
+        // the brightness must be between 0 and 255
         if (newBrightness < 0) {
             newBrightness = 0
         }
@@ -176,13 +181,11 @@ class AndroidDisplayAdapter(context: Context) : DisplayAdapter {
         }
     }
 
-    override fun enableAutoBrightness(): Result<*> {
-        return setBrightnessMode(Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC)
-    }
+    override fun enableAutoBrightness(): Result<*> =
+        setBrightnessMode(Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC)
 
-    override fun disableAutoBrightness(): Result<*> {
-        return setBrightnessMode(Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL)
-    }
+    override fun disableAutoBrightness(): Result<*> =
+        setBrightnessMode(Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL)
 
     private fun setBrightnessMode(mode: Int): Result<*> {
         val success =
@@ -195,10 +198,8 @@ class AndroidDisplayAdapter(context: Context) : DisplayAdapter {
         }
     }
 
-    private fun getDisplayOrientation(): Orientation {
-        val sdkRotation = displayManager.displays[0].rotation
-
-        return when (sdkRotation) {
+    private fun getDisplayOrientation(): Orientation =
+        when (val sdkRotation = displayManager.displays[0].rotation) {
             Surface.ROTATION_0 -> Orientation.ORIENTATION_0
             Surface.ROTATION_90 -> Orientation.ORIENTATION_90
             Surface.ROTATION_180 -> Orientation.ORIENTATION_180
@@ -206,5 +207,4 @@ class AndroidDisplayAdapter(context: Context) : DisplayAdapter {
 
             else -> throw Exception("Don't know how to convert $sdkRotation to Orientation")
         }
-    }
 }

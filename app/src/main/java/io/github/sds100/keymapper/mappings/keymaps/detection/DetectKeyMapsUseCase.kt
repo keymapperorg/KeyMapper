@@ -50,8 +50,9 @@ class DetectKeyMapsUseCaseImpl(
     private val shizukuInputEventInjector: InputEventInjector,
     private val permissionAdapter: PermissionAdapter,
     private val phoneAdapter: PhoneAdapter,
-    private val inputMethodAdapter: InputMethodAdapter
-) : DetectKeyMapsUseCase, DetectMappingUseCase by detectMappingUseCase {
+    private val inputMethodAdapter: InputMethodAdapter,
+) : DetectKeyMapsUseCase,
+    DetectMappingUseCase by detectMappingUseCase {
 
     override val allKeyMapList: Flow<List<KeyMap>> =
         keyMapRepository.keyMapList
@@ -73,7 +74,7 @@ class DetectKeyMapsUseCaseImpl(
     override val detectScreenOffTriggers: Flow<Boolean> =
         combine(
             allKeyMapList,
-            suAdapter.isGranted
+            suAdapter.isGranted,
         ) { keyMapList, isRootPermissionGranted ->
             keyMapList.any { it.trigger.screenOffTrigger } && isRootPermissionGranted
         }.flowOn(Dispatchers.Default)
@@ -117,7 +118,7 @@ class DetectKeyMapsUseCaseImpl(
         suAdapter,
         accessibilityService,
         shizukuInputEventInjector,
-        permissionAdapter
+        permissionAdapter,
     )
 
     override fun imitateButtonPress(
@@ -125,7 +126,7 @@ class DetectKeyMapsUseCaseImpl(
         metaState: Int,
         deviceId: Int,
         inputEventType: InputEventType,
-        scanCode: Int
+        scanCode: Int,
     ) {
         if (permissionAdapter.isGranted(Permission.SHIZUKU)) {
             Timber.d("Imitate button press ${KeyEvent.keyCodeToString(keyCode)} with Shizuku, key code: $keyCode, device id: $deviceId, meta state: $metaState, scan code: $scanCode")
@@ -136,8 +137,8 @@ class DetectKeyMapsUseCaseImpl(
                     inputEventType,
                     metaState,
                     deviceId,
-                    scanCode
-                )
+                    scanCode,
+                ),
             )
         } else {
             Timber.d("Imitate button press ${KeyEvent.keyCodeToString(keyCode)}, key code: $keyCode, device id: $deviceId, meta state: $metaState, scan code: $scanCode")
@@ -150,7 +151,7 @@ class DetectKeyMapsUseCaseImpl(
                 KeyEvent.KEYCODE_BACK -> accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
                 KeyEvent.KEYCODE_HOME -> accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME)
                 KeyEvent.KEYCODE_APP_SWITCH -> accessibilityService.doGlobalAction(
-                    AccessibilityService.GLOBAL_ACTION_POWER_DIALOG
+                    AccessibilityService.GLOBAL_ACTION_POWER_DIALOG,
                 )
 
                 KeyEvent.KEYCODE_MENU -> openMenuHelper.openMenu()
@@ -161,8 +162,8 @@ class DetectKeyMapsUseCaseImpl(
                         inputEventType,
                         metaState,
                         deviceId,
-                        scanCode
-                    )
+                        scanCode,
+                    ),
                 )
             }
         }
@@ -189,7 +190,7 @@ interface DetectKeyMapsUseCase : DetectMappingUseCase {
         metaState: Int = 0,
         deviceId: Int = 0,
         inputEventType: InputEventType = InputEventType.DOWN_UP,
-        scanCode: Int = 0
+        scanCode: Int = 0,
     )
 
     val isScreenOn: Flow<Boolean>

@@ -1,11 +1,15 @@
 package io.github.sds100.keymapper.data.entities
 
 import android.os.Parcelable
-import com.github.salomonbrys.kotson.*
+import com.github.salomonbrys.kotson.byArray
+import com.github.salomonbrys.kotson.byInt
+import com.github.salomonbrys.kotson.byNullableString
+import com.github.salomonbrys.kotson.byString
+import com.github.salomonbrys.kotson.jsonDeserializer
 import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.data.entities.ActionEntity.Type
 import kotlinx.android.parcel.Parcelize
-import java.util.*
+import java.util.UUID
 
 /**
  * Created by sds100 on 16/07/2018.
@@ -49,12 +53,12 @@ data class ActionEntity(
     val flags: Int = 0,
 
     @SerializedName(NAME_UID)
-    val uid: String = UUID.randomUUID().toString()
+    val uid: String = UUID.randomUUID().toString(),
 
 ) : Parcelable {
     companion object {
 
-        //DON'T CHANGE THESE IDs!!!!
+        // DON'T CHANGE THESE IDs!!!!
 
         /**
          * The KeyEvent meta state is stored as bit flags.
@@ -78,8 +82,9 @@ data class ActionEntity(
         const val EXTRA_INTENT_TARGET = "extra_intent_target"
         const val EXTRA_INTENT_DESCRIPTION = "extra_intent_description"
         const val EXTRA_SOUND_FILE_DESCRIPTION = "extra_sound_file_description"
+        const val EXTRA_INTENT_EXTRAS = "extra_intent_extras"
 
-        //DON'T CHANGE THESE. Used for JSON serialization and parsing.
+        // DON'T CHANGE THESE. Used for JSON serialization and parsing.
         const val NAME_ACTION_TYPE = "type"
         const val NAME_DATA = "data"
         const val NAME_EXTRAS = "extras"
@@ -118,18 +123,35 @@ data class ActionEntity(
             val uid by it.json.byNullableString(NAME_UID)
 
             ActionEntity(
-                type, data, extraList.toMutableList(), flags, uid
-                    ?: UUID.randomUUID().toString()
+                type,
+                data,
+                extraList.toMutableList(),
+                flags,
+                uid
+                    ?: UUID.randomUUID().toString(),
             )
         }
     }
 
     enum class Type {
-        //DONT CHANGE THESE
-        APP, APP_SHORTCUT, KEY_EVENT, TEXT_BLOCK, URL, SYSTEM_ACTION, TAP_COORDINATE, SWIPE_COORDINATE, PINCH_COORDINATE, INTENT, PHONE_CALL, SOUND
+        // DONT CHANGE THESE
+        APP,
+        APP_SHORTCUT,
+        KEY_EVENT,
+        TEXT_BLOCK,
+        URL,
+        SYSTEM_ACTION,
+        TAP_COORDINATE,
+        SWIPE_COORDINATE,
+        PINCH_COORDINATE,
+        INTENT,
+        PHONE_CALL,
+        SOUND,
     }
 
     constructor(
-        type: Type, data: String, extra: Extra
+        type: Type,
+        data: String,
+        extra: Extra,
     ) : this(type, data, listOf(extra))
 }

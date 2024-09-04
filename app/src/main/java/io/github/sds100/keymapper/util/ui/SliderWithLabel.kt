@@ -17,7 +17,7 @@ import io.github.sds100.keymapper.util.str
 class SliderWithLabel(
     context: Context,
     attrs: AttributeSet?,
-    defStyleAttr: Int
+    defStyleAttr: Int,
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -38,7 +38,7 @@ class SliderWithLabel(
         }
 
         slider.setLabelFormatter {
-            //Set text to "default" if the slider is in the "default" step position.
+            // Set text to "default" if the slider is in the "default" step position.
             if (isDefaultStepEnabled && it == slider.valueFrom) {
                 buttonDefaultText
             } else {
@@ -84,7 +84,7 @@ class SliderWithLabel(
         if (model.value is Defaultable.Custom) {
             when {
                 model.value.data > max -> {
-                    //set the max slider value to a multiple of the step size greater than the value
+                    // set the max slider value to a multiple of the step size greater than the value
                     val remainder = if (stepSize == 0) {
                         0
                     } else {
@@ -120,12 +120,10 @@ class SliderWithLabel(
         slider.addOnSliderTouchListener(listener)
     }
 
-    private fun calculateDefaultStepValue(min: Float, stepSize: Float): Float {
-        return min - stepSize
-    }
+    private fun calculateDefaultStepValue(min: Float, stepSize: Float): Float = min - stepSize
 
     private fun setSliderValueTextViewText(value: Float) {
-        //Set text to "default" if the slider is in the "default" step position.
+        // Set text to "default" if the slider is in the "default" step position.
         if (isDefaultStepEnabled && value == slider.valueFrom) {
             sliderValue.text = buttonDefaultText
         } else {

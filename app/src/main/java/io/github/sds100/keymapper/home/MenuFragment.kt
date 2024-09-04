@@ -44,10 +44,9 @@ class MenuFragment : BottomSheetDialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         FragmentMenuBinding.inflate(inflater, container, false).apply {
-
             lifecycleOwner = viewLifecycleOwner
             _binding = this
 
@@ -96,7 +95,6 @@ class MenuFragment : BottomSheetDialogFragment() {
 
                 binding.buttonToggleKeymaps.text = text
                 binding.buttonToggleKeymaps.setBackgroundColor(color)
-
             }
         }
 

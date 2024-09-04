@@ -19,11 +19,12 @@ import kotlinx.coroutines.flow.Flow
  */
 class FingerprintMapOptionsFragment : SimpleRecyclerViewFragment<ListItem>() {
 
-    class Info : FragmentInfo(
-        R.string.option_list_header,
-        R.string.url_fingerprint_map_options_guide,
-        { FingerprintMapOptionsFragment() }
-    )
+    class Info :
+        FragmentInfo(
+            R.string.option_list_header,
+            R.string.url_fingerprint_map_options_guide,
+            { FingerprintMapOptionsFragment() },
+        )
 
     private val configViewModel: ConfigFingerprintMapViewModel by navGraphViewModels(R.id.nav_config_fingerprint_map) {
         Inject.configFingerprintMapViewModel(requireContext())

@@ -28,11 +28,11 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
 
-open class KeyMapListViewModel constructor(
+open class KeyMapListViewModel(
     private val coroutineScope: CoroutineScope,
     private val useCase: ListKeyMapsUseCase,
     resourceProvider: ResourceProvider,
-    private val multiSelectProvider: MultiSelectProvider<String>
+    private val multiSelectProvider: MultiSelectProvider<String>,
 ) : PopupViewModel by PopupViewModelImpl(),
     ResourceProvider by resourceProvider,
     NavigationViewModel by NavigationViewModelImpl() {
@@ -50,7 +50,7 @@ open class KeyMapListViewModel constructor(
 
         combine(
             rebuildUiState,
-            useCase.showDeviceDescriptors
+            useCase.showDeviceDescriptors,
         ) { keyMapListState, showDeviceDescriptors ->
             keyMapStateListFlow.value = State.Loading
 
@@ -82,7 +82,7 @@ open class KeyMapListViewModel constructor(
         coroutineScope.launch(Dispatchers.Default) {
             combine(
                 keyMapStateListFlow,
-                multiSelectProvider.state
+                multiSelectProvider.state,
             ) { keymapListState, selectionState ->
                 Pair(keymapListState, selectionState)
             }.collectLatest { pair ->
@@ -100,7 +100,7 @@ open class KeyMapListViewModel constructor(
 
                         KeyMapListItem(
                             keymapUiState,
-                            KeyMapListItem.SelectionUiState(isSelected, isSelectable)
+                            KeyMapListItem.SelectionUiState(isSelected, isSelectable),
                         )
                     }
                 }
@@ -129,8 +129,10 @@ open class KeyMapListViewModel constructor(
         coroutineScope.launch {
             state.value.apply {
                 if (this is State.Data) {
-                    multiSelectProvider.select(*this.data.map { it.keyMapUiState.uid }
-                        .toTypedArray())
+                    multiSelectProvider.select(
+                        *this.data.map { it.keyMapUiState.uid }
+                            .toTypedArray(),
+                    )
                 }
             }
         }
@@ -138,41 +140,41 @@ open class KeyMapListViewModel constructor(
 
     fun onTriggerErrorChipClick(chipModel: ChipUi) {
         if (chipModel is ChipUi.Error) {
-            if (chipModel.error == Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)) {
-                coroutineScope.launch {
-                    ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
-                        resourceProvider = this@KeyMapListViewModel,
-                        popupViewModel = this@KeyMapListViewModel,
-                        neverShowDndTriggerErrorAgain = { useCase.neverShowDndTriggerErrorAgain() },
-                        fixError = { useCase.fixError(it) }
-                    )
-                }
-            } else {
-                showDialogAndFixError(chipModel.error)
-            }
+            onFixError(chipModel.error)
         }
     }
 
     fun onActionChipClick(chipModel: ChipUi) {
         if (chipModel is ChipUi.Error) {
-            showDialogAndFixError(chipModel.error)
+            onFixError(chipModel.error)
         }
     }
 
     fun onConstraintsChipClick(chipModel: ChipUi) {
         if (chipModel is ChipUi.Error) {
-            showDialogAndFixError(chipModel.error)
+            onFixError(chipModel.error)
         }
     }
 
-    private fun showDialogAndFixError(error: Error) {
+    private fun onFixError(error: Error) {
         coroutineScope.launch {
-            ViewModelHelper.showFixErrorDialog(
-                resourceProvider = this@KeyMapListViewModel,
-                popupViewModel = this@KeyMapListViewModel,
-                error
-            ) {
-                useCase.fixError(error)
+            if (error == Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)) {
+                coroutineScope.launch {
+                    ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
+                        resourceProvider = this@KeyMapListViewModel,
+                        popupViewModel = this@KeyMapListViewModel,
+                        neverShowDndTriggerErrorAgain = { useCase.neverShowDndTriggerErrorAgain() },
+                        fixError = { useCase.fixError(it) },
+                    )
+                }
+            } else {
+                ViewModelHelper.showFixErrorDialog(
+                    resourceProvider = this@KeyMapListViewModel,
+                    popupViewModel = this@KeyMapListViewModel,
+                    error,
+                ) {
+                    useCase.fixError(error)
+                }
             }
         }
     }

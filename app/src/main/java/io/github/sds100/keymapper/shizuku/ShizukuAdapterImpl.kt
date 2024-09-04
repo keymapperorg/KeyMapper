@@ -18,7 +18,7 @@ import rikka.shizuku.Shizuku
  */
 class ShizukuAdapterImpl(
     private val coroutineScope: CoroutineScope,
-    private val packageManagerAdapter: PackageManagerAdapter
+    private val packageManagerAdapter: PackageManagerAdapter,
 ) : ShizukuAdapter {
     override val isStarted by lazy { MutableStateFlow(Shizuku.getBinder() != null) }
 
@@ -34,7 +34,7 @@ class ShizukuAdapterImpl(
             .stateIn(
                 coroutineScope,
                 SharingStarted.WhileSubscribed(),
-                packageManagerAdapter.isAppInstalled(ShizukuUtils.SHIZUKU_PACKAGE)
+                packageManagerAdapter.isAppInstalled(ShizukuUtils.SHIZUKU_PACKAGE),
             )
 
     init {

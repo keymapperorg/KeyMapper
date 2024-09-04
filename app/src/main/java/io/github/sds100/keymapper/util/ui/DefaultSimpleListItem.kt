@@ -9,14 +9,14 @@ data class DefaultSimpleListItem(
     override val subtitle: String? = null,
     override val subtitleTint: TintType = TintType.OnSurface,
     override val icon: IconInfo? = null,
-    override val isEnabled: Boolean = true
+    override val isEnabled: Boolean = true,
 ) : SimpleListItem {
-    override fun getSearchableString(): String {
-        return title
-    }
+    override fun getSearchableString(): String = title
 }
 
-interface SimpleListItem : ListItem, ISearchable {
+interface SimpleListItem :
+    ListItem,
+    ISearchable {
     override val id: String
     val title: String
     val subtitle: String?

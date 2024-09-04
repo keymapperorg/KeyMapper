@@ -11,7 +11,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.lifecycleScope
 import io.github.sds100.keymapper.ServiceLocator
-import io.github.sds100.keymapper.util.Event
+import io.github.sds100.keymapper.util.ServiceEvent
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
@@ -19,13 +19,15 @@ import timber.log.Timber
 /**
  * Created by sds100 on 14/11/20.
  */
-class NotificationReceiver : NotificationListenerService(), LifecycleOwner {
+class NotificationReceiver :
+    NotificationListenerService(),
+    LifecycleOwner {
     private val mediaSessionManager: MediaSessionManager by lazy { getSystemService()!! }
 
     private val notificationListenerComponent by lazy {
         ComponentName(
             this,
-            NotificationReceiver::class.java
+            NotificationReceiver::class.java,
         )
     }
 
@@ -53,8 +55,8 @@ class NotificationReceiver : NotificationListenerService(), LifecycleOwner {
         serviceAdapter.eventsToService
             .onEach { event ->
                 when (event) {
-                    Event.DismissLastNotification -> cancelNotification(lastNotificationKey)
-                    Event.DismissAllNotifications -> cancelAllNotifications()
+                    ServiceEvent.DismissLastNotification -> cancelNotification(lastNotificationKey)
+                    ServiceEvent.DismissAllNotifications -> cancelAllNotifications()
                     else -> Unit
                 }
             }.launchIn(lifecycleScope)
@@ -79,9 +81,8 @@ class NotificationReceiver : NotificationListenerService(), LifecycleOwner {
         }
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        return super.onStartCommand(intent, flags, startId)
-    }
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int =
+        super.onStartCommand(intent, flags, startId)
 
     override fun onListenerConnected() {
         super.onListenerConnected()
@@ -89,15 +90,16 @@ class NotificationReceiver : NotificationListenerService(), LifecycleOwner {
         try {
             mediaSessionManager.addOnActiveSessionsChangedListener(
                 activeSessionsChangeListener,
-                notificationListenerComponent
+                notificationListenerComponent,
             )
 
-            val activeSessions = mediaSessionManager.getActiveSessions(notificationListenerComponent)
+            val activeSessions =
+                mediaSessionManager.getActiveSessions(notificationListenerComponent)
             mediaAdapter.onActiveMediaSessionChange(activeSessions)
         } catch (e: SecurityException) {
             Timber.e(
                 "NotificationReceiver: " +
-                    "Failed to add active sessions changed listener due to security exception. $e"
+                    "Failed to add active sessions changed listener due to security exception. $e",
             )
         }
     }

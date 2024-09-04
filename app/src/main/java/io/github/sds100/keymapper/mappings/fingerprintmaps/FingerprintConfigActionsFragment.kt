@@ -11,14 +11,14 @@ import io.github.sds100.keymapper.util.Inject
  * Created by sds100 on 22/11/20.
  */
 
-class FingerprintConfigActionsFragment :
-    ConfigActionsFragment<FingerprintMapAction>() {
+class FingerprintConfigActionsFragment : ConfigActionsFragment<FingerprintMapAction>() {
 
-    class Info : FragmentInfo(
-        R.string.action_list_header,
-        R.string.url_action_guide,
-        { FingerprintConfigActionsFragment() }
-    )
+    class Info :
+        FragmentInfo(
+            R.string.action_list_header,
+            R.string.url_action_guide,
+            { FingerprintConfigActionsFragment() },
+        )
 
     override var isAppBarVisible = false
 

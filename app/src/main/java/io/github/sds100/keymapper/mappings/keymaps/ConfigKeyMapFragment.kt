@@ -41,7 +41,7 @@ class ConfigKeyMapFragment : ConfigMappingFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        //only load the keymap if opening this fragment for the first time
+        // only load the keymap if opening this fragment for the first time
         if (savedInstanceState == null) {
             args.keymapUid.let {
                 if (it == null) {
@@ -120,20 +120,23 @@ class ConfigKeyMapFragment : ConfigMappingFragment() {
         }
     }
 
-    class TriggerAndActionsFragment : TwoFragments(
-        TriggerFragment.Info(),
-        KeyMapConfigActionsFragment.Info()
-    )
+    class TriggerAndActionsFragment :
+        TwoFragments(
+            TriggerFragment.Info(),
+            KeyMapConfigActionsFragment.Info(),
+        )
 
-    class ConstraintsAndOptionsFragment : TwoFragments(
-        ConfigTriggerOptionsFragment.Info(),
-        ConfigKeyMapConstraintsFragment.Info()
-    )
+    class ConstraintsAndOptionsFragment :
+        TwoFragments(
+            ConfigTriggerOptionsFragment.Info(),
+            ConfigKeyMapConstraintsFragment.Info(),
+        )
 
-    class AllFragments : FourFragments(
-        TriggerFragment.Info(),
-        ConfigTriggerOptionsFragment.Info(),
-        KeyMapConfigActionsFragment.Info(),
-        ConfigKeyMapConstraintsFragment.Info()
-    )
+    class AllFragments :
+        FourFragments(
+            TriggerFragment.Info(),
+            ConfigTriggerOptionsFragment.Info(),
+            KeyMapConfigActionsFragment.Info(),
+            ConfigKeyMapConstraintsFragment.Info(),
+        )
 }

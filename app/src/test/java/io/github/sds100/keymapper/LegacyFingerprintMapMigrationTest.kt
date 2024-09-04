@@ -10,12 +10,13 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import io.github.sds100.keymapper.data.migration.JsonMigration
 import io.github.sds100.keymapper.data.migration.MigrationUtils
-import io.github.sds100.keymapper.data.migration.fingerprintmaps.FingerprintMapMigration_0_1
-import io.github.sds100.keymapper.data.migration.fingerprintmaps.FingerprintMapMigration_1_2
+import io.github.sds100.keymapper.data.migration.fingerprintmaps.FingerprintMapMigration0To1
+import io.github.sds100.keymapper.data.migration.fingerprintmaps.FingerprintMapMigration1To2
 import io.github.sds100.keymapper.util.JsonTestUtils
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.TestCoroutineExceptionHandler
+import kotlinx.coroutines.test.createTestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Rule
@@ -45,7 +46,8 @@ class LegacyFingerprintMapMigrationTest {
     var instantExecutorRule = InstantTaskExecutorRule()
 
     private val testDispatcher = TestCoroutineDispatcher()
-    private val coroutineScope = TestCoroutineScope(testDispatcher)
+    private val coroutineScope =
+        createTestCoroutineScope(TestCoroutineDispatcher() + TestCoroutineExceptionHandler() + testDispatcher)
     private lateinit var parser: JsonParser
     private lateinit var gson: Gson
 
@@ -60,7 +62,8 @@ class LegacyFingerprintMapMigrationTest {
         test(
             listOf(getLegacySwipeDownJsonFromFile("migration-10-11-test-data.json")).toJsonArray(),
             listOf(getLegacySwipeDownJsonFromFile("migration-10-11-expected-data.json")).toJsonArray(),
-            1, 2
+            1,
+            2,
         )
     }
 
@@ -86,19 +89,18 @@ class LegacyFingerprintMapMigrationTest {
         return rootElement["fingerprint_swipe_down"].asJsonObject
     }
 
-    private fun getJson(fileName: String): InputStream {
-        return this.javaClass.classLoader!!.getResourceAsStream("json-migration-test/$fileName")
-    }
+    private fun getJson(fileName: String): InputStream =
+        this.javaClass.classLoader!!.getResourceAsStream("json-migration-test/$fileName")
 
     private fun test(
         testData: JsonArray,
         expectedData: JsonArray,
         inputVersion: Int,
-        outputVersion: Int
+        outputVersion: Int,
     ) = coroutineScope.runBlockingTest {
         val migrations = listOf(
-            JsonMigration(0, 1) { json -> FingerprintMapMigration_0_1.migrate(json) },
-            JsonMigration(1, 2) { json -> FingerprintMapMigration_1_2.migrate(json) },
+            JsonMigration(0, 1) { json -> FingerprintMapMigration0To1.migrate(json) },
+            JsonMigration(1, 2) { json -> FingerprintMapMigration1To2.migrate(json) },
         )
         testData.forEachIndexed { index, fingerprintMap ->
 
@@ -106,7 +108,7 @@ class LegacyFingerprintMapMigrationTest {
                 migrations,
                 inputVersion,
                 fingerprintMap.asJsonObject,
-                outputVersion
+                outputVersion,
             )
 
             val expectedElement = expectedData[index]

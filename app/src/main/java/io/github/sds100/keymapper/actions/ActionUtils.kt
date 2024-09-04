@@ -12,7 +12,6 @@ import io.github.sds100.keymapper.system.permissions.Permission
  * Created by sds100 on 16/03/2021.
  */
 
-
 object ActionUtils {
 
     @StringRes
@@ -381,83 +380,86 @@ object ActionUtils {
             ActionId.END_PHONE_CALL -> R.drawable.ic_outline_call_end_24
         }
 
-    fun getMinApi(id: ActionId): Int {
-        return when (id) {
-            ActionId.ANSWER_PHONE_CALL -> Build.VERSION_CODES.O
-            ActionId.END_PHONE_CALL -> Build.VERSION_CODES.P
+    fun getMinApi(id: ActionId): Int = when (id) {
+        ActionId.ANSWER_PHONE_CALL -> Build.VERSION_CODES.O
+        ActionId.END_PHONE_CALL -> Build.VERSION_CODES.P
 
-            ActionId.TOGGLE_SPLIT_SCREEN -> Build.VERSION_CODES.N
-            ActionId.GO_LAST_APP -> Build.VERSION_CODES.N
+        ActionId.TOGGLE_SPLIT_SCREEN -> Build.VERSION_CODES.N
+        ActionId.GO_LAST_APP -> Build.VERSION_CODES.N
 
-            ActionId.VOLUME_MUTE,
-            ActionId.VOLUME_UNMUTE,
-            ActionId.VOLUME_TOGGLE_MUTE,
-            ActionId.TOGGLE_DND_MODE,
-            ActionId.ENABLE_DND_MODE,
-            ActionId.DISABLE_DND_MODE,
-            -> Build.VERSION_CODES.M
+        ActionId.VOLUME_MUTE,
+        ActionId.VOLUME_UNMUTE,
+        ActionId.VOLUME_TOGGLE_MUTE,
+        ActionId.TOGGLE_DND_MODE,
+        ActionId.ENABLE_DND_MODE,
+        ActionId.DISABLE_DND_MODE,
+        -> Build.VERSION_CODES.M
 
-            ActionId.DISABLE_FLASHLIGHT,
-            ActionId.ENABLE_FLASHLIGHT,
-            ActionId.TOGGLE_FLASHLIGHT,
-            -> Build.VERSION_CODES.M
+        ActionId.DISABLE_FLASHLIGHT,
+        ActionId.ENABLE_FLASHLIGHT,
+        ActionId.TOGGLE_FLASHLIGHT,
+        -> Build.VERSION_CODES.M
 
-            ActionId.TOGGLE_KEYBOARD,
-            ActionId.SHOW_KEYBOARD,
-            ActionId.HIDE_KEYBOARD,
-            -> Build.VERSION_CODES.N
+        ActionId.TOGGLE_KEYBOARD,
+        ActionId.SHOW_KEYBOARD,
+        ActionId.HIDE_KEYBOARD,
+        -> Build.VERSION_CODES.N
 
-            ActionId.TEXT_CUT,
-            ActionId.TEXT_COPY,
-            ActionId.TEXT_PASTE,
-            ActionId.SELECT_WORD_AT_CURSOR,
-            -> Build.VERSION_CODES.JELLY_BEAN_MR2
+        ActionId.TEXT_CUT,
+        ActionId.TEXT_COPY,
+        ActionId.TEXT_PASTE,
+        ActionId.SELECT_WORD_AT_CURSOR,
+        -> Build.VERSION_CODES.JELLY_BEAN_MR2
 
-            ActionId.SHOW_POWER_MENU -> Build.VERSION_CODES.LOLLIPOP
+        ActionId.SHOW_POWER_MENU -> Build.VERSION_CODES.LOLLIPOP
 
-            else -> Constants.MIN_API
-        }
+        else -> Constants.MIN_API
     }
 
-    fun getMaxApi(id: ActionId): Int {
-        return when (id) {
-            ActionId.SHOW_KEYBOARD_PICKER -> Build.VERSION_CODES.P
+    fun getMaxApi(id: ActionId): Int = when (id) {
+        ActionId.SHOW_KEYBOARD_PICKER -> Build.VERSION_CODES.P
 
-            else -> Constants.MAX_API
-        }
+        // The global action still fails even though the API exists in SDK 34.
+        ActionId.COLLAPSE_STATUS_BAR -> Build.VERSION_CODES.TIRAMISU
+
+        ActionId.ENABLE_BLUETOOTH,
+        ActionId.DISABLE_BLUETOOTH,
+        ActionId.TOGGLE_BLUETOOTH,
+        -> Build.VERSION_CODES.S_V2
+
+        else -> Constants.MAX_API
     }
 
-    fun getRequiredSystemFeatures(id: ActionId): List<String> {
-        return when (id) {
-            ActionId.END_PHONE_CALL,
-            ActionId.ANSWER_PHONE_CALL,
-            ActionId.PHONE_CALL -> listOf(PackageManager.FEATURE_TELEPHONY)
+    fun getRequiredSystemFeatures(id: ActionId): List<String> = when (id) {
+        ActionId.END_PHONE_CALL,
+        ActionId.ANSWER_PHONE_CALL,
+        ActionId.PHONE_CALL,
+        -> listOf(PackageManager.FEATURE_TELEPHONY)
 
-            ActionId.SECURE_LOCK_DEVICE
-            -> listOf(PackageManager.FEATURE_DEVICE_ADMIN)
+        ActionId.SECURE_LOCK_DEVICE,
+        -> listOf(PackageManager.FEATURE_DEVICE_ADMIN)
 
-            ActionId.TOGGLE_WIFI,
-            ActionId.ENABLE_WIFI,
-            ActionId.DISABLE_WIFI,
-            -> listOf(PackageManager.FEATURE_WIFI)
+        ActionId.TOGGLE_WIFI,
+        ActionId.ENABLE_WIFI,
+        ActionId.DISABLE_WIFI,
+        -> listOf(PackageManager.FEATURE_WIFI)
 
-            ActionId.TOGGLE_NFC,
-            ActionId.ENABLE_NFC,
-            ActionId.DISABLE_NFC,
-            -> listOf(PackageManager.FEATURE_NFC)
+        ActionId.TOGGLE_NFC,
+        ActionId.ENABLE_NFC,
+        ActionId.DISABLE_NFC,
+        -> listOf(PackageManager.FEATURE_NFC)
 
-            ActionId.TOGGLE_BLUETOOTH,
-            ActionId.ENABLE_BLUETOOTH,
-            ActionId.DISABLE_BLUETOOTH,
-            -> listOf(PackageManager.FEATURE_BLUETOOTH)
+        ActionId.TOGGLE_BLUETOOTH,
+        ActionId.ENABLE_BLUETOOTH,
+        ActionId.DISABLE_BLUETOOTH,
+        -> listOf(PackageManager.FEATURE_BLUETOOTH)
 
-            ActionId.TOGGLE_FLASHLIGHT,
-            ActionId.ENABLE_FLASHLIGHT,
-            ActionId.DISABLE_FLASHLIGHT,
-            -> listOf(PackageManager.FEATURE_CAMERA_FLASH)
+        ActionId.TOGGLE_FLASHLIGHT,
+        ActionId.ENABLE_FLASHLIGHT,
+        ActionId.DISABLE_FLASHLIGHT,
+        -> listOf(PackageManager.FEATURE_CAMERA_FLASH)
 
-            else -> emptyList()
-        }
+        else -> emptyList()
     }
 
     fun getRequiredPermissions(id: ActionId): List<Permission> {
@@ -551,11 +553,13 @@ object ActionUtils {
             ActionId.POWER_ON_OFF_DEVICE -> return listOf(Permission.ROOT)
 
             ActionId.DISMISS_ALL_NOTIFICATIONS,
-            ActionId.DISMISS_MOST_RECENT_NOTIFICATION ->
+            ActionId.DISMISS_MOST_RECENT_NOTIFICATION,
+            ->
                 return listOf(Permission.NOTIFICATION_LISTENER)
 
             ActionId.ANSWER_PHONE_CALL,
-            ActionId.END_PHONE_CALL -> return listOf(Permission.ANSWER_PHONE_CALL)
+            ActionId.END_PHONE_CALL,
+            -> return listOf(Permission.ANSWER_PHONE_CALL)
 
             else -> Unit
         }

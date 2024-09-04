@@ -28,8 +28,9 @@ import kotlinx.coroutines.withContext
 class ConfigFingerprintMapOptionsViewModel(
     private val coroutineScope: CoroutineScope,
     private val config: ConfigFingerprintMapUseCase,
-    resourceProvider: ResourceProvider
-) : ResourceProvider by resourceProvider, PopupViewModel by PopupViewModelImpl() {
+    resourceProvider: ResourceProvider,
+) : ResourceProvider by resourceProvider,
+    PopupViewModel by PopupViewModelImpl() {
 
     companion object {
         private const val ID_VIBRATE_DURATION = "vibrate_duration"
@@ -63,15 +64,15 @@ class ConfigFingerprintMapOptionsViewModel(
         }
     }
 
-    private fun buildUiState(configState: State<FingerprintMap>): State<List<ListItem>> {
-        return configState.mapData { fingerprintMap ->
+    private fun buildUiState(configState: State<FingerprintMap>): State<List<ListItem>> =
+        configState.mapData { fingerprintMap ->
             sequence {
                 yield(
                     CheckBoxListItem(
                         id = ID_SHOW_TOAST,
                         isChecked = fingerprintMap.showToast,
-                        label = getString(R.string.flag_show_toast)
-                    )
+                        label = getString(R.string.flag_show_toast),
+                    ),
                 )
 
                 if (fingerprintMap.isVibrateAllowed()) {
@@ -79,8 +80,8 @@ class ConfigFingerprintMapOptionsViewModel(
                         CheckBoxListItem(
                             id = ID_VIBRATE,
                             isChecked = fingerprintMap.vibrate,
-                            label = getString(R.string.flag_vibrate)
-                        )
+                            label = getString(R.string.flag_vibrate),
+                        ),
                     )
                 }
 
@@ -95,11 +96,10 @@ class ConfigFingerprintMapOptionsViewModel(
                                 min = OptionMinimums.VIBRATION_DURATION,
                                 max = SliderMaximums.VIBRATION_DURATION,
                                 stepSize = SliderStepSizes.VIBRATION_DURATION,
-                            )
-                        )
+                            ),
+                        ),
                     )
                 }
             }.toList()
         }
-    }
 }

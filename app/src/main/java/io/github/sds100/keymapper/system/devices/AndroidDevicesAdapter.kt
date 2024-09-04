@@ -32,7 +32,7 @@ class AndroidDevicesAdapter(
     context: Context,
     private val bluetoothAdapter: io.github.sds100.keymapper.system.bluetooth.BluetoothAdapter,
     private val permissionAdapter: PermissionAdapter,
-    private val coroutineScope: CoroutineScope
+    private val coroutineScope: CoroutineScope,
 ) : DevicesAdapter {
     private val ctx = context.applicationContext
     private val inputManager = ctx.getSystemService<InputManager>()
@@ -56,41 +56,43 @@ class AndroidDevicesAdapter(
             merge(
                 bluetoothAdapter.onDevicePairedChange,
                 bluetoothAdapter.isBluetoothEnabled,
-                permissionAdapter.isGrantedFlow(Permission.FIND_NEARBY_DEVICES)
+                permissionAdapter.isGrantedFlow(Permission.FIND_NEARBY_DEVICES),
             ).collectLatest {
                 updatePairedBluetoothDevices()
             }
         }
 
         inputManager?.apply {
-            registerInputDeviceListener(object : InputManager.InputDeviceListener {
-                override fun onInputDeviceAdded(deviceId: Int) {
-                    coroutineScope.launch {
-                        val device = InputDevice.getDevice(deviceId) ?: return@launch
-                        onInputDeviceConnect.emit(InputDeviceUtils.createInputDeviceInfo(device))
+            registerInputDeviceListener(
+                object : InputManager.InputDeviceListener {
+                    override fun onInputDeviceAdded(deviceId: Int) {
+                        coroutineScope.launch {
+                            val device = InputDevice.getDevice(deviceId) ?: return@launch
+                            onInputDeviceConnect.emit(InputDeviceUtils.createInputDeviceInfo(device))
 
-                        updateInputDevices()
-                    }
-                }
-
-                override fun onInputDeviceRemoved(deviceId: Int) {
-                    coroutineScope.launch {
-                        connectedInputDevices.value.ifIsData { connectedInputDevices ->
-                            val device = connectedInputDevices.find { it.id == deviceId }
-                                ?: return@ifIsData
-
-                            onInputDeviceDisconnect.emit(device)
+                            updateInputDevices()
                         }
+                    }
 
+                    override fun onInputDeviceRemoved(deviceId: Int) {
+                        coroutineScope.launch {
+                            connectedInputDevices.value.ifIsData { connectedInputDevices ->
+                                val device = connectedInputDevices.find { it.id == deviceId }
+                                    ?: return@ifIsData
+
+                                onInputDeviceDisconnect.emit(device)
+                            }
+
+                            updateInputDevices()
+                        }
+                    }
+
+                    override fun onInputDeviceChanged(deviceId: Int) {
                         updateInputDevices()
                     }
-                }
-
-                override fun onInputDeviceChanged(deviceId: Int) {
-                    updateInputDevices()
-                }
-
-            }, Handler(mainLooper))
+                },
+                Handler(mainLooper),
+            )
         }
 
         bluetoothAdapter.onDeviceConnect.onEach { device ->
@@ -108,12 +110,14 @@ class AndroidDevicesAdapter(
     }
 
     override fun deviceHasKey(id: Int, keyCode: Int): Boolean {
-        return InputDevice.getDevice(id).hasKeys(keyCode)[0]
+        val device = InputDevice.getDevice(id) ?: return false
+
+        return device.hasKeys(keyCode)[0]
     }
 
     override fun getInputDeviceName(descriptor: String): Result<String> {
         InputDevice.getDeviceIds().forEach {
-            val device = InputDevice.getDevice(it)
+            val device = InputDevice.getDevice(it) ?: return@forEach
 
             if (device.descriptor == descriptor) {
                 return Success(device.name)

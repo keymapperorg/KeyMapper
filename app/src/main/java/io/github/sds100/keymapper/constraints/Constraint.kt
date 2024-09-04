@@ -37,12 +37,10 @@ sealed class Constraint {
     object NoMediaPlaying : Constraint()
 
     @Serializable
-    data class BtDeviceConnected(val bluetoothAddress: String, val deviceName: String) :
-        Constraint()
+    data class BtDeviceConnected(val bluetoothAddress: String, val deviceName: String) : Constraint()
 
     @Serializable
-    data class BtDeviceDisconnected(val bluetoothAddress: String, val deviceName: String) :
-        Constraint()
+    data class BtDeviceDisconnected(val bluetoothAddress: String, val deviceName: String) : Constraint()
 
     @Serializable
     object ScreenOn : Constraint()
@@ -76,7 +74,7 @@ sealed class Constraint {
         /**
          * Null if connected to any wifi network.
          */
-        val ssid: String?
+        val ssid: String?,
     ) : Constraint()
 
     @Serializable
@@ -84,19 +82,19 @@ sealed class Constraint {
         /**
          * Null if disconnected from any wifi network.
          */
-        val ssid: String?
+        val ssid: String?,
     ) : Constraint()
 
     @Serializable
     data class ImeChosen(
         val imeId: String,
-        val imeLabel: String
+        val imeLabel: String,
     ) : Constraint()
 
     @Serializable
     data class ImeNotChosen(
         val imeId: String,
-        val imeLabel: String
+        val imeLabel: String,
     ) : Constraint()
 
     @Serializable
@@ -138,21 +136,18 @@ object ConstraintEntityMapper {
 
     private val LENS_MAP = mapOf(
         CameraLens.BACK to "option_lens_back",
-        CameraLens.FRONT to "option_lens_front"
+        CameraLens.FRONT to "option_lens_front",
     )
 
     fun fromEntity(entity: ConstraintEntity): Constraint {
-        fun getPackageName(): String {
-            return entity.extras.getData(ConstraintEntity.EXTRA_PACKAGE_NAME).valueOrNull()!!
-        }
+        fun getPackageName(): String =
+            entity.extras.getData(ConstraintEntity.EXTRA_PACKAGE_NAME).valueOrNull()!!
 
-        fun getBluetoothAddress(): String {
-            return entity.extras.getData(ConstraintEntity.EXTRA_BT_ADDRESS).valueOrNull()!!
-        }
+        fun getBluetoothAddress(): String =
+            entity.extras.getData(ConstraintEntity.EXTRA_BT_ADDRESS).valueOrNull()!!
 
-        fun getBluetoothDeviceName(): String {
-            return entity.extras.getData(ConstraintEntity.EXTRA_BT_NAME).valueOrNull()!!
-        }
+        fun getBluetoothDeviceName(): String =
+            entity.extras.getData(ConstraintEntity.EXTRA_BT_NAME).valueOrNull()!!
 
         fun getCameraLens(): CameraLens {
             val extraValue =
@@ -231,22 +226,22 @@ object ConstraintEntityMapper {
     fun toEntity(constraint: Constraint): ConstraintEntity = when (constraint) {
         is Constraint.AppInForeground -> ConstraintEntity(
             type = ConstraintEntity.APP_FOREGROUND,
-            extras = listOf(Extra(ConstraintEntity.EXTRA_PACKAGE_NAME, constraint.packageName))
+            extras = listOf(Extra(ConstraintEntity.EXTRA_PACKAGE_NAME, constraint.packageName)),
         )
 
         is Constraint.AppNotInForeground -> ConstraintEntity(
             type = ConstraintEntity.APP_NOT_FOREGROUND,
-            extras = listOf(Extra(ConstraintEntity.EXTRA_PACKAGE_NAME, constraint.packageName))
+            extras = listOf(Extra(ConstraintEntity.EXTRA_PACKAGE_NAME, constraint.packageName)),
         )
 
         is Constraint.AppPlayingMedia -> ConstraintEntity(
             type = ConstraintEntity.APP_PLAYING_MEDIA,
-            extras = listOf(Extra(ConstraintEntity.EXTRA_PACKAGE_NAME, constraint.packageName))
+            extras = listOf(Extra(ConstraintEntity.EXTRA_PACKAGE_NAME, constraint.packageName)),
         )
 
         is Constraint.AppNotPlayingMedia -> ConstraintEntity(
             type = ConstraintEntity.APP_NOT_PLAYING_MEDIA,
-            extras = listOf(Extra(ConstraintEntity.EXTRA_PACKAGE_NAME, constraint.packageName))
+            extras = listOf(Extra(ConstraintEntity.EXTRA_PACKAGE_NAME, constraint.packageName)),
         )
 
         Constraint.MediaPlaying -> ConstraintEntity(ConstraintEntity.MEDIA_PLAYING)
@@ -257,7 +252,7 @@ object ConstraintEntityMapper {
             extras = listOf(
                 Extra(ConstraintEntity.EXTRA_BT_ADDRESS, constraint.bluetoothAddress),
                 Extra(ConstraintEntity.EXTRA_BT_NAME, constraint.deviceName),
-            )
+            ),
         )
 
         is Constraint.BtDeviceDisconnected -> ConstraintEntity(
@@ -265,7 +260,7 @@ object ConstraintEntityMapper {
             extras = listOf(
                 Extra(ConstraintEntity.EXTRA_BT_ADDRESS, constraint.bluetoothAddress),
                 Extra(ConstraintEntity.EXTRA_BT_NAME, constraint.deviceName),
-            )
+            ),
         )
 
         is Constraint.OrientationCustom -> when (constraint.orientation) {
@@ -282,12 +277,12 @@ object ConstraintEntityMapper {
 
         is Constraint.FlashlightOff -> ConstraintEntity(
             ConstraintEntity.FLASHLIGHT_OFF,
-            Extra(ConstraintEntity.EXTRA_FLASHLIGHT_CAMERA_LENS, LENS_MAP[constraint.lens]!!)
+            Extra(ConstraintEntity.EXTRA_FLASHLIGHT_CAMERA_LENS, LENS_MAP[constraint.lens]!!),
         )
 
         is Constraint.FlashlightOn -> ConstraintEntity(
             ConstraintEntity.FLASHLIGHT_ON,
-            Extra(ConstraintEntity.EXTRA_FLASHLIGHT_CAMERA_LENS, LENS_MAP[constraint.lens]!!)
+            Extra(ConstraintEntity.EXTRA_FLASHLIGHT_CAMERA_LENS, LENS_MAP[constraint.lens]!!),
         )
 
         is Constraint.WifiConnected -> {
@@ -317,7 +312,7 @@ object ConstraintEntityMapper {
             ConstraintEntity(
                 ConstraintEntity.IME_CHOSEN,
                 Extra(ConstraintEntity.EXTRA_IME_ID, constraint.imeId),
-                Extra(ConstraintEntity.EXTRA_IME_LABEL, constraint.imeLabel)
+                Extra(ConstraintEntity.EXTRA_IME_LABEL, constraint.imeLabel),
             )
         }
 
@@ -325,7 +320,7 @@ object ConstraintEntityMapper {
             ConstraintEntity(
                 ConstraintEntity.IME_NOT_CHOSEN,
                 Extra(ConstraintEntity.EXTRA_IME_ID, constraint.imeId),
-                Extra(ConstraintEntity.EXTRA_IME_LABEL, constraint.imeLabel)
+                Extra(ConstraintEntity.EXTRA_IME_LABEL, constraint.imeLabel),
             )
         }
 

@@ -8,9 +8,25 @@ import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.getFullMessage
-import io.github.sds100.keymapper.util.ui.*
+import io.github.sds100.keymapper.util.ui.DefaultSimpleListItem
+import io.github.sds100.keymapper.util.ui.NavDestination
+import io.github.sds100.keymapper.util.ui.NavigationViewModel
+import io.github.sds100.keymapper.util.ui.NavigationViewModelImpl
+import io.github.sds100.keymapper.util.ui.PopupUi
+import io.github.sds100.keymapper.util.ui.PopupViewModel
+import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
+import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.util.ui.SimpleListItem
+import io.github.sds100.keymapper.util.ui.TintType
+import io.github.sds100.keymapper.util.ui.navigate
+import io.github.sds100.keymapper.util.ui.showPopup
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 /**
@@ -19,7 +35,7 @@ import kotlinx.coroutines.launch
 
 class ChooseConstraintViewModel(
     private val useCase: CreateConstraintUseCase,
-    resourceProvider: ResourceProvider
+    resourceProvider: ResourceProvider,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
     PopupViewModel by PopupViewModelImpl(),
@@ -66,7 +82,7 @@ class ChooseConstraintViewModel(
             ChooseConstraintType.PHONE_RINGING,
 
             ChooseConstraintType.CHARGING,
-            ChooseConstraintType.DISCHARGING
+            ChooseConstraintType.DISCHARGING,
         )
     }
 
@@ -92,20 +108,20 @@ class ChooseConstraintViewModel(
 
     fun onListItemClick(id: String) {
         viewModelScope.launch {
-            val constraintType = ChooseConstraintType.valueOf(id)
-
-            when (constraintType) {
+            when (val constraintType = ChooseConstraintType.valueOf(id)) {
                 ChooseConstraintType.APP_IN_FOREGROUND,
                 ChooseConstraintType.APP_NOT_IN_FOREGROUND,
                 ChooseConstraintType.APP_PLAYING_MEDIA,
-                ChooseConstraintType.APP_NOT_PLAYING_MEDIA -> onSelectAppConstraint(constraintType)
+                ChooseConstraintType.APP_NOT_PLAYING_MEDIA,
+                -> onSelectAppConstraint(constraintType)
 
                 ChooseConstraintType.MEDIA_PLAYING -> _returnResult.emit(Constraint.MediaPlaying)
                 ChooseConstraintType.MEDIA_NOT_PLAYING -> _returnResult.emit(Constraint.NoMediaPlaying)
 
                 ChooseConstraintType.BT_DEVICE_CONNECTED,
-                ChooseConstraintType.BT_DEVICE_DISCONNECTED -> onSelectBluetoothConstraint(
-                    constraintType
+                ChooseConstraintType.BT_DEVICE_DISCONNECTED,
+                -> onSelectBluetoothConstraint(
+                    constraintType,
                 )
 
                 ChooseConstraintType.SCREEN_ON -> onSelectScreenOnConstraint()
@@ -143,12 +159,14 @@ class ChooseConstraintViewModel(
                 ChooseConstraintType.WIFI_OFF -> _returnResult.emit(Constraint.WifiOff)
 
                 ChooseConstraintType.WIFI_CONNECTED,
-                ChooseConstraintType.WIFI_DISCONNECTED -> onSelectWifiConnectedConstraint(
-                    constraintType
+                ChooseConstraintType.WIFI_DISCONNECTED,
+                -> onSelectWifiConnectedConstraint(
+                    constraintType,
                 )
 
                 ChooseConstraintType.IME_CHOSEN,
-                ChooseConstraintType.IME_NOT_CHOSEN -> onSelectImeChosenConstraint(constraintType)
+                ChooseConstraintType.IME_NOT_CHOSEN,
+                -> onSelectImeChosenConstraint(constraintType)
 
                 ChooseConstraintType.DEVICE_IS_LOCKED ->
                     _returnResult.emit(Constraint.DeviceIsLocked)
@@ -177,7 +195,7 @@ class ChooseConstraintViewModel(
     private suspend fun chooseFlashlightLens(): CameraLens? {
         val items = listOf(
             CameraLens.FRONT to getString(R.string.lens_front),
-            CameraLens.BACK to getString(R.string.lens_back)
+            CameraLens.BACK to getString(R.string.lens_back),
         )
 
         val dialog = PopupUi.SingleChoice(items)
@@ -233,7 +251,7 @@ class ChooseConstraintViewModel(
                 isEnabled = error == null,
                 subtitle = error?.getFullMessage(this@ChooseConstraintViewModel),
                 subtitleTint = TintType.Error,
-                icon = null
+                icon = null,
             )
 
             yield(listItem)
@@ -252,7 +270,7 @@ class ChooseConstraintViewModel(
                 hint = getString(R.string.hint_wifi_ssid),
                 allowEmpty = true,
                 message = getString(R.string.constraint_wifi_message_cant_list_networks),
-                autoCompleteEntries = savedWifiSSIDs
+                autoCompleteEntries = savedWifiSSIDs,
             )
 
             val ssidText = showPopup("type_ssid", dialog) ?: return
@@ -316,7 +334,7 @@ class ChooseConstraintViewModel(
     private suspend fun onSelectScreenOnConstraint() {
         val response = showPopup(
             "screen_on_constraint_limitation",
-            PopupUi.Ok(getString(R.string.dialog_message_screen_constraints_limitation))
+            PopupUi.Ok(getString(R.string.dialog_message_screen_constraints_limitation)),
         )
 
         response ?: return
@@ -327,7 +345,7 @@ class ChooseConstraintViewModel(
     private suspend fun onSelectScreenOffConstraint() {
         val response = showPopup(
             "screen_on_constraint_limitation",
-            PopupUi.Ok(getString(R.string.dialog_message_screen_constraints_limitation))
+            PopupUi.Ok(getString(R.string.dialog_message_screen_constraints_limitation)),
         )
 
         response ?: return
@@ -338,25 +356,25 @@ class ChooseConstraintViewModel(
     private suspend fun onSelectBluetoothConstraint(type: ChooseConstraintType) {
         val response = showPopup(
             "bluetooth_device_constraint_limitation",
-            PopupUi.Ok(getString(R.string.dialog_message_bt_constraint_limitation))
+            PopupUi.Ok(getString(R.string.dialog_message_bt_constraint_limitation)),
         )
 
         response ?: return
 
         val device = navigate(
             "choose_bluetooth_device_for_constraint",
-            NavDestination.ChooseBluetoothDevice
+            NavDestination.ChooseBluetoothDevice,
         ) ?: return
 
         val constraint = when (type) {
             ChooseConstraintType.BT_DEVICE_CONNECTED -> Constraint.BtDeviceConnected(
                 device.address,
-                device.name
+                device.name,
             )
 
             ChooseConstraintType.BT_DEVICE_DISCONNECTED -> Constraint.BtDeviceDisconnected(
                 device.address,
-                device.name
+                device.name,
             )
 
             else -> throw IllegalArgumentException("Don't know how to create $type constraint after choosing app")
@@ -367,24 +385,27 @@ class ChooseConstraintViewModel(
 
     private suspend fun onSelectAppConstraint(type: ChooseConstraintType) {
         val packageName =
-            navigate("choose_package_for_constraint", NavDestination.ChooseApp(allowHiddenApps = true))
+            navigate(
+                "choose_package_for_constraint",
+                NavDestination.ChooseApp(allowHiddenApps = true),
+            )
                 ?: return
 
         val constraint = when (type) {
             ChooseConstraintType.APP_IN_FOREGROUND -> Constraint.AppInForeground(
-                packageName
+                packageName,
             )
 
             ChooseConstraintType.APP_NOT_IN_FOREGROUND -> Constraint.AppNotInForeground(
-                packageName
+                packageName,
             )
 
             ChooseConstraintType.APP_PLAYING_MEDIA -> Constraint.AppPlayingMedia(
-                packageName
+                packageName,
             )
 
             ChooseConstraintType.APP_NOT_PLAYING_MEDIA -> Constraint.AppNotPlayingMedia(
-                packageName
+                packageName,
             )
 
             else -> throw IllegalArgumentException("Don't know how to create $type constraint after choosing app")
@@ -396,11 +417,10 @@ class ChooseConstraintViewModel(
     @Suppress("UNCHECKED_CAST")
     class Factory(
         private val isSupported: CreateConstraintUseCase,
-        private val resourceProvider: ResourceProvider
+        private val resourceProvider: ResourceProvider,
     ) : ViewModelProvider.NewInstanceFactory() {
 
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return ChooseConstraintViewModel(isSupported, resourceProvider) as T
-        }
+        override fun <T : ViewModel> create(modelClass: Class<T>): T =
+            ChooseConstraintViewModel(isSupported, resourceProvider) as T
     }
 }

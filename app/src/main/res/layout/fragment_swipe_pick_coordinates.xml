@@ -25,7 +25,7 @@
             android:id="@+id/scrollView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="?attr/actionBarSize"
+            android:layout_marginBottom="@dimen/bottom_app_bar_height"
             app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -318,7 +318,7 @@
 
         <com.google.android.material.bottomappbar.BottomAppBar
             android:id="@+id/appBar"
-            style="@style/BottomAppBar"
+            app:menuAlignmentMode="auto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"

@@ -10,8 +10,27 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.system.apps.ActivityInfo
-import io.github.sds100.keymapper.util.ui.*
-import kotlinx.coroutines.flow.*
+import io.github.sds100.keymapper.util.ui.DialogResponse
+import io.github.sds100.keymapper.util.ui.MultiChoiceItem
+import io.github.sds100.keymapper.util.ui.NavDestination
+import io.github.sds100.keymapper.util.ui.NavigationViewModel
+import io.github.sds100.keymapper.util.ui.NavigationViewModelImpl
+import io.github.sds100.keymapper.util.ui.PopupUi
+import io.github.sds100.keymapper.util.ui.PopupViewModel
+import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
+import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.util.ui.navigate
+import io.github.sds100.keymapper.util.ui.showPopup
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag
@@ -20,7 +39,8 @@ import splitties.bitflags.withFlag
  * Created by sds100 on 01/01/21.
  */
 
-class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
+class ConfigIntentViewModel(resourceProvider: ResourceProvider) :
+    ViewModel(),
     ResourceProvider by resourceProvider,
     PopupViewModel by PopupViewModelImpl(),
     NavigationViewModel by NavigationViewModelImpl() {
@@ -44,9 +64,8 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
             FloatExtraType(),
             FloatArrayExtraType(),
             ShortExtraType(),
-            ShortArrayExtraType()
+            ShortArrayExtraType(),
         )
-
 
         val availableIntentFlags: List<Pair<Int, String>> =
             sequence {
@@ -116,7 +135,6 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     yield(Intent.FLAG_RECEIVER_VISIBLE_TO_INSTANT_APPS to "FLAG_RECEIVER_VISIBLE_TO_INSTANT_APPS")
                 }
-
             }.toList()
     }
 
@@ -162,7 +180,9 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
     }
 
     val isDoneButtonEnabled = isValid.stateIn(
-        viewModelScope, SharingStarted.Eagerly, false
+        viewModelScope,
+        SharingStarted.Eagerly,
+        false,
     )
 
     private val _returnResult = MutableSharedFlow<ConfigIntentResult>()
@@ -241,8 +261,9 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
                 ConfigIntentResult(
                     uri = uri,
                     target = target.value,
-                    description = description.value
-                )
+                    description = description.value,
+                    extras = extras.value,
+                ),
             )
         }
     }
@@ -310,7 +331,6 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
 
     fun showFlagsDialog() {
         viewModelScope.launch {
-
             val oldSelectedFlags: Int = flags.first()
 
             val dialogItems = availableIntentFlags.map { pair ->
@@ -356,12 +376,21 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
 
         val extrasBundle = intent.extras ?: Bundle.EMPTY
 
-        extras.value = extrasBundle.keySet().mapNotNull { key ->
-            val value = extrasBundle.get(key)
+        val intentExtras: MutableList<IntentExtraModel> = result.extras.toMutableList()
 
-            if (value == null) {
-                return@mapNotNull null
+        /**
+         * See issue #1171. Until version 2.6.1, the extras were assumed to be stored in
+         * the URI representation of the intent. But the array extras were never saved.
+         * So to maintain backwards compatibility with old intent actions that stored the arrays
+         * in the URI, also add the extras from the URI.
+         */
+        for (key in extrasBundle.keySet()) {
+            // skip the extra if the list already contains it.
+            if (intentExtras.any { it.name == key }) {
+                continue
             }
+
+            val value = extrasBundle.get(key) ?: continue
 
             val extraType = when (value) {
                 is Boolean -> BoolExtraType()
@@ -379,15 +408,20 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
                 is Short -> ShortExtraType()
                 is ShortArray -> ShortArrayExtraType()
                 is String -> StringExtraType()
-                else -> throw IllegalArgumentException("Don't know how to conver this extra (${value.javaClass.name}) to an IntentExtraType")
+                is Array<*> -> StringArrayExtraType()
+                else -> throw IllegalArgumentException("Don't know how to convert this extra (${value.javaClass.name}) to an IntentExtraType")
             }
 
-            IntentExtraModel(
+            val extra = IntentExtraModel(
                 type = extraType,
                 name = key,
-                value = value.toString()
+                value = value.toString(),
             )
+
+            intentExtras.add(extra)
         }
+
+        this.extras.value = intentExtras
     }
 
     fun setActivity(activityInfo: ActivityInfo) {
@@ -400,7 +434,7 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
             val dialog = PopupUi.Dialog(
                 message = getString(R.string.intent_flags_example),
                 positiveButtonText = getString(R.string.pos_ok),
-                neutralButtonText = getString(R.string.neutral_intent_docs)
+                neutralButtonText = getString(R.string.neutral_intent_docs),
             )
 
             val response = showPopup("flags_example", dialog) ?: return@launch
@@ -408,88 +442,91 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) : ViewModel(),
             if (response == DialogResponse.NEUTRAL) {
                 showPopup(
                     "url_intent_flags",
-                    PopupUi.OpenUrl(getString(R.string.url_intent_set_flags_help))
+                    PopupUi.OpenUrl(getString(R.string.url_intent_set_flags_help)),
                 )
             }
         }
     }
 
-    private fun IntentExtraModel.toListItem(): IntentExtraListItem {
-        return when (type) {
-            is BoolExtraType -> BoolIntentExtraListItem(
-                uid,
-                name,
-                parsedValue?.let { it as Boolean } ?: true,
-                isValidValue
-            )
+    private fun IntentExtraModel.toListItem(): IntentExtraListItem = when (type) {
+        is BoolExtraType -> BoolIntentExtraListItem(
+            uid,
+            name,
+            parsedValue?.let { it as Boolean } ?: true,
+            isValidValue,
+        )
 
-            else -> {
-                val inputType = when (type) {
-                    is IntExtraType ->
-                        InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED
+        else -> {
+            val inputType = when (type) {
+                is IntExtraType ->
+                    InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED
 
-                    is IntArrayExtraType -> InputType.TYPE_CLASS_NUMBER or
+                is IntArrayExtraType ->
+                    InputType.TYPE_CLASS_NUMBER or
                         InputType.TYPE_NUMBER_FLAG_SIGNED or InputType.TYPE_CLASS_TEXT
 
-                    is LongExtraType ->
-                        InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED
+                is LongExtraType ->
+                    InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED
 
-                    is LongArrayExtraType -> InputType.TYPE_CLASS_NUMBER or
+                is LongArrayExtraType ->
+                    InputType.TYPE_CLASS_NUMBER or
                         InputType.TYPE_NUMBER_FLAG_SIGNED or InputType.TYPE_CLASS_TEXT
 
-                    is ByteExtraType ->
-                        InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED
+                is ByteExtraType ->
+                    InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED
 
-                    is ByteArrayExtraType -> InputType.TYPE_CLASS_NUMBER or
+                is ByteArrayExtraType ->
+                    InputType.TYPE_CLASS_NUMBER or
                         InputType.TYPE_NUMBER_FLAG_SIGNED or InputType.TYPE_CLASS_TEXT
 
-                    is DoubleExtraType ->
-                        InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED or
-                            InputType.TYPE_NUMBER_FLAG_DECIMAL
+                is DoubleExtraType ->
+                    InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED or
+                        InputType.TYPE_NUMBER_FLAG_DECIMAL
 
-                    is DoubleArrayExtraType -> InputType.TYPE_CLASS_NUMBER or
+                is DoubleArrayExtraType ->
+                    InputType.TYPE_CLASS_NUMBER or
                         InputType.TYPE_NUMBER_FLAG_DECIMAL or
                         InputType.TYPE_NUMBER_FLAG_SIGNED or
                         InputType.TYPE_CLASS_TEXT
 
-                    is FloatExtraType ->
-                        InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED or
-                            InputType.TYPE_NUMBER_FLAG_DECIMAL
+                is FloatExtraType ->
+                    InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED or
+                        InputType.TYPE_NUMBER_FLAG_DECIMAL
 
-                    is FloatArrayExtraType -> InputType.TYPE_CLASS_NUMBER or
+                is FloatArrayExtraType ->
+                    InputType.TYPE_CLASS_NUMBER or
                         InputType.TYPE_NUMBER_FLAG_DECIMAL or
                         InputType.TYPE_NUMBER_FLAG_SIGNED or
                         InputType.TYPE_CLASS_TEXT
 
-                    is ShortExtraType ->
-                        InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED
+                is ShortExtraType ->
+                    InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED
 
-                    is ShortArrayExtraType -> InputType.TYPE_CLASS_NUMBER or
+                is ShortArrayExtraType ->
+                    InputType.TYPE_CLASS_NUMBER or
                         InputType.TYPE_NUMBER_FLAG_SIGNED or InputType.TYPE_CLASS_TEXT
 
-                    else -> InputType.TYPE_CLASS_TEXT
-                }
-
-                GenericIntentExtraListItem(
-                    uid,
-                    getString(type.labelStringRes),
-                    name,
-                    value,
-                    isValidValue,
-                    getString(type.exampleStringRes),
-                    inputType
-                )
+                else -> InputType.TYPE_CLASS_TEXT
             }
+
+            GenericIntentExtraListItem(
+                uid,
+                getString(type.labelStringRes),
+                name,
+                value,
+                isValidValue,
+                getString(type.exampleStringRes),
+                inputType,
+            )
         }
     }
 
     @Suppress("UNCHECKED_CAST")
     class Factory(
-        private val resourceProvider: ResourceProvider
+        private val resourceProvider: ResourceProvider,
     ) : ViewModelProvider.NewInstanceFactory() {
 
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return ConfigIntentViewModel(resourceProvider) as T
-        }
+        override fun <T : ViewModel> create(modelClass: Class<T>): T =
+            ConfigIntentViewModel(resourceProvider) as T
     }
 }

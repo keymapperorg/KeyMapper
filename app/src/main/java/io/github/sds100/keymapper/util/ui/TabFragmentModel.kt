@@ -10,5 +10,5 @@ import androidx.fragment.app.Fragment
 data class TabFragmentModel(
     @StringRes val tabTitle: Int,
     val searchStateKey: String?,
-    val fragmentCreator: () -> Fragment
+    val fragmentCreator: () -> Fragment,
 )

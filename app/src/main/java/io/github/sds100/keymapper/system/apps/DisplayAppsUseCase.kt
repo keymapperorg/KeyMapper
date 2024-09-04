@@ -10,25 +10,19 @@ import kotlinx.coroutines.flow.Flow
  */
 
 class DisplayAppsUseCaseImpl(
-    private val adapter: PackageManagerAdapter
+    private val adapter: PackageManagerAdapter,
 ) : DisplayAppsUseCase {
     override val installedPackages: Flow<State<List<PackageInfo>>> = adapter.installedPackages
 
-    override fun getAppName(packageName: String): Result<String> {
-        return adapter.getAppName(packageName)
-    }
+    override fun getAppName(packageName: String): Result<String> = adapter.getAppName(packageName)
 
-    override fun getAppIcon(packageName: String): Result<Drawable> {
-        return adapter.getAppIcon(packageName)
-    }
+    override fun getAppIcon(packageName: String): Result<Drawable> = adapter.getAppIcon(packageName)
 
-    override fun getActivityLabel(packageName: String, activityClass: String): Result<String> {
-        return adapter.getActivityLabel(packageName, activityClass)
-    }
+    override fun getActivityLabel(packageName: String, activityClass: String): Result<String> =
+        adapter.getActivityLabel(packageName, activityClass)
 
-    override fun getActivityIcon(packageName: String, activityClass: String): Result<Drawable?> {
-        return adapter.getActivityIcon(packageName, activityClass)
-    }
+    override fun getActivityIcon(packageName: String, activityClass: String): Result<Drawable?> =
+        adapter.getActivityIcon(packageName, activityClass)
 }
 
 interface DisplayAppsUseCase {

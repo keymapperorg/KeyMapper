@@ -11,6 +11,7 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
 import android.view.inputmethod.InputMethodManager
+import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import io.github.sds100.keymapper.system.JobSchedulerHelper
 import io.github.sds100.keymapper.system.SettingsUtils
@@ -20,8 +21,8 @@ import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.util.Error
-import io.github.sds100.keymapper.util.Event
 import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.util.ServiceEvent
 import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.onFailure
 import io.github.sds100.keymapper.util.onSuccess
@@ -52,7 +53,7 @@ class AndroidInputMethodAdapter(
     private val coroutineScope: CoroutineScope,
     private val serviceAdapter: ServiceAdapter,
     private val permissionAdapter: PermissionAdapter,
-    private val suAdapter: SuAdapter
+    private val suAdapter: SuAdapter,
 ) : InputMethodAdapter {
 
     companion object {
@@ -96,8 +97,8 @@ class AndroidInputMethodAdapter(
     override val isUserInputRequiredToChangeIme: Flow<Boolean> = channelFlow {
         suspend fun invalidate() {
             when {
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
-                    && serviceAdapter.state.first() == ServiceState.ENABLED -> send(true)
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
+                    serviceAdapter.state.first() == ServiceState.ENABLED -> send(true)
 
                 permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS) -> send(true)
 
@@ -121,7 +122,7 @@ class AndroidInputMethodAdapter(
     }
 
     init {
-        //use job scheduler because there is there is a much shorter delay when the app is in the background
+        // use job scheduler because there is there is a much shorter delay when the app is in the background
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             JobSchedulerHelper.observeInputMethods(ctx)
         } else {
@@ -136,21 +137,27 @@ class AndroidInputMethodAdapter(
             ctx.contentResolver.registerContentObserver(
                 Settings.Secure.getUriFor(Settings.Secure.ENABLED_INPUT_METHODS),
                 false,
-                observer
+                observer,
             )
 
             ctx.contentResolver.registerContentObserver(
                 Settings.Secure.getUriFor(
-                    SETTINGS_SECURE_SUBTYPE_HISTORY_KEY
-                ), false, observer
+                    SETTINGS_SECURE_SUBTYPE_HISTORY_KEY,
+                ),
+                false,
+                observer,
             )
         }
 
-        IntentFilter().apply {
-            addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
+        val filter = IntentFilter()
+        filter.addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
 
-            ctx.registerReceiver(broadcastReceiver, this)
-        }
+        ContextCompat.registerReceiver(
+            ctx,
+            broadcastReceiver,
+            filter,
+            ContextCompat.RECEIVER_NOT_EXPORTED,
+        )
     }
 
     override fun showImePicker(fromForeground: Boolean): Result<*> {
@@ -170,26 +177,22 @@ class AndroidInputMethodAdapter(
         }
     }
 
-    override fun enableIme(imeId: String): Result<*> {
-        return enableImeWithoutUserInput(imeId).otherwise {
-            try {
-                val intent = Intent(Settings.ACTION_INPUT_METHOD_SETTINGS)
-                intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_ACTIVITY_NEW_TASK
+    override fun enableIme(imeId: String): Result<*> = enableImeWithoutUserInput(imeId).otherwise {
+        try {
+            val intent = Intent(Settings.ACTION_INPUT_METHOD_SETTINGS)
+            intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_ACTIVITY_NEW_TASK
 
-                ctx.startActivity(intent)
-                Success(Unit)
-            } catch (e: Exception) {
-                Error.CantFindImeSettings
-            }
+            ctx.startActivity(intent)
+            Success(Unit)
+        } catch (e: Exception) {
+            Error.CantFindImeSettings
         }
     }
 
-    private fun enableImeWithoutUserInput(imeId: String): Result<*> {
-        return suAdapter.execute("ime enable $imeId")
-    }
+    private fun enableImeWithoutUserInput(imeId: String): Result<*> =
+        suAdapter.execute("ime enable $imeId")
 
     override suspend fun chooseImeWithoutUserInput(imeId: String): Result<ImeInfo> {
-
         getInfoById(imeId).onSuccess {
             if (!it.isEnabled) {
                 return Error.ImeDisabled(it)
@@ -201,7 +204,7 @@ class AndroidInputMethodAdapter(
         var failed = true
 
         if (failed && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && serviceAdapter.state.value == ServiceState.ENABLED) {
-            serviceAdapter.send(Event.ChangeIme(imeId)).onSuccess {
+            serviceAdapter.send(ServiceEvent.ChangeIme(imeId)).onSuccess {
                 failed = false
             }
         }
@@ -210,7 +213,7 @@ class AndroidInputMethodAdapter(
             SettingsUtils.putSecureSetting(
                 ctx,
                 Settings.Secure.DEFAULT_INPUT_METHOD,
-                imeId
+                imeId,
             )
 
             failed = false
@@ -220,7 +223,7 @@ class AndroidInputMethodAdapter(
             return Error.FailedToChangeIme
         }
 
-        //wait for the ime to change and then return the info of the ime
+        // wait for the ime to change and then return the info of the ime
         val didImeChange = withTimeoutOrNull(2000) {
             chosenIme.first { it?.id == imeId }
         }
@@ -239,9 +242,8 @@ class AndroidInputMethodAdapter(
         return Success(info)
     }
 
-    override fun getInfoByPackageName(packageName: String): Result<ImeInfo> {
-        return getImeId(packageName).then { getInfoById(it) }
-    }
+    override fun getInfoByPackageName(packageName: String): Result<ImeInfo> =
+        getImeId(packageName).then { getInfoById(it) }
 
     /**
      * Example:
@@ -259,11 +261,10 @@ class AndroidInputMethodAdapter(
     fun onInputMethodsUpdate() {
         inputMethods.value = getInputMethods()
         inputMethodHistory.value = getImeHistory().mapNotNull { getInfoById(it).valueOrNull() }
-        Timber.i("On input method update, chosen IME = ${chosenIme.value.toString()}")
+        Timber.i("On input method update, chosen IME = ${chosenIme.value}")
     }
 
     private fun getInputMethods(): List<ImeInfo> {
-
         val chosenImeId = getChosenImeId()
 
         val enabledInputMethods = inputMethodManager.enabledInputMethodList
@@ -274,17 +275,15 @@ class AndroidInputMethodAdapter(
                 inputMethodInfo.packageName,
                 inputMethodInfo.loadLabel(ctx.packageManager).toString(),
                 isChosen = inputMethodInfo.id == chosenImeId,
-                isEnabled = enabledInputMethods.any { it.id == inputMethodInfo.id }
+                isEnabled = enabledInputMethods.any { it.id == inputMethodInfo.id },
             )
         }
     }
 
-    private fun getSubtypeHistoryString(ctx: Context): String {
-        return Settings.Secure.getString(
-            ctx.contentResolver,
-            SETTINGS_SECURE_SUBTYPE_HISTORY_KEY
-        )
-    }
+    private fun getSubtypeHistoryString(ctx: Context): String = Settings.Secure.getString(
+        ctx.contentResolver,
+        SETTINGS_SECURE_SUBTYPE_HISTORY_KEY,
+    )
 
     private fun getChosenIme(): ImeInfo? {
         val chosenImeId = getChosenImeId()
@@ -292,9 +291,8 @@ class AndroidInputMethodAdapter(
         return getInfoById(chosenImeId).valueOrNull()
     }
 
-    private fun getChosenImeId(): String {
-        return Settings.Secure.getString(ctx.contentResolver, Settings.Secure.DEFAULT_INPUT_METHOD)
-    }
+    private fun getChosenImeId(): String =
+        Settings.Secure.getString(ctx.contentResolver, Settings.Secure.DEFAULT_INPUT_METHOD)
 
     private fun getImeId(packageName: String): Result<String> {
         val imeId = inputMethodManager.inputMethodList.find { it.packageName == packageName }?.id

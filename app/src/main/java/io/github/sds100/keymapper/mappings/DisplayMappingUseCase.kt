@@ -68,7 +68,7 @@ class DisplaySimpleMappingUseCaseImpl(
                     keyMapperImeHelper.enableCompatibleInputMethods()
                 }
 
-                //wait for compatible ime to be enabled then choose it.
+                // wait for compatible ime to be enabled then choose it.
                 keyMapperImeHelper.isCompatibleImeEnabledFlow.first { it }
 
                 keyMapperImeHelper.chooseCompatibleInputMethod().otherwise {
@@ -80,16 +80,18 @@ class DisplaySimpleMappingUseCaseImpl(
         }
     }
 
-    override fun startAccessibilityService(): Boolean {
-        return accessibilityServiceAdapter.start()
-    }
+    override fun startAccessibilityService(): Boolean = accessibilityServiceAdapter.start()
 
-    override fun restartAccessibilityService(): Boolean {
-        return accessibilityServiceAdapter.restart()
+    override fun restartAccessibilityService(): Boolean = accessibilityServiceAdapter.restart()
+
+    override fun neverShowDndTriggerErrorAgain() {
+        preferenceRepository.set(Keys.neverShowDndError, true)
     }
 }
 
-interface DisplaySimpleMappingUseCase : DisplayActionUseCase, DisplayConstraintUseCase {
+interface DisplaySimpleMappingUseCase :
+    DisplayActionUseCase,
+    DisplayConstraintUseCase {
     override val showDeviceDescriptors: Flow<Boolean>
 }
 
@@ -99,6 +101,7 @@ interface DisplayActionUseCase : GetActionErrorUseCase {
     fun getAppIcon(packageName: String): Result<Drawable>
     fun getInputMethodLabel(imeId: String): Result<String>
     suspend fun fixError(error: Error)
+    fun neverShowDndTriggerErrorAgain()
     fun startAccessibilityService(): Boolean
     fun restartAccessibilityService(): Boolean
 }
@@ -107,5 +110,6 @@ interface DisplayConstraintUseCase : GetConstraintErrorUseCase {
     fun getAppName(packageName: String): Result<String>
     fun getAppIcon(packageName: String): Result<Drawable>
     fun getInputMethodLabel(imeId: String): Result<String>
+    fun neverShowDndTriggerErrorAgain()
     suspend fun fixError(error: Error)
 }

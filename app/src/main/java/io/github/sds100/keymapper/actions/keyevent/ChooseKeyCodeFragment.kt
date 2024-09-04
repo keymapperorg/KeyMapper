@@ -66,7 +66,5 @@ class ChooseKeyCodeFragment : SimpleRecyclerViewFragment<SimpleListItem>() {
         viewModel.searchQuery.value = query
     }
 
-    override fun getRequestKey(): String {
-        return args.requestKey
-    }
+    override fun getRequestKey(): String = args.requestKey
 }

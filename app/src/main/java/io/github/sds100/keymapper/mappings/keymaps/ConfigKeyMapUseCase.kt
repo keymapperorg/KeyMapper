@@ -31,15 +31,16 @@ import kotlinx.coroutines.flow.map
 class ConfigKeyMapUseCaseImpl(
     private val keyMapRepository: KeyMapRepository,
     private val devicesAdapter: DevicesAdapter,
-    private val preferenceRepository: PreferenceRepository
-) : BaseConfigMappingUseCase<KeyMapAction, KeyMap>(), ConfigKeyMapUseCase {
+    private val preferenceRepository: PreferenceRepository,
+) : BaseConfigMappingUseCase<KeyMapAction, KeyMap>(),
+    ConfigKeyMapUseCase {
 
     private val showDeviceDescriptors: Flow<Boolean> =
         preferenceRepository.get(Keys.showDeviceDescriptors).map { it ?: false }
 
     override fun addTriggerKey(
         keyCode: Int,
-        device: TriggerKeyDevice
+        device: TriggerKeyDevice,
     ) = editTrigger { trigger ->
         val clickType = when (trigger.mode) {
             is TriggerMode.Parallel -> trigger.mode.clickType
@@ -51,17 +52,16 @@ class ConfigKeyMapUseCaseImpl(
             if (trigger.mode != TriggerMode.Sequence) {
                 val sameKeyCode = keyCode == keyToCompare.keyCode
 
-                //if the new key is not external, check whether a trigger key already exists for this device
+                // if the new key is not external, check whether a trigger key already exists for this device
                 val sameDevice = when {
-                    keyToCompare.device is TriggerKeyDevice.External
-                        && device is TriggerKeyDevice.External ->
+                    keyToCompare.device is TriggerKeyDevice.External &&
+                        device is TriggerKeyDevice.External ->
                         keyToCompare.device.descriptor == device.descriptor
 
                     else -> true
                 }
 
                 sameKeyCode && sameDevice
-
             } else {
                 false
             }
@@ -71,7 +71,7 @@ class ConfigKeyMapUseCaseImpl(
 
         var consumeKeyEvent = true
 
-        //Issue #753
+        // Issue #753
         if (KeyEventUtils.isModifierKey(keyCode)) {
             consumeKeyEvent = false
         }
@@ -80,7 +80,7 @@ class ConfigKeyMapUseCaseImpl(
             keyCode = keyCode,
             device = device,
             clickType = clickType,
-            consumeKeyEvent = consumeKeyEvent
+            consumeKeyEvent = consumeKeyEvent,
         )
 
         newKeys.add(triggerKey)
@@ -115,14 +115,14 @@ class ConfigKeyMapUseCaseImpl(
         trigger.copy(
             keys = trigger.keys.toMutableList().apply {
                 moveElement(fromIndex, toIndex)
-            }
+            },
         )
     }
 
     override fun setParallelTriggerMode() = editTrigger { trigger ->
         if (trigger.mode is TriggerMode.Parallel) return@editTrigger trigger
 
-        //undefined mode only allowed if one or no keys
+        // undefined mode only allowed if one or no keys
         if (trigger.keys.size <= 1) {
             return@editTrigger trigger.copy(mode = TriggerMode.Undefined)
         }
@@ -137,7 +137,7 @@ class ConfigKeyMapUseCaseImpl(
                 key.copy(clickType = ClickType.SHORT_PRESS)
             }.toMutableList()
 
-            //remove duplicates of keys that have the same keycode and device id
+            // remove duplicates of keys that have the same keycode and device id
             newKeys =
                 newKeys.distinctBy { Pair(it.keyCode, it.device) }.toMutableList()
         }
@@ -153,7 +153,7 @@ class ConfigKeyMapUseCaseImpl(
 
     override fun setSequenceTriggerMode() = editTrigger { trigger ->
         if (trigger.mode == TriggerMode.Sequence) return@editTrigger trigger
-        //undefined mode only allowed if one or no keys
+        // undefined mode only allowed if one or no keys
         if (trigger.keys.size <= 1) {
             return@editTrigger trigger.copy(mode = TriggerMode.Undefined)
         }
@@ -164,7 +164,7 @@ class ConfigKeyMapUseCaseImpl(
     override fun setUndefinedTriggerMode() = editTrigger { trigger ->
         if (trigger.mode == TriggerMode.Undefined) return@editTrigger trigger
 
-        //undefined mode only allowed if one or no keys
+        // undefined mode only allowed if one or no keys
         if (trigger.keys.size > 1) {
             return@editTrigger trigger
         }
@@ -281,7 +281,7 @@ class ConfigKeyMapUseCaseImpl(
                     val name = if (showDeviceDescriptors) {
                         InputDeviceUtils.appendDeviceDescriptorToName(
                             device.descriptor,
-                            device.name
+                            device.name,
                         )
                     } else {
                         device.name
@@ -314,7 +314,7 @@ class ConfigKeyMapUseCaseImpl(
             }
 
             keyMap.copy(
-                actionList = newActionList
+                actionList = newActionList,
             )
         }
     }
@@ -379,7 +379,7 @@ class ConfigKeyMapUseCaseImpl(
         return KeyMapAction(
             data = data,
             repeat = repeat,
-            holdDown = holdDown
+            holdDown = holdDown,
         )
     }
 
@@ -418,7 +418,7 @@ class ConfigKeyMapUseCaseImpl(
 
     private fun setActionOption(
         uid: String,
-        block: (action: KeyMapAction) -> KeyMapAction
+        block: (action: KeyMapAction) -> KeyMapAction,
     ) {
         editKeyMap { keyMap ->
             val newActionList = keyMap.actionList.map { action ->
@@ -430,7 +430,7 @@ class ConfigKeyMapUseCaseImpl(
             }
 
             keyMap.copy(
-                actionList = newActionList
+                actionList = newActionList,
             )
         }
     }
@@ -463,7 +463,7 @@ class ConfigKeyMapUseCaseImpl(
 }
 
 interface ConfigKeyMapUseCase : ConfigMappingUseCase<KeyMapAction, KeyMap> {
-    //trigger
+    // trigger
     fun addTriggerKey(keyCode: Int, device: TriggerKeyDevice)
     fun removeTriggerKey(uid: String)
     fun moveTriggerKey(fromIndex: Int, toIndex: Int)
@@ -496,7 +496,7 @@ interface ConfigKeyMapUseCase : ConfigMappingUseCase<KeyMapAction, KeyMap> {
 
     fun getAvailableTriggerKeyDevices(): List<TriggerKeyDevice>
 
-    //actions
+    // actions
     fun setActionRepeatEnabled(uid: String, repeat: Boolean)
     fun setActionRepeatDelay(uid: String, repeatDelay: Int?)
     fun setActionHoldDownEnabled(uid: String, holdDown: Boolean)
