@@ -1,3 +1,9 @@
+## [2.6.2](https://github.com/sds100/KeyMapper/releases/tag/v2.6.2)
+
+#### 9 September 2024
+
+- #1293 Checkbox buttons were invisible when configuring some actions.
+
 ## [2.6.1](https://github.com/sds100/KeyMapper/releases/tag/v2.6.1)
 
 #### 4 September 2024
