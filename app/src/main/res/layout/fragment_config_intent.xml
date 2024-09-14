@@ -329,6 +329,16 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
 
+        <com.google.android.material.bottomappbar.BottomAppBar
+            android:id="@+id/appBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            app:fabAlignmentMode="end"
+            app:fabAnimationMode="slide"
+            app:menuAlignmentMode="auto"
+            app:navigationIcon="@drawable/ic_baseline_arrow_back_24" />
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"
             android:layout_width="wrap_content"
@@ -339,14 +349,5 @@
             android:src="@drawable/ic_baseline_done_24"
             app:layout_anchor="@id/appBar" />
 
-        <com.google.android.material.bottomappbar.BottomAppBar
-            android:id="@+id/appBar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            app:fabAlignmentMode="end"
-            app:fabAnimationMode="slide"
-            app:menuAlignmentMode="auto"
-            app:navigationIcon="@drawable/ic_baseline_arrow_back_24" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

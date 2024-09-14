@@ -1,4 +1,4 @@
-**Project in maintenance mode.**
+**Project under slower development.**
 > Well, working on this project was a fun ride 🎢! This project has taught me so much about Android, software development and how to collaborate with an online community. It has been my dream to lead a big FOSS project with people from all over the world so a **huge** thank you goes to everyone that spread the word and helped on GitHub along the way ☺. Unfortunately, I do not have any more time to work on this project - I'm now studying Computer Science at university and I have landed software-dev side jobs, which has taken up any free-time I did have to code on the side.
 >
 > A special thank you goes to everyone in the [Team](https://docs.keymapper.club/#our-team) for their long-term

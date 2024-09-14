@@ -1,3 +1,39 @@
+## [2.6.2](https://github.com/sds100/KeyMapper/releases/tag/v2.6.2)
+
+#### 9 September 2024
+
+- #1293 Checkbox buttons were invisible when configuring some actions.
+
+## [2.6.1](https://github.com/sds100/KeyMapper/releases/tag/v2.6.1)
+
+#### 4 September 2024
+
+This release adds support for Android 14 and fixes some bugs associated with it.
+
+### Added
+
+- #1256 Add Russian and Chinese Simplified translations. Update other languages.
+- #1282 Add Assist key code as screen off trigger for Bixby button.
+
+### Bug fixes
+
+- #1218, #1251 Key event actions and triggering key maps from an intent were delayed by 1 second on Android 14 due to new broadcast receiver restrictions.
+- #1175 Bypass the do not disturb permission requirement for volume button triggers.
+- #1234 Granting permissions with Shizuku crashes on Android 14.
+- #1249 Crash when opening help page from the home page if no browser app for custom tabs was found.
+- #1250 Random crashes when picking a screenshot for actions.
+- #1227 Deprecate Bluetooth actions on Android 13+ due to new restrictions.
+- #1252 Add another Camera key code as supported for screen off triggers.
+- #1219 Key Mapper notifications could not be enabled on Android 14.
+- #1194 Deprecate closing the status bar on Android 14 due to new restrictions.
+- #1190 Add a 3 second delay after the screenshot action before showing the on-screen message confirming it happened.
+
+## [2.6.0](https://github.com/sds100/KeyMapper/releases/tag/v2.6.0)
+
+#### 7 October 2023
+
+- #550 Action for doing pinches and swipes on the screen with 2 or more fingers. Many thanks to Tino (@pixel-shock) for working on this feature. 😊
+
 ## [2.5.0](https://github.com/sds100/KeyMapper/releases/tag/v2.5.0)
 
 #### 9 September 2023

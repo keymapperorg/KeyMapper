@@ -649,21 +649,26 @@ object KeyEventUtils {
      * KeyEvent key codes in the Android SDK so these have to be manually whitelisted
      * as people need.
      */
-    val GET_EVENT_LABEL_TO_KEYCODE: Map<String, Int>
-        get() = mapOf(
-            "KEY_VOLUMEDOWN" to KeyEvent.KEYCODE_VOLUME_DOWN,
-            "KEY_VOLUMEUP" to KeyEvent.KEYCODE_VOLUME_UP,
-            "KEY_MEDIA" to KeyEvent.KEYCODE_HEADSETHOOK,
-            "KEY_HEADSETHOOK" to KeyEvent.KEYCODE_HEADSETHOOK,
-            "KEY_CAMERA_FOCUS" to KeyEvent.KEYCODE_FOCUS,
-            "02fe" to KeyEvent.KEYCODE_CAMERA,
-            "00fa" to KeyEvent.KEYCODE_CAMERA,
-            "02bf" to KeyEvent.KEYCODE_MENU,
-            "KEY_SEARCH" to KeyEvent.KEYCODE_SEARCH,
-        )
+    val GET_EVENT_LABEL_TO_KEYCODE: List<Pair<String, Int>> = listOf(
+        "KEY_VOLUMEDOWN" to KeyEvent.KEYCODE_VOLUME_DOWN,
+        "KEY_VOLUMEUP" to KeyEvent.KEYCODE_VOLUME_UP,
+        "KEY_MEDIA" to KeyEvent.KEYCODE_HEADSETHOOK,
+        "KEY_HEADSETHOOK" to KeyEvent.KEYCODE_HEADSETHOOK,
+        "KEY_CAMERA_FOCUS" to KeyEvent.KEYCODE_FOCUS,
+        "02fe" to KeyEvent.KEYCODE_CAMERA,
+        "00fa" to KeyEvent.KEYCODE_CAMERA,
+
+        // This kernel key event code seems to be the Bixby button
+        // but different ROMs have different key maps and so
+        // it is reported as different Android key codes.
+        "02bf" to KeyEvent.KEYCODE_MENU,
+        "02bf" to KeyEvent.KEYCODE_ASSIST,
+
+        "KEY_SEARCH" to KeyEvent.KEYCODE_SEARCH,
+    )
 
     fun canDetectKeyWhenScreenOff(keyCode: Int): Boolean =
-        KeyEventUtils.GET_EVENT_LABEL_TO_KEYCODE.containsValue(keyCode)
+        GET_EVENT_LABEL_TO_KEYCODE.any { it.second == keyCode }
 
     val MODIFIER_KEYCODES: Set<Int>
         get() = setOf(

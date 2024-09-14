@@ -1,1 +1,1 @@
-Action for doing pinches and swipes on the screen with 2 or more fingers. Many thanks to Tino (@pixel-shock) for working on this feature. 😊
+Support for Android 14 and many bug fixes. See the changelog.
