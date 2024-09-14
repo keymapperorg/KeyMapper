@@ -3,7 +3,6 @@ package io.github.sds100.keymapper.home
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.mappings.assistant.AssistantTriggerFragment
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapListFragment
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapListFragment
 
@@ -19,7 +18,6 @@ class HomePagerAdapter(
         val TAB_NAMES: Map<HomeTab, Int> = mapOf(
             HomeTab.KEY_EVENTS to R.string.tab_keyevents,
             HomeTab.FINGERPRINT_MAPS to R.string.tab_fingerprint,
-            HomeTab.ASSISTANT_TRIGGER to R.string.tab_assistant_trigger
         )
     }
 
@@ -40,12 +38,6 @@ class HomePagerAdapter(
                         FingerprintMapListFragment().apply {
                             isAppBarVisible = false
                         }
-                    }
-                }
-
-                HomeTab.ASSISTANT_TRIGGER -> {
-                    {
-                        AssistantTriggerFragment()
                     }
                 }
             }

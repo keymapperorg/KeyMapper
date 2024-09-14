@@ -209,7 +209,6 @@
     <string name="tab_trigger">Trigger</string>
     <string name="tab_keyevents" translatable="false">Key events</string>
     <string name="tab_fingerprint">Fingerprint</string>
-    <string name="tab_assistant_trigger">Assistant trigger</string>
     <!--  Tabs  -->
 
     <!--  Navigation argument ids  -->

@@ -144,8 +144,6 @@ class HomeViewModel(
                 if (showFingerprintMaps) {
                     yield(HomeTab.FINGERPRINT_MAPS)
                 }
-
-                yield(HomeTab.ASSISTANT_TRIGGER)
             }.toList()
 
             val showTabs = when {
