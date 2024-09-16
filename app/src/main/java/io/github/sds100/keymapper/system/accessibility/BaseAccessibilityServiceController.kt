@@ -54,7 +54,7 @@ import timber.log.Timber
 /**
  * Created by sds100 on 17/04/2021.
  */
-class AccessibilityServiceController(
+abstract class BaseAccessibilityServiceController(
     private val coroutineScope: CoroutineScope,
     private val accessibilityService: IAccessibilityService,
     private val inputEvents: SharedFlow<ServiceEvent>,
@@ -92,7 +92,7 @@ class AccessibilityServiceController(
         detectConstraintsUseCase,
     )
 
-    private val keymapDetectionDelegate = KeyMapController(
+    private val keyMapController = KeyMapController(
         coroutineScope,
         detectKeyMapsUseCase,
         performActionsUseCase,
@@ -123,7 +123,7 @@ class AccessibilityServiceController(
 
             if (!isPaused.value) {
                 withContext(Dispatchers.Main.immediate) {
-                    keymapDetectionDelegate.onKeyEvent(
+                    keyMapController.onKeyEvent(
                         keyCode,
                         action,
                         metaState = 0,
@@ -196,7 +196,7 @@ class AccessibilityServiceController(
         }
 
         pauseMappingsUseCase.isPaused.distinctUntilChanged().onEach {
-            keymapDetectionDelegate.reset()
+            keyMapController.reset()
             fingerprintMapController.reset()
             triggerKeyMapFromOtherAppsController.reset()
         }.launchIn(coroutineScope)
@@ -324,7 +324,7 @@ class AccessibilityServiceController(
             try {
                 var consume: Boolean
 
-                consume = keymapDetectionDelegate.onKeyEvent(
+                consume = keyMapController.onKeyEvent(
                     keyCode,
                     action,
                     metaState,
@@ -426,7 +426,7 @@ class AccessibilityServiceController(
         triggerKeyMapFromOtherAppsController.onDetected(uid)
     }
 
-    private fun onEventFromUi(event: ServiceEvent) {
+    open fun onEventFromUi(event: ServiceEvent) {
         Timber.d("Service received event from UI: $event")
         when (event) {
             is ServiceEvent.StartRecordingTrigger ->
@@ -449,7 +449,10 @@ class AccessibilityServiceController(
 
             is ServiceEvent.TestAction -> performActionsUseCase.perform(event.action)
 
-            is ServiceEvent.Ping -> coroutineScope.launch { outputEvents.emit(ServiceEvent.Pong(event.key)) }
+            is ServiceEvent.Ping -> coroutineScope.launch {
+                outputEvents.emit(ServiceEvent.Pong(event.key))
+            }
+
             is ServiceEvent.HideKeyboard -> accessibilityService.hideKeyboard()
             is ServiceEvent.ShowKeyboard -> accessibilityService.showKeyboard()
             is ServiceEvent.ChangeIme -> accessibilityService.switchIme(event.imeId)
