@@ -113,12 +113,7 @@ android {
 }
 
 android.sourceSets {
-    test {
-        java.srcDirs += "$projectDir/src/testShared"
-    }
-
     androidTest {
-        java.srcDirs += "$projectDir/src/testShared"
         assets.srcDirs += files("$projectDir/schemas".toString())
         resources.srcDirs += ['src/test/resources']
     }

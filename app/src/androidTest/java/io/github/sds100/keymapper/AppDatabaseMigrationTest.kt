@@ -11,8 +11,12 @@ import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.salomonbrys.kotson.get
+import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonElement
+import com.google.gson.JsonParseException
+import com.google.gson.JsonParser
 import io.github.sds100.keymapper.data.db.AppDatabase
-import io.github.sds100.keymapper.util.JsonTestUtils
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.runBlocking
