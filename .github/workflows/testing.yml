@@ -97,7 +97,7 @@ jobs:
         run: echo "APK_NAME=$(basename app/build/outputs/apk/ci/*.apk .apk)" >> $GITHUB_ENV
 
       - name: Upload APK
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.APK_NAME }}
           path: app/build/outputs/apk/ci/${{ env.APK_NAME }}.apk
