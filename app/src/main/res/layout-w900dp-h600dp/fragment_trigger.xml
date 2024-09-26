@@ -84,7 +84,7 @@
             android:onCheckedChanged="@{(radioGroup, checkedId) -> viewModel.onClickTypeRadioButtonCheckedChange(checkedId)}"
             android:orientation="horizontal"
             android:visibility="@{viewModel.clickTypeRadioButtonsVisible ? View.VISIBLE : View.GONE}"
-            app:layout_constraintBottom_toTopOf="@id/buttonRecordKeys"
+            app:layout_constraintBottom_toTopOf="@id/composeViewRecordTriggerButtons"
             app:layout_constraintEnd_toStartOf="@id/radioGroupTriggerMode"
             app:layout_constraintStart_toStartOf="parent">
 
@@ -131,7 +131,7 @@
             android:checkedButton="@{viewModel.checkedTriggerModeRadioButton}"
             android:gravity="bottom"
             android:orientation="horizontal"
-            app:layout_constraintBottom_toTopOf="@+id/buttonRecordKeys"
+            app:layout_constraintBottom_toTopOf="@+id/composeViewRecordTriggerButtons"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/radioGroupClickType">
 
@@ -139,18 +139,18 @@
                 android:id="@+id/radioButtonParallel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onCheckedChanged="@{(view, isChecked) -> viewModel.onParallelRadioButtonCheckedChange(isChecked)}"
                 android:layout_weight="0.5"
                 android:enabled="@{viewModel.triggerModeButtonsEnabled}"
+                android:onCheckedChanged="@{(view, isChecked) -> viewModel.onParallelRadioButtonCheckedChange(isChecked)}"
                 android:text="@string/radio_button_parallel" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/radioButtonSequence"
-                android:onCheckedChanged="@{(view, isChecked) -> viewModel.onSequenceRadioButtonCheckedChange(isChecked)}"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="0.5"
                 android:enabled="@{viewModel.triggerModeButtonsEnabled}"
+                android:onCheckedChanged="@{(view, isChecked) -> viewModel.onSequenceRadioButtonCheckedChange(isChecked)}"
                 android:text="@string/radio_button_sequence" />
 
 
@@ -163,21 +163,19 @@
                 android:visibility="gone" />
         </RadioGroup>
 
-        <com.google.android.material.button.MaterialButton
-            style="@style/Widget.Button.Red"
-            android:id="@+id/buttonRecordKeys"
+        <androidx.compose.ui.platform.ComposeView
+            android:id="@+id/composeViewRecordTriggerButtons"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="4dp"
-            android:onClick="@{() -> viewModel.onRecordTriggerButtonClick()}"
-            android:text="@{viewModel.recordTriggerButtonText}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toStartOf="parent"
+            tools:layout_height="80dp"
             tools:text="@string/button_record_trigger" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -160,8 +160,8 @@ dependencies {
     implementation "dev.rikka.shizuku:api:$shizuku_version"
     implementation "dev.rikka.shizuku:provider:$shizuku_version"
     implementation 'org.lsposed.hiddenapibypass:hiddenapibypass:4.3'
-    proImplementation "com.android.billingclient:billing:7.0.0"
-    proImplementation "com.android.billingclient:billing-ktx:7.0.0"
+    proImplementation "com.android.billingclient:billing:7.1.0"
+    proImplementation "com.android.billingclient:billing-ktx:7.1.0"
 
     // splitties
     implementation "com.louiscad.splitties:splitties-bitflags:$splitties_version"
@@ -197,8 +197,10 @@ dependencies {
     kapt "androidx.room:room-compiler:$room_version"
 
     // Compose
-    implementation 'androidx.compose.ui:ui-android:1.6.8'
-    implementation 'androidx.compose.material3:material3-android:1.2.1'
+    implementation 'androidx.compose.ui:ui-android:1.7.2'
+    implementation 'androidx.compose.material3:material3-android:1.3.0'
+    implementation 'androidx.compose.ui:ui-tooling-preview-android:1.7.2'
+    debugImplementation 'androidx.compose.ui:ui-tooling:1.7.2'
 
 //    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.6'
 
