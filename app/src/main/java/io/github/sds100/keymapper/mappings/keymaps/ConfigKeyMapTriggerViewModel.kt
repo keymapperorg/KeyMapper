@@ -136,6 +136,19 @@ class ConfigKeyMapTriggerViewModel(
         }
     }.flowOn(Dispatchers.Default).stateIn(coroutineScope, SharingStarted.Eagerly, false)
 
+    /**
+     * After adding the feature for advanced triggers, only show the buttons
+     * for the trigger mode if there are keys recorded.
+     */
+    val triggerModeRadioButtonsVisible: StateFlow<Boolean> = config.mapping
+        .map { state ->
+            when (state) {
+                is State.Data -> state.data.trigger.keys.isNotEmpty()
+                State.Loading -> false
+            }
+        }
+        .stateIn(coroutineScope, SharingStarted.Eagerly, false)
+
     val doublePressButtonVisible: StateFlow<Boolean> = config.mapping.map { state ->
         when (state) {
             is State.Data -> state.data.trigger.keys.size == 1

@@ -120,6 +120,7 @@
             android:enabled="@{viewModel.triggerModeButtonsEnabled}"
             android:paddingTop="8dp"
             android:text="@string/press_dot_dot_dot"
+            android:visibility="@{viewModel.triggerModeRadioButtonsVisible ? View.VISIBLE : View.GONE}"
             android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
             app:layout_constraintBottom_toTopOf="@+id/radioGroupTriggerMode"
             app:layout_constraintStart_toStartOf="parent" />
@@ -134,6 +135,7 @@
             android:checkedButton="@{viewModel.checkedTriggerModeRadioButton}"
             android:gravity="bottom"
             android:orientation="horizontal"
+            android:visibility="@{viewModel.triggerModeRadioButtonsVisible ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toTopOf="@+id/buttonRecordKeys"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
