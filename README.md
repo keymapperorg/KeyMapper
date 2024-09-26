@@ -34,6 +34,7 @@ Key Mapper is a free and open source Android app that can remap your buttons and
 ![pl translation](https://img.shields.io/badge/dynamic/json?color=blue&label=Polish&style=flat&logo=crowdin&query=%24.progress[?(@.data.languageId==%27pl%27)].data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-13864667-360045.json)
 ![ru translation](https://img.shields.io/badge/dynamic/json?color=blue&label=Russian&style=flat&logo=crowdin&query=%24.progress[?(@.data.languageId==%27ru%27)].data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-13864667-360045.json)
 ![sk translation](https://img.shields.io/badge/dynamic/json?color=blue&label=Slovak&style=flat&logo=crowdin&query=%24.progress[?(@.data.languageId==%27sk%27)].data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-13864667-360045.json)
+![vi translation](https://img.shields.io/badge/dynamic/json?color=blue&label=Vietnamese&style=flat&logo=crowdin&query=%24.progress[?(@.data.languageId==%27vi%27)].data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-13864667-360045.json)
 ![zh-CN translation](https://img.shields.io/badge/dynamic/json?color=blue&label=Chinese%20(Simplified)&style=flat&logo=crowdin&query=%24.progress[?(@.data.languageId==%27zh-CN%27)].data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-13864667-360045.json)
 
 ## Star History
