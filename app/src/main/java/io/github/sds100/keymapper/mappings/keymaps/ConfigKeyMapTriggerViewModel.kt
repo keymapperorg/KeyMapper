@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.mappings.keymaps
 
 import android.os.Build
 import android.view.KeyEvent
+import androidx.compose.runtime.getValue
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTrigger
@@ -82,16 +83,11 @@ class ConfigKeyMapTriggerViewModel(
      */
     val openEditOptions = _openEditOptions.asSharedFlow()
 
-    val recordTriggerButtonText: StateFlow<String> = recordTrigger.state.map { recordTriggerState ->
-        when (recordTriggerState) {
-            is RecordTriggerState.CountingDown -> getString(
-                R.string.button_recording_trigger_countdown,
-                recordTriggerState.timeLeft,
-            )
-
-            RecordTriggerState.Stopped -> getString(R.string.button_record_trigger)
-        }
-    }.flowOn(Dispatchers.Default).stateIn(coroutineScope, SharingStarted.Lazily, "")
+    val recordTriggerState: StateFlow<RecordTriggerState> = recordTrigger.state.stateIn(
+        coroutineScope,
+        SharingStarted.Lazily,
+        RecordTriggerState.Stopped,
+    )
 
     val triggerModeButtonsEnabled: StateFlow<Boolean> = config.mapping.map { state ->
         when (state) {
@@ -137,8 +133,9 @@ class ConfigKeyMapTriggerViewModel(
     }.flowOn(Dispatchers.Default).stateIn(coroutineScope, SharingStarted.Eagerly, false)
 
     /**
-     * After adding the feature for advanced triggers, only show the buttons
-     * for the trigger mode if there are keys recorded.
+     * Only show the buttons for the trigger mode if keys have been added. The buttons
+     * shouldn't be shown when no trigger is selected because they aren't relevant
+     * for advanced triggers.
      */
     val triggerModeRadioButtonsVisible: StateFlow<Boolean> = config.mapping
         .map { state ->

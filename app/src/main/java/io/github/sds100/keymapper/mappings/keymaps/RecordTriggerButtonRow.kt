@@ -1,41 +1,137 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import io.github.sds100.keymapper.KeyMapperTheme
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.compose.KeyMapperTheme
+import io.github.sds100.keymapper.compose.LocalCustomColorsPalette
+import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerState
 
 /**
  * This row of buttons is shown at the bottom of the TriggerFragment.
  */
 @Composable
-fun RecordTriggerButtonRow(modifier: Modifier = Modifier) {
+fun RecordTriggerButtonRow(
+    modifier: Modifier = Modifier,
+    viewModel: ConfigKeyMapTriggerViewModel,
+) {
+    val recordTriggerState by viewModel.recordTriggerState.collectAsState()
+
+    RecordTriggerButtonRow(
+        modifier = modifier,
+        onRecordTriggerClick = viewModel::onRecordTriggerButtonClick,
+        recordTriggerState = recordTriggerState,
+        onAdvancedTriggersClick = {
+        },
+    )
+}
+
+/**
+ * This row of buttons is shown at the bottom of the TriggerFragment.
+ */
+@Composable
+private fun RecordTriggerButtonRow(
+    modifier: Modifier = Modifier,
+    onRecordTriggerClick: () -> Unit = {},
+    recordTriggerState: RecordTriggerState,
+    onAdvancedTriggersClick: () -> Unit = {},
+) {
     Row(modifier) {
-        RecordTriggerButton()
+        RecordTriggerButton(
+            modifier = Modifier.weight(1f),
+            recordTriggerState,
+            onClick = onRecordTriggerClick,
+        )
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        AdvancedTriggersButton(
+            modifier = Modifier.weight(1f),
+            isEnabled = recordTriggerState is RecordTriggerState.Stopped,
+            onClick = onAdvancedTriggersClick,
+        )
     }
 }
 
 @Composable
-private fun RecordTriggerButton() {
+private fun RecordTriggerButton(
+    modifier: Modifier,
+    state: RecordTriggerState,
+    onClick: () -> Unit,
+) {
+    val colors = ButtonDefaults.filledTonalButtonColors().copy(
+        containerColor = LocalCustomColorsPalette.current.red,
+        contentColor = LocalCustomColorsPalette.current.onRed,
+    )
+
+    val text: String = when (state) {
+        is RecordTriggerState.CountingDown ->
+            stringResource(R.string.button_recording_trigger_countdown, state.timeLeft)
+
+        RecordTriggerState.Stopped ->
+            stringResource(R.string.button_record_trigger)
+    }
+
     FilledTonalButton(
-        onClick = {},
-        colors = ButtonDefaults.filledTonalButtonColors()
-            .copy(containerColor = MaterialTheme.colorScheme.primary)
+        modifier = modifier,
+        onClick = onClick,
+        colors = colors,
     ) {
-        Text(stringResource(R.string.button_record_trigger))
+        Text(text)
     }
 }
 
-@androidx.compose.ui.tooling.preview.Preview
 @Composable
-private fun Preview() {
+private fun AdvancedTriggersButton(
+    modifier: Modifier,
+    isEnabled: Boolean,
+    onClick: () -> Unit,
+) {
+    OutlinedButton(
+        modifier = modifier,
+        enabled = isEnabled,
+        onClick = onClick,
+    ) {
+        Text(stringResource(R.string.button_advanced_triggers))
+    }
+}
+
+@Preview(widthDp = 400)
+@Composable
+private fun PreviewCountingDown() {
     KeyMapperTheme {
-        RecordTriggerButtonRow()
+        Surface {
+            RecordTriggerButtonRow(
+                modifier = Modifier.fillMaxWidth(),
+                recordTriggerState = RecordTriggerState.CountingDown(3),
+            )
+        }
+    }
+}
+
+@Preview(widthDp = 400)
+@Composable
+private fun PreviewStopped() {
+    KeyMapperTheme {
+        Surface {
+            RecordTriggerButtonRow(
+                modifier = Modifier.fillMaxWidth(),
+                recordTriggerState = RecordTriggerState.Stopped,
+            )
+        }
     }
 }

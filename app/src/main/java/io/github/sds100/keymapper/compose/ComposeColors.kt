@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper
+package io.github.sds100.keymapper.compose
 
 import androidx.compose.ui.graphics.Color
 
@@ -30,6 +30,8 @@ object ComposeColors {
     val inverseSurfaceLight = Color(0xFF2F3034)
     val inverseOnSurfaceLight = Color(0xFFF2F0F4)
     val inversePrimaryLight = Color(0xFFA8C7FF)
+    val redLight = Color(0xffd32f2f)
+    val onRedLight = Color(0xFFFFFFFF)
 
     val primaryDark = Color(0xFFA8C7FF)
     val onPrimaryDark = Color(0xFF002F66)
@@ -57,5 +59,6 @@ object ComposeColors {
     val outlineVariantDark = Color(0xFF3F484A)
     val inverseSurfaceDark = Color(0xFFE3E2E6)
     val inverseOnSurfaceDark = Color(0xFF1A1B1F)
-
+    val redDark = Color(0xffff7961)
+    val onRedDark = Color(0xFFFFFFFF)
 }

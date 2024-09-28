@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper
+package io.github.sds100.keymapper.compose
 
 import android.app.Activity
 import android.os.Build
@@ -10,7 +10,9 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
@@ -78,6 +80,8 @@ object ComposeTheme {
         )
 }
 
+val LocalCustomColorsPalette = staticCompositionLocalOf { ComposeCustomColors() }
+
 @Composable
 fun KeyMapperTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -100,9 +104,16 @@ fun KeyMapperTheme(
         }
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography(),
-        content = content,
-    )
+    val customColorsPalette =
+        if (darkTheme) ComposeCustomColors.DarkPalette else ComposeCustomColors.LightPalette
+
+    CompositionLocalProvider(
+        LocalCustomColorsPalette provides customColorsPalette,
+    ) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography(),
+            content = content,
+        )
+    }
 }

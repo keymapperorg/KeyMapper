@@ -13,9 +13,9 @@ import com.airbnb.epoxy.EpoxyController
 import com.airbnb.epoxy.EpoxyRecyclerView
 import com.airbnb.epoxy.EpoxyTouchHelper
 import com.google.android.material.card.MaterialCardView
-import io.github.sds100.keymapper.KeyMapperTheme
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.TriggerKeyBindingModel_
+import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.databinding.FragmentTriggerBinding
 import io.github.sds100.keymapper.fixError
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapTriggerViewModel
@@ -64,7 +64,7 @@ class TriggerFragment : RecyclerViewFragment<TriggerKeyListItem, FragmentTrigger
                 setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
                 setContent {
                     KeyMapperTheme {
-                        RecordTriggerButtonRow(Modifier.fillMaxWidth())
+                        RecordTriggerButtonRow(Modifier.fillMaxWidth(), configKeyMapTriggerViewModel)
                     }
                 }
             }
