@@ -10,6 +10,18 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  test:
+    name: Run unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+
+      - name: Unit tests
+        run: bash ./gradlew testDebugUnitTest
+
   style:
     name: Code style check
     runs-on: ubuntu-latest
