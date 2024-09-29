@@ -29,7 +29,7 @@ fun AdvancedTriggersBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
     ) {
-        Text("Test")
+        Text("I am free build.")
         IconButton(onClick = {
             scope.launch {
                 sheetState.hide()
