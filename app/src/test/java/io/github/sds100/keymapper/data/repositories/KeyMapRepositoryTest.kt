@@ -11,10 +11,9 @@ import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.util.State
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineExceptionHandler
-import kotlinx.coroutines.test.createTestCoroutineScope
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -45,9 +44,8 @@ class KeyMapRepositoryTest {
         )
     }
 
-    private val testDispatcher = TestCoroutineDispatcher()
-    private val coroutineScope =
-        createTestCoroutineScope(TestCoroutineDispatcher() + TestCoroutineExceptionHandler() + testDispatcher)
+    private val testDispatcher = UnconfinedTestDispatcher()
+    private val testScope = TestScope(testDispatcher)
 
     private lateinit var repository: RoomKeyMapRepository
     private lateinit var devicesAdapter: FakeDevicesAdapter
@@ -67,7 +65,7 @@ class KeyMapRepositoryTest {
         repository = RoomKeyMapRepository(
             mockDao,
             devicesAdapter,
-            coroutineScope,
+            testScope,
             dispatchers = TestDispatcherProvider(testDispatcher),
         )
     }
@@ -77,7 +75,7 @@ class KeyMapRepositoryTest {
      */
     @Test
     fun `if modifying a huge number of key maps then split job into batches`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val keyMapList = sequence {
                 repeat(991) {
@@ -112,7 +110,7 @@ class KeyMapRepositoryTest {
 
     @Test
     fun `key map with key event action from device and proper device name extra, do not update action device name`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val action = ActionEntity(
                 type = ActionEntity.Type.KEY_EVENT,
@@ -136,7 +134,7 @@ class KeyMapRepositoryTest {
 
     @Test
     fun `key map with key event action from device and blank device name extra, if device for action is disconnected, do not update action device name`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val action = ActionEntity(
                 type = ActionEntity.Type.KEY_EVENT,
@@ -160,7 +158,7 @@ class KeyMapRepositoryTest {
 
     @Test
     fun `key map with key event action from device and blank device name extra, if device for action is connected, update action device name`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val action = ActionEntity(
                 type = ActionEntity.Type.KEY_EVENT,
@@ -195,7 +193,7 @@ class KeyMapRepositoryTest {
 
     @Test
     fun `key map with key event action from device and no device name extra, if device for action is connected, update action device name`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val action = ActionEntity(
                 type = ActionEntity.Type.KEY_EVENT,
@@ -230,7 +228,7 @@ class KeyMapRepositoryTest {
 
     @Test
     fun `key map with key event action from device and no device name extra, if device for action is disconnected, update action device name`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val action = ActionEntity(
                 type = ActionEntity.Type.KEY_EVENT,
@@ -254,7 +252,7 @@ class KeyMapRepositoryTest {
 
     @Test
     fun `key map with device name for trigger key, if device for trigger key is connected, do not update trigger key device name`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val triggerKey = TriggerEntity.KeyEntity(
                 keyCode = 1,
@@ -277,7 +275,7 @@ class KeyMapRepositoryTest {
 
     @Test
     fun `key map with device name for trigger key, if device for trigger key is disconnected, do not update trigger key device name`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val triggerKey = TriggerEntity.KeyEntity(
                 keyCode = 1,
@@ -298,7 +296,7 @@ class KeyMapRepositoryTest {
 
     @Test
     fun `key map with no device name for trigger key, if device for trigger key is connected, update trigger key device name`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val triggerKey = TriggerEntity.KeyEntity(
                 keyCode = 1,

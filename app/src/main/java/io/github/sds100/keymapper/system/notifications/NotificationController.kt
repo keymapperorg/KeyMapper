@@ -108,8 +108,8 @@ class NotificationController(
     /**
      * Open the app and use the String as the Intent action.
      */
-    private val _openApp: MutableSharedFlow<String?> = MutableSharedFlow()
-    val openApp: SharedFlow<String?> = _openApp.asSharedFlow()
+    private val _openApp: MutableSharedFlow<String> = MutableSharedFlow()
+    val openApp: SharedFlow<String> = _openApp.asSharedFlow()
 
     private val _showToast = MutableSharedFlow<String>()
     val showToast = _showToast.asSharedFlow()
@@ -213,7 +213,7 @@ class NotificationController(
                 ACTION_STOP_SERVICE -> controlAccessibilityService.stopService()
 
                 ACTION_DISMISS_TOGGLE_MAPPINGS -> manageNotifications.dismiss(ID_TOGGLE_MAPPINGS)
-                ACTION_OPEN_KEY_MAPPER -> _openApp.emit(null)
+                ACTION_OPEN_KEY_MAPPER -> _openApp.emit("")
                 ACTION_SHOW_IME_PICKER -> showImePicker.show(fromForeground = false)
                 ACTION_SHOW_KEYBOARD -> hideInputMethod.show()
                 ACTION_TOGGLE_KEYBOARD -> toggleCompatibleIme.toggle().onSuccess {
@@ -224,12 +224,12 @@ class NotificationController(
 
                 ACTION_FINGERPRINT_GESTURE_FEATURE -> {
                     onboardingUseCase.approvedFingerprintFeaturePrompt = true
-                    _openApp.emit(null)
+                    _openApp.emit("")
                 }
 
                 ACTION_ON_SETUP_CHOSEN_DEVICES_AGAIN -> {
                     onboardingUseCase.approvedSetupChosenDevicesAgainNotification()
-                    _openApp.emit(null)
+                    _openApp.emit("")
                 }
             }
         }.flowOn(dispatchers.default()).launchIn(coroutineScope)

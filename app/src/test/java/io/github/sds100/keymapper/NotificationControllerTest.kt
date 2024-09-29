@@ -6,17 +6,15 @@ import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.notifications.ManageNotificationsUseCase
 import io.github.sds100.keymapper.system.notifications.NotificationController
 import io.github.sds100.keymapper.system.notifications.NotificationModel
-import io.github.sds100.keymapper.util.FlowUtils.toListWithTimeout
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.DelayController
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineExceptionHandler
-import kotlinx.coroutines.test.createTestCoroutineScope
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
 import org.junit.Before
@@ -27,7 +25,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import kotlin.coroutines.ContinuationInterceptor
 
 /**
  * Created by sds100 on 25/04/2021.
@@ -37,9 +34,8 @@ import kotlin.coroutines.ContinuationInterceptor
 @RunWith(MockitoJUnitRunner::class)
 class NotificationControllerTest {
 
-    private val testDispatcher = TestCoroutineDispatcher()
-    private val coroutineScope =
-        createTestCoroutineScope(TestCoroutineDispatcher() + TestCoroutineExceptionHandler() + testDispatcher)
+    private val testDispatcher = UnconfinedTestDispatcher()
+    private val testScope = TestScope(testDispatcher)
 
     private lateinit var controller: NotificationController
     private lateinit var mockManageNotifications: ManageNotificationsUseCase
@@ -62,7 +58,7 @@ class NotificationControllerTest {
         fakeOnboarding = FakeOnboardingUseCase()
 
         controller = NotificationController(
-            coroutineScope,
+            testScope,
             mockManageNotifications,
             pauseMappings = mock {
                 on { isPaused }.then { flow<Boolean> {} }
@@ -88,24 +84,20 @@ class NotificationControllerTest {
 
     @Test
     fun `click setup chosen devices notification, open app and approve`() =
-        coroutineScope.runBlockingTest {
-            // WHEN
-
-            (coroutineContext[ContinuationInterceptor]!! as DelayController).pauseDispatcher()
-            launch {
-                onActionClick.emit(NotificationController.ACTION_ON_SETUP_CHOSEN_DEVICES_AGAIN)
+        runTest(testDispatcher) {
+            val value = async {
+                controller.openApp.first()
             }
 
-            // THEN
-            assertThat(controller.openApp.toListWithTimeout().size, `is`(1))
-            (coroutineContext[ContinuationInterceptor]!! as DelayController).resumeDispatcher()
+            onActionClick.emit(NotificationController.ACTION_ON_SETUP_CHOSEN_DEVICES_AGAIN)
 
+            assertThat(value.await(), `is`(""))
             assertThat(fakeOnboarding.approvedSetupChosenDevicesAgainNotification, `is`(true))
         }
 
     @Test
     fun `show setup chosen devices notification`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val title = "title"
             val text = "text"

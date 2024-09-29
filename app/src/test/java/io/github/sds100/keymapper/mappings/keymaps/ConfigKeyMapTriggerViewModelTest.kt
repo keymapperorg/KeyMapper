@@ -16,13 +16,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineExceptionHandler
-import kotlinx.coroutines.test.createTestCoroutineScope
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -38,9 +36,9 @@ import org.mockito.kotlin.mock
 @RunWith(MockitoJUnitRunner::class)
 class ConfigKeyMapTriggerViewModelTest {
 
-    private val testDispatcher = TestCoroutineDispatcher()
-    private val coroutineScope =
-        createTestCoroutineScope(TestCoroutineDispatcher() + TestCoroutineExceptionHandler() + testDispatcher)
+    private val testDispatcher = UnconfinedTestDispatcher()
+    private val testScope = TestScope(testDispatcher)
+
     private lateinit var viewModel: ConfigKeyMapTriggerViewModel
     private lateinit var mockConfigKeyMapUseCase: ConfigKeyMapUseCase
     private lateinit var mockRecordTrigger: RecordTriggerUseCase
@@ -69,7 +67,7 @@ class ConfigKeyMapTriggerViewModelTest {
         fakeResourceProvider = FakeResourceProvider()
 
         viewModel = ConfigKeyMapTriggerViewModel(
-            coroutineScope,
+            testScope,
             fakeOnboarding,
             mockConfigKeyMapUseCase,
             mockRecordTrigger,
@@ -83,17 +81,12 @@ class ConfigKeyMapTriggerViewModelTest {
         )
     }
 
-    @After
-    fun tearDown() {
-        coroutineScope.cleanupTestCoroutines()
-    }
-
     /**
      * issue #602
      */
     @Test
     fun `when create back button trigger key then prompt the user to disable screen pinning`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             fakeResourceProvider.stringResourceMap[R.string.dialog_message_screen_pinning_warning] =
                 "bla"
