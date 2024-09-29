@@ -1,12 +1,17 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Badge
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -17,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -71,7 +77,9 @@ private fun RecordTriggerButtonRow(
 ) {
     Row(modifier) {
         RecordTriggerButton(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .weight(1f)
+                .align(Alignment.Bottom),
             recordTriggerState,
             onClick = onRecordTriggerClick,
         )
@@ -120,12 +128,30 @@ private fun AdvancedTriggersButton(
     isEnabled: Boolean,
     onClick: () -> Unit,
 ) {
-    OutlinedButton(
-        modifier = modifier,
-        enabled = isEnabled,
-        onClick = onClick,
-    ) {
-        Text(stringResource(R.string.button_advanced_triggers))
+    Box(modifier = modifier) {
+        OutlinedButton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 20.dp),
+            enabled = isEnabled,
+            onClick = onClick,
+        ) {
+            Text(stringResource(R.string.button_advanced_triggers))
+        }
+
+        Badge(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .height(36.dp),
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        ) {
+            Text(
+                modifier = Modifier.padding(horizontal = 8.dp),
+                text = stringResource(R.string.button_advanced_triggers_badge),
+                style = MaterialTheme.typography.labelLarge,
+            )
+        }
     }
 }
 
