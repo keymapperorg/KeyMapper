@@ -450,6 +450,7 @@
     <string name="button_record_trigger">Record trigger</string>
     <string name="button_advanced_triggers">Advanced triggers</string>
     <string name="button_advanced_triggers_badge">NEW!</string>
+    <string name="button_dismiss_advanced_triggers_sheet_content_description">Dismiss choosing advanced triggers.</string>
     <string name="button_done">Done</string>
     <string name="button_save">Save</string>
     <string name="button_fix">Fix</string>

@@ -5,13 +5,18 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -19,23 +24,37 @@ import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.compose.LocalCustomColorsPalette
+import io.github.sds100.keymapper.mappings.keymaps.trigger.AdvancedTriggersBottomSheet
 import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerState
 
 /**
  * This row of buttons is shown at the bottom of the TriggerFragment.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecordTriggerButtonRow(
     modifier: Modifier = Modifier,
     viewModel: ConfigKeyMapTriggerViewModel,
 ) {
     val recordTriggerState by viewModel.recordTriggerState.collectAsState()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var showBottomSheet: Boolean by rememberSaveable { mutableStateOf(false) }
+
+    if (showBottomSheet) {
+        AdvancedTriggersBottomSheet(
+            onDismissRequest = {
+                showBottomSheet = false
+            },
+            sheetState = sheetState,
+        )
+    }
 
     RecordTriggerButtonRow(
         modifier = modifier,
         onRecordTriggerClick = viewModel::onRecordTriggerButtonClick,
         recordTriggerState = recordTriggerState,
         onAdvancedTriggersClick = {
+            showBottomSheet = true
         },
     )
 }
