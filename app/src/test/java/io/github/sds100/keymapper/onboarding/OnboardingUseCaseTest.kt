@@ -6,11 +6,10 @@ import io.github.sds100.keymapper.data.repositories.FakePreferenceRepository
 import io.github.sds100.keymapper.util.VersionHelper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineExceptionHandler
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.createTestCoroutineScope
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
 import org.junit.Before
@@ -27,9 +26,8 @@ import org.mockito.kotlin.mock
 @RunWith(MockitoJUnitRunner::class)
 class OnboardingUseCaseTest {
 
-    private val testDispatcher = TestCoroutineDispatcher()
-    private val coroutineScope =
-        createTestCoroutineScope(TestCoroutineDispatcher() + TestCoroutineExceptionHandler() + testDispatcher)
+    private val testDispatcher = UnconfinedTestDispatcher()
+    private val testScope = TestScope(testDispatcher)
 
     private lateinit var useCase: OnboardingUseCaseImpl
     private lateinit var fakePreferences: FakePreferenceRepository
@@ -52,7 +50,7 @@ class OnboardingUseCaseTest {
      */
     @Test
     fun `Only show fingerprint map feature notification for the first update only`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // show it when updating from a version that didn't support it to a version that does
             // GIVEN
             fakePreferences.set(Keys.approvedFingerprintFeaturePrompt, false)
@@ -100,7 +98,7 @@ class OnboardingUseCaseTest {
 
     @Test
     fun `update to 2_3_0, no bluetooth devices were chosen in settings, do not show notification to choose devices again`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             fakePreferences.set(
                 stringSetPreferencesKey("pref_bluetooth_devices_show_ime_picker"),
@@ -120,7 +118,7 @@ class OnboardingUseCaseTest {
 
     @Test
     fun `update to 2_3_0, bluetooth devices were chosen in settings, show notification to choose devices again`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             fakePreferences.set(
                 stringSetPreferencesKey("pref_bluetooth_devices_show_ime_picker"),
