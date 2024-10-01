@@ -9,6 +9,7 @@ import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.constraints.ConstraintSnapshot
 import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
+import io.github.sds100.keymapper.constraints.isSatisfied
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.mappings.ClickType
@@ -324,7 +325,7 @@ class KeyMapController(
                     }
                 }
 
-                parallelTriggers.forEach { triggerIndex ->
+                for (triggerIndex in parallelTriggers) {
                     val trigger = triggers[triggerIndex]
 
                     trigger.keys.forEachIndexed { keyIndex, key ->
@@ -385,13 +386,13 @@ class KeyMapController(
     /**
      * All sequence events that have the long press click type.
      */
-    private var longPressSequenceTriggerKeys: Array<TriggerKey> = arrayOf<TriggerKey>()
+    private var longPressSequenceTriggerKeys: Array<TriggerKey> = arrayOf()
 
     /**
      * All double press keys and the index of their corresponding trigger. first is the event and second is
      * the trigger index.
      */
-    private var doublePressTriggerKeys: Array<TriggerKeyLocation> = arrayOf<TriggerKeyLocation>()
+    private var doublePressTriggerKeys: Array<TriggerKeyLocation> = arrayOf()
 
     /**
      * order matches with [doublePressTriggerKeys]
@@ -405,7 +406,7 @@ class KeyMapController(
      */
     private var doublePressTimeoutTimes = longArrayOf()
 
-    private var actionMap = SparseArrayCompat<KeyMapAction>()
+    private var actionMap: SparseArrayCompat<KeyMapAction> = SparseArrayCompat()
     private var triggers: Array<KeyMapTrigger> = emptyArray()
 
     /**
@@ -424,9 +425,9 @@ class KeyMapController(
     /**
      * The indexes of triggers that overlap after the first element with each trigger in [sequenceTriggers]
      */
-    private var sequenceTriggersOverlappingSequenceTriggers = arrayOf<IntArray>()
+    private var sequenceTriggersOverlappingSequenceTriggers: Array<IntArray> = arrayOf()
 
-    private var sequenceTriggersOverlappingParallelTriggers = arrayOf<IntArray>()
+    private var sequenceTriggersOverlappingParallelTriggers: Array<IntArray> = arrayOf()
 
     /**
      * An array of the index of the last matched event in each trigger.
@@ -436,7 +437,7 @@ class KeyMapController(
     /**
      * An array of the constraints for every trigger
      */
-    private var triggerConstraints: Array<ConstraintState> = arrayOf<ConstraintState>()
+    private var triggerConstraints: Array<ConstraintState> = arrayOf()
 
     /**
      * The events to detect for each parallel trigger.
@@ -447,7 +448,7 @@ class KeyMapController(
      * The actions to perform when each trigger is detected. The order matches with
      * [triggers].
      */
-    private var triggerActions: Array<IntArray> = arrayOf<IntArray>()
+    private var triggerActions: Array<IntArray> = arrayOf()
 
     /**
      * Stores whether each event in each parallel trigger need to be released after being held down.
@@ -612,38 +613,59 @@ class KeyMapController(
 
         val constraintSnapshot: ConstraintSnapshot by lazy { detectConstraints.getSnapshot() }
 
-        // consume sequence trigger keys until their timeout has been reached
-        for (sequenceTriggerIndex in sequenceTriggers) {
-            val timeoutTime = sequenceTriggersTimeoutTimes[sequenceTriggerIndex] ?: -1
-            val trigger = triggers[sequenceTriggerIndex]
-            val constraintState = triggerConstraints[sequenceTriggerIndex]
+        /**
+         * Store which triggers are currently satisfied by the constraints.
+         * This is used to check later on whether to wait for a double press to complete
+         * before executing a short press. See issue #1271.
+         */
+        val triggersSatisfiedByConstraints = mutableSetOf<Int>()
 
-            if (constraintState.constraints.isNotEmpty()) {
-                if (!constraintSnapshot.isSatisfied(constraintState)) continue
+        for (triggerIndex in parallelTriggers.plus(sequenceTriggers)) {
+            val constraintState = triggerConstraints[triggerIndex]
+
+            if (constraintSnapshot.isSatisfied(constraintState)) {
+                triggersSatisfiedByConstraints.add(triggerIndex)
+            }
+        }
+
+        // consume sequence trigger keys until their timeout has been reached
+        for (triggerIndex in sequenceTriggers) {
+            val timeoutTime = sequenceTriggersTimeoutTimes[triggerIndex] ?: -1
+
+            if (!triggersSatisfiedByConstraints.contains(triggerIndex)) {
+                continue
             }
 
             if (timeoutTime != -1L && currentTime >= timeoutTime) {
-                lastMatchedEventIndices[sequenceTriggerIndex] = -1
-                sequenceTriggersTimeoutTimes[sequenceTriggerIndex] = -1
+                lastMatchedEventIndices[triggerIndex] = -1
+                sequenceTriggersTimeoutTimes[triggerIndex] = -1
             } else {
+                val triggerKeys = triggers[triggerIndex].keys
+
                 // consume the event if the trigger contains this keycode.
-                trigger.keys.forEachIndexed { keyIndex, key ->
-                    if (key.keyCode == event.keyCode && trigger.keys[keyIndex].consumeKeyEvent) {
+                for ((keyIndex, key) in triggerKeys.withIndex()) {
+                    if (key.keyCode == event.keyCode && triggerKeys[keyIndex].consumeKeyEvent) {
                         consumeEvent = true
                     }
                 }
             }
         }
 
-        doublePressTimeoutTimes.forEachIndexed { doublePressEventIndex, timeoutTime ->
+        for ((doublePressEventIndex, timeoutTime) in doublePressTimeoutTimes.withIndex()) {
             if (currentTime >= timeoutTime) {
                 doublePressTimeoutTimes[doublePressEventIndex] = -1
                 doublePressEventStates[doublePressEventIndex] = NOT_PRESSED
             } else {
                 val eventLocation = doublePressTriggerKeys[doublePressEventIndex]
+                val triggerIndex = eventLocation.triggerIndex
+
+                // Ignore this double press trigger if the constraint isn't satisfied.
+                if (!triggersSatisfiedByConstraints.contains(triggerIndex)) {
+                    continue
+                }
+
                 val doublePressEvent =
                     triggers[eventLocation.triggerIndex].keys[eventLocation.keyIndex]
-                val triggerIndex = eventLocation.triggerIndex
 
                 triggers[triggerIndex].keys.forEachIndexed { eventIndex, event ->
                     if (event == doublePressEvent &&
@@ -669,16 +691,13 @@ class KeyMapController(
         Otherwise the order of the key maps affects the logic.
          */
         triggerLoop@ for (triggerIndex in parallelTriggers) {
-            val trigger = triggers[triggerIndex]
-            val lastMatchedIndex = lastMatchedEventIndices[triggerIndex]
-
-            val constraintState = triggerConstraints[triggerIndex]
-
-            if (constraintState.constraints.isNotEmpty()) {
-                if (!constraintSnapshot.isSatisfied(constraintState)) {
-                    continue
-                }
+            if (!triggersSatisfiedByConstraints.contains(triggerIndex)) {
+                continue
             }
+
+            val trigger = triggers[triggerIndex]
+
+            val lastMatchedIndex = lastMatchedEventIndices[triggerIndex]
 
             for (actionKey in triggerActions[triggerIndex]) {
                 if (canActionBePerformed[actionKey] == null) {
@@ -701,26 +720,22 @@ class KeyMapController(
 
             val nextIndex = lastMatchedIndex + 1
 
-            if (trigger.matchingEventAtIndex(
-                    event.withShortPress,
-                    nextIndex,
-                )
-            ) {
+            if (trigger.matchingEventAtIndex(event.withShortPress, nextIndex)) {
                 lastMatchedEventIndices[triggerIndex] = nextIndex
                 parallelTriggerEventsAwaitingRelease[triggerIndex][nextIndex] = true
             }
 
-            if (trigger.matchingEventAtIndex(
-                    event.withLongPress,
-                    nextIndex,
-                )
-            ) {
+            if (trigger.matchingEventAtIndex(event.withLongPress, nextIndex)) {
                 lastMatchedEventIndices[triggerIndex] = nextIndex
                 parallelTriggerEventsAwaitingRelease[triggerIndex][nextIndex] = true
             }
         }
 
         triggerLoop@ for (triggerIndex in parallelTriggers) {
+            if (!triggersSatisfiedByConstraints.contains(triggerIndex)) {
+                continue
+            }
+
             val trigger = triggers[triggerIndex]
             val lastMatchedIndex = lastMatchedEventIndices[triggerIndex]
 
@@ -741,11 +756,7 @@ class KeyMapController(
             }
 
             // Perform short press action
-            if (trigger.matchingEventAtIndex(
-                    event.withShortPress,
-                    lastMatchedIndex,
-                )
-            ) {
+            if (trigger.matchingEventAtIndex(event.withShortPress, lastMatchedIndex)) {
                 if (trigger.keys[lastMatchedIndex].consumeKeyEvent) {
                     consumeEvent = true
                 }
@@ -773,10 +784,7 @@ class KeyMapController(
                         detectedShortPressTriggers.add(triggerIndex)
 
                         val vibrateDuration = when {
-                            trigger.vibrate -> {
-                                vibrateDuration(trigger)
-                            }
-
+                            trigger.vibrate -> vibrateDuration(trigger)
                             forceVibrate.value -> defaultVibrateDuration.value
                             else -> -1L
                         }
@@ -787,11 +795,7 @@ class KeyMapController(
             }
 
             // Perform long press action
-            if (trigger.matchingEventAtIndex(
-                    event.withLongPress,
-                    lastMatchedIndex,
-                )
-            ) {
+            if (trigger.matchingEventAtIndex(event.withLongPress, lastMatchedIndex)) {
                 if (trigger.keys[lastMatchedIndex].consumeKeyEvent) {
                     consumeEvent = true
                 }
@@ -799,8 +803,7 @@ class KeyMapController(
                 if (lastMatchedIndex == trigger.keys.lastIndex) {
                     awaitingLongPress = true
 
-                    if (trigger.longPressDoubleVibration
-                    ) {
+                    if (trigger.longPressDoubleVibration) {
                         useCase.vibrate(vibrateDuration(trigger))
                     }
 
@@ -836,8 +839,16 @@ class KeyMapController(
         }
 
         if (detectedShortPressTriggers.isNotEmpty()) {
-            val matchingDoublePressEvent = doublePressTriggerKeys.any {
-                triggers[it.triggerIndex].keys[it.keyIndex].matchesEvent(event.withDoublePress)
+            val matchingDoublePressEvent = doublePressTriggerKeys.any { keyLocation ->
+                // See issue #1271. Only consider the double press triggers that overlap
+                // if the constraints allow it.
+
+                if (!triggersSatisfiedByConstraints.contains(keyLocation.triggerIndex)) {
+                    return@any false
+                }
+
+                val key = triggers[keyLocation.triggerIndex].keys[keyLocation.keyIndex]
+                key.matchesEvent(event.withDoublePress)
             }
 
             /* to prevent the actions of keys mapped to a short press and, a long press or a double press
@@ -852,16 +863,17 @@ class KeyMapController(
                     performActionsOnFailedLongPress.addAll(detectedShortPressTriggers)
                 }
 
-                else -> detectedShortPressTriggers.forEach { triggerIndex ->
+                else -> {
+                    for (triggerIndex in detectedShortPressTriggers) {
+                        if (triggers[triggerIndex].showToast) {
+                            showToast = true
+                        }
 
-                    if (triggers[triggerIndex].showToast) {
-                        showToast = true
+                        parallelTriggerActionPerformers[triggerIndex]?.onTriggered(
+                            calledOnTriggerRelease = false,
+                            metaState = metaStateFromKeyEvent.withFlag(metaStateFromActions),
+                        )
                     }
-
-                    parallelTriggerActionPerformers[triggerIndex]?.onTriggered(
-                        calledOnTriggerRelease = false,
-                        metaState = metaStateFromKeyEvent.withFlag(metaStateFromActions),
-                    )
                 }
             }
         }
@@ -882,13 +894,14 @@ class KeyMapController(
             return true
         }
 
-        sequenceTriggers.forEach { triggerIndex ->
+        for (triggerIndex in sequenceTriggers) {
+            if (!triggersSatisfiedByConstraints.contains(triggerIndex)) {
+                continue
+            }
+
             val trigger = triggers[triggerIndex]
-            val constraints = triggerConstraints[triggerIndex]
 
-            if (!constraintSnapshot.isSatisfied(constraints)) return@forEach
-
-            trigger.keys.forEachIndexed { keyIndex, key ->
+            for (key in trigger.keys) {
                 val matchingEvent = when {
                     key.matchesEvent(event.withShortPress) -> true
                     key.matchesEvent(event.withLongPress) -> true
@@ -1015,7 +1028,7 @@ class KeyMapController(
             // the index of the next event to match in the trigger
             val nextIndex = lastMatchedEventIndex + 1
 
-            if ((currentTime - downTime) >= longPressDelay(triggers[triggerIndex])) {
+            if ((currentTime - downTime) >= longPressDelay(trigger)) {
                 successfulLongPressTrigger = true
             } else if (detectSequenceLongPresses &&
                 longPressSequenceTriggerKeys.any { it.matchesEvent(event.withLongPress) }
@@ -1036,12 +1049,8 @@ class KeyMapController(
             }
 
             // if the next event matches the event just pressed
-            if (triggers[triggerIndex].matchingEventAtIndex(
-                    encodedEventWithClickType,
-                    nextIndex,
-                )
-            ) {
-                if (triggers[triggerIndex].keys[nextIndex].consumeKeyEvent) {
+            if (trigger.matchingEventAtIndex(encodedEventWithClickType, nextIndex)) {
+                if (trigger.keys[nextIndex].consumeKeyEvent) {
                     consumeEvent = true
                 }
 
@@ -1053,7 +1062,7 @@ class KeyMapController(
                  */
                 if (nextIndex == 0) {
                     val startTime = currentTime
-                    val timeout = sequenceTriggerTimeout(triggers[triggerIndex])
+                    val timeout = sequenceTriggerTimeout(trigger)
 
                     sequenceTriggersTimeoutTimes[triggerIndex] = startTime + timeout
                 }
@@ -1062,16 +1071,16 @@ class KeyMapController(
                 If the last event in a trigger has been matched, then the action needs to be performed and the timer
                 reset.
                  */
-                if (nextIndex == triggers[triggerIndex].keys.lastIndex) {
+                if (nextIndex == trigger.keys.lastIndex) {
                     detectedSequenceTriggerIndexes.add(triggerIndex)
 
-                    if (triggers[triggerIndex].showToast) {
+                    if (trigger.showToast) {
                         showToast = true
                     }
 
-                    triggerActions[triggerIndex].forEachIndexed { index, _ ->
-                        if (triggers[triggerIndex].vibrate) {
-                            vibrateDurations.add(vibrateDuration(triggers[triggerIndex]))
+                    triggerActions[triggerIndex].forEach { _ ->
+                        if (trigger.vibrate) {
+                            vibrateDurations.add(vibrateDuration(trigger))
                         }
                     }
 

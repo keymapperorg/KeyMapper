@@ -164,6 +164,86 @@ class KeyMapControllerTest {
         )
     }
 
+    /**
+     * #1271 but with long press trigger instead of double press.
+     */
+    @Test
+    fun `Trigger short press key map if constraints allow it and a long press key map to the same button is not allowed`() =
+        runTest(testDispatcher) {
+            val shortPressTrigger = singleKeyTrigger(
+                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
+            )
+            val shortPressConstraints = ConstraintState(constraints = setOf(Constraint.WifiOn))
+
+            val longPressTrigger = singleKeyTrigger(
+                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
+            )
+            val doublePressConstraints = ConstraintState(constraints = setOf(Constraint.WifiOff))
+
+            keyMapListFlow.value = listOf(
+                KeyMap(
+                    0,
+                    trigger = shortPressTrigger,
+                    actionList = listOf(TEST_ACTION),
+                    constraintState = shortPressConstraints,
+                ),
+                KeyMap(
+                    1,
+                    trigger = longPressTrigger,
+                    actionList = listOf(TEST_ACTION_2),
+                    constraintState = doublePressConstraints,
+                ),
+            )
+
+            // Only the short press trigger is allowed.
+            mockConstraintSnapshot { constraint -> constraint == Constraint.WifiOn }
+
+            mockTriggerKeyInput(shortPressTrigger.keys.first())
+
+            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+            verify(performActionsUseCase, never()).perform(TEST_ACTION_2.data)
+        }
+
+    /**
+     * #1271
+     */
+    @Test
+    fun `ignore double press key maps overlapping short press key maps if the constraints aren't satisfied`() =
+        runTest(testDispatcher) {
+            val shortPressTrigger = singleKeyTrigger(
+                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
+            )
+            val shortPressConstraints = ConstraintState(constraints = setOf(Constraint.WifiOn))
+
+            val doublePressTrigger = singleKeyTrigger(
+                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.DOUBLE_PRESS),
+            )
+            val doublePressConstraints = ConstraintState(constraints = setOf(Constraint.WifiOff))
+
+            keyMapListFlow.value = listOf(
+                KeyMap(
+                    0,
+                    trigger = shortPressTrigger,
+                    actionList = listOf(TEST_ACTION),
+                    constraintState = shortPressConstraints,
+                ),
+                KeyMap(
+                    1,
+                    trigger = doublePressTrigger,
+                    actionList = listOf(TEST_ACTION_2),
+                    constraintState = doublePressConstraints,
+                ),
+            )
+
+            // Only the short press trigger is allowed.
+            mockConstraintSnapshot { constraint -> constraint == Constraint.WifiOn }
+
+            mockTriggerKeyInput(shortPressTrigger.keys.first())
+
+            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+            verify(performActionsUseCase, never()).perform(TEST_ACTION_2.data)
+        }
+
     @Test
     fun `Don't imitate button if 1 long press trigger is successful and another with a longer delay fails`() =
         runTest(testDispatcher) {
@@ -3235,5 +3315,12 @@ class KeyMapControllerTest {
             id = deviceId,
             isGameController = isGameController,
         )
+    }
+
+    private fun mockConstraintSnapshot(isSatisfiedBlock: (constraint: Constraint) -> Boolean) {
+        val snapshot = object : ConstraintSnapshot {
+            override fun isSatisfied(constraint: Constraint): Boolean = isSatisfiedBlock(constraint)
+        }
+        whenever(detectConstraintsUseCase.getSnapshot()).thenReturn(snapshot)
     }
 }
