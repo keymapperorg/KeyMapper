@@ -7,7 +7,7 @@ import com.github.salomonbrys.kotson.byInt
 import com.github.salomonbrys.kotson.byNullableInt
 import com.github.salomonbrys.kotson.jsonDeserializer
 import com.google.gson.annotations.SerializedName
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 /**
  * Created by sds100 on 16/07/2018.

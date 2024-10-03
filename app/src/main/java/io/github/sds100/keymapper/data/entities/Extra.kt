@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 /**
  * Created by sds100 on 26/01/2019.
