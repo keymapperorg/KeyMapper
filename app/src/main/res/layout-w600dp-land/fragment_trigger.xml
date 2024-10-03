@@ -10,7 +10,7 @@
 
         <variable
             name="viewModel"
-            type="io.github.sds100.keymapper.mappings.keymaps.ConfigTriggerViewModel" />
+            type="io.github.sds100.keymapper.mappings.keymaps.trigger.ConfigTriggerViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -7,7 +7,6 @@ import androidx.navigation.navGraphViewModels
 import com.airbnb.epoxy.EpoxyRecyclerView
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapViewModel
-import io.github.sds100.keymapper.mappings.keymaps.ConfigTriggerOptionsViewModel
 import io.github.sds100.keymapper.system.url.UrlUtils
 import io.github.sds100.keymapper.triggerFromOtherApps
 import io.github.sds100.keymapper.ui.utils.configuredCheckBox

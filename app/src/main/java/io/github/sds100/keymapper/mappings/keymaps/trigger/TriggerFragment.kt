@@ -19,8 +19,6 @@ import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.databinding.FragmentTriggerBinding
 import io.github.sds100.keymapper.fixError
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapViewModel
-import io.github.sds100.keymapper.mappings.keymaps.ConfigTriggerViewModel
-import io.github.sds100.keymapper.mappings.keymaps.RecordTriggerButtonRow
 import io.github.sds100.keymapper.triggerKey
 import io.github.sds100.keymapper.util.FragmentInfo
 import io.github.sds100.keymapper.util.Inject

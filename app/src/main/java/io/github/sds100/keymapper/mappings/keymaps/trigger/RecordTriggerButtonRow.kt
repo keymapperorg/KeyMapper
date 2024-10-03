@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.mappings.keymaps
+package io.github.sds100.keymapper.mappings.keymaps.trigger
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -31,8 +31,6 @@ import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.compose.LocalCustomColorsPalette
-import io.github.sds100.keymapper.mappings.keymaps.trigger.AdvancedTriggersBottomSheet
-import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerState
 
 /**
  * This row of buttons is shown at the bottom of the TriggerFragment.
@@ -53,6 +51,7 @@ fun RecordTriggerButtonRow(
             onDismissRequest = {
                 showBottomSheet = false
             },
+            onChooseAssistantTrigger = viewModel::onChooseAssistantTrigger,
             sheetState = sheetState,
         )
     }

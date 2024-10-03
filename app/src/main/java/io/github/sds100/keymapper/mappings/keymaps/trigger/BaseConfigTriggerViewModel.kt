@@ -1,17 +1,13 @@
-package io.github.sds100.keymapper.mappings.keymaps
+package io.github.sds100.keymapper.mappings.keymaps.trigger
 
 import android.os.Build
 import android.view.KeyEvent
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.ClickType
-import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerState
-import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerUseCase
-import io.github.sds100.keymapper.mappings.keymaps.trigger.Trigger
-import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerError
-import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
-import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyLinkType
-import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyListItem
-import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
+import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapUseCase
+import io.github.sds100.keymapper.mappings.keymaps.CreateKeyMapShortcutUseCase
+import io.github.sds100.keymapper.mappings.keymaps.DisplayKeyMapUseCase
+import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
@@ -56,7 +52,7 @@ import kotlinx.coroutines.runBlocking
  * Created by sds100 on 24/11/20.
  */
 
-class ConfigTriggerViewModel(
+abstract class BaseConfigTriggerViewModel(
     private val coroutineScope: CoroutineScope,
     private val onboarding: OnboardingUseCase,
     private val config: ConfigKeyMapUseCase,
@@ -366,8 +362,8 @@ class ConfigTriggerViewModel(
 
             if (result is Error.AccessibilityServiceDisabled) {
                 ViewModelHelper.handleAccessibilityServiceStoppedSnackBar(
-                    resourceProvider = this@ConfigTriggerViewModel,
-                    popupViewModel = this@ConfigTriggerViewModel,
+                    resourceProvider = this@BaseConfigTriggerViewModel,
+                    popupViewModel = this@BaseConfigTriggerViewModel,
                     startService = displayKeyMap::startAccessibilityService,
                     message = R.string.dialog_message_enable_accessibility_service_to_record_trigger,
                 )
@@ -375,8 +371,8 @@ class ConfigTriggerViewModel(
 
             if (result is Error.AccessibilityServiceCrashed) {
                 ViewModelHelper.handleAccessibilityServiceCrashedSnackBar(
-                    resourceProvider = this@ConfigTriggerViewModel,
-                    popupViewModel = this@ConfigTriggerViewModel,
+                    resourceProvider = this@BaseConfigTriggerViewModel,
+                    popupViewModel = this@BaseConfigTriggerViewModel,
                     restartService = displayKeyMap::restartAccessibilityService,
                     message = R.string.dialog_message_restart_accessibility_service_to_record_trigger,
                 )
@@ -395,8 +391,8 @@ class ConfigTriggerViewModel(
             when (TriggerError.valueOf(listItemId)) {
                 TriggerError.DND_ACCESS_DENIED -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
-                        resourceProvider = this@ConfigTriggerViewModel,
-                        popupViewModel = this@ConfigTriggerViewModel,
+                        resourceProvider = this@BaseConfigTriggerViewModel,
+                        popupViewModel = this@BaseConfigTriggerViewModel,
                         neverShowDndTriggerErrorAgain = { displayKeyMap.neverShowDndTriggerErrorAgain() },
                         fixError = { displayKeyMap.fixError(it) },
                     )
