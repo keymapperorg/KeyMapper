@@ -34,7 +34,7 @@ import org.mockito.kotlin.mock
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
-class ConfigCustomTriggerViewModelTest {
+class ConfigTriggerViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
     private val testScope = TestScope(testDispatcher)

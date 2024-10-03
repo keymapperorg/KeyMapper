@@ -4,10 +4,10 @@ import android.os.Build
 import android.view.KeyEvent
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.ClickType
-import io.github.sds100.keymapper.mappings.keymaps.trigger.CustomTrigger
-import io.github.sds100.keymapper.mappings.keymaps.trigger.CustomTriggerError
 import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerState
 import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerUseCase
+import io.github.sds100.keymapper.mappings.keymaps.trigger.Trigger
+import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerError
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyLinkType
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyListItem
@@ -268,20 +268,20 @@ class ConfigTriggerViewModel(
         }
     }
 
-    private fun buildTriggerErrorListItems(triggerErrors: List<CustomTriggerError>) =
+    private fun buildTriggerErrorListItems(triggerErrors: List<TriggerError>) =
         triggerErrors.map { error ->
             when (error) {
-                CustomTriggerError.DND_ACCESS_DENIED -> TextListItem.Error(
+                TriggerError.DND_ACCESS_DENIED -> TextListItem.Error(
                     id = error.toString(),
                     text = getString(R.string.trigger_error_dnd_access_denied),
                 )
 
-                CustomTriggerError.SCREEN_OFF_ROOT_DENIED -> TextListItem.Error(
+                TriggerError.SCREEN_OFF_ROOT_DENIED -> TextListItem.Error(
                     id = error.toString(),
                     text = getString(R.string.trigger_error_screen_off_root_permission_denied),
                 )
 
-                CustomTriggerError.CANT_DETECT_IN_PHONE_CALL -> TextListItem.Error(
+                TriggerError.CANT_DETECT_IN_PHONE_CALL -> TextListItem.Error(
                     id = error.toString(),
                     text = getString(R.string.trigger_error_cant_detect_in_phone_call),
                 )
@@ -392,8 +392,8 @@ class ConfigTriggerViewModel(
 
     fun onTriggerErrorClick(listItemId: String) {
         coroutineScope.launch {
-            when (CustomTriggerError.valueOf(listItemId)) {
-                CustomTriggerError.DND_ACCESS_DENIED -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            when (TriggerError.valueOf(listItemId)) {
+                TriggerError.DND_ACCESS_DENIED -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
                         resourceProvider = this@ConfigTriggerViewModel,
                         popupViewModel = this@ConfigTriggerViewModel,
@@ -402,12 +402,12 @@ class ConfigTriggerViewModel(
                     )
                 }
 
-                CustomTriggerError.SCREEN_OFF_ROOT_DENIED -> {
+                TriggerError.SCREEN_OFF_ROOT_DENIED -> {
                     val error = Error.PermissionDenied(Permission.ROOT)
                     displayKeyMap.fixError(error)
                 }
 
-                CustomTriggerError.CANT_DETECT_IN_PHONE_CALL -> {
+                TriggerError.CANT_DETECT_IN_PHONE_CALL -> {
                     displayKeyMap.fixError(Error.CantDetectKeyEventsInPhoneCall)
                 }
             }
@@ -415,7 +415,7 @@ class ConfigTriggerViewModel(
     }
 
     private fun createListItems(
-        trigger: CustomTrigger,
+        trigger: Trigger,
         showDeviceDescriptors: Boolean,
     ): List<TriggerKeyListItem> =
         trigger.keys.mapIndexed { index, key ->

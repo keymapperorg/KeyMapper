@@ -3,8 +3,8 @@ package io.github.sds100.keymapper.mappings.keymaps
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.BaseMappingListItemCreator
 import io.github.sds100.keymapper.mappings.ClickType
-import io.github.sds100.keymapper.mappings.keymaps.trigger.CustomTrigger
-import io.github.sds100.keymapper.mappings.keymaps.trigger.CustomTriggerError
+import io.github.sds100.keymapper.mappings.keymaps.trigger.Trigger
+import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerError
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
@@ -111,21 +111,21 @@ class KeyMapListItemCreator(
 
         val triggerErrorChips = triggerErrors.map {
             when (it) {
-                CustomTriggerError.DND_ACCESS_DENIED ->
+                TriggerError.DND_ACCESS_DENIED ->
                     ChipUi.Error(
-                        id = CustomTriggerError.DND_ACCESS_DENIED.toString(),
+                        id = TriggerError.DND_ACCESS_DENIED.toString(),
                         text = getString(R.string.trigger_error_dnd_access_denied_short),
                         error = Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY),
                     )
 
-                CustomTriggerError.SCREEN_OFF_ROOT_DENIED -> ChipUi.Error(
-                    id = CustomTriggerError.SCREEN_OFF_ROOT_DENIED.toString(),
+                TriggerError.SCREEN_OFF_ROOT_DENIED -> ChipUi.Error(
+                    id = TriggerError.SCREEN_OFF_ROOT_DENIED.toString(),
                     text = getString(R.string.trigger_error_screen_off_root_permission_denied_short),
                     error = Error.PermissionDenied(Permission.ROOT),
                 )
 
-                CustomTriggerError.CANT_DETECT_IN_PHONE_CALL -> ChipUi.Error(
-                    id = CustomTriggerError.SCREEN_OFF_ROOT_DENIED.toString(),
+                TriggerError.CANT_DETECT_IN_PHONE_CALL -> ChipUi.Error(
+                    id = TriggerError.SCREEN_OFF_ROOT_DENIED.toString(),
                     text = getString(R.string.trigger_error_cant_detect_in_phone_call),
                     error = Error.CantDetectKeyEventsInPhoneCall,
                 )
@@ -143,7 +143,7 @@ class KeyMapListItemCreator(
         )
     }
 
-    private fun getTriggerOptionLabels(trigger: CustomTrigger): List<String> {
+    private fun getTriggerOptionLabels(trigger: Trigger): List<String> {
         val labels = mutableListOf<String>()
 
         if (trigger.isVibrateAllowed() && trigger.vibrate) {

@@ -15,7 +15,7 @@ import splitties.bitflags.withFlag
  */
 
 @Serializable
-data class CustomTrigger(
+data class Trigger(
     val keys: List<TriggerKey> = emptyList(),
     val mode: TriggerMode = TriggerMode.Undefined,
     val vibrate: Boolean = false,
@@ -51,10 +51,10 @@ data class CustomTrigger(
         !keys.isNullOrEmpty() && keys.size > 1 && mode is TriggerMode.Sequence
 }
 
-object CustomTriggerEntityMapper {
+object TriggerEntityMapper {
     fun fromEntity(
         entity: TriggerEntity,
-    ): CustomTrigger {
+    ): Trigger {
         val keys = entity.keys.map { TriggerKeyEntityMapper.fromEntity(it) }
 
         val mode = when {
@@ -63,7 +63,7 @@ object CustomTriggerEntityMapper {
             else -> TriggerMode.Undefined
         }
 
-        return CustomTrigger(
+        return Trigger(
             keys = keys,
             mode = mode,
 
@@ -90,7 +90,7 @@ object CustomTriggerEntityMapper {
         )
     }
 
-    fun toEntity(trigger: CustomTrigger): TriggerEntity {
+    fun toEntity(trigger: Trigger): TriggerEntity {
         val extras = mutableListOf<Extra>()
 
         if (trigger.isChangingSequenceTriggerTimeoutAllowed() && trigger.sequenceTriggerTimeout != null) {

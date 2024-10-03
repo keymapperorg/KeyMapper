@@ -15,7 +15,7 @@ import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapAction
-import io.github.sds100.keymapper.mappings.keymaps.trigger.CustomTrigger
+import io.github.sds100.keymapper.mappings.keymaps.trigger.Trigger
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
@@ -57,7 +57,7 @@ class KeyMapController(
          * @return whether the actions assigned to this trigger will be performed on the down event of the final key
          * rather than the up event.
          */
-        fun performActionOnDown(trigger: CustomTrigger): Boolean = (
+        fun performActionOnDown(trigger: Trigger): Boolean = (
             trigger.keys.size <= 1 &&
                 trigger.keys.getOrNull(0)?.clickType != ClickType.DOUBLE_PRESS &&
                 trigger.mode == TriggerMode.Undefined
@@ -96,7 +96,7 @@ class KeyMapController(
 
                 setActionMapAndOptions(value.flatMap { it.actionList }.toSet())
 
-                val triggers = mutableListOf<CustomTrigger>()
+                val triggers = mutableListOf<Trigger>()
                 val sequenceTriggers = mutableListOf<Int>()
                 val parallelTriggers = mutableListOf<Int>()
 
@@ -407,7 +407,7 @@ class KeyMapController(
     private var doublePressTimeoutTimes = longArrayOf()
 
     private var actionMap: SparseArrayCompat<KeyMapAction> = SparseArrayCompat()
-    private var triggers: Array<CustomTrigger> = emptyArray()
+    private var triggers: Array<Trigger> = emptyArray()
 
     /**
      * The events to detect for each sequence trigger.
@@ -1470,7 +1470,7 @@ class KeyMapController(
         }
     }
 
-    private fun CustomTrigger.matchingEventAtIndex(event: Event, index: Int): Boolean {
+    private fun Trigger.matchingEventAtIndex(event: Event, index: Int): Boolean {
         if (index >= this.keys.size) return false
 
         val key = this.keys[index]
@@ -1508,16 +1508,16 @@ class KeyMapController(
                     this.clickType == otherKey.clickType
     }
 
-    private fun longPressDelay(trigger: CustomTrigger): Long =
+    private fun longPressDelay(trigger: Trigger): Long =
         trigger.longPressDelay?.toLong() ?: defaultLongPressDelay.value
 
-    private fun doublePressTimeout(trigger: CustomTrigger): Long =
+    private fun doublePressTimeout(trigger: Trigger): Long =
         trigger.doublePressDelay?.toLong() ?: defaultDoublePressDelay.value
 
-    private fun vibrateDuration(trigger: CustomTrigger): Long =
+    private fun vibrateDuration(trigger: Trigger): Long =
         trigger.vibrateDuration?.toLong() ?: defaultVibrateDuration.value
 
-    private fun sequenceTriggerTimeout(trigger: CustomTrigger): Long =
+    private fun sequenceTriggerTimeout(trigger: Trigger): Long =
         trigger.sequenceTriggerTimeout?.toLong() ?: defaultSequenceTriggerTimeout.value
 
     private fun setActionMapAndOptions(actions: Set<KeyMapAction>) {
