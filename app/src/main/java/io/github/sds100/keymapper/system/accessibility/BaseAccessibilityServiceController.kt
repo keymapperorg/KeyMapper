@@ -15,10 +15,10 @@ import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
 import io.github.sds100.keymapper.mappings.fingerprintmaps.DetectFingerprintMapsUseCase
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintGestureMapController
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapId
-import io.github.sds100.keymapper.mappings.keymaps.TriggerKeyMapFromOtherAppsController
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCase
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectScreenOffKeyEventsController
 import io.github.sds100.keymapper.mappings.keymaps.detection.KeyMapController
+import io.github.sds100.keymapper.mappings.keymaps.detection.TriggerKeyMapFromOtherAppsController
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsController
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsUseCase
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
