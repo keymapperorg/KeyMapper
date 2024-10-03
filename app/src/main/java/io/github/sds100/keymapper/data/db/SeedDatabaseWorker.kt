@@ -9,6 +9,7 @@ import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.data.entities.TriggerEntity
+import io.github.sds100.keymapper.data.entities.TriggerKeyEntity
 import kotlinx.coroutines.coroutineScope
 
 /**
@@ -45,25 +46,25 @@ class SeedDatabaseWorker(
     private fun createRandomTrigger(): TriggerEntity {
         val keys = sequence {
             yield(
-                TriggerEntity.KeyEntity(
+                TriggerKeyEntity(
                     KeyEvent.KEYCODE_CTRL_LEFT,
-                    TriggerEntity.KeyEntity.DEVICE_ID_THIS_DEVICE,
+                    TriggerKeyEntity.DEVICE_ID_THIS_DEVICE,
                     null,
                     TriggerEntity.SHORT_PRESS,
                 ),
             )
             yield(
-                TriggerEntity.KeyEntity(
+                TriggerKeyEntity(
                     KeyEvent.KEYCODE_ALT_LEFT,
-                    TriggerEntity.KeyEntity.DEVICE_ID_ANY_DEVICE,
+                    TriggerKeyEntity.DEVICE_ID_ANY_DEVICE,
                     null,
                     TriggerEntity.LONG_PRESS,
                 ),
             )
             yield(
-                TriggerEntity.KeyEntity(
+                TriggerKeyEntity(
                     KeyEvent.KEYCODE_DEL,
-                    TriggerEntity.KeyEntity.DEVICE_ID_THIS_DEVICE,
+                    TriggerKeyEntity.DEVICE_ID_THIS_DEVICE,
                     null,
                     TriggerEntity.SHORT_PRESS,
                 ),

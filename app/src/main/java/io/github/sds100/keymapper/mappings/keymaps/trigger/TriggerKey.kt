@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.mappings.keymaps.trigger
 
 import io.github.sds100.keymapper.data.entities.TriggerEntity
+import io.github.sds100.keymapper.data.entities.TriggerKeyEntity
 import io.github.sds100.keymapper.mappings.ClickType
 import kotlinx.serialization.Serializable
 import splitties.bitflags.hasFlag
@@ -32,13 +33,13 @@ data class TriggerKey(
 
 object TriggerKeyEntityMapper {
     fun fromEntity(
-        entity: TriggerEntity.KeyEntity,
+        entity: TriggerKeyEntity,
     ): TriggerKey = TriggerKey(
         uid = entity.uid,
         keyCode = entity.keyCode,
         device = when (entity.deviceId) {
-            TriggerEntity.KeyEntity.DEVICE_ID_THIS_DEVICE -> TriggerKeyDevice.Internal
-            TriggerEntity.KeyEntity.DEVICE_ID_ANY_DEVICE -> TriggerKeyDevice.Any
+            TriggerKeyEntity.DEVICE_ID_THIS_DEVICE -> TriggerKeyDevice.Internal
+            TriggerKeyEntity.DEVICE_ID_ANY_DEVICE -> TriggerKeyDevice.Any
             else -> TriggerKeyDevice.External(
                 entity.deviceId,
                 entity.deviceName ?: "",
@@ -50,14 +51,14 @@ object TriggerKeyEntityMapper {
             TriggerEntity.DOUBLE_PRESS -> ClickType.DOUBLE_PRESS
             else -> ClickType.SHORT_PRESS
         },
-        consumeKeyEvent = !entity.flags.hasFlag(TriggerEntity.KeyEntity.FLAG_DO_NOT_CONSUME_KEY_EVENT),
+        consumeKeyEvent = !entity.flags.hasFlag(TriggerKeyEntity.FLAG_DO_NOT_CONSUME_KEY_EVENT),
     )
 
-    fun toEntity(key: TriggerKey): TriggerEntity.KeyEntity {
+    fun toEntity(key: TriggerKey): TriggerKeyEntity {
         val deviceId = when (key.device) {
-            TriggerKeyDevice.Any -> TriggerEntity.KeyEntity.DEVICE_ID_ANY_DEVICE
+            TriggerKeyDevice.Any -> TriggerKeyEntity.DEVICE_ID_ANY_DEVICE
             is TriggerKeyDevice.External -> key.device.descriptor
-            TriggerKeyDevice.Internal -> TriggerEntity.KeyEntity.DEVICE_ID_THIS_DEVICE
+            TriggerKeyDevice.Internal -> TriggerKeyEntity.DEVICE_ID_THIS_DEVICE
         }
 
         val deviceName = if (key.device is TriggerKeyDevice.External) {
@@ -75,10 +76,10 @@ object TriggerKeyEntityMapper {
         var flags = 0
 
         if (!key.consumeKeyEvent) {
-            flags = flags.withFlag(TriggerEntity.KeyEntity.FLAG_DO_NOT_CONSUME_KEY_EVENT)
+            flags = flags.withFlag(TriggerKeyEntity.FLAG_DO_NOT_CONSUME_KEY_EVENT)
         }
 
-        return TriggerEntity.KeyEntity(
+        return TriggerKeyEntity(
             keyCode = key.keyCode,
             deviceId = deviceId,
             deviceName = deviceName,

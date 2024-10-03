@@ -9,6 +9,7 @@ import com.github.salomonbrys.kotson.registerTypeAdapter
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.github.sds100.keymapper.data.entities.TriggerEntity
+import io.github.sds100.keymapper.data.entities.TriggerKeyEntity
 import splitties.bitflags.hasFlag
 import splitties.bitflags.minusFlag
 import splitties.bitflags.withFlag
@@ -40,7 +41,7 @@ object Migration6To7 {
 
                 val newTriggerKeys = trigger.keys.map {
                     if (trigger.flags.hasFlag(TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION)) {
-                        it.copy(flags = it.flags.withFlag(TriggerEntity.KeyEntity.FLAG_DO_NOT_CONSUME_KEY_EVENT))
+                        it.copy(flags = it.flags.withFlag(TriggerKeyEntity.FLAG_DO_NOT_CONSUME_KEY_EVENT))
                     } else {
                         it
                     }

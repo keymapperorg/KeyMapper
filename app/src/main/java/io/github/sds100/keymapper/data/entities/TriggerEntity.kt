@@ -5,12 +5,9 @@ import androidx.annotation.IntDef
 import com.github.salomonbrys.kotson.byArray
 import com.github.salomonbrys.kotson.byInt
 import com.github.salomonbrys.kotson.byNullableInt
-import com.github.salomonbrys.kotson.byNullableString
-import com.github.salomonbrys.kotson.byString
 import com.github.salomonbrys.kotson.jsonDeserializer
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
-import java.util.UUID
 
 /**
  * Created by sds100 on 16/07/2018.
@@ -19,7 +16,7 @@ import java.util.UUID
 @Parcelize
 data class TriggerEntity(
     @SerializedName(NAME_KEYS)
-    val keys: List<KeyEntity> = listOf(),
+    val keys: List<TriggerKeyEntity> = listOf(),
 
     @SerializedName(NAME_EXTRAS)
     val extras: List<Extra> = listOf(),
@@ -64,7 +61,7 @@ data class TriggerEntity(
 
         val DESERIALIZER = jsonDeserializer {
             val triggerKeysJsonArray by it.json.byArray(NAME_KEYS)
-            val keys = it.context.deserialize<List<KeyEntity>>(triggerKeysJsonArray)
+            val keys = it.context.deserialize<List<TriggerKeyEntity>>(triggerKeysJsonArray)
 
             val extrasJsonArray by it.json.byArray(NAME_EXTRAS)
             val extraList = it.context.deserialize<List<Extra>>(extrasJsonArray) ?: listOf()
@@ -74,65 +71,6 @@ data class TriggerEntity(
             val flags by it.json.byNullableInt(NAME_FLAGS)
 
             TriggerEntity(keys, extraList, mode, flags ?: 0)
-        }
-    }
-
-    // TODO move to separate file
-    @Parcelize
-    data class KeyEntity(
-        @SerializedName(NAME_KEYCODE)
-        val keyCode: Int,
-        @SerializedName(NAME_DEVICE_ID)
-        val deviceId: String = DEVICE_ID_THIS_DEVICE,
-
-        @SerializedName(NAME_DEVICE_NAME)
-        val deviceName: String? = null,
-
-        @ClickType
-        @SerializedName(NAME_CLICK_TYPE)
-        val clickType: Int = SHORT_PRESS,
-
-        @SerializedName(NAME_FLAGS)
-        val flags: Int = 0,
-
-        @SerializedName(NAME_UID)
-        val uid: String = UUID.randomUUID().toString(),
-    ) : Parcelable {
-
-        companion object {
-            // DON'T CHANGE THESE. Used for JSON serialization and parsing.
-            const val NAME_KEYCODE = "keyCode"
-            const val NAME_DEVICE_ID = "deviceId"
-            const val NAME_DEVICE_NAME = "deviceName"
-            const val NAME_CLICK_TYPE = "clickType"
-            const val NAME_FLAGS = "flags"
-            const val NAME_UID = "uid"
-
-            // IDS! DON'T CHANGE
-            const val DEVICE_ID_THIS_DEVICE = "io.github.sds100.keymapper.THIS_DEVICE"
-            const val DEVICE_ID_ANY_DEVICE = "io.github.sds100.keymapper.ANY_DEVICE"
-
-            const val FLAG_DO_NOT_CONSUME_KEY_EVENT = 1
-
-            val DESERIALIZER = jsonDeserializer {
-                val keycode by it.json.byInt(NAME_KEYCODE)
-                val deviceId by it.json.byString(NAME_DEVICE_ID)
-                val deviceName by it.json.byNullableString(NAME_DEVICE_NAME)
-                val clickType by it.json.byInt(NAME_CLICK_TYPE)
-
-                // nullable because this property was added after backup and restore was released.
-                val flags by it.json.byNullableInt(NAME_FLAGS)
-                val uid by it.json.byNullableString(NAME_UID)
-
-                KeyEntity(
-                    keycode,
-                    deviceId,
-                    deviceName,
-                    clickType,
-                    flags ?: 0,
-                    uid ?: UUID.randomUUID().toString(),
-                )
-            }
         }
     }
 

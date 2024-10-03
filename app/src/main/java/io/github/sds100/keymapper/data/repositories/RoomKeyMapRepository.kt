@@ -4,7 +4,7 @@ import io.github.sds100.keymapper.data.db.dao.KeyMapDao
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.Extra
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
-import io.github.sds100.keymapper.data.entities.TriggerEntity
+import io.github.sds100.keymapper.data.entities.TriggerKeyEntity
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapRepository
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.util.DefaultDispatcherProvider
@@ -149,8 +149,8 @@ class RoomKeyMapRepository(
             var updateKeyMap = false
 
             val newTriggerKeys = keyMap.trigger.keys.map { triggerKey ->
-                if (triggerKey.deviceId != TriggerEntity.KeyEntity.DEVICE_ID_THIS_DEVICE ||
-                    triggerKey.deviceId != TriggerEntity.KeyEntity.DEVICE_ID_ANY_DEVICE
+                if (triggerKey.deviceId != TriggerKeyEntity.DEVICE_ID_THIS_DEVICE ||
+                    triggerKey.deviceId != TriggerKeyEntity.DEVICE_ID_ANY_DEVICE
                 ) {
                     val deviceDescriptor = triggerKey.deviceId
 
