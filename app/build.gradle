@@ -131,8 +131,8 @@ dependencies {
     compileOnly project(":systemstubs")
 
     def room_version = "2.6.1"
-    def coroutinesVersion = "1.5.0"
-    def nav_version = "2.7.7"
+    def coroutinesVersion = "1.9.0"
+    def nav_version = '2.7.7'
     def work_version = "2.9.1"
     def epoxy_version = "4.6.2"
     def splitties_version = "3.0.0"

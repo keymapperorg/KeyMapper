@@ -110,8 +110,12 @@ class AndroidAppShortcutAdapter(context: Context) : AppShortcutAdapter {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
         try {
-            val pendingIntent =
-                PendingIntent.getActivity(ctx, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+            // See issue #1222 and #1307. Must have FLAG_UPDATE_CURRENT so that
+            // the intent data is updated. If you don't do this and have two app shortcut actions
+            // from the same app then the data isn't updated and both actions will send
+            // the pending intent for the shortcut that was triggered first.
+            val flags = PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            val pendingIntent = PendingIntent.getActivity(ctx, 0, intent, flags)
 
             pendingIntent.send()
             return Success(Unit)

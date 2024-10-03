@@ -14,6 +14,7 @@
       "constraintMode": 1,
       "flags": 0,
       "id": 0,
+      "uid": "uid1",
       "isEnabled": true,
       "trigger": {
         "extras": [],
@@ -42,6 +43,7 @@
       "constraintMode": 1,
       "flags": 0,
       "id": 0,
+      "uid": "uid2",
       "isEnabled": true,
       "trigger": {
         "extras": [],

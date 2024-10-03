@@ -3,9 +3,14 @@ package io.github.sds100.keymapper.system.intents
 import android.content.Intent
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.github.sds100.keymapper.util.firstBlocking
+import io.github.sds100.keymapper.util.ui.FakeResourceProvider
+import io.github.sds100.keymapper.util.ui.MultiChoiceItem
+import io.github.sds100.keymapper.util.ui.PopupUi
+import io.github.sds100.keymapper.util.ui.ShowPopupEvent
+import io.github.sds100.keymapper.util.ui.onUserResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.setMain
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.hasItem
@@ -22,7 +27,7 @@ internal class ConfigIntentViewModelTest {
 
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
-    private val testDispatcher = TestCoroutineDispatcher()
+    private val testDispatcher = UnconfinedTestDispatcher()
 
     private lateinit var fakeResourceProvider: FakeResourceProvider
     private lateinit var viewModel: ConfigIntentViewModel
@@ -53,7 +58,8 @@ internal class ConfigIntentViewModelTest {
         viewModel.showFlagsDialog()
         val popupEvent: ShowPopupEvent = viewModel.showPopup.firstBlocking()
         val multipleChoiceDialog = popupEvent.ui as PopupUi.MultiChoice<*>
-        val expectedCheckedItem = MultiChoiceItem(Intent.FLAG_ACTIVITY_NEW_TASK, "FLAG_ACTIVITY_NEW_TASK", true)
+        val expectedCheckedItem =
+            MultiChoiceItem(Intent.FLAG_ACTIVITY_NEW_TASK, "FLAG_ACTIVITY_NEW_TASK", true)
 
         assertThat(multipleChoiceDialog.items, hasItem(expectedCheckedItem))
     }

@@ -12,10 +12,9 @@ import io.github.sds100.keymapper.util.InputEventType
 import io.github.sds100.keymapper.util.State
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineExceptionHandler
-import kotlinx.coroutines.test.createTestCoroutineScope
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -37,9 +36,8 @@ import org.mockito.kotlin.whenever
 @RunWith(MockitoJUnitRunner::class)
 class PerformActionsUseCaseTest {
 
-    private val testDispatcher = TestCoroutineDispatcher()
-    private val coroutineScope =
-        createTestCoroutineScope(TestCoroutineDispatcher() + TestCoroutineExceptionHandler() + testDispatcher)
+    private val testDispatcher = UnconfinedTestDispatcher()
+    private val testScope = TestScope(testDispatcher)
 
     private lateinit var useCase: PerformActionsUseCaseImpl
     private lateinit var mockKeyMapperImeMessenger: KeyMapperImeMessenger
@@ -55,7 +53,7 @@ class PerformActionsUseCaseTest {
         mockToastAdapter = mock()
 
         useCase = PerformActionsUseCaseImpl(
-            coroutineScope,
+            testScope,
             accessibilityService = mockAccessibilityService,
             inputMethodAdapter = mock(),
             fileAdapter = mock(),
@@ -95,7 +93,7 @@ class PerformActionsUseCaseTest {
      */
     @Test
     fun `dont show accessibility service not found error for open menu action`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val action = ActionData.OpenMenu
 
@@ -118,7 +116,7 @@ class PerformActionsUseCaseTest {
      */
     @Test
     fun `set the device id of key event actions to a connected game controller if is a game pad key code`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val fakeGamePad = InputDeviceInfo(
                 descriptor = "game_pad",
@@ -156,7 +154,7 @@ class PerformActionsUseCaseTest {
      */
     @Test
     fun `don't set the device id of key event actions to a connected game controller if there are no connected game controllers`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             fakeDevicesAdapter.connectedInputDevices.value = State.Data(emptyList())
 
@@ -186,7 +184,7 @@ class PerformActionsUseCaseTest {
      */
     @Test
     fun `don't set the device id of key event actions to a connected game controller if the action has a custom device set`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val fakeGamePad = InputDeviceInfo(
                 descriptor = "game_pad",
@@ -236,7 +234,7 @@ class PerformActionsUseCaseTest {
      */
     @Test
     fun `perform key event action with device name and multiple devices connected with same descriptor and none support the key code, ensure action is still performed`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val descriptor = "fake_device_descriptor"
 
@@ -271,9 +269,7 @@ class PerformActionsUseCaseTest {
             )
 
             // none of the devices support the key code
-            fakeDevicesAdapter.deviceHasKey = { id, keyCode ->
-                false
-            }
+            fakeDevicesAdapter.deviceHasKey = { id, keyCode -> false }
 
             // WHEN
             useCase.perform(action, inputEventType = InputEventType.DOWN_UP, keyMetaState = 0)
@@ -293,7 +289,7 @@ class PerformActionsUseCaseTest {
 
     @Test
     fun `perform key event action with no device name, ensure action is still performed with correct device id`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val descriptor = "fake_device_descriptor"
 
