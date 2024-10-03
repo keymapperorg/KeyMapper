@@ -30,7 +30,7 @@ data class TriggerKey(
     }
 }
 
-object KeymapTriggerKeyEntityMapper {
+object TriggerKeyEntityMapper {
     fun fromEntity(
         entity: TriggerEntity.KeyEntity,
     ): TriggerKey = TriggerKey(

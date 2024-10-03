@@ -61,7 +61,7 @@ class ConfigKeyMapViewModel(
         resourceProvider,
     )
 
-    val configTriggerViewModel = ConfigKeyMapTriggerViewModel(
+    val configTriggerViewModel = ConfigTriggerViewModel(
         viewModelScope,
         onboarding,
         config,

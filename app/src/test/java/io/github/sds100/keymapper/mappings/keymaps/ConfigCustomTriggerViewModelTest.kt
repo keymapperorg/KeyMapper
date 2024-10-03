@@ -34,12 +34,12 @@ import org.mockito.kotlin.mock
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
-class ConfigKeyMapTriggerViewModelTest {
+class ConfigCustomTriggerViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
     private val testScope = TestScope(testDispatcher)
 
-    private lateinit var viewModel: ConfigKeyMapTriggerViewModel
+    private lateinit var viewModel: ConfigTriggerViewModel
     private lateinit var mockConfigKeyMapUseCase: ConfigKeyMapUseCase
     private lateinit var mockRecordTrigger: RecordTriggerUseCase
     private lateinit var fakeOnboarding: FakeOnboardingUseCase
@@ -66,7 +66,7 @@ class ConfigKeyMapTriggerViewModelTest {
 
         fakeResourceProvider = FakeResourceProvider()
 
-        viewModel = ConfigKeyMapTriggerViewModel(
+        viewModel = ConfigTriggerViewModel(
             testScope,
             fakeOnboarding,
             mockConfigKeyMapUseCase,

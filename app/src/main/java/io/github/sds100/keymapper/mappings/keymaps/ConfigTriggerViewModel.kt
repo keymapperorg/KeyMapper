@@ -2,11 +2,10 @@ package io.github.sds100.keymapper.mappings.keymaps
 
 import android.os.Build
 import android.view.KeyEvent
-import androidx.compose.runtime.getValue
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.ClickType
-import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTrigger
-import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTriggerError
+import io.github.sds100.keymapper.mappings.keymaps.trigger.CustomTrigger
+import io.github.sds100.keymapper.mappings.keymaps.trigger.CustomTriggerError
 import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerState
 import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerUseCase
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
@@ -57,7 +56,7 @@ import kotlinx.coroutines.runBlocking
  * Created by sds100 on 24/11/20.
  */
 
-class ConfigKeyMapTriggerViewModel(
+class ConfigTriggerViewModel(
     private val coroutineScope: CoroutineScope,
     private val onboarding: OnboardingUseCase,
     private val config: ConfigKeyMapUseCase,
@@ -69,7 +68,7 @@ class ConfigKeyMapTriggerViewModel(
     PopupViewModel by PopupViewModelImpl(),
     NavigationViewModel by NavigationViewModelImpl() {
 
-    val optionsViewModel = ConfigKeyMapTriggerOptionsViewModel(
+    val optionsViewModel = ConfigTriggerOptionsViewModel(
         coroutineScope,
         config,
         createKeyMapShortcut,
@@ -269,20 +268,20 @@ class ConfigKeyMapTriggerViewModel(
         }
     }
 
-    private fun buildTriggerErrorListItems(triggerErrors: List<KeyMapTriggerError>) =
+    private fun buildTriggerErrorListItems(triggerErrors: List<CustomTriggerError>) =
         triggerErrors.map { error ->
             when (error) {
-                KeyMapTriggerError.DND_ACCESS_DENIED -> TextListItem.Error(
+                CustomTriggerError.DND_ACCESS_DENIED -> TextListItem.Error(
                     id = error.toString(),
                     text = getString(R.string.trigger_error_dnd_access_denied),
                 )
 
-                KeyMapTriggerError.SCREEN_OFF_ROOT_DENIED -> TextListItem.Error(
+                CustomTriggerError.SCREEN_OFF_ROOT_DENIED -> TextListItem.Error(
                     id = error.toString(),
                     text = getString(R.string.trigger_error_screen_off_root_permission_denied),
                 )
 
-                KeyMapTriggerError.CANT_DETECT_IN_PHONE_CALL -> TextListItem.Error(
+                CustomTriggerError.CANT_DETECT_IN_PHONE_CALL -> TextListItem.Error(
                     id = error.toString(),
                     text = getString(R.string.trigger_error_cant_detect_in_phone_call),
                 )
@@ -367,8 +366,8 @@ class ConfigKeyMapTriggerViewModel(
 
             if (result is Error.AccessibilityServiceDisabled) {
                 ViewModelHelper.handleAccessibilityServiceStoppedSnackBar(
-                    resourceProvider = this@ConfigKeyMapTriggerViewModel,
-                    popupViewModel = this@ConfigKeyMapTriggerViewModel,
+                    resourceProvider = this@ConfigTriggerViewModel,
+                    popupViewModel = this@ConfigTriggerViewModel,
                     startService = displayKeyMap::startAccessibilityService,
                     message = R.string.dialog_message_enable_accessibility_service_to_record_trigger,
                 )
@@ -376,8 +375,8 @@ class ConfigKeyMapTriggerViewModel(
 
             if (result is Error.AccessibilityServiceCrashed) {
                 ViewModelHelper.handleAccessibilityServiceCrashedSnackBar(
-                    resourceProvider = this@ConfigKeyMapTriggerViewModel,
-                    popupViewModel = this@ConfigKeyMapTriggerViewModel,
+                    resourceProvider = this@ConfigTriggerViewModel,
+                    popupViewModel = this@ConfigTriggerViewModel,
                     restartService = displayKeyMap::restartAccessibilityService,
                     message = R.string.dialog_message_restart_accessibility_service_to_record_trigger,
                 )
@@ -393,22 +392,22 @@ class ConfigKeyMapTriggerViewModel(
 
     fun onTriggerErrorClick(listItemId: String) {
         coroutineScope.launch {
-            when (KeyMapTriggerError.valueOf(listItemId)) {
-                KeyMapTriggerError.DND_ACCESS_DENIED -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            when (CustomTriggerError.valueOf(listItemId)) {
+                CustomTriggerError.DND_ACCESS_DENIED -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
-                        resourceProvider = this@ConfigKeyMapTriggerViewModel,
-                        popupViewModel = this@ConfigKeyMapTriggerViewModel,
+                        resourceProvider = this@ConfigTriggerViewModel,
+                        popupViewModel = this@ConfigTriggerViewModel,
                         neverShowDndTriggerErrorAgain = { displayKeyMap.neverShowDndTriggerErrorAgain() },
                         fixError = { displayKeyMap.fixError(it) },
                     )
                 }
 
-                KeyMapTriggerError.SCREEN_OFF_ROOT_DENIED -> {
+                CustomTriggerError.SCREEN_OFF_ROOT_DENIED -> {
                     val error = Error.PermissionDenied(Permission.ROOT)
                     displayKeyMap.fixError(error)
                 }
 
-                KeyMapTriggerError.CANT_DETECT_IN_PHONE_CALL -> {
+                CustomTriggerError.CANT_DETECT_IN_PHONE_CALL -> {
                     displayKeyMap.fixError(Error.CantDetectKeyEventsInPhoneCall)
                 }
             }
@@ -416,7 +415,7 @@ class ConfigKeyMapTriggerViewModel(
     }
 
     private fun createListItems(
-        trigger: KeyMapTrigger,
+        trigger: CustomTrigger,
         showDeviceDescriptors: Boolean,
     ): List<TriggerKeyListItem> =
         trigger.keys.mapIndexed { index, key ->

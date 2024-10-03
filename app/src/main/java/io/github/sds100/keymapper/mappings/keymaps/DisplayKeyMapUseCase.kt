@@ -5,7 +5,7 @@ import android.view.KeyEvent
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.DisplaySimpleMappingUseCase
-import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTriggerError
+import io.github.sds100.keymapper.mappings.keymaps.trigger.CustomTriggerError
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.system.permissions.Permission
@@ -40,20 +40,20 @@ class DisplayKeyMapUseCaseImpl(
         preferenceRepository.get(Keys.neverShowDndError).map { }.drop(1),
     )
 
-    override suspend fun getTriggerErrors(keyMap: KeyMap): List<KeyMapTriggerError> {
+    override suspend fun getTriggerErrors(keyMap: KeyMap): List<CustomTriggerError> {
         val trigger = keyMap.trigger
-        val errors = mutableListOf<KeyMapTriggerError>()
+        val errors = mutableListOf<CustomTriggerError>()
 
         // can only detect volume button presses during a phone call with an input method service
         if (!keyMapperImeHelper.isCompatibleImeChosen() && keyMap.requiresImeKeyEventForwarding()) {
-            errors.add(KeyMapTriggerError.CANT_DETECT_IN_PHONE_CALL)
+            errors.add(CustomTriggerError.CANT_DETECT_IN_PHONE_CALL)
         }
 
         if (trigger.keys.any { it.keyCode in keysThatRequireDndAccess }) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
                 !permissionAdapter.isGranted(Permission.ACCESS_NOTIFICATION_POLICY)
             ) {
-                errors.add(KeyMapTriggerError.DND_ACCESS_DENIED)
+                errors.add(CustomTriggerError.DND_ACCESS_DENIED)
             }
         }
 
@@ -61,7 +61,7 @@ class DisplayKeyMapUseCaseImpl(
             !permissionAdapter.isGranted(Permission.ROOT) &&
             trigger.isDetectingWhenScreenOffAllowed()
         ) {
-            errors.add(KeyMapTriggerError.SCREEN_OFF_ROOT_DENIED)
+            errors.add(CustomTriggerError.SCREEN_OFF_ROOT_DENIED)
         }
 
         return errors
@@ -70,5 +70,5 @@ class DisplayKeyMapUseCaseImpl(
 
 interface DisplayKeyMapUseCase : DisplaySimpleMappingUseCase {
     val invalidateTriggerErrors: Flow<Unit>
-    suspend fun getTriggerErrors(keyMap: KeyMap): List<KeyMapTriggerError>
+    suspend fun getTriggerErrors(keyMap: KeyMap): List<CustomTriggerError>
 }

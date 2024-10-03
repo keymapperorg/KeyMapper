@@ -32,7 +32,7 @@ import kotlinx.coroutines.withContext
 /**
  * Created by sds100 on 29/11/20.
  */
-class ConfigKeyMapTriggerOptionsViewModel(
+class ConfigTriggerOptionsViewModel(
     private val coroutineScope: CoroutineScope,
     private val config: ConfigKeyMapUseCase,
     private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
@@ -109,7 +109,7 @@ class ConfigKeyMapTriggerOptionsViewModel(
 
             result.onFailure { error ->
                 val snackBar = PopupUi.SnackBar(
-                    message = error.getFullMessage(this@ConfigKeyMapTriggerOptionsViewModel),
+                    message = error.getFullMessage(this@ConfigTriggerOptionsViewModel),
                 )
 
                 showPopup("create_shortcut_result", snackBar)

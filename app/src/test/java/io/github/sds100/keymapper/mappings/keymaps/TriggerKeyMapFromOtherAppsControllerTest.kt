@@ -6,7 +6,7 @@ import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.constraints.ConstraintSnapshotImpl
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCase
-import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTrigger
+import io.github.sds100.keymapper.mappings.keymaps.trigger.CustomTrigger
 import junitparams.JUnitParamsRunner
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -115,7 +115,7 @@ class TriggerKeyMapFromOtherAppsControllerTest {
                 )
             val keyMap = KeyMap(
                 actionList = listOf(action),
-                trigger = KeyMapTrigger(triggerFromOtherApps = true),
+                trigger = CustomTrigger(triggerFromOtherApps = true),
             )
             keyMapListFlow.value = listOf(keyMap)
 

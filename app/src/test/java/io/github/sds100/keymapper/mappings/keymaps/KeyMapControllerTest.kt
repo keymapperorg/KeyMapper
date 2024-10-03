@@ -12,7 +12,7 @@ import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCase
 import io.github.sds100.keymapper.mappings.keymaps.detection.KeyMapController
-import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTrigger
+import io.github.sds100.keymapper.mappings.keymaps.trigger.CustomTrigger
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
@@ -378,7 +378,7 @@ class KeyMapControllerTest {
         runTest(testDispatcher) {
             // GIVEN
             val keyMap1 = KeyMap(
-                trigger = KeyMapTrigger(
+                trigger = CustomTrigger(
                     keys = listOf(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN)),
                     longPressDelay = 500,
                 ),
@@ -386,7 +386,7 @@ class KeyMapControllerTest {
             )
 
             val keyMap2 = KeyMap(
-                trigger = KeyMapTrigger(
+                trigger = CustomTrigger(
                     keys = listOf(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN)),
                     longPressDelay = 1000,
                 ),
@@ -1980,7 +1980,7 @@ class KeyMapControllerTest {
 
     @Test
     @Parameters(method = "params_repeatAction")
-    fun parallelTrigger_holdDown_repeatAction10Times(description: String, trigger: KeyMapTrigger) =
+    fun parallelTrigger_holdDown_repeatAction10Times(description: String, trigger: CustomTrigger) =
         runTest(testDispatcher) {
             // given
             val action = KeyMapAction(
@@ -2032,7 +2032,7 @@ class KeyMapControllerTest {
     @Parameters(method = "params_dualParallelTrigger_input2ndKey_doNotConsumeUp")
     fun dualParallelTrigger_input2ndKey_doNotConsumeUp(
         description: String,
-        trigger: KeyMapTrigger,
+        trigger: CustomTrigger,
     ) =
         runTest(testDispatcher) {
             // given
@@ -2304,7 +2304,7 @@ class KeyMapControllerTest {
 
     @Test
     @Parameters(method = "params_multipleActionsPerformed")
-    fun validInput_multipleActionsPerformed(description: String, trigger: KeyMapTrigger) =
+    fun validInput_multipleActionsPerformed(description: String, trigger: CustomTrigger) =
         runTest(testDispatcher) {
             val actionList = listOf(TEST_ACTION, TEST_ACTION_2)
             // GIVEN
@@ -3259,7 +3259,7 @@ class KeyMapControllerTest {
     )
 
     private suspend fun mockParallelTrigger(
-        trigger: KeyMapTrigger,
+        trigger: CustomTrigger,
         delay: Long? = null,
     ) {
         require(trigger.mode is TriggerMode.Parallel)

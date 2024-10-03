@@ -9,7 +9,7 @@ import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.BaseConfigMappingUseCase
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.ConfigMappingUseCase
-import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTrigger
+import io.github.sds100.keymapper.mappings.keymaps.trigger.CustomTrigger
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
@@ -435,7 +435,7 @@ class ConfigKeyMapUseCaseImpl(
         }
     }
 
-    private fun editTrigger(block: (trigger: KeyMapTrigger) -> KeyMapTrigger) {
+    private fun editTrigger(block: (trigger: CustomTrigger) -> CustomTrigger) {
         editKeyMap { keyMap ->
             val newTrigger = block(keyMap.trigger)
 

@@ -9,8 +9,8 @@ import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.mappings.Mapping
 import io.github.sds100.keymapper.mappings.keymaps.detection.KeyMapController
-import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTrigger
-import io.github.sds100.keymapper.mappings.keymaps.trigger.KeymapTriggerEntityMapper
+import io.github.sds100.keymapper.mappings.keymaps.trigger.CustomTrigger
+import io.github.sds100.keymapper.mappings.keymaps.trigger.CustomTriggerEntityMapper
 import kotlinx.serialization.Serializable
 import java.util.UUID
 
@@ -22,7 +22,7 @@ import java.util.UUID
 data class KeyMap(
     val dbId: Long? = null,
     val uid: String = UUID.randomUUID().toString(),
-    val trigger: KeyMapTrigger = KeyMapTrigger(),
+    val trigger: CustomTrigger = CustomTrigger(),
     override val actionList: List<KeyMapAction> = emptyList(),
     override val constraintState: ConstraintState = ConstraintState(),
     override val isEnabled: Boolean = true,
@@ -81,7 +81,7 @@ object KeyMapEntityMapper {
         return KeyMap(
             dbId = entity.id,
             uid = entity.uid,
-            trigger = KeymapTriggerEntityMapper.fromEntity(entity.trigger),
+            trigger = CustomTriggerEntityMapper.fromEntity(entity.trigger),
             actionList = actionList,
             constraintState = ConstraintState(constraintList, constraintMode),
             isEnabled = entity.isEnabled,
@@ -93,7 +93,7 @@ object KeyMapEntityMapper {
 
         return KeyMapEntity(
             id = dbId,
-            trigger = KeymapTriggerEntityMapper.toEntity(keyMap.trigger),
+            trigger = CustomTriggerEntityMapper.toEntity(keyMap.trigger),
             actionList = actionEntityList,
             constraintList = keyMap.constraintState.constraints.map {
                 ConstraintEntityMapper.toEntity(

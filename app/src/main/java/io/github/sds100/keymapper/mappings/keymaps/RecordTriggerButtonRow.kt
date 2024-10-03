@@ -41,7 +41,7 @@ import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerState
 @Composable
 fun RecordTriggerButtonRow(
     modifier: Modifier = Modifier,
-    viewModel: ConfigKeyMapTriggerViewModel,
+    viewModel: ConfigTriggerViewModel,
 ) {
     val recordTriggerState by viewModel.recordTriggerState.collectAsState()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)

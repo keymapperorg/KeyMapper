@@ -16,9 +16,6 @@ import java.util.UUID
  * Created by sds100 on 16/07/2018.
  */
 
-/**
- * @property [keys] The key codes which will trigger the action
- */
 @Parcelize
 data class TriggerEntity(
     @SerializedName(NAME_KEYS)
@@ -80,6 +77,7 @@ data class TriggerEntity(
         }
     }
 
+    // TODO move to separate file
     @Parcelize
     data class KeyEntity(
         @SerializedName(NAME_KEYCODE)

@@ -15,7 +15,7 @@ import splitties.bitflags.withFlag
  */
 
 @Serializable
-data class KeyMapTrigger(
+data class CustomTrigger(
     val keys: List<TriggerKey> = emptyList(),
     val mode: TriggerMode = TriggerMode.Undefined,
     val vibrate: Boolean = false,
@@ -51,11 +51,11 @@ data class KeyMapTrigger(
         !keys.isNullOrEmpty() && keys.size > 1 && mode is TriggerMode.Sequence
 }
 
-object KeymapTriggerEntityMapper {
+object CustomTriggerEntityMapper {
     fun fromEntity(
         entity: TriggerEntity,
-    ): KeyMapTrigger {
-        val keys = entity.keys.map { KeymapTriggerKeyEntityMapper.fromEntity(it) }
+    ): CustomTrigger {
+        val keys = entity.keys.map { TriggerKeyEntityMapper.fromEntity(it) }
 
         val mode = when {
             entity.mode == TriggerEntity.SEQUENCE && keys.size > 1 -> TriggerMode.Sequence
@@ -63,7 +63,7 @@ object KeymapTriggerEntityMapper {
             else -> TriggerMode.Undefined
         }
 
-        return KeyMapTrigger(
+        return CustomTrigger(
             keys = keys,
             mode = mode,
 
@@ -90,7 +90,7 @@ object KeymapTriggerEntityMapper {
         )
     }
 
-    fun toEntity(trigger: KeyMapTrigger): TriggerEntity {
+    fun toEntity(trigger: CustomTrigger): TriggerEntity {
         val extras = mutableListOf<Extra>()
 
         if (trigger.isChangingSequenceTriggerTimeoutAllowed() && trigger.sequenceTriggerTimeout != null) {
@@ -158,7 +158,7 @@ object KeymapTriggerEntityMapper {
         }
 
         return TriggerEntity(
-            keys = trigger.keys.map { KeymapTriggerKeyEntityMapper.toEntity(it) },
+            keys = trigger.keys.map { TriggerKeyEntityMapper.toEntity(it) },
             extras = extras,
             mode = mode,
             flags = flags,
