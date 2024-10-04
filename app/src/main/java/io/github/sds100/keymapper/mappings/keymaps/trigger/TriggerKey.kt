@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.mappings.keymaps.trigger
 
-import io.github.sds100.keymapper.data.entities.TriggerEntity
 import io.github.sds100.keymapper.data.entities.TriggerKeyEntity
 import io.github.sds100.keymapper.mappings.ClickType
 import kotlinx.serialization.Serializable
@@ -46,9 +45,9 @@ object TriggerKeyEntityMapper {
             )
         },
         clickType = when (entity.clickType) {
-            TriggerEntity.SHORT_PRESS -> ClickType.SHORT_PRESS
-            TriggerEntity.LONG_PRESS -> ClickType.LONG_PRESS
-            TriggerEntity.DOUBLE_PRESS -> ClickType.DOUBLE_PRESS
+            TriggerKeyEntity.SHORT_PRESS -> ClickType.SHORT_PRESS
+            TriggerKeyEntity.LONG_PRESS -> ClickType.LONG_PRESS
+            TriggerKeyEntity.DOUBLE_PRESS -> ClickType.DOUBLE_PRESS
             else -> ClickType.SHORT_PRESS
         },
         consumeKeyEvent = !entity.flags.hasFlag(TriggerKeyEntity.FLAG_DO_NOT_CONSUME_KEY_EVENT),
@@ -68,9 +67,9 @@ object TriggerKeyEntityMapper {
         }
 
         val clickType = when (key.clickType) {
-            ClickType.SHORT_PRESS -> TriggerEntity.SHORT_PRESS
-            ClickType.LONG_PRESS -> TriggerEntity.LONG_PRESS
-            ClickType.DOUBLE_PRESS -> TriggerEntity.DOUBLE_PRESS
+            ClickType.SHORT_PRESS -> TriggerKeyEntity.SHORT_PRESS
+            ClickType.LONG_PRESS -> TriggerKeyEntity.LONG_PRESS
+            ClickType.DOUBLE_PRESS -> TriggerKeyEntity.DOUBLE_PRESS
         }
 
         var flags = 0

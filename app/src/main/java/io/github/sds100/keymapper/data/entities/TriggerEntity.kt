@@ -49,11 +49,6 @@ data class TriggerEntity(
 
         const val DEFAULT_TRIGGER_MODE = UNDEFINED
 
-        const val UNDETERMINED = -1
-        const val SHORT_PRESS = 0
-        const val LONG_PRESS = 1
-        const val DOUBLE_PRESS = 2
-
         const val EXTRA_SEQUENCE_TRIGGER_TIMEOUT = "extra_sequence_trigger_timeout"
         const val EXTRA_LONG_PRESS_DELAY = "extra_long_press_delay"
         const val EXTRA_DOUBLE_PRESS_DELAY = "extra_double_press_timeout"
@@ -76,7 +71,4 @@ data class TriggerEntity(
 
     @IntDef(value = [PARALLEL, SEQUENCE, UNDEFINED])
     annotation class Mode
-
-    @IntDef(value = [UNDETERMINED, SHORT_PRESS, LONG_PRESS, DOUBLE_PRESS])
-    annotation class ClickType
 }

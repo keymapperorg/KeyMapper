@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.data.entities
 
 import android.os.Parcelable
+import androidx.annotation.IntDef
 import com.github.salomonbrys.kotson.byInt
 import com.github.salomonbrys.kotson.byNullableInt
 import com.github.salomonbrys.kotson.byNullableString
@@ -20,9 +21,9 @@ data class TriggerKeyEntity(
     @SerializedName(NAME_DEVICE_NAME)
     val deviceName: String? = null,
 
-    @TriggerEntity.ClickType
+    @ClickType
     @SerializedName(NAME_CLICK_TYPE)
-    val clickType: Int = TriggerEntity.SHORT_PRESS,
+    val clickType: Int = SHORT_PRESS,
 
     @SerializedName(NAME_FLAGS)
     val flags: Int = 0,
@@ -46,6 +47,11 @@ data class TriggerKeyEntity(
 
         const val FLAG_DO_NOT_CONSUME_KEY_EVENT = 1
 
+        const val UNDETERMINED = -1
+        const val SHORT_PRESS = 0
+        const val LONG_PRESS = 1
+        const val DOUBLE_PRESS = 2
+
         val DESERIALIZER = jsonDeserializer {
             val keycode by it.json.byInt(NAME_KEYCODE)
             val deviceId by it.json.byString(NAME_DEVICE_ID)
@@ -66,4 +72,7 @@ data class TriggerKeyEntity(
             )
         }
     }
+
+    @IntDef(value = [UNDETERMINED, SHORT_PRESS, LONG_PRESS, DOUBLE_PRESS])
+    annotation class ClickType
 }

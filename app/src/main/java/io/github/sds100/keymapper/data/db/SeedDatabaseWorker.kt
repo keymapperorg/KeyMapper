@@ -50,7 +50,7 @@ class SeedDatabaseWorker(
                     KeyEvent.KEYCODE_CTRL_LEFT,
                     TriggerKeyEntity.DEVICE_ID_THIS_DEVICE,
                     null,
-                    TriggerEntity.SHORT_PRESS,
+                    TriggerKeyEntity.SHORT_PRESS,
                 ),
             )
             yield(
@@ -58,7 +58,7 @@ class SeedDatabaseWorker(
                     KeyEvent.KEYCODE_ALT_LEFT,
                     TriggerKeyEntity.DEVICE_ID_ANY_DEVICE,
                     null,
-                    TriggerEntity.LONG_PRESS,
+                    TriggerKeyEntity.LONG_PRESS,
                 ),
             )
             yield(
@@ -66,7 +66,7 @@ class SeedDatabaseWorker(
                     KeyEvent.KEYCODE_DEL,
                     TriggerKeyEntity.DEVICE_ID_THIS_DEVICE,
                     null,
-                    TriggerEntity.SHORT_PRESS,
+                    TriggerKeyEntity.SHORT_PRESS,
                 ),
             )
         }.toList()
