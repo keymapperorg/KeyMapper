@@ -1,4 +1,5 @@
 [*.{kt,kts}]
+ktlint_standard_function-expression-body = disabled
 ktlint_function_naming_ignore_when_annotated_with = Composable
 ktlint_ignore_back_ticked_identifier = true
 ktlint_code_style = intellij_idea # Use IntelliJ style because it has trailing commas
