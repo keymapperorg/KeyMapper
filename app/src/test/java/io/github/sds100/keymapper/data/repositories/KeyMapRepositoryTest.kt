@@ -4,9 +4,9 @@ import io.github.sds100.keymapper.TestDispatcherProvider
 import io.github.sds100.keymapper.data.db.dao.KeyMapDao
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.Extra
+import io.github.sds100.keymapper.data.entities.KeyCodeTriggerKeyEntity
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.data.entities.TriggerEntity
-import io.github.sds100.keymapper.data.entities.TriggerKeyEntity
 import io.github.sds100.keymapper.system.devices.FakeDevicesAdapter
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.util.State
@@ -255,7 +255,7 @@ class KeyMapRepositoryTest {
     fun `key map with device name for trigger key, if device for trigger key is connected, do not update trigger key device name`() =
         runTest(testDispatcher) {
             // GIVEN
-            val triggerKey = TriggerKeyEntity(
+            val triggerKey = KeyCodeTriggerKeyEntity(
                 keyCode = 1,
                 deviceId = FAKE_KEYBOARD.descriptor,
                 deviceName = FAKE_KEYBOARD.name,
@@ -278,7 +278,7 @@ class KeyMapRepositoryTest {
     fun `key map with device name for trigger key, if device for trigger key is disconnected, do not update trigger key device name`() =
         runTest(testDispatcher) {
             // GIVEN
-            val triggerKey = TriggerKeyEntity(
+            val triggerKey = KeyCodeTriggerKeyEntity(
                 keyCode = 1,
                 deviceId = FAKE_KEYBOARD.descriptor,
                 deviceName = FAKE_KEYBOARD.name,
@@ -299,7 +299,7 @@ class KeyMapRepositoryTest {
     fun `key map with no device name for trigger key, if device for trigger key is connected, update trigger key device name`() =
         runTest(testDispatcher) {
             // GIVEN
-            val triggerKey = TriggerKeyEntity(
+            val triggerKey = KeyCodeTriggerKeyEntity(
                 keyCode = 1,
                 deviceId = FAKE_KEYBOARD.descriptor,
                 deviceName = "",

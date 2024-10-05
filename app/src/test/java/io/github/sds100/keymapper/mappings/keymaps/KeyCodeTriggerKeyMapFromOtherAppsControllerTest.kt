@@ -30,7 +30,7 @@ import org.mockito.kotlin.verify
 
 @ExperimentalCoroutinesApi
 @RunWith(JUnitParamsRunner::class)
-class TriggerKeyMapFromOtherAppsControllerTest {
+class KeyCodeTriggerKeyMapFromOtherAppsControllerTest {
 
     companion object {
         private const val LONG_PRESS_DELAY = 500L

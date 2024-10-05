@@ -84,7 +84,7 @@ class ConfigTriggerKeyViewModel(
         triggerKeyUid.value = uid
     }
 
-    private fun createListItems(triggerMode: TriggerMode, key: TriggerKey): List<ListItem> =
+    private fun createListItems(triggerMode: TriggerMode, key: KeyCodeTriggerKey): List<ListItem> =
         sequence {
             yield(
                 CheckBoxListItem(

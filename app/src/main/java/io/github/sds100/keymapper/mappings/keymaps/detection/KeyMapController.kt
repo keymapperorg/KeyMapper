@@ -15,8 +15,8 @@ import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapAction
+import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.Trigger
-import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
@@ -90,7 +90,7 @@ class KeyMapController(
             } else {
                 detectKeyMaps = true
 
-                val longPressSequenceTriggerKeys = mutableListOf<TriggerKey>()
+                val longPressSequenceTriggerKeys = mutableListOf<KeyCodeTriggerKey>()
 
                 val doublePressKeys = mutableListOf<TriggerKeyLocation>()
 
@@ -128,9 +128,9 @@ class KeyMapController(
                         }
 
                         if ((
-                                    keyMap.trigger.mode == TriggerMode.Sequence ||
-                                            keyMap.trigger.mode == TriggerMode.Undefined
-                                    ) &&
+                                keyMap.trigger.mode == TriggerMode.Sequence ||
+                                    keyMap.trigger.mode == TriggerMode.Undefined
+                                ) &&
                             key.clickType == ClickType.DOUBLE_PRESS
                         ) {
                             doublePressKeys.add(TriggerKeyLocation(triggerIndex, keyIndex))
@@ -156,9 +156,9 @@ class KeyMapController(
 
                     if (keyMap.actionList.any {
                             it.data is ActionData.InputKeyEvent &&
-                                    isModifierKey(
-                                        it.data.keyCode,
-                                    )
+                                isModifierKey(
+                                    it.data.keyCode,
+                                )
                         }
                     ) {
                         modifierKeyEventActions = true
@@ -166,9 +166,9 @@ class KeyMapController(
 
                     if (keyMap.actionList.any {
                             it.data is ActionData.InputKeyEvent &&
-                                    !isModifierKey(
-                                        it.data.keyCode,
-                                    )
+                                !isModifierKey(
+                                    it.data.keyCode,
+                                )
                         }
                     ) {
                         notModifierKeyEventActions = true
@@ -386,7 +386,7 @@ class KeyMapController(
     /**
      * All sequence events that have the long press click type.
      */
-    private var longPressSequenceTriggerKeys: Array<TriggerKey> = arrayOf()
+    private var longPressSequenceTriggerKeys: Array<KeyCodeTriggerKey> = arrayOf()
 
     /**
      * All double press keys and the index of their corresponding trigger. first is the event and second is
@@ -1478,34 +1478,34 @@ class KeyMapController(
         return key.matchesEvent(event)
     }
 
-    private fun TriggerKey.matchesEvent(event: Event): Boolean = when (this.device) {
+    private fun KeyCodeTriggerKey.matchesEvent(event: Event): Boolean = when (this.device) {
         TriggerKeyDevice.Any -> this.keyCode == event.keyCode && this.clickType == event.clickType
         is TriggerKeyDevice.External ->
             this.keyCode == event.keyCode &&
-                    event.descriptor != null &&
-                    event.descriptor == this.device.descriptor &&
-                    this.clickType == event.clickType
+                event.descriptor != null &&
+                event.descriptor == this.device.descriptor &&
+                this.clickType == event.clickType
 
         TriggerKeyDevice.Internal ->
             this.keyCode == event.keyCode &&
-                    event.descriptor == null &&
-                    this.clickType == event.clickType
+                event.descriptor == null &&
+                this.clickType == event.clickType
     }
 
-    private fun TriggerKey.matchesWithOtherKey(otherKey: TriggerKey): Boolean = when (this.device) {
+    private fun KeyCodeTriggerKey.matchesWithOtherKey(otherKey: KeyCodeTriggerKey): Boolean = when (this.device) {
         TriggerKeyDevice.Any ->
             this.keyCode == otherKey.keyCode &&
-                    this.clickType == otherKey.clickType
+                this.clickType == otherKey.clickType
 
         is TriggerKeyDevice.External ->
             this.keyCode == otherKey.keyCode &&
-                    this.device == otherKey.device &&
-                    this.clickType == otherKey.clickType
+                this.device == otherKey.device &&
+                this.clickType == otherKey.clickType
 
         TriggerKeyDevice.Internal ->
             this.keyCode == otherKey.keyCode &&
-                    otherKey.device == TriggerKeyDevice.Internal &&
-                    this.clickType == otherKey.clickType
+                otherKey.device == TriggerKeyDevice.Internal &&
+                this.clickType == otherKey.clickType
     }
 
     private fun longPressDelay(trigger: Trigger): Long =

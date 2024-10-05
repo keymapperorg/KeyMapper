@@ -9,8 +9,8 @@ import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.BaseConfigMappingUseCase
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.ConfigMappingUseCase
+import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.Trigger
-import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
@@ -76,7 +76,7 @@ class ConfigKeyMapUseCaseImpl(
             consumeKeyEvent = false
         }
 
-        val triggerKey = TriggerKey(
+        val triggerKey = KeyCodeTriggerKey(
             keyCode = keyCode,
             device = device,
             clickType = clickType,
@@ -443,7 +443,7 @@ class ConfigKeyMapUseCaseImpl(
         }
     }
 
-    private fun editTriggerKey(uid: String, block: (key: TriggerKey) -> TriggerKey) {
+    private fun editTriggerKey(uid: String, block: (key: KeyCodeTriggerKey) -> KeyCodeTriggerKey) {
         editTrigger { oldTrigger ->
             val newKeys = oldTrigger.keys.map {
                 if (it.uid == uid) {

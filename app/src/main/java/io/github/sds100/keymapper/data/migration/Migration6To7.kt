@@ -8,6 +8,7 @@ import com.github.salomonbrys.kotson.fromJson
 import com.github.salomonbrys.kotson.registerTypeAdapter
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import io.github.sds100.keymapper.data.entities.KeyCodeTriggerKeyEntity
 import io.github.sds100.keymapper.data.entities.TriggerEntity
 import io.github.sds100.keymapper.data.entities.TriggerKeyEntity
 import splitties.bitflags.hasFlag
@@ -29,7 +30,10 @@ object Migration6To7 {
             .create()
 
         query(query).apply {
-            val gson = GsonBuilder().registerTypeAdapter(TriggerEntity.DESERIALIZER).create()
+            val gson = GsonBuilder()
+                .registerTypeAdapter(TriggerEntity.DESERIALIZER)
+                .registerTypeAdapter(TriggerKeyEntity.DESERIALIZER)
+                .create()
 
             while (moveToNext()) {
                 val idColumnIndex = getColumnIndex("id")
@@ -39,13 +43,15 @@ object Migration6To7 {
 
                 val trigger = gson.fromJson<TriggerEntity>(getString(triggerColumnIndex))
 
-                val newTriggerKeys = trigger.keys.map {
-                    if (trigger.flags.hasFlag(TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION)) {
-                        it.copy(flags = it.flags.withFlag(TriggerKeyEntity.FLAG_DO_NOT_CONSUME_KEY_EVENT))
-                    } else {
-                        it
+                val newTriggerKeys = trigger.keys
+                    .mapNotNull { it as? KeyCodeTriggerKeyEntity }
+                    .map { key ->
+                        if (trigger.flags.hasFlag(TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION)) {
+                            key.copy(flags = key.flags.withFlag(KeyCodeTriggerKeyEntity.FLAG_DO_NOT_CONSUME_KEY_EVENT))
+                        } else {
+                            key
+                        }
                     }
-                }
 
                 val newTriggerFlags = trigger.flags.minusFlag(
                     TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION,

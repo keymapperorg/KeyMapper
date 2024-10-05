@@ -12,8 +12,8 @@ import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCase
 import io.github.sds100.keymapper.mappings.keymaps.detection.KeyMapController
+import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.Trigger
-import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
 import io.github.sds100.keymapper.system.camera.CameraLens
@@ -3212,7 +3212,7 @@ class KeyMapControllerTest {
             verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
         }
 
-    private suspend fun mockTriggerKeyInput(key: TriggerKey, delay: Long? = null) {
+    private suspend fun mockTriggerKeyInput(key: KeyCodeTriggerKey, delay: Long? = null) {
         val deviceDescriptor = triggerKeyDeviceToInputDevice(key.device)
         val pressDuration: Long = delay ?: when (key.clickType) {
             ClickType.LONG_PRESS -> LONG_PRESS_DELAY + 100L

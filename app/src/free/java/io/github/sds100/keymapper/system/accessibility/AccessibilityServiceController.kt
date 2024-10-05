@@ -44,5 +44,5 @@ class AccessibilityServiceController(
     devicesAdapter,
     suAdapter,
     inputMethodAdapter,
-    settingsRepository
+    settingsRepository,
 )

@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.data.repositories
 import io.github.sds100.keymapper.data.db.dao.KeyMapDao
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.Extra
+import io.github.sds100.keymapper.data.entities.KeyCodeTriggerKeyEntity
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.data.entities.TriggerKeyEntity
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapRepository
@@ -148,27 +149,30 @@ class RoomKeyMapRepository(
         for (keyMap in keyMapList) {
             var updateKeyMap = false
 
-            val newTriggerKeys = keyMap.trigger.keys.map { triggerKey ->
-                if (triggerKey.deviceId != TriggerKeyEntity.DEVICE_ID_THIS_DEVICE ||
-                    triggerKey.deviceId != TriggerKeyEntity.DEVICE_ID_ANY_DEVICE
-                ) {
-                    val deviceDescriptor = triggerKey.deviceId
+            val newTriggerKeys = mutableListOf<TriggerKeyEntity>()
 
-                    if (triggerKey.deviceName.isNullOrBlank()) {
+            for (key in keyMap.trigger.keys) {
+                if (key !is KeyCodeTriggerKeyEntity) {
+                    newTriggerKeys.add(key)
+                    continue
+                }
+
+                if (key.deviceId != KeyCodeTriggerKeyEntity.DEVICE_ID_THIS_DEVICE &&
+                    key.deviceId != KeyCodeTriggerKeyEntity.DEVICE_ID_ANY_DEVICE
+                ) {
+                    val deviceDescriptor = key.deviceId
+
+                    if (key.deviceName.isNullOrBlank()) {
                         val newDeviceName =
                             connectedInputDevices.data.find { it.descriptor == deviceDescriptor }?.name
 
                         if (newDeviceName != null) {
                             updateKeyMap = true
 
-                            return@map triggerKey.copy(
-                                deviceName = newDeviceName,
-                            )
+                            newTriggerKeys.add(key.copy(deviceName = newDeviceName))
                         }
                     }
                 }
-
-                return@map triggerKey
             }
 
             val newActions = keyMap.actionList.map { action ->
