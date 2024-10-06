@@ -14,8 +14,7 @@ data class KeyCodeTriggerKey(
     val keyCode: Int,
     val device: TriggerKeyDevice,
     override val clickType: ClickType,
-
-    val consumeKeyEvent: Boolean = true,
+    override val consumeEvent: Boolean = true,
 ) : TriggerKey() {
 
     override fun toString(): String {
@@ -24,31 +23,29 @@ data class KeyCodeTriggerKey(
             is TriggerKeyDevice.External -> "external"
             TriggerKeyDevice.Internal -> "internal"
         }
-        return "KeyCodeTriggerKey(uid=${uid.substring(0..5)}, keyCode=$keyCode, device=$deviceString, clickType=$clickType, consume=$consumeKeyEvent) "
+        return "KeyCodeTriggerKey(uid=${uid.substring(0..5)}, keyCode=$keyCode, device=$deviceString, clickType=$clickType, consume=$consumeEvent) "
     }
 
     companion object {
-        fun fromEntity(entity: KeyCodeTriggerKeyEntity): TriggerKey {
-            return KeyCodeTriggerKey(
-                uid = entity.uid,
-                keyCode = entity.keyCode,
-                device = when (entity.deviceId) {
-                    KeyCodeTriggerKeyEntity.DEVICE_ID_THIS_DEVICE -> TriggerKeyDevice.Internal
-                    KeyCodeTriggerKeyEntity.DEVICE_ID_ANY_DEVICE -> TriggerKeyDevice.Any
-                    else -> TriggerKeyDevice.External(
-                        entity.deviceId,
-                        entity.deviceName ?: "",
-                    )
-                },
-                clickType = when (entity.clickType) {
-                    TriggerKeyEntity.SHORT_PRESS -> ClickType.SHORT_PRESS
-                    TriggerKeyEntity.LONG_PRESS -> ClickType.LONG_PRESS
-                    TriggerKeyEntity.DOUBLE_PRESS -> ClickType.DOUBLE_PRESS
-                    else -> ClickType.SHORT_PRESS
-                },
-                consumeKeyEvent = !entity.flags.hasFlag(KeyCodeTriggerKeyEntity.FLAG_DO_NOT_CONSUME_KEY_EVENT),
-            )
-        }
+        fun fromEntity(entity: KeyCodeTriggerKeyEntity): TriggerKey = KeyCodeTriggerKey(
+            uid = entity.uid,
+            keyCode = entity.keyCode,
+            device = when (entity.deviceId) {
+                KeyCodeTriggerKeyEntity.DEVICE_ID_THIS_DEVICE -> TriggerKeyDevice.Internal
+                KeyCodeTriggerKeyEntity.DEVICE_ID_ANY_DEVICE -> TriggerKeyDevice.Any
+                else -> TriggerKeyDevice.External(
+                    entity.deviceId,
+                    entity.deviceName ?: "",
+                )
+            },
+            clickType = when (entity.clickType) {
+                TriggerKeyEntity.SHORT_PRESS -> ClickType.SHORT_PRESS
+                TriggerKeyEntity.LONG_PRESS -> ClickType.LONG_PRESS
+                TriggerKeyEntity.DOUBLE_PRESS -> ClickType.DOUBLE_PRESS
+                else -> ClickType.SHORT_PRESS
+            },
+            consumeEvent = !entity.flags.hasFlag(KeyCodeTriggerKeyEntity.FLAG_DO_NOT_CONSUME_KEY_EVENT),
+        )
 
         fun toEntity(key: KeyCodeTriggerKey): KeyCodeTriggerKeyEntity {
             val deviceId = when (key.device) {
@@ -71,7 +68,7 @@ data class KeyCodeTriggerKey(
 
             var flags = 0
 
-            if (!key.consumeKeyEvent) {
+            if (!key.consumeEvent) {
                 flags = flags.withFlag(KeyCodeTriggerKeyEntity.FLAG_DO_NOT_CONSUME_KEY_EVENT)
             }
 

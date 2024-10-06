@@ -5,7 +5,6 @@ package io.github.sds100.keymapper.mappings.keymaps.trigger
  */
 data class TriggerKeyListItem(
     val id: String,
-    val keyCode: Int,
     val name: String,
 
     /**

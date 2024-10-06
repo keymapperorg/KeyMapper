@@ -1373,4 +1373,9 @@
     <string name="about_team_bydario_url" translatable="false">https://github.com/bydariogamer</string>
     <string name="about_team_bydario_role">Translator (Spanish)</string>
     <!--  About  -->
+
+    <!-- Assistant trigger   -->
+    <string name="assistant_any_trigger_name">Any assistant</string>
+    <string name="assistant_device_trigger_name">Device assistant</string>
+    <string name="assistant_voice_trigger_name">Voice assistant</string>
 </resources>

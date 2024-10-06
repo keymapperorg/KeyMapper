@@ -69,12 +69,12 @@ class ConfigKeyMapUseCaseTest {
                 useCase.mapping.value = State.Data(KeyMap())
 
                 // WHEN
-                useCase.addTriggerKey(modifierKeyCode, TriggerKeyDevice.Internal)
+                useCase.addKeyCodeTriggerKey(modifierKeyCode, TriggerKeyDevice.Internal)
 
                 // THEN
                 val trigger = useCase.mapping.value.dataOrNull()!!.trigger
 
-                assertThat(trigger.keys[0].consumeKeyEvent, `is`(false))
+                assertThat(trigger.keys[0].consumeEvent, `is`(false))
             }
         }
 
@@ -88,12 +88,12 @@ class ConfigKeyMapUseCaseTest {
             useCase.mapping.value = State.Data(KeyMap())
 
             // WHEN
-            useCase.addTriggerKey(KeyEvent.KEYCODE_A, TriggerKeyDevice.Internal)
+            useCase.addKeyCodeTriggerKey(KeyEvent.KEYCODE_A, TriggerKeyDevice.Internal)
 
             // THEN
             val trigger = useCase.mapping.value.dataOrNull()!!.trigger
 
-            assertThat(trigger.keys[0].consumeKeyEvent, `is`(true))
+            assertThat(trigger.keys[0].consumeEvent, `is`(true))
         }
 
     /**

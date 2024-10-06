@@ -14,6 +14,7 @@ import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCas
 import io.github.sds100.keymapper.mappings.keymaps.detection.KeyMapController
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.Trigger
+import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
 import io.github.sds100.keymapper.system.camera.CameraLens
@@ -2040,7 +2041,7 @@ class KeyMapControllerTest {
                 listOf(KeyMap(0, trigger = trigger, actionList = listOf(TEST_ACTION)))
 
             // when
-            trigger.keys[1].let {
+            (trigger.keys[1] as KeyCodeTriggerKey).let {
                 inputKeyEvent(
                     it.keyCode,
                     KeyEvent.ACTION_DOWN,
@@ -2048,7 +2049,7 @@ class KeyMapControllerTest {
                 )
             }
 
-            trigger.keys[1].let {
+            (trigger.keys[1] as KeyCodeTriggerKey).let {
                 val consumed = inputKeyEvent(
                     it.keyCode,
                     KeyEvent.ACTION_UP,
@@ -2090,22 +2091,22 @@ class KeyMapControllerTest {
             listOf(KeyMap(0, trigger = trigger, actionList = listOf(TEST_ACTION)))
 
         // when
-        trigger.keys.forEach {
+        for (key in trigger.keys.mapNotNull { it as? KeyCodeTriggerKey }) {
             inputKeyEvent(
-                it.keyCode,
+                key.keyCode,
                 KeyEvent.ACTION_DOWN,
-                triggerKeyDeviceToInputDevice(it.device),
+                triggerKeyDeviceToInputDevice(key.device),
             )
         }
 
         var consumedUpCount = 0
 
-        trigger.keys.forEach {
+        for (key in trigger.keys.mapNotNull { it as? KeyCodeTriggerKey }) {
             val consumed =
                 inputKeyEvent(
-                    it.keyCode,
+                    key.keyCode,
                     KeyEvent.ACTION_UP,
-                    triggerKeyDeviceToInputDevice(it.device),
+                    triggerKeyDeviceToInputDevice(key.device),
                 )
 
             if (consumed) {
@@ -2129,11 +2130,11 @@ class KeyMapControllerTest {
             listOf(KeyMap(0, trigger = trigger, actionList = listOf(TEST_ACTION)))
 
         // when
-        trigger.keys.forEach {
+        for (key in trigger.keys.mapNotNull { it as? KeyCodeTriggerKey }) {
             inputKeyEvent(
-                it.keyCode,
+                key.keyCode,
                 KeyEvent.ACTION_DOWN,
-                triggerKeyDeviceToInputDevice(it.device),
+                triggerKeyDeviceToInputDevice(key.device),
             )
         }
 
@@ -2141,12 +2142,12 @@ class KeyMapControllerTest {
 
         var consumedUpCount = 0
 
-        trigger.keys.forEach {
+        for (key in trigger.keys.mapNotNull { it as? KeyCodeTriggerKey }) {
             val consumed =
                 inputKeyEvent(
-                    it.keyCode,
+                    key.keyCode,
                     KeyEvent.ACTION_UP,
-                    triggerKeyDeviceToInputDevice(it.device),
+                    triggerKeyDeviceToInputDevice(key.device),
                 )
 
             if (consumed) {
@@ -2366,12 +2367,12 @@ class KeyMapControllerTest {
             // WHEN
             var consumedCount = 0
 
-            keyMap.trigger.keys.forEach {
+            for (key in keyMap.trigger.keys.mapNotNull { it as? KeyCodeTriggerKey }) {
                 val consumed =
                     inputKeyEvent(
                         999,
                         KeyEvent.ACTION_DOWN,
-                        triggerKeyDeviceToInputDevice(it.device),
+                        triggerKeyDeviceToInputDevice(key.device),
                     )
 
                 if (consumed) {
@@ -2393,12 +2394,12 @@ class KeyMapControllerTest {
 
             var consumedCount = 0
 
-            keyMap.trigger.keys.forEach {
+            for (key in keyMap.trigger.keys.mapNotNull { it as? KeyCodeTriggerKey }) {
                 val consumed =
                     inputKeyEvent(
-                        it.keyCode,
+                        key.keyCode,
                         KeyEvent.ACTION_DOWN,
-                        triggerKeyDeviceToInputDevice(it.device),
+                        triggerKeyDeviceToInputDevice(key.device),
                     )
 
                 if (consumed) {
@@ -2418,12 +2419,12 @@ class KeyMapControllerTest {
 
             var consumedCount = 0
 
-            keyMap.trigger.keys.forEach {
+            for (key in keyMap.trigger.keys.mapNotNull { it as? KeyCodeTriggerKey }) {
                 val consumed =
                     inputKeyEvent(
-                        it.keyCode,
+                        key.keyCode,
                         KeyEvent.ACTION_DOWN,
-                        triggerKeyDeviceToInputDevice(it.device),
+                        triggerKeyDeviceToInputDevice(key.device),
                     )
 
                 if (consumed) {
@@ -3212,7 +3213,11 @@ class KeyMapControllerTest {
             verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
         }
 
-    private suspend fun mockTriggerKeyInput(key: KeyCodeTriggerKey, delay: Long? = null) {
+    private suspend fun mockTriggerKeyInput(key: TriggerKey, delay: Long? = null) {
+        if (key !is KeyCodeTriggerKey) {
+            return
+        }
+
         val deviceDescriptor = triggerKeyDeviceToInputDevice(key.device)
         val pressDuration: Long = delay ?: when (key.clickType) {
             ClickType.LONG_PRESS -> LONG_PRESS_DELAY + 100L
@@ -3263,11 +3268,16 @@ class KeyMapControllerTest {
         delay: Long? = null,
     ) {
         require(trigger.mode is TriggerMode.Parallel)
+        require(trigger.keys.all { it is KeyCodeTriggerKey })
 
-        trigger.keys.forEach {
-            val deviceDescriptor = triggerKeyDeviceToInputDevice(it.device)
+        for (key in trigger.keys) {
+            if (key !is KeyCodeTriggerKey) {
+                continue
+            }
 
-            inputKeyEvent(it.keyCode, KeyEvent.ACTION_DOWN, deviceDescriptor)
+            val deviceDescriptor = triggerKeyDeviceToInputDevice(key.device)
+
+            inputKeyEvent(key.keyCode, KeyEvent.ACTION_DOWN, deviceDescriptor)
         }
 
         if (delay != null) {
@@ -3280,10 +3290,14 @@ class KeyMapControllerTest {
             }
         }
 
-        trigger.keys.forEach {
-            val deviceDescriptor = triggerKeyDeviceToInputDevice(it.device)
+        for (key in trigger.keys) {
+            if (key !is KeyCodeTriggerKey) {
+                continue
+            }
 
-            inputKeyEvent(it.keyCode, KeyEvent.ACTION_UP, deviceDescriptor)
+            val deviceDescriptor = triggerKeyDeviceToInputDevice(key.device)
+
+            inputKeyEvent(key.keyCode, KeyEvent.ACTION_UP, deviceDescriptor)
         }
     }
 

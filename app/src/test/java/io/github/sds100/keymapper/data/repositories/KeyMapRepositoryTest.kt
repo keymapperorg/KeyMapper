@@ -65,7 +65,6 @@ class KeyMapRepositoryTest {
 
         repository = RoomKeyMapRepository(
             mockDao,
-            devicesAdapter,
             testScope,
             dispatchers = TestDispatcherProvider(testDispatcher),
         )

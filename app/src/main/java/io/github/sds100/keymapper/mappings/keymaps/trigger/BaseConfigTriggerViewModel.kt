@@ -227,7 +227,7 @@ abstract class BaseConfigTriggerViewModel(
                 showPopup("screen_pinning_message", dialog)
             }
 
-            config.addTriggerKey(it.keyCode, it.device)
+            config.addKeyCodeTriggerKey(it.keyCode, it.device)
         }.launchIn(coroutineScope)
 
         coroutineScope.launch {
@@ -415,15 +415,6 @@ abstract class BaseConfigTriggerViewModel(
         showDeviceDescriptors: Boolean,
     ): List<TriggerKeyListItem> =
         trigger.keys.mapIndexed { index, key ->
-            val extraInfo = buildString {
-                append(getTriggerKeyDeviceName(key.device, showDeviceDescriptors))
-
-                if (!key.consumeKeyEvent) {
-                    val midDot = getString(R.string.middot)
-                    append(" $midDot ${getString(R.string.flag_dont_override_default_action)}")
-                }
-            }
-
             val clickTypeString = when (key.clickType) {
                 ClickType.SHORT_PRESS -> null
                 ClickType.LONG_PRESS -> getString(R.string.clicktype_long_press)
@@ -438,14 +429,38 @@ abstract class BaseConfigTriggerViewModel(
 
             TriggerKeyListItem(
                 id = key.uid,
-                keyCode = key.keyCode,
-                name = KeyEventUtils.keyCodeToString(key.keyCode),
+                name = getTriggerKeyName(key),
                 clickTypeString = clickTypeString,
-                extraInfo = extraInfo,
+                extraInfo = getTriggerKeyExtraInfo(key, showDeviceDescriptors),
                 linkType = linkDrawable,
                 isDragDropEnabled = trigger.keys.size > 1,
             )
         }
+
+    private fun getTriggerKeyExtraInfo(key: TriggerKey, showDeviceDescriptors: Boolean): String? {
+        if (key !is KeyCodeTriggerKey) {
+            return null
+        }
+
+        return buildString {
+            append(getTriggerKeyDeviceName(key.device, showDeviceDescriptors))
+
+            if (!key.consumeEvent) {
+                val midDot = getString(R.string.middot)
+                append(" $midDot ${getString(R.string.flag_dont_override_default_action)}")
+            }
+        }
+    }
+
+    private fun getTriggerKeyName(key: TriggerKey): String = when (key) {
+        is AssistantTriggerKey -> when (key.type) {
+            AssistantTriggerType.ANY -> getString(R.string.assistant_any_trigger_name)
+            AssistantTriggerType.VOICE -> getString(R.string.assistant_voice_trigger_name)
+            AssistantTriggerType.DEVICE -> getString(R.string.assistant_device_trigger_name)
+        }
+
+        is KeyCodeTriggerKey -> KeyEventUtils.keyCodeToString(key.keyCode)
+    }
 
     private fun getTriggerKeyDeviceName(
         device: TriggerKeyDevice,

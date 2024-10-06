@@ -5,6 +5,7 @@ import android.view.KeyEvent
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.DisplaySimpleMappingUseCase
+import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerError
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
@@ -49,7 +50,11 @@ class DisplayKeyMapUseCaseImpl(
             errors.add(TriggerError.CANT_DETECT_IN_PHONE_CALL)
         }
 
-        if (trigger.keys.any { it.keyCode in keysThatRequireDndAccess }) {
+        val requiresDndAccess = trigger.keys
+            .mapNotNull { it as? KeyCodeTriggerKey }
+            .any { it.keyCode in keysThatRequireDndAccess }
+
+        if (requiresDndAccess) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
                 !permissionAdapter.isGranted(Permission.ACCESS_NOTIFICATION_POLICY)
             ) {

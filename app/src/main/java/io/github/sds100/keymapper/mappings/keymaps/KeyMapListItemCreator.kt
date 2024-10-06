@@ -3,6 +3,9 @@ package io.github.sds100.keymapper.mappings.keymaps
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.BaseMappingListItemCreator
 import io.github.sds100.keymapper.mappings.ClickType
+import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerKey
+import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerType
+import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.Trigger
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerError
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
@@ -25,13 +28,17 @@ class KeyMapListItemCreator(
     KeyMapActionUiHelper(displayMapping, resourceProvider),
     resourceProvider,
 ) {
+    private val midDot by lazy { getString(R.string.middot) }
+    private val longPressString by lazy { getString(R.string.clicktype_long_press) }
+    private val doublePressString by lazy { getString(R.string.clicktype_double_press) }
+    private val anyAssistantString by lazy { getString(R.string.assistant_any_trigger_name) }
+    private val voiceAssistantString by lazy { getString(R.string.assistant_voice_trigger_name) }
+    private val deviceAssistantString by lazy { getString(R.string.assistant_device_trigger_name) }
 
     suspend fun create(
         keyMap: KeyMap,
         showDeviceDescriptors: Boolean,
     ): KeyMapListItem.KeyMapUiState {
-        val midDot = getString(R.string.middot)
-
         val triggerDescription = buildString {
             val separator = when (keyMap.trigger.mode) {
                 is TriggerMode.Parallel -> getString(R.string.plus)
@@ -39,46 +46,15 @@ class KeyMapListItemCreator(
                 is TriggerMode.Undefined -> null
             }
 
-            val longPressString = getString(R.string.clicktype_long_press)
-            val doublePressString = getString(R.string.clicktype_double_press)
-
             keyMap.trigger.keys.forEachIndexed { index, key ->
                 if (index > 0) {
                     append(" $separator ")
                 }
 
-                when (key.clickType) {
-                    ClickType.LONG_PRESS -> append(longPressString).append(" ")
-                    ClickType.DOUBLE_PRESS -> append(doublePressString).append(" ")
-                    else -> Unit
+                when (key) {
+                    is AssistantTriggerKey -> appendAssistantTriggerKeyName(key)
+                    is KeyCodeTriggerKey -> appendKeyCodeTriggerKeyName(key, showDeviceDescriptors)
                 }
-
-                append(KeyEventUtils.keyCodeToString(key.keyCode))
-
-                val deviceName = when (key.device) {
-                    is TriggerKeyDevice.Internal -> getString(R.string.this_device)
-                    is TriggerKeyDevice.Any -> getString(R.string.any_device)
-                    is TriggerKeyDevice.External -> {
-                        if (showDeviceDescriptors) {
-                            InputDeviceUtils.appendDeviceDescriptorToName(
-                                key.device.descriptor,
-                                key.device.name,
-                            )
-                        } else {
-                            key.device.name
-                        }
-                    }
-                }
-
-                append(" (")
-
-                append(deviceName)
-
-                if (!key.consumeKeyEvent) {
-                    append(" $midDot ${getString(R.string.flag_dont_override_default_action)}")
-                }
-
-                append(")")
             }
         }
 
@@ -109,28 +85,7 @@ class KeyMapListItemCreator(
 
         val triggerErrors = displayMapping.getTriggerErrors(keyMap)
 
-        val triggerErrorChips = triggerErrors.map {
-            when (it) {
-                TriggerError.DND_ACCESS_DENIED ->
-                    ChipUi.Error(
-                        id = TriggerError.DND_ACCESS_DENIED.toString(),
-                        text = getString(R.string.trigger_error_dnd_access_denied_short),
-                        error = Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY),
-                    )
-
-                TriggerError.SCREEN_OFF_ROOT_DENIED -> ChipUi.Error(
-                    id = TriggerError.SCREEN_OFF_ROOT_DENIED.toString(),
-                    text = getString(R.string.trigger_error_screen_off_root_permission_denied_short),
-                    error = Error.PermissionDenied(Permission.ROOT),
-                )
-
-                TriggerError.CANT_DETECT_IN_PHONE_CALL -> ChipUi.Error(
-                    id = TriggerError.SCREEN_OFF_ROOT_DENIED.toString(),
-                    text = getString(R.string.trigger_error_cant_detect_in_phone_call),
-                    error = Error.CantDetectKeyEventsInPhoneCall,
-                )
-            }
-        }
+        val triggerErrorChips = triggerErrors.map(this::getTriggerChipError)
 
         return KeyMapListItem.KeyMapUiState(
             uid = keyMap.uid,
@@ -141,6 +96,79 @@ class KeyMapListItemCreator(
             extraInfo = extraInfo,
             triggerErrorChipList = triggerErrorChips,
         )
+    }
+
+    private fun getTriggerChipError(error: TriggerError): ChipUi.Error =
+        when (error) {
+            TriggerError.DND_ACCESS_DENIED ->
+                ChipUi.Error(
+                    id = TriggerError.DND_ACCESS_DENIED.toString(),
+                    text = getString(R.string.trigger_error_dnd_access_denied_short),
+                    error = Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY),
+                )
+
+            TriggerError.SCREEN_OFF_ROOT_DENIED -> ChipUi.Error(
+                id = TriggerError.SCREEN_OFF_ROOT_DENIED.toString(),
+                text = getString(R.string.trigger_error_screen_off_root_permission_denied_short),
+                error = Error.PermissionDenied(Permission.ROOT),
+            )
+
+            TriggerError.CANT_DETECT_IN_PHONE_CALL -> ChipUi.Error(
+                id = TriggerError.SCREEN_OFF_ROOT_DENIED.toString(),
+                text = getString(R.string.trigger_error_cant_detect_in_phone_call),
+                error = Error.CantDetectKeyEventsInPhoneCall,
+            )
+        }
+
+    private fun StringBuilder.appendKeyCodeTriggerKeyName(
+        key: KeyCodeTriggerKey,
+        showDeviceDescriptors: Boolean,
+    ) {
+        when (key.clickType) {
+            ClickType.LONG_PRESS -> append(longPressString).append(" ")
+            ClickType.DOUBLE_PRESS -> append(doublePressString).append(" ")
+            else -> Unit
+        }
+
+        append(KeyEventUtils.keyCodeToString(key.keyCode))
+
+        val deviceName = when (key.device) {
+            is TriggerKeyDevice.Internal -> getString(R.string.this_device)
+            is TriggerKeyDevice.Any -> getString(R.string.any_device)
+            is TriggerKeyDevice.External -> {
+                if (showDeviceDescriptors) {
+                    InputDeviceUtils.appendDeviceDescriptorToName(
+                        key.device.descriptor,
+                        key.device.name,
+                    )
+                } else {
+                    key.device.name
+                }
+            }
+        }
+
+        append(" (")
+
+        append(deviceName)
+
+        if (!key.consumeEvent) {
+            append(" $midDot ${getString(R.string.flag_dont_override_default_action)}")
+        }
+
+        append(")")
+    }
+
+    private fun StringBuilder.appendAssistantTriggerKeyName(key: AssistantTriggerKey) {
+        when (key.clickType) {
+            ClickType.DOUBLE_PRESS -> append(doublePressString).append(" ")
+            else -> Unit
+        }
+
+        when (key.type) {
+            AssistantTriggerType.ANY -> append(anyAssistantString)
+            AssistantTriggerType.VOICE -> append(voiceAssistantString)
+            AssistantTriggerType.DEVICE -> append(deviceAssistantString)
+        }
     }
 
     private fun getTriggerOptionLabels(trigger: Trigger): List<String> {

@@ -92,7 +92,7 @@ abstract class BaseAccessibilityServiceController(
         detectConstraintsUseCase,
     )
 
-    private val keyMapController = KeyMapController(
+    val keyMapController = KeyMapController(
         coroutineScope,
         detectKeyMapsUseCase,
         performActionsUseCase,
@@ -108,7 +108,7 @@ abstract class BaseAccessibilityServiceController(
     private val recordingTrigger: Boolean
         get() = recordingTriggerJob != null && recordingTriggerJob?.isActive == true
 
-    private val isPaused: StateFlow<Boolean> = pauseMappingsUseCase.isPaused
+    val isPaused: StateFlow<Boolean> = pauseMappingsUseCase.isPaused
         .stateIn(coroutineScope, SharingStarted.Eagerly, false)
 
     private val screenOffTriggersEnabled: StateFlow<Boolean> =
@@ -320,7 +320,12 @@ abstract class BaseAccessibilityServiceController(
             return true
         }
 
-        if (!isPaused.value) {
+        if (isPaused.value) {
+            when (action) {
+                KeyEvent.ACTION_DOWN -> Timber.d("Down ${KeyEvent.keyCodeToString(keyCode)} - not filtering because paused, $detailedLogInfo")
+                KeyEvent.ACTION_UP -> Timber.d("Up ${KeyEvent.keyCodeToString(keyCode)} - not filtering because paused, $detailedLogInfo")
+            }
+        } else {
             try {
                 var consume: Boolean
 
@@ -350,11 +355,6 @@ abstract class BaseAccessibilityServiceController(
                 return consume
             } catch (e: Exception) {
                 Timber.e(e)
-            }
-        } else {
-            when (action) {
-                KeyEvent.ACTION_DOWN -> Timber.d("Down ${KeyEvent.keyCodeToString(keyCode)} - not filtering because paused, $detailedLogInfo")
-                KeyEvent.ACTION_UP -> Timber.d("Up ${KeyEvent.keyCodeToString(keyCode)} - not filtering because paused, $detailedLogInfo")
             }
         }
 

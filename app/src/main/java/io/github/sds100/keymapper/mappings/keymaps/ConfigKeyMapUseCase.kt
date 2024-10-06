@@ -9,8 +9,11 @@ import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.BaseConfigMappingUseCase
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.ConfigMappingUseCase
+import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerKey
+import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerType
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.Trigger
+import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
@@ -38,7 +41,35 @@ class ConfigKeyMapUseCaseImpl(
     private val showDeviceDescriptors: Flow<Boolean> =
         preferenceRepository.get(Keys.showDeviceDescriptors).map { it ?: false }
 
-    override fun addTriggerKey(
+    override fun addAssistantTriggerKey(type: AssistantTriggerType) = editTrigger { trigger ->
+        val clickType = when (trigger.mode) {
+            is TriggerMode.Parallel -> trigger.mode.clickType
+            TriggerMode.Sequence -> ClickType.SHORT_PRESS
+            TriggerMode.Undefined -> ClickType.SHORT_PRESS
+        }
+
+        // Check whether the trigger already contains the key because if so
+        // then it must be converted to a sequence trigger.
+        val containsKey = trigger.keys.any { it is AssistantTriggerKey }
+
+        val triggerKey = AssistantTriggerKey(type = type, clickType = clickType)
+
+        val newKeys = trigger.keys.plus(triggerKey)
+
+        val newMode = when {
+            trigger.mode != TriggerMode.Sequence && containsKey -> TriggerMode.Sequence
+            newKeys.size <= 1 -> TriggerMode.Undefined
+
+            /* Automatically make it a parallel trigger when the user makes a trigger with more than one key
+            because this is what most users are expecting when they make a trigger with multiple keys */
+            newKeys.size == 2 && !containsKey -> TriggerMode.Parallel(newKeys[0].clickType)
+            else -> trigger.mode
+        }
+
+        trigger.copy(keys = newKeys, mode = newMode)
+    }
+
+    override fun addKeyCodeTriggerKey(
         keyCode: Int,
         device: TriggerKeyDevice,
     ) = editTrigger { trigger ->
@@ -48,26 +79,13 @@ class ConfigKeyMapUseCaseImpl(
             TriggerMode.Undefined -> ClickType.SHORT_PRESS
         }
 
-        val containsKey = trigger.keys.any { keyToCompare ->
-            if (trigger.mode != TriggerMode.Sequence) {
-                val sameKeyCode = keyCode == keyToCompare.keyCode
-
-                // if the new key is not external, check whether a trigger key already exists for this device
-                val sameDevice = when {
-                    keyToCompare.device is TriggerKeyDevice.External &&
-                        device is TriggerKeyDevice.External ->
-                        keyToCompare.device.descriptor == device.descriptor
-
-                    else -> true
-                }
-
-                sameKeyCode && sameDevice
-            } else {
-                false
+        // Check whether the trigger already contains the key because if so
+        // then it must be converted to a sequence trigger.
+        val containsKey = trigger.keys
+            .mapNotNull { it as? KeyCodeTriggerKey }
+            .any { keyToCompare ->
+                keyToCompare.keyCode == keyCode && keyToCompare.device.isSameDevice(device)
             }
-        }
-
-        val newKeys = trigger.keys.toMutableList()
 
         var consumeKeyEvent = true
 
@@ -80,18 +98,18 @@ class ConfigKeyMapUseCaseImpl(
             keyCode = keyCode,
             device = device,
             clickType = clickType,
-            consumeKeyEvent = consumeKeyEvent,
+            consumeEvent = consumeKeyEvent,
         )
 
-        newKeys.add(triggerKey)
+        val newKeys = trigger.keys.plus(triggerKey)
 
         val newMode = when {
-            containsKey -> TriggerMode.Sequence
+            trigger.mode != TriggerMode.Sequence && containsKey -> TriggerMode.Sequence
             newKeys.size <= 1 -> TriggerMode.Undefined
 
             /* Automatically make it a parallel trigger when the user makes a trigger with more than one key
             because this is what most users are expecting when they make a trigger with multiple keys */
-            newKeys.size == 2 && !containsKey -> TriggerMode.Parallel(clickType)
+            newKeys.size == 2 && !containsKey -> TriggerMode.Parallel(triggerKey.clickType)
             else -> trigger.mode
         }
 
@@ -120,7 +138,9 @@ class ConfigKeyMapUseCaseImpl(
     }
 
     override fun setParallelTriggerMode() = editTrigger { trigger ->
-        if (trigger.mode is TriggerMode.Parallel) return@editTrigger trigger
+        if (trigger.mode is TriggerMode.Parallel) {
+            return@editTrigger trigger
+        }
 
         // undefined mode only allowed if one or no keys
         if (trigger.keys.size <= 1) {
@@ -128,19 +148,19 @@ class ConfigKeyMapUseCaseImpl(
         }
 
         val oldKeys = trigger.keys
-        var newKeys = oldKeys.toMutableList()
+        var newKeys = oldKeys
 
-        if (trigger.mode !is TriggerMode.Parallel) {
-            // set all the keys to a short press if coming from a non-parallel trigger
-            // because they must all be the same click type and can't all be double pressed
-            newKeys = newKeys.map { key ->
-                key.copy(clickType = ClickType.SHORT_PRESS)
-            }.toMutableList()
-
+        // set all the keys to a short press if coming from a non-parallel trigger
+        // because they must all be the same click type and can't all be double pressed
+        newKeys = newKeys
+            .map { key -> key.setClickType(clickType = ClickType.SHORT_PRESS) }
             // remove duplicates of keys that have the same keycode and device id
-            newKeys =
-                newKeys.distinctBy { Pair(it.keyCode, it.device) }.toMutableList()
-        }
+            .distinctBy { key ->
+                when (key) {
+                    is AssistantTriggerKey -> key.type
+                    is KeyCodeTriggerKey -> Pair(key.keyCode, key.device)
+                }
+            }
 
         val newMode = if (newKeys.size <= 1) {
             TriggerMode.Undefined
@@ -178,7 +198,7 @@ class ConfigKeyMapUseCaseImpl(
                 return@editTrigger oldTrigger
             }
 
-            val newKeys = oldTrigger.keys.map { it.copy(clickType = ClickType.SHORT_PRESS) }
+            val newKeys = oldTrigger.keys.map { it.setClickType(clickType = ClickType.SHORT_PRESS) }
             val newMode = if (newKeys.size <= 1) {
                 TriggerMode.Undefined
             } else {
@@ -189,50 +209,65 @@ class ConfigKeyMapUseCaseImpl(
     }
 
     override fun setTriggerLongPress() {
-        editTrigger { oldTrigger ->
-            if (oldTrigger.mode == TriggerMode.Sequence) {
-                return@editTrigger oldTrigger
+        editTrigger { trigger ->
+            if (trigger.mode == TriggerMode.Sequence) {
+                return@editTrigger trigger
             }
 
-            val newKeys = oldTrigger.keys.map { it.copy(clickType = ClickType.LONG_PRESS) }
+            // You can't set the trigger to a long press if it contains a key
+            // that isn't detected with key codes. This is because there aren't
+            // separate key events for the up and down press that can be timed.
+            if (trigger.keys.any { it !is KeyCodeTriggerKey }) {
+                return@editTrigger trigger
+            }
+
+            val newKeys = trigger.keys.map { it.setClickType(clickType = ClickType.LONG_PRESS) }
             val newMode = if (newKeys.size <= 1) {
                 TriggerMode.Undefined
             } else {
                 TriggerMode.Parallel(ClickType.LONG_PRESS)
             }
 
-            oldTrigger.copy(keys = newKeys, mode = newMode)
+            trigger.copy(keys = newKeys, mode = newMode)
         }
     }
 
     override fun setTriggerDoublePress() {
-        editTrigger { oldTrigger ->
-            if (oldTrigger.mode != TriggerMode.Undefined) {
-                return@editTrigger oldTrigger
+        editTrigger { trigger ->
+            if (trigger.mode != TriggerMode.Undefined) {
+                return@editTrigger trigger
             }
 
-            val newKeys = oldTrigger.keys.map { it.copy(clickType = ClickType.DOUBLE_PRESS) }
+            val newKeys = trigger.keys.map { it.setClickType(clickType = ClickType.DOUBLE_PRESS) }
             val newMode = TriggerMode.Undefined
 
-            oldTrigger.copy(keys = newKeys, mode = newMode)
+            trigger.copy(keys = newKeys, mode = newMode)
         }
     }
 
     override fun setTriggerKeyClickType(keyUid: String, clickType: ClickType) {
         editTriggerKey(keyUid) {
-            it.copy(clickType = clickType)
+            it.setClickType(clickType = clickType)
         }
     }
 
     override fun setTriggerKeyDevice(keyUid: String, device: TriggerKeyDevice) {
         editTriggerKey(keyUid) {
-            it.copy(device = device)
+            if (it is KeyCodeTriggerKey) {
+                it.copy(device = device)
+            } else {
+                it
+            }
         }
     }
 
     override fun setTriggerKeyConsumeKeyEvent(keyUid: String, consumeKeyEvent: Boolean) {
         editTriggerKey(keyUid) {
-            it.copy(consumeKeyEvent = consumeKeyEvent)
+            if (it is KeyCodeTriggerKey) {
+                it.copy(consumeEvent = consumeKeyEvent)
+            } else {
+                it
+            }
         }
     }
 
@@ -443,7 +478,7 @@ class ConfigKeyMapUseCaseImpl(
         }
     }
 
-    private fun editTriggerKey(uid: String, block: (key: KeyCodeTriggerKey) -> KeyCodeTriggerKey) {
+    private fun editTriggerKey(uid: String, block: (key: TriggerKey) -> TriggerKey) {
         editTrigger { oldTrigger ->
             val newKeys = oldTrigger.keys.map {
                 if (it.uid == uid) {
@@ -464,7 +499,8 @@ class ConfigKeyMapUseCaseImpl(
 
 interface ConfigKeyMapUseCase : ConfigMappingUseCase<KeyMapAction, KeyMap> {
     // trigger
-    fun addTriggerKey(keyCode: Int, device: TriggerKeyDevice)
+    fun addKeyCodeTriggerKey(keyCode: Int, device: TriggerKeyDevice)
+    fun addAssistantTriggerKey(type: AssistantTriggerType)
     fun removeTriggerKey(uid: String)
     fun moveTriggerKey(fromIndex: Int, toIndex: Int)
 

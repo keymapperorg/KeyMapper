@@ -1492,21 +1492,22 @@ class KeyMapController(
                 this.clickType == event.clickType
     }
 
-    private fun KeyCodeTriggerKey.matchesWithOtherKey(otherKey: KeyCodeTriggerKey): Boolean = when (this.device) {
-        TriggerKeyDevice.Any ->
-            this.keyCode == otherKey.keyCode &&
-                this.clickType == otherKey.clickType
+    private fun KeyCodeTriggerKey.matchesWithOtherKey(otherKey: KeyCodeTriggerKey): Boolean =
+        when (this.device) {
+            TriggerKeyDevice.Any ->
+                this.keyCode == otherKey.keyCode &&
+                    this.clickType == otherKey.clickType
 
-        is TriggerKeyDevice.External ->
-            this.keyCode == otherKey.keyCode &&
-                this.device == otherKey.device &&
-                this.clickType == otherKey.clickType
+            is TriggerKeyDevice.External ->
+                this.keyCode == otherKey.keyCode &&
+                    this.device == otherKey.device &&
+                    this.clickType == otherKey.clickType
 
-        TriggerKeyDevice.Internal ->
-            this.keyCode == otherKey.keyCode &&
-                otherKey.device == TriggerKeyDevice.Internal &&
-                this.clickType == otherKey.clickType
-    }
+            TriggerKeyDevice.Internal ->
+                this.keyCode == otherKey.keyCode &&
+                    otherKey.device == TriggerKeyDevice.Internal &&
+                    this.clickType == otherKey.clickType
+        }
 
     private fun longPressDelay(trigger: Trigger): Long =
         trigger.longPressDelay?.toLong() ?: defaultLongPressDelay.value

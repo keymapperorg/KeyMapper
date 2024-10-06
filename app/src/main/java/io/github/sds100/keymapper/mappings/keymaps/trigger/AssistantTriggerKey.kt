@@ -11,9 +11,11 @@ data class AssistantTriggerKey(
     override val uid: String = UUID.randomUUID().toString(),
     val type: AssistantTriggerType,
     override val clickType: ClickType,
-
-    val consumeKeyEvent: Boolean = true,
 ) : TriggerKey() {
+
+    // This is always true for an assistant key event because Key Mapper can't forward the
+    // assistant event to another app (or can it??).
+    override val consumeEvent: Boolean = true
 
     companion object {
         fun fromEntity(
