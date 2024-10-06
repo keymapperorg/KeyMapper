@@ -170,7 +170,7 @@
     <string name="tab_options">Tùy chọn</string>
     <string name="tab_constraints">Hạn chế</string>
     <string name="tab_actions">Hành động</string>
-    <string name="tab_trigger">Trigger</string>
+    <string name="tab_trigger">Kích hoạt</string>
     <string name="tab_fingerprint">Dấu vân tay</string>
     <string-array name="home_tab_titles">
         <item>@string/tab_keyevents</item>
@@ -281,7 +281,7 @@
     <string name="orientation_270">Màn hình xoay (270°)</string>
     <!-- Constraints -->
     <!-- Click types -->
-    <string name="clicktype_short_press">Bấm nhanh</string>
+    <string name="clicktype_short_press">Nhấn</string>
     <string name="clicktype_long_press">Nhấn giữ</string>
     <string name="clicktype_double_press">Nhấn đúp</string>
     <!-- Click types -->
@@ -309,7 +309,7 @@
     <string name="action_settings">Cài đặt</string>
     <string name="action_done">Xong</string>
     <string name="action_select_all">Chọn tất cả</string>
-    <string name="action_about">Về</string>
+    <string name="action_about">Thông tin </string>
     <string name="action_search">Tìm kiếm</string>
     <string name="action_help_home">Hướng dẫn bắt đầu nhanh</string>
     <string name="action_help">Help</string>
@@ -659,7 +659,7 @@
     <string name="showcase_grant_shizuku_permission_granted_title">Shizuku đã được phép!</string>
     <string name="showcase_grant_shizuku_permission_granted_message">Bạn đã cấp quyền thành công cho Key Mapper Shizuku.</string>
     <string name="showcase_more_shizuku_info">Thông tin thêm</string>
-    <string name="showcase_request_shizuku_permission">Khoản trợ cấp</string>
+    <string name="showcase_request_shizuku_permission">Cấp quyền</string>
     <string name="showcase_shizuku_not_started_title">Shizuku chưa bắt đầu</string>
     <string name="showcase_shizuku_not_started_message">Shizuku phải được khởi động trước khi bạn cấp quyền cho Key Mapper sử dụng. Nhấn vào \'Khởi chạy Shizuku\' để mở ứng dụng Shizuku để bạn có thể khởi động ứng dụng.</string>
     <string name="showcase_shizuku_launch_shizuku_app">Cài đặt Shizuku</string>
@@ -667,7 +667,7 @@
     <string name="showcase_notification_permission_denied_message">Một số tính năng của Key Mapper yêu cầu quyền đăng thông báo, ví dụ: có thông báo tạm dừng/tiếp tục các bản đồ chính của bạn. Nhấn \'cấp\' để cấp quyền.</string>
     <string name="showcase_notification_permission_granted_title">Thông báo có thể được hiển thị!</string>
     <string name="showcase_notification_permission_granted_message">Bạn đã cấp thành công quyền Key Mapper để hiển thị thông báo.</string>
-    <string name="showcase_notification_permission_button">Khoản trợ cấp</string>
+    <string name="showcase_notification_permission_button">Cấp quyền</string>
     <!-- Showcase -->
     <!-- system action options -->
     <string name="stream_accessibility">Khả năng tiếp cận</string>
@@ -678,7 +678,7 @@
     <string name="stream_ring">Nhẫn</string>
     <string name="stream_system">Hệ thống</string>
     <string name="stream_voice_call">Cuộc gọi thoại</string>
-    <string name="ringer_mode_normal">Nhẫn</string>
+    <string name="ringer_mode_normal">Chuông</string>
     <string name="ringer_mode_vibrate">Rung</string>
     <string name="ringer_mode_silent">Im lặng</string>
     <string name="lens_front">Đằng trước</string>
