@@ -1374,8 +1374,13 @@
     <string name="about_team_bydario_role">Translator (Spanish)</string>
     <!--  About  -->
 
-    <!-- Assistant trigger   -->
+    <!-- Advanced triggers -->
     <string name="assistant_any_trigger_name">Any assistant</string>
     <string name="assistant_device_trigger_name">Device assistant</string>
     <string name="assistant_voice_trigger_name">Voice assistant</string>
+    <string name="advanced_triggers_sheet_title">Advanced triggers</string>
+    <string name="advanced_triggers_sheet_text">The developer doesn\'t believe ads are a sustainable or user-friendly form of monetization so these paid triggers help support development ❤️. You will be given priority support as well.</string>
+    <string name="assistant_trigger_product_title">Assistant trigger</string>
+    <string name="assistant_trigger_product_description">Did you know you can remap your device assistant? Instead of launching Google Assistant or Bixby, your device can perform an action of your choice. It works even when the screen is off!</string>
+    <string name="unlock_product_button">Unlock (%s)</string>
 </resources>
