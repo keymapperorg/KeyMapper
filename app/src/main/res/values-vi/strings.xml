@@ -24,7 +24,7 @@
     <string name="unknown_device_name">Tên thiết bị không xác định</string>
     <string name="on">Bật</string>
     <string name="off">Tắt</string>
-    <string name="follow_system">Theo dõi hệ thống</string>
+    <string name="follow_system">Theo hệ thống</string>
     <string name="this_device">Thiết bị này</string>
     <string name="any_device">Bất kỳ thiết bị nào</string>
     <string name="trigger_device_name_not_found">Không biết tên của thiết bị này</string>
@@ -66,7 +66,7 @@
     <string name="caption_no_paired_bt_devices">Không thể tìm thấy bất kỳ thiết bị được ghép nối nào. Bluetooth đã được bật chưa?</string>
     <string name="caption_create_keymap_shortcut">Tùy chọn \"Cho phép các ứng dụng khác kích hoạt sơ đồ bàn phím này\" sẽ được bật cho sơ đồ bàn phím mà bạn chọn nếu chưa bật. Nếu sau này bạn tắt tùy chọn này thì mọi phím tắt hoặc Ý định kích hoạt sơ đồ phím này sẽ không hoạt động.</string>
     <string name="switch_enabled">Đã bật</string>
-    <string name="disabled">Tàn tật</string>
+    <string name="disabled">Đã tắt</string>
     <string name="reset">Khôi phục</string>
     <string name="enable_device_admin_message">Sau khi đã bật quản trị viên thiết bị, bạn phải TẮT KÍCH HOẠT nó nếu muốn gỡ cài đặt Key Mapper.</string>
     <string name="constraints_recyclerview_placeholder">Thêm một hạn chế!</string>
@@ -92,7 +92,7 @@
     <string name="home_success_accessibility_service_is_enabled">Dịch vụ trợ năng đã được kích hoạt! Hành động của bạn sẽ hoạt động.</string>
     <string name="home_error_logging_enabled">Ghi nhật ký bổ sung được bật! Hãy tắt tính năng này nếu bạn không cố gắng khắc phục sự cố.</string>
     <string name="home_error_logging_enabled_button">Tắt</string>
-    <string name="title_about">Về</string>
+    <string name="title_about">Thông tin</string>
     <!--  Action descriptions  -->
     <string name="description_open_app">Mở %s</string>
     <string name="description_key">Nhấn phím \'%s\'</string>
@@ -113,7 +113,7 @@
     <!--  Headers  -->
     <string name="option_list_header">Tùy chọn</string>
     <string name="action_list_header">Hành động</string>
-    <string name="trigger_header">Trigger</string>
+    <string name="trigger_header">Kích hoạt</string>
     <string name="constraint_list_header">Hạn chế</string>
     <string name="header_fingerprint_gesture_up">Vuốt lên</string>
     <string name="header_fingerprint_gesture_down">Vuốt xuống</string>
@@ -155,7 +155,7 @@
     <string name="radio_button_sequence">Theo thứ tự</string>
     <string name="radio_button_and">VÀ</string>
     <string name="radio_button_or">HOẶC</string>
-    <string name="radio_button_short_press">Bấm nhanh</string>
+    <string name="radio_button_short_press">Nhấn</string>
     <string name="radio_button_long_press">Nhấn giữ</string>
     <string name="radio_button_double_press">Nhấn đúp</string>
     <string name="radio_button_intent_extra_value_true">Đúng</string>
@@ -188,7 +188,7 @@
     <string name="toast_automatic_backup_successful">Tự động sao lưu thành công!</string>
     <string name="toast_automatic_backup_failed">Tự động sao lưu thất bại!</string>
     <string name="toast_screenshot_taken">Đã chụp ảnh màn hình</string>
-    <string name="toast_io_exception_shrug">IO exception ¯\\_(ツ)_/¯</string>
+    <string name="toast_io_exception_shrug">IO ngoại lệ ¯\\_(ツ)_/¯</string>
     <string name="toast_incorrect_screenshot_resolution">Độ phân giải ảnh chụp màn hình không khớp với độ phân giải của thiết bị này!</string>
     <string name="toast_copied_keymap_uid_to_clipboard">Đã sao chép sơ đồ khóa UUID vào bảng nhớ tạm</string>
     <string name="toast_triggered_keymap">Bạn đã kích hoạt hành động</string>
@@ -200,24 +200,24 @@
     <string name="toast_granted_itself_write_secure_settings_with_root">Key Mapper đã sử dụng Root để tự cấp quyền WRITE_SECURE_SETTINGS</string>
     <!--  Toasts  -->
     <!-- Extra labels -->
-    <string name="extra_label_sequence_trigger_timeout">Sequence trigger timeout (ms)</string>
+    <string name="extra_label_sequence_trigger_timeout">Thời gian chờ kích hoạt phím tiếp theo (ms)</string>
     <string name="extra_label_long_press_delay_timeout">Độ trễ nhấn giữ (ms)</string>
     <string name="extra_label_double_press_delay_timeout">Thời gian chờ nhấn đúp (ms)</string>
     <string name="extra_label_repeat_delay">Trì hoãn cho đến khi lặp lại (ms)</string>
     <string name="extra_label_repeat_limit">Giới hạn lặp lại</string>
     <string name="extra_label_repeat_rate">Lặp lại mỗi… (ms)</string>
     <string name="extra_label_vibration_duration">Thời gian rung (ms)</string>
-    <string name="extra_label_action_multiplier">Đã bao nhiêu lần</string>
+    <string name="extra_label_action_multiplier">Số lần lặp lại</string>
     <string name="extra_label_action_multiplier_with_repeat">Mỗi lần lặp lại bao nhiêu lần</string>
-    <string name="extra_label_delay_before_next_action"></string>
+    <string name="extra_label_delay_before_next_action">Độ trễ trước hành động tiếp theo (ms) </string>
     <string name="extra_label_hold_down_duration">Thời gian giữ phím (ms)</string>
     <string name="extra_label_swipe_duration">Thời lượng vuốt (ms)</string>
-    <string name="extra_label_swipe_finger_count">Đếm ngón tay</string>
+    <string name="extra_label_swipe_finger_count">Số ngón tay</string>
     <string name="extra_label_swipe_select_start_end_label">Tọa độ để thiết lập với ảnh chụp màn hình</string>
     <string name="extra_label_swipe_select_start_end_start">Bắt đầu</string>
     <string name="extra_label_swipe_select_start_end_end">Kết thúc</string>
     <string name="extra_label_pinch_duration">Thời lượng chụm (ms)</string>
-    <string name="extra_label_pinch_finger_count">Đếm ngón tay</string>
+    <string name="extra_label_pinch_finger_count">Số ngón tay</string>
     <!-- Extra labels -->
     <!-- Constraints -->
     <string name="constraint_app_foreground_description">%s ở phía trước</string>
@@ -246,8 +246,8 @@
     <string name="constraint_choose_orientation_90">Màn hình xoay (90°)</string>
     <string name="constraint_choose_orientation_180">Màn hình xoay (180°)</string>
     <string name="constraint_choose_orientation_270">Màn hình xoay (270°)</string>
-    <string name="constraint_choose_orientation_portrait">Màn hình xoay (bất kỳ)</string>
-    <string name="constraint_choose_orientation_landscape">Phong cảnh (bất kỳ)</string>
+    <string name="constraint_choose_orientation_portrait">Màn hình dọc (bất kỳ)</string>
+    <string name="constraint_choose_orientation_landscape">Màn hình ngang (bất kỳ)</string>
     <string name="constraint_choose_app_playing_media">Ứng dụng phát âm thanh</string>
     <string name="constraint_choose_app_not_playing_media">Ứng dụng không phát âm thanh </string>
     <string name="constraint_choose_media_playing">Âm thanh đang phát</string>
@@ -322,7 +322,7 @@
     <string name="action_seed_database">Cơ sở dữ liệu hạt giống</string>
     <string name="action_save">Lưu</string>
     <string name="action_duplicate_keymap">Nhân bản</string>
-    <string name="action_backup">Lên </string>
+    <string name="action_backup">Lưu</string>
     <string name="action_restore">Khôi phục</string>
     <string name="action_backup_everything">Sao lưu mọi thứ </string>
     <string name="action_backup_all">Sao lưu tất cả</string>
@@ -348,7 +348,7 @@
     <string name="button_add_intent_extra">Thêm bổ sung</string>
     <string name="button_create_keymap_shortcut_in_launcher_enabled">Tạo lối tắt trình khởi chạy</string>
     <string name="button_create_keymap_shortcut_in_launcher_disabled">Tạo lối tắt thủ công</string>
-    <string name="button_open_trigger_keymap_from_intent_guide">Hướng dẫn ý định</string>
+    <string name="button_open_trigger_keymap_from_intent_guide">Hướng dẫn</string>
     <string name="button_help">Help</string>
     <string name="button_pick_coordinate_select_screenshot">Chọn ảnh chụp màn hình (tùy chọn)</string>
     <string name="button_config_intent_choose_activity">Chọn hoạt động</string>
@@ -437,7 +437,7 @@
     <string name="pos_report_issues_guide">Hướng dẫn</string>
     <string name="pos_start_service_with_adb_guide">Hướng dẫn</string>
     <string name="pos_enable_root_features">Kích hoạt tính năng root </string>
-    <string name="pos_grant">Khoản trợ cấp</string>
+    <string name="pos_grant">Cấp quyền</string>
     <string name="pos_join">Tham gia</string>
     <string name="pos_change_location">Thay đổi</string>
     <string name="pos_turn_off_stock_battery_optimisation">Sửa một phần</string>
@@ -474,13 +474,13 @@
     <string name="notification_channel_new_features">Tính năng mới</string>
     <string name="notification_ime_persistent_text">Nhấn để thay đổi bàn phím của bạn.</string>
     <string name="notification_ime_persistent_title">Hộp chọn bàn phím</string>
-    <string name="notification_keymaps_resumed_title">Đang tải xuống…</string>
+    <string name="notification_keymaps_resumed_title">Đang chạy</string>
     <string name="notification_keymaps_resumed_text">Nhấn để mở Key Mapper.</string>
     <string name="notification_action_pause">Tạm dừng</string>
     <string name="notification_keymaps_paused_title">Đã tạm dừng</string>
     <string name="notification_keymaps_paused_text">Nhấn để mở Key Mapper.</string>
-    <string name="notification_action_resume">Bản tóm tắt</string>
-    <string name="notification_action_dismiss">Miễn nhiệm</string>
+    <string name="notification_action_resume">Khởi chạy</string>
+    <string name="notification_action_dismiss">Loại bỏ</string>
     <string name="notification_action_restart_accessibility_service">Khởi động lại</string>
     <string name="notification_accessibility_service_disabled_title">Dịch vụ trợ năng bị vô hiệu hóa</string>
     <string name="notification_accessibility_service_disabled_text">Nhấn để bắt đầu dịch vụ trợ năng.</string>
@@ -564,7 +564,7 @@
     <string name="title_pref_grant_shizuku_started">2. Shizuku bắt đầu.</string>
     <string name="title_pref_grant_shizuku_not_granted">3. Key Mapper không được phép sử dụng Shizuku. Nhấn để cấp quyền này.</string>
     <string name="title_pref_grant_shizuku_granted">3. Key Mapper sẽ tự động sử dụng Shizuku. Nhấn để đọc tính năng Key Mapper nào sử dụng Shizuku.</string>
-    <string name="title_pref_default_options">Tùy chọn ánh xạ mặc định</string>
+    <string name="title_pref_default_options">Tùy chọn cài đặt mặc định</string>
     <string name="summary_pref_default_options">Thay đổi các tùy chọn mặc định cho ánh xạ của bạn.</string>
     <!--Preference titles and summaries-->
     <!--Preference categories-->
@@ -617,7 +617,7 @@
     <string name="flag_repeat_actions_pressed_again">Lặp lại cho đến khi nhấn lại</string>
     <string name="flag_hold_down">Giữ và giữ</string>
     <string name="flag_hold_down_until_pressed_again">Giữ cho đến khi nhấn lại</string>
-    <string name="flag_dont_override_default_action">Không ánh xạ lại</string>
+    <string name="flag_dont_override_default_action">Cho phép phím hoạt động bình thường </string>
     <string name="flag_hold_down_until_swiped_again">Giữ cho đến khi vuốt lại</string>
     <string name="flag_trigger_from_other_apps">Cho phép các ứng dụng khác kích hoạt bản đồ phím này</string>
     <!--flags-->
@@ -634,7 +634,7 @@
     <string name="showcase_note_from_the_developer_title">Lưu ý từ nhà phát triển</string>
     <string name="showcase_note_from_the_developer_description">Không có gì đảm bảo rằng mọi hành động sẽ hoạt động trên thiết bị của bạn và mọi nút đều có thể được phát hiện. Điều này là do Android có nhiều phiên bản khác nhau và các OEM có thể vô tình hoặc cố ý phá vỡ các tính năng. Nếu có điều gì đó không ổn, vui lòng thông báo cho nhà phát triển và không đánh giá ứng dụng kém vì sự cố thường nằm ngoài tầm kiểm soát của nhà phát triển. =)</string>
     <string name="showcase_disable_battery_optimisation_title">Key Mapper có thể ngừng hoạt động ngẫu nhiên!</string>
-    <string name="showcase_disable_battery_optimisation_message_bad">PHÊ BÌNH!!! Nhấn \"tắt\" để hy vọng ngăn Android dừng ứng dụng khi ứng dụng này ở chế độ nền. Giao diện OEM của bạn như MIUI hoặc Samsung Experience có thể có các tính năng \"tiết kiệm pin\" khác, vì vậy bạn PHẢI tắt chúng cho Key Mapper bằng cách làm theo hướng dẫn tại Dontkillmyapp.com</string>
+    <string name="showcase_disable_battery_optimisation_message_bad">QUAN TRỌNG!!! Nhấn \"tắt\" để hy vọng ngăn Android dừng ứng dụng khi nó đang chạy nền. Giao diện OEM của bạn như MIUI hoặc Samsung Experience có thể có các tính năng \"tiết kiệm pin\" khác nên bạn PHẢI tắt chúng cho Key Mapper bằng cách làm theo hướng dẫn tại dontkillmyapp.com </string>
     <string name="showcase_disable_battery_optimisation_message_good">Tối ưu hóa pin Android gốc đã tắt. Điều này không đủ tốt cho hầu hết các thiết bị, vì vậy hãy truy cập Dontkillmyapp.com để xem hướng dẫn cách tắt nhiều tính năng diệt ứng dụng hơn nữa trên thiết bị của bạn.</string>
     <string name="showcase_disable_battery_optimisation_button_turn_off">Tắt</string>
     <string name="showcase_disable_battery_optimisation_button_dont_kill_my_app">Truy cập Dontkillmyapp.com</string>
@@ -664,9 +664,9 @@
     <string name="showcase_shizuku_not_started_message">Shizuku phải được khởi động trước khi bạn cấp quyền cho Key Mapper sử dụng. Nhấn vào \'Khởi chạy Shizuku\' để mở ứng dụng Shizuku để bạn có thể khởi động ứng dụng.</string>
     <string name="showcase_shizuku_launch_shizuku_app">Cài đặt Shizuku</string>
     <string name="showcase_notification_permission_denied_title">Cấp quyền thông báo</string>
-    <string name="showcase_notification_permission_denied_message">Một số tính năng của Key Mapper yêu cầu quyền đăng thông báo, ví dụ: có thông báo tạm dừng/tiếp tục các bản đồ chính của bạn. Nhấn \'cấp\' để cấp quyền.</string>
+    <string name="showcase_notification_permission_denied_message">Một số tính năng của Key Mapper yêu cầu quyền đăng thông báo, ví dụ: có thông báo tạm dừng/tiếp tục các bản đồ chính của bạn. Nhấn \'Cấp quyền\' để cấp quyền.</string>
     <string name="showcase_notification_permission_granted_title">Thông báo có thể được hiển thị!</string>
-    <string name="showcase_notification_permission_granted_message">Bạn đã cấp thành công quyền Key Mapper để hiển thị thông báo.</string>
+    <string name="showcase_notification_permission_granted_message">Bạn đã cấp quyền Key Mapper có thể hiển thị thông báo.</string>
     <string name="showcase_notification_permission_button">Cấp quyền</string>
     <!-- Showcase -->
     <!-- system action options -->
@@ -675,7 +675,7 @@
     <string name="stream_dtmf">DTMF</string>
     <string name="stream_music">Âm nhạc</string>
     <string name="stream_notification">Thông báo</string>
-    <string name="stream_ring">Nhẫn</string>
+    <string name="stream_ring">Chuông</string>
     <string name="stream_system">Hệ thống</string>
     <string name="stream_voice_call">Cuộc gọi thoại</string>
     <string name="ringer_mode_normal">Chuông</string>
@@ -700,19 +700,19 @@
     <string name="meta_state_ctrl_left">Ctrl left</string>
     <string name="meta_state_ctrl_right">Ctrl right</string>
     <string name="meta_state_alt">Alt</string>
-    <string name="meta_state_alt_left">Alt trái</string>
-    <string name="meta_state_alt_right">Alt phải</string>
+    <string name="meta_state_alt_left">Alt left</string>
+    <string name="meta_state_alt_right">Alt right</string>
     <string name="meta_state_shift">Shift</string>
-    <string name="meta_state_shift_left">Shift trái </string>
-    <string name="meta_state_shift_right">Shift phải </string>
+    <string name="meta_state_shift_left">Shift left</string>
+    <string name="meta_state_shift_right">Shift right</string>
     <string name="meta_state_meta">Meta</string>
     <string name="meta_state_meta_left">Meta trái</string>
     <string name="meta_state_meta_right">Meta phải</string>
     <string name="meta_state_sym">Sym</string>
     <string name="meta_state_function">Func</string>
-    <string name="meta_state_caps_lock">Khóa mũ</string>
-    <string name="meta_state_num_lock">Khóa số</string>
-    <string name="meta_state_scroll_lock">Khóa cuộn</string>
+    <string name="meta_state_caps_lock">Caps Lock</string>
+    <string name="meta_state_num_lock">Num Lock</string>
+    <string name="meta_state_scroll_lock">Scroll Lock</string>
     <!-- Meta States -->
     <!-- Error messages -->
     <string name="error_must_type_a_key">Bạn phải gõ một phím!</string>
@@ -871,10 +871,10 @@
     <string name="action_enable_auto_rotate">Bật tự động xoay</string>
     <string name="action_disable_auto_rotate">Vô hiệu hóa tự động xoay</string>
     <string name="action_toggle_auto_rotate">Chuyển đổi tự động xoay</string>
-    <string name="action_portrait_mode">Chế độ chân dung</string>
-    <string name="action_landscape_mode">Chế độ phong cảnh</string>
-    <string name="action_switch_orientation">Chuyển hướng</string>
-    <string name="action_cycle_rotations">Xoay vòng qua các vòng quay</string>
+    <string name="action_portrait_mode">Màn hình dọc</string>
+    <string name="action_landscape_mode">Màn hình ngang</string>
+    <string name="action_switch_orientation">Xoay màn hình</string>
+    <string name="action_cycle_rotations">Cài đặt xoay màn hình </string>
     <string name="action_cycle_rotations_formatted">Xoay vòng qua %s vòng quay</string>
     <string name="action_toggle_mobile_data">Chuyển đổi dữ liệu di động</string>
     <string name="action_enable_mobile_data">Kích hoạt dữ liệu di động</string>
@@ -913,7 +913,7 @@
     <string name="action_rewind_package_formatted">Tua lại trong %s</string>
     <string name="action_rewind_message">Không phải tất cả các ứng dụng media đều hỗ trợ tua lại. Ví dụ: Google Play Âm nhạc.</string>
     <string name="action_go_back">Quay lại</string>
-    <string name="action_go_home">Go home</string>
+    <string name="action_go_home">Màn hình chính</string>
     <string name="action_open_recents">Mở gần đây</string>
     <string name="action_open_menu">Mở trình đơn</string>
     <string name="action_toggle_split_screen">Chuyển đổi màn hình chia nhỏ </string>
@@ -927,13 +927,13 @@
     <string name="action_nfc_enable">Bật NFC</string>
     <string name="action_nfc_disable">Tắt NFC</string>
     <string name="action_nfc_toggle">Chuyển đổi NFC</string>
-    <string name="action_screenshot">Ảnh chụp màn hình</string>
+    <string name="action_screenshot">Chụp màn hình</string>
     <string name="action_open_assistant">Khởi chạy trợ lý giọng nói</string>
     <string name="action_open_device_assistant">Khởi chạy trợ lý thiết bị</string>
     <string name="action_open_camera">Mở máy ảnh</string>
     <string name="action_lock_device">Khóa thiết bị</string>
     <string name="action_secure_lock_device">Thiết bị khóa an toàn</string>
-    <string name="action_secure_lock_device_message">Bạn sẽ chỉ có thể đăng nhập lại bằng mã PIN của mình. Máy quét dấu vân tay và mở khóa bằng khuôn mặt sẽ bị tắt. Đây là cách đáng tin cậy duy nhất mà tôi tìm thấy để khóa các thiết bị chưa root trước Android Pie 9.0.</string>
+    <string name="action_secure_lock_device_message">Bạn sẽ chỉ có thể đăng nhập lại bằng mã PIN của mình. Máy quét dấu vân tay và mở khóa bằng khuôn mặt sẽ bị tắt. Đây là cách đáng tin cậy duy nhất mà tôi tìm thấy để khóa các thiết bị chưa root trước Android 9.0.</string>
     <string name="action_power_on_off_device">Thiết bị ngủ/thức</string>
     <string name="action_power_on_off_device_message">Bạn phải bật tùy chọn phát hiện trigger khi màn hình tắt!</string>
     <string name="action_consume_keyevent">Không làm gì cả</string>
@@ -944,7 +944,7 @@
     <string name="action_show_keyboard">Hiển thị bàn phím</string>
     <string name="action_hide_keyboard">Ẩn bàn phím</string>
     <string name="action_show_keyboard_picker">Hiển thị hộp chọn bàn phím</string>
-    <string name="action_switch_keyboard">Chuyển đổi bàn phím</string>
+    <string name="action_switch_keyboard">Chuyển đổi bàn phím thiết lập</string>
     <string name="action_switch_keyboard_formatted">Chuyển sang %s</string>
     <string name="action_text_cut">Cắt</string>
     <string name="action_text_copy">Sao chép</string>
@@ -952,8 +952,8 @@
     <string name="action_select_word_at_cursor">Chọn từ tại con trỏ</string>
     <string name="action_open_settings">Mở cài đặt</string>
     <string name="action_show_power_menu">Hiển thị menu nguồn</string>
-    <string name="action_toggle_airplane_mode">Chuyển đổi chế độ trên máy bay</string>
-    <string name="action_enable_airplane_mode">Bật chế độ trên máy bay</string>
+    <string name="action_toggle_airplane_mode">Chuyển đổi chế độ máy bay</string>
+    <string name="action_enable_airplane_mode">Bật chế độ máy bay</string>
     <string name="action_disable_airplane_mode">Tắt chế độ Máy bay</string>
     <string name="action_open_app">Khởi chạy ứng dụng</string>
     <string name="action_open_app_shortcut">Khởi chạy phím tắt ứng dụng</string>
@@ -964,7 +964,7 @@
     <string name="action_pinch_screen">Chụm màn hình</string>
     <string name="action_input_text">Nhập văn bản</string>
     <string name="action_open_url">Mở URL</string>
-    <string name="action_send_intent">Gửi ý định</string>
+    <string name="action_send_intent">Gửi thông tin</string>
     <string name="action_phone_call">Bắt đầu cuộc gọi điện thoại</string>
     <string name="action_answer_call">Trả lời cuộc gọi điện thoại</string>
     <string name="action_end_call">Kết thúc cuộc gọi điện thoại</string>
@@ -984,14 +984,14 @@
     <string name="action_cat_content">Nội dung</string>
     <string name="action_cat_interface">Giao diện</string>
     <string name="action_cat_telephony">Điện thoại</string>
-    <string name="action_cat_display">Trưng bày</string>
+    <string name="action_cat_display">Hiển thị</string>
     <string name="action_cat_notifications">Thông báo</string>
     <!-- action category labels -->
     <!--  Intent action type strings  -->
     <string name="intent_type_bool_header">Boolean</string>
-    <string name="intent_type_bool_array_header">Mảng Boolean</string>
+    <string name="intent_type_bool_array_header">Boolean array</string>
     <string name="intent_type_int_header">Số nguyên</string>
-    <string name="intent_type_int_array_header">Mảng số nguyên</string>
+    <string name="intent_type_int_array_header">Integer array</string>
     <string name="intent_type_string_header">Chuỗi</string>
     <string name="intent_type_string_array_header">Mảng chuỗi</string>
     <string name="intent_type_long_header">Dài</string>
@@ -1000,8 +1000,8 @@
     <string name="intent_type_byte_array_header">Mảng byte</string>
     <string name="intent_type_double_header">Double</string>
     <string name="intent_type_double_array_header">Mảng đôi</string>
-    <string name="intent_type_char_header">Char</string>
-    <string name="intent_type_char_array_header">Mảng char</string>
+    <string name="intent_type_char_header">Ký tự</string>
+    <string name="intent_type_char_array_header">Mảng ký tự</string>
     <string name="intent_type_float_header">Nổi</string>
     <string name="intent_type_float_array_header">Mảng nổi</string>
     <string name="intent_type_short_header">Ngắn</string>
@@ -1009,7 +1009,7 @@
     <string name="intent_type_bool_example">Chỉ có thể là \"đúng\" hoặc \"sai\"</string>
     <string name="intent_type_bool_array_example">Danh sách \"đúng\" và \"sai\" được phân tách bằng dấu phẩy. Ví dụ: đúng, sai, đúng</string>
     <string name="intent_type_int_example">Một số nguyên hợp lệ trong ngôn ngữ lập trình Java.</string>
-    <string name="intent_type_int_array_example">Danh sách các số nguyên hợp lệ được phân tách bằng dấu phẩy trong ngôn ngữ lập trình Java. Ví dụ: 100.399</string>
+    <string name="intent_type_int_array_example">Danh sách các số nguyên hợp lệ được phân tách bằng dấu phẩy trong ngôn ngữ lập trình Java. Ví dụ: 100,399 </string>
     <string name="intent_categories_example">Một danh sách được phân tách bằng dấu phẩy. Ví dụ: loại 1, loại 2</string>
     <string name="intent_type_string_example">Bất kỳ văn bản nào.</string>
     <string name="intent_type_string_array_example">Danh sách các chuỗi được phân tách bằng dấu phẩy. Ví dụ: chuỗi1, chuỗi2</string>
@@ -1018,13 +1018,13 @@
     <string name="intent_type_byte_example">Một Byte hợp lệ trong ngôn ngữ lập trình Java.</string>
     <string name="intent_type_byte_array_example">Danh sách các Byte hợp lệ được phân tách bằng dấu phẩy trong ngôn ngữ lập trình Java. Ví dụ: 123,3</string>
     <string name="intent_type_double_example">Một Double hợp lệ trong ngôn ngữ lập trình Java.</string>
-    <string name="intent_type_double_array_example">Danh sách các Nhân đôi hợp lệ được phân tách bằng dấu phẩy trong ngôn ngữ lập trình Java. Ví dụ: 1.0,3.234</string>
+    <string name="intent_type_double_array_example">Danh sách các Mảng đôi hợp lệ được phân tách bằng dấu phẩy trong ngôn ngữ lập trình Java. Ví dụ: 1.0,3.234</string>
     <string name="intent_type_char_example">Một Char hợp lệ trong ngôn ngữ lập trình Java. Ví dụ: \'a\' hoặc \'b\'</string>
     <string name="intent_type_char_array_example">Danh sách các ký tự hợp lệ được phân tách bằng dấu phẩy trong ngôn ngữ lập trình Java. Ví dụ: a,b,c</string>
     <string name="intent_type_float_example">Float hợp lệ trong ngôn ngữ lập trình Java. Ví dụ: 3,145</string>
-    <string name="intent_type_float_array_example">Danh sách các Float hợp lệ được phân tách bằng dấu phẩy trong ngôn ngữ lập trình Java. Ví dụ: 1241.123</string>
+    <string name="intent_type_float_array_example">Danh sách các Mảng nổi hợp lệ được phân tách bằng dấu phẩy trong ngôn ngữ lập trình Java. Ví dụ: 1241.123</string>
     <string name="intent_type_short_example">Một đoạn ngắn hợp lệ bằng ngôn ngữ lập trình Java. Ví dụ: 2342</string>
-    <string name="intent_type_short_array_example">Danh sách các video ngắn hợp lệ được phân tách bằng dấu phẩy bằng ngôn ngữ lập trình Java. Ví dụ: 3242,12354</string>
+    <string name="intent_type_short_array_example">Danh sách các Mảng ngắn hợp lệ được phân tách bằng dấu phẩy bằng ngôn ngữ lập trình Java. Ví dụ: 3242,12354</string>
     <string name="intent_flags_example">Các cờ cho một Ý định được lưu dưới dạng cờ bit. Những cờ này thay đổi cách xử lý Ý định. Nếu mục này trống đối với Ý định hoạt động thì Trình ánh xạ khóa sẽ sử dụng FLAG_ACTIVITY_NEW_TASK theo mặc định. Để biết thêm thông tin, hãy nhấn vào \'tài liệu\' để xem tài liệu dành cho nhà phát triển Android.</string>
     <!--  Intent action type strings  -->
     <!--  Tap targets  -->
@@ -1036,10 +1036,10 @@
     <string name="about_link_website">Website</string>
     <string name="about_link_translations">Bản dịch</string>
     <string name="about_version">Phiên bản %s</string>
-    <string name="about_link_rate">Tỷ lệ</string>
+    <string name="about_link_rate">Đánh giá</string>
     <string name="about_link_changelog">Nhật ký thay đổi</string>
     <string name="about_link_discord">Discord</string>
-    <string name="about_header_boring_stuff">Những thứ nhàm chán</string>
+    <string name="about_header_boring_stuff">Thông tin pháp lý</string>
     <string name="about_license_title">Giấy phép</string>
     <string name="about_license_subtitle">Giấy phép nguồn mở cho ứng dụng này.</string>
     <string name="about_privacy_policy_title">Chính sách bảo mật</string>
