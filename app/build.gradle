@@ -110,18 +110,22 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion "1.5.10"
     }
-}
 
-android.sourceSets {
-    androidTest {
-        assets.srcDirs += files("$projectDir/schemas".toString())
-        resources.srcDirs += ["src/test/resources"]
+    sourceSets {
+        androidTest {
+            assets.srcDirs += files("$projectDir/schemas".toString())
+            resources.srcDirs += ["src/test/resources"]
+        }
+
+        test {
+            java.srcDirs += ["src/pro/test/java"]
+        }
     }
-}
 
-android.applicationVariants.all { variant ->
-    variant.outputs.all {
-        outputFileName = "keymapper-${variant.versionName}.apk"
+    applicationVariants.configureEach { variant ->
+        variant.outputs.configureEach {
+            outputFileName = "keymapper-${variant.versionName}.apk"
+        }
     }
 }
 
