@@ -24,7 +24,7 @@ import io.github.sds100.keymapper.system.bluetooth.BluetoothAdapter
 import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.clipboard.ClipboardAdapter
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
-import io.github.sds100.keymapper.system.display.DisplayAdapter
+import io.github.sds100.keymapper.system.display.AndroidDisplayAdapter
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.intents.IntentAdapter
@@ -204,7 +204,7 @@ object ServiceLocator {
     fun vibratorAdapter(context: Context): VibratorAdapter =
         (context.applicationContext as KeyMapperApp).vibratorAdapter
 
-    fun displayAdapter(context: Context): DisplayAdapter =
+    fun displayAdapter(context: Context): AndroidDisplayAdapter =
         (context.applicationContext as KeyMapperApp).displayAdapter
 
     fun audioAdapter(context: Context): VolumeAdapter =

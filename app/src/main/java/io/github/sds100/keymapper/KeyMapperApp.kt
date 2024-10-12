@@ -118,7 +118,7 @@ class KeyMapperApp : MultiDexApplication() {
     val fileAdapter by lazy { AndroidFileAdapter(this) }
     val popupMessageAdapter by lazy { AndroidToastAdapter(this) }
     val vibratorAdapter by lazy { AndroidVibratorAdapter(this) }
-    val displayAdapter by lazy { AndroidDisplayAdapter(this) }
+    val displayAdapter by lazy { AndroidDisplayAdapter(this, coroutineScope = appCoroutineScope) }
     val audioAdapter by lazy { AndroidVolumeAdapter(this) }
     val suAdapter by lazy {
         SuAdapterImpl(
