@@ -140,6 +140,10 @@ class ConfigKeyMapUseCaseImpl(
         )
     }
 
+    override fun getTriggerKey(uid: String): TriggerKey? {
+        return mapping.value.dataOrNull()?.trigger?.keys?.find { it.uid == uid }
+    }
+
     override fun setParallelTriggerMode() = editTrigger { trigger ->
         if (trigger.mode is TriggerMode.Parallel) {
             return@editTrigger trigger
@@ -249,27 +253,37 @@ class ConfigKeyMapUseCaseImpl(
     }
 
     override fun setTriggerKeyClickType(keyUid: String, clickType: ClickType) {
-        editTriggerKey(keyUid) {
-            it.setClickType(clickType = clickType)
+        editTriggerKey(keyUid) { key ->
+            key.setClickType(clickType = clickType)
         }
     }
 
     override fun setTriggerKeyDevice(keyUid: String, device: TriggerKeyDevice) {
-        editTriggerKey(keyUid) {
-            if (it is KeyCodeTriggerKey) {
-                it.copy(device = device)
+        editTriggerKey(keyUid) { key ->
+            if (key is KeyCodeTriggerKey) {
+                key.copy(device = device)
             } else {
-                it
+                key
             }
         }
     }
 
     override fun setTriggerKeyConsumeKeyEvent(keyUid: String, consumeKeyEvent: Boolean) {
-        editTriggerKey(keyUid) {
-            if (it is KeyCodeTriggerKey) {
-                it.copy(consumeEvent = consumeKeyEvent)
+        editTriggerKey(keyUid) { key ->
+            if (key is KeyCodeTriggerKey) {
+                key.copy(consumeEvent = consumeKeyEvent)
             } else {
-                it
+                key
+            }
+        }
+    }
+
+    override fun setAssistantTriggerKeyType(keyUid: String, type: AssistantTriggerType) {
+        editTriggerKey(keyUid) { key ->
+            if (key is AssistantTriggerKey) {
+                key.copy(type = type)
+            } else {
+                key
             }
         }
     }
@@ -505,6 +519,7 @@ interface ConfigKeyMapUseCase : ConfigMappingUseCase<KeyMapAction, KeyMap> {
     fun addKeyCodeTriggerKey(keyCode: Int, device: TriggerKeyDevice)
     fun addAssistantTriggerKey(type: AssistantTriggerType)
     fun removeTriggerKey(uid: String)
+    fun getTriggerKey(uid: String): TriggerKey?
     fun moveTriggerKey(fromIndex: Int, toIndex: Int)
 
     fun restoreState(keyMap: KeyMap)
@@ -522,6 +537,7 @@ interface ConfigKeyMapUseCase : ConfigMappingUseCase<KeyMapAction, KeyMap> {
     fun setTriggerKeyClickType(keyUid: String, clickType: ClickType)
     fun setTriggerKeyDevice(keyUid: String, device: TriggerKeyDevice)
     fun setTriggerKeyConsumeKeyEvent(keyUid: String, consumeKeyEvent: Boolean)
+    fun setAssistantTriggerKeyType(keyUid: String, type: AssistantTriggerType)
 
     fun setVibrateEnabled(enabled: Boolean)
     fun setVibrationDuration(duration: Defaultable<Int>)

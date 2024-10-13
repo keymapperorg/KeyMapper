@@ -316,48 +316,52 @@ abstract class BaseConfigTriggerViewModel(
     fun onRemoveKeyClick(uid: String) = config.removeTriggerKey(uid)
     fun onMoveTriggerKey(fromIndex: Int, toIndex: Int) = config.moveTriggerKey(fromIndex, toIndex)
 
-    fun onTriggerKeyOptionsClick(id: String) {
+    open fun onTriggerKeyOptionsClick(id: String) {
         runBlocking { _openEditOptions.emit(id) }
     }
 
     fun onChooseDeviceClick(keyUid: String) {
         coroutineScope.launch {
-            val idAny = "any"
-            val idInternal = "this_device"
-            val devices = config.getAvailableTriggerKeyDevices()
-            val showDeviceDescriptors = displayKeyMap.showDeviceDescriptors.first()
+            chooseDeviceForKeyCodeTriggerKey(keyUid)
+        }
+    }
 
-            val listItems = devices.map { device: TriggerKeyDevice ->
-                when (device) {
-                    TriggerKeyDevice.Any -> idAny to getString(R.string.any_device)
-                    TriggerKeyDevice.Internal -> idInternal to getString(R.string.this_device)
-                    is TriggerKeyDevice.External -> {
-                        if (showDeviceDescriptors) {
-                            val name = InputDeviceUtils.appendDeviceDescriptorToName(
-                                device.descriptor,
-                                device.name,
-                            )
-                            device.descriptor to name
-                        } else {
-                            device.descriptor to device.name
-                        }
+    private suspend fun chooseDeviceForKeyCodeTriggerKey(keyUid: String) {
+        val idAny = "any"
+        val idInternal = "this_device"
+        val devices = config.getAvailableTriggerKeyDevices()
+        val showDeviceDescriptors = displayKeyMap.showDeviceDescriptors.first()
+
+        val listItems = devices.map { device: TriggerKeyDevice ->
+            when (device) {
+                TriggerKeyDevice.Any -> idAny to getString(R.string.any_device)
+                TriggerKeyDevice.Internal -> idInternal to getString(R.string.this_device)
+                is TriggerKeyDevice.External -> {
+                    if (showDeviceDescriptors) {
+                        val name = InputDeviceUtils.appendDeviceDescriptorToName(
+                            device.descriptor,
+                            device.name,
+                        )
+                        device.descriptor to name
+                    } else {
+                        device.descriptor to device.name
                     }
                 }
             }
-
-            val triggerKeyDeviceId = showPopup(
-                "pick_trigger_key_device",
-                PopupUi.SingleChoice(listItems),
-            ) ?: return@launch
-
-            val selectedTriggerKeyDevice = when (triggerKeyDeviceId) {
-                idAny -> TriggerKeyDevice.Any
-                idInternal -> TriggerKeyDevice.Internal
-                else -> devices.single { it is TriggerKeyDevice.External && it.descriptor == triggerKeyDeviceId }
-            }
-
-            config.setTriggerKeyDevice(keyUid, selectedTriggerKeyDevice)
         }
+
+        val triggerKeyDeviceId = showPopup(
+            "pick_trigger_key_device",
+            PopupUi.SingleChoice(listItems),
+        ) ?: return
+
+        val selectedTriggerKeyDevice = when (triggerKeyDeviceId) {
+            idAny -> TriggerKeyDevice.Any
+            idInternal -> TriggerKeyDevice.Internal
+            else -> devices.single { it is TriggerKeyDevice.External && it.descriptor == triggerKeyDeviceId }
+        }
+
+        config.setTriggerKeyDevice(keyUid, selectedTriggerKeyDevice)
     }
 
     fun onRecordTriggerButtonClick() {
@@ -443,6 +447,7 @@ abstract class BaseConfigTriggerViewModel(
                 extraInfo = getTriggerKeyExtraInfo(key, showDeviceDescriptors),
                 linkType = linkDrawable,
                 isDragDropEnabled = trigger.keys.size > 1,
+                isChooseDeviceButtonVisible = key is KeyCodeTriggerKey,
             )
         }
 

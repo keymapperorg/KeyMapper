@@ -17,4 +17,9 @@ data class TriggerKeyListItem(
     val linkType: TriggerKeyLinkType,
 
     val isDragDropEnabled: Boolean,
+
+    /**
+     * The button for choosing the device is only visible for key code trigger keys.
+     */
+    val isChooseDeviceButtonVisible: Boolean,
 )
