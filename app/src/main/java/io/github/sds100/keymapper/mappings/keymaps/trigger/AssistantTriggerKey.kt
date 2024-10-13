@@ -3,13 +3,18 @@ package io.github.sds100.keymapper.mappings.keymaps.trigger
 import io.github.sds100.keymapper.data.entities.AssistantTriggerKeyEntity
 import io.github.sds100.keymapper.data.entities.TriggerKeyEntity
 import io.github.sds100.keymapper.mappings.ClickType
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.util.UUID
 
 @Serializable
 data class AssistantTriggerKey(
     override val uid: String = UUID.randomUUID().toString(),
+
+    // A custom JSON name is required because this conflicts with the built-in "type" property.
+    @SerialName("assistantType")
     val type: AssistantTriggerType,
+
     override val clickType: ClickType,
 ) : TriggerKey() {
 
