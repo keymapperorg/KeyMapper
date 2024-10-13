@@ -36,6 +36,7 @@
             android:id="@+id/listLayout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginTop="8dp"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             app:layout_constraintBottom_toTopOf="@id/radioGroupClickType"
             app:layout_constraintEnd_toEndOf="parent"
@@ -46,6 +47,7 @@
                 android:id="@+id/recyclerViewTriggerKeys"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginTop="8dp"
                 android:clipToPadding="false"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/list_item_simple" />
