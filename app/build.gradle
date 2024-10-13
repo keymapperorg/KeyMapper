@@ -164,8 +164,8 @@ dependencies {
     implementation "dev.rikka.shizuku:api:$shizuku_version"
     implementation "dev.rikka.shizuku:provider:$shizuku_version"
     implementation "org.lsposed.hiddenapibypass:hiddenapibypass:4.3"
-    proImplementation "com.android.billingclient:billing:7.1.0"
-    proImplementation "com.android.billingclient:billing-ktx:7.1.0"
+    proImplementation "com.android.billingclient:billing:7.1.1"
+    proImplementation "com.android.billingclient:billing-ktx:7.1.1"
 
     // splitties
     implementation "com.louiscad.splitties:splitties-bitflags:$splitties_version"
