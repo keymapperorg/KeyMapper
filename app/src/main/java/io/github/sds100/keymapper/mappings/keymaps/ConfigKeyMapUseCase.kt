@@ -61,8 +61,11 @@ class ConfigKeyMapUseCaseImpl(
             newKeys.size <= 1 -> TriggerMode.Undefined
 
             /* Automatically make it a parallel trigger when the user makes a trigger with more than one key
-            because this is what most users are expecting when they make a trigger with multiple keys */
-            newKeys.size == 2 && !containsKey -> TriggerMode.Parallel(newKeys[0].clickType)
+            because this is what most users are expecting when they make a trigger with multiple keys.
+
+            It must be a short press because long pressing the assistant key isn't supported.
+             */
+            !containsKey -> TriggerMode.Parallel(ClickType.SHORT_PRESS)
             else -> trigger.mode
         }
 

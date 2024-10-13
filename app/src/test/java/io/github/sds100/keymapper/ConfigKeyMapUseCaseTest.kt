@@ -23,7 +23,6 @@ import kotlinx.coroutines.test.runTest
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.contains
 import org.hamcrest.Matchers.`is`
-import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
@@ -49,9 +48,44 @@ class ConfigKeyMapUseCaseTest {
     }
 
     @Test
+    fun `Set trigger mode to short press when adding assistant key to multiple long press trigger keys`() =
+        runTest(testDispatcher) {
+            useCase.mapping.value = State.Data(KeyMap())
+
+            useCase.addKeyCodeTriggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, TriggerKeyDevice.Any)
+            useCase.addKeyCodeTriggerKey(KeyEvent.KEYCODE_VOLUME_UP, TriggerKeyDevice.Any)
+            useCase.setTriggerLongPress()
+
+            useCase.addAssistantTriggerKey(AssistantTriggerType.ANY)
+
+            val trigger = useCase.mapping.value.dataOrNull()!!.trigger
+            assertThat(trigger.mode, `is`(TriggerMode.Parallel(clickType = ClickType.SHORT_PRESS)))
+        }
+
+    @Test
+    fun `Set trigger mode to short press when adding assistant key to double press trigger key`() =
+        runTest(testDispatcher) {
+            useCase.mapping.value = State.Data(KeyMap())
+
+            useCase.addKeyCodeTriggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, TriggerKeyDevice.Any)
+            useCase.setTriggerDoublePress()
+            useCase.addAssistantTriggerKey(AssistantTriggerType.ANY)
+
+            val trigger = useCase.mapping.value.dataOrNull()!!.trigger
+            assertThat(trigger.mode, `is`(TriggerMode.Parallel(clickType = ClickType.SHORT_PRESS)))
+        }
+
+    @Test
     fun `Set trigger mode to short press when adding assistant key to long press trigger key`() =
         runTest(testDispatcher) {
-            fail()
+            useCase.mapping.value = State.Data(KeyMap())
+
+            useCase.addKeyCodeTriggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, TriggerKeyDevice.Any)
+            useCase.setTriggerLongPress()
+            useCase.addAssistantTriggerKey(AssistantTriggerType.ANY)
+
+            val trigger = useCase.mapping.value.dataOrNull()!!.trigger
+            assertThat(trigger.mode, `is`(TriggerMode.Parallel(clickType = ClickType.SHORT_PRESS)))
         }
 
     @Test
