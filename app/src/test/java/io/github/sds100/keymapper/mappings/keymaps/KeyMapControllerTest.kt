@@ -3295,9 +3295,9 @@ class KeyMapControllerTest {
                 continue
             }
 
-            val deviceDescriptor = triggerKeyDeviceToInputDevice(key.device)
+            val inputDevice = triggerKeyDeviceToInputDevice(key.device)
 
-            inputKeyEvent(key.keyCode, KeyEvent.ACTION_UP, deviceDescriptor)
+            inputKeyEvent(key.keyCode, KeyEvent.ACTION_UP, inputDevice)
         }
     }
 
