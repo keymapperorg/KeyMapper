@@ -115,14 +115,30 @@ abstract class BaseConfigTriggerViewModel(
             }
         }.flowOn(Dispatchers.Default).stateIn(coroutineScope, SharingStarted.Eagerly, State.Loading)
 
+    /**
+     * The click type radio buttons are only visible if there is one key
+     * or there are only key code keys in the trigger. It is not possible to do a long press of
+     * non-key code keys in a parallel trigger.
+     */
     val clickTypeRadioButtonsVisible: StateFlow<Boolean> = config.mapping.map { state ->
         when (state) {
             is State.Data -> {
                 val trigger = state.data.trigger
 
-                trigger.mode is TriggerMode.Parallel || trigger.keys.size == 1
+                if (trigger.mode is TriggerMode.Parallel) {
+                    trigger.keys.all { it is KeyCodeTriggerKey }
+                } else {
+                    trigger.keys.size == 1
+                }
             }
 
+            State.Loading -> false
+        }
+    }.flowOn(Dispatchers.Default).stateIn(coroutineScope, SharingStarted.Eagerly, false)
+
+    val doublePressButtonVisible: StateFlow<Boolean> = config.mapping.map { state ->
+        when (state) {
+            is State.Data -> state.data.trigger.keys.size == 1
             State.Loading -> false
         }
     }.flowOn(Dispatchers.Default).stateIn(coroutineScope, SharingStarted.Eagerly, false)
@@ -140,13 +156,6 @@ abstract class BaseConfigTriggerViewModel(
             }
         }
         .stateIn(coroutineScope, SharingStarted.Eagerly, false)
-
-    val doublePressButtonVisible: StateFlow<Boolean> = config.mapping.map { state ->
-        when (state) {
-            is State.Data -> state.data.trigger.keys.size == 1
-            State.Loading -> false
-        }
-    }.flowOn(Dispatchers.Default).stateIn(coroutineScope, SharingStarted.Eagerly, false)
 
     val checkedClickTypeRadioButton: StateFlow<Int> = config.mapping.map { state ->
         when (state) {

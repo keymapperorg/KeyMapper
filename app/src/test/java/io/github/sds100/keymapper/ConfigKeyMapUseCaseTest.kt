@@ -3,10 +3,15 @@ package io.github.sds100.keymapper
 import android.view.KeyEvent
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.constraints.Constraint
+import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapUseCaseImpl
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapAction
+import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerKey
+import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerType
+import io.github.sds100.keymapper.mappings.keymaps.trigger.Trigger
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
+import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
 import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.dataOrNull
@@ -18,6 +23,7 @@ import kotlinx.coroutines.test.runTest
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.contains
 import org.hamcrest.Matchers.`is`
+import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
@@ -41,6 +47,35 @@ class ConfigKeyMapUseCaseTest {
             preferenceRepository = mock(),
         )
     }
+
+    @Test
+    fun `Set trigger mode to short press when adding assistant key to long press trigger key`() =
+        runTest(testDispatcher) {
+            fail()
+        }
+
+    @Test
+    fun `Do not allow long press for parallel trigger with assistant key`() =
+        runTest(testDispatcher) {
+            val keyMap = KeyMap(
+                trigger = Trigger(
+                    mode = TriggerMode.Parallel(clickType = ClickType.SHORT_PRESS),
+                    keys = listOf(
+                        triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
+                        AssistantTriggerKey(
+                            type = AssistantTriggerType.ANY,
+                            clickType = ClickType.SHORT_PRESS,
+                        ),
+                    ),
+                ),
+            )
+
+            useCase.mapping.value = State.Data(keyMap)
+            useCase.setTriggerLongPress()
+
+            val trigger = useCase.mapping.value.dataOrNull()!!.trigger
+            assertThat(trigger.mode, `is`(TriggerMode.Parallel(clickType = ClickType.SHORT_PRESS)))
+        }
 
     /**
      * Issue #753. If a modifier key is used as a trigger then it the
