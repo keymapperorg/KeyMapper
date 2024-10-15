@@ -19,6 +19,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun AdvancedTriggersBottomSheet(
     modifier: Modifier = Modifier,
+    viewModel: ConfigTriggerViewModel,
     onDismissRequest: () -> Unit,
     sheetState: SheetState,
 ) {
