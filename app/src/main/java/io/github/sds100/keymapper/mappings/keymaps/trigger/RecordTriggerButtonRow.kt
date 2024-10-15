@@ -48,10 +48,10 @@ fun RecordTriggerButtonRow(
     if (showBottomSheet) {
         AdvancedTriggersBottomSheet(
             modifier = Modifier.systemBarsPadding(),
+            viewModel = viewModel,
             onDismissRequest = {
                 showBottomSheet = false
             },
-            onChooseAssistantTrigger = viewModel::onChooseAssistantTrigger,
             sheetState = sheetState,
         )
     }
