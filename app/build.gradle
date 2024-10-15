@@ -83,6 +83,10 @@ android {
         }
         pro {
             dimension "pro"
+
+            def localProperties = new Properties()
+            localProperties.load(new FileInputStream(rootProject.file("local.properties")))
+            buildConfigField("String", "REVENUECAT_API_KEY", localProperties["REVENUECAT_API_KEY"])
         }
     }
 
@@ -167,8 +171,8 @@ dependencies {
     implementation "org.lsposed.hiddenapibypass:hiddenapibypass:4.3"
     implementation("com.google.dagger:hilt-android:2.51")
     kapt("com.google.dagger:hilt-android-compiler:2.51")
-    proImplementation "com.android.billingclient:billing:7.1.1"
-    proImplementation "com.android.billingclient:billing-ktx:7.1.1"
+    proImplementation 'com.revenuecat.purchases:purchases:8.8.1'
+
 
     // splitties
     implementation "com.louiscad.splitties:splitties-bitflags:$splitties_version"
