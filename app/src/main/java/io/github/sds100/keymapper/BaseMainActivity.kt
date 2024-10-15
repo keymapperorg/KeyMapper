@@ -21,7 +21,7 @@ import timber.log.Timber
  * Created by sds100 on 19/02/2020.
  */
 
-class MainActivity : AppCompatActivity() {
+abstract class BaseMainActivity : AppCompatActivity() {
 
     companion object {
         const val ACTION_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG =
@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
 
         requestPermissionDelegate = RequestPermissionDelegate(this, showDialogs = true)
 
-        ServiceLocator.permissionAdapter(this@MainActivity).request
+        ServiceLocator.permissionAdapter(this@BaseMainActivity).request
             .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
             .onEach { permission ->
                 requestPermissionDelegate.requestPermission(

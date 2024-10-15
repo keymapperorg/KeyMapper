@@ -9,6 +9,7 @@ import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.multidex.MultiDexApplication
 import com.google.android.material.color.DynamicColors
+import dagger.hilt.android.HiltAndroidApp
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.entities.LogEntryEntity
 import io.github.sds100.keymapper.logging.KeyMapperLoggingTree
@@ -64,6 +65,7 @@ import java.util.Calendar
 /**
  * Created by sds100 on 19/05/2020.
  */
+@HiltAndroidApp
 class KeyMapperApp : MultiDexApplication() {
     val appCoroutineScope = MainScope()
 

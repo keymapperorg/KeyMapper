@@ -3,8 +3,8 @@ package io.github.sds100.keymapper.system.notifications
 import androidx.annotation.VisibleForTesting
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import io.github.sds100.keymapper.BaseMainActivity
 import io.github.sds100.keymapper.Constants
-import io.github.sds100.keymapper.MainActivity
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
 import io.github.sds100.keymapper.mappings.fingerprintmaps.AreFingerprintGesturesSupportedUseCase
@@ -250,7 +250,7 @@ class NotificationController(
     private fun attemptStartAccessibilityService() {
         if (!controlAccessibilityService.startService()) {
             coroutineScope.launch {
-                _openApp.emit(MainActivity.ACTION_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG)
+                _openApp.emit(BaseMainActivity.ACTION_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG)
             }
         }
     }
@@ -258,7 +258,7 @@ class NotificationController(
     private fun attemptRestartAccessibilityService() {
         if (!controlAccessibilityService.restartService()) {
             coroutineScope.launch {
-                _openApp.emit(MainActivity.ACTION_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG)
+                _openApp.emit(BaseMainActivity.ACTION_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG)
             }
         }
     }
