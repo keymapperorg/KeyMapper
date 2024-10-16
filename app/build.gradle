@@ -55,11 +55,12 @@ android {
             versionNameSuffix "-debug"
         }
 
-        // Do not alter the package name so can test revenuecat and billing while developing.
         debug_release {
-            minifyEnabled false
-            versionNameSuffix "-debug"
-            signingConfig signingConfigs.debug
+            // Extend from debug build type so compose Live Edit and rapid building works
+            initWith debug
+
+            // Do not alter the package name so can test revenuecat and billing while developing.
+            applicationIdSuffix ""
 
             /*
             This is required because the splitties library does not have a debug_release build type.
