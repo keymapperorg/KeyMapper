@@ -176,10 +176,6 @@
     <string name="tab_actions">动作</string>
     <string name="tab_trigger">触发器</string>
     <string name="tab_fingerprint">指纹</string>
-    <string-array name="home_tab_titles">
-        <item>按键事件</item>
-        <item>指纹</item>
-    </string-array>
     <!--  Tabs  -->
     <!--  Navigation argument ids  -->
     <!--  Navigation argument ids  -->

@@ -172,10 +172,7 @@
     <string name="tab_actions">Hành động</string>
     <string name="tab_trigger">Trigger</string>
     <string name="tab_fingerprint">Dấu vân tay</string>
-    <string-array name="home_tab_titles">
-        <item>@string/tab_keyevents</item>
-        <item>@string/tab_fingerprint</item>
-    </string-array>
+
     <!--  Tabs  -->
     <!--  Navigation argument ids  -->
     <!--  Navigation argument ids  -->

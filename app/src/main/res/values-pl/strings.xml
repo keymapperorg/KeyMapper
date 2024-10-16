@@ -176,10 +176,7 @@
     <string name="tab_actions">Działania</string>
     <string name="tab_trigger">Wyzwalacz</string>
     <string name="tab_fingerprint">Odcisk palca</string>
-    <string-array name="home_tab_titles">
-        <item>@string/tab_keyevents</item>
-        <item>@string/tab_fingerprint</item>
-    </string-array>
+
     <!--  Tabs  -->
     <!--  Navigation argument ids  -->
     <!--  Navigation argument ids  -->
