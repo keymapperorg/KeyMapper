@@ -55,6 +55,18 @@ android {
             versionNameSuffix "-debug"
         }
 
+        // Do not alter the package name so can test revenuecat and billing while developing.
+        debug_release {
+            minifyEnabled false
+            versionNameSuffix "-debug"
+            signingConfig signingConfigs.debug
+
+            /*
+            This is required because the splitties library does not have a debug_release build type.
+             */
+            matchingFallbacks = ["debug"]
+        }
+
         ci {
             postprocessing {
                 removeUnusedCode true
@@ -65,7 +77,7 @@ android {
             }
 
             /*
-            This is required because the splitties library doesn"t have a ci build type.
+            This is required because the splitties library does not have a ci build type.
              */
             matchingFallbacks = ["debug"]
 
