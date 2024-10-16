@@ -32,7 +32,6 @@ import io.github.sds100.keymapper.mappings.keymaps.CreateKeyMapShortcutViewModel
 import io.github.sds100.keymapper.mappings.keymaps.ListKeyMapsUseCaseImpl
 import io.github.sds100.keymapper.onboarding.AppIntroUseCaseImpl
 import io.github.sds100.keymapper.onboarding.AppIntroViewModel
-import io.github.sds100.keymapper.purchasing.PurchasingUseCaseImpl
 import io.github.sds100.keymapper.reportbug.ReportBugUseCaseImpl
 import io.github.sds100.keymapper.reportbug.ReportBugViewModel
 import io.github.sds100.keymapper.settings.ConfigSettingsUseCaseImpl
@@ -130,9 +129,6 @@ object Inject {
             ServiceLocator.resourceProvider(context),
         )
 
-    fun purchasingUseCase(ctx: Context) =
-        PurchasingUseCaseImpl(ServiceLocator.purchasingManager(ctx))
-
     fun configKeyMapViewModel(
         ctx: Context,
     ): ConfigKeyMapViewModel.Factory = ConfigKeyMapViewModel.Factory(
@@ -144,7 +140,7 @@ object Inject {
         UseCases.displayKeyMap(ctx),
         UseCases.createAction(ctx),
         ServiceLocator.resourceProvider(ctx),
-        purchasingUseCase(ctx),
+        ServiceLocator.purchasingManager(ctx),
     )
 
     fun configFingerprintMapViewModel(
