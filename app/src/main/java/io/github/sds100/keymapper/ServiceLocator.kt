@@ -15,6 +15,7 @@ import io.github.sds100.keymapper.data.repositories.RoomLogRepository
 import io.github.sds100.keymapper.data.repositories.SettingsPreferenceRepository
 import io.github.sds100.keymapper.logging.LogRepository
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapRepository
+import io.github.sds100.keymapper.purchasing.PurchasingManagerImpl
 import io.github.sds100.keymapper.shizuku.ShizukuAdapter
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.airplanemode.AirplaneModeAdapter
@@ -251,6 +252,9 @@ object ServiceLocator {
 
     fun appCoroutineScope(context: Context): CoroutineScope =
         (context.applicationContext as KeyMapperApp).appCoroutineScope
+
+    fun purchasingManager(context: Context): PurchasingManagerImpl =
+        (context.applicationContext as KeyMapperApp).purchasingManager
 
     private fun createDatabase(context: Context): AppDatabase = Room.databaseBuilder(
         context.applicationContext,
