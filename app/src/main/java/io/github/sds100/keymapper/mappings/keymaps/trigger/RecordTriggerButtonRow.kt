@@ -46,7 +46,7 @@ fun RecordTriggerButtonRow(
             modifier = Modifier.systemBarsPadding(),
             viewModel = viewModel,
             onDismissRequest = {
-                viewModel.showAdvancedTriggersBottomSheet
+                viewModel.showAdvancedTriggersBottomSheet = false
             },
             sheetState = sheetState,
         )
