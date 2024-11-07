@@ -9,6 +9,7 @@ import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapAction
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerType
+import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.Trigger
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
@@ -22,6 +23,8 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.contains
+import org.hamcrest.Matchers.hasSize
+import org.hamcrest.Matchers.instanceOf
 import org.hamcrest.Matchers.`is`
 import org.junit.Before
 import org.junit.Test
@@ -47,8 +50,43 @@ class ConfigKeyMapUseCaseTest {
         )
     }
 
+    /**
+     * This ensures that it isn't possible to have two or more assistant triggers when the mode is parallel.
+     */
     @Test
-    fun `Set trigger mode to short press when adding assistant key to multiple long press trigger keys`() =
+    fun `Remove device assistant trigger if setting mode to parallel and voice assistant already exists`() =
+        runTest(testDispatcher) {
+            useCase.mapping.value = State.Data(KeyMap())
+
+            useCase.addKeyCodeTriggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, TriggerKeyDevice.Any)
+            useCase.addAssistantTriggerKey(AssistantTriggerType.VOICE)
+            useCase.addAssistantTriggerKey(AssistantTriggerType.DEVICE)
+            useCase.setParallelTriggerMode()
+
+            val trigger = useCase.mapping.value.dataOrNull()!!.trigger
+            assertThat(trigger.keys, hasSize(2))
+            assertThat(trigger.keys[0], instanceOf(KeyCodeTriggerKey::class.java))
+            assertThat(trigger.keys[1], instanceOf(AssistantTriggerKey::class.java))
+        }
+
+    @Test
+    fun `Remove voice assistant trigger if setting mode to parallel and device assistant already exists`() =
+        runTest(testDispatcher) {
+            useCase.mapping.value = State.Data(KeyMap())
+
+            useCase.addKeyCodeTriggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, TriggerKeyDevice.Any)
+            useCase.addAssistantTriggerKey(AssistantTriggerType.DEVICE)
+            useCase.addAssistantTriggerKey(AssistantTriggerType.VOICE)
+            useCase.setParallelTriggerMode()
+
+            val trigger = useCase.mapping.value.dataOrNull()!!.trigger
+            assertThat(trigger.keys, hasSize(2))
+            assertThat(trigger.keys[0], instanceOf(KeyCodeTriggerKey::class.java))
+            assertThat(trigger.keys[1], instanceOf(AssistantTriggerKey::class.java))
+        }
+
+    @Test
+    fun `Set click type to short press when adding assistant key to multiple long press trigger keys`() =
         runTest(testDispatcher) {
             useCase.mapping.value = State.Data(KeyMap())
 
@@ -63,7 +101,7 @@ class ConfigKeyMapUseCaseTest {
         }
 
     @Test
-    fun `Set trigger mode to short press when adding assistant key to double press trigger key`() =
+    fun `Set click type to short press when adding assistant key to double press trigger key`() =
         runTest(testDispatcher) {
             useCase.mapping.value = State.Data(KeyMap())
 
@@ -76,7 +114,7 @@ class ConfigKeyMapUseCaseTest {
         }
 
     @Test
-    fun `Set trigger mode to short press when adding assistant key to long press trigger key`() =
+    fun `Set click type to short press when adding assistant key to long press trigger key`() =
         runTest(testDispatcher) {
             useCase.mapping.value = State.Data(KeyMap())
 

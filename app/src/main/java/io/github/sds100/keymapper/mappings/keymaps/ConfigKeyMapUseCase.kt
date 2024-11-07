@@ -164,7 +164,8 @@ class ConfigKeyMapUseCaseImpl(
             // remove duplicates of keys that have the same keycode and device id
             .distinctBy { key ->
                 when (key) {
-                    is AssistantTriggerKey -> key.type
+                    // You can't mix assistant trigger types in a parallel trigger because there is no notion of a "down" key event, which means they can't be pressed at the same time
+                    is AssistantTriggerKey -> 0
                     is KeyCodeTriggerKey -> Pair(key.keyCode, key.device)
                 }
             }
