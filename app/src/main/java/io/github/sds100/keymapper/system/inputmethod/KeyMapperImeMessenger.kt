@@ -168,13 +168,17 @@ class KeyMapperImeMessengerImpl(
 
             val chars = text.toCharArray(startIndex = 0, endIndex = 1)
 
-            val events: Array<KeyEvent> = keyCharacterMap.getEvents(chars)
+            val events: Array<KeyEvent>? = keyCharacterMap.getEvents(chars)
 
-            for (i in events.indices) {
-                keyEventRelayService.sendKeyEvent(events[i], imePackageName)
+            // The events can be null if there isn't a way to input the character
+            // with the current key character map.
+            if (events != null) {
+                for (e in events) {
+                    keyEventRelayService.sendKeyEvent(e, imePackageName)
+                }
+
+                return
             }
-
-            return
         }
 
         // Otherwise, revert to the special key event containing

@@ -2,16 +2,14 @@
 name: Bug report
 about: Create a report to help us improve
 title: ''
-labels: bug
+labels: bug, needs triage
 assignees: sds100
 
 ---
 
 **Developer TODO (don't remove)**
-- [ ] create new branch. put issue number at start of name if not a very quick fix.
 - [ ] write tests. put issue number in comment
 - [ ] update documentation
-- [ ] merge and delete branch (don't squash because want commit history to see why I made changes)
 
 **Discord message link/email recipient**
 
