@@ -120,6 +120,18 @@ sealed class Error : Result<Nothing>() {
 
     data object ShizukuNotStarted : Error()
     data object CantDetectKeyEventsInPhoneCall : Error()
+
+    sealed class PurchasingError : Error() {
+        data object ProductNotFound : PurchasingError()
+        data object Cancelled : PurchasingError()
+        data object StoreProblem : PurchasingError()
+        data object NetworkError : PurchasingError()
+
+        /**
+         * This handles errors that haven't been
+         */
+        data class Unexpected(val message: String) : PurchasingError()
+    }
 }
 
 inline fun <T> Result<T>.onSuccess(f: (T) -> Unit): Result<T> {
@@ -154,6 +166,15 @@ inline infix fun <T> Result<T>.otherwise(f: (error: Error) -> Result<T>) =
     when (this) {
         is Success -> this
         is Error -> f(this)
+    }
+
+inline fun <T, U> Result<T>.resolve(
+    onSuccess: (value: T) -> U,
+    onFailure: (error: Error) -> U,
+) =
+    when (this) {
+        is Success -> onSuccess(this.value)
+        is Error -> onFailure(this)
     }
 
 inline infix fun <T> Result<T>.valueIfFailure(f: (error: Error) -> T): T =

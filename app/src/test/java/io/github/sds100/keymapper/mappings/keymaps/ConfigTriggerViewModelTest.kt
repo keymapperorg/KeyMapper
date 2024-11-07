@@ -79,6 +79,7 @@ class ConfigTriggerViewModelTest {
                 onBlocking { getTriggerErrors(any()) }.thenReturn(emptyList())
             },
             fakeResourceProvider,
+            purchasingManager = mock(),
         )
     }
 

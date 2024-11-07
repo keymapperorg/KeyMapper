@@ -141,6 +141,12 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider) = when (this) {
     Error.CantDetectKeyEventsInPhoneCall -> resourceProvider.getString(R.string.trigger_error_cant_detect_in_phone_call_explanation)
     Error.GestureStrokeCountTooHigh -> resourceProvider.getString(R.string.trigger_error_gesture_stroke_count_too_high)
     Error.GestureDurationTooHigh -> resourceProvider.getString(R.string.trigger_error_gesture_duration_too_high)
+
+    Error.PurchasingError.Cancelled -> resourceProvider.getString(R.string.purchasing_error_cancelled)
+    Error.PurchasingError.NetworkError -> resourceProvider.getString(R.string.purchasing_error_network)
+    Error.PurchasingError.ProductNotFound -> resourceProvider.getString(R.string.purchasing_error_product_not_found)
+    Error.PurchasingError.StoreProblem -> resourceProvider.getString(R.string.purchasing_error_store_problem)
+    is Error.PurchasingError.Unexpected -> this.message
 }
 
 val Error.isFixable: Boolean
