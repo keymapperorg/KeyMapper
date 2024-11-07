@@ -20,9 +20,6 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -43,14 +40,13 @@ fun RecordTriggerButtonRow(
 ) {
     val recordTriggerState by viewModel.recordTriggerState.collectAsState()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    var showBottomSheet: Boolean by rememberSaveable { mutableStateOf(false) }
 
-    if (showBottomSheet) {
+    if (viewModel.showAdvancedTriggersBottomSheet) {
         AdvancedTriggersBottomSheet(
             modifier = Modifier.systemBarsPadding(),
             viewModel = viewModel,
             onDismissRequest = {
-                showBottomSheet = false
+                viewModel.showAdvancedTriggersBottomSheet
             },
             sheetState = sheetState,
         )
@@ -61,7 +57,7 @@ fun RecordTriggerButtonRow(
         onRecordTriggerClick = viewModel::onRecordTriggerButtonClick,
         recordTriggerState = recordTriggerState,
         onAdvancedTriggersClick = {
-            showBottomSheet = true
+            viewModel.showAdvancedTriggersBottomSheet = true
         },
     )
 }
