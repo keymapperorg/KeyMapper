@@ -1372,6 +1372,7 @@
     <string name="about_team_bydario_name" translatable="false">Darío B. C. (bydariogamer)</string>
     <string name="about_team_bydario_url" translatable="false">https://github.com/bydariogamer</string>
     <string name="about_team_bydario_role">Translator (Spanish)</string>
+
     <!--  About  -->
 
     <!-- Advanced triggers -->
@@ -1382,6 +1383,8 @@
     <string name="advanced_triggers_sheet_text">The developer doesn\'t believe ads are a sustainable or user-friendly form of monetization so these paid triggers help support development ❤️. You will be given priority support as well.</string>
     <string name="assistant_trigger_product_title">Assistant trigger</string>
     <string name="assistant_trigger_product_description">Did you know you can remap your device assistant? Instead of launching Google Assistant or Bixby, your device can perform an action of your choice. It works even when the screen is off!</string>
+    <string name="assistant_trigger_purchase_thank_you_title">Thank you for supporting the app ❤️!</string>
+    <string name="assistant_trigger_purchase_thank_you_message">Your purchase was successful and you can now use the assistant triggers. As a paying user of Key Mapper you will receive priority support to help you to use the app. There is now a button on this page to contact the developer.</string>
 
     <!--  Purchasing  -->
     <string name="unlock_product_button">Unlock (%s)</string>
@@ -1394,4 +1397,8 @@
     <string name="purchasing_error_store_problem">Google Play encountered an error.</string>
     <string name="purchasing_error_dialog_title">Something went wrong 😕</string>
     <string name="purchasing_error_dialog_button_retry">Retry</string>
+    <string name="purchasing_contact_developer_button">Contact developer</string>
+    <string name="purchasing_contact_email" translatable="false">contact@keymapper.club</string>
+    <string name="customer_email_subject" translatable="false">Key Mapper Pro query</string>
+    <string name="customer_email_body" translatable="false">Please describe the problem you are having here.</string>
 </resources>
