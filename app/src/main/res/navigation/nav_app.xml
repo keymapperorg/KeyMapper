@@ -102,6 +102,17 @@
         app:destination="@id/menuFragment"
         app:enterAnim="@anim/slide_in_bottom" />
 
+    <dialog
+        android:id="@+id/sortMenuFragment"
+        android:name="io.github.sds100.keymapper.sorting.SortMenuFragment"
+        android:label="fragment_sort_menu"
+        tools:layout="@layout/fragment_sort_menu" />
+
+    <action
+        android:id="@+id/action_global_sortingFragment"
+        app:destination="@id/sortMenuFragment"
+        app:enterAnim="@anim/slide_in_bottom" />
+
     <action
         android:id="@+id/chooseApp"
         app:destination="@id/chooseAppFragment"
@@ -127,7 +138,7 @@
         <argument
             android:name="allowHiddenApps"
             app:argType="boolean" />
-        
+
         <argument
             android:name="requestKey"
             app:argType="string" />

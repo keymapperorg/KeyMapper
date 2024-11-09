@@ -36,6 +36,7 @@ import io.github.sds100.keymapper.reportbug.ReportBugUseCaseImpl
 import io.github.sds100.keymapper.reportbug.ReportBugViewModel
 import io.github.sds100.keymapper.settings.ConfigSettingsUseCaseImpl
 import io.github.sds100.keymapper.settings.SettingsViewModel
+import io.github.sds100.keymapper.sorting.SortViewModel
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceController
 import io.github.sds100.keymapper.system.accessibility.MyAccessibilityService
 import io.github.sds100.keymapper.system.apps.ChooseActivityViewModel
@@ -161,6 +162,7 @@ object Inject {
             ServiceLocator.roomKeymapRepository(ctx),
             ServiceLocator.backupManager(ctx),
             UseCases.displayKeyMap(ctx),
+            UseCases.observeKeyMapsSorter(ctx),
         ),
         UseCases.createKeymapShortcut(ctx),
         ServiceLocator.resourceProvider(ctx),
@@ -171,6 +173,7 @@ object Inject {
             ServiceLocator.roomKeymapRepository(ctx),
             ServiceLocator.backupManager(ctx),
             UseCases.displayKeyMap(ctx),
+            UseCases.observeKeyMapsSorter(ctx),
         ),
         ListFingerprintMapsUseCaseImpl(
             ServiceLocator.fingerprintMapRepository(ctx),
@@ -288,5 +291,12 @@ object Inject {
             ServiceLocator.fileAdapter(ctx),
         ),
         ServiceLocator.resourceProvider(ctx),
+    )
+
+    fun sortViewModel(ctx: Context): SortViewModel.Factory = SortViewModel.Factory(
+        UseCases.observeKeyMapFieldSortOrderUseCase(ctx),
+        UseCases.observeKeyMapSortOrderUseCase(ctx),
+        UseCases.setKeyMapFieldSortOrderUseCase(ctx),
+        UseCases.setKeyMapSortOrderUseCase(ctx),
     )
 }

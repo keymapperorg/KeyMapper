@@ -448,6 +448,7 @@
     <string name="action_short_log_message">Toggle short messages</string>
     <string name="action_copy_log">Copy</string>
     <string name="action_clear_log">Clear</string>
+    <string name="action_sort">Sort</string>
     <!-- Menu action titles-->
 
     <!-- Button titles -->
@@ -1375,4 +1376,9 @@
     <string name="about_team_bydario_url" translatable="false">https://github.com/bydariogamer</string>
     <string name="about_team_bydario_role">Translator (Spanish)</string>
     <!--  About  -->
+
+    <string name="sort_by">Sort by</string>
+    <string name="ascending">Ascending</string>
+    <string name="descending">Descending</string>
+    <string name="drag_to_reorder">Drag to reorder</string>
 </resources>

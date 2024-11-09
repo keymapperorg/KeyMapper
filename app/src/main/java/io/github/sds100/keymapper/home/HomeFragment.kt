@@ -305,6 +305,19 @@ class HomeFragment : Fragment() {
                 backupFingerprintMapsLauncher.launch(BackupUtils.createFingerprintMapsFileName())
             }
         }
+
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
+            binding.appBar.setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.action_sort -> {
+                        findNavController().navigate(R.id.action_global_sortingFragment)
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+        }
     }
 
     override fun onDestroyView() {
