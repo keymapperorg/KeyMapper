@@ -1,0 +1,26 @@
+package io.github.sds100.keymapper.sorting
+
+import io.github.sds100.keymapper.data.Keys
+import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.mappings.keymaps.KeyMapField
+
+class SetKeyMapSortOrderUseCase(
+    private val preferenceRepository: PreferenceRepository,
+) {
+    /**
+     * @param sortOrder The order in which key map fields should be sorted, requiring all 4 fields.
+     */
+    operator fun invoke(sortOrder: List<KeyMapField>) {
+        val sortOrder = sortOrder.distinct()
+
+        // Illegal sort order
+        if (sortOrder.size != 4) {
+            throw IllegalArgumentException("Sort order must have 4 unique fields")
+        }
+
+        preferenceRepository.set(
+            Keys.sortOrder,
+            sortOrder.joinToString(",") { it.name },
+        )
+    }
+}
