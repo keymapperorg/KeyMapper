@@ -200,3 +200,39 @@ object KeymapActionEntityMapper {
         )
     }
 }
+
+// Comparator.reversed() requires API level 24
+class KeyMapActionsComparator(
+    private val reverse: Boolean = false,
+) : Comparator<KeyMap> {
+    override fun compare(
+        keyMap: KeyMap?,
+        otherKeyMap: KeyMap?,
+    ): Int {
+        // TODO
+        if (keyMap == null || otherKeyMap == null) {
+            return 0
+        }
+
+        for (i in 0 until keyMap.actionList.size.coerceAtMost(otherKeyMap.actionList.size)) {
+            val action1 = keyMap.actionList[i]
+            val action2 = otherKeyMap.actionList[i]
+
+            val result = action1.data.id.ordinal.compareTo(action2.data.id.ordinal)
+
+            if (result != 0) {
+                return doFinal(result)
+            }
+        }
+
+        val comparison = keyMap.actionList.size.compareTo(otherKeyMap.actionList.size)
+
+        return doFinal(comparison)
+    }
+
+    fun doFinal(result: Int) = if (reverse) {
+        result * -1
+    } else {
+        result
+    }
+}

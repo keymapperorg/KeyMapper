@@ -106,3 +106,37 @@ object KeyMapEntityMapper {
         )
     }
 }
+
+// Comparator.reversed() requires API level 24
+class KeyMapOptionsComparator(
+    private val reverse: Boolean = false,
+) : Comparator<KeyMap> {
+    override fun compare(
+        keyMap: KeyMap?,
+        otherKeyMap: KeyMap?,
+    ): Int {
+        // TODO
+
+        if (keyMap == null || otherKeyMap == null) {
+            return 0
+        }
+
+        // Compare the options
+
+        if (keyMap.vibrate != otherKeyMap.vibrate) {
+            return doFinal(keyMap.vibrate.compareTo(otherKeyMap.vibrate))
+        }
+
+        if (keyMap.showToast != otherKeyMap.showToast) {
+            return doFinal(keyMap.showToast.compareTo(otherKeyMap.showToast))
+        }
+
+        return 0
+    }
+
+    fun doFinal(result: Int) = if (reverse) {
+        result * -1
+    } else {
+        result
+    }
+}
