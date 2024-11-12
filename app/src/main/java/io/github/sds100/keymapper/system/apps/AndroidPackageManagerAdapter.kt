@@ -136,6 +136,18 @@ class AndroidPackageManagerAdapter(
         }
     }
 
+    override fun getDeviceAssistantPackage(): Result<String> {
+        try {
+            val intent = Intent(Intent.ACTION_ASSIST)
+            val activity =
+                packageManager.resolveActivity(intent, 0) ?: return Error.NoDeviceAssistant
+
+            return Success(activity.activityInfo!!.packageName)
+        } catch (e: ActivityNotFoundException) {
+            return Error.NoDeviceAssistant
+        }
+    }
+
     override fun enableApp(packageName: String) {
         Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
             data = Uri.parse("package:$packageName")

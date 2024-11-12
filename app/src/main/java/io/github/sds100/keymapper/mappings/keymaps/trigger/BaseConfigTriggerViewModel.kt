@@ -273,7 +273,7 @@ abstract class BaseConfigTriggerViewModel(
         }
     }
 
-    private fun buildTriggerErrorListItems(triggerErrors: List<TriggerError>) =
+    private fun buildTriggerErrorListItems(triggerErrors: List<TriggerError>): List<TextListItem.Error> =
         triggerErrors.map { error ->
             when (error) {
                 TriggerError.DND_ACCESS_DENIED -> TextListItem.Error(
@@ -289,6 +289,16 @@ abstract class BaseConfigTriggerViewModel(
                 TriggerError.CANT_DETECT_IN_PHONE_CALL -> TextListItem.Error(
                     id = error.toString(),
                     text = getString(R.string.trigger_error_cant_detect_in_phone_call),
+                )
+
+                TriggerError.ASSISTANT_NOT_SELECTED -> TextListItem.Error(
+                    id = error.toString(),
+                    text = getString(R.string.trigger_error_assistant_activity_not_chosen),
+                )
+
+                TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED -> TextListItem.Error(
+                    id = error.toString(),
+                    text = getString(R.string.trigger_error_assistant_not_purchased),
                 )
             }
         }
@@ -418,6 +428,14 @@ abstract class BaseConfigTriggerViewModel(
 
                 TriggerError.CANT_DETECT_IN_PHONE_CALL -> {
                     displayKeyMap.fixError(Error.CantDetectKeyEventsInPhoneCall)
+                }
+
+                TriggerError.ASSISTANT_NOT_SELECTED -> {
+                    TODO()
+                }
+
+                TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED -> {
+                    TODO()
                 }
             }
         }

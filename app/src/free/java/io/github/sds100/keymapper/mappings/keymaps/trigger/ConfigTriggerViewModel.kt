@@ -8,10 +8,6 @@ import io.github.sds100.keymapper.purchasing.PurchasingManager
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
 
-/**
- * Created by sds100 on 24/11/20.
- */
-
 class ConfigTriggerViewModel(
     coroutineScope: CoroutineScope,
     onboarding: OnboardingUseCase,

@@ -10,6 +10,7 @@ import io.github.sds100.keymapper.mappings.keymaps.trigger.Trigger
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerError
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
+import io.github.sds100.keymapper.purchasing.ProductId
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
 import io.github.sds100.keymapper.system.permissions.Permission
@@ -117,6 +118,18 @@ class KeyMapListItemCreator(
                 id = TriggerError.SCREEN_OFF_ROOT_DENIED.toString(),
                 text = getString(R.string.trigger_error_cant_detect_in_phone_call),
                 error = Error.CantDetectKeyEventsInPhoneCall,
+            )
+
+            TriggerError.ASSISTANT_NOT_SELECTED -> ChipUi.Error(
+                id = error.toString(),
+                text = getString(R.string.trigger_error_assistant_activity_not_chosen),
+                error = Error.DeviceAssistantNotSet,
+            )
+
+            TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED -> ChipUi.Error(
+                id = error.toString(),
+                text = getString(R.string.trigger_error_assistant_not_purchased),
+                error = Error.ProductNotPurchased(ProductId.ASSISTANT_TRIGGER),
             )
         }
 

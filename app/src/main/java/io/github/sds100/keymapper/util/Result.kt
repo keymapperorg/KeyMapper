@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.util
 
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.purchasing.ProductId
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.util.ui.ResourceProvider
@@ -121,15 +122,21 @@ sealed class Error : Result<Nothing>() {
     data object ShizukuNotStarted : Error()
     data object CantDetectKeyEventsInPhoneCall : Error()
 
+    // This is returned from the PurchasingManager on FOSS builds that don't
+    // have the pro features implemented.
+    data object PurchasingNotImplemented : Error()
+
+    /**
+     * Key Mapper isn't set as the device assistant.
+     */
+    data object DeviceAssistantNotSet : Error()
+    data class ProductNotPurchased(val product: ProductId) : Error()
+
     sealed class PurchasingError : Error() {
         data object ProductNotFound : PurchasingError()
         data object Cancelled : PurchasingError()
         data object StoreProblem : PurchasingError()
         data object NetworkError : PurchasingError()
-
-        /**
-         * This handles errors that haven't been
-         */
         data class Unexpected(val message: String) : PurchasingError()
     }
 }

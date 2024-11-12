@@ -22,6 +22,13 @@ data class AssistantTriggerKey(
     // assistant event to another app (or can it??).
     override val consumeEvent: Boolean = true
 
+    /**
+     * Whether this assistant trigger requires the device assistant activity to be set.
+     */
+    fun requiresDeviceAssistant(): Boolean {
+        return type == AssistantTriggerType.DEVICE || type == AssistantTriggerType.ANY
+    }
+
     companion object {
         fun fromEntity(
             entity: AssistantTriggerKeyEntity,

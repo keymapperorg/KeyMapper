@@ -1385,6 +1385,9 @@
     <string name="assistant_trigger_product_description">Did you know you can remap your device assistant? Instead of launching Google Assistant or Bixby, your device can perform an action of your choice. It works even when the screen is off!</string>
     <string name="assistant_trigger_purchase_thank_you_title">Thank you for supporting the app! ❤️</string>
     <string name="assistant_trigger_purchase_thank_you_message">Your purchase was successful and you can now use the assistant triggers. As a paying user of Key Mapper you will receive priority support to help you use the app. There is now a button on this page to contact the developer.</string>
+    <string name="trigger_error_assistant_activity_not_chosen">You must select Key Mapper as the device assistant for this trigger to work.</string>
+    <string name="trigger_error_assistant_activity_not_chosen_short">Key Mapper must be the device assistant.</string>
+    <string name="trigger_error_assistant_not_purchased">You must purchase the assistant trigger feature!</string>
 
     <!--  Purchasing  -->
     <string name="unlock_product_button">Unlock (%s)</string>
@@ -1392,12 +1395,14 @@
     <string name="loading_product_button">Loading…</string>
     <string name="retry_loading_price_button">Retry fetching price</string>
     <string name="purchasing_error_cancelled">Purchase cancelled.</string>
+    <string name="purchasing_error_not_implemented">This requires a paid feature that can only be bought by downloading Key Mapper from Google Play.</string>
     <string name="purchasing_error_network">Network error encountered. Do you have an internet connection?</string>
     <string name="purchasing_error_product_not_found">This product was not found.</string>
     <string name="purchasing_error_store_problem">Google Play encountered an error.</string>
     <string name="purchasing_error_dialog_title">Something went wrong 😕</string>
     <string name="purchasing_error_dialog_button_retry">Retry</string>
     <string name="purchasing_contact_developer_button">Contact developer</string>
+    <string name="purchasing_error_assistant_not_purchased">You must purchase the assistant trigger feature!</string>
     <string name="purchasing_contact_email" translatable="false">contact@keymapper.club</string>
     <string name="customer_email_subject" translatable="false">Key Mapper Pro query</string>
     <string name="customer_email_body" translatable="false">Please describe the problem you are having here.</string>
