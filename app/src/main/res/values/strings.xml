@@ -1402,7 +1402,7 @@
     <string name="purchasing_error_dialog_title">Something went wrong 😕</string>
     <string name="purchasing_error_dialog_button_retry">Retry</string>
     <string name="purchasing_contact_developer_button">Contact developer</string>
-    <string name="purchasing_error_assistant_not_purchased">You must purchase the assistant trigger feature!</string>
+    <string name="purchasing_error_assistant_not_purchased_home_screen">You must purchase the assistant trigger feature! Tap on the key map and then purchase it by clicking on \'Advanced triggers\'.</string>
     <string name="purchasing_contact_email" translatable="false">contact@keymapper.club</string>
     <string name="customer_email_subject" translatable="false">Key Mapper Pro query</string>
     <string name="customer_email_body" translatable="false">Please describe the problem you are having here.</string>

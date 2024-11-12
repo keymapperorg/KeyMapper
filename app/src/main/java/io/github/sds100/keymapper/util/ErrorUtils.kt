@@ -152,7 +152,7 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider): String = when (thi
     Error.DeviceAssistantNotSet -> resourceProvider.getString(R.string.trigger_error_assistant_activity_not_chosen_short)
 
     is Error.ProductNotPurchased -> when (this.product) {
-        ProductId.ASSISTANT_TRIGGER -> resourceProvider.getString(R.string.purchasing_error_assistant_not_purchased)
+        ProductId.ASSISTANT_TRIGGER -> resourceProvider.getString(R.string.purchasing_error_assistant_not_purchased_home_screen)
     }
 
     Error.PurchasingNotImplemented -> resourceProvider.getString(R.string.purchasing_error_not_implemented)
