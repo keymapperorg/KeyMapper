@@ -1406,4 +1406,6 @@
     <string name="purchasing_contact_email" translatable="false">contact@keymapper.club</string>
     <string name="customer_email_subject" translatable="false">Key Mapper Pro query</string>
     <string name="customer_email_body" translatable="false">Please describe the problem you are having here.</string>
+    <string name="purchasing_not_implemented_bottom_sheet_text">The advanced triggers are paid feature but you downloaded the FOSS build of Key Mapper that does not include this module or Google Play billing. Please download Key Mapper from Google Play to get access to this feature.</string>
+    <string name="purchasing_download_key_mapper_from_google_play">Download Play build</string>
 </resources>

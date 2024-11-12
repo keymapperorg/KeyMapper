@@ -2,6 +2,9 @@ package io.github.sds100.keymapper.mappings.keymaps.trigger
 
 import android.os.Build
 import android.view.KeyEvent
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapUseCase
@@ -189,6 +192,8 @@ abstract class BaseConfigTriggerViewModel(
 
     private val _fixAppKilling = MutableSharedFlow<Unit>()
     val fixAppKilling = _fixAppKilling.asSharedFlow()
+
+    var showAdvancedTriggersBottomSheet: Boolean by mutableStateOf(false)
 
     init {
         val rebuildErrorList = MutableSharedFlow<State<KeyMap>>(replay = 1)
