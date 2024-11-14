@@ -102,7 +102,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="@string/radio_button_long_press" />
+                android:text="@string/radio_button_long_press"
+                android:visibility="@{viewModel.longPressButtonVisible ? View.VISIBLE : View.GONE}" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/radioButtonDoublePress"

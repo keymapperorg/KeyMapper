@@ -147,6 +147,16 @@ abstract class BaseConfigTriggerViewModel(
     }.flowOn(Dispatchers.Default).stateIn(coroutineScope, SharingStarted.Eagerly, false)
 
     /**
+     * Long press is only allowed for triggers that only use key code trigger keys.
+     */
+    val longPressButtonVisible: StateFlow<Boolean> = config.mapping.map { state ->
+        when (state) {
+            is State.Data -> state.data.trigger.keys.all { it is KeyCodeTriggerKey }
+            State.Loading -> false
+        }
+    }.flowOn(Dispatchers.Default).stateIn(coroutineScope, SharingStarted.Eagerly, false)
+
+    /**
      * Only show the buttons for the trigger mode if keys have been added. The buttons
      * shouldn't be shown when no trigger is selected because they aren't relevant
      * for advanced triggers.
