@@ -4,11 +4,14 @@ import android.content.Context
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableSharedFlow
 
 class PurchasingManagerImpl(
     context: Context,
     private val coroutineScope: CoroutineScope,
 ) : PurchasingManager {
+    override val onCompleteProductPurchase: MutableSharedFlow<ProductId> = MutableSharedFlow()
+
     override suspend fun launchPurchasingFlow(product: ProductId): Result<Unit> {
         return Error.PurchasingNotImplemented
     }
