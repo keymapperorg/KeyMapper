@@ -123,7 +123,7 @@ class KeyMapListItemCreator(
             TriggerError.ASSISTANT_NOT_SELECTED -> ChipUi.Error(
                 id = error.toString(),
                 text = getString(R.string.trigger_error_assistant_activity_not_chosen),
-                error = Error.DeviceAssistantNotSet,
+                error = Error.PermissionDenied(Permission.DEVICE_ASSISTANT),
             )
 
             TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED -> ChipUi.Error(

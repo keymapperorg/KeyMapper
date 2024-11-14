@@ -109,6 +109,7 @@ class KeyMapperApp : MultiDexApplication() {
             suAdapter,
             notificationReceiverAdapter,
             ServiceLocator.settingsRepository(this),
+            packageManagerAdapter,
         )
     }
 

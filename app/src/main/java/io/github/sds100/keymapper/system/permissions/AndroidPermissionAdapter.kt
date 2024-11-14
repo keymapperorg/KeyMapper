@@ -21,13 +21,17 @@ import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.shizuku.ShizukuUtils
 import io.github.sds100.keymapper.system.DeviceAdmin
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
+import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.getIdentifier
 import io.github.sds100.keymapper.util.onFailure
 import io.github.sds100.keymapper.util.onSuccess
 import io.github.sds100.keymapper.util.success
+import io.github.sds100.keymapper.util.then
+import io.github.sds100.keymapper.util.valueIfFailure
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -56,6 +60,7 @@ class AndroidPermissionAdapter(
     private val suAdapter: SuAdapter,
     private val notificationReceiverAdapter: ServiceAdapter,
     private val preferenceRepository: PreferenceRepository,
+    private val packageManagerAdapter: PackageManagerAdapter,
 ) : PermissionAdapter {
     companion object {
         const val REQUEST_CODE_SHIZUKU_PERMISSION = 1
@@ -333,6 +338,11 @@ class AndroidPermissionAdapter(
             } else {
                 true
             }
+
+        Permission.DEVICE_ASSISTANT ->
+            packageManagerAdapter.getDeviceAssistantPackage()
+                .then { Success(it == Constants.PACKAGE_NAME) }
+                .valueIfFailure { false }
     }
 
     override fun isGrantedFlow(permission: Permission): Flow<Boolean> = callbackFlow {

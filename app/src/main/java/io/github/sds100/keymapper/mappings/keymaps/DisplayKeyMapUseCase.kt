@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.mappings.keymaps
 
 import android.os.Build
 import android.view.KeyEvent
-import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.DisplaySimpleMappingUseCase
@@ -11,13 +10,10 @@ import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerError
 import io.github.sds100.keymapper.purchasing.ProductId
 import io.github.sds100.keymapper.purchasing.PurchasingManager
-import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
-import io.github.sds100.keymapper.util.Success
-import io.github.sds100.keymapper.util.then
 import io.github.sds100.keymapper.util.valueIfFailure
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.drop
@@ -33,7 +29,6 @@ class DisplayKeyMapUseCaseImpl(
     private val inputMethodAdapter: InputMethodAdapter,
     displaySimpleMappingUseCase: DisplaySimpleMappingUseCase,
     private val preferenceRepository: PreferenceRepository,
-    private val packageManagerAdapter: PackageManagerAdapter,
     private val purchasingManager: PurchasingManager,
 ) : DisplayKeyMapUseCase,
     DisplaySimpleMappingUseCase by displaySimpleMappingUseCase {
@@ -46,9 +41,10 @@ class DisplayKeyMapUseCaseImpl(
 
     private val keyMapperImeHelper: KeyMapperImeHelper = KeyMapperImeHelper(inputMethodAdapter)
 
-    override val invalidateTriggerErrors = merge(
+    override val invalidateTriggerErrors: Flow<Unit> = merge(
         permissionAdapter.onPermissionsUpdate,
         preferenceRepository.get(Keys.neverShowDndError).map { }.drop(1),
+        purchasingManager.onCompleteProductPurchase.map { },
     )
 
     override suspend fun getTriggerErrors(keyMap: KeyMap): List<TriggerError> {
@@ -89,10 +85,7 @@ class DisplayKeyMapUseCaseImpl(
             errors.add(TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED)
         }
 
-        val isKeyMapperDeviceAssistant =
-            packageManagerAdapter.getDeviceAssistantPackage()
-                .then { Success(it == Constants.PACKAGE_NAME) }
-                .valueIfFailure { false }
+        val isKeyMapperDeviceAssistant = permissionAdapter.isGranted(Permission.DEVICE_ASSISTANT)
 
         // Show an error if Key Mapper isn't selected as the device assistant
         // and an assistant trigger is used. The error shouldn't be shown

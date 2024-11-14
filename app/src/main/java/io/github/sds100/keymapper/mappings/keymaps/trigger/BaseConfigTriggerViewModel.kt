@@ -436,11 +436,11 @@ abstract class BaseConfigTriggerViewModel(
                 }
 
                 TriggerError.ASSISTANT_NOT_SELECTED -> {
-                    TODO()
+                    displayKeyMap.fixError(Error.PermissionDenied(Permission.DEVICE_ASSISTANT))
                 }
 
                 TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED -> {
-                    TODO()
+                    showAdvancedTriggersBottomSheet = true
                 }
             }
         }
