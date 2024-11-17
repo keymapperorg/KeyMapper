@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.sorting
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import io.github.sds100.keymapper.mappings.keymaps.KeyMapField
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
@@ -15,10 +14,10 @@ class SortViewModel(
     private val setKeyMapSortOrderUseCase: SetKeyMapSortOrderUseCase,
 ) : ViewModel() {
     val sortState = combine(
-        observeKeyMapFieldSortOrderUseCase(KeyMapField.TRIGGER),
-        observeKeyMapFieldSortOrderUseCase(KeyMapField.ACTIONS),
-        observeKeyMapFieldSortOrderUseCase(KeyMapField.CONSTRAINTS),
-        observeKeyMapFieldSortOrderUseCase(KeyMapField.OPTIONS),
+        observeKeyMapFieldSortOrderUseCase(SortField.TRIGGER),
+        observeKeyMapFieldSortOrderUseCase(SortField.ACTIONS),
+        observeKeyMapFieldSortOrderUseCase(SortField.CONSTRAINTS),
+        observeKeyMapFieldSortOrderUseCase(SortField.OPTIONS),
         observeKeyMapSortOrderUseCase(),
     ) { trigger, actions, constraints, options, order ->
         if (fieldsOrder.isEmpty()) {
@@ -35,7 +34,7 @@ class SortViewModel(
     }.flowOn(Dispatchers.Default)
 
     // Order of fields which are displayed in the UI
-    private var fieldsOrder = mutableListOf<KeyMapField>()
+    private var fieldsOrder = mutableListOf<SortField>()
 
     fun setLocalSortOrder(fromPosition: Int, toPosition: Int) {
         if (
@@ -57,7 +56,7 @@ class SortViewModel(
         setKeyMapSortOrderUseCase(fieldsOrder)
     }
 
-    fun toggleField(field: KeyMapField) {
+    fun toggleField(field: SortField) {
         toggleKeyMapFieldSortOrderUseCase(field)
     }
 
@@ -83,12 +82,12 @@ data class SortState(
     val actionsSortOrder: SortOrder,
     val constraintsSortOrder: SortOrder,
     val optionsSortOrder: SortOrder,
-    val fieldsOrder: List<KeyMapField>,
+    val fieldsOrder: List<SortField>,
 ) {
-    fun getSortOrder(field: KeyMapField) = when (field) {
-        KeyMapField.TRIGGER -> triggerSortOrder
-        KeyMapField.ACTIONS -> actionsSortOrder
-        KeyMapField.CONSTRAINTS -> constraintsSortOrder
-        KeyMapField.OPTIONS -> optionsSortOrder
+    fun getSortOrder(field: SortField) = when (field) {
+        SortField.TRIGGER -> triggerSortOrder
+        SortField.ACTIONS -> actionsSortOrder
+        SortField.CONSTRAINTS -> constraintsSortOrder
+        SortField.OPTIONS -> optionsSortOrder
     }
 }

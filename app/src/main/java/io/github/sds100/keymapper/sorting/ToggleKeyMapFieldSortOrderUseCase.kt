@@ -2,18 +2,17 @@ package io.github.sds100.keymapper.sorting
 
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.mappings.keymaps.KeyMapField
 import io.github.sds100.keymapper.util.firstBlocking
 
 class ToggleKeyMapFieldSortOrderUseCase(
     private val preferenceRepository: PreferenceRepository,
 ) {
-    operator fun invoke(field: KeyMapField) {
+    operator fun invoke(field: SortField) {
         val key = when (field) {
-            KeyMapField.TRIGGER -> Keys.sortTriggerAscending
-            KeyMapField.ACTIONS -> Keys.sortActionsAscending
-            KeyMapField.CONSTRAINTS -> Keys.sortConstraintsAscending
-            KeyMapField.OPTIONS -> Keys.sortOptionsAscending
+            SortField.TRIGGER -> Keys.sortTriggerAscending
+            SortField.ACTIONS -> Keys.sortActionsAscending
+            SortField.CONSTRAINTS -> Keys.sortConstraintsAscending
+            SortField.OPTIONS -> Keys.sortOptionsAscending
         }
 
         preferenceRepository.get(key).firstBlocking().let {

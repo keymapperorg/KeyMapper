@@ -1,9 +1,11 @@
-package io.github.sds100.keymapper.mappings.keymaps
+package io.github.sds100.keymapper.sorting
 
 import io.github.sds100.keymapper.constraints.KeyMapConstraintsComparator
+import io.github.sds100.keymapper.mappings.keymaps.KeyMapActionsComparator
+import io.github.sds100.keymapper.mappings.keymaps.KeyMapOptionsComparator
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTriggerComparator
 
-enum class KeyMapField {
+enum class SortField {
     TRIGGER,
     ACTIONS,
     CONSTRAINTS,

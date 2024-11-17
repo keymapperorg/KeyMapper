@@ -14,7 +14,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentSortMenuBinding
 import io.github.sds100.keymapper.databinding.SortMenuItemBinding
-import io.github.sds100.keymapper.mappings.keymaps.KeyMapField
 import io.github.sds100.keymapper.util.Inject
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -97,13 +96,13 @@ class SortMenuFragment : BottomSheetDialogFragment() {
 }
 
 data class KeyMapFieldSortOrder(
-    val field: KeyMapField,
+    val field: SortField,
     var order: SortOrder,
 )
 
 class SortAdapter(
     private var items: List<KeyMapFieldSortOrder>,
-    private val onItemToggle: (KeyMapField) -> Unit,
+    private val onItemToggle: (SortField) -> Unit,
     private val itemTouchHelper: ItemTouchHelper,
 ) : RecyclerView.Adapter<SortAdapter.SortViewHolder>() {
     fun update(newState: SortState) {
@@ -146,10 +145,10 @@ class SortAdapter(
     ) : RecyclerView.ViewHolder(itemView) {
         fun bind(item: KeyMapFieldSortOrder) {
             val header = when (item.field) {
-                KeyMapField.TRIGGER -> R.string.trigger_header
-                KeyMapField.ACTIONS -> R.string.action_list_header
-                KeyMapField.CONSTRAINTS -> R.string.constraint_list_header
-                KeyMapField.OPTIONS -> R.string.option_list_header
+                SortField.TRIGGER -> R.string.trigger_header
+                SortField.ACTIONS -> R.string.action_list_header
+                SortField.CONSTRAINTS -> R.string.constraint_list_header
+                SortField.OPTIONS -> R.string.option_list_header
             }
             binding.sortMenuItemName.text = binding.root.context.resources.getString(header)
 

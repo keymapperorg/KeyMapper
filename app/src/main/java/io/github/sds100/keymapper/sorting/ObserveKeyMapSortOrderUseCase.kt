@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.sorting
 
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.mappings.keymaps.KeyMapField
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -17,21 +16,21 @@ class ObserveKeyMapSortOrderUseCase(
 ) {
     private val default by lazy {
         listOf(
-            KeyMapField.TRIGGER,
-            KeyMapField.ACTIONS,
-            KeyMapField.CONSTRAINTS,
-            KeyMapField.OPTIONS,
+            SortField.TRIGGER,
+            SortField.ACTIONS,
+            SortField.CONSTRAINTS,
+            SortField.OPTIONS,
         )
     }
 
-    operator fun invoke(): Flow<List<KeyMapField>> {
+    operator fun invoke(): Flow<List<SortField>> {
         return preferenceRepository
             .get(Keys.sortOrder)
             .map {
                 val result = runCatching {
                     it
                         ?.split(",")
-                        ?.map { KeyMapField.valueOf(it) }
+                        ?.map { SortField.valueOf(it) }
                         ?: default
                 }.getOrDefault(default).distinct()
 
