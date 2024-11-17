@@ -21,25 +21,28 @@ class KeyMapConstraintsComparator(
         keyMap: KeyMap?,
         otherKeyMap: KeyMap?,
     ): Int {
-        // TODO
-
         if (keyMap == null || otherKeyMap == null) {
             return 0
         }
 
-        for (i in 0 until keyMap.constraintState.constraints.size.coerceAtMost(otherKeyMap.constraintState.constraints.size)) {
+        val keyMapConstraintsLength = keyMap.constraintState.constraints.size
+        val otherKeyMapConstraintsLength = otherKeyMap.constraintState.constraints.size
+        val maxLength = keyMapConstraintsLength.coerceAtMost(otherKeyMapConstraintsLength)
+
+        // Compare constraints one by one
+        for (i in 0 until maxLength) {
             val constraint1 = keyMap.constraintState.constraints.elementAt(i)
             val constraint2 = otherKeyMap.constraintState.constraints.elementAt(i)
 
-            val result = constraint1.javaClass.name.compareTo(constraint2.javaClass.name)
+            val result = constraint1.compareTo(constraint2)
 
             if (result != 0) {
                 return doFinal(result)
             }
         }
 
-        val comparison =
-            keyMap.constraintState.constraints.size.compareTo(otherKeyMap.constraintState.constraints.size)
+        // If constraints are equal, compare the length
+        val comparison = keyMapConstraintsLength.compareTo(otherKeyMapConstraintsLength)
 
         return doFinal(comparison)
     }

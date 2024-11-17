@@ -15,20 +15,33 @@ import java.util.UUID
  */
 
 @Serializable
-sealed class Constraint {
+sealed class Constraint : Comparable<Constraint> {
     val uid: String = UUID.randomUUID().toString()
 
-    @Serializable
-    data class AppInForeground(val packageName: String) : Constraint()
+    override fun compareTo(other: Constraint) = this.javaClass.name.compareTo(other.javaClass.name)
+
+    sealed class AppConstraint : Constraint() {
+        abstract val packageName: String
+        override fun compareTo(other: Constraint): Int {
+            if (other !is AppConstraint) {
+                return super<Constraint>.compareTo(other)
+            }
+
+            return this.packageName.compareTo(other.packageName)
+        }
+    }
 
     @Serializable
-    data class AppNotInForeground(val packageName: String) : Constraint()
+    data class AppInForeground(override val packageName: String) : AppConstraint()
 
     @Serializable
-    data class AppPlayingMedia(val packageName: String) : Constraint()
+    data class AppNotInForeground(override val packageName: String) : AppConstraint()
 
     @Serializable
-    data class AppNotPlayingMedia(val packageName: String) : Constraint()
+    data class AppPlayingMedia(override val packageName: String) : AppConstraint()
+
+    @Serializable
+    data class AppNotPlayingMedia(override val packageName: String) : AppConstraint()
 
     @Serializable
     object MediaPlaying : Constraint()
@@ -36,11 +49,35 @@ sealed class Constraint {
     @Serializable
     object NoMediaPlaying : Constraint()
 
-    @Serializable
-    data class BtDeviceConnected(val bluetoothAddress: String, val deviceName: String) : Constraint()
+    sealed class BtConstraint : Constraint() {
+        abstract val bluetoothAddress: String
+        abstract val deviceName: String
+        override fun compareTo(other: Constraint): Int {
+            if (other !is BtConstraint) {
+                return super<Constraint>.compareTo(other)
+            }
+
+            val address = this.bluetoothAddress.compareTo(other.bluetoothAddress)
+
+            if (address != 0) {
+                return address
+            }
+
+            return this.deviceName.compareTo(other.deviceName)
+        }
+    }
 
     @Serializable
-    data class BtDeviceDisconnected(val bluetoothAddress: String, val deviceName: String) : Constraint()
+    data class BtDeviceConnected(
+        override val bluetoothAddress: String,
+        override val deviceName: String,
+    ) : BtConstraint()
+
+    @Serializable
+    data class BtDeviceDisconnected(
+        override val bluetoothAddress: String,
+        override val deviceName: String,
+    ) : BtConstraint()
 
     @Serializable
     object ScreenOn : Constraint()
@@ -55,13 +92,32 @@ sealed class Constraint {
     object OrientationLandscape : Constraint()
 
     @Serializable
-    data class OrientationCustom(val orientation: Orientation) : Constraint()
+    data class OrientationCustom(val orientation: Orientation) : Constraint() {
+        override fun compareTo(other: Constraint): Int {
+            if (other !is OrientationCustom) {
+                return super<Constraint>.compareTo(other)
+            }
+
+            return this.orientation.compareTo(other.orientation)
+        }
+    }
+
+    sealed class FlashlightConstraint : Constraint() {
+        abstract val lens: CameraLens
+        override fun compareTo(other: Constraint): Int {
+            if (other !is FlashlightConstraint) {
+                return super<Constraint>.compareTo(other)
+            }
+
+            return this.lens.compareTo(other.lens)
+        }
+    }
 
     @Serializable
-    data class FlashlightOn(val lens: CameraLens) : Constraint()
+    data class FlashlightOn(override val lens: CameraLens) : FlashlightConstraint()
 
     @Serializable
-    data class FlashlightOff(val lens: CameraLens) : Constraint()
+    data class FlashlightOff(override val lens: CameraLens) : FlashlightConstraint()
 
     @Serializable
     object WifiOn : Constraint()
@@ -69,33 +125,62 @@ sealed class Constraint {
     @Serializable
     object WifiOff : Constraint()
 
+    sealed class WifiConstraint : Constraint() {
+        abstract val ssid: String?
+        override fun compareTo(other: Constraint): Int {
+            if (other !is WifiConstraint) {
+                return super<Constraint>.compareTo(other)
+            }
+
+            return this.ssid?.compareTo(other.ssid ?: "") ?: 0
+        }
+    }
+
     @Serializable
     data class WifiConnected(
         /**
          * Null if connected to any wifi network.
          */
-        val ssid: String?,
-    ) : Constraint()
+        override val ssid: String?,
+    ) : WifiConstraint()
 
     @Serializable
     data class WifiDisconnected(
         /**
          * Null if disconnected from any wifi network.
          */
-        val ssid: String?,
-    ) : Constraint()
+        override val ssid: String?,
+    ) : WifiConstraint()
+
+    sealed class ImeConstraint : Constraint() {
+        abstract val imeId: String
+        abstract val imeLabel: String
+        override fun compareTo(other: Constraint): Int {
+            if (other !is ImeConstraint) {
+                return super<Constraint>.compareTo(other)
+            }
+
+            val imeId = this.imeId.compareTo(other.imeId)
+
+            if (imeId != 0) {
+                return imeId
+            }
+
+            return this.imeLabel.compareTo(other.imeLabel)
+        }
+    }
 
     @Serializable
     data class ImeChosen(
-        val imeId: String,
-        val imeLabel: String,
-    ) : Constraint()
+        override val imeId: String,
+        override val imeLabel: String,
+    ) : ImeConstraint()
 
     @Serializable
     data class ImeNotChosen(
-        val imeId: String,
-        val imeLabel: String,
-    ) : Constraint()
+        override val imeId: String,
+        override val imeLabel: String,
+    ) : ImeConstraint()
 
     @Serializable
     object DeviceIsLocked : Constraint()
