@@ -7,7 +7,10 @@ import kotlinx.serialization.Serializable
  */
 
 @Serializable
-sealed class TriggerKeyDevice {
+sealed class TriggerKeyDevice : Comparable<TriggerKeyDevice> {
+    override fun compareTo(other: TriggerKeyDevice) =
+        this.javaClass.name.compareTo(other.javaClass.name)
+
     @Serializable
     object Internal : TriggerKeyDevice()
 
@@ -15,5 +18,18 @@ sealed class TriggerKeyDevice {
     object Any : TriggerKeyDevice()
 
     @Serializable
-    data class External(val descriptor: String, val name: String) : TriggerKeyDevice()
+    data class External(val descriptor: String, val name: String) : TriggerKeyDevice() {
+        override fun compareTo(other: TriggerKeyDevice): Int {
+            if (other !is External) {
+                return super<TriggerKeyDevice>.compareTo(other)
+            }
+
+            return compareValuesBy(
+                this,
+                other,
+                { it.name },
+                { it.descriptor },
+            )
+        }
+    }
 }
