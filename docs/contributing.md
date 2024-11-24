@@ -13,7 +13,7 @@ You can get the apks for the pre-release versions in 2 ways:
 
     There are two types of pre-release versions:
 
-    - **Alpha**.  These have ".alpha" in the version name and are the most unstable. Expect the most crashes and broken features in these builds. BEWARE! Your data in Key Mapper isn't considered compatible between alpha builds so it is possible that Key Mapper will crash and refuse to fix itself.
+    - **Alpha**.  These have ".alpha" in the version name and are the most unstable. Expect the most crashes and broken features in these builds. BEWARE! Your data in Key Mapper isn't considered compatible between alpha builds so it is possible Key Mapper will crash and refuse to fix itself if you update to a new build that can't understand the data.
     - **Beta**. These builds have some of the latest features and contain a few bugs. You can safely update between versions. These have ".beta.X" in the version name. These are pre-release builds for the the open-testing channel on Google Play and F-droid always has beta builds. When all known bugs are fixed a new build is released to the app stores.
 
 ### How can I help?
@@ -34,6 +34,17 @@ You can get the apks for the pre-release versions in 2 ways:
 !!! info
     To build the documentation website you need to install [mkdocs-material](https://squidfunk.github.io/mkdocs-material/getting-started/) with Python. Just run `pip install -r requirements.txt` in the root of the project to install it.
     Then run `mkdocs serve` in the project root.
+    
+### Build flavors and types
+
+After version 2.7.0 Key Mapper will have 2 build flavours: _free_ and _pro_. The pro flavor includes the closed-source features (e.g assistant trigger) and non-FOSS libraries such as the Google Play Billing library. The free variant stubs out these closed-source features and only uses FOSS libraries.
+
+There are also 4 build types, which have different optimizations and package names.
+
+- **debug** = This is the default debug build type that has no optimizations and builds rapidly. It has a `.debug` package name suffix.
+- **release** = This is the default release build type that includes a lot of optimizations and creates an apk/app bundle suitable for releasing. There is no package name suffix.
+- **debug_release** = This is a debug build type that does not include a package name suffix so that it is possible to test how the production app will look. It is the only way to get the Google Play Billing library functioning because it will break if the package name isn't the same as on the Play store.
+- **ci** = This is used for alpha builds to the community in Discord. It includes some optimizations to ensure it is performant but doesn't obfuscate the code so it is possible to understand logs and bug reports. It has a `.ci` package name suffix.
 
 ### Introduction to the structure
 
@@ -64,9 +75,7 @@ The `system` package bundles all the packages which are related to the Android f
 ### Branches 🌴
 
  - master: Everything in the latest stable release.
- - develop: The most recent changes. The app is potentially unstable but it can be successfully compiled. A new release is branched off of here. 
-
- - release/*: Branched off develop if it is a new large release (e.g 2.4.0), otherwise it is branched off master for bug fix releases (e.g 2.3.1). Beta releases for a particular release are built from here. Once the code is stable, it will be merged into master. No big changes should be made/merged here as the purpose of this branch is to make a release stable. By separating upcoming releases from develop, new features can be worked on in develop without affecting the upcoming release's code base.
+ - develop: The most recent changes. The app is potentially unstable but it can be successfully compiled. A new release is branched off of here.
  - feature/*: Any new changes currently being developed. Merges into develop.
  - fix/*: A bug fix. This branch should be merged into a release branch and develop.
 
@@ -142,7 +151,7 @@ Follow Google's Kotlin style guide. [https://developer.android.com/kotlin/style-
 ## Translating 🌍
 
 You can translate this project on the [CrowdIn page](https://crowdin.com/project/key-mapper). Translations will be
-merged into production once they are >50% translated. If your language isn't available on the CrowdIn page then contact
+merged into production once they are >80% translated. If your language isn't available on the CrowdIn page then contact
 the developer so we can add it. Our contact details are in the footer of every page on this site.
 
 We really appreciate translators so thank you! 🙂
