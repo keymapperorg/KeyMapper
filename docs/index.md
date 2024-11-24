@@ -2,7 +2,7 @@
 
 !!! warning "MAINTENANCE NOTICE!"
 
-    Feature development has stopped.
+    Feature development has slowed down.
 
 [Key Mapper](https://github.com/keymapperorg/KeyMapper) is a free and open source Android app that can map single or multiple buttons to a custom action. 
 
