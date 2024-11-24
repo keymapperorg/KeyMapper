@@ -378,6 +378,7 @@
     <string name="url_github_repo" translatable="false">https://github.com/sds100/KeyMapper</string>
     <string name="url_rate" translatable="false">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper</string>
     <string name="url_website" translatable="false">https://keymapperorg.github.io/KeyMapper</string>
+    <string name="url_advanced_triggers" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/advanced-triggers</string>
 
     <string name="url_play_store_keymapper_gui_keyboard" translatable="false">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper.inputmethod.latin</string>
     <string name="url_fdroid_keymapper_gui_keyboard" translatable="false">https://f-droid.org/en/packages/io.github.sds100.keymapper.inputmethod.latin</string>
@@ -1388,6 +1389,7 @@
     <string name="trigger_error_assistant_activity_not_chosen">You must select Key Mapper as the default digital assistant app for this trigger to work.</string>
     <string name="trigger_error_assistant_activity_not_chosen_short">Key Mapper must be the default assistant.</string>
     <string name="trigger_error_assistant_not_purchased">You must purchase the assistant trigger feature!</string>
+    <string name="advanced_triggers_learn_more_button">Learn more</string>
 
     <!--  Purchasing  -->
     <string name="unlock_product_button">Unlock (%s)</string>
