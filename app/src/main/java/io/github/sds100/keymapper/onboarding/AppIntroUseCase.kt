@@ -51,8 +51,6 @@ class AppIntroUseCaseImpl(
     }
 
     override fun shownAppIntro() {
-        preferenceRepository.set(Keys.approvedFingerprintFeaturePrompt, true)
-        preferenceRepository.set(Keys.approvedSetupChosenDevicesAgain, true)
         preferenceRepository.set(Keys.shownAppIntro, true)
     }
 
