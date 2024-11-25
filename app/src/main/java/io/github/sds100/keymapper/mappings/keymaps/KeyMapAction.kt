@@ -37,7 +37,20 @@ data class KeyMapAction(
 
     override val multiplier: Int? = null,
     override val delayBeforeNextAction: Int? = null,
-) : Action {
+) : Action, Comparable<KeyMapAction> {
+    override fun compareTo(other: KeyMapAction) = compareValuesBy(
+        this,
+        other,
+        { it.data },
+        { it.repeat },
+        { it.multiplier },
+        { it.repeatLimit },
+        { it.repeatRate },
+        { it.repeatDelay },
+        { it.repeatMode },
+        { it.delayBeforeNextAction },
+    )
+
     companion object {
         const val REPEAT_DELAY_MIN = 0
     }
@@ -209,22 +222,27 @@ class KeyMapActionsComparator(
         keyMap: KeyMap?,
         otherKeyMap: KeyMap?,
     ): Int {
-        // TODO
         if (keyMap == null || otherKeyMap == null) {
             return 0
         }
 
-        for (i in 0 until keyMap.actionList.size.coerceAtMost(otherKeyMap.actionList.size)) {
+        val keyMapActionsLength = keyMap.actionList.size
+        val otherKeyMapActionsLength = otherKeyMap.actionList.size
+        val maxLength = keyMapActionsLength.coerceAtMost(otherKeyMapActionsLength)
+
+        // compare actions one by one
+        for (i in 0 until maxLength) {
             val action1 = keyMap.actionList[i]
             val action2 = otherKeyMap.actionList[i]
 
-            val result = action1.data.id.ordinal.compareTo(action2.data.id.ordinal)
+            val result = action1.compareTo(action2)
 
             if (result != 0) {
                 return doFinal(result)
             }
         }
 
+        // if actions are equal compare length
         val comparison = keyMap.actionList.size.compareTo(otherKeyMap.actionList.size)
 
         return doFinal(comparison)
