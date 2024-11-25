@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.mappings.keymaps.trigger
 
-import android.annotation.SuppressLint
 import io.github.sds100.keymapper.data.entities.TriggerEntity
 import io.github.sds100.keymapper.mappings.ClickType
 import kotlinx.serialization.Serializable

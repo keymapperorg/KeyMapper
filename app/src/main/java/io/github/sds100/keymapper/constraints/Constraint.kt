@@ -20,28 +20,37 @@ sealed class Constraint : Comparable<Constraint> {
 
     override fun compareTo(other: Constraint) = this.javaClass.name.compareTo(other.javaClass.name)
 
-    sealed class AppConstraint : Constraint() {
-        abstract val packageName: String
-        override fun compareTo(other: Constraint): Int {
-            if (other !is AppConstraint) {
-                return super<Constraint>.compareTo(other)
-            }
-
-            return this.packageName.compareTo(other.packageName)
+    @Serializable
+    data class AppInForeground(val packageName: String) : Constraint() {
+        override fun compareTo(other: Constraint) = when (other) {
+            is AppInForeground -> this.packageName.compareTo(other.packageName)
+            else -> super.compareTo(other)
         }
     }
 
     @Serializable
-    data class AppInForeground(override val packageName: String) : AppConstraint()
+    data class AppNotInForeground(val packageName: String) : Constraint() {
+        override fun compareTo(other: Constraint) = when (other) {
+            is AppNotInForeground -> this.packageName.compareTo(other.packageName)
+            else -> super.compareTo(other)
+        }
+    }
 
     @Serializable
-    data class AppNotInForeground(override val packageName: String) : AppConstraint()
+    data class AppPlayingMedia(val packageName: String) : Constraint() {
+        override fun compareTo(other: Constraint) = when (other) {
+            is AppPlayingMedia -> this.packageName.compareTo(other.packageName)
+            else -> super.compareTo(other)
+        }
+    }
 
     @Serializable
-    data class AppPlayingMedia(override val packageName: String) : AppConstraint()
-
-    @Serializable
-    data class AppNotPlayingMedia(override val packageName: String) : AppConstraint()
+    data class AppNotPlayingMedia(val packageName: String) : Constraint() {
+        override fun compareTo(other: Constraint) = when (other) {
+            is AppNotPlayingMedia -> this.packageName.compareTo(other.packageName)
+            else -> super.compareTo(other)
+        }
+    }
 
     @Serializable
     object MediaPlaying : Constraint()
@@ -49,35 +58,39 @@ sealed class Constraint : Comparable<Constraint> {
     @Serializable
     object NoMediaPlaying : Constraint()
 
-    sealed class BtConstraint : Constraint() {
-        abstract val bluetoothAddress: String
-        abstract val deviceName: String
-        override fun compareTo(other: Constraint): Int {
-            if (other !is BtConstraint) {
-                return super<Constraint>.compareTo(other)
-            }
+    @Serializable
+    data class BtDeviceConnected(
+        val bluetoothAddress: String,
+        val deviceName: String,
+    ) : Constraint() {
+        override fun compareTo(other: Constraint) = when (other) {
+            is BtDeviceConnected -> compareValuesBy(
+                this,
+                other,
+                { it.bluetoothAddress },
+                { it.deviceName },
+            )
 
-            val address = this.bluetoothAddress.compareTo(other.bluetoothAddress)
-
-            if (address != 0) {
-                return address
-            }
-
-            return this.deviceName.compareTo(other.deviceName)
+            else -> super.compareTo(other)
         }
     }
 
     @Serializable
-    data class BtDeviceConnected(
-        override val bluetoothAddress: String,
-        override val deviceName: String,
-    ) : BtConstraint()
-
-    @Serializable
     data class BtDeviceDisconnected(
-        override val bluetoothAddress: String,
-        override val deviceName: String,
-    ) : BtConstraint()
+        val bluetoothAddress: String,
+        val deviceName: String,
+    ) : Constraint() {
+        override fun compareTo(other: Constraint) = when (other) {
+            is BtDeviceDisconnected -> compareValuesBy(
+                this,
+                other,
+                { it.bluetoothAddress },
+                { it.deviceName },
+            )
+
+            else -> super.compareTo(other)
+        }
+    }
 
     @Serializable
     object ScreenOn : Constraint()
@@ -102,22 +115,21 @@ sealed class Constraint : Comparable<Constraint> {
         }
     }
 
-    sealed class FlashlightConstraint : Constraint() {
-        abstract val lens: CameraLens
-        override fun compareTo(other: Constraint): Int {
-            if (other !is FlashlightConstraint) {
-                return super<Constraint>.compareTo(other)
-            }
-
-            return this.lens.compareTo(other.lens)
+    @Serializable
+    data class FlashlightOn(val lens: CameraLens) : Constraint() {
+        override fun compareTo(other: Constraint) = when (other) {
+            is FlashlightOn -> this.lens.compareTo(other.lens)
+            else -> super.compareTo(other)
         }
     }
 
     @Serializable
-    data class FlashlightOn(override val lens: CameraLens) : FlashlightConstraint()
-
-    @Serializable
-    data class FlashlightOff(override val lens: CameraLens) : FlashlightConstraint()
+    data class FlashlightOff(val lens: CameraLens) : Constraint() {
+        override fun compareTo(other: Constraint) = when (other) {
+            is FlashlightOff -> this.lens.compareTo(other.lens)
+            else -> super.compareTo(other)
+        }
+    }
 
     @Serializable
     object WifiOn : Constraint()
@@ -125,62 +137,65 @@ sealed class Constraint : Comparable<Constraint> {
     @Serializable
     object WifiOff : Constraint()
 
-    sealed class WifiConstraint : Constraint() {
-        abstract val ssid: String?
-        override fun compareTo(other: Constraint): Int {
-            if (other !is WifiConstraint) {
-                return super<Constraint>.compareTo(other)
-            }
-
-            return this.ssid?.compareTo(other.ssid ?: "") ?: 0
-        }
-    }
-
     @Serializable
     data class WifiConnected(
         /**
          * Null if connected to any wifi network.
          */
-        override val ssid: String?,
-    ) : WifiConstraint()
+        val ssid: String?,
+    ) : Constraint() {
+        override fun compareTo(other: Constraint) = when (other) {
+            is WifiConnected -> this.ssid?.compareTo(other.ssid ?: "") ?: 0
+            else -> super.compareTo(other)
+        }
+    }
 
     @Serializable
     data class WifiDisconnected(
         /**
          * Null if disconnected from any wifi network.
          */
-        override val ssid: String?,
-    ) : WifiConstraint()
-
-    sealed class ImeConstraint : Constraint() {
-        abstract val imeId: String
-        abstract val imeLabel: String
-        override fun compareTo(other: Constraint): Int {
-            if (other !is ImeConstraint) {
-                return super<Constraint>.compareTo(other)
-            }
-
-            val imeId = this.imeId.compareTo(other.imeId)
-
-            if (imeId != 0) {
-                return imeId
-            }
-
-            return this.imeLabel.compareTo(other.imeLabel)
+        val ssid: String?,
+    ) : Constraint() {
+        override fun compareTo(other: Constraint) = when (other) {
+            is WifiDisconnected -> this.ssid?.compareTo(other.ssid ?: "") ?: 0
+            else -> super.compareTo(other)
         }
     }
 
     @Serializable
     data class ImeChosen(
-        override val imeId: String,
-        override val imeLabel: String,
-    ) : ImeConstraint()
+        val imeId: String,
+        val imeLabel: String,
+    ) : Constraint() {
+        override fun compareTo(other: Constraint) = when (other) {
+            is ImeChosen -> compareValuesBy(
+                this,
+                other,
+                { it.imeId },
+                { it.imeLabel },
+            )
+
+            else -> super.compareTo(other)
+        }
+    }
 
     @Serializable
     data class ImeNotChosen(
-        override val imeId: String,
-        override val imeLabel: String,
-    ) : ImeConstraint()
+        val imeId: String,
+        val imeLabel: String,
+    ) : Constraint() {
+        override fun compareTo(other: Constraint) = when (other) {
+            is ImeNotChosen -> compareValuesBy(
+                this,
+                other,
+                { it.imeId },
+                { it.imeLabel },
+            )
+
+            else -> super.compareTo(other)
+        }
+    }
 
     @Serializable
     object DeviceIsLocked : Constraint()
