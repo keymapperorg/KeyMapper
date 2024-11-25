@@ -115,23 +115,20 @@ class KeyMapOptionsComparator(
         keyMap: KeyMap?,
         otherKeyMap: KeyMap?,
     ): Int {
-        // TODO
-
         if (keyMap == null || otherKeyMap == null) {
             return 0
         }
 
-        // Compare the options
+        val result = compareValuesBy(
+            keyMap,
+            otherKeyMap,
+            { it.vibrate },
+            { it.trigger.screenOffTrigger },
+            { it.trigger.triggerFromOtherApps },
+            { it.showToast },
+        )
 
-        if (keyMap.vibrate != otherKeyMap.vibrate) {
-            return doFinal(keyMap.vibrate.compareTo(otherKeyMap.vibrate))
-        }
-
-        if (keyMap.showToast != otherKeyMap.showToast) {
-            return doFinal(keyMap.showToast.compareTo(otherKeyMap.showToast))
-        }
-
-        return 0
+        return doFinal(result)
     }
 
     fun doFinal(result: Int) = if (reverse) {
