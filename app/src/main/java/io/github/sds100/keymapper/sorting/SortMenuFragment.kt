@@ -2,20 +2,17 @@ package io.github.sds100.keymapper.sorting
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentSortMenuBinding
-import io.github.sds100.keymapper.databinding.SortMenuItemBinding
+import io.github.sds100.keymapper.databinding.SortMenuChipBinding
 import io.github.sds100.keymapper.util.Inject
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 class SortMenuFragment : BottomSheetDialogFragment() {
@@ -26,8 +23,6 @@ class SortMenuFragment : BottomSheetDialogFragment() {
     private val sortViewModel: SortViewModel by activityViewModels {
         Inject.sortViewModel(requireContext())
     }
-
-    private lateinit var adapter: SortAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,125 +39,84 @@ class SortMenuFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(
-            ItemTouchHelper.UP or ItemTouchHelper.DOWN,
-            0,
-        ) {
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder,
-            ): Boolean {
-                val fromPosition = viewHolder.absoluteAdapterPosition
-                val toPosition = target.absoluteAdapterPosition
-                sortViewModel.setLocalSortOrder(fromPosition, toPosition)
-                adapter.notifyItemMoved(fromPosition, toPosition)
-                return true
-            }
+        sortViewModel.saveCheckpoint()
 
-            override fun clearView(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-            ) {
-                super.clearView(recyclerView, viewHolder)
-                sortViewModel.saveSortOrder()
-            }
+        val triggerChip = getChipByField(SortField.TRIGGER)
+        val actionsChip = getChipByField(SortField.ACTIONS)
+        val constraintsChip = getChipByField(SortField.CONSTRAINTS)
+        val optionsChip = getChipByField(SortField.OPTIONS)
 
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) = Unit
+        binding.chipGroupSortBy.addView(triggerChip.root)
+        binding.chipGroupSortBy.addView(actionsChip.root)
+        binding.chipGroupSortBy.addView(constraintsChip.root)
+        binding.chipGroupSortBy.addView(optionsChip.root)
+
+        binding.buttonApply.setOnClickListener {
+            sortViewModel.applySortOrder()
+            dismiss()
         }
 
-        val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
-        itemTouchHelper.attachToRecyclerView(binding.recyclerView)
+        binding.buttonCancel.setOnClickListener {
+            dismiss()
+            sortViewModel.restoreCheckpoint()
+        }
 
-        adapter = SortAdapter(
-            items = emptyList(),
-            onItemToggle = sortViewModel::toggleField,
-            itemTouchHelper = itemTouchHelper,
-        )
-        binding.recyclerView.layoutManager = LinearLayoutManager(context)
-        binding.recyclerView.adapter = adapter
+        binding.buttonSortReset.setOnClickListener {
+            sortViewModel.resetSortOrder()
+        }
 
         lifecycleScope.launch {
-            sortViewModel.sortState.collectLatest {
-                adapter.update(it)
+            combine(
+                sortViewModel.triggerSortState,
+                sortViewModel.actionsSortState,
+                sortViewModel.constraintsSortState,
+                sortViewModel.optionsSortState,
+            ) { trigger, actions, constraints, options ->
+                trigger != SortOrder.NONE || actions != SortOrder.NONE || constraints != SortOrder.NONE || options != SortOrder.NONE
+            }.collectLatest { hasSortOrder ->
+                binding.canResetSort = hasSortOrder
             }
         }
+    }
+
+    private fun getChipByField(
+        field: SortField,
+    ): SortMenuChipBinding {
+        val chipBinding = SortMenuChipBinding.inflate(
+            LayoutInflater.from(requireContext()),
+            binding.chipGroupSortBy,
+            false,
+        )
+
+        chipBinding.text = when (field) {
+            SortField.TRIGGER -> getString(R.string.trigger_header)
+            SortField.ACTIONS -> getString(R.string.action_list_header)
+            SortField.CONSTRAINTS -> getString(R.string.constraint_list_header)
+            SortField.OPTIONS -> getString(R.string.option_list_header)
+        }
+
+        lifecycleScope.launch {
+            val stateFlow = when (field) {
+                SortField.TRIGGER -> sortViewModel.triggerSortState
+                SortField.ACTIONS -> sortViewModel.actionsSortState
+                SortField.CONSTRAINTS -> sortViewModel.constraintsSortState
+                SortField.OPTIONS -> sortViewModel.optionsSortState
+            }
+
+            stateFlow.collectLatest { sortOrder ->
+                chipBinding.sortOrder = sortOrder
+                chipBinding.chip.isSelected = sortOrder != SortOrder.NONE
+                chipBinding.onClickListener = View.OnClickListener {
+                    sortViewModel.toggleSortOrder(field)
+                }
+            }
+        }
+
+        return chipBinding
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-}
-
-data class KeyMapFieldSortOrder(
-    val field: SortField,
-    var order: SortOrder,
-)
-
-class SortAdapter(
-    private var items: List<KeyMapFieldSortOrder>,
-    private val onItemToggle: (SortField) -> Unit,
-    private val itemTouchHelper: ItemTouchHelper,
-) : RecyclerView.Adapter<SortAdapter.SortViewHolder>() {
-    fun update(newState: SortState) {
-        val oldItems = items
-        items = newState.fieldsOrder.map { KeyMapFieldSortOrder(it, newState.getSortOrder(it)) }
-
-        // If the old list is empty it means that the adapter has just been created
-        if (oldItems.isEmpty()) {
-            notifyDataSetChanged()
-            return
-        }
-
-        // Update only fields which order has changed
-        items.forEachIndexed { index, item ->
-            // Find the index of the item in the old list
-            oldItems.first { it.field == item.field }.let {
-                // If the order has changed, notify the adapter
-                if (it.order != item.order) {
-                    notifyItemChanged(index)
-                }
-            }
-        }
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SortViewHolder {
-        SortMenuItemBinding.inflate(LayoutInflater.from(parent.context), parent, false).apply {
-            return SortViewHolder(this.root, this)
-        }
-    }
-
-    override fun onBindViewHolder(holder: SortViewHolder, position: Int) {
-        holder.bind(items[position])
-    }
-
-    override fun getItemCount(): Int = items.size
-
-    inner class SortViewHolder(
-        itemView: View,
-        private val binding: SortMenuItemBinding,
-    ) : RecyclerView.ViewHolder(itemView) {
-        fun bind(item: KeyMapFieldSortOrder) {
-            val header = when (item.field) {
-                SortField.TRIGGER -> R.string.trigger_header
-                SortField.ACTIONS -> R.string.action_list_header
-                SortField.CONSTRAINTS -> R.string.constraint_list_header
-                SortField.OPTIONS -> R.string.option_list_header
-            }
-            binding.sortMenuItemName.text = binding.root.context.resources.getString(header)
-
-            binding.isAscending = item.order == SortOrder.ASCENDING
-
-            binding.onClickListener = View.OnClickListener { onItemToggle(item.field) }
-
-            binding.dragHandle.setOnTouchListener { _, event ->
-                if (event.action == MotionEvent.ACTION_DOWN) {
-                    itemTouchHelper.startDrag(this)
-                }
-
-                false
-            }
-        }
     }
 }

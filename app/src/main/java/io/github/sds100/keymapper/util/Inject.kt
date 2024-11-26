@@ -294,9 +294,7 @@ object Inject {
     )
 
     fun sortViewModel(ctx: Context): SortViewModel.Factory = SortViewModel.Factory(
-        UseCases.observeKeyMapFieldSortOrderUseCase(ctx),
-        UseCases.observeKeyMapSortOrderUseCase(ctx),
         UseCases.setKeyMapFieldSortOrderUseCase(ctx),
-        UseCases.setKeyMapSortOrderUseCase(ctx),
+        UseCases.observeKeyMapFieldSortOrderUseCase(ctx),
     )
 }

@@ -5,6 +5,8 @@ import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
+// This was supposed to be used but it became to complex. #1223
+
 /**
  * Observes the order in which key map fields should be sorted, prioritizing specific fields.
  * For example, if the order is [TRIGGER, ACTIONS, CONSTRAINTS, OPTIONS],

@@ -583,6 +583,9 @@
     <string name="dialog_title_fix_dnd_trigger_error">Grant Do Not Disturb access</string>
     <string name="dialog_message_fix_dnd_trigger_error">You will be taken to your device\'s settings page to manage which apps can modify the Do Not Disturb state. This is <b>not present on some devices</b> so tap don\'t show again if you do not see Key Mapper in the list.</string>
 
+    <string name="dialog_title_sort">Sort</string>
+    <string name="dialog_message_sort_sort_by">Sort by</string>
+
     <string name="pos_yes">Yes</string>
     <string name="pos_confirm">Confirm</string>
     <string name="pos_done">Done</string>
@@ -600,6 +603,7 @@
     <string name="pos_restart">Restart</string>
     <string name="pos_never_show_again">Never show again</string>
     <string name="pos_go_to_dont_kill_my_app">Open online guide</string>
+    <string name="pos_apply">Apply</string>
 
     <string name="neg_turn_off">Turn off</string>
     <string name="neg_stay_out">Stay out</string>
@@ -1376,9 +1380,4 @@
     <string name="about_team_bydario_url" translatable="false">https://github.com/bydariogamer</string>
     <string name="about_team_bydario_role">Translator (Spanish)</string>
     <!--  About  -->
-
-    <string name="sort_by">Sort by</string>
-    <string name="ascending">Ascending</string>
-    <string name="descending">Descending</string>
-    <string name="drag_to_reorder">Drag to reorder</string>
 </resources>

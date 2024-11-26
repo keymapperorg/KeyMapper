@@ -3,6 +3,8 @@ package io.github.sds100.keymapper.sorting
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 
+// This was supposed to be used but it became to complex. #1223
+
 class SetKeyMapSortOrderUseCase(
     private val preferenceRepository: PreferenceRepository,
 ) {

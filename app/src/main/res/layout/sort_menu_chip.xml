@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <import type="io.github.sds100.keymapper.sorting.SortOrder" />
+
+        <variable
+            name="sortOrder"
+            type="io.github.sds100.keymapper.sorting.SortOrder" />
+
+        <variable
+            name="text"
+            type="String" />
+
+        <variable
+            name="onClickListener"
+            type="android.view.View.OnClickListener" />
+    </data>
+
+    <com.google.android.material.chip.Chip
+        android:id="@+id/chip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClickListener="@{onClickListener}"
+        android:text="@{text}"
+        app:chipIcon="@{sortOrder == SortOrder.ASCENDING ? @drawable/ic_arrow_upward_24 : (sortOrder == SortOrder.DESCENDING ? @drawable/arrow_downward_24 : null) }" />
+
+</layout>
