@@ -178,6 +178,11 @@ class HomeFragment : Fragment() {
                     true
                 }
 
+                R.id.action_sort -> {
+                    findNavController().navigate(R.id.action_global_sortingFragment)
+                    true
+                }
+
                 else -> false
             }
         }
@@ -303,19 +308,6 @@ class HomeFragment : Fragment() {
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             homeViewModel.fingerprintMapListViewModel.requestFingerprintMapsBackup.collectLatest {
                 backupFingerprintMapsLauncher.launch(BackupUtils.createFingerprintMapsFileName())
-            }
-        }
-
-        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
-            binding.appBar.setOnMenuItemClickListener {
-                when (it.itemId) {
-                    R.id.action_sort -> {
-                        findNavController().navigate(R.id.action_global_sortingFragment)
-                        true
-                    }
-
-                    else -> false
-                }
             }
         }
     }
