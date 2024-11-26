@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.sorting
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 
 /**
@@ -28,8 +29,12 @@ class ObserveKeyMapsSorterUseCase(
                     SortField.OPTIONS -> options
                 }
 
+                if (fieldOrder == SortOrder.NONE) {
+                    return@map null
+                }
+
                 it.getComparator(fieldOrder == SortOrder.DESCENDING)
-            }
+            }.filterNotNull()
         }.map { Sorter(it) }
     }
 }

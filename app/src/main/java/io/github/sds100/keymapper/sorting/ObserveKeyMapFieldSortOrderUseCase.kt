@@ -28,8 +28,8 @@ class ObserveKeyMapFieldSortOrderUseCase(
 
         return preferenceRepository.get(key).map {
             when (it) {
-                // Default value is ascending
-                null, true -> SortOrder.ASCENDING
+                null -> SortOrder.NONE
+                true -> SortOrder.ASCENDING
                 false -> SortOrder.DESCENDING
             }
         }
