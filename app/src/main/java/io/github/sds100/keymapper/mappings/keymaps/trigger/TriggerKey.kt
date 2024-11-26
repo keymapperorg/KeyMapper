@@ -18,7 +18,7 @@ data class TriggerKey(
     val clickType: ClickType,
 
     val consumeKeyEvent: Boolean = true,
-) {
+) : Comparable<TriggerKey> {
 
     override fun toString(): String {
         val deviceString = when (device) {
@@ -27,6 +27,18 @@ data class TriggerKey(
             TriggerKeyDevice.Internal -> "internal"
         }
         return "TriggerKey(uid=${uid.substring(0..5)}, keyCode=$keyCode, device=$deviceString, clickType=$clickType, consume=$consumeKeyEvent) "
+    }
+
+    // key code -> click type -> device -> consume key event
+    override fun compareTo(other: TriggerKey): Int {
+        return compareValuesBy(
+            this,
+            other,
+            { it.keyCode },
+            { it.clickType },
+            { it.device },
+            { it.consumeKeyEvent },
+        )
     }
 }
 

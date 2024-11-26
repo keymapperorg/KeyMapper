@@ -9,6 +9,12 @@
         app:showAsAction="ifRoom" />
 
     <item
+        android:id="@+id/action_sort"
+        android:icon="@drawable/ic_sort_24"
+        android:title="@string/action_sort"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/action_seed_database"
         android:title="@string/action_seed_database"
         android:visible="false"
