@@ -126,7 +126,7 @@ jobs:
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
-          args: app/build/outputs/apk/ci/${{ env.APK_NAME }}.apk
+          args: app/build/outputs/apk/free/ci/${{ env.APK_NAME }}.apk
 
       - name: Report build status to Discord
         uses: sarisia/actions-status-discord@v1
