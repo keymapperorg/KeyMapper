@@ -96,9 +96,13 @@ android {
         pro {
             dimension "pro"
 
-            def localProperties = new Properties()
-            localProperties.load(new FileInputStream(rootProject.file("local.properties")))
-            buildConfigField("String", "REVENUECAT_API_KEY", localProperties["REVENUECAT_API_KEY"])
+            File file = rootProject.file("local.properties")
+
+            if (file.exists()) {
+                def localProperties = new Properties()
+                localProperties.load(new FileInputStream(file))
+                buildConfigField("String", "REVENUECAT_API_KEY", localProperties["REVENUECAT_API_KEY"])
+            }
         }
     }
 
