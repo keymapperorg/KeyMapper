@@ -7,10 +7,4 @@
         android:icon="@drawable/ic_baseline_help_outline_24"
         android:title="@string/action_help_home"
         app:showAsAction="ifRoom" />
-
-    <item
-        android:id="@+id/action_seed_database"
-        android:title="@string/action_seed_database"
-        android:visible="false"
-        app:showAsAction="never" />
 </menu>

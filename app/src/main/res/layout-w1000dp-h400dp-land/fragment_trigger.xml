@@ -9,7 +9,7 @@
 
         <variable
             name="viewModel"
-            type="io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapTriggerViewModel" />
+            type="io.github.sds100.keymapper.mappings.keymaps.trigger.ConfigTriggerViewModel" />
 
     </data>
 
@@ -36,6 +36,7 @@
             android:id="@+id/listLayout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginTop="8dp"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             app:layout_constraintBottom_toTopOf="@id/radioGroupClickType"
             app:layout_constraintEnd_toEndOf="parent"
@@ -46,6 +47,7 @@
                 android:id="@+id/recyclerViewTriggerKeys"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginTop="8dp"
                 android:clipToPadding="false"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/list_item_simple" />
@@ -134,7 +136,7 @@
             android:checkedButton="@{viewModel.checkedTriggerModeRadioButton}"
             android:gravity="bottom"
             android:orientation="horizontal"
-            app:layout_constraintBottom_toTopOf="@+id/buttonRecordKeys"
+            app:layout_constraintBottom_toTopOf="@+id/composeViewRecordTriggerButtons"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
@@ -166,21 +168,19 @@
 
         </RadioGroup>
 
-        <com.google.android.material.button.MaterialButton
-            style="@style/Widget.Button.Red"
-            android:id="@+id/buttonRecordKeys"
+        <androidx.compose.ui.platform.ComposeView
+            android:id="@+id/composeViewRecordTriggerButtons"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="4dp"
-            android:onClick="@{() -> viewModel.onRecordTriggerButtonClick()}"
-            android:text="@{viewModel.recordTriggerButtonText}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toStartOf="parent"
+            tools:layout_height="80dp"
             tools:text="@string/button_record_trigger" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

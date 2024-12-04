@@ -9,8 +9,9 @@ import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.mappings.Mapping
 import io.github.sds100.keymapper.mappings.keymaps.detection.KeyMapController
-import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTrigger
-import io.github.sds100.keymapper.mappings.keymaps.trigger.KeymapTriggerEntityMapper
+import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
+import io.github.sds100.keymapper.mappings.keymaps.trigger.Trigger
+import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerEntityMapper
 import kotlinx.serialization.Serializable
 import java.util.UUID
 
@@ -22,7 +23,7 @@ import java.util.UUID
 data class KeyMap(
     val dbId: Long? = null,
     val uid: String = UUID.randomUUID().toString(),
-    val trigger: KeyMapTrigger = KeyMapTrigger(),
+    val trigger: Trigger = Trigger(),
     override val actionList: List<KeyMapAction> = emptyList(),
     override val constraintState: ConstraintState = ConstraintState(),
     override val isEnabled: Boolean = true,
@@ -62,12 +63,24 @@ data class KeyMap(
 }
 
 /**
- * @return whether this key map requires an input method to send the key events
- * because otherwise it won't be detected.
+ * Whether this key map requires an input method to detect the key events.
+ * If the key map needs to answer or end a call then it must use an input method to detect
+ * the key events because volume key events are not sent to accessibility services when a call
+ * is incoming.
  */
-fun KeyMap.requiresImeKeyEventForwarding(): Boolean =
-    trigger.keys.any { it.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || it.keyCode == KeyEvent.KEYCODE_VOLUME_UP } &&
+fun KeyMap.requiresImeKeyEventForwarding(): Boolean {
+    val hasPhoneCallAction =
         actionList.any { it.data is ActionData.AnswerCall || it.data is ActionData.EndCall }
+
+    val hasVolumeKeys = trigger.keys
+        .mapNotNull { it as? KeyCodeTriggerKey }
+        .any {
+            it.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN ||
+                it.keyCode == KeyEvent.KEYCODE_VOLUME_UP
+        }
+
+    return hasVolumeKeys && hasPhoneCallAction
+}
 
 object KeyMapEntityMapper {
     fun fromEntity(entity: KeyMapEntity): KeyMap {
@@ -81,7 +94,7 @@ object KeyMapEntityMapper {
         return KeyMap(
             dbId = entity.id,
             uid = entity.uid,
-            trigger = KeymapTriggerEntityMapper.fromEntity(entity.trigger),
+            trigger = TriggerEntityMapper.fromEntity(entity.trigger),
             actionList = actionList,
             constraintState = ConstraintState(constraintList, constraintMode),
             isEnabled = entity.isEnabled,
@@ -93,7 +106,7 @@ object KeyMapEntityMapper {
 
         return KeyMapEntity(
             id = dbId,
-            trigger = KeymapTriggerEntityMapper.toEntity(keyMap.trigger),
+            trigger = TriggerEntityMapper.toEntity(keyMap.trigger),
             actionList = actionEntityList,
             constraintList = keyMap.constraintState.constraints.map {
                 ConstraintEntityMapper.toEntity(

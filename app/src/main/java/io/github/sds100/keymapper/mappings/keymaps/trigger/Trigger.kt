@@ -15,7 +15,7 @@ import splitties.bitflags.withFlag
  */
 
 @Serializable
-data class KeyMapTrigger(
+data class Trigger(
     val keys: List<TriggerKey> = emptyList(),
     val mode: TriggerMode = TriggerMode.Undefined,
     val vibrate: Boolean = false,
@@ -42,20 +42,27 @@ data class KeyMapTrigger(
         (keys.size == 1 || (mode is TriggerMode.Parallel)) &&
             keys.getOrNull(0)?.clickType == ClickType.LONG_PRESS
 
-    fun isDetectingWhenScreenOffAllowed(): Boolean = keys.isNotEmpty() &&
-        keys.all {
-            KeyEventUtils.canDetectKeyWhenScreenOff(it.keyCode)
-        }
+    /**
+     * Must check that it is not empty otherwise it would be true from the "all" check.
+     * It is not allowed if the key is an assistant button because it is assumed to be true
+     * anyway.
+     */
+    fun isDetectingWhenScreenOffAllowed(): Boolean {
+        return keys.isNotEmpty() &&
+            keys.all {
+                it is KeyCodeTriggerKey && KeyEventUtils.canDetectKeyWhenScreenOff(it.keyCode)
+            }
+    }
 
     fun isChangingSequenceTriggerTimeoutAllowed(): Boolean =
-        !keys.isNullOrEmpty() && keys.size > 1 && mode is TriggerMode.Sequence
+        keys.isNotEmpty() && keys.size > 1 && mode is TriggerMode.Sequence
 }
 
-object KeymapTriggerEntityMapper {
+object TriggerEntityMapper {
     fun fromEntity(
         entity: TriggerEntity,
-    ): KeyMapTrigger {
-        val keys = entity.keys.map { KeymapTriggerKeyEntityMapper.fromEntity(it) }
+    ): Trigger {
+        val keys = entity.keys.map { TriggerKey.fromEntity(it) }
 
         val mode = when {
             entity.mode == TriggerEntity.SEQUENCE && keys.size > 1 -> TriggerMode.Sequence
@@ -63,7 +70,7 @@ object KeymapTriggerEntityMapper {
             else -> TriggerMode.Undefined
         }
 
-        return KeyMapTrigger(
+        return Trigger(
             keys = keys,
             mode = mode,
 
@@ -90,7 +97,7 @@ object KeymapTriggerEntityMapper {
         )
     }
 
-    fun toEntity(trigger: KeyMapTrigger): TriggerEntity {
+    fun toEntity(trigger: Trigger): TriggerEntity {
         val extras = mutableListOf<Extra>()
 
         if (trigger.isChangingSequenceTriggerTimeoutAllowed() && trigger.sequenceTriggerTimeout != null) {
@@ -158,7 +165,7 @@ object KeymapTriggerEntityMapper {
         }
 
         return TriggerEntity(
-            keys = trigger.keys.map { KeymapTriggerKeyEntityMapper.toEntity(it) },
+            keys = trigger.keys.map { TriggerKey.toEntity(it) },
             extras = extras,
             mode = mode,
             flags = flags,

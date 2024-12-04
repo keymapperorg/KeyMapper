@@ -1,5 +1,7 @@
 package io.github.sds100.keymapper.system.accessibility
 
+import io.github.sds100.keymapper.system.permissions.Permission
+import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -8,6 +10,7 @@ import kotlinx.coroutines.flow.Flow
 
 class ControlAccessibilityServiceUseCaseImpl(
     private val adapter: ServiceAdapter,
+    private val permissionAdapter: PermissionAdapter,
 ) : ControlAccessibilityServiceUseCase {
     override val serviceState: Flow<ServiceState> = adapter.state
 
@@ -26,6 +29,13 @@ class ControlAccessibilityServiceUseCaseImpl(
     override fun stopService() {
         adapter.stop()
     }
+
+    /**
+     * @return whether the user must manually start/stop the service.
+     */
+    override fun isUserInteractionRequired(): Boolean {
+        return !permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)
+    }
 }
 
 interface ControlAccessibilityServiceUseCase {
@@ -33,4 +43,5 @@ interface ControlAccessibilityServiceUseCase {
     fun startService(): Boolean
     fun restartService(): Boolean
     fun stopService()
+    fun isUserInteractionRequired(): Boolean
 }

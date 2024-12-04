@@ -9,7 +9,7 @@
 
         <variable
             name="viewModel"
-            type="io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapTriggerViewModel" />
+            type="io.github.sds100.keymapper.mappings.keymaps.trigger.ConfigTriggerViewModel" />
 
     </data>
 
@@ -36,6 +36,7 @@
             android:id="@+id/listLayout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginTop="8dp"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             app:layout_constraintBottom_toTopOf="@id/radioGroupClickType"
             app:layout_constraintEnd_toEndOf="parent"
@@ -67,10 +68,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="16dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="32dp"
                 android:text="@string/triggers_recyclerview_placeholder" />
         </FrameLayout>
 
@@ -101,7 +102,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="@string/radio_button_long_press" />
+                android:text="@string/radio_button_long_press"
+                android:visibility="@{viewModel.longPressButtonVisible ? View.VISIBLE : View.GONE}" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/radioButtonDoublePress"
@@ -121,6 +123,7 @@
             android:paddingTop="8dp"
             android:text="@string/press_dot_dot_dot"
             android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+            android:visibility="@{viewModel.triggerModeRadioButtonsVisible ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toTopOf="@+id/radioGroupTriggerMode"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -134,7 +137,8 @@
             android:checkedButton="@{viewModel.checkedTriggerModeRadioButton}"
             android:gravity="bottom"
             android:orientation="horizontal"
-            app:layout_constraintBottom_toTopOf="@+id/buttonRecordKeys"
+            android:visibility="@{viewModel.triggerModeRadioButtonsVisible ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toTopOf="@+id/composeViewRecordTriggerButtons"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
@@ -166,21 +170,19 @@
 
         </RadioGroup>
 
-        <com.google.android.material.button.MaterialButton
-            style="@style/Widget.Button.Red"
-            android:id="@+id/buttonRecordKeys"
+        <androidx.compose.ui.platform.ComposeView
+            android:id="@+id/composeViewRecordTriggerButtons"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="4dp"
-            android:onClick="@{() -> viewModel.onRecordTriggerButtonClick()}"
-            android:text="@{viewModel.recordTriggerButtonText}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toStartOf="parent"
+            tools:layout_height="80dp"
             tools:text="@string/button_record_trigger" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

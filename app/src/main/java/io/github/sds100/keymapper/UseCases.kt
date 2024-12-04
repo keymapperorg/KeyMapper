@@ -50,6 +50,7 @@ object UseCases {
         ServiceLocator.inputMethodAdapter(ctx),
         displaySimpleMapping(ctx),
         ServiceLocator.settingsRepository(ctx),
+        ServiceLocator.purchasingManager(ctx),
     )
 
     fun configKeyMap(ctx: Context): ConfigKeyMapUseCase = ConfigKeyMapUseCaseImpl(
@@ -121,6 +122,7 @@ object UseCases {
     fun controlAccessibilityService(ctx: Context): ControlAccessibilityServiceUseCase =
         ControlAccessibilityServiceUseCaseImpl(
             ServiceLocator.accessibilityServiceAdapter(ctx),
+            ServiceLocator.permissionAdapter(ctx),
         )
 
     fun toggleCompatibleIme(ctx: Context) =

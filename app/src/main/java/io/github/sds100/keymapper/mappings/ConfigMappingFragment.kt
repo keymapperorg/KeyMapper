@@ -78,6 +78,10 @@ abstract class ConfigMappingFragment : Fragment() {
             fragmentInfoList.map { it.first.toLong() to it.second.instantiate },
         )
 
+        // Don't show the swipe animations for reaching the end of the pager
+        // if there is only one page.
+        binding.viewPager.isUserInputEnabled = fragmentInfoList.size > 1
+
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             val tabTitleRes = fragmentInfoList[position].second.header
 

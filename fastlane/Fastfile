@@ -19,7 +19,7 @@ default_platform(:android)
 
 desc "Create testing release"
 lane :testing do
-    gradle(task: "clean assembleCi")
+    gradle(task: "clean assembleFreeCi")
 end
 
 desc "Create and deploy production release"
@@ -30,9 +30,10 @@ lane :prod do |options|
     whats_new = File.read("../app/src/main/assets/whats-new.txt")
     File.write("metadata/android/en-US/changelogs/" + version_code + ".txt", whats_new)
 
-    gradle(task: "assembleDebug")
-    gradle(task: "assembleRelease")
-    gradle(task: "bundleRelease")
+#   Do not release a debug build for pro version.
+#   gradle(task: "assembleDebug")
+    gradle(task: "assembleProRelease")
+    gradle(task: "bundleProRelease")
 
     apk_path_debug="app/build/outputs/apk/debug/keymapper-" + version_name + "-debug.apk"
     apk_path_release="app/build/outputs/apk/release/keymapper-" + version_name + ".apk"

@@ -6,7 +6,8 @@ import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.constraints.ConstraintSnapshotImpl
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCase
-import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTrigger
+import io.github.sds100.keymapper.mappings.keymaps.detection.TriggerKeyMapFromOtherAppsController
+import io.github.sds100.keymapper.mappings.keymaps.trigger.Trigger
 import junitparams.JUnitParamsRunner
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -29,7 +30,7 @@ import org.mockito.kotlin.verify
 
 @ExperimentalCoroutinesApi
 @RunWith(JUnitParamsRunner::class)
-class TriggerKeyMapFromOtherAppsControllerTest {
+class KeyCodeTriggerKeyMapFromOtherAppsControllerTest {
 
     companion object {
         private const val LONG_PRESS_DELAY = 500L
@@ -115,7 +116,7 @@ class TriggerKeyMapFromOtherAppsControllerTest {
                 )
             val keyMap = KeyMap(
                 actionList = listOf(action),
-                trigger = KeyMapTrigger(triggerFromOtherApps = true),
+                trigger = Trigger(triggerFromOtherApps = true),
             )
             keyMapListFlow.value = listOf(keyMap)
 

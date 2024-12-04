@@ -3,6 +3,9 @@ package io.github.sds100.keymapper.mappings.keymaps.trigger
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -12,15 +15,14 @@ import com.airbnb.epoxy.EpoxyTouchHelper
 import com.google.android.material.card.MaterialCardView
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.TriggerKeyBindingModel_
+import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.databinding.FragmentTriggerBinding
 import io.github.sds100.keymapper.fixError
-import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapTriggerViewModel
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapViewModel
 import io.github.sds100.keymapper.triggerKey
 import io.github.sds100.keymapper.util.FragmentInfo
 import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.State
-import io.github.sds100.keymapper.util.color
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.RecyclerViewFragment
 import kotlinx.coroutines.flow.Flow
@@ -39,7 +41,7 @@ class TriggerFragment : RecyclerViewFragment<TriggerKeyListItem, FragmentTrigger
             { TriggerFragment() },
         )
 
-    private val configKeyMapTriggerViewModel: ConfigKeyMapTriggerViewModel by lazy {
+    private val configTriggerViewModel: ConfigTriggerViewModel by lazy {
         navGraphViewModels<ConfigKeyMapViewModel>(R.id.nav_config_keymap) {
             Inject.configKeyMapViewModel(requireContext())
         }.value.configTriggerViewModel
@@ -48,22 +50,31 @@ class TriggerFragment : RecyclerViewFragment<TriggerKeyListItem, FragmentTrigger
     private val triggerKeyController = TriggerKeyController()
 
     override val listItems: Flow<State<List<TriggerKeyListItem>>>
-        get() = configKeyMapTriggerViewModel.triggerKeyListItems
+        get() = configTriggerViewModel.triggerKeyListItems
 
     override fun bind(inflater: LayoutInflater, container: ViewGroup?) =
         FragmentTriggerBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
+
+            composeViewRecordTriggerButtons.apply {
+                // Dispose of the Composition when the view's LifecycleOwner
+                // is destroyed
+                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                setContent {
+                    KeyMapperTheme {
+                        RecordTriggerButtonRow(Modifier.fillMaxWidth(), configTriggerViewModel)
+                    }
+                }
+            }
         }
 
     override fun subscribeUi(binding: FragmentTriggerBinding) {
-        binding.viewModel = configKeyMapTriggerViewModel
-
-        binding.buttonRecordKeys.setBackgroundColor(color(R.color.red, harmonize = true))
+        binding.viewModel = configTriggerViewModel
 
         binding.recyclerViewTriggerKeys.adapter = triggerKeyController.adapter
 
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
-            configKeyMapTriggerViewModel.errorListItems.collectLatest { listItems ->
+            configTriggerViewModel.errorListItems.collectLatest { listItems ->
 
                 binding.enableTriggerKeyDragging(triggerKeyController)
 
@@ -74,7 +85,7 @@ class TriggerFragment : RecyclerViewFragment<TriggerKeyListItem, FragmentTrigger
                             model(it)
 
                             onFixClick { _ ->
-                                configKeyMapTriggerViewModel.onTriggerErrorClick(it.id)
+                                configTriggerViewModel.onTriggerErrorClick(it.id)
                             }
                         }
                     }
@@ -98,7 +109,7 @@ class TriggerFragment : RecyclerViewFragment<TriggerKeyListItem, FragmentTrigger
     override fun onPause() {
         super.onPause()
 
-        configKeyMapTriggerViewModel.stopRecordingTrigger()
+        configTriggerViewModel.stopRecordingTrigger()
     }
 
     private fun FragmentTriggerBinding.enableTriggerKeyDragging(controller: EpoxyController): ItemTouchHelper =
@@ -117,7 +128,7 @@ class TriggerFragment : RecyclerViewFragment<TriggerKeyListItem, FragmentTrigger
                     modelBeingMoved: TriggerKeyBindingModel_?,
                     itemView: View?,
                 ) {
-                    configKeyMapTriggerViewModel.onMoveTriggerKey(fromPosition, toPosition)
+                    configTriggerViewModel.onMoveTriggerKey(fromPosition, toPosition)
                 }
 
                 override fun onDragStarted(
@@ -147,15 +158,15 @@ class TriggerFragment : RecyclerViewFragment<TriggerKeyListItem, FragmentTrigger
                     model(model)
 
                     onRemoveClick { _ ->
-                        configKeyMapTriggerViewModel.onRemoveKeyClick(model.id)
+                        configTriggerViewModel.onRemoveKeyClick(model.id)
                     }
 
                     onMoreClick { _ ->
-                        configKeyMapTriggerViewModel.onTriggerKeyOptionsClick(model.id)
+                        configTriggerViewModel.onTriggerKeyOptionsClick(model.id)
                     }
 
                     onDeviceClick { _ ->
-                        configKeyMapTriggerViewModel.onChooseDeviceClick(model.id)
+                        configTriggerViewModel.onChooseDeviceClick(model.id)
                     }
                 }
             }

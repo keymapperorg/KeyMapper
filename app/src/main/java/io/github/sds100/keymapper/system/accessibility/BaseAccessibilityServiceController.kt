@@ -15,10 +15,10 @@ import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
 import io.github.sds100.keymapper.mappings.fingerprintmaps.DetectFingerprintMapsUseCase
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintGestureMapController
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapId
-import io.github.sds100.keymapper.mappings.keymaps.TriggerKeyMapFromOtherAppsController
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCase
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectScreenOffKeyEventsController
 import io.github.sds100.keymapper.mappings.keymaps.detection.KeyMapController
+import io.github.sds100.keymapper.mappings.keymaps.detection.TriggerKeyMapFromOtherAppsController
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsController
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsUseCase
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
@@ -54,7 +54,7 @@ import timber.log.Timber
 /**
  * Created by sds100 on 17/04/2021.
  */
-class AccessibilityServiceController(
+abstract class BaseAccessibilityServiceController(
     private val coroutineScope: CoroutineScope,
     private val accessibilityService: IAccessibilityService,
     private val inputEvents: SharedFlow<ServiceEvent>,
@@ -92,7 +92,7 @@ class AccessibilityServiceController(
         detectConstraintsUseCase,
     )
 
-    private val keymapDetectionDelegate = KeyMapController(
+    val keyMapController = KeyMapController(
         coroutineScope,
         detectKeyMapsUseCase,
         performActionsUseCase,
@@ -108,7 +108,7 @@ class AccessibilityServiceController(
     private val recordingTrigger: Boolean
         get() = recordingTriggerJob != null && recordingTriggerJob?.isActive == true
 
-    private val isPaused: StateFlow<Boolean> = pauseMappingsUseCase.isPaused
+    val isPaused: StateFlow<Boolean> = pauseMappingsUseCase.isPaused
         .stateIn(coroutineScope, SharingStarted.Eagerly, false)
 
     private val screenOffTriggersEnabled: StateFlow<Boolean> =
@@ -123,7 +123,7 @@ class AccessibilityServiceController(
 
             if (!isPaused.value) {
                 withContext(Dispatchers.Main.immediate) {
-                    keymapDetectionDelegate.onKeyEvent(
+                    keyMapController.onKeyEvent(
                         keyCode,
                         action,
                         metaState = 0,
@@ -196,7 +196,7 @@ class AccessibilityServiceController(
         }
 
         pauseMappingsUseCase.isPaused.distinctUntilChanged().onEach {
-            keymapDetectionDelegate.reset()
+            keyMapController.reset()
             fingerprintMapController.reset()
             triggerKeyMapFromOtherAppsController.reset()
         }.launchIn(coroutineScope)
@@ -320,11 +320,16 @@ class AccessibilityServiceController(
             return true
         }
 
-        if (!isPaused.value) {
+        if (isPaused.value) {
+            when (action) {
+                KeyEvent.ACTION_DOWN -> Timber.d("Down ${KeyEvent.keyCodeToString(keyCode)} - not filtering because paused, $detailedLogInfo")
+                KeyEvent.ACTION_UP -> Timber.d("Up ${KeyEvent.keyCodeToString(keyCode)} - not filtering because paused, $detailedLogInfo")
+            }
+        } else {
             try {
                 var consume: Boolean
 
-                consume = keymapDetectionDelegate.onKeyEvent(
+                consume = keyMapController.onKeyEvent(
                     keyCode,
                     action,
                     metaState,
@@ -350,11 +355,6 @@ class AccessibilityServiceController(
                 return consume
             } catch (e: Exception) {
                 Timber.e(e)
-            }
-        } else {
-            when (action) {
-                KeyEvent.ACTION_DOWN -> Timber.d("Down ${KeyEvent.keyCodeToString(keyCode)} - not filtering because paused, $detailedLogInfo")
-                KeyEvent.ACTION_UP -> Timber.d("Up ${KeyEvent.keyCodeToString(keyCode)} - not filtering because paused, $detailedLogInfo")
             }
         }
 
@@ -426,7 +426,7 @@ class AccessibilityServiceController(
         triggerKeyMapFromOtherAppsController.onDetected(uid)
     }
 
-    private fun onEventFromUi(event: ServiceEvent) {
+    open fun onEventFromUi(event: ServiceEvent) {
         Timber.d("Service received event from UI: $event")
         when (event) {
             is ServiceEvent.StartRecordingTrigger ->
@@ -449,7 +449,10 @@ class AccessibilityServiceController(
 
             is ServiceEvent.TestAction -> performActionsUseCase.perform(event.action)
 
-            is ServiceEvent.Ping -> coroutineScope.launch { outputEvents.emit(ServiceEvent.Pong(event.key)) }
+            is ServiceEvent.Ping -> coroutineScope.launch {
+                outputEvents.emit(ServiceEvent.Pong(event.key))
+            }
+
             is ServiceEvent.HideKeyboard -> accessibilityService.hideKeyboard()
             is ServiceEvent.ShowKeyboard -> accessibilityService.showKeyboard()
             is ServiceEvent.ChangeIme -> accessibilityService.switchIme(event.imeId)

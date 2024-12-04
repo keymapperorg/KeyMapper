@@ -94,6 +94,6 @@ sealed class NavDestination<R> {
     object FixAppKilling : NavDestination<Unit>()
     object Settings : NavDestination<Unit>()
     object About : NavDestination<Unit>()
-    data class ConfigKeyMap(val keyMapUid: String?) : NavDestination<Unit>()
+    data class ConfigKeyMap(val keyMapUid: String?, val showAdvancedTriggers: Boolean = false) : NavDestination<Unit>()
     data class ConfigFingerprintMap(val id: FingerprintMapId) : NavDestination<Unit>()
 }

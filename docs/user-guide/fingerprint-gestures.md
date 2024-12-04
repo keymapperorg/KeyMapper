@@ -24,9 +24,9 @@ From the Key Mapper home screen, tab the 'Fingerprint' tab.
 
 Here you can set actions for the 4 directional gestures. Tapping any one of them will bring you to the action assignment screen for that gesture and by tapping 'Add action' at the bottom of the screen you can assign the action. [Click here for an explanation of all the actions you can choose from.](actions.md)
 
-After choosing an action (or actions) you can press the save :fontawesome-solid-save: icon in the bottom right to save the mapping.
+After choosing an action (or actions) you can press the save :material-content-save: icon in the bottom right to save the mapping.
 
-Make sure to save :fontawesome-solid-save: your fingerprint gesture map after applying these changes.
+Make sure to save :material-content-save: your fingerprint gesture map after applying these changes.
 
 ## Customising actions
 

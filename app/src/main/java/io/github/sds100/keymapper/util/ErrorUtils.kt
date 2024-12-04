@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.util
 
 import android.content.pm.PackageManager
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.purchasing.ProductId
 import io.github.sds100.keymapper.system.BuildUtils
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 
@@ -9,7 +10,7 @@ import io.github.sds100.keymapper.util.ui.ResourceProvider
  * Created by sds100 on 29/02/2020.
  */
 
-fun Error.getFullMessage(resourceProvider: ResourceProvider) = when (this) {
+fun Error.getFullMessage(resourceProvider: ResourceProvider): String = when (this) {
     is Error.PermissionDenied ->
         Error.PermissionDenied.getMessageForPermission(
             resourceProvider,
@@ -141,6 +142,18 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider) = when (this) {
     Error.CantDetectKeyEventsInPhoneCall -> resourceProvider.getString(R.string.trigger_error_cant_detect_in_phone_call_explanation)
     Error.GestureStrokeCountTooHigh -> resourceProvider.getString(R.string.trigger_error_gesture_stroke_count_too_high)
     Error.GestureDurationTooHigh -> resourceProvider.getString(R.string.trigger_error_gesture_duration_too_high)
+
+    Error.PurchasingError.Cancelled -> resourceProvider.getString(R.string.purchasing_error_cancelled)
+    Error.PurchasingError.NetworkError -> resourceProvider.getString(R.string.purchasing_error_network)
+    Error.PurchasingError.ProductNotFound -> resourceProvider.getString(R.string.purchasing_error_product_not_found)
+    Error.PurchasingError.StoreProblem -> resourceProvider.getString(R.string.purchasing_error_store_problem)
+    is Error.PurchasingError.Unexpected -> this.message
+
+    is Error.ProductNotPurchased -> when (this.product) {
+        ProductId.ASSISTANT_TRIGGER -> resourceProvider.getString(R.string.purchasing_error_assistant_not_purchased_home_screen)
+    }
+
+    Error.PurchasingNotImplemented -> resourceProvider.getString(R.string.purchasing_error_not_implemented)
 }
 
 val Error.isFixable: Boolean

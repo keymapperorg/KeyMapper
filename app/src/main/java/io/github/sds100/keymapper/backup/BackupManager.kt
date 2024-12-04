@@ -26,6 +26,8 @@ import io.github.sds100.keymapper.data.entities.ConstraintEntity
 import io.github.sds100.keymapper.data.entities.Extra
 import io.github.sds100.keymapper.data.entities.FingerprintMapEntity
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
+import io.github.sds100.keymapper.data.entities.TriggerEntity
+import io.github.sds100.keymapper.data.entities.TriggerKeyEntity
 import io.github.sds100.keymapper.data.migration.JsonMigration
 import io.github.sds100.keymapper.data.migration.Migration10To11
 import io.github.sds100.keymapper.data.migration.Migration11To12
@@ -110,6 +112,8 @@ class BackupManagerImpl(
         GsonBuilder()
             .registerTypeAdapter(FingerprintMapEntity.DESERIALIZER)
             .registerTypeAdapter(KeyMapEntity.DESERIALIZER)
+            .registerTypeAdapter(TriggerEntity.DESERIALIZER)
+            .registerTypeAdapter(TriggerKeyEntity.DESERIALIZER)
             .registerTypeAdapter(ActionEntity.DESERIALIZER)
             .registerTypeAdapter(Extra.DESERIALIZER)
             .registerTypeAdapter(ConstraintEntity.DESERIALIZER).create()
@@ -262,7 +266,6 @@ class BackupManagerImpl(
     private suspend fun restore(inputStream: InputStream, soundFiles: List<IFile>): Result<*> {
         try {
             val parser = JsonParser()
-            val gson = Gson()
 
             val rootElement = inputStream.bufferedReader().use {
                 val element = parser.parse(it)
@@ -299,10 +302,7 @@ class BackupManagerImpl(
                     Migration11To12.migrateKeyMap(json, deviceInfoList ?: JsonArray())
                 },
                 // do nothing because this added the log table
-                JsonMigration(
-                    12,
-                    13,
-                ) { json -> json },
+                JsonMigration(12, 13) { json -> json },
             )
 
             keymapListJsonArray?.forEach { keyMap ->
@@ -330,10 +330,7 @@ class BackupManagerImpl(
 
             // do nothing because this added the log table
             val newFingerprintMapMigrations = listOf(
-                JsonMigration(
-                    12,
-                    13,
-                ) { json -> json },
+                JsonMigration(12, 13) { json -> json },
             )
 
             if (rootElement.contains(NAME_FINGERPRINT_MAP_LIST) && backupDbVersion >= 12) {
@@ -429,8 +426,9 @@ class BackupManagerImpl(
         } catch (e: NoSuchElementException) {
             return Error.CorruptJsonFile(e.message ?: "")
         } catch (e: Exception) {
+            e.printStackTrace()
+
             if (throwExceptions) {
-                e.printStackTrace()
                 throw e
             }
 

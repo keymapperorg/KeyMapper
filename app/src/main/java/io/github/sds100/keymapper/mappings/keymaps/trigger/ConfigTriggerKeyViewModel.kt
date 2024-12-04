@@ -84,12 +84,16 @@ class ConfigTriggerKeyViewModel(
         triggerKeyUid.value = uid
     }
 
-    private fun createListItems(triggerMode: TriggerMode, key: TriggerKey): List<ListItem> =
-        sequence {
+    private fun createListItems(triggerMode: TriggerMode, key: TriggerKey): List<ListItem> {
+        if (key !is KeyCodeTriggerKey) {
+            return emptyList()
+        }
+
+        return sequence {
             yield(
                 CheckBoxListItem(
                     id = ID_DONT_CONSUME_KEY_EVENT,
-                    isChecked = !key.consumeKeyEvent,
+                    isChecked = !key.consumeEvent,
                     label = getString(R.string.flag_dont_override_default_action),
                 ),
             )
@@ -115,4 +119,5 @@ class ConfigTriggerKeyViewModel(
                 )
             }
         }.toList()
+    }
 }

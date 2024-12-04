@@ -1,17 +1,16 @@
-package io.github.sds100.keymapper.mappings.keymaps
+package io.github.sds100.keymapper.mappings.keymaps.trigger
 
 import android.os.Build
 import android.view.KeyEvent
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.ClickType
-import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTrigger
-import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTriggerError
-import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerState
-import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerUseCase
-import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
-import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyLinkType
-import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyListItem
-import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
+import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapUseCase
+import io.github.sds100.keymapper.mappings.keymaps.CreateKeyMapShortcutUseCase
+import io.github.sds100.keymapper.mappings.keymaps.DisplayKeyMapUseCase
+import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
@@ -56,7 +55,7 @@ import kotlinx.coroutines.runBlocking
  * Created by sds100 on 24/11/20.
  */
 
-class ConfigKeyMapTriggerViewModel(
+abstract class BaseConfigTriggerViewModel(
     private val coroutineScope: CoroutineScope,
     private val onboarding: OnboardingUseCase,
     private val config: ConfigKeyMapUseCase,
@@ -68,7 +67,7 @@ class ConfigKeyMapTriggerViewModel(
     PopupViewModel by PopupViewModelImpl(),
     NavigationViewModel by NavigationViewModelImpl() {
 
-    val optionsViewModel = ConfigKeyMapTriggerOptionsViewModel(
+    val optionsViewModel = ConfigTriggerOptionsViewModel(
         coroutineScope,
         config,
         createKeyMapShortcut,
@@ -82,16 +81,11 @@ class ConfigKeyMapTriggerViewModel(
      */
     val openEditOptions = _openEditOptions.asSharedFlow()
 
-    val recordTriggerButtonText: StateFlow<String> = recordTrigger.state.map { recordTriggerState ->
-        when (recordTriggerState) {
-            is RecordTriggerState.CountingDown -> getString(
-                R.string.button_recording_trigger_countdown,
-                recordTriggerState.timeLeft,
-            )
-
-            RecordTriggerState.Stopped -> getString(R.string.button_record_trigger)
-        }
-    }.flowOn(Dispatchers.Default).stateIn(coroutineScope, SharingStarted.Lazily, "")
+    val recordTriggerState: StateFlow<RecordTriggerState> = recordTrigger.state.stateIn(
+        coroutineScope,
+        SharingStarted.Lazily,
+        RecordTriggerState.Stopped,
+    )
 
     val triggerModeButtonsEnabled: StateFlow<Boolean> = config.mapping.map { state ->
         when (state) {
@@ -124,12 +118,21 @@ class ConfigKeyMapTriggerViewModel(
             }
         }.flowOn(Dispatchers.Default).stateIn(coroutineScope, SharingStarted.Eagerly, State.Loading)
 
+    /**
+     * The click type radio buttons are only visible if there is one key
+     * or there are only key code keys in the trigger. It is not possible to do a long press of
+     * non-key code keys in a parallel trigger.
+     */
     val clickTypeRadioButtonsVisible: StateFlow<Boolean> = config.mapping.map { state ->
         when (state) {
             is State.Data -> {
                 val trigger = state.data.trigger
 
-                trigger.mode is TriggerMode.Parallel || trigger.keys.size == 1
+                if (trigger.mode is TriggerMode.Parallel) {
+                    trigger.keys.all { it is KeyCodeTriggerKey }
+                } else {
+                    trigger.keys.size == 1
+                }
             }
 
             State.Loading -> false
@@ -142,6 +145,30 @@ class ConfigKeyMapTriggerViewModel(
             State.Loading -> false
         }
     }.flowOn(Dispatchers.Default).stateIn(coroutineScope, SharingStarted.Eagerly, false)
+
+    /**
+     * Long press is only allowed for triggers that only use key code trigger keys.
+     */
+    val longPressButtonVisible: StateFlow<Boolean> = config.mapping.map { state ->
+        when (state) {
+            is State.Data -> state.data.trigger.keys.all { it is KeyCodeTriggerKey }
+            State.Loading -> false
+        }
+    }.flowOn(Dispatchers.Default).stateIn(coroutineScope, SharingStarted.Eagerly, false)
+
+    /**
+     * Only show the buttons for the trigger mode if keys have been added. The buttons
+     * shouldn't be shown when no trigger is selected because they aren't relevant
+     * for advanced triggers.
+     */
+    val triggerModeRadioButtonsVisible: StateFlow<Boolean> = config.mapping
+        .map { state ->
+            when (state) {
+                is State.Data -> state.data.trigger.keys.isNotEmpty()
+                State.Loading -> false
+            }
+        }
+        .stateIn(coroutineScope, SharingStarted.Eagerly, false)
 
     val checkedClickTypeRadioButton: StateFlow<Int> = config.mapping.map { state ->
         when (state) {
@@ -175,6 +202,8 @@ class ConfigKeyMapTriggerViewModel(
 
     private val _fixAppKilling = MutableSharedFlow<Unit>()
     val fixAppKilling = _fixAppKilling.asSharedFlow()
+
+    var showAdvancedTriggersBottomSheet: Boolean by mutableStateOf(false)
 
     init {
         val rebuildErrorList = MutableSharedFlow<State<KeyMap>>(replay = 1)
@@ -222,7 +251,7 @@ class ConfigKeyMapTriggerViewModel(
                 showPopup("screen_pinning_message", dialog)
             }
 
-            config.addTriggerKey(it.keyCode, it.device)
+            config.addKeyCodeTriggerKey(it.keyCode, it.device)
         }.launchIn(coroutineScope)
 
         coroutineScope.launch {
@@ -259,22 +288,32 @@ class ConfigKeyMapTriggerViewModel(
         }
     }
 
-    private fun buildTriggerErrorListItems(triggerErrors: List<KeyMapTriggerError>) =
+    private fun buildTriggerErrorListItems(triggerErrors: List<TriggerError>): List<TextListItem.Error> =
         triggerErrors.map { error ->
             when (error) {
-                KeyMapTriggerError.DND_ACCESS_DENIED -> TextListItem.Error(
+                TriggerError.DND_ACCESS_DENIED -> TextListItem.Error(
                     id = error.toString(),
                     text = getString(R.string.trigger_error_dnd_access_denied),
                 )
 
-                KeyMapTriggerError.SCREEN_OFF_ROOT_DENIED -> TextListItem.Error(
+                TriggerError.SCREEN_OFF_ROOT_DENIED -> TextListItem.Error(
                     id = error.toString(),
                     text = getString(R.string.trigger_error_screen_off_root_permission_denied),
                 )
 
-                KeyMapTriggerError.CANT_DETECT_IN_PHONE_CALL -> TextListItem.Error(
+                TriggerError.CANT_DETECT_IN_PHONE_CALL -> TextListItem.Error(
                     id = error.toString(),
                     text = getString(R.string.trigger_error_cant_detect_in_phone_call),
+                )
+
+                TriggerError.ASSISTANT_NOT_SELECTED -> TextListItem.Error(
+                    id = error.toString(),
+                    text = getString(R.string.trigger_error_assistant_activity_not_chosen),
+                )
+
+                TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED -> TextListItem.Error(
+                    id = error.toString(),
+                    text = getString(R.string.trigger_error_assistant_not_purchased),
                 )
             }
         }
@@ -302,48 +341,52 @@ class ConfigKeyMapTriggerViewModel(
     fun onRemoveKeyClick(uid: String) = config.removeTriggerKey(uid)
     fun onMoveTriggerKey(fromIndex: Int, toIndex: Int) = config.moveTriggerKey(fromIndex, toIndex)
 
-    fun onTriggerKeyOptionsClick(id: String) {
+    open fun onTriggerKeyOptionsClick(id: String) {
         runBlocking { _openEditOptions.emit(id) }
     }
 
     fun onChooseDeviceClick(keyUid: String) {
         coroutineScope.launch {
-            val idAny = "any"
-            val idInternal = "this_device"
-            val devices = config.getAvailableTriggerKeyDevices()
-            val showDeviceDescriptors = displayKeyMap.showDeviceDescriptors.first()
+            chooseDeviceForKeyCodeTriggerKey(keyUid)
+        }
+    }
 
-            val listItems = devices.map { device: TriggerKeyDevice ->
-                when (device) {
-                    TriggerKeyDevice.Any -> idAny to getString(R.string.any_device)
-                    TriggerKeyDevice.Internal -> idInternal to getString(R.string.this_device)
-                    is TriggerKeyDevice.External -> {
-                        if (showDeviceDescriptors) {
-                            val name = InputDeviceUtils.appendDeviceDescriptorToName(
-                                device.descriptor,
-                                device.name,
-                            )
-                            device.descriptor to name
-                        } else {
-                            device.descriptor to device.name
-                        }
+    private suspend fun chooseDeviceForKeyCodeTriggerKey(keyUid: String) {
+        val idAny = "any"
+        val idInternal = "this_device"
+        val devices = config.getAvailableTriggerKeyDevices()
+        val showDeviceDescriptors = displayKeyMap.showDeviceDescriptors.first()
+
+        val listItems = devices.map { device: TriggerKeyDevice ->
+            when (device) {
+                TriggerKeyDevice.Any -> idAny to getString(R.string.any_device)
+                TriggerKeyDevice.Internal -> idInternal to getString(R.string.this_device)
+                is TriggerKeyDevice.External -> {
+                    if (showDeviceDescriptors) {
+                        val name = InputDeviceUtils.appendDeviceDescriptorToName(
+                            device.descriptor,
+                            device.name,
+                        )
+                        device.descriptor to name
+                    } else {
+                        device.descriptor to device.name
                     }
                 }
             }
-
-            val triggerKeyDeviceId = showPopup(
-                "pick_trigger_key_device",
-                PopupUi.SingleChoice(listItems),
-            ) ?: return@launch
-
-            val selectedTriggerKeyDevice = when (triggerKeyDeviceId) {
-                idAny -> TriggerKeyDevice.Any
-                idInternal -> TriggerKeyDevice.Internal
-                else -> devices.single { it is TriggerKeyDevice.External && it.descriptor == triggerKeyDeviceId }
-            }
-
-            config.setTriggerKeyDevice(keyUid, selectedTriggerKeyDevice)
         }
+
+        val triggerKeyDeviceId = showPopup(
+            "pick_trigger_key_device",
+            PopupUi.SingleChoice(listItems),
+        ) ?: return
+
+        val selectedTriggerKeyDevice = when (triggerKeyDeviceId) {
+            idAny -> TriggerKeyDevice.Any
+            idInternal -> TriggerKeyDevice.Internal
+            else -> devices.single { it is TriggerKeyDevice.External && it.descriptor == triggerKeyDeviceId }
+        }
+
+        config.setTriggerKeyDevice(keyUid, selectedTriggerKeyDevice)
     }
 
     fun onRecordTriggerButtonClick() {
@@ -357,8 +400,8 @@ class ConfigKeyMapTriggerViewModel(
 
             if (result is Error.AccessibilityServiceDisabled) {
                 ViewModelHelper.handleAccessibilityServiceStoppedSnackBar(
-                    resourceProvider = this@ConfigKeyMapTriggerViewModel,
-                    popupViewModel = this@ConfigKeyMapTriggerViewModel,
+                    resourceProvider = this@BaseConfigTriggerViewModel,
+                    popupViewModel = this@BaseConfigTriggerViewModel,
                     startService = displayKeyMap::startAccessibilityService,
                     message = R.string.dialog_message_enable_accessibility_service_to_record_trigger,
                 )
@@ -366,8 +409,8 @@ class ConfigKeyMapTriggerViewModel(
 
             if (result is Error.AccessibilityServiceCrashed) {
                 ViewModelHelper.handleAccessibilityServiceCrashedSnackBar(
-                    resourceProvider = this@ConfigKeyMapTriggerViewModel,
-                    popupViewModel = this@ConfigKeyMapTriggerViewModel,
+                    resourceProvider = this@BaseConfigTriggerViewModel,
+                    popupViewModel = this@BaseConfigTriggerViewModel,
                     restartService = displayKeyMap::restartAccessibilityService,
                     message = R.string.dialog_message_restart_accessibility_service_to_record_trigger,
                 )
@@ -383,42 +426,41 @@ class ConfigKeyMapTriggerViewModel(
 
     fun onTriggerErrorClick(listItemId: String) {
         coroutineScope.launch {
-            when (KeyMapTriggerError.valueOf(listItemId)) {
-                KeyMapTriggerError.DND_ACCESS_DENIED -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            when (TriggerError.valueOf(listItemId)) {
+                TriggerError.DND_ACCESS_DENIED -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
-                        resourceProvider = this@ConfigKeyMapTriggerViewModel,
-                        popupViewModel = this@ConfigKeyMapTriggerViewModel,
+                        resourceProvider = this@BaseConfigTriggerViewModel,
+                        popupViewModel = this@BaseConfigTriggerViewModel,
                         neverShowDndTriggerErrorAgain = { displayKeyMap.neverShowDndTriggerErrorAgain() },
                         fixError = { displayKeyMap.fixError(it) },
                     )
                 }
 
-                KeyMapTriggerError.SCREEN_OFF_ROOT_DENIED -> {
+                TriggerError.SCREEN_OFF_ROOT_DENIED -> {
                     val error = Error.PermissionDenied(Permission.ROOT)
                     displayKeyMap.fixError(error)
                 }
 
-                KeyMapTriggerError.CANT_DETECT_IN_PHONE_CALL -> {
+                TriggerError.CANT_DETECT_IN_PHONE_CALL -> {
                     displayKeyMap.fixError(Error.CantDetectKeyEventsInPhoneCall)
+                }
+
+                TriggerError.ASSISTANT_NOT_SELECTED -> {
+                    displayKeyMap.fixError(Error.PermissionDenied(Permission.DEVICE_ASSISTANT))
+                }
+
+                TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED -> {
+                    showAdvancedTriggersBottomSheet = true
                 }
             }
         }
     }
 
     private fun createListItems(
-        trigger: KeyMapTrigger,
+        trigger: Trigger,
         showDeviceDescriptors: Boolean,
     ): List<TriggerKeyListItem> =
         trigger.keys.mapIndexed { index, key ->
-            val extraInfo = buildString {
-                append(getTriggerKeyDeviceName(key.device, showDeviceDescriptors))
-
-                if (!key.consumeKeyEvent) {
-                    val midDot = getString(R.string.middot)
-                    append(" $midDot ${getString(R.string.flag_dont_override_default_action)}")
-                }
-            }
-
             val clickTypeString = when (key.clickType) {
                 ClickType.SHORT_PRESS -> null
                 ClickType.LONG_PRESS -> getString(R.string.clicktype_long_press)
@@ -433,14 +475,39 @@ class ConfigKeyMapTriggerViewModel(
 
             TriggerKeyListItem(
                 id = key.uid,
-                keyCode = key.keyCode,
-                name = KeyEventUtils.keyCodeToString(key.keyCode),
+                name = getTriggerKeyName(key),
                 clickTypeString = clickTypeString,
-                extraInfo = extraInfo,
+                extraInfo = getTriggerKeyExtraInfo(key, showDeviceDescriptors),
                 linkType = linkDrawable,
                 isDragDropEnabled = trigger.keys.size > 1,
+                isChooseDeviceButtonVisible = key is KeyCodeTriggerKey,
             )
         }
+
+    private fun getTriggerKeyExtraInfo(key: TriggerKey, showDeviceDescriptors: Boolean): String? {
+        if (key !is KeyCodeTriggerKey) {
+            return null
+        }
+
+        return buildString {
+            append(getTriggerKeyDeviceName(key.device, showDeviceDescriptors))
+
+            if (!key.consumeEvent) {
+                val midDot = getString(R.string.middot)
+                append(" $midDot ${getString(R.string.flag_dont_override_default_action)}")
+            }
+        }
+    }
+
+    private fun getTriggerKeyName(key: TriggerKey): String = when (key) {
+        is AssistantTriggerKey -> when (key.type) {
+            AssistantTriggerType.ANY -> getString(R.string.assistant_any_trigger_name)
+            AssistantTriggerType.VOICE -> getString(R.string.assistant_voice_trigger_name)
+            AssistantTriggerType.DEVICE -> getString(R.string.assistant_device_trigger_name)
+        }
+
+        is KeyCodeTriggerKey -> KeyEventUtils.keyCodeToString(key.keyCode)
+    }
 
     private fun getTriggerKeyDeviceName(
         device: TriggerKeyDevice,

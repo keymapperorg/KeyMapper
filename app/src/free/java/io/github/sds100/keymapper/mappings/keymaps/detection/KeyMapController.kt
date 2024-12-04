@@ -15,7 +15,8 @@ import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapAction
-import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTrigger
+import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
+import io.github.sds100.keymapper.mappings.keymaps.trigger.Trigger
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
@@ -57,7 +58,7 @@ class KeyMapController(
          * @return whether the actions assigned to this trigger will be performed on the down event of the final key
          * rather than the up event.
          */
-        fun performActionOnDown(trigger: KeyMapTrigger): Boolean = (
+        fun performActionOnDown(trigger: Trigger): Boolean = (
             trigger.keys.size <= 1 &&
                 trigger.keys.getOrNull(0)?.clickType != ClickType.DOUBLE_PRESS &&
                 trigger.mode == TriggerMode.Undefined
@@ -90,13 +91,13 @@ class KeyMapController(
             } else {
                 detectKeyMaps = true
 
-                val longPressSequenceTriggerKeys = mutableListOf<TriggerKey>()
+                val longPressSequenceTriggerKeys = mutableListOf<KeyCodeTriggerKey>()
 
                 val doublePressKeys = mutableListOf<TriggerKeyLocation>()
 
                 setActionMapAndOptions(value.flatMap { it.actionList }.toSet())
 
-                val triggers = mutableListOf<KeyMapTrigger>()
+                val triggers = mutableListOf<Trigger>()
                 val sequenceTriggers = mutableListOf<Int>()
                 val parallelTriggers = mutableListOf<Int>()
 
@@ -110,47 +111,51 @@ class KeyMapController(
                 val parallelTriggerModifierKeyIndices = mutableListOf<Pair<Int, Int>>()
 
                 // Only process key maps that can be triggered
-                val validKeyMaps = value.filter {
-                    it.actionList.isNotEmpty() && it.isEnabled
+                val validKeyMaps = value.filter { keyMap ->
+                    keyMap.actionList.isNotEmpty() &&
+                        keyMap.isEnabled &&
+                        keyMap.trigger.keys.all { it is KeyCodeTriggerKey }
                 }
 
                 for ((triggerIndex, keyMap) in validKeyMaps.withIndex()) {
 
                     // TRIGGER STUFF
-                    keyMap.trigger.keys.forEachIndexed { keyIndex, key ->
-                        if (keyMap.trigger.mode == TriggerMode.Sequence &&
-                            key.clickType == ClickType.LONG_PRESS
-                        ) {
+                    keyMap.trigger.keys
+                        .mapNotNull { it as? KeyCodeTriggerKey }
+                        .forEachIndexed { keyIndex, key ->
+                            if (keyMap.trigger.mode == TriggerMode.Sequence &&
+                                key.clickType == ClickType.LONG_PRESS
+                            ) {
 
-                            if (keyMap.trigger.keys.size > 1) {
-                                longPressSequenceTriggerKeys.add(key)
+                                if (keyMap.trigger.keys.size > 1) {
+                                    longPressSequenceTriggerKeys.add(key)
+                                }
+                            }
+
+                            if ((
+                                    keyMap.trigger.mode == TriggerMode.Sequence ||
+                                        keyMap.trigger.mode == TriggerMode.Undefined
+                                    ) &&
+                                key.clickType == ClickType.DOUBLE_PRESS
+                            ) {
+                                doublePressKeys.add(TriggerKeyLocation(triggerIndex, keyIndex))
+                            }
+
+                            when (key.device) {
+                                TriggerKeyDevice.Internal -> {
+                                    detectInternalEvents = true
+                                }
+
+                                TriggerKeyDevice.Any -> {
+                                    detectInternalEvents = true
+                                    detectExternalEvents = true
+                                }
+
+                                is TriggerKeyDevice.External -> {
+                                    detectExternalEvents = true
+                                }
                             }
                         }
-
-                        if ((
-                                keyMap.trigger.mode == TriggerMode.Sequence ||
-                                    keyMap.trigger.mode == TriggerMode.Undefined
-                                ) &&
-                            key.clickType == ClickType.DOUBLE_PRESS
-                        ) {
-                            doublePressKeys.add(TriggerKeyLocation(triggerIndex, keyIndex))
-                        }
-
-                        when (key.device) {
-                            TriggerKeyDevice.Internal -> {
-                                detectInternalEvents = true
-                            }
-
-                            TriggerKeyDevice.Any -> {
-                                detectInternalEvents = true
-                                detectExternalEvents = true
-                            }
-
-                            is TriggerKeyDevice.External -> {
-                                detectExternalEvents = true
-                            }
-                        }
-                    }
 
                     val encodedActionList = encodeActionList(keyMap.actionList)
 
@@ -328,11 +333,13 @@ class KeyMapController(
                 for (triggerIndex in parallelTriggers) {
                     val trigger = triggers[triggerIndex]
 
-                    trigger.keys.forEachIndexed { keyIndex, key ->
-                        if (isModifierKey(key.keyCode)) {
-                            parallelTriggerModifierKeyIndices.add(triggerIndex to keyIndex)
+                    trigger.keys
+                        .mapNotNull { it as? KeyCodeTriggerKey }
+                        .forEachIndexed { keyIndex, key ->
+                            if (isModifierKey(key.keyCode)) {
+                                parallelTriggerModifierKeyIndices.add(triggerIndex to keyIndex)
+                            }
                         }
-                    }
                 }
 
                 reset()
@@ -386,7 +393,7 @@ class KeyMapController(
     /**
      * All sequence events that have the long press click type.
      */
-    private var longPressSequenceTriggerKeys: Array<TriggerKey> = arrayOf()
+    private var longPressSequenceTriggerKeys: Array<KeyCodeTriggerKey> = arrayOf()
 
     /**
      * All double press keys and the index of their corresponding trigger. first is the event and second is
@@ -407,7 +414,7 @@ class KeyMapController(
     private var doublePressTimeoutTimes = longArrayOf()
 
     private var actionMap: SparseArrayCompat<KeyMapAction> = SparseArrayCompat()
-    private var triggers: Array<KeyMapTrigger> = emptyArray()
+    private var triggers: Array<Trigger> = emptyArray()
 
     /**
      * The events to detect for each sequence trigger.
@@ -571,14 +578,18 @@ class KeyMapController(
         metaStateFromKeyEvent = metaState
 
         // remove the metastate from any modifier keys that remapped and are pressed down
-        parallelTriggerModifierKeyIndices.forEach {
+        for (it in parallelTriggerModifierKeyIndices) {
             val triggerIndex = it.first
             val eventIndex = it.second
-            val event = triggers[triggerIndex].keys[eventIndex]
+            val key = triggers[triggerIndex].keys[eventIndex]
+
+            if (key !is KeyCodeTriggerKey) {
+                continue
+            }
 
             if (parallelTriggerEventsAwaitingRelease[triggerIndex][eventIndex]) {
                 metaStateFromKeyEvent =
-                    metaStateFromKeyEvent.minusFlag(KeyEventUtils.modifierKeycodeToMetaState(event.keyCode))
+                    metaStateFromKeyEvent.minusFlag(KeyEventUtils.modifierKeycodeToMetaState(key.keyCode))
             }
         }
 
@@ -644,6 +655,10 @@ class KeyMapController(
 
                 // consume the event if the trigger contains this keycode.
                 for ((keyIndex, key) in triggerKeys.withIndex()) {
+                    if (key !is KeyCodeTriggerKey) {
+                        continue
+                    }
+
                     if (key.keyCode == event.keyCode && triggerKeys[keyIndex].consumeKeyEvent) {
                         consumeEvent = true
                     }
@@ -1470,7 +1485,7 @@ class KeyMapController(
         }
     }
 
-    private fun KeyMapTrigger.matchingEventAtIndex(event: Event, index: Int): Boolean {
+    private fun Trigger.matchingEventAtIndex(event: Event, index: Int): Boolean {
         if (index >= this.keys.size) return false
 
         val key = this.keys[index]
@@ -1478,46 +1493,58 @@ class KeyMapController(
         return key.matchesEvent(event)
     }
 
-    private fun TriggerKey.matchesEvent(event: Event): Boolean = when (this.device) {
-        TriggerKeyDevice.Any -> this.keyCode == event.keyCode && this.clickType == event.clickType
-        is TriggerKeyDevice.External ->
-            this.keyCode == event.keyCode &&
-                event.descriptor != null &&
-                event.descriptor == this.device.descriptor &&
-                this.clickType == event.clickType
+    private fun TriggerKey.matchesEvent(event: Event): Boolean {
+        if (this !is KeyCodeTriggerKey) {
+            return false
+        }
 
-        TriggerKeyDevice.Internal ->
-            this.keyCode == event.keyCode &&
-                event.descriptor == null &&
-                this.clickType == event.clickType
+        return when (this.device) {
+            TriggerKeyDevice.Any -> this.keyCode == event.keyCode && this.clickType == event.clickType
+            is TriggerKeyDevice.External ->
+                this.keyCode == event.keyCode &&
+                    event.descriptor != null &&
+                    event.descriptor == this.device.descriptor &&
+                    this.clickType == event.clickType
+
+            TriggerKeyDevice.Internal ->
+                this.keyCode == event.keyCode &&
+                    event.descriptor == null &&
+                    this.clickType == event.clickType
+        }
     }
 
-    private fun TriggerKey.matchesWithOtherKey(otherKey: TriggerKey): Boolean = when (this.device) {
-        TriggerKeyDevice.Any ->
-            this.keyCode == otherKey.keyCode &&
-                this.clickType == otherKey.clickType
+    private fun TriggerKey.matchesWithOtherKey(otherKey: TriggerKey): Boolean {
+        if (!(this is KeyCodeTriggerKey && otherKey is KeyCodeTriggerKey)) {
+            return false
+        }
 
-        is TriggerKeyDevice.External ->
-            this.keyCode == otherKey.keyCode &&
-                this.device == otherKey.device &&
-                this.clickType == otherKey.clickType
+        return when (this.device) {
+            TriggerKeyDevice.Any ->
+                this.keyCode == otherKey.keyCode &&
+                    this.clickType == otherKey.clickType
 
-        TriggerKeyDevice.Internal ->
-            this.keyCode == otherKey.keyCode &&
-                otherKey.device == TriggerKeyDevice.Internal &&
-                this.clickType == otherKey.clickType
+            is TriggerKeyDevice.External ->
+                this.keyCode == otherKey.keyCode &&
+                    this.device == otherKey.device &&
+                    this.clickType == otherKey.clickType
+
+            TriggerKeyDevice.Internal ->
+                this.keyCode == otherKey.keyCode &&
+                    otherKey.device == TriggerKeyDevice.Internal &&
+                    this.clickType == otherKey.clickType
+        }
     }
 
-    private fun longPressDelay(trigger: KeyMapTrigger): Long =
+    private fun longPressDelay(trigger: Trigger): Long =
         trigger.longPressDelay?.toLong() ?: defaultLongPressDelay.value
 
-    private fun doublePressTimeout(trigger: KeyMapTrigger): Long =
+    private fun doublePressTimeout(trigger: Trigger): Long =
         trigger.doublePressDelay?.toLong() ?: defaultDoublePressDelay.value
 
-    private fun vibrateDuration(trigger: KeyMapTrigger): Long =
+    private fun vibrateDuration(trigger: Trigger): Long =
         trigger.vibrateDuration?.toLong() ?: defaultVibrateDuration.value
 
-    private fun sequenceTriggerTimeout(trigger: KeyMapTrigger): Long =
+    private fun sequenceTriggerTimeout(trigger: Trigger): Long =
         trigger.sequenceTriggerTimeout?.toLong() ?: defaultSequenceTriggerTimeout.value
 
     private fun setActionMapAndOptions(actions: Set<KeyMapAction>) {
@@ -1570,4 +1597,11 @@ class KeyMapController(
     )
 
     private data class TriggerKeyLocation(val triggerIndex: Int, val keyIndex: Int)
+
+    private val TriggerKey.consumeKeyEvent: Boolean
+        get() = if (this is KeyCodeTriggerKey) {
+            this.consumeEvent
+        } else {
+            false
+        }
 }

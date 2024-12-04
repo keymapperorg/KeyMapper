@@ -15,6 +15,7 @@ import io.github.sds100.keymapper.data.repositories.RoomLogRepository
 import io.github.sds100.keymapper.data.repositories.SettingsPreferenceRepository
 import io.github.sds100.keymapper.logging.LogRepository
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapRepository
+import io.github.sds100.keymapper.purchasing.PurchasingManagerImpl
 import io.github.sds100.keymapper.shizuku.ShizukuAdapter
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.airplanemode.AirplaneModeAdapter
@@ -24,7 +25,7 @@ import io.github.sds100.keymapper.system.bluetooth.BluetoothAdapter
 import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.clipboard.ClipboardAdapter
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
-import io.github.sds100.keymapper.system.display.DisplayAdapter
+import io.github.sds100.keymapper.system.display.AndroidDisplayAdapter
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.intents.IntentAdapter
@@ -204,7 +205,7 @@ object ServiceLocator {
     fun vibratorAdapter(context: Context): VibratorAdapter =
         (context.applicationContext as KeyMapperApp).vibratorAdapter
 
-    fun displayAdapter(context: Context): DisplayAdapter =
+    fun displayAdapter(context: Context): AndroidDisplayAdapter =
         (context.applicationContext as KeyMapperApp).displayAdapter
 
     fun audioAdapter(context: Context): VolumeAdapter =
@@ -251,6 +252,9 @@ object ServiceLocator {
 
     fun appCoroutineScope(context: Context): CoroutineScope =
         (context.applicationContext as KeyMapperApp).appCoroutineScope
+
+    fun purchasingManager(context: Context): PurchasingManagerImpl =
+        (context.applicationContext as KeyMapperApp).purchasingManager
 
     private fun createDatabase(context: Context): AppDatabase = Room.databaseBuilder(
         context.applicationContext,

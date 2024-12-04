@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.mappings.keymaps
 
 import android.view.KeyEvent
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.mappings.keymaps.trigger.ConfigTriggerViewModel
 import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerState
 import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerUseCase
 import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordedKey
@@ -34,12 +35,12 @@ import org.mockito.kotlin.mock
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
-class ConfigKeyMapTriggerViewModelTest {
+class ConfigTriggerViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
     private val testScope = TestScope(testDispatcher)
 
-    private lateinit var viewModel: ConfigKeyMapTriggerViewModel
+    private lateinit var viewModel: ConfigTriggerViewModel
     private lateinit var mockConfigKeyMapUseCase: ConfigKeyMapUseCase
     private lateinit var mockRecordTrigger: RecordTriggerUseCase
     private lateinit var fakeOnboarding: FakeOnboardingUseCase
@@ -66,7 +67,7 @@ class ConfigKeyMapTriggerViewModelTest {
 
         fakeResourceProvider = FakeResourceProvider()
 
-        viewModel = ConfigKeyMapTriggerViewModel(
+        viewModel = ConfigTriggerViewModel(
             testScope,
             fakeOnboarding,
             mockConfigKeyMapUseCase,
@@ -78,6 +79,7 @@ class ConfigKeyMapTriggerViewModelTest {
                 onBlocking { getTriggerErrors(any()) }.thenReturn(emptyList())
             },
             fakeResourceProvider,
+            purchasingManager = mock(),
         )
     }
 

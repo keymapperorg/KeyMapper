@@ -24,12 +24,12 @@ Your mapping will only work if a specific bluetooth device is connected/disconne
 ### Orientation (2.2.0+)
 This will restrict your gesture map to work only when the device is set to a specific screen orientation.
 
-### Screen is on/off (ROOT)
+### Screen is on/off
 
 !!! info "Only for key maps"
 
 !!! attention
-    You must [grant Key Mapper root permission](settings.md#key-mapper-has-root-permission) and select the [option](../keymaps#special-options) to detect the key map when the screen is off.
+    If you are not using a custom trigger then you must [grant Key Mapper root permission](settings.md#key-mapper-has-root-permission) and select the [option](../keymaps#special-options) to detect the key map when the screen is off.
 
 Only allow the key map to be triggered when the screen is on or off.
 

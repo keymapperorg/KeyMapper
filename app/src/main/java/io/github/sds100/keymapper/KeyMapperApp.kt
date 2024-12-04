@@ -13,6 +13,7 @@ import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.entities.LogEntryEntity
 import io.github.sds100.keymapper.logging.KeyMapperLoggingTree
 import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerController
+import io.github.sds100.keymapper.purchasing.PurchasingManagerImpl
 import io.github.sds100.keymapper.settings.ThemeUtils
 import io.github.sds100.keymapper.shizuku.ShizukuAdapterImpl
 import io.github.sds100.keymapper.system.AndroidSystemFeatureAdapter
@@ -108,6 +109,7 @@ class KeyMapperApp : MultiDexApplication() {
             suAdapter,
             notificationReceiverAdapter,
             ServiceLocator.settingsRepository(this),
+            packageManagerAdapter,
         )
     }
 
@@ -118,7 +120,7 @@ class KeyMapperApp : MultiDexApplication() {
     val fileAdapter by lazy { AndroidFileAdapter(this) }
     val popupMessageAdapter by lazy { AndroidToastAdapter(this) }
     val vibratorAdapter by lazy { AndroidVibratorAdapter(this) }
-    val displayAdapter by lazy { AndroidDisplayAdapter(this) }
+    val displayAdapter by lazy { AndroidDisplayAdapter(this, coroutineScope = appCoroutineScope) }
     val audioAdapter by lazy { AndroidVolumeAdapter(this) }
     val suAdapter by lazy {
         SuAdapterImpl(
@@ -150,6 +152,10 @@ class KeyMapperApp : MultiDexApplication() {
             popupMessageAdapter,
             resourceProvider,
         )
+    }
+
+    val purchasingManager: PurchasingManagerImpl by lazy {
+        PurchasingManagerImpl(this.applicationContext, appCoroutineScope)
     }
 
     private val loggingTree by lazy {
@@ -211,13 +217,13 @@ class KeyMapperApp : MultiDexApplication() {
                 ServiceLocator.settingsRepository(this),
                 notificationAdapter,
                 suAdapter,
+                permissionAdapter,
             ),
             UseCases.pauseMappings(this),
             UseCases.showImePicker(this),
             UseCases.controlAccessibilityService(this),
             UseCases.toggleCompatibleIme(this),
             ShowHideInputMethodUseCaseImpl(ServiceLocator.accessibilityServiceAdapter(this)),
-            UseCases.fingerprintGesturesSupported(this),
             UseCases.onboarding(this),
             ServiceLocator.resourceProvider(this),
         )

@@ -161,10 +161,6 @@
     <string name="tab_actions">Действия</string>
     <string name="tab_trigger">События</string>
     <string name="tab_fingerprint">Отпечаток пальцев</string>
-    <string-array name="home_tab_titles">
-        <item>События нажатий</item>
-        <item>Отпечаток пальца</item>
-    </string-array>
     <!--  Tabs  -->
     <!--  Navigation argument ids  -->
     <!--  Navigation argument ids  -->

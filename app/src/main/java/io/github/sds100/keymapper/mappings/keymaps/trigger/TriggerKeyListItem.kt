@@ -5,7 +5,6 @@ package io.github.sds100.keymapper.mappings.keymaps.trigger
  */
 data class TriggerKeyListItem(
     val id: String,
-    val keyCode: Int,
     val name: String,
 
     /**
@@ -18,4 +17,9 @@ data class TriggerKeyListItem(
     val linkType: TriggerKeyLinkType,
 
     val isDragDropEnabled: Boolean,
+
+    /**
+     * The button for choosing the device is only visible for key code trigger keys.
+     */
+    val isChooseDeviceButtonVisible: Boolean,
 )
