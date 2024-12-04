@@ -43,7 +43,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -215,7 +214,10 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
                 NavAppDirections.actionToConfigFingerprintMap(destination.id.toString())
 
             is NavDestination.ConfigKeyMap ->
-                NavAppDirections.actionToConfigKeymap(destination.keyMapUid)
+                NavAppDirections.actionToConfigKeymap(
+                    destination.keyMapUid,
+                    showAdvancedTriggers = destination.showAdvancedTriggers,
+                )
         }
 
         fragment.findNavController().navigate(direction)

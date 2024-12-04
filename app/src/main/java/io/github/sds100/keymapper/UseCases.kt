@@ -122,6 +122,7 @@ object UseCases {
     fun controlAccessibilityService(ctx: Context): ControlAccessibilityServiceUseCase =
         ControlAccessibilityServiceUseCaseImpl(
             ServiceLocator.accessibilityServiceAdapter(ctx),
+            ServiceLocator.permissionAdapter(ctx),
         )
 
     fun toggleCompatibleIme(ctx: Context) =

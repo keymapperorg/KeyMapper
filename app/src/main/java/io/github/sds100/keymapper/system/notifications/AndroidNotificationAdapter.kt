@@ -8,6 +8,7 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.google.android.material.color.DynamicColors
+import io.github.sds100.keymapper.MainActivity
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.color
 import kotlinx.coroutines.CoroutineScope
@@ -36,8 +37,8 @@ class AndroidNotificationAdapter(
             setContentTitle(notification.title)
             setContentText(notification.text)
 
-            if (notification.onClickActionId != null) {
-                val pendingIntent = createActionPendingIntent(notification.onClickActionId)
+            if (notification.onClickAction != null) {
+                val pendingIntent = createActionIntent(notification.onClickAction)
                 setContentIntent(pendingIntent)
             }
 
@@ -58,12 +59,12 @@ class AndroidNotificationAdapter(
                 setVisibility(NotificationCompat.VISIBILITY_SECRET)
             }
 
-            notification.actions.forEach { action ->
+            for (action in notification.actions) {
                 addAction(
                     NotificationCompat.Action(
                         0,
                         action.text,
-                        createActionPendingIntent(action.id),
+                        createActionIntent(action.intentType),
                     ),
                 )
             }
@@ -100,11 +101,29 @@ class AndroidNotificationAdapter(
         }
     }
 
-    private fun createActionPendingIntent(actionId: String): PendingIntent {
-        val intent = Intent(ctx, NotificationClickReceiver::class.java).apply {
-            action = actionId
-        }
+    private fun createActionIntent(intentType: NotificationIntentType): PendingIntent {
+        when (intentType) {
+            is NotificationIntentType.Broadcast -> {
+                val intent = Intent(ctx, NotificationClickReceiver::class.java).apply {
+                    action = intentType.action
+                }
 
-        return PendingIntent.getBroadcast(ctx, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+                return PendingIntent.getBroadcast(ctx, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+            }
+
+            is NotificationIntentType.MainActivity -> {
+                val intent = Intent(ctx, MainActivity::class.java).apply {
+                    action = intentType.customIntentAction ?: Intent.ACTION_MAIN
+                }
+
+                return PendingIntent.getActivity(ctx, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+            }
+
+            is NotificationIntentType.Activity -> {
+                val intent = Intent(intentType.action)
+
+                return PendingIntent.getActivity(ctx, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+            }
+        }
     }
 }

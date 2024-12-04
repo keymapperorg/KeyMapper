@@ -1390,6 +1390,8 @@
     <string name="trigger_error_assistant_activity_not_chosen_short">Key Mapper must be the default assistant.</string>
     <string name="trigger_error_assistant_not_purchased">You must purchase the assistant trigger feature!</string>
     <string name="advanced_triggers_learn_more_button">Learn more</string>
+    <string name="notification_assistant_trigger_feature_title">New trigger! Did you know you can remap your digital assistant?</string>
+    <string name="notification_assistant_trigger_feature_text">Instead of launching Google Assistant or Bixby, you can perform an action of your choice. Tap to learn more.</string>
 
     <!--  Purchasing  -->
     <string name="unlock_product_button">Unlock (%s)</string>

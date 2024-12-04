@@ -11,4 +11,9 @@ object VersionHelper {
      * availability of fingerprint gestures.
      */
     const val FINGERPRINT_GESTURES_MIN_VERSION = 40
+
+    /**
+     * This is version 2.7.0 when the assistant trigger was first introduced.
+     */
+    const val ASSISTANT_TRIGGER_MIN_VERSION = 66
 }
