@@ -1,1 +1,3 @@
-Support for Android 14 and many bug fixes. See the changelog.
+New trigger 🎉!
+
+You can now trigger your key maps from any of the ways your phone launches the assistant! This could be the Bixby button, Power button, or a button on your headset.
