@@ -7,7 +7,6 @@
     <string name="enable">Włącz</string>
     <string name="open">Otwórz</string>
     <string name="recyclerview_placeholder">¯\\_(ツ)_/¯\n\nNic tu nie ma!</string>
-    <string name="triggers_recyclerview_placeholder">Wprowadź wyzwalacz!</string>
     <string name="actions_recyclerview_placeholder">Dodaj działanie!</string>
     <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nUtwórz mapę klawiszy!</string>
     <string name="action_shortcut_list_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nNie wybrano żadnych działań dla tego skrótu!</string>
@@ -176,7 +175,6 @@
     <string name="tab_actions">Działania</string>
     <string name="tab_trigger">Wyzwalacz</string>
     <string name="tab_fingerprint">Odcisk palca</string>
-
     <!--  Tabs  -->
     <!--  Navigation argument ids  -->
     <!--  Navigation argument ids  -->
@@ -1071,4 +1069,6 @@
     <string name="about_team_trollserver_role">Tłumacz (czeski)</string>
     <string name="about_team_bydario_role">Tłumacz (hiszpański)</string>
     <!--  About  -->
+    <!-- Advanced triggers -->
+    <!--  Purchasing  -->
 </resources>
