@@ -7,7 +7,6 @@
     <string name="enable">Habilitar</string>
     <string name="open">Abrir</string>
     <string name="recyclerview_placeholder">¯\\_(ツ)_/¯\n\nNada encontrado!</string>
-    <string name="triggers_recyclerview_placeholder">Grave um gatilho!</string>
     <string name="actions_recyclerview_placeholder">Adicionar ação!</string>
     <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nCriar mapeamento!</string>
     <string name="action_shortcut_list_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nNenhuma ação para este atalho!</string>
@@ -1069,4 +1068,6 @@
     <string name="about_team_trollserver_role">Tradutor (Checo)</string>
     <string name="about_team_bydario_role">Tradutor (Espanhol)</string>
     <!--  About  -->
+    <!-- Advanced triggers -->
+    <!--  Purchasing  -->
 </resources>

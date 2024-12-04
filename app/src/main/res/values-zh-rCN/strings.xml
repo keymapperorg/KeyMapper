@@ -7,7 +7,6 @@
     <string name="enable">启用</string>
     <string name="open">打开</string>
     <string name="recyclerview_placeholder">¯\\_(ツ)_/¯\n\n这里什么都没有！</string>
-    <string name="triggers_recyclerview_placeholder">录制触发器！</string>
     <string name="actions_recyclerview_placeholder">添加动作！</string>
     <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\n创建一个按键映射！</string>
     <string name="action_shortcut_list_recyclerview_placeholder">¯\\_(ツ)_/¯\n\n你没有为此快捷方式选择任何动作！</string>
@@ -1070,4 +1069,6 @@
     <string name="about_team_trollserver_role">译者（捷克语）</string>
     <string name="about_team_bydario_role">译者（西班牙语）</string>
     <!--  About  -->
+    <!-- Advanced triggers -->
+    <!--  Purchasing  -->
 </resources>

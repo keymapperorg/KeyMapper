@@ -1,9 +1,9 @@
 O que pode ser remapeado?
 
- * Gestos de impressão digital em dispositivos suportados.
  * Botões de volume.
- * Botões de navegação.
+ * Power button via Google Assistant, Pixel Active Edge, Double press Bixby button.
  * Teclados Bluetooth/com fio.
+ * Gestos de impressão digital em dispositivos suportados.
  * Botões em outros dispositivos conectados também devem funcionar.
 
 SOMENTE botões de HARDWARE podem ser remapeados.
@@ -12,12 +12,10 @@ NÃO HÁ GARANTIA de que qualquer um desses botões funcionará e este aplicativ
 Você pode combinar várias teclas de um dispositivo específico ou de qualquer dispositivo para formar um "gatilho". Cada gatilho pode ter múltiplas ações. As teclas podem ser configuradas para serem pressionadas ao mesmo tempo ou uma após a outra em sequência. As teclas podem ser remapeadas quando pressionadas brevemente, longamente ou duas vezes. Um mapa de teclas pode ter um conjunto de "restrições" para que ele só tenha efeito em determinadas situações.
 
 O que não pode ser remapeado?
- * Botão de energia
- * Botão Bixby
  * Botões do mouse
  * Dpad, joysticks ou gatilhos em controles de jogos
 
-Os mapas de teclas não funcionam se a tela estiver desligada. Esta é uma limitação do Android. Não há nada que o desenvolvedor possa fazer.
+Your key maps do not work if the screen is OFF. Esta é uma limitação do Android. Não há nada que o desenvolvedor possa fazer.
 
 O que posso fazer para remapear minhas chaves?
 Algumas ações só funcionarão em dispositivos com root e em versões específicas do Android.
@@ -27,7 +25,7 @@ Há muitos recursos para listar aqui, então confira a lista completa aqui: http
 Permissões
 Você não precisa conceder todas as permissões para que o aplicativo funcione. O aplicativo informará se é necessário conceder uma permissão para que um recurso funcione.
 
- * Serviço de Acessibilidade: Requisito básico para o remapeamento para o trabalho. É necessário para que o aplicativo possa escutar e bloquear eventos-chave.
+ * Serviço de Acessibilidade: Requisito básico para o remapeamento para o trabalho. It is needed so the app can listen to and block key events.
  * Administrador do dispositivo: para desligar a tela ao usar a ação para desligar a tela.
  * Modificar configurações do sistema: para alterar as configurações de brilho e rotação.
  * Câmera: Para controlar a lanterna.

@@ -5,7 +5,6 @@
     <string name="enable">Zapnúť</string>
     <string name="open">Otvoriť</string>
     <string name="recyclerview_placeholder">¯\\_(ツ)_/¯\n\nNič tu nie je!</string>
-    <string name="triggers_recyclerview_placeholder">Nahrať spúšť!</string>
     <string name="actions_recyclerview_placeholder">Pridať akciu!</string>
     <string name="keymap_recyclerview_placeholder">̄\\_(ツ)_/ ̄\n\nVytvoriť mapu klávesov!</string>
     <string name="action_shortcut_list_recyclerview_placeholder">̄\\_(ツ)_/ ̄\n\nNevybrali ste pre tento odkaz žiadne akcie!</string>
@@ -867,4 +866,6 @@
     <string name="about_link_discord">Discord</string>
     <string name="about_license_title">Licencia</string>
     <!--  About  -->
+    <!-- Advanced triggers -->
+    <!--  Purchasing  -->
 </resources>

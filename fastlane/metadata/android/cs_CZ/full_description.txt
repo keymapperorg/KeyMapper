@@ -1,9 +1,9 @@
 Co lze přemapovat?
 
- * Gesta otisků prstů na podporovaných zařízeních.
  * Tlačítka hlasitosti.
- * Navigační tlačítka.
+ * Power button via Google Assistant, Pixel Active Edge, Double press Bixby button.
  * Bluetooth/kabelová klávesnice.
+ * Gesta otisků prstů na podporovaných zařízeních.
  * Tlačítka na ostatních připojených zařízeních by měla také fungovat.
 
 POUZE HARDWARE tlačítka mohou být znovu mapována.
@@ -12,12 +12,10 @@ POUZE HARDWARE tlačítka mohou být znovu mapována.
 Můžete kombinovat více klíčů z konkrétního zařízení nebo jakéhokoli zařízení a vytvořit "trigger". Každý spouštěč může mít více akcí. Klávesy lze nastavit tak, aby byly stisknuty současně nebo jednou za sebou. Tlačítka mohou být zmapována po krátkém stisknutí, dlouhém stisknutí nebo dvojitém stisknutí. Klíčová mapa může mít sadu "vazeb", takže má vliv pouze v určitých situacích.
 
 Co nelze přemapovat?
- * Tlačítko napájení
- * Tlačítko Bixby
  * Tlačítka myši
  * Dpad, paličky nebo spouštěče na herních ovladačích
 
-Vaše klíčové mapy nefungují, pokud je obrazovka vypnutá. Toto je omezení v Android. Není nic, co by vývojář nemohl udělat.
+Your key maps do not work if the screen is OFF. Toto je omezení v Android. Není nic, co by vývojář nemohl udělat.
 
 Co mohu přemapovat své klíče?
 Některé akce budou fungovat pouze na rootovaných zařízeních a konkrétních verzích Androidu.
@@ -27,7 +25,7 @@ Existuje příliš mnoho funkcí, které zde můžete vypsaovat, takže se podí
 Skupiny uživatelů a dokumentů
 Není nutné udělovat všechna oprávnění pro fungování aplikace. Aplikace vám řekne, zda má být uděleno oprávnění pro funkčnost funkce.
 
- * Služba přístupu: Základní požadavek pro přemapování do práce. Je to potřeba, aby aplikace mohla poslouchat a blokovat klíčové události.
+ * Služba přístupu: Základní požadavek pro přemapování do práce. It is needed so the app can listen to and block key events.
  * Admin zařízení: Při použití akce vypněte obrazovku.
  * Upravit nastavení systému: Chcete-li změnit nastavení jasu a rotace.
  * Fotoaparát: Pro ovládání svítilny.

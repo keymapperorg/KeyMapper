@@ -1,9 +1,9 @@
 Mit lehet átállítani?
 
- * Ujjlenyomat-gesztusok a támogatott eszközökön.
  * Hangerőszabályzó gombok.
- * Navigációs gombok.
+ * Power button via Google Assistant, Pixel Active Edge, Double press Bixby button.
  * Bluetooth/vezetékes billentyűzeteket.
+ * Ujjlenyomat-gesztusok a támogatott eszközökön.
  * Más csatlakoztatott eszközök gombjainak is működniük kell.
 
 Kizárólag a HARDVERes gombokat lehet átképezni.
@@ -12,12 +12,10 @@ NINCS GARANCIA, hogy bármelyik gomb működni fog, és ezt az alkalmazást NEM 
 Egy adott eszköz vagy bármely eszköz több billentyűjét kombinálhatod aktiválásként. Minden egyes aktiváláshoz több művelet is tartozhat. A billentyűk egyszerre vagy egymás után, sorrendben nyomhatók le. A billentyűk rövid, hosszú vagy dupla megnyomás esetén átállíthatóak. A billentyű-térképnek lehet egy sor "korlátozása", így csak bizonyos helyzetekben van hatása.
 
 Mit nem lehet átállítani?
- * Bekapcsoló gomb
- * Bixby gomb
  * Egér gombok
  * Dpad, hüvelykujjas botok vagy ravaszok a játékvezérlőkön
 
-A billentyűs térképek nem működnek, ha a képernyő ki van kapcsolva. Ez az Android egyik korlátozása. A fejlesztő semmit sem tehet ez ellen.
+Your key maps do not work if the screen is OFF. Ez az Android egyik korlátozása. A fejlesztő semmit sem tehet ez ellen.
 
 Mit tudok a billentyűimnek beállítani?
 Egyes műveletek csak rootolt eszközökön és bizonyos Android-verziókon működnek.
@@ -27,7 +25,7 @@ Túl sok funkció van ahhoz, hogy itt felsoroljuk, ezért a teljes listát itt t
 Engedélyek
 Nem kell minden engedélyt megadnod ahhoz, hogy az alkalmazás működjön. Az alkalmazás megmondja, ha egy funkció működéséhez engedélyt kell adni.
 
- * Akadálymentesítési szolgáltatás: Alapvető követelmény az átállításhoz. Erre azért van szükség, hogy az alkalmazás figyelni és blokkolni tudja a billentyűlenyomásokat.
+ * Akadálymentesítési szolgáltatás: Alapvető követelmény az átállításhoz. It is needed so the app can listen to and block key events.
  * Adminisztrátor: A képernyő kikapcsolása a képernyő kikapcsolására szolgáló művelet használatakor.
  * Rendszerbeállítások módosítása: A fényerő és a forgatási beállítások megváltoztatásához.
  * Kamera: A zseblámpa vezérléséhez.
