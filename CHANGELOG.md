@@ -1,3 +1,15 @@
+## [2.7.0](https://github.com/sds100/KeyMapper/releases/tag/v2.7.0)
+
+#### 8 December 2024
+
+## Added
+
+- #1274 New trigger! You can now trigger your key maps from any of the ways your phone launches the assistant! This could be the Bixby button, Power button, or a button on your headset.
+
+## Bug fixes
+
+- #1307 Key Mapper doesn't execute the correct app shortcut action if you created multiple from the same app.
+
 ## [2.6.2](https://github.com/sds100/KeyMapper/releases/tag/v2.6.2)
 
 #### 9 September 2024
