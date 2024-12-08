@@ -1,4 +1,4 @@
-**Project in maintenance mode.**
+**Project under slower development.**
 > Well, working on this project was a fun ride 🎢! This project has taught me so much about Android, software development and how to collaborate with an online community. It has been my dream to lead a big FOSS project with people from all over the world so a **huge** thank you goes to everyone that spread the word and helped on GitHub along the way ☺. Unfortunately, I do not have any more time to work on this project - I'm now studying Computer Science at university and I have landed software-dev side jobs, which has taken up any free-time I did have to code on the side.
 >
 > A special thank you goes to everyone in the [Team](https://docs.keymapper.club/#our-team) for their long-term
@@ -27,14 +27,17 @@ Key Mapper is a free and open source Android app that can remap your buttons and
 
 🎉 Check out the [website](https://docs.keymapper.club) for more information and help! 🎉
 
+
 ## Translations
 
-![cs translation](https://img.shields.io/badge/dynamic/json?color=blue&label=Czech&style=flat&logo=crowdin&query=%24.progress[?(@.data.languageId==%27cs%27)].data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-13864667-360045.json)
-![es-ES translation](https://img.shields.io/badge/dynamic/json?color=blue&label=Spanish&style=flat&logo=crowdin&query=%24.progress[?(@.data.languageId==%27es-ES%27)].data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-13864667-360045.json)
-![pl translation](https://img.shields.io/badge/dynamic/json?color=blue&label=Polish&style=flat&logo=crowdin&query=%24.progress[?(@.data.languageId==%27pl%27)].data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-13864667-360045.json)
-![ru translation](https://img.shields.io/badge/dynamic/json?color=blue&label=Russian&style=flat&logo=crowdin&query=%24.progress[?(@.data.languageId==%27ru%27)].data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-13864667-360045.json)
-![sk translation](https://img.shields.io/badge/dynamic/json?color=blue&label=Slovak&style=flat&logo=crowdin&query=%24.progress[?(@.data.languageId==%27sk%27)].data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-13864667-360045.json)
-![zh-CN translation](https://img.shields.io/badge/dynamic/json?color=blue&label=Chinese%20(Simplified)&style=flat&logo=crowdin&query=%24.progress[?(@.data.languageId==%27zh-CN%27)].data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-13864667-360045.json)
+[![cs proofreading](https://img.shields.io/badge/dynamic/json?color=green&label=cs&style=flat&logo=crowdin&query=%24.progress.1.data.approvalProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-13864667-360045-update.json)](https://crowdin.com/project/key-mapper)
+[![es-ES proofreading](https://img.shields.io/badge/dynamic/json?color=green&label=es-ES&style=flat&logo=crowdin&query=%24.progress.3.data.approvalProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-13864667-360045-update.json)](https://crowdin.com/project/key-mapper)
+[![pl proofreading](https://img.shields.io/badge/dynamic/json?color=green&label=pl&style=flat&logo=crowdin&query=%24.progress.8.data.approvalProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-13864667-360045-update.json)](https://crowdin.com/project/key-mapper)
+[![pt-BR proofreading](https://img.shields.io/badge/dynamic/json?color=green&label=pt-BR&style=flat&logo=crowdin&query=%24.progress.9.data.approvalProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-13864667-360045-update.json)](https://crowdin.com/project/key-mapper)
+[![ru proofreading](https://img.shields.io/badge/dynamic/json?color=green&label=ru&style=flat&logo=crowdin&query=%24.progress.10.data.approvalProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-13864667-360045-update.json)](https://crowdin.com/project/key-mapper)
+[![sk proofreading](https://img.shields.io/badge/dynamic/json?color=green&label=sk&style=flat&logo=crowdin&query=%24.progress.11.data.approvalProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-13864667-360045-update.json)](https://crowdin.com/project/key-mapper)
+[![zh-CN proofreading](https://img.shields.io/badge/dynamic/json?color=green&label=zh-CN&style=flat&logo=crowdin&query=%24.progress.15.data.approvalProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-13864667-360045-update.json)](https://crowdin.com/project/key-mapper)
+
 
 ## Star History
 

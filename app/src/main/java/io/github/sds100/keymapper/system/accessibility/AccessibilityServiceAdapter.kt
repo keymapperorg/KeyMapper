@@ -77,6 +77,16 @@ class AccessibilityServiceAdapter(
         }.launchIn(coroutineScope)
     }
 
+    /**
+     * Send an event to the accessibility service asynchronously. This method
+     * will return immediately and you won't be notified of whether it is sent.
+     */
+    fun sendAsync(event: ServiceEvent) {
+        coroutineScope.launch {
+            eventsToService.emit(event)
+        }
+    }
+
     override suspend fun send(event: ServiceEvent): Result<*> {
         state.value = getState()
 

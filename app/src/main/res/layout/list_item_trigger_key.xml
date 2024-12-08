@@ -6,6 +6,7 @@
     <data>
 
         <import type="android.view.View" />
+
         <import type="io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyLinkType" />
 
         <variable
@@ -35,8 +36,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:tint="?attr/colorOnSurface"
             android:src="@{model.linkType == TriggerKeyLinkType.ARROW ? @drawable/ic_baseline_arrow_downward_24 : @drawable/ic_baseline_add_24}"
+            android:tint="?attr/colorOnSurface"
             android:visibility="@{model.linkType == TriggerKeyLinkType.HIDDEN ? View.GONE : View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -73,7 +74,7 @@
                     android:orientation="vertical"
                     app:layout_constraintEnd_toStartOf="@+id/buttonDevice"
                     app:layout_constraintStart_toEndOf="@id/buttonDrag"
-                    app:layout_constraintTop_toTopOf="@+id/buttonDevice">
+                    app:layout_constraintTop_toTopOf="@+id/buttonRemove">
 
                     <TextView
                         android:id="@+id/textViewKeyName"
@@ -120,6 +121,19 @@
                     app:srcCompat="@drawable/ic_baseline_drag_handle_24" />
 
                 <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@+id/buttonDevice"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="36dp"
+                    android:layout_height="0dp"
+                    android:onClick="@{onDeviceClick}"
+                    android:tint="?attr/colorOnSurface"
+                    android:visibility="@{model.chooseDeviceButtonVisible ? View.VISIBLE : View.GONE}"
+                    app:layout_constraintBottom_toBottomOf="@+id/buttonRemove"
+                    app:layout_constraintEnd_toStartOf="@+id/buttonEdit"
+                    app:layout_constraintTop_toTopOf="@id/buttonRemove"
+                    app:srcCompat="@drawable/ic_baseline_devices_other_24" />
+
+                <androidx.appcompat.widget.AppCompatImageButton
                     android:id="@+id/buttonEdit"
                     style="@style/Widget.AppCompat.Button.Borderless.Colored"
                     android:layout_width="36dp"
@@ -130,18 +144,6 @@
                     app:layout_constraintEnd_toStartOf="@+id/buttonRemove"
                     app:layout_constraintTop_toTopOf="@id/buttonRemove"
                     app:srcCompat="@drawable/ic_outline_more_vert_24" />
-
-                <androidx.appcompat.widget.AppCompatImageButton
-                    android:id="@+id/buttonDevice"
-                    style="@style/Widget.Material3.Button.TextButton"
-                    android:layout_width="36dp"
-                    android:layout_height="0dp"
-                    android:onClick="@{onDeviceClick}"
-                    android:tint="?attr/colorOnSurface"
-                    app:layout_constraintBottom_toBottomOf="@+id/buttonRemove"
-                    app:layout_constraintEnd_toStartOf="@+id/buttonEdit"
-                    app:layout_constraintTop_toTopOf="@id/buttonRemove"
-                    app:srcCompat="@drawable/ic_baseline_devices_other_24" />
 
                 <io.github.sds100.keymapper.util.ui.SquareImageButton
                     android:id="@+id/buttonRemove"

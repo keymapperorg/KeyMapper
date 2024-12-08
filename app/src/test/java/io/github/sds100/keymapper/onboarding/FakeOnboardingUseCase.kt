@@ -26,22 +26,13 @@ class FakeOnboardingUseCase : OnboardingUseCase {
 
     override fun neverShowGuiKeyboardPromptsAgain() {}
 
-    override var approvedFingerprintFeaturePrompt: Boolean = false
     override var shownParallelTriggerOrderExplanation: Boolean = false
     override var shownSequenceTriggerExplanation: Boolean = false
-    override val showFingerprintFeatureNotificationIfAvailable = MutableStateFlow(false)
+    override val showAssistantTriggerFeatureNotification: Flow<Boolean> = MutableStateFlow(false)
 
-    override fun showedFingerprintFeatureNotificationIfAvailable() {}
+    override fun showedAssistantTriggerFeatureNotification() {}
 
-    override val showSetupChosenDevicesAgainNotification = MutableStateFlow(false)
-
-    override fun approvedSetupChosenDevicesAgainNotification() {
-        approvedSetupChosenDevicesAgainNotification = true
-    }
-
-    override val showSetupChosenDevicesAgainAppIntro = MutableStateFlow(false)
-
-    override fun approvedSetupChosenDevicesAgainAppIntro() {}
+    override var approvedAssistantTriggerFeaturePrompt: Boolean = false
 
     override val showWhatsNew = MutableStateFlow(false)
 

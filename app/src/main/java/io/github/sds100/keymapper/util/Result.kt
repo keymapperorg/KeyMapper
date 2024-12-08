@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.util
 
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.purchasing.ProductId
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.util.ui.ResourceProvider
@@ -24,37 +25,37 @@ sealed class Error : Result<Nothing>() {
     data class SdkVersionTooLow(val minSdk: Int) : Error()
     data class SdkVersionTooHigh(val maxSdk: Int) : Error()
     data class InputMethodNotFound(val imeLabel: String) : Error()
-    object NoVoiceAssistant : Error()
-    object NoDeviceAssistant : Error()
-    object NoCameraApp : Error()
-    object NoSettingsApp : Error()
-    object FrontFlashNotFound : Error()
-    object BackFlashNotFound : Error()
+    data object NoVoiceAssistant : Error()
+    data object NoDeviceAssistant : Error()
+    data object NoCameraApp : Error()
+    data object NoSettingsApp : Error()
+    data object FrontFlashNotFound : Error()
+    data object BackFlashNotFound : Error()
     data class ImeDisabled(val ime: ImeInfo) : Error()
     data class DeviceNotFound(val descriptor: String) : Error()
-    object InvalidNumber : Error()
+    data object InvalidNumber : Error()
     data class NumberTooBig(val max: Int) : Error()
     data class NumberTooSmall(val min: Int) : Error()
-    object EmptyText : Error()
-    object NoIncompatibleKeyboardsInstalled : Error()
-    object NoMediaSessions : Error()
-    object BackupVersionTooNew : Error()
-    object LauncherShortcutsNotSupported : Error()
+    data object EmptyText : Error()
+    data object NoIncompatibleKeyboardsInstalled : Error()
+    data object NoMediaSessions : Error()
+    data object BackupVersionTooNew : Error()
+    data object LauncherShortcutsNotSupported : Error()
 
     data class AppNotFound(val packageName: String) : Error()
     data class AppDisabled(val packageName: String) : Error()
-    object AppShortcutCantBeOpened : Error()
-    object InsufficientPermissionsToOpenAppShortcut : Error()
-    object NoCompatibleImeEnabled : Error()
-    object NoCompatibleImeChosen : Error()
+    data object AppShortcutCantBeOpened : Error()
+    data object InsufficientPermissionsToOpenAppShortcut : Error()
+    data object NoCompatibleImeEnabled : Error()
+    data object NoCompatibleImeChosen : Error()
 
-    object AccessibilityServiceDisabled : Error()
-    object AccessibilityServiceCrashed : Error()
+    data object AccessibilityServiceDisabled : Error()
+    data object AccessibilityServiceCrashed : Error()
 
-    object CantShowImePickerInBackground : Error()
-    object CantFindImeSettings : Error()
-    object GestureStrokeCountTooHigh : Error()
-    object GestureDurationTooHigh : Error()
+    data object CantShowImePickerInBackground : Error()
+    data object CantFindImeSettings : Error()
+    data object GestureStrokeCountTooHigh : Error()
+    data object GestureDurationTooHigh : Error()
 
     data class PermissionDenied(val permission: Permission) : Error() {
         companion object {
@@ -79,6 +80,7 @@ sealed class Error : Result<Nothing>() {
                     Permission.ANSWER_PHONE_CALL -> R.string.error_answer_end_phone_call_permission_denied
                     Permission.FIND_NEARBY_DEVICES -> R.string.error_find_nearby_devices_permission_denied
                     Permission.POST_NOTIFICATIONS -> R.string.error_notifications_permission_denied
+                    Permission.DEVICE_ASSISTANT -> R.string.trigger_error_assistant_activity_not_chosen_short
                 }
 
                 return resourceProvider.getString(resId)
@@ -86,40 +88,54 @@ sealed class Error : Result<Nothing>() {
         }
     }
 
-    object FailedToFindAccessibilityNode : Error()
+    data object FailedToFindAccessibilityNode : Error()
     data class FailedToPerformAccessibilityGlobalAction(val action: Int) : Error()
-    object FailedToDispatchGesture : Error()
+    data object FailedToDispatchGesture : Error()
 
-    object CameraInUse : Error()
-    object CameraDisconnected : Error()
-    object CameraDisabled : Error()
-    object MaxCamerasInUse : Error()
-    object CameraError : Error()
+    data object CameraInUse : Error()
+    data object CameraDisconnected : Error()
+    data object CameraDisabled : Error()
+    data object MaxCamerasInUse : Error()
+    data object CameraError : Error()
 
     data class FailedToModifySystemSetting(val setting: String) : Error()
-    object FailedToChangeIme : Error()
-    object NoAppToOpenUrl : Error()
-    object NoAppToPhoneCall : Error()
+    data object FailedToChangeIme : Error()
+    data object NoAppToOpenUrl : Error()
+    data object NoAppToPhoneCall : Error()
 
     data class NotAFile(val uri: String) : Error()
     data class NotADirectory(val uri: String) : Error()
-    object StoragePermissionDenied : Error()
+    data object StoragePermissionDenied : Error()
     data class CannotCreateFileInTarget(val uri: String) : Error()
     data class SourceFileNotFound(val uri: String) : Error()
     data class TargetFileNotFound(val uri: String) : Error()
     data class TargetDirectoryNotFound(val uri: String) : Error()
-    object UnknownIOError : Error()
-    object FileOperationCancelled : Error()
-    object TargetDirectoryMatchesSourceDirectory : Error()
+    data object UnknownIOError : Error()
+    data object FileOperationCancelled : Error()
+    data object TargetDirectoryMatchesSourceDirectory : Error()
     data class NoSpaceLeftOnTarget(val uri: String) : Error()
-    object NoFileName : Error()
+    data object NoFileName : Error()
 
-    object EmptyJson : Error()
-    object CantFindSoundFile : Error()
+    data object EmptyJson : Error()
+    data object CantFindSoundFile : Error()
     data class CorruptJsonFile(val reason: String) : Error()
 
-    object ShizukuNotStarted : Error()
-    object CantDetectKeyEventsInPhoneCall : Error()
+    data object ShizukuNotStarted : Error()
+    data object CantDetectKeyEventsInPhoneCall : Error()
+
+    // This is returned from the PurchasingManager on FOSS builds that don't
+    // have the pro features implemented.
+    data object PurchasingNotImplemented : Error()
+
+    data class ProductNotPurchased(val product: ProductId) : Error()
+
+    sealed class PurchasingError : Error() {
+        data object ProductNotFound : PurchasingError()
+        data object Cancelled : PurchasingError()
+        data object StoreProblem : PurchasingError()
+        data object NetworkError : PurchasingError()
+        data class Unexpected(val message: String) : PurchasingError()
+    }
 }
 
 inline fun <T> Result<T>.onSuccess(f: (T) -> Unit): Result<T> {
@@ -154,6 +170,15 @@ inline infix fun <T> Result<T>.otherwise(f: (error: Error) -> Result<T>) =
     when (this) {
         is Success -> this
         is Error -> f(this)
+    }
+
+inline fun <T, U> Result<T>.resolve(
+    onSuccess: (value: T) -> U,
+    onFailure: (error: Error) -> U,
+) =
+    when (this) {
+        is Success -> onSuccess(this.value)
+        is Error -> onFailure(this)
     }
 
 inline infix fun <T> Result<T>.valueIfFailure(f: (error: Error) -> T): T =

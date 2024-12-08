@@ -3,6 +3,8 @@ package io.github.sds100.keymapper.system.notifications
 import android.os.Build
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.system.permissions.Permission
+import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -16,6 +18,7 @@ class ManageNotificationsUseCaseImpl(
     private val preferences: PreferenceRepository,
     private val notificationAdapter: NotificationAdapter,
     private val suAdapter: SuAdapter,
+    private val permissionAdapter: PermissionAdapter,
 ) : ManageNotificationsUseCase {
 
     override val showImePickerNotification: Flow<Boolean> =
@@ -82,6 +85,10 @@ class ManageNotificationsUseCaseImpl(
     override fun deleteChannel(channelId: String) {
         notificationAdapter.deleteChannel(channelId)
     }
+
+    override fun isPermissionGranted(): Boolean {
+        return permissionAdapter.isGranted(Permission.POST_NOTIFICATIONS)
+    }
 }
 
 interface ManageNotificationsUseCase {
@@ -94,6 +101,7 @@ interface ManageNotificationsUseCase {
      */
     val onActionClick: Flow<String>
 
+    fun isPermissionGranted(): Boolean
     fun show(notification: NotificationModel)
     fun dismiss(notificationId: Int)
     fun createChannel(channel: NotificationChannelModel)

@@ -9,12 +9,10 @@ import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import junitparams.JUnitParamsRunner
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineExceptionHandler
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.createTestCoroutineScope
-import kotlinx.coroutines.test.runBlockingTest
-import org.junit.After
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -43,9 +41,8 @@ class SimpleMappingControllerTest {
         private const val HOLD_DOWN_DURATION = 1000L
     }
 
-    private val testDispatcher = TestCoroutineDispatcher()
-    private val coroutineScope =
-        createTestCoroutineScope(TestCoroutineDispatcher() + TestCoroutineExceptionHandler() + testDispatcher)
+    private val testDispatcher = UnconfinedTestDispatcher()
+    private val testScope = TestScope(testDispatcher)
 
     private lateinit var controller: SimpleMappingController
     private lateinit var detectMappingUseCase: DetectMappingUseCase
@@ -90,16 +87,11 @@ class SimpleMappingControllerTest {
         }
 
         controller = FakeSimpleMappingController(
-            coroutineScope,
+            testScope,
             detectMappingUseCase,
             performActionsUseCase,
             detectConstraintsUseCase,
         )
-    }
-
-    @After
-    fun tearDown() {
-        coroutineScope.cleanupTestCoroutines()
     }
 
     /**
@@ -107,7 +99,7 @@ class SimpleMappingControllerTest {
      */
     @Test
     fun `action with repeat until limit reached shouldn't stop repeating when trigger is detected again`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val action = FakeAction(
                 data = ActionData.InputKeyEvent(1),
@@ -131,7 +123,7 @@ class SimpleMappingControllerTest {
      */
     @Test
     fun `when triggering action that repeats until limit reached, then stop repeating when the limit has been reached`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val action = FakeAction(
                 data = ActionData.InputKeyEvent(keyCode = 1),
@@ -153,7 +145,7 @@ class SimpleMappingControllerTest {
      */
     @Test
     fun `when triggering action that repeats until pressed again with repeat limit, then stop repeating when the trigger has been pressed again`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val action = FakeAction(
                 data = ActionData.InputKeyEvent(keyCode = 1),
@@ -180,7 +172,7 @@ class SimpleMappingControllerTest {
      */
     @Test
     fun `when triggering action that repeats until pressed again with repeat limit, then stop repeating when limit reached and trigger hasn't been pressed again`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val action = FakeAction(
                 data = ActionData.InputKeyEvent(keyCode = 1),

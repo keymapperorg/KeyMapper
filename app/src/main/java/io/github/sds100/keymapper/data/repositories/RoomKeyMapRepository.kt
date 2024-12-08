@@ -1,25 +1,17 @@
 package io.github.sds100.keymapper.data.repositories
 
 import io.github.sds100.keymapper.data.db.dao.KeyMapDao
-import io.github.sds100.keymapper.data.entities.ActionEntity
-import io.github.sds100.keymapper.data.entities.Extra
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
-import io.github.sds100.keymapper.data.entities.TriggerEntity
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapRepository
-import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.util.DefaultDispatcherProvider
 import io.github.sds100.keymapper.util.DispatcherProvider
 import io.github.sds100.keymapper.util.State
-import io.github.sds100.keymapper.util.ifIsData
 import io.github.sds100.keymapper.util.splitIntoBatches
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -29,7 +21,6 @@ import java.util.UUID
  */
 class RoomKeyMapRepository(
     private val dao: KeyMapDao,
-    private val devicesAdapter: DevicesAdapter,
     private val coroutineScope: CoroutineScope,
     private val dispatchers: DispatcherProvider = DefaultDispatcherProvider(),
 ) : KeyMapRepository {
@@ -40,24 +31,9 @@ class RoomKeyMapRepository(
 
     override val keyMapList = dao.getAll()
         .map { State.Data(it) }
-        .map { state ->
-            if (fixUnknownDeviceNamesInKeyMaps(state.data)) {
-                State.Loading
-            } else {
-                state
-            }
-        }
         .stateIn(coroutineScope, SharingStarted.Eagerly, State.Loading)
 
     override val requestBackup = MutableSharedFlow<List<KeyMapEntity>>()
-
-    init {
-        keyMapList.onEach { keyMapListState ->
-            keyMapListState.ifIsData {
-                fixUnknownDeviceNamesInKeyMaps(it)
-            }
-        }.flowOn(dispatchers.default()).launchIn(coroutineScope)
-    }
 
     override fun insert(vararg keyMap: KeyMapEntity) {
         coroutineScope.launch(dispatchers.default()) {
@@ -126,93 +102,6 @@ class RoomKeyMapRepository(
 
             requestBackup()
         }
-    }
-
-    /**
-     * See issue #612.
-     * This will check if any triggers or actions have unknown device names and if the device is connected
-     * then it will update the device name with the correct one.
-     * This only has to check for uses of devices in Key Mapper 2.2 and older.
-     *
-     * @return whether any key maps were updated
-     */
-    private suspend fun fixUnknownDeviceNamesInKeyMaps(keyMapList: List<KeyMapEntity>): Boolean {
-        val keyMapsToUpdate = mutableListOf<KeyMapEntity>()
-        val connectedInputDevices =
-            devicesAdapter.connectedInputDevices.first { it is State.Data } as State.Data
-
-        if (connectedInputDevices.data.isEmpty()) {
-            return false
-        }
-
-        for (keyMap in keyMapList) {
-            var updateKeyMap = false
-
-            val newTriggerKeys = keyMap.trigger.keys.map { triggerKey ->
-                if (triggerKey.deviceId != TriggerEntity.KeyEntity.DEVICE_ID_THIS_DEVICE ||
-                    triggerKey.deviceId != TriggerEntity.KeyEntity.DEVICE_ID_ANY_DEVICE
-                ) {
-                    val deviceDescriptor = triggerKey.deviceId
-
-                    if (triggerKey.deviceName.isNullOrBlank()) {
-                        val newDeviceName =
-                            connectedInputDevices.data.find { it.descriptor == deviceDescriptor }?.name
-
-                        if (newDeviceName != null) {
-                            updateKeyMap = true
-
-                            return@map triggerKey.copy(
-                                deviceName = newDeviceName,
-                            )
-                        }
-                    }
-                }
-
-                return@map triggerKey
-            }
-
-            val newActions = keyMap.actionList.map { action ->
-                if (action.type == ActionEntity.Type.KEY_EVENT) {
-                    val deviceDescriptor =
-                        action.extras.find { it.id == ActionEntity.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR }?.data
-                    val oldDeviceName =
-                        action.extras.find { it.id == ActionEntity.EXTRA_KEY_EVENT_DEVICE_NAME }?.data
-
-                    if (deviceDescriptor != null && oldDeviceName.isNullOrBlank()) {
-                        val newDeviceName =
-                            connectedInputDevices.data.find { it.descriptor == deviceDescriptor }?.name
-
-                        if (newDeviceName != null) {
-                            updateKeyMap = true
-
-                            val newExtras = action.extras.toMutableList().apply {
-                                removeAll { it.id == ActionEntity.EXTRA_KEY_EVENT_DEVICE_NAME }
-                                add(Extra(ActionEntity.EXTRA_KEY_EVENT_DEVICE_NAME, newDeviceName))
-                            }
-
-                            return@map action.copy(extras = newExtras)
-                        }
-                    }
-                }
-
-                return@map action
-            }
-
-            if (updateKeyMap) {
-                val newKeyMap = keyMap.copy(
-                    trigger = keyMap.trigger.copy(keys = newTriggerKeys),
-                    actionList = newActions,
-                )
-
-                keyMapsToUpdate.add(newKeyMap)
-            }
-        }
-
-        if (keyMapsToUpdate.isNotEmpty()) {
-            dao.update(*keyMapsToUpdate.toTypedArray())
-        }
-
-        return keyMapsToUpdate.isNotEmpty()
     }
 
     private fun requestBackup() {

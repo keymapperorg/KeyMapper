@@ -36,6 +36,10 @@
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
+        <argument
+            android:name="showAdvancedTriggers"
+            android:defaultValue="false"
+            app:argType="boolean" />
     </action>
 
     <action

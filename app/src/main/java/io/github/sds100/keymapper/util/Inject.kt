@@ -140,6 +140,7 @@ object Inject {
         UseCases.displayKeyMap(ctx),
         UseCases.createAction(ctx),
         ServiceLocator.resourceProvider(ctx),
+        ServiceLocator.purchasingManager(ctx),
     )
 
     fun configFingerprintMapViewModel(

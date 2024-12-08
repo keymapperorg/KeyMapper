@@ -17,6 +17,11 @@
             app:argType="string"
             app:nullable="true" />
 
+        <argument
+            android:name="showAdvancedTriggers"
+            android:defaultValue="false"
+            app:argType="boolean" />
+
         <action
             android:id="@+id/action_config_keymap_fragment_to_actionOptionsFragment"
             app:destination="@id/keymapActionOptionsFragment"
@@ -31,11 +36,10 @@
     <dialog
         android:id="@+id/triggerKeyOptionsFragment"
         android:name="io.github.sds100.keymapper.mappings.keymaps.trigger.ConfigTriggerKeyFragment"
-        android:label="TriggerKeyOptionsFragment"/>
+        android:label="TriggerKeyOptionsFragment" />
 
     <dialog
         android:id="@+id/keymapActionOptionsFragment"
         android:name="io.github.sds100.keymapper.mappings.keymaps.EditKeyMapActionFragment"
-        android:label="KeymapActionOptionsFragment">
-   </dialog>
+        android:label="KeymapActionOptionsFragment" />
 </navigation>

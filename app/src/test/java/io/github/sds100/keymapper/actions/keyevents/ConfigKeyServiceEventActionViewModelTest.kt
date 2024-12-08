@@ -7,12 +7,11 @@ import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineExceptionHandler
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.createTestCoroutineScope
 import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
@@ -36,9 +35,9 @@ class ConfigKeyServiceEventActionViewModelTest {
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
 
-    private val testDispatcher = TestCoroutineDispatcher()
-    private val coroutineScope =
-        createTestCoroutineScope(TestCoroutineDispatcher() + TestCoroutineExceptionHandler() + testDispatcher)
+    private val testDispatcher = UnconfinedTestDispatcher()
+    private val testScope = TestScope(testDispatcher)
+
     private lateinit var viewModel: ConfigKeyEventActionViewModel
     private lateinit var mockUseCase: ConfigKeyEventUseCase
 
@@ -63,13 +62,12 @@ class ConfigKeyServiceEventActionViewModelTest {
 
     @After
     fun tearDown() {
-        testDispatcher.cleanupTestCoroutines()
         Dispatchers.resetMain()
     }
 
     @Test
     fun `multiple input devices with same descriptor but a different name, choose a device, ensure device with correct name is chosen`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val fakeDevice1 = InputDeviceInfo(
                 descriptor = "bla",
@@ -92,7 +90,7 @@ class ConfigKeyServiceEventActionViewModelTest {
 
             // THEN
             viewModel.chooseDevice(0)
-            coroutineScope.advanceUntilIdle()
+            testScope.advanceUntilIdle()
 
             assertThat(viewModel.uiState.value.chosenDeviceName, `is`(fakeDevice1.name))
 

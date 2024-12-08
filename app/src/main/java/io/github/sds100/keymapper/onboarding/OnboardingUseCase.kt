@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.onboarding
 
-import androidx.datastore.preferences.core.stringSetPreferencesKey
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.canUseImeToPerform
@@ -59,11 +58,6 @@ class OnboardingUseCaseImpl(
         preferenceRepository.set(Keys.acknowledgedGuiKeyboard, true)
     }
 
-    override var approvedFingerprintFeaturePrompt by PrefDelegate(
-        Keys.approvedFingerprintFeaturePrompt,
-        false,
-    )
-
     override var shownParallelTriggerOrderExplanation by PrefDelegate(
         Keys.shownParallelTriggerOrderExplanation,
         false,
@@ -74,7 +68,7 @@ class OnboardingUseCaseImpl(
     )
 
     override val showWhatsNew = get(Keys.lastInstalledVersionCodeHomeScreen)
-        .map { it ?: -1 < Constants.VERSION_CODE }
+        .map { (it ?: -1) < Constants.VERSION_CODE }
 
     override fun showedWhatsNew() {
         set(Keys.lastInstalledVersionCodeHomeScreen, Constants.VERSION_CODE)
@@ -85,65 +79,28 @@ class OnboardingUseCaseImpl(
             readText()
         }
 
-    override val showFingerprintFeatureNotificationIfAvailable: Flow<Boolean> by lazy {
+    override var approvedAssistantTriggerFeaturePrompt by PrefDelegate(
+        Keys.approvedAssistantTriggerFeaturePrompt,
+        false,
+    )
+
+    /**
+     * Show the assistant trigger only when they *upgrade* to the new version and after they've
+     * completed the app intro, which asks them whether they want to receive notifications.
+     */
+    override val showAssistantTriggerFeatureNotification: Flow<Boolean> =
         combine(
             get(Keys.lastInstalledVersionCodeBackground).map { it ?: -1 },
-            showWhatsNew,
-            get(Keys.approvedFingerprintFeaturePrompt).map { it ?: false },
             get(Keys.shownAppIntro).map { it ?: false },
-        ) { oldVersionCode, showWhatsNew, approvedPrompt, shownAppIntro ->
-            // has the user opened the app and will have already seen that they can remap fingerprint gestures
-            val handledUpdateInHomeScreen = !showWhatsNew
-
-            oldVersionCode < VersionHelper.FINGERPRINT_GESTURES_MIN_VERSION &&
-                !handledUpdateInHomeScreen &&
-                !approvedPrompt &&
-                shownAppIntro
+            get(Keys.approvedAssistantTriggerFeaturePrompt).map { it ?: false },
+        ) { oldVersionCode, shownAppIntro, approvedPrompt ->
+            oldVersionCode < VersionHelper.ASSISTANT_TRIGGER_MIN_VERSION &&
+                shownAppIntro &&
+                !approvedPrompt
         }
-    }
 
-    override fun showedFingerprintFeatureNotificationIfAvailable() {
+    override fun showedAssistantTriggerFeatureNotification() {
         set(Keys.lastInstalledVersionCodeBackground, Constants.VERSION_CODE)
-    }
-
-    override val showSetupChosenDevicesAgainNotification: Flow<Boolean> =
-        get(Keys.approvedSetupChosenDevicesAgain).map { it ?: false }.map { approvedPreviously ->
-            val bluetoothDevicesThatShowImePicker =
-                get(stringSetPreferencesKey("pref_bluetooth_devices_show_ime_picker")).first()
-                    ?: emptySet()
-
-            val bluetoothDevicesThatChangeIme =
-                get(stringSetPreferencesKey("pref_bluetooth_devices")).first() ?: emptySet()
-
-            val previouslyChoseBluetoothDevices =
-                bluetoothDevicesThatShowImePicker.isNotEmpty() || bluetoothDevicesThatChangeIme.isNotEmpty()
-
-            return@map !approvedPreviously && previouslyChoseBluetoothDevices
-        }
-
-    override fun approvedSetupChosenDevicesAgainNotification() {
-        set(Keys.approvedSetupChosenDevicesAgain, true)
-    }
-
-    override val showSetupChosenDevicesAgainAppIntro: Flow<Boolean> =
-        get(Keys.approvedSetupChosenDevicesAgain).map { it ?: false }.map { approvedPreviously ->
-
-            val bluetoothDevicesThatShowImePicker =
-                get(stringSetPreferencesKey("pref_bluetooth_devices_show_ime_picker")).first()
-                    ?: emptySet()
-
-            val bluetoothDevicesThatChangeIme =
-                get(stringSetPreferencesKey("pref_bluetooth_devices")).first()
-                    ?: emptySet()
-
-            val previouslyChoseBluetoothDevices =
-                bluetoothDevicesThatShowImePicker.isNotEmpty() || bluetoothDevicesThatChangeIme.isNotEmpty()
-
-            return@map !approvedPreviously && previouslyChoseBluetoothDevices
-        }
-
-    override fun approvedSetupChosenDevicesAgainAppIntro() {
-        set(Keys.approvedSetupChosenDevicesAgain, true)
     }
 
     override val showQuickStartGuideHint: Flow<Boolean> = get(Keys.shownQuickStartGuideHint).map {
@@ -194,18 +151,12 @@ interface OnboardingUseCase {
     fun isTvDevice(): Boolean
     fun neverShowGuiKeyboardPromptsAgain()
 
-    var approvedFingerprintFeaturePrompt: Boolean
     var shownParallelTriggerOrderExplanation: Boolean
     var shownSequenceTriggerExplanation: Boolean
 
-    val showFingerprintFeatureNotificationIfAvailable: Flow<Boolean>
-    fun showedFingerprintFeatureNotificationIfAvailable()
-
-    val showSetupChosenDevicesAgainNotification: Flow<Boolean>
-    fun approvedSetupChosenDevicesAgainNotification()
-
-    val showSetupChosenDevicesAgainAppIntro: Flow<Boolean>
-    fun approvedSetupChosenDevicesAgainAppIntro()
+    val showAssistantTriggerFeatureNotification: Flow<Boolean>
+    fun showedAssistantTriggerFeatureNotification()
+    var approvedAssistantTriggerFeaturePrompt: Boolean
 
     val showWhatsNew: Flow<Boolean>
     fun showedWhatsNew()

@@ -55,18 +55,7 @@ class ConstraintSnapshotImpl(
         }
     }
 
-    override fun isSatisfied(constraintState: ConstraintState): Boolean =
-        when (constraintState.mode) {
-            ConstraintMode.AND -> {
-                constraintState.constraints.all { isSatisfied(it) }
-            }
-
-            ConstraintMode.OR -> {
-                constraintState.constraints.any { isSatisfied(it) }
-            }
-        }
-
-    private fun isSatisfied(constraint: Constraint): Boolean {
+    override fun isSatisfied(constraint: Constraint): Boolean {
         val isSatisfied = when (constraint) {
             is Constraint.AppInForeground -> appInForeground == constraint.packageName
             is Constraint.AppNotInForeground -> appInForeground != constraint.packageName
@@ -98,7 +87,6 @@ class ConstraintSnapshotImpl(
             is Constraint.FlashlightOff -> !cameraAdapter.isFlashlightOn(constraint.lens)
             is Constraint.FlashlightOn -> cameraAdapter.isFlashlightOn(constraint.lens)
             is Constraint.WifiConnected -> {
-                Timber.d("Connected WiFi ssid = $connectedWifiSSID")
                 if (constraint.ssid == null) {
                     // connected to any network
                     connectedWifiSSID != null
@@ -139,5 +127,22 @@ class ConstraintSnapshotImpl(
 }
 
 interface ConstraintSnapshot {
-    fun isSatisfied(constraintState: ConstraintState): Boolean
+    fun isSatisfied(constraint: Constraint): Boolean
+}
+
+fun ConstraintSnapshot.isSatisfied(constraintState: ConstraintState): Boolean {
+    // Required in case OR is used with empty list of constraints.
+    if (constraintState.constraints.isEmpty()) {
+        return true
+    }
+
+    return when (constraintState.mode) {
+        ConstraintMode.AND -> {
+            constraintState.constraints.all { isSatisfied(it) }
+        }
+
+        ConstraintMode.OR -> {
+            constraintState.constraints.any { isSatisfied(it) }
+        }
+    }
 }

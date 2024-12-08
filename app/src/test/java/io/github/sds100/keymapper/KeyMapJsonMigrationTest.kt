@@ -13,10 +13,9 @@ import io.github.sds100.keymapper.data.migration.Migration9To10
 import io.github.sds100.keymapper.data.migration.MigrationUtils
 import io.github.sds100.keymapper.util.JsonTestUtils
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineExceptionHandler
-import kotlinx.coroutines.test.createTestCoroutineScope
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -42,9 +41,8 @@ class KeyMapJsonMigrationTest {
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
 
-    private val testDispatcher = TestCoroutineDispatcher()
-    private val coroutineScope =
-        createTestCoroutineScope(TestCoroutineDispatcher() + TestCoroutineExceptionHandler() + testDispatcher)
+    private val testDispatcher = UnconfinedTestDispatcher()
+    private val testScope = TestScope(testDispatcher)
 
     private lateinit var parser: JsonParser
     private lateinit var gson: Gson
@@ -111,7 +109,7 @@ class KeyMapJsonMigrationTest {
         expectedData: JsonArray,
         inputVersion: Int,
         outputVersion: Int,
-    ) = coroutineScope.runBlockingTest {
+    ) = runTest(testDispatcher) {
         val migrations = listOf(
             JsonMigration(9, 10) { json -> Migration9To10.migrateJson(json) },
             JsonMigration(10, 11) { json -> Migration10To11.migrateJson(json) },

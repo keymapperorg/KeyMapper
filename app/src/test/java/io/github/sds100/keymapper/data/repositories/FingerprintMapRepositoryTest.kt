@@ -11,10 +11,9 @@ import io.github.sds100.keymapper.util.State
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineExceptionHandler
-import kotlinx.coroutines.test.createTestCoroutineScope
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -43,9 +42,8 @@ class FingerprintMapRepositoryTest {
         )
     }
 
-    private val testDispatcher = TestCoroutineDispatcher()
-    private val coroutineScope =
-        createTestCoroutineScope(TestCoroutineDispatcher() + TestCoroutineExceptionHandler() + testDispatcher)
+    private val testDispatcher = UnconfinedTestDispatcher()
+    private val testScope = TestScope(testDispatcher)
     private val dispatchers = TestDispatcherProvider(testDispatcher)
 
     private lateinit var repository: RoomFingerprintMapRepository
@@ -65,7 +63,7 @@ class FingerprintMapRepositoryTest {
 
         repository = RoomFingerprintMapRepository(
             mockDao,
-            coroutineScope,
+            testScope,
             devicesAdapter,
             dispatchers = dispatchers,
         )
@@ -73,8 +71,8 @@ class FingerprintMapRepositoryTest {
 
     @Test
     fun `only swipe down fingerprint map in database, insert 3 blank fingerprint maps for the other fingerprint maps`() =
-        coroutineScope.runBlockingTest {
-            repository.fingerprintMapList.launchIn(coroutineScope)
+        runTest(testDispatcher) {
+            repository.fingerprintMapList.launchIn(testScope)
 
             fingerprintMaps.emit(listOf(FingerprintMapEntity(id = FingerprintMapEntity.ID_SWIPE_DOWN)))
 
@@ -87,8 +85,8 @@ class FingerprintMapRepositoryTest {
 
     @Test
     fun `no fingerprint maps in database, insert 4 blank fingerprint maps`() =
-        coroutineScope.runBlockingTest {
-            repository.fingerprintMapList.launchIn(coroutineScope)
+        runTest(testDispatcher) {
+            repository.fingerprintMapList.launchIn(testScope)
 
             fingerprintMaps.emit(emptyList())
 
@@ -102,7 +100,7 @@ class FingerprintMapRepositoryTest {
 
     @Test
     fun `fingerprint map with key event action from device and proper device name extra, do not update action device name`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val action = ActionEntity(
                 type = ActionEntity.Type.KEY_EVENT,
@@ -126,7 +124,7 @@ class FingerprintMapRepositoryTest {
 
     @Test
     fun `fingerprint map with key event action from device and blank device name extra, if device for action is disconnected, do not update action device name`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val action = ActionEntity(
                 type = ActionEntity.Type.KEY_EVENT,
@@ -150,7 +148,7 @@ class FingerprintMapRepositoryTest {
 
     @Test
     fun `fingerprint map with key event action from device and blank device name extra, if device for action is connected, update action device name`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val action = ActionEntity(
                 type = ActionEntity.Type.KEY_EVENT,
@@ -192,7 +190,7 @@ class FingerprintMapRepositoryTest {
 
     @Test
     fun `fingerprint map with key event action from device and no device name extra, if device for action is connected, update action device name`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val action = ActionEntity(
                 type = ActionEntity.Type.KEY_EVENT,
@@ -234,7 +232,7 @@ class FingerprintMapRepositoryTest {
 
     @Test
     fun `fingerprint map with key event action from device and no device name extra, if device for action is disconnected, update action device name`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val action = ActionEntity(
                 type = ActionEntity.Type.KEY_EVENT,

@@ -12,7 +12,8 @@ import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCase
 import io.github.sds100.keymapper.mappings.keymaps.detection.KeyMapController
-import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTrigger
+import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
+import io.github.sds100.keymapper.mappings.keymaps.trigger.Trigger
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
@@ -30,15 +31,13 @@ import junitparams.naming.TestCaseName
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineExceptionHandler
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.createTestCoroutineScope
 import kotlinx.coroutines.test.currentTime
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
-import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -107,9 +106,8 @@ class KeyMapControllerTest {
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
 
-    private val testDispatcher = TestCoroutineDispatcher()
-    private val coroutineScope =
-        createTestCoroutineScope(TestCoroutineDispatcher() + TestCoroutineExceptionHandler() + testDispatcher)
+    private val testDispatcher = UnconfinedTestDispatcher()
+    private val testScope = TestScope(testDispatcher)
 
     @Before
     fun init() {
@@ -139,7 +137,7 @@ class KeyMapControllerTest {
             }
         }
 
-        whenever(detectKeyMapsUseCase.currentTime).thenAnswer { coroutineScope.currentTime }
+        whenever(detectKeyMapsUseCase.currentTime).thenAnswer { testScope.currentTime }
 
         performActionsUseCase = mock {
             MutableStateFlow(REPEAT_DELAY).apply {
@@ -160,21 +158,96 @@ class KeyMapControllerTest {
         }
 
         controller = KeyMapController(
-            coroutineScope,
+            testScope,
             detectKeyMapsUseCase,
             performActionsUseCase,
             detectConstraintsUseCase,
         )
     }
 
-    @After
-    fun tearDown() {
-        coroutineScope.cleanupTestCoroutines()
-    }
+    /**
+     * #1271 but with long press trigger instead of double press.
+     */
+    @Test
+    fun `Trigger short press key map if constraints allow it and a long press key map to the same button is not allowed`() =
+        runTest(testDispatcher) {
+            val shortPressTrigger = singleKeyTrigger(
+                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
+            )
+            val shortPressConstraints = ConstraintState(constraints = setOf(Constraint.WifiOn))
+
+            val longPressTrigger = singleKeyTrigger(
+                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
+            )
+            val doublePressConstraints = ConstraintState(constraints = setOf(Constraint.WifiOff))
+
+            keyMapListFlow.value = listOf(
+                KeyMap(
+                    0,
+                    trigger = shortPressTrigger,
+                    actionList = listOf(TEST_ACTION),
+                    constraintState = shortPressConstraints,
+                ),
+                KeyMap(
+                    1,
+                    trigger = longPressTrigger,
+                    actionList = listOf(TEST_ACTION_2),
+                    constraintState = doublePressConstraints,
+                ),
+            )
+
+            // Only the short press trigger is allowed.
+            mockConstraintSnapshot { constraint -> constraint == Constraint.WifiOn }
+
+            mockTriggerKeyInput(shortPressTrigger.keys.first())
+
+            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+            verify(performActionsUseCase, never()).perform(TEST_ACTION_2.data)
+        }
+
+    /**
+     * #1271
+     */
+    @Test
+    fun `ignore double press key maps overlapping short press key maps if the constraints aren't satisfied`() =
+        runTest(testDispatcher) {
+            val shortPressTrigger = singleKeyTrigger(
+                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
+            )
+            val shortPressConstraints = ConstraintState(constraints = setOf(Constraint.WifiOn))
+
+            val doublePressTrigger = singleKeyTrigger(
+                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.DOUBLE_PRESS),
+            )
+            val doublePressConstraints = ConstraintState(constraints = setOf(Constraint.WifiOff))
+
+            keyMapListFlow.value = listOf(
+                KeyMap(
+                    0,
+                    trigger = shortPressTrigger,
+                    actionList = listOf(TEST_ACTION),
+                    constraintState = shortPressConstraints,
+                ),
+                KeyMap(
+                    1,
+                    trigger = doublePressTrigger,
+                    actionList = listOf(TEST_ACTION_2),
+                    constraintState = doublePressConstraints,
+                ),
+            )
+
+            // Only the short press trigger is allowed.
+            mockConstraintSnapshot { constraint -> constraint == Constraint.WifiOn }
+
+            mockTriggerKeyInput(shortPressTrigger.keys.first())
+
+            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+            verify(performActionsUseCase, never()).perform(TEST_ACTION_2.data)
+        }
 
     @Test
     fun `Don't imitate button if 1 long press trigger is successful and another with a longer delay fails`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
 
             val longerTrigger =
@@ -250,7 +323,7 @@ class KeyMapControllerTest {
      */
     @Test
     fun `Long press trigger shouldn't be triggered if the constraints are changed by the actions`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val actionData = ActionData.Flashlight.Toggle(CameraLens.BACK)
 
@@ -303,10 +376,10 @@ class KeyMapControllerTest {
      */
     @Test
     fun `multiple key maps with the same long press trigger but different long press delays should all work`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val keyMap1 = KeyMap(
-                trigger = KeyMapTrigger(
+                trigger = Trigger(
                     keys = listOf(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN)),
                     longPressDelay = 500,
                 ),
@@ -314,7 +387,7 @@ class KeyMapControllerTest {
             )
 
             val keyMap2 = KeyMap(
-                trigger = KeyMapTrigger(
+                trigger = Trigger(
                     keys = listOf(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN)),
                     longPressDelay = 1000,
                 ),
@@ -362,7 +435,7 @@ class KeyMapControllerTest {
      */
     @Test
     fun `don't consume down and up event if no valid actions to perform`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN))
             val actionList = listOf(KeyMapAction(data = ActionData.InputKeyEvent(2)))
@@ -387,7 +460,7 @@ class KeyMapControllerTest {
      * #689
      */
     @Test
-    fun `perform all actions once when key map is triggered`() = coroutineScope.runBlockingTest {
+    fun `perform all actions once when key map is triggered`() = runTest(testDispatcher) {
         // GIVEN
         val trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN))
 
@@ -415,7 +488,7 @@ class KeyMapControllerTest {
      */
     @Test
     fun `action with repeat until limit reached shouldn't stop repeating when trigger is released`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN))
 
@@ -445,7 +518,7 @@ class KeyMapControllerTest {
 
     @Test
     fun `key map with multiple actions and delay in between, perform all actions even when trigger is released`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN))
 
@@ -487,7 +560,7 @@ class KeyMapControllerTest {
 
     @Test
     fun `multiple key maps with same trigger, perform both key maps`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN))
 
@@ -525,7 +598,7 @@ class KeyMapControllerTest {
      */
     @Test
     fun `when triggering action that repeats until limit reached, then stop repeating when the limit has been reached and not when the trigger is released`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val action = KeyMapAction(
                 data = ActionData.InputKeyEvent(keyCode = 1),
@@ -554,7 +627,7 @@ class KeyMapControllerTest {
      */
     @Test
     fun `when triggering action that repeats until pressed again with repeat limit, then stop repeating when the trigger has been pressed again`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val action = KeyMapAction(
                 data = ActionData.InputKeyEvent(keyCode = 1),
@@ -589,7 +662,7 @@ class KeyMapControllerTest {
      */
     @Test
     fun `when triggering action that repeats until pressed again with repeat limit, then stop repeating when limit reached and trigger hasn't been pressed again`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val action = KeyMapAction(
                 data = ActionData.InputKeyEvent(keyCode = 1),
@@ -623,7 +696,7 @@ class KeyMapControllerTest {
      */
     @Test
     fun `when triggering action that repeats until released with repeat limit, then stop repeating when the trigger has been released`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val action = KeyMapAction(
                 data = ActionData.InputKeyEvent(keyCode = 1),
@@ -653,7 +726,7 @@ class KeyMapControllerTest {
      */
     @Test
     fun `when triggering action that repeats until released with repeat limit, then stop repeating when the limit has been reached and the action is still being held down`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val action = KeyMapAction(
                 data = ActionData.InputKeyEvent(keyCode = 1),
@@ -682,7 +755,7 @@ class KeyMapControllerTest {
      * issue #653
      */
     @Test
-    fun `overlapping triggers 3`() = coroutineScope.runBlockingTest {
+    fun `overlapping triggers 3`() = runTest(testDispatcher) {
         // GIVEN
         val keyMaps = listOf(
             KeyMap(
@@ -750,7 +823,7 @@ class KeyMapControllerTest {
      * issue #653
      */
     @Test
-    fun `overlapping triggers 2`() = coroutineScope.runBlockingTest {
+    fun `overlapping triggers 2`() = runTest(testDispatcher) {
         // GIVEN
         val keyMaps = listOf(
             KeyMap(
@@ -811,7 +884,7 @@ class KeyMapControllerTest {
      * issue #653
      */
     @Test
-    fun `overlapping triggers 1`() = coroutineScope.runBlockingTest {
+    fun `overlapping triggers 1`() = runTest(testDispatcher) {
         // GIVEN
         val keyMaps = listOf(
             KeyMap(
@@ -908,7 +981,7 @@ class KeyMapControllerTest {
      */
     @Test
     fun `imitate button presses when a short press trigger with multiple keys fails`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val trigger = parallelTrigger(
                 triggerKey(keyCode = 1),
@@ -968,7 +1041,7 @@ class KeyMapControllerTest {
      */
     @Test
     fun `don't imitate button press when a short press trigger is triggered`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val trigger = parallelTrigger(
                 triggerKey(keyCode = 1),
@@ -998,7 +1071,7 @@ class KeyMapControllerTest {
      */
     @Test
     fun `don't repeat when trigger is released for an action that has these options when the trigger is held down`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val action = KeyMapAction(
                 data = ActionData.InputKeyEvent(keyCode = 1),
@@ -1019,7 +1092,7 @@ class KeyMapControllerTest {
             mockTriggerKeyInput(triggerKey(keyCode = 2), delay = 1)
 
             // see if the action repeats
-            coroutineScope.testScheduler.apply {
+            testScope.testScheduler.apply {
                 advanceTimeBy(500)
                 runCurrent()
             }
@@ -1042,7 +1115,7 @@ class KeyMapControllerTest {
      */
     @Test
     fun `don't initialise repeating if repeat when trigger is released after failed long press`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // given
             val trigger1 = parallelTrigger(triggerKey(keyCode = 1))
             val action1 = KeyMapAction(
@@ -1092,7 +1165,7 @@ class KeyMapControllerTest {
      */
     @Test
     fun `don't initialise repeating if repeat when trigger is released after failed failed double press`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // given
             val trigger1 = parallelTrigger(triggerKey(keyCode = 1))
             val action1 = KeyMapAction(
@@ -1141,7 +1214,7 @@ class KeyMapControllerTest {
      */
     @Test
     fun `don't initialise repeating if repeat when trigger is released after failed double press and failed long press`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // given
             val trigger1 = parallelTrigger(triggerKey(keyCode = 1))
             val action1 = KeyMapAction(
@@ -1202,7 +1275,7 @@ class KeyMapControllerTest {
      */
     @Test
     fun `initialise repeating if repeat until pressed again on failed long press`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // given
             val trigger1 = parallelTrigger(triggerKey(keyCode = 1))
             val action1 = KeyMapAction(
@@ -1252,7 +1325,7 @@ class KeyMapControllerTest {
      */
     @Test
     fun `initialise repeating if repeat until pressed again on failed double press`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // given
             val trigger1 = parallelTrigger(triggerKey(keyCode = 1))
             val action1 = KeyMapAction(
@@ -1307,7 +1380,7 @@ class KeyMapControllerTest {
      */
     @Test
     fun `initialise repeating if repeat until pressed again on failed double press and failed long press`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // given
             val trigger1 = parallelTrigger(triggerKey(keyCode = 1))
             val action1 = KeyMapAction(
@@ -1368,7 +1441,7 @@ class KeyMapControllerTest {
      */
     @Test
     fun `short press key and double press same key sequence trigger, double press key, don't perform action`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             val trigger = sequenceTrigger(
                 triggerKey(KeyEvent.KEYCODE_A),
                 triggerKey(KeyEvent.KEYCODE_A, clickType = ClickType.DOUBLE_PRESS),
@@ -1392,7 +1465,7 @@ class KeyMapControllerTest {
      * issue #563
      */
     @Test
-    fun sendKeyEventActionWhenImitatingButtonPresses() = coroutineScope.runBlockingTest {
+    fun sendKeyEventActionWhenImitatingButtonPresses() = runTest(testDispatcher) {
         val trigger = singleKeyTrigger(
             triggerKey(
                 keyCode = KeyEvent.KEYCODE_META_LEFT,
@@ -1553,7 +1626,7 @@ class KeyMapControllerTest {
 
     @Test
     fun `parallel trigger with 2 keys and the 2nd key is another trigger, press 2 key trigger, only the action for 2 key trigger should be performed `() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val twoKeyTrigger = parallelTrigger(
                 triggerKey(KeyEvent.KEYCODE_SHIFT_LEFT),
@@ -1596,7 +1669,7 @@ class KeyMapControllerTest {
 
     @Test
     fun `trigger for a specific device and trigger for any device, input trigger from a different device, only detect trigger for any device`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val triggerKeyboard = singleKeyTrigger(
                 triggerKey(KeyEvent.KEYCODE_A, FAKE_KEYBOARD_TRIGGER_KEY_DEVICE),
@@ -1623,7 +1696,7 @@ class KeyMapControllerTest {
 
     @Test
     fun `trigger for a specific device, input trigger from a different device, do not detect trigger`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val triggerHeadphone = singleKeyTrigger(
                 triggerKey(KeyEvent.KEYCODE_A, FAKE_HEADPHONE_TRIGGER_KEY_DEVICE),
@@ -1642,7 +1715,7 @@ class KeyMapControllerTest {
 
     @Test
     fun `long press trigger and action with Hold Down until pressed again flag, input valid long press, hold down until long pressed again`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val trigger =
                 singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_A, clickType = ClickType.LONG_PRESS))
@@ -1684,7 +1757,7 @@ class KeyMapControllerTest {
      */
     @Test
     fun `trigger with modifier key and modifier keycode action, don't include metastate from the trigger modifier key when an unmapped modifier key is pressed`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             val trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_CTRL_LEFT))
 
             keyMapListFlow.value = listOf(
@@ -1747,7 +1820,7 @@ class KeyMapControllerTest {
 
     @Test
     fun `2x key sequence trigger and 3x key sequence trigger with the last 2 keys being the same, trigger 3x key trigger, ignore the first 2x key trigger`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             val firstTrigger = sequenceTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
@@ -1784,7 +1857,7 @@ class KeyMapControllerTest {
 
     @Test
     fun `2x key long press parallel trigger with HOME or RECENTS keycode, trigger successfully, don't do normal action`() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             /*
             HOME
              */
@@ -1835,7 +1908,7 @@ class KeyMapControllerTest {
 
     @Test
     fun shortPressTriggerDoublePressTrigger_holdDown_onlyDetectDoublePressTrigger() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // given
             val shortPressTrigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN))
             val doublePressTrigger = singleKeyTrigger(
@@ -1873,7 +1946,7 @@ class KeyMapControllerTest {
 
     @Test
     fun shortPressTriggerLongPressTrigger_holdDown_onlyDetectLongPressTrigger() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             val shortPressTrigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN))
             val longPressTrigger = singleKeyTrigger(
@@ -1908,8 +1981,8 @@ class KeyMapControllerTest {
 
     @Test
     @Parameters(method = "params_repeatAction")
-    fun parallelTrigger_holdDown_repeatAction10Times(description: String, trigger: KeyMapTrigger) =
-        coroutineScope.runBlockingTest {
+    fun parallelTrigger_holdDown_repeatAction10Times(description: String, trigger: Trigger) =
+        runTest(testDispatcher) {
             // given
             val action = KeyMapAction(
                 data = ActionData.Volume.Up(showVolumeUi = false),
@@ -1957,18 +2030,18 @@ class KeyMapControllerTest {
     )
 
     @Test
-    @Parameters(method = "params_dualParallelTrigger_input2ndKey_do notConsumeUp")
+    @Parameters(method = "params_dualParallelTrigger_input2ndKey_doNotConsumeUp")
     fun dualParallelTrigger_input2ndKey_doNotConsumeUp(
         description: String,
-        trigger: KeyMapTrigger,
+        trigger: Trigger,
     ) =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // given
             keyMapListFlow.value =
                 listOf(KeyMap(0, trigger = trigger, actionList = listOf(TEST_ACTION)))
 
             // when
-            trigger.keys[1].let {
+            (trigger.keys[1] as KeyCodeTriggerKey).let {
                 inputKeyEvent(
                     it.keyCode,
                     KeyEvent.ACTION_DOWN,
@@ -1976,7 +2049,7 @@ class KeyMapControllerTest {
                 )
             }
 
-            trigger.keys[1].let {
+            (trigger.keys[1] as KeyCodeTriggerKey).let {
                 val consumed = inputKeyEvent(
                     it.keyCode,
                     KeyEvent.ACTION_UP,
@@ -2007,7 +2080,7 @@ class KeyMapControllerTest {
     )
 
     @Test
-    fun dualShortPressParallelTrigger_validInput_consumeUp() = coroutineScope.runBlockingTest {
+    fun dualShortPressParallelTrigger_validInput_consumeUp() = runTest(testDispatcher) {
         // given
         val trigger = parallelTrigger(
             triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
@@ -2018,22 +2091,22 @@ class KeyMapControllerTest {
             listOf(KeyMap(0, trigger = trigger, actionList = listOf(TEST_ACTION)))
 
         // when
-        trigger.keys.forEach {
+        for (key in trigger.keys.mapNotNull { it as? KeyCodeTriggerKey }) {
             inputKeyEvent(
-                it.keyCode,
+                key.keyCode,
                 KeyEvent.ACTION_DOWN,
-                triggerKeyDeviceToInputDevice(it.device),
+                triggerKeyDeviceToInputDevice(key.device),
             )
         }
 
         var consumedUpCount = 0
 
-        trigger.keys.forEach {
+        for (key in trigger.keys.mapNotNull { it as? KeyCodeTriggerKey }) {
             val consumed =
                 inputKeyEvent(
-                    it.keyCode,
+                    key.keyCode,
                     KeyEvent.ACTION_UP,
-                    triggerKeyDeviceToInputDevice(it.device),
+                    triggerKeyDeviceToInputDevice(key.device),
                 )
 
             if (consumed) {
@@ -2046,7 +2119,7 @@ class KeyMapControllerTest {
     }
 
     @Test
-    fun dualLongPressParallelTrigger_validInput_consumeUp() = coroutineScope.runBlockingTest {
+    fun dualLongPressParallelTrigger_validInput_consumeUp() = runTest(testDispatcher) {
         // given
         val trigger = parallelTrigger(
             triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
@@ -2057,11 +2130,11 @@ class KeyMapControllerTest {
             listOf(KeyMap(0, trigger = trigger, actionList = listOf(TEST_ACTION)))
 
         // when
-        trigger.keys.forEach {
+        for (key in trigger.keys.mapNotNull { it as? KeyCodeTriggerKey }) {
             inputKeyEvent(
-                it.keyCode,
+                key.keyCode,
                 KeyEvent.ACTION_DOWN,
-                triggerKeyDeviceToInputDevice(it.device),
+                triggerKeyDeviceToInputDevice(key.device),
             )
         }
 
@@ -2069,12 +2142,12 @@ class KeyMapControllerTest {
 
         var consumedUpCount = 0
 
-        trigger.keys.forEach {
+        for (key in trigger.keys.mapNotNull { it as? KeyCodeTriggerKey }) {
             val consumed =
                 inputKeyEvent(
-                    it.keyCode,
+                    key.keyCode,
                     KeyEvent.ACTION_UP,
-                    triggerKeyDeviceToInputDevice(it.device),
+                    triggerKeyDeviceToInputDevice(key.device),
                 )
 
             if (consumed) {
@@ -2088,7 +2161,7 @@ class KeyMapControllerTest {
 
     @Test
     fun keymappedToLongPressAndDoublePress_invalidLongPress_imitateOnce() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // given
             val longPressTrigger = singleKeyTrigger(
                 triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
@@ -2119,7 +2192,7 @@ class KeyMapControllerTest {
 
     @Test
     fun keymappedToSingleShortPressAndLongPress_validShortPress_onlyPerformActiondoNotImitateKey() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // given
             val shortPressTrigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN))
 
@@ -2149,7 +2222,7 @@ class KeyMapControllerTest {
 
     @Test
     fun keymappedToShortPressAndDoublePress_validShortPress_onlyPerformActionDoNotImitateKey() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // given
             val shortPressTrigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN))
 
@@ -2181,7 +2254,7 @@ class KeyMapControllerTest {
 
     @Test
     fun singleKeyTriggerAndShortPressParallelTriggerWithSameInitialKey_validSingleKeyTriggerInput_onlyPerformActiondoNotImitateKey() =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // given
             val singleKeyTrigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN))
             val parallelTrigger = parallelTrigger(
@@ -2209,7 +2282,7 @@ class KeyMapControllerTest {
         }
 
     @Test
-    fun longPressSequenceTrigger_invalidLongPress_keyImitated() = coroutineScope.runBlockingTest {
+    fun longPressSequenceTrigger_invalidLongPress_keyImitated() = runTest(testDispatcher) {
         val trigger = sequenceTrigger(
             triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
             triggerKey(KeyEvent.KEYCODE_VOLUME_UP),
@@ -2232,8 +2305,8 @@ class KeyMapControllerTest {
 
     @Test
     @Parameters(method = "params_multipleActionsPerformed")
-    fun validInput_multipleActionsPerformed(description: String, trigger: KeyMapTrigger) =
-        coroutineScope.runBlockingTest {
+    fun validInput_multipleActionsPerformed(description: String, trigger: Trigger) =
+        runTest(testDispatcher) {
             val actionList = listOf(TEST_ACTION, TEST_ACTION_2)
             // GIVEN
             keyMapListFlow.value = listOf(
@@ -2287,19 +2360,19 @@ class KeyMapControllerTest {
     @Parameters(method = "params_allTriggerKeyCombinations")
     @TestCaseName("{0}")
     fun invalidInput_downNotConsumed(description: String, keyMap: KeyMap) =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             keyMapListFlow.value = listOf(keyMap)
 
             // WHEN
             var consumedCount = 0
 
-            keyMap.trigger.keys.forEach {
+            for (key in keyMap.trigger.keys.mapNotNull { it as? KeyCodeTriggerKey }) {
                 val consumed =
                     inputKeyEvent(
                         999,
                         KeyEvent.ACTION_DOWN,
-                        triggerKeyDeviceToInputDevice(it.device),
+                        triggerKeyDeviceToInputDevice(key.device),
                     )
 
                 if (consumed) {
@@ -2315,18 +2388,18 @@ class KeyMapControllerTest {
     @Parameters(method = "params_allTriggerKeyCombinations")
     @TestCaseName("{0}")
     fun validInput_downConsumed(description: String, keyMap: KeyMap) =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             keyMapListFlow.value = listOf(keyMap)
 
             var consumedCount = 0
 
-            keyMap.trigger.keys.forEach {
+            for (key in keyMap.trigger.keys.mapNotNull { it as? KeyCodeTriggerKey }) {
                 val consumed =
                     inputKeyEvent(
-                        it.keyCode,
+                        key.keyCode,
                         KeyEvent.ACTION_DOWN,
-                        triggerKeyDeviceToInputDevice(it.device),
+                        triggerKeyDeviceToInputDevice(key.device),
                     )
 
                 if (consumed) {
@@ -2338,20 +2411,20 @@ class KeyMapControllerTest {
         }
 
     @Test
-    @Parameters(method = "params_allTriggerKeyCombinationsdo notConsume")
+    @Parameters(method = "params_allTriggerKeyCombinationsdoNotConsume")
     @TestCaseName("{0}")
     fun validInput_doNotConsumeFlag_doNotConsumeDown(description: String, keyMap: KeyMap) =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             keyMapListFlow.value = listOf(keyMap)
 
             var consumedCount = 0
 
-            keyMap.trigger.keys.forEach {
+            for (key in keyMap.trigger.keys.mapNotNull { it as? KeyCodeTriggerKey }) {
                 val consumed =
                     inputKeyEvent(
-                        it.keyCode,
+                        key.keyCode,
                         KeyEvent.ACTION_DOWN,
-                        triggerKeyDeviceToInputDevice(it.device),
+                        triggerKeyDeviceToInputDevice(key.device),
                     )
 
                 if (consumed) {
@@ -3119,7 +3192,7 @@ class KeyMapControllerTest {
     @Parameters(method = "params_allTriggerKeyCombinations")
     @TestCaseName("{0}")
     fun validInput_actionPerformed(description: String, keyMap: KeyMap) =
-        coroutineScope.runBlockingTest {
+        runTest(testDispatcher) {
             // GIVEN
             keyMapListFlow.value = listOf(keyMap)
 
@@ -3141,6 +3214,10 @@ class KeyMapControllerTest {
         }
 
     private suspend fun mockTriggerKeyInput(key: TriggerKey, delay: Long? = null) {
+        if (key !is KeyCodeTriggerKey) {
+            return
+        }
+
         val deviceDescriptor = triggerKeyDeviceToInputDevice(key.device)
         val pressDuration: Long = delay ?: when (key.clickType) {
             ClickType.LONG_PRESS -> LONG_PRESS_DELAY + 100L
@@ -3187,15 +3264,20 @@ class KeyMapControllerTest {
     )
 
     private suspend fun mockParallelTrigger(
-        trigger: KeyMapTrigger,
+        trigger: Trigger,
         delay: Long? = null,
     ) {
         require(trigger.mode is TriggerMode.Parallel)
+        require(trigger.keys.all { it is KeyCodeTriggerKey })
 
-        trigger.keys.forEach {
-            val deviceDescriptor = triggerKeyDeviceToInputDevice(it.device)
+        for (key in trigger.keys) {
+            if (key !is KeyCodeTriggerKey) {
+                continue
+            }
 
-            inputKeyEvent(it.keyCode, KeyEvent.ACTION_DOWN, deviceDescriptor)
+            val deviceDescriptor = triggerKeyDeviceToInputDevice(key.device)
+
+            inputKeyEvent(key.keyCode, KeyEvent.ACTION_DOWN, deviceDescriptor)
         }
 
         if (delay != null) {
@@ -3208,10 +3290,14 @@ class KeyMapControllerTest {
             }
         }
 
-        trigger.keys.forEach {
-            val deviceDescriptor = triggerKeyDeviceToInputDevice(it.device)
+        for (key in trigger.keys) {
+            if (key !is KeyCodeTriggerKey) {
+                continue
+            }
 
-            inputKeyEvent(it.keyCode, KeyEvent.ACTION_UP, deviceDescriptor)
+            val inputDevice = triggerKeyDeviceToInputDevice(key.device)
+
+            inputKeyEvent(key.keyCode, KeyEvent.ACTION_UP, inputDevice)
         }
     }
 
@@ -3243,5 +3329,12 @@ class KeyMapControllerTest {
             id = deviceId,
             isGameController = isGameController,
         )
+    }
+
+    private fun mockConstraintSnapshot(isSatisfiedBlock: (constraint: Constraint) -> Boolean) {
+        val snapshot = object : ConstraintSnapshot {
+            override fun isSatisfied(constraint: Constraint): Boolean = isSatisfiedBlock(constraint)
+        }
+        whenever(detectConstraintsUseCase.getSnapshot()).thenReturn(snapshot)
     }
 }
