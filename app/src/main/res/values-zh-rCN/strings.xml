@@ -2,7 +2,7 @@
 <resources>
     <string name="slogan">松开你的按键！</string>
     <string name="no_action_chosen">未选择动作</string>
-    <string name="accessibility_service_explanation">Key Mapper 需要使用无障碍服务，以便它可以检测并更改您在应用程序之外时按下的按钮的操作。只有在您启用了无障碍服务后，您的按键映射才会起作用。必须打开无障碍服务才能创建触发器。</string>
+    <string name="accessibility_service_explanation">键映射器需要使用无障碍服务，以便它可以检测并更改您在应用程序之外时按下的按钮的操作。只有在您启用了无障碍服务后，您的按键映射才会起作用。必须打开无障碍服务才能创建触发器。</string>
     <string name="selection_count">已选择 %d 个</string>
     <string name="enable">启用</string>
     <string name="open">打开</string>
@@ -41,7 +41,7 @@
     <string name="show_hidden_apps">显示隐藏的应用</string>
     <string name="modifiers">修改器</string>
     <string name="toggle">切换</string>
-    <string name="tap_coordinate_screenshot_message">重要！！！这些坐标只有当你的显示方向与屏幕截图相同时才是正确的！ 此操作将取消您在屏幕上所做的任何触摸或手势。\n\n如果你寻找您屏幕上某点的坐标需要帮助，就采取屏幕截图的方法，然后在屏幕截图上点击您想让此动作按下的地方。</string>
+    <string name="tap_coordinate_screenshot_message">重要的提示！！ 仅当你的屏幕与截图的方向相同时，这些坐标才是正确的！ 此操作将取消你在屏幕上执行的任何触摸或手势。\n\n如果您需要帮助查找屏幕上某个点的坐标，请截屏后点击截图上您想让此动作按下的地方。</string>
     <string name="pinch_screen_x_y_note">注意：在使用 “缩小” 时，X和Y是结束坐标，在使用 “放大” 时，X和Y是起始坐标。</string>
     <string name="dont_know_device_name">未知设备名称！</string>
     <string name="tap_actions_to_fix">点击动作以修复！</string>
