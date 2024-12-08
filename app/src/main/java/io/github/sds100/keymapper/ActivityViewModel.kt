@@ -21,6 +21,7 @@ class ActivityViewModel(
     PopupViewModel by PopupViewModelImpl(),
     NavigationViewModel by NavigationViewModelImpl() {
 
+    var handledActivityLaunchIntent: Boolean = false
     var previousNightMode: Int? = null
 
     fun onCantFindAccessibilitySettings() {

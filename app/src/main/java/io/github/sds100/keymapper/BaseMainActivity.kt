@@ -68,6 +68,10 @@ abstract class BaseMainActivity : AppCompatActivity() {
         // Must launch when the activity is resumed
         // so the nav controller can be found
         launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
+            if (viewModel.handledActivityLaunchIntent) {
+                return@launchRepeatOnLifecycle
+            }
+
             when (intent.action) {
                 ACTION_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG -> {
                     viewModel.onCantFindAccessibilitySettings()
@@ -82,6 +86,8 @@ abstract class BaseMainActivity : AppCompatActivity() {
                     )
                 }
             }
+
+            viewModel.handledActivityLaunchIntent = true
         }
     }
 
