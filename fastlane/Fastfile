@@ -50,10 +50,12 @@ lane :prod do
 
 #   Do not release a debug build for pro version.
 #   gradle(task: "assembleDebug")
-    gradle(task: "assembleProRelease")
+
+#   Release the free build to GitHub because billing only works if signed by Google Play
+    gradle(task: "assembleFreeRelease")
     gradle(task: "bundleProRelease")
 
-    apk_path_release="app/build/outputs/apk/pro/release/keymapper-" + version_name + ".apk"
+    apk_path_release="app/build/outputs/apk/free/release/keymapper-" + version_name + ".apk"
 
     github_release = set_github_release(
       repository_name: "keymapperorg/KeyMapper",
