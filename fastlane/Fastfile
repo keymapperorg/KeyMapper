@@ -27,8 +27,9 @@ lane :prod do
     version_code = get_properties_value(key: "VERSION_CODE", path: "./app/version.properties")
     version_name = get_properties_value(key: "VERSION_NAME", path: "./app/version.properties")
 
-    whats_new = File.read("../app/src/main/assets/whats-new.txt")
-    File.write("metadata/android/en-US/changelogs/" + version_code + ".txt", whats_new)
+#   Don't create changelog for f-droid because not committing it
+#   whats_new = File.read("../app/src/main/assets/whats-new.txt")
+#   File.write("metadata/android/en-US/changelogs/" + version_code + ".txt", whats_new)
 
     gradle(task: "testDebugUnitTest")
 
