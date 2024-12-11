@@ -18,6 +18,7 @@ class TriggerTypeConverter {
     fun toTrigger(json: String): TriggerEntity {
         val gson = GsonBuilder()
             .registerTypeAdapter(TriggerEntity.DESERIALIZER)
+            .registerTypeAdapter(TriggerKeyEntity.SERIALIZER)
             .registerTypeAdapter(TriggerKeyEntity.DESERIALIZER)
             .registerTypeAdapter(Extra.DESERIALIZER).create()
 

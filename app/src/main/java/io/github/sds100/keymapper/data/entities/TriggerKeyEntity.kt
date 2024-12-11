@@ -6,9 +6,12 @@ import com.github.salomonbrys.kotson.byNullableInt
 import com.github.salomonbrys.kotson.byNullableString
 import com.github.salomonbrys.kotson.byString
 import com.github.salomonbrys.kotson.jsonDeserializer
+import com.github.salomonbrys.kotson.jsonSerializer
 import com.github.salomonbrys.kotson.obj
+import com.google.gson.Gson
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
+import com.google.gson.JsonSerializer
 import java.util.UUID
 
 sealed class TriggerKeyEntity : Parcelable {
@@ -25,6 +28,17 @@ sealed class TriggerKeyEntity : Parcelable {
         const val SHORT_PRESS = 0
         const val LONG_PRESS = 1
         const val DOUBLE_PRESS = 2
+
+        /**
+         * This is required because they are subclasses and Gson doesn't know about their
+         * fields otherwise.
+         */
+        val SERIALIZER: JsonSerializer<TriggerKeyEntity> = jsonSerializer { (key) ->
+            when (key) {
+                is AssistantTriggerKeyEntity -> Gson().toJsonTree(key)
+                is KeyCodeTriggerKeyEntity -> Gson().toJsonTree(key)
+            }
+        }
 
         val DESERIALIZER: JsonDeserializer<TriggerKeyEntity> =
             jsonDeserializer { (json, _, _) ->

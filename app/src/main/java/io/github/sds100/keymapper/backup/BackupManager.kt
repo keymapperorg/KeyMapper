@@ -113,10 +113,12 @@ class BackupManagerImpl(
             .registerTypeAdapter(FingerprintMapEntity.DESERIALIZER)
             .registerTypeAdapter(KeyMapEntity.DESERIALIZER)
             .registerTypeAdapter(TriggerEntity.DESERIALIZER)
+            .registerTypeAdapter(TriggerKeyEntity.SERIALIZER)
             .registerTypeAdapter(TriggerKeyEntity.DESERIALIZER)
             .registerTypeAdapter(ActionEntity.DESERIALIZER)
             .registerTypeAdapter(Extra.DESERIALIZER)
-            .registerTypeAdapter(ConstraintEntity.DESERIALIZER).create()
+            .registerTypeAdapter(ConstraintEntity.DESERIALIZER)
+            .create()
     }
 
     private val backupAutomatically: Flow<Boolean> = preferenceRepository
@@ -426,7 +428,7 @@ class BackupManagerImpl(
         } catch (e: NoSuchElementException) {
             return Error.CorruptJsonFile(e.message ?: "")
         } catch (e: Exception) {
-            e.printStackTrace()
+            Timber.e(e)
 
             if (throwExceptions) {
                 throw e
@@ -448,44 +450,44 @@ class BackupManagerImpl(
             // delete the contents of the file
             output.clear()
 
-            val json = gson.toJson(
-                BackupModel(
-                    AppDatabase.DATABASE_VERSION,
-                    Constants.VERSION_CODE,
-                    keyMapList,
-                    fingerprintMaps,
-                    defaultLongPressDelay =
-                    preferenceRepository
-                        .get(Keys.defaultLongPressDelay)
-                        .first()
-                        .takeIf { it != PreferenceDefaults.LONG_PRESS_DELAY },
-                    defaultDoublePressDelay =
-                    preferenceRepository
-                        .get(Keys.defaultDoublePressDelay)
-                        .first()
-                        .takeIf { it != PreferenceDefaults.DOUBLE_PRESS_DELAY },
-                    defaultRepeatDelay =
-                    preferenceRepository
-                        .get(Keys.defaultRepeatDelay)
-                        .first()
-                        .takeIf { it != PreferenceDefaults.REPEAT_DELAY },
-                    defaultRepeatRate =
-                    preferenceRepository
-                        .get(Keys.defaultRepeatRate)
-                        .first()
-                        .takeIf { it != PreferenceDefaults.REPEAT_RATE },
-                    defaultSequenceTriggerTimeout =
-                    preferenceRepository
-                        .get(Keys.defaultSequenceTriggerTimeout)
-                        .first()
-                        .takeIf { it != PreferenceDefaults.SEQUENCE_TRIGGER_TIMEOUT },
-                    defaultVibrationDuration =
-                    preferenceRepository
-                        .get(Keys.defaultVibrateDuration)
-                        .first()
-                        .takeIf { it != PreferenceDefaults.VIBRATION_DURATION },
-                ),
+            val backupModel = BackupModel(
+                AppDatabase.DATABASE_VERSION,
+                Constants.VERSION_CODE,
+                keyMapList,
+                fingerprintMaps,
+                defaultLongPressDelay =
+                preferenceRepository
+                    .get(Keys.defaultLongPressDelay)
+                    .first()
+                    .takeIf { it != PreferenceDefaults.LONG_PRESS_DELAY },
+                defaultDoublePressDelay =
+                preferenceRepository
+                    .get(Keys.defaultDoublePressDelay)
+                    .first()
+                    .takeIf { it != PreferenceDefaults.DOUBLE_PRESS_DELAY },
+                defaultRepeatDelay =
+                preferenceRepository
+                    .get(Keys.defaultRepeatDelay)
+                    .first()
+                    .takeIf { it != PreferenceDefaults.REPEAT_DELAY },
+                defaultRepeatRate =
+                preferenceRepository
+                    .get(Keys.defaultRepeatRate)
+                    .first()
+                    .takeIf { it != PreferenceDefaults.REPEAT_RATE },
+                defaultSequenceTriggerTimeout =
+                preferenceRepository
+                    .get(Keys.defaultSequenceTriggerTimeout)
+                    .first()
+                    .takeIf { it != PreferenceDefaults.SEQUENCE_TRIGGER_TIMEOUT },
+                defaultVibrationDuration =
+                preferenceRepository
+                    .get(Keys.defaultVibrateDuration)
+                    .first()
+                    .takeIf { it != PreferenceDefaults.VIBRATION_DURATION },
             )
+
+            val json = gson.toJson(backupModel)
 
             val backupUid = uuidGenerator.random()
 
@@ -549,7 +551,7 @@ class BackupManagerImpl(
         val appVersion: Int,
 
         @SerializedName(NAME_KEYMAP_LIST)
-        val keymapList: List<KeyMapEntity>? = null,
+        val keyMapList: List<KeyMapEntity>? = null,
 
         @SerializedName(NAME_FINGERPRINT_MAP_LIST)
         val fingerprintMapList: List<FingerprintMapEntity>?,
