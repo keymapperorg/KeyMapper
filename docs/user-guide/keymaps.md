@@ -77,9 +77,9 @@ This trigger allows you to remap the various ways that your devices trigger the 
 
 There are 3 assistant options you can choose:
 
-- **Device assistant** = This is the assistant usually triggered from a long press of a power button or a dedicated button. 
-- **Voice assistant** = This is the assistant launched from the hands-free voice button on keyboards/headsets. 
-- **Any assistant** = This will trigger the key map when any of the above are triggered.
+- **Device assistant**: This is the assistant usually triggered from a long press of a power button or a dedicated button. 
+- **Voice assistant**: This is the assistant launched from the hands-free voice button on keyboards/headsets. 
+- **Any assistant**: This will trigger the key map when any of the above are triggered.
 
 !!! note
     It is not possible to create long-press key maps with this trigger! But you can do double press. You also can not use multiple assistant triggers in a parallel trigger because there is no way to detect them being pressed at exactly the same time.
@@ -103,10 +103,10 @@ This *should* work on Samsung devices that have a dedicated Bixby button but als
 
 **Voice assistant button on keyboards and Bluetooth headphones**
 
-Many external devices such as headsets, keyboards have a button for launching the voice assistant so you can control your phone hands-free. This also works with Key Mapper. If you 
+Many external devices such as headsets and keyboards have a button for launching the voice assistant so you can control your phone hands-free. This also works with Key Mapper. 
 
 !!! warning
-    Some headphones have hardcoded the assistant apps that they will launch and will not work with Key Mapper. The developer has Sony WH1000XM3 headphones that support either Alexa or Google Assistant and refuse to launch Key Mapper when it is selected as the default assistant app.
+    Some headphones have hardcoded the assistant apps that they support and will not work with Key Mapper. The developer has Sony WH1000XM3 headphones that only support Alexa and Google Assistant and refuse to launch Key Mapper when it is selected as the default assistant app.
 
 ## Customising actions
 
