@@ -27,8 +27,9 @@ lane :prod do
     version_code = get_properties_value(key: "VERSION_CODE", path: "./app/version.properties")
     version_name = get_properties_value(key: "VERSION_NAME", path: "./app/version.properties")
 
-    whats_new = File.read("../app/src/main/assets/whats-new.txt")
-    File.write("metadata/android/en-US/changelogs/" + version_code + ".txt", whats_new)
+#   Don't create changelog for f-droid because not committing it
+#   whats_new = File.read("../app/src/main/assets/whats-new.txt")
+#   File.write("metadata/android/en-US/changelogs/" + version_code + ".txt", whats_new)
 
     gradle(task: "testDebugUnitTest")
 
@@ -49,10 +50,12 @@ lane :prod do
 
 #   Do not release a debug build for pro version.
 #   gradle(task: "assembleDebug")
-    gradle(task: "assembleProRelease")
+
+#   Release the free build to GitHub because billing only works if signed by Google Play
+    gradle(task: "assembleFreeRelease")
     gradle(task: "bundleProRelease")
 
-    apk_path_release="app/build/outputs/apk/pro/release/keymapper-" + version_name + ".apk"
+    apk_path_release="app/build/outputs/apk/free/release/keymapper-" + version_name + ".apk"
 
     github_release = set_github_release(
       repository_name: "keymapperorg/KeyMapper",

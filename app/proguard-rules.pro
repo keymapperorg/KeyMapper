@@ -64,9 +64,17 @@
 -keep class androidx.recyclerview.** { *; }
 -keep interface androidx.recyclerview.** { *; }
 
+# Keep all the AIDL classes because they must not be ofuscated for the bindings to work.
+-keep class android.hardware.input.IInputManager { *; }
 -keep class android.hardware.input.IInputManager$Stub { *; }
+-keep class android.content.pm.IPackageManager { *; }
 -keep class android.content.pm.IPackageManager$Stub { *; }
+-keep class android.permission.IPermissionManager { *; }
 -keep class android.permission.IPermissionManager$Stub { *; }
+-keep class io.github.sds100.keymapper.api.IKeyEventRelayService { *; }
+-keep class io.github.sds100.keymapper.api.IKeyEventRelayService$Stub { *; }
+-keep class io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback { *; }
+-keep class io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback$Stub { *; }
 
 -keepattributes *Annotation*, InnerClasses
 -dontnote kotlinx.serialization.AnnotationsKt # core serialization annotations

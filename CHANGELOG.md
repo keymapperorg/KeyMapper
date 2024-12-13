@@ -1,3 +1,13 @@
+## [2.7.1](https://github.com/sds100/KeyMapper/releases/tag/v2.7.1)
+
+#### 13 December 2024
+
+## Bug fixes
+
+- #1360 complete the documentation for advanced triggers at docs.keymapper.club
+- #1364 key event actions no longer crash when using Shizuku
+- #1362 backing up and restoring key maps works again
+
 ## [2.7.0](https://github.com/sds100/KeyMapper/releases/tag/v2.7.0)
 
 #### 8 December 2024
