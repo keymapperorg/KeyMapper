@@ -18,7 +18,7 @@ You can get the apks for the pre-release versions in 2 ways:
 
 ### How can I help?
 - Test and experiment new features. All features and bug-fixes that are being worked on for a release can be found on the Projects page [here](https://github.com/keymapperorg/KeyMapper/projects).
-- If you find any bugs or crashes then report them by following the guide [here](report-issues.md).
+- If you find any bugs or crashes then report them by following the guide [here](../report-issues.md).
 
 ## Contributing code
 
@@ -45,32 +45,6 @@ There are also 4 build types, which have different optimizations and package nam
 - **release** = This is the default release build type that includes a lot of optimizations and creates an apk/app bundle suitable for releasing. There is no package name suffix.
 - **debug_release** = This is a debug build type that does not include a package name suffix so that it is possible to test how the production app will look. It is the only way to get the Google Play Billing library functioning because it will break if the package name isn't the same as on the Play store.
 - **ci** = This is used for alpha builds to the community in Discord. It includes some optimizations to ensure it is performant but doesn't obfuscate the code so it is possible to understand logs and bug reports. It has a `.ci` package name suffix.
-
-### Introduction to the structure
-
-This app follows something inspired from Clean Architecture and package-by-feature.
-
-#### Architecture
-
-All data structures that are persisted are passed around as one of two objects:
-
-1. **Non-Entity**. This models the data in a way that makes the code more readable and doing the business logic easier. There are no rules for how these need to be named. They should be named what they are. E.g KeyMap, Action, Constraint.
-
-2. **Entity**. This models how the data should be stored. The class name has an ...Entity suffix. E.g KeyMapEntity. The data is more optimised for storing and the code required to get the data from these models isn't very concise or elegant. The developer took some strange decisions in the first versions of this app. 😆
-
-Every screen in the app has a view model and the view model interacts with one or multiple *use cases* (more below). The view model converts data that needs to be shown to the user into something that can populate the user interface. For example, the data values in the Action object isn't very useful to the user so this needs to be converted into strings and images that do mean something to the user. All the view models have a ResourceProvider dependency which is how they get strings, Drawables and colours from the resources without having to use a Context. This isn't a problem for configuration changes (e.g locale change) because the activity is recreated, which means all the resources are re-fetched in the view model.
-
-The use cases contains all the business logic in the app. A *use case*  interacts with the adapters and repositories mentioned below. A use case is made for everything that can be done in the app. E.g configuring a key map, displaying a mapping, configuring settings, onboarding the user. Most use cases correspond to something that *the user can do* in the app but some do not because they contain complicated code that is used in multiple use cases. E.g the GetActionErrorUseCase which determines if an action can be performed successfully.
-
-Adapters and repositories contain all interactions with the Android framework (except UI stuff). This is so that tests can be more easily written and executed. Android often changes what apps are allowed to do and how so abstracting these interactions away means the code only needs to be changed in a single place. This means that the only place that a Context object is used is in Services, Activities, Fragments and the adapters.
-
-#### Package by feature
-
-Every package contains files related to each other. For example, everything (view models, fragments, use cases) to do with constraints is stored in one package.
-The only package which isn't a feature is the `data` package because it is useful to have some of the things in there together, e.g the migrations.
-The `system` package bundles all the packages which are related to the Android framework because there are so many.
-
-![contributing-app-structure](images/contributing-app-structure.png)
 
 ### Branches 🌴
 
