@@ -1266,6 +1266,7 @@
     <string name="action_play_sound">Play sound</string>
     <string name="action_dismiss_most_recent_notification">Dismiss most recent notification</string>
     <string name="action_dismiss_all_notifications">Dismiss all notifications</string>
+    <string name="action_device_controls">Device controls screen</string>
     <!-- action labels -->
 
     <!-- action category labels -->
