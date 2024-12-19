@@ -7,7 +7,6 @@
     <string name="enable">Включить</string>
     <string name="open">Открыть</string>
     <string name="recyclerview_placeholder">¯\\_(ツ)_/¯\n\n Здесь ничего!</string>
-    <string name="triggers_recyclerview_placeholder">Запишите событие!</string>
     <string name="actions_recyclerview_placeholder">Добавьте действие!</string>
     <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nСоздайте мэппинг!</string>
     <string name="action_shortcut_list_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nВы не выбрали никаких действий для этого ярлыка!</string>
@@ -161,10 +160,6 @@
     <string name="tab_actions">Действия</string>
     <string name="tab_trigger">События</string>
     <string name="tab_fingerprint">Отпечаток пальцев</string>
-    <string-array name="home_tab_titles">
-        <item>События нажатий</item>
-        <item>Отпечаток пальца</item>
-    </string-array>
     <!--  Tabs  -->
     <!--  Navigation argument ids  -->
     <!--  Navigation argument ids  -->
@@ -1035,4 +1030,6 @@
     <string name="about_team_trollserver_role">Переводчик (Чешский)</string>
     <string name="about_team_bydario_role">Переводчик (Испанский)</string>
     <!--  About  -->
+    <!-- Advanced triggers -->
+    <!--  Purchasing  -->
 </resources>

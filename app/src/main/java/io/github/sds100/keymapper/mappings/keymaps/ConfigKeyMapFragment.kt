@@ -50,6 +50,10 @@ class ConfigKeyMapFragment : ConfigMappingFragment() {
                     viewModel.loadKeymap(it)
                 }
             }
+
+            if (args.showAdvancedTriggers) {
+                viewModel.configTriggerViewModel.showAdvancedTriggersBottomSheet = true
+            }
         }
 
         viewModel.configTriggerViewModel.setupNavigation(this)

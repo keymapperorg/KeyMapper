@@ -7,7 +7,6 @@
     <string name="enable">Cho phép</string>
     <string name="open">Mở</string>
     <string name="recyclerview_placeholder">¯\\_(ツ)_/¯\n\nKhông có gì ở đây!</string>
-    <string name="triggers_recyclerview_placeholder">Ghi thao tác kích hoạt!</string>
     <string name="actions_recyclerview_placeholder">Thêm hành động!</string>
     <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\n Tạo một hành động!</string>
     <string name="action_shortcut_list_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nBạn chưa chọn bất kỳ hành động nào cho phím tắt này!</string>
@@ -172,10 +171,6 @@
     <string name="tab_actions">Hành động</string>
     <string name="tab_trigger">Kích hoạt</string>
     <string name="tab_fingerprint">Dấu vân tay</string>
-    <string-array name="home_tab_titles">
-        <item>@string/tab_keyevents</item>
-        <item>@string/tab_fingerprint</item>
-    </string-array>
     <!--  Tabs  -->
     <!--  Navigation argument ids  -->
     <!--  Navigation argument ids  -->
@@ -1052,4 +1047,6 @@
     <string name="about_team_trollserver_role">Người phiên dịch (tiếng Séc)</string>
     <string name="about_team_bydario_role">Phiên dịch viên (tiếng Tây Ban Nha)</string>
     <!--  About  -->
+    <!-- Advanced triggers -->
+    <!--  Purchasing  -->
 </resources>

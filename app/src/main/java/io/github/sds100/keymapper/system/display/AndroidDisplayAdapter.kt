@@ -13,12 +13,19 @@ import io.github.sds100.keymapper.system.SettingsUtils
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 /**
  * Created by sds100 on 17/04/2021.
  */
-class AndroidDisplayAdapter(context: Context) : DisplayAdapter {
+class AndroidDisplayAdapter(
+    context: Context,
+    private val coroutineScope: CoroutineScope,
+) : DisplayAdapter {
     companion object {
 
         /**
@@ -35,8 +42,18 @@ class AndroidDisplayAdapter(context: Context) : DisplayAdapter {
             context ?: return
 
             when (intent.action) {
-                Intent.ACTION_SCREEN_ON -> isScreenOn.value = true
-                Intent.ACTION_SCREEN_OFF -> isScreenOn.value = false
+                Intent.ACTION_SCREEN_ON -> {
+                    // This intent is received before the assistant activity is launched so
+                    // wait 100ms before updating. This is so that one can use the screen-off
+                    // constraint with the assistant triggers.
+                    coroutineScope.launch {
+                        delay(100)
+
+                        isScreenOn.update { true }
+                    }
+                }
+
+                Intent.ACTION_SCREEN_OFF -> isScreenOn.update { false }
             }
         }
     }
@@ -44,6 +61,7 @@ class AndroidDisplayAdapter(context: Context) : DisplayAdapter {
     override val isScreenOn = MutableStateFlow(true)
 
     private val displayManager: DisplayManager = ctx.getSystemService()!!
+    override var orientation: Orientation = getDisplayOrientation()
 
     init {
         displayManager.registerDisplayListener(
@@ -62,11 +80,7 @@ class AndroidDisplayAdapter(context: Context) : DisplayAdapter {
             },
             null,
         )
-    }
 
-    override var orientation: Orientation = getDisplayOrientation()
-
-    init {
         val filter = IntentFilter()
         filter.addAction(Intent.ACTION_SCREEN_ON)
         filter.addAction(Intent.ACTION_SCREEN_OFF)

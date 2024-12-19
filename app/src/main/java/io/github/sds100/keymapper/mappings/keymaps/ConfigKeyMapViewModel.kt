@@ -12,8 +12,10 @@ import io.github.sds100.keymapper.constraints.ConstraintUtils
 import io.github.sds100.keymapper.mappings.ConfigMappingUiState
 import io.github.sds100.keymapper.mappings.ConfigMappingViewModel
 import io.github.sds100.keymapper.mappings.keymaps.trigger.ConfigTriggerKeyViewModel
+import io.github.sds100.keymapper.mappings.keymaps.trigger.ConfigTriggerViewModel
 import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerUseCase
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
+import io.github.sds100.keymapper.purchasing.PurchasingManager
 import io.github.sds100.keymapper.ui.utils.getJsonSerializable
 import io.github.sds100.keymapper.ui.utils.putJsonSerializable
 import io.github.sds100.keymapper.util.State
@@ -37,6 +39,7 @@ class ConfigKeyMapViewModel(
     private val displayMapping: DisplayKeyMapUseCase,
     createActionUseCase: CreateActionUseCase,
     resourceProvider: ResourceProvider,
+    purchasingManager: PurchasingManager,
 ) : ViewModel(),
     ConfigMappingViewModel,
     ResourceProvider by resourceProvider {
@@ -61,7 +64,7 @@ class ConfigKeyMapViewModel(
         resourceProvider,
     )
 
-    val configTriggerViewModel = ConfigKeyMapTriggerViewModel(
+    val configTriggerViewModel = ConfigTriggerViewModel(
         viewModelScope,
         onboarding,
         config,
@@ -69,6 +72,7 @@ class ConfigKeyMapViewModel(
         createKeyMapShortcut,
         displayMapping,
         resourceProvider,
+        purchasingManager,
     )
 
     override val configConstraintsViewModel = ConfigConstraintsViewModel(
@@ -129,6 +133,7 @@ class ConfigKeyMapViewModel(
         private val displayMapping: DisplayKeyMapUseCase,
         private val createActionUseCase: CreateActionUseCase,
         private val resourceProvider: ResourceProvider,
+        private val purchasingManager: PurchasingManager,
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -142,6 +147,7 @@ class ConfigKeyMapViewModel(
                 displayMapping,
                 createActionUseCase,
                 resourceProvider,
+                purchasingManager,
             ) as T
     }
 }

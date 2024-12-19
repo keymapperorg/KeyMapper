@@ -182,7 +182,7 @@ You can see explanations of more options [here](../user-guide/keymaps/#special-o
 
 ## Managing key maps
 
-To save your key map and return to the home screen, tap the save :fontawesome-solid-save: icon in the bottom right of the screen.
+To save your key map and return to the home screen, tap the save :material-content-save: icon in the bottom right of the screen.
 
 Now your key map should already be working. To pause/unpause all of your key maps, pull down the notification tray and tap the Key Mapper notification to toggle between Paused and Running.
 

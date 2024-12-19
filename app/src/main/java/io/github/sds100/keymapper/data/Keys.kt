@@ -42,8 +42,9 @@ object Keys {
     val hideHomeScreenAlerts = booleanPreferencesKey("pref_hide_home_screen_alerts")
     val acknowledgedGuiKeyboard = booleanPreferencesKey("pref_acknowledged_gui_keyboard")
     val showDeviceDescriptors = booleanPreferencesKey("pref_show_device_descriptors")
-    val approvedFingerprintFeaturePrompt =
-        booleanPreferencesKey("pref_approved_fingerprint_feature_prompt")
+
+    val approvedAssistantTriggerFeaturePrompt =
+        booleanPreferencesKey("pref_approved_assistant_trigger_feature_prompt")
     val shownParallelTriggerOrderExplanation =
         booleanPreferencesKey("key_shown_parallel_trigger_order_warning")
     val shownSequenceTriggerExplanation =
@@ -57,9 +58,6 @@ object Keys {
 
     val fingerprintGesturesAvailable =
         booleanPreferencesKey("fingerprint_gestures_available")
-
-    val approvedSetupChosenDevicesAgain =
-        booleanPreferencesKey("pref_approved_new_choose_devices_settings")
 
     val rerouteKeyEvents = booleanPreferencesKey("key_reroute_key_events_from_specified_devices")
     val devicesToRerouteKeyEvents =

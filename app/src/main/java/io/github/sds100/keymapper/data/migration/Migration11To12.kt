@@ -98,12 +98,12 @@ object Migration11To12 {
         val cursor = database.query(keyMapListQuery)
 
         val keyMapIdColumnIndex = cursor.getColumnIndex("id")
-        val keyMapTriggerColumnIndex = cursor.getColumnIndex("trigger")
+        val triggerColumnIndex = cursor.getColumnIndex("trigger")
         val keyMapActionListColumnIndex = cursor.getColumnIndex("action_list")
 
         while (cursor.moveToNext()) {
             val id = cursor.getLong(keyMapIdColumnIndex)
-            val triggerJson = cursor.getString(keyMapTriggerColumnIndex)
+            val triggerJson = cursor.getString(triggerColumnIndex)
             val triggerJsonObject = parser.parse(triggerJson).asJsonObject
 
             val actionListJson = cursor.getString(keyMapActionListColumnIndex)

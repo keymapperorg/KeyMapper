@@ -1,9 +1,9 @@
 Funkcje jakich przycisków można zmienić?
 
- * Gesty czytnika linii papilarnych na obsługiwanych urządzeniach.
  * Przyciski głośności.
- * Przyciski nawigacji.
+ * Power button via Google Assistant, Pixel Active Edge, Double press Bixby button.
  * Klawiatury przewodowe i Bluetooth.
+ * Gesty czytnika linii papilarnych na obsługiwanych urządzeniach.
  * Przyciski na innych podłączonych urządzeniach również powinny działać.
 
 TYLKO FIZYCZNE przyciski mogą mieć zmienione funkcje.
@@ -12,12 +12,10 @@ NIE MA GWARANCJI, że Twoje przyciski mogą być używane, a także ta aplikacja
 Możesz połączyć wiele przycisków z określonego lub dowolnego urządzenia, aby utworzyć "wyzwalacz". Każdy wyzwalacz może mieć wiele czynności. Przyciski można ustawić tak, aby były naciskane jednocześnie lub jeden po drugim w kolejności. Przyciski mogą być wykorzystane, gdy są wciśnięte krótko, długo lub podwójnie. Zmiana funkcji może mieć zestaw "ograniczeń", aby działała tylko w określonych sytuacjach.
 
 Funkcje jakich przycisków nie można zmieniać?
- * Przycisk zasilania
- * Przycisk Bixby
  * Przyciski myszy
  * Krzyżak, gałki albo spusty na kontrolerach gier
 
-Twoje zmiany funkcji nie będą działać, gdy ekran jest WYŁĄCZONY. To jest ograniczenie w systemie Android. Programista nic nie może na to poradzić.
+Your key maps do not work if the screen is OFF. To jest ograniczenie w systemie Android. Programista nic nie może na to poradzić.
 
 Jakie funkcje można przypisać do przycisków?
 Niektóre czynności będą działać tylko na zrootowanych urządzeniach i określonych wersjach Androida.
@@ -27,7 +25,7 @@ Mamy zbyt wiele funkcji, aby wszystko się tu zmieściło, więc zapoznaj się z
 Uprawnienia
 Nie musisz przyznawać wszystkich uprawnień, aby aplikacja działała. Aplikacja poinformuje Cię, czy do działania funkcji wymagane jest określone uprawnienie.
 
- * Usługa ułatwień dostępu: Podstawowe wymaganie dotyczące zmiany funkcji przycisków. Jest to potrzebne, aby aplikacja mogła nasłuchiwać i blokować zdarzenia przycisków.
+ * Usługa ułatwień dostępu: Podstawowe wymaganie dotyczące zmiany funkcji przycisków. It is needed so the app can listen to and block key events.
  * Zarządzanie urządzeniem: aby wyłączyć ekran podczas korzystania z czynności wyłączenia ekranu.
  * Modyfikowanie ustawień systemu: Aby zmienić ustawienia jasności i obracania.
  * Aparat: Aby sterować latarką.

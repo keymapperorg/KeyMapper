@@ -32,4 +32,12 @@ sealed class TriggerKeyDevice : Comparable<TriggerKeyDevice> {
             )
         }
     }
+
+    fun isSameDevice(other: TriggerKeyDevice): Boolean {
+        if (other is External && this is External) {
+            return other.descriptor == this.descriptor
+        } else {
+            return true
+        }
+    }
 }

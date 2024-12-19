@@ -7,6 +7,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.github.sds100.keymapper.data.entities.Extra
 import io.github.sds100.keymapper.data.entities.TriggerEntity
+import io.github.sds100.keymapper.data.entities.TriggerKeyEntity
 
 /**
  * Created by sds100 on 05/09/2018.
@@ -17,7 +18,8 @@ class TriggerTypeConverter {
     fun toTrigger(json: String): TriggerEntity {
         val gson = GsonBuilder()
             .registerTypeAdapter(TriggerEntity.DESERIALIZER)
-            .registerTypeAdapter(TriggerEntity.KeyEntity.DESERIALIZER)
+            .registerTypeAdapter(TriggerKeyEntity.SERIALIZER)
+            .registerTypeAdapter(TriggerKeyEntity.DESERIALIZER)
             .registerTypeAdapter(Extra.DESERIALIZER).create()
 
         return gson.fromJson(json)

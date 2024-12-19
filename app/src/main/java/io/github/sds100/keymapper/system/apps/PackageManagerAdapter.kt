@@ -25,6 +25,7 @@ interface PackageManagerAdapter {
     fun launchVoiceAssistant(): Result<*>
     fun launchDeviceAssistant(): Result<*>
     fun isVoiceAssistantInstalled(): Boolean
+    fun getDeviceAssistantPackage(): Result<String>
 
     fun launchCameraApp(): Result<*>
     fun launchSettingsApp(): Result<*>

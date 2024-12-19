@@ -27,6 +27,7 @@ import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeMessenger
 import io.github.sds100.keymapper.system.intents.IntentAdapter
+import io.github.sds100.keymapper.system.intents.IntentTarget
 import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
 import io.github.sds100.keymapper.system.lock.LockScreenAdapter
 import io.github.sds100.keymapper.system.media.MediaAdapter
@@ -785,6 +786,14 @@ class PerformActionsUseCaseImpl(
             ActionData.EndCall -> {
                 phoneAdapter.endCall()
                 result = success()
+            }
+
+            ActionData.DeviceControls -> {
+                result = intentAdapter.send(
+                    IntentTarget.ACTIVITY,
+                    uri = "#Intent;action=android.intent.action.MAIN;package=com.android.systemui;component=com.android.systemui/.controls.ui.ControlsActivity;end",
+                    extras = emptyList(),
+                )
             }
         }
 

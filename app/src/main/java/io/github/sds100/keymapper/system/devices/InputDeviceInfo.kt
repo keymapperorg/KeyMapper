@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.system.devices
 
 import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
 /**

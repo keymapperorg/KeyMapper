@@ -1,12 +1,12 @@
 Refer to the [Quick Start Guide](../quick-start.md) for help with creating key maps. This page gives more detail about every option.
 
-Make sure to save :fontawesome-solid-save: your key map after applying these changes.
+Make sure to save :material-content-save: your key map after applying these changes.
 
 ## Trigger
 
 A trigger is a combination of keys that must be pressed in a certain way to 'trigger' the key map. A key map can only have one trigger. You can change the order of the keys by holding down on one and then dragging it into a new position.
  
-This is the page to create a trigger for a key map.
+This is the page to create a trigger for a key map. You will usually want to 'record' a custom trigger that is a combination of physical buttons/keys. There are also ['advanced triggers'](#advanced-triggers) that need to be set up slightly differently.
 
 ![](../images/trigger-page.png)
 
@@ -64,6 +64,49 @@ action. This will be automatically
 This will change the click type for a key in a sequence trigger. A parallel trigger key will not have the click type
 option because all the keys have the same click type. You will find the buttons to change a parallel trigger's click
 type above the trigger mode buttons as shown in the image at the top of this Trigger section.
+
+## Advanced triggers
+
+These triggers can be purchased so that the Key Mapper project has a little financial support and the developer is able to invest time maintaining and working on the project. You can see the list of advanced triggers below by tapping 'advanced triggers' on the trigger page.
+
+![](../images/advanced-triggers-paywall.png)
+
+### Assistant trigger
+
+This trigger allows you to remap the various ways that your devices trigger the 'assistant' such as Google Assistant, Bixby, Alexa etc.
+
+There are 3 assistant options you can choose:
+
+- **Device assistant**: This is the assistant usually triggered from a long press of a power button or a dedicated button. 
+- **Voice assistant**: This is the assistant launched from the hands-free voice button on keyboards/headsets. 
+- **Any assistant**: This will trigger the key map when any of the above are triggered.
+
+!!! note
+    It is not possible to create long-press key maps with this trigger! But you can do double press. You also can not use multiple assistant triggers in a parallel trigger because there is no way to detect them being pressed at exactly the same time.
+
+### Setting up
+
+There are multiple ways of triggering the assistant on different devices.
+
+**Long press power button, Pixel squeeze**
+
+This works on most Android devices. Android devices now have the option for remapping a long press of the power button to the assistant app. Older Pixels, such as the Pixel 2, also had a feature called "Active Edge" that allowed you to _squeeze_ the bottom half of the phone to trigger the assistant. If you select Key Mapper as the 'device assistant' app then your key map will be triggered with both of these methods.
+
+You can set up the long-press of the power button by going to Android Settings :material-arrow-right-thin: System :material-arrow-right-thin: Gestures :material-arrow-right-thin: Press and hold power button. Then choose the digital assistant instead of showing power menu when you long press the power button. Key Mapper will prompt you to select it as the default digital assistant app.
+
+**Bixby button**
+
+This *should* work on Samsung devices that have a dedicated Bixby button but also devices that have the option of remapping the power button to another app when you double press it. You can use the assistant trigger for double pressing the Bixby or power button by picking the 'Assistant trigger' app/activity that shows in your list of apps.
+
+!!! note
+    The developer does not have a Samsung device with a Bixby button so there is no guarantee that it works. If it does, please let the developer know so we can be more confident about support in the future 😄.
+
+**Voice assistant button on keyboards and Bluetooth headphones**
+
+Many external devices such as headsets and keyboards have a button for launching the voice assistant so you can control your phone hands-free. This also works with Key Mapper. 
+
+!!! warning
+    Some headphones have hardcoded the assistant apps that they support and will not work with Key Mapper. The developer has Sony WH1000XM3 headphones that only support Alexa and Google Assistant and refuse to launch Key Mapper when it is selected as the default assistant app.
 
 ## Customising actions
 

@@ -8,7 +8,7 @@ nav:
   - Home: index.md
   - Quick Start Guide: quick-start.md
   - FAQ: faq.md
-  - Share Your Key Maps Here! 👐: sharing.md
+  #  - Share Your Key Maps Here! 👐: sharing.md
   - User Guide:
       - Key Maps: user-guide/keymaps.md
       - Fingerprint Gesture Maps (2.2.0+, Android 8.0+): user-guide/fingerprint-gestures.md
@@ -22,7 +22,9 @@ nav:
       - Installing on Oculus Quest: user-guide/oculus.md
       - Shizuku support (2.4.0+, Android 6.0+): user-guide/shizuku.md
       - API: user-guide/api.md
-  - Contributing: contributing.md
+  - Contributing:
+      - Introduction: contributing/introduction.md
+      - Code base: contributing/codebase.md
   - Report Issues: report-issues.md
   - Known Issues: known-issues.md
 
@@ -94,7 +96,7 @@ markdown_extensions:
 plugins:
   - redirects:
       redirect_maps:
-        'redirects/trigger-by-intent.md': 'https://keymapperorg.github.io/KeyMapper/user-guide/keymaps#trigger-from-other-apps-230'
+        'redirects/trigger-by-intent.md': 'https://keymapperorg.github.io/KeyMapper/user-guide/keymaps#allow-other-apps-to-trigger-this-key-map-230'
         'redirects/grant-write-secure-settings.md': 'https://keymapperorg.github.io/KeyMapper/user-guide/adb-permissions#write_secure_settings'
         'redirects/faq.md': 'https://keymapperorg.github.io/KeyMapper/faq'
         'redirects/quick-start.md': 'https://keymapperorg.github.io/KeyMapper/quick-start'
@@ -104,14 +106,15 @@ plugins:
         'redirects/trigger.md': 'https://keymapperorg.github.io/KeyMapper/user-guide/keymaps#trigger'
         'redirects/trigger-options.md': 'https://keymapperorg.github.io/KeyMapper/user-guide/keymaps#special-options'
         'redirects/keymap-action-options.md': 'https://keymapperorg.github.io/KeyMapper/user-guide/keymaps#customising-actions'
-        'redirects/fingerprint-action-options.md': 'https://keymapperorg.github.io/KeyMapper/user-guide/fingerprint-gestures#customising-fingerprint-gesture-maps'
+        'redirects/fingerprint-action-options.md': 'https://keymapperorg.github.io/KeyMapper/user-guide/fingerprint-gestures#customising-actions'
         'redirects/trigger-key-options.md': 'https://keymapperorg.github.io/KeyMapper/user-guide/keymaps#key-options'
-        'redirects/android-11-device-id-bug-work-around.md': 'https://keymapperorg.github.io/KeyMapper/user-guide/settings#workaround-for-android-11-bug-that-sets-the-device-id-for-input-events-to-1-230-android-11'
+        'redirects/android-11-device-id-bug-work-around.md': 'https://keymapperorg.github.io/KeyMapper/user-guide/settings#fix-keyboards-that-are-set-to-us-english-230-android-11'
         'redirects/settings.md': 'https://keymapperorg.github.io/KeyMapper/user-guide/settings'
         'redirects/report-issues.md': 'https://keymapperorg.github.io/KeyMapper/report-issues'
-        'redirects/fix-optimisation.md': 'https://keymapperorg.github.io/KeyMapper/known-issues.html#key-mapper-randomly-stops'
+        'redirects/fix-optimisation.md': 'https://keymapperorg.github.io/KeyMapper/faq/#key-mapper-keeps-randomly-stoppingcrashingbuggingfreezing'
         'redirects/shizuku-benefits.md': 'https://keymapperorg.github.io/KeyMapper/user-guide/shizuku#benefits'
         'redirects/cant-find-accessibility-settings.md': 'https://keymapperorg.github.io/KeyMapper/known-issues#key-mapper-cant-open-the-accessibility-settings-on-some-devices'
+        'redirects/advanced-triggers.md': 'https://keymapperorg.github.io/KeyMapper/user-guide/keymaps#advanced-triggers'
   - search:
       lang:
         - en

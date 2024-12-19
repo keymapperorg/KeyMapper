@@ -71,14 +71,6 @@ class GetConstraintErrorUseCaseImpl(
                     return Error.PermissionDenied(Permission.WRITE_SETTINGS)
                 }
 
-            Constraint.ScreenOff,
-            Constraint.ScreenOn,
-            -> {
-                if (!permissionAdapter.isGranted(Permission.ROOT)) {
-                    return Error.PermissionDenied(Permission.ROOT)
-                }
-            }
-
             is Constraint.FlashlightOn, is Constraint.FlashlightOff -> {
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
                     return Error.SdkVersionTooLow(minSdk = Build.VERSION_CODES.M)

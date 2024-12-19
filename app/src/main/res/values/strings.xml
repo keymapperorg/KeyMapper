@@ -10,7 +10,7 @@
     <string name="open">Open</string>
     <string name="shrug" translatable="false">¯\\_(ツ)_/¯</string>
     <string name="recyclerview_placeholder">¯\\_(ツ)_/¯\n\nNothing here!</string>
-    <string name="triggers_recyclerview_placeholder">Record a trigger!</string>
+    <string name="triggers_recyclerview_placeholder">The first step is to add some buttons that will trigger the key map.\n\nFirst tap ‘Record trigger’ and then press the buttons that you want to remap. They will appear here.\n\nAlternatively, you can trigger a key map using an ‘advanced trigger’.</string>
     <string name="actions_recyclerview_placeholder">Add an action!</string>
     <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nCreate a key map!</string>
     <string name="action_shortcut_list_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nYou haven\'t chosen any actions for this shortcut!</string>
@@ -209,11 +209,6 @@
     <string name="tab_trigger">Trigger</string>
     <string name="tab_keyevents" translatable="false">Key events</string>
     <string name="tab_fingerprint">Fingerprint</string>
-
-    <string-array name="home_tab_titles">
-        <item>@string/tab_keyevents</item>
-        <item>@string/tab_fingerprint</item>
-    </string-array>
     <!--  Tabs  -->
 
     <!--  Navigation argument ids  -->
@@ -383,6 +378,7 @@
     <string name="url_github_repo" translatable="false">https://github.com/sds100/KeyMapper</string>
     <string name="url_rate" translatable="false">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper</string>
     <string name="url_website" translatable="false">https://keymapperorg.github.io/KeyMapper</string>
+    <string name="url_advanced_triggers" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/advanced-triggers</string>
 
     <string name="url_play_store_keymapper_gui_keyboard" translatable="false">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper.inputmethod.latin</string>
     <string name="url_fdroid_keymapper_gui_keyboard" translatable="false">https://f-droid.org/en/packages/io.github.sds100.keymapper.inputmethod.latin</string>
@@ -454,6 +450,9 @@
     <!-- Button titles -->
     <string name="button_add_action">Add action</string>
     <string name="button_record_trigger">Record trigger</string>
+    <string name="button_advanced_triggers">Advanced triggers</string>
+    <string name="button_advanced_triggers_badge">NEW!</string>
+    <string name="button_dismiss_advanced_triggers_sheet_content_description">Dismiss choosing advanced triggers.</string>
     <string name="button_done">Done</string>
     <string name="button_save">Save</string>
     <string name="button_fix">Fix</string>
@@ -1272,6 +1271,7 @@
     <string name="action_play_sound">Play sound</string>
     <string name="action_dismiss_most_recent_notification">Dismiss most recent notification</string>
     <string name="action_dismiss_all_notifications">Dismiss all notifications</string>
+    <string name="action_device_controls">Device controls screen</string>
     <!-- action labels -->
 
     <!-- action category labels -->
@@ -1379,5 +1379,43 @@
     <string name="about_team_bydario_name" translatable="false">Darío B. C. (bydariogamer)</string>
     <string name="about_team_bydario_url" translatable="false">https://github.com/bydariogamer</string>
     <string name="about_team_bydario_role">Translator (Spanish)</string>
+
     <!--  About  -->
+
+    <!-- Advanced triggers -->
+    <string name="assistant_any_trigger_name">Any assistant</string>
+    <string name="assistant_device_trigger_name">Device assistant</string>
+    <string name="assistant_voice_trigger_name">Voice assistant</string>
+    <string name="advanced_triggers_sheet_title">Advanced triggers</string>
+    <string name="advanced_triggers_sheet_text">The developer doesn\'t believe ads are a sustainable or user-friendly form of monetization so these paid triggers help support development ❤️. You will be given priority support as well.</string>
+    <string name="assistant_trigger_product_title">Assistant trigger</string>
+    <string name="assistant_trigger_product_description">Did you know you can remap your device assistant? Instead of launching Google Assistant or Bixby, your device can perform an action of your choice. It works even when the screen is off!</string>
+    <string name="assistant_trigger_purchase_thank_you_title">Thank you for supporting the app! ❤️</string>
+    <string name="assistant_trigger_purchase_thank_you_message">Your purchase was successful and you can now use the assistant triggers. As a paying user of Key Mapper you will receive priority support to help you use the app. There is now a button on this page to contact the developer.</string>
+    <string name="trigger_error_assistant_activity_not_chosen">You must select Key Mapper as the default digital assistant app for this trigger to work.</string>
+    <string name="trigger_error_assistant_activity_not_chosen_short">Key Mapper must be the default assistant.</string>
+    <string name="trigger_error_assistant_not_purchased">You must purchase the assistant trigger feature!</string>
+    <string name="advanced_triggers_learn_more_button">Learn more</string>
+    <string name="notification_assistant_trigger_feature_title">New trigger! Did you know you can remap your digital assistant?</string>
+    <string name="notification_assistant_trigger_feature_text">Instead of launching Google Assistant or Bixby, you can perform an action of your choice. Tap to learn more.</string>
+
+    <!--  Purchasing  -->
+    <string name="unlock_product_button">Unlock (%s)</string>
+    <string name="use_product_button">Use</string>
+    <string name="loading_product_button">Loading…</string>
+    <string name="retry_loading_price_button">Retry fetching price</string>
+    <string name="purchasing_error_cancelled">Purchase cancelled.</string>
+    <string name="purchasing_error_not_implemented">This requires a paid feature that can only be bought by downloading Key Mapper from Google Play.</string>
+    <string name="purchasing_error_network">Network error encountered. Do you have an internet connection?</string>
+    <string name="purchasing_error_product_not_found">This product was not found.</string>
+    <string name="purchasing_error_store_problem">Google Play encountered an error.</string>
+    <string name="purchasing_error_dialog_title">Something went wrong 😕</string>
+    <string name="purchasing_error_dialog_button_retry">Retry</string>
+    <string name="purchasing_contact_developer_button">Contact developer</string>
+    <string name="purchasing_error_assistant_not_purchased_home_screen">You must purchase the assistant trigger feature! Tap on the key map and then purchase it by clicking on \'Advanced triggers\'.</string>
+    <string name="purchasing_contact_email" translatable="false">contact@keymapper.club</string>
+    <string name="customer_email_subject" translatable="false">Key Mapper Pro query</string>
+    <string name="customer_email_body" translatable="false">Please describe the problem you are having here.</string>
+    <string name="purchasing_not_implemented_bottom_sheet_text">The advanced triggers are paid feature but you downloaded the FOSS build of Key Mapper that does not include this module or Google Play billing. Please download Key Mapper from Google Play to get access to this feature.</string>
+    <string name="purchasing_download_key_mapper_from_google_play">Download Play build</string>
 </resources>

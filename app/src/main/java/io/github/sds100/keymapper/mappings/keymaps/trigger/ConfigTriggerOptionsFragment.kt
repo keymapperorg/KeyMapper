@@ -6,7 +6,6 @@ import androidx.core.content.getSystemService
 import androidx.navigation.navGraphViewModels
 import com.airbnb.epoxy.EpoxyRecyclerView
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapTriggerOptionsViewModel
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapViewModel
 import io.github.sds100.keymapper.system.url.UrlUtils
 import io.github.sds100.keymapper.triggerFromOtherApps
@@ -39,7 +38,7 @@ class ConfigTriggerOptionsFragment : SimpleRecyclerViewFragment<ListItem>() {
         Inject.configKeyMapViewModel(requireContext())
     }
 
-    private val viewModel: ConfigKeyMapTriggerOptionsViewModel
+    private val viewModel: ConfigTriggerOptionsViewModel
         get() = configKeyMapViewModel.configTriggerViewModel.optionsViewModel
 
     override var isAppBarVisible = false
