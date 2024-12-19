@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
 import io.github.sds100.keymapper.backup.BackupManager
+import io.github.sds100.keymapper.sorting.ObserveKeyMapsSorterUseCase
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.mapData
@@ -8,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.withContext
 
 /**
@@ -17,23 +19,25 @@ class ListKeyMapsUseCaseImpl(
     private val keyMapRepository: KeyMapRepository,
     private val backupManager: BackupManager,
     displayKeyMapUseCase: DisplayKeyMapUseCase,
+    private val observeKeyMapsSorterUseCase: ObserveKeyMapsSorterUseCase,
 ) : ListKeyMapsUseCase,
     DisplayKeyMapUseCase by displayKeyMapUseCase {
 
     override val keyMapList: Flow<State<List<KeyMap>>> = channelFlow {
         send(State.Loading)
 
-        keyMapRepository.keyMapList.collectLatest { keyMapEntitiesState ->
-            send(State.Loading)
-
+        combine(
+            keyMapRepository.keyMapList,
+            observeKeyMapsSorterUseCase(),
+        ) { keyMapEntitiesState, sorter ->
+            keyMapEntitiesState.mapData { keyMapEntities ->
+                keyMapEntities
+                    .map { KeyMapEntityMapper.fromEntity(it) }
+                    .sortedWith(sorter)
+            }
+        }.collectLatest {
             withContext(Dispatchers.Default) {
-                val keyMaps = keyMapEntitiesState.mapData { keyMapEntities ->
-                    keyMapEntities.map {
-                        KeyMapEntityMapper.fromEntity(it)
-                    }
-                }
-
-                send(keyMaps)
+                send(it)
             }
         }
     }
