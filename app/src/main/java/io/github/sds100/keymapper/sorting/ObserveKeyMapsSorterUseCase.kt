@@ -3,7 +3,6 @@ package io.github.sds100.keymapper.sorting
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 
 /**
@@ -11,7 +10,7 @@ import kotlinx.coroutines.flow.map
  */
 class ObserveKeyMapsSorterUseCase(
     private val observeKeyMapFieldSortOrderUseCase: ObserveKeyMapFieldSortOrderUseCase,
-    private val observeKeyMapSortOrderUseCase: ObserveKeyMapSortOrderUseCase,
+    private val observeSortFieldPriorityUseCase: ObserveSortFieldPriorityUseCase,
 ) {
     operator fun invoke(): Flow<Comparator<KeyMap>> {
         return combine(
@@ -19,7 +18,7 @@ class ObserveKeyMapsSorterUseCase(
             observeKeyMapFieldSortOrderUseCase(SortField.ACTIONS),
             observeKeyMapFieldSortOrderUseCase(SortField.CONSTRAINTS),
             observeKeyMapFieldSortOrderUseCase(SortField.OPTIONS),
-            observeKeyMapSortOrderUseCase(),
+            observeSortFieldPriorityUseCase(),
         ) { trigger, actions, constraints, options, order ->
             order.map {
                 val fieldOrder = when (it) {
