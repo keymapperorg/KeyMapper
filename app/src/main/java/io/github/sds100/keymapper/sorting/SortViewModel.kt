@@ -6,15 +6,23 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class SortViewModel(
     private val setKeyMapFieldSortOrderUseCase: SetKeyMapFieldSortOrderUseCase,
     private val observeKeyMapFieldSortOrderUseCase: ObserveKeyMapFieldSortOrderUseCase,
+    private val setSortFieldPriorityUseCase: SetSortFieldPriorityUseCase,
+    private val observeSortFieldPriorityUseCase: ObserveSortFieldPriorityUseCase,
 ) : ViewModel() {
     val triggerSortState = MutableStateFlow(SortOrder.NONE)
     val actionsSortState = MutableStateFlow(SortOrder.NONE)
     val constraintsSortState = MutableStateFlow(SortOrder.NONE)
     val optionsSortState = MutableStateFlow(SortOrder.NONE)
+
+    private var _sortPriority: MutableList<SortField> = runBlocking {
+        observeSortFieldPriorityUseCase().first().toMutableList()
+    }
+    val sortPriority: List<SortField> get() = _sortPriority
 
     init {
         viewModelScope.launch {
@@ -37,12 +45,11 @@ class SortViewModel(
     }
 
     fun applySortOrder() {
-        viewModelScope.launch {
-            setKeyMapFieldSortOrderUseCase(SortField.TRIGGER, triggerSortState.value)
-            setKeyMapFieldSortOrderUseCase(SortField.ACTIONS, actionsSortState.value)
-            setKeyMapFieldSortOrderUseCase(SortField.CONSTRAINTS, constraintsSortState.value)
-            setKeyMapFieldSortOrderUseCase(SortField.OPTIONS, optionsSortState.value)
-        }
+        setKeyMapFieldSortOrderUseCase(SortField.TRIGGER, triggerSortState.value)
+        setKeyMapFieldSortOrderUseCase(SortField.ACTIONS, actionsSortState.value)
+        setKeyMapFieldSortOrderUseCase(SortField.CONSTRAINTS, constraintsSortState.value)
+        setKeyMapFieldSortOrderUseCase(SortField.OPTIONS, optionsSortState.value)
+        setSortFieldPriorityUseCase(sortPriority.toSet())
     }
 
     fun resetSortOrder() {
@@ -52,6 +59,10 @@ class SortViewModel(
             constraintsSortState.emit(SortOrder.NONE)
             optionsSortState.emit(SortOrder.NONE)
         }
+    }
+
+    fun swapSortPriority(from: Int, to: Int) {
+        _sortPriority.apply { add(to, removeAt(from)) }
     }
 
     // If user explicitly cancels, restore the state that was saved when the dialog was opened
@@ -68,12 +79,16 @@ class SortViewModel(
     class Factory(
         private val setKeyMapFieldSortOrderUseCase: SetKeyMapFieldSortOrderUseCase,
         private val observeKeyMapFieldSortOrderUseCase: ObserveKeyMapFieldSortOrderUseCase,
+        private val setSortFieldPriorityUseCase: SetSortFieldPriorityUseCase,
+        private val observeSortFieldPriorityUseCase: ObserveSortFieldPriorityUseCase,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>) =
             SortViewModel(
                 setKeyMapFieldSortOrderUseCase,
                 observeKeyMapFieldSortOrderUseCase,
+                setSortFieldPriorityUseCase,
+                observeSortFieldPriorityUseCase,
             ) as T
     }
 
@@ -82,8 +97,11 @@ class SortViewModel(
         val actionsSortState: SortOrder = this@SortViewModel.actionsSortState.value,
         val constraintsSortState: SortOrder = this@SortViewModel.constraintsSortState.value,
         val optionsSortState: SortOrder = this@SortViewModel.optionsSortState.value,
+        val sortPriority: MutableList<SortField> = this@SortViewModel.sortPriority.toMutableList(),
     ) {
         fun restore() {
+            this@SortViewModel._sortPriority = this@Checkpoint.sortPriority
+
             viewModelScope.launch {
                 this@SortViewModel.triggerSortState.emit(triggerSortState)
                 this@SortViewModel.actionsSortState.emit(actionsSortState)

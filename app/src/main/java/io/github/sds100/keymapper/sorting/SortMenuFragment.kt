@@ -1,16 +1,23 @@
 package io.github.sds100.keymapper.sorting
 
+import android.graphics.Rect
+import android.os.Build
 import android.os.Bundle
+import android.view.DragEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.children
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.chip.ChipGroup
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentSortMenuBinding
 import io.github.sds100.keymapper.databinding.SortMenuChipBinding
 import io.github.sds100.keymapper.util.Inject
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
@@ -41,15 +48,12 @@ class SortMenuFragment : BottomSheetDialogFragment() {
 
         sortViewModel.saveCheckpoint()
 
-        val triggerChip = getChipByField(SortField.TRIGGER)
-        val actionsChip = getChipByField(SortField.ACTIONS)
-        val constraintsChip = getChipByField(SortField.CONSTRAINTS)
-        val optionsChip = getChipByField(SortField.OPTIONS)
+        // Retrieve the sort priority from the view model and create a chip for each field
+        sortViewModel.sortPriority.map(::getChipByField).forEach { chip ->
+            binding.chipGroupSortBy.addView(chip.root)
+        }
 
-        binding.chipGroupSortBy.addView(triggerChip.root)
-        binding.chipGroupSortBy.addView(actionsChip.root)
-        binding.chipGroupSortBy.addView(constraintsChip.root)
-        binding.chipGroupSortBy.addView(optionsChip.root)
+        binding.chipGroupSortBy.setOnDragListener(chipGroupOnDragListener)
 
         binding.buttonApply.setOnClickListener {
             sortViewModel.applySortOrder()
@@ -79,14 +83,79 @@ class SortMenuFragment : BottomSheetDialogFragment() {
         }
     }
 
-    private fun getChipByField(
-        field: SortField,
-    ): SortMenuChipBinding {
+    private var chipDragJob: Job? = null
+    private val chipGroupOnDragListener = View.OnDragListener { chipGroup, dragEvent ->
+        chipGroup as ChipGroup
+        val dragView = dragEvent.localState as View
+
+        when (dragEvent.action) {
+            DragEvent.ACTION_DRAG_STARTED,
+            DragEvent.ACTION_DRAG_ENTERED,
+            DragEvent.ACTION_DRAG_EXITED,
+            -> true
+
+            DragEvent.ACTION_DRAG_ENDED -> {
+                dragView.visibility = View.VISIBLE
+                true
+            }
+
+            DragEvent.ACTION_DRAG_LOCATION,
+            DragEvent.ACTION_DROP,
+            -> {
+                val itemIndex = chipGroup.indexOfChild(dragView)
+                val newIndex = chipGroup.children.indexOfFirst { child ->
+                    val rect = Rect()
+                    child.getHitRect(rect)
+                    rect.contains(dragEvent.x.toInt(), dragEvent.y.toInt())
+                }.takeIf { it != -1 } ?: return@OnDragListener true
+
+                binding.chipGroupSortBy.apply {
+                    // Delay the removal and addition of the views to prevent flickering
+                    chipDragJob?.cancel()
+                    chipDragJob = lifecycleScope.launch {
+                        delay(30)
+
+                        // Animation disabled because it is to clumsy
+
+                        // Can't use `android:animateLayoutChanges = "true"`
+                        // because bottom sheet will jump up and down when dragging chips
+                        // https://stackoverflow.com/a/69829813
+                        // TransitionManager.beginDelayedTransition(binding.chipGroupSortBy)
+
+                        removeViewAt(itemIndex)
+                        addView(dragView, newIndex)
+                        sortViewModel.swapSortPriority(itemIndex, newIndex)
+                    }
+                }
+
+                true
+            }
+
+            else -> false
+        }
+    }
+
+    private fun getChipByField(field: SortField): SortMenuChipBinding {
         val chipBinding = SortMenuChipBinding.inflate(
             LayoutInflater.from(requireContext()),
             binding.chipGroupSortBy,
             false,
         )
+
+        chipBinding.chip.setOnLongClickListener { view ->
+            val clipShadow = View.DragShadowBuilder(view)
+
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                @Suppress("DEPRECATION")
+                view.startDrag(null, clipShadow, view, 0)
+            } else {
+                view.startDragAndDrop(null, clipShadow, view, 0)
+            }
+
+            view.visibility = View.INVISIBLE
+
+            true
+        }
 
         chipBinding.text = when (field) {
             SortField.TRIGGER -> getString(R.string.trigger_header)
@@ -116,6 +185,7 @@ class SortMenuFragment : BottomSheetDialogFragment() {
     }
 
     override fun onDestroyView() {
+        chipDragJob?.cancel()
         super.onDestroyView()
         _binding = null
     }

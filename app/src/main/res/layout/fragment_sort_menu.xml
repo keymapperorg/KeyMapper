@@ -74,25 +74,17 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="4dp"
-                    android:paddingHorizontal="8dp"
                     android:minWidth="0dp"
+                    android:paddingHorizontal="8dp"
                     android:text="@string/action_reset"
                     android:visibility="@{canResetSort ? View.VISIBLE : View.INVISIBLE}" />
 
             </LinearLayout>
 
-            <HorizontalScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scrollbars="none">
-
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/chipGroupSortBy"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    app:singleLine="true" />
-
-            </HorizontalScrollView>
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupSortBy"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
 
         </LinearLayout>
 
