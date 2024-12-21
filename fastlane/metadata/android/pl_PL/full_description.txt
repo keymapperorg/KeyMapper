@@ -1,7 +1,9 @@
+Nowy wyzwalacz! 🎉 Zmień funkcje przycisków asystenta i Bixby!
+
 Funkcje jakich przycisków można zmienić?
 
  * Przyciski głośności.
- * Power button via Google Assistant, Pixel Active Edge, Double press Bixby button.
+ * Przycisk zasilania za pośrednictwem asystenta Google, Pixel Active Edge, dwukrotne naciśnięcie przycisku Bixby.
  * Klawiatury przewodowe i Bluetooth.
  * Gesty czytnika linii papilarnych na obsługiwanych urządzeniach.
  * Przyciski na innych podłączonych urządzeniach również powinny działać.
@@ -15,7 +17,7 @@ Funkcje jakich przycisków nie można zmieniać?
  * Przyciski myszy
  * Krzyżak, gałki albo spusty na kontrolerach gier
 
-Your key maps do not work if the screen is OFF. To jest ograniczenie w systemie Android. Programista nic nie może na to poradzić.
+Twoje zmiany funkcji nie będą działać, gdy ekran jest WYŁĄCZONY. To jest ograniczenie w systemie Android. Programista nic nie może na to poradzić.
 
 Jakie funkcje można przypisać do przycisków?
 Niektóre czynności będą działać tylko na zrootowanych urządzeniach i określonych wersjach Androida.
@@ -25,7 +27,7 @@ Mamy zbyt wiele funkcji, aby wszystko się tu zmieściło, więc zapoznaj się z
 Uprawnienia
 Nie musisz przyznawać wszystkich uprawnień, aby aplikacja działała. Aplikacja poinformuje Cię, czy do działania funkcji wymagane jest określone uprawnienie.
 
- * Usługa ułatwień dostępu: Podstawowe wymaganie dotyczące zmiany funkcji przycisków. It is needed so the app can listen to and block key events.
+ * Usługa ułatwień dostępu: Podstawowe wymaganie dotyczące zmiany funkcji przycisków. Jest to potrzebne, aby aplikacja mogła nasłuchiwać i blokować zdarzenia przycisków.
  * Zarządzanie urządzeniem: aby wyłączyć ekran podczas korzystania z czynności wyłączenia ekranu.
  * Modyfikowanie ustawień systemu: Aby zmienić ustawienia jasności i obracania.
  * Aparat: Aby sterować latarką.
