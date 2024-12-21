@@ -23,6 +23,11 @@ import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCas
 import io.github.sds100.keymapper.onboarding.OnboardingUseCaseImpl
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsUseCaseImpl
 import io.github.sds100.keymapper.shizuku.ShizukuInputEventInjector
+import io.github.sds100.keymapper.sorting.ObserveKeyMapFieldSortOrderUseCase
+import io.github.sds100.keymapper.sorting.ObserveKeyMapsSorterUseCase
+import io.github.sds100.keymapper.sorting.ObserveSortFieldPriorityUseCase
+import io.github.sds100.keymapper.sorting.SetKeyMapFieldSortOrderUseCase
+import io.github.sds100.keymapper.sorting.SetSortFieldPriorityUseCase
 import io.github.sds100.keymapper.system.Shell
 import io.github.sds100.keymapper.system.accessibility.ControlAccessibilityServiceUseCase
 import io.github.sds100.keymapper.system.accessibility.ControlAccessibilityServiceUseCaseImpl
@@ -233,4 +238,25 @@ object UseCases {
             keyEventRelayService,
             ServiceLocator.inputMethodAdapter(ctx),
         )
+
+    fun observeKeyMapFieldSortOrderUseCase(ctx: Context) = ObserveKeyMapFieldSortOrderUseCase(
+        ServiceLocator.settingsRepository(ctx),
+    )
+
+    fun observeKeyMapsSorter(ctx: Context) = ObserveKeyMapsSorterUseCase(
+        observeKeyMapFieldSortOrderUseCase(ctx),
+        observeSortFieldPriorityUseCase(ctx),
+    )
+
+    fun observeSortFieldPriorityUseCase(ctx: Context) = ObserveSortFieldPriorityUseCase(
+        ServiceLocator.settingsRepository(ctx),
+    )
+
+    fun setKeyMapFieldSortOrderUseCase(ctx: Context) = SetKeyMapFieldSortOrderUseCase(
+        ServiceLocator.settingsRepository(ctx),
+    )
+
+    fun setSortFieldPriorityUseCase(ctx: Context) = SetSortFieldPriorityUseCase(
+        ServiceLocator.settingsRepository(ctx),
+    )
 }

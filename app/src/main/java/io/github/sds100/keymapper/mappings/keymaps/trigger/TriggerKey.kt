@@ -7,7 +7,7 @@ import io.github.sds100.keymapper.mappings.ClickType
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed class TriggerKey {
+sealed class TriggerKey : Comparable<TriggerKey> {
     abstract val clickType: ClickType
 
     /**
@@ -34,4 +34,6 @@ sealed class TriggerKey {
         is AssistantTriggerKey -> copy(clickType = clickType)
         is KeyCodeTriggerKey -> copy(clickType = clickType)
     }
+
+    override fun compareTo(other: TriggerKey) = this.javaClass.name.compareTo(other.javaClass.name)
 }
