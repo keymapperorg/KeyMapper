@@ -100,11 +100,6 @@ class GetActionErrorUseCaseImpl(
                     return Error.SdkVersionTooLow(Build.VERSION_CODES.N)
                 }
 
-            is ActionData.PhoneCall ->
-                if (!permissionAdapter.isGranted(Permission.CALL_PHONE)) {
-                    return Error.PermissionDenied(Permission.CALL_PHONE)
-                }
-
             is ActionData.Sound -> {
                 soundsManager.getSound(action.soundUid).onFailure { error ->
                     return error
@@ -128,13 +123,6 @@ class GetActionErrorUseCaseImpl(
             is ActionData.SwitchKeyboard ->
                 inputMethodAdapter.getInfoById(action.imeId).onFailure {
                     return it
-                }
-
-            is ActionData.Bluetooth ->
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
-                    !permissionAdapter.isGranted(Permission.FIND_NEARBY_DEVICES)
-                ) {
-                    return Error.PermissionDenied(Permission.FIND_NEARBY_DEVICES)
                 }
 
             else -> Unit

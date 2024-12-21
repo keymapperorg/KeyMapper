@@ -565,6 +565,13 @@ object ActionUtils {
             ActionId.END_PHONE_CALL,
             -> return listOf(Permission.ANSWER_PHONE_CALL)
 
+            ActionId.PHONE_CALL -> return listOf(Permission.CALL_PHONE)
+
+            ActionId.ENABLE_BLUETOOTH, ActionId.DISABLE_BLUETOOTH, ActionId.TOGGLE_BLUETOOTH ->
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    return listOf(Permission.FIND_NEARBY_DEVICES)
+                }
+
             else -> Unit
         }
 
