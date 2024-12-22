@@ -796,6 +796,10 @@ object KeyEventUtils {
         KeyEvent.META_SHIFT_LEFT_ON to R.string.meta_state_shift_left,
         KeyEvent.META_SHIFT_RIGHT_ON to R.string.meta_state_shift_right,
 
+        KeyEvent.META_META_ON to R.string.meta_state_meta,
+        KeyEvent.META_META_LEFT_ON to R.string.meta_state_meta_left,
+        KeyEvent.META_META_RIGHT_ON to R.string.meta_state_meta_right,
+
         KeyEvent.META_SYM_ON to R.string.meta_state_sym,
         KeyEvent.META_CAPS_LOCK_ON to R.string.meta_state_caps_lock,
         KeyEvent.META_NUM_LOCK_ON to R.string.meta_state_num_lock,

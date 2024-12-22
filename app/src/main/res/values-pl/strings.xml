@@ -7,6 +7,7 @@
     <string name="enable">Włącz</string>
     <string name="open">Otwórz</string>
     <string name="recyclerview_placeholder">¯\\_(ツ)_/¯\n\nNic tu nie ma!</string>
+    <string name="triggers_recyclerview_placeholder">Pierwszym krokiem jest dodanie kilku przycisków, które będą uruchamiać mapę klawiszy.\n\nNajpierw kliknij \"Wprowadź wyzwalacz\", a następnie naciśnij przyciski, które chcesz zmienić. One pojawią się tutaj.\n\nAlternatywnie możesz uruchomić mapę klawiszy za pomocą \"zaawansowanego wyzwalacza\".</string>
     <string name="actions_recyclerview_placeholder">Dodaj działanie!</string>
     <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nUtwórz mapę klawiszy!</string>
     <string name="action_shortcut_list_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nNie wybrano żadnych działań dla tego skrótu!</string>
@@ -340,6 +341,9 @@
     <!-- Button titles -->
     <string name="button_add_action">Dodaj działanie</string>
     <string name="button_record_trigger">Wprowadź wyzwalacz</string>
+    <string name="button_advanced_triggers">Zaawansowane wyzwalacze</string>
+    <string name="button_advanced_triggers_badge">Nowość!</string>
+    <string name="button_dismiss_advanced_triggers_sheet_content_description">Odrzuć wybór zaawansowanych wyzwalaczy.</string>
     <string name="button_done">Gotowe</string>
     <string name="button_save">Zapisz</string>
     <string name="button_fix">Napraw</string>
@@ -988,6 +992,7 @@
     <string name="action_play_sound">Odtwórz dźwięk</string>
     <string name="action_dismiss_most_recent_notification">Odrzuć ostatnie powiadomienie</string>
     <string name="action_dismiss_all_notifications">Odrzuć wszystkie powiadomienia</string>
+    <string name="action_device_controls">Ekran sterowania urządzeniami</string>
     <!-- action labels -->
     <!-- action category labels -->
     <string name="action_cat_navigation">Nawigacja</string>
@@ -1070,5 +1075,35 @@
     <string name="about_team_bydario_role">Tłumacz (hiszpański)</string>
     <!--  About  -->
     <!-- Advanced triggers -->
+    <string name="assistant_any_trigger_name">Dowolny asystent</string>
+    <string name="assistant_device_trigger_name">Asystent urządzenia</string>
+    <string name="assistant_voice_trigger_name">Asystent głosowy</string>
+    <string name="advanced_triggers_sheet_title">Zaawansowane wyzwalacze</string>
+    <string name="advanced_triggers_sheet_text">Programista nie wierzy, że reklamy są zrównoważoną lub przyjazną użytkownikowi formą monetyzacji, więc te płatne wyzwalacze pomagają wspierać rozwój ❤️. Otrzymasz również priorytetowe wsparcie.</string>
+    <string name="assistant_trigger_product_title">Wyzwalacz asystenta</string>
+    <string name="assistant_trigger_product_description">Czy wiesz, że możesz zmienić przycisk asystenta urządzenia? Zamiast uruchamiać asystenta Google lub Bixby, urządzenie może wykonać niestandardową akcję. Działa nawet, gdy ekran jest wyłączony!</string>
+    <string name="assistant_trigger_purchase_thank_you_title">Dziękujemy za wsparcie aplikacji! ❤️</string>
+    <string name="assistant_trigger_purchase_thank_you_message">Zakup zakończył się sukcesem i teraz możesz używać wyzwalaczy asystenta. Jako płatny użytkownik Key Mapper otrzymasz priorytetową pomoc w korzystaniu z aplikacji. Na tej stronie znajduje się teraz przycisk, aby skontaktować się z programistą.</string>
+    <string name="trigger_error_assistant_activity_not_chosen">Aby ten wyzwalacz działał, musisz ustawić Key Mapper jako domyślną aplikację asystenta cyfrowego.</string>
+    <string name="trigger_error_assistant_activity_not_chosen_short">Key Mapper musi być domyślnym asystentem.</string>
+    <string name="trigger_error_assistant_not_purchased">Musisz kupić funkcję wyzwalacza asystenta!</string>
+    <string name="advanced_triggers_learn_more_button">Dowiedz się więcej</string>
+    <string name="notification_assistant_trigger_feature_title">Nowy wyzwalacz! Czy wiesz, że możesz zmienić przycisk asystenta?</string>
+    <string name="notification_assistant_trigger_feature_text">Zamiast uruchamiać Asystenta Google lub Bixby, możesz wykonać wybrane działanie. Kliknij, aby dowiedzieć się więcej.</string>
     <!--  Purchasing  -->
+    <string name="unlock_product_button">Odblokuj (%s)</string>
+    <string name="use_product_button">Użyj</string>
+    <string name="loading_product_button">Ładuję…</string>
+    <string name="retry_loading_price_button">Spróbuj ponownie pobrać cenę</string>
+    <string name="purchasing_error_cancelled">Zakup anulowany.</string>
+    <string name="purchasing_error_not_implemented">Wymaga to płatnej funkcji, którą można kupić wyłącznie pobierając aplikację Key Mapper z Google Play.</string>
+    <string name="purchasing_error_network">Napotkano błąd sieciowy. Czy masz połączenie z internetem?</string>
+    <string name="purchasing_error_product_not_found">Produkt nie został znaleziony.</string>
+    <string name="purchasing_error_store_problem">Google Play napotkał błąd.</string>
+    <string name="purchasing_error_dialog_title">Coś poszło nie tak 😕</string>
+    <string name="purchasing_error_dialog_button_retry">Spróbuj ponownie</string>
+    <string name="purchasing_contact_developer_button">Skontaktuj się z programistą</string>
+    <string name="purchasing_error_assistant_not_purchased_home_screen">Musisz kupić funkcję wyzwalacza asystenta! Kliknij mapę klawiszy, a następnie kup ją, klikając \"Zaawansowane wyzwalacze\".</string>
+    <string name="purchasing_not_implemented_bottom_sheet_text">Zaawansowane wyzwalacze to płatna funkcja, ale pobrano Key Mapper wersji open source, która nie obsługuje tego modułu ani rozliczeń Google Play. Aby uzyskać dostęp do tych funkcji, pobierz Key Mapper z Google Play.</string>
+    <string name="purchasing_download_key_mapper_from_google_play">Pobierz wersję z Google Play</string>
 </resources>

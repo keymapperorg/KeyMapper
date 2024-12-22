@@ -456,6 +456,8 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
 
             ActionData.AnswerCall -> getString(R.string.action_answer_call)
             ActionData.EndCall -> getString(R.string.action_end_call)
+
+            ActionData.DeviceControls -> getString(R.string.action_device_controls)
         }
 
     override fun getIcon(action: ActionData): IconInfo? = when (action) {

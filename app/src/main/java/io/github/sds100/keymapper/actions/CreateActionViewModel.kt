@@ -596,6 +596,7 @@ class CreateActionViewModelImpl(
             ActionId.DISMISS_ALL_NOTIFICATIONS -> return ActionData.DismissAllNotifications
             ActionId.ANSWER_PHONE_CALL -> return ActionData.AnswerCall
             ActionId.END_PHONE_CALL -> return ActionData.EndCall
+            ActionId.DEVICE_CONTROLS -> return ActionData.DeviceControls
         }
     }
 }

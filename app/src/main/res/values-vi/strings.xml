@@ -7,6 +7,7 @@
     <string name="enable">Cho phép</string>
     <string name="open">Mở</string>
     <string name="recyclerview_placeholder">¯\\_(ツ)_/¯\n\nKhông có gì ở đây!</string>
+    <string name="triggers_recyclerview_placeholder">Bước đầu tiên là thêm một số nút sẽ kích hoạt sơ đồ phím.\n\nTrước tiên hãy nhấn vào \'Trình kích hoạt ghi\' rồi nhấn các nút mà bạn muốn ánh xạ lại. Chúng sẽ xuất hiện ở đây.\n\nNgoài ra, bạn có thể kích hoạt bản đồ chính bằng cách sử dụng \'trình kích hoạt nâng cao\'.</string>
     <string name="actions_recyclerview_placeholder">Thêm hành động!</string>
     <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\n Tạo một hành động!</string>
     <string name="action_shortcut_list_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nBạn chưa chọn bất kỳ hành động nào cho phím tắt này!</string>
@@ -332,6 +333,9 @@
     <!-- Button titles -->
     <string name="button_add_action">Thêm hành động</string>
     <string name="button_record_trigger">Ghi kích hoạt</string>
+    <string name="button_advanced_triggers">Trình kích hoạt nâng cao</string>
+    <string name="button_advanced_triggers_badge">Mới!</string>
+    <string name="button_dismiss_advanced_triggers_sheet_content_description">Loại bỏ việc chọn trình kích hoạt nâng cao.</string>
     <string name="button_done">Xong</string>
     <string name="button_save">Lưu</string>
     <string name="button_fix">Sửa chữa</string>
@@ -966,6 +970,7 @@
     <string name="action_play_sound">Phát âm thanh</string>
     <string name="action_dismiss_most_recent_notification">Loại bỏ thông báo gần đây nhất</string>
     <string name="action_dismiss_all_notifications">Loại bỏ tất cả thông báo</string>
+    <string name="action_device_controls">Màn hình điều khiển thiết bị</string>
     <!-- action labels -->
     <!-- action category labels -->
     <string name="action_cat_navigation">Điều hướng</string>
@@ -1048,5 +1053,35 @@
     <string name="about_team_bydario_role">Phiên dịch viên (tiếng Tây Ban Nha)</string>
     <!--  About  -->
     <!-- Advanced triggers -->
+    <string name="assistant_any_trigger_name">Trợ lý bất kỳ</string>
+    <string name="assistant_device_trigger_name">Trợ lý thiết bị</string>
+    <string name="assistant_voice_trigger_name">Trợ lý giọng nói</string>
+    <string name="advanced_triggers_sheet_title">Trình kích hoạt nâng cao</string>
+    <string name="advanced_triggers_sheet_text">Nhà phát triển không tin rằng quảng cáo là hình thức kiếm tiền bền vững hoặc thân thiện với người dùng nên những trình kích hoạt trả phí này sẽ giúp hỗ trợ sự phát triển ❤️. Bạn cũng sẽ được ưu tiên hỗ trợ.</string>
+    <string name="assistant_trigger_product_title">Trình kích hoạt trợ lý</string>
+    <string name="assistant_trigger_product_description">Bạn có biết bạn có thể ánh xạ lại trợ lý thiết bị của mình không? Thay vì khởi chạy Google Assistant hoặc Bixby, thiết bị của bạn có thể thực hiện hành động mà bạn chọn. Nó hoạt động ngay cả khi màn hình tắt!</string>
+    <string name="assistant_trigger_purchase_thank_you_title">Cảm ơn bạn đã ủng hộ ứng dụng! ❤️</string>
+    <string name="assistant_trigger_purchase_thank_you_message">Giao dịch mua hàng của bạn đã thành công và bây giờ bạn có thể sử dụng trình kích hoạt trợ lý. Là người dùng trả phí của Key Mapper, bạn sẽ nhận được hỗ trợ ưu tiên để giúp bạn sử dụng ứng dụng. Hiện tại có một nút trên trang này để liên hệ với nhà phát triển.</string>
+    <string name="trigger_error_assistant_activity_not_chosen">Bạn phải chọn Key Mapper làm ứng dụng trợ lý kỹ thuật số mặc định để trình kích hoạt này hoạt động.</string>
+    <string name="trigger_error_assistant_activity_not_chosen_short">Key Mapper phải là trợ lý mặc định.</string>
+    <string name="trigger_error_assistant_not_purchased">Bạn phải mua tính năng kích hoạt trợ lý!</string>
+    <string name="advanced_triggers_learn_more_button">Tìm hiểu thêm</string>
+    <string name="notification_assistant_trigger_feature_title">Kích hoạt mới! Bạn có biết bạn có thể sắp xếp lại trợ lý kỹ thuật số của mình không?</string>
+    <string name="notification_assistant_trigger_feature_text">Thay vì khởi chạy Google Assistant hoặc Bixby, bạn có thể thực hiện hành động mà mình chọn. Nhấn để tìm hiểu thêm.</string>
     <!--  Purchasing  -->
+    <string name="unlock_product_button">Mở khóa (%s)</string>
+    <string name="use_product_button">Sử dụng</string>
+    <string name="loading_product_button">Đang tải…</string>
+    <string name="retry_loading_price_button">Thử tìm nạp lại giá</string>
+    <string name="purchasing_error_cancelled">Đã hủy mua hàng.</string>
+    <string name="purchasing_error_not_implemented">Điều này yêu cầu một tính năng trả phí chỉ có thể mua được bằng cách tải xuống Key Mapper từ Google Play.</string>
+    <string name="purchasing_error_network">Đã gặp lỗi mạng. Bạn có kết nối internet không?</string>
+    <string name="purchasing_error_product_not_found">Sản phẩm này không được tìm thấy.</string>
+    <string name="purchasing_error_store_problem">Google Play đã gặp lỗi.</string>
+    <string name="purchasing_error_dialog_title">Đã xảy ra lỗi 😕</string>
+    <string name="purchasing_error_dialog_button_retry">Thử lại</string>
+    <string name="purchasing_contact_developer_button">Liên hệ với nhà phát triển</string>
+    <string name="purchasing_error_assistant_not_purchased_home_screen">Bạn phải mua tính năng kích hoạt trợ lý! Nhấn vào bản đồ chính và sau đó mua nó bằng cách nhấp vào \'Trình kích hoạt nâng cao\'.</string>
+    <string name="purchasing_not_implemented_bottom_sheet_text">Trình kích hoạt nâng cao là tính năng trả phí nhưng bạn đã tải xuống bản dựng FOSS của Key Mapper không bao gồm mô-đun này hoặc thanh toán Google Play. Vui lòng tải xuống Key Mapper từ Google Play để có quyền truy cập vào tính năng này.</string>
+    <string name="purchasing_download_key_mapper_from_google_play">Tải xuống bản dựng Play</string>
 </resources>

@@ -29,6 +29,14 @@ Create testing release
 
 Create and deploy production release
 
+### alpha
+
+```sh
+[bundle exec] fastlane alpha
+```
+
+Deploy alpha release
+
 ----
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.

@@ -157,6 +157,7 @@ object ActionUtils {
 
             ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> ActionCategory.NOTIFICATIONS
             ActionId.DISMISS_ALL_NOTIFICATIONS -> ActionCategory.NOTIFICATIONS
+            ActionId.DEVICE_CONTROLS -> ActionCategory.APPS
         }
 
     @StringRes
@@ -267,6 +268,7 @@ object ActionUtils {
             ActionId.DISMISS_ALL_NOTIFICATIONS -> R.string.action_dismiss_all_notifications
             ActionId.ANSWER_PHONE_CALL -> R.string.action_answer_call
             ActionId.END_PHONE_CALL -> R.string.action_end_call
+            ActionId.DEVICE_CONTROLS -> R.string.action_device_controls
         }
 
     @DrawableRes
@@ -378,6 +380,7 @@ object ActionUtils {
             ActionId.DISMISS_ALL_NOTIFICATIONS -> R.drawable.ic_baseline_clear_all_24
             ActionId.ANSWER_PHONE_CALL -> R.drawable.ic_outline_call_24
             ActionId.END_PHONE_CALL -> R.drawable.ic_outline_call_end_24
+            ActionId.DEVICE_CONTROLS -> R.drawable.ic_home_automation
         }
 
     fun getMinApi(id: ActionId): Int = when (id) {
@@ -412,6 +415,7 @@ object ActionUtils {
         -> Build.VERSION_CODES.JELLY_BEAN_MR2
 
         ActionId.SHOW_POWER_MENU -> Build.VERSION_CODES.LOLLIPOP
+        ActionId.DEVICE_CONTROLS -> Build.VERSION_CODES.S
 
         else -> Constants.MIN_API
     }
@@ -426,6 +430,10 @@ object ActionUtils {
         ActionId.DISABLE_BLUETOOTH,
         ActionId.TOGGLE_BLUETOOTH,
         -> Build.VERSION_CODES.S_V2
+
+        // See https://issuetracker.google.com/issues/225186417. The global action
+        // is not marked as deprecated even though it doesn't work.
+        ActionId.TOGGLE_SPLIT_SCREEN -> Build.VERSION_CODES.S
 
         else -> Constants.MAX_API
     }
@@ -560,6 +568,13 @@ object ActionUtils {
             ActionId.ANSWER_PHONE_CALL,
             ActionId.END_PHONE_CALL,
             -> return listOf(Permission.ANSWER_PHONE_CALL)
+
+            ActionId.PHONE_CALL -> return listOf(Permission.CALL_PHONE)
+
+            ActionId.ENABLE_BLUETOOTH, ActionId.DISABLE_BLUETOOTH, ActionId.TOGGLE_BLUETOOTH ->
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    return listOf(Permission.FIND_NEARBY_DEVICES)
+                }
 
             else -> Unit
         }

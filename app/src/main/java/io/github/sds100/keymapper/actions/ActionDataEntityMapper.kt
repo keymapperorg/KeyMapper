@@ -15,7 +15,6 @@ import io.github.sds100.keymapper.util.getKey
 import io.github.sds100.keymapper.util.success
 import io.github.sds100.keymapper.util.then
 import io.github.sds100.keymapper.util.valueOrNull
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import splitties.bitflags.hasFlag
@@ -482,6 +481,7 @@ object ActionDataEntityMapper {
             ActionId.DISMISS_ALL_NOTIFICATIONS -> ActionData.DismissAllNotifications
             ActionId.ANSWER_PHONE_CALL -> ActionData.AnswerCall
             ActionId.END_PHONE_CALL -> ActionData.EndCall
+            ActionId.DEVICE_CONTROLS -> ActionData.DeviceControls
         }
     }
 
@@ -806,5 +806,6 @@ object ActionDataEntityMapper {
 
         ActionId.ANSWER_PHONE_CALL to "answer_phone_call",
         ActionId.END_PHONE_CALL to "end_phone_call",
+        ActionId.DEVICE_CONTROLS to "device_controls",
     )
 }

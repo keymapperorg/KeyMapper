@@ -647,4 +647,9 @@ sealed class ActionData {
     object EndCall : ActionData() {
         override val id: ActionId = ActionId.END_PHONE_CALL
     }
+
+    @Serializable
+    object DeviceControls : ActionData() {
+        override val id: ActionId = ActionId.DEVICE_CONTROLS
+    }
 }
