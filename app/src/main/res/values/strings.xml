@@ -1250,6 +1250,11 @@
     <string name="action_disable_airplane_mode">Disable Airplane mode</string>
 
     <string name="action_open_app">Launch app</string>
+    <string name="action_open_app_dialog_message">Some devices require apps to have permission before they can launch apps in the background. Tap \"Read more\" to view the instructions on our website.</string>
+    <string name="action_open_app_dialog_read_more_button">Read more</string>
+    <string name="action_open_app_dialog_ignore_button">Ignore</string>
+
+    <string name="action_open_app_dialog_title">Warning!</string>
     <string name="action_open_app_shortcut">Launch app shortcut</string>
     <string name="action_input_key_code">Input key code</string>
     <string name="action_input_key_event">Input key event</string>
@@ -1374,7 +1379,6 @@
     <string name="about_team_bydario_name" translatable="false">Darío B. C. (bydariogamer)</string>
     <string name="about_team_bydario_url" translatable="false">https://github.com/bydariogamer</string>
     <string name="about_team_bydario_role">Translator (Spanish)</string>
-
     <!--  About  -->
 
     <!-- Advanced triggers -->
