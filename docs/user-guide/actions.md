@@ -2,6 +2,9 @@
 
 Launch an app.
 
+!!! warning "Extra permission on Xiaomi devices!"
+    See issue [#1370](https://github.com/keymapperorg/KeyMapper/issues/1370https://github.com/keymapperorg/KeyMapper/issues/1370). Xioami blocks apps from launching apps when they are in the background unless you give permission to "Display pop-up windows while running in the background" and "Display pop-up window". Follow these steps through the Settings app: Apps > Manage apps > Key Mapper App Settings > Other Permissions > Display pop-up windows while running in the background.
+
 ### Launch app shortcut
 
 Launch an app shortcut. This is a great way to add more functionality to Key Mapper.
@@ -16,7 +19,8 @@ Input a simple key event with this key code.
 
 This will tap a point on your screen.
 
-!!! warning Android restricts what apps can do with this so you won't be able to tap the screen at the same time as Key Mapper and Key Mapper can't tap multiple places at once.
+!!! warning
+Android restricts what apps can do with this so you won't be able to tap the screen at the same time as Key Mapper and Key Mapper can't tap multiple places at once.
 
 ### Swipe screen (2.5.0+, Android 7.0+)
 
