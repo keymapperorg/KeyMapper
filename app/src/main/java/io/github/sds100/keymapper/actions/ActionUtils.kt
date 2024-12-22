@@ -431,6 +431,10 @@ object ActionUtils {
         ActionId.TOGGLE_BLUETOOTH,
         -> Build.VERSION_CODES.S_V2
 
+        // See https://issuetracker.google.com/issues/225186417. The global action
+        // is not marked as deprecated even though it doesn't work.
+        ActionId.TOGGLE_SPLIT_SCREEN -> Build.VERSION_CODES.S
+
         else -> Constants.MAX_API
     }
 
