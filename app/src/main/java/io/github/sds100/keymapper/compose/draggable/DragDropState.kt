@@ -61,12 +61,6 @@ class DragDropState internal constructor(
 
     internal val scrollChannel = Channel<Float>()
 
-    init {
-        scrollChannel.invokeOnClose {
-            Timber.d("scrollChannel closed")
-        }
-    }
-
     private var draggingItemDraggedDelta by mutableFloatStateOf(0f)
     private var draggingItemInitialOffset by mutableIntStateOf(0)
     internal val draggingItemOffset: Float
