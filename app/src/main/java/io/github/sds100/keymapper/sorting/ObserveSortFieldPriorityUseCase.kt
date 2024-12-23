@@ -28,15 +28,15 @@ class ObserveSortFieldPriorityUseCase(
             .get(Keys.sortOrder)
             .map {
                 val result = runCatching {
-                    it
-                        ?.map { SortField.valueOf(it) }
-                        ?: default
+                    val mapped = it?.split(",")?.map { SortField.valueOf(it) }
+
+                    mapped ?: default
                 }.getOrDefault(default).distinct()
 
                 // If the result is not the expected size it means that the preference is corrupted
                 // or there are missing fields (e.g. a new field was added). In this case, return
                 // the default order.
-                if (result.size != SortField.values().size) {
+                if (result.size != SortField.entries.size) {
                     return@map default
                 }
 

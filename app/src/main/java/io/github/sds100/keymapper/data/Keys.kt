@@ -74,5 +74,5 @@ object Keys {
     val sortActionsAscending = booleanPreferencesKey("key_sort_actions_ascending")
     val sortConstraintsAscending = booleanPreferencesKey("key_sort_constraints_ascending")
     val sortOptionsAscending = booleanPreferencesKey("key_sort_options_ascending")
-    val sortOrder = stringSetPreferencesKey("key_sort_order")
+    val sortOrder = stringPreferencesKey("key_sort_order")
 }

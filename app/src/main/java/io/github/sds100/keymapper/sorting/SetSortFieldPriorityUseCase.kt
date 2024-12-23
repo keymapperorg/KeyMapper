@@ -11,13 +11,12 @@ class SetSortFieldPriorityUseCase(
      * [SortField] values to be present exactly once.
      */
     operator fun invoke(sortOrder: Set<SortField>) {
-        require(sortOrder.size == SortField.values().size) {
-            "Sort order set must have ${SortField.values().size} fields"
+        require(sortOrder.size == SortField.entries.size) {
+            "Sort order set must have ${SortField.entries.size} fields"
         }
 
-        preferenceRepository.set(
-            Keys.sortOrder,
-            sortOrder.map { it.name }.toSet(),
-        )
+        val mapped = sortOrder.joinToString(",") { it.name }
+
+        preferenceRepository.set(Keys.sortOrder, mapped)
     }
 }
