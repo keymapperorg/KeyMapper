@@ -144,16 +144,16 @@ private fun SortDraggableList(
     ) {
         itemsIndexed(
             items = list,
-            key = { index, item -> item.sortField },
+            key = { index, item -> item.field },
         ) { index, item ->
             DraggableItem(
                 dragDropState = dragDropState,
                 index = index,
             ) { isDragging ->
                 SortFieldListItem(
-                    sortField = item.sortField,
-                    sortOrder = item.sortOrder,
-                    onToggle = { onSortFieldClick(item.sortField) },
+                    sortField = item.field,
+                    sortOrder = item.order,
+                    onToggle = { onSortFieldClick(item.field) },
                     isDragging = isDragging,
                     onDrag = { dragDropState.onDrag(it) },
                     onDragStarted = {

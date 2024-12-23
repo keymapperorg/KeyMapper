@@ -69,10 +69,5 @@ object Keys {
 
     val neverShowDndError = booleanPreferencesKey("key_never_show_dnd_error")
 
-    // true = ascending, false = descending
-    val sortTriggerAscending = booleanPreferencesKey("key_sort_trigger_ascending")
-    val sortActionsAscending = booleanPreferencesKey("key_sort_actions_ascending")
-    val sortConstraintsAscending = booleanPreferencesKey("key_sort_constraints_ascending")
-    val sortOptionsAscending = booleanPreferencesKey("key_sort_options_ascending")
-    val sortOrder = stringPreferencesKey("key_sort_order")
+    val sortOrderJson = stringPreferencesKey("key_keymaps_sort_order_json")
 }

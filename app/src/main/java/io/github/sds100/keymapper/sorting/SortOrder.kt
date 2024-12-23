@@ -1,5 +1,8 @@
 package io.github.sds100.keymapper.sorting
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 enum class SortOrder {
     NONE,
     ASCENDING,
