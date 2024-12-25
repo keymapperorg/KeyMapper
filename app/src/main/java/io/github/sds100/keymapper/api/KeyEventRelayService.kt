@@ -94,6 +94,8 @@ class KeyEventRelayService : Service() {
     override fun onCreate() {
         super.onCreate()
 
+        Timber.d("Relay service: onCreate")
+
         val intent = Intent(ACTION_REBIND_RELAY_SERVICE)
         sendBroadcast(intent)
     }
@@ -102,6 +104,12 @@ class KeyEventRelayService : Service() {
         // This service is explicitly started and stopped as needed
         // so the system shouldn't stop it automatically.
         return START_STICKY
+    }
+
+    override fun onDestroy() {
+        Timber.d("Relay service: onDestroy")
+
+        super.onDestroy()
     }
 
     override fun onBind(intent: Intent?): IBinder? = binderInterface.asBinder()
