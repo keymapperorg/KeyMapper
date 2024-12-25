@@ -369,16 +369,12 @@ abstract class BaseAccessibilityServiceController(
         scanCode: Int = 0,
         eventTime: Long,
     ): Boolean {
-        if (!detectKeyMapsUseCase.acceptKeyEventsFromIme) {
-            Timber.d("Don't input key event from ime")
-            return false
-        }
-
         /*
         Issue #850
         If a volume key is sent while the phone is ringing or in a call
         then that key event must have been relayed by an input method and only an up event
-        is sent. This is a restriction in Android. So send a fake down key event as well.
+        is sent. This is a restriction in Android. So send a fake DOWN key event as well
+        before returning the UP key event.
          */
         if (action == KeyEvent.ACTION_UP && (keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)) {
             onKeyEvent(
