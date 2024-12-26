@@ -585,6 +585,7 @@
     <string name="dialog_title_sort">Sort</string>
     <string name="dialog_message_sort_sort_by">Sort by</string>
     <string name="sorting_drag_and_drop_list_help">You can drag and drop to reorder sort priority. Click a field to toggle its sort order. Fields without a sort order will not be included in the sort.</string>
+    <string name="drag_handle_for">Drag handle for %1$s</string>
 
     <string name="pos_yes">Yes</string>
     <string name="pos_confirm">Confirm</string>

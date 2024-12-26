@@ -19,11 +19,15 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
@@ -31,26 +35,34 @@ import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sds100.keymapper.R
@@ -62,40 +74,82 @@ import io.github.sds100.keymapper.sorting.SortFieldOrder
 import io.github.sds100.keymapper.sorting.SortOrder
 import io.github.sds100.keymapper.sorting.SortViewModel
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
-fun SortBottomSheetContent(
-    onExit: () -> Unit,
+fun SortBottomSheet(
+    onDismissRequest: () -> Unit,
     viewModel: SortViewModel,
+    modifier: Modifier = Modifier,
 ) {
-    val list by viewModel.state.collectAsStateWithLifecycle()
+    val sortFieldOrderList by viewModel.state.collectAsStateWithLifecycle()
 
-    SortBottomSheetContent(
-        onApply = {
-            viewModel.applySortPriority()
-            onExit()
-        },
-        onCancel = {
-            viewModel.restoreState()
-            onExit()
-        },
-        list = list,
-        onMove = { fromIndex, toIndex ->
-            viewModel.swapSortPriority(fromIndex, toIndex)
-        },
-        onToggle = { field ->
-            viewModel.toggleSortOrder(field)
-        },
-        canReset = list.any { it.order != SortOrder.NONE },
+    SortBottomSheet(
+        modifier = modifier,
+        onDismissRequest = onDismissRequest,
+        onApply = viewModel::applySortPriority,
+        onCancel = viewModel::restoreState,
+        sortFieldOrderList = sortFieldOrderList,
+        onMove = viewModel::swapSortPriority,
+        onToggle = viewModel::toggleSortOrder,
+        canReset = sortFieldOrderList.any { it.order != SortOrder.NONE },
         onReset = viewModel::resetSortPriority,
     )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SortBottomSheet(
+    onDismissRequest: () -> Unit,
+    sortFieldOrderList: List<SortFieldOrder>,
+    onApply: () -> Unit,
+    onCancel: () -> Unit,
+    onMove: (fromIndex: Int, toIndex: Int) -> Unit,
+    onToggle: (SortField) -> Unit,
+    canReset: Boolean,
+    onReset: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true,
+    )
+    val coroutineScope = rememberCoroutineScope()
+    val dismissSheet: (afterBlock: suspend () -> Unit) -> Unit = { block ->
+        coroutineScope.launch {
+            block()
+            sheetState.hide()
+            onDismissRequest()
+        }
+    }
+
+    ModalBottomSheet(
+        modifier = modifier.statusBarsPadding(),
+        sheetState = sheetState,
+        onDismissRequest = onDismissRequest,
+        // Hide drag handle because other bottom sheets don't have it
+        dragHandle = {},
+    ) {
+        SortBottomSheetContent(
+            onCancel = {
+                dismissSheet { onCancel() }
+            },
+            onApply = {
+                dismissSheet { onApply() }
+            },
+            sortFieldOrderList = sortFieldOrderList,
+            onMove = onMove,
+            onToggle = onToggle,
+            canReset = canReset,
+            onReset = onReset,
+        )
+    }
 }
 
 @Composable
 private fun SortBottomSheetContent(
     onCancel: () -> Unit,
     onApply: () -> Unit,
-    list: List<SortFieldOrder>,
+    sortFieldOrderList: List<SortFieldOrder>,
     onMove: (fromIndex: Int, toIndex: Int) -> Unit,
     onToggle: (SortField) -> Unit,
     canReset: Boolean,
@@ -103,7 +157,7 @@ private fun SortBottomSheetContent(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.padding(top = 8.dp),
+        modifier = modifier.verticalScroll(rememberScrollState()),
     ) {
         Box(
             modifier = Modifier
@@ -127,7 +181,8 @@ private fun SortBottomSheetContent(
         }
 
         SortDraggableList(
-            list = list,
+            modifier = Modifier.heightIn(max = 400.dp),
+            sortFieldOrderList = sortFieldOrderList,
             onMove = onMove,
             onSortFieldClick = onToggle,
         )
@@ -165,7 +220,7 @@ private fun SortBottomSheetContent(
 
 @Composable
 private fun SortDraggableList(
-    list: List<SortFieldOrder>,
+    sortFieldOrderList: List<SortFieldOrder>,
     onMove: (fromIndex: Int, toIndex: Int) -> Unit,
     onSortFieldClick: (SortField) -> Unit,
     modifier: Modifier = Modifier,
@@ -181,7 +236,7 @@ private fun SortDraggableList(
         state = lazyListState,
     ) {
         itemsIndexed(
-            items = list,
+            items = sortFieldOrderList,
             key = { index, item -> item.field },
         ) { index, item ->
             DraggableItem(
@@ -291,17 +346,27 @@ private fun SortFieldListItem(
                 )
             }
         }
-        Icon(
-            modifier = Modifier.draggable(
-                state = draggableState,
-                orientation = Orientation.Vertical,
-                startDragImmediately = true,
-                onDragStarted = onDragStarted,
-                onDragStopped = onDragStopped,
-            ),
-            imageVector = Icons.Default.DragHandle,
-            contentDescription = null,
-        )
+
+        Box(
+            modifier = Modifier
+                .size(40.dp)
+                .draggable(
+                    state = draggableState,
+                    orientation = Orientation.Vertical,
+                    startDragImmediately = true,
+                    onDragStarted = onDragStarted,
+                    onDragStopped = onDragStopped,
+                ),
+        ) {
+            Icon(
+                modifier = Modifier.align(Alignment.Center),
+                imageVector = Icons.Default.DragHandle,
+                contentDescription = stringResource(
+                    R.string.drag_handle_for,
+                    stringSortField(sortField),
+                ),
+            )
+        }
     }
 }
 
@@ -362,7 +427,39 @@ private fun SortBottomSheetContentPreview() {
             SortBottomSheetContent(
                 onApply = {},
                 onCancel = {},
-                list = list,
+                sortFieldOrderList = list,
+                onMove = { _, _ -> },
+                onToggle = {},
+                canReset = true,
+                onReset = {},
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun SortBottomSheetPreview() {
+    val list = listOf(
+        SortFieldOrder(SortField.TRIGGER, SortOrder.NONE),
+        SortFieldOrder(SortField.ACTIONS, SortOrder.ASCENDING),
+        SortFieldOrder(SortField.CONSTRAINTS, SortOrder.DESCENDING),
+        SortFieldOrder(SortField.OPTIONS, SortOrder.NONE),
+    )
+
+    var size by remember { mutableIntStateOf(0) }
+
+    KeyMapperTheme {
+        Surface {
+            SortBottomSheet(
+                // Preview hack, breaks if you run it
+                modifier = Modifier
+                    .offset { IntOffset(0, -size) }
+                    .onSizeChanged { size = it.height },
+                onDismissRequest = {},
+                onApply = {},
+                onCancel = {},
+                sortFieldOrderList = list,
                 onMove = { _, _ -> },
                 onToggle = {},
                 canReset = true,
