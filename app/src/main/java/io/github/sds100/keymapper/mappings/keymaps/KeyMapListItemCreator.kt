@@ -6,6 +6,7 @@ import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerType
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
+import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.mappings.keymaps.trigger.Trigger
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerError
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
@@ -161,6 +162,10 @@ class KeyMapListItemCreator(
         }
 
         append(" (")
+
+        if (key.detectionSource == KeyEventDetectionSource.INPUT_METHOD) {
+            append("${getString(R.string.flag_detect_from_input_method)} $midDot ")
+        }
 
         append(deviceName)
 
