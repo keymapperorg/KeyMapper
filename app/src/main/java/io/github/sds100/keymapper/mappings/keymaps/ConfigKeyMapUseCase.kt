@@ -12,6 +12,7 @@ import io.github.sds100.keymapper.mappings.ConfigMappingUseCase
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerType
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
+import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.mappings.keymaps.trigger.Trigger
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
@@ -75,6 +76,7 @@ class ConfigKeyMapUseCaseImpl(
     override fun addKeyCodeTriggerKey(
         keyCode: Int,
         device: TriggerKeyDevice,
+        detectionSource: KeyEventDetectionSource
     ) = editTrigger { trigger ->
         val clickType = when (trigger.mode) {
             is TriggerMode.Parallel -> trigger.mode.clickType
@@ -102,6 +104,7 @@ class ConfigKeyMapUseCaseImpl(
             device = device,
             clickType = clickType,
             consumeEvent = consumeKeyEvent,
+            detectionSource = detectionSource
         )
 
         val newKeys = trigger.keys.plus(triggerKey)
@@ -517,7 +520,12 @@ class ConfigKeyMapUseCaseImpl(
 
 interface ConfigKeyMapUseCase : ConfigMappingUseCase<KeyMapAction, KeyMap> {
     // trigger
-    fun addKeyCodeTriggerKey(keyCode: Int, device: TriggerKeyDevice)
+    fun addKeyCodeTriggerKey(
+        keyCode: Int,
+        device: TriggerKeyDevice,
+        detectionSource: KeyEventDetectionSource
+    )
+
     fun addAssistantTriggerKey(type: AssistantTriggerType)
     fun removeTriggerKey(uid: String)
     fun getTriggerKey(uid: String): TriggerKey?

@@ -28,7 +28,7 @@ class RecordTriggerController(
                     TriggerKeyDevice.Internal
                 }
 
-                RecordedKey(event.keyCode, device)
+                RecordedKey(event.keyCode, device, event.detectionSource)
             }
 
             else -> null
@@ -38,7 +38,8 @@ class RecordTriggerController(
     init {
         serviceAdapter.eventReceiver.onEach { event ->
             when (event) {
-                is ServiceEvent.OnStoppedRecordingTrigger -> state.value = RecordTriggerState.Stopped
+                is ServiceEvent.OnStoppedRecordingTrigger -> state.value =
+                    RecordTriggerState.Stopped
 
                 is ServiceEvent.OnIncrementRecordTriggerTimer ->
                     state.value =

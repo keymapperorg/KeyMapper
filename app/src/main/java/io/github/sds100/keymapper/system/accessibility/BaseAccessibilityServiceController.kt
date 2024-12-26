@@ -19,6 +19,7 @@ import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCas
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectScreenOffKeyEventsController
 import io.github.sds100.keymapper.mappings.keymaps.detection.KeyMapController
 import io.github.sds100.keymapper.mappings.keymaps.detection.TriggerKeyMapFromOtherAppsController
+import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsController
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsUseCase
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
@@ -300,6 +301,7 @@ abstract class BaseAccessibilityServiceController(
         metaState: Int,
         scanCode: Int = 0,
         eventTime: Long,
+        detectionSource: KeyEventDetectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE
     ): Boolean {
         val detailedLogInfo =
             "key code: $keyCode, time since event: ${SystemClock.uptimeMillis() - eventTime}ms, device name: ${device?.name}, descriptor: ${device?.descriptor}, device id: ${device?.id}, is external: ${device?.isExternal}, meta state: $metaState, scan code: $scanCode"
@@ -312,6 +314,7 @@ abstract class BaseAccessibilityServiceController(
                         ServiceEvent.RecordedTriggerKey(
                             keyCode,
                             device,
+                            detectionSource
                         ),
                     )
                 }
@@ -384,6 +387,7 @@ abstract class BaseAccessibilityServiceController(
                 metaState,
                 0,
                 eventTime,
+                detectionSource = KeyEventDetectionSource.INPUT_METHOD
             )
         }
 
@@ -394,6 +398,7 @@ abstract class BaseAccessibilityServiceController(
             metaState,
             scanCode,
             eventTime,
+            detectionSource = KeyEventDetectionSource.INPUT_METHOD
         )
     }
 
