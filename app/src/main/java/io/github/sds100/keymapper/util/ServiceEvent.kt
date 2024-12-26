@@ -21,7 +21,7 @@ sealed class ServiceEvent {
     data class RecordedTriggerKey(
         val keyCode: Int,
         val device: InputDeviceInfo?,
-        val detectionSource: KeyEventDetectionSource
+        val detectionSource: KeyEventDetectionSource,
     ) : ServiceEvent(),
         Parcelable
 

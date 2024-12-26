@@ -301,7 +301,7 @@ abstract class BaseAccessibilityServiceController(
         metaState: Int,
         scanCode: Int = 0,
         eventTime: Long,
-        detectionSource: KeyEventDetectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE
+        detectionSource: KeyEventDetectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
     ): Boolean {
         val detailedLogInfo =
             "key code: $keyCode, time since event: ${SystemClock.uptimeMillis() - eventTime}ms, device name: ${device?.name}, descriptor: ${device?.descriptor}, device id: ${device?.id}, is external: ${device?.isExternal}, meta state: $metaState, scan code: $scanCode"
@@ -314,7 +314,7 @@ abstract class BaseAccessibilityServiceController(
                         ServiceEvent.RecordedTriggerKey(
                             keyCode,
                             device,
-                            detectionSource
+                            detectionSource,
                         ),
                     )
                 }
@@ -387,7 +387,7 @@ abstract class BaseAccessibilityServiceController(
                 metaState,
                 0,
                 eventTime,
-                detectionSource = KeyEventDetectionSource.INPUT_METHOD
+                detectionSource = KeyEventDetectionSource.INPUT_METHOD,
             )
         }
 
@@ -398,7 +398,7 @@ abstract class BaseAccessibilityServiceController(
             metaState,
             scanCode,
             eventTime,
-            detectionSource = KeyEventDetectionSource.INPUT_METHOD
+            detectionSource = KeyEventDetectionSource.INPUT_METHOD,
         )
     }
 

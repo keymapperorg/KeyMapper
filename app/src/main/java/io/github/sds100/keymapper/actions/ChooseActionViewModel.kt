@@ -171,17 +171,16 @@ class ChooseActionViewModel(
                     message = getString(R.string.action_open_app_dialog_message),
                     title = getString(R.string.action_open_app_dialog_title),
                     positiveButtonText = getString(R.string.action_open_app_dialog_read_more_button),
-                    negativeButtonText = getString(R.string.action_open_app_dialog_ignore_button)
+                    negativeButtonText = getString(R.string.action_open_app_dialog_ignore_button),
                 ),
             )
 
             if (response == DialogResponse.POSITIVE) {
                 showPopup(
                     "app_action_permission_info",
-                    PopupUi.OpenUrl(getString(R.string.url_action_guide))
+                    PopupUi.OpenUrl(getString(R.string.url_action_guide)),
                 )
                 return false
-
             } else {
                 return response != null
             }

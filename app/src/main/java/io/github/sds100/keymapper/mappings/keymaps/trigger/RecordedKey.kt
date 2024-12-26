@@ -6,5 +6,5 @@ package io.github.sds100.keymapper.mappings.keymaps.trigger
 data class RecordedKey(
     val keyCode: Int,
     val device: TriggerKeyDevice,
-    val detectionSource: KeyEventDetectionSource
+    val detectionSource: KeyEventDetectionSource,
 )

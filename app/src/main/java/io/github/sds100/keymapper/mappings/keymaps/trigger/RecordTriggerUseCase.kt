@@ -38,8 +38,9 @@ class RecordTriggerController(
     init {
         serviceAdapter.eventReceiver.onEach { event ->
             when (event) {
-                is ServiceEvent.OnStoppedRecordingTrigger -> state.value =
-                    RecordTriggerState.Stopped
+                is ServiceEvent.OnStoppedRecordingTrigger ->
+                    state.value =
+                        RecordTriggerState.Stopped
 
                 is ServiceEvent.OnIncrementRecordTriggerTimer ->
                     state.value =

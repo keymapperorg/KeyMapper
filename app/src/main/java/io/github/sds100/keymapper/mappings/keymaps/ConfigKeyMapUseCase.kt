@@ -76,7 +76,7 @@ class ConfigKeyMapUseCaseImpl(
     override fun addKeyCodeTriggerKey(
         keyCode: Int,
         device: TriggerKeyDevice,
-        detectionSource: KeyEventDetectionSource
+        detectionSource: KeyEventDetectionSource,
     ) = editTrigger { trigger ->
         val clickType = when (trigger.mode) {
             is TriggerMode.Parallel -> trigger.mode.clickType
@@ -104,7 +104,7 @@ class ConfigKeyMapUseCaseImpl(
             device = device,
             clickType = clickType,
             consumeEvent = consumeKeyEvent,
-            detectionSource = detectionSource
+            detectionSource = detectionSource,
         )
 
         val newKeys = trigger.keys.plus(triggerKey)
@@ -523,7 +523,7 @@ interface ConfigKeyMapUseCase : ConfigMappingUseCase<KeyMapAction, KeyMap> {
     fun addKeyCodeTriggerKey(
         keyCode: Int,
         device: TriggerKeyDevice,
-        detectionSource: KeyEventDetectionSource
+        detectionSource: KeyEventDetectionSource,
     )
 
     fun addAssistantTriggerKey(type: AssistantTriggerType)

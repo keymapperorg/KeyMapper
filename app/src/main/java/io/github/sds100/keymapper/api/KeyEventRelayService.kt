@@ -130,7 +130,7 @@ class KeyEventRelayService : Service() {
 
     private inner class ClientConnection(
         private val sourcePackageName: String,
-        val callback: IKeyEventRelayServiceCallback
+        val callback: IKeyEventRelayServiceCallback,
     ) : DeathRecipient {
         override fun binderDied() {
             Timber.d("Client binder died: $sourcePackageName")

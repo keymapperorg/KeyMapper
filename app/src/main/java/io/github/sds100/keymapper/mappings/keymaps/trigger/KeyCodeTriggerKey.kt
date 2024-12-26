@@ -15,7 +15,7 @@ data class KeyCodeTriggerKey(
     val device: TriggerKeyDevice,
     override val clickType: ClickType,
     override val consumeEvent: Boolean = true,
-    val detectionSource: KeyEventDetectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE
+    val detectionSource: KeyEventDetectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
 ) : TriggerKey() {
 
     override fun toString(): String {
@@ -61,7 +61,7 @@ data class KeyCodeTriggerKey(
                 device = device,
                 clickType = clickType,
                 consumeEvent = consumeEvent,
-                detectionSource = detectionSource
+                detectionSource = detectionSource,
             )
         }
 

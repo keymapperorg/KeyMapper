@@ -310,7 +310,7 @@ abstract class BaseConfigTriggerViewModel(
                 title = getString(R.string.dialog_title_keyboard_icon_means_ime_detection),
                 message = getString(R.string.dialog_message_keyboard_icon_means_ime_detection),
                 negativeButtonText = getString(R.string.neg_dont_show_again),
-                positiveButtonText = getString(R.string.pos_ok)
+                positiveButtonText = getString(R.string.pos_ok),
             )
 
             val response = showPopup("keyboard_icon_explanation", dialog)
