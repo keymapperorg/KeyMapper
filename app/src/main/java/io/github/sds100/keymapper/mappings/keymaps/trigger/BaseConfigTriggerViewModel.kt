@@ -251,7 +251,7 @@ abstract class BaseConfigTriggerViewModel(
                 showPopup("screen_pinning_message", dialog)
             }
 
-            config.addKeyCodeTriggerKey(it.keyCode, it.device)
+            config.addKeyCodeTriggerKey(it.keyCode, it.device, it.detectionSource)
         }.launchIn(coroutineScope)
 
         coroutineScope.launch {
@@ -491,22 +491,31 @@ abstract class BaseConfigTriggerViewModel(
 
         return buildString {
             append(getTriggerKeyDeviceName(key.device, showDeviceDescriptors))
+            val midDot = getString(R.string.middot)
 
             if (!key.consumeEvent) {
-                val midDot = getString(R.string.middot)
                 append(" $midDot ${getString(R.string.flag_dont_override_default_action)}")
             }
         }
     }
 
-    private fun getTriggerKeyName(key: TriggerKey): String = when (key) {
-        is AssistantTriggerKey -> when (key.type) {
-            AssistantTriggerType.ANY -> getString(R.string.assistant_any_trigger_name)
-            AssistantTriggerType.VOICE -> getString(R.string.assistant_voice_trigger_name)
-            AssistantTriggerType.DEVICE -> getString(R.string.assistant_device_trigger_name)
-        }
+    private fun getTriggerKeyName(key: TriggerKey): String {
+        return when (key) {
+            is AssistantTriggerKey -> when (key.type) {
+                AssistantTriggerType.ANY -> getString(R.string.assistant_any_trigger_name)
+                AssistantTriggerType.VOICE -> getString(R.string.assistant_voice_trigger_name)
+                AssistantTriggerType.DEVICE -> getString(R.string.assistant_device_trigger_name)
+            }
 
-        is KeyCodeTriggerKey -> KeyEventUtils.keyCodeToString(key.keyCode)
+            is KeyCodeTriggerKey -> buildString {
+                append(KeyEventUtils.keyCodeToString(key.keyCode))
+
+                if (key.detectionSource == KeyEventDetectionSource.INPUT_METHOD) {
+                    val midDot = getString(R.string.middot)
+                    append(" $midDot ${getString(R.string.flag_detect_from_input_method)}")
+                }
+            }
+        }
     }
 
     private fun getTriggerKeyDeviceName(

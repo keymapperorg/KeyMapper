@@ -849,6 +849,7 @@
     <string name="flag_dont_override_default_action">Do not remap</string>
     <string name="flag_hold_down_until_swiped_again">Hold down until swiped again</string>
     <string name="flag_trigger_from_other_apps">Allow other apps to trigger this key map</string>
+    <string name="flag_detect_from_input_method">⌨</string>
     <!--flags-->
 
     <!-- Showcase -->
