@@ -4,7 +4,6 @@ import io.github.sds100.keymapper.data.entities.Extra
 import io.github.sds100.keymapper.data.entities.TriggerEntity
 import io.github.sds100.keymapper.data.entities.getData
 import io.github.sds100.keymapper.mappings.ClickType
-import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
 import io.github.sds100.keymapper.util.valueOrNull
 import kotlinx.serialization.Serializable
@@ -171,56 +170,5 @@ object TriggerEntityMapper {
             mode = mode,
             flags = flags,
         )
-    }
-}
-
-// Comparator.reversed() requires API level 24
-class KeyMapTriggerComparator(
-    private val reverse: Boolean = false,
-) : Comparator<KeyMap> {
-    // key -> keys length -> mode
-    override fun compare(
-        keyMap: KeyMap?,
-        otherKeyMap: KeyMap?,
-    ): Int {
-        if (keyMap == null || otherKeyMap == null) {
-            return 0
-        }
-
-        val trigger = keyMap.trigger
-        val otherTrigger = otherKeyMap.trigger
-
-        val keyMapTriggerKeysLength = trigger.keys.size
-        val otherKeyMapTriggerKeysLength = otherTrigger.keys.size
-        val maxLength = keyMapTriggerKeysLength.coerceAtMost(otherKeyMapTriggerKeysLength)
-
-        // Compare keys one by one
-        for (i in 0 until maxLength) {
-            val key = trigger.keys.elementAt(i)
-            val otherKey = otherTrigger.keys.elementAt(i)
-
-            val result = key.compareTo(otherKey)
-
-            if (result != 0) {
-                return doFinal(result)
-            }
-        }
-
-        // If keys are equal compare length
-        // Otherwise compare mode
-        val result = compareValuesBy(
-            trigger,
-            otherTrigger,
-            { it.keys.size },
-            { it.mode },
-        )
-
-        return doFinal(result)
-    }
-
-    fun doFinal(result: Int) = if (reverse) {
-        result * -1
-    } else {
-        result
     }
 }

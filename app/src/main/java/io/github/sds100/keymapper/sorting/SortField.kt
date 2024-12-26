@@ -1,10 +1,12 @@
 package io.github.sds100.keymapper.sorting
 
-import io.github.sds100.keymapper.constraints.KeyMapConstraintsComparator
-import io.github.sds100.keymapper.mappings.keymaps.KeyMapActionsComparator
-import io.github.sds100.keymapper.mappings.keymaps.KeyMapOptionsComparator
-import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapTriggerComparator
+import io.github.sds100.keymapper.sorting.comparators.KeyMapActionsComparator
+import io.github.sds100.keymapper.sorting.comparators.KeyMapConstraintsComparator
+import io.github.sds100.keymapper.sorting.comparators.KeyMapOptionsComparator
+import io.github.sds100.keymapper.sorting.comparators.KeyMapTriggerComparator
+import kotlinx.serialization.Serializable
 
+@Serializable
 enum class SortField {
     TRIGGER,
     ACTIONS,
