@@ -1,16 +1,19 @@
 package io.github.sds100.keymapper.sorting.ui
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,19 +28,28 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.DragHandle
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -74,6 +86,8 @@ fun SortBottomSheetContent(
         onToggle = { field ->
             viewModel.toggleSortOrder(field)
         },
+        canReset = list.any { it.order != SortOrder.NONE },
+        onReset = viewModel::resetSortPriority,
     )
 }
 
@@ -84,36 +98,31 @@ private fun SortBottomSheetContent(
     list: List<SortFieldOrder>,
     onMove: (fromIndex: Int, toIndex: Int) -> Unit,
     onToggle: (SortField) -> Unit,
+    canReset: Boolean,
+    onReset: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier.padding(top = 8.dp),
     ) {
-        Row(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
+                .padding(8.dp),
         ) {
-            TextButton(
-                onClick = onCancel,
-                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
-            ) {
-                Text(
-                    text = stringResource(R.string.neg_cancel),
-                )
-            }
             Text(
+                modifier = Modifier.align(Alignment.Center),
                 text = stringResource(R.string.dialog_message_sort_sort_by),
-                style = MaterialTheme.typography.titleLarge,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.headlineMedium,
             )
+
             TextButton(
-                onClick = onApply,
+                modifier = Modifier.align(Alignment.CenterEnd),
+                onClick = onReset,
+                enabled = canReset,
             ) {
-                Text(
-                    text = stringResource(R.string.pos_apply),
-                )
+                Text(stringResource(R.string.reset))
             }
         }
 
@@ -122,6 +131,35 @@ private fun SortBottomSheetContent(
             onMove = onMove,
             onSortFieldClick = onToggle,
         )
+
+        SortHelp(Modifier.padding(8.dp))
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+        ) {
+            OutlinedButton(
+                modifier = Modifier.align(Alignment.CenterStart),
+                onClick = onCancel,
+                colors = ButtonDefaults.outlinedButtonColors(
+                    contentColor = MaterialTheme.colorScheme.error,
+                ),
+                border = BorderStroke(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.error,
+                ),
+            ) {
+                Text(stringResource(R.string.neg_cancel))
+            }
+
+            Button(
+                modifier = Modifier.align(Alignment.CenterEnd),
+                onClick = onApply,
+            ) {
+                Text(stringResource(R.string.pos_apply))
+            }
+        }
     }
 }
 
@@ -151,6 +189,7 @@ private fun SortDraggableList(
                 index = index,
             ) { isDragging ->
                 SortFieldListItem(
+                    index = index + 1,
                     sortField = item.field,
                     sortOrder = item.order,
                     onToggle = { onSortFieldClick(item.field) },
@@ -176,6 +215,7 @@ private fun SortDraggableList(
 
 @Composable
 private fun SortFieldListItem(
+    index: Int,
     sortField: SortField,
     sortOrder: SortOrder,
     onToggle: () -> Unit,
@@ -203,8 +243,21 @@ private fun SortFieldListItem(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(
+            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
+            Text(
+                modifier = Modifier.padding(8.dp),
+                text = index.toString(),
+            )
+            Text(
+                text = stringSortField(sortField),
+                style = if (sortOrder == SortOrder.NONE) {
+                    MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal)
+                } else {
+                    MaterialTheme.typography.titleMedium
+                },
+            )
             AnimatedContent(
                 targetState = sortOrder,
                 transitionSpec = {
@@ -237,10 +290,6 @@ private fun SortFieldListItem(
                     contentDescription = null,
                 )
             }
-            Text(
-                text = stringSortField(sortField),
-                style = MaterialTheme.typography.bodyMedium,
-            )
         }
         Icon(
             modifier = Modifier.draggable(
@@ -253,6 +302,48 @@ private fun SortFieldListItem(
             imageVector = Icons.Default.DragHandle,
             contentDescription = null,
         )
+    }
+}
+
+@Composable
+private fun SortHelp(
+    modifier: Modifier = Modifier,
+) {
+    var helpVisible by rememberSaveable { mutableStateOf(false) }
+
+    Card(
+        modifier = modifier,
+    ) {
+        Column(
+            modifier = Modifier
+                .clickable { helpVisible = !helpVisible }
+                .padding(16.dp),
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_baseline_help_outline_24),
+                    contentDescription = null,
+                )
+
+                Text(
+                    text = stringResource(R.string.button_help),
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+            }
+
+            AnimatedVisibility(visible = helpVisible) {
+                Text(
+                    modifier = Modifier.padding(top = 8.dp),
+                    text = stringResource(R.string.sorting_drag_and_drop_list_help),
+                    textAlign = TextAlign.Justify,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+        }
     }
 }
 
@@ -274,6 +365,8 @@ private fun SortBottomSheetContentPreview() {
                 list = list,
                 onMove = { _, _ -> },
                 onToggle = {},
+                canReset = true,
+                onReset = {},
             )
         }
     }

@@ -45,6 +45,14 @@ class SortViewModel(
         }
     }
 
+    fun resetSortPriority() {
+        state.update {
+            it.map { sortFieldOrder ->
+                sortFieldOrder.copy(order = SortOrder.NONE)
+            }
+        }
+    }
+
     fun applySortPriority() {
         viewModelScope.launch {
             setKeyMapSortFieldOrderUseCase(state.value)
