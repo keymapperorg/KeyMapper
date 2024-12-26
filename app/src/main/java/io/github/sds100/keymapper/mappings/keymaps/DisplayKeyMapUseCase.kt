@@ -43,9 +43,22 @@ class DisplayKeyMapUseCaseImpl(
 
     override val invalidateTriggerErrors: Flow<Unit> = merge(
         permissionAdapter.onPermissionsUpdate,
-        preferenceRepository.get(Keys.neverShowDndError).map { }.drop(1),
+        preferenceRepository.get(Keys.neverShowDndAccessError).map { }.drop(1),
         purchasingManager.onCompleteProductPurchase.map { },
     )
+
+    override val showTriggerKeyboardIconExplanation: Flow<Boolean> =
+        preferenceRepository.get(Keys.neverShowTriggerKeyboardIconExplanation).map { neverShow ->
+            if (neverShow == null) {
+                true
+            } else {
+                !neverShow
+            }
+        }
+
+    override fun neverShowTriggerKeyboardIconExplanation() {
+        preferenceRepository.set(Keys.neverShowTriggerKeyboardIconExplanation, true)
+    }
 
     override suspend fun getTriggerErrors(keyMap: KeyMap): List<TriggerError> {
         val trigger = keyMap.trigger
@@ -101,4 +114,6 @@ class DisplayKeyMapUseCaseImpl(
 interface DisplayKeyMapUseCase : DisplaySimpleMappingUseCase {
     val invalidateTriggerErrors: Flow<Unit>
     suspend fun getTriggerErrors(keyMap: KeyMap): List<TriggerError>
+    val showTriggerKeyboardIconExplanation: Flow<Boolean>
+    fun neverShowTriggerKeyboardIconExplanation()
 }

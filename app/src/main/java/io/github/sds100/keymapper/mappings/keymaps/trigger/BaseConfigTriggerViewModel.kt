@@ -19,6 +19,7 @@ import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.dataOrNull
 import io.github.sds100.keymapper.util.mapData
+import io.github.sds100.keymapper.util.ui.DialogResponse
 import io.github.sds100.keymapper.util.ui.NavigationViewModel
 import io.github.sds100.keymapper.util.ui.NavigationViewModelImpl
 import io.github.sds100.keymapper.util.ui.PopupUi
@@ -43,10 +44,8 @@ import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -234,25 +233,11 @@ abstract class BaseConfigTriggerViewModel(
             }
         }
 
-        recordTrigger.onRecordKey.onEach {
-            if (it.keyCode == KeyEvent.KEYCODE_CAPS_LOCK) {
-                val dialog = PopupUi.Ok(
-                    message = getString(R.string.dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout),
-                )
-
-                showPopup("caps_lock_message", dialog)
+        coroutineScope.launch {
+            recordTrigger.onRecordKey.collectLatest {
+                onRecordTriggerKey(it)
             }
-
-            if (it.keyCode == KeyEvent.KEYCODE_BACK) {
-                val dialog = PopupUi.Ok(
-                    message = getString(R.string.dialog_message_screen_pinning_warning),
-                )
-
-                showPopup("screen_pinning_message", dialog)
-            }
-
-            config.addKeyCodeTriggerKey(it.keyCode, it.device, it.detectionSource)
-        }.launchIn(coroutineScope)
+        }
 
         coroutineScope.launch {
             config.mapping
@@ -260,31 +245,79 @@ abstract class BaseConfigTriggerViewModel(
                 .distinctUntilChanged()
                 .drop(1)
                 .collectLatest { mode ->
-                    if (mode is TriggerMode.Parallel) {
-                        if (onboarding.shownParallelTriggerOrderExplanation) return@collectLatest
-
-                        val dialog = PopupUi.Ok(
-                            message = getString(R.string.dialog_message_parallel_trigger_order),
-                        )
-
-                        showPopup("parallel_trigger_order", dialog) ?: return@collectLatest
-
-                        onboarding.shownParallelTriggerOrderExplanation = true
-                    }
-
-                    if (mode is TriggerMode.Sequence) {
-                        if (onboarding.shownSequenceTriggerExplanation) return@collectLatest
-
-                        val dialog = PopupUi.Ok(
-                            message = getString(R.string.dialog_message_sequence_trigger_explanation),
-                        )
-
-                        showPopup("sequence_trigger_explanation", dialog)
-                            ?: return@collectLatest
-
-                        onboarding.shownSequenceTriggerExplanation = true
-                    }
+                    onTriggerModeChanged(mode)
                 }
+        }
+    }
+
+    private suspend fun onTriggerModeChanged(mode: TriggerMode) {
+        if (mode is TriggerMode.Parallel) {
+            if (onboarding.shownParallelTriggerOrderExplanation) {
+                return
+            }
+
+            val dialog = PopupUi.Ok(
+                message = getString(R.string.dialog_message_parallel_trigger_order),
+            )
+
+            showPopup("parallel_trigger_order", dialog) ?: return
+
+            onboarding.shownParallelTriggerOrderExplanation = true
+        }
+
+        if (mode is TriggerMode.Sequence) {
+            if (onboarding.shownSequenceTriggerExplanation) {
+                return
+            }
+
+            val dialog = PopupUi.Ok(
+                message = getString(R.string.dialog_message_sequence_trigger_explanation),
+            )
+
+            showPopup("sequence_trigger_explanation", dialog)
+                ?: return
+
+            onboarding.shownSequenceTriggerExplanation = true
+        }
+    }
+
+    private suspend fun onRecordTriggerKey(key: RecordedKey) {
+        // Add the trigger key before showing the dialog so it doesn't
+        // need to be dismissed before it is added.
+        config.addKeyCodeTriggerKey(key.keyCode, key.device, key.detectionSource)
+
+        if (key.keyCode == KeyEvent.KEYCODE_CAPS_LOCK) {
+            val dialog = PopupUi.Ok(
+                message = getString(R.string.dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout),
+            )
+
+            showPopup("caps_lock_message", dialog)
+        }
+
+        if (key.keyCode == KeyEvent.KEYCODE_BACK) {
+            val dialog = PopupUi.Ok(
+                message = getString(R.string.dialog_message_screen_pinning_warning),
+            )
+
+            showPopup("screen_pinning_message", dialog)
+        }
+
+        // Issue #491. Some key codes can only be detected through an input method. This will
+        // be shown to the user by showing a keyboard icon next to the trigger key name so
+        // explain this to the user.
+        if (key.detectionSource == KeyEventDetectionSource.INPUT_METHOD && displayKeyMap.showTriggerKeyboardIconExplanation.first()) {
+            val dialog = PopupUi.Dialog(
+                title = getString(R.string.dialog_title_keyboard_icon_means_ime_detection),
+                message = getString(R.string.dialog_message_keyboard_icon_means_ime_detection),
+                negativeButtonText = getString(R.string.neg_dont_show_again),
+                positiveButtonText = getString(R.string.pos_ok)
+            )
+
+            val response = showPopup("keyboard_icon_explanation", dialog)
+
+            if (response == DialogResponse.NEGATIVE) {
+                displayKeyMap.neverShowTriggerKeyboardIconExplanation()
+            }
         }
     }
 
@@ -431,7 +464,7 @@ abstract class BaseConfigTriggerViewModel(
                     ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
                         resourceProvider = this@BaseConfigTriggerViewModel,
                         popupViewModel = this@BaseConfigTriggerViewModel,
-                        neverShowDndTriggerErrorAgain = { displayKeyMap.neverShowDndTriggerErrorAgain() },
+                        neverShowDndTriggerErrorAgain = { displayKeyMap.neverShowDndTriggerError() },
                         fixError = { displayKeyMap.fixError(it) },
                     )
                 }

@@ -163,7 +163,7 @@ open class KeyMapListViewModel(
                     ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
                         resourceProvider = this@KeyMapListViewModel,
                         popupViewModel = this@KeyMapListViewModel,
-                        neverShowDndTriggerErrorAgain = { useCase.neverShowDndTriggerErrorAgain() },
+                        neverShowDndTriggerErrorAgain = { useCase.neverShowDndTriggerError() },
                         fixError = { useCase.fixError(it) },
                     )
                 }

@@ -120,7 +120,7 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
                     ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
                         resourceProvider = this@ConfigActionsViewModel,
                         popupViewModel = this@ConfigActionsViewModel,
-                        neverShowDndTriggerErrorAgain = { displayActionUseCase.neverShowDndTriggerErrorAgain() },
+                        neverShowDndTriggerErrorAgain = { displayActionUseCase.neverShowDndTriggerError() },
                         fixError = { displayActionUseCase.fixError(it) },
                     )
                 }
