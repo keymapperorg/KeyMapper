@@ -33,16 +33,22 @@ class SortViewModel(
     fun toggleSortOrder(field: SortField) {
         state.update {
             val index = it.indexOfFirst { it.field == field }
-            val newOrder = it[index].order.toggle()
-            val newList = it.toMutableList()
-            newList[index] = SortFieldOrder(field, newOrder)
-            newList
+
+            it.mapIndexed { i, sortFieldOrder ->
+                if (i != index) {
+                    return@mapIndexed sortFieldOrder
+                }
+
+                val newOrder = sortFieldOrder.order.toggle()
+                sortFieldOrder.copy(order = newOrder)
+            }
         }
     }
 
     fun applySortPriority() {
         viewModelScope.launch {
             setKeyMapSortFieldOrderUseCase(state.value)
+            saveState()
         }
     }
 
@@ -60,13 +66,13 @@ class SortViewModel(
 
     private var savedState: List<SortFieldOrder>? = null
 
-    private fun saveState() {
-        savedState = state.value.toList()
+    private fun saveState(toSave: List<SortFieldOrder> = state.value) {
+        savedState = toSave.toList()
     }
 
     fun restoreState() {
         savedState?.let {
-            state.update { it }
+            state.value = it
         }
     }
 }
