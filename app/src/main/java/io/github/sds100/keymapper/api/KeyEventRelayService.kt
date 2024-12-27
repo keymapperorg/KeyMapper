@@ -35,30 +35,30 @@ class KeyEventRelayService : Service() {
 
     private val binderInterface: IKeyEventRelayService = object : IKeyEventRelayService.Stub() {
         override fun sendKeyEvent(event: KeyEvent?, targetPackageName: String?): Boolean {
+            Timber.d("KeyEventRelayService: onKeyEvent ${event?.keyCode}")
+
             synchronized(callbackLock) {
-                Timber.d("KeyEventRelayService: onKeyEvent ${event?.keyCode}")
-
-                val client = clients[targetPackageName]
-
-                if (client == null) {
+                if (!clients.containsKey(targetPackageName)) {
                     return false
-                } else {
-                    try {
-                        // Get the process ID of the app that called this service.
-                        val sourcePackageName = getCallerPackageName() ?: return false
+                }
 
-                        if (!permittedPackages.contains(sourcePackageName)) {
-                            Timber.d("An unrecognized package $sourcePackageName tried to send a key event.")
+                val client = clients[targetPackageName]!!
 
-                            return false
-                        }
+                try {
+                    // Get the process ID of the app that called this service.
+                    val sourcePackageName = getCallerPackageName() ?: return false
 
-                        return client.callback.onKeyEvent(event, targetPackageName)
-                    } catch (e: DeadObjectException) {
-                        // If the application is no longer connected then delete the callback.
-                        clients.remove(targetPackageName)
+                    if (!permittedPackages.contains(sourcePackageName)) {
+                        Timber.d("An unrecognized package $sourcePackageName tried to send a key event.")
+
                         return false
                     }
+
+                    return client.callback.onKeyEvent(event, targetPackageName)
+                } catch (e: DeadObjectException) {
+                    // If the application is no longer connected then delete the callback.
+                    clients.remove(targetPackageName)
+                    return false
                 }
             }
         }
@@ -127,13 +127,13 @@ class KeyEventRelayService : Service() {
     }
 
     private inner class ClientConnection(
-        private val sourcePackageName: String,
+        private val clientPackageName: String,
         val callback: IKeyEventRelayServiceCallback
     ) : DeathRecipient {
         override fun binderDied() {
-            Timber.d("Client binder died: $sourcePackageName")
+            Timber.d("Client binder died: $clientPackageName")
             synchronized(callbackLock) {
-                clients.remove(sourcePackageName)
+                clients.remove(clientPackageName)
             }
         }
     }
