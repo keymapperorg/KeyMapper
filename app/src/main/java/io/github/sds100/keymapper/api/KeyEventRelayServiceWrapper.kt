@@ -92,7 +92,7 @@ class KeyEventRelayServiceWrapperImpl(
         // because the connection is already broken at that point and it
         // will fail.
         try {
-            keyEventRelayService?.unregisterCallback()
+            keyEventRelayService?.unregisterCallback(callback)
             ctx.unbindService(serviceConnection)
         } catch (e: RemoteException) {
             // do nothing
