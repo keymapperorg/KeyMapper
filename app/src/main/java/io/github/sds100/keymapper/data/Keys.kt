@@ -70,4 +70,5 @@ object Keys {
     val neverShowDndError = booleanPreferencesKey("key_never_show_dnd_error")
 
     val sortOrderJson = stringPreferencesKey("key_keymaps_sort_order_json")
+    val sortShowHelp = booleanPreferencesKey("key_keymaps_sort_show_help")
 }

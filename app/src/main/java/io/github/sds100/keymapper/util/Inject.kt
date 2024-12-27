@@ -297,5 +297,6 @@ object Inject {
     fun sortViewModel(ctx: Context): SortViewModel.Factory = SortViewModel.Factory(
         UseCases.observeSortFieldOrderUseCase(ctx),
         UseCases.setKeyMapSortFieldOrderUseCase(ctx),
+        ServiceLocator.settingsRepository(ctx),
     )
 }

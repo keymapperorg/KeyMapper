@@ -3,8 +3,13 @@ package io.github.sds100.keymapper.sorting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import io.github.sds100.keymapper.data.Keys
+import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -12,7 +17,16 @@ import kotlinx.coroutines.runBlocking
 class SortViewModel(
     private val observeSortFieldOrderUseCase: ObserveSortFieldOrderUseCase,
     private val setKeyMapSortFieldOrderUseCase: SetKeyMapSortFieldOrderUseCase,
+    private val preferenceRepository: PreferenceRepository,
 ) : ViewModel() {
+    val showHelp = preferenceRepository.get(Keys.sortShowHelp)
+        .map { it ?: true }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = false,
+        )
+
     val state: MutableStateFlow<List<SortFieldOrder>>
 
     init {
@@ -60,15 +74,34 @@ class SortViewModel(
         }
     }
 
+    fun setShowHelp(show: Boolean) {
+        viewModelScope.launch {
+            preferenceRepository.set(Keys.sortShowHelp, show)
+        }
+    }
+
+    fun showExample() {
+        viewModelScope.launch {
+            state.value = listOf(
+                SortFieldOrder(SortField.ACTIONS, SortOrder.ASCENDING),
+                SortFieldOrder(SortField.TRIGGER, SortOrder.DESCENDING),
+                SortFieldOrder(SortField.CONSTRAINTS),
+                SortFieldOrder(SortField.OPTIONS),
+            )
+        }
+    }
+
     class Factory(
         private val observeSortFieldOrderUseCase: ObserveSortFieldOrderUseCase,
         private val setKeyMapSortFieldOrderUseCase: SetKeyMapSortFieldOrderUseCase,
+        private val preferenceRepository: PreferenceRepository,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>) =
             SortViewModel(
                 observeSortFieldOrderUseCase,
                 setKeyMapSortFieldOrderUseCase,
+                preferenceRepository,
             ) as T
     }
 
