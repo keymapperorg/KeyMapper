@@ -18,9 +18,12 @@ interface IKeyEventRelayService {
     void registerCallback(IKeyEventRelayServiceCallback client);
 
     /**
-     * Unregister a callback to receive key events from this relay service. The service
-     * checks the process uid of the caller to this method and only permits certain applications
-     * from connecting.
+     * Unregister all the callbacks associated with the calling package from this relay service.
      */
-    void unregisterCallback();
+    void unregisterAllCallbacks();
+
+    /**
+     * Unregister a callback to receive key events from this relay service.
+     */
+    void unregisterCallback(IKeyEventRelayServiceCallback client);
 }

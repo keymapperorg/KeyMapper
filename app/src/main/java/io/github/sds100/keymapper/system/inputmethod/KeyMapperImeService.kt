@@ -109,7 +109,8 @@ class KeyMapperImeService : InputMethodService() {
             filter,
             ContextCompat.RECEIVER_NOT_EXPORTED,
         )
-        keyEventRelayServiceWrapper.bind()
+
+        keyEventRelayServiceWrapper.onCreate()
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean =
@@ -120,7 +121,7 @@ class KeyMapperImeService : InputMethodService() {
 
     override fun onDestroy() {
         unregisterReceiver(broadcastReceiver)
-        keyEventRelayServiceWrapper.unbind()
+        keyEventRelayServiceWrapper.onDestroy()
 
         super.onDestroy()
     }
