@@ -116,7 +116,7 @@ private fun SortBottomSheet(
     onToggle: (SortField) -> Unit,
     canReset: Boolean,
     onReset: () -> Unit,
-    showHelp: Boolean?,
+    showHelp: Boolean,
     onHideHelpClick: () -> Unit,
     onShowHelpClick: () -> Unit,
     onShowExample: () -> Unit,
@@ -170,7 +170,7 @@ private fun SortBottomSheetContent(
     onToggle: (SortField) -> Unit,
     canReset: Boolean,
     onReset: () -> Unit,
-    showHelp: Boolean?,
+    showHelp: Boolean,
     onHideHelpClick: () -> Unit,
     onShowHelpClick: () -> Unit,
     onShowExample: () -> Unit,
@@ -189,7 +189,7 @@ private fun SortBottomSheetContent(
                 .padding(8.dp),
         ) {
             this@Column.AnimatedVisibility(
-                visible = showHelp == false,
+                visible = !showHelp,
                 enter = slideInHorizontally(),
                 exit = slideOutHorizontally { -2 * it },
             ) {
@@ -230,7 +230,7 @@ private fun SortBottomSheetContent(
             onSortFieldClick = onToggle,
         )
 
-        AnimatedVisibility(showHelp == true) {
+        AnimatedVisibility(showHelp) {
             SortHelp(
                 modifier = Modifier.padding(8.dp),
                 onHideHelpClick = {

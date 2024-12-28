@@ -23,15 +23,16 @@ class SortViewModel(
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(),
-            initialValue = false,
+            initialValue = runBlocking {
+                preferenceRepository.get(Keys.sortShowHelp).first()
+            } ?: true
         )
 
-    val state: MutableStateFlow<List<SortFieldOrder>>
+    val state: MutableStateFlow<List<SortFieldOrder>> = MutableStateFlow(
+        runBlocking { sortKeyMapsUseCase.observeSortFieldOrder().first() }
+    )
 
     init {
-        val list = runBlocking { sortKeyMapsUseCase.observeSortFieldOrder().first() }
-
-        state = MutableStateFlow(list)
         saveState()
     }
 
