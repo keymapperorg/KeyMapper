@@ -101,7 +101,6 @@ class KeyEventRelayServiceWrapperImpl(
             // while there is no registered connection.
         }
     }
-
 }
 
 interface KeyEventRelayServiceWrapper {
