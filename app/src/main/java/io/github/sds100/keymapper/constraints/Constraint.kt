@@ -145,7 +145,12 @@ sealed class Constraint : Comparable<Constraint> {
         val ssid: String?,
     ) : Constraint() {
         override fun compareTo(other: Constraint) = when (other) {
-            is WifiConnected -> this.ssid?.compareTo(other.ssid ?: "") ?: 0
+            is WifiConnected -> compareValuesBy(
+                this,
+                other,
+                { it.ssid },
+            )
+
             else -> super.compareTo(other)
         }
     }
@@ -158,7 +163,12 @@ sealed class Constraint : Comparable<Constraint> {
         val ssid: String?,
     ) : Constraint() {
         override fun compareTo(other: Constraint) = when (other) {
-            is WifiDisconnected -> this.ssid?.compareTo(other.ssid ?: "") ?: 0
+            is WifiDisconnected -> compareValuesBy(
+                this,
+                other,
+                { it.ssid },
+            )
+
             else -> super.compareTo(other)
         }
     }

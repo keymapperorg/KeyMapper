@@ -294,7 +294,7 @@ private fun SortDraggableList(
     ) {
         itemsIndexed(
             items = sortFieldOrderList,
-            key = { index, item -> item.field },
+            key = { _, item -> item.field },
         ) { index, item ->
             DraggableItem(
                 dragDropState = dragDropState,
@@ -553,5 +553,15 @@ private fun SortBottomSheetPreview() {
                 onShowExample = {},
             )
         }
+    }
+}
+
+@Composable
+private fun stringSortField(sortField: SortField): String {
+    return when (sortField) {
+        SortField.TRIGGER -> stringResource(R.string.trigger_header)
+        SortField.ACTIONS -> stringResource(R.string.action_list_header)
+        SortField.CONSTRAINTS -> stringResource(R.string.constraint_list_header)
+        SortField.OPTIONS -> stringResource(R.string.option_list_header)
     }
 }
