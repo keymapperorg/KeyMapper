@@ -15,8 +15,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 class SortViewModel(
-    private val observeSortFieldOrderUseCase: ObserveSortFieldOrderUseCase,
-    private val setKeyMapSortFieldOrderUseCase: SetKeyMapSortFieldOrderUseCase,
+    private val sortKeyMapsUseCase: SortKeyMapsUseCase,
     private val preferenceRepository: PreferenceRepository,
 ) : ViewModel() {
     val showHelp = preferenceRepository.get(Keys.sortShowHelp)
@@ -30,7 +29,7 @@ class SortViewModel(
     val state: MutableStateFlow<List<SortFieldOrder>>
 
     init {
-        val list = runBlocking { observeSortFieldOrderUseCase().first() }
+        val list = runBlocking { sortKeyMapsUseCase.observeSortFieldOrder().first() }
 
         state = MutableStateFlow(list)
         saveState()
@@ -69,7 +68,7 @@ class SortViewModel(
 
     fun applySortPriority() {
         viewModelScope.launch {
-            setKeyMapSortFieldOrderUseCase(state.value)
+            sortKeyMapsUseCase.setSortFieldOrder(state.value)
             saveState()
         }
     }
@@ -92,15 +91,13 @@ class SortViewModel(
     }
 
     class Factory(
-        private val observeSortFieldOrderUseCase: ObserveSortFieldOrderUseCase,
-        private val setKeyMapSortFieldOrderUseCase: SetKeyMapSortFieldOrderUseCase,
+        private val sortKeyMapsUseCase: SortKeyMapsUseCase,
         private val preferenceRepository: PreferenceRepository,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>) =
             SortViewModel(
-                observeSortFieldOrderUseCase,
-                setKeyMapSortFieldOrderUseCase,
+                sortKeyMapsUseCase,
                 preferenceRepository,
             ) as T
     }

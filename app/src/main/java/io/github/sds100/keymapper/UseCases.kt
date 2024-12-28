@@ -23,9 +23,7 @@ import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCas
 import io.github.sds100.keymapper.onboarding.OnboardingUseCaseImpl
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsUseCaseImpl
 import io.github.sds100.keymapper.shizuku.ShizukuInputEventInjector
-import io.github.sds100.keymapper.sorting.ObserveKeyMapsSorterUseCase
-import io.github.sds100.keymapper.sorting.ObserveSortFieldOrderUseCase
-import io.github.sds100.keymapper.sorting.SetKeyMapSortFieldOrderUseCase
+import io.github.sds100.keymapper.sorting.SortKeyMapsUseCase
 import io.github.sds100.keymapper.system.Shell
 import io.github.sds100.keymapper.system.accessibility.ControlAccessibilityServiceUseCase
 import io.github.sds100.keymapper.system.accessibility.ControlAccessibilityServiceUseCaseImpl
@@ -237,15 +235,7 @@ object UseCases {
             ServiceLocator.inputMethodAdapter(ctx),
         )
 
-    fun observeKeyMapsSorter(ctx: Context) = ObserveKeyMapsSorterUseCase(
-        observeSortFieldOrderUseCase(ctx),
-    )
-
-    fun setKeyMapSortFieldOrderUseCase(ctx: Context) = SetKeyMapSortFieldOrderUseCase(
-        ServiceLocator.settingsRepository(ctx),
-    )
-
-    fun observeSortFieldOrderUseCase(ctx: Context) = ObserveSortFieldOrderUseCase(
+    fun sortKeyMapsUseCase(ctx: Context) = SortKeyMapsUseCase(
         ServiceLocator.settingsRepository(ctx),
     )
 }

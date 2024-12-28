@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
 import io.github.sds100.keymapper.backup.BackupManager
-import io.github.sds100.keymapper.sorting.ObserveKeyMapsSorterUseCase
+import io.github.sds100.keymapper.sorting.SortKeyMapsUseCase
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.mapData
@@ -19,7 +19,7 @@ class ListKeyMapsUseCaseImpl(
     private val keyMapRepository: KeyMapRepository,
     private val backupManager: BackupManager,
     displayKeyMapUseCase: DisplayKeyMapUseCase,
-    private val observeKeyMapsSorterUseCase: ObserveKeyMapsSorterUseCase,
+    private val sortKeyMapsUseCase: SortKeyMapsUseCase,
 ) : ListKeyMapsUseCase,
     DisplayKeyMapUseCase by displayKeyMapUseCase {
 
@@ -28,7 +28,7 @@ class ListKeyMapsUseCaseImpl(
 
         combine(
             keyMapRepository.keyMapList,
-            observeKeyMapsSorterUseCase(),
+            sortKeyMapsUseCase.observeKeyMapsSorter(),
         ) { keyMapEntitiesState, sorter ->
             keyMapEntitiesState.mapData { keyMapEntities ->
                 keyMapEntities

@@ -163,7 +163,7 @@ object Inject {
             ServiceLocator.roomKeymapRepository(ctx),
             ServiceLocator.backupManager(ctx),
             UseCases.displayKeyMap(ctx),
-            UseCases.observeKeyMapsSorter(ctx),
+            UseCases.sortKeyMapsUseCase(ctx),
         ),
         UseCases.createKeymapShortcut(ctx),
         ServiceLocator.resourceProvider(ctx),
@@ -174,7 +174,7 @@ object Inject {
             ServiceLocator.roomKeymapRepository(ctx),
             ServiceLocator.backupManager(ctx),
             UseCases.displayKeyMap(ctx),
-            UseCases.observeKeyMapsSorter(ctx),
+            UseCases.sortKeyMapsUseCase(ctx),
         ),
         ListFingerprintMapsUseCaseImpl(
             ServiceLocator.fingerprintMapRepository(ctx),
@@ -295,8 +295,7 @@ object Inject {
     )
 
     fun sortViewModel(ctx: Context): SortViewModel.Factory = SortViewModel.Factory(
-        UseCases.observeSortFieldOrderUseCase(ctx),
-        UseCases.setKeyMapSortFieldOrderUseCase(ctx),
+        UseCases.sortKeyMapsUseCase(ctx),
         ServiceLocator.settingsRepository(ctx),
     )
 }
