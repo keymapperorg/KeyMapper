@@ -1,7 +1,9 @@
+Kích hoạt mới! 🎉 Sắp xếp lại các nút Trợ lý và Bixby của bạn!
+
 Những gì có thể được ánh xạ lại?
 
  * Nút âm lượng.
- * Power button via Google Assistant, Pixel Active Edge, Double press Bixby button.
+ * Nút nguồn thông qua Google Assistant, Pixel Active Edge, Nhấn đúp vào nút Bixby.
  * Bàn phím Bluetooth/có dây.
  * Cử chỉ vân tay trên các thiết bị được hỗ trợ.
  * Các nút trên các thiết bị được kết nối khác cũng sẽ hoạt động.
@@ -15,7 +17,7 @@ Những gì không thể được ánh xạ lại?
  * Nút chuột
  * Dpad, gậy ngón tay cái hoặc trình kích hoạt trên bộ điều khiển trò chơi
 
-Your key maps do not work if the screen is OFF. Đây là một hạn chế trong Android. Dev không thể làm gì được.
+Sơ đồ phím của bạn không hoạt động nếu màn hình TẮT. Đây là một hạn chế trong Android. Dev không thể làm gì được.
 
 Tôi có thể sắp xếp lại chìa khóa của mình để làm gì?
 Một số hành động sẽ chỉ hoạt động trên các thiết bị đã root và các phiên bản Android cụ thể.
@@ -25,7 +27,7 @@ Có quá nhiều tính năng để liệt kê ở đây, vì vậy hãy xem danh
 Quyền
 Bạn không cần phải cấp tất cả các quyền để ứng dụng hoạt động. Ứng dụng sẽ cho bạn biết liệu có cần cấp quyền để một tính năng hoạt động hay không.
 
- * Dịch vụ trợ năng: Yêu cầu cơ bản để ánh xạ lại hoạt động. It is needed so the app can listen to and block key events.
+ * Dịch vụ trợ năng: Yêu cầu cơ bản để ánh xạ lại hoạt động. Nó cần thiết để ứng dụng có thể nghe và chặn các sự kiện quan trọng.
  * Quản trị thiết bị: Để tắt màn hình khi sử dụng thao tác tắt màn hình.
  * Sửa đổi cài đặt hệ thống: Để thay đổi cài đặt độ sáng và xoay.
  * Camera: Để điều khiển đèn pin.

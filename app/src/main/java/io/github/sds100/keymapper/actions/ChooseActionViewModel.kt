@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.actions
 
-import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -10,6 +9,7 @@ import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.containsQuery
 import io.github.sds100.keymapper.util.getFullMessage
 import io.github.sds100.keymapper.util.ui.DefaultSimpleListItem
+import io.github.sds100.keymapper.util.ui.DialogResponse
 import io.github.sds100.keymapper.util.ui.IconInfo
 import io.github.sds100.keymapper.util.ui.ListItem
 import io.github.sds100.keymapper.util.ui.PopupUi
@@ -163,7 +163,30 @@ class ChooseActionViewModel(
      * @return whether the user approved the message
      */
     private suspend fun showMessageForAction(id: ActionId): Boolean {
-        @StringRes val messageToShow: Int? = when (id) {
+        // See issue #1379
+        if (id == ActionId.APP) {
+            val response = showPopup(
+                "show_app_action_warning_dialog",
+                PopupUi.Dialog(
+                    message = getString(R.string.action_open_app_dialog_message),
+                    title = getString(R.string.action_open_app_dialog_title),
+                    positiveButtonText = getString(R.string.action_open_app_dialog_read_more_button),
+                    negativeButtonText = getString(R.string.action_open_app_dialog_ignore_button),
+                ),
+            )
+
+            if (response == DialogResponse.POSITIVE) {
+                showPopup(
+                    "app_action_permission_info",
+                    PopupUi.OpenUrl(getString(R.string.url_action_guide)),
+                )
+                return false
+            } else {
+                return response != null
+            }
+        }
+
+        val messageToShow: Int? = when (id) {
             ActionId.FAST_FORWARD_PACKAGE,
             ActionId.FAST_FORWARD,
             -> R.string.action_fast_forward_message

@@ -431,6 +431,10 @@ object ActionUtils {
         ActionId.TOGGLE_BLUETOOTH,
         -> Build.VERSION_CODES.S_V2
 
+        // See https://issuetracker.google.com/issues/225186417. The global action
+        // is not marked as deprecated even though it doesn't work.
+        ActionId.TOGGLE_SPLIT_SCREEN -> Build.VERSION_CODES.S
+
         else -> Constants.MAX_API
     }
 
@@ -564,6 +568,13 @@ object ActionUtils {
             ActionId.ANSWER_PHONE_CALL,
             ActionId.END_PHONE_CALL,
             -> return listOf(Permission.ANSWER_PHONE_CALL)
+
+            ActionId.PHONE_CALL -> return listOf(Permission.CALL_PHONE)
+
+            ActionId.ENABLE_BLUETOOTH, ActionId.DISABLE_BLUETOOTH, ActionId.TOGGLE_BLUETOOTH ->
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    return listOf(Permission.FIND_NEARBY_DEVICES)
+                }
 
             else -> Unit
         }

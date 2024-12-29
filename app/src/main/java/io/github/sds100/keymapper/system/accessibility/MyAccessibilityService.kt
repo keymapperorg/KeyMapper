@@ -46,7 +46,7 @@ class MyAccessibilityService :
     private lateinit var lifecycleRegistry: LifecycleRegistry
 
     private var fingerprintGestureCallback:
-        FingerprintGestureController.FingerprintGestureCallback? = null
+            FingerprintGestureController.FingerprintGestureCallback? = null
 
     override val rootNode: AccessibilityNodeModel?
         get() {
@@ -150,7 +150,7 @@ class MyAccessibilityService :
             }
         }
 
-        keyEventRelayServiceWrapper.bind()
+        keyEventRelayServiceWrapper.onCreate()
     }
 
     override fun onServiceConnected() {
@@ -218,7 +218,7 @@ class MyAccessibilityService :
                 .unregisterFingerprintGestureCallback(fingerprintGestureCallback)
         }
 
-        keyEventRelayServiceWrapper.unbind()
+        keyEventRelayServiceWrapper.onDestroy()
 
         Timber.i("Accessibility service: onDestroy")
 
