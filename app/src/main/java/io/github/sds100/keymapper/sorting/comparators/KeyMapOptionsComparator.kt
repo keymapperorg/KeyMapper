@@ -23,10 +23,10 @@ class KeyMapOptionsComparator(
             { it.showToast },
         )
 
-        return doFinal(result)
+        return invertIfReverse(result)
     }
 
-    fun doFinal(result: Int) = if (reverse) {
+    private fun invertIfReverse(result: Int) = if (reverse) {
         result * -1
     } else {
         result

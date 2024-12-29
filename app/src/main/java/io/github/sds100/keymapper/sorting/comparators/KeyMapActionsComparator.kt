@@ -37,17 +37,17 @@ class KeyMapActionsComparator(
             )
 
             if (result != 0) {
-                return doFinal(result)
+                return invertIfReverse(result)
             }
         }
 
         // if actions are equal compare length
         val comparison = keyMap.actionList.size.compareTo(otherKeyMap.actionList.size)
 
-        return doFinal(comparison)
+        return invertIfReverse(comparison)
     }
 
-    fun doFinal(result: Int) = if (reverse) {
+    private fun invertIfReverse(result: Int) = if (reverse) {
         result * -1
     } else {
         result

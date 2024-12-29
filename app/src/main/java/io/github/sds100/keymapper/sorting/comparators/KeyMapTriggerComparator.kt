@@ -30,7 +30,7 @@ class KeyMapTriggerComparator(
             val result = key.compareTo(otherKey)
 
             if (result != 0) {
-                return doFinal(result)
+                return invertIfReverse(result)
             }
         }
 
@@ -43,10 +43,10 @@ class KeyMapTriggerComparator(
             { it.mode },
         )
 
-        return doFinal(result)
+        return invertIfReverse(result)
     }
 
-    fun doFinal(result: Int) = if (reverse) {
+    private fun invertIfReverse(result: Int) = if (reverse) {
         result * -1
     } else {
         result

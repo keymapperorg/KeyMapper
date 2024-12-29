@@ -26,17 +26,17 @@ class KeyMapConstraintsComparator(
             val result = constraint1.compareTo(constraint2)
 
             if (result != 0) {
-                return doFinal(result)
+                return invertIfReverse(result)
             }
         }
 
         // If constraints are equal, compare the length
         val comparison = keyMapConstraintsLength.compareTo(otherKeyMapConstraintsLength)
 
-        return doFinal(comparison)
+        return invertIfReverse(comparison)
     }
 
-    fun doFinal(result: Int) = if (reverse) {
+    private fun invertIfReverse(result: Int) = if (reverse) {
         result * -1
     } else {
         result
