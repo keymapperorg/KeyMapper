@@ -8,7 +8,6 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.github.sds100.keymapper.compose.KeyMapperTheme
-import io.github.sds100.keymapper.sorting.ui.SortBottomSheet
 import io.github.sds100.keymapper.util.Inject
 
 class SortMenuFragment : BottomSheetDialogFragment() {

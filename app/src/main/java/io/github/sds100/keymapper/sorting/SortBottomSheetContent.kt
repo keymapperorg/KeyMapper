@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.sorting.ui
+package io.github.sds100.keymapper.sorting
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -71,10 +71,6 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.compose.draggable.DraggableItem
 import io.github.sds100.keymapper.compose.draggable.rememberDragDropState
-import io.github.sds100.keymapper.sorting.SortField
-import io.github.sds100.keymapper.sorting.SortFieldOrder
-import io.github.sds100.keymapper.sorting.SortOrder
-import io.github.sds100.keymapper.sorting.SortViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
