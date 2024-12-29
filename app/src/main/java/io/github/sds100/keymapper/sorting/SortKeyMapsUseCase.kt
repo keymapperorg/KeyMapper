@@ -8,9 +8,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-class SortKeyMapsUseCase(
+class SortKeyMapsUseCaseImpl(
     private val preferenceRepository: PreferenceRepository,
-) {
+) : SortKeyMapsUseCase {
     private val defaultOrder = listOf(
         SortFieldOrder(SortField.TRIGGER),
         SortFieldOrder(SortField.ACTIONS),
@@ -24,7 +24,7 @@ class SortKeyMapsUseCase(
      * it means the key maps should be sorted first by trigger, then by actions, followed by constraints,
      * and finally by options.
      */
-    fun observeSortFieldOrder(): Flow<List<SortFieldOrder>> {
+    override fun observeSortFieldOrder(): Flow<List<SortFieldOrder>> {
         return preferenceRepository
             .get(Keys.sortOrderJson)
             .map {
@@ -48,12 +48,12 @@ class SortKeyMapsUseCase(
             }
     }
 
-    fun setSortFieldOrder(sortFieldOrders: List<SortFieldOrder>) {
+    override fun setSortFieldOrder(sortFieldOrders: List<SortFieldOrder>) {
         val json = Json.encodeToString(sortFieldOrders)
         preferenceRepository.set(Keys.sortOrderJson, json)
     }
 
-    fun observeKeyMapsSorter(): Flow<Comparator<KeyMap>> {
+    override fun observeKeyMapsSorter(): Flow<Comparator<KeyMap>> {
         return observeSortFieldOrder()
             .map { list ->
                 list.filter { it.order != SortOrder.NONE }
@@ -61,6 +61,12 @@ class SortKeyMapsUseCase(
             }
             .map { Sorter(it) }
     }
+}
+
+interface SortKeyMapsUseCase {
+    fun observeSortFieldOrder(): Flow<List<SortFieldOrder>>
+    fun setSortFieldOrder(sortFieldOrders: List<SortFieldOrder>)
+    fun observeKeyMapsSorter(): Flow<Comparator<KeyMap>>
 }
 
 private class Sorter(

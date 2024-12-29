@@ -24,6 +24,7 @@ import io.github.sds100.keymapper.onboarding.OnboardingUseCaseImpl
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsUseCaseImpl
 import io.github.sds100.keymapper.shizuku.ShizukuInputEventInjector
 import io.github.sds100.keymapper.sorting.SortKeyMapsUseCase
+import io.github.sds100.keymapper.sorting.SortKeyMapsUseCaseImpl
 import io.github.sds100.keymapper.system.Shell
 import io.github.sds100.keymapper.system.accessibility.ControlAccessibilityServiceUseCase
 import io.github.sds100.keymapper.system.accessibility.ControlAccessibilityServiceUseCaseImpl
@@ -235,7 +236,7 @@ object UseCases {
             ServiceLocator.inputMethodAdapter(ctx),
         )
 
-    fun sortKeyMapsUseCase(ctx: Context) = SortKeyMapsUseCase(
+    fun sortKeyMapsUseCase(ctx: Context): SortKeyMapsUseCase = SortKeyMapsUseCaseImpl(
         ServiceLocator.settingsRepository(ctx),
     )
 }
