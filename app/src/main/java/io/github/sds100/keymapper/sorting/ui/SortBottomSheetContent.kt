@@ -4,9 +4,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
@@ -20,6 +18,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -83,22 +82,19 @@ import kotlinx.coroutines.launch
 fun SortBottomSheet(
     onDismissRequest: () -> Unit,
     viewModel: SortViewModel,
-    modifier: Modifier = Modifier,
 ) {
-    val sortFieldOrderList by viewModel.state.collectAsStateWithLifecycle()
+    val sortFieldOrderList by viewModel.sortFieldOrder.collectAsStateWithLifecycle()
     val showHelp by viewModel.showHelp.collectAsStateWithLifecycle()
 
     SortBottomSheet(
-        modifier = modifier,
+        modifier = Modifier.statusBarsPadding(),
+        sortFieldOrderList = sortFieldOrderList,
+        showHelp = showHelp,
         onDismissRequest = onDismissRequest,
         onApply = viewModel::applySortPriority,
-        onCancel = viewModel::restoreState,
-        sortFieldOrderList = sortFieldOrderList,
         onMove = viewModel::swapSortPriority,
         onToggle = viewModel::toggleSortOrder,
-        canReset = sortFieldOrderList.any { it.order != SortOrder.NONE },
         onReset = viewModel::resetSortPriority,
-        showHelp = showHelp,
         onHideHelpClick = { viewModel.setShowHelp(false) },
         onShowHelpClick = { viewModel.setShowHelp(true) },
         onShowExample = viewModel::showExample,
@@ -108,34 +104,23 @@ fun SortBottomSheet(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SortBottomSheet(
+    modifier: Modifier = Modifier,
     onDismissRequest: () -> Unit,
     sortFieldOrderList: List<SortFieldOrder>,
+    showHelp: Boolean,
     onApply: () -> Unit,
-    onCancel: () -> Unit,
     onMove: (fromIndex: Int, toIndex: Int) -> Unit,
     onToggle: (SortField) -> Unit,
-    canReset: Boolean,
     onReset: () -> Unit,
-    showHelp: Boolean,
     onHideHelpClick: () -> Unit,
     onShowHelpClick: () -> Unit,
     onShowExample: () -> Unit,
-    modifier: Modifier = Modifier,
 ) {
-    val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true,
-    )
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val coroutineScope = rememberCoroutineScope()
-    val dismissSheet: (afterBlock: suspend () -> Unit) -> Unit = { block ->
-        coroutineScope.launch {
-            block()
-            sheetState.hide()
-            onDismissRequest()
-        }
-    }
 
     ModalBottomSheet(
-        modifier = modifier.statusBarsPadding(),
+        modifier = modifier,
         sheetState = sheetState,
         onDismissRequest = onDismissRequest,
         // Hide drag handle because other bottom sheets don't have it
@@ -143,15 +128,21 @@ private fun SortBottomSheet(
     ) {
         SortBottomSheetContent(
             onCancel = {
-                dismissSheet { onCancel() }
+                coroutineScope.launch {
+                    sheetState.hide()
+                    onDismissRequest()
+                }
             },
             onApply = {
-                dismissSheet { onApply() }
+                coroutineScope.launch {
+                    onApply()
+                    sheetState.hide()
+                    onDismissRequest()
+                }
             },
             sortFieldOrderList = sortFieldOrderList,
             onMove = onMove,
             onToggle = onToggle,
-            canReset = canReset,
             onReset = onReset,
             showHelp = showHelp,
             onHideHelpClick = onHideHelpClick,
@@ -163,20 +154,19 @@ private fun SortBottomSheet(
 
 @Composable
 private fun SortBottomSheetContent(
+    modifier: Modifier = Modifier,
+    sortFieldOrderList: List<SortFieldOrder>,
+    showHelp: Boolean,
     onCancel: () -> Unit,
     onApply: () -> Unit,
-    sortFieldOrderList: List<SortFieldOrder>,
     onMove: (fromIndex: Int, toIndex: Int) -> Unit,
     onToggle: (SortField) -> Unit,
-    canReset: Boolean,
     onReset: () -> Unit,
-    showHelp: Boolean,
     onHideHelpClick: () -> Unit,
     onShowHelpClick: () -> Unit,
     onShowExample: () -> Unit,
-    modifier: Modifier = Modifier,
 ) {
-    var helpExpanded by rememberSaveable { mutableStateOf(false) }
+    var isHelpExpanded by rememberSaveable { mutableStateOf(false) }
     val scrollableState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
 
@@ -186,24 +176,19 @@ private fun SortBottomSheetContent(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp),
+                .padding(horizontal = 16.dp, vertical = 8.dp),
         ) {
-            this@Column.AnimatedVisibility(
+            // Use fully qualified name due to quirky overload resolution. The compiler will
+            // otherwise tell you to use it in a column or row scope.
+            androidx.compose.animation.AnimatedVisibility(
+                modifier = Modifier.align(Alignment.CenterStart),
                 visible = !showHelp,
-                enter = slideInHorizontally(),
-                exit = slideOutHorizontally { -2 * it },
+                enter = fadeIn(),
+                exit = fadeOut(),
             ) {
-                IconButton(
-                    onClick = {
-                        onShowHelpClick()
-                        helpExpanded = true
-                    },
-                    modifier = Modifier.align(Alignment.CenterStart),
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_baseline_help_outline_24),
-                        contentDescription = stringResource(R.string.button_help),
-                    )
+                HelpButton {
+                    onShowHelpClick()
+                    isHelpExpanded = true
                 }
             }
 
@@ -217,7 +202,7 @@ private fun SortBottomSheetContent(
             TextButton(
                 modifier = Modifier.align(Alignment.CenterEnd),
                 onClick = onReset,
-                enabled = canReset,
+                enabled = sortFieldOrderList.any { it.order != SortOrder.NONE },
             ) {
                 Text(stringResource(R.string.reset))
             }
@@ -231,13 +216,13 @@ private fun SortBottomSheetContent(
         )
 
         AnimatedVisibility(showHelp) {
-            SortHelp(
+            SortHelpCard(
                 modifier = Modifier.padding(8.dp),
                 onHideHelpClick = {
                     onHideHelpClick()
-                    helpExpanded = false
+                    isHelpExpanded = false
                 },
-                onShowExample = {
+                onShowExampleClick = {
                     coroutineScope.launch {
                         scrollableState.animateScrollTo(0)
                         onShowExample()
@@ -246,13 +231,15 @@ private fun SortBottomSheetContent(
             )
         }
 
-        Box(
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp),
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             OutlinedButton(
-                modifier = Modifier.align(Alignment.CenterStart),
                 onClick = onCancel,
                 colors = ButtonDefaults.outlinedButtonColors(
                     contentColor = MaterialTheme.colorScheme.error,
@@ -266,21 +253,35 @@ private fun SortBottomSheetContent(
             }
 
             Button(
-                modifier = Modifier.align(Alignment.CenterEnd),
                 onClick = onApply,
             ) {
                 Text(stringResource(R.string.pos_apply))
             }
         }
+
+        Spacer(modifier = Modifier.height(8.dp))
+    }
+}
+
+@Composable
+private fun HelpButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
+    IconButton(
+        modifier = modifier,
+        onClick = onClick,
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.ic_baseline_help_outline_24),
+            contentDescription = stringResource(R.string.button_help),
+        )
     }
 }
 
 @Composable
 private fun SortDraggableList(
+    modifier: Modifier = Modifier,
     sortFieldOrderList: List<SortFieldOrder>,
     onMove: (fromIndex: Int, toIndex: Int) -> Unit,
     onSortFieldClick: (SortField) -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     val lazyListState = rememberLazyListState()
     val dragDropState = rememberDragDropState(
@@ -296,6 +297,7 @@ private fun SortDraggableList(
             items = sortFieldOrderList,
             key = { _, item -> item.field },
         ) { index, item ->
+
             DraggableItem(
                 dragDropState = dragDropState,
                 index = index,
@@ -307,14 +309,14 @@ private fun SortDraggableList(
                     onToggle = { onSortFieldClick(item.field) },
                     isDragging = isDragging,
                     onDrag = { dragDropState.onDrag(it) },
-                    onDragStarted = {
+                    onDragStarted = { offset ->
                         // Calculate the offset of the item in the list
                         val lazyItem = lazyListState.layoutInfo.visibleItemsInfo
                             .firstOrNull { it.index == index } ?: return@SortFieldListItem
 
                         val initialOffset = lazyItem.offset
 
-                        val finalOffset = it + Offset(0f, initialOffset.toFloat())
+                        val finalOffset = offset + Offset(0f, initialOffset.toFloat())
 
                         dragDropState.onDragStart(finalOffset)
                     },
@@ -350,7 +352,7 @@ private fun SortFieldListItem(
                     drawRect(draggableColor)
                 }
             }
-            .padding(8.dp),
+            .padding(horizontal = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -363,7 +365,7 @@ private fun SortFieldListItem(
                 text = index.toString(),
             )
             Text(
-                text = stringSortField(sortField),
+                text = sortFieldText(sortField),
                 style = if (sortOrder == SortOrder.NONE) {
                     MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal)
                 } else {
@@ -420,7 +422,7 @@ private fun SortFieldListItem(
                 imageVector = Icons.Default.DragHandle,
                 contentDescription = stringResource(
                     R.string.drag_handle_for,
-                    stringSortField(sortField),
+                    sortFieldText(sortField),
                 ),
             )
         }
@@ -428,17 +430,16 @@ private fun SortFieldListItem(
 }
 
 @Composable
-private fun SortHelp(
-    onHideHelpClick: () -> Unit,
-    onShowExample: () -> Unit,
+private fun SortHelpCard(
     modifier: Modifier = Modifier,
+    onHideHelpClick: () -> Unit,
+    onShowExampleClick: () -> Unit,
 ) {
     Card(
         modifier = modifier,
     ) {
         Column(
-            modifier = Modifier
-                .padding(16.dp),
+            modifier = Modifier.padding(16.dp),
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -452,39 +453,41 @@ private fun SortHelp(
 
                 Text(
                     text = stringResource(R.string.button_help),
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.titleMedium,
                 )
             }
 
-            Column {
-                Text(
-                    modifier = Modifier.padding(top = 16.dp),
-                    text = stringResource(R.string.sorting_drag_and_drop_list_help),
-                    textAlign = TextAlign.Justify,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
+            Spacer(modifier = Modifier.height(8.dp))
 
-                Text(
-                    modifier = Modifier.padding(bottom = 8.dp),
-                    text = stringResource(R.string.sorting_drag_and_drop_list_help_example),
-                    textAlign = TextAlign.Justify,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
+            Text(
+                text = stringResource(R.string.sorting_drag_and_drop_list_help),
+                textAlign = TextAlign.Justify,
+                style = MaterialTheme.typography.bodyMedium,
+            )
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = stringResource(R.string.sorting_drag_and_drop_list_help_example),
+                textAlign = TextAlign.Justify,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                TextButton(
+                    onClick = onHideHelpClick,
                 ) {
-                    TextButton(
-                        onClick = onHideHelpClick,
-                    ) {
-                        Text(stringResource(R.string.neutral_hide))
-                    }
-                    TextButton(
-                        onClick = onShowExample,
-                    ) {
-                        Text(stringResource(R.string.show_example))
-                    }
+                    Text(stringResource(R.string.neutral_hide))
+                }
+                TextButton(
+                    onClick = onShowExampleClick,
+                ) {
+                    Text(stringResource(R.string.show_example))
                 }
             }
         }
@@ -509,7 +512,6 @@ private fun SortBottomSheetContentPreview() {
                 sortFieldOrderList = list,
                 onMove = { _, _ -> },
                 onToggle = {},
-                canReset = true,
                 onReset = {},
                 onHideHelpClick = {},
                 showHelp = true,
@@ -541,11 +543,9 @@ private fun SortBottomSheetPreview() {
                     .onSizeChanged { size = it.height },
                 onDismissRequest = {},
                 onApply = {},
-                onCancel = {},
                 sortFieldOrderList = list,
                 onMove = { _, _ -> },
                 onToggle = {},
-                canReset = true,
                 onReset = {},
                 showHelp = true,
                 onHideHelpClick = {},
@@ -557,7 +557,7 @@ private fun SortBottomSheetPreview() {
 }
 
 @Composable
-private fun stringSortField(sortField: SortField): String {
+private fun sortFieldText(sortField: SortField): String {
     return when (sortField) {
         SortField.TRIGGER -> stringResource(R.string.trigger_header)
         SortField.ACTIONS -> stringResource(R.string.action_list_header)

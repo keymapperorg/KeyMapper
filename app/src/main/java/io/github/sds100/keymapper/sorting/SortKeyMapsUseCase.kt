@@ -11,13 +11,12 @@ import kotlinx.serialization.json.Json
 class SortKeyMapsUseCase(
     private val preferenceRepository: PreferenceRepository,
 ) {
-    private val defaultOrder
-        get() = listOf(
-            SortFieldOrder(SortField.TRIGGER),
-            SortFieldOrder(SortField.ACTIONS),
-            SortFieldOrder(SortField.CONSTRAINTS),
-            SortFieldOrder(SortField.OPTIONS),
-        )
+    private val defaultOrder = listOf(
+        SortFieldOrder(SortField.TRIGGER),
+        SortFieldOrder(SortField.ACTIONS),
+        SortFieldOrder(SortField.CONSTRAINTS),
+        SortFieldOrder(SortField.OPTIONS),
+    )
 
     /**
      * Observes the order in which key map fields should be sorted, prioritizing specific fields.
@@ -55,11 +54,12 @@ class SortKeyMapsUseCase(
     }
 
     fun observeKeyMapsSorter(): Flow<Comparator<KeyMap>> {
-        return observeSortFieldOrder().map { list ->
-            list
-                .filter { it.order != SortOrder.NONE }
-                .map(SortFieldOrder::getComparator)
-        }.map { Sorter(it) }
+        return observeSortFieldOrder()
+            .map { list ->
+                list.filter { it.order != SortOrder.NONE }
+                    .map(SortFieldOrder::getComparator)
+            }
+            .map { Sorter(it) }
     }
 }
 

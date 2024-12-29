@@ -24,8 +24,8 @@ class KeyMapTriggerComparator(
 
         // Compare keys one by one
         for (i in 0 until maxLength) {
-            val key = trigger.keys.elementAt(i)
-            val otherKey = otherTrigger.keys.elementAt(i)
+            val key = trigger.keys[i]
+            val otherKey = otherTrigger.keys[i]
 
             val result = key.compareTo(otherKey)
 

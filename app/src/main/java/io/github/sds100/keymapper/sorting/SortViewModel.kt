@@ -25,19 +25,21 @@ class SortViewModel(
             started = SharingStarted.WhileSubscribed(),
             initialValue = runBlocking {
                 preferenceRepository.get(Keys.sortShowHelp).first()
-            } ?: true
+            } ?: true,
         )
 
-    val state: MutableStateFlow<List<SortFieldOrder>> = MutableStateFlow(
-        runBlocking { sortKeyMapsUseCase.observeSortFieldOrder().first() }
-    )
+    val sortFieldOrder: MutableStateFlow<List<SortFieldOrder>> = MutableStateFlow(emptyList())
 
     init {
-        saveState()
+        // Set the initial value of the sort field order to whatever is saved.
+        // The modified value will be saved when they click Apply.
+        viewModelScope.launch {
+            sortFieldOrder.value = sortKeyMapsUseCase.observeSortFieldOrder().first()
+        }
     }
 
     fun swapSortPriority(fromIndex: Int, toIndex: Int) {
-        state.update {
+        sortFieldOrder.update {
             val newList = it.toMutableList()
             newList.add(toIndex, newList.removeAt(fromIndex))
             newList
@@ -45,10 +47,10 @@ class SortViewModel(
     }
 
     fun toggleSortOrder(field: SortField) {
-        state.update {
-            val index = it.indexOfFirst { it.field == field }
+        sortFieldOrder.update { sortFieldOrder ->
+            val index = sortFieldOrder.indexOfFirst { it.field == field }
 
-            it.mapIndexed { i, sortFieldOrder ->
+            sortFieldOrder.mapIndexed { i, sortFieldOrder ->
                 if (i != index) {
                     return@mapIndexed sortFieldOrder
                 }
@@ -60,7 +62,7 @@ class SortViewModel(
     }
 
     fun resetSortPriority() {
-        state.update {
+        sortFieldOrder.update {
             it.map { sortFieldOrder ->
                 sortFieldOrder.copy(order = SortOrder.NONE)
             }
@@ -68,27 +70,20 @@ class SortViewModel(
     }
 
     fun applySortPriority() {
-        viewModelScope.launch {
-            sortKeyMapsUseCase.setSortFieldOrder(state.value)
-            saveState()
-        }
+        sortKeyMapsUseCase.setSortFieldOrder(sortFieldOrder.value)
     }
 
     fun setShowHelp(show: Boolean) {
-        viewModelScope.launch {
-            preferenceRepository.set(Keys.sortShowHelp, show)
-        }
+        preferenceRepository.set(Keys.sortShowHelp, show)
     }
 
     fun showExample() {
-        viewModelScope.launch {
-            state.value = listOf(
-                SortFieldOrder(SortField.ACTIONS, SortOrder.ASCENDING),
-                SortFieldOrder(SortField.TRIGGER, SortOrder.DESCENDING),
-                SortFieldOrder(SortField.CONSTRAINTS),
-                SortFieldOrder(SortField.OPTIONS),
-            )
-        }
+        sortFieldOrder.value = listOf(
+            SortFieldOrder(SortField.ACTIONS, SortOrder.ASCENDING),
+            SortFieldOrder(SortField.TRIGGER, SortOrder.DESCENDING),
+            SortFieldOrder(SortField.CONSTRAINTS),
+            SortFieldOrder(SortField.OPTIONS),
+        )
     }
 
     class Factory(
@@ -101,17 +96,5 @@ class SortViewModel(
                 sortKeyMapsUseCase,
                 preferenceRepository,
             ) as T
-    }
-
-    private var savedState: List<SortFieldOrder>? = null
-
-    private fun saveState(toSave: List<SortFieldOrder> = state.value) {
-        savedState = toSave.toList()
-    }
-
-    fun restoreState() {
-        savedState?.let {
-            state.value = it
-        }
     }
 }
