@@ -56,6 +56,8 @@ private fun AdvancedTriggersBottomSheet(
         modifier = modifier,
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
+        // Hide drag handle because other bottom sheets don't have it
+        dragHandle = {},
     ) {
         Text(
             modifier = Modifier.fillMaxWidth(),
