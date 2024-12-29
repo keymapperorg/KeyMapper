@@ -2,8 +2,11 @@ package io.github.sds100.keymapper.sorting.comparators
 
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 
-// Comparator.reversed() requires API level 24
 class KeyMapOptionsComparator(
+    /**
+     * Each comparator is reversed separately instead of the entire key map list
+     * and Comparator.reversed() requires API level 24 so use a custom reverse field.
+     */
     private val reverse: Boolean = false,
 ) : Comparator<KeyMap> {
     override fun compare(
