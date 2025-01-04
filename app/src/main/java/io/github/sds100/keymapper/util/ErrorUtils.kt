@@ -154,6 +154,7 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider): String = when (thi
     }
 
     Error.PurchasingNotImplemented -> resourceProvider.getString(R.string.purchasing_error_not_implemented)
+    Error.DpadTriggerImeNotSelected -> resourceProvider.getString(R.string.trigger_error_dpad_ime_not_selected)
 }
 
 val Error.isFixable: Boolean
@@ -168,7 +169,7 @@ val Error.isFixable: Boolean
         is Error.PermissionDenied,
         is Error.ShizukuNotStarted,
         is Error.CantDetectKeyEventsInPhoneCall,
-        -> true
+            -> true
 
         else -> false
     }

@@ -12,6 +12,7 @@ import io.github.sds100.keymapper.purchasing.ProductId
 import io.github.sds100.keymapper.purchasing.PurchasingManager
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
+import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.util.valueIfFailure
@@ -63,8 +64,10 @@ class DisplayKeyMapUseCaseImpl(
     override suspend fun getTriggerErrors(keyMap: KeyMap): List<TriggerError> {
         val trigger = keyMap.trigger
         val errors = mutableListOf<TriggerError>()
+        val isKeyMapperImeChosen = keyMapperImeHelper.isCompatibleImeChosen()
+
         // can only detect volume button presses during a phone call with an input method service
-        if (!keyMapperImeHelper.isCompatibleImeChosen() && keyMap.requiresImeKeyEventForwarding()) {
+        if (!isKeyMapperImeChosen && keyMap.requiresImeKeyEventForwarding()) {
             errors.add(TriggerError.CANT_DETECT_IN_PHONE_CALL)
         }
 
@@ -87,9 +90,9 @@ class DisplayKeyMapUseCaseImpl(
             errors.add(TriggerError.SCREEN_OFF_ROOT_DENIED)
         }
 
-        val containsAssistantTrigger = keyMap.trigger.keys.any { it is AssistantTriggerKey }
+        val containsAssistantTrigger = trigger.keys.any { it is AssistantTriggerKey }
         val containsDeviceAssistantTrigger =
-            keyMap.trigger.keys.any { it is AssistantTriggerKey && it.requiresDeviceAssistant() }
+            trigger.keys.any { it is AssistantTriggerKey && it.requiresDeviceAssistant() }
 
         val isAssistantTriggerPurchased =
             purchasingManager.isPurchased(ProductId.ASSISTANT_TRIGGER).valueIfFailure { false }
@@ -105,6 +108,14 @@ class DisplayKeyMapUseCaseImpl(
         // if the assistant trigger feature is not purchased.
         if (containsDeviceAssistantTrigger && isAssistantTriggerPurchased && !isKeyMapperDeviceAssistant) {
             errors.add(TriggerError.ASSISTANT_NOT_SELECTED)
+        }
+
+        val containsDpadKey = trigger.keys
+            .mapNotNull { it as? KeyCodeTriggerKey }
+            .any { KeyEventUtils.isDpadKeyCode(it.keyCode) }
+
+        if (!isKeyMapperImeChosen && containsDpadKey) {
+            errors.add(TriggerError.DPAD_IME_NOT_SELECTED)
         }
 
         return errors

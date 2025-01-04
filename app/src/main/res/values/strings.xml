@@ -111,6 +111,8 @@
     <string name="trigger_error_cant_detect_in_phone_call_explanation">Android doesn\'t let accessibility services detect volume button presses while your phone is ringing or it is in a phone call but it does let input method services detect them. Therefore, you must use one of the Key Mapper keyboards if you want this trigger to work.</string>
     <string name="trigger_error_gesture_stroke_count_too_high">Too many fingers to perform gesture due to android limitations.</string>
     <string name="trigger_error_gesture_duration_too_high">Gesture duration is too high due to android limitations.</string>
+    <string name="trigger_error_dpad_ime_not_selected">You must be using a Key Mapper keyboard for DPAD triggers to work!</string>
+    <string name="trigger_error_dpad_ime_not_selected_short">DPAD triggers will not work!</string>
 
     <string name="home_error_is_battery_optimised">Your mappings will stop working randomly!</string>
     <string name="home_error_key_maps_paused">Your mappings are paused!</string>

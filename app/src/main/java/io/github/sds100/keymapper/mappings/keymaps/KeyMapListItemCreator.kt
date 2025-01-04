@@ -132,6 +132,12 @@ class KeyMapListItemCreator(
                 text = getString(R.string.trigger_error_assistant_not_purchased),
                 error = Error.ProductNotPurchased(ProductId.ASSISTANT_TRIGGER),
             )
+
+            TriggerError.DPAD_IME_NOT_SELECTED -> ChipUi.Error(
+                id = error.toString(),
+                text = getString(R.string.trigger_error_dpad_ime_not_selected_short),
+                error = Error.DpadTriggerImeNotSelected,
+            )
         }
 
     private fun StringBuilder.appendKeyCodeTriggerKeyName(

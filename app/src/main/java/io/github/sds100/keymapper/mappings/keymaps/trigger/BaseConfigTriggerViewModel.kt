@@ -203,6 +203,7 @@ abstract class BaseConfigTriggerViewModel(
     val fixAppKilling = _fixAppKilling.asSharedFlow()
 
     var showAdvancedTriggersBottomSheet: Boolean by mutableStateOf(false)
+    var showDpadImeTriggerErrorBottomSheet: Boolean by mutableStateOf(false)
 
     init {
         val rebuildErrorList = MutableSharedFlow<State<KeyMap>>(replay = 1)
@@ -348,6 +349,11 @@ abstract class BaseConfigTriggerViewModel(
                     id = error.toString(),
                     text = getString(R.string.trigger_error_assistant_not_purchased),
                 )
+
+                TriggerError.DPAD_IME_NOT_SELECTED -> TextListItem.Error(
+                    id = error.toString(),
+                    text = getString(R.string.trigger_error_dpad_ime_not_selected),
+                )
             }
         }
 
@@ -484,6 +490,10 @@ abstract class BaseConfigTriggerViewModel(
 
                 TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED -> {
                     showAdvancedTriggersBottomSheet = true
+                }
+
+                TriggerError.DPAD_IME_NOT_SELECTED -> {
+                    showDpadImeTriggerErrorBottomSheet = true
                 }
             }
         }
