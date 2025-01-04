@@ -9,7 +9,9 @@ import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerUseCase
 import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordedKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.onboarding.FakeOnboardingUseCase
+import io.github.sds100.keymapper.purchasing.ProductId
 import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.ui.FakeResourceProvider
 import io.github.sds100.keymapper.util.ui.PopupUi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -80,7 +82,10 @@ class ConfigTriggerViewModelTest {
                 onBlocking { getTriggerErrors(any()) }.thenReturn(emptyList())
             },
             fakeResourceProvider,
-            purchasingManager = mock(),
+            purchasingManager = mock {
+                onBlocking { isPurchased(ProductId.ASSISTANT_TRIGGER) }.thenReturn(Success(false))
+                onBlocking { getProductPrice(ProductId.ASSISTANT_TRIGGER) }.thenReturn(Success(""))
+            },
         )
     }
 
