@@ -109,11 +109,25 @@ abstract class BaseMainActivity : AppCompatActivity() {
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         event ?: return false
-        return recordTriggerController.onRecordKeyFromActivity(event)
+        val consume = recordTriggerController.onRecordKeyFromActivity(event)
+
+        return if (consume) {
+            true
+        } else {
+            // IMPORTANT! return super so that the back navigation button still works.
+            super.onKeyDown(keyCode, event)
+        }
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
         event ?: return false
-        return recordTriggerController.onRecordKeyFromActivity(event)
+        val consume = recordTriggerController.onRecordKeyFromActivity(event)
+
+        return if (consume) {
+            true
+        } else {
+            // IMPORTANT! return super so that the back navigation button still works.
+            super.onKeyUp(keyCode, event)
+        }
     }
 }
