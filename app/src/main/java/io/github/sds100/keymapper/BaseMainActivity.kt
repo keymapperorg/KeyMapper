@@ -2,6 +2,7 @@ package io.github.sds100.keymapper
 
 import android.content.res.Configuration
 import android.os.Bundle
+import android.view.KeyEvent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -11,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.databinding.ActivityMainBinding
+import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerController
 import io.github.sds100.keymapper.system.permissions.RequestPermissionDelegate
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.showPopups
@@ -40,6 +42,9 @@ abstract class BaseMainActivity : AppCompatActivity() {
         get() = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
 
     private lateinit var requestPermissionDelegate: RequestPermissionDelegate
+    private val recordTriggerController: RecordTriggerController by lazy {
+        (applicationContext as KeyMapperApp).recordTriggerController
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -100,5 +105,15 @@ abstract class BaseMainActivity : AppCompatActivity() {
     override fun onDestroy() {
         viewModel.previousNightMode = currentNightMode
         super.onDestroy()
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        event ?: return false
+        return recordTriggerController.onRecordKeyFromActivity(event)
+    }
+
+    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
+        event ?: return false
+        return recordTriggerController.onRecordKeyFromActivity(event)
     }
 }

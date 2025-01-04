@@ -200,6 +200,7 @@ class MyAccessibilityService :
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
+
         Timber.i("Accessibility service: onUnbind")
         return super.onUnbind(intent)
     }

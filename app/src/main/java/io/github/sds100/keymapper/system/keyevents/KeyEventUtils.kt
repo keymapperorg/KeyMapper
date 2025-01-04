@@ -728,7 +728,7 @@ object KeyEventUtils {
             KeyEvent.KEYCODE_BUTTON_14,
             KeyEvent.KEYCODE_BUTTON_15,
             KeyEvent.KEYCODE_BUTTON_16,
-            -> return true
+                -> return true
 
             else -> return false
         }
@@ -806,4 +806,15 @@ object KeyEventUtils {
         KeyEvent.META_SCROLL_LOCK_ON to R.string.meta_state_scroll_lock,
         KeyEvent.META_FUNCTION_ON to R.string.meta_state_function,
     )
+
+    fun isDpadKeyCode(code: Int): Boolean {
+        return code == KeyEvent.KEYCODE_DPAD_LEFT
+                || code == KeyEvent.KEYCODE_DPAD_RIGHT
+                || code == KeyEvent.KEYCODE_DPAD_UP
+                || code == KeyEvent.KEYCODE_DPAD_DOWN
+                || code == KeyEvent.KEYCODE_DPAD_UP_LEFT
+                || code == KeyEvent.KEYCODE_DPAD_UP_RIGHT
+                || code == KeyEvent.KEYCODE_DPAD_DOWN_LEFT
+                || code == KeyEvent.KEYCODE_DPAD_DOWN_RIGHT
+    }
 }
