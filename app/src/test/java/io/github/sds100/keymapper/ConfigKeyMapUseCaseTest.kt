@@ -10,6 +10,7 @@ import io.github.sds100.keymapper.mappings.keymaps.KeyMapAction
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerType
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
+import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.mappings.keymaps.trigger.Trigger
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
@@ -58,7 +59,7 @@ class ConfigKeyMapUseCaseTest {
         runTest(testDispatcher) {
             useCase.mapping.value = State.Data(KeyMap())
 
-            useCase.addKeyCodeTriggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, TriggerKeyDevice.Any)
+            useCase.addKeyCodeTriggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, TriggerKeyDevice.Any, detectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE)
             useCase.addAssistantTriggerKey(AssistantTriggerType.VOICE)
             useCase.addAssistantTriggerKey(AssistantTriggerType.DEVICE)
             useCase.setParallelTriggerMode()
@@ -74,7 +75,11 @@ class ConfigKeyMapUseCaseTest {
         runTest(testDispatcher) {
             useCase.mapping.value = State.Data(KeyMap())
 
-            useCase.addKeyCodeTriggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, TriggerKeyDevice.Any)
+            useCase.addKeyCodeTriggerKey(
+                KeyEvent.KEYCODE_VOLUME_DOWN,
+                TriggerKeyDevice.Any,
+                detectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE
+            )
             useCase.addAssistantTriggerKey(AssistantTriggerType.DEVICE)
             useCase.addAssistantTriggerKey(AssistantTriggerType.VOICE)
             useCase.setParallelTriggerMode()
@@ -90,8 +95,16 @@ class ConfigKeyMapUseCaseTest {
         runTest(testDispatcher) {
             useCase.mapping.value = State.Data(KeyMap())
 
-            useCase.addKeyCodeTriggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, TriggerKeyDevice.Any)
-            useCase.addKeyCodeTriggerKey(KeyEvent.KEYCODE_VOLUME_UP, TriggerKeyDevice.Any)
+            useCase.addKeyCodeTriggerKey(
+                KeyEvent.KEYCODE_VOLUME_DOWN,
+                TriggerKeyDevice.Any,
+                detectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE
+            )
+            useCase.addKeyCodeTriggerKey(
+                KeyEvent.KEYCODE_VOLUME_UP,
+                TriggerKeyDevice.Any,
+                detectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE
+            )
             useCase.setTriggerLongPress()
 
             useCase.addAssistantTriggerKey(AssistantTriggerType.ANY)
@@ -105,7 +118,11 @@ class ConfigKeyMapUseCaseTest {
         runTest(testDispatcher) {
             useCase.mapping.value = State.Data(KeyMap())
 
-            useCase.addKeyCodeTriggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, TriggerKeyDevice.Any)
+            useCase.addKeyCodeTriggerKey(
+                KeyEvent.KEYCODE_VOLUME_DOWN,
+                TriggerKeyDevice.Any,
+                detectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE
+            )
             useCase.setTriggerDoublePress()
             useCase.addAssistantTriggerKey(AssistantTriggerType.ANY)
 
@@ -118,7 +135,11 @@ class ConfigKeyMapUseCaseTest {
         runTest(testDispatcher) {
             useCase.mapping.value = State.Data(KeyMap())
 
-            useCase.addKeyCodeTriggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, TriggerKeyDevice.Any)
+            useCase.addKeyCodeTriggerKey(
+                KeyEvent.KEYCODE_VOLUME_DOWN,
+                TriggerKeyDevice.Any,
+                detectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE
+            )
             useCase.setTriggerLongPress()
             useCase.addAssistantTriggerKey(AssistantTriggerType.ANY)
 
@@ -176,7 +197,11 @@ class ConfigKeyMapUseCaseTest {
                 useCase.mapping.value = State.Data(KeyMap())
 
                 // WHEN
-                useCase.addKeyCodeTriggerKey(modifierKeyCode, TriggerKeyDevice.Internal)
+                useCase.addKeyCodeTriggerKey(
+                    modifierKeyCode,
+                    TriggerKeyDevice.Internal,
+                    detectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE
+                )
 
                 // THEN
                 val trigger = useCase.mapping.value.dataOrNull()!!.trigger
@@ -195,7 +220,11 @@ class ConfigKeyMapUseCaseTest {
             useCase.mapping.value = State.Data(KeyMap())
 
             // WHEN
-            useCase.addKeyCodeTriggerKey(KeyEvent.KEYCODE_A, TriggerKeyDevice.Internal)
+            useCase.addKeyCodeTriggerKey(
+                KeyEvent.KEYCODE_A,
+                TriggerKeyDevice.Internal,
+                detectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE
+            )
 
             // THEN
             val trigger = useCase.mapping.value.dataOrNull()!!.trigger
