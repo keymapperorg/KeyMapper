@@ -238,5 +238,7 @@ object UseCases {
 
     fun sortKeyMapsUseCase(ctx: Context): SortKeyMapsUseCase = SortKeyMapsUseCaseImpl(
         ServiceLocator.settingsRepository(ctx),
+        displaySimpleMapping(ctx),
+        ServiceLocator.resourceProvider(ctx),
     )
 }

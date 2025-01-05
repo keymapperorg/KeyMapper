@@ -1,8 +1,11 @@
 package io.github.sds100.keymapper.sorting
 
+import io.github.sds100.keymapper.constraints.ConstraintUiHelper
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.mappings.DisplaySimpleMappingUseCase
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
+import io.github.sds100.keymapper.util.ui.ResourceProviderImpl
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
@@ -10,7 +13,12 @@ import kotlinx.serialization.json.Json
 
 class SortKeyMapsUseCaseImpl(
     private val preferenceRepository: PreferenceRepository,
+    displaySimpleMappingUseCase: DisplaySimpleMappingUseCase,
+    resourceProvider: ResourceProviderImpl,
 ) : SortKeyMapsUseCase {
+    private val constraintUiHelper =
+        ConstraintUiHelper(displaySimpleMappingUseCase, resourceProvider)
+
     private val defaultOrder = listOf(
         SortFieldOrder(SortField.TRIGGER),
         SortFieldOrder(SortField.ACTIONS),
@@ -57,9 +65,26 @@ class SortKeyMapsUseCaseImpl(
         return observeSortFieldOrder()
             .map { list ->
                 list.filter { it.order != SortOrder.NONE }
-                    .map(SortFieldOrder::getComparator)
+                    .map(::getComparator)
             }
             .map { Sorter(it) }
+    }
+
+    private fun getComparator(sortFieldOrder: SortFieldOrder): Comparator<KeyMap> {
+        val reverseOrder = sortFieldOrder.order == SortOrder.DESCENDING
+
+        return when (sortFieldOrder.field) {
+            SortField.TRIGGER -> SortField.getTriggerComparator(reverseOrder)
+
+            SortField.ACTIONS -> SortField.getActionsComparator(reverseOrder)
+
+            SortField.CONSTRAINTS -> SortField.getConstraintsComparator(
+                constraintUiHelper,
+                reverseOrder,
+            )
+
+            SortField.OPTIONS -> SortField.getOptionsComparator(reverseOrder)
+        }
     }
 }
 

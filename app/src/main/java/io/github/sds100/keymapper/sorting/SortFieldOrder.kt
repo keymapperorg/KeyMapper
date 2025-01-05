@@ -6,6 +6,4 @@ import kotlinx.serialization.Serializable
 data class SortFieldOrder(
     val field: SortField,
     val order: SortOrder = SortOrder.NONE,
-) {
-    fun getComparator() = field.getComparator(order == SortOrder.DESCENDING)
-}
+)
