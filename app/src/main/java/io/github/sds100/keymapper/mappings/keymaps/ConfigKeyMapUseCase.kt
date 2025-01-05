@@ -19,7 +19,7 @@ import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
-import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
+import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.util.Defaultable
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.dataOrNull
@@ -95,7 +95,7 @@ class ConfigKeyMapUseCaseImpl(
         var consumeKeyEvent = true
 
         // Issue #753
-        if (KeyEventUtils.isModifierKey(keyCode)) {
+        if (InputEventUtils.isModifierKey(keyCode)) {
             consumeKeyEvent = false
         }
 
@@ -294,11 +294,9 @@ class ConfigKeyMapUseCaseImpl(
 
     override fun setVibrateEnabled(enabled: Boolean) = editTrigger { it.copy(vibrate = enabled) }
 
-    override fun setVibrationDuration(duration: Defaultable<Int>) =
-        editTrigger { it.copy(vibrateDuration = duration.nullIfDefault()) }
+    override fun setVibrationDuration(duration: Defaultable<Int>) = editTrigger { it.copy(vibrateDuration = duration.nullIfDefault()) }
 
-    override fun setLongPressDelay(delay: Defaultable<Int>) =
-        editTrigger { it.copy(longPressDelay = delay.nullIfDefault()) }
+    override fun setLongPressDelay(delay: Defaultable<Int>) = editTrigger { it.copy(longPressDelay = delay.nullIfDefault()) }
 
     override fun setDoublePressDelay(delay: Defaultable<Int>) {
         editTrigger { it.copy(doublePressDelay = delay.nullIfDefault()) }
@@ -375,48 +373,36 @@ class ConfigKeyMapUseCaseImpl(
         }
     }
 
-    override fun setActionRepeatEnabled(uid: String, repeat: Boolean) =
-        setActionOption(uid) { it.copy(repeat = repeat) }
+    override fun setActionRepeatEnabled(uid: String, repeat: Boolean) = setActionOption(uid) { it.copy(repeat = repeat) }
 
-    override fun setActionRepeatRate(uid: String, repeatRate: Int?) =
-        setActionOption(uid) { it.copy(repeatRate = repeatRate) }
+    override fun setActionRepeatRate(uid: String, repeatRate: Int?) = setActionOption(uid) { it.copy(repeatRate = repeatRate) }
 
-    override fun setActionRepeatDelay(uid: String, repeatDelay: Int?) =
-        setActionOption(uid) { it.copy(repeatDelay = repeatDelay) }
+    override fun setActionRepeatDelay(uid: String, repeatDelay: Int?) = setActionOption(uid) { it.copy(repeatDelay = repeatDelay) }
 
-    override fun setActionRepeatLimit(uid: String, repeatLimit: Int?) =
-        setActionOption(uid) { it.copy(repeatLimit = repeatLimit) }
+    override fun setActionRepeatLimit(uid: String, repeatLimit: Int?) = setActionOption(uid) { it.copy(repeatLimit = repeatLimit) }
 
-    override fun setActionHoldDownEnabled(uid: String, holdDown: Boolean) =
-        setActionOption(uid) { it.copy(holdDown = holdDown) }
+    override fun setActionHoldDownEnabled(uid: String, holdDown: Boolean) = setActionOption(uid) { it.copy(holdDown = holdDown) }
 
-    override fun setActionHoldDownDuration(uid: String, holdDownDuration: Int?) =
-        setActionOption(uid) { it.copy(holdDownDuration = holdDownDuration) }
+    override fun setActionHoldDownDuration(uid: String, holdDownDuration: Int?) = setActionOption(uid) { it.copy(holdDownDuration = holdDownDuration) }
 
-    override fun setActionStopRepeatingWhenTriggerPressedAgain(uid: String) =
-        setActionOption(uid) { it.copy(repeatMode = RepeatMode.TRIGGER_PRESSED_AGAIN) }
+    override fun setActionStopRepeatingWhenTriggerPressedAgain(uid: String) = setActionOption(uid) { it.copy(repeatMode = RepeatMode.TRIGGER_PRESSED_AGAIN) }
 
-    override fun setActionStopRepeatingWhenLimitReached(uid: String) =
-        setActionOption(uid) { it.copy(repeatMode = RepeatMode.LIMIT_REACHED) }
+    override fun setActionStopRepeatingWhenLimitReached(uid: String) = setActionOption(uid) { it.copy(repeatMode = RepeatMode.LIMIT_REACHED) }
 
-    override fun setActionStopRepeatingWhenTriggerReleased(uid: String) =
-        setActionOption(uid) { it.copy(repeatMode = RepeatMode.TRIGGER_RELEASED) }
+    override fun setActionStopRepeatingWhenTriggerReleased(uid: String) = setActionOption(uid) { it.copy(repeatMode = RepeatMode.TRIGGER_RELEASED) }
 
-    override fun setActionStopHoldingDownWhenTriggerPressedAgain(uid: String, enabled: Boolean) =
-        setActionOption(uid) { it.copy(stopHoldDownWhenTriggerPressedAgain = enabled) }
+    override fun setActionStopHoldingDownWhenTriggerPressedAgain(uid: String, enabled: Boolean) = setActionOption(uid) { it.copy(stopHoldDownWhenTriggerPressedAgain = enabled) }
 
-    override fun setActionMultiplier(uid: String, multiplier: Int?) =
-        setActionOption(uid) { it.copy(multiplier = multiplier) }
+    override fun setActionMultiplier(uid: String, multiplier: Int?) = setActionOption(uid) { it.copy(multiplier = multiplier) }
 
-    override fun setDelayBeforeNextAction(uid: String, delay: Int?) =
-        setActionOption(uid) { it.copy(delayBeforeNextAction = delay) }
+    override fun setDelayBeforeNextAction(uid: String, delay: Int?) = setActionOption(uid) { it.copy(delayBeforeNextAction = delay) }
 
     override fun createAction(data: ActionData): KeyMapAction {
         var holdDown = false
         var repeat = false
 
         if (data is ActionData.InputKeyEvent) {
-            if (KeyEventUtils.isModifierKey(data.keyCode)) {
+            if (InputEventUtils.isModifierKey(data.keyCode)) {
                 holdDown = true
                 repeat = false
             } else {

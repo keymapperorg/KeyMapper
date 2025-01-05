@@ -13,7 +13,7 @@ import io.github.sds100.keymapper.mappings.keymaps.DisplayKeyMapUseCase
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
-import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
+import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.State
@@ -322,40 +322,39 @@ abstract class BaseConfigTriggerViewModel(
         }
     }
 
-    private fun buildTriggerErrorListItems(triggerErrors: List<TriggerError>): List<TextListItem.Error> =
-        triggerErrors.map { error ->
-            when (error) {
-                TriggerError.DND_ACCESS_DENIED -> TextListItem.Error(
-                    id = error.toString(),
-                    text = getString(R.string.trigger_error_dnd_access_denied),
-                )
+    private fun buildTriggerErrorListItems(triggerErrors: List<TriggerError>): List<TextListItem.Error> = triggerErrors.map { error ->
+        when (error) {
+            TriggerError.DND_ACCESS_DENIED -> TextListItem.Error(
+                id = error.toString(),
+                text = getString(R.string.trigger_error_dnd_access_denied),
+            )
 
-                TriggerError.SCREEN_OFF_ROOT_DENIED -> TextListItem.Error(
-                    id = error.toString(),
-                    text = getString(R.string.trigger_error_screen_off_root_permission_denied),
-                )
+            TriggerError.SCREEN_OFF_ROOT_DENIED -> TextListItem.Error(
+                id = error.toString(),
+                text = getString(R.string.trigger_error_screen_off_root_permission_denied),
+            )
 
-                TriggerError.CANT_DETECT_IN_PHONE_CALL -> TextListItem.Error(
-                    id = error.toString(),
-                    text = getString(R.string.trigger_error_cant_detect_in_phone_call),
-                )
+            TriggerError.CANT_DETECT_IN_PHONE_CALL -> TextListItem.Error(
+                id = error.toString(),
+                text = getString(R.string.trigger_error_cant_detect_in_phone_call),
+            )
 
-                TriggerError.ASSISTANT_NOT_SELECTED -> TextListItem.Error(
-                    id = error.toString(),
-                    text = getString(R.string.trigger_error_assistant_activity_not_chosen),
-                )
+            TriggerError.ASSISTANT_NOT_SELECTED -> TextListItem.Error(
+                id = error.toString(),
+                text = getString(R.string.trigger_error_assistant_activity_not_chosen),
+            )
 
-                TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED -> TextListItem.Error(
-                    id = error.toString(),
-                    text = getString(R.string.trigger_error_assistant_not_purchased),
-                )
+            TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED -> TextListItem.Error(
+                id = error.toString(),
+                text = getString(R.string.trigger_error_assistant_not_purchased),
+            )
 
-                TriggerError.DPAD_IME_NOT_SELECTED -> TextListItem.Error(
-                    id = error.toString(),
-                    text = getString(R.string.trigger_error_dpad_ime_not_selected),
-                )
-            }
+            TriggerError.DPAD_IME_NOT_SELECTED -> TextListItem.Error(
+                id = error.toString(),
+                text = getString(R.string.trigger_error_dpad_ime_not_selected),
+            )
         }
+    }
 
     fun onParallelRadioButtonCheckedChange(isChecked: Boolean) {
         if (isChecked) {
@@ -502,30 +501,29 @@ abstract class BaseConfigTriggerViewModel(
     private fun createListItems(
         trigger: Trigger,
         showDeviceDescriptors: Boolean,
-    ): List<TriggerKeyListItem> =
-        trigger.keys.mapIndexed { index, key ->
-            val clickTypeString = when (key.clickType) {
-                ClickType.SHORT_PRESS -> null
-                ClickType.LONG_PRESS -> getString(R.string.clicktype_long_press)
-                ClickType.DOUBLE_PRESS -> getString(R.string.clicktype_double_press)
-            }
-
-            val linkDrawable = when {
-                trigger.mode is TriggerMode.Parallel && index < trigger.keys.lastIndex -> TriggerKeyLinkType.PLUS
-                trigger.mode is TriggerMode.Sequence && index < trigger.keys.lastIndex -> TriggerKeyLinkType.ARROW
-                else -> TriggerKeyLinkType.HIDDEN
-            }
-
-            TriggerKeyListItem(
-                id = key.uid,
-                name = getTriggerKeyName(key),
-                clickTypeString = clickTypeString,
-                extraInfo = getTriggerKeyExtraInfo(key, showDeviceDescriptors),
-                linkType = linkDrawable,
-                isDragDropEnabled = trigger.keys.size > 1,
-                isChooseDeviceButtonVisible = key is KeyCodeTriggerKey,
-            )
+    ): List<TriggerKeyListItem> = trigger.keys.mapIndexed { index, key ->
+        val clickTypeString = when (key.clickType) {
+            ClickType.SHORT_PRESS -> null
+            ClickType.LONG_PRESS -> getString(R.string.clicktype_long_press)
+            ClickType.DOUBLE_PRESS -> getString(R.string.clicktype_double_press)
         }
+
+        val linkDrawable = when {
+            trigger.mode is TriggerMode.Parallel && index < trigger.keys.lastIndex -> TriggerKeyLinkType.PLUS
+            trigger.mode is TriggerMode.Sequence && index < trigger.keys.lastIndex -> TriggerKeyLinkType.ARROW
+            else -> TriggerKeyLinkType.HIDDEN
+        }
+
+        TriggerKeyListItem(
+            id = key.uid,
+            name = getTriggerKeyName(key),
+            clickTypeString = clickTypeString,
+            extraInfo = getTriggerKeyExtraInfo(key, showDeviceDescriptors),
+            linkType = linkDrawable,
+            isDragDropEnabled = trigger.keys.size > 1,
+            isChooseDeviceButtonVisible = key is KeyCodeTriggerKey,
+        )
+    }
 
     private fun getTriggerKeyExtraInfo(key: TriggerKey, showDeviceDescriptors: Boolean): String? {
         if (key !is KeyCodeTriggerKey) {
@@ -551,7 +549,7 @@ abstract class BaseConfigTriggerViewModel(
             }
 
             is KeyCodeTriggerKey -> buildString {
-                append(KeyEventUtils.keyCodeToString(key.keyCode))
+                append(InputEventUtils.keyCodeToString(key.keyCode))
 
                 if (key.detectionSource == KeyEventDetectionSource.INPUT_METHOD) {
                     val midDot = getString(R.string.middot)

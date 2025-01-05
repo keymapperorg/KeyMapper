@@ -10,9 +10,9 @@ import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerError
 import io.github.sds100.keymapper.purchasing.ProductId
 import io.github.sds100.keymapper.purchasing.PurchasingManager
+import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
-import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.util.valueIfFailure
@@ -112,7 +112,7 @@ class DisplayKeyMapUseCaseImpl(
 
         val containsDpadKey = trigger.keys
             .mapNotNull { it as? KeyCodeTriggerKey }
-            .any { KeyEventUtils.isDpadKeyCode(it.keyCode) }
+            .any { InputEventUtils.isDpadKeyCode(it.keyCode) }
 
         if (!isKeyMapperImeChosen && containsDpadKey) {
             errors.add(TriggerError.DPAD_IME_NOT_SELECTED)

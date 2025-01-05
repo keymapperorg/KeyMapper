@@ -4,7 +4,7 @@ import android.view.KeyEvent
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
-import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
+import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.ServiceEvent
 import kotlinx.coroutines.CoroutineScope
@@ -56,11 +56,9 @@ class RecordTriggerController(
             .launchIn(coroutineScope)
     }
 
-    override suspend fun startRecording(): Result<*> =
-        serviceAdapter.send(ServiceEvent.StartRecordingTrigger)
+    override suspend fun startRecording(): Result<*> = serviceAdapter.send(ServiceEvent.StartRecordingTrigger)
 
-    override suspend fun stopRecording(): Result<*> =
-        serviceAdapter.send(ServiceEvent.StopRecordingTrigger)
+    override suspend fun stopRecording(): Result<*> = serviceAdapter.send(ServiceEvent.StopRecordingTrigger)
 
     /**
      * Process key events from the activity so that DPAD buttons can be recorded
@@ -73,7 +71,7 @@ class RecordTriggerController(
             return false
         }
 
-        if (!KeyEventUtils.isDpadKeyCode(event.keyCode)) {
+        if (!InputEventUtils.isDpadKeyCode(event.keyCode)) {
             return false
         }
 
@@ -83,12 +81,11 @@ class RecordTriggerController(
         // to the TriggerFragment by touch and then pressing a DPAD button will cause the View
         // consume the key event and get focus.
         if (event.action == KeyEvent.ACTION_UP) {
-
             val device = InputDeviceUtils.createInputDeviceInfo(event.device)
             val recordedKey = createRecordedKeyEvent(
                 event.keyCode,
                 device,
-                KeyEventDetectionSource.INPUT_METHOD
+                KeyEventDetectionSource.INPUT_METHOD,
             )
 
             coroutineScope.launch {
@@ -102,7 +99,7 @@ class RecordTriggerController(
     private fun createRecordedKeyEvent(
         keyCode: Int,
         device: InputDeviceInfo?,
-        detectionSource: KeyEventDetectionSource
+        detectionSource: KeyEventDetectionSource,
     ): RecordedKey {
         val triggerKeyDevice = if (device != null && device.isExternal) {
             TriggerKeyDevice.External(device.descriptor, device.name)

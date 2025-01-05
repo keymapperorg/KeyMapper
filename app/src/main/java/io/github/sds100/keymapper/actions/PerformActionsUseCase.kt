@@ -23,12 +23,12 @@ import io.github.sds100.keymapper.system.display.DisplayAdapter
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.files.FileUtils
+import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeMessenger
 import io.github.sds100.keymapper.system.intents.IntentAdapter
 import io.github.sds100.keymapper.system.intents.IntentTarget
-import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
 import io.github.sds100.keymapper.system.lock.LockScreenAdapter
 import io.github.sds100.keymapper.system.media.MediaAdapter
 import io.github.sds100.keymapper.system.navigation.OpenMenuHelper
@@ -828,7 +828,7 @@ class PerformActionsUseCaseImpl(
         if (action.device?.descriptor == null) {
             // automatically select a game controller as the input device for game controller key events
 
-            if (KeyEventUtils.isGamepadKeyCode(action.keyCode)) {
+            if (InputEventUtils.isGamepadKeyCode(action.keyCode)) {
                 deviceAdapter.connectedInputDevices.value.ifIsData { inputDevices ->
                     val device = inputDevices.find { it.isGameController }
 

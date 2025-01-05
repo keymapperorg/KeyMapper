@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.system.keyevents
+package io.github.sds100.keymapper.system.inputevents
 
 import android.os.Build
 import android.view.InputDevice
@@ -10,7 +10,7 @@ import splitties.bitflags.withFlag
 /**
  * Created by sds100 on 17/07/2018.
  */
-object KeyEventUtils {
+object InputEventUtils {
     /**
      * Maps keys which aren't single characters like the Control keys to a string representation
      */

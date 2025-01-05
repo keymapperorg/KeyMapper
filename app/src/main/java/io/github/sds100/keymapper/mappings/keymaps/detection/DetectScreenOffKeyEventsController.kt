@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.mappings.keymaps.detection
 import android.view.KeyEvent
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
-import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
+import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.valueOrNull
@@ -69,11 +69,12 @@ class DetectScreenOffKeyEventsController(
                 var line: String?
 
                 while (inputStream.bufferedReader().readLine()
-                        .also { line = it } != null && isActive
+                        .also { line = it } != null &&
+                    isActive
                 ) {
                     line ?: continue
 
-                    KeyEventUtils.GET_EVENT_LABEL_TO_KEYCODE.forEach { (label, keyCode) ->
+                    InputEventUtils.GET_EVENT_LABEL_TO_KEYCODE.forEach { (label, keyCode) ->
                         if (line!!.contains(label)) {
                             val deviceLocation =
                                 deviceLocationRegex.find(line!!)?.value ?: return@forEach
