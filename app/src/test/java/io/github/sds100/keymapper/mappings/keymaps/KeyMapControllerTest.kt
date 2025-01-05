@@ -20,6 +20,7 @@ import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
+import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.InputEventType
 import io.github.sds100.keymapper.util.parallelTrigger
@@ -195,7 +196,11 @@ class KeyMapControllerTest {
 
         repeat(10) { count ->
             val consumeRepeatedDown =
-                inputKeyEvent(KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.ACTION_DOWN, repeatCount = count + 1)
+                inputKeyEvent(
+                    KeyEvent.KEYCODE_DPAD_LEFT,
+                    KeyEvent.ACTION_DOWN,
+                    repeatCount = count + 1,
+                )
 
             assertThat(consumeRepeatedDown, `is`(true))
 
@@ -3298,12 +3303,14 @@ class KeyMapControllerTest {
         scanCode: Int = 0,
         repeatCount: Int = 0,
     ): Boolean = controller.onKeyEvent(
-        keyCode = keyCode,
-        action = action,
-        metaState = metaState ?: 0,
-        scanCode = scanCode,
-        device = device,
-        repeatCount = repeatCount,
+        MyKeyEvent(
+            keyCode = keyCode,
+            action = action,
+            metaState = metaState ?: 0,
+            scanCode = scanCode,
+            device = device,
+            repeatCount = repeatCount,
+        ),
     )
 
     private suspend fun mockParallelTrigger(

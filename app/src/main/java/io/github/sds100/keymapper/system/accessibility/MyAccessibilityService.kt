@@ -23,6 +23,7 @@ import io.github.sds100.keymapper.api.KeyEventRelayServiceWrapperImpl
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapId
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
+import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
 import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Inject
@@ -118,13 +119,14 @@ class MyAccessibilityService :
 
                 if (controller != null) {
                     return controller!!.onKeyEventFromIme(
-                        event.keyCode,
-                        event.action,
-                        device,
-                        event.metaState,
-                        event.scanCode,
-                        event.eventTime,
-                        event.repeatCount,
+                        MyKeyEvent(
+                            keyCode = event.keyCode,
+                            action = event.action,
+                            metaState = event.metaState,
+                            scanCode = event.scanCode,
+                            device = device,
+                            repeatCount = event.repeatCount,
+                        ),
                     )
                 }
 
@@ -264,14 +266,15 @@ class MyAccessibilityService :
 
         if (controller != null) {
             return controller!!.onKeyEvent(
-                event.keyCode,
-                event.action,
-                device,
-                event.metaState,
-                event.scanCode,
-                event.eventTime,
+                MyKeyEvent(
+                    keyCode = event.keyCode,
+                    action = event.action,
+                    metaState = event.metaState,
+                    scanCode = event.scanCode,
+                    device = device,
+                    repeatCount = event.repeatCount,
+                ),
                 KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
-                event.repeatCount,
             )
         }
 

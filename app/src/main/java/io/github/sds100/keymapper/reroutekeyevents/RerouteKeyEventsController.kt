@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.reroutekeyevents
 
 import android.view.KeyEvent
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
+import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.util.InputEventType
 import kotlinx.coroutines.CoroutineScope
@@ -31,25 +32,19 @@ class RerouteKeyEventsController(
      */
     private var repeatJob: Job? = null
 
-    fun onKeyEvent(
-        keyCode: Int,
-        action: Int,
-        metaState: Int,
-        scanCode: Int = 0,
-        device: InputDeviceInfo?,
-    ): Boolean = when (action) {
+    fun onKeyEvent(event: MyKeyEvent): Boolean = when (event.action) {
         KeyEvent.ACTION_DOWN -> onKeyDown(
-            keyCode,
-            device,
-            metaState,
-            scanCode,
+            event.keyCode,
+            event.device,
+            event.metaState,
+            event.scanCode,
         )
 
         KeyEvent.ACTION_UP -> onKeyUp(
-            keyCode,
-            device,
-            metaState,
-            scanCode,
+            event.keyCode,
+            event.device,
+            event.metaState,
+            event.scanCode,
         )
 
         else -> false

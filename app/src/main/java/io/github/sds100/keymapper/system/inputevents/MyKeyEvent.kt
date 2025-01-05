@@ -7,6 +7,6 @@ data class MyKeyEvent(
     val action: Int,
     val metaState: Int,
     val scanCode: Int,
-    val device: InputDeviceInfo,
+    val device: InputDeviceInfo?,
     val repeatCount: Int,
 )
