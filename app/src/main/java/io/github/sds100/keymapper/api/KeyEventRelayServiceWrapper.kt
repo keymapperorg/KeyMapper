@@ -8,6 +8,7 @@ import android.os.DeadObjectException
 import android.os.IBinder
 import android.os.RemoteException
 import android.view.KeyEvent
+import android.view.MotionEvent
 
 /**
  * This handles connecting to the relay service and exposes an interface
@@ -71,6 +72,21 @@ class KeyEventRelayServiceWrapperImpl(
         }
     }
 
+    override fun sendMotionEvent(event: MotionEvent?, targetPackageName: String?): Boolean {
+        synchronized(keyEventRelayServiceLock) {
+            if (keyEventRelayService == null) {
+                return false
+            }
+
+            try {
+                return keyEventRelayService!!.sendMotionEvent(event, targetPackageName)
+            } catch (e: DeadObjectException) {
+                keyEventRelayService = null
+                return false
+            }
+        }
+    }
+
     private fun bind() {
         try {
             val relayServiceIntent = Intent(ctx, KeyEventRelayService::class.java)
@@ -105,4 +121,5 @@ class KeyEventRelayServiceWrapperImpl(
 
 interface KeyEventRelayServiceWrapper {
     fun sendKeyEvent(event: KeyEvent?, targetPackageName: String?): Boolean
+    fun sendMotionEvent(event: MotionEvent?, targetPackageName: String?): Boolean
 }

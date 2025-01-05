@@ -7,6 +7,7 @@ import android.os.DeadObjectException
 import android.os.IBinder
 import android.os.IBinder.DeathRecipient
 import android.view.KeyEvent
+import android.view.MotionEvent
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
 import timber.log.Timber
 import java.util.concurrent.ConcurrentHashMap
@@ -61,6 +62,41 @@ class KeyEventRelayService : Service() {
                     }
 
                     return consumeKeyEvent
+                } catch (e: DeadObjectException) {
+                    // If the application is no longer connected then delete the callback.
+                    clientConnections.remove(targetPackageName)
+                    return false
+                }
+            }
+        }
+
+        override fun sendMotionEvent(event: MotionEvent?, targetPackageName: String?): Boolean {
+            Timber.d("KeyEventRelayService: onMotionEvent")
+
+            synchronized(callbackLock) {
+                if (!clientConnections.containsKey(targetPackageName)) {
+                    return false
+                }
+
+                try {
+                    // Get the process ID of the app that called this service.
+                    val sourcePackageName = getCallerPackageName() ?: return false
+
+                    if (!permittedPackages.contains(sourcePackageName)) {
+                        Timber.d("An unrecognized package $sourcePackageName tried to send a motion event.")
+
+                        return false
+                    }
+
+                    var consumeMotionEvent = false
+
+                    for (connection in clientConnections[targetPackageName]!!) {
+                        if (connection.callback.onMotionEvent(event, targetPackageName)) {
+                            consumeMotionEvent = true
+                        }
+                    }
+
+                    return consumeMotionEvent
                 } catch (e: DeadObjectException) {
                     // If the application is no longer connected then delete the callback.
                     clientConnections.remove(targetPackageName)

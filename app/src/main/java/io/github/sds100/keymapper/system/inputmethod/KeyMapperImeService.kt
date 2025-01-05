@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.inputmethodservice.InputMethodService
 import android.view.KeyEvent
+import android.view.MotionEvent
 import androidx.core.content.ContextCompat
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback
@@ -88,6 +89,11 @@ class KeyMapperImeService : InputMethodService() {
 
                 return currentInputConnection?.sendKeyEvent(event) ?: false
             }
+
+            override fun onMotionEvent(event: MotionEvent?, sourcePackageName: String?): Boolean {
+                // Do nothing if the IME receives a motion event.
+                return false
+            }
         }
 
     private val keyEventRelayServiceWrapper: KeyEventRelayServiceWrapperImpl by lazy {
@@ -113,11 +119,35 @@ class KeyMapperImeService : InputMethodService() {
         keyEventRelayServiceWrapper.onCreate()
     }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean =
-        keyEventRelayServiceWrapper.sendKeyEvent(event, Constants.PACKAGE_NAME)
+    override fun onGenericMotionEvent(event: MotionEvent?): Boolean {
+        val consume = keyEventRelayServiceWrapper.sendMotionEvent(event, Constants.PACKAGE_NAME)
 
-    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean =
-        keyEventRelayServiceWrapper.sendKeyEvent(event, Constants.PACKAGE_NAME)
+        return if (consume) {
+            true
+        } else {
+            super.onGenericMotionEvent(event)
+        }
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        val consume = keyEventRelayServiceWrapper.sendKeyEvent(event, Constants.PACKAGE_NAME)
+
+        return if (consume) {
+            true
+        } else {
+            super.onKeyUp(keyCode, event)
+        }
+    }
+
+    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
+        val consume = keyEventRelayServiceWrapper.sendKeyEvent(event, Constants.PACKAGE_NAME)
+
+        return if (consume) {
+            true
+        } else {
+            super.onKeyUp(keyCode, event)
+        }
+    }
 
     override fun onDestroy() {
         unregisterReceiver(broadcastReceiver)

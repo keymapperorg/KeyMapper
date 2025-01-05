@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.api;
 
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback;
 
 interface IKeyEventRelayService {
@@ -26,4 +27,10 @@ interface IKeyEventRelayService {
      * Unregister a callback to receive key events from this relay service.
      */
     void unregisterCallback(IKeyEventRelayServiceCallback client);
+
+    /**
+     * Send a motion event to the target package that is registered with
+     * a callback.
+     */
+    boolean sendMotionEvent(in MotionEvent event, in String targetPackageName);
 }

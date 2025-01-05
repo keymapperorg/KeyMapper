@@ -10,6 +10,7 @@ import android.graphics.Path
 import android.graphics.Point
 import android.os.Build
 import android.view.KeyEvent
+import android.view.MotionEvent
 import android.view.accessibility.AccessibilityEvent
 import androidx.core.content.getSystemService
 import androidx.core.os.bundleOf
@@ -22,6 +23,7 @@ import io.github.sds100.keymapper.api.KeyEventRelayServiceWrapperImpl
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapId
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
+import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.InputEventType
@@ -124,6 +126,17 @@ class MyAccessibilityService :
                         event.eventTime,
                         event.repeatCount,
                     )
+                }
+
+                return false
+            }
+
+            override fun onMotionEvent(event: MotionEvent?, sourcePackageName: String?): Boolean {
+                event ?: return false
+                sourcePackageName ?: return false
+
+                if (controller != null) {
+                    return controller!!.onMotionEventFromIme(MyMotionEvent.fromMotionEvent(event))
                 }
 
                 return false

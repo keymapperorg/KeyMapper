@@ -24,6 +24,7 @@ import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsController
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsUseCase
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
+import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.util.ServiceEvent
@@ -405,6 +406,21 @@ abstract class BaseAccessibilityServiceController(
             detectionSource = KeyEventDetectionSource.INPUT_METHOD,
             repeatCount,
         )
+    }
+
+    fun onMotionEventFromIme(event: MyMotionEvent): Boolean {
+        if (isPaused.value) {
+            return false
+        }
+
+        try {
+            val consume = keyMapController.onMotionEvent(event)
+
+            return consume
+        } catch (e: Exception) {
+            Timber.e(e)
+            return false
+        }
     }
 
     fun onAccessibilityEvent(event: AccessibilityEventModel?) {
