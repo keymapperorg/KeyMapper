@@ -1,6 +1,8 @@
 package io.github.sds100.keymapper.system.keyevents
 
 import android.os.Build
+import android.view.InputDevice
+import android.view.InputEvent
 import android.view.KeyEvent
 import io.github.sds100.keymapper.R
 import splitties.bitflags.withFlag
@@ -667,8 +669,7 @@ object KeyEventUtils {
         "KEY_SEARCH" to KeyEvent.KEYCODE_SEARCH,
     )
 
-    fun canDetectKeyWhenScreenOff(keyCode: Int): Boolean =
-        GET_EVENT_LABEL_TO_KEYCODE.any { it.second == keyCode }
+    fun canDetectKeyWhenScreenOff(keyCode: Int): Boolean = GET_EVENT_LABEL_TO_KEYCODE.any { it.second == keyCode }
 
     val MODIFIER_KEYCODES: Set<Int>
         get() = setOf(
@@ -728,7 +729,7 @@ object KeyEventUtils {
             KeyEvent.KEYCODE_BUTTON_14,
             KeyEvent.KEYCODE_BUTTON_15,
             KeyEvent.KEYCODE_BUTTON_16,
-                -> return true
+            -> return true
 
             else -> return false
         }
@@ -808,13 +809,16 @@ object KeyEventUtils {
     )
 
     fun isDpadKeyCode(code: Int): Boolean {
-        return code == KeyEvent.KEYCODE_DPAD_LEFT
-                || code == KeyEvent.KEYCODE_DPAD_RIGHT
-                || code == KeyEvent.KEYCODE_DPAD_UP
-                || code == KeyEvent.KEYCODE_DPAD_DOWN
-                || code == KeyEvent.KEYCODE_DPAD_UP_LEFT
-                || code == KeyEvent.KEYCODE_DPAD_UP_RIGHT
-                || code == KeyEvent.KEYCODE_DPAD_DOWN_LEFT
-                || code == KeyEvent.KEYCODE_DPAD_DOWN_RIGHT
+        return code == KeyEvent.KEYCODE_DPAD_LEFT ||
+            code == KeyEvent.KEYCODE_DPAD_RIGHT ||
+            code == KeyEvent.KEYCODE_DPAD_UP ||
+            code == KeyEvent.KEYCODE_DPAD_DOWN ||
+            code == KeyEvent.KEYCODE_DPAD_UP_LEFT ||
+            code == KeyEvent.KEYCODE_DPAD_UP_RIGHT ||
+            code == KeyEvent.KEYCODE_DPAD_DOWN_LEFT ||
+            code == KeyEvent.KEYCODE_DPAD_DOWN_RIGHT
     }
+
+    fun isDpadDevice(event: InputEvent): Boolean = // Check that input comes from a device with directional pads.
+        event.source and InputDevice.SOURCE_DPAD != InputDevice.SOURCE_DPAD
 }

@@ -20,6 +20,7 @@ import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
 import io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback
 import io.github.sds100.keymapper.api.KeyEventRelayServiceWrapperImpl
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapId
+import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Inject
@@ -121,6 +122,7 @@ class MyAccessibilityService :
                         event.metaState,
                         event.scanCode,
                         event.eventTime,
+                        event.repeatCount,
                     )
                 }
 
@@ -200,7 +202,6 @@ class MyAccessibilityService :
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
-
         Timber.i("Accessibility service: onUnbind")
         return super.onUnbind(intent)
     }
@@ -256,6 +257,8 @@ class MyAccessibilityService :
                 event.metaState,
                 event.scanCode,
                 event.eventTime,
+                KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
+                event.repeatCount,
             )
         }
 

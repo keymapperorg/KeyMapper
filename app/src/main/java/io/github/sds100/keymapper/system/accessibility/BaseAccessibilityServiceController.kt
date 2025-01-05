@@ -302,9 +302,10 @@ abstract class BaseAccessibilityServiceController(
         scanCode: Int = 0,
         eventTime: Long,
         detectionSource: KeyEventDetectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
+        repeatCount: Int,
     ): Boolean {
         val detailedLogInfo =
-            "key code: $keyCode, time since event: ${SystemClock.uptimeMillis() - eventTime}ms, device name: ${device?.name}, descriptor: ${device?.descriptor}, device id: ${device?.id}, is external: ${device?.isExternal}, meta state: $metaState, scan code: $scanCode"
+            "key code: $keyCode, time since event: ${SystemClock.uptimeMillis() - eventTime}ms, device name: ${device?.name}, descriptor: ${device?.descriptor}, device id: ${device?.id}, is external: ${device?.isExternal}, meta state: $metaState, scan code: $scanCode, repeat count: $repeatCount"
 
         if (recordingTrigger) {
             if (action == KeyEvent.ACTION_DOWN) {
@@ -338,6 +339,7 @@ abstract class BaseAccessibilityServiceController(
                     metaState,
                     scanCode,
                     device,
+                    repeatCount,
                 )
 
                 if (!consume) {
@@ -371,6 +373,7 @@ abstract class BaseAccessibilityServiceController(
         metaState: Int,
         scanCode: Int = 0,
         eventTime: Long,
+        repeatCount: Int,
     ): Boolean {
         /*
         Issue #850
@@ -388,6 +391,7 @@ abstract class BaseAccessibilityServiceController(
                 0,
                 eventTime,
                 detectionSource = KeyEventDetectionSource.INPUT_METHOD,
+                repeatCount,
             )
         }
 
@@ -399,6 +403,7 @@ abstract class BaseAccessibilityServiceController(
             scanCode,
             eventTime,
             detectionSource = KeyEventDetectionSource.INPUT_METHOD,
+            repeatCount,
         )
     }
 
