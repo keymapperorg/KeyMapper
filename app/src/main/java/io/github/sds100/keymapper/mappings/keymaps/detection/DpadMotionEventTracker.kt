@@ -16,13 +16,17 @@ class DpadMotionEventTracker {
     }
 
     // TODO support multiple controllers
-    private var dpadState = 0
+    private val dpadState: HashMap<String, Int> = hashMapOf()
 
-    // TODO write unit tests
+    /**
+     * TODO
+     */
     fun convertMotionEvent(event: MyMotionEvent): MyKeyEvent? {
+        val oldState = dpadState[event.device.descriptor] ?: 0
         val newState = eventToDpadState(event)
-        val diff = dpadState xor newState
-        dpadState = newState
+        val diff = oldState xor newState
+
+        dpadState[event.device.descriptor] = newState
 
         // If no dpad keys changed then return null
         if (diff == 0) {
@@ -55,7 +59,7 @@ class DpadMotionEventTracker {
     }
 
     fun reset() {
-        dpadState = 0
+        dpadState.clear()
     }
 
     private fun eventToDpadState(event: MyMotionEvent): Int {
