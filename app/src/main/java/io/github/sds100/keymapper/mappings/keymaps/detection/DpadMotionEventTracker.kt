@@ -5,7 +5,11 @@ import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
 import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
 
 /**
- * TODO explain the problem and why this class is necessary.
+ * See https://developer.android.com/develop/ui/views/touch-and-input/game-controllers/controller-input#dpad
+ * Some controllers send motion events as well as key events when DPAD buttons
+ * are pressed, while others just send key events.
+ * The motion events must be consumed but this means the following key events are also
+ * consumed so one must rely on converting these motion events oneself.
  */
 class DpadMotionEventTracker {
     companion object {
@@ -15,11 +19,11 @@ class DpadMotionEventTracker {
         private const val DPAD_RIGHT = 8
     }
 
-    // TODO support multiple controllers
     private val dpadState: HashMap<String, Int> = hashMapOf()
 
     /**
-     * TODO
+     * @return The equivalent DPAD key event if there was one in response to this motion event.
+     * Null if this motion event didn't result in a DPAD key event.
      */
     fun convertMotionEvent(event: MyMotionEvent): MyKeyEvent? {
         val oldState = dpadState[event.device.descriptor] ?: 0
