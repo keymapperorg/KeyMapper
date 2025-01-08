@@ -16,6 +16,7 @@ import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintGestureMap
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapId
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCase
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectScreenOffKeyEventsController
+import io.github.sds100.keymapper.mappings.keymaps.detection.DpadMotionEventTracker
 import io.github.sds100.keymapper.mappings.keymaps.detection.KeyMapController
 import io.github.sds100.keymapper.mappings.keymaps.detection.TriggerKeyMapFromOtherAppsController
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyEventDetectionSource
@@ -108,6 +109,8 @@ abstract class BaseAccessibilityServiceController(
     private var recordingTriggerJob: Job? = null
     private val recordingTrigger: Boolean
         get() = recordingTriggerJob != null && recordingTriggerJob?.isActive == true
+    private val recordDpadMotionEventTracker: DpadMotionEventTracker =
+        DpadMotionEventTracker()
 
     val isPaused: StateFlow<Boolean> = pauseMappingsUseCase.isPaused
         .stateIn(coroutineScope, SharingStarted.Eagerly, false)
@@ -367,6 +370,27 @@ abstract class BaseAccessibilityServiceController(
             return false
         }
 
+        if (recordingTrigger) {
+            val dpadKeyEvent = recordDpadMotionEventTracker.convertMotionEvent(event)
+
+            if (dpadKeyEvent == null) {
+                return false
+            } else {
+                Timber.d("Recorded motion event ${KeyEvent.keyCodeToString(dpadKeyEvent.keyCode)}")
+                coroutineScope.launch {
+                    outputEvents.emit(
+                        ServiceEvent.RecordedTriggerKey(
+                            dpadKeyEvent.keyCode,
+                            dpadKeyEvent.device,
+                            KeyEventDetectionSource.INPUT_METHOD,
+                        ),
+                    )
+                }
+
+                return true
+            }
+        }
+
         try {
             val consume = keyMapController.onMotionEvent(event)
 
@@ -407,6 +431,7 @@ abstract class BaseAccessibilityServiceController(
         when (event) {
             is ServiceEvent.StartRecordingTrigger ->
                 if (!recordingTrigger) {
+                    recordDpadMotionEventTracker.reset()
                     recordingTriggerJob = recordTriggerJob()
                 }
 
@@ -415,6 +440,7 @@ abstract class BaseAccessibilityServiceController(
 
                 recordingTriggerJob?.cancel()
                 recordingTriggerJob = null
+                recordDpadMotionEventTracker.reset()
 
                 if (wasRecordingTrigger) {
                     coroutineScope.launch {
