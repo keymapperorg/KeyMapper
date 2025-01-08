@@ -21,6 +21,7 @@ import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
+import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.InputEventType
 import io.github.sds100.keymapper.util.parallelTrigger
@@ -76,7 +77,20 @@ class KeyMapControllerTest {
         private const val FAKE_HEADPHONE_DESCRIPTOR = "fake_headphone"
         private val FAKE_HEADPHONE_TRIGGER_KEY_DEVICE = TriggerKeyDevice.External(
             descriptor = FAKE_HEADPHONE_DESCRIPTOR,
-            name = "Fake HeadPhones",
+            name = "Fake Headphones",
+        )
+
+        private const val FAKE_CONTROLLER_DESCRIPTOR = "fake_controller"
+        private val FAKE_CONTROLLER_TRIGGER_KEY_DEVICE = TriggerKeyDevice.External(
+            descriptor = FAKE_CONTROLLER_DESCRIPTOR,
+            name = "Fake Controller",
+        )
+        private val FAKE_CONTROLLER_INPUT_DEVICE = InputDeviceInfo(
+            descriptor = FAKE_CONTROLLER_DESCRIPTOR,
+            name = "Fake Controller",
+            id = 0,
+            isExternal = true,
+            isGameController = true,
         )
 
         private const val FAKE_PACKAGE_NAME = "test_package"
@@ -167,13 +181,158 @@ class KeyMapControllerTest {
         )
     }
 
+    @Test
+    fun `Hold down key event action while DPAD button is held down via motion events`() = runTest(testDispatcher) {
+        val trigger = singleKeyTrigger(
+            triggerKey(
+                KeyEvent.KEYCODE_DPAD_LEFT,
+                clickType = ClickType.SHORT_PRESS,
+                detectionSource = KeyEventDetectionSource.INPUT_METHOD,
+                device = FAKE_CONTROLLER_TRIGGER_KEY_DEVICE,
+            ),
+        )
+
+        val action = KeyMapAction(
+            data = ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_Q),
+            holdDown = true,
+        )
+
+        keyMapListFlow.value = listOf(
+            KeyMap(0, trigger = trigger, actionList = listOf(action)),
+        )
+
+        inOrder(performActionsUseCase) {
+            inputMotionEvent(axisHatX = -1.0f)
+            verify(performActionsUseCase, times(1)).perform(action.data, InputEventType.DOWN)
+
+            delay(1000) // Hold down the DPAD button for 1 second.
+            inputMotionEvent(axisHatX = 0.0f)
+            verify(performActionsUseCase, times(1)).perform(action.data, InputEventType.UP)
+        }
+    }
+
+    @Test
+    fun `Trigger short press key map from DPAD motion event while another DPAD button is held down`() = runTest(testDispatcher) {
+        val trigger = singleKeyTrigger(
+            triggerKey(
+                KeyEvent.KEYCODE_DPAD_LEFT,
+                clickType = ClickType.SHORT_PRESS,
+                detectionSource = KeyEventDetectionSource.INPUT_METHOD,
+                device = FAKE_CONTROLLER_TRIGGER_KEY_DEVICE,
+            ),
+        )
+
+        keyMapListFlow.value = listOf(
+            KeyMap(0, trigger = trigger, actionList = listOf(TEST_ACTION)),
+        )
+
+        var motionEvent = createMotionEvent(axisHatY = 1.0f)
+        val consumeDown1 = controller.onMotionEvent(motionEvent)
+        assertThat(consumeDown1, `is`(false))
+
+        motionEvent = motionEvent.copy(axisHatX = -1.0f)
+        val consumeDown2 = controller.onMotionEvent(motionEvent)
+        assertThat(consumeDown2, `is`(true))
+
+        motionEvent = motionEvent.copy(axisHatX = 0.0f)
+        val consumeUp2 = controller.onMotionEvent(motionEvent)
+        assertThat(consumeUp2, `is`(true))
+
+        motionEvent = motionEvent.copy(axisHatY = 0.0f)
+        val consumeUp1 = controller.onMotionEvent(motionEvent)
+        assertThat(consumeUp1, `is`(false))
+
+        verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+    }
+
+    @Test
+    fun `Trigger short press key map from DPAD motion event while a volume button is held down`() = runTest(testDispatcher) {
+        val trigger = singleKeyTrigger(
+            triggerKey(
+                KeyEvent.KEYCODE_DPAD_LEFT,
+                clickType = ClickType.SHORT_PRESS,
+                detectionSource = KeyEventDetectionSource.INPUT_METHOD,
+                device = FAKE_CONTROLLER_TRIGGER_KEY_DEVICE,
+            ),
+        )
+
+        keyMapListFlow.value = listOf(
+            KeyMap(0, trigger = trigger, actionList = listOf(TEST_ACTION)),
+        )
+
+        inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_DOWN)
+
+        val consumeDown = inputMotionEvent(axisHatX = -1.0f)
+        assertThat(consumeDown, `is`(true))
+
+        val consumeUp = inputMotionEvent(axisHatX = 0.0f)
+
+        assertThat(consumeUp, `is`(true))
+
+        inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_UP)
+
+        verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+    }
+
+    @Test
+    fun `Trigger long press key map from DPAD motion event`() = runTest(testDispatcher) {
+        val trigger = singleKeyTrigger(
+            triggerKey(
+                KeyEvent.KEYCODE_DPAD_LEFT,
+                clickType = ClickType.LONG_PRESS,
+                detectionSource = KeyEventDetectionSource.INPUT_METHOD,
+                device = FAKE_CONTROLLER_TRIGGER_KEY_DEVICE,
+            ),
+        )
+
+        keyMapListFlow.value = listOf(
+            KeyMap(0, trigger = trigger, actionList = listOf(TEST_ACTION)),
+        )
+
+        val consumeDown = inputMotionEvent(axisHatX = -1.0f)
+        assertThat(consumeDown, `is`(true))
+
+        delay(LONG_PRESS_DELAY)
+
+        val consumeUp = inputMotionEvent(axisHatX = 0.0f)
+
+        assertThat(consumeUp, `is`(true))
+
+        verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+    }
+
+    @Test
+    fun `Trigger short press key map from DPAD motion event`() = runTest(testDispatcher) {
+        val trigger = singleKeyTrigger(
+            triggerKey(
+                KeyEvent.KEYCODE_DPAD_LEFT,
+                clickType = ClickType.SHORT_PRESS,
+                detectionSource = KeyEventDetectionSource.INPUT_METHOD,
+                device = FAKE_CONTROLLER_TRIGGER_KEY_DEVICE,
+            ),
+        )
+
+        keyMapListFlow.value = listOf(
+            KeyMap(0, trigger = trigger, actionList = listOf(TEST_ACTION)),
+        )
+
+        val consumeDown = inputMotionEvent(axisHatX = -1.0f)
+        assertThat(consumeDown, `is`(true))
+
+        val consumeUp = inputMotionEvent(axisHatX = 0.0f)
+
+        assertThat(consumeUp, `is`(true))
+
+        verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+    }
+
     /**
      * Issue #491. While a DPAD button is held down many key events are sent with increasing
      * repeatCount values.
      */
     @Test
     fun `Trigger short press key map once when a key event is repeated`() = runTest(testDispatcher) {
-        val longPressTrigger = singleKeyTrigger(
+        val trigger = singleKeyTrigger(
             triggerKey(
                 KeyEvent.KEYCODE_DPAD_LEFT,
                 clickType = ClickType.SHORT_PRESS,
@@ -184,7 +343,7 @@ class KeyMapControllerTest {
         keyMapListFlow.value = listOf(
             KeyMap(
                 0,
-                trigger = longPressTrigger,
+                trigger = trigger,
                 actionList = listOf(TEST_ACTION),
             ),
         )
@@ -3294,6 +3453,35 @@ class KeyMapControllerTest {
             }
         }
     }
+
+    private fun createMotionEvent(
+        axisHatX: Float = 0.0f,
+        axisHatY: Float = 0.0f,
+        device: InputDeviceInfo = FAKE_CONTROLLER_INPUT_DEVICE,
+        isDpad: Boolean = true,
+    ): MyMotionEvent {
+        return MyMotionEvent(
+            metaState = 0,
+            device = device,
+            axisHatX = axisHatX,
+            axisHatY = axisHatY,
+            isDpad = isDpad,
+        )
+    }
+
+    private fun inputMotionEvent(
+        axisHatX: Float = 0.0f,
+        axisHatY: Float = 0.0f,
+        device: InputDeviceInfo = FAKE_CONTROLLER_INPUT_DEVICE,
+    ): Boolean = controller.onMotionEvent(
+        MyMotionEvent(
+            metaState = 0,
+            device = device,
+            axisHatX = axisHatX,
+            axisHatY = axisHatY,
+            isDpad = true,
+        ),
+    )
 
     private fun inputKeyEvent(
         keyCode: Int,
