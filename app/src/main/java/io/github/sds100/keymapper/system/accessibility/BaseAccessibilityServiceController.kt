@@ -376,17 +376,20 @@ abstract class BaseAccessibilityServiceController(
             if (dpadKeyEvent == null) {
                 return false
             } else {
-                Timber.d("Recorded motion event ${KeyEvent.keyCodeToString(dpadKeyEvent.keyCode)}")
-                coroutineScope.launch {
-                    outputEvents.emit(
-                        ServiceEvent.RecordedTriggerKey(
-                            dpadKeyEvent.keyCode,
-                            dpadKeyEvent.device,
-                            KeyEventDetectionSource.INPUT_METHOD,
-                        ),
-                    )
+                if (dpadKeyEvent.action == KeyEvent.ACTION_DOWN) {
+                    Timber.d("Recorded motion event ${KeyEvent.keyCodeToString(dpadKeyEvent.keyCode)}")
+                    coroutineScope.launch {
+                        outputEvents.emit(
+                            ServiceEvent.RecordedTriggerKey(
+                                dpadKeyEvent.keyCode,
+                                dpadKeyEvent.device,
+                                KeyEventDetectionSource.INPUT_METHOD,
+                            ),
+                        )
+                    }
                 }
 
+                // Consume the key event if it is an DOWN or UP.
                 return true
             }
         }
