@@ -32,22 +32,28 @@ class RerouteKeyEventsController(
      */
     private var repeatJob: Job? = null
 
-    fun onKeyEvent(event: MyKeyEvent): Boolean = when (event.action) {
-        KeyEvent.ACTION_DOWN -> onKeyDown(
-            event.keyCode,
-            event.device,
-            event.metaState,
-            event.scanCode,
-        )
+    fun onKeyEvent(event: MyKeyEvent): Boolean {
+        if (!useCase.shouldRerouteKeyEvent(event.device?.descriptor)) {
+            return false
+        }
 
-        KeyEvent.ACTION_UP -> onKeyUp(
-            event.keyCode,
-            event.device,
-            event.metaState,
-            event.scanCode,
-        )
+        return when (event.action) {
+            KeyEvent.ACTION_DOWN -> onKeyDown(
+                event.keyCode,
+                event.device,
+                event.metaState,
+                event.scanCode,
+            )
 
-        else -> false
+            KeyEvent.ACTION_UP -> onKeyUp(
+                event.keyCode,
+                event.device,
+                event.metaState,
+                event.scanCode,
+            )
+
+            else -> false
+        }
     }
 
     /**
@@ -59,10 +65,6 @@ class RerouteKeyEventsController(
         metaState: Int,
         scanCode: Int = 0,
     ): Boolean {
-        if (device != null && !useCase.shouldRerouteKeyEvent(device.descriptor)) {
-            return false
-        }
-
         val inputKeyModel = InputKeyModel(
             keyCode = keyCode,
             inputType = InputEventType.DOWN,
@@ -97,10 +99,6 @@ class RerouteKeyEventsController(
         metaState: Int,
         scanCode: Int = 0,
     ): Boolean {
-        if (device != null && !useCase.shouldRerouteKeyEvent(device.descriptor)) {
-            return false
-        }
-
         repeatJob?.cancel()
 
         val inputKeyModel = InputKeyModel(
