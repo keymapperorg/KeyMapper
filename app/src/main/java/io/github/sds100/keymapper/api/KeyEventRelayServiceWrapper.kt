@@ -17,6 +17,7 @@ import android.view.MotionEvent
  */
 class KeyEventRelayServiceWrapperImpl(
     private val ctx: Context,
+    private val id: String,
     private val callback: IKeyEventRelayServiceCallback,
 ) : KeyEventRelayServiceWrapper {
 
@@ -31,7 +32,7 @@ class KeyEventRelayServiceWrapperImpl(
             ) {
                 synchronized(keyEventRelayServiceLock) {
                     keyEventRelayService = IKeyEventRelayService.Stub.asInterface(service)
-                    keyEventRelayService?.registerCallback(callback)
+                    keyEventRelayService?.registerCallback(callback, id)
                 }
             }
 
@@ -55,8 +56,9 @@ class KeyEventRelayServiceWrapperImpl(
     }
 
     override fun sendKeyEvent(
-        event: KeyEvent?,
-        targetPackageName: String?,
+        event: KeyEvent,
+        targetPackageName: String,
+        callbackId: String,
     ): Boolean {
         synchronized(keyEventRelayServiceLock) {
             if (keyEventRelayService == null) {
@@ -64,7 +66,7 @@ class KeyEventRelayServiceWrapperImpl(
             }
 
             try {
-                return keyEventRelayService!!.sendKeyEvent(event, targetPackageName)
+                return keyEventRelayService!!.sendKeyEvent(event, targetPackageName, callbackId)
             } catch (e: DeadObjectException) {
                 keyEventRelayService = null
                 return false
@@ -72,14 +74,18 @@ class KeyEventRelayServiceWrapperImpl(
         }
     }
 
-    override fun sendMotionEvent(event: MotionEvent?, targetPackageName: String?): Boolean {
+    override fun sendMotionEvent(
+        event: MotionEvent,
+        targetPackageName: String,
+        callbackId: String,
+    ): Boolean {
         synchronized(keyEventRelayServiceLock) {
             if (keyEventRelayService == null) {
                 return false
             }
 
             try {
-                return keyEventRelayService!!.sendMotionEvent(event, targetPackageName)
+                return keyEventRelayService!!.sendMotionEvent(event, targetPackageName, callbackId)
             } catch (e: DeadObjectException) {
                 keyEventRelayService = null
                 return false
@@ -108,7 +114,7 @@ class KeyEventRelayServiceWrapperImpl(
         // because the connection is already broken at that point and it
         // will fail.
         try {
-            keyEventRelayService?.unregisterCallback(callback)
+            keyEventRelayService?.unregisterCallback(id)
             ctx.unbindService(serviceConnection)
         } catch (e: RemoteException) {
             // do nothing
@@ -120,6 +126,6 @@ class KeyEventRelayServiceWrapperImpl(
 }
 
 interface KeyEventRelayServiceWrapper {
-    fun sendKeyEvent(event: KeyEvent?, targetPackageName: String?): Boolean
-    fun sendMotionEvent(event: MotionEvent?, targetPackageName: String?): Boolean
+    fun sendKeyEvent(event: KeyEvent, targetPackageName: String, callbackId: String): Boolean
+    fun sendMotionEvent(event: MotionEvent, targetPackageName: String, callbackId: String): Boolean
 }

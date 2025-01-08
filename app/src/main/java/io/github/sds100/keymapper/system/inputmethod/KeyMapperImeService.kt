@@ -10,6 +10,7 @@ import android.view.MotionEvent
 import androidx.core.content.ContextCompat
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback
+import io.github.sds100.keymapper.api.KeyEventRelayService
 import io.github.sds100.keymapper.api.KeyEventRelayServiceWrapperImpl
 
 /**
@@ -97,7 +98,11 @@ class KeyMapperImeService : InputMethodService() {
         }
 
     private val keyEventRelayServiceWrapper: KeyEventRelayServiceWrapperImpl by lazy {
-        KeyEventRelayServiceWrapperImpl(this, keyEventReceiverCallback)
+        KeyEventRelayServiceWrapperImpl(
+            ctx = this,
+            id = KeyEventRelayService.CALLBACK_ID_INPUT_METHOD,
+            callback = keyEventReceiverCallback,
+        )
     }
 
     override fun onCreate() {
@@ -120,7 +125,13 @@ class KeyMapperImeService : InputMethodService() {
     }
 
     override fun onGenericMotionEvent(event: MotionEvent?): Boolean {
-        val consume = keyEventRelayServiceWrapper.sendMotionEvent(event, Constants.PACKAGE_NAME)
+        event ?: return super.onGenericMotionEvent(null)
+
+        val consume = keyEventRelayServiceWrapper.sendMotionEvent(
+            event = event,
+            targetPackageName = Constants.PACKAGE_NAME,
+            callbackId = KeyEventRelayService.CALLBACK_ID_ACCESSIBILITY_SERVICE,
+        )
 
         return if (consume) {
             true
@@ -130,17 +141,29 @@ class KeyMapperImeService : InputMethodService() {
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        val consume = keyEventRelayServiceWrapper.sendKeyEvent(event, Constants.PACKAGE_NAME)
+        event ?: return super.onKeyDown(keyCode, null)
+
+        val consume = keyEventRelayServiceWrapper.sendKeyEvent(
+            event = event,
+            targetPackageName = Constants.PACKAGE_NAME,
+            callbackId = KeyEventRelayService.CALLBACK_ID_ACCESSIBILITY_SERVICE,
+        )
 
         return if (consume) {
             true
         } else {
-            super.onKeyUp(keyCode, event)
+            super.onKeyDown(keyCode, event)
         }
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
-        val consume = keyEventRelayServiceWrapper.sendKeyEvent(event, Constants.PACKAGE_NAME)
+        event ?: return super.onKeyUp(keyCode, null)
+
+        val consume = keyEventRelayServiceWrapper.sendKeyEvent(
+            event = event,
+            targetPackageName = Constants.PACKAGE_NAME,
+            callbackId = KeyEventRelayService.CALLBACK_ID_ACCESSIBILITY_SERVICE,
+        )
 
         return if (consume) {
             true

@@ -19,6 +19,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
 import io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback
+import io.github.sds100.keymapper.api.KeyEventRelayService
 import io.github.sds100.keymapper.api.KeyEventRelayServiceWrapperImpl
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapId
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyEventDetectionSource
@@ -105,7 +106,7 @@ class MyAccessibilityService :
             }
         }
 
-    private val keyEventReceiverCallback: IKeyEventRelayServiceCallback =
+    private val relayServiceCallback: IKeyEventRelayServiceCallback =
         object : IKeyEventRelayServiceCallback.Stub() {
             override fun onKeyEvent(event: KeyEvent?, sourcePackageName: String?): Boolean {
                 event ?: return false
@@ -146,7 +147,11 @@ class MyAccessibilityService :
         }
 
     private val keyEventRelayServiceWrapper: KeyEventRelayServiceWrapperImpl by lazy {
-        KeyEventRelayServiceWrapperImpl(this, keyEventReceiverCallback)
+        KeyEventRelayServiceWrapperImpl(
+            ctx = this,
+            id = KeyEventRelayService.CALLBACK_ID_ACCESSIBILITY_SERVICE,
+            callback = relayServiceCallback,
+        )
     }
 
     private var controller: AccessibilityServiceController? = null

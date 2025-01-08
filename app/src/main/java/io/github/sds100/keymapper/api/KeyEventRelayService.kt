@@ -30,16 +30,31 @@ class KeyEventRelayService : Service() {
     companion object {
         const val ACTION_REBIND_RELAY_SERVICE =
             "io.github.sds100.keymapper.ACTION_REBIND_RELAY_SERVICE"
+
+        const val CALLBACK_ID_ACCESSIBILITY_SERVICE = "accessibility_service"
+        const val CALLBACK_ID_INPUT_METHOD = "input_method"
+
+        /**
+         * Used when a client registers a callback without specifying an ID.
+         */
+        private const val CALLBACK_ID_DEFAULT = "default"
     }
 
     val permittedPackages = KeyMapperImeHelper.KEY_MAPPER_IME_PACKAGE_LIST
 
     private val binderInterface: IKeyEventRelayService = object : IKeyEventRelayService.Stub() {
-        override fun sendKeyEvent(event: KeyEvent?, targetPackageName: String?): Boolean {
+        override fun sendKeyEvent(
+            event: KeyEvent?,
+            targetPackageName: String?,
+            callbackId: String?,
+        ): Boolean {
+            targetPackageName ?: return false
             Timber.d("KeyEventRelayService: onKeyEvent ${event?.keyCode}")
 
             synchronized(callbackLock) {
-                if (!clientConnections.containsKey(targetPackageName)) {
+                val key = ClientKey(targetPackageName, callbackId ?: CALLBACK_ID_DEFAULT)
+
+                if (!clientConnections.containsKey(key)) {
                     return false
                 }
 
@@ -54,27 +69,33 @@ class KeyEventRelayService : Service() {
                     }
 
                     var consumeKeyEvent = false
+                    val connection = clientConnections[key]!!
 
-                    for (connection in clientConnections[targetPackageName]!!) {
-                        if (connection.callback.onKeyEvent(event, targetPackageName)) {
-                            consumeKeyEvent = true
-                        }
+                    if (connection.callback.onKeyEvent(event, targetPackageName)) {
+                        consumeKeyEvent = true
                     }
 
                     return consumeKeyEvent
                 } catch (e: DeadObjectException) {
                     // If the application is no longer connected then delete the callback.
-                    clientConnections.remove(targetPackageName)
+                    removeConnection(key)
                     return false
                 }
             }
         }
 
-        override fun sendMotionEvent(event: MotionEvent?, targetPackageName: String?): Boolean {
+        override fun sendMotionEvent(
+            event: MotionEvent?,
+            targetPackageName: String?,
+            callbackId: String?,
+        ): Boolean {
+            targetPackageName ?: return false
             Timber.d("KeyEventRelayService: onMotionEvent")
 
             synchronized(callbackLock) {
-                if (!clientConnections.containsKey(targetPackageName)) {
+                val key = ClientKey(targetPackageName, callbackId ?: CALLBACK_ID_DEFAULT)
+
+                if (!clientConnections.containsKey(key)) {
                     return false
                 }
 
@@ -89,23 +110,22 @@ class KeyEventRelayService : Service() {
                     }
 
                     var consumeMotionEvent = false
+                    val connection = clientConnections[key]!!
 
-                    for (connection in clientConnections[targetPackageName]!!) {
-                        if (connection.callback.onMotionEvent(event, targetPackageName)) {
-                            consumeMotionEvent = true
-                        }
+                    if (connection.callback.onMotionEvent(event, targetPackageName)) {
+                        consumeMotionEvent = true
                     }
 
                     return consumeMotionEvent
                 } catch (e: DeadObjectException) {
                     // If the application is no longer connected then delete the callback.
-                    clientConnections.remove(targetPackageName)
+                    removeConnection(key)
                     return false
                 }
             }
         }
 
-        override fun registerCallback(client: IKeyEventRelayServiceCallback?) {
+        override fun registerCallback(client: IKeyEventRelayServiceCallback?, id: String?) {
             val sourcePackageName = getCallerPackageName() ?: return
 
             if (client == null || !permittedPackages.contains(sourcePackageName)) {
@@ -115,46 +135,38 @@ class KeyEventRelayService : Service() {
 
             synchronized(callbackLock) {
                 Timber.d("Package $sourcePackageName registered a key event relay callback.")
-                val connection = ClientConnection(sourcePackageName, client)
 
-                if (clientConnections.containsKey(sourcePackageName)) {
-                    clientConnections[sourcePackageName] =
-                        clientConnections[sourcePackageName]!!.plus(connection)
-                } else {
-                    clientConnections[sourcePackageName] = arrayOf(connection)
+                val key = ClientKey(sourcePackageName, id ?: CALLBACK_ID_DEFAULT)
+
+                // Handle disconnecting the client. Unlink the death recipient.
+                if (clientConnections.containsKey(key)) {
+                    removeConnection(key)
                 }
 
+                val connection = ClientConnection(key, client)
+                clientConnections[key] = connection
                 client.asBinder().linkToDeath(connection, 0)
             }
         }
 
-        override fun unregisterAllCallbacks() {
-            synchronized(callbackLock) {
-                val sourcePackageName = getCallerPackageName() ?: return
-
-                Timber.d("Package $sourcePackageName unregistered all key event relay callback.")
-
-                if (clientConnections.containsKey(sourcePackageName)) {
-                    for (connection in clientConnections[sourcePackageName]!!) {
-                        connection.callback.asBinder().unlinkToDeath(connection, 0)
-                    }
-
-                    clientConnections.remove(sourcePackageName)
-                }
-            }
-        }
-
-        override fun unregisterCallback(client: IKeyEventRelayServiceCallback?) {
-            client ?: return
+        override fun unregisterCallback(callbackId: String?) {
             val sourcePackageName = getCallerPackageName() ?: return
 
-            Timber.d("Package $sourcePackageName unregistered a key event relay callback.")
-            removeConnection(sourcePackageName, client)
+            // The callback id is not passed on older versions of the API.
+            if (callbackId == null) {
+                Timber.d("Package $sourcePackageName unregistered all key event relay callbacks.")
+
+                removeAllConnections(sourcePackageName)
+            } else {
+                Timber.d("Package $sourcePackageName unregistered a key event relay callback.")
+
+                removeConnection(ClientKey(sourcePackageName, callbackId))
+            }
         }
     }
 
     private val callbackLock: Any = Any()
-    private var clientConnections: ConcurrentHashMap<String, Array<ClientConnection>> =
+    private var clientConnections: ConcurrentHashMap<ClientKey, ClientConnection> =
         ConcurrentHashMap()
 
     override fun onCreate() {
@@ -184,34 +196,35 @@ class KeyEventRelayService : Service() {
         return applicationContext.packageManager.getNameForUid(sourceUid)
     }
 
-    private fun removeConnection(packageName: String, callback: IKeyEventRelayServiceCallback) {
-        if (clientConnections.containsKey(packageName)) {
-            val newConnections = mutableListOf<ClientConnection>()
+    private fun removeConnection(key: ClientKey) {
+        val connection = clientConnections.remove(key) ?: return
 
-            // Unlink the death recipient from the connection to remove and
-            // delete it from the list of connections for the package.
-            for (connection in clientConnections[packageName]!!) {
-                if (connection.callback == callback) {
-                    connection.callback.asBinder().unlinkToDeath(connection, 0)
-                    continue
+        // Unlink the death recipient from the connection to remove and
+        // delete it from the list of connections for the package.
+        connection.callback.asBinder().unlinkToDeath(connection, 0)
+    }
+
+    private fun removeAllConnections(packageName: String) {
+        synchronized(callbackLock) {
+            for (key in clientConnections.keys()) {
+                if (key.packageName == packageName) {
+                    removeConnection(key)
                 }
-
-                newConnections.add(connection)
             }
-
-            clientConnections[packageName] = newConnections.toTypedArray()
         }
     }
 
     private inner class ClientConnection(
-        private val clientPackageName: String,
+        private val clientKey: ClientKey,
         val callback: IKeyEventRelayServiceCallback,
     ) : DeathRecipient {
         override fun binderDied() {
-            Timber.d("Client binder died: $clientPackageName")
+            Timber.d("Client binder died: $clientKey")
             synchronized(callbackLock) {
-                removeConnection(clientPackageName, callback)
+                removeConnection(clientKey)
             }
         }
     }
+
+    data class ClientKey(val packageName: String, val callbackId: String)
 }
