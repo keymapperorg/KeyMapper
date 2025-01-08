@@ -151,7 +151,6 @@ class DpadMotionEventTrackerTest {
         isDpad: Boolean = true,
     ): MyMotionEvent {
         return MyMotionEvent(
-            eventTime = 0L,
             metaState = 0,
             device = device,
             axisHatX = axisHatX,

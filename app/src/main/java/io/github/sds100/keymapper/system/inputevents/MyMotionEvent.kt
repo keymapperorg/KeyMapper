@@ -9,7 +9,6 @@ import io.github.sds100.keymapper.system.devices.InputDeviceUtils
  * values without relying on the Android SDK.
  */
 data class MyMotionEvent(
-    val eventTime: Long,
     val metaState: Int,
     val device: InputDeviceInfo,
     val axisHatX: Float,
@@ -19,7 +18,6 @@ data class MyMotionEvent(
     companion object {
         fun fromMotionEvent(event: MotionEvent): MyMotionEvent {
             return MyMotionEvent(
-                eventTime = event.eventTime,
                 metaState = event.metaState,
                 device = InputDeviceUtils.createInputDeviceInfo(event.device),
                 axisHatX = event.getAxisValue(MotionEvent.AXIS_HAT_X),
