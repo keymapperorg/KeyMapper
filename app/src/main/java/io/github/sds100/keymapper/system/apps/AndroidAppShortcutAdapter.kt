@@ -1,11 +1,13 @@
 package io.github.sds100.keymapper.system.apps
 
+import android.app.ActivityOptions
 import android.app.PendingIntent
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.os.Bundle
 import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
@@ -79,8 +81,7 @@ class AndroidAppShortcutAdapter(context: Context) : AppShortcutAdapter {
         }
     }
 
-    override fun createShortcutResultIntent(shortcut: ShortcutInfoCompat): Intent =
-        ShortcutManagerCompat.createShortcutResultIntent(ctx, shortcut)
+    override fun createShortcutResultIntent(shortcut: ShortcutInfoCompat): Intent = ShortcutManagerCompat.createShortcutResultIntent(ctx, shortcut)
 
     override fun getShortcutName(info: AppShortcutInfo): Result<String> {
         try {
@@ -117,7 +118,18 @@ class AndroidAppShortcutAdapter(context: Context) : AppShortcutAdapter {
             val flags = PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
             val pendingIntent = PendingIntent.getActivity(ctx, 0, intent, flags)
 
-            pendingIntent.send()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                val bundle = ActivityOptions.makeBasic()
+                    .setPendingIntentBackgroundActivityStartMode(
+                        ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOWED,
+                    )
+                    .toBundle()
+
+                pendingIntent.send(bundle)
+            } else {
+                pendingIntent.send()
+            }
+
             return Success(Unit)
         } catch (e: SecurityException) {
             return Error.InsufficientPermissionsToOpenAppShortcut
