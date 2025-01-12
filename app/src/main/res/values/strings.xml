@@ -3,7 +3,7 @@
     <string name="slogan">Unleash your keys!</string>
 
     <string name="no_action_chosen">No action chosen</string>
-    <string name="accessibility_service_explanation">Key Mapper requires the use of an accessibility service so that it can detect and change what your button presses do while you are outside of the app. Your key maps will only work once you have enabled the accessibility service. It must also be turned on to create a trigger.</string>
+    <string name="accessibility_service_explanation">Key Mapper requires the use of an accessibility service so that it can detect and change what your button presses do while you are outside of the app. Your key maps will only work once you have enabled the accessibility service. It must also be turned on to create a trigger and test actions.</string>
     <string name="selection_count">%d selected</string>
     <string name="ime_service_label" translatable="false">Key Mapper Basic Input Method</string>
     <string name="enable">Enable</string>
@@ -545,10 +545,8 @@
     <string name="dialog_title_send_feedback">Send feedback</string>
     <string name="dialog_message_send_feedback">Please read the guide on how to report issues on the website.</string>
 
-    <string name="dialog_message_enable_accessibility_service_to_record_trigger">Turn on the accessibility service so that you can record a trigger.</string>
     <string name="dialog_message_restart_accessibility_service_to_record_trigger">Restart the accessibility service by turning it <i>off</i> and <i>on</i> so that you can record a trigger.</string>
 
-    <string name="dialog_message_enable_accessibility_service_to_test_action">Turn on the accessibility service so that you can test the action.</string>
     <string name="dialog_message_restart_accessibility_service_to_test_action">Restart the accessibility service by turning it <i>off</i> and <i>on</i> so that you can test the action.</string>
     <string name="dialog_message_restart_accessibility_service">Restart the accessibility service by turning it <i>off</i> and <i>on</i>.</string>
 

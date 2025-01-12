@@ -91,19 +91,11 @@ object ViewModelHelper {
         }
     }
 
-    suspend fun handleAccessibilityServiceStoppedSnackBar(
+    suspend fun handleAccessibilityServiceStoppedDialog(
         resourceProvider: ResourceProvider,
         popupViewModel: PopupViewModel,
         startService: () -> Boolean,
-        @StringRes message: Int,
     ) {
-        val snackBar = PopupUi.SnackBar(
-            message = resourceProvider.getString(message),
-            actionText = resourceProvider.getString(R.string.pos_turn_on),
-        )
-
-        popupViewModel.showPopup("snackbar_enable_service", snackBar) ?: return
-
         val explanationResponse =
             showAccessibilityServiceExplanationDialog(resourceProvider, popupViewModel)
 
