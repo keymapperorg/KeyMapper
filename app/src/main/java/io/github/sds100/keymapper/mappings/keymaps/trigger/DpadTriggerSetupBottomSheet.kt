@@ -1,11 +1,14 @@
 package io.github.sds100.keymapper.mappings.keymaps.trigger
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
@@ -21,7 +24,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
@@ -63,124 +65,127 @@ private fun DpadTriggerSetupBottomSheet(
     onChooseKeyboardClick: () -> Unit = {},
 ) {
     val scope = rememberCoroutineScope()
-    val ctx = LocalContext.current
     val uriHandler = LocalUriHandler.current
+    val scrollState = rememberScrollState()
 
     ModalBottomSheet(
-        modifier = modifier,
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
         // Hide drag handle because other bottom sheets don't have it
         dragHandle = {},
     ) {
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 32.dp),
-            textAlign = TextAlign.Center,
-            text = stringResource(R.string.dpad_trigger_setup_bottom_sheet_title),
-            style = MaterialTheme.typography.headlineMedium,
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .fillMaxWidth(),
-            text = stringResource(R.string.dpad_trigger_setup_bottom_sheet_text),
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        val guiKeyboardUrl = stringResource(R.string.url_play_store_keymapper_gui_keyboard)
-        StepRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            isEnabled = !state.isKeyboardInstalled,
-            rowText = stringResource(R.string.dpad_trigger_setup_install_keyboard_text),
-            buttonTextEnabled = stringResource(R.string.dpad_trigger_setup_install_keyboard_button),
-            buttonTextDisabled = stringResource(R.string.dpad_trigger_setup_install_keyboard_button_disabled),
-            onButtonClick = {
-                uriHandler.openUri(guiKeyboardUrl)
-            },
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        StepRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            isEnabled = !state.isKeyboardInstalled,
-            rowText = stringResource(R.string.dpad_trigger_setup_enable_keyboard_text),
-            buttonTextEnabled = stringResource(R.string.dpad_trigger_setup_enable_keyboard_button),
-            buttonTextDisabled = stringResource(R.string.dpad_trigger_setup_enable_keyboard_button_disabled),
-            onButtonClick = onEnableKeyboardClick,
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        StepRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            isEnabled = !state.isKeyboardChosen,
-            rowText = stringResource(R.string.dpad_trigger_setup_choose_keyboard_text),
-            buttonTextEnabled = stringResource(R.string.dpad_trigger_setup_choose_keyboard_button),
-            buttonTextDisabled = stringResource(R.string.dpad_trigger_setup_choose_keyboard_button_disabled),
-            onButtonClick = onChooseKeyboardClick,
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
+        Column(
+            modifier = Modifier.verticalScroll(scrollState),
         ) {
+            Spacer(modifier = Modifier.height(16.dp))
+
             Text(
-                modifier = Modifier.weight(1f),
-                text = stringResource(R.string.dpad_trigger_setup_automatically_change_keyboards_text),
-                fontWeight = FontWeight.Medium,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 32.dp),
+                textAlign = TextAlign.Center,
+                text = stringResource(R.string.dpad_trigger_setup_bottom_sheet_title),
+                style = MaterialTheme.typography.headlineMedium,
             )
 
-            Switch(
-                checked = state.isAutomaticallyChangeKeyboardEnabled,
-                onCheckedChange = { isChecked -> },
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth(),
+                text = stringResource(R.string.dpad_trigger_setup_bottom_sheet_text),
             )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            val guiKeyboardUrl = stringResource(R.string.url_play_store_keymapper_gui_keyboard)
+            StepRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                isEnabled = !state.isKeyboardInstalled,
+                rowText = stringResource(R.string.dpad_trigger_setup_install_keyboard_text),
+                buttonTextEnabled = stringResource(R.string.dpad_trigger_setup_install_keyboard_button),
+                buttonTextDisabled = stringResource(R.string.dpad_trigger_setup_install_keyboard_button_disabled),
+                onButtonClick = {
+                    uriHandler.openUri(guiKeyboardUrl)
+                },
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            StepRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                isEnabled = !state.isKeyboardInstalled,
+                rowText = stringResource(R.string.dpad_trigger_setup_enable_keyboard_text),
+                buttonTextEnabled = stringResource(R.string.dpad_trigger_setup_enable_keyboard_button),
+                buttonTextDisabled = stringResource(R.string.dpad_trigger_setup_enable_keyboard_button_disabled),
+                onButtonClick = onEnableKeyboardClick,
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            StepRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                isEnabled = !state.isKeyboardChosen,
+                rowText = stringResource(R.string.dpad_trigger_setup_choose_keyboard_text),
+                buttonTextEnabled = stringResource(R.string.dpad_trigger_setup_choose_keyboard_button),
+                buttonTextDisabled = stringResource(R.string.dpad_trigger_setup_choose_keyboard_button_disabled),
+                onButtonClick = onChooseKeyboardClick,
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = stringResource(R.string.dpad_trigger_setup_automatically_change_keyboards_text),
+                    fontWeight = FontWeight.Medium,
+                )
+
+                Switch(
+                    checked = state.isAutomaticallyChangeKeyboardEnabled,
+                    onCheckedChange = { isChecked -> },
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Button(
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .padding(horizontal = 16.dp),
+                onClick = {
+                    scope.launch {
+                        sheetState.hide()
+                        onDismissRequest()
+                    }
+                },
+            ) {
+                Text(stringResource(R.string.pos_done))
+            }
+
+            Spacer(Modifier.height(16.dp))
         }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Button(
-            modifier = Modifier
-                .align(Alignment.End)
-                .padding(horizontal = 16.dp),
-            onClick = {
-                scope.launch {
-                    sheetState.hide()
-                    onDismissRequest()
-                }
-            },
-        ) {
-            Text(stringResource(R.string.pos_done))
-        }
-
-        Spacer(Modifier.height(16.dp))
     }
 }
 
