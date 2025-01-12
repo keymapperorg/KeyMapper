@@ -203,7 +203,17 @@ abstract class BaseConfigTriggerViewModel(
     val fixAppKilling = _fixAppKilling.asSharedFlow()
 
     var showAdvancedTriggersBottomSheet: Boolean by mutableStateOf(false)
-    var showDpadImeTriggerErrorBottomSheet: Boolean by mutableStateOf(false)
+    var showDpadTriggerSetupBottomSheet: Boolean by mutableStateOf(false)
+
+    private val _dpadTriggerSetupState = MutableStateFlow(
+        DpadTriggerSetupState(
+            isKeyboardInstalled = false,
+            isKeyboardEnabled = false,
+            isKeyboardChosen = false,
+            isAutomaticallyChangeKeyboardEnabled = false,
+        ),
+    )
+    val dpadTriggerSetupState = _dpadTriggerSetupState.asStateFlow()
 
     init {
         val rebuildErrorList = MutableSharedFlow<State<KeyMap>>(replay = 1)
@@ -491,7 +501,7 @@ abstract class BaseConfigTriggerViewModel(
                 }
 
                 TriggerError.DPAD_IME_NOT_SELECTED -> {
-                    showDpadImeTriggerErrorBottomSheet = true
+                    showDpadTriggerSetupBottomSheet = true
                 }
             }
         }

@@ -1421,4 +1421,19 @@
     <string name="customer_email_body" translatable="false">Please describe the problem you are having here.</string>
     <string name="purchasing_not_implemented_bottom_sheet_text">The advanced triggers are paid feature but you downloaded the FOSS build of Key Mapper that does not include this module or Google Play billing. Please download Key Mapper from Google Play to get access to this feature.</string>
     <string name="purchasing_download_key_mapper_from_google_play">Download Play build</string>
+
+
+    <!--  Dpad trigger setup bottom sheet  -->
+    <string name="dpad_trigger_setup_bottom_sheet_title">Want to remap DPAD buttons?</string>
+    <string name="dpad_trigger_setup_bottom_sheet_text">You must set up the Key Mapper GUI Keyboard following the steps below.</string>
+    <string name="dpad_trigger_setup_install_keyboard_text">1. Install the keyboard app</string>
+    <string name="dpad_trigger_setup_install_keyboard_button">Install</string>
+    <string name="dpad_trigger_setup_install_keyboard_button_disabled">Installed</string>
+    <string name="dpad_trigger_setup_enable_keyboard_text">2. Enable the keyboard</string>
+    <string name="dpad_trigger_setup_enable_keyboard_button">Enable</string>
+    <string name="dpad_trigger_setup_enable_keyboard_button_disabled">Enabled</string>
+    <string name="dpad_trigger_setup_choose_keyboard_text">3. Use the keyboard</string>
+    <string name="dpad_trigger_setup_choose_keyboard_button">Change keyboard</string>
+    <string name="dpad_trigger_setup_choose_keyboard_button_disabled">Keyboard selected</string>
+    <string name="dpad_trigger_setup_automatically_change_keyboards_text">4. Automatically change keyboards when using the controller (optional)</string>
 </resources>

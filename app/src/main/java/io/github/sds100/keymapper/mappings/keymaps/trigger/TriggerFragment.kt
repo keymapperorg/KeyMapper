@@ -4,6 +4,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.lifecycle.Lifecycle
@@ -52,21 +55,34 @@ class TriggerFragment : RecyclerViewFragment<TriggerKeyListItem, FragmentTrigger
     override val listItems: Flow<State<List<TriggerKeyListItem>>>
         get() = configTriggerViewModel.triggerKeyListItems
 
-    override fun bind(inflater: LayoutInflater, container: ViewGroup?) =
-        FragmentTriggerBinding.inflate(inflater, container, false).apply {
-            lifecycleOwner = viewLifecycleOwner
+    @OptIn(ExperimentalMaterial3Api::class)
+    override fun bind(inflater: LayoutInflater, container: ViewGroup?) = FragmentTriggerBinding.inflate(inflater, container, false).apply {
+        lifecycleOwner = viewLifecycleOwner
 
-            composeViewRecordTriggerButtons.apply {
-                // Dispose of the Composition when the view's LifecycleOwner
-                // is destroyed
-                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-                setContent {
-                    KeyMapperTheme {
-                        RecordTriggerButtonRow(Modifier.fillMaxWidth(), configTriggerViewModel)
+        composeViewRecordTriggerButtons.apply {
+            // Dispose of the Composition when the view's LifecycleOwner
+            // is destroyed
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                KeyMapperTheme {
+                    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+                    if (configTriggerViewModel.showDpadTriggerSetupBottomSheet) {
+                        DpadTriggerSetupBottomSheet(
+                            modifier = Modifier.systemBarsPadding(),
+                            onDismissRequest = {
+                                configTriggerViewModel.showDpadTriggerSetupBottomSheet = false
+                            },
+                            viewModel = configTriggerViewModel,
+                            sheetState = sheetState,
+                        )
                     }
+
+                    RecordTriggerButtonRow(Modifier.fillMaxWidth(), configTriggerViewModel)
                 }
             }
         }
+    }
 
     override fun subscribeUi(binding: FragmentTriggerBinding) {
 //        binding.root.clearFocus()
@@ -114,37 +130,35 @@ class TriggerFragment : RecyclerViewFragment<TriggerKeyListItem, FragmentTrigger
         configTriggerViewModel.stopRecordingTrigger()
     }
 
-    private fun FragmentTriggerBinding.enableTriggerKeyDragging(controller: EpoxyController): ItemTouchHelper =
-        EpoxyTouchHelper.initDragging(controller)
-            .withRecyclerView(recyclerViewTriggerKeys)
-            .forVerticalList()
-            .withTarget(TriggerKeyBindingModel_::class.java)
-            .andCallbacks(object : EpoxyTouchHelper.DragCallbacks<TriggerKeyBindingModel_>() {
+    private fun FragmentTriggerBinding.enableTriggerKeyDragging(controller: EpoxyController): ItemTouchHelper = EpoxyTouchHelper.initDragging(controller)
+        .withRecyclerView(recyclerViewTriggerKeys)
+        .forVerticalList()
+        .withTarget(TriggerKeyBindingModel_::class.java)
+        .andCallbacks(object : EpoxyTouchHelper.DragCallbacks<TriggerKeyBindingModel_>() {
 
-                override fun isDragEnabledForModel(model: TriggerKeyBindingModel_?): Boolean =
-                    model?.model()?.isDragDropEnabled ?: false
+            override fun isDragEnabledForModel(model: TriggerKeyBindingModel_?): Boolean = model?.model()?.isDragDropEnabled ?: false
 
-                override fun onModelMoved(
-                    fromPosition: Int,
-                    toPosition: Int,
-                    modelBeingMoved: TriggerKeyBindingModel_?,
-                    itemView: View?,
-                ) {
-                    configTriggerViewModel.onMoveTriggerKey(fromPosition, toPosition)
-                }
+            override fun onModelMoved(
+                fromPosition: Int,
+                toPosition: Int,
+                modelBeingMoved: TriggerKeyBindingModel_?,
+                itemView: View?,
+            ) {
+                configTriggerViewModel.onMoveTriggerKey(fromPosition, toPosition)
+            }
 
-                override fun onDragStarted(
-                    model: TriggerKeyBindingModel_?,
-                    itemView: View?,
-                    adapterPosition: Int,
-                ) {
-                    itemView?.findViewById<MaterialCardView>(R.id.cardView)?.isDragged = true
-                }
+            override fun onDragStarted(
+                model: TriggerKeyBindingModel_?,
+                itemView: View?,
+                adapterPosition: Int,
+            ) {
+                itemView?.findViewById<MaterialCardView>(R.id.cardView)?.isDragged = true
+            }
 
-                override fun onDragReleased(model: TriggerKeyBindingModel_?, itemView: View?) {
-                    itemView?.findViewById<MaterialCardView>(R.id.cardView)?.isDragged = false
-                }
-            })
+            override fun onDragReleased(model: TriggerKeyBindingModel_?, itemView: View?) {
+                itemView?.findViewById<MaterialCardView>(R.id.cardView)?.isDragged = false
+            }
+        })
 
     private inner class TriggerKeyController : EpoxyController() {
         var modelList: List<TriggerKeyListItem> = listOf()
