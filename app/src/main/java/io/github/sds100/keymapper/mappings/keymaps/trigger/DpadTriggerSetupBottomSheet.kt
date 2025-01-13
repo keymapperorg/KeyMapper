@@ -12,12 +12,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue.Expanded
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
+import io.github.sds100.keymapper.compose.LocalCustomColorsPalette
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,6 +50,8 @@ fun DpadTriggerSetupBottomSheet(
         state = state,
         sheetState,
         onDismissRequest,
+        onEnableKeyboardClick = viewModel::onEnableGuiKeyboardClick,
+        onChooseKeyboardClick = viewModel::onChooseGuiKeyboardClick,
     )
 }
 
@@ -69,6 +70,7 @@ private fun DpadTriggerSetupBottomSheet(
     val scrollState = rememberScrollState()
 
     ModalBottomSheet(
+        modifier = modifier,
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
         // Hide drag handle because other bottom sheets don't have it
@@ -119,7 +121,7 @@ private fun DpadTriggerSetupBottomSheet(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
-                isEnabled = !state.isKeyboardInstalled,
+                isEnabled = !state.isKeyboardEnabled,
                 rowText = stringResource(R.string.dpad_trigger_setup_enable_keyboard_text),
                 buttonTextEnabled = stringResource(R.string.dpad_trigger_setup_enable_keyboard_button),
                 buttonTextDisabled = stringResource(R.string.dpad_trigger_setup_enable_keyboard_button_disabled),
@@ -141,47 +143,33 @@ private fun DpadTriggerSetupBottomSheet(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-
-            Spacer(modifier = Modifier.height(8.dp))
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(
-                    modifier = Modifier.weight(1f),
-                    text = stringResource(R.string.dpad_trigger_setup_automatically_change_keyboards_text),
-                    fontWeight = FontWeight.Medium,
-                )
+                if (state.isKeyboardInstalled && state.isKeyboardEnabled && state.isKeyboardChosen) {
+                    Text(
+                        text = "Setup complete!",
+                        color = LocalCustomColorsPalette.current.green,
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Medium,
+                    )
 
-                Switch(
-                    checked = state.isAutomaticallyChangeKeyboardEnabled,
-                    onCheckedChange = { isChecked -> },
-                )
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Button(
-                modifier = Modifier
-                    .align(Alignment.End)
-                    .padding(horizontal = 16.dp),
-                onClick = {
-                    scope.launch {
-                        sheetState.hide()
-                        onDismissRequest()
-                    }
-                },
-            ) {
-                Text(stringResource(R.string.pos_done))
+                    Spacer(Modifier.weight(1f))
+                }
+                Button(
+                    onClick = {
+                        scope.launch {
+                            sheetState.hide()
+                            onDismissRequest()
+                        }
+                    },
+                ) {
+                    Text(stringResource(R.string.pos_done))
+                }
             }
 
             Spacer(Modifier.height(16.dp))
@@ -241,7 +229,29 @@ private fun Preview() {
                 isKeyboardInstalled = true,
                 isKeyboardEnabled = false,
                 isKeyboardChosen = false,
-                isAutomaticallyChangeKeyboardEnabled = true,
+            ),
+            sheetState = sheetState,
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun PreviewComplete() {
+    KeyMapperTheme {
+        val sheetState = SheetState(
+            skipPartiallyExpanded = true,
+            density = LocalDensity.current,
+            initialValue = Expanded,
+        )
+
+        DpadTriggerSetupBottomSheet(
+            onDismissRequest = {},
+            state = DpadTriggerSetupState(
+                isKeyboardInstalled = true,
+                isKeyboardEnabled = true,
+                isKeyboardChosen = true,
             ),
             sheetState = sheetState,
         )

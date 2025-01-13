@@ -46,6 +46,7 @@ class DisplayKeyMapUseCaseImpl(
         permissionAdapter.onPermissionsUpdate,
         preferenceRepository.get(Keys.neverShowDndAccessError).map { }.drop(1),
         purchasingManager.onCompleteProductPurchase.map { },
+        inputMethodAdapter.chosenIme.map { },
     )
 
     override val showTriggerKeyboardIconExplanation: Flow<Boolean> =

@@ -1435,5 +1435,4 @@
     <string name="dpad_trigger_setup_choose_keyboard_text">3. Use the keyboard</string>
     <string name="dpad_trigger_setup_choose_keyboard_button">Change keyboard</string>
     <string name="dpad_trigger_setup_choose_keyboard_button_disabled">Keyboard selected</string>
-    <string name="dpad_trigger_setup_automatically_change_keyboards_text">4. Automatically change keyboards when using the controller (optional)</string>
 </resources>

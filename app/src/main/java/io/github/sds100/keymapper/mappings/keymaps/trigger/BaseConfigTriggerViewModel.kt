@@ -61,6 +61,7 @@ abstract class BaseConfigTriggerViewModel(
     private val recordTrigger: RecordTriggerUseCase,
     private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
     private val displayKeyMap: DisplayKeyMapUseCase,
+    private val setupDpad: SetupDpadTriggerUseCase,
     resourceProvider: ResourceProvider,
 ) : ResourceProvider by resourceProvider,
     PopupViewModel by PopupViewModelImpl(),
@@ -205,15 +206,17 @@ abstract class BaseConfigTriggerViewModel(
     var showAdvancedTriggersBottomSheet: Boolean by mutableStateOf(false)
     var showDpadTriggerSetupBottomSheet: Boolean by mutableStateOf(false)
 
-    private val _dpadTriggerSetupState = MutableStateFlow(
+    val dpadTriggerSetupState: StateFlow<DpadTriggerSetupState> = combine(
+        setupDpad.isGuiKeyboardInstalled,
+        setupDpad.isGuiKeyboardEnabled,
+        setupDpad.isGuiKeyboardChosen,
+    ) { isInstalled, isEnabled, isChosen ->
         DpadTriggerSetupState(
-            isKeyboardInstalled = false,
-            isKeyboardEnabled = false,
-            isKeyboardChosen = false,
-            isAutomaticallyChangeKeyboardEnabled = false,
-        ),
-    )
-    val dpadTriggerSetupState = _dpadTriggerSetupState.asStateFlow()
+            isInstalled,
+            isEnabled,
+            isChosen,
+        )
+    }.stateIn(coroutineScope, SharingStarted.Lazily, DpadTriggerSetupState.DEFAULT)
 
     init {
         val rebuildErrorList = MutableSharedFlow<State<KeyMap>>(replay = 1)
@@ -584,5 +587,13 @@ abstract class BaseConfigTriggerViewModel(
                 device.name
             }
         }
+    }
+
+    fun onEnableGuiKeyboardClick() {
+        setupDpad.enableGuiKeyboard()
+    }
+
+    fun onChooseGuiKeyboardClick() {
+        setupDpad.chooseGuiKeyboard()
     }
 }

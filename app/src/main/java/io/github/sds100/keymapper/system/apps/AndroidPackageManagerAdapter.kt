@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import splitties.bitflags.withFlag
+import java.io.IOException
 
 /**
  * Created by sds100 on 16/03/2021.
@@ -283,6 +284,8 @@ class AndroidPackageManagerAdapter(
                 .success()
         } catch (e: PackageManager.NameNotFoundException) {
             return Error.AppNotFound(packageName)
+        } catch (e: IOException) {
+            return Error.AppNotFound(packageName)
         }
     }
 
@@ -293,6 +296,8 @@ class AndroidPackageManagerAdapter(
                 .loadIcon(packageManager)
                 .success()
         } catch (e: PackageManager.NameNotFoundException) {
+            return Error.AppNotFound(packageName)
+        } catch (e: IOException) {
             return Error.AppNotFound(packageName)
         }
     }
