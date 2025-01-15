@@ -1,1 +1,3 @@
-New trigger! 🎉 You can now trigger your key maps from the Bixby button, Power button, a button on your headset, or any other way your device can launch the assistant.
+New trigger! 🎉 You can now remap the DPAD buttons on your game controller!
+
+Joysticks and triggers are coming soon... 😉
