@@ -780,6 +780,12 @@
     <string name="title_pref_default_options">Default mapping options</string>
     <string name="summary_pref_default_options">Change the default options for your mappings.</string>
 
+    <string name="title_pref_reset_settings">Reset all settings</string>
+    <string name="summary_pref_reset_settings">DANGER! Reset all settings in the app to the default. Your key maps will NOT be reset.</string>
+    <string name="dialog_title_reset_settings">DANGER!</string>
+    <string name="dialog_message_reset_settings">Are you sure you want to reset all settings in the app to the default? Your key maps will NOT be reset. The introduction screen and all warning pop ups will show again.</string>
+    <string name="pos_button_reset_settings">Yes, reset</string>
+
     <!--Preference titles and summaries-->
 
     <!--Preference categories-->

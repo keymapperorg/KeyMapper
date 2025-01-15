@@ -9,4 +9,5 @@ import kotlinx.coroutines.flow.Flow
 interface PreferenceRepository {
     fun <T> get(key: Preferences.Key<T>): Flow<T?>
     fun <T> set(key: Preferences.Key<T>, value: T?)
+    fun deleteAll()
 }

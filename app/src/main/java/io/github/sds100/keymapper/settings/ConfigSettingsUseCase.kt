@@ -29,7 +29,7 @@ import kotlinx.coroutines.flow.map
  * Created by sds100 on 14/02/2021.
  */
 class ConfigSettingsUseCaseImpl(
-    private val preferenceRepository: PreferenceRepository,
+    private val preferences: PreferenceRepository,
     private val permissionAdapter: PermissionAdapter,
     private val inputMethodAdapter: InputMethodAdapter,
     private val soundsManager: SoundsManager,
@@ -68,7 +68,7 @@ class ConfigSettingsUseCaseImpl(
     }
 
     override val rerouteKeyEvents: Flow<Boolean> =
-        preferenceRepository.get(Keys.rerouteKeyEvents).map { it ?: false }
+        preferences.get(Keys.rerouteKeyEvents).map { it ?: false }
 
     override val isCompatibleImeChosen: Flow<Boolean> = inputMethodAdapter.chosenIme.map {
         imeHelper.isCompatibleImeChosen()
@@ -85,60 +85,56 @@ class ConfigSettingsUseCaseImpl(
         imeHelper.enableCompatibleInputMethods()
     }
 
-    override suspend fun chooseCompatibleIme(): Result<ImeInfo> =
-        imeHelper.chooseCompatibleInputMethod()
+    override suspend fun chooseCompatibleIme(): Result<ImeInfo> = imeHelper.chooseCompatibleInputMethod()
 
-    override suspend fun showImePicker(): Result<*> =
-        inputMethodAdapter.showImePicker(fromForeground = true)
+    override suspend fun showImePicker(): Result<*> = inputMethodAdapter.showImePicker(fromForeground = true)
 
-    override fun <T> getPreference(key: Preferences.Key<T>) =
-        preferenceRepository.get(key)
+    override fun <T> getPreference(key: Preferences.Key<T>) = preferences.get(key)
 
-    override fun <T> setPreference(key: Preferences.Key<T>, value: T?) =
-        preferenceRepository.set(key, value)
+    override fun <T> setPreference(key: Preferences.Key<T>, value: T?) = preferences.set(key, value)
 
     override val automaticBackupLocation =
-        preferenceRepository.get(Keys.automaticBackupLocation).map { it ?: "" }
+        preferences.get(Keys.automaticBackupLocation).map { it ?: "" }
 
     override fun setAutomaticBackupLocation(uri: String) {
-        preferenceRepository.set(Keys.automaticBackupLocation, uri)
+        preferences.set(Keys.automaticBackupLocation, uri)
     }
 
     override fun disableAutomaticBackup() {
-        preferenceRepository.set(Keys.automaticBackupLocation, null)
+        preferences.set(Keys.automaticBackupLocation, null)
     }
 
     override val defaultLongPressDelay: Flow<Int> =
-        preferenceRepository.get(Keys.defaultLongPressDelay)
+        preferences.get(Keys.defaultLongPressDelay)
             .map { it ?: PreferenceDefaults.LONG_PRESS_DELAY }
 
     override val defaultDoublePressDelay: Flow<Int> =
-        preferenceRepository.get(Keys.defaultDoublePressDelay)
+        preferences.get(Keys.defaultDoublePressDelay)
             .map { it ?: PreferenceDefaults.DOUBLE_PRESS_DELAY }
 
     override val defaultRepeatDelay: Flow<Int> =
-        preferenceRepository.get(Keys.defaultRepeatDelay)
+        preferences.get(Keys.defaultRepeatDelay)
             .map { it ?: PreferenceDefaults.REPEAT_DELAY }
 
     override val defaultSequenceTriggerTimeout: Flow<Int> =
-        preferenceRepository.get(Keys.defaultSequenceTriggerTimeout)
+        preferences.get(Keys.defaultSequenceTriggerTimeout)
             .map { it ?: PreferenceDefaults.SEQUENCE_TRIGGER_TIMEOUT }
 
     override val defaultVibrateDuration: Flow<Int> =
-        preferenceRepository.get(Keys.defaultVibrateDuration)
+        preferences.get(Keys.defaultVibrateDuration)
             .map { it ?: PreferenceDefaults.VIBRATION_DURATION }
 
     override val defaultRepeatRate: Flow<Int> =
-        preferenceRepository.get(Keys.defaultRepeatRate)
+        preferences.get(Keys.defaultRepeatRate)
             .map { it ?: PreferenceDefaults.REPEAT_RATE }
 
     override fun resetDefaultMappingOptions() {
-        preferenceRepository.set(Keys.defaultLongPressDelay, null)
-        preferenceRepository.set(Keys.defaultDoublePressDelay, null)
-        preferenceRepository.set(Keys.defaultRepeatDelay, null)
-        preferenceRepository.set(Keys.defaultSequenceTriggerTimeout, null)
-        preferenceRepository.set(Keys.defaultVibrateDuration, null)
-        preferenceRepository.set(Keys.defaultRepeatRate, null)
+        preferences.set(Keys.defaultLongPressDelay, null)
+        preferences.set(Keys.defaultDoublePressDelay, null)
+        preferences.set(Keys.defaultRepeatDelay, null)
+        preferences.set(Keys.defaultSequenceTriggerTimeout, null)
+        preferences.set(Keys.defaultVibrateDuration, null)
+        preferences.set(Keys.defaultRepeatRate, null)
     }
 
     override fun requestWriteSecureSettingsPermission() {
@@ -161,8 +157,7 @@ class ConfigSettingsUseCaseImpl(
         permissionAdapter.request(Permission.POST_NOTIFICATIONS)
     }
 
-    override fun isNotificationsPermissionGranted(): Boolean =
-        permissionAdapter.isGranted(Permission.POST_NOTIFICATIONS)
+    override fun isNotificationsPermissionGranted(): Boolean = permissionAdapter.isGranted(Permission.POST_NOTIFICATIONS)
 
     override fun getSoundFiles(): List<SoundFileInfo> = soundsManager.soundFiles.value
 
@@ -170,6 +165,10 @@ class ConfigSettingsUseCaseImpl(
         uid.forEach {
             soundsManager.deleteSound(it)
         }
+    }
+
+    override fun resetAllSettings() {
+        preferences.deleteAll()
     }
 }
 
@@ -211,4 +210,6 @@ interface ConfigSettingsUseCase {
     fun requestShizukuPermission()
 
     val connectedInputDevices: StateFlow<State<List<InputDeviceInfo>>>
+
+    fun resetAllSettings()
 }
