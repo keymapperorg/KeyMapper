@@ -221,6 +221,13 @@ abstract class BaseConfigTriggerViewModel(
         )
     }.stateIn(coroutineScope, SharingStarted.Lazily, SetupGuiKeyboardState.DEFAULT)
 
+    /**
+     * Check whether the user stopped the trigger recording countdown. This
+     * distinction is important so that the bottom sheet describing what to do
+     * when no buttons are recorded is not shown.
+     */
+    private var isRecordingCompletionUserInitiated: Boolean = false
+
     init {
         val rebuildErrorList = MutableSharedFlow<State<KeyMap>>(replay = 1)
 
@@ -269,10 +276,14 @@ abstract class BaseConfigTriggerViewModel(
         recordTrigger.state.onEach { state ->
             if (state is RecordTriggerState.Completed &&
                 state.recordedKeys.isEmpty() &&
-                onboarding.showNoKeysDetectedBottomSheet.first()
+                onboarding.showNoKeysDetectedBottomSheet.first() &&
+                !isRecordingCompletionUserInitiated
             ) {
                 showNoKeysRecordedBottomSheet = true
             }
+
+            // reset this field when recording has completed
+            isRecordingCompletionUserInitiated = false
         }.launchIn(coroutineScope)
     }
 
@@ -457,7 +468,11 @@ abstract class BaseConfigTriggerViewModel(
             val recordTriggerState = recordTrigger.state.firstOrNull() ?: return@launch
 
             val result = when (recordTriggerState) {
-                is RecordTriggerState.CountingDown -> recordTrigger.stopRecording()
+                is RecordTriggerState.CountingDown -> {
+                    isRecordingCompletionUserInitiated = true
+                    recordTrigger.stopRecording()
+                }
+
                 is RecordTriggerState.Completed,
                 RecordTriggerState.Idle,
                 -> recordTrigger.startRecording()
@@ -479,12 +494,6 @@ abstract class BaseConfigTriggerViewModel(
                     message = R.string.dialog_message_restart_accessibility_service_to_record_trigger,
                 )
             }
-        }
-    }
-
-    fun stopRecordingTrigger() {
-        coroutineScope.launch {
-            recordTrigger.stopRecording()
         }
     }
 
