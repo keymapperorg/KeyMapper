@@ -10,6 +10,7 @@ import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapListVie
 import io.github.sds100.keymapper.mappings.fingerprintmaps.ListFingerprintMapsUseCase
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapListViewModel
 import io.github.sds100.keymapper.mappings.keymaps.ListKeyMapsUseCase
+import io.github.sds100.keymapper.mappings.keymaps.trigger.SetupGuiKeyboardUseCase
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
@@ -60,6 +61,7 @@ class HomeViewModel(
     private val showImePicker: ShowInputMethodPickerUseCase,
     private val onboarding: OnboardingUseCase,
     resourceProvider: ResourceProvider,
+    private val setupGuiKeyboard: SetupGuiKeyboardUseCase,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
     PopupViewModel by PopupViewModelImpl(),
@@ -92,6 +94,7 @@ class HomeViewModel(
             listKeyMaps,
             resourceProvider,
             multiSelectProvider,
+            setupGuiKeyboard,
         )
     }
 
@@ -513,6 +516,7 @@ class HomeViewModel(
         private val showImePicker: ShowInputMethodPickerUseCase,
         private val onboarding: OnboardingUseCase,
         private val resourceProvider: ResourceProvider,
+        private val setupGuiKeyboard: SetupGuiKeyboardUseCase,
     ) : ViewModelProvider.NewInstanceFactory() {
 
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeViewModel(
@@ -524,6 +528,7 @@ class HomeViewModel(
             showImePicker,
             onboarding,
             resourceProvider,
+            setupGuiKeyboard,
         ) as T
     }
 }

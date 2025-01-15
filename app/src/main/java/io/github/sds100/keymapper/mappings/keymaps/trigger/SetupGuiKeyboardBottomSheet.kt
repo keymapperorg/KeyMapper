@@ -40,19 +40,20 @@ import kotlinx.coroutines.launch
 fun DpadTriggerSetupBottomSheet(
     modifier: Modifier = Modifier,
     onDismissRequest: () -> Unit,
-    viewModel: ConfigTriggerViewModel,
+    guiKeyboardState: SetupGuiKeyboardState,
+    onEnableKeyboardClick: () -> Unit = {},
+    onChooseKeyboardClick: () -> Unit = {},
+    onNeverShowAgainClick: () -> Unit = {},
     sheetState: SheetState,
 ) {
-    val state by viewModel.setupGuiKeyboardState.collectAsStateWithLifecycle()
-
     SetupGuiKeyboardBottomSheet(
         modifier,
-        guiKeyboardState = state,
+        guiKeyboardState = guiKeyboardState,
         sheetState = sheetState,
         onDismissRequest = onDismissRequest,
-        onEnableKeyboardClick = viewModel::onEnableGuiKeyboardClick,
-        onChooseKeyboardClick = viewModel::onChooseGuiKeyboardClick,
-        onNeverShowAgainClick = viewModel::onNeverShowSetupDpadClick,
+        onEnableKeyboardClick = onEnableKeyboardClick,
+        onChooseKeyboardClick = onChooseKeyboardClick,
+        onNeverShowAgainClick = onNeverShowAgainClick,
         title = stringResource(R.string.dpad_trigger_setup_bottom_sheet_title),
         text = stringResource(R.string.dpad_trigger_setup_bottom_sheet_text),
         setupCompleteText = stringResource(R.string.dpad_trigger_setup_setup_complete_text),

@@ -98,8 +98,7 @@ object Inject {
 
     fun chooseKeyCodeViewModel(): ChooseKeyCodeViewModel.Factory = ChooseKeyCodeViewModel.Factory()
 
-    fun configIntentViewModel(ctx: Context): ConfigIntentViewModel.Factory =
-        ConfigIntentViewModel.Factory(ServiceLocator.resourceProvider(ctx))
+    fun configIntentViewModel(ctx: Context): ConfigIntentViewModel.Factory = ConfigIntentViewModel.Factory(ServiceLocator.resourceProvider(ctx))
 
     fun soundFileActionTypeViewModel(ctx: Context): ChooseSoundFileViewModel.Factory = ChooseSoundFileViewModel.Factory(
         ServiceLocator.resourceProvider(ctx),
@@ -186,6 +185,10 @@ object Inject {
         UseCases.showImePicker(ctx),
         UseCases.onboarding(ctx),
         ServiceLocator.resourceProvider(ctx),
+        SetupGuiKeyboardUseCaseImpl(
+            ServiceLocator.inputMethodAdapter(ctx),
+            ServiceLocator.packageManagerAdapter(ctx),
+        ),
     )
 
     fun settingsViewModel(context: Context): SettingsViewModel.Factory = SettingsViewModel.Factory(

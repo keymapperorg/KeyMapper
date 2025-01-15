@@ -7,9 +7,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.airbnb.epoxy.EpoxyController
@@ -66,6 +68,7 @@ class TriggerFragment : RecyclerViewFragment<TriggerKeyListItem, FragmentTrigger
             setContent {
                 KeyMapperTheme {
                     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+                    val state by configTriggerViewModel.setupGuiKeyboardState.collectAsStateWithLifecycle()
 
                     if (configTriggerViewModel.showDpadTriggerSetupBottomSheet) {
                         DpadTriggerSetupBottomSheet(
@@ -73,7 +76,10 @@ class TriggerFragment : RecyclerViewFragment<TriggerKeyListItem, FragmentTrigger
                             onDismissRequest = {
                                 configTriggerViewModel.showDpadTriggerSetupBottomSheet = false
                             },
-                            viewModel = configTriggerViewModel,
+                            guiKeyboardState = state,
+                            onEnableKeyboardClick = configTriggerViewModel::onEnableGuiKeyboardClick,
+                            onChooseKeyboardClick = configTriggerViewModel::onChooseGuiKeyboardClick,
+                            onNeverShowAgainClick = configTriggerViewModel::onNeverShowSetupDpadClick,
                             sheetState = sheetState,
                         )
                     }
