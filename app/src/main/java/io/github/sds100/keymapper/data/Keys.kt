@@ -70,4 +70,9 @@ object Keys {
     val neverShowDndAccessError = booleanPreferencesKey("key_never_show_dnd_error")
     val neverShowTriggerKeyboardIconExplanation =
         booleanPreferencesKey("key_never_show_keyboard_icon_explanation")
+
+    val neverShowDpadImeTriggerError =
+        booleanPreferencesKey("key_never_show_dpad_ime_trigger_error")
+    val neverShowNoKeysRecordedError =
+        booleanPreferencesKey("key_never_show_no_keys_recorded_error")
 }

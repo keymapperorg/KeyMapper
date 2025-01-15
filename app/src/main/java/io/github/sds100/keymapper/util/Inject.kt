@@ -30,7 +30,7 @@ import io.github.sds100.keymapper.mappings.fingerprintmaps.ListFingerprintMapsUs
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapViewModel
 import io.github.sds100.keymapper.mappings.keymaps.CreateKeyMapShortcutViewModel
 import io.github.sds100.keymapper.mappings.keymaps.ListKeyMapsUseCaseImpl
-import io.github.sds100.keymapper.mappings.keymaps.trigger.SetupDpadTriggerUseCaseImpl
+import io.github.sds100.keymapper.mappings.keymaps.trigger.SetupGuiKeyboardUseCaseImpl
 import io.github.sds100.keymapper.onboarding.AppIntroUseCaseImpl
 import io.github.sds100.keymapper.onboarding.AppIntroViewModel
 import io.github.sds100.keymapper.reportbug.ReportBugUseCaseImpl
@@ -133,7 +133,7 @@ object Inject {
         UseCases.createAction(ctx),
         ServiceLocator.resourceProvider(ctx),
         ServiceLocator.purchasingManager(ctx),
-        SetupDpadTriggerUseCaseImpl(
+        SetupGuiKeyboardUseCaseImpl(
             ServiceLocator.inputMethodAdapter(ctx),
             ServiceLocator.packageManagerAdapter(ctx),
         ),

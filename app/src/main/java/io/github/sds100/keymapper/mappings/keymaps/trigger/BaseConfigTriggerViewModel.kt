@@ -44,8 +44,10 @@ import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -61,7 +63,7 @@ abstract class BaseConfigTriggerViewModel(
     private val recordTrigger: RecordTriggerUseCase,
     private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
     private val displayKeyMap: DisplayKeyMapUseCase,
-    private val setupDpad: SetupDpadTriggerUseCase,
+    private val setupGuiKeyboard: SetupGuiKeyboardUseCase,
     resourceProvider: ResourceProvider,
 ) : ResourceProvider by resourceProvider,
     PopupViewModel by PopupViewModelImpl(),
@@ -84,7 +86,7 @@ abstract class BaseConfigTriggerViewModel(
     val recordTriggerState: StateFlow<RecordTriggerState> = recordTrigger.state.stateIn(
         coroutineScope,
         SharingStarted.Lazily,
-        RecordTriggerState.Stopped,
+        RecordTriggerState.Idle,
     )
 
     val triggerModeButtonsEnabled: StateFlow<Boolean> = config.mapping.map { state ->
@@ -205,18 +207,19 @@ abstract class BaseConfigTriggerViewModel(
 
     var showAdvancedTriggersBottomSheet: Boolean by mutableStateOf(false)
     var showDpadTriggerSetupBottomSheet: Boolean by mutableStateOf(false)
+    var showNoKeysRecordedBottomSheet: Boolean by mutableStateOf(false)
 
-    val dpadTriggerSetupState: StateFlow<DpadTriggerSetupState> = combine(
-        setupDpad.isGuiKeyboardInstalled,
-        setupDpad.isGuiKeyboardEnabled,
-        setupDpad.isGuiKeyboardChosen,
+    val setupGuiKeyboardState: StateFlow<SetupGuiKeyboardState> = combine(
+        setupGuiKeyboard.isInstalled,
+        setupGuiKeyboard.isEnabled,
+        setupGuiKeyboard.isChosen,
     ) { isInstalled, isEnabled, isChosen ->
-        DpadTriggerSetupState(
+        SetupGuiKeyboardState(
             isInstalled,
             isEnabled,
             isChosen,
         )
-    }.stateIn(coroutineScope, SharingStarted.Lazily, DpadTriggerSetupState.DEFAULT)
+    }.stateIn(coroutineScope, SharingStarted.Lazily, SetupGuiKeyboardState.DEFAULT)
 
     init {
         val rebuildErrorList = MutableSharedFlow<State<KeyMap>>(replay = 1)
@@ -262,6 +265,15 @@ abstract class BaseConfigTriggerViewModel(
                     onTriggerModeChanged(mode)
                 }
         }
+
+        recordTrigger.state.onEach { state ->
+            if (state is RecordTriggerState.Completed &&
+                state.recordedKeys.isEmpty() &&
+                onboarding.showNoKeysDetectedBottomSheet.first()
+            ) {
+                showNoKeysRecordedBottomSheet = true
+            }
+        }.launchIn(coroutineScope)
     }
 
     private suspend fun onTriggerModeChanged(mode: TriggerMode) {
@@ -446,7 +458,9 @@ abstract class BaseConfigTriggerViewModel(
 
             val result = when (recordTriggerState) {
                 is RecordTriggerState.CountingDown -> recordTrigger.stopRecording()
-                RecordTriggerState.Stopped -> recordTrigger.startRecording()
+                is RecordTriggerState.Completed,
+                RecordTriggerState.Idle,
+                -> recordTrigger.startRecording()
             }
 
             if (result is Error.AccessibilityServiceDisabled) {
@@ -590,10 +604,18 @@ abstract class BaseConfigTriggerViewModel(
     }
 
     fun onEnableGuiKeyboardClick() {
-        setupDpad.enableGuiKeyboard()
+        setupGuiKeyboard.enableInputMethod()
     }
 
     fun onChooseGuiKeyboardClick() {
-        setupDpad.chooseGuiKeyboard()
+        setupGuiKeyboard.chooseInputMethod()
+    }
+
+    fun onNeverShowSetupDpadClick() {
+        displayKeyMap.neverShowDpadImeSetupError()
+    }
+
+    fun onNeverShowNoKeysRecordedClick() {
+        onboarding.neverShowNoKeysRecordedBottomSheet()
     }
 }

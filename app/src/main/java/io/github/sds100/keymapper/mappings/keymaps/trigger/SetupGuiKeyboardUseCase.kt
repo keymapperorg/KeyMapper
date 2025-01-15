@@ -10,29 +10,29 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 
-class SetupDpadTriggerUseCaseImpl(
+class SetupGuiKeyboardUseCaseImpl(
     private val inputMethodAdapter: InputMethodAdapter,
     private val packageManager: PackageManagerAdapter,
-) : SetupDpadTriggerUseCase {
-    override val isGuiKeyboardInstalled: Flow<Boolean> =
+) : SetupGuiKeyboardUseCase {
+    override val isInstalled: Flow<Boolean> =
         packageManager.installedPackages
             .mapNotNull { it as? State.Data }
             .map { packages -> packages.data.any { it.packageName == KeyMapperImeHelper.KEY_MAPPER_GUI_IME_PACKAGE } }
 
-    override val isGuiKeyboardEnabled: Flow<Boolean> =
+    override val isEnabled: Flow<Boolean> =
         getGuiKeyboardImeInfoFlow().map { it?.isEnabled ?: false }
 
-    override fun enableGuiKeyboard() {
+    override fun enableInputMethod() {
         inputMethodAdapter.getInfoByPackageName(KeyMapperImeHelper.KEY_MAPPER_GUI_IME_PACKAGE)
             .onSuccess {
                 inputMethodAdapter.enableIme(it.id)
             }
     }
 
-    override val isGuiKeyboardChosen: Flow<Boolean> =
+    override val isChosen: Flow<Boolean> =
         getGuiKeyboardImeInfoFlow().map { it?.isChosen ?: false }
 
-    override fun chooseGuiKeyboard() {
+    override fun chooseInputMethod() {
         inputMethodAdapter.showImePicker(fromForeground = true)
     }
 
@@ -41,12 +41,12 @@ class SetupDpadTriggerUseCaseImpl(
     }
 }
 
-interface SetupDpadTriggerUseCase {
-    val isGuiKeyboardInstalled: Flow<Boolean>
+interface SetupGuiKeyboardUseCase {
+    val isInstalled: Flow<Boolean>
 
-    val isGuiKeyboardEnabled: Flow<Boolean>
-    fun enableGuiKeyboard()
+    val isEnabled: Flow<Boolean>
+    fun enableInputMethod()
 
-    val isGuiKeyboardChosen: Flow<Boolean>
-    fun chooseGuiKeyboard()
+    val isChosen: Flow<Boolean>
+    fun chooseInputMethod()
 }

@@ -24,8 +24,9 @@ class RecordTriggerController(
     private val coroutineScope: CoroutineScope,
     private val serviceAdapter: ServiceAdapter,
 ) : RecordTriggerUseCase {
-    override val state = MutableStateFlow<RecordTriggerState>(RecordTriggerState.Stopped)
+    override val state = MutableStateFlow<RecordTriggerState>(RecordTriggerState.Idle)
 
+    private val recordedKeys: MutableList<RecordedKey> = mutableListOf()
     override val onRecordKey: MutableSharedFlow<RecordedKey> = MutableSharedFlow()
 
     init {
@@ -33,7 +34,7 @@ class RecordTriggerController(
             when (event) {
                 is ServiceEvent.OnStoppedRecordingTrigger ->
                     state.value =
-                        RecordTriggerState.Stopped
+                        RecordTriggerState.Completed(recordedKeys)
 
                 is ServiceEvent.OnIncrementRecordTriggerTimer ->
                     state.value =
@@ -52,13 +53,21 @@ class RecordTriggerController(
                 }
             }
             .map { createRecordedKeyEvent(it.keyCode, it.device, it.detectionSource) }
-            .onEach { key -> onRecordKey.emit(key) }
+            .onEach { key ->
+                recordedKeys.add(key)
+                onRecordKey.emit(key)
+            }
             .launchIn(coroutineScope)
     }
 
-    override suspend fun startRecording(): Result<*> = serviceAdapter.send(ServiceEvent.StartRecordingTrigger)
+    override suspend fun startRecording(): Result<*> {
+        recordedKeys.clear()
+        return serviceAdapter.send(ServiceEvent.StartRecordingTrigger)
+    }
 
-    override suspend fun stopRecording(): Result<*> = serviceAdapter.send(ServiceEvent.StopRecordingTrigger)
+    override suspend fun stopRecording(): Result<*> {
+        return serviceAdapter.send(ServiceEvent.StopRecordingTrigger)
+    }
 
     /**
      * Process key events from the activity so that DPAD buttons can be recorded
@@ -67,7 +76,7 @@ class RecordTriggerController(
      */
     fun onRecordKeyFromActivity(event: KeyEvent): Boolean {
         // Only consume the key event if the app is recording a trigger.
-        if (state.value == RecordTriggerState.Stopped) {
+        if (state.value !is RecordTriggerState.CountingDown) {
             return false
         }
 
@@ -88,6 +97,7 @@ class RecordTriggerController(
                 KeyEventDetectionSource.INPUT_METHOD,
             )
 
+            recordedKeys.add(recordedKey)
             coroutineScope.launch {
                 onRecordKey.emit(recordedKey)
             }

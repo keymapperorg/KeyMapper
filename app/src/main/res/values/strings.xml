@@ -1426,13 +1426,20 @@
     <!--  Dpad trigger setup bottom sheet  -->
     <string name="dpad_trigger_setup_bottom_sheet_title">Want to remap DPAD buttons?</string>
     <string name="dpad_trigger_setup_bottom_sheet_text">You must set up the Key Mapper GUI Keyboard following the steps below.</string>
-    <string name="dpad_trigger_setup_install_keyboard_text">1. Install the keyboard app</string>
-    <string name="dpad_trigger_setup_install_keyboard_button">Install</string>
-    <string name="dpad_trigger_setup_install_keyboard_button_disabled">Installed</string>
-    <string name="dpad_trigger_setup_enable_keyboard_text">2. Enable the keyboard</string>
-    <string name="dpad_trigger_setup_enable_keyboard_button">Enable</string>
-    <string name="dpad_trigger_setup_enable_keyboard_button_disabled">Enabled</string>
-    <string name="dpad_trigger_setup_choose_keyboard_text">3. Use the keyboard</string>
-    <string name="dpad_trigger_setup_choose_keyboard_button">Change keyboard</string>
-    <string name="dpad_trigger_setup_choose_keyboard_button_disabled">Keyboard selected</string>
+    <string name="setup_gui_keyboard_install_keyboard_text">1. Install the keyboard app</string>
+    <string name="setup_gui_keyboard_install_keyboard_button">Install</string>
+    <string name="setup_gui_keyboard_install_keyboard_button_disabled">Installed</string>
+    <string name="setup_gui_keyboard_enable_keyboard_text">2. Enable the keyboard</string>
+    <string name="setup_gui_keyboard_enable_keyboard_button">Enable</string>
+    <string name="setup_gui_keyboard_enable_keyboard_button_disabled">Enabled</string>
+    <string name="setup_gui_keyboard_choose_keyboard_text">3. Use the keyboard</string>
+    <string name="setup_gui_keyboard_choose_keyboard_button">Change keyboard</string>
+    <string name="setup_gui_keyboard_choose_keyboard_button_disabled">Keyboard selected</string>
+    <string name="dpad_trigger_setup_setup_complete_text">Setup complete! Tap \'Done\' and your DPAD trigger should work.</string>
+
+    <!-- No keys recorded bottom sheet -->
+    <string name="no_keys_recorded_bottom_sheet_title">Button not detected?</string>
+    <string name="no_keys_recorded_bottom_sheet_text">You can try using the Key Mapper GUI Keyboard app to record your trigger instead of the accessibility service.</string>
+    <string name="no_keys_recorded_setup_complete_text">Setup complete! Tap \'Done\' and try recording your trigger again. If it doesn’t work then Android will not let it be remapped 🫤.</string>
+
 </resources>

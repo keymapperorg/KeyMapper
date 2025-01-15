@@ -1,12 +1,12 @@
 package io.github.sds100.keymapper.mappings.keymaps.trigger
 
-data class DpadTriggerSetupState(
+data class SetupGuiKeyboardState(
     val isKeyboardInstalled: Boolean,
     val isKeyboardEnabled: Boolean,
     val isKeyboardChosen: Boolean,
 ) {
     companion object {
-        val DEFAULT = DpadTriggerSetupState(
+        val DEFAULT = SetupGuiKeyboardState(
             isKeyboardInstalled = false,
             isKeyboardEnabled = false,
             isKeyboardChosen = false,

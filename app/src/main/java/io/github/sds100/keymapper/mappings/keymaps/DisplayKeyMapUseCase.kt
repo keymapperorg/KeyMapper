@@ -18,6 +18,7 @@ import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.util.valueIfFailure
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 
@@ -29,7 +30,7 @@ class DisplayKeyMapUseCaseImpl(
     private val permissionAdapter: PermissionAdapter,
     private val inputMethodAdapter: InputMethodAdapter,
     displaySimpleMappingUseCase: DisplaySimpleMappingUseCase,
-    private val preferenceRepository: PreferenceRepository,
+    private val preferences: PreferenceRepository,
     private val purchasingManager: PurchasingManager,
 ) : DisplayKeyMapUseCase,
     DisplaySimpleMappingUseCase by displaySimpleMappingUseCase {
@@ -42,15 +43,25 @@ class DisplayKeyMapUseCaseImpl(
 
     private val keyMapperImeHelper: KeyMapperImeHelper = KeyMapperImeHelper(inputMethodAdapter)
 
+    private val showDpadImeSetupError: Flow<Boolean> =
+        preferences.get(Keys.neverShowDpadImeTriggerError).map { neverShow ->
+            if (neverShow == null) {
+                true
+            } else {
+                !neverShow
+            }
+        }
+
     override val invalidateTriggerErrors: Flow<Unit> = merge(
         permissionAdapter.onPermissionsUpdate,
-        preferenceRepository.get(Keys.neverShowDndAccessError).map { }.drop(1),
+        preferences.get(Keys.neverShowDndAccessError).map { }.drop(1),
         purchasingManager.onCompleteProductPurchase.map { },
         inputMethodAdapter.chosenIme.map { },
+        showDpadImeSetupError.map { },
     )
 
     override val showTriggerKeyboardIconExplanation: Flow<Boolean> =
-        preferenceRepository.get(Keys.neverShowTriggerKeyboardIconExplanation).map { neverShow ->
+        preferences.get(Keys.neverShowTriggerKeyboardIconExplanation).map { neverShow ->
             if (neverShow == null) {
                 true
             } else {
@@ -59,7 +70,11 @@ class DisplayKeyMapUseCaseImpl(
         }
 
     override fun neverShowTriggerKeyboardIconExplanation() {
-        preferenceRepository.set(Keys.neverShowTriggerKeyboardIconExplanation, true)
+        preferences.set(Keys.neverShowTriggerKeyboardIconExplanation, true)
+    }
+
+    override fun neverShowDpadImeSetupError() {
+        preferences.set(Keys.neverShowDpadImeTriggerError, true)
     }
 
     override suspend fun getTriggerErrors(keyMap: KeyMap): List<TriggerError> {
@@ -115,7 +130,7 @@ class DisplayKeyMapUseCaseImpl(
             .mapNotNull { it as? KeyCodeTriggerKey }
             .any { InputEventUtils.isDpadKeyCode(it.keyCode) }
 
-        if (!isKeyMapperImeChosen && containsDpadKey) {
+        if (showDpadImeSetupError.first() && !isKeyMapperImeChosen && containsDpadKey) {
             errors.add(TriggerError.DPAD_IME_NOT_SELECTED)
         }
 
@@ -128,4 +143,6 @@ interface DisplayKeyMapUseCase : DisplaySimpleMappingUseCase {
     suspend fun getTriggerErrors(keyMap: KeyMap): List<TriggerError>
     val showTriggerKeyboardIconExplanation: Flow<Boolean>
     fun neverShowTriggerKeyboardIconExplanation()
+
+    fun neverShowDpadImeSetupError()
 }

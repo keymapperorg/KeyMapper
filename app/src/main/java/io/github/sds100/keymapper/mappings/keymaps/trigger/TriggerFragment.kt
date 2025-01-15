@@ -78,6 +78,17 @@ class TriggerFragment : RecyclerViewFragment<TriggerKeyListItem, FragmentTrigger
                         )
                     }
 
+                    if (configTriggerViewModel.showNoKeysRecordedBottomSheet) {
+                        NoKeysRecordedBottomSheet(
+                            modifier = Modifier.systemBarsPadding(),
+                            onDismissRequest = {
+                                configTriggerViewModel.showNoKeysRecordedBottomSheet = false
+                            },
+                            viewModel = configTriggerViewModel,
+                            sheetState = sheetState,
+                        )
+                    }
+
                     RecordTriggerButtonRow(Modifier.fillMaxWidth(), configTriggerViewModel)
                 }
             }
@@ -121,14 +132,7 @@ class TriggerFragment : RecyclerViewFragment<TriggerKeyListItem, FragmentTrigger
 
     override fun getRecyclerView(binding: FragmentTriggerBinding) = binding.recyclerViewTriggerKeys
     override fun getProgressBar(binding: FragmentTriggerBinding) = binding.progressBar
-    override fun getEmptyListPlaceHolderTextView(binding: FragmentTriggerBinding) =
-        binding.emptyListPlaceHolder
-
-    override fun onPause() {
-        super.onPause()
-
-        configTriggerViewModel.stopRecordingTrigger()
-    }
+    override fun getEmptyListPlaceHolderTextView(binding: FragmentTriggerBinding) = binding.emptyListPlaceHolder
 
     private fun FragmentTriggerBinding.enableTriggerKeyDragging(controller: EpoxyController): ItemTouchHelper = EpoxyTouchHelper.initDragging(controller)
         .withRecyclerView(recyclerViewTriggerKeys)
