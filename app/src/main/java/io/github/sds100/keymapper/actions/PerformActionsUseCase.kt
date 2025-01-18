@@ -9,7 +9,6 @@ import io.github.sds100.keymapper.actions.sound.SoundsManager
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.shizuku.InputEventInjector
 import io.github.sds100.keymapper.system.accessibility.AccessibilityNodeAction
 import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
@@ -23,6 +22,7 @@ import io.github.sds100.keymapper.system.display.DisplayAdapter
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.files.FileUtils
+import io.github.sds100.keymapper.system.inputevents.InputEventInjector
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter

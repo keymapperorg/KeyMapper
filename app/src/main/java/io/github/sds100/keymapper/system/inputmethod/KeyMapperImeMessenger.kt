@@ -8,7 +8,7 @@ import android.view.KeyCharacterMap
 import android.view.KeyEvent
 import io.github.sds100.keymapper.api.KeyEventRelayService
 import io.github.sds100.keymapper.api.KeyEventRelayServiceWrapper
-import io.github.sds100.keymapper.shizuku.InputEventInjector
+import io.github.sds100.keymapper.system.inputevents.InputEventInjector
 import io.github.sds100.keymapper.util.InputEventType
 import timber.log.Timber
 

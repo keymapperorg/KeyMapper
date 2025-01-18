@@ -10,9 +10,9 @@ import io.github.sds100.keymapper.mappings.DetectMappingUseCase
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapEntityMapper
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapRepository
-import io.github.sds100.keymapper.shizuku.InputEventInjector
 import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.display.DisplayAdapter
+import io.github.sds100.keymapper.system.inputevents.InputEventInjector
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeMessenger
 import io.github.sds100.keymapper.system.navigation.OpenMenuHelper
