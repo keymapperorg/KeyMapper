@@ -48,39 +48,26 @@ class KeyEventRelayService : Service() {
             targetPackageName: String?,
             callbackId: String?,
         ): Boolean {
+            event ?: return false
             targetPackageName ?: return false
-            Timber.d("KeyEventRelayService: onKeyEvent ${event?.keyCode}")
 
-            synchronized(callbackLock) {
-                val key = ClientKey(targetPackageName, callbackId ?: CALLBACK_ID_DEFAULT)
+            val key = ClientKey(targetPackageName, callbackId ?: CALLBACK_ID_DEFAULT)
 
-                if (!clientConnections.containsKey(key)) {
-                    return false
+            try {
+                val connection = clientConnections[key] ?: return false
+                var consumeKeyEvent = false
+
+                if (connection.callback.onKeyEvent(event, null)) {
+                    consumeKeyEvent = true
                 }
 
-                try {
-                    // Get the process ID of the app that called this service.
-                    val sourcePackageName = getCallerPackageName() ?: return false
-
-                    if (!permittedPackages.contains(sourcePackageName)) {
-                        Timber.d("An unrecognized package $sourcePackageName tried to send a key event.")
-
-                        return false
-                    }
-
-                    var consumeKeyEvent = false
-                    val connection = clientConnections[key]!!
-
-                    if (connection.callback.onKeyEvent(event, sourcePackageName)) {
-                        consumeKeyEvent = true
-                    }
-
-                    return consumeKeyEvent
-                } catch (e: DeadObjectException) {
-                    // If the application is no longer connected then delete the callback.
+                return consumeKeyEvent
+            } catch (e: DeadObjectException) {
+                // If the application is no longer connected then delete the callback.
+                synchronized(callbackLock) {
                     removeConnection(key)
-                    return false
                 }
+                return false
             }
         }
 
@@ -89,39 +76,25 @@ class KeyEventRelayService : Service() {
             targetPackageName: String?,
             callbackId: String?,
         ): Boolean {
+            event ?: return false
             targetPackageName ?: return false
-            Timber.d("KeyEventRelayService: onMotionEvent")
+            val key = ClientKey(targetPackageName, callbackId ?: CALLBACK_ID_DEFAULT)
 
-            synchronized(callbackLock) {
-                val key = ClientKey(targetPackageName, callbackId ?: CALLBACK_ID_DEFAULT)
+            try {
+                val connection = clientConnections[key] ?: return false
+                var consumeMotionEvent = false
 
-                if (!clientConnections.containsKey(key)) {
-                    return false
+                if (connection.callback.onMotionEvent(event, null)) {
+                    consumeMotionEvent = true
                 }
 
-                try {
-                    // Get the process ID of the app that called this service.
-                    val sourcePackageName = getCallerPackageName() ?: return false
-
-                    if (!permittedPackages.contains(sourcePackageName)) {
-                        Timber.d("An unrecognized package $sourcePackageName tried to send a motion event.")
-
-                        return false
-                    }
-
-                    var consumeMotionEvent = false
-                    val connection = clientConnections[key]!!
-
-                    if (connection.callback.onMotionEvent(event, sourcePackageName)) {
-                        consumeMotionEvent = true
-                    }
-
-                    return consumeMotionEvent
-                } catch (e: DeadObjectException) {
-                    // If the application is no longer connected then delete the callback.
+                return consumeMotionEvent
+            } catch (e: DeadObjectException) {
+                // If the application is no longer connected then delete the callback.
+                synchronized(callbackLock) {
                     removeConnection(key)
-                    return false
                 }
+                return false
             }
         }
 
@@ -191,6 +164,9 @@ class KeyEventRelayService : Service() {
 
     override fun onBind(intent: Intent?): IBinder? = binderInterface.asBinder()
 
+    /**
+     * IMPORTANT! This takes about 1ms to execute so do not use it when latency is critical.
+     */
     private fun getCallerPackageName(): String? {
         val sourceUid = Binder.getCallingUid()
         return applicationContext.packageManager.getNameForUid(sourceUid)
