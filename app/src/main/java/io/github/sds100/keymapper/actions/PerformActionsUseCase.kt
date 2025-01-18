@@ -63,7 +63,10 @@ import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import splitties.bitflags.withFlag
 import timber.log.Timber
@@ -114,6 +117,13 @@ class PerformActionsUseCaseImpl(
         )
     }
 
+    /**
+     * Cache this so we aren't checking every time a key event must be inputted.
+     */
+    private val inputKeyEventsWithShizuku: StateFlow<Boolean> =
+        permissionAdapter.isGrantedFlow(Permission.SHIZUKU)
+            .stateIn(coroutineScope, SharingStarted.Eagerly, false)
+
     override fun perform(
         action: ActionData,
         inputEventType: InputEventType,
@@ -148,7 +158,7 @@ class PerformActionsUseCaseImpl(
                 )
 
                 result = when {
-                    permissionAdapter.isGranted(Permission.SHIZUKU) -> {
+                    inputKeyEventsWithShizuku.value -> {
                         shizukuInputEventInjector.inputKeyEvent(model)
                         Success(Unit)
                     }
@@ -596,7 +606,7 @@ class PerformActionsUseCaseImpl(
                     metaState = KeyEvent.META_CTRL_ON,
                 )
 
-                if (permissionAdapter.isGranted(Permission.SHIZUKU)) {
+                if (inputKeyEventsWithShizuku.value) {
                     shizukuInputEventInjector.inputKeyEvent(keyModel)
                 } else {
                     imeInputEventInjector.inputKeyEvent(keyModel)
