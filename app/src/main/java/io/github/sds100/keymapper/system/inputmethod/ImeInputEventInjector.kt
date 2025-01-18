@@ -20,11 +20,11 @@ import timber.log.Timber
  * This class handles communicating with the Key Mapper input method services
  * so key events and text can be inputted.
  */
-class KeyMapperImeMessengerImpl(
+class ImeInputEventInjectorImpl(
     context: Context,
     private val keyEventRelayService: KeyEventRelayServiceWrapper,
     private val inputMethodAdapter: InputMethodAdapter,
-) : KeyMapperImeMessenger {
+) : ImeInputEventInjector {
 
     companion object {
         // DON'T CHANGE THESE!!!
@@ -219,6 +219,6 @@ class KeyMapperImeMessengerImpl(
     }
 }
 
-interface KeyMapperImeMessenger : InputEventInjector {
+interface ImeInputEventInjector : InputEventInjector {
     fun inputText(text: String)
 }

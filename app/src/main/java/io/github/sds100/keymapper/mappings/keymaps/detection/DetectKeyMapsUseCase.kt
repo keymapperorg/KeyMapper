@@ -13,8 +13,8 @@ import io.github.sds100.keymapper.mappings.keymaps.KeyMapRepository
 import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.display.DisplayAdapter
 import io.github.sds100.keymapper.system.inputevents.InputEventInjector
+import io.github.sds100.keymapper.system.inputmethod.ImeInputEventInjector
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
-import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeMessenger
 import io.github.sds100.keymapper.system.navigation.OpenMenuHelper
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
@@ -41,7 +41,7 @@ class DetectKeyMapsUseCaseImpl(
     private val suAdapter: SuAdapter,
     private val displayAdapter: DisplayAdapter,
     private val volumeAdapter: VolumeAdapter,
-    private val keyMapperImeMessenger: KeyMapperImeMessenger,
+    private val imeInputEventInjector: ImeInputEventInjector,
     private val accessibilityService: IAccessibilityService,
     private val shizukuInputEventInjector: InputEventInjector,
     private val permissionAdapter: PermissionAdapter,
@@ -133,7 +133,7 @@ class DetectKeyMapsUseCaseImpl(
 
                 KeyEvent.KEYCODE_MENU -> openMenuHelper.openMenu()
 
-                else -> keyMapperImeMessenger.inputKeyEvent(
+                else -> imeInputEventInjector.inputKeyEvent(
                     InputKeyModel(
                         keyCode,
                         inputEventType,

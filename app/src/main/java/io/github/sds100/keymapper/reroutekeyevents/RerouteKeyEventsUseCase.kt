@@ -3,10 +3,10 @@ package io.github.sds100.keymapper.reroutekeyevents
 import android.os.Build
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.system.inputmethod.ImeInputEventInjector
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
-import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeMessenger
 import io.github.sds100.keymapper.util.firstBlocking
 import kotlinx.coroutines.flow.map
 
@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.map
  */
 class RerouteKeyEventsUseCaseImpl(
     private val inputMethodAdapter: InputMethodAdapter,
-    private val keyMapperImeMessenger: KeyMapperImeMessenger,
+    private val imeInputEventInjector: ImeInputEventInjector,
     private val preferenceRepository: PreferenceRepository,
 ) : RerouteKeyEventsUseCase {
 
@@ -43,11 +43,12 @@ class RerouteKeyEventsUseCaseImpl(
             (
                 descriptor != null &&
                     devicesToRerouteKeyEvents.firstBlocking()
-                        .contains(descriptor))
+                        .contains(descriptor)
+                )
     }
 
     override fun inputKeyEvent(keyModel: InputKeyModel) {
-        keyMapperImeMessenger.inputKeyEvent(keyModel)
+        imeInputEventInjector.inputKeyEvent(keyModel)
     }
 }
 

@@ -30,7 +30,7 @@ import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.accessibility.MyAccessibilityService
 import io.github.sds100.keymapper.system.apps.DisplayAppsUseCase
 import io.github.sds100.keymapper.system.apps.DisplayAppsUseCaseImpl
-import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeMessengerImpl
+import io.github.sds100.keymapper.system.inputmethod.ImeInputEventInjectorImpl
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCaseImpl
 import io.github.sds100.keymapper.system.inputmethod.ToggleCompatibleImeUseCaseImpl
@@ -215,7 +215,7 @@ object UseCases {
     private fun keyMapperImeMessenger(
         ctx: Context,
         keyEventRelayService: KeyEventRelayServiceWrapper,
-    ) = KeyMapperImeMessengerImpl(
+    ) = ImeInputEventInjectorImpl(
         ctx,
         keyEventRelayService,
         ServiceLocator.inputMethodAdapter(ctx),

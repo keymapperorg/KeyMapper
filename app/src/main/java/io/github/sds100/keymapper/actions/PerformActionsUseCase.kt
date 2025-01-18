@@ -24,9 +24,9 @@ import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.system.inputevents.InputEventInjector
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
+import io.github.sds100.keymapper.system.inputmethod.ImeInputEventInjector
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
-import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeMessenger
 import io.github.sds100.keymapper.system.intents.IntentAdapter
 import io.github.sds100.keymapper.system.intents.IntentTarget
 import io.github.sds100.keymapper.system.lock.LockScreenAdapter
@@ -81,7 +81,7 @@ class PerformActionsUseCaseImpl(
     private val shellAdapter: ShellAdapter,
     private val intentAdapter: IntentAdapter,
     private val getActionError: GetActionErrorUseCase,
-    private val keyMapperImeMessenger: KeyMapperImeMessenger,
+    private val imeInputEventInjector: ImeInputEventInjector,
     private val shizukuInputEventInjector: InputEventInjector,
     private val packageManagerAdapter: PackageManagerAdapter,
     private val appShortcutAdapter: AppShortcutAdapter,
@@ -156,7 +156,7 @@ class PerformActionsUseCaseImpl(
                     action.useShell -> suAdapter.execute("input keyevent ${model.keyCode}")
 
                     else -> {
-                        keyMapperImeMessenger.inputKeyEvent(model)
+                        imeInputEventInjector.inputKeyEvent(model)
 
                         Success(Unit)
                     }
@@ -319,7 +319,7 @@ class PerformActionsUseCaseImpl(
             }
 
             is ActionData.Text -> {
-                keyMapperImeMessenger.inputText(action.text)
+                imeInputEventInjector.inputText(action.text)
                 result = Success(Unit)
             }
 
@@ -599,7 +599,7 @@ class PerformActionsUseCaseImpl(
                 if (permissionAdapter.isGranted(Permission.SHIZUKU)) {
                     shizukuInputEventInjector.inputKeyEvent(keyModel)
                 } else {
-                    keyMapperImeMessenger.inputKeyEvent(keyModel)
+                    imeInputEventInjector.inputKeyEvent(keyModel)
                 }
 
                 result = Success(Unit)
