@@ -4,6 +4,6 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 
 interface IKeyEventRelayServiceCallback {
-    boolean onKeyEvent(in KeyEvent event, in String sourcePackageName);
-    boolean onMotionEvent(in MotionEvent event, in String sourcePackageName);
+    boolean onKeyEvent(in KeyEvent event);
+    boolean onMotionEvent(in MotionEvent event);
 }

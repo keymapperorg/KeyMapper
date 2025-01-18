@@ -108,9 +108,8 @@ class MyAccessibilityService :
 
     private val relayServiceCallback: IKeyEventRelayServiceCallback =
         object : IKeyEventRelayServiceCallback.Stub() {
-            override fun onKeyEvent(event: KeyEvent?, sourcePackageName: String?): Boolean {
+            override fun onKeyEvent(event: KeyEvent?): Boolean {
                 event ?: return false
-                sourcePackageName ?: return false
 
                 val device = if (event.device == null) {
                     null
@@ -134,9 +133,8 @@ class MyAccessibilityService :
                 return false
             }
 
-            override fun onMotionEvent(event: MotionEvent?, sourcePackageName: String?): Boolean {
+            override fun onMotionEvent(event: MotionEvent?): Boolean {
                 event ?: return false
-                sourcePackageName ?: return false
 
                 if (controller != null) {
                     return controller!!.onMotionEventFromIme(MyMotionEvent.fromMotionEvent(event))

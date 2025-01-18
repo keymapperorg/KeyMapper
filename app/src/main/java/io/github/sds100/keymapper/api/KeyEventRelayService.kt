@@ -57,7 +57,7 @@ class KeyEventRelayService : Service() {
                 val connection = clientConnections[key] ?: return false
                 var consumeKeyEvent = false
 
-                if (connection.callback.onKeyEvent(event, null)) {
+                if (connection.callback.onKeyEvent(event)) {
                     consumeKeyEvent = true
                 }
 
@@ -84,7 +84,7 @@ class KeyEventRelayService : Service() {
                 val connection = clientConnections[key] ?: return false
                 var consumeMotionEvent = false
 
-                if (connection.callback.onMotionEvent(event, null)) {
+                if (connection.callback.onMotionEvent(event)) {
                     consumeMotionEvent = true
                 }
 
