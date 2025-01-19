@@ -60,17 +60,15 @@ class KeyEventRelayServiceWrapperImpl(
         targetPackageName: String,
         callbackId: String,
     ): Boolean {
-        synchronized(keyEventRelayServiceLock) {
-            if (keyEventRelayService == null) {
-                return false
-            }
+        if (keyEventRelayService == null) {
+            return false
+        }
 
-            try {
-                return keyEventRelayService!!.sendKeyEvent(event, targetPackageName, callbackId)
-            } catch (e: DeadObjectException) {
-                keyEventRelayService = null
-                return false
-            }
+        try {
+            return keyEventRelayService!!.sendKeyEvent(event, targetPackageName, callbackId)
+        } catch (e: DeadObjectException) {
+            keyEventRelayService = null
+            return false
         }
     }
 
@@ -79,17 +77,15 @@ class KeyEventRelayServiceWrapperImpl(
         targetPackageName: String,
         callbackId: String,
     ): Boolean {
-        synchronized(keyEventRelayServiceLock) {
-            if (keyEventRelayService == null) {
-                return false
-            }
+        if (keyEventRelayService == null) {
+            return false
+        }
 
-            try {
-                return keyEventRelayService!!.sendMotionEvent(event, targetPackageName, callbackId)
-            } catch (e: DeadObjectException) {
-                keyEventRelayService = null
-                return false
-            }
+        try {
+            return keyEventRelayService!!.sendMotionEvent(event, targetPackageName, callbackId)
+        } catch (e: DeadObjectException) {
+            keyEventRelayService = null
+            return false
         }
     }
 
