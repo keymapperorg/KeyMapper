@@ -2,7 +2,6 @@
 <resources>
     <string name="slogan">Giải phóng chìa khóa của bạn!</string>
     <string name="no_action_chosen">Không có hành động nào được chọn</string>
-    <string name="accessibility_service_explanation">Key Mapper yêu cầu sử dụng dịch vụ trợ năng để dịch vụ này có thể phát hiện và thay đổi thao tác nhấn nút của bạn khi bạn ở ngoài ứng dụng. Bản đồ chính của bạn sẽ chỉ hoạt động khi bạn đã bật dịch vụ trợ năng. Nó cũng phải được bật để tạo trình kích hoạt.</string>
     <string name="selection_count">%d Đã chọn</string>
     <string name="enable">Cho phép</string>
     <string name="open">Mở</string>
@@ -79,7 +78,6 @@
     <string name="trigger_error_dnd_access_denied">Key Mapper yêu cầu quyền sửa đổi chế độ Không làm phiền nếu bạn muốn các nút hoạt động như mong đợi ở chế độ Không làm phiền!</string>
     <string name="trigger_error_dnd_access_denied_short">Trình kích hoạt này sẽ không hoạt động như mong đợi ở chế độ Không làm phiền!</string>
     <string name="trigger_error_screen_off_root_permission_denied">Tùy chọn kích hoạt khi màn hình tắt cần có quyền root để hoạt động!</string>
-    <string name="trigger_error_screen_off_root_permission_denied_short">Tùy chọn kích hoạt khi màn hình tắt sẽ không hoạt động!</string>
     <string name="trigger_error_cant_detect_in_phone_call">Trình kích hoạt này sẽ không hoạt động khi đang đổ chuông hoặc đang gọi điện thoại!</string>
     <string name="trigger_error_cant_detect_in_phone_call_explanation">Android không cho phép các dịch vụ trợ năng phát hiện các lần nhấn nút âm lượng khi điện thoại của bạn đang đổ chuông hoặc đang trong cuộc gọi điện thoại, nhưng nó cho phép các dịch vụ phương thức nhập liệu phát hiện chúng. Do đó, bạn phải sử dụng một trong các bàn phím Key Mapper nếu muốn trình kích hoạt này hoạt động.</string>
     <string name="trigger_error_gesture_stroke_count_too_high">Quá nhiều ngón tay để thực hiện cử chỉ do giới hạn của Android.</string>
@@ -1081,4 +1079,8 @@
     <string name="purchasing_error_assistant_not_purchased_home_screen">Bạn phải mua tính năng kích hoạt trợ lý! Nhấn vào bản đồ chính và sau đó mua nó bằng cách nhấp vào \'Trình kích hoạt nâng cao\'.</string>
     <string name="purchasing_not_implemented_bottom_sheet_text">Trình kích hoạt nâng cao là tính năng trả phí nhưng bạn đã tải xuống bản dựng FOSS của Key Mapper không bao gồm mô-đun này hoặc thanh toán Google Play. Vui lòng tải xuống Key Mapper từ Google Play để có quyền truy cập vào tính năng này.</string>
     <string name="purchasing_download_key_mapper_from_google_play">Tải xuống bản dựng Play</string>
+    <!--  Dpad trigger setup bottom sheet  -->
+    <string name="setup_gui_keyboard_enable_keyboard_button">Cho phép</string>
+    <string name="setup_gui_keyboard_enable_keyboard_button_disabled">Đã bật</string>
+    <!-- No keys recorded bottom sheet -->
 </resources>

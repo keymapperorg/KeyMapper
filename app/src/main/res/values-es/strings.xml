@@ -2,7 +2,6 @@
 <resources>
     <string name="slogan">¡Desata tus teclas!</string>
     <string name="no_action_chosen">Ninguna acción seleccionada</string>
-    <string name="accessibility_service_explanation">Key Mapper requiere el uso de un servicio de accesibilidad para poder detectar y cambiar lo que hacen las pulsaciones de los botones mientras está fuera de la aplicación. Tus mapeados solo funcionarán una vez que hayas habilitado el servicio de accesibilidad. También debe estar activado para crear un disparador.</string>
     <string name="selection_count">%d seleccionado</string>
     <string name="enable">Activar</string>
     <string name="open">Abrir</string>
@@ -81,7 +80,6 @@
     <string name="trigger_error_dnd_access_denied">¡Key Mapper necesita permiso para modificar el Modo No Molestar si quieres que los botones funcionen como lo esperas en Modo No Molestar!</string>
     <string name="trigger_error_dnd_access_denied_short">¡Este activador no funcionará como se espera en el modo \"No molestar\"!</string>
     <string name="trigger_error_screen_off_root_permission_denied">¡La opción de activar cuando la pantalla está apagada necesita permiso de root para funcionar!</string>
-    <string name="trigger_error_screen_off_root_permission_denied_short">¡Opción para activar cuando la pantalla se apaga no funciona!</string>
     <string name="trigger_error_cant_detect_in_phone_call">¡Este activador no funciona mientras el teléfono suena o estás en una llamada!</string>
     <string name="trigger_error_cant_detect_in_phone_call_explanation">Android no deja a los servicios de accesibilidad detectar las pulsaciones en un botón de volumen del teléfono mientras suena o está en llamada, pero sí deja al servicio de método de entrada usarlos. Por tanto, debes usar uno de los teclados \"Key Mapper\" si quieres que este activador funcione.</string>
     <string name="home_error_is_battery_optimised">¡Tus asignaciones dejarán de funcionar aleatoriamente!</string>
@@ -1028,4 +1026,8 @@
     <!--  About  -->
     <!-- Advanced triggers -->
     <!--  Purchasing  -->
+    <!--  Dpad trigger setup bottom sheet  -->
+    <string name="setup_gui_keyboard_enable_keyboard_button">Activar</string>
+    <string name="setup_gui_keyboard_enable_keyboard_button_disabled">Activado</string>
+    <!-- No keys recorded bottom sheet -->
 </resources>

@@ -2,7 +2,6 @@
 <resources>
     <string name="slogan">Дайте волю кнопкам!</string>
     <string name="no_action_chosen">Действие не выбрано</string>
-    <string name="accessibility_service_explanation">Key Mapper необходимо использование службы спец. возможностей для распознавания и изменения нажатий кнопок вне приложения. Ваши назначения будут работать только после включения службы. Она также должна быть включена для добавления триггеров.</string>
     <string name="selection_count">%d выбрано</string>
     <string name="enable">Включить</string>
     <string name="open">Открыть</string>
@@ -81,7 +80,6 @@
     <string name="trigger_error_dnd_access_denied">Key Mapper требует разрешения на изменение режима «Не беспокоить», если вы хотите, чтобы кнопки работали должным образом в режиме «Не беспокоить»!</string>
     <string name="trigger_error_dnd_access_denied_short">Этот триггер не будет работать должным образом в режиме «Не беспокоить»!</string>
     <string name="trigger_error_screen_off_root_permission_denied">Опция запуска, когда экран выключен, требует root-разрешения для работы!</string>
-    <string name="trigger_error_screen_off_root_permission_denied_short">Опция срабатывания при выключенном экране не будет работать!</string>
     <string name="trigger_error_cant_detect_in_phone_call">Этот триггер не будет работать во время звонка!</string>
     <string name="trigger_error_cant_detect_in_phone_call_explanation">Android не позволяет службам спец. возможностей распознавать касания кнопок громкости во время звонка, но позволяет это службам методов ввода. Следовательно, вы должны использовать одну из клавиатур Key Mapper для работы этого триггера.</string>
     <string name="home_error_is_battery_optimised">Ваши сопоставления перестанут работать случайным образом!</string>
@@ -1029,4 +1027,8 @@
     <!--  About  -->
     <!-- Advanced triggers -->
     <!--  Purchasing  -->
+    <!--  Dpad trigger setup bottom sheet  -->
+    <string name="setup_gui_keyboard_enable_keyboard_button">Включить</string>
+    <string name="setup_gui_keyboard_enable_keyboard_button_disabled">Включено</string>
+    <!-- No keys recorded bottom sheet -->
 </resources>

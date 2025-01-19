@@ -1,10 +1,11 @@
-New trigger! 🎉 Remap your Assistant & Bixby buttons!
+New trigger! 🎉 Remap your Assistant, Bixby and DPAD buttons!
 
 Что можно переназначить?
 
  * Кнопки громкости.
  * Power button via Google Assistant, Pixel Active Edge, Double press Bixby button.
  * Проводные и Bluetooth клавиатуры.
+ * DPAD buttons on game controllers.
  * Жесты отпечатка пальца на поддерживаемых устройствах.
  * Кнопки на других подключенных устройствах также должны работать.
 
@@ -15,7 +16,7 @@ New trigger! 🎉 Remap your Assistant & Bixby buttons!
 
 Что НЕ может быть переназначено:
  * Кнопки мыши
- * Dpad, джойстики или триггеры на игровых контроллерах
+ * Joysticks or triggers on game controllers
 
 Your key maps do not work if the screen is OFF. Это ограничение самого Android. К сожалению с этим ничего нельзя сделать.
 

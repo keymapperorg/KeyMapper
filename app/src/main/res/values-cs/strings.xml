@@ -2,7 +2,6 @@
 <resources>
     <string name="slogan">Uvolněte své klíče!</string>
     <string name="no_action_chosen">Není vybrána žádná akce</string>
-    <string name="accessibility_service_explanation">Key Mapper vyžaduje použití služby usnadnění, aby mohl detekovat a měnit, co dělá vaše stisknutí tlačítka, když jste mimo aplikaci. Vaše klíčové mapy budou fungovat, až když povolíte službu usnadnění. Pro vytvoření spouště musí být také zapnuto.</string>
     <string name="selection_count">%d vybrán</string>
     <string name="enable">Povolit</string>
     <string name="open">Otevřít</string>
@@ -81,7 +80,6 @@
     <string name="trigger_error_dnd_access_denied">Klávesová mapa vyžaduje oprávnění ke změně režimu Nerušit, pokud chcete, aby tlačítka fungovala dle očekávání v režimu Nerušit!</string>
     <string name="trigger_error_dnd_access_denied_short">Tento spouštěč nebude fungovat podle očekávání v režimu Nerušit!</string>
     <string name="trigger_error_screen_off_root_permission_denied">Možnost spustit, když je obrazovka vypnutá, vyžaduje oprávnění root!</string>
-    <string name="trigger_error_screen_off_root_permission_denied_short">Možnost spuštění při vypnuté obrazovce nebude fungovat!</string>
     <string name="home_error_is_battery_optimised">Vaše mapování přestane fungovat náhodně!</string>
     <string name="home_error_key_maps_paused">Vaše mapování je pozastaveno!</string>
     <string name="home_error_key_maps_paused_button">Unpause</string>
@@ -1009,4 +1007,8 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <!--  About  -->
     <!-- Advanced triggers -->
     <!--  Purchasing  -->
+    <!--  Dpad trigger setup bottom sheet  -->
+    <string name="setup_gui_keyboard_enable_keyboard_button">Povolit</string>
+    <string name="setup_gui_keyboard_enable_keyboard_button_disabled">Povoleno</string>
+    <!-- No keys recorded bottom sheet -->
 </resources>
