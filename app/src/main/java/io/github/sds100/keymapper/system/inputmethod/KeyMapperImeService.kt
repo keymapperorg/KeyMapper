@@ -82,16 +82,12 @@ class KeyMapperImeService : InputMethodService() {
 
     private val keyEventReceiverCallback: IKeyEventRelayServiceCallback =
         object : IKeyEventRelayServiceCallback.Stub() {
-            override fun onKeyEvent(event: KeyEvent?, sourcePackageName: String?): Boolean {
+            override fun onKeyEvent(event: KeyEvent?): Boolean {
                 // Only accept key events from Key Mapper
-                if (sourcePackageName != Constants.PACKAGE_NAME) {
-                    return false
-                }
-
                 return currentInputConnection?.sendKeyEvent(event) ?: false
             }
 
-            override fun onMotionEvent(event: MotionEvent?, sourcePackageName: String?): Boolean {
+            override fun onMotionEvent(event: MotionEvent?): Boolean {
                 // Do nothing if the IME receives a motion event.
                 return false
             }
