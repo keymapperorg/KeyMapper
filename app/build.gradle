@@ -9,8 +9,8 @@ apply plugin: "org.jlleitschuh.gradle.ktlint"
 android {
 
     namespace "io.github.sds100.keymapper"
-    compileSdk 34
-    buildToolsVersion = "34.0.0"
+    compileSdk 35
+    buildToolsVersion = "35.0.0"
 
     def versionProperties = new Properties()
     file("version.properties").withInputStream { versionProperties.load(it) }
@@ -18,7 +18,7 @@ android {
     defaultConfig {
         applicationId "io.github.sds100.keymapper"
         minSdkVersion 21
-        targetSdkVersion 34
+        targetSdkVersion 35
         versionCode versionProperties.getProperty("VERSION_CODE").toInteger()
         versionName versionProperties.getProperty("VERSION_NAME")
         multiDexEnabled true
