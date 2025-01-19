@@ -2,7 +2,6 @@
 <resources>
     <string name="slogan">松开你的按键！</string>
     <string name="no_action_chosen">未选择动作</string>
-    <string name="accessibility_service_explanation">键映射器需要使用无障碍服务，以便它可以检测并更改您在应用程序之外时按下的按钮的操作。只有在您启用了无障碍服务后，您的按键映射才会起作用。必须打开无障碍服务才能创建触发器。</string>
     <string name="selection_count">已选择 %d 个</string>
     <string name="enable">启用</string>
     <string name="open">打开</string>
@@ -82,7 +81,6 @@
     <string name="trigger_error_dnd_access_denied">如果您希望按键映射在“请勿打扰”模式下按预期工作，则 Key Mapper 需要修改“请勿打扰”模式的权限！</string>
     <string name="trigger_error_dnd_access_denied_short">此触发器无法在“请勿打扰”模式下正常工作！</string>
     <string name="trigger_error_screen_off_root_permission_denied">屏幕关闭时触发的设置需要root权限才能工作！</string>
-    <string name="trigger_error_screen_off_root_permission_denied_short">屏幕关闭时触发的设置将失效！</string>
     <string name="trigger_error_cant_detect_in_phone_call">此触发器在响铃或通话时失效！</string>
     <string name="trigger_error_cant_detect_in_phone_call_explanation">Android 的无障碍服务不会在您的手机响铃或通话时检测音量按钮按下的动作，但可以被输入法服务检测到。 如果您希望此触发器起作用，您必须使用Key Mapper keyboard。</string>
     <string name="trigger_error_gesture_stroke_count_too_high">由于 Android 的限制，需要多指才能执行手势</string>
@@ -1068,4 +1066,8 @@
     <!--  About  -->
     <!-- Advanced triggers -->
     <!--  Purchasing  -->
+    <!--  Dpad trigger setup bottom sheet  -->
+    <string name="setup_gui_keyboard_enable_keyboard_button">启用</string>
+    <string name="setup_gui_keyboard_enable_keyboard_button_disabled">已启用</string>
+    <!-- No keys recorded bottom sheet -->
 </resources>

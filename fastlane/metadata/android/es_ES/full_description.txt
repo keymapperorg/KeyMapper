@@ -1,10 +1,11 @@
-New trigger! 🎉 Remap your Assistant & Bixby buttons!
+New trigger! 🎉 Remap your Assistant, Bixby and DPAD buttons!
 
 ¿Qué se puede reasignar?
 
  * Botones de volumen.
  * Power button via Google Assistant, Pixel Active Edge, Double press Bixby button.
  * Teclados Bluetooth/con cable.
+ * DPAD buttons on game controllers.
  * Gestos con la huella dactilar en los dispositivos compatibles.
  * Los botones de otros dispositivos conectados también deberían funcionar.
 
@@ -15,7 +16,7 @@ Puedes combinar varias teclas de un dispositivo específico o de cualquier dispo
 
 ¿Qué no es posible remapear?
  * Botones del ratón
- * Dpad, thumb sticks o gatillos en los mandos de los juegos
+ * Joysticks or triggers on game controllers
 
 Your key maps do not work if the screen is OFF. Esta es una limitación de Android. No hay nada que pueda hacer el desarrollador.
 

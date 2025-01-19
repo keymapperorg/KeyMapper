@@ -1,10 +1,11 @@
-Nowy wyzwalacz! 🎉 Zmień funkcje przycisków asystenta i Bixby!
+Nowy wyzwalacz! 🎉 Remap your Assistant, Bixby and DPAD buttons!
 
 Funkcje jakich przycisków można zmienić?
 
  * Przyciski głośności.
  * Przycisk zasilania za pośrednictwem asystenta Google, Pixel Active Edge, dwukrotne naciśnięcie przycisku Bixby.
  * Klawiatury przewodowe i Bluetooth.
+ * DPAD buttons on game controllers.
  * Gesty czytnika linii papilarnych na obsługiwanych urządzeniach.
  * Przyciski na innych podłączonych urządzeniach również powinny działać.
 
@@ -15,7 +16,7 @@ Możesz połączyć wiele przycisków z określonego lub dowolnego urządzenia, 
 
 Funkcje jakich przycisków nie można zmieniać?
  * Przyciski myszy
- * Krzyżak, gałki albo spusty na kontrolerach gier
+ * Joysticks or triggers on game controllers
 
 Twoje zmiany funkcji nie będą działać, gdy ekran jest WYŁĄCZONY. To jest ograniczenie w systemie Android. Programista nic nie może na to poradzić.
 

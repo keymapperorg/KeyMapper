@@ -76,7 +76,6 @@
     <string name="trigger_error_dnd_access_denied">Key Mapper vyžaduje povolenie na úpravu režimu Nerušiť, ak chcete, aby tlačidlá fungovali podľa očakávania v režime Nerušiť!</string>
     <string name="trigger_error_dnd_access_denied_short">Tento spúšťač nebude fungovať podľa očakávania v režime Nerušiť!</string>
     <string name="trigger_error_screen_off_root_permission_denied">Možnosť spustiť, keď je obrazovka vypnutá, potrebuje povolenie root na prácu!</string>
-    <string name="trigger_error_screen_off_root_permission_denied_short">Možnosť spustiť, keď je obrazovka vypnutá nebude fungovať!</string>
     <string name="home_error_is_battery_optimised">Vaše mapovanie prestane fungovať náhodne!</string>
     <string name="home_error_key_maps_paused">Vaše mapovanie je pozastavené!</string>
     <string name="home_error_key_maps_paused_button">Spustiť</string>
@@ -865,4 +864,8 @@
     <!--  About  -->
     <!-- Advanced triggers -->
     <!--  Purchasing  -->
+    <!--  Dpad trigger setup bottom sheet  -->
+    <string name="setup_gui_keyboard_enable_keyboard_button">Zapnúť</string>
+    <string name="setup_gui_keyboard_enable_keyboard_button_disabled">Povolené</string>
+    <!-- No keys recorded bottom sheet -->
 </resources>

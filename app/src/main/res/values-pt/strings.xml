@@ -2,7 +2,6 @@
 <resources>
     <string name="slogan">Liberte suas chaves!</string>
     <string name="no_action_chosen">Sem ação definida</string>
-    <string name="accessibility_service_explanation">Este aplicativo requer o serviço de acessibilidade. Isso detecta suas ações fora do aplicativo. O mapeamento depende disso. Também obrigatório para criar gatilhos.</string>
     <string name="selection_count">%d selecionado</string>
     <string name="enable">Habilitar</string>
     <string name="open">Abrir</string>
@@ -82,7 +81,6 @@
     <string name="trigger_error_dnd_access_denied">Key Mapper precisa de permissão para modificar o modo Não Perturbar se você quer que os botões funcionem corretamente no modo Não Perturbar!</string>
     <string name="trigger_error_dnd_access_denied_short">Este acionador não funcionará como esperado no modo Não Perturbe!</string>
     <string name="trigger_error_screen_off_root_permission_denied">A opção para acionar quando a tela está desligada precisa de permissão de super usuário para funcionar!</string>
-    <string name="trigger_error_screen_off_root_permission_denied_short">A opção para acionar quando a tela está desligada não funcionará!</string>
     <string name="trigger_error_cant_detect_in_phone_call">Este acionador não funcionará enquanto o telefone estiver tocando ou durante uma chamada!</string>
     <string name="trigger_error_cant_detect_in_phone_call_explanation">O sistema operacional não permite que os serviços de acessibilidade detectem os pressionamentos do botão de volume enquanto seu telefone está tocando ou durante uma chamada, mas permite que os serviços de método de entrada os detectem. Portanto, você deve usar um dos teclados do aplicativo se quiser que este acionador funcione.</string>
     <string name="trigger_error_gesture_stroke_count_too_high">Muitos dedos para realizar o gesto devido às limitações do Android.</string>
@@ -1067,4 +1065,8 @@
     <!--  About  -->
     <!-- Advanced triggers -->
     <!--  Purchasing  -->
+    <!--  Dpad trigger setup bottom sheet  -->
+    <string name="setup_gui_keyboard_enable_keyboard_button">Habilitar</string>
+    <string name="setup_gui_keyboard_enable_keyboard_button_disabled">Ativado</string>
+    <!-- No keys recorded bottom sheet -->
 </resources>

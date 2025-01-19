@@ -1,10 +1,11 @@
-New trigger! 🎉 Remap your Assistant & Bixby buttons!
+New trigger! 🎉 Remap your Assistant, Bixby and DPAD buttons!
 
 什么能被重新映射？
 
  * 音量键。
  * Power button via Google Assistant, Pixel Active Edge, Double press Bixby button.
  * 蓝牙/有线键盘。
+ * DPAD buttons on game controllers.
  * 在支持的设备上的指纹手势。
  * 其他已连接的设备的按钮也应该起作用。
 
@@ -15,7 +16,7 @@ New trigger! 🎉 Remap your Assistant & Bixby buttons!
 
 什么不可以重新映射？
  * 鼠标键
- * 游戏手柄上的Dpad、类比摇杆和触发器
+ * Joysticks or triggers on game controllers
 
 Your key maps do not work if the screen is OFF. 这是Android中的一个限制。 开发者无能为力。
 

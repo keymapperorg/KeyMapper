@@ -2,7 +2,6 @@
 <resources>
     <string name="slogan">Uwolnij swoje przyciski!</string>
     <string name="no_action_chosen">Nie wybrano działania</string>
-    <string name="accessibility_service_explanation">Aplikacja Key Mapper wymaga włączenia usługi ułatwień dostępu, aby mogła wykrywać i zmieniać działanie naciśnięć przycisków, gdy jesteś poza aplikacją. Mapy klawiszy będą działać dopiero po włączeniu usługi ułatwień dostępu. Należy również włączyć usługę, aby utworzyć wyzwalacz.</string>
     <string name="selection_count">%d elementy</string>
     <string name="enable">Włącz</string>
     <string name="open">Otwórz</string>
@@ -83,7 +82,6 @@
     <string name="trigger_error_dnd_access_denied">Key Mapper wymaga uprawnień do modyfikowania trybu Nie przeszkadzać, jeśli chcesz, aby przyciski działały zgodnie z oczekiwaniami w trybie Nie przeszkadzać!</string>
     <string name="trigger_error_dnd_access_denied_short">Ten wyzwalacz nie będzie działał zgodnie z oczekiwaniami w trybie Nie przeszkadzać!</string>
     <string name="trigger_error_screen_off_root_permission_denied">Opcja wyzwalania, gdy ekran jest wyłączony, wymaga uprawnień roota do działania!</string>
-    <string name="trigger_error_screen_off_root_permission_denied_short">Opcja wyzwalania, gdy ekran jest wyłączony, nie będzie działać!</string>
     <string name="trigger_error_cant_detect_in_phone_call">Ten wyzwalacz nie zadziała, gdy telefon dzwoni lub w trakcie rozmowy telefonicznej!</string>
     <string name="trigger_error_cant_detect_in_phone_call_explanation">Android nie pozwala usługom ułatwień dostępu wykrywać naciśnięcia przycisków głośności, gdy telefon dzwoni lub trwa rozmowa telefoniczna, ale umożliwia wykrywanie ich przez metody wprowadzania. Dlatego należy użyć jednej z klawiatur Key Mapper, jeśli chcesz, aby ten wyzwalacz działał w takich sytuacjach.</string>
     <string name="trigger_error_gesture_stroke_count_too_high">Zbyt wiele palców do wykonania gestu ze względu na ograniczenia systemu Android.</string>
@@ -1103,4 +1101,8 @@
     <string name="purchasing_error_assistant_not_purchased_home_screen">Musisz kupić funkcję wyzwalacza asystenta! Kliknij mapę klawiszy, a następnie kup ją, klikając \"Zaawansowane wyzwalacze\".</string>
     <string name="purchasing_not_implemented_bottom_sheet_text">Zaawansowane wyzwalacze to płatna funkcja, ale pobrano Key Mapper wersji open source, która nie obsługuje tego modułu ani rozliczeń Google Play. Aby uzyskać dostęp do tych funkcji, pobierz Key Mapper z Google Play.</string>
     <string name="purchasing_download_key_mapper_from_google_play">Pobierz wersję z Google Play</string>
+    <!--  Dpad trigger setup bottom sheet  -->
+    <string name="setup_gui_keyboard_enable_keyboard_button">Włącz</string>
+    <string name="setup_gui_keyboard_enable_keyboard_button_disabled">Włączone</string>
+    <!-- No keys recorded bottom sheet -->
 </resources>
