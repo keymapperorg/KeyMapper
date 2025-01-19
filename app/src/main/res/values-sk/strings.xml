@@ -370,9 +370,7 @@
     <string name="dialog_message_disable_battery_optimisation"><b>MUSÍTE</b> si prečítať toto<b>celé</b>, inak budete v budúcnosti <b>frustrovaný</b>! \n\nStlačte \"opraviť čiastočne\" <b>môže</b> zabrániť Androidu zastaviť aplikáciu, keď je na pozadí.\n\n<b>Toto NESTAČÍ</b>. Váš OEM skin, ako napríklad MIUI alebo Samsung Experience, môže obsahovať iné funkcie na zabíjanie aplikácií, takže ich musíte vypnúť aj pre Key Mapper podľa online sprievodcu na dontkillmyapp.com.</string>
     <string name="dialog_title_send_feedback">Odoslať spätnú väzbu</string>
     <string name="dialog_message_send_feedback">Prečítajte si príručku o tom, ako nahlásiť problémy na webovú stránku.</string>
-    <string name="dialog_message_enable_accessibility_service_to_record_trigger">Zapnite službu zjednodušenia ovládania, aby ste mohli nahrať spúšťač.</string>
     <string name="dialog_message_restart_accessibility_service_to_record_trigger">Reštartujte službu zjednodušenia ovládania tak, že ju <i>vypnete</i> a <i>zapnete</i>, aby ste mohli nahrať spúšťač.</string>
-    <string name="dialog_message_enable_accessibility_service_to_test_action">Zapnite službu zjednodušenia ovládania, aby ste mohli akciu otestovať.</string>
     <string name="dialog_message_restart_accessibility_service_to_test_action">Reštartujte službu zjednodušenia ovládania tak, že ju <i> vyp.</i> a <i>zap.</i>, aby ste mohli akciu otestovať.</string>
     <string name="dialog_message_restart_accessibility_service">Reštartujte službu zjednodušenia ovládania tak, že ju <i>vyp.</i> a <i>zap.</i>.</string>
     <string name="dialog_message_screen_pinning_warning">Použitie tohto spúšťača môže spôsobiť čiernu obrazovku pri odomknutí zariadenia po použití nastavenia pripovania obrazovky v nastaveniach zariadenia. To môže byť opravené reštartom. To sa nestane na všetkých zariadeniach, takže pozor a vypnite nastavenie, ak to robí!</string>
