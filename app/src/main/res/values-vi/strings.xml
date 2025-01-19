@@ -640,7 +640,6 @@
     <string name="showcase_dnd_access_description_disabled">Key Mapper cần có quyền truy cập Không làm phiền nếu bạn muốn các hành động thay đổi âm lượng và ánh xạ lại các nút âm lượng hoạt động.</string>
     <string name="showcase_dnd_access_description_enabled">Tất cả đều tốt! :)</string>
     <string name="showcase_contributing_title">Đóng góp</string>
-    <string name="showcase_contributing_description">"Ứng dụng này là nguồn mở! Bạn có thể bắt đầu đóng góp bằng cách truy cập kho lưu trữ sds100/KeyMapper trên GitHub và bằng cách tham gia máy chủ Discord. Ngay cả khi bạn không thể viết mã, bạn vẫn có thể đóng góp bằng cách giúp đỡ người khác và thử nghiệm các tính năng mới nhất."</string>
     <string name="showcase_action_list">Nhấn vào dấu 3 chấm để thay đổi hành vi lặp lại và hơn thế nữa. Bạn có thể kiểm tra một hành động và sửa lỗi hành động bằng cách nhấn vào hành động đó.</string>
     <string name="showcase_fingerprint_gesture_support_title_supported_unknown">Ánh xạ lại cử chỉ đọc dấu vân tay</string>
     <string name="showcase_fingerprint_gesture_support_title_supported">Bạn có thể ánh xạ lại cử chỉ đọc dấu vân tay! :)</string>

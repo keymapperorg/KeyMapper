@@ -657,7 +657,6 @@
     <string name="showcase_dnd_access_description_disabled">O Key Mapper precisa do acesso Não Perturbe se você quiser que ações que alterem o volume e botões de volume remapeados funcionem.</string>
     <string name="showcase_dnd_access_description_enabled">Tudo certo</string>
     <string name="showcase_contributing_title">Contribuindo</string>
-    <string name="showcase_contributing_description">"Este aplicativo é de código aberto! Você pode começar a contribuir indo para o repositório sds100/KeyMapper no GitHub e entrando no servidor Discord. Mesmo que você não saiba programar, você pode contribuir ajudando outros"</string>
     <string name="showcase_action_list">Toque nos 3 pontos para alterar o comportamento de repetição e mais. Você pode testar uma ação e corrigir erros de ação tocando nela.</string>
     <string name="showcase_fingerprint_gesture_support_title_supported_unknown">Remapeando gestos do leitor de impressão digital</string>
     <string name="showcase_fingerprint_gesture_support_title_supported">Você pode remapear os gestos do leitor de impressão digital! :)</string>

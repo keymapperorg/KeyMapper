@@ -587,7 +587,6 @@
     <string name="showcase_dnd_access_description_disabled">Key Mapper potrebuje prístup k režimu Nerušiť, ak chcete, aby akcie, ktoré menia hlasitosť a premapované tlačidlá hlasitosti fungovali.</string>
     <string name="showcase_dnd_access_description_enabled">Všetko dobré! :)</string>
     <string name="showcase_contributing_title">Spolupráca</string>
-    <string name="showcase_contributing_description">"Táto aplikácia je otvorený zdroj! Môžete začať prispievať tým, že zamierite na repo na sds100/KeyMapper na GitHub a pripojíte sa k serveru Discord. Aj keď nemôžete programovať, môžete prispieť tým, že pomôžete ostatným a otestujete najnovšie funkcie."</string>
     <string name="showcase_action_list">Klepnutím na 3 bodky zmeňte opakované správanie a ešte oveľa viac. Akciu môžete otestovať a opraviť chyby akcie klepnutím na ňu.</string>
     <string name="showcase_fingerprint_gesture_support_title_supported_unknown">Premapovanie gest čítačky odtlačkov prstov</string>
     <string name="showcase_fingerprint_gesture_support_title_supported">Gestá čítačky odtlačkov prstov môžete premapovať! :)</string>

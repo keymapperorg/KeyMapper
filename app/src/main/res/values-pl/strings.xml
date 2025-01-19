@@ -662,7 +662,6 @@
     <string name="showcase_dnd_access_description_disabled">Key Mapper wymaga dostępu do trybu Nie przeszkadzać, aby czynności zmieniające głośność i przyciski głośności ze zmienionymi funkcjami działały.</string>
     <string name="showcase_dnd_access_description_enabled">Wszystko jest dobrze! :)</string>
     <string name="showcase_contributing_title">Wkład</string>
-    <string name="showcase_contributing_description">"Ta aplikacja to otwarte oprogramowanie! Możesz zacząć współtworzyć, przechodząc do repozytorium sds100/KeyMapper na GitHub i dołączając do serwera Discord. Nawet jeśli nie potrafisz programować, możesz wnieść swój wkład, pomagając innym i testując najnowsze funkcje."</string>
     <string name="showcase_action_list">Kliknij przycisk z trzema kropkami, aby zmienić zachowanie powtarzania i nie tylko. Klikając na czynność możesz ją przetestować i naprawić jej błędy.</string>
     <string name="showcase_fingerprint_gesture_support_title_supported_unknown">Zmień funkcje gestów czytnika linii papilarnych</string>
     <string name="showcase_fingerprint_gesture_support_title_supported">Możesz zmienić funkcje gestów czytnika linii papilarnych! :)</string>

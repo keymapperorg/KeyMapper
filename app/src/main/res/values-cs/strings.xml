@@ -619,7 +619,6 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <string name="showcase_dnd_access_description_disabled">Klávesová mapa vyžaduje přístup k režimu Nerušit, pokud chcete, aby fungovaly akce, které mění hlasitost a přemapovají tlačítka hlasitosti.</string>
     <string name="showcase_dnd_access_description_enabled">Všechno dobré! :)</string>
     <string name="showcase_contributing_title">Přispěje</string>
-    <string name="showcase_contributing_description">"Tato aplikace je open source! Můžete začít přispívat tím, že půjdete na sds100/KeyMapper repo na GitHubu a připojíte se na Discord server. I když nemůžete programovat, můžete přispět tím, že pomůžete ostatním a otestujte nejnovější funkce."</string>
     <string name="showcase_action_list">Klepnutím na 3 tečky změníte chování opakování a další. Můžete vyzkoušet akci a opravit chyby akce klepnutím na ni.</string>
     <string name="showcase_fingerprint_gesture_support_title_supported_unknown">Odstranění gesta čtečky otisků prstů</string>
     <string name="showcase_fingerprint_gesture_support_title_supported">Můžete přemapovat gesta čtečky otisků prstů! :)</string>
