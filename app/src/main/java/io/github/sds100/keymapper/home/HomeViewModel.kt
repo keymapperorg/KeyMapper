@@ -260,32 +260,9 @@ class HomeViewModel(
     val closeKeyMapper = _closeKeyMapper.asSharedFlow()
 
     init {
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch {
             backupRestore.onAutomaticBackupResult.collectLatest { result ->
-                when (result) {
-                    is Success -> {
-                        showPopup(
-                            "successful_automatic_backup_result",
-                            PopupUi.SnackBar(getString(R.string.toast_automatic_backup_successful)),
-                        )
-                    }
-
-                    is Error -> {
-                        val response = showPopup(
-                            "automatic_backup_error",
-                            PopupUi.Dialog(
-                                title = getString(R.string.toast_automatic_backup_failed),
-                                message = result.getFullMessage(this@HomeViewModel),
-                                positiveButtonText = getString(R.string.pos_ok),
-                                neutralButtonText = getString(R.string.neutral_go_to_settings),
-                            ),
-                        ) ?: return@collectLatest
-
-                        if (response == DialogResponse.NEUTRAL) {
-                            navigate("settings", NavDestination.Settings)
-                        }
-                    }
-                }
+                onAutomaticBackupResult(result)
             }
         }
 
@@ -295,25 +272,80 @@ class HomeViewModel(
         ) { showWhatsNew, showQuickStartGuideHint ->
 
             if (showWhatsNew) {
-                val dialog = PopupUi.Dialog(
-                    title = getString(R.string.whats_new),
-                    message = onboarding.getWhatsNewText(),
-                    positiveButtonText = getString(R.string.pos_ok),
-                    neutralButtonText = getString(R.string.neutral_changelog),
-                )
-
-                // don't return if they dismiss the dialog because this is common behaviour.
-                val response = showPopup("whats-new", dialog)
-
-                if (response == DialogResponse.NEUTRAL) {
-                    showPopup("url_changelog", PopupUi.OpenUrl(getString(R.string.url_changelog)))
-                }
-
-                onboarding.showedWhatsNew()
+                showWhatsNewDialog()
             }
 
             _showQuickStartGuideHint.value = showQuickStartGuideHint
-        }.flowOn(Dispatchers.Default).launchIn(viewModelScope)
+        }.launchIn(viewModelScope)
+
+        viewModelScope.launch {
+            if (setupGuiKeyboard.isInstalled.first() && !setupGuiKeyboard.isCompatibleVersion.first()) {
+                showUpgradeGuiKeyboardDialog()
+            }
+        }
+    }
+
+    private suspend fun showWhatsNewDialog() {
+        val dialog = PopupUi.Dialog(
+            title = getString(R.string.whats_new),
+            message = onboarding.getWhatsNewText(),
+            positiveButtonText = getString(R.string.pos_ok),
+            neutralButtonText = getString(R.string.neutral_changelog),
+        )
+
+        // don't return if they dismiss the dialog because this is common behaviour.
+        val response = showPopup("whats-new", dialog)
+
+        if (response == DialogResponse.NEUTRAL) {
+            showPopup("url_changelog", PopupUi.OpenUrl(getString(R.string.url_changelog)))
+        }
+
+        onboarding.showedWhatsNew()
+    }
+
+    private suspend fun onAutomaticBackupResult(result: Result<*>) {
+        when (result) {
+            is Success -> {
+                showPopup(
+                    "successful_automatic_backup_result",
+                    PopupUi.SnackBar(getString(R.string.toast_automatic_backup_successful)),
+                )
+            }
+
+            is Error -> {
+                val response = showPopup(
+                    "automatic_backup_error",
+                    PopupUi.Dialog(
+                        title = getString(R.string.toast_automatic_backup_failed),
+                        message = result.getFullMessage(this),
+                        positiveButtonText = getString(R.string.pos_ok),
+                        neutralButtonText = getString(R.string.neutral_go_to_settings),
+                    ),
+                ) ?: return
+
+                if (response == DialogResponse.NEUTRAL) {
+                    navigate("settings", NavDestination.Settings)
+                }
+            }
+        }
+    }
+
+    private suspend fun showUpgradeGuiKeyboardDialog() {
+        val dialog = PopupUi.Dialog(
+            title = getString(R.string.dialog_upgrade_gui_keyboard_title),
+            message = getString(R.string.dialog_upgrade_gui_keyboard_message),
+            positiveButtonText = getString(R.string.dialog_upgrade_gui_keyboard_positive),
+            negativeButtonText = getString(R.string.dialog_upgrade_gui_keyboard_neutral),
+        )
+
+        val response = showPopup("upgrade_gui_keyboard", dialog)
+
+        if (response == DialogResponse.POSITIVE) {
+            showPopup(
+                "gui_keyboard_play_store",
+                PopupUi.OpenUrl(getString(R.string.url_play_store_keymapper_gui_keyboard)),
+            )
+        }
     }
 
     fun approvedQuickStartGuideTapTarget() {

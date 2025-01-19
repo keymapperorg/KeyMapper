@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.mappings.keymaps.trigger
 
+import io.github.sds100.keymapper.system.apps.PackageInfo
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
@@ -14,13 +15,24 @@ class SetupGuiKeyboardUseCaseImpl(
     private val inputMethodAdapter: InputMethodAdapter,
     private val packageManager: PackageManagerAdapter,
 ) : SetupGuiKeyboardUseCase {
-    override val isInstalled: Flow<Boolean> =
+    private val guiKeyboardPackage: Flow<PackageInfo?> =
         packageManager.installedPackages
             .mapNotNull { it as? State.Data }
-            .map { packages -> packages.data.any { it.packageName == KeyMapperImeHelper.KEY_MAPPER_GUI_IME_PACKAGE } }
+            .map { packages -> packages.data.find { it.packageName == KeyMapperImeHelper.KEY_MAPPER_GUI_IME_PACKAGE } }
+
+    override val isInstalled: Flow<Boolean> = guiKeyboardPackage.map { it != null }
 
     override val isEnabled: Flow<Boolean> =
         getGuiKeyboardImeInfoFlow().map { it?.isEnabled ?: false }
+
+    override val isCompatibleVersion: Flow<Boolean> =
+        guiKeyboardPackage.map { packageInfo ->
+            if (packageInfo == null) {
+                false
+            } else {
+                packageInfo.versionCode >= KeyMapperImeHelper.MIN_SUPPORTED_GUI_KEYBOARD_VERSION_CODE
+            }
+        }
 
     override fun enableInputMethod() {
         inputMethodAdapter.getInfoByPackageName(KeyMapperImeHelper.KEY_MAPPER_GUI_IME_PACKAGE)
@@ -49,4 +61,6 @@ interface SetupGuiKeyboardUseCase {
 
     val isChosen: Flow<Boolean>
     fun chooseInputMethod()
+
+    val isCompatibleVersion: Flow<Boolean>
 }

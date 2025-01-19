@@ -584,6 +584,11 @@
     <string name="dialog_title_keyboard_icon_means_ime_detection">Good to know!</string>
     <string name="dialog_message_keyboard_icon_means_ime_detection">If you see this symbol (⌨) next to a trigger key then you MUST use a Key Mapper keyboard for it to be detected. This is a restriction in Android and is only required for some buttons.</string>
 
+    <string name="dialog_upgrade_gui_keyboard_title">Important!</string>
+    <string name="dialog_upgrade_gui_keyboard_message">You must update the Key Mapper GUI Keyboard so it is compatible with this version of Key Mapper. Some key maps may not work until you update!</string>
+    <string name="dialog_upgrade_gui_keyboard_positive">Update now</string>
+    <string name="dialog_upgrade_gui_keyboard_neutral">Ignore</string>
+
     <string name="pos_yes">Yes</string>
     <string name="pos_confirm">Confirm</string>
     <string name="pos_done">Done</string>
@@ -785,6 +790,7 @@
     <string name="dialog_title_reset_settings">DANGER!</string>
     <string name="dialog_message_reset_settings">Are you sure you want to reset all settings in the app to the default? Your key maps will NOT be reset. The introduction screen and all warning pop ups will show again.</string>
     <string name="pos_button_reset_settings">Yes, reset</string>
+
 
     <!--Preference titles and summaries-->
 

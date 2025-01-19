@@ -18,6 +18,7 @@ import android.os.TransactionTooLargeException
 import android.provider.MediaStore
 import android.provider.Settings
 import androidx.core.content.ContextCompat
+import androidx.core.content.pm.PackageInfoCompat
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.State
@@ -349,18 +350,18 @@ class AndroidPackageManagerAdapter(
 
             val isLaunchable = launchIntent != null || leanbackLaunchIntent != null
 
-            val activityPackageInfo = packageManager.getPackageInfo(
+            val packageInfo = packageManager.getPackageInfo(
                 packageName,
-                PackageManager.GET_ACTIVITIES,
+                PackageManager.GET_ACTIVITIES or PackageManager.GET_META_DATA,
             )
 
-            if (activityPackageInfo == null) {
+            if (packageInfo == null) {
                 return null
             }
 
             val activityModels = mutableListOf<ActivityInfo>()
 
-            activityPackageInfo.activities.forEach { activity ->
+            packageInfo.activities.forEach { activity ->
                 val model = ActivityInfo(
                     activityName = activity.name,
                     packageName = activity.packageName,
@@ -374,6 +375,7 @@ class AndroidPackageManagerAdapter(
                 activities = activityModels,
                 isEnabled = applicationInfo.enabled,
                 isLaunchable = isLaunchable,
+                versionCode = PackageInfoCompat.getLongVersionCode(packageInfo),
             )
         } catch (e: PackageManager.NameNotFoundException) {
             return null
