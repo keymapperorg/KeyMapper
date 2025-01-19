@@ -660,7 +660,6 @@
     <string name="showcase_dnd_access_description_disabled">如果你想要动作更改音量和重新映射音量按钮，Key Mapper需要访问“勿扰”</string>
     <string name="showcase_dnd_access_description_enabled">一切准备就绪! :)</string>
     <string name="showcase_contributing_title">参与贡献</string>
-    <string name="showcase_contributing_description">"这个应用是开源的！你可以通过跳转到GitHub的sds100/KeyMapper存储库并加入Discord服务器来开始作出贡献。即使你不会代码，您也可以通过帮助他人和测试最新功能来作出贡献。"</string>
     <string name="showcase_action_list">点击3个点来更改重复行为和更多。你可以通过点击它来测试和修复一个动作的错误。</string>
     <string name="showcase_fingerprint_gesture_support_title_supported_unknown">重新映射指纹读取器手势</string>
     <string name="showcase_fingerprint_gesture_support_title_supported">你可以重新映射指纹读取器手势! :)</string>

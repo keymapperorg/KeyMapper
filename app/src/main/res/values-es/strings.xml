@@ -636,7 +636,6 @@
     <string name="showcase_dnd_access_description_disabled">Key Mapper necesita acceso a No molestar si quiere que funcionen las acciones que cambian el volumen y los botones de volumen asignados.</string>
     <string name="showcase_dnd_access_description_enabled">¡Todo bien! :)</string>
     <string name="showcase_contributing_title">Contribuir</string>
-    <string name="showcase_contributing_description">"Esta aplicación es de código abierto. Puedes empezar a contribuir dirigiéndote al repo de sds100/KeyMapper en GitHub y uniéndote al servidor de Discord. Aunque no sepas codificar, puedes contribuir ayudando a los demás y probando las últimas funciones."</string>
     <string name="showcase_action_list">Toca los 3 puntos para cambiar el comportamiento de repetición y mucho más. Puedes probar una acción y arreglar los errores de la acción tocándola.</string>
     <string name="showcase_fingerprint_gesture_support_title_supported_unknown">Reasignación de los gestos del lector de huellas dactilares</string>
     <string name="showcase_fingerprint_gesture_support_title_supported">¡Puedes reasignar los gestos del lector de huellas dactilares! :)</string>

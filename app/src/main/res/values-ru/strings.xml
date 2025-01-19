@@ -637,7 +637,6 @@
     <string name="showcase_dnd_access_description_disabled">Приложению Key Mapper требуется доступ к управлению режимом \"Не беспокосить\" если вы хотите переназначить действия связанные с событием нажатия на клавишу громкости.</string>
     <string name="showcase_dnd_access_description_enabled">Всё ок! :)</string>
     <string name="showcase_contributing_title">Помощь проекту</string>
-    <string name="showcase_contributing_description">"Это приложение с открытым исходным кодом! Вы можете начать вносить свой вклад в репозиторий sds100/KeyMapper на GitHub и присоединившись к серверу Discord. Даже если вы не можете программировать, вы можете помочь, помогая другим и тестируя последние возможности."</string>
     <string name="showcase_action_list">Нажмите на три точки чтобы изменить режим повтора и другие особенности. Вы можете протестировать результат и исправить ошибки действия нажав на него.</string>
     <string name="showcase_fingerprint_gesture_support_title_supported_unknown">Переназначение жестов датчика отпечатка пальцев</string>
     <string name="showcase_fingerprint_gesture_support_title_supported">Вы можете переназначить жесты датчика отпечатка пальцев! :)</string>
