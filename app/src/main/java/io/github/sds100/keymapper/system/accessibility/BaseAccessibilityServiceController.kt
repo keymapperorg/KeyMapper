@@ -371,18 +371,19 @@ abstract class BaseAccessibilityServiceController(
         }
 
         if (recordingTrigger) {
-            val dpadKeyEvent = recordDpadMotionEventTracker.convertMotionEvent(event)
+            val dpadKeyEvents = recordDpadMotionEventTracker.convertMotionEvent(event)
 
-            if (dpadKeyEvent == null) {
-                return false
-            } else {
-                if (dpadKeyEvent.action == KeyEvent.ACTION_DOWN) {
-                    Timber.d("Recorded motion event ${KeyEvent.keyCodeToString(dpadKeyEvent.keyCode)}")
+            var consume = false
+
+            for (keyEvent in dpadKeyEvents) {
+                if (keyEvent.action == KeyEvent.ACTION_DOWN) {
+                    Timber.d("Recorded motion event ${KeyEvent.keyCodeToString(keyEvent.keyCode)}")
+
                     coroutineScope.launch {
                         outputEvents.emit(
                             ServiceEvent.RecordedTriggerKey(
-                                dpadKeyEvent.keyCode,
-                                dpadKeyEvent.device,
+                                keyEvent.keyCode,
+                                keyEvent.device,
                                 KeyEventDetectionSource.INPUT_METHOD,
                             ),
                         )
@@ -390,6 +391,10 @@ abstract class BaseAccessibilityServiceController(
                 }
 
                 // Consume the key event if it is an DOWN or UP.
+                consume = true
+            }
+
+            if (consume) {
                 return true
             }
         }

@@ -55,10 +55,13 @@ class DpadMotionEventTracker {
     }
 
     /**
-     * @return The equivalent DPAD key event if there was one in response to this motion event.
-     * Null if this motion event didn't result in a DPAD key event.
+     * The equivalent DPAD key events if any DPAD buttons changed in the motion event.
+     * There is a chance that one motion event will be sent if multiple axes change at the same time
+     * hence why it returns an array.
+     *
+     * @return An array of key events. Empty if no DPAD buttons changed.
      */
-    fun convertMotionEvent(event: MyMotionEvent): MyKeyEvent? {
+    fun convertMotionEvent(event: MyMotionEvent): List<MyKeyEvent> {
         val oldState = dpadState[event.device.descriptor] ?: 0
         val newState = eventToDpadState(event)
         val diff = oldState xor newState
@@ -67,15 +70,25 @@ class DpadMotionEventTracker {
 
         // If no dpad keys changed then return null
         if (diff == 0) {
-            return null
+            return emptyList()
         }
 
-        val keyCode = when (diff) {
-            DPAD_DOWN -> KeyEvent.KEYCODE_DPAD_DOWN
-            DPAD_UP -> KeyEvent.KEYCODE_DPAD_UP
-            DPAD_LEFT -> KeyEvent.KEYCODE_DPAD_LEFT
-            DPAD_RIGHT -> KeyEvent.KEYCODE_DPAD_RIGHT
-            else -> throw Exception("Can't convert this dpad flag diff $diff")
+        val keyCodes = mutableListOf<Int>()
+
+        if (diff and DPAD_DOWN == DPAD_DOWN) {
+            keyCodes.add(KeyEvent.KEYCODE_DPAD_DOWN)
+        }
+
+        if (diff and DPAD_UP == DPAD_UP) {
+            keyCodes.add(KeyEvent.KEYCODE_DPAD_UP)
+        }
+
+        if (diff and DPAD_LEFT == DPAD_LEFT) {
+            keyCodes.add(KeyEvent.KEYCODE_DPAD_LEFT)
+        }
+
+        if (diff and DPAD_RIGHT == DPAD_RIGHT) {
+            keyCodes.add(KeyEvent.KEYCODE_DPAD_RIGHT)
         }
 
         // If the new state contains the dpad press then it has just been pressed down.
@@ -85,14 +98,16 @@ class DpadMotionEventTracker {
             KeyEvent.ACTION_UP
         }
 
-        return MyKeyEvent(
-            keyCode,
-            action,
-            metaState = event.metaState,
-            scanCode = 0,
-            device = event.device,
-            repeatCount = 0,
-        )
+        return keyCodes.map {
+            MyKeyEvent(
+                it,
+                action,
+                metaState = event.metaState,
+                scanCode = 0,
+                device = event.device,
+                repeatCount = 0,
+            )
+        }
     }
 
     fun reset() {

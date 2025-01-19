@@ -8,6 +8,8 @@ import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
 import junitparams.JUnitParamsRunner
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers.hasItem
+import org.hamcrest.Matchers.hasSize
 import org.hamcrest.Matchers.`is`
 import org.junit.Before
 import org.junit.Test
@@ -44,6 +46,46 @@ class DpadMotionEventTrackerTest {
     @Before
     fun init() {
         tracker = DpadMotionEventTracker()
+    }
+
+    @Test
+    fun `Detect multiple key events if two DPAD buttons changed in the same motion event`() {
+        var motionEvent = createMotionEvent(axisHatX = -1.0f)
+        tracker.convertMotionEvent(motionEvent)
+
+        motionEvent = motionEvent.copy(axisHatY = -1.0f)
+        tracker.convertMotionEvent(motionEvent)
+
+        motionEvent = motionEvent.copy(axisHatX = 0.0f, axisHatY = 0.0f)
+        val keyEvents = tracker.convertMotionEvent(motionEvent)
+
+        assertThat(keyEvents, hasSize(2))
+        assertThat(
+            keyEvents,
+            hasItem(
+                MyKeyEvent(
+                    KeyEvent.KEYCODE_DPAD_LEFT,
+                    KeyEvent.ACTION_UP,
+                    metaState = 0,
+                    scanCode = 0,
+                    device = CONTROLLER_1_DEVICE,
+                    repeatCount = 0,
+                ),
+            ),
+        )
+        assertThat(
+            keyEvents,
+            hasItem(
+                MyKeyEvent(
+                    KeyEvent.KEYCODE_DPAD_UP,
+                    KeyEvent.ACTION_UP,
+                    metaState = 0,
+                    scanCode = 0,
+                    device = CONTROLLER_1_DEVICE,
+                    repeatCount = 0,
+                ),
+            ),
+        )
     }
 
     @Test
@@ -102,8 +144,8 @@ class DpadMotionEventTrackerTest {
             ),
         )
 
-        assertThat(keyEvent?.keyCode, `is`(KeyEvent.KEYCODE_DPAD_RIGHT))
-        assertThat(keyEvent?.action, `is`(KeyEvent.ACTION_DOWN))
+        assertThat(keyEvent.first().keyCode, `is`(KeyEvent.KEYCODE_DPAD_RIGHT))
+        assertThat(keyEvent.first().action, `is`(KeyEvent.ACTION_DOWN))
     }
 
     @Test
@@ -121,8 +163,8 @@ class DpadMotionEventTrackerTest {
             ),
         )
 
-        assertThat(keyEvent?.keyCode, `is`(KeyEvent.KEYCODE_DPAD_LEFT))
-        assertThat(keyEvent?.action, `is`(KeyEvent.ACTION_DOWN))
+        assertThat(keyEvent.first().keyCode, `is`(KeyEvent.KEYCODE_DPAD_LEFT))
+        assertThat(keyEvent.first().action, `is`(KeyEvent.ACTION_DOWN))
     }
 
     @Test
@@ -135,20 +177,20 @@ class DpadMotionEventTrackerTest {
         motionEvent = motionEvent.copy(axisHatY = -1.0f)
         var keyEvent = tracker.convertMotionEvent(motionEvent)
 
-        assertThat(keyEvent?.keyCode, `is`(KeyEvent.KEYCODE_DPAD_UP))
-        assertThat(keyEvent?.action, `is`(KeyEvent.ACTION_DOWN))
+        assertThat(keyEvent.first().keyCode, `is`(KeyEvent.KEYCODE_DPAD_UP))
+        assertThat(keyEvent.first().action, `is`(KeyEvent.ACTION_DOWN))
 
         // Release DPAD left
         motionEvent = motionEvent.copy(axisHatX = 0.0f)
         keyEvent = tracker.convertMotionEvent(motionEvent)
-        assertThat(keyEvent?.keyCode, `is`(KeyEvent.KEYCODE_DPAD_LEFT))
-        assertThat(keyEvent?.action, `is`(KeyEvent.ACTION_UP))
+        assertThat(keyEvent.first().keyCode, `is`(KeyEvent.KEYCODE_DPAD_LEFT))
+        assertThat(keyEvent.first().action, `is`(KeyEvent.ACTION_UP))
 
         // Release DPAD up
         motionEvent = motionEvent.copy(axisHatY = 0.0f)
         keyEvent = tracker.convertMotionEvent(motionEvent)
-        assertThat(keyEvent?.keyCode, `is`(KeyEvent.KEYCODE_DPAD_UP))
-        assertThat(keyEvent?.action, `is`(KeyEvent.ACTION_UP))
+        assertThat(keyEvent.first().keyCode, `is`(KeyEvent.KEYCODE_DPAD_UP))
+        assertThat(keyEvent.first().action, `is`(KeyEvent.ACTION_UP))
     }
 
     @Test
@@ -160,18 +202,18 @@ class DpadMotionEventTrackerTest {
         // Press DPAD up
         var keyEvent = tracker.convertMotionEvent(motionEvent.copy(axisHatY = -1.0f))
 
-        assertThat(keyEvent?.keyCode, `is`(KeyEvent.KEYCODE_DPAD_UP))
-        assertThat(keyEvent?.action, `is`(KeyEvent.ACTION_DOWN))
+        assertThat(keyEvent.first().keyCode, `is`(KeyEvent.KEYCODE_DPAD_UP))
+        assertThat(keyEvent.first().action, `is`(KeyEvent.ACTION_DOWN))
 
         // Release DPAD up
         keyEvent = tracker.convertMotionEvent(motionEvent.copy(axisHatY = 0.0f))
-        assertThat(keyEvent?.keyCode, `is`(KeyEvent.KEYCODE_DPAD_UP))
-        assertThat(keyEvent?.action, `is`(KeyEvent.ACTION_UP))
+        assertThat(keyEvent.first().keyCode, `is`(KeyEvent.KEYCODE_DPAD_UP))
+        assertThat(keyEvent.first().action, `is`(KeyEvent.ACTION_UP))
 
         // Release DPAD left
         keyEvent = tracker.convertMotionEvent(motionEvent.copy(axisHatX = 0.0f))
-        assertThat(keyEvent?.keyCode, `is`(KeyEvent.KEYCODE_DPAD_LEFT))
-        assertThat(keyEvent?.action, `is`(KeyEvent.ACTION_UP))
+        assertThat(keyEvent.first().keyCode, `is`(KeyEvent.KEYCODE_DPAD_LEFT))
+        assertThat(keyEvent.first().action, `is`(KeyEvent.ACTION_UP))
     }
 
     @Test
@@ -183,13 +225,13 @@ class DpadMotionEventTrackerTest {
 
         // Press DPAD right
         var keyEvent = tracker.convertMotionEvent(createMotionEvent(axisHatX = 1.0f))
-        assertThat(keyEvent?.keyCode, `is`(KeyEvent.KEYCODE_DPAD_RIGHT))
-        assertThat(keyEvent?.action, `is`(KeyEvent.ACTION_DOWN))
+        assertThat(keyEvent.first().keyCode, `is`(KeyEvent.KEYCODE_DPAD_RIGHT))
+        assertThat(keyEvent.first().action, `is`(KeyEvent.ACTION_DOWN))
 
         // Release DPAD right
         keyEvent = tracker.convertMotionEvent(createMotionEvent(axisHatX = 0.0f))
-        assertThat(keyEvent?.keyCode, `is`(KeyEvent.KEYCODE_DPAD_RIGHT))
-        assertThat(keyEvent?.action, `is`(KeyEvent.ACTION_UP))
+        assertThat(keyEvent.first().keyCode, `is`(KeyEvent.KEYCODE_DPAD_RIGHT))
+        assertThat(keyEvent.first().action, `is`(KeyEvent.ACTION_UP))
     }
 
     @Test
@@ -199,8 +241,8 @@ class DpadMotionEventTrackerTest {
 
         // Release DPAD left
         val keyEvent = tracker.convertMotionEvent(createMotionEvent(axisHatX = 0.0f))
-        assertThat(keyEvent?.keyCode, `is`(KeyEvent.KEYCODE_DPAD_LEFT))
-        assertThat(keyEvent?.action, `is`(KeyEvent.ACTION_UP))
+        assertThat(keyEvent.first().keyCode, `is`(KeyEvent.KEYCODE_DPAD_LEFT))
+        assertThat(keyEvent.first().action, `is`(KeyEvent.ACTION_UP))
     }
 
     @Test
@@ -208,8 +250,8 @@ class DpadMotionEventTrackerTest {
         // Press DPAD left
         val keyEvent = tracker.convertMotionEvent(createMotionEvent(axisHatX = -1.0f))
 
-        assertThat(keyEvent?.keyCode, `is`(KeyEvent.KEYCODE_DPAD_LEFT))
-        assertThat(keyEvent?.action, `is`(KeyEvent.ACTION_DOWN))
+        assertThat(keyEvent.first().keyCode, `is`(KeyEvent.KEYCODE_DPAD_LEFT))
+        assertThat(keyEvent.first().action, `is`(KeyEvent.ACTION_DOWN))
     }
 
     private fun createMotionEvent(
