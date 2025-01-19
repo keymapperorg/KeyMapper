@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.mappings.keymaps
 import android.view.KeyEvent
 import io.github.sds100.keymapper.mappings.keymaps.detection.DpadMotionEventTracker
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
+import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
 import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
 import junitparams.JUnitParamsRunner
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -46,6 +47,47 @@ class DpadMotionEventTrackerTest {
     }
 
     @Test
+    fun `Consume DPAD key events when joystick motion events are received while multiple DPAD buttons are pressed`() {
+        var motionEvent = createMotionEvent(axisHatX = -1.0f)
+        tracker.convertMotionEvent(motionEvent)
+
+        motionEvent = motionEvent.copy(axisHatY = -1.0f)
+        tracker.convertMotionEvent(motionEvent)
+
+        var consume =
+            tracker.onKeyEvent(createDownKeyEvent(KeyEvent.KEYCODE_DPAD_LEFT, CONTROLLER_1_DEVICE))
+        assertThat(consume, `is`(true))
+        consume =
+            tracker.onKeyEvent(createDownKeyEvent(KeyEvent.KEYCODE_DPAD_UP, CONTROLLER_1_DEVICE))
+        assertThat(consume, `is`(true))
+
+        motionEvent = motionEvent.copy(axisHatX = 0.0f)
+        tracker.convertMotionEvent(motionEvent)
+        motionEvent = motionEvent.copy(axisHatY = 0.0f)
+        tracker.convertMotionEvent(motionEvent)
+
+        consume =
+            tracker.onKeyEvent(createUpKeyEvent(KeyEvent.KEYCODE_DPAD_LEFT, CONTROLLER_1_DEVICE))
+        assertThat(consume, `is`(false))
+        tracker.onKeyEvent(createUpKeyEvent(KeyEvent.KEYCODE_DPAD_UP, CONTROLLER_1_DEVICE))
+        assertThat(consume, `is`(false))
+    }
+
+    @Test
+    fun `Consume DPAD key events when joystick motion events are received while processing DPAD motion event`() {
+        tracker.convertMotionEvent(createMotionEvent(axisHatX = -1.0f))
+        var consume =
+            tracker.onKeyEvent(createDownKeyEvent(KeyEvent.KEYCODE_DPAD_LEFT, CONTROLLER_1_DEVICE))
+        assertThat(consume, `is`(true))
+
+        tracker.convertMotionEvent(createMotionEvent(axisHatX = 0.0f))
+
+        consume =
+            tracker.onKeyEvent(createUpKeyEvent(KeyEvent.KEYCODE_DPAD_LEFT, CONTROLLER_1_DEVICE))
+        assertThat(consume, `is`(false))
+    }
+
+    @Test
     fun `Track DPAD left and right key events from two controllers`() { // Press DPAD left
         tracker.convertMotionEvent(
             createMotionEvent(
@@ -81,6 +123,32 @@ class DpadMotionEventTrackerTest {
 
         assertThat(keyEvent?.keyCode, `is`(KeyEvent.KEYCODE_DPAD_LEFT))
         assertThat(keyEvent?.action, `is`(KeyEvent.ACTION_DOWN))
+    }
+
+    @Test
+    fun `Interleave press and release of two dpad buttons`() {
+        var motionEvent = createMotionEvent(axisHatX = -1.0f)
+        // Press DPAD left
+        tracker.convertMotionEvent(motionEvent)
+
+        // Press DPAD up
+        motionEvent = motionEvent.copy(axisHatY = -1.0f)
+        var keyEvent = tracker.convertMotionEvent(motionEvent)
+
+        assertThat(keyEvent?.keyCode, `is`(KeyEvent.KEYCODE_DPAD_UP))
+        assertThat(keyEvent?.action, `is`(KeyEvent.ACTION_DOWN))
+
+        // Release DPAD left
+        motionEvent = motionEvent.copy(axisHatX = 0.0f)
+        keyEvent = tracker.convertMotionEvent(motionEvent)
+        assertThat(keyEvent?.keyCode, `is`(KeyEvent.KEYCODE_DPAD_LEFT))
+        assertThat(keyEvent?.action, `is`(KeyEvent.ACTION_UP))
+
+        // Release DPAD up
+        motionEvent = motionEvent.copy(axisHatY = 0.0f)
+        keyEvent = tracker.convertMotionEvent(motionEvent)
+        assertThat(keyEvent?.keyCode, `is`(KeyEvent.KEYCODE_DPAD_UP))
+        assertThat(keyEvent?.action, `is`(KeyEvent.ACTION_UP))
     }
 
     @Test
@@ -156,6 +224,28 @@ class DpadMotionEventTrackerTest {
             axisHatX = axisHatX,
             axisHatY = axisHatY,
             isDpad = isDpad,
+        )
+    }
+
+    private fun createDownKeyEvent(keyCode: Int, device: InputDeviceInfo): MyKeyEvent {
+        return MyKeyEvent(
+            keyCode = keyCode,
+            action = KeyEvent.ACTION_DOWN,
+            metaState = 0,
+            scanCode = 0,
+            device = device,
+            repeatCount = 0,
+        )
+    }
+
+    private fun createUpKeyEvent(keyCode: Int, device: InputDeviceInfo): MyKeyEvent {
+        return MyKeyEvent(
+            keyCode = keyCode,
+            action = KeyEvent.ACTION_UP,
+            metaState = 0,
+            scanCode = 0,
+            device = device,
+            repeatCount = 0,
         )
     }
 }

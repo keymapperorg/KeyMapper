@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.mappings.keymaps.detection
 
 import android.view.KeyEvent
+import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
 import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
 
@@ -19,7 +20,39 @@ class DpadMotionEventTracker {
         private const val DPAD_RIGHT = 8
     }
 
-    private val dpadState: HashMap<String, Int> = hashMapOf()
+    val dpadState: HashMap<String, Int> = hashMapOf()
+
+    /**
+     * When moving the joysticks on a controller while pressing a DPAD button at the same time,
+     * DPAD key events can be interleaved in the DPAD motion events. We don't want to register
+     * these as multiple clicks so consume DPAD key events if the motion events say the DPAD
+     * is already pressed.
+     *
+     * @return whether to consume the key event.
+     */
+    fun onKeyEvent(event: MyKeyEvent): Boolean {
+        event.device ?: return false
+
+        if (!InputEventUtils.isDpadKeyCode(event.keyCode)) {
+            return false
+        }
+
+        val dpadFlag = when (event.keyCode) {
+            KeyEvent.KEYCODE_DPAD_DOWN -> DPAD_DOWN
+            KeyEvent.KEYCODE_DPAD_UP -> DPAD_UP
+            KeyEvent.KEYCODE_DPAD_LEFT -> DPAD_LEFT
+            KeyEvent.KEYCODE_DPAD_RIGHT -> DPAD_RIGHT
+            else -> return false
+        }
+
+        val dpadState = dpadState[event.device.descriptor] ?: return false
+
+        if (dpadState == 0) {
+            return false
+        }
+
+        return dpadState and dpadFlag == dpadFlag
+    }
 
     /**
      * @return The equivalent DPAD key event if there was one in response to this motion event.
