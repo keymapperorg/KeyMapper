@@ -102,8 +102,6 @@ class TriggerFragment : RecyclerViewFragment<TriggerKeyListItem, FragmentTrigger
     }
 
     override fun subscribeUi(binding: FragmentTriggerBinding) {
-//        binding.root.clearFocus()
-
         binding.viewModel = configTriggerViewModel
 
         binding.recyclerViewTriggerKeys.adapter = triggerKeyController.adapter

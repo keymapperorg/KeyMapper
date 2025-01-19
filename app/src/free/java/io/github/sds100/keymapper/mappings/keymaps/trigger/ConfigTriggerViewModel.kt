@@ -16,7 +16,8 @@ class ConfigTriggerViewModel(
     createKeyMapShortcut: CreateKeyMapShortcutUseCase,
     displayKeyMap: DisplayKeyMapUseCase,
     resourceProvider: ResourceProvider,
-    private val purchasingManager: PurchasingManager,
+    purchasingManager: PurchasingManager,
+    setupGuiKeyboardUseCase: SetupGuiKeyboardUseCase,
 ) : BaseConfigTriggerViewModel(
     coroutineScope,
     onboarding,
@@ -24,5 +25,6 @@ class ConfigTriggerViewModel(
     recordTrigger,
     createKeyMapShortcut,
     displayKeyMap,
+    setupGuiKeyboardUseCase,
     resourceProvider,
 )
