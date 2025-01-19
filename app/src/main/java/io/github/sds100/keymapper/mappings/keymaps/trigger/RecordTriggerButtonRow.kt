@@ -85,7 +85,7 @@ private fun RecordTriggerButtonRow(
 
         AdvancedTriggersButton(
             modifier = Modifier.weight(1f),
-            isEnabled = recordTriggerState is RecordTriggerState.Completed,
+            isEnabled = recordTriggerState !is RecordTriggerState.CountingDown,
             onClick = onAdvancedTriggersClick,
         )
     }
