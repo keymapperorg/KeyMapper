@@ -11,6 +11,7 @@ import io.github.sds100.keymapper.util.getFullMessage
 import io.github.sds100.keymapper.util.onFailure
 import io.github.sds100.keymapper.util.onSuccess
 import io.github.sds100.keymapper.util.otherwise
+import io.github.sds100.keymapper.util.ui.DialogResponse
 import io.github.sds100.keymapper.util.ui.MultiChoiceItem
 import io.github.sds100.keymapper.util.ui.PopupUi
 import io.github.sds100.keymapper.util.ui.PopupViewModel
@@ -188,6 +189,23 @@ class SettingsViewModel(
 
         viewModelScope.launch {
             showPopup("create_document_activity_not_found", dialog)
+        }
+    }
+
+    fun onResetAllSettingsClick() {
+        val dialog = PopupUi.Dialog(
+            title = getString(R.string.dialog_title_reset_settings),
+            message = getString(R.string.dialog_message_reset_settings),
+            positiveButtonText = getString(R.string.pos_button_reset_settings),
+            negativeButtonText = getString(R.string.neg_cancel),
+        )
+
+        viewModelScope.launch {
+            val response = showPopup("reset_settings_dialog", dialog)
+
+            if (response == DialogResponse.POSITIVE) {
+                useCase.resetAllSettings()
+            }
         }
     }
 

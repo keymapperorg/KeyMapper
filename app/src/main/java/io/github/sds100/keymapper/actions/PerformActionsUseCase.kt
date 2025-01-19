@@ -9,7 +9,6 @@ import io.github.sds100.keymapper.actions.sound.SoundsManager
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.shizuku.InputEventInjector
 import io.github.sds100.keymapper.system.accessibility.AccessibilityNodeAction
 import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
@@ -23,12 +22,13 @@ import io.github.sds100.keymapper.system.display.DisplayAdapter
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.files.FileUtils
+import io.github.sds100.keymapper.system.inputevents.InputEventInjector
+import io.github.sds100.keymapper.system.inputevents.InputEventUtils
+import io.github.sds100.keymapper.system.inputmethod.ImeInputEventInjector
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
-import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeMessenger
 import io.github.sds100.keymapper.system.intents.IntentAdapter
 import io.github.sds100.keymapper.system.intents.IntentTarget
-import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
 import io.github.sds100.keymapper.system.lock.LockScreenAdapter
 import io.github.sds100.keymapper.system.media.MediaAdapter
 import io.github.sds100.keymapper.system.navigation.OpenMenuHelper
@@ -63,7 +63,10 @@ import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import splitties.bitflags.withFlag
 import timber.log.Timber
@@ -81,7 +84,7 @@ class PerformActionsUseCaseImpl(
     private val shellAdapter: ShellAdapter,
     private val intentAdapter: IntentAdapter,
     private val getActionError: GetActionErrorUseCase,
-    private val keyMapperImeMessenger: KeyMapperImeMessenger,
+    private val imeInputEventInjector: ImeInputEventInjector,
     private val shizukuInputEventInjector: InputEventInjector,
     private val packageManagerAdapter: PackageManagerAdapter,
     private val appShortcutAdapter: AppShortcutAdapter,
@@ -113,6 +116,13 @@ class PerformActionsUseCaseImpl(
             permissionAdapter,
         )
     }
+
+    /**
+     * Cache this so we aren't checking every time a key event must be inputted.
+     */
+    private val inputKeyEventsWithShizuku: StateFlow<Boolean> =
+        permissionAdapter.isGrantedFlow(Permission.SHIZUKU)
+            .stateIn(coroutineScope, SharingStarted.Eagerly, false)
 
     override fun perform(
         action: ActionData,
@@ -148,7 +158,7 @@ class PerformActionsUseCaseImpl(
                 )
 
                 result = when {
-                    permissionAdapter.isGranted(Permission.SHIZUKU) -> {
+                    inputKeyEventsWithShizuku.value -> {
                         shizukuInputEventInjector.inputKeyEvent(model)
                         Success(Unit)
                     }
@@ -156,7 +166,7 @@ class PerformActionsUseCaseImpl(
                     action.useShell -> suAdapter.execute("input keyevent ${model.keyCode}")
 
                     else -> {
-                        keyMapperImeMessenger.inputKeyEvent(model)
+                        imeInputEventInjector.inputKeyEvent(model)
 
                         Success(Unit)
                     }
@@ -319,7 +329,7 @@ class PerformActionsUseCaseImpl(
             }
 
             is ActionData.Text -> {
-                keyMapperImeMessenger.inputText(action.text)
+                imeInputEventInjector.inputText(action.text)
                 result = Success(Unit)
             }
 
@@ -596,10 +606,10 @@ class PerformActionsUseCaseImpl(
                     metaState = KeyEvent.META_CTRL_ON,
                 )
 
-                if (permissionAdapter.isGranted(Permission.SHIZUKU)) {
+                if (inputKeyEventsWithShizuku.value) {
                     shizukuInputEventInjector.inputKeyEvent(keyModel)
                 } else {
-                    keyMapperImeMessenger.inputKeyEvent(keyModel)
+                    imeInputEventInjector.inputKeyEvent(keyModel)
                 }
 
                 result = Success(Unit)
@@ -828,7 +838,7 @@ class PerformActionsUseCaseImpl(
         if (action.device?.descriptor == null) {
             // automatically select a game controller as the input device for game controller key events
 
-            if (KeyEventUtils.isGamepadKeyCode(action.keyCode)) {
+            if (InputEventUtils.isGamepadKeyCode(action.keyCode)) {
                 deviceAdapter.connectedInputDevices.value.ifIsData { inputDevices ->
                     val device = inputDevices.find { it.isGameController }
 

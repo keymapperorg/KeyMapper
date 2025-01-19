@@ -13,12 +13,13 @@ import io.github.sds100.keymapper.mappings.keymaps.DisplayKeyMapUseCase
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
-import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
+import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.dataOrNull
 import io.github.sds100.keymapper.util.mapData
+import io.github.sds100.keymapper.util.ui.DialogResponse
 import io.github.sds100.keymapper.util.ui.NavigationViewModel
 import io.github.sds100.keymapper.util.ui.NavigationViewModelImpl
 import io.github.sds100.keymapper.util.ui.PopupUi
@@ -62,6 +63,7 @@ abstract class BaseConfigTriggerViewModel(
     private val recordTrigger: RecordTriggerUseCase,
     private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
     private val displayKeyMap: DisplayKeyMapUseCase,
+    private val setupGuiKeyboard: SetupGuiKeyboardUseCase,
     resourceProvider: ResourceProvider,
 ) : ResourceProvider by resourceProvider,
     PopupViewModel by PopupViewModelImpl(),
@@ -84,7 +86,7 @@ abstract class BaseConfigTriggerViewModel(
     val recordTriggerState: StateFlow<RecordTriggerState> = recordTrigger.state.stateIn(
         coroutineScope,
         SharingStarted.Lazily,
-        RecordTriggerState.Stopped,
+        RecordTriggerState.Idle,
     )
 
     val triggerModeButtonsEnabled: StateFlow<Boolean> = config.mapping.map { state ->
@@ -204,6 +206,27 @@ abstract class BaseConfigTriggerViewModel(
     val fixAppKilling = _fixAppKilling.asSharedFlow()
 
     var showAdvancedTriggersBottomSheet: Boolean by mutableStateOf(false)
+    var showDpadTriggerSetupBottomSheet: Boolean by mutableStateOf(false)
+    var showNoKeysRecordedBottomSheet: Boolean by mutableStateOf(false)
+
+    val setupGuiKeyboardState: StateFlow<SetupGuiKeyboardState> = combine(
+        setupGuiKeyboard.isInstalled,
+        setupGuiKeyboard.isEnabled,
+        setupGuiKeyboard.isChosen,
+    ) { isInstalled, isEnabled, isChosen ->
+        SetupGuiKeyboardState(
+            isInstalled,
+            isEnabled,
+            isChosen,
+        )
+    }.stateIn(coroutineScope, SharingStarted.Lazily, SetupGuiKeyboardState.DEFAULT)
+
+    /**
+     * Check whether the user stopped the trigger recording countdown. This
+     * distinction is important so that the bottom sheet describing what to do
+     * when no buttons are recorded is not shown.
+     */
+    private var isRecordingCompletionUserInitiated: Boolean = false
 
     init {
         val rebuildErrorList = MutableSharedFlow<State<KeyMap>>(replay = 1)
@@ -234,25 +257,11 @@ abstract class BaseConfigTriggerViewModel(
             }
         }
 
-        recordTrigger.onRecordKey.onEach {
-            if (it.keyCode == KeyEvent.KEYCODE_CAPS_LOCK) {
-                val dialog = PopupUi.Ok(
-                    message = getString(R.string.dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout),
-                )
-
-                showPopup("caps_lock_message", dialog)
+        coroutineScope.launch {
+            recordTrigger.onRecordKey.collectLatest {
+                onRecordTriggerKey(it)
             }
-
-            if (it.keyCode == KeyEvent.KEYCODE_BACK) {
-                val dialog = PopupUi.Ok(
-                    message = getString(R.string.dialog_message_screen_pinning_warning),
-                )
-
-                showPopup("screen_pinning_message", dialog)
-            }
-
-            config.addKeyCodeTriggerKey(it.keyCode, it.device)
-        }.launchIn(coroutineScope)
+        }
 
         coroutineScope.launch {
             config.mapping
@@ -260,63 +269,128 @@ abstract class BaseConfigTriggerViewModel(
                 .distinctUntilChanged()
                 .drop(1)
                 .collectLatest { mode ->
-                    if (mode is TriggerMode.Parallel) {
-                        if (onboarding.shownParallelTriggerOrderExplanation) return@collectLatest
-
-                        val dialog = PopupUi.Ok(
-                            message = getString(R.string.dialog_message_parallel_trigger_order),
-                        )
-
-                        showPopup("parallel_trigger_order", dialog) ?: return@collectLatest
-
-                        onboarding.shownParallelTriggerOrderExplanation = true
-                    }
-
-                    if (mode is TriggerMode.Sequence) {
-                        if (onboarding.shownSequenceTriggerExplanation) return@collectLatest
-
-                        val dialog = PopupUi.Ok(
-                            message = getString(R.string.dialog_message_sequence_trigger_explanation),
-                        )
-
-                        showPopup("sequence_trigger_explanation", dialog)
-                            ?: return@collectLatest
-
-                        onboarding.shownSequenceTriggerExplanation = true
-                    }
+                    onTriggerModeChanged(mode)
                 }
+        }
+
+        recordTrigger.state.onEach { state ->
+            if (state is RecordTriggerState.Completed &&
+                state.recordedKeys.isEmpty() &&
+                onboarding.showNoKeysDetectedBottomSheet.first() &&
+                !isRecordingCompletionUserInitiated
+            ) {
+                showNoKeysRecordedBottomSheet = true
+            }
+
+            // reset this field when recording has completed
+            isRecordingCompletionUserInitiated = false
+        }.launchIn(coroutineScope)
+    }
+
+    private suspend fun onTriggerModeChanged(mode: TriggerMode) {
+        if (mode is TriggerMode.Parallel) {
+            if (onboarding.shownParallelTriggerOrderExplanation) {
+                return
+            }
+
+            val dialog = PopupUi.Ok(
+                message = getString(R.string.dialog_message_parallel_trigger_order),
+            )
+
+            showPopup("parallel_trigger_order", dialog) ?: return
+
+            onboarding.shownParallelTriggerOrderExplanation = true
+        }
+
+        if (mode is TriggerMode.Sequence) {
+            if (onboarding.shownSequenceTriggerExplanation) {
+                return
+            }
+
+            val dialog = PopupUi.Ok(
+                message = getString(R.string.dialog_message_sequence_trigger_explanation),
+            )
+
+            showPopup("sequence_trigger_explanation", dialog)
+                ?: return
+
+            onboarding.shownSequenceTriggerExplanation = true
         }
     }
 
-    private fun buildTriggerErrorListItems(triggerErrors: List<TriggerError>): List<TextListItem.Error> =
-        triggerErrors.map { error ->
-            when (error) {
-                TriggerError.DND_ACCESS_DENIED -> TextListItem.Error(
-                    id = error.toString(),
-                    text = getString(R.string.trigger_error_dnd_access_denied),
-                )
+    private suspend fun onRecordTriggerKey(key: RecordedKey) {
+        // Add the trigger key before showing the dialog so it doesn't
+        // need to be dismissed before it is added.
+        config.addKeyCodeTriggerKey(key.keyCode, key.device, key.detectionSource)
 
-                TriggerError.SCREEN_OFF_ROOT_DENIED -> TextListItem.Error(
-                    id = error.toString(),
-                    text = getString(R.string.trigger_error_screen_off_root_permission_denied),
-                )
+        if (key.keyCode == KeyEvent.KEYCODE_CAPS_LOCK) {
+            val dialog = PopupUi.Ok(
+                message = getString(R.string.dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout),
+            )
 
-                TriggerError.CANT_DETECT_IN_PHONE_CALL -> TextListItem.Error(
-                    id = error.toString(),
-                    text = getString(R.string.trigger_error_cant_detect_in_phone_call),
-                )
+            showPopup("caps_lock_message", dialog)
+        }
 
-                TriggerError.ASSISTANT_NOT_SELECTED -> TextListItem.Error(
-                    id = error.toString(),
-                    text = getString(R.string.trigger_error_assistant_activity_not_chosen),
-                )
+        if (key.keyCode == KeyEvent.KEYCODE_BACK) {
+            val dialog = PopupUi.Ok(
+                message = getString(R.string.dialog_message_screen_pinning_warning),
+            )
 
-                TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED -> TextListItem.Error(
-                    id = error.toString(),
-                    text = getString(R.string.trigger_error_assistant_not_purchased),
-                )
+            showPopup("screen_pinning_message", dialog)
+        }
+
+        // Issue #491. Some key codes can only be detected through an input method. This will
+        // be shown to the user by showing a keyboard icon next to the trigger key name so
+        // explain this to the user.
+        if (key.detectionSource == KeyEventDetectionSource.INPUT_METHOD && displayKeyMap.showTriggerKeyboardIconExplanation.first()) {
+            val dialog = PopupUi.Dialog(
+                title = getString(R.string.dialog_title_keyboard_icon_means_ime_detection),
+                message = getString(R.string.dialog_message_keyboard_icon_means_ime_detection),
+                negativeButtonText = getString(R.string.neg_dont_show_again),
+                positiveButtonText = getString(R.string.pos_ok),
+            )
+
+            val response = showPopup("keyboard_icon_explanation", dialog)
+
+            if (response == DialogResponse.NEGATIVE) {
+                displayKeyMap.neverShowTriggerKeyboardIconExplanation()
             }
         }
+    }
+
+    private fun buildTriggerErrorListItems(triggerErrors: List<TriggerError>): List<TextListItem.Error> = triggerErrors.map { error ->
+        when (error) {
+            TriggerError.DND_ACCESS_DENIED -> TextListItem.Error(
+                id = error.toString(),
+                text = getString(R.string.trigger_error_dnd_access_denied),
+            )
+
+            TriggerError.SCREEN_OFF_ROOT_DENIED -> TextListItem.Error(
+                id = error.toString(),
+                text = getString(R.string.trigger_error_screen_off_root_permission_denied),
+            )
+
+            TriggerError.CANT_DETECT_IN_PHONE_CALL -> TextListItem.Error(
+                id = error.toString(),
+                text = getString(R.string.trigger_error_cant_detect_in_phone_call),
+            )
+
+            TriggerError.ASSISTANT_NOT_SELECTED -> TextListItem.Error(
+                id = error.toString(),
+                text = getString(R.string.trigger_error_assistant_activity_not_chosen),
+            )
+
+            TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED -> TextListItem.Error(
+                id = error.toString(),
+                text = getString(R.string.trigger_error_assistant_not_purchased),
+            )
+
+            TriggerError.DPAD_IME_NOT_SELECTED -> TextListItem.Error(
+                id = error.toString(),
+                text = getString(R.string.trigger_error_dpad_ime_not_selected),
+            )
+        }
+    }
 
     fun onParallelRadioButtonCheckedChange(isChecked: Boolean) {
         if (isChecked) {
@@ -394,16 +468,21 @@ abstract class BaseConfigTriggerViewModel(
             val recordTriggerState = recordTrigger.state.firstOrNull() ?: return@launch
 
             val result = when (recordTriggerState) {
-                is RecordTriggerState.CountingDown -> recordTrigger.stopRecording()
-                RecordTriggerState.Stopped -> recordTrigger.startRecording()
+                is RecordTriggerState.CountingDown -> {
+                    isRecordingCompletionUserInitiated = true
+                    recordTrigger.stopRecording()
+                }
+
+                is RecordTriggerState.Completed,
+                RecordTriggerState.Idle,
+                -> recordTrigger.startRecording()
             }
 
             if (result is Error.AccessibilityServiceDisabled) {
-                ViewModelHelper.handleAccessibilityServiceStoppedSnackBar(
+                ViewModelHelper.handleAccessibilityServiceStoppedDialog(
                     resourceProvider = this@BaseConfigTriggerViewModel,
                     popupViewModel = this@BaseConfigTriggerViewModel,
                     startService = displayKeyMap::startAccessibilityService,
-                    message = R.string.dialog_message_enable_accessibility_service_to_record_trigger,
                 )
             }
 
@@ -418,12 +497,6 @@ abstract class BaseConfigTriggerViewModel(
         }
     }
 
-    fun stopRecordingTrigger() {
-        coroutineScope.launch {
-            recordTrigger.stopRecording()
-        }
-    }
-
     fun onTriggerErrorClick(listItemId: String) {
         coroutineScope.launch {
             when (TriggerError.valueOf(listItemId)) {
@@ -431,7 +504,7 @@ abstract class BaseConfigTriggerViewModel(
                     ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
                         resourceProvider = this@BaseConfigTriggerViewModel,
                         popupViewModel = this@BaseConfigTriggerViewModel,
-                        neverShowDndTriggerErrorAgain = { displayKeyMap.neverShowDndTriggerErrorAgain() },
+                        neverShowDndTriggerErrorAgain = { displayKeyMap.neverShowDndTriggerError() },
                         fixError = { displayKeyMap.fixError(it) },
                     )
                 }
@@ -452,6 +525,10 @@ abstract class BaseConfigTriggerViewModel(
                 TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED -> {
                     showAdvancedTriggersBottomSheet = true
                 }
+
+                TriggerError.DPAD_IME_NOT_SELECTED -> {
+                    showDpadTriggerSetupBottomSheet = true
+                }
             }
         }
     }
@@ -459,30 +536,29 @@ abstract class BaseConfigTriggerViewModel(
     private fun createListItems(
         trigger: Trigger,
         showDeviceDescriptors: Boolean,
-    ): List<TriggerKeyListItem> =
-        trigger.keys.mapIndexed { index, key ->
-            val clickTypeString = when (key.clickType) {
-                ClickType.SHORT_PRESS -> null
-                ClickType.LONG_PRESS -> getString(R.string.clicktype_long_press)
-                ClickType.DOUBLE_PRESS -> getString(R.string.clicktype_double_press)
-            }
-
-            val linkDrawable = when {
-                trigger.mode is TriggerMode.Parallel && index < trigger.keys.lastIndex -> TriggerKeyLinkType.PLUS
-                trigger.mode is TriggerMode.Sequence && index < trigger.keys.lastIndex -> TriggerKeyLinkType.ARROW
-                else -> TriggerKeyLinkType.HIDDEN
-            }
-
-            TriggerKeyListItem(
-                id = key.uid,
-                name = getTriggerKeyName(key),
-                clickTypeString = clickTypeString,
-                extraInfo = getTriggerKeyExtraInfo(key, showDeviceDescriptors),
-                linkType = linkDrawable,
-                isDragDropEnabled = trigger.keys.size > 1,
-                isChooseDeviceButtonVisible = key is KeyCodeTriggerKey,
-            )
+    ): List<TriggerKeyListItem> = trigger.keys.mapIndexed { index, key ->
+        val clickTypeString = when (key.clickType) {
+            ClickType.SHORT_PRESS -> null
+            ClickType.LONG_PRESS -> getString(R.string.clicktype_long_press)
+            ClickType.DOUBLE_PRESS -> getString(R.string.clicktype_double_press)
         }
+
+        val linkDrawable = when {
+            trigger.mode is TriggerMode.Parallel && index < trigger.keys.lastIndex -> TriggerKeyLinkType.PLUS
+            trigger.mode is TriggerMode.Sequence && index < trigger.keys.lastIndex -> TriggerKeyLinkType.ARROW
+            else -> TriggerKeyLinkType.HIDDEN
+        }
+
+        TriggerKeyListItem(
+            id = key.uid,
+            name = getTriggerKeyName(key),
+            clickTypeString = clickTypeString,
+            extraInfo = getTriggerKeyExtraInfo(key, showDeviceDescriptors),
+            linkType = linkDrawable,
+            isDragDropEnabled = trigger.keys.size > 1,
+            isChooseDeviceButtonVisible = key is KeyCodeTriggerKey,
+        )
+    }
 
     private fun getTriggerKeyExtraInfo(key: TriggerKey, showDeviceDescriptors: Boolean): String? {
         if (key !is KeyCodeTriggerKey) {
@@ -491,22 +567,31 @@ abstract class BaseConfigTriggerViewModel(
 
         return buildString {
             append(getTriggerKeyDeviceName(key.device, showDeviceDescriptors))
+            val midDot = getString(R.string.middot)
 
             if (!key.consumeEvent) {
-                val midDot = getString(R.string.middot)
                 append(" $midDot ${getString(R.string.flag_dont_override_default_action)}")
             }
         }
     }
 
-    private fun getTriggerKeyName(key: TriggerKey): String = when (key) {
-        is AssistantTriggerKey -> when (key.type) {
-            AssistantTriggerType.ANY -> getString(R.string.assistant_any_trigger_name)
-            AssistantTriggerType.VOICE -> getString(R.string.assistant_voice_trigger_name)
-            AssistantTriggerType.DEVICE -> getString(R.string.assistant_device_trigger_name)
-        }
+    private fun getTriggerKeyName(key: TriggerKey): String {
+        return when (key) {
+            is AssistantTriggerKey -> when (key.type) {
+                AssistantTriggerType.ANY -> getString(R.string.assistant_any_trigger_name)
+                AssistantTriggerType.VOICE -> getString(R.string.assistant_voice_trigger_name)
+                AssistantTriggerType.DEVICE -> getString(R.string.assistant_device_trigger_name)
+            }
 
-        is KeyCodeTriggerKey -> KeyEventUtils.keyCodeToString(key.keyCode)
+            is KeyCodeTriggerKey -> buildString {
+                append(InputEventUtils.keyCodeToString(key.keyCode))
+
+                if (key.detectionSource == KeyEventDetectionSource.INPUT_METHOD) {
+                    val midDot = getString(R.string.middot)
+                    append(" $midDot ${getString(R.string.flag_detect_from_input_method)}")
+                }
+            }
+        }
     }
 
     private fun getTriggerKeyDeviceName(
@@ -525,5 +610,21 @@ abstract class BaseConfigTriggerViewModel(
                 device.name
             }
         }
+    }
+
+    fun onEnableGuiKeyboardClick() {
+        setupGuiKeyboard.enableInputMethod()
+    }
+
+    fun onChooseGuiKeyboardClick() {
+        setupGuiKeyboard.chooseInputMethod()
+    }
+
+    fun onNeverShowSetupDpadClick() {
+        displayKeyMap.neverShowDpadImeSetupError()
+    }
+
+    fun onNeverShowNoKeysRecordedClick() {
+        onboarding.neverShowNoKeysRecordedBottomSheet()
     }
 }

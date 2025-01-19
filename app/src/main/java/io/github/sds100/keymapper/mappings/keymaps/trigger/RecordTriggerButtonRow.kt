@@ -85,7 +85,7 @@ private fun RecordTriggerButtonRow(
 
         AdvancedTriggersButton(
             modifier = Modifier.weight(1f),
-            isEnabled = recordTriggerState is RecordTriggerState.Stopped,
+            isEnabled = recordTriggerState !is RecordTriggerState.CountingDown,
             onClick = onAdvancedTriggersClick,
         )
     }
@@ -106,7 +106,7 @@ private fun RecordTriggerButton(
         is RecordTriggerState.CountingDown ->
             stringResource(R.string.button_recording_trigger_countdown, state.timeLeft)
 
-        RecordTriggerState.Stopped ->
+        else ->
             stringResource(R.string.button_record_trigger)
     }
 
@@ -172,7 +172,7 @@ private fun PreviewStopped() {
         Surface {
             RecordTriggerButtonRow(
                 modifier = Modifier.fillMaxWidth(),
-                recordTriggerState = RecordTriggerState.Stopped,
+                recordTriggerState = RecordTriggerState.Idle,
             )
         }
     }

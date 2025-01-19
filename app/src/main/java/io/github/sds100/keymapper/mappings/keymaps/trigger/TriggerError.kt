@@ -15,4 +15,9 @@ enum class TriggerError {
     // This error appears when a key map has an assistant trigger but the user hasn't purchased
     // the product.
     ASSISTANT_TRIGGER_NOT_PURCHASED,
+
+    /**
+     * A Key Mapper IME must be used for DPAD triggers to work.
+     */
+    DPAD_IME_NOT_SELECTED,
 }

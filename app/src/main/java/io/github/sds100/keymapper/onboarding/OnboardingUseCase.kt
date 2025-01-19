@@ -25,19 +25,19 @@ import kotlinx.coroutines.flow.map
  * Created by sds100 on 14/02/21.
  */
 class OnboardingUseCaseImpl(
-    private val preferenceRepository: PreferenceRepository,
+    private val preferences: PreferenceRepository,
     private val fileAdapter: FileAdapter,
     private val leanbackAdapter: LeanbackAdapter,
     private val shizukuAdapter: ShizukuAdapter,
     private val permissionAdapter: PermissionAdapter,
     private val packageManagerAdapter: PackageManagerAdapter,
-) : PreferenceRepository by preferenceRepository,
+) : PreferenceRepository by preferences,
     OnboardingUseCase {
 
     override var shownAppIntro by PrefDelegate(Keys.shownAppIntro, false)
 
     override suspend fun showInstallGuiKeyboardPrompt(action: ActionData): Boolean {
-        val acknowledged = preferenceRepository.get(Keys.acknowledgedGuiKeyboard).first()
+        val acknowledged = preferences.get(Keys.acknowledgedGuiKeyboard).first()
         val isGuiKeyboardInstalled =
             packageManagerAdapter.isAppInstalled(KeyMapperImeHelper.KEY_MAPPER_GUI_IME_PACKAGE)
 
@@ -49,13 +49,12 @@ class OnboardingUseCaseImpl(
             action.canUseImeToPerform()
     }
 
-    override suspend fun showInstallShizukuPrompt(action: ActionData): Boolean =
-        !shizukuAdapter.isInstalled.value &&
-            ShizukuUtils.isRecommendedForSdkVersion() &&
-            action.canUseShizukuToPerform()
+    override suspend fun showInstallShizukuPrompt(action: ActionData): Boolean = !shizukuAdapter.isInstalled.value &&
+        ShizukuUtils.isRecommendedForSdkVersion() &&
+        action.canUseShizukuToPerform()
 
     override fun neverShowGuiKeyboardPromptsAgain() {
-        preferenceRepository.set(Keys.acknowledgedGuiKeyboard, true)
+        preferences.set(Keys.acknowledgedGuiKeyboard, true)
     }
 
     override var shownParallelTriggerOrderExplanation by PrefDelegate(
@@ -74,10 +73,9 @@ class OnboardingUseCaseImpl(
         set(Keys.lastInstalledVersionCodeHomeScreen, Constants.VERSION_CODE)
     }
 
-    override fun getWhatsNewText(): String =
-        with(fileAdapter.openAsset("whats-new.txt").bufferedReader()) {
-            readText()
-        }
+    override fun getWhatsNewText(): String = with(fileAdapter.openAsset("whats-new.txt").bufferedReader()) {
+        readText()
+    }
 
     override var approvedAssistantTriggerFeaturePrompt by PrefDelegate(
         Keys.approvedAssistantTriggerFeaturePrompt,
@@ -112,13 +110,13 @@ class OnboardingUseCaseImpl(
     }
 
     override fun shownQuickStartGuideHint() {
-        preferenceRepository.set(Keys.shownQuickStartGuideHint, true)
+        preferences.set(Keys.shownQuickStartGuideHint, true)
     }
 
     override fun isTvDevice(): Boolean = leanbackAdapter.isTvDevice()
 
     override val promptForShizukuPermission: Flow<Boolean> = combine(
-        preferenceRepository.get(Keys.shownShizukuPermissionPrompt),
+        preferences.get(Keys.shownShizukuPermissionPrompt),
         shizukuAdapter.isInstalled,
         permissionAdapter.isGrantedFlow(Permission.SHIZUKU),
     ) {
@@ -131,6 +129,19 @@ class OnboardingUseCaseImpl(
 
     override val showShizukuAppIntroSlide: Boolean
         get() = shizukuAdapter.isInstalled.value
+
+    override val showNoKeysDetectedBottomSheet: Flow<Boolean> =
+        preferences.get(Keys.neverShowNoKeysRecordedError).map { neverShow ->
+            if (neverShow == null) {
+                true
+            } else {
+                !neverShow
+            }
+        }
+
+    override fun neverShowNoKeysRecordedBottomSheet() {
+        preferences.set(Keys.neverShowNoKeysRecordedError, true)
+    }
 }
 
 interface OnboardingUseCase {
@@ -168,4 +179,7 @@ interface OnboardingUseCase {
     val promptForShizukuPermission: Flow<Boolean>
 
     val showShizukuAppIntroSlide: Boolean
+
+    val showNoKeysDetectedBottomSheet: Flow<Boolean>
+    fun neverShowNoKeysRecordedBottomSheet()
 }

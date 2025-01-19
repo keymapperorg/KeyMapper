@@ -120,7 +120,7 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
                     ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
                         resourceProvider = this@ConfigActionsViewModel,
                         popupViewModel = this@ConfigActionsViewModel,
-                        neverShowDndTriggerErrorAgain = { displayActionUseCase.neverShowDndTriggerErrorAgain() },
+                        neverShowDndTriggerErrorAgain = { displayActionUseCase.neverShowDndTriggerError() },
                         fixError = { displayActionUseCase.fixError(it) },
                     )
                 }
@@ -171,11 +171,10 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
         testActionUseCase.invoke(actionData).onFailure { error ->
 
             if (error is Error.AccessibilityServiceDisabled) {
-                ViewModelHelper.handleAccessibilityServiceStoppedSnackBar(
+                ViewModelHelper.handleAccessibilityServiceStoppedDialog(
                     resourceProvider = this,
                     popupViewModel = this,
                     startService = displayActionUseCase::startAccessibilityService,
-                    message = R.string.dialog_message_enable_accessibility_service_to_test_action,
                 )
             }
 

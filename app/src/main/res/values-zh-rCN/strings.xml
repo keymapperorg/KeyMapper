@@ -419,9 +419,7 @@
     <string name="dialog_message_disable_battery_optimisation">您<b>必须</b>阅读此<b>全部</b>，否则您将来会<b>沮丧</b>！\n\n点击“部分修复”<b>可能</b > 防止 Android 在后台停止应用程序。\n\n<b>这还不够</b>。 您的 OEM 厂商（例如 MIUI 或 Samsung Experience）可能具有其他应用程序终止功能，因此您必须按照 dontkillmyapp.com 上的在线指南为 Key Mapper 关闭它们。</string>
     <string name="dialog_title_send_feedback">发送反馈</string>
     <string name="dialog_message_send_feedback">请阅读有关如何在网站上报告问题的指南。</string>
-    <string name="dialog_message_enable_accessibility_service_to_record_trigger">打开无障碍服务，以便您可以记录触发器。</string>
     <string name="dialog_message_restart_accessibility_service_to_record_trigger">通过<i>off</i>和<i>on</i>重新启动无障碍服务，这样您就可以记录触发器。</string>
-    <string name="dialog_message_enable_accessibility_service_to_test_action">打开无障碍服务，以便您可以测试操作。</string>
     <string name="dialog_message_restart_accessibility_service_to_test_action">通过<i>打开</i>和<i>关闭</i>重新启动无障碍服务，以便您可以测试该操作。</string>
     <string name="dialog_message_restart_accessibility_service">通过<i>打开</i>和<i>关闭</i>重新启动无障碍服务，以便您可以测试该操作。</string>
     <string name="dialog_message_screen_pinning_warning">使用设备设置中的屏幕固定设置后解锁设备时，使用此触发器可能会导致黑屏。 这可以通过重新启动来解决。 并非所有设备都会发生这种情况，因此请注意并关闭设置！</string>

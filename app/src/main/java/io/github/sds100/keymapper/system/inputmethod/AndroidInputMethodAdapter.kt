@@ -65,7 +65,7 @@ class AndroidInputMethodAdapter(
         MutableStateFlow(initialValues)
     }
 
-    val broadcastReceiver = object : BroadcastReceiver() {
+    private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             intent ?: return
             context ?: return
@@ -189,8 +189,7 @@ class AndroidInputMethodAdapter(
         }
     }
 
-    private fun enableImeWithoutUserInput(imeId: String): Result<*> =
-        suAdapter.execute("ime enable $imeId")
+    private fun enableImeWithoutUserInput(imeId: String): Result<*> = suAdapter.execute("ime enable $imeId")
 
     override suspend fun chooseImeWithoutUserInput(imeId: String): Result<ImeInfo> {
         getInfoById(imeId).onSuccess {
@@ -237,13 +236,12 @@ class AndroidInputMethodAdapter(
 
     override fun getInfoById(imeId: String): Result<ImeInfo> {
         val info =
-            inputMethods.value.find { it.id == imeId } ?: return Error.InputMethodNotFound(imeId)
+            getInputMethods().find { it.id == imeId } ?: return Error.InputMethodNotFound(imeId)
 
         return Success(info)
     }
 
-    override fun getInfoByPackageName(packageName: String): Result<ImeInfo> =
-        getImeId(packageName).then { getInfoById(it) }
+    override fun getInfoByPackageName(packageName: String): Result<ImeInfo> = getImeId(packageName).then { getInfoById(it) }
 
     /**
      * Example:
@@ -291,8 +289,7 @@ class AndroidInputMethodAdapter(
         return getInfoById(chosenImeId).valueOrNull()
     }
 
-    private fun getChosenImeId(): String =
-        Settings.Secure.getString(ctx.contentResolver, Settings.Secure.DEFAULT_INPUT_METHOD)
+    private fun getChosenImeId(): String = Settings.Secure.getString(ctx.contentResolver, Settings.Secure.DEFAULT_INPUT_METHOD)
 
     private fun getImeId(packageName: String): Result<String> {
         val imeId = inputMethodManager.inputMethodList.find { it.packageName == packageName }?.id

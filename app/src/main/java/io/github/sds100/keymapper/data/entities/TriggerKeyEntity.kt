@@ -24,7 +24,6 @@ sealed class TriggerKeyEntity : Parcelable {
         const val NAME_UID = "uid"
 
         // Click types
-        const val UNDETERMINED = -1
         const val SHORT_PRESS = 0
         const val LONG_PRESS = 1
         const val DOUBLE_PRESS = 2

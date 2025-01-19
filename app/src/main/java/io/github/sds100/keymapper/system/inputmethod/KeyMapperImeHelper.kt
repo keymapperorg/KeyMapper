@@ -32,6 +32,8 @@ class KeyMapperImeHelper(private val imeAdapter: InputMethodAdapter) {
             KEY_MAPPER_LEANBACK_IME_PACKAGE,
             KEY_MAPPER_HACKERS_KEYBOARD_PACKAGE,
         )
+
+        const val MIN_SUPPORTED_GUI_KEYBOARD_VERSION_CODE: Int = 20
     }
 
     val isCompatibleImeEnabledFlow: Flow<Boolean> =
@@ -46,15 +48,13 @@ class KeyMapperImeHelper(private val imeAdapter: InputMethodAdapter) {
         }
     }
 
-    suspend fun chooseCompatibleInputMethod(): Result<ImeInfo> =
-        getLastUsedCompatibleImeId().suspendThen {
-            imeAdapter.chooseImeWithoutUserInput(it)
-        }
+    suspend fun chooseCompatibleInputMethod(): Result<ImeInfo> = getLastUsedCompatibleImeId().suspendThen {
+        imeAdapter.chooseImeWithoutUserInput(it)
+    }
 
-    suspend fun chooseLastUsedIncompatibleInputMethod(): Result<ImeInfo> =
-        getLastUsedIncompatibleImeId().then {
-            imeAdapter.chooseImeWithoutUserInput(it)
-        }
+    suspend fun chooseLastUsedIncompatibleInputMethod(): Result<ImeInfo> = getLastUsedIncompatibleImeId().then {
+        imeAdapter.chooseImeWithoutUserInput(it)
+    }
 
     suspend fun toggleCompatibleInputMethod(): Result<ImeInfo> = if (isCompatibleImeChosen()) {
         chooseLastUsedIncompatibleInputMethod()
@@ -62,8 +62,7 @@ class KeyMapperImeHelper(private val imeAdapter: InputMethodAdapter) {
         chooseCompatibleInputMethod()
     }
 
-    fun isCompatibleImeChosen(): Boolean =
-        imeAdapter.chosenIme.value?.packageName in KEY_MAPPER_IME_PACKAGE_LIST
+    fun isCompatibleImeChosen(): Boolean = imeAdapter.chosenIme.value?.packageName in KEY_MAPPER_IME_PACKAGE_LIST
 
     fun isCompatibleImeEnabled(): Boolean = imeAdapter.inputMethods
         .map { containsCompatibleIme(it) }

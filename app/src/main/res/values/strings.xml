@@ -3,7 +3,7 @@
     <string name="slogan">Unleash your keys!</string>
 
     <string name="no_action_chosen">No action chosen</string>
-    <string name="accessibility_service_explanation">Key Mapper requires the use of an accessibility service so that it can detect and change what your button presses do while you are outside of the app. Your key maps will only work once you have enabled the accessibility service. It must also be turned on to create a trigger.</string>
+    <string name="accessibility_service_explanation">Key Mapper requires the use of an accessibility service so that it can detect and change what your button presses do while you are outside of the app. Your key maps will only work once you have enabled the accessibility service. It must also be turned on to create a trigger and test actions.</string>
     <string name="selection_count">%d selected</string>
     <string name="ime_service_label" translatable="false">Key Mapper Basic Input Method</string>
     <string name="enable">Enable</string>
@@ -106,11 +106,13 @@
     <string name="trigger_error_dnd_access_denied">Key Mapper requires permission to modify the Do Not Disturb mode if you want the buttons to work as expected in Do Not Disturb mode!</string>
     <string name="trigger_error_dnd_access_denied_short">This trigger will not work as expected in Do Not Disturb mode!</string>
     <string name="trigger_error_screen_off_root_permission_denied">The option to trigger when the screen is off needs root permission to work!</string>
-    <string name="trigger_error_screen_off_root_permission_denied_short">The option to trigger when the screen is off will not work!</string>
+    <string name="trigger_error_screen_off_root_permission_denied_short">Screen off triggers will not work!</string>
     <string name="trigger_error_cant_detect_in_phone_call">This trigger won\'t work while ringing or in a phone call!</string>
     <string name="trigger_error_cant_detect_in_phone_call_explanation">Android doesn\'t let accessibility services detect volume button presses while your phone is ringing or it is in a phone call but it does let input method services detect them. Therefore, you must use one of the Key Mapper keyboards if you want this trigger to work.</string>
     <string name="trigger_error_gesture_stroke_count_too_high">Too many fingers to perform gesture due to android limitations.</string>
     <string name="trigger_error_gesture_duration_too_high">Gesture duration is too high due to android limitations.</string>
+    <string name="trigger_error_dpad_ime_not_selected">You must be using a Key Mapper keyboard for DPAD triggers to work!</string>
+    <string name="trigger_error_dpad_ime_not_selected_short">DPAD triggers will not work!</string>
 
     <string name="home_error_is_battery_optimised">Your mappings will stop working randomly!</string>
     <string name="home_error_key_maps_paused">Your mappings are paused!</string>
@@ -543,10 +545,8 @@
     <string name="dialog_title_send_feedback">Send feedback</string>
     <string name="dialog_message_send_feedback">Please read the guide on how to report issues on the website.</string>
 
-    <string name="dialog_message_enable_accessibility_service_to_record_trigger">Turn on the accessibility service so that you can record a trigger.</string>
     <string name="dialog_message_restart_accessibility_service_to_record_trigger">Restart the accessibility service by turning it <i>off</i> and <i>on</i> so that you can record a trigger.</string>
 
-    <string name="dialog_message_enable_accessibility_service_to_test_action">Turn on the accessibility service so that you can test the action.</string>
     <string name="dialog_message_restart_accessibility_service_to_test_action">Restart the accessibility service by turning it <i>off</i> and <i>on</i> so that you can test the action.</string>
     <string name="dialog_message_restart_accessibility_service">Restart the accessibility service by turning it <i>off</i> and <i>on</i>.</string>
 
@@ -580,6 +580,14 @@
 
     <string name="dialog_title_fix_dnd_trigger_error">Grant Do Not Disturb access</string>
     <string name="dialog_message_fix_dnd_trigger_error">You will be taken to your device\'s settings page to manage which apps can modify the Do Not Disturb state. This is <b>not present on some devices</b> so tap don\'t show again if you do not see Key Mapper in the list.</string>
+
+    <string name="dialog_title_keyboard_icon_means_ime_detection">Good to know!</string>
+    <string name="dialog_message_keyboard_icon_means_ime_detection">If you see this symbol (⌨) next to a trigger key then you MUST use a Key Mapper keyboard for it to be detected. This is a restriction in Android and is only required for some buttons.</string>
+
+    <string name="dialog_upgrade_gui_keyboard_title">Important!</string>
+    <string name="dialog_upgrade_gui_keyboard_message">You must update the Key Mapper GUI Keyboard so it is compatible with this version of Key Mapper. Some key maps may not work until you update!</string>
+    <string name="dialog_upgrade_gui_keyboard_positive">Update now</string>
+    <string name="dialog_upgrade_gui_keyboard_neutral">Ignore</string>
 
     <string name="pos_yes">Yes</string>
     <string name="pos_confirm">Confirm</string>
@@ -777,6 +785,13 @@
     <string name="title_pref_default_options">Default mapping options</string>
     <string name="summary_pref_default_options">Change the default options for your mappings.</string>
 
+    <string name="title_pref_reset_settings">Reset all settings</string>
+    <string name="summary_pref_reset_settings">DANGER! Reset all settings in the app to the default. Your key maps will NOT be reset.</string>
+    <string name="dialog_title_reset_settings">DANGER!</string>
+    <string name="dialog_message_reset_settings">Are you sure you want to reset all settings in the app to the default? Your key maps will NOT be reset. The introduction screen and all warning pop ups will show again.</string>
+    <string name="pos_button_reset_settings">Yes, reset</string>
+
+
     <!--Preference titles and summaries-->
 
     <!--Preference categories-->
@@ -849,6 +864,7 @@
     <string name="flag_dont_override_default_action">Do not remap</string>
     <string name="flag_hold_down_until_swiped_again">Hold down until swiped again</string>
     <string name="flag_trigger_from_other_apps">Allow other apps to trigger this key map</string>
+    <string name="flag_detect_from_input_method">⌨</string>
     <!--flags-->
 
     <!-- Showcase -->
@@ -1417,4 +1433,25 @@
     <string name="customer_email_body" translatable="false">Please fill the following information so I can help you.\n\n1. Device model:\n2. Android version:\n3. Key maps (make a back up in the home screen menu):\n4. Screenshot of Key Mapper home screen:\n5. Describe the problem you are having:</string>
     <string name="purchasing_not_implemented_bottom_sheet_text">The advanced triggers are paid feature but you downloaded the FOSS build of Key Mapper that does not include this module or Google Play billing. Please download Key Mapper from Google Play to get access to this feature.</string>
     <string name="purchasing_download_key_mapper_from_google_play">Download Play build</string>
+
+
+    <!--  Dpad trigger setup bottom sheet  -->
+    <string name="dpad_trigger_setup_bottom_sheet_title">Want to remap DPAD buttons?</string>
+    <string name="dpad_trigger_setup_bottom_sheet_text">You must set up the Key Mapper GUI Keyboard following the steps below.</string>
+    <string name="setup_gui_keyboard_install_keyboard_text">1. Install the keyboard app</string>
+    <string name="setup_gui_keyboard_install_keyboard_button">Install</string>
+    <string name="setup_gui_keyboard_install_keyboard_button_disabled">Installed</string>
+    <string name="setup_gui_keyboard_enable_keyboard_text">2. Enable the keyboard</string>
+    <string name="setup_gui_keyboard_enable_keyboard_button">Enable</string>
+    <string name="setup_gui_keyboard_enable_keyboard_button_disabled">Enabled</string>
+    <string name="setup_gui_keyboard_choose_keyboard_text">3. Use the keyboard</string>
+    <string name="setup_gui_keyboard_choose_keyboard_button">Change keyboard</string>
+    <string name="setup_gui_keyboard_choose_keyboard_button_disabled">Keyboard selected</string>
+    <string name="dpad_trigger_setup_setup_complete_text">Setup complete! Tap \'Done\' and your DPAD trigger should work.</string>
+
+    <!-- No keys recorded bottom sheet -->
+    <string name="no_keys_recorded_bottom_sheet_title">Button not detected?</string>
+    <string name="no_keys_recorded_bottom_sheet_text">You can try using the Key Mapper GUI Keyboard app to record your trigger instead of the accessibility service.</string>
+    <string name="no_keys_recorded_setup_complete_text">Setup complete! Tap \'Done\' and try recording your trigger again. If it doesn’t work then Android will not let it be remapped 🫤.</string>
+
 </resources>

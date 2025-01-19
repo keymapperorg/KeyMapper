@@ -84,8 +84,8 @@ class DisplaySimpleMappingUseCaseImpl(
 
     override fun restartAccessibilityService(): Boolean = accessibilityServiceAdapter.restart()
 
-    override fun neverShowDndTriggerErrorAgain() {
-        preferenceRepository.set(Keys.neverShowDndError, true)
+    override fun neverShowDndTriggerError() {
+        preferenceRepository.set(Keys.neverShowDndAccessError, true)
     }
 }
 
@@ -101,7 +101,7 @@ interface DisplayActionUseCase : GetActionErrorUseCase {
     fun getAppIcon(packageName: String): Result<Drawable>
     fun getInputMethodLabel(imeId: String): Result<String>
     suspend fun fixError(error: Error)
-    fun neverShowDndTriggerErrorAgain()
+    fun neverShowDndTriggerError()
     fun startAccessibilityService(): Boolean
     fun restartAccessibilityService(): Boolean
 }
@@ -110,6 +110,6 @@ interface DisplayConstraintUseCase : GetConstraintErrorUseCase {
     fun getAppName(packageName: String): Result<String>
     fun getAppIcon(packageName: String): Result<Drawable>
     fun getInputMethodLabel(imeId: String): Result<String>
-    fun neverShowDndTriggerErrorAgain()
+    fun neverShowDndTriggerError()
     suspend fun fixError(error: Error)
 }

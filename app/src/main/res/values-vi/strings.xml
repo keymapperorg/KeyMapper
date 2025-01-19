@@ -402,9 +402,7 @@
     <string name="dialog_message_disable_battery_optimisation">Bạn <b>PHẢI</b> đọc <b>tất cả</b> này nếu không bạn sẽ <b>thất vọng</b> trong tương lai!\n\nNhấn vào \"sửa một phần\" <b>có thể</b > ngăn Android dừng ứng dụng khi ứng dụng đang chạy trong nền.\n\n<b>Điều này KHÔNG ĐỦ</b>. Giao diện OEM của bạn như MIUI hoặc Samsung Experience có thể có các tính năng tiêu diệt ứng dụng khác, vì vậy bạn PHẢI tắt chúng cho Key Mapper bằng cách làm theo hướng dẫn trực tuyến tại Dontkillmyapp.com.</string>
     <string name="dialog_title_send_feedback">Gửi phản hồi</string>
     <string name="dialog_message_send_feedback">Vui lòng đọc hướng dẫn về cách báo cáo sự cố trên trang web.</string>
-    <string name="dialog_message_enable_accessibility_service_to_record_trigger">Bật dịch vụ trợ năng để bạn có thể ghi lại trình kích hoạt.</string>
     <string name="dialog_message_restart_accessibility_service_to_record_trigger">Khởi động lại dịch vụ trợ năng bằng cách <i>tắt</i> và <i>bật</i> để bạn có thể ghi lại trình kích hoạt.</string>
-    <string name="dialog_message_enable_accessibility_service_to_test_action">Bật dịch vụ trợ năng để bạn có thể kiểm tra hành động.</string>
     <string name="dialog_message_restart_accessibility_service_to_test_action">Khởi động lại dịch vụ trợ năng bằng cách <i>tắt</i> và <i>bật</i> để bạn có thể kiểm tra hành động.</string>
     <string name="dialog_message_restart_accessibility_service">Khởi động lại dịch vụ trợ năng bằng cách <i>tắt</i> và <i>bật</i>.</string>
     <string name="dialog_message_screen_pinning_warning">Việc sử dụng trình kích hoạt này có thể gây ra màn hình đen khi bạn mở khóa thiết bị sau khi sử dụng cài đặt ghim màn hình trong cài đặt của thiết bị. Điều này có thể được khắc phục bằng cách khởi động lại. Điều này không xảy ra trên tất cả các thiết bị vì vậy hãy cẩn thận và tắt cài đặt nếu xảy ra!</string>

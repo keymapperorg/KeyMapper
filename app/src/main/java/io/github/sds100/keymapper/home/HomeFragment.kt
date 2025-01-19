@@ -10,10 +10,17 @@ import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomappbar.BottomAppBar.FAB_ALIGNMENT_MODE_CENTER
@@ -21,8 +28,10 @@ import com.google.android.material.bottomappbar.BottomAppBar.FAB_ALIGNMENT_MODE_
 import com.google.android.material.tabs.TabLayoutMediator
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.backup.BackupUtils
+import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.databinding.FragmentHomeBinding
 import io.github.sds100.keymapper.fixError
+import io.github.sds100.keymapper.mappings.keymaps.trigger.DpadTriggerSetupBottomSheet
 import io.github.sds100.keymapper.success
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.system.url.UrlUtils
@@ -105,6 +114,34 @@ class HomeFragment : Fragment() {
         FragmentHomeBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
             _binding = this
+
+            @OptIn(ExperimentalMaterial3Api::class)
+            composeView.apply {
+                // Dispose of the Composition when the view's LifecycleOwner
+                // is destroyed
+                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                setContent {
+                    KeyMapperTheme {
+                        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+                        val state by homeViewModel.keymapListViewModel.setupGuiKeyboardState.collectAsStateWithLifecycle()
+
+                        if (homeViewModel.keymapListViewModel.showDpadTriggerSetupBottomSheet) {
+                            DpadTriggerSetupBottomSheet(
+                                modifier = Modifier.systemBarsPadding(),
+                                onDismissRequest = {
+                                    homeViewModel.keymapListViewModel.showDpadTriggerSetupBottomSheet =
+                                        false
+                                },
+                                guiKeyboardState = state,
+                                onEnableKeyboardClick = homeViewModel.keymapListViewModel::onEnableGuiKeyboardClick,
+                                onChooseKeyboardClick = homeViewModel.keymapListViewModel::onChooseGuiKeyboardClick,
+                                onNeverShowAgainClick = homeViewModel.keymapListViewModel::onNeverShowSetupDpadClick,
+                                sheetState = sheetState,
+                            )
+                        }
+                    }
+                }
+            }
             return this.root
         }
     }

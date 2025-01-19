@@ -1,11 +1,12 @@
 package io.github.sds100.keymapper.reroutekeyevents
 
+import android.os.Build
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.system.inputmethod.ImeInputEventInjector
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
-import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeMessenger
 import io.github.sds100.keymapper.util.firstBlocking
 import kotlinx.coroutines.flow.map
 
@@ -20,7 +21,7 @@ import kotlinx.coroutines.flow.map
  */
 class RerouteKeyEventsUseCaseImpl(
     private val inputMethodAdapter: InputMethodAdapter,
-    private val keyMapperImeMessenger: KeyMapperImeMessenger,
+    private val imeInputEventInjector: ImeInputEventInjector,
     private val preferenceRepository: PreferenceRepository,
 ) : RerouteKeyEventsUseCase {
 
@@ -32,17 +33,26 @@ class RerouteKeyEventsUseCaseImpl(
 
     private val imeHelper by lazy { KeyMapperImeHelper(inputMethodAdapter) }
 
-    override fun shouldRerouteKeyEvent(descriptor: String): Boolean =
-        imeHelper.isCompatibleImeChosen() &&
-            devicesToRerouteKeyEvents.firstBlocking().contains(descriptor) &&
-            rerouteKeyEvents.firstBlocking()
+    override fun shouldRerouteKeyEvent(descriptor: String?): Boolean {
+        if (Build.VERSION.SDK_INT != Build.VERSION_CODES.R) {
+            return false
+        }
+
+        return rerouteKeyEvents.firstBlocking() &&
+            imeHelper.isCompatibleImeChosen() &&
+            (
+                descriptor != null &&
+                    devicesToRerouteKeyEvents.firstBlocking()
+                        .contains(descriptor)
+                )
+    }
 
     override fun inputKeyEvent(keyModel: InputKeyModel) {
-        keyMapperImeMessenger.inputKeyEvent(keyModel)
+        imeInputEventInjector.inputKeyEvent(keyModel)
     }
 }
 
 interface RerouteKeyEventsUseCase {
-    fun shouldRerouteKeyEvent(descriptor: String): Boolean
+    fun shouldRerouteKeyEvent(descriptor: String?): Boolean
     fun inputKeyEvent(keyModel: InputKeyModel)
 }

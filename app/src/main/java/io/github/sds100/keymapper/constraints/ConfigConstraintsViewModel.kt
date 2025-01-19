@@ -125,7 +125,7 @@ class ConfigConstraintsViewModel(
                     ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
                         resourceProvider = this@ConfigConstraintsViewModel,
                         popupViewModel = this@ConfigConstraintsViewModel,
-                        neverShowDndTriggerErrorAgain = { displayUseCase.neverShowDndTriggerErrorAgain() },
+                        neverShowDndTriggerErrorAgain = { displayUseCase.neverShowDndTriggerError() },
                         fixError = { displayUseCase.fixError(it) },
                     )
                 }

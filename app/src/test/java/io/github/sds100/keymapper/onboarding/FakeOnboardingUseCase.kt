@@ -47,4 +47,8 @@ class FakeOnboardingUseCase : OnboardingUseCase {
     override val promptForShizukuPermission: Flow<Boolean> = MutableStateFlow(false)
 
     override val showShizukuAppIntroSlide: Boolean = false
+
+    override val showNoKeysDetectedBottomSheet: Flow<Boolean> = MutableStateFlow(false)
+
+    override fun neverShowNoKeysRecordedBottomSheet() {}
 }

@@ -4,6 +4,8 @@ package io.github.sds100.keymapper.mappings.keymaps.trigger
  * Created by sds100 on 04/03/2021.
  */
 sealed class RecordTriggerState {
+    data object Idle : RecordTriggerState()
+
     data class CountingDown(
         /**
          * The time left in seconds
@@ -11,5 +13,5 @@ sealed class RecordTriggerState {
         val timeLeft: Int,
     ) : RecordTriggerState()
 
-    object Stopped : RecordTriggerState()
+    data class Completed(val recordedKeys: List<RecordedKey>) : RecordTriggerState()
 }

@@ -5,15 +5,12 @@ import android.content.Context
 import android.hardware.input.IInputManager
 import android.os.SystemClock
 import android.view.KeyEvent
+import io.github.sds100.keymapper.system.inputevents.InputEventInjector
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.util.InputEventType
 import rikka.shizuku.ShizukuBinderWrapper
 import rikka.shizuku.SystemServiceHelper
 import timber.log.Timber
-
-/**
- * Created by sds100 on 21/04/2021.
- */
 
 @SuppressLint("PrivateApi")
 class ShizukuInputEventInjector : InputEventInjector {
@@ -57,8 +54,4 @@ class ShizukuInputEventInjector : InputEventInjector {
             iInputManager.injectInputEvent(upEvent, INJECT_INPUT_EVENT_MODE_ASYNC)
         }
     }
-}
-
-interface InputEventInjector {
-    fun inputKeyEvent(model: InputKeyModel)
 }

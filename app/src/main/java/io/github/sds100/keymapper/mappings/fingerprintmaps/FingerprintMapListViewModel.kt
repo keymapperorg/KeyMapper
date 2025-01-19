@@ -152,7 +152,7 @@ class FingerprintMapListViewModel(
                     ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
                         resourceProvider = this@FingerprintMapListViewModel,
                         popupViewModel = this@FingerprintMapListViewModel,
-                        neverShowDndTriggerErrorAgain = { useCase.neverShowDndTriggerErrorAgain() },
+                        neverShowDndTriggerErrorAgain = { useCase.neverShowDndTriggerError() },
                         fixError = { useCase.fixError(it) },
                     )
                 }

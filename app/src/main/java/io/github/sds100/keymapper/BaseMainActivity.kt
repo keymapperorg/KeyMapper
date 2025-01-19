@@ -2,6 +2,7 @@ package io.github.sds100.keymapper
 
 import android.content.res.Configuration
 import android.os.Bundle
+import android.view.KeyEvent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -11,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.databinding.ActivityMainBinding
+import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerController
 import io.github.sds100.keymapper.system.permissions.RequestPermissionDelegate
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.showPopups
@@ -40,6 +42,9 @@ abstract class BaseMainActivity : AppCompatActivity() {
         get() = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
 
     private lateinit var requestPermissionDelegate: RequestPermissionDelegate
+    private val recordTriggerController: RecordTriggerController by lazy {
+        (applicationContext as KeyMapperApp).recordTriggerController
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -100,5 +105,18 @@ abstract class BaseMainActivity : AppCompatActivity() {
     override fun onDestroy() {
         viewModel.previousNightMode = currentNightMode
         super.onDestroy()
+    }
+
+    // Use this method rather than onKeyDown and onKeyUp so that we process
+    // the key events before any other Views. onKeyDown are called after being sent to the Views.
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        val consume = recordTriggerController.onRecordKeyFromActivity(event)
+
+        return if (consume) {
+            true
+        } else {
+            // IMPORTANT! return super so that the back navigation button still works.
+            super.dispatchKeyEvent(event)
+        }
     }
 }
