@@ -107,27 +107,16 @@ abstract class BaseMainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        event ?: return false
+    // Use this method rather than onKeyDown and onKeyUp so that we process
+    // the key events before any other Views. onKeyDown are called after being sent to the Views.
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         val consume = recordTriggerController.onRecordKeyFromActivity(event)
 
         return if (consume) {
             true
         } else {
             // IMPORTANT! return super so that the back navigation button still works.
-            super.onKeyDown(keyCode, event)
-        }
-    }
-
-    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
-        event ?: return false
-        val consume = recordTriggerController.onRecordKeyFromActivity(event)
-
-        return if (consume) {
-            true
-        } else {
-            // IMPORTANT! return super so that the back navigation button still works.
-            super.onKeyUp(keyCode, event)
+            super.dispatchKeyEvent(event)
         }
     }
 }
