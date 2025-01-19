@@ -402,7 +402,17 @@ class ConfigKeyMapUseCaseImpl(
         var repeat = false
 
         if (data is ActionData.InputKeyEvent) {
-            if (InputEventUtils.isModifierKey(data.keyCode)) {
+            val trigger = mapping.value.dataOrNull()?.trigger
+
+            val containsDpadKey: Boolean = if (trigger == null) {
+                false
+            } else {
+                trigger.keys
+                    .mapNotNull { it as? KeyCodeTriggerKey }
+                    .any { InputEventUtils.isDpadKeyCode(it.keyCode) }
+            }
+
+            if (InputEventUtils.isModifierKey(data.keyCode) || containsDpadKey) {
                 holdDown = true
                 repeat = false
             } else {

@@ -51,6 +51,22 @@ class ConfigKeyMapUseCaseTest {
         )
     }
 
+    @Test
+    fun `Enable hold down option for key event actions when the trigger is a DPAD button`() = runTest(testDispatcher) {
+        useCase.mapping.value = State.Data(KeyMap())
+        useCase.addKeyCodeTriggerKey(
+            KeyEvent.KEYCODE_DPAD_LEFT,
+            TriggerKeyDevice.Any,
+            KeyEventDetectionSource.INPUT_METHOD,
+        )
+
+        useCase.addAction(ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_W))
+
+        val actionList = useCase.mapping.value.dataOrNull()!!.actionList
+        assertThat(actionList[0].holdDown, `is`(true))
+        assertThat(actionList[0].repeat, `is`(false))
+    }
+
     /**
      * This ensures that it isn't possible to have two or more assistant triggers when the mode is parallel.
      */
@@ -58,7 +74,11 @@ class ConfigKeyMapUseCaseTest {
     fun `Remove device assistant trigger if setting mode to parallel and voice assistant already exists`() = runTest(testDispatcher) {
         useCase.mapping.value = State.Data(KeyMap())
 
-        useCase.addKeyCodeTriggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, TriggerKeyDevice.Any, detectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE)
+        useCase.addKeyCodeTriggerKey(
+            KeyEvent.KEYCODE_VOLUME_DOWN,
+            TriggerKeyDevice.Any,
+            detectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
+        )
         useCase.addAssistantTriggerKey(AssistantTriggerType.VOICE)
         useCase.addAssistantTriggerKey(AssistantTriggerType.DEVICE)
         useCase.setParallelTriggerMode()
