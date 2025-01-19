@@ -1414,7 +1414,7 @@
     <string name="purchasing_error_assistant_not_purchased_home_screen">You must purchase the assistant trigger feature! Tap on the key map and then purchase it by clicking on \'Advanced triggers\'.</string>
     <string name="purchasing_contact_email" translatable="false">contact@keymapper.club</string>
     <string name="customer_email_subject" translatable="false">Key Mapper Pro query</string>
-    <string name="customer_email_body" translatable="false">Please describe the problem you are having here.</string>
+    <string name="customer_email_body" translatable="false">Please fill the following information so I can help you.\n\n1. Device model:\n2. Android version:\n3. Key maps (make a back up in the home screen menu):\n4. Screenshot of Key Mapper home screen:\n5. Describe the problem you are having:</string>
     <string name="purchasing_not_implemented_bottom_sheet_text">The advanced triggers are paid feature but you downloaded the FOSS build of Key Mapper that does not include this module or Google Play billing. Please download Key Mapper from Google Play to get access to this feature.</string>
     <string name="purchasing_download_key_mapper_from_google_play">Download Play build</string>
 </resources>
