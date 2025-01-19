@@ -86,6 +86,7 @@ class ConfigTriggerViewModelTest {
                 onBlocking { isPurchased(ProductId.ASSISTANT_TRIGGER) }.thenReturn(Success(false))
                 onBlocking { getProductPrice(ProductId.ASSISTANT_TRIGGER) }.thenReturn(Success(""))
             },
+            mock(),
         )
     }
 
@@ -93,22 +94,21 @@ class ConfigTriggerViewModelTest {
      * issue #602
      */
     @Test
-    fun `when create back button trigger key then prompt the user to disable screen pinning`() =
-        runTest(testDispatcher) {
-            // GIVEN
-            fakeResourceProvider.stringResourceMap[R.string.dialog_message_screen_pinning_warning] =
-                "bla"
+    fun `when create back button trigger key then prompt the user to disable screen pinning`() = runTest(testDispatcher) {
+        // GIVEN
+        fakeResourceProvider.stringResourceMap[R.string.dialog_message_screen_pinning_warning] =
+            "bla"
 
-            // WHEN
-            onRecordKey.emit(
-                RecordedKey(
-                    keyCode = KeyEvent.KEYCODE_BACK,
-                    device = TriggerKeyDevice.Internal,
-                    detectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE
-                ),
-            )
+        // WHEN
+        onRecordKey.emit(
+            RecordedKey(
+                keyCode = KeyEvent.KEYCODE_BACK,
+                device = TriggerKeyDevice.Internal,
+                detectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
+            ),
+        )
 
-            // THEN
-            assertThat(viewModel.showPopup.first().ui, `is`(PopupUi.Ok("bla")))
-        }
+        // THEN
+        assertThat(viewModel.showPopup.first().ui, `is`(PopupUi.Ok("bla")))
+    }
 }

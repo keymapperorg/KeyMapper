@@ -9,7 +9,8 @@ import kotlinx.coroutines.flow.map
  * Created by sds100 on 26/04/2021.
  */
 class FakePreferenceRepository : PreferenceRepository {
-    private val preferences: MutableStateFlow<Map<Preferences.Key<*>, Any?>> = MutableStateFlow(emptyMap())
+    private val preferences: MutableStateFlow<Map<Preferences.Key<*>, Any?>> =
+        MutableStateFlow(emptyMap())
 
     @Suppress("UNCHECKED_CAST")
     override fun <T> get(key: Preferences.Key<T>): Flow<T?> {
@@ -20,5 +21,9 @@ class FakePreferenceRepository : PreferenceRepository {
         preferences.value = preferences.value.toMutableMap().apply {
             this[key] = value
         }
+    }
+
+    override fun deleteAll() {
+        preferences.value = emptyMap()
     }
 }
