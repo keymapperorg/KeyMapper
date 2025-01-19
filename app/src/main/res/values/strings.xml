@@ -343,18 +343,18 @@
     <!-- Click types -->
 
     <!-- URLs -->
-    <string name="url_source_code" translatable="false">https://github.com/sds100/KeyMapper</string>
+    <string name="url_source_code" translatable="false">https://github.com/keymapperorg/KeyMapper</string>
     <string name="url_developer_github" translatable="false">https://github.com/sds100</string>
     <string name="url_play_store_listing" translatable="false">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper</string>
-    <string name="url_license" translatable="false">https://github.com/sds100/KeyMapper/blob/master/LICENSE.md</string>
-    <string name="url_changelog" translatable="false">https://github.com/sds100/KeyMapper/blob/master/CHANGELOG.md</string>
-    <string name="url_credits" translatable="false">https://github.com/sds100/KeyMapper/blob/master/CREDITS.md</string>
+    <string name="url_license" translatable="false">https://github.com/keymapperorg/KeyMapper/blob/master/LICENSE.md</string>
+    <string name="url_changelog" translatable="false">https://github.com/keymapperorg/KeyMapper/blob/master/CHANGELOG.md</string>
+    <string name="url_credits" translatable="false">https://github.com/keymapperorg/KeyMapper/blob/master/CREDITS.md</string>
     <string name="url_translate" translatable="false">https://keymapperorg.github.io/KeyMapper/contributing/#translating</string>
-    <string name="url_privacy_policy" translatable="false">https://github.com/sds100/KeyMapper/blob/master/PRIVACY_POLICY.md</string>
+    <string name="url_privacy_policy" translatable="false">https://github.com/keymapperorg/KeyMapper/blob/master/PRIVACY_POLICY.md</string>
     <string name="url_xda_thread" translatable="false">https://forum.xda-developers.com/android/apps-games/app-keyboard-button-mapper-t3914005</string>
     <string name="url_discord_server_invite" translatable="false">https://discord.gg/Suj6nyw</string>
     <string name="url_fdroid_key_mapper" translatable="false">https://f-droid.org/en/packages/io.github.sds100.keymapper/</string>
-    <string name="url_github_releases_key_mapper" translatable="false">https://github.com/sds100/KeyMapper/releases</string>
+    <string name="url_github_releases_key_mapper" translatable="false">https://github.com/keymapperorg/KeyMapper/releases</string>
     <string name="url_youtube_channel" translatable="false">https://www.youtube.com/channel/UC87daDTKj8hpQQolhB81mYA</string>
     <string name="url_trigger_by_intent_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/trigger-by-intent</string>
     <string name="url_trigger_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/trigger</string>
@@ -375,18 +375,18 @@
     <string name="url_settings_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/settings</string>
     <string name="url_report_issues_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/report-issues</string>
     <string name="url_intent_set_flags_help" translatable="false">https://developer.android.com/reference/android/content/Intent#setFlags(int)</string>
-    <string name="url_github_repo" translatable="false">https://github.com/sds100/KeyMapper</string>
+    <string name="url_github_repo" translatable="false">https://github.com/keymapperorg/KeyMapper</string>
     <string name="url_rate" translatable="false">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper</string>
     <string name="url_website" translatable="false">https://keymapperorg.github.io/KeyMapper</string>
     <string name="url_advanced_triggers" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/advanced-triggers</string>
 
     <string name="url_play_store_keymapper_gui_keyboard" translatable="false">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper.inputmethod.latin</string>
     <string name="url_fdroid_keymapper_gui_keyboard" translatable="false">https://f-droid.org/en/packages/io.github.sds100.keymapper.inputmethod.latin</string>
-    <string name="url_github_keymapper_gui_keyboard" translatable="false">https://github.com/sds100/KeyMapperKeyboard/releases</string>
+    <string name="url_github_keymapper_gui_keyboard" translatable="false">https://github.com/keymapperorg/KeyMapperKeyboard/releases</string>
 
-    <string name="url_github_keymapper_leanback_keyboard" translatable="false">https://github.com/sds100/KeyMapperLeanbackKeyboard/releases</string>
+    <string name="url_github_keymapper_leanback_keyboard" translatable="false">https://github.com/keymapperorg/KeyMapperLeanbackKeyboard/releases</string>
 
-    <string name="url_github_create_issue_bug" translatable="false">https://github.com/sds100/KeyMapper/issues/new/choose</string>
+    <string name="url_github_create_issue_bug" translatable="false">https://github.com/keymapperorg/KeyMapper/issues/new/choose</string>
     <!-- URLs -->
 
     <!-- Activity titles -->
@@ -880,7 +880,7 @@
     <string name="showcase_dnd_access_description_enabled">All good! :)</string>
 
     <string name="showcase_contributing_title">Contributing</string>
-    <string name="showcase_contributing_description">"This app is open source! You can start contributing by heading over to the sds100/KeyMapper repo on GitHub and by joining the Discord server. Even if you can\'t code, you can contribute by helping others and testing the latest features."</string>
+    <string name="showcase_contributing_description">"This app is open source! You can start contributing by heading over to the keymapperorg/KeyMapper repo on GitHub and by joining the Discord server. Even if you can\'t code, you can contribute by helping others and testing the latest features."</string>
     <string name="showcase_action_list">Tap the 3 dots to change the repeat behaviour and more. You can test an action and fix action errors by tapping it.</string>
 
     <string name="showcase_fingerprint_gesture_support_title_supported_unknown">Remapping fingerprint reader gestures</string>
