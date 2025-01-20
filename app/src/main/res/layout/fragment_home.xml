@@ -119,6 +119,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             app:fabAnimationMode="slide"
+            app:paddingBottomSystemWindowInsets="false"
             app:menu="@menu/menu_home"
             app:menuAlignmentMode="auto"
             app:navigationIcon='@{viewModel.appBarState == HomeAppBarState.MULTI_SELECTING ? @drawable/ic_baseline_arrow_back_24 : @drawable/ic_baseline_menu_24}' />

@@ -93,6 +93,7 @@
                 android:id="@+id/appBar"
                 app:menuAlignmentMode="auto"
                 android:layout_width="match_parent"
+                app:paddingBottomSystemWindowInsets="false"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:gravity="center" />
