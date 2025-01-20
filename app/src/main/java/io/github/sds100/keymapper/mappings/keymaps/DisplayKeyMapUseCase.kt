@@ -7,6 +7,7 @@ import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.DisplaySimpleMappingUseCase
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
+import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerError
 import io.github.sds100.keymapper.purchasing.ProductId
 import io.github.sds100.keymapper.purchasing.PurchasingManager
@@ -128,7 +129,7 @@ class DisplayKeyMapUseCaseImpl(
 
         val containsDpadKey = trigger.keys
             .mapNotNull { it as? KeyCodeTriggerKey }
-            .any { InputEventUtils.isDpadKeyCode(it.keyCode) }
+            .any { InputEventUtils.isDpadKeyCode(it.keyCode) && it.detectionSource == KeyEventDetectionSource.INPUT_METHOD }
 
         if (showDpadImeSetupError.first() && !isKeyMapperImeChosen && containsDpadKey) {
             errors.add(TriggerError.DPAD_IME_NOT_SELECTED)
