@@ -2,7 +2,7 @@ package io.github.sds100.keymapper
 
 import android.content.res.Configuration
 import android.os.Bundle
-import android.view.KeyEvent
+import android.view.MotionEvent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -13,6 +13,7 @@ import androidx.navigation.findNavController
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.databinding.ActivityMainBinding
 import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerController
+import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
 import io.github.sds100.keymapper.system.permissions.RequestPermissionDelegate
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.showPopups
@@ -107,16 +108,17 @@ abstract class BaseMainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    // Use this method rather than onKeyDown and onKeyUp so that we process
-    // the key events before any other Views. onKeyDown are called after being sent to the Views.
-    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-        val consume = recordTriggerController.onRecordKeyFromActivity(event)
+    override fun onGenericMotionEvent(event: MotionEvent?): Boolean {
+        event ?: return super.onGenericMotionEvent(event)
+
+        val consume =
+            recordTriggerController.onActivityMotionEvent(MyMotionEvent.fromMotionEvent(event))
 
         return if (consume) {
             true
         } else {
             // IMPORTANT! return super so that the back navigation button still works.
-            super.dispatchKeyEvent(event)
+            super.onGenericMotionEvent(event)
         }
     }
 }

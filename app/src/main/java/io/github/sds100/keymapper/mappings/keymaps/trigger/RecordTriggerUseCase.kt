@@ -1,10 +1,11 @@
 package io.github.sds100.keymapper.mappings.keymaps.trigger
 
 import android.view.KeyEvent
+import io.github.sds100.keymapper.mappings.keymaps.detection.DpadMotionEventTracker
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
-import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
+import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.ServiceEvent
 import kotlinx.coroutines.CoroutineScope
@@ -28,6 +29,7 @@ class RecordTriggerController(
 
     private val recordedKeys: MutableList<RecordedKey> = mutableListOf()
     override val onRecordKey: MutableSharedFlow<RecordedKey> = MutableSharedFlow()
+    private val dpadMotionEventTracker: DpadMotionEventTracker = DpadMotionEventTracker()
 
     init {
         serviceAdapter.eventReceiver.onEach { event ->
@@ -62,6 +64,7 @@ class RecordTriggerController(
 
     override suspend fun startRecording(): Result<*> {
         recordedKeys.clear()
+        dpadMotionEventTracker.reset()
         return serviceAdapter.send(ServiceEvent.StartRecordingTrigger)
     }
 
@@ -70,30 +73,27 @@ class RecordTriggerController(
     }
 
     /**
-     * Process key events from the activity so that DPAD buttons can be recorded
-     * even when the Key Mapper IME is not being used.
-     * @return Whether the key event is consumed.
+     * Process motion events from the activity so that DPAD buttons can be recorded
+     * even when the Key Mapper IME is not being used. DO NOT record the key events because
+     * these are sent from the joy sticks.
+     * @return Whether the motion event is consumed.
      */
-    fun onRecordKeyFromActivity(event: KeyEvent): Boolean {
-        // Only consume the key event if the app is recording a trigger.
+    fun onActivityMotionEvent(event: MyMotionEvent): Boolean {
         if (state.value !is RecordTriggerState.CountingDown) {
             return false
         }
 
-        if (!InputEventUtils.isDpadKeyCode(event.keyCode)) {
+        val keyEvent =
+            dpadMotionEventTracker.convertMotionEvent(event).firstOrNull() ?: return false
+
+        if (!InputEventUtils.isDpadKeyCode(keyEvent.keyCode)) {
             return false
         }
 
-        // If it is the up key event then consume it and record the key. Do not record the key
-        // on the down event because the down key event may be consumed by a View and so
-        // onKeyDown will not be called in the activity. This can be reproduced by navigating
-        // to the TriggerFragment by touch and then pressing a DPAD button will cause the View
-        // consume the key event and get focus.
-        if (event.action == KeyEvent.ACTION_UP) {
-            val device = InputDeviceUtils.createInputDeviceInfo(event.device)
+        if (keyEvent.action == KeyEvent.ACTION_UP) {
             val recordedKey = createRecordedKeyEvent(
-                event.keyCode,
-                device,
+                keyEvent.keyCode,
+                keyEvent.device,
                 KeyEventDetectionSource.INPUT_METHOD,
             )
 
