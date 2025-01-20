@@ -287,8 +287,7 @@ class HomeFragment : Fragment() {
 
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             homeViewModel.shareBackup.collectLatest { uri ->
-                Intent().apply {
-                    action = Intent.ACTION_SEND
+                Intent(Intent.ACTION_SEND).apply {
                     putExtra(Intent.EXTRA_STREAM, Uri.parse(uri))
 
                     type = FileUtils.MIME_TYPE_ZIP
