@@ -17,6 +17,9 @@ import androidx.core.os.bundleOf
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
+import androidx.savedstate.SavedStateRegistry
+import androidx.savedstate.SavedStateRegistryController
+import androidx.savedstate.SavedStateRegistryOwner
 import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
 import io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback
 import io.github.sds100.keymapper.api.KeyEventRelayService
@@ -43,12 +46,17 @@ import timber.log.Timber
 class MyAccessibilityService :
     AccessibilityService(),
     LifecycleOwner,
-    IAccessibilityService {
+    IAccessibilityService,
+    SavedStateRegistryOwner {
 
     // virtual distance between fingers on multitouch gestures
     private val fingerGestureDistance = 10L
 
-    private lateinit var lifecycleRegistry: LifecycleRegistry
+    private var lifecycleRegistry: LifecycleRegistry = LifecycleRegistry(this)
+    private var savedStateRegistryController: SavedStateRegistryController? =
+        SavedStateRegistryController.create(this)
+    override val savedStateRegistry: SavedStateRegistry
+        get() = savedStateRegistryController!!.savedStateRegistry
 
     private var fingerprintGestureCallback: FingerprintGestureController.FingerprintGestureCallback? =
         null
@@ -152,13 +160,16 @@ class MyAccessibilityService :
         )
     }
 
-    private var controller: AccessibilityServiceController? = null
+    var controller: AccessibilityServiceController? = null
+    private var overlayController: AccessibilityOverlayController? = null
 
     override fun onCreate() {
         super.onCreate()
         Timber.i("Accessibility service: onCreate")
 
-        lifecycleRegistry = LifecycleRegistry(this)
+        savedStateRegistryController?.performAttach()
+        savedStateRegistryController?.performRestore(null)
+
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -177,6 +188,7 @@ class MyAccessibilityService :
         super.onServiceConnected()
 
         Timber.i("Accessibility service: onServiceConnected")
+//        lifecycleRegistry.currentState = Lifecycle.State.STARTED
 
         /*
         I would put this in onCreate but for some reason on some devices getting the application
@@ -184,6 +196,12 @@ class MyAccessibilityService :
          */
         if (controller == null) {
             controller = Inject.accessibilityServiceController(this, keyEventRelayServiceWrapper)
+        }
+
+        overlayController = AccessibilityOverlayController(this)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            overlayController?.addComposeOverlay()
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -229,9 +247,7 @@ class MyAccessibilityService :
     override fun onDestroy() {
         controller = null
 
-        if (::lifecycleRegistry.isInitialized) {
-            lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
-        }
+        lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             fingerprintGestureController
