@@ -4,7 +4,7 @@ import io.github.sds100.keymapper.data.entities.Extra
 import io.github.sds100.keymapper.data.entities.TriggerEntity
 import io.github.sds100.keymapper.data.entities.getData
 import io.github.sds100.keymapper.mappings.ClickType
-import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
+import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.util.valueOrNull
 import kotlinx.serialization.Serializable
 import splitties.bitflags.hasFlag
@@ -32,15 +32,12 @@ data class Trigger(
 
     fun isChangingVibrationDurationAllowed(): Boolean = vibrate || longPressDoubleVibration
 
-    fun isChangingLongPressDelayAllowed(): Boolean =
-        keys.any { key -> key.clickType == ClickType.LONG_PRESS }
+    fun isChangingLongPressDelayAllowed(): Boolean = keys.any { key -> key.clickType == ClickType.LONG_PRESS }
 
-    fun isChangingDoublePressDelayAllowed(): Boolean =
-        keys.any { key -> key.clickType == ClickType.DOUBLE_PRESS }
+    fun isChangingDoublePressDelayAllowed(): Boolean = keys.any { key -> key.clickType == ClickType.DOUBLE_PRESS }
 
-    fun isLongPressDoubleVibrationAllowed(): Boolean =
-        (keys.size == 1 || (mode is TriggerMode.Parallel)) &&
-            keys.getOrNull(0)?.clickType == ClickType.LONG_PRESS
+    fun isLongPressDoubleVibrationAllowed(): Boolean = (keys.size == 1 || (mode is TriggerMode.Parallel)) &&
+        keys.getOrNull(0)?.clickType == ClickType.LONG_PRESS
 
     /**
      * Must check that it is not empty otherwise it would be true from the "all" check.
@@ -50,12 +47,11 @@ data class Trigger(
     fun isDetectingWhenScreenOffAllowed(): Boolean {
         return keys.isNotEmpty() &&
             keys.all {
-                it is KeyCodeTriggerKey && KeyEventUtils.canDetectKeyWhenScreenOff(it.keyCode)
+                it is KeyCodeTriggerKey && InputEventUtils.canDetectKeyWhenScreenOff(it.keyCode)
             }
     }
 
-    fun isChangingSequenceTriggerTimeoutAllowed(): Boolean =
-        keys.isNotEmpty() && keys.size > 1 && mode is TriggerMode.Sequence
+    fun isChangingSequenceTriggerTimeoutAllowed(): Boolean = keys.isNotEmpty() && keys.size > 1 && mode is TriggerMode.Sequence
 }
 
 object TriggerEntityMapper {

@@ -2,7 +2,6 @@
 <resources>
     <string name="slogan">松开你的按键！</string>
     <string name="no_action_chosen">未选择动作</string>
-    <string name="accessibility_service_explanation">键映射器需要使用无障碍服务，以便它可以检测并更改您在应用程序之外时按下的按钮的操作。只有在您启用了无障碍服务后，您的按键映射才会起作用。必须打开无障碍服务才能创建触发器。</string>
     <string name="selection_count">已选择 %d 个</string>
     <string name="enable">启用</string>
     <string name="open">打开</string>
@@ -82,7 +81,6 @@
     <string name="trigger_error_dnd_access_denied">如果您希望按键映射在“请勿打扰”模式下按预期工作，则 Key Mapper 需要修改“请勿打扰”模式的权限！</string>
     <string name="trigger_error_dnd_access_denied_short">此触发器无法在“请勿打扰”模式下正常工作！</string>
     <string name="trigger_error_screen_off_root_permission_denied">屏幕关闭时触发的设置需要root权限才能工作！</string>
-    <string name="trigger_error_screen_off_root_permission_denied_short">屏幕关闭时触发的设置将失效！</string>
     <string name="trigger_error_cant_detect_in_phone_call">此触发器在响铃或通话时失效！</string>
     <string name="trigger_error_cant_detect_in_phone_call_explanation">Android 的无障碍服务不会在您的手机响铃或通话时检测音量按钮按下的动作，但可以被输入法服务检测到。 如果您希望此触发器起作用，您必须使用Key Mapper keyboard。</string>
     <string name="trigger_error_gesture_stroke_count_too_high">由于 Android 的限制，需要多指才能执行手势</string>
@@ -419,9 +417,7 @@
     <string name="dialog_message_disable_battery_optimisation">您<b>必须</b>阅读此<b>全部</b>，否则您将来会<b>沮丧</b>！\n\n点击“部分修复”<b>可能</b > 防止 Android 在后台停止应用程序。\n\n<b>这还不够</b>。 您的 OEM 厂商（例如 MIUI 或 Samsung Experience）可能具有其他应用程序终止功能，因此您必须按照 dontkillmyapp.com 上的在线指南为 Key Mapper 关闭它们。</string>
     <string name="dialog_title_send_feedback">发送反馈</string>
     <string name="dialog_message_send_feedback">请阅读有关如何在网站上报告问题的指南。</string>
-    <string name="dialog_message_enable_accessibility_service_to_record_trigger">打开无障碍服务，以便您可以记录触发器。</string>
     <string name="dialog_message_restart_accessibility_service_to_record_trigger">通过<i>off</i>和<i>on</i>重新启动无障碍服务，这样您就可以记录触发器。</string>
-    <string name="dialog_message_enable_accessibility_service_to_test_action">打开无障碍服务，以便您可以测试操作。</string>
     <string name="dialog_message_restart_accessibility_service_to_test_action">通过<i>打开</i>和<i>关闭</i>重新启动无障碍服务，以便您可以测试该操作。</string>
     <string name="dialog_message_restart_accessibility_service">通过<i>打开</i>和<i>关闭</i>重新启动无障碍服务，以便您可以测试该操作。</string>
     <string name="dialog_message_screen_pinning_warning">使用设备设置中的屏幕固定设置后解锁设备时，使用此触发器可能会导致黑屏。 这可以通过重新启动来解决。 并非所有设备都会发生这种情况，因此请注意并关闭设置！</string>
@@ -660,7 +656,6 @@
     <string name="showcase_dnd_access_description_disabled">如果你想要动作更改音量和重新映射音量按钮，Key Mapper需要访问“勿扰”</string>
     <string name="showcase_dnd_access_description_enabled">一切准备就绪! :)</string>
     <string name="showcase_contributing_title">参与贡献</string>
-    <string name="showcase_contributing_description">"这个应用是开源的！你可以通过跳转到GitHub的sds100/KeyMapper存储库并加入Discord服务器来开始作出贡献。即使你不会代码，您也可以通过帮助他人和测试最新功能来作出贡献。"</string>
     <string name="showcase_action_list">点击3个点来更改重复行为和更多。你可以通过点击它来测试和修复一个动作的错误。</string>
     <string name="showcase_fingerprint_gesture_support_title_supported_unknown">重新映射指纹读取器手势</string>
     <string name="showcase_fingerprint_gesture_support_title_supported">你可以重新映射指纹读取器手势! :)</string>
@@ -1071,4 +1066,8 @@
     <!--  About  -->
     <!-- Advanced triggers -->
     <!--  Purchasing  -->
+    <!--  Dpad trigger setup bottom sheet  -->
+    <string name="setup_gui_keyboard_enable_keyboard_button">启用</string>
+    <string name="setup_gui_keyboard_enable_keyboard_button_disabled">已启用</string>
+    <!-- No keys recorded bottom sheet -->
 </resources>

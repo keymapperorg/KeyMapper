@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.reroutekeyevents
 
 import android.view.KeyEvent
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
+import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.util.InputEventType
 import kotlinx.coroutines.CoroutineScope
@@ -31,28 +32,28 @@ class RerouteKeyEventsController(
      */
     private var repeatJob: Job? = null
 
-    fun onKeyEvent(
-        keyCode: Int,
-        action: Int,
-        metaState: Int,
-        scanCode: Int = 0,
-        device: InputDeviceInfo?,
-    ): Boolean = when (action) {
-        KeyEvent.ACTION_DOWN -> onKeyDown(
-            keyCode,
-            device,
-            metaState,
-            scanCode,
-        )
+    fun onKeyEvent(event: MyKeyEvent): Boolean {
+        if (!useCase.shouldRerouteKeyEvent(event.device?.descriptor)) {
+            return false
+        }
 
-        KeyEvent.ACTION_UP -> onKeyUp(
-            keyCode,
-            device,
-            metaState,
-            scanCode,
-        )
+        return when (event.action) {
+            KeyEvent.ACTION_DOWN -> onKeyDown(
+                event.keyCode,
+                event.device,
+                event.metaState,
+                event.scanCode,
+            )
 
-        else -> false
+            KeyEvent.ACTION_UP -> onKeyUp(
+                event.keyCode,
+                event.device,
+                event.metaState,
+                event.scanCode,
+            )
+
+            else -> false
+        }
     }
 
     /**
@@ -64,10 +65,6 @@ class RerouteKeyEventsController(
         metaState: Int,
         scanCode: Int = 0,
     ): Boolean {
-        if (device != null && !useCase.shouldRerouteKeyEvent(device.descriptor)) {
-            return false
-        }
-
         val inputKeyModel = InputKeyModel(
             keyCode = keyCode,
             inputType = InputEventType.DOWN,
@@ -102,10 +99,6 @@ class RerouteKeyEventsController(
         metaState: Int,
         scanCode: Int = 0,
     ): Boolean {
-        if (device != null && !useCase.shouldRerouteKeyEvent(device.descriptor)) {
-            return false
-        }
-
         repeatJob?.cancel()
 
         val inputKeyModel = InputKeyModel(

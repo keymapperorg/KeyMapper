@@ -95,8 +95,7 @@ class ChooseAppShortcutFragment : SimpleRecyclerViewFragment<AppShortcutListItem
     override fun getRequestKey(): String = args.requestKey
 
     private fun launchShortcutConfiguration(shortcutInfo: AppShortcutInfo) {
-        Intent().apply {
-            action = Intent.ACTION_CREATE_SHORTCUT
+        Intent(Intent.ACTION_CREATE_SHORTCUT).apply {
             setClassName(shortcutInfo.packageName, shortcutInfo.activityName)
             putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, 1)
 

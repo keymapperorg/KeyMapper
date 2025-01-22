@@ -6,9 +6,11 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.inputmethodservice.InputMethodService
 import android.view.KeyEvent
+import android.view.MotionEvent
 import androidx.core.content.ContextCompat
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback
+import io.github.sds100.keymapper.api.KeyEventRelayService
 import io.github.sds100.keymapper.api.KeyEventRelayServiceWrapperImpl
 
 /**
@@ -80,18 +82,23 @@ class KeyMapperImeService : InputMethodService() {
 
     private val keyEventReceiverCallback: IKeyEventRelayServiceCallback =
         object : IKeyEventRelayServiceCallback.Stub() {
-            override fun onKeyEvent(event: KeyEvent?, sourcePackageName: String?): Boolean {
+            override fun onKeyEvent(event: KeyEvent?): Boolean {
                 // Only accept key events from Key Mapper
-                if (sourcePackageName != Constants.PACKAGE_NAME) {
-                    return false
-                }
-
                 return currentInputConnection?.sendKeyEvent(event) ?: false
+            }
+
+            override fun onMotionEvent(event: MotionEvent?): Boolean {
+                // Do nothing if the IME receives a motion event.
+                return false
             }
         }
 
     private val keyEventRelayServiceWrapper: KeyEventRelayServiceWrapperImpl by lazy {
-        KeyEventRelayServiceWrapperImpl(this, keyEventReceiverCallback)
+        KeyEventRelayServiceWrapperImpl(
+            ctx = this,
+            id = KeyEventRelayService.CALLBACK_ID_INPUT_METHOD,
+            callback = keyEventReceiverCallback,
+        )
     }
 
     override fun onCreate() {
@@ -113,11 +120,53 @@ class KeyMapperImeService : InputMethodService() {
         keyEventRelayServiceWrapper.onCreate()
     }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean =
-        keyEventRelayServiceWrapper.sendKeyEvent(event, Constants.PACKAGE_NAME)
+    override fun onGenericMotionEvent(event: MotionEvent?): Boolean {
+        event ?: return super.onGenericMotionEvent(null)
 
-    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean =
-        keyEventRelayServiceWrapper.sendKeyEvent(event, Constants.PACKAGE_NAME)
+        val consume = keyEventRelayServiceWrapper.sendMotionEvent(
+            event = event,
+            targetPackageName = Constants.PACKAGE_NAME,
+            callbackId = KeyEventRelayService.CALLBACK_ID_ACCESSIBILITY_SERVICE,
+        )
+
+        return if (consume) {
+            true
+        } else {
+            super.onGenericMotionEvent(event)
+        }
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        event ?: return super.onKeyDown(keyCode, null)
+
+        val consume = keyEventRelayServiceWrapper.sendKeyEvent(
+            event = event,
+            targetPackageName = Constants.PACKAGE_NAME,
+            callbackId = KeyEventRelayService.CALLBACK_ID_ACCESSIBILITY_SERVICE,
+        )
+
+        return if (consume) {
+            true
+        } else {
+            super.onKeyDown(keyCode, event)
+        }
+    }
+
+    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
+        event ?: return super.onKeyUp(keyCode, null)
+
+        val consume = keyEventRelayServiceWrapper.sendKeyEvent(
+            event = event,
+            targetPackageName = Constants.PACKAGE_NAME,
+            callbackId = KeyEventRelayService.CALLBACK_ID_ACCESSIBILITY_SERVICE,
+        )
+
+        return if (consume) {
+            true
+        } else {
+            super.onKeyUp(keyCode, event)
+        }
+    }
 
     override fun onDestroy() {
         unregisterReceiver(broadcastReceiver)

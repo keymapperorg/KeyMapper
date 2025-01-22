@@ -30,7 +30,7 @@ lane :prod do
 #   Don't create changelog for f-droid because not committing it
 #   File.write("metadata/android/en-US/changelogs/" + version_code + ".txt", whats_new)
 
-    gradle(task: "testDebugUnitTest")
+    gradle(task: "testProDebugUnitTest")
 
     github_token = prompt(
                     text: "Github token: ",

@@ -1,10 +1,11 @@
-New trigger! 🎉 Remap your Assistant & Bixby buttons!
+New trigger! 🎉 Remap your Assistant, Bixby and DPAD buttons!
 
 What can be remapped?
 
  * Volume buttons.
  * Power button via Google Assistant, Pixel Active Edge, Double press Bixby button.
  * Bluetooth/wired keyboards.
+ * DPAD buttons on game controllers.
  * Fingerprint gestures on supported devices.
  * Buttons on other connected devices should also work.
 
@@ -15,7 +16,7 @@ You can combine multiple keys from a specific device or any device to form a "tr
 
 What can’t be remapped?
  * Mouse buttons
- * Dpad, thumb sticks or triggers on game controllers
+ * Joysticks or triggers on game controllers
 
 Your key maps do not work if the screen is OFF. This is a limitation in Android. There is nothing the dev can do.
 

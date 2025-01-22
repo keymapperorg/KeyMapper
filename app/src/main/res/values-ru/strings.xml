@@ -2,7 +2,6 @@
 <resources>
     <string name="slogan">Дайте волю кнопкам!</string>
     <string name="no_action_chosen">Действие не выбрано</string>
-    <string name="accessibility_service_explanation">Key Mapper необходимо использование службы спец. возможностей для распознавания и изменения нажатий кнопок вне приложения. Ваши назначения будут работать только после включения службы. Она также должна быть включена для добавления триггеров.</string>
     <string name="selection_count">%d выбрано</string>
     <string name="enable">Включить</string>
     <string name="open">Открыть</string>
@@ -81,7 +80,6 @@
     <string name="trigger_error_dnd_access_denied">Key Mapper требует разрешения на изменение режима «Не беспокоить», если вы хотите, чтобы кнопки работали должным образом в режиме «Не беспокоить»!</string>
     <string name="trigger_error_dnd_access_denied_short">Этот триггер не будет работать должным образом в режиме «Не беспокоить»!</string>
     <string name="trigger_error_screen_off_root_permission_denied">Опция запуска, когда экран выключен, требует root-разрешения для работы!</string>
-    <string name="trigger_error_screen_off_root_permission_denied_short">Опция срабатывания при выключенном экране не будет работать!</string>
     <string name="trigger_error_cant_detect_in_phone_call">Этот триггер не будет работать во время звонка!</string>
     <string name="trigger_error_cant_detect_in_phone_call_explanation">Android не позволяет службам спец. возможностей распознавать касания кнопок громкости во время звонка, но позволяет это службам методов ввода. Следовательно, вы должны использовать одну из клавиатур Key Mapper для работы этого триггера.</string>
     <string name="home_error_is_battery_optimised">Ваши сопоставления перестанут работать случайным образом!</string>
@@ -396,9 +394,7 @@
     <string name="dialog_message_disable_battery_optimisation">Вы <b>MUST</b> прочитать это <b>все</b> иначе вы получите <b>фрустрировано</b> в будущем!\n\nВыполнение «исправления частично» <b>майт</b> помешать Android остановить приложение, пока оно находится в фоновом режиме.\n\n<b>Это НЕДОСТАТОЧНО</b>. Скин вашего OEM-производителя, такой как MIUI или Samsung Experience, может иметь другие функции уничтожения приложений, поэтому вы ДОЛЖНЫ отключить их для Key Mapper, а также следуя онлайн-руководству на dontkillmyapp.com.</string>
     <string name="dialog_title_send_feedback">Отправить отзыв</string>
     <string name="dialog_message_send_feedback">Пожалуйста, ознакомьтесь с руководством о том, как сообщать о проблемах на веб-сайте.</string>
-    <string name="dialog_message_enable_accessibility_service_to_record_trigger">Включите службу специальных возможностей, чтобы можно было записать триггер.</string>
     <string name="dialog_message_restart_accessibility_service_to_record_trigger">Перезапустите службу специальных возможностей, включив ее <i>off</i> и <i>on</i> чтобы можно было записать триггер.</string>
-    <string name="dialog_message_enable_accessibility_service_to_test_action">Включите службу специальных возможностей, чтобы можно было протестировать действие.</string>
     <string name="dialog_message_restart_accessibility_service_to_test_action">Перезапустите службу специальных возможностей, включив ее <i> выключен</i>ной и <i>он</i> чтобы можно было протестировать действие.</string>
     <string name="dialog_message_restart_accessibility_service">Перезапустите службу спец. возможностей, <i>выключив</i> и <i>включив</i> её.</string>
     <string name="dialog_message_screen_pinning_warning">Использование этого триггера может привести к черному экрану при разблокировке устройства после использования параметра закрепления экрана в настройках устройства. Это можно исправить с помощью перезагрузки. Это происходит не на всех устройствах, поэтому будьте осторожны и отключите настройку, если это так!</string>
@@ -637,7 +633,6 @@
     <string name="showcase_dnd_access_description_disabled">Приложению Key Mapper требуется доступ к управлению режимом \"Не беспокосить\" если вы хотите переназначить действия связанные с событием нажатия на клавишу громкости.</string>
     <string name="showcase_dnd_access_description_enabled">Всё ок! :)</string>
     <string name="showcase_contributing_title">Помощь проекту</string>
-    <string name="showcase_contributing_description">"Это приложение с открытым исходным кодом! Вы можете начать вносить свой вклад в репозиторий sds100/KeyMapper на GitHub и присоединившись к серверу Discord. Даже если вы не можете программировать, вы можете помочь, помогая другим и тестируя последние возможности."</string>
     <string name="showcase_action_list">Нажмите на три точки чтобы изменить режим повтора и другие особенности. Вы можете протестировать результат и исправить ошибки действия нажав на него.</string>
     <string name="showcase_fingerprint_gesture_support_title_supported_unknown">Переназначение жестов датчика отпечатка пальцев</string>
     <string name="showcase_fingerprint_gesture_support_title_supported">Вы можете переназначить жесты датчика отпечатка пальцев! :)</string>
@@ -1032,4 +1027,8 @@
     <!--  About  -->
     <!-- Advanced triggers -->
     <!--  Purchasing  -->
+    <!--  Dpad trigger setup bottom sheet  -->
+    <string name="setup_gui_keyboard_enable_keyboard_button">Включить</string>
+    <string name="setup_gui_keyboard_enable_keyboard_button_disabled">Включено</string>
+    <!-- No keys recorded bottom sheet -->
 </resources>

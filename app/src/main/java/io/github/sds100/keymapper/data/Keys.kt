@@ -67,8 +67,14 @@ object Keys {
     val shownShizukuPermissionPrompt = booleanPreferencesKey("key_shown_shizuku_permission_prompt")
     val savedWifiSSIDs = stringSetPreferencesKey("key_saved_wifi_ssids")
 
-    val neverShowDndError = booleanPreferencesKey("key_never_show_dnd_error")
+    val neverShowDndAccessError = booleanPreferencesKey("key_never_show_dnd_error")
+    val neverShowTriggerKeyboardIconExplanation =
+        booleanPreferencesKey("key_never_show_keyboard_icon_explanation")
 
+    val neverShowDpadImeTriggerError =
+        booleanPreferencesKey("key_never_show_dpad_ime_trigger_error")
+    val neverShowNoKeysRecordedError =
+        booleanPreferencesKey("key_never_show_no_keys_recorded_error")
     val sortOrderJson = stringPreferencesKey("key_keymaps_sort_order_json")
     val sortShowHelp = booleanPreferencesKey("key_keymaps_sort_show_help")
 }

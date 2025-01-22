@@ -7,9 +7,11 @@ import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.DisplaySimpleMappingUseCase
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
+import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerError
 import io.github.sds100.keymapper.purchasing.ProductId
 import io.github.sds100.keymapper.purchasing.PurchasingManager
+import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.system.permissions.Permission
@@ -17,6 +19,7 @@ import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.util.valueIfFailure
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 
@@ -28,7 +31,7 @@ class DisplayKeyMapUseCaseImpl(
     private val permissionAdapter: PermissionAdapter,
     private val inputMethodAdapter: InputMethodAdapter,
     displaySimpleMappingUseCase: DisplaySimpleMappingUseCase,
-    private val preferenceRepository: PreferenceRepository,
+    private val preferences: PreferenceRepository,
     private val purchasingManager: PurchasingManager,
 ) : DisplayKeyMapUseCase,
     DisplaySimpleMappingUseCase by displaySimpleMappingUseCase {
@@ -41,17 +44,47 @@ class DisplayKeyMapUseCaseImpl(
 
     private val keyMapperImeHelper: KeyMapperImeHelper = KeyMapperImeHelper(inputMethodAdapter)
 
+    private val showDpadImeSetupError: Flow<Boolean> =
+        preferences.get(Keys.neverShowDpadImeTriggerError).map { neverShow ->
+            if (neverShow == null) {
+                true
+            } else {
+                !neverShow
+            }
+        }
+
     override val invalidateTriggerErrors: Flow<Unit> = merge(
         permissionAdapter.onPermissionsUpdate,
-        preferenceRepository.get(Keys.neverShowDndError).map { }.drop(1),
+        preferences.get(Keys.neverShowDndAccessError).map { }.drop(1),
         purchasingManager.onCompleteProductPurchase.map { },
+        inputMethodAdapter.chosenIme.map { },
+        showDpadImeSetupError.map { },
     )
+
+    override val showTriggerKeyboardIconExplanation: Flow<Boolean> =
+        preferences.get(Keys.neverShowTriggerKeyboardIconExplanation).map { neverShow ->
+            if (neverShow == null) {
+                true
+            } else {
+                !neverShow
+            }
+        }
+
+    override fun neverShowTriggerKeyboardIconExplanation() {
+        preferences.set(Keys.neverShowTriggerKeyboardIconExplanation, true)
+    }
+
+    override fun neverShowDpadImeSetupError() {
+        preferences.set(Keys.neverShowDpadImeTriggerError, true)
+    }
 
     override suspend fun getTriggerErrors(keyMap: KeyMap): List<TriggerError> {
         val trigger = keyMap.trigger
         val errors = mutableListOf<TriggerError>()
+        val isKeyMapperImeChosen = keyMapperImeHelper.isCompatibleImeChosen()
+
         // can only detect volume button presses during a phone call with an input method service
-        if (!keyMapperImeHelper.isCompatibleImeChosen() && keyMap.requiresImeKeyEventForwarding()) {
+        if (!isKeyMapperImeChosen && keyMap.requiresImeKeyEventForwarding()) {
             errors.add(TriggerError.CANT_DETECT_IN_PHONE_CALL)
         }
 
@@ -74,9 +107,9 @@ class DisplayKeyMapUseCaseImpl(
             errors.add(TriggerError.SCREEN_OFF_ROOT_DENIED)
         }
 
-        val containsAssistantTrigger = keyMap.trigger.keys.any { it is AssistantTriggerKey }
+        val containsAssistantTrigger = trigger.keys.any { it is AssistantTriggerKey }
         val containsDeviceAssistantTrigger =
-            keyMap.trigger.keys.any { it is AssistantTriggerKey && it.requiresDeviceAssistant() }
+            trigger.keys.any { it is AssistantTriggerKey && it.requiresDeviceAssistant() }
 
         val isAssistantTriggerPurchased =
             purchasingManager.isPurchased(ProductId.ASSISTANT_TRIGGER).valueIfFailure { false }
@@ -94,6 +127,14 @@ class DisplayKeyMapUseCaseImpl(
             errors.add(TriggerError.ASSISTANT_NOT_SELECTED)
         }
 
+        val containsDpadKey = trigger.keys
+            .mapNotNull { it as? KeyCodeTriggerKey }
+            .any { InputEventUtils.isDpadKeyCode(it.keyCode) && it.detectionSource == KeyEventDetectionSource.INPUT_METHOD }
+
+        if (showDpadImeSetupError.first() && !isKeyMapperImeChosen && containsDpadKey) {
+            errors.add(TriggerError.DPAD_IME_NOT_SELECTED)
+        }
+
         return errors
     }
 }
@@ -101,4 +142,8 @@ class DisplayKeyMapUseCaseImpl(
 interface DisplayKeyMapUseCase : DisplaySimpleMappingUseCase {
     val invalidateTriggerErrors: Flow<Unit>
     suspend fun getTriggerErrors(keyMap: KeyMap): List<TriggerError>
+    val showTriggerKeyboardIconExplanation: Flow<Boolean>
+    fun neverShowTriggerKeyboardIconExplanation()
+
+    fun neverShowDpadImeSetupError()
 }

@@ -5,7 +5,7 @@ import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapAction
-import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
+import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.util.InputEventType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -113,7 +113,7 @@ class ParallelTriggerActionPerformer(
                 return@forEachIndexed
             }
 
-            if (action.data is ActionData.InputKeyEvent && KeyEventUtils.isModifierKey(action.data.keyCode)) {
+            if (action.data is ActionData.InputKeyEvent && InputEventUtils.isModifierKey(action.data.keyCode)) {
                 return@forEachIndexed
             }
 

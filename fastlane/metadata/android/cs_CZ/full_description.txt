@@ -1,10 +1,11 @@
-New trigger! 🎉 Remap your Assistant & Bixby buttons!
+New trigger! 🎉 Remap your Assistant, Bixby and DPAD buttons!
 
 Co lze přemapovat?
 
  * Tlačítka hlasitosti.
  * Power button via Google Assistant, Pixel Active Edge, Double press Bixby button.
  * Bluetooth/kabelová klávesnice.
+ * DPAD buttons on game controllers.
  * Gesta otisků prstů na podporovaných zařízeních.
  * Tlačítka na ostatních připojených zařízeních by měla také fungovat.
 
@@ -15,7 +16,7 @@ Můžete kombinovat více klíčů z konkrétního zařízení nebo jakéhokoli 
 
 Co nelze přemapovat?
  * Tlačítka myši
- * Dpad, paličky nebo spouštěče na herních ovladačích
+ * Joysticks or triggers on game controllers
 
 Your key maps do not work if the screen is OFF. Toto je omezení v Android. Není nic, co by vývojář nemohl udělat.
 

@@ -14,6 +14,7 @@ import io.github.sds100.keymapper.mappings.ConfigMappingViewModel
 import io.github.sds100.keymapper.mappings.keymaps.trigger.ConfigTriggerKeyViewModel
 import io.github.sds100.keymapper.mappings.keymaps.trigger.ConfigTriggerViewModel
 import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerUseCase
+import io.github.sds100.keymapper.mappings.keymaps.trigger.SetupGuiKeyboardUseCase
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.purchasing.PurchasingManager
 import io.github.sds100.keymapper.ui.utils.getJsonSerializable
@@ -40,6 +41,7 @@ class ConfigKeyMapViewModel(
     createActionUseCase: CreateActionUseCase,
     resourceProvider: ResourceProvider,
     purchasingManager: PurchasingManager,
+    setupGuiKeyboardUseCase: SetupGuiKeyboardUseCase,
 ) : ViewModel(),
     ConfigMappingViewModel,
     ResourceProvider by resourceProvider {
@@ -73,6 +75,7 @@ class ConfigKeyMapViewModel(
         displayMapping,
         resourceProvider,
         purchasingManager,
+        setupGuiKeyboardUseCase,
     )
 
     override val configConstraintsViewModel = ConfigConstraintsViewModel(
@@ -134,21 +137,22 @@ class ConfigKeyMapViewModel(
         private val createActionUseCase: CreateActionUseCase,
         private val resourceProvider: ResourceProvider,
         private val purchasingManager: PurchasingManager,
+        private val setupGuiKeyboardUseCase: SetupGuiKeyboardUseCase,
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>) =
-            ConfigKeyMapViewModel(
-                config,
-                testAction,
-                onboard,
-                recordTrigger,
-                createKeyMapShortcut,
-                displayMapping,
-                createActionUseCase,
-                resourceProvider,
-                purchasingManager,
-            ) as T
+        override fun <T : ViewModel> create(modelClass: Class<T>) = ConfigKeyMapViewModel(
+            config,
+            testAction,
+            onboard,
+            recordTrigger,
+            createKeyMapShortcut,
+            displayMapping,
+            createActionUseCase,
+            resourceProvider,
+            purchasingManager,
+            setupGuiKeyboardUseCase,
+        ) as T
     }
 }
 

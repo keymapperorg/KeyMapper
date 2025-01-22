@@ -66,13 +66,14 @@
 
         <com.google.android.material.bottomappbar.BottomAppBar
             android:id="@+id/appBar"
-            app:menuAlignmentMode="auto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             app:fabAlignmentMode="end"
             app:fabAnimationMode="slide"
-            app:navigationIcon="@drawable/ic_baseline_arrow_back_24" />
+            app:menuAlignmentMode="auto"
+            app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
+            app:paddingBottomSystemWindowInsets="false" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

@@ -13,16 +13,19 @@ import androidx.compose.ui.graphics.Color
 data class ComposeCustomColors(
     val red: Color = Color.Unspecified,
     val onRed: Color = Color.Unspecified,
+    val green: Color = Color.Unspecified,
 ) {
     companion object {
         val LightPalette = ComposeCustomColors(
             red = ComposeColors.redLight,
             onRed = ComposeColors.onRedLight,
+            green = ComposeColors.greenLight,
         )
 
         val DarkPalette = ComposeCustomColors(
             red = ComposeColors.redDark,
             onRed = ComposeColors.onRedDark,
+            green = ComposeColors.greenDark,
         )
     }
 }

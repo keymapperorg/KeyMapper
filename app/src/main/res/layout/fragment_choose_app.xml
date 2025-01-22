@@ -91,7 +91,8 @@
                 android:gravity="center"
                 app:menu="@menu/menu_recyclerview_fragment"
                 app:menuAlignmentMode="auto"
-                app:navigationIcon="@drawable/ic_baseline_arrow_back_24" />
+                app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
+                app:paddingBottomSystemWindowInsets="false" />
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
