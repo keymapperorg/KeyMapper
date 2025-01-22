@@ -5,6 +5,10 @@ import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.DisplaySimpleMappingUseCase
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
+import io.github.sds100.keymapper.sorting.comparators.KeyMapActionsComparator
+import io.github.sds100.keymapper.sorting.comparators.KeyMapConstraintsComparator
+import io.github.sds100.keymapper.sorting.comparators.KeyMapOptionsComparator
+import io.github.sds100.keymapper.sorting.comparators.KeyMapTriggerComparator
 import io.github.sds100.keymapper.util.ui.ResourceProviderImpl
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -17,6 +21,9 @@ class SortKeyMapsUseCaseImpl(
     resourceProvider: ResourceProviderImpl,
 ) : SortKeyMapsUseCase {
     private val constraintUiHelper =
+        ConstraintUiHelper(displaySimpleMappingUseCase, resourceProvider)
+
+    private val actionUiHelper =
         ConstraintUiHelper(displaySimpleMappingUseCase, resourceProvider)
 
     private val defaultOrder = listOf(
@@ -74,16 +81,16 @@ class SortKeyMapsUseCaseImpl(
         val reverseOrder = sortFieldOrder.order == SortOrder.DESCENDING
 
         return when (sortFieldOrder.field) {
-            SortField.TRIGGER -> SortField.getTriggerComparator(reverseOrder)
+            SortField.TRIGGER -> KeyMapTriggerComparator(reverseOrder)
 
-            SortField.ACTIONS -> SortField.getActionsComparator(reverseOrder)
+            SortField.ACTIONS -> KeyMapActionsComparator(reverseOrder)
 
-            SortField.CONSTRAINTS -> SortField.getConstraintsComparator(
+            SortField.CONSTRAINTS -> KeyMapConstraintsComparator(
                 constraintUiHelper,
                 reverseOrder,
             )
 
-            SortField.OPTIONS -> SortField.getOptionsComparator(reverseOrder)
+            SortField.OPTIONS -> KeyMapOptionsComparator(reverseOrder)
         }
     }
 }
