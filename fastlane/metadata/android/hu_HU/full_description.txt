@@ -1,22 +1,19 @@
-New trigger! 🎉 Remap your Assistant, Bixby and DPAD buttons!
+New trigger! 🎉 Remap your Assistant & Bixby, and DPAD buttons!
 
 Mit lehet átállítani?
 
  * Hangerőszabályzó gombok.
  * Power button via Google Assistant, Pixel Active Edge, Double press Bixby button.
  * Bluetooth/vezetékes billentyűzeteket.
- * DPAD buttons on game controllers.
  * Ujjlenyomat-gesztusok a támogatott eszközökön.
+ * DPAD buttons on game controllers.
  * Más csatlakoztatott eszközök gombjainak is működniük kell.
-
-Kizárólag a HARDVERes gombokat lehet átképezni.
-NINCS GARANCIA, hogy bármelyik gomb működni fog, és ezt az alkalmazást NEM játékok vezérlésére tervezték. A készülék OEM-je/gyártója megakadályozhatja az átállítást.
 
 Egy adott eszköz vagy bármely eszköz több billentyűjét kombinálhatod aktiválásként. Minden egyes aktiváláshoz több művelet is tartozhat. A billentyűk egyszerre vagy egymás után, sorrendben nyomhatók le. A billentyűk rövid, hosszú vagy dupla megnyomás esetén átállíthatóak. A billentyű-térképnek lehet egy sor "korlátozása", így csak bizonyos helyzetekben van hatása.
 
 Mit nem lehet átállítani?
  * Egér gombok
- * Joysticks or triggers on game controllers
+ * Thumb sticks or triggers on game controllers
 
 Your key maps do not work if the screen is OFF. Ez az Android egyik korlátozása. A fejlesztő semmit sem tehet ez ellen.
 
