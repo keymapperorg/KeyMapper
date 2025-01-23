@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.system.vibrator
 
 import android.content.Context
 import android.os.Build
+import android.os.VibrationAttributes
 import android.os.VibrationEffect
 import android.os.Vibrator
 import androidx.core.content.getSystemService
@@ -22,7 +23,14 @@ class AndroidVibratorAdapter(context: Context) : VibratorAdapter {
                     VibrationEffect.DEFAULT_AMPLITUDE,
                 )
 
-            vibrator?.vibrate(effect)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                vibrator?.vibrate(
+                    effect,
+                    VibrationAttributes.createForUsage(VibrationAttributes.USAGE_ACCESSIBILITY),
+                )
+            } else {
+                vibrator?.vibrate(effect)
+            }
         } else {
             vibrator?.vibrate(duration)
         }
