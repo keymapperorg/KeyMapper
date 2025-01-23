@@ -1,22 +1,19 @@
-Kích hoạt mới! 🎉 Remap your Assistant, Bixby and DPAD buttons!
+Kích hoạt mới! 🎉 Remap your Assistant & Bixby, and DPAD buttons!
 
 Những gì có thể được ánh xạ lại?
 
  * Nút âm lượng.
  * Nút nguồn thông qua Google Assistant, Pixel Active Edge, Nhấn đúp vào nút Bixby.
  * Bàn phím Bluetooth/có dây.
- * DPAD buttons on game controllers.
  * Cử chỉ vân tay trên các thiết bị được hỗ trợ.
+ * DPAD buttons on game controllers.
  * Các nút trên các thiết bị được kết nối khác cũng sẽ hoạt động.
-
-CHỈ có thể ánh xạ lại các nút PHẦN CỨNG.
-KHÔNG CÓ ĐẢM BẢO bất kỳ nút nào trong số này sẽ hoạt động và ứng dụng này KHÔNG được thiết kế để điều khiển trò chơi. OEM/nhà cung cấp thiết bị của bạn có thể ngăn không cho chúng được ánh xạ lại.
 
 Bạn có thể kết hợp nhiều phím từ một thiết bị cụ thể hoặc bất kỳ thiết bị nào để tạo thành một "trình kích hoạt". Mỗi trigger có thể có nhiều hành động. Các phím có thể được cài đặt để nhấn cùng lúc hoặc lần lượt theo trình tự. Các phím có thể được ánh xạ lại khi chúng được nhấn nhanh, nhấn lâu hoặc nhấn đúp. Sơ đồ bàn phím có thể có một tập hợp các "ràng buộc" nên nó chỉ có tác dụng trong một số trường hợp nhất định.
 
 Những gì không thể được ánh xạ lại?
  * Nút chuột
- * Joysticks or triggers on game controllers
+ * Thumb sticks or triggers on game controllers
 
 Sơ đồ phím của bạn không hoạt động nếu màn hình TẮT. Đây là một hạn chế trong Android. Dev không thể làm gì được.
 

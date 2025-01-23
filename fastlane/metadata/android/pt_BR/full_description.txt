@@ -1,22 +1,19 @@
-New trigger! 🎉 Remap your Assistant, Bixby and DPAD buttons!
+New trigger! 🎉 Remap your Assistant & Bixby, and DPAD buttons!
 
 O que pode ser remapeado?
 
  * Botões de volume.
  * Power button via Google Assistant, Pixel Active Edge, Double press Bixby button.
  * Teclados Bluetooth/com fio.
- * DPAD buttons on game controllers.
  * Gestos de impressão digital em dispositivos suportados.
+ * DPAD buttons on game controllers.
  * Botões em outros dispositivos conectados também devem funcionar.
-
-SOMENTE botões de HARDWARE podem ser remapeados.
-NÃO HÁ GARANTIA de que qualquer um desses botões funcionará e este aplicativo NÃO foi projetado para controlar jogos. O OEM/fornecedor do seu dispositivo pode impedir que ele seja remapeado.
 
 Você pode combinar várias teclas de um dispositivo específico ou de qualquer dispositivo para formar um "gatilho". Cada gatilho pode ter múltiplas ações. As teclas podem ser configuradas para serem pressionadas ao mesmo tempo ou uma após a outra em sequência. As teclas podem ser remapeadas quando pressionadas brevemente, longamente ou duas vezes. Um mapa de teclas pode ter um conjunto de "restrições" para que ele só tenha efeito em determinadas situações.
 
 O que não pode ser remapeado?
  * Botões do mouse
- * Joysticks or triggers on game controllers
+ * Thumb sticks or triggers on game controllers
 
 Your key maps do not work if the screen is OFF. Esta é uma limitação do Android. Não há nada que o desenvolvedor possa fazer.
 
