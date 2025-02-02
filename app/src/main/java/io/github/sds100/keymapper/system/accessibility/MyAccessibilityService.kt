@@ -188,7 +188,7 @@ class MyAccessibilityService :
         super.onServiceConnected()
 
         Timber.i("Accessibility service: onServiceConnected")
-//        lifecycleRegistry.currentState = Lifecycle.State.STARTED
+        lifecycleRegistry.currentState = Lifecycle.State.STARTED
 
         /*
         I would put this in onCreate but for some reason on some devices getting the application
