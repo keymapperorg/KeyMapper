@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.sorting
 
-import io.github.sds100.keymapper.constraints.ConstraintUiHelper
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.DisplaySimpleMappingUseCase
@@ -17,21 +16,9 @@ import kotlinx.serialization.json.Json
 
 class SortKeyMapsUseCaseImpl(
     private val preferenceRepository: PreferenceRepository,
-    displaySimpleMappingUseCase: DisplaySimpleMappingUseCase,
-    resourceProvider: ResourceProviderImpl,
+    private val displaySimpleMappingUseCase: DisplaySimpleMappingUseCase,
+    private val resourceProvider: ResourceProviderImpl,
 ) : SortKeyMapsUseCase {
-    private val constraintUiHelper =
-        ConstraintUiHelper(displaySimpleMappingUseCase, resourceProvider)
-
-    private val actionUiHelper =
-        ConstraintUiHelper(displaySimpleMappingUseCase, resourceProvider)
-
-    private val defaultOrder = listOf(
-        SortFieldOrder(SortField.TRIGGER),
-        SortFieldOrder(SortField.ACTIONS),
-        SortFieldOrder(SortField.CONSTRAINTS),
-        SortFieldOrder(SortField.OPTIONS),
-    )
 
     /**
      * Observes the order in which key map fields should be sorted, prioritizing specific fields.
@@ -44,19 +31,19 @@ class SortKeyMapsUseCaseImpl(
             .get(Keys.sortOrderJson)
             .map {
                 if (it == null) {
-                    return@map defaultOrder
+                    return@map Companion.defaultOrder
                 }
 
                 val result = runCatching {
                     Json.decodeFromString<List<SortFieldOrder>>(it)
-                }.getOrDefault(defaultOrder).distinct()
+                }.getOrDefault(Companion.defaultOrder).distinct()
 
                 // If the result is not the expected size it means that the preference is corrupted
                 // or there are missing fields (e.g. a new field was added). In this case, return
                 // the default order.
 
                 if (result.size != SortField.entries.size) {
-                    return@map defaultOrder
+                    return@map Companion.defaultOrder
                 }
 
                 result

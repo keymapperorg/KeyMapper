@@ -37,6 +37,7 @@ import io.github.sds100.keymapper.reportbug.ReportBugUseCaseImpl
 import io.github.sds100.keymapper.reportbug.ReportBugViewModel
 import io.github.sds100.keymapper.settings.ConfigSettingsUseCaseImpl
 import io.github.sds100.keymapper.settings.SettingsViewModel
+import io.github.sds100.keymapper.sorting.SortKeyMapsUseCaseImpl
 import io.github.sds100.keymapper.sorting.SortViewModel
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceController
 import io.github.sds100.keymapper.system.accessibility.MyAccessibilityService
@@ -158,7 +159,6 @@ object Inject {
             ServiceLocator.roomKeymapRepository(ctx),
             ServiceLocator.backupManager(ctx),
             UseCases.displayKeyMap(ctx),
-            UseCases.sortKeyMapsUseCase(ctx),
         ),
         UseCases.createKeymapShortcut(ctx),
         ServiceLocator.resourceProvider(ctx),
@@ -169,7 +169,6 @@ object Inject {
             ServiceLocator.roomKeymapRepository(ctx),
             ServiceLocator.backupManager(ctx),
             UseCases.displayKeyMap(ctx),
-            UseCases.sortKeyMapsUseCase(ctx),
         ),
         ListFingerprintMapsUseCaseImpl(
             ServiceLocator.fingerprintMapRepository(ctx),
@@ -191,6 +190,11 @@ object Inject {
         SetupGuiKeyboardUseCaseImpl(
             ServiceLocator.inputMethodAdapter(ctx),
             ServiceLocator.packageManagerAdapter(ctx),
+        ),
+        SortKeyMapsUseCaseImpl(
+            ServiceLocator.settingsRepository(ctx),
+            UseCases.displayKeyMap(ctx),
+            ServiceLocator.resourceProvider(ctx),
         ),
     )
 

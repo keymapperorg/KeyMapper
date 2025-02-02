@@ -17,112 +17,168 @@ import java.util.UUID
 @Serializable
 sealed class Constraint {
     val uid: String = UUID.randomUUID().toString()
+    abstract val id: ConstraintId
 
     @Serializable
-    data class AppInForeground(val packageName: String) : Constraint()
+    data class AppInForeground(val packageName: String) : Constraint() {
+        override val id: ConstraintId = ConstraintId.APP_IN_FOREGROUND
+    }
 
     @Serializable
-    data class AppNotInForeground(val packageName: String) : Constraint()
+    data class AppNotInForeground(val packageName: String) : Constraint() {
+        override val id: ConstraintId = ConstraintId.APP_NOT_IN_FOREGROUND
+    }
 
     @Serializable
-    data class AppPlayingMedia(val packageName: String) : Constraint()
+    data class AppPlayingMedia(val packageName: String) : Constraint() {
+        override val id: ConstraintId = ConstraintId.APP_PLAYING_MEDIA
+    }
 
     @Serializable
-    data class AppNotPlayingMedia(val packageName: String) : Constraint()
+    data class AppNotPlayingMedia(val packageName: String) : Constraint() {
+        override val id: ConstraintId = ConstraintId.APP_NOT_PLAYING_MEDIA
+    }
 
     @Serializable
-    object MediaPlaying : Constraint()
+    data object MediaPlaying : Constraint() {
+        override val id: ConstraintId = ConstraintId.MEDIA_PLAYING
+    }
 
     @Serializable
-    object NoMediaPlaying : Constraint()
+    data object NoMediaPlaying : Constraint() {
+        override val id: ConstraintId = ConstraintId.MEDIA_NOT_PLAYING
+    }
 
     @Serializable
     data class BtDeviceConnected(
         val bluetoothAddress: String,
         val deviceName: String,
-    ) : Constraint()
+    ) : Constraint() {
+        override val id: ConstraintId = ConstraintId.BT_DEVICE_CONNECTED
+    }
 
     @Serializable
     data class BtDeviceDisconnected(
         val bluetoothAddress: String,
         val deviceName: String,
-    ) : Constraint()
+    ) : Constraint() {
+        override val id: ConstraintId = ConstraintId.BT_DEVICE_DISCONNECTED
+    }
 
     @Serializable
-    object ScreenOn : Constraint()
+    data object ScreenOn : Constraint() {
+        override val id: ConstraintId = ConstraintId.SCREEN_ON
+    }
 
     @Serializable
-    object ScreenOff : Constraint()
+    data object ScreenOff : Constraint() {
+        override val id: ConstraintId = ConstraintId.SCREEN_OFF
+    }
 
     @Serializable
-    object OrientationPortrait : Constraint()
+    data object OrientationPortrait : Constraint() {
+        override val id: ConstraintId = ConstraintId.ORIENTATION_PORTRAIT
+    }
 
     @Serializable
-    object OrientationLandscape : Constraint()
+    data object OrientationLandscape : Constraint() {
+        override val id: ConstraintId = ConstraintId.ORIENTATION_LANDSCAPE
+    }
 
     @Serializable
-    data class OrientationCustom(val orientation: Orientation) : Constraint()
+    data class OrientationCustom(val orientation: Orientation) : Constraint() {
+        override val id: ConstraintId = when (orientation) {
+            Orientation.ORIENTATION_0 -> ConstraintId.ORIENTATION_0
+            Orientation.ORIENTATION_90 -> ConstraintId.ORIENTATION_90
+            Orientation.ORIENTATION_180 -> ConstraintId.ORIENTATION_180
+            Orientation.ORIENTATION_270 -> ConstraintId.ORIENTATION_270
+        }
+    }
 
     @Serializable
-    data class FlashlightOn(val lens: CameraLens) : Constraint()
+    data class FlashlightOn(val lens: CameraLens) : Constraint() {
+        override val id: ConstraintId = ConstraintId.FLASHLIGHT_ON
+    }
 
     @Serializable
-    data class FlashlightOff(val lens: CameraLens) : Constraint()
+    data class FlashlightOff(val lens: CameraLens) : Constraint() {
+        override val id: ConstraintId = ConstraintId.FLASHLIGHT_OFF
+    }
 
     @Serializable
-    object WifiOn : Constraint()
+    data object WifiOn : Constraint() {
+        override val id: ConstraintId = ConstraintId.WIFI_ON
+    }
 
     @Serializable
-    object WifiOff : Constraint()
+    data object WifiOff : Constraint() {
+        override val id: ConstraintId = ConstraintId.WIFI_OFF
+    }
 
     @Serializable
     data class WifiConnected(
-        /**
-         * Null if connected to any wifi network.
-         */
         val ssid: String?,
-    ) : Constraint()
+    ) : Constraint() {
+        override val id: ConstraintId = ConstraintId.WIFI_CONNECTED
+    }
 
     @Serializable
     data class WifiDisconnected(
-        /**
-         * Null if disconnected from any wifi network.
-         */
         val ssid: String?,
-    ) : Constraint()
+    ) : Constraint() {
+        override val id: ConstraintId = ConstraintId.WIFI_DISCONNECTED
+    }
 
     @Serializable
     data class ImeChosen(
         val imeId: String,
         val imeLabel: String,
-    ) : Constraint()
+    ) : Constraint() {
+        override val id: ConstraintId = ConstraintId.IME_CHOSEN
+    }
 
     @Serializable
     data class ImeNotChosen(
         val imeId: String,
         val imeLabel: String,
-    ) : Constraint()
+    ) : Constraint() {
+        override val id: ConstraintId = ConstraintId.IME_NOT_CHOSEN
+    }
 
     @Serializable
-    object DeviceIsLocked : Constraint()
+    data object DeviceIsLocked : Constraint() {
+        override val id: ConstraintId = ConstraintId.DEVICE_IS_LOCKED
+    }
 
     @Serializable
-    object DeviceIsUnlocked : Constraint()
+    data object DeviceIsUnlocked : Constraint() {
+        override val id: ConstraintId = ConstraintId.DEVICE_IS_UNLOCKED
+    }
 
     @Serializable
-    object InPhoneCall : Constraint()
+    data object InPhoneCall : Constraint() {
+        override val id: ConstraintId = ConstraintId.IN_PHONE_CALL
+    }
 
     @Serializable
-    object NotInPhoneCall : Constraint()
+    data object NotInPhoneCall : Constraint() {
+        override val id: ConstraintId = ConstraintId.NOT_IN_PHONE_CALL
+    }
 
     @Serializable
-    object PhoneRinging : Constraint()
+    data object PhoneRinging : Constraint() {
+        override val id: ConstraintId = ConstraintId.PHONE_RINGING
+    }
 
     @Serializable
-    object Charging : Constraint()
+    data object Charging : Constraint() {
+        override val id: ConstraintId = ConstraintId.CHARGING
+    }
 
     @Serializable
-    object Discharging : Constraint()
+    data object Discharging : Constraint() {
+        override val id: ConstraintId = ConstraintId.DISCHARGING
+    }
 }
 
 object ConstraintModeEntityMapper {
@@ -146,14 +202,11 @@ object ConstraintEntityMapper {
     )
 
     fun fromEntity(entity: ConstraintEntity): Constraint {
-        fun getPackageName(): String =
-            entity.extras.getData(ConstraintEntity.EXTRA_PACKAGE_NAME).valueOrNull()!!
+        fun getPackageName(): String = entity.extras.getData(ConstraintEntity.EXTRA_PACKAGE_NAME).valueOrNull()!!
 
-        fun getBluetoothAddress(): String =
-            entity.extras.getData(ConstraintEntity.EXTRA_BT_ADDRESS).valueOrNull()!!
+        fun getBluetoothAddress(): String = entity.extras.getData(ConstraintEntity.EXTRA_BT_ADDRESS).valueOrNull()!!
 
-        fun getBluetoothDeviceName(): String =
-            entity.extras.getData(ConstraintEntity.EXTRA_BT_NAME).valueOrNull()!!
+        fun getBluetoothDeviceName(): String = entity.extras.getData(ConstraintEntity.EXTRA_BT_NAME).valueOrNull()!!
 
         fun getCameraLens(): CameraLens {
             val extraValue =
