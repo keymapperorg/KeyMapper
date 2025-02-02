@@ -86,12 +86,21 @@ class SortKeyMapsUseCaseImpl(
             SortField.ACTIONS -> KeyMapActionsComparator(reverseOrder)
 
             SortField.CONSTRAINTS -> KeyMapConstraintsComparator(
-                constraintUiHelper,
+                displaySimpleMappingUseCase,
                 reverseOrder,
             )
 
             SortField.OPTIONS -> KeyMapOptionsComparator(reverseOrder)
         }
+    }
+
+    companion object {
+        val defaultOrder = listOf(
+            SortFieldOrder(SortField.TRIGGER),
+            SortFieldOrder(SortField.ACTIONS),
+            SortFieldOrder(SortField.CONSTRAINTS),
+            SortFieldOrder(SortField.OPTIONS),
+        )
     }
 }
 

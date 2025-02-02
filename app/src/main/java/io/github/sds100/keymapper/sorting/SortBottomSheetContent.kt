@@ -198,7 +198,7 @@ private fun SortBottomSheetContent(
             TextButton(
                 modifier = Modifier.align(Alignment.CenterEnd),
                 onClick = onReset,
-                enabled = sortFieldOrderList.any { it.order != SortOrder.NONE },
+                enabled = sortFieldOrderList != SortKeyMapsUseCaseImpl.defaultOrder,
             ) {
                 Text(stringResource(R.string.reset))
             }

@@ -62,11 +62,7 @@ class SortViewModel(
     }
 
     fun resetSortPriority() {
-        sortFieldOrder.update {
-            it.map { sortFieldOrder ->
-                sortFieldOrder.copy(order = SortOrder.NONE)
-            }
-        }
+        sortFieldOrder.value = SortKeyMapsUseCaseImpl.defaultOrder
     }
 
     fun applySortPriority() {
