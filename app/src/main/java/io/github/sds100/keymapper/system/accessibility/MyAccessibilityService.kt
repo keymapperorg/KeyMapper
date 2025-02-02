@@ -201,7 +201,7 @@ class MyAccessibilityService :
         overlayController = AccessibilityOverlayController(this)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            overlayController?.addComposeOverlay()
+            overlayController?.init()
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
