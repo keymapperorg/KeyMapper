@@ -1,8 +1,14 @@
 package io.github.sds100.keymapper.sorting.comparators
 
+import io.github.sds100.keymapper.actions.ActionData
+import io.github.sds100.keymapper.mappings.DisplayActionUseCase
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
+import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.util.Success
+import io.github.sds100.keymapper.util.valueOrNull
 
 class KeyMapActionsComparator(
+    private val displayActions: DisplayActionUseCase,
     /**
      * Each comparator is reversed separately instead of the entire key map list
      * and Comparator.reversed() requires API level 24 so use a custom reverse field.
@@ -29,7 +35,8 @@ class KeyMapActionsComparator(
             val result = compareValuesBy(
                 action1,
                 action2,
-                { it.data },
+                { it.data.id },
+                { getSecondarySortField(it.data).valueOrNull() ?: it.data.id },
                 { it.repeat },
                 { it.multiplier },
                 { it.repeatLimit },
@@ -54,5 +61,30 @@ class KeyMapActionsComparator(
         result * -1
     } else {
         result
+    }
+
+    private fun getSecondarySortField(action: ActionData): Result<String> {
+        return when (action) {
+            is ActionData.App -> displayActions.getAppName(action.packageName)
+            is ActionData.AppShortcut -> Success(action.shortcutTitle)
+            is ActionData.InputKeyEvent -> Success(action.keyCode.toString())
+            is ActionData.Sound -> Success(action.soundDescription)
+            is ActionData.Volume.Stream -> Success(action.volumeStream.toString())
+            is ActionData.Volume.SetRingerMode -> Success(action.ringerMode.toString())
+            is ActionData.Flashlight -> Success(action.lens.toString())
+            is ActionData.SwitchKeyboard -> Success(action.savedImeName)
+            is ActionData.DoNotDisturb.Toggle -> Success(action.dndMode.toString())
+            is ActionData.DoNotDisturb.Enable -> Success(action.dndMode.toString())
+            is ActionData.ControlMediaForApp -> Success(action.packageName)
+            is ActionData.Intent -> Success(action.description)
+            is ActionData.TapScreen -> Success(action.description ?: "")
+            is ActionData.SwipeScreen -> Success(action.description ?: "")
+            is ActionData.PinchScreen -> Success(action.description ?: "")
+            is ActionData.PhoneCall -> Success(action.number)
+            is ActionData.Url -> Success(action.url)
+            is ActionData.Text -> Success(action.text)
+            is ActionData.Rotation.CycleRotations -> Success(action.orientations.joinToString())
+            else -> Success("")
+        }
     }
 }

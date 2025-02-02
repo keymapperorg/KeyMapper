@@ -69,14 +69,11 @@ class SortKeyMapsUseCaseImpl(
 
         return when (sortFieldOrder.field) {
             SortField.TRIGGER -> KeyMapTriggerComparator(reverseOrder)
-
-            SortField.ACTIONS -> KeyMapActionsComparator(reverseOrder)
-
+            SortField.ACTIONS -> KeyMapActionsComparator(displaySimpleMappingUseCase, reverseOrder)
             SortField.CONSTRAINTS -> KeyMapConstraintsComparator(
                 displaySimpleMappingUseCase,
                 reverseOrder,
             )
-
             SortField.OPTIONS -> KeyMapOptionsComparator(reverseOrder)
         }
     }
