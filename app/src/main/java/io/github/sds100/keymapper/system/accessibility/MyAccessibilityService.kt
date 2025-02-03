@@ -6,6 +6,7 @@ import android.accessibilityservice.GestureDescription
 import android.accessibilityservice.GestureDescription.StrokeDescription
 import android.app.ActivityManager
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.Path
 import android.graphics.Point
 import android.os.Build
@@ -199,10 +200,7 @@ class MyAccessibilityService :
         }
 
         overlayController = AccessibilityOverlayController(this)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            overlayController?.init()
-        }
+        overlayController?.init()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             fingerprintGestureCallback =
@@ -259,6 +257,12 @@ class MyAccessibilityService :
         Timber.i("Accessibility service: onDestroy")
 
         super.onDestroy()
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+
+        overlayController?.onConfigurationChanged()
     }
 
     override fun onLowMemory() {

@@ -187,6 +187,7 @@
         <service
             android:name=".system.accessibility.MyAccessibilityService"
             android:exported="true"
+            android:configChanges="orientation|screenSize"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />
