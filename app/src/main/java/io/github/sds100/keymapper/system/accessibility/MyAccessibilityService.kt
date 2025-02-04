@@ -262,7 +262,7 @@ class MyAccessibilityService :
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
 
-        overlayController?.onConfigurationChanged()
+        overlayController?.onConfigurationChanged(newConfig)
     }
 
     override fun onLowMemory() {

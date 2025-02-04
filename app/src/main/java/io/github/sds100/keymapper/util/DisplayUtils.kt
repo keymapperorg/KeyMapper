@@ -1,7 +1,10 @@
 package io.github.sds100.keymapper.util
 
 import android.content.Context
+import android.graphics.Point
+import android.util.Size
 import android.util.TypedValue
+import androidx.core.content.ContextCompat
 
 fun dpToPx(context: Context, dp: Float): Float {
     return TypedValue.applyDimension(
@@ -9,4 +12,12 @@ fun dpToPx(context: Context, dp: Float): Float {
         dp,
         context.resources.displayMetrics,
     )
+}
+
+fun Context.getDisplaySize(): Size {
+    val point = Point().apply {
+        ContextCompat.getDisplayOrDefault(this@getDisplaySize).getRealSize(this)
+    }
+
+    return Size(point.x, point.y)
 }
