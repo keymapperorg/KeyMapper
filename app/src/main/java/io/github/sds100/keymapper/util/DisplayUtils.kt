@@ -14,9 +14,17 @@ fun dpToPx(context: Context, dp: Float): Float {
     )
 }
 
-fun Context.getDisplaySize(): Size {
+fun Context.getRealDisplaySize(): Size {
     val point = Point().apply {
-        ContextCompat.getDisplayOrDefault(this@getDisplaySize).getRealSize(this)
+        ContextCompat.getDisplayOrDefault(this@getRealDisplaySize).getRealSize(this)
+    }
+
+    return Size(point.x, point.y)
+}
+
+fun Context.getApplicationDisplaySize(): Size {
+    val point = Point().apply {
+        ContextCompat.getDisplayOrDefault(this@getApplicationDisplaySize).getSize(this)
     }
 
     return Size(point.x, point.y)
