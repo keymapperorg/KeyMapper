@@ -171,10 +171,9 @@ fun View.enabled(isEnabled: Boolean) {
     }
 }
 
-fun TintType.toColor(ctx: Context): Int? =
-    when (this) {
-        TintType.None -> null
-        TintType.OnSurface -> ctx.styledColor(R.attr.colorOnPrimaryContainer)
-        TintType.Error -> ctx.styledColor(R.attr.colorError)
-        is TintType.Color -> this.color
-    }
+fun TintType.toColor(ctx: Context): Int? = when (this) {
+    TintType.None -> null
+    TintType.OnSurface -> ctx.styledColor(R.attr.colorOnSurface)
+    TintType.Error -> ctx.styledColor(R.attr.colorError)
+    is TintType.Color -> this.color
+}
