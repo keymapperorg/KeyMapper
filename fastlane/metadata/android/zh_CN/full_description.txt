@@ -1,12 +1,12 @@
-New trigger! 🎉 Remap your Assistant & Bixby, and DPAD buttons!
+新的触发器！ 🎉重新映射你的助手键和Bixby键，还有方向按钮！
 
 什么能被重新映射？
 
  * 音量键。
- * Power button via Google Assistant, Pixel Active Edge, Double press Bixby button.
+ * 通过 Google 助手、Pixel Active Edge 按电源键，双击 Bixby 按钮。
  * 蓝牙/有线键盘。
- * 在支持的设备上的指纹手势。
- * DPAD buttons on game controllers.
+ * 支持设备上的指纹手势。
+ * 游戏手柄上的方向按钮。
  * 其他已连接的设备的按钮也应该起作用。
 
 你可以组合来自特定设备或多个设备的多个按键来构成“触发器”。 每个触发器都可以有多个动作。 可以将按键设置为同时按下或依次按下。 按键可以在它们被短按、长按或双击时被重新映射。 按键映射可以有一组“约束，因此它仅在某些情况下有效。
