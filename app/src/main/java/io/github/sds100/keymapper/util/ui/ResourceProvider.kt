@@ -25,8 +25,7 @@ class ResourceProviderImpl(
 
     override val onThemeChange = MutableSharedFlow<Unit>()
 
-    override fun getString(resId: Int, args: Array<Any>): String =
-        ctx.str(resId, formatArgArray = args)
+    override fun getString(resId: Int, args: Array<Any>): String = ctx.str(resId, formatArgArray = args)
 
     override fun getText(resId: Int): CharSequence = ctx.getText(resId)
 

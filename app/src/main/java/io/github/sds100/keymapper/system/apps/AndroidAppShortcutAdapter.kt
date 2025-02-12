@@ -55,8 +55,36 @@ class AndroidAppShortcutAdapter(context: Context) : AppShortcutAdapter {
         intentAction: String,
         intentExtras: Bundle,
     ): ShortcutInfoCompat {
+        return createLauncherShortcut(
+            IconCompat.createWithBitmap(icon.toBitmap()),
+            label,
+            intentAction,
+            intentExtras,
+        )
+    }
+
+    override fun createLauncherShortcut(
+        iconResId: Int,
+        label: String,
+        intentAction: String,
+        intentExtras: Bundle,
+    ): ShortcutInfoCompat {
+        return createLauncherShortcut(
+            IconCompat.createWithResource(ctx, iconResId),
+            label,
+            intentAction,
+            intentExtras,
+        )
+    }
+
+    private fun createLauncherShortcut(
+        icon: IconCompat,
+        label: String,
+        intentAction: String,
+        intentExtras: Bundle,
+    ): ShortcutInfoCompat {
         val builder = ShortcutInfoCompat.Builder(ctx, UUID.randomUUID().toString()).apply {
-            setIcon(IconCompat.createWithBitmap(icon.toBitmap()))
+            setIcon(icon)
             setShortLabel(label)
 
             Intent(ctx, LaunchKeyMapShortcutActivity::class.java).apply {
