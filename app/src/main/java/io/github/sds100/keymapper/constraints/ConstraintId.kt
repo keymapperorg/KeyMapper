@@ -7,7 +7,9 @@ import kotlinx.serialization.Serializable
  */
 
 @Serializable
-enum class ChooseConstraintType {
+enum class ConstraintId {
+    // THESE MUST BE ORDERED IN HOW THEY WANT TO BE SORTED
+
     APP_IN_FOREGROUND,
     APP_NOT_IN_FOREGROUND,
     APP_PLAYING_MEDIA,
