@@ -335,6 +335,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             app:fabAlignmentMode="end"
+            app:paddingRightSystemWindowInsets="false" />
             app:paddingBottomSystemWindowInsets="false"
             app:fabAnimationMode="slide"
             app:menuAlignmentMode="auto"

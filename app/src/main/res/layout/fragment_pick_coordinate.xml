@@ -131,6 +131,8 @@
             android:layout_gravity="bottom"
             app:fabAlignmentMode="end"
             app:paddingBottomSystemWindowInsets="false"
+            app:paddingLeftSystemWindowInsets="false"
+            app:paddingRightSystemWindowInsets="false"
             app:fabAnimationMode="slide"
             app:navigationIcon="@drawable/ic_baseline_arrow_back_24" />
 
