@@ -114,7 +114,7 @@ fun ChipGroup.setChipUiModels(
     removeAllViews()
 
     val colorTintError by lazy { styledColorSL(R.attr.colorError) }
-    val colorOnSurface by lazy { styledColorSL(R.attr.colorOnPrimaryContainer) }
+    val colorOnSurface by lazy { styledColorSL(R.attr.colorOnSurface) }
 
     models.forEach { model ->
         when (model) {
