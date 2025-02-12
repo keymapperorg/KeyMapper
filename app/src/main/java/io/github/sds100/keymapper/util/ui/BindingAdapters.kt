@@ -114,7 +114,7 @@ fun ChipGroup.setChipUiModels(
     removeAllViews()
 
     val colorTintError by lazy { styledColorSL(R.attr.colorError) }
-    val colorOnSurface by lazy { styledColorSL(R.attr.colorOnPrimaryContainer) }
+    val colorOnSurface by lazy { styledColorSL(R.attr.colorOnSurface) }
 
     models.forEach { model ->
         when (model) {
@@ -171,10 +171,9 @@ fun View.enabled(isEnabled: Boolean) {
     }
 }
 
-fun TintType.toColor(ctx: Context): Int? =
-    when (this) {
-        TintType.None -> null
-        TintType.OnSurface -> ctx.styledColor(R.attr.colorOnPrimaryContainer)
-        TintType.Error -> ctx.styledColor(R.attr.colorError)
-        is TintType.Color -> this.color
-    }
+fun TintType.toColor(ctx: Context): Int? = when (this) {
+    TintType.None -> null
+    TintType.OnSurface -> ctx.styledColor(R.attr.colorOnSurface)
+    TintType.Error -> ctx.styledColor(R.attr.colorError)
+    is TintType.Color -> this.color
+}

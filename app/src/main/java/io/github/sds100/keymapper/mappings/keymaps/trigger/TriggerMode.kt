@@ -8,9 +8,19 @@ import kotlinx.serialization.Serializable
  */
 
 @Serializable
-sealed class TriggerMode {
+sealed class TriggerMode : Comparable<TriggerMode> {
+    override fun compareTo(other: TriggerMode) = this.javaClass.name.compareTo(other.javaClass.name)
+
     @Serializable
-    data class Parallel(val clickType: ClickType) : TriggerMode()
+    data class Parallel(val clickType: ClickType) : TriggerMode() {
+        override fun compareTo(other: TriggerMode): Int {
+            if (other !is Parallel) {
+                return super<TriggerMode>.compareTo(other)
+            }
+
+            return clickType.compareTo(other.clickType)
+        }
+    }
 
     @Serializable
     object Sequence : TriggerMode()

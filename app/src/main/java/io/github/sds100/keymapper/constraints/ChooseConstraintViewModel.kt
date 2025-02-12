@@ -42,47 +42,47 @@ class ChooseConstraintViewModel(
     NavigationViewModel by NavigationViewModelImpl() {
 
     companion object {
-        private val ALL_CONSTRAINTS_ORDERED: Array<ChooseConstraintType> = arrayOf(
-            ChooseConstraintType.APP_IN_FOREGROUND,
-            ChooseConstraintType.APP_NOT_IN_FOREGROUND,
-            ChooseConstraintType.APP_PLAYING_MEDIA,
-            ChooseConstraintType.APP_NOT_PLAYING_MEDIA,
-            ChooseConstraintType.MEDIA_PLAYING,
-            ChooseConstraintType.MEDIA_NOT_PLAYING,
+        private val ALL_CONSTRAINTS_ORDERED: Array<ConstraintId> = arrayOf(
+            ConstraintId.APP_IN_FOREGROUND,
+            ConstraintId.APP_NOT_IN_FOREGROUND,
+            ConstraintId.APP_PLAYING_MEDIA,
+            ConstraintId.APP_NOT_PLAYING_MEDIA,
+            ConstraintId.MEDIA_PLAYING,
+            ConstraintId.MEDIA_NOT_PLAYING,
 
-            ChooseConstraintType.BT_DEVICE_CONNECTED,
-            ChooseConstraintType.BT_DEVICE_DISCONNECTED,
+            ConstraintId.BT_DEVICE_CONNECTED,
+            ConstraintId.BT_DEVICE_DISCONNECTED,
 
-            ChooseConstraintType.SCREEN_ON,
-            ChooseConstraintType.SCREEN_OFF,
+            ConstraintId.SCREEN_ON,
+            ConstraintId.SCREEN_OFF,
 
-            ChooseConstraintType.ORIENTATION_PORTRAIT,
-            ChooseConstraintType.ORIENTATION_LANDSCAPE,
-            ChooseConstraintType.ORIENTATION_0,
-            ChooseConstraintType.ORIENTATION_90,
-            ChooseConstraintType.ORIENTATION_180,
-            ChooseConstraintType.ORIENTATION_270,
+            ConstraintId.ORIENTATION_PORTRAIT,
+            ConstraintId.ORIENTATION_LANDSCAPE,
+            ConstraintId.ORIENTATION_0,
+            ConstraintId.ORIENTATION_90,
+            ConstraintId.ORIENTATION_180,
+            ConstraintId.ORIENTATION_270,
 
-            ChooseConstraintType.FLASHLIGHT_ON,
-            ChooseConstraintType.FLASHLIGHT_OFF,
+            ConstraintId.FLASHLIGHT_ON,
+            ConstraintId.FLASHLIGHT_OFF,
 
-            ChooseConstraintType.WIFI_ON,
-            ChooseConstraintType.WIFI_OFF,
-            ChooseConstraintType.WIFI_CONNECTED,
-            ChooseConstraintType.WIFI_DISCONNECTED,
+            ConstraintId.WIFI_ON,
+            ConstraintId.WIFI_OFF,
+            ConstraintId.WIFI_CONNECTED,
+            ConstraintId.WIFI_DISCONNECTED,
 
-            ChooseConstraintType.IME_CHOSEN,
-            ChooseConstraintType.IME_NOT_CHOSEN,
+            ConstraintId.IME_CHOSEN,
+            ConstraintId.IME_NOT_CHOSEN,
 
-            ChooseConstraintType.DEVICE_IS_LOCKED,
-            ChooseConstraintType.DEVICE_IS_UNLOCKED,
+            ConstraintId.DEVICE_IS_LOCKED,
+            ConstraintId.DEVICE_IS_UNLOCKED,
 
-            ChooseConstraintType.IN_PHONE_CALL,
-            ChooseConstraintType.NOT_IN_PHONE_CALL,
-            ChooseConstraintType.PHONE_RINGING,
+            ConstraintId.IN_PHONE_CALL,
+            ConstraintId.NOT_IN_PHONE_CALL,
+            ConstraintId.PHONE_RINGING,
 
-            ChooseConstraintType.CHARGING,
-            ChooseConstraintType.DISCHARGING,
+            ConstraintId.CHARGING,
+            ConstraintId.DISCHARGING,
         )
     }
 
@@ -92,7 +92,7 @@ class ChooseConstraintViewModel(
     private val _returnResult = MutableSharedFlow<Constraint>()
     val returnResult = _returnResult.asSharedFlow()
 
-    private var supportedConstraints = MutableStateFlow<Array<ChooseConstraintType>>(emptyArray())
+    private var supportedConstraints = MutableStateFlow<Array<ConstraintId>>(emptyArray())
 
     init {
         viewModelScope.launch(Dispatchers.Default) {
@@ -102,91 +102,91 @@ class ChooseConstraintViewModel(
         }
     }
 
-    fun setSupportedConstraints(supportedConstraints: Array<ChooseConstraintType>) {
+    fun setSupportedConstraints(supportedConstraints: Array<ConstraintId>) {
         this.supportedConstraints.value = supportedConstraints
     }
 
     fun onListItemClick(id: String) {
         viewModelScope.launch {
-            when (val constraintType = ChooseConstraintType.valueOf(id)) {
-                ChooseConstraintType.APP_IN_FOREGROUND,
-                ChooseConstraintType.APP_NOT_IN_FOREGROUND,
-                ChooseConstraintType.APP_PLAYING_MEDIA,
-                ChooseConstraintType.APP_NOT_PLAYING_MEDIA,
+            when (val constraintType = ConstraintId.valueOf(id)) {
+                ConstraintId.APP_IN_FOREGROUND,
+                ConstraintId.APP_NOT_IN_FOREGROUND,
+                ConstraintId.APP_PLAYING_MEDIA,
+                ConstraintId.APP_NOT_PLAYING_MEDIA,
                 -> onSelectAppConstraint(constraintType)
 
-                ChooseConstraintType.MEDIA_PLAYING -> _returnResult.emit(Constraint.MediaPlaying)
-                ChooseConstraintType.MEDIA_NOT_PLAYING -> _returnResult.emit(Constraint.NoMediaPlaying)
+                ConstraintId.MEDIA_PLAYING -> _returnResult.emit(Constraint.MediaPlaying)
+                ConstraintId.MEDIA_NOT_PLAYING -> _returnResult.emit(Constraint.NoMediaPlaying)
 
-                ChooseConstraintType.BT_DEVICE_CONNECTED,
-                ChooseConstraintType.BT_DEVICE_DISCONNECTED,
+                ConstraintId.BT_DEVICE_CONNECTED,
+                ConstraintId.BT_DEVICE_DISCONNECTED,
                 -> onSelectBluetoothConstraint(
                     constraintType,
                 )
 
-                ChooseConstraintType.SCREEN_ON -> onSelectScreenOnConstraint()
-                ChooseConstraintType.SCREEN_OFF -> onSelectScreenOffConstraint()
+                ConstraintId.SCREEN_ON -> onSelectScreenOnConstraint()
+                ConstraintId.SCREEN_OFF -> onSelectScreenOffConstraint()
 
-                ChooseConstraintType.ORIENTATION_PORTRAIT ->
+                ConstraintId.ORIENTATION_PORTRAIT ->
                     _returnResult.emit(Constraint.OrientationPortrait)
 
-                ChooseConstraintType.ORIENTATION_LANDSCAPE ->
+                ConstraintId.ORIENTATION_LANDSCAPE ->
                     _returnResult.emit(Constraint.OrientationLandscape)
 
-                ChooseConstraintType.ORIENTATION_0 ->
+                ConstraintId.ORIENTATION_0 ->
                     _returnResult.emit(Constraint.OrientationCustom(Orientation.ORIENTATION_0))
 
-                ChooseConstraintType.ORIENTATION_90 ->
+                ConstraintId.ORIENTATION_90 ->
                     _returnResult.emit(Constraint.OrientationCustom(Orientation.ORIENTATION_90))
 
-                ChooseConstraintType.ORIENTATION_180 ->
+                ConstraintId.ORIENTATION_180 ->
                     _returnResult.emit(Constraint.OrientationCustom(Orientation.ORIENTATION_180))
 
-                ChooseConstraintType.ORIENTATION_270 ->
+                ConstraintId.ORIENTATION_270 ->
                     _returnResult.emit(Constraint.OrientationCustom(Orientation.ORIENTATION_270))
 
-                ChooseConstraintType.FLASHLIGHT_ON -> {
+                ConstraintId.FLASHLIGHT_ON -> {
                     val lens = chooseFlashlightLens() ?: return@launch
                     _returnResult.emit(Constraint.FlashlightOn(lens))
                 }
 
-                ChooseConstraintType.FLASHLIGHT_OFF -> {
+                ConstraintId.FLASHLIGHT_OFF -> {
                     val lens = chooseFlashlightLens() ?: return@launch
                     _returnResult.emit(Constraint.FlashlightOff(lens))
                 }
 
-                ChooseConstraintType.WIFI_ON -> _returnResult.emit(Constraint.WifiOn)
-                ChooseConstraintType.WIFI_OFF -> _returnResult.emit(Constraint.WifiOff)
+                ConstraintId.WIFI_ON -> _returnResult.emit(Constraint.WifiOn)
+                ConstraintId.WIFI_OFF -> _returnResult.emit(Constraint.WifiOff)
 
-                ChooseConstraintType.WIFI_CONNECTED,
-                ChooseConstraintType.WIFI_DISCONNECTED,
+                ConstraintId.WIFI_CONNECTED,
+                ConstraintId.WIFI_DISCONNECTED,
                 -> onSelectWifiConnectedConstraint(
                     constraintType,
                 )
 
-                ChooseConstraintType.IME_CHOSEN,
-                ChooseConstraintType.IME_NOT_CHOSEN,
+                ConstraintId.IME_CHOSEN,
+                ConstraintId.IME_NOT_CHOSEN,
                 -> onSelectImeChosenConstraint(constraintType)
 
-                ChooseConstraintType.DEVICE_IS_LOCKED ->
+                ConstraintId.DEVICE_IS_LOCKED ->
                     _returnResult.emit(Constraint.DeviceIsLocked)
 
-                ChooseConstraintType.DEVICE_IS_UNLOCKED ->
+                ConstraintId.DEVICE_IS_UNLOCKED ->
                     _returnResult.emit(Constraint.DeviceIsUnlocked)
 
-                ChooseConstraintType.IN_PHONE_CALL ->
+                ConstraintId.IN_PHONE_CALL ->
                     _returnResult.emit(Constraint.InPhoneCall)
 
-                ChooseConstraintType.NOT_IN_PHONE_CALL ->
+                ConstraintId.NOT_IN_PHONE_CALL ->
                     _returnResult.emit(Constraint.NotInPhoneCall)
 
-                ChooseConstraintType.PHONE_RINGING ->
+                ConstraintId.PHONE_RINGING ->
                     _returnResult.emit(Constraint.PhoneRinging)
 
-                ChooseConstraintType.CHARGING ->
+                ConstraintId.CHARGING ->
                     _returnResult.emit(Constraint.Charging)
 
-                ChooseConstraintType.DISCHARGING ->
+                ConstraintId.DISCHARGING ->
                     _returnResult.emit(Constraint.Discharging)
             }
         }
@@ -210,37 +210,37 @@ class ChooseConstraintViewModel(
             if (!supportedConstraints.value.contains(type)) return@forEach
 
             val title: String = when (type) {
-                ChooseConstraintType.APP_IN_FOREGROUND -> getString(R.string.constraint_choose_app_foreground)
-                ChooseConstraintType.APP_NOT_IN_FOREGROUND -> getString(R.string.constraint_choose_app_not_foreground)
-                ChooseConstraintType.APP_PLAYING_MEDIA -> getString(R.string.constraint_choose_app_playing_media)
-                ChooseConstraintType.APP_NOT_PLAYING_MEDIA -> getString(R.string.constraint_choose_app_not_playing_media)
-                ChooseConstraintType.MEDIA_NOT_PLAYING -> getString(R.string.constraint_choose_media_not_playing)
-                ChooseConstraintType.MEDIA_PLAYING -> getString(R.string.constraint_choose_media_playing)
-                ChooseConstraintType.BT_DEVICE_CONNECTED -> getString(R.string.constraint_choose_bluetooth_device_connected)
-                ChooseConstraintType.BT_DEVICE_DISCONNECTED -> getString(R.string.constraint_choose_bluetooth_device_disconnected)
-                ChooseConstraintType.SCREEN_ON -> getString(R.string.constraint_choose_screen_on_description)
-                ChooseConstraintType.SCREEN_OFF -> getString(R.string.constraint_choose_screen_off_description)
-                ChooseConstraintType.ORIENTATION_PORTRAIT -> getString(R.string.constraint_choose_orientation_portrait)
-                ChooseConstraintType.ORIENTATION_LANDSCAPE -> getString(R.string.constraint_choose_orientation_landscape)
-                ChooseConstraintType.ORIENTATION_0 -> getString(R.string.constraint_choose_orientation_0)
-                ChooseConstraintType.ORIENTATION_90 -> getString(R.string.constraint_choose_orientation_90)
-                ChooseConstraintType.ORIENTATION_180 -> getString(R.string.constraint_choose_orientation_180)
-                ChooseConstraintType.ORIENTATION_270 -> getString(R.string.constraint_choose_orientation_270)
-                ChooseConstraintType.FLASHLIGHT_ON -> getString(R.string.constraint_flashlight_on)
-                ChooseConstraintType.FLASHLIGHT_OFF -> getString(R.string.constraint_flashlight_off)
-                ChooseConstraintType.WIFI_ON -> getString(R.string.constraint_wifi_on)
-                ChooseConstraintType.WIFI_OFF -> getString(R.string.constraint_wifi_off)
-                ChooseConstraintType.WIFI_CONNECTED -> getString(R.string.constraint_wifi_connected)
-                ChooseConstraintType.WIFI_DISCONNECTED -> getString(R.string.constraint_wifi_disconnected)
-                ChooseConstraintType.IME_CHOSEN -> getString(R.string.constraint_ime_chosen)
-                ChooseConstraintType.IME_NOT_CHOSEN -> getString(R.string.constraint_ime_not_chosen)
-                ChooseConstraintType.DEVICE_IS_LOCKED -> getString(R.string.constraint_device_is_locked)
-                ChooseConstraintType.DEVICE_IS_UNLOCKED -> getString(R.string.constraint_device_is_unlocked)
-                ChooseConstraintType.IN_PHONE_CALL -> getString(R.string.constraint_in_phone_call)
-                ChooseConstraintType.NOT_IN_PHONE_CALL -> getString(R.string.constraint_not_in_phone_call)
-                ChooseConstraintType.PHONE_RINGING -> getString(R.string.constraint_phone_ringing)
-                ChooseConstraintType.CHARGING -> getString(R.string.constraint_charging)
-                ChooseConstraintType.DISCHARGING -> getString(R.string.constraint_discharging)
+                ConstraintId.APP_IN_FOREGROUND -> getString(R.string.constraint_choose_app_foreground)
+                ConstraintId.APP_NOT_IN_FOREGROUND -> getString(R.string.constraint_choose_app_not_foreground)
+                ConstraintId.APP_PLAYING_MEDIA -> getString(R.string.constraint_choose_app_playing_media)
+                ConstraintId.APP_NOT_PLAYING_MEDIA -> getString(R.string.constraint_choose_app_not_playing_media)
+                ConstraintId.MEDIA_NOT_PLAYING -> getString(R.string.constraint_choose_media_not_playing)
+                ConstraintId.MEDIA_PLAYING -> getString(R.string.constraint_choose_media_playing)
+                ConstraintId.BT_DEVICE_CONNECTED -> getString(R.string.constraint_choose_bluetooth_device_connected)
+                ConstraintId.BT_DEVICE_DISCONNECTED -> getString(R.string.constraint_choose_bluetooth_device_disconnected)
+                ConstraintId.SCREEN_ON -> getString(R.string.constraint_choose_screen_on_description)
+                ConstraintId.SCREEN_OFF -> getString(R.string.constraint_choose_screen_off_description)
+                ConstraintId.ORIENTATION_PORTRAIT -> getString(R.string.constraint_choose_orientation_portrait)
+                ConstraintId.ORIENTATION_LANDSCAPE -> getString(R.string.constraint_choose_orientation_landscape)
+                ConstraintId.ORIENTATION_0 -> getString(R.string.constraint_choose_orientation_0)
+                ConstraintId.ORIENTATION_90 -> getString(R.string.constraint_choose_orientation_90)
+                ConstraintId.ORIENTATION_180 -> getString(R.string.constraint_choose_orientation_180)
+                ConstraintId.ORIENTATION_270 -> getString(R.string.constraint_choose_orientation_270)
+                ConstraintId.FLASHLIGHT_ON -> getString(R.string.constraint_flashlight_on)
+                ConstraintId.FLASHLIGHT_OFF -> getString(R.string.constraint_flashlight_off)
+                ConstraintId.WIFI_ON -> getString(R.string.constraint_wifi_on)
+                ConstraintId.WIFI_OFF -> getString(R.string.constraint_wifi_off)
+                ConstraintId.WIFI_CONNECTED -> getString(R.string.constraint_wifi_connected)
+                ConstraintId.WIFI_DISCONNECTED -> getString(R.string.constraint_wifi_disconnected)
+                ConstraintId.IME_CHOSEN -> getString(R.string.constraint_ime_chosen)
+                ConstraintId.IME_NOT_CHOSEN -> getString(R.string.constraint_ime_not_chosen)
+                ConstraintId.DEVICE_IS_LOCKED -> getString(R.string.constraint_device_is_locked)
+                ConstraintId.DEVICE_IS_UNLOCKED -> getString(R.string.constraint_device_is_unlocked)
+                ConstraintId.IN_PHONE_CALL -> getString(R.string.constraint_in_phone_call)
+                ConstraintId.NOT_IN_PHONE_CALL -> getString(R.string.constraint_not_in_phone_call)
+                ConstraintId.PHONE_RINGING -> getString(R.string.constraint_phone_ringing)
+                ConstraintId.CHARGING -> getString(R.string.constraint_charging)
+                ConstraintId.DISCHARGING -> getString(R.string.constraint_discharging)
             }
 
             val error = useCase.isSupported(type)
@@ -258,7 +258,7 @@ class ChooseConstraintViewModel(
         }
     }.toList()
 
-    private suspend fun onSelectWifiConnectedConstraint(type: ChooseConstraintType) {
+    private suspend fun onSelectWifiConnectedConstraint(type: ConstraintId) {
         val knownSSIDs = useCase.getKnownWiFiSSIDs()
 
         val chosenSSID: String?
@@ -301,17 +301,17 @@ class ChooseConstraintViewModel(
         }
 
         when (type) {
-            ChooseConstraintType.WIFI_CONNECTED ->
+            ConstraintId.WIFI_CONNECTED ->
                 _returnResult.emit(Constraint.WifiConnected(chosenSSID))
 
-            ChooseConstraintType.WIFI_DISCONNECTED ->
+            ConstraintId.WIFI_DISCONNECTED ->
                 _returnResult.emit(Constraint.WifiDisconnected(chosenSSID))
 
             else -> Unit
         }
     }
 
-    private suspend fun onSelectImeChosenConstraint(type: ChooseConstraintType) {
+    private suspend fun onSelectImeChosenConstraint(type: ConstraintId) {
         val inputMethods = useCase.getEnabledInputMethods()
         val items = inputMethods.map { it.id to it.label }
         val dialog = PopupUi.SingleChoice(items = items)
@@ -321,10 +321,10 @@ class ChooseConstraintViewModel(
         val imeInfo = inputMethods.single { it.id == result }
 
         when (type) {
-            ChooseConstraintType.IME_CHOSEN ->
+            ConstraintId.IME_CHOSEN ->
                 _returnResult.emit(Constraint.ImeChosen(imeInfo.id, imeInfo.label))
 
-            ChooseConstraintType.IME_NOT_CHOSEN ->
+            ConstraintId.IME_NOT_CHOSEN ->
                 _returnResult.emit(Constraint.ImeNotChosen(imeInfo.id, imeInfo.label))
 
             else -> Unit
@@ -353,7 +353,7 @@ class ChooseConstraintViewModel(
         _returnResult.emit(Constraint.ScreenOff)
     }
 
-    private suspend fun onSelectBluetoothConstraint(type: ChooseConstraintType) {
+    private suspend fun onSelectBluetoothConstraint(type: ConstraintId) {
         val response = showPopup(
             "bluetooth_device_constraint_limitation",
             PopupUi.Ok(getString(R.string.dialog_message_bt_constraint_limitation)),
@@ -367,12 +367,12 @@ class ChooseConstraintViewModel(
         ) ?: return
 
         val constraint = when (type) {
-            ChooseConstraintType.BT_DEVICE_CONNECTED -> Constraint.BtDeviceConnected(
+            ConstraintId.BT_DEVICE_CONNECTED -> Constraint.BtDeviceConnected(
                 device.address,
                 device.name,
             )
 
-            ChooseConstraintType.BT_DEVICE_DISCONNECTED -> Constraint.BtDeviceDisconnected(
+            ConstraintId.BT_DEVICE_DISCONNECTED -> Constraint.BtDeviceDisconnected(
                 device.address,
                 device.name,
             )
@@ -383,7 +383,7 @@ class ChooseConstraintViewModel(
         _returnResult.emit(constraint)
     }
 
-    private suspend fun onSelectAppConstraint(type: ChooseConstraintType) {
+    private suspend fun onSelectAppConstraint(type: ConstraintId) {
         val packageName =
             navigate(
                 "choose_package_for_constraint",
@@ -392,19 +392,19 @@ class ChooseConstraintViewModel(
                 ?: return
 
         val constraint = when (type) {
-            ChooseConstraintType.APP_IN_FOREGROUND -> Constraint.AppInForeground(
+            ConstraintId.APP_IN_FOREGROUND -> Constraint.AppInForeground(
                 packageName,
             )
 
-            ChooseConstraintType.APP_NOT_IN_FOREGROUND -> Constraint.AppNotInForeground(
+            ConstraintId.APP_NOT_IN_FOREGROUND -> Constraint.AppNotInForeground(
                 packageName,
             )
 
-            ChooseConstraintType.APP_PLAYING_MEDIA -> Constraint.AppPlayingMedia(
+            ConstraintId.APP_PLAYING_MEDIA -> Constraint.AppPlayingMedia(
                 packageName,
             )
 
-            ChooseConstraintType.APP_NOT_PLAYING_MEDIA -> Constraint.AppNotPlayingMedia(
+            ConstraintId.APP_NOT_PLAYING_MEDIA -> Constraint.AppNotPlayingMedia(
                 packageName,
             )
 
@@ -420,7 +420,6 @@ class ChooseConstraintViewModel(
         private val resourceProvider: ResourceProvider,
     ) : ViewModelProvider.NewInstanceFactory() {
 
-        override fun <T : ViewModel> create(modelClass: Class<T>): T =
-            ChooseConstraintViewModel(isSupported, resourceProvider) as T
+        override fun <T : ViewModel> create(modelClass: Class<T>): T = ChooseConstraintViewModel(isSupported, resourceProvider) as T
     }
 }

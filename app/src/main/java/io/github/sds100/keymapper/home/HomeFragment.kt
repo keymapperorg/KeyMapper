@@ -206,6 +206,11 @@ class HomeFragment : Fragment() {
                     true
                 }
 
+                R.id.action_sort -> {
+                    findNavController().navigate(R.id.action_global_sortingFragment)
+                    true
+                }
+
                 else -> false
             }
         }

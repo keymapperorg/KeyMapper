@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import io.github.sds100.keymapper.mappings.keymaps.trigger.SetupGuiKeyboardState
 import io.github.sds100.keymapper.mappings.keymaps.trigger.SetupGuiKeyboardUseCase
+import io.github.sds100.keymapper.sorting.SortKeyMapsUseCase
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.State
@@ -38,15 +39,16 @@ import kotlinx.coroutines.launch
 
 open class KeyMapListViewModel(
     private val coroutineScope: CoroutineScope,
-    private val useCase: ListKeyMapsUseCase,
+    private val listKeyMaps: ListKeyMapsUseCase,
     resourceProvider: ResourceProvider,
     private val multiSelectProvider: MultiSelectProvider<String>,
     private val setupGuiKeyboard: SetupGuiKeyboardUseCase,
+    private val sortKeyMaps: SortKeyMapsUseCase,
 ) : PopupViewModel by PopupViewModelImpl(),
     ResourceProvider by resourceProvider,
     NavigationViewModel by NavigationViewModelImpl() {
 
-    private val listItemCreator = KeyMapListItemCreator(useCase, resourceProvider)
+    private val listItemCreator = KeyMapListItemCreator(listKeyMaps, resourceProvider)
 
     private val _state = MutableStateFlow<State<List<KeyMapListItem>>>(State.Loading)
     val state = _state.asStateFlow()
@@ -71,8 +73,17 @@ open class KeyMapListViewModel(
         val rebuildUiState = MutableSharedFlow<State<List<KeyMap>>>(replay = 1)
 
         combine(
+            listKeyMaps.keyMapList,
+            sortKeyMaps.observeKeyMapsSorter(),
+        ) { keyMapList, sorter ->
+            keyMapList
+                .mapData { list -> list.sortedWith(sorter) }
+                .also { rebuildUiState.emit(it) }
+        }.flowOn(Dispatchers.Default).launchIn(coroutineScope)
+
+        combine(
             rebuildUiState,
-            useCase.showDeviceDescriptors,
+            listKeyMaps.showDeviceDescriptors,
         ) { keyMapListState, showDeviceDescriptors ->
             keyMapStateListFlow.value = State.Loading
 
@@ -84,13 +95,7 @@ open class KeyMapListViewModel(
         }.flowOn(Dispatchers.Default).launchIn(coroutineScope)
 
         coroutineScope.launch {
-            useCase.keyMapList.collectLatest {
-                rebuildUiState.emit(it)
-            }
-        }
-
-        coroutineScope.launch {
-            useCase.invalidateActionErrors.drop(1).collectLatest {
+            listKeyMaps.invalidateActionErrors.drop(1).collectLatest {
                 /*
                 Don't get the key maps from the repository because there can be a race condition
                 when restoring key maps. This happens because when the activity is resumed the
@@ -102,7 +107,7 @@ open class KeyMapListViewModel(
         }
 
         coroutineScope.launch {
-            useCase.invalidateTriggerErrors.drop(1).collectLatest {
+            listKeyMaps.invalidateTriggerErrors.drop(1).collectLatest {
                 /*
                 Don't get the key maps from the repository because there can be a race condition
                 when restoring key maps. This happens because when the activity is resumed the
@@ -114,7 +119,7 @@ open class KeyMapListViewModel(
         }
 
         coroutineScope.launch {
-            useCase.invalidateConstraintErrors.drop(1).collectLatest {
+            listKeyMaps.invalidateConstraintErrors.drop(1).collectLatest {
                 /*
                 Don't get the key maps from the repository because there can be a race condition
                 when restoring key maps. This happens because when the activity is resumed the
@@ -211,7 +216,7 @@ open class KeyMapListViewModel(
     }
 
     fun onNeverShowSetupDpadClick() {
-        useCase.neverShowDpadImeSetupError()
+        listKeyMaps.neverShowDpadImeSetupError()
     }
 
     private fun onFixError(error: Error) {
@@ -222,8 +227,8 @@ open class KeyMapListViewModel(
                         ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
                             resourceProvider = this@KeyMapListViewModel,
                             popupViewModel = this@KeyMapListViewModel,
-                            neverShowDndTriggerErrorAgain = { useCase.neverShowDndTriggerError() },
-                            fixError = { useCase.fixError(it) },
+                            neverShowDndTriggerErrorAgain = { listKeyMaps.neverShowDndTriggerError() },
+                            fixError = { listKeyMaps.fixError(it) },
                         )
                     }
                 }
@@ -238,7 +243,7 @@ open class KeyMapListViewModel(
                         popupViewModel = this@KeyMapListViewModel,
                         error,
                     ) {
-                        useCase.fixError(error)
+                        listKeyMaps.fixError(error)
                     }
                 }
             }

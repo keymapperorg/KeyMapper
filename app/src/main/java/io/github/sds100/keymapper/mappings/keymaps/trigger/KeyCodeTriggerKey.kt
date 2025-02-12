@@ -27,6 +27,20 @@ data class KeyCodeTriggerKey(
         return "KeyCodeTriggerKey(uid=${uid.substring(0..5)}, keyCode=$keyCode, device=$deviceString, clickType=$clickType, consume=$consumeEvent) "
     }
 
+    // key code -> click type -> device -> consume key event
+    override fun compareTo(other: TriggerKey) = when (other) {
+        is KeyCodeTriggerKey -> compareValuesBy(
+            this,
+            other,
+            { it.keyCode },
+            { it.clickType },
+            { it.device },
+            { it.consumeEvent },
+        )
+
+        else -> super.compareTo(other)
+    }
+
     companion object {
         fun fromEntity(entity: KeyCodeTriggerKeyEntity): TriggerKey {
             val device = when (entity.deviceId) {

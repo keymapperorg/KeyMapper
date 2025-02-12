@@ -5,8 +5,8 @@ import io.github.sds100.keymapper.actions.pinchscreen.PinchPickCoordinateResult
 import io.github.sds100.keymapper.actions.sound.ChooseSoundFileResult
 import io.github.sds100.keymapper.actions.swipescreen.SwipePickCoordinateResult
 import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
-import io.github.sds100.keymapper.constraints.ChooseConstraintType
 import io.github.sds100.keymapper.constraints.Constraint
+import io.github.sds100.keymapper.constraints.ConstraintId
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapId
 import io.github.sds100.keymapper.system.apps.ActivityInfo
 import io.github.sds100.keymapper.system.apps.ChooseAppShortcutResult
@@ -87,7 +87,7 @@ sealed class NavDestination<R> {
     object ChooseActivity : NavDestination<ActivityInfo>()
     object ChooseSound : NavDestination<ChooseSoundFileResult>()
     object ChooseAction : NavDestination<ActionData>()
-    data class ChooseConstraint(val supportedConstraints: List<ChooseConstraintType>) : NavDestination<Constraint>()
+    data class ChooseConstraint(val supportedConstraints: List<ConstraintId>) : NavDestination<Constraint>()
 
     object ChooseBluetoothDevice : NavDestination<BluetoothDeviceInfo>()
     object ReportBug : NavDestination<Unit>()
