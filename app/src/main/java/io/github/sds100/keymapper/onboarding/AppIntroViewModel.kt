@@ -46,13 +46,11 @@ class AppIntroViewModel(
     private val slideModels: StateFlow<List<AppIntroSlideUi>> = combine(
         useCase.serviceState,
         useCase.isBatteryOptimised,
-        useCase.fingerprintGesturesSupported,
         useCase.isShizukuPermissionGranted,
         useCase.isNotificationPermissionGranted,
     ) {
             serviceState,
             isBatteryOptimised,
-            fingerprintGesturesSupported,
             isShizukuPermissionGranted,
             isNotificationPermissionGranted,
         ->
@@ -62,8 +60,6 @@ class AppIntroViewModel(
                 AppIntroSlide.NOTE_FROM_DEV -> noteFromDeveloperSlide()
                 AppIntroSlide.ACCESSIBILITY_SERVICE -> accessibilityServiceSlide(serviceState)
                 AppIntroSlide.BATTERY_OPTIMISATION -> batteryOptimisationSlide(isBatteryOptimised)
-                AppIntroSlide.FINGERPRINT_GESTURE_SUPPORT ->
-                    fingerprintGestureSupportSlide(fingerprintGesturesSupported)
 
                 AppIntroSlide.CONTRIBUTING -> contributingSlide()
                 AppIntroSlide.SETUP_CHOSEN_DEVICES_AGAIN -> setupChosenDevicesAgainSlide()
@@ -120,8 +116,7 @@ class AppIntroViewModel(
         }
     }
 
-    fun getSlide(slide: String): Flow<AppIntroSlideUi> =
-        slideModels.mapNotNull { allSlides -> allSlides.find { it.id == slide } }
+    fun getSlide(slide: String): Flow<AppIntroSlideUi> = slideModels.mapNotNull { allSlides -> allSlides.find { it.id == slide } }
 
     fun onDoneClick() {
         if (slideModels.value.any { it.id == AppIntroSlide.GRANT_SHIZUKU_PERMISSION }) {
@@ -139,41 +134,40 @@ class AppIntroViewModel(
         backgroundColor = getColor(R.color.slideRed),
     )
 
-    private fun accessibilityServiceSlide(serviceState: ServiceState): AppIntroSlideUi =
-        when (serviceState) {
-            ServiceState.ENABLED ->
-                AppIntroSlideUi(
-                    id = AppIntroSlide.ACCESSIBILITY_SERVICE,
-                    image = getDrawable(R.drawable.ic_baseline_check_64),
-                    title = getString(R.string.showcase_accessibility_service_title_enabled),
-                    description = getString(R.string.showcase_accessibility_service_description_enabled),
-                    backgroundColor = getColor(R.color.slidePurple),
-                )
+    private fun accessibilityServiceSlide(serviceState: ServiceState): AppIntroSlideUi = when (serviceState) {
+        ServiceState.ENABLED ->
+            AppIntroSlideUi(
+                id = AppIntroSlide.ACCESSIBILITY_SERVICE,
+                image = getDrawable(R.drawable.ic_baseline_check_64),
+                title = getString(R.string.showcase_accessibility_service_title_enabled),
+                description = getString(R.string.showcase_accessibility_service_description_enabled),
+                backgroundColor = getColor(R.color.slidePurple),
+            )
 
-            ServiceState.CRASHED ->
-                AppIntroSlideUi(
-                    id = AppIntroSlide.ACCESSIBILITY_SERVICE,
-                    image = getDrawable(R.drawable.ic_outline_error_outline_64),
-                    title = getString(R.string.showcase_accessibility_service_title_crashed),
-                    description = getString(R.string.showcase_accessibility_service_description_crashed),
-                    backgroundColor = getColor(R.color.slidePurple),
+        ServiceState.CRASHED ->
+            AppIntroSlideUi(
+                id = AppIntroSlide.ACCESSIBILITY_SERVICE,
+                image = getDrawable(R.drawable.ic_outline_error_outline_64),
+                title = getString(R.string.showcase_accessibility_service_title_crashed),
+                description = getString(R.string.showcase_accessibility_service_description_crashed),
+                backgroundColor = getColor(R.color.slidePurple),
 
-                    buttonId1 = ID_BUTTON_RESTART_ACCESSIBILITY_SERVICE,
-                    buttonText1 = getString(R.string.showcase_accessibility_service_button_restart),
-                )
+                buttonId1 = ID_BUTTON_RESTART_ACCESSIBILITY_SERVICE,
+                buttonText1 = getString(R.string.showcase_accessibility_service_button_restart),
+            )
 
-            ServiceState.DISABLED ->
-                AppIntroSlideUi(
-                    id = AppIntroSlide.ACCESSIBILITY_SERVICE,
-                    image = getDrawable(R.drawable.ic_outline_error_outline_64),
-                    title = getString(R.string.showcase_accessibility_service_title_disabled),
-                    description = getString(R.string.showcase_accessibility_service_description_disabled),
-                    backgroundColor = getColor(R.color.slidePurple),
+        ServiceState.DISABLED ->
+            AppIntroSlideUi(
+                id = AppIntroSlide.ACCESSIBILITY_SERVICE,
+                image = getDrawable(R.drawable.ic_outline_error_outline_64),
+                title = getString(R.string.showcase_accessibility_service_title_disabled),
+                description = getString(R.string.showcase_accessibility_service_description_disabled),
+                backgroundColor = getColor(R.color.slidePurple),
 
-                    buttonId1 = ID_BUTTON_ENABLE_ACCESSIBILITY_SERVICE,
-                    buttonText1 = getString(R.string.enable),
-                )
-        }
+                buttonId1 = ID_BUTTON_ENABLE_ACCESSIBILITY_SERVICE,
+                buttonText1 = getString(R.string.enable),
+            )
+    }
 
     private fun batteryOptimisationSlide(isBatteryOptimised: Boolean): AppIntroSlideUi {
         if (isBatteryOptimised) {
@@ -200,37 +194,6 @@ class AppIntroViewModel(
 
                 buttonId1 = ID_BUTTON_DONT_KILL_MY_APP,
                 buttonText1 = getString(R.string.showcase_disable_battery_optimisation_button_dont_kill_my_app),
-            )
-        }
-    }
-
-    private fun fingerprintGestureSupportSlide(areGesturesAvailable: Boolean?): AppIntroSlideUi {
-        when (areGesturesAvailable) {
-            true -> return AppIntroSlideUi(
-                id = AppIntroSlide.FINGERPRINT_GESTURE_SUPPORT,
-                image = getDrawable(R.drawable.ic_baseline_check_64),
-                title = getString(R.string.showcase_fingerprint_gesture_support_title_supported),
-                description = getString(R.string.showcase_fingerprint_gesture_support_message_supported),
-                backgroundColor = getColor(R.color.slideOrange),
-            )
-
-            false -> return AppIntroSlideUi(
-                id = AppIntroSlide.FINGERPRINT_GESTURE_SUPPORT,
-                image = getDrawable(R.drawable.ic_baseline_cross_64),
-                title = getString(R.string.showcase_fingerprint_gesture_support_title_not_supported),
-                description = getString(R.string.showcase_fingerprint_gesture_support_message_not_supported),
-                backgroundColor = getColor(R.color.slideOrange),
-            )
-
-            null -> return AppIntroSlideUi(
-                id = AppIntroSlide.FINGERPRINT_GESTURE_SUPPORT,
-                image = getDrawable(R.drawable.ic_baseline_fingerprint_64),
-                title = getString(R.string.showcase_fingerprint_gesture_support_title_supported_unknown),
-                description = getString(R.string.showcase_fingerprint_gesture_support_message_supported_unknown),
-                backgroundColor = getColor(R.color.slideOrange),
-
-                buttonId1 = ID_BUTTON_ENABLE_ACCESSIBILITY_SERVICE,
-                buttonText1 = getString(R.string.enable),
             )
         }
     }

@@ -913,11 +913,6 @@
     <string name="showcase_fingerprint_gesture_support_title_supported">You can remap fingerprint reader gestures! :)</string>
     <string name="showcase_fingerprint_gesture_support_title_not_supported">You can not remap fingerprint reader gestures!</string>
 
-    <string name="showcase_fingerprint_gesture_support_message_supported_unknown">You\'ll need to enable the accessibility service so that Key Mapper can check whether your device can detect fingerprint gestures.</string>
-    <string name="showcase_fingerprint_gesture_support_message_supported">Your device can detect fingerprint gestures! There is a tab at the top of the home screen for remapping fingerprint gestures.</string>
-    <string name="showcase_fingerprint_gesture_support_message_not_supported">Your device does not allow 3rd party apps to detect fingerprint gestures! There isn\'t anything the developer can do about this. Some devices have the setting to swipe down on the fingerprint reader to open the notification drawer and do not allow 3rd party apps to detect fingerprint gestures.</string>
-    <string name="showcase_fingerprint_gesture_support_button">Enable</string>
-
     <string name="showcase_setup_chosen_devices_again_title">You need to setup some settings again</string>
     <string name="showcase_setup_chosen_devices_again_message">It looks like you were using the setting to automatically change the keyboard or show the input method picker when a Bluetooth device connects and disconnects. Key Mapper now allows you to use any input device and not just Bluetooth devices. There isn\'t a way to migrate the old settings in a way that the new functionality will work so you\'ll have to choose the devices again.</string>
 

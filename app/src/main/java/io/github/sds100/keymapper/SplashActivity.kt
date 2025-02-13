@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper
 
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -41,10 +40,6 @@ class SplashActivity : FragmentActivity() {
 
                 yield(AppIntroSlide.ACCESSIBILITY_SERVICE)
                 yield(AppIntroSlide.BATTERY_OPTIMISATION)
-
-                if (systemFeatureAdapter.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)) {
-                    yield(AppIntroSlide.FINGERPRINT_GESTURE_SUPPORT)
-                }
 
                 if (onboarding.showShizukuAppIntroSlide) {
                     yield(AppIntroSlide.GRANT_SHIZUKU_PERMISSION)
