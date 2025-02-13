@@ -314,7 +314,6 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <string name="button_done">Hotovo</string>
     <string name="button_save">Uložit</string>
     <string name="button_fix">Opravit</string>
-    <string name="button_recording_trigger_countdown">%d…</string>
     <string name="button_add_constraint">Přidat omezení</string>
     <string name="button_choose_keycode">Zvolte kód klíče</string>
     <string name="button_yes">Ano!</string>
@@ -621,10 +620,6 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <string name="showcase_fingerprint_gesture_support_title_supported_unknown">Odstranění gesta čtečky otisků prstů</string>
     <string name="showcase_fingerprint_gesture_support_title_supported">Můžete přemapovat gesta čtečky otisků prstů! :)</string>
     <string name="showcase_fingerprint_gesture_support_title_not_supported">Nelze přemapovat gesta čtečky otisků prstů!</string>
-    <string name="showcase_fingerprint_gesture_support_message_supported_unknown">Budete muset povolit službu usnadnění přístupnosti, aby mapa klíčů mohla zkontrolovat, zda vaše zařízení může rozpoznat gesta otisků prstů.</string>
-    <string name="showcase_fingerprint_gesture_support_message_supported">Vaše zařízení může detekovat gesta otisků prstů! V horní části domovské obrazovky je záložka pro přemapování gesta otisků prstů.</string>
-    <string name="showcase_fingerprint_gesture_support_message_not_supported">Vaše zařízení neumožňuje aplikacím třetích stran detekovat gesta otisků prstů! Není nic, co by vývojář mohl udělat. Některá zařízení mají nastavení, které chcete přejetím prstu dolů otevřít oznamovací oblast a nepovolit, aby aplikace třetích stran odhalily gesta otisků prstů.</string>
-    <string name="showcase_fingerprint_gesture_support_button">Povolit</string>
     <string name="showcase_setup_chosen_devices_again_title">Některá nastavení musíte nastavit znovu</string>
     <string name="showcase_setup_chosen_devices_again_message">Vypadá to, že jste použili nastavení k automatické změně klávesnice nebo zobrazení výběru vstupní metody při připojení a odpojení zařízení Bluetooth. Klávesová mapa nyní umožňuje používat libovolné vstupní zařízení, nejen zařízení Bluetooth. Neexistuje způsob, jak migrovat stará nastavení tak, že nová funkce bude fungovat, takže budete muset znovu vybrat zařízení.</string>
     <string name="showcase_grant_shizuku_permission_denied_title">Udělení povolení Shizuku</string>

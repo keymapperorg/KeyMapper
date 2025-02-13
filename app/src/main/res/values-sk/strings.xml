@@ -298,7 +298,6 @@
     <string name="button_done">Hotovo</string>
     <string name="button_save">Uložiť</string>
     <string name="button_fix">Opraviť</string>
-    <string name="button_recording_trigger_countdown">%d…</string>
     <string name="button_add_constraint">Pridajte obmedzenie</string>
     <string name="button_choose_keycode">Vyberte Key code</string>
     <string name="button_yes">Áno!</string>
@@ -590,10 +589,6 @@
     <string name="showcase_fingerprint_gesture_support_title_supported_unknown">Premapovanie gest čítačky odtlačkov prstov</string>
     <string name="showcase_fingerprint_gesture_support_title_supported">Gestá čítačky odtlačkov prstov môžete premapovať! :)</string>
     <string name="showcase_fingerprint_gesture_support_title_not_supported">Gestá čítačky odtlačkov prstov nie je možné premapovať!</string>
-    <string name="showcase_fingerprint_gesture_support_message_supported_unknown">Budete musieť zapnúť službu prístupnosti, aby Key Mapper mohol skontrolovať, či vaše zariadenie dokáže rozpoznať gestá odtlačkov prstov.</string>
-    <string name="showcase_fingerprint_gesture_support_message_supported">Vaše zariadenie dokáže detekovať gestá odtlačkov prstov! V hornej časti domovskej obrazovky sa nachádza karta na premapovanie gest odtlačkov prstov.</string>
-    <string name="showcase_fingerprint_gesture_support_message_not_supported">Vaše zariadenie nepovoľuje aplikáciám tretích strán detekovať gestá odtlačkov prstov! Vývojár s tým nemôže nič urobiť. Niektoré zariadenia majú nastavenie na potiahnutie prstom nadol na čítačke odtlačkov prstov, aby sa otvorila lišta s upozorneniami a neumožnili aplikáciám tretích strán zistiť gestá odtlačkov prstov.</string>
-    <string name="showcase_fingerprint_gesture_support_button">Zapnúť</string>
     <string name="showcase_setup_chosen_devices_again_title">Musíte znova nastaviť niektoré nastavenia</string>
     <string name="showcase_setup_chosen_devices_again_message">Zdá sa, že ste toto nastavenie používali na automatickú zmenu klávesnice alebo zobrazenie výberu metódy vstupu, keď sa zariadenie Bluetooth pripojí a odpojí. Key Mapper teraz umožňuje používať akékoľvek vstupné zariadenie a nielen zariadenia Bluetooth. Neexistuje spôsob, ako migrovať staré nastavenia tak, aby nové funkcie fungovali, takže budete musieť znova vybrať zariadenia.</string>
     <string name="showcase_request_shizuku_permission">Udeliť</string>
