@@ -1,3 +1,25 @@
+## [2.8.0](https://github.com/sds100/KeyMapper/releases/tag/v2.8.0)
+
+#### 13 February 2025
+
+## Added
+
+- #491 remap DPAD buttons.
+- #1223 sort key maps by triggers, actions, constraints and options.
+- #1344 target Android 15 and support edge-to-edge display mode.
+- #1372 allow Shizuku features to work with Sui.
+- #1391 button in Settings to reset all settings to their defaults.
+
+## Bug fixes
+
+- #1426, #1434 key map launcher shortcut icons were white.
+- #1410 vibrations not working on Android 13+.
+- #1342 add missing Meta modifier options for key event actions.
+- #1375 memory leak when rebinding to the relay service in the Key Mapper GUI Keyboard.
+- #1376 Key Mapper Basic Input Method would not work on Android 14+ in some situations.
+- #1094 wrong repository name in the introduction screen.
+- #1387 some app shortcuts would not open on Android 14+.
+
 ## [2.7.2](https://github.com/sds100/KeyMapper/releases/tag/v2.7.2)
 
 #### 22 December 2024
