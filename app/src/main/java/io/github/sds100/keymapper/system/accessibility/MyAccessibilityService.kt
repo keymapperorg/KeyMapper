@@ -200,7 +200,7 @@ class MyAccessibilityService :
         }
 
         overlayController = AccessibilityOverlayController(this)
-        overlayController?.init()
+        overlayController?.onServiceConnected()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             fingerprintGestureCallback =
