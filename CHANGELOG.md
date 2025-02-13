@@ -10,6 +10,14 @@
 - #1372 allow Shizuku features to work with Sui.
 - #1391 button in Settings to reset all settings to their defaults.
 
+## Changed
+
+- #1412 make the record trigger text clearer by saying it is recording.
+
+## Removed
+
+- #1411 remove the app intro screen for remapping fingerprint gestures because almost all new phones do not support them anyway.
+
 ## Bug fixes
 
 - #1426, #1434 key map launcher shortcut icons were white.
