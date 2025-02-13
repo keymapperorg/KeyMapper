@@ -458,7 +458,7 @@
     <string name="button_done">Done</string>
     <string name="button_save">Save</string>
     <string name="button_fix">Fix</string>
-    <string name="button_recording_trigger_countdown">%d…</string>
+    <string name="button_recording_trigger_countdown">Recording (%d…)</string>
     <string name="button_add_constraint">Add constraint</string>
     <string name="button_choose_keycode">Choose Key code</string>
     <string name="button_yes">Yes!</string>
