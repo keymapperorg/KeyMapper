@@ -341,7 +341,6 @@
     <string name="button_done">完成</string>
     <string name="button_save">保存</string>
     <string name="button_fix">修复</string>
-    <string name="button_recording_trigger_countdown">%d…</string>
     <string name="button_add_constraint">添加约束</string>
     <string name="button_choose_keycode">选择键码</string>
     <string name="button_yes">是！</string>
@@ -660,10 +659,6 @@
     <string name="showcase_fingerprint_gesture_support_title_supported_unknown">重新映射指纹读取器手势</string>
     <string name="showcase_fingerprint_gesture_support_title_supported">你可以重新映射指纹读取器手势! :)</string>
     <string name="showcase_fingerprint_gesture_support_title_not_supported">你不能重新映射指纹读取器手势！</string>
-    <string name="showcase_fingerprint_gesture_support_message_supported_unknown">你需要启用无障碍服务，以便Key Maoper能够检查你的设备是否能够检测指纹手势。</string>
-    <string name="showcase_fingerprint_gesture_support_message_supported">你的设备可以检测指纹手势！主屏幕顶部有一个标签来重新映射指纹。</string>
-    <string name="showcase_fingerprint_gesture_support_message_not_supported">你的设备不允许第三方应用检测指纹手势！开发者无法做任何事情。 某些设备设置在指纹读取器上下滑动以打开通知抽屉，不允许第三方应用检测指纹手势。</string>
-    <string name="showcase_fingerprint_gesture_support_button">启用</string>
     <string name="showcase_setup_chosen_devices_again_title">您需要再次设置一些设置</string>
     <string name="showcase_setup_chosen_devices_again_message">您似乎正在使用该设置在蓝牙设备连接和断开连接时自动更改键盘或显示输入法选择器。 Key Mapper 现在允许您使用任何输入设备，而不仅仅是蓝牙设备。 没有办法以新功能可以工作的方式迁移旧设置，因此您必须在 Key Mapper 设置中再次选择设备。 点击打开 Key Mapper。</string>
     <string name="showcase_grant_shizuku_permission_denied_title">请求 Shizuku 权限</string>

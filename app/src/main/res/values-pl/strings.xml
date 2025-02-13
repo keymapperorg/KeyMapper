@@ -345,7 +345,6 @@
     <string name="button_done">Gotowe</string>
     <string name="button_save">Zapisz</string>
     <string name="button_fix">Napraw</string>
-    <string name="button_recording_trigger_countdown">%d…</string>
     <string name="button_add_constraint">Dodaj ograniczenie</string>
     <string name="button_choose_keycode">Wybierz kod klawisza</string>
     <string name="button_yes">Tak!</string>
@@ -664,10 +663,6 @@
     <string name="showcase_fingerprint_gesture_support_title_supported_unknown">Zmień funkcje gestów czytnika linii papilarnych</string>
     <string name="showcase_fingerprint_gesture_support_title_supported">Możesz zmienić funkcje gestów czytnika linii papilarnych! :)</string>
     <string name="showcase_fingerprint_gesture_support_title_not_supported">Nie można zmienić funcje gestów czytnika linii papilarnych!</string>
-    <string name="showcase_fingerprint_gesture_support_message_supported_unknown">Musisz włączyć usługę ułatwień dostępu, aby Key Mapper mógł sprawdzić, czy Twoje urządzenie obsługuje wykrywanie gestów czytnika linii papilarnych.</string>
-    <string name="showcase_fingerprint_gesture_support_message_supported">Twoje urządzenie obsługuje wykrywanie gestów na czytniku linii papilarnych! W górnej części ekranu głównego znajduje się karta do zmiany funkcji tych gestów.</string>
-    <string name="showcase_fingerprint_gesture_support_message_not_supported">Twoje urządzenie nie pozwala aplikacjom innych firm na wykrywanie gestów czytnika linii papilarnych! Programista nie może nic z tym poradzić. Niektóre urządzenia mają ustawienie przesuwania w dół po czytniku, aby rozwinąć pasek powiadomień i nie zezwalają aplikacjom innych firm na wykrywanie na nim gestów.</string>
-    <string name="showcase_fingerprint_gesture_support_button">Włącz</string>
     <string name="showcase_setup_chosen_devices_again_title">Musisz ponownie skonfigurować niektóre ustawienia</string>
     <string name="showcase_setup_chosen_devices_again_message">Wygląda na to, że używasz ustawienia do automatycznej zmiany klawiatury lub wyświetlania selektora metody wprowadzania, gdy urządzenie Bluetooth się łączy i rozłącza. Key Mapper umożliwia teraz korzystanie z dowolnego urządzenia wejściowego, a nie tylko urządzeń Bluetooth. Nie ma sposobu na migrację starych ustawień w taki sposób, aby nowa funkcja działała, więc trzeba będzie ponownie wybrać urządzenia.</string>
     <string name="showcase_grant_shizuku_permission_denied_title">Udziel uprawnienie Shizuku</string>
