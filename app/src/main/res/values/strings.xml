@@ -1464,4 +1464,9 @@
     <string name="no_keys_recorded_bottom_sheet_text">You can try using the Key Mapper GUI Keyboard app to record your trigger instead of the accessibility service.</string>
     <string name="no_keys_recorded_setup_complete_text">Setup complete! Tap \'Done\' and try recording your trigger again. If it doesn’t work then Android will not let it be remapped 🫤.</string>
 
+    <!--  Floating buttons  -->
+    <string name="floating_menu_tooltip">Tap this button to show/hide this menu. You can add new floating buttons here and when you\'re finished tap Done.</string>
+    <string name="floating_menu_add_button">Add button</string>
+    <string name="floating_menu_done_button">Done</string>
+    <string name="floating_button_tooltip">Long press to move around and tap to change how it looks or delete it.</string>
 </resources>
