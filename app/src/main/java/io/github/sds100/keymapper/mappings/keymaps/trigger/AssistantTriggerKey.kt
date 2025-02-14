@@ -29,6 +29,17 @@ data class AssistantTriggerKey(
         return type == AssistantTriggerType.DEVICE || type == AssistantTriggerType.ANY
     }
 
+    override fun compareTo(other: TriggerKey) = when (other) {
+        is AssistantTriggerKey -> compareValuesBy(
+            this,
+            other,
+            { it.type },
+            { it.clickType },
+        )
+
+        else -> super.compareTo(other)
+    }
+
     companion object {
         fun fromEntity(
             entity: AssistantTriggerKeyEntity,

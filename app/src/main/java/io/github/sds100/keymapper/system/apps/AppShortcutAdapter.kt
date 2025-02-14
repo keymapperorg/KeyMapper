@@ -23,6 +23,13 @@ interface AppShortcutAdapter {
         intentExtras: Bundle,
     ): ShortcutInfoCompat
 
+    fun createLauncherShortcut(
+        iconResId: Int,
+        label: String,
+        intentAction: String,
+        intentExtras: Bundle,
+    ): ShortcutInfoCompat
+
     fun pinShortcut(shortcut: ShortcutInfoCompat): Result<*>
     fun createShortcutResultIntent(shortcut: ShortcutInfoCompat): Intent
 

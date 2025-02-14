@@ -10,18 +10,14 @@ import io.github.sds100.keymapper.mappings.DetectMappingUseCase
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapEntityMapper
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapRepository
-import io.github.sds100.keymapper.shizuku.InputEventInjector
 import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.display.DisplayAdapter
+import io.github.sds100.keymapper.system.inputevents.InputEventInjector
+import io.github.sds100.keymapper.system.inputmethod.ImeInputEventInjector
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
-import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
-import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
-import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeMessenger
 import io.github.sds100.keymapper.system.navigation.OpenMenuHelper
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
-import io.github.sds100.keymapper.system.phone.CallState
-import io.github.sds100.keymapper.system.phone.PhoneAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import io.github.sds100.keymapper.util.InputEventType
@@ -45,12 +41,10 @@ class DetectKeyMapsUseCaseImpl(
     private val suAdapter: SuAdapter,
     private val displayAdapter: DisplayAdapter,
     private val volumeAdapter: VolumeAdapter,
-    private val keyMapperImeMessenger: KeyMapperImeMessenger,
+    private val imeInputEventInjector: ImeInputEventInjector,
     private val accessibilityService: IAccessibilityService,
     private val shizukuInputEventInjector: InputEventInjector,
     private val permissionAdapter: PermissionAdapter,
-    private val phoneAdapter: PhoneAdapter,
-    private val inputMethodAdapter: InputMethodAdapter,
 ) : DetectKeyMapsUseCase,
     DetectMappingUseCase by detectMappingUseCase {
 
@@ -97,23 +91,6 @@ class DetectKeyMapsUseCaseImpl(
     override val currentTime: Long
         get() = SystemClock.elapsedRealtime()
 
-    override val acceptKeyEventsFromIme: Boolean
-        get() {
-            if (!keyMapperImeHelper.isCompatibleImeChosen()) {
-                return false
-            }
-
-            if (permissionAdapter.isGranted(Permission.READ_PHONE_STATE)) {
-                val callState = phoneAdapter.getCallState()
-
-                return callState == CallState.IN_PHONE_CALL || callState == CallState.RINGING
-            }
-
-            return false
-        }
-
-    private val keyMapperImeHelper: KeyMapperImeHelper = KeyMapperImeHelper(inputMethodAdapter)
-
     private val openMenuHelper = OpenMenuHelper(
         suAdapter,
         accessibilityService,
@@ -156,7 +133,7 @@ class DetectKeyMapsUseCaseImpl(
 
                 KeyEvent.KEYCODE_MENU -> openMenuHelper.openMenu()
 
-                else -> keyMapperImeMessenger.inputKeyEvent(
+                else -> imeInputEventInjector.inputKeyEvent(
                     InputKeyModel(
                         keyCode,
                         inputEventType,
@@ -180,8 +157,6 @@ interface DetectKeyMapsUseCase : DetectMappingUseCase {
     val defaultLongPressDelay: Flow<Long>
     val defaultDoublePressDelay: Flow<Long>
     val defaultSequenceTriggerTimeout: Flow<Long>
-
-    val acceptKeyEventsFromIme: Boolean
 
     val currentTime: Long
 

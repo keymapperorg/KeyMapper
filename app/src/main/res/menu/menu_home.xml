@@ -7,4 +7,10 @@
         android:icon="@drawable/ic_baseline_help_outline_24"
         android:title="@string/action_help_home"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_sort"
+        android:icon="@drawable/ic_sort_24"
+        android:title="@string/action_sort"
+        app:showAsAction="ifRoom" />
 </menu>

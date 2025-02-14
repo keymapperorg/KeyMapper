@@ -2,7 +2,6 @@
 <resources>
     <string name="slogan">¡Desata tus teclas!</string>
     <string name="no_action_chosen">Ninguna acción seleccionada</string>
-    <string name="accessibility_service_explanation">Key Mapper requiere el uso de un servicio de accesibilidad para poder detectar y cambiar lo que hacen las pulsaciones de los botones mientras está fuera de la aplicación. Tus mapeados solo funcionarán una vez que hayas habilitado el servicio de accesibilidad. También debe estar activado para crear un disparador.</string>
     <string name="selection_count">%d seleccionado</string>
     <string name="enable">Activar</string>
     <string name="open">Abrir</string>
@@ -81,7 +80,6 @@
     <string name="trigger_error_dnd_access_denied">¡Key Mapper necesita permiso para modificar el Modo No Molestar si quieres que los botones funcionen como lo esperas en Modo No Molestar!</string>
     <string name="trigger_error_dnd_access_denied_short">¡Este activador no funcionará como se espera en el modo \"No molestar\"!</string>
     <string name="trigger_error_screen_off_root_permission_denied">¡La opción de activar cuando la pantalla está apagada necesita permiso de root para funcionar!</string>
-    <string name="trigger_error_screen_off_root_permission_denied_short">¡Opción para activar cuando la pantalla se apaga no funciona!</string>
     <string name="trigger_error_cant_detect_in_phone_call">¡Este activador no funciona mientras el teléfono suena o estás en una llamada!</string>
     <string name="trigger_error_cant_detect_in_phone_call_explanation">Android no deja a los servicios de accesibilidad detectar las pulsaciones en un botón de volumen del teléfono mientras suena o está en llamada, pero sí deja al servicio de método de entrada usarlos. Por tanto, debes usar uno de los teclados \"Key Mapper\" si quieres que este activador funcione.</string>
     <string name="home_error_is_battery_optimised">¡Tus asignaciones dejarán de funcionar aleatoriamente!</string>
@@ -320,7 +318,6 @@
     <string name="button_done">Hecho</string>
     <string name="button_save">Guardar</string>
     <string name="button_fix">Arreglar</string>
-    <string name="button_recording_trigger_countdown">%d…</string>
     <string name="button_add_constraint">Añadir restricción</string>
     <string name="button_choose_keycode">Seleccionar código de tecla</string>
     <string name="button_yes">¡Sí!</string>
@@ -395,9 +392,7 @@
     <string name="dialog_message_disable_battery_optimisation"><b>Debes leer</b> esto <b>completamente</b>, de lo contrario te frustrarás en el futuro.\n\nPulsar \"arreglar parcialmente\" <b>puede evitar</b> que Android detenga la aplicación mientras está en segundo plano.\n\n<b>Esto NO ES SUFICIENTE</b>.El tema de tu OEM como MIUI o Samsung Experience puede tener otras funciones de eliminación de aplicaciones, por lo que DEBES desactivarlas también para Key Mapper siguiendo la guía online en dontkillmyapp.com.</string>
     <string name="dialog_title_send_feedback">Enviar comentarios</string>
     <string name="dialog_message_send_feedback">Por favor, lea la guía sobre cómo informar de los problemas en el sitio web.</string>
-    <string name="dialog_message_enable_accessibility_service_to_record_trigger">Activa el servicio de accesibilidad para poder grabar un disparador.</string>
     <string name="dialog_message_restart_accessibility_service_to_record_trigger">Reinicie el servicio de accesibilidad <i>apagándolo</i> y <i>encendiéndolo</i> para poder grabar el activador.</string>
-    <string name="dialog_message_enable_accessibility_service_to_test_action">Active el servicio de accesibilidad para poder probar la acción.</string>
     <string name="dialog_message_restart_accessibility_service_to_test_action">Reinicie el servicio de accesibilidad <i>apagándolo</i> y <i>encendiéndolo</i> para poder probar la acción.</string>
     <string name="dialog_message_restart_accessibility_service">Reinicie el servicio de accesibilidad <i>apagándolo</i> y <i>encendiéndolo</i>.</string>
     <string name="dialog_message_screen_pinning_warning">El uso de este activador puede causar una pantalla negra cuando se desbloquea el dispositivo después de usar la configuración de fijación de la pantalla en los ajustes del dispositivo. Esto se puede arreglar con un reinicio. ¡Esto no ocurre en todos los dispositivos, así que ten cuidado y desactiva el ajuste si lo hace!</string>
@@ -636,15 +631,10 @@
     <string name="showcase_dnd_access_description_disabled">Key Mapper necesita acceso a No molestar si quiere que funcionen las acciones que cambian el volumen y los botones de volumen asignados.</string>
     <string name="showcase_dnd_access_description_enabled">¡Todo bien! :)</string>
     <string name="showcase_contributing_title">Contribuir</string>
-    <string name="showcase_contributing_description">"Esta aplicación es de código abierto. Puedes empezar a contribuir dirigiéndote al repo de sds100/KeyMapper en GitHub y uniéndote al servidor de Discord. Aunque no sepas codificar, puedes contribuir ayudando a los demás y probando las últimas funciones."</string>
     <string name="showcase_action_list">Toca los 3 puntos para cambiar el comportamiento de repetición y mucho más. Puedes probar una acción y arreglar los errores de la acción tocándola.</string>
     <string name="showcase_fingerprint_gesture_support_title_supported_unknown">Reasignación de los gestos del lector de huellas dactilares</string>
     <string name="showcase_fingerprint_gesture_support_title_supported">¡Puedes reasignar los gestos del lector de huellas dactilares! :)</string>
     <string name="showcase_fingerprint_gesture_support_title_not_supported">¡No puedes reasignar los gestos del lector de huellas dactilares!</string>
-    <string name="showcase_fingerprint_gesture_support_message_supported_unknown">Tendrás que habilitar el servicio de accesibilidad para que Key Mapper pueda comprobar si tu dispositivo puede detectar los gestos de las huellas dactilares.</string>
-    <string name="showcase_fingerprint_gesture_support_message_supported">¡Tu dispositivo puede detectar los gestos de las huellas dactilares! Hay una pestaña en la parte superior de la pantalla de inicio para reasignar los gestos de las huellas dactilares.</string>
-    <string name="showcase_fingerprint_gesture_support_message_not_supported">Tu dispositivo no permite que las aplicaciones de terceros detecten los gestos de las huellas dactilares. No hay nada que el desarrollador pueda hacer al respecto. Algunos dispositivos tienen el ajuste de deslizar hacia abajo el lector de huellas dactilares para abrir el cajón de notificaciones y no permiten que las aplicaciones de terceros detecten los gestos de las huellas dactilares.</string>
-    <string name="showcase_fingerprint_gesture_support_button">Activar</string>
     <string name="showcase_setup_chosen_devices_again_title">Tienes que volver a configurar algunos ajustes</string>
     <string name="showcase_setup_chosen_devices_again_message">Parece que estabas usando la configuración para cambiar automáticamente el teclado o mostrar el selector de método de entrada cuando un dispositivo Bluetooth se conecta y desconecta. Ahora Key Mapper permite utilizar cualquier dispositivo de entrada y no sólo los dispositivos Bluetooth. No hay forma de migrar la configuración antigua de manera que la nueva característica funcione, así que tendrás que elegir los dispositivos de nuevo.</string>
     <string name="showcase_grant_shizuku_permission_denied_title">Concede permiso a Shizuku</string>
@@ -1031,4 +1021,8 @@
     <!--  About  -->
     <!-- Advanced triggers -->
     <!--  Purchasing  -->
+    <!--  Dpad trigger setup bottom sheet  -->
+    <string name="setup_gui_keyboard_enable_keyboard_button">Activar</string>
+    <string name="setup_gui_keyboard_enable_keyboard_button_disabled">Activado</string>
+    <!-- No keys recorded bottom sheet -->
 </resources>

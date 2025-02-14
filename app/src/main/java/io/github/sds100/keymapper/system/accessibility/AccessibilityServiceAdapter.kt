@@ -182,7 +182,9 @@ class AccessibilityServiceAdapter(
             settingsIntent.addFlags(
                 Intent.FLAG_ACTIVITY_NEW_TASK
                     or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS,
+                    or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
+                    // Add this flag so user only has to press back once.
+                    or Intent.FLAG_ACTIVITY_NO_HISTORY,
             )
 
             ctx.startActivity(settingsIntent)

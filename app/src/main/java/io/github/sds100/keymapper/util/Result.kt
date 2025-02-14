@@ -136,6 +136,11 @@ sealed class Error : Result<Nothing>() {
         data object NetworkError : PurchasingError()
         data class Unexpected(val message: String) : PurchasingError()
     }
+
+    /**
+     * DPAD triggers require a Key Mapper keyboard to be selected.
+     */
+    data object DpadTriggerImeNotSelected : Error()
 }
 
 inline fun <T> Result<T>.onSuccess(f: (T) -> Unit): Result<T> {

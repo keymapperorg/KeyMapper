@@ -8,8 +8,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
  * Created by sds100 on 26/04/2021.
  */
 class FakeOnboardingUseCase : OnboardingUseCase {
-    var approvedSetupChosenDevicesAgainNotification = false
-
     override var shownAppIntro: Boolean = false
 
     override suspend fun showInstallGuiKeyboardPrompt(action: ActionData): Boolean {
@@ -49,4 +47,8 @@ class FakeOnboardingUseCase : OnboardingUseCase {
     override val promptForShizukuPermission: Flow<Boolean> = MutableStateFlow(false)
 
     override val showShizukuAppIntroSlide: Boolean = false
+
+    override val showNoKeysDetectedBottomSheet: Flow<Boolean> = MutableStateFlow(false)
+
+    override fun neverShowNoKeysRecordedBottomSheet() {}
 }

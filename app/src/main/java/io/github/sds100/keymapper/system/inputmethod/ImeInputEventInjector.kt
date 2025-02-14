@@ -6,8 +6,9 @@ import android.os.Build
 import android.os.SystemClock
 import android.view.KeyCharacterMap
 import android.view.KeyEvent
+import io.github.sds100.keymapper.api.KeyEventRelayService
 import io.github.sds100.keymapper.api.KeyEventRelayServiceWrapper
-import io.github.sds100.keymapper.shizuku.InputEventInjector
+import io.github.sds100.keymapper.system.inputevents.InputEventInjector
 import io.github.sds100.keymapper.util.InputEventType
 import timber.log.Timber
 
@@ -19,11 +20,11 @@ import timber.log.Timber
  * This class handles communicating with the Key Mapper input method services
  * so key events and text can be inputted.
  */
-class KeyMapperImeMessengerImpl(
+class ImeInputEventInjectorImpl(
     context: Context,
     private val keyEventRelayService: KeyEventRelayServiceWrapper,
     private val inputMethodAdapter: InputMethodAdapter,
-) : KeyMapperImeMessenger {
+) : ImeInputEventInjector {
 
     companion object {
         // DON'T CHANGE THESE!!!
@@ -110,20 +111,36 @@ class KeyMapperImeMessengerImpl(
         when (model.inputType) {
             InputEventType.DOWN_UP -> {
                 val downKeyEvent = createKeyEvent(eventTime, KeyEvent.ACTION_DOWN, model)
-                keyEventRelayService.sendKeyEvent(downKeyEvent, imePackageName)
+                keyEventRelayService.sendKeyEvent(
+                    downKeyEvent,
+                    imePackageName,
+                    KeyEventRelayService.CALLBACK_ID_INPUT_METHOD,
+                )
 
                 val upKeyEvent = createKeyEvent(eventTime, KeyEvent.ACTION_UP, model)
-                keyEventRelayService.sendKeyEvent(upKeyEvent, imePackageName)
+                keyEventRelayService.sendKeyEvent(
+                    upKeyEvent,
+                    imePackageName,
+                    KeyEventRelayService.CALLBACK_ID_INPUT_METHOD,
+                )
             }
 
             InputEventType.DOWN -> {
                 val downKeyEvent = createKeyEvent(eventTime, KeyEvent.ACTION_DOWN, model)
-                keyEventRelayService.sendKeyEvent(downKeyEvent, imePackageName)
+                keyEventRelayService.sendKeyEvent(
+                    downKeyEvent,
+                    imePackageName,
+                    KeyEventRelayService.CALLBACK_ID_INPUT_METHOD,
+                )
             }
 
             InputEventType.UP -> {
                 val upKeyEvent = createKeyEvent(eventTime, KeyEvent.ACTION_UP, model)
-                keyEventRelayService.sendKeyEvent(upKeyEvent, imePackageName)
+                keyEventRelayService.sendKeyEvent(
+                    upKeyEvent,
+                    imePackageName,
+                    KeyEventRelayService.CALLBACK_ID_INPUT_METHOD,
+                )
             }
         }
     }
@@ -174,7 +191,11 @@ class KeyMapperImeMessengerImpl(
             // with the current key character map.
             if (events != null) {
                 for (e in events) {
-                    keyEventRelayService.sendKeyEvent(e, imePackageName)
+                    keyEventRelayService.sendKeyEvent(
+                        e,
+                        imePackageName,
+                        KeyEventRelayService.CALLBACK_ID_INPUT_METHOD,
+                    )
                 }
 
                 return
@@ -190,10 +211,14 @@ class KeyMapperImeMessengerImpl(
             0,
         )
 
-        keyEventRelayService.sendKeyEvent(event, imePackageName)
+        keyEventRelayService.sendKeyEvent(
+            event,
+            imePackageName,
+            KeyEventRelayService.CALLBACK_ID_INPUT_METHOD,
+        )
     }
 }
 
-interface KeyMapperImeMessenger : InputEventInjector {
+interface ImeInputEventInjector : InputEventInjector {
     fun inputText(text: String)
 }

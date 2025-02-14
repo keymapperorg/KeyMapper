@@ -40,7 +40,7 @@ class ConfigConstraintsViewModel(
     private val coroutineScope: CoroutineScope,
     private val displayUseCase: DisplayConstraintUseCase,
     private val configMappingUseCase: ConfigMappingUseCase<*, *>,
-    private val allowedConstraints: List<ChooseConstraintType>,
+    private val allowedConstraints: List<ConstraintId>,
     resourceProvider: ResourceProvider,
 ) : ResourceProvider by resourceProvider,
     PopupViewModel by PopupViewModelImpl(),
@@ -125,7 +125,7 @@ class ConfigConstraintsViewModel(
                     ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
                         resourceProvider = this@ConfigConstraintsViewModel,
                         popupViewModel = this@ConfigConstraintsViewModel,
-                        neverShowDndTriggerErrorAgain = { displayUseCase.neverShowDndTriggerErrorAgain() },
+                        neverShowDndTriggerErrorAgain = { displayUseCase.neverShowDndTriggerError() },
                         fixError = { displayUseCase.fixError(it) },
                     )
                 }

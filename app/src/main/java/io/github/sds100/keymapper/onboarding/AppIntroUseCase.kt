@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.onboarding
 
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.mappings.fingerprintmaps.AreFingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.shizuku.ShizukuAdapter
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.accessibility.ServiceState
@@ -18,16 +17,12 @@ class AppIntroUseCaseImpl(
     private val permissionAdapter: PermissionAdapter,
     private val serviceAdapter: ServiceAdapter,
     private val preferenceRepository: PreferenceRepository,
-    private val fingerprintGesturesSupportedUseCase: AreFingerprintGesturesSupportedUseCase,
     private val shizukuAdapter: ShizukuAdapter,
 ) : AppIntroUseCase {
     override val serviceState: Flow<ServiceState> = serviceAdapter.state
 
     override val isBatteryOptimised: Flow<Boolean> =
         permissionAdapter.isGrantedFlow(Permission.IGNORE_BATTERY_OPTIMISATION).map { !it }
-
-    override val fingerprintGesturesSupported: Flow<Boolean?> =
-        fingerprintGesturesSupportedUseCase.isSupported
 
     override val isShizukuPermissionGranted: Flow<Boolean> =
         permissionAdapter.isGrantedFlow(Permission.SHIZUKU)
@@ -74,7 +69,6 @@ class AppIntroUseCaseImpl(
 interface AppIntroUseCase {
     val serviceState: Flow<ServiceState>
     val isBatteryOptimised: Flow<Boolean>
-    val fingerprintGesturesSupported: Flow<Boolean?>
     val isShizukuPermissionGranted: Flow<Boolean>
     val isNotificationPermissionGranted: Flow<Boolean>
     val isShizukuStarted: Boolean

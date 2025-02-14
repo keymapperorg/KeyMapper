@@ -1,5 +1,11 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import io.github.sds100.keymapper.mappings.keymaps.trigger.SetupGuiKeyboardState
+import io.github.sds100.keymapper.mappings.keymaps.trigger.SetupGuiKeyboardUseCase
+import io.github.sds100.keymapper.sorting.SortKeyMapsUseCase
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.State
@@ -19,6 +25,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
@@ -26,21 +34,37 @@ import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 open class KeyMapListViewModel(
     private val coroutineScope: CoroutineScope,
-    private val useCase: ListKeyMapsUseCase,
+    private val listKeyMaps: ListKeyMapsUseCase,
     resourceProvider: ResourceProvider,
     private val multiSelectProvider: MultiSelectProvider<String>,
+    private val setupGuiKeyboard: SetupGuiKeyboardUseCase,
+    private val sortKeyMaps: SortKeyMapsUseCase,
 ) : PopupViewModel by PopupViewModelImpl(),
     ResourceProvider by resourceProvider,
     NavigationViewModel by NavigationViewModelImpl() {
 
-    private val listItemCreator = KeyMapListItemCreator(useCase, resourceProvider)
+    private val listItemCreator = KeyMapListItemCreator(listKeyMaps, resourceProvider)
 
     private val _state = MutableStateFlow<State<List<KeyMapListItem>>>(State.Loading)
     val state = _state.asStateFlow()
+
+    val setupGuiKeyboardState: StateFlow<SetupGuiKeyboardState> = combine(
+        setupGuiKeyboard.isInstalled,
+        setupGuiKeyboard.isEnabled,
+        setupGuiKeyboard.isChosen,
+    ) { isInstalled, isEnabled, isChosen ->
+        SetupGuiKeyboardState(
+            isInstalled,
+            isEnabled,
+            isChosen,
+        )
+    }.stateIn(coroutineScope, SharingStarted.Lazily, SetupGuiKeyboardState.DEFAULT)
+    var showDpadTriggerSetupBottomSheet: Boolean by mutableStateOf(false)
 
     init {
         val keyMapStateListFlow =
@@ -49,8 +73,17 @@ open class KeyMapListViewModel(
         val rebuildUiState = MutableSharedFlow<State<List<KeyMap>>>(replay = 1)
 
         combine(
+            listKeyMaps.keyMapList,
+            sortKeyMaps.observeKeyMapsSorter(),
+        ) { keyMapList, sorter ->
+            keyMapList
+                .mapData { list -> list.sortedWith(sorter) }
+                .also { rebuildUiState.emit(it) }
+        }.flowOn(Dispatchers.Default).launchIn(coroutineScope)
+
+        combine(
             rebuildUiState,
-            useCase.showDeviceDescriptors,
+            listKeyMaps.showDeviceDescriptors,
         ) { keyMapListState, showDeviceDescriptors ->
             keyMapStateListFlow.value = State.Loading
 
@@ -62,13 +95,31 @@ open class KeyMapListViewModel(
         }.flowOn(Dispatchers.Default).launchIn(coroutineScope)
 
         coroutineScope.launch {
-            useCase.keyMapList.collectLatest {
-                rebuildUiState.emit(it)
+            listKeyMaps.invalidateActionErrors.drop(1).collectLatest {
+                /*
+                Don't get the key maps from the repository because there can be a race condition
+                when restoring key maps. This happens because when the activity is resumed the
+                key maps in the repository are being updated and this flow is collected
+                at the same time.
+                 */
+                rebuildUiState.emit(rebuildUiState.first())
             }
         }
 
         coroutineScope.launch {
-            useCase.invalidateActionErrors.drop(1).collectLatest {
+            listKeyMaps.invalidateTriggerErrors.drop(1).collectLatest {
+                /*
+                Don't get the key maps from the repository because there can be a race condition
+                when restoring key maps. This happens because when the activity is resumed the
+                key maps in the repository are being updated and this flow is collected
+                at the same time.
+                 */
+                rebuildUiState.emit(rebuildUiState.first())
+            }
+        }
+
+        coroutineScope.launch {
+            listKeyMaps.invalidateConstraintErrors.drop(1).collectLatest {
                 /*
                 Don't get the key maps from the repository because there can be a race condition
                 when restoring key maps. This happens because when the activity is resumed the
@@ -156,24 +207,44 @@ open class KeyMapListViewModel(
         }
     }
 
+    fun onEnableGuiKeyboardClick() {
+        setupGuiKeyboard.enableInputMethod()
+    }
+
+    fun onChooseGuiKeyboardClick() {
+        setupGuiKeyboard.chooseInputMethod()
+    }
+
+    fun onNeverShowSetupDpadClick() {
+        listKeyMaps.neverShowDpadImeSetupError()
+    }
+
     private fun onFixError(error: Error) {
         coroutineScope.launch {
-            if (error == Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)) {
-                coroutineScope.launch {
-                    ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
+            when (error) {
+                Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY) -> {
+                    coroutineScope.launch {
+                        ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
+                            resourceProvider = this@KeyMapListViewModel,
+                            popupViewModel = this@KeyMapListViewModel,
+                            neverShowDndTriggerErrorAgain = { listKeyMaps.neverShowDndTriggerError() },
+                            fixError = { listKeyMaps.fixError(it) },
+                        )
+                    }
+                }
+
+                Error.DpadTriggerImeNotSelected -> {
+                    showDpadTriggerSetupBottomSheet = true
+                }
+
+                else -> {
+                    ViewModelHelper.showFixErrorDialog(
                         resourceProvider = this@KeyMapListViewModel,
                         popupViewModel = this@KeyMapListViewModel,
-                        neverShowDndTriggerErrorAgain = { useCase.neverShowDndTriggerErrorAgain() },
-                        fixError = { useCase.fixError(it) },
-                    )
-                }
-            } else {
-                ViewModelHelper.showFixErrorDialog(
-                    resourceProvider = this@KeyMapListViewModel,
-                    popupViewModel = this@KeyMapListViewModel,
-                    error,
-                ) {
-                    useCase.fixError(error)
+                        error,
+                    ) {
+                        listKeyMaps.fixError(error)
+                    }
                 }
             }
         }

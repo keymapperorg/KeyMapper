@@ -341,6 +341,18 @@ class MainSettingsFragment : BaseSettingsFragment() {
             }
         }
 
+        Preference(requireContext()).apply {
+            setTitle(R.string.title_pref_reset_settings)
+            setSummary(R.string.summary_pref_reset_settings)
+
+            setOnPreferenceClickListener {
+                viewModel.onResetAllSettingsClick()
+                true
+            }
+
+            addPreference(this)
+        }
+
         // write secure settings
         PreferenceCategory(requireContext()).apply {
             key = CATEGORY_KEY_GRANT_WRITE_SECURE_SETTINGS

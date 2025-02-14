@@ -2,7 +2,6 @@
 <resources>
     <string name="slogan">Uvolněte své klíče!</string>
     <string name="no_action_chosen">Není vybrána žádná akce</string>
-    <string name="accessibility_service_explanation">Key Mapper vyžaduje použití služby usnadnění, aby mohl detekovat a měnit, co dělá vaše stisknutí tlačítka, když jste mimo aplikaci. Vaše klíčové mapy budou fungovat, až když povolíte službu usnadnění. Pro vytvoření spouště musí být také zapnuto.</string>
     <string name="selection_count">%d vybrán</string>
     <string name="enable">Povolit</string>
     <string name="open">Otevřít</string>
@@ -81,7 +80,6 @@
     <string name="trigger_error_dnd_access_denied">Klávesová mapa vyžaduje oprávnění ke změně režimu Nerušit, pokud chcete, aby tlačítka fungovala dle očekávání v režimu Nerušit!</string>
     <string name="trigger_error_dnd_access_denied_short">Tento spouštěč nebude fungovat podle očekávání v režimu Nerušit!</string>
     <string name="trigger_error_screen_off_root_permission_denied">Možnost spustit, když je obrazovka vypnutá, vyžaduje oprávnění root!</string>
-    <string name="trigger_error_screen_off_root_permission_denied_short">Možnost spuštění při vypnuté obrazovce nebude fungovat!</string>
     <string name="home_error_is_battery_optimised">Vaše mapování přestane fungovat náhodně!</string>
     <string name="home_error_key_maps_paused">Vaše mapování je pozastaveno!</string>
     <string name="home_error_key_maps_paused_button">Unpause</string>
@@ -316,7 +314,6 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <string name="button_done">Hotovo</string>
     <string name="button_save">Uložit</string>
     <string name="button_fix">Opravit</string>
-    <string name="button_recording_trigger_countdown">%d…</string>
     <string name="button_add_constraint">Přidat omezení</string>
     <string name="button_choose_keycode">Zvolte kód klíče</string>
     <string name="button_yes">Ano!</string>
@@ -389,9 +386,7 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <string name="dialog_message_disable_battery_optimisation">&lt;b&gt;MUSÍTE&lt;/b&gt; přečtěte si toto &lt;b&gt;vše&lt;/b&gt; , jinak v budoucnu získáte &lt;b&gt;frustrovanou&lt;/b&gt; &lt;/b&gt;.!\n\nKlepnutím na \"částečně opravit\" &lt;b&gt;může&lt;/b&gt; zabránit Androidu v zastavení aplikace v době, kdy je na pozadí.\n\n&lt;b&gt;Toto NEPOČÁTEK&lt;/b&gt;. Skin OEM jako MIUI nebo Samsung Experience může mít další funkce zabíjení aplikací, takže je MUSÍ vypnout pro mapování klíčových klíčů a také sledovat online průvodce na dontkillmyapp. kde:</string>
     <string name="dialog_title_send_feedback">Odeslat zpětnou vazbu</string>
     <string name="dialog_message_send_feedback">Přečtěte si prosím návod jak nahlásit problémy na webových stránkách.</string>
-    <string name="dialog_message_enable_accessibility_service_to_record_trigger">Zapněte službu usnadnění přístupu, abyste mohli zaznamenat spouštěč.</string>
     <string name="dialog_message_restart_accessibility_service_to_record_trigger">Restartujte službu přístupnosti vypnutím <i>vypněte</i> a <i>zapněte</i> , abyste mohli zaznamenat spouštěč.</string>
-    <string name="dialog_message_enable_accessibility_service_to_test_action">Zapněte službu usnadnění přístupu, abyste mohli vyzkoušet akci.</string>
     <string name="dialog_message_restart_accessibility_service_to_test_action">Restartujte službu přístupnosti vypnutím <i>vypněte</i> a <i>dne</i> , abyste mohli vyzkoušet akci.</string>
     <string name="dialog_message_restart_accessibility_service">Restartujte službu přístupnosti vypnutím <i></i> a <i>dne</i>.</string>
     <string name="dialog_message_screen_pinning_warning">Použití tohoto spouštěče může způsobit černou obrazovku, když odemknete zařízení po použití nastavení připnutí obrazovky v nastavení zařízení. To lze opravit restartem. To se neděje na všech zařízeních, takže beware a vypněte nastavení, pokud tak učiní!</string>
@@ -621,15 +616,10 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <string name="showcase_dnd_access_description_disabled">Klávesová mapa vyžaduje přístup k režimu Nerušit, pokud chcete, aby fungovaly akce, které mění hlasitost a přemapovají tlačítka hlasitosti.</string>
     <string name="showcase_dnd_access_description_enabled">Všechno dobré! :)</string>
     <string name="showcase_contributing_title">Přispěje</string>
-    <string name="showcase_contributing_description">"Tato aplikace je open source! Můžete začít přispívat tím, že půjdete na sds100/KeyMapper repo na GitHubu a připojíte se na Discord server. I když nemůžete programovat, můžete přispět tím, že pomůžete ostatním a otestujte nejnovější funkce."</string>
     <string name="showcase_action_list">Klepnutím na 3 tečky změníte chování opakování a další. Můžete vyzkoušet akci a opravit chyby akce klepnutím na ni.</string>
     <string name="showcase_fingerprint_gesture_support_title_supported_unknown">Odstranění gesta čtečky otisků prstů</string>
     <string name="showcase_fingerprint_gesture_support_title_supported">Můžete přemapovat gesta čtečky otisků prstů! :)</string>
     <string name="showcase_fingerprint_gesture_support_title_not_supported">Nelze přemapovat gesta čtečky otisků prstů!</string>
-    <string name="showcase_fingerprint_gesture_support_message_supported_unknown">Budete muset povolit službu usnadnění přístupnosti, aby mapa klíčů mohla zkontrolovat, zda vaše zařízení může rozpoznat gesta otisků prstů.</string>
-    <string name="showcase_fingerprint_gesture_support_message_supported">Vaše zařízení může detekovat gesta otisků prstů! V horní části domovské obrazovky je záložka pro přemapování gesta otisků prstů.</string>
-    <string name="showcase_fingerprint_gesture_support_message_not_supported">Vaše zařízení neumožňuje aplikacím třetích stran detekovat gesta otisků prstů! Není nic, co by vývojář mohl udělat. Některá zařízení mají nastavení, které chcete přejetím prstu dolů otevřít oznamovací oblast a nepovolit, aby aplikace třetích stran odhalily gesta otisků prstů.</string>
-    <string name="showcase_fingerprint_gesture_support_button">Povolit</string>
     <string name="showcase_setup_chosen_devices_again_title">Některá nastavení musíte nastavit znovu</string>
     <string name="showcase_setup_chosen_devices_again_message">Vypadá to, že jste použili nastavení k automatické změně klávesnice nebo zobrazení výběru vstupní metody při připojení a odpojení zařízení Bluetooth. Klávesová mapa nyní umožňuje používat libovolné vstupní zařízení, nejen zařízení Bluetooth. Neexistuje způsob, jak migrovat stará nastavení tak, že nová funkce bude fungovat, takže budete muset znovu vybrat zařízení.</string>
     <string name="showcase_grant_shizuku_permission_denied_title">Udělení povolení Shizuku</string>
@@ -1012,4 +1002,8 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <!--  About  -->
     <!-- Advanced triggers -->
     <!--  Purchasing  -->
+    <!--  Dpad trigger setup bottom sheet  -->
+    <string name="setup_gui_keyboard_enable_keyboard_button">Povolit</string>
+    <string name="setup_gui_keyboard_enable_keyboard_button_disabled">Povoleno</string>
+    <!-- No keys recorded bottom sheet -->
 </resources>

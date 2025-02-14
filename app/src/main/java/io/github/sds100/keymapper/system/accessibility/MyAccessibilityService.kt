@@ -10,6 +10,7 @@ import android.graphics.Path
 import android.graphics.Point
 import android.os.Build
 import android.view.KeyEvent
+import android.view.MotionEvent
 import android.view.accessibility.AccessibilityEvent
 import androidx.core.content.getSystemService
 import androidx.core.os.bundleOf
@@ -18,9 +19,13 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
 import io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback
+import io.github.sds100.keymapper.api.KeyEventRelayService
 import io.github.sds100.keymapper.api.KeyEventRelayServiceWrapperImpl
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapId
+import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
+import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
+import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.InputEventType
@@ -45,8 +50,8 @@ class MyAccessibilityService :
 
     private lateinit var lifecycleRegistry: LifecycleRegistry
 
-    private var fingerprintGestureCallback:
-        FingerprintGestureController.FingerprintGestureCallback? = null
+    private var fingerprintGestureCallback: FingerprintGestureController.FingerprintGestureCallback? =
+        null
 
     override val rootNode: AccessibilityNodeModel?
         get() {
@@ -101,11 +106,10 @@ class MyAccessibilityService :
             }
         }
 
-    private val keyEventReceiverCallback: IKeyEventRelayServiceCallback =
+    private val relayServiceCallback: IKeyEventRelayServiceCallback =
         object : IKeyEventRelayServiceCallback.Stub() {
-            override fun onKeyEvent(event: KeyEvent?, sourcePackageName: String?): Boolean {
+            override fun onKeyEvent(event: KeyEvent?): Boolean {
                 event ?: return false
-                sourcePackageName ?: return false
 
                 val device = if (event.device == null) {
                     null
@@ -115,13 +119,25 @@ class MyAccessibilityService :
 
                 if (controller != null) {
                     return controller!!.onKeyEventFromIme(
-                        event.keyCode,
-                        event.action,
-                        device,
-                        event.metaState,
-                        event.scanCode,
-                        event.eventTime,
+                        MyKeyEvent(
+                            keyCode = event.keyCode,
+                            action = event.action,
+                            metaState = event.metaState,
+                            scanCode = event.scanCode,
+                            device = device,
+                            repeatCount = event.repeatCount,
+                        ),
                     )
+                }
+
+                return false
+            }
+
+            override fun onMotionEvent(event: MotionEvent?): Boolean {
+                event ?: return false
+
+                if (controller != null) {
+                    return controller!!.onMotionEventFromIme(MyMotionEvent.fromMotionEvent(event))
                 }
 
                 return false
@@ -129,7 +145,11 @@ class MyAccessibilityService :
         }
 
     private val keyEventRelayServiceWrapper: KeyEventRelayServiceWrapperImpl by lazy {
-        KeyEventRelayServiceWrapperImpl(this, keyEventReceiverCallback)
+        KeyEventRelayServiceWrapperImpl(
+            ctx = this,
+            id = KeyEventRelayService.CALLBACK_ID_ACCESSIBILITY_SERVICE,
+            callback = relayServiceCallback,
+        )
     }
 
     private var controller: AccessibilityServiceController? = null
@@ -150,7 +170,7 @@ class MyAccessibilityService :
             }
         }
 
-        keyEventRelayServiceWrapper.bind()
+        keyEventRelayServiceWrapper.onCreate()
     }
 
     override fun onServiceConnected() {
@@ -218,7 +238,7 @@ class MyAccessibilityService :
                 .unregisterFingerprintGestureCallback(fingerprintGestureCallback)
         }
 
-        keyEventRelayServiceWrapper.unbind()
+        keyEventRelayServiceWrapper.onDestroy()
 
         Timber.i("Accessibility service: onDestroy")
 
@@ -249,12 +269,15 @@ class MyAccessibilityService :
 
         if (controller != null) {
             return controller!!.onKeyEvent(
-                event.keyCode,
-                event.action,
-                device,
-                event.metaState,
-                event.scanCode,
-                event.eventTime,
+                MyKeyEvent(
+                    keyCode = event.keyCode,
+                    action = event.action,
+                    metaState = event.metaState,
+                    scanCode = event.scanCode,
+                    device = device,
+                    repeatCount = event.repeatCount,
+                ),
+                KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
             )
         }
 

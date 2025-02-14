@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.util
 
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
+import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.mappings.keymaps.trigger.Trigger
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
@@ -31,9 +32,11 @@ fun triggerKey(
     device: TriggerKeyDevice = TriggerKeyDevice.Internal,
     clickType: ClickType = ClickType.SHORT_PRESS,
     consume: Boolean = true,
+    detectionSource: KeyEventDetectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
 ): KeyCodeTriggerKey = KeyCodeTriggerKey(
     keyCode = keyCode,
     device = device,
     clickType = clickType,
     consumeEvent = consume,
+    detectionSource = detectionSource,
 )

@@ -2,7 +2,6 @@
 <resources>
     <string name="slogan">Liberte suas chaves!</string>
     <string name="no_action_chosen">Sem ação definida</string>
-    <string name="accessibility_service_explanation">Este aplicativo requer o serviço de acessibilidade. Isso detecta suas ações fora do aplicativo. O mapeamento depende disso. Também obrigatório para criar gatilhos.</string>
     <string name="selection_count">%d selecionado</string>
     <string name="enable">Habilitar</string>
     <string name="open">Abrir</string>
@@ -82,7 +81,6 @@
     <string name="trigger_error_dnd_access_denied">Key Mapper precisa de permissão para modificar o modo Não Perturbar se você quer que os botões funcionem corretamente no modo Não Perturbar!</string>
     <string name="trigger_error_dnd_access_denied_short">Este acionador não funcionará como esperado no modo Não Perturbe!</string>
     <string name="trigger_error_screen_off_root_permission_denied">A opção para acionar quando a tela está desligada precisa de permissão de super usuário para funcionar!</string>
-    <string name="trigger_error_screen_off_root_permission_denied_short">A opção para acionar quando a tela está desligada não funcionará!</string>
     <string name="trigger_error_cant_detect_in_phone_call">Este acionador não funcionará enquanto o telefone estiver tocando ou durante uma chamada!</string>
     <string name="trigger_error_cant_detect_in_phone_call_explanation">O sistema operacional não permite que os serviços de acessibilidade detectem os pressionamentos do botão de volume enquanto seu telefone está tocando ou durante uma chamada, mas permite que os serviços de método de entrada os detectem. Portanto, você deve usar um dos teclados do aplicativo se quiser que este acionador funcione.</string>
     <string name="trigger_error_gesture_stroke_count_too_high">Muitos dedos para realizar o gesto devido às limitações do Android.</string>
@@ -342,7 +340,6 @@
     <string name="button_done">Concluído</string>
     <string name="button_save">Salvar</string>
     <string name="button_fix">Corrigir </string>
-    <string name="button_recording_trigger_countdown">%d…</string>
     <string name="button_add_constraint">Adicionar restrição</string>
     <string name="button_choose_keycode">Selecionar código de tecla</string>
     <string name="button_yes">Sim!</string>
@@ -418,9 +415,7 @@
     <string name="dialog_message_disable_battery_optimisation">Você <b>DEVE</b> ler tudo isso <b>senão</b> você ficará <b>frustrado</b> no futuro!\n\nTocar em \"corrigir parcialmente\" <b>pode</b> impedir que o Android pare o aplicativo enquanto ele está em segundo plano.\n\n<b>ISSO NÃO É SUFICIENTE</b>. A interface do seu OEM, como MIUI ou Samsung Experience, pode ter outros recursos de encerramento de aplicativos, então você <b>DEVE</b> desativá-los para o Key Mapper também, seguindo o guia online em dontkillmyapp.com.</string>
     <string name="dialog_title_send_feedback">Enviar feedback</string>
     <string name="dialog_message_send_feedback">Leia o guia sobre como relatar problemas no site.</string>
-    <string name="dialog_message_enable_accessibility_service_to_record_trigger">Ative o serviço de acessibilidade para que você possa gravar um gatilho.</string>
     <string name="dialog_message_restart_accessibility_service_to_record_trigger">Reinicie o serviço de acessibilidade desligando-o <i>e</i> ligando-o <i>novamente</i> para que você possa gravar um gatilho.</string>
-    <string name="dialog_message_enable_accessibility_service_to_test_action">Ative o serviço de acessibilidade para que você possa testar a ação.</string>
     <string name="dialog_message_restart_accessibility_service_to_test_action">Reinicie o serviço de acessibilidade desligando-o <i>e</i> ligando-o <i>novamente</i> para que você possa testar a ação.</string>
     <string name="dialog_message_restart_accessibility_service">Reinicie o serviço de acessibilidade desligando-o <i>e</i> ligando-o <i>novamente</i>.</string>
     <string name="dialog_message_screen_pinning_warning">Usar este gatilho pode causar uma tela preta quando você desbloqueia seu dispositivo após usar a configuração de fixação de tela nas configurações do seu dispositivo. Isso pode ser corrigido com uma reinicialização. Isso não acontece em todos os dispositivos, então fique atento e desative a configuração se isso ocorrer!</string>
@@ -659,15 +654,10 @@
     <string name="showcase_dnd_access_description_disabled">O Key Mapper precisa do acesso Não Perturbe se você quiser que ações que alterem o volume e botões de volume remapeados funcionem.</string>
     <string name="showcase_dnd_access_description_enabled">Tudo certo</string>
     <string name="showcase_contributing_title">Contribuindo</string>
-    <string name="showcase_contributing_description">"Este aplicativo é de código aberto! Você pode começar a contribuir indo para o repositório sds100/KeyMapper no GitHub e entrando no servidor Discord. Mesmo que você não saiba programar, você pode contribuir ajudando outros"</string>
     <string name="showcase_action_list">Toque nos 3 pontos para alterar o comportamento de repetição e mais. Você pode testar uma ação e corrigir erros de ação tocando nela.</string>
     <string name="showcase_fingerprint_gesture_support_title_supported_unknown">Remapeando gestos do leitor de impressão digital</string>
     <string name="showcase_fingerprint_gesture_support_title_supported">Você pode remapear os gestos do leitor de impressão digital! :)</string>
     <string name="showcase_fingerprint_gesture_support_title_not_supported">Você não pode remapear os gestos do leitor de impressão digital!</string>
-    <string name="showcase_fingerprint_gesture_support_message_supported_unknown">Você precisará habilitar o serviço de acessibilidade para que o Key Mapper possa verificar se o seu dispositivo consegue detectar gestos de impressão digital.</string>
-    <string name="showcase_fingerprint_gesture_support_message_supported">Seu dispositivo pode detectar gestos de impressão digital! Há uma aba no topo da tela inicial para remapear gestos de impressão digital.</string>
-    <string name="showcase_fingerprint_gesture_support_message_not_supported">Seu dispositivo não permite que aplicativos de terceiros detectem gestos de impressão digital! Não há nada que o desenvolvedor possa fazer sobre isso. Alguns dispositivos têm a configuração para deslizar para baixo no leitor de impressão digital para abrir a bandeja de notificações e não permitem que aplicativos de terceiros detectem gestos de impressão digital.</string>
-    <string name="showcase_fingerprint_gesture_support_button">Habilitar</string>
     <string name="showcase_setup_chosen_devices_again_title">Você precisa configurar algumas configurações novamente</string>
     <string name="showcase_setup_chosen_devices_again_message">Parece que você estava usando a configuração para mudar automaticamente o teclado ou mostrar o seletor de métodos de entrada quando um dispositivo Bluetooth se conecta ou desconecta. O Key Mapper agora permite que você use qualquer dispositivo de entrada e não apenas dispositivos Bluetooth. Não há uma maneira de migrar as configurações antigas de forma que a nova funcionalidade funcione, então você terá que escolher os dispositivos novamente.</string>
     <string name="showcase_grant_shizuku_permission_denied_title">Conceda permissão a Shizuku</string>
@@ -1070,4 +1060,8 @@
     <!--  About  -->
     <!-- Advanced triggers -->
     <!--  Purchasing  -->
+    <!--  Dpad trigger setup bottom sheet  -->
+    <string name="setup_gui_keyboard_enable_keyboard_button">Habilitar</string>
+    <string name="setup_gui_keyboard_enable_keyboard_button_disabled">Ativado</string>
+    <!-- No keys recorded bottom sheet -->
 </resources>

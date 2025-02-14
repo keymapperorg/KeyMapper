@@ -32,6 +32,7 @@ object ComposeColors {
     val inversePrimaryLight = Color(0xFFA8C7FF)
     val redLight = Color(0xffd32f2f)
     val onRedLight = Color(0xFFFFFFFF)
+    val greenLight = Color(0xff4CAF50)
 
     val primaryDark = Color(0xFFA8C7FF)
     val onPrimaryDark = Color(0xFF002F66)
@@ -61,4 +62,5 @@ object ComposeColors {
     val inverseOnSurfaceDark = Color(0xFF1A1B1F)
     val redDark = Color(0xffff7961)
     val onRedDark = Color(0xFFFFFFFF)
+    val greenDark = Color(0xff80e27e)
 }

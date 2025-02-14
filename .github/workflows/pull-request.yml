@@ -21,7 +21,7 @@ jobs:
         uses: android-actions/setup-android@v2
 
       - name: Unit tests
-        run: bash ./gradlew testDebugUnitTest
+        run: bash ./gradlew testFreeDebugUnitTest
 
   style:
     name: Code style check
@@ -94,3 +94,12 @@ jobs:
 
       - name: Build apk with fastlane
         run: bundle exec fastlane testing
+
+      - name: set apk name env
+        run: echo "APK_NAME=$(basename app/build/outputs/apk/free/ci/*.apk .apk)" >> $GITHUB_ENV
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.APK_NAME }}
+          path: app/build/outputs/apk/free/ci/${{ env.APK_NAME }}.apk

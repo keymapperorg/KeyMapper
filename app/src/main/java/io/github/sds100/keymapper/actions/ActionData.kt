@@ -11,14 +11,21 @@ import io.github.sds100.keymapper.system.volume.VolumeStream
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed class ActionData {
+sealed class ActionData : Comparable<ActionData> {
     abstract val id: ActionId
+
+    override fun compareTo(other: ActionData) = id.compareTo(other.id)
 
     @Serializable
     data class App(
         val packageName: String,
     ) : ActionData() {
         override val id: ActionId = ActionId.APP
+
+        override fun compareTo(other: ActionData) = when (other) {
+            is App -> packageName.compareTo(other.packageName)
+            else -> super.compareTo(other)
+        }
     }
 
     @Serializable
@@ -28,6 +35,11 @@ sealed class ActionData {
         val uri: String,
     ) : ActionData() {
         override val id: ActionId = ActionId.APP_SHORTCUT
+
+        override fun compareTo(other: ActionData) = when (other) {
+            is AppShortcut -> shortcutTitle.compareTo(other.shortcutTitle)
+            else -> super.compareTo(other)
+        }
     }
 
     @Serializable
@@ -45,6 +57,11 @@ sealed class ActionData {
             val descriptor: String,
             val name: String,
         )
+
+        override fun compareTo(other: ActionData) = when (other) {
+            is InputKeyEvent -> keyCode.compareTo(other.keyCode)
+            else -> super.compareTo(other)
+        }
     }
 
     @Serializable
@@ -53,6 +70,11 @@ sealed class ActionData {
         val soundDescription: String,
     ) : ActionData() {
         override val id = ActionId.SOUND
+
+        override fun compareTo(other: ActionData) = when (other) {
+            is Sound -> soundUid.compareTo(other.soundUid)
+            else -> super.compareTo(other)
+        }
     }
 
     @Serializable
@@ -60,6 +82,17 @@ sealed class ActionData {
         sealed class Stream : Volume() {
             abstract val volumeStream: VolumeStream
             abstract val showVolumeUi: Boolean
+
+            override fun compareTo(other: ActionData) = when (other) {
+                is Stream -> compareValuesBy(
+                    this,
+                    other,
+                    { it.id },
+                    { it.volumeStream },
+                )
+
+                else -> super.compareTo(other)
+            }
 
             @Serializable
             data class Increase(
@@ -108,6 +141,11 @@ sealed class ActionData {
             val ringerMode: RingerMode,
         ) : Volume() {
             override val id: ActionId = ActionId.CHANGE_RINGER_MODE
+
+            override fun compareTo(other: ActionData) = when (other) {
+                is SetRingerMode -> ringerMode.compareTo(other.ringerMode)
+                else -> super.compareTo(other)
+            }
         }
 
         @Serializable
@@ -129,6 +167,17 @@ sealed class ActionData {
     @Serializable
     sealed class Flashlight : ActionData() {
         abstract val lens: CameraLens
+
+        override fun compareTo(other: ActionData) = when (other) {
+            is Flashlight -> compareValuesBy(
+                this,
+                other,
+                { it.id },
+                { it.lens },
+            )
+
+            else -> super.compareTo(other)
+        }
 
         @Serializable
         data class Toggle(override val lens: CameraLens) : Flashlight() {
@@ -152,6 +201,11 @@ sealed class ActionData {
         val savedImeName: String,
     ) : ActionData() {
         override val id = ActionId.SWITCH_KEYBOARD
+
+        override fun compareTo(other: ActionData) = when (other) {
+            is SwitchKeyboard -> savedImeName.compareTo(other.savedImeName)
+            else -> super.compareTo(other)
+        }
     }
 
     @Serializable
@@ -160,11 +214,21 @@ sealed class ActionData {
         @Serializable
         data class Toggle(val dndMode: DndMode) : DoNotDisturb() {
             override val id: ActionId = ActionId.TOGGLE_DND_MODE
+
+            override fun compareTo(other: ActionData) = when (other) {
+                is Toggle -> dndMode.compareTo(other.dndMode)
+                else -> super.compareTo(other)
+            }
         }
 
         @Serializable
         data class Enable(val dndMode: DndMode) : DoNotDisturb() {
             override val id: ActionId = ActionId.ENABLE_DND_MODE
+
+            override fun compareTo(other: ActionData) = when (other) {
+                is Enable -> dndMode.compareTo(other.dndMode)
+                else -> super.compareTo(other)
+            }
         }
 
         @Serializable
@@ -210,12 +274,33 @@ sealed class ActionData {
             val orientations: List<Orientation>,
         ) : Rotation() {
             override val id = ActionId.CYCLE_ROTATIONS
+
+            override fun compareTo(other: ActionData) = when (other) {
+                // Compare orientations one by one until a difference is found otherwise compare the size
+                is CycleRotations -> orientations.zip(other.orientations)
+                    .map { (a, b) -> a.compareTo(b) }
+                    .firstOrNull { it != 0 }
+                    ?: orientations.size.compareTo(other.orientations.size)
+
+                else -> super.compareTo(other)
+            }
         }
     }
 
     @Serializable
     sealed class ControlMediaForApp : ActionData() {
         abstract val packageName: String
+
+        override fun compareTo(other: ActionData) = when (other) {
+            is ControlMediaForApp -> compareValuesBy(
+                this,
+                other,
+                { it.id },
+                { it.packageName },
+            )
+
+            else -> super.compareTo(other)
+        }
 
         @Serializable
         data class Pause(override val packageName: String) : ControlMediaForApp() {
@@ -299,6 +384,11 @@ sealed class ActionData {
         val extras: List<IntentExtraModel>,
     ) : ActionData() {
         override val id = ActionId.INTENT
+
+        override fun compareTo(other: ActionData) = when (other) {
+            is Intent -> description.compareTo(other.description)
+            else -> super.compareTo(other)
+        }
     }
 
     @Serializable
@@ -308,6 +398,18 @@ sealed class ActionData {
         val description: String?,
     ) : ActionData() {
         override val id = ActionId.TAP_SCREEN
+
+        override fun compareTo(other: ActionData) = when (other) {
+            is TapScreen -> compareValuesBy(
+                this,
+                other,
+                { it.description },
+                { it.x },
+                { it.y },
+            )
+
+            else -> super.compareTo(other)
+        }
     }
 
     @Serializable
@@ -321,6 +423,22 @@ sealed class ActionData {
         val description: String?,
     ) : ActionData() {
         override val id = ActionId.SWIPE_SCREEN
+
+        override fun compareTo(other: ActionData) = when (other) {
+            is SwipeScreen -> compareValuesBy(
+                this,
+                other,
+                { it.description },
+                { it.fingerCount },
+                { it.xStart },
+                { it.yStart },
+                { it.xEnd },
+                { it.yEnd },
+                { it.duration },
+            )
+
+            else -> super.compareTo(other)
+        }
     }
 
     @Serializable
@@ -334,6 +452,22 @@ sealed class ActionData {
         val description: String?,
     ) : ActionData() {
         override val id = ActionId.PINCH_SCREEN
+
+        override fun compareTo(other: ActionData) = when (other) {
+            is PinchScreen -> compareValuesBy(
+                this,
+                other,
+                { it.description },
+                { it.pinchType },
+                { it.fingerCount },
+                { it.x },
+                { it.y },
+                { it.distance },
+                { it.duration },
+            )
+
+            else -> super.compareTo(other)
+        }
     }
 
     @Serializable
@@ -341,6 +475,11 @@ sealed class ActionData {
         val number: String,
     ) : ActionData() {
         override val id = ActionId.PHONE_CALL
+
+        override fun compareTo(other: ActionData) = when (other) {
+            is PhoneCall -> number.compareTo(other.number)
+            else -> super.compareTo(other)
+        }
     }
 
     @Serializable
@@ -348,6 +487,11 @@ sealed class ActionData {
         val url: String,
     ) : ActionData() {
         override val id = ActionId.URL
+
+        override fun compareTo(other: ActionData) = when (other) {
+            is Url -> url.compareTo(other.url)
+            else -> super.compareTo(other)
+        }
     }
 
     @Serializable
@@ -355,6 +499,11 @@ sealed class ActionData {
         val text: String,
     ) : ActionData() {
         override val id = ActionId.TEXT
+
+        override fun compareTo(other: ActionData) = when (other) {
+            is Text -> text.compareTo(other.text)
+            else -> super.compareTo(other)
+        }
     }
 
     @Serializable

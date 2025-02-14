@@ -2,12 +2,10 @@ package io.github.sds100.keymapper.constraints
 
 import kotlinx.serialization.Serializable
 
-/**
- * Created by sds100 on 05/04/2021.
- */
-
+// THESE MUST BE ORDERED IN HOW THE CONSTRAINTS SHOULD BE SORTED
+// IN THE KEY MAP LIST
 @Serializable
-enum class ChooseConstraintType {
+enum class ConstraintId {
     APP_IN_FOREGROUND,
     APP_NOT_IN_FOREGROUND,
     APP_PLAYING_MEDIA,

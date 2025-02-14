@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.system.accessibility
 
 import android.accessibilityservice.AccessibilityServiceInfo
 import android.os.Build
-import android.os.SystemClock
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
@@ -17,12 +16,15 @@ import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintGestureMap
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapId
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCase
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectScreenOffKeyEventsController
+import io.github.sds100.keymapper.mappings.keymaps.detection.DpadMotionEventTracker
 import io.github.sds100.keymapper.mappings.keymaps.detection.KeyMapController
 import io.github.sds100.keymapper.mappings.keymaps.detection.TriggerKeyMapFromOtherAppsController
+import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsController
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsUseCase
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
-import io.github.sds100.keymapper.system.devices.InputDeviceInfo
+import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
+import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.util.ServiceEvent
@@ -107,6 +109,8 @@ abstract class BaseAccessibilityServiceController(
     private var recordingTriggerJob: Job? = null
     private val recordingTrigger: Boolean
         get() = recordingTriggerJob != null && recordingTriggerJob?.isActive == true
+    private val recordDpadMotionEventTracker: DpadMotionEventTracker =
+        DpadMotionEventTracker()
 
     val isPaused: StateFlow<Boolean> = pauseMappingsUseCase.isPaused
         .stateIn(coroutineScope, SharingStarted.Eagerly, false)
@@ -119,16 +123,11 @@ abstract class BaseAccessibilityServiceController(
         DetectScreenOffKeyEventsController(
             suAdapter,
             devicesAdapter,
-        ) { keyCode, action, device ->
+        ) { event ->
 
             if (!isPaused.value) {
                 withContext(Dispatchers.Main.immediate) {
-                    keyMapController.onKeyEvent(
-                        keyCode,
-                        action,
-                        metaState = 0,
-                        device = device,
-                    )
+                    keyMapController.onKeyEvent(event)
                 }
             }
         }
@@ -294,24 +293,20 @@ abstract class BaseAccessibilityServiceController(
     }
 
     fun onKeyEvent(
-        keyCode: Int,
-        action: Int,
-        device: InputDeviceInfo?,
-        metaState: Int,
-        scanCode: Int = 0,
-        eventTime: Long,
+        event: MyKeyEvent,
+        detectionSource: KeyEventDetectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
     ): Boolean {
-        val detailedLogInfo =
-            "key code: $keyCode, time since event: ${SystemClock.uptimeMillis() - eventTime}ms, device name: ${device?.name}, descriptor: ${device?.descriptor}, device id: ${device?.id}, is external: ${device?.isExternal}, meta state: $metaState, scan code: $scanCode"
+        val detailedLogInfo = event.toString()
 
         if (recordingTrigger) {
-            if (action == KeyEvent.ACTION_DOWN) {
-                Timber.d("Recorded key ${KeyEvent.keyCodeToString(keyCode)}, $detailedLogInfo")
+            if (event.action == KeyEvent.ACTION_DOWN) {
+                Timber.d("Recorded key ${KeyEvent.keyCodeToString(event.keyCode)}, $detailedLogInfo")
                 coroutineScope.launch {
                     outputEvents.emit(
                         ServiceEvent.RecordedTriggerKey(
-                            keyCode,
-                            device,
+                            event.keyCode,
+                            event.device,
+                            detectionSource,
                         ),
                     )
                 }
@@ -321,35 +316,23 @@ abstract class BaseAccessibilityServiceController(
         }
 
         if (isPaused.value) {
-            when (action) {
-                KeyEvent.ACTION_DOWN -> Timber.d("Down ${KeyEvent.keyCodeToString(keyCode)} - not filtering because paused, $detailedLogInfo")
-                KeyEvent.ACTION_UP -> Timber.d("Up ${KeyEvent.keyCodeToString(keyCode)} - not filtering because paused, $detailedLogInfo")
+            when (event.action) {
+                KeyEvent.ACTION_DOWN -> Timber.d("Down ${KeyEvent.keyCodeToString(event.keyCode)} - not filtering because paused, $detailedLogInfo")
+                KeyEvent.ACTION_UP -> Timber.d("Up ${KeyEvent.keyCodeToString(event.keyCode)} - not filtering because paused, $detailedLogInfo")
             }
         } else {
             try {
                 var consume: Boolean
 
-                consume = keyMapController.onKeyEvent(
-                    keyCode,
-                    action,
-                    metaState,
-                    scanCode,
-                    device,
-                )
+                consume = keyMapController.onKeyEvent(event)
 
                 if (!consume) {
-                    consume = rerouteKeyEventsController.onKeyEvent(
-                        keyCode,
-                        action,
-                        metaState,
-                        scanCode,
-                        device,
-                    )
+                    consume = rerouteKeyEventsController.onKeyEvent(event)
                 }
 
-                when (action) {
-                    KeyEvent.ACTION_DOWN -> Timber.d("Down ${KeyEvent.keyCodeToString(keyCode)} - consumed: $consume, $detailedLogInfo")
-                    KeyEvent.ACTION_UP -> Timber.d("Up ${KeyEvent.keyCodeToString(keyCode)} - consumed: $consume, $detailedLogInfo")
+                when (event.action) {
+                    KeyEvent.ACTION_DOWN -> Timber.d("Down ${KeyEvent.keyCodeToString(event.keyCode)} - consumed: $consume, $detailedLogInfo")
+                    KeyEvent.ACTION_UP -> Timber.d("Up ${KeyEvent.keyCodeToString(event.keyCode)} - consumed: $consume, $detailedLogInfo")
                 }
 
                 return consume
@@ -361,44 +344,69 @@ abstract class BaseAccessibilityServiceController(
         return false
     }
 
-    fun onKeyEventFromIme(
-        keyCode: Int,
-        action: Int,
-        device: InputDeviceInfo?,
-        metaState: Int,
-        scanCode: Int = 0,
-        eventTime: Long,
-    ): Boolean {
-        if (!detectKeyMapsUseCase.acceptKeyEventsFromIme) {
-            Timber.d("Don't input key event from ime")
-            return false
-        }
-
+    fun onKeyEventFromIme(event: MyKeyEvent): Boolean {
         /*
         Issue #850
         If a volume key is sent while the phone is ringing or in a call
         then that key event must have been relayed by an input method and only an up event
-        is sent. This is a restriction in Android. So send a fake down key event as well.
+        is sent. This is a restriction in Android. So send a fake DOWN key event as well
+        before returning the UP key event.
          */
-        if (action == KeyEvent.ACTION_UP && (keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)) {
+        if (event.action == KeyEvent.ACTION_UP && (event.keyCode == KeyEvent.KEYCODE_VOLUME_UP || event.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)) {
             onKeyEvent(
-                keyCode,
-                KeyEvent.ACTION_DOWN,
-                device,
-                metaState,
-                0,
-                eventTime,
+                event.copy(action = KeyEvent.ACTION_DOWN),
+                detectionSource = KeyEventDetectionSource.INPUT_METHOD,
             )
         }
 
         return onKeyEvent(
-            keyCode,
-            action,
-            device,
-            metaState,
-            scanCode,
-            eventTime,
+            event,
+            detectionSource = KeyEventDetectionSource.INPUT_METHOD,
         )
+    }
+
+    fun onMotionEventFromIme(event: MyMotionEvent): Boolean {
+        if (isPaused.value) {
+            return false
+        }
+
+        if (recordingTrigger) {
+            val dpadKeyEvents = recordDpadMotionEventTracker.convertMotionEvent(event)
+
+            var consume = false
+
+            for (keyEvent in dpadKeyEvents) {
+                if (keyEvent.action == KeyEvent.ACTION_DOWN) {
+                    Timber.d("Recorded motion event ${KeyEvent.keyCodeToString(keyEvent.keyCode)}")
+
+                    coroutineScope.launch {
+                        outputEvents.emit(
+                            ServiceEvent.RecordedTriggerKey(
+                                keyEvent.keyCode,
+                                keyEvent.device,
+                                KeyEventDetectionSource.INPUT_METHOD,
+                            ),
+                        )
+                    }
+                }
+
+                // Consume the key event if it is an DOWN or UP.
+                consume = true
+            }
+
+            if (consume) {
+                return true
+            }
+        }
+
+        try {
+            val consume = keyMapController.onMotionEvent(event)
+
+            return consume
+        } catch (e: Exception) {
+            Timber.e(e)
+            return false
+        }
     }
 
     fun onAccessibilityEvent(event: AccessibilityEventModel?) {
@@ -431,6 +439,7 @@ abstract class BaseAccessibilityServiceController(
         when (event) {
             is ServiceEvent.StartRecordingTrigger ->
                 if (!recordingTrigger) {
+                    recordDpadMotionEventTracker.reset()
                     recordingTriggerJob = recordTriggerJob()
                 }
 
@@ -439,6 +448,7 @@ abstract class BaseAccessibilityServiceController(
 
                 recordingTriggerJob?.cancel()
                 recordingTriggerJob = null
+                recordDpadMotionEventTracker.reset()
 
                 if (wasRecordingTrigger) {
                     coroutineScope.launch {

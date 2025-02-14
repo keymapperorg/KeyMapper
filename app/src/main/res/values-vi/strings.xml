@@ -2,7 +2,6 @@
 <resources>
     <string name="slogan">Giải phóng chìa khóa của bạn!</string>
     <string name="no_action_chosen">Không có hành động nào được chọn</string>
-    <string name="accessibility_service_explanation">Key Mapper yêu cầu sử dụng dịch vụ trợ năng để dịch vụ này có thể phát hiện và thay đổi thao tác nhấn nút của bạn khi bạn ở ngoài ứng dụng. Bản đồ chính của bạn sẽ chỉ hoạt động khi bạn đã bật dịch vụ trợ năng. Nó cũng phải được bật để tạo trình kích hoạt.</string>
     <string name="selection_count">%d Đã chọn</string>
     <string name="enable">Cho phép</string>
     <string name="open">Mở</string>
@@ -79,7 +78,6 @@
     <string name="trigger_error_dnd_access_denied">Key Mapper yêu cầu quyền sửa đổi chế độ Không làm phiền nếu bạn muốn các nút hoạt động như mong đợi ở chế độ Không làm phiền!</string>
     <string name="trigger_error_dnd_access_denied_short">Trình kích hoạt này sẽ không hoạt động như mong đợi ở chế độ Không làm phiền!</string>
     <string name="trigger_error_screen_off_root_permission_denied">Tùy chọn kích hoạt khi màn hình tắt cần có quyền root để hoạt động!</string>
-    <string name="trigger_error_screen_off_root_permission_denied_short">Tùy chọn kích hoạt khi màn hình tắt sẽ không hoạt động!</string>
     <string name="trigger_error_cant_detect_in_phone_call">Trình kích hoạt này sẽ không hoạt động khi đang đổ chuông hoặc đang gọi điện thoại!</string>
     <string name="trigger_error_cant_detect_in_phone_call_explanation">Android không cho phép các dịch vụ trợ năng phát hiện các lần nhấn nút âm lượng khi điện thoại của bạn đang đổ chuông hoặc đang trong cuộc gọi điện thoại, nhưng nó cho phép các dịch vụ phương thức nhập liệu phát hiện chúng. Do đó, bạn phải sử dụng một trong các bàn phím Key Mapper nếu muốn trình kích hoạt này hoạt động.</string>
     <string name="trigger_error_gesture_stroke_count_too_high">Quá nhiều ngón tay để thực hiện cử chỉ do giới hạn của Android.</string>
@@ -339,7 +337,6 @@
     <string name="button_done">Xong</string>
     <string name="button_save">Lưu</string>
     <string name="button_fix">Sửa chữa</string>
-    <string name="button_recording_trigger_countdown">%d…</string>
     <string name="button_add_constraint">Thêm hạm chế </string>
     <string name="button_choose_keycode">Chọn mã khóa</string>
     <string name="button_yes">Đúng!</string>
@@ -402,9 +399,7 @@
     <string name="dialog_message_disable_battery_optimisation">Bạn <b>PHẢI</b> đọc <b>tất cả</b> này nếu không bạn sẽ <b>thất vọng</b> trong tương lai!\n\nNhấn vào \"sửa một phần\" <b>có thể</b > ngăn Android dừng ứng dụng khi ứng dụng đang chạy trong nền.\n\n<b>Điều này KHÔNG ĐỦ</b>. Giao diện OEM của bạn như MIUI hoặc Samsung Experience có thể có các tính năng tiêu diệt ứng dụng khác, vì vậy bạn PHẢI tắt chúng cho Key Mapper bằng cách làm theo hướng dẫn trực tuyến tại Dontkillmyapp.com.</string>
     <string name="dialog_title_send_feedback">Gửi phản hồi</string>
     <string name="dialog_message_send_feedback">Vui lòng đọc hướng dẫn về cách báo cáo sự cố trên trang web.</string>
-    <string name="dialog_message_enable_accessibility_service_to_record_trigger">Bật dịch vụ trợ năng để bạn có thể ghi lại trình kích hoạt.</string>
     <string name="dialog_message_restart_accessibility_service_to_record_trigger">Khởi động lại dịch vụ trợ năng bằng cách <i>tắt</i> và <i>bật</i> để bạn có thể ghi lại trình kích hoạt.</string>
-    <string name="dialog_message_enable_accessibility_service_to_test_action">Bật dịch vụ trợ năng để bạn có thể kiểm tra hành động.</string>
     <string name="dialog_message_restart_accessibility_service_to_test_action">Khởi động lại dịch vụ trợ năng bằng cách <i>tắt</i> và <i>bật</i> để bạn có thể kiểm tra hành động.</string>
     <string name="dialog_message_restart_accessibility_service">Khởi động lại dịch vụ trợ năng bằng cách <i>tắt</i> và <i>bật</i>.</string>
     <string name="dialog_message_screen_pinning_warning">Việc sử dụng trình kích hoạt này có thể gây ra màn hình đen khi bạn mở khóa thiết bị sau khi sử dụng cài đặt ghim màn hình trong cài đặt của thiết bị. Điều này có thể được khắc phục bằng cách khởi động lại. Điều này không xảy ra trên tất cả các thiết bị vì vậy hãy cẩn thận và tắt cài đặt nếu xảy ra!</string>
@@ -642,15 +637,10 @@
     <string name="showcase_dnd_access_description_disabled">Key Mapper cần có quyền truy cập Không làm phiền nếu bạn muốn các hành động thay đổi âm lượng và ánh xạ lại các nút âm lượng hoạt động.</string>
     <string name="showcase_dnd_access_description_enabled">Tất cả đều tốt! :)</string>
     <string name="showcase_contributing_title">Đóng góp</string>
-    <string name="showcase_contributing_description">"Ứng dụng này là nguồn mở! Bạn có thể bắt đầu đóng góp bằng cách truy cập kho lưu trữ sds100/KeyMapper trên GitHub và bằng cách tham gia máy chủ Discord. Ngay cả khi bạn không thể viết mã, bạn vẫn có thể đóng góp bằng cách giúp đỡ người khác và thử nghiệm các tính năng mới nhất."</string>
     <string name="showcase_action_list">Nhấn vào dấu 3 chấm để thay đổi hành vi lặp lại và hơn thế nữa. Bạn có thể kiểm tra một hành động và sửa lỗi hành động bằng cách nhấn vào hành động đó.</string>
     <string name="showcase_fingerprint_gesture_support_title_supported_unknown">Ánh xạ lại cử chỉ đọc dấu vân tay</string>
     <string name="showcase_fingerprint_gesture_support_title_supported">Bạn có thể ánh xạ lại cử chỉ đọc dấu vân tay! :)</string>
     <string name="showcase_fingerprint_gesture_support_title_not_supported">Bạn không thể ánh xạ lại cử chỉ đọc dấu vân tay!</string>
-    <string name="showcase_fingerprint_gesture_support_message_supported_unknown">Bạn cần bật dịch vụ trợ năng để Key Mapper có thể kiểm tra xem thiết bị của bạn có thể phát hiện cử chỉ vân tay hay không.</string>
-    <string name="showcase_fingerprint_gesture_support_message_supported">Thiết bị của bạn có thể phát hiện cử chỉ vân tay! Có một tab ở đầu màn hình chính để ánh xạ lại cử chỉ vân tay.</string>
-    <string name="showcase_fingerprint_gesture_support_message_not_supported">Thiết bị của bạn không cho phép ứng dụng của bên thứ 3 phát hiện cử chỉ vân tay! Nhà phát triển không thể làm gì về điều này. Một số thiết bị có cài đặt vuốt xuống trên đầu đọc dấu vân tay để mở ngăn thông báo và không cho phép ứng dụng bên thứ 3 phát hiện cử chỉ vân tay.</string>
-    <string name="showcase_fingerprint_gesture_support_button">Cho phép</string>
     <string name="showcase_setup_chosen_devices_again_title">Bạn cần thiết lập lại một số cài đặt</string>
     <string name="showcase_setup_chosen_devices_again_message">Có vẻ như bạn đã sử dụng cài đặt để tự động thay đổi bàn phím hoặc hiển thị trình chọn phương thức nhập khi thiết bị Bluetooth kết nối và ngắt kết nối. Key Mapper hiện cho phép bạn sử dụng bất kỳ thiết bị nhập nào chứ không chỉ thiết bị Bluetooth. Không có cách nào để di chuyển cài đặt cũ theo cách mà chức năng mới sẽ hoạt động nên bạn sẽ phải chọn lại thiết bị.</string>
     <string name="showcase_grant_shizuku_permission_denied_title">Cấp phép cho Shizuku</string>
@@ -1084,4 +1074,8 @@
     <string name="purchasing_error_assistant_not_purchased_home_screen">Bạn phải mua tính năng kích hoạt trợ lý! Nhấn vào bản đồ chính và sau đó mua nó bằng cách nhấp vào \'Trình kích hoạt nâng cao\'.</string>
     <string name="purchasing_not_implemented_bottom_sheet_text">Trình kích hoạt nâng cao là tính năng trả phí nhưng bạn đã tải xuống bản dựng FOSS của Key Mapper không bao gồm mô-đun này hoặc thanh toán Google Play. Vui lòng tải xuống Key Mapper từ Google Play để có quyền truy cập vào tính năng này.</string>
     <string name="purchasing_download_key_mapper_from_google_play">Tải xuống bản dựng Play</string>
+    <!--  Dpad trigger setup bottom sheet  -->
+    <string name="setup_gui_keyboard_enable_keyboard_button">Cho phép</string>
+    <string name="setup_gui_keyboard_enable_keyboard_button_disabled">Đã bật</string>
+    <!-- No keys recorded bottom sheet -->
 </resources>

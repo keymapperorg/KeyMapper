@@ -15,6 +15,7 @@ data class KeyCodeTriggerKey(
     val device: TriggerKeyDevice,
     override val clickType: ClickType,
     override val consumeEvent: Boolean = true,
+    val detectionSource: KeyEventDetectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
 ) : TriggerKey() {
 
     override fun toString(): String {
@@ -26,26 +27,57 @@ data class KeyCodeTriggerKey(
         return "KeyCodeTriggerKey(uid=${uid.substring(0..5)}, keyCode=$keyCode, device=$deviceString, clickType=$clickType, consume=$consumeEvent) "
     }
 
+    // key code -> click type -> device -> consume key event
+    override fun compareTo(other: TriggerKey) = when (other) {
+        is KeyCodeTriggerKey -> compareValuesBy(
+            this,
+            other,
+            { it.keyCode },
+            { it.clickType },
+            { it.device },
+            { it.consumeEvent },
+        )
+
+        else -> super.compareTo(other)
+    }
+
     companion object {
-        fun fromEntity(entity: KeyCodeTriggerKeyEntity): TriggerKey = KeyCodeTriggerKey(
-            uid = entity.uid,
-            keyCode = entity.keyCode,
-            device = when (entity.deviceId) {
+        fun fromEntity(entity: KeyCodeTriggerKeyEntity): TriggerKey {
+            val device = when (entity.deviceId) {
                 KeyCodeTriggerKeyEntity.DEVICE_ID_THIS_DEVICE -> TriggerKeyDevice.Internal
                 KeyCodeTriggerKeyEntity.DEVICE_ID_ANY_DEVICE -> TriggerKeyDevice.Any
                 else -> TriggerKeyDevice.External(
                     entity.deviceId,
                     entity.deviceName ?: "",
                 )
-            },
-            clickType = when (entity.clickType) {
+            }
+
+            val clickType = when (entity.clickType) {
                 TriggerKeyEntity.SHORT_PRESS -> ClickType.SHORT_PRESS
                 TriggerKeyEntity.LONG_PRESS -> ClickType.LONG_PRESS
                 TriggerKeyEntity.DOUBLE_PRESS -> ClickType.DOUBLE_PRESS
                 else -> ClickType.SHORT_PRESS
-            },
-            consumeEvent = !entity.flags.hasFlag(KeyCodeTriggerKeyEntity.FLAG_DO_NOT_CONSUME_KEY_EVENT),
-        )
+            }
+
+            val consumeEvent =
+                !entity.flags.hasFlag(KeyCodeTriggerKeyEntity.FLAG_DO_NOT_CONSUME_KEY_EVENT)
+
+            val detectionSource =
+                if (entity.flags.hasFlag(KeyCodeTriggerKeyEntity.FLAG_DETECTION_SOURCE_INPUT_METHOD)) {
+                    KeyEventDetectionSource.INPUT_METHOD
+                } else {
+                    KeyEventDetectionSource.ACCESSIBILITY_SERVICE
+                }
+
+            return KeyCodeTriggerKey(
+                uid = entity.uid,
+                keyCode = entity.keyCode,
+                device = device,
+                clickType = clickType,
+                consumeEvent = consumeEvent,
+                detectionSource = detectionSource,
+            )
+        }
 
         fun toEntity(key: KeyCodeTriggerKey): KeyCodeTriggerKeyEntity {
             val deviceId = when (key.device) {
@@ -70,6 +102,10 @@ data class KeyCodeTriggerKey(
 
             if (!key.consumeEvent) {
                 flags = flags.withFlag(KeyCodeTriggerKeyEntity.FLAG_DO_NOT_CONSUME_KEY_EVENT)
+            }
+
+            if (key.detectionSource == KeyEventDetectionSource.INPUT_METHOD) {
+                flags = flags.withFlag(KeyCodeTriggerKeyEntity.FLAG_DETECTION_SOURCE_INPUT_METHOD)
             }
 
             return KeyCodeTriggerKeyEntity(

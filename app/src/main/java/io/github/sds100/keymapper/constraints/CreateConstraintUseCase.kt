@@ -21,14 +21,14 @@ class CreateConstraintUseCaseImpl(
     private val preferenceRepository: PreferenceRepository,
 ) : CreateConstraintUseCase {
 
-    override fun isSupported(constraint: ChooseConstraintType): Error? {
+    override fun isSupported(constraint: ConstraintId): Error? {
         when (constraint) {
-            ChooseConstraintType.FLASHLIGHT_ON, ChooseConstraintType.FLASHLIGHT_OFF ->
+            ConstraintId.FLASHLIGHT_ON, ConstraintId.FLASHLIGHT_OFF ->
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
                     return Error.SdkVersionTooLow(minSdk = Build.VERSION_CODES.M)
                 }
 
-            ChooseConstraintType.DEVICE_IS_LOCKED, ChooseConstraintType.DEVICE_IS_UNLOCKED ->
+            ConstraintId.DEVICE_IS_LOCKED, ConstraintId.DEVICE_IS_UNLOCKED ->
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP_MR1) {
                     return Error.SdkVersionTooLow(minSdk = Build.VERSION_CODES.LOLLIPOP_MR1)
                 }
@@ -64,13 +64,12 @@ class CreateConstraintUseCaseImpl(
         )
     }
 
-    override fun getSavedWifiSSIDs(): Flow<List<String>> =
-        preferenceRepository.get(Keys.savedWifiSSIDs)
-            .map { it?.toList() ?: emptyList() }
+    override fun getSavedWifiSSIDs(): Flow<List<String>> = preferenceRepository.get(Keys.savedWifiSSIDs)
+        .map { it?.toList() ?: emptyList() }
 }
 
 interface CreateConstraintUseCase {
-    fun isSupported(constraint: ChooseConstraintType): Error?
+    fun isSupported(constraint: ConstraintId): Error?
     fun getKnownWiFiSSIDs(): List<String>?
     fun getEnabledInputMethods(): List<ImeInfo>
 

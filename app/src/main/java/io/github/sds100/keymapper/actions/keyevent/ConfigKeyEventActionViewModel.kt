@@ -9,7 +9,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
-import io.github.sds100.keymapper.system.keyevents.KeyEventUtils
+import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
@@ -212,7 +212,7 @@ class ConfigKeyEventActionViewModel(
             onError = { "" },
         )
 
-        val modifierListItems = KeyEventUtils.MODIFIER_LABELS.map { (modifier, label) ->
+        val modifierListItems = InputEventUtils.MODIFIER_LABELS.map { (modifier, label) ->
             CheckBoxListItem(
                 id = modifier.toString(),
                 label = getString(label),
@@ -264,8 +264,7 @@ class ConfigKeyEventActionViewModel(
         private val resourceProvider: ResourceProvider,
     ) : ViewModelProvider.NewInstanceFactory() {
 
-        override fun <T : ViewModel> create(modelClass: Class<T>): T =
-            ConfigKeyEventActionViewModel(useCase, resourceProvider) as T
+        override fun <T : ViewModel> create(modelClass: Class<T>): T = ConfigKeyEventActionViewModel(useCase, resourceProvider) as T
     }
 
     private data class KeyEventState(

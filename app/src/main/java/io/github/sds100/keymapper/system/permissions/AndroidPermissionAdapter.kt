@@ -96,7 +96,7 @@ class AndroidPermissionAdapter(
      * show it again.
      */
     private val neverRequestDndPermission: StateFlow<Boolean> =
-        preferenceRepository.get(Keys.neverShowDndError)
+        preferenceRepository.get(Keys.neverShowDndAccessError)
             .map { it == true }
             .stateIn(coroutineScope, SharingStarted.Eagerly, false)
 
