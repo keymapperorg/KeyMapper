@@ -1,3 +1,3 @@
-New trigger! 🎉 You can now remap the DPAD buttons on your game controller!
+You can now remap the DPAD buttons on your game controller!
 
-Joysticks and triggers are coming soon... 😉
+Many other bug fixes. See all the changes at http://changelog.keymapper.club.

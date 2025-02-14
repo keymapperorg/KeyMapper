@@ -220,7 +220,6 @@ object Inject {
             ServiceLocator.permissionAdapter(context),
             ServiceLocator.accessibilityServiceAdapter(context),
             ServiceLocator.settingsRepository(context),
-            UseCases.fingerprintGesturesSupported(context),
             ServiceLocator.shizukuAdapter(context),
         ),
         slides,

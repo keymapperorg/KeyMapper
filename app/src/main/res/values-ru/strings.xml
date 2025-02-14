@@ -318,7 +318,6 @@
     <string name="button_done">Готово</string>
     <string name="button_save">Сохранить</string>
     <string name="button_fix">Исправить</string>
-    <string name="button_recording_trigger_countdown">%d…</string>
     <string name="button_add_constraint">Добавить ограничение</string>
     <string name="button_choose_keycode">Выберите код клавиши</string>
     <string name="button_yes">Да!</string>
@@ -637,10 +636,6 @@
     <string name="showcase_fingerprint_gesture_support_title_supported_unknown">Переназначение жестов датчика отпечатка пальцев</string>
     <string name="showcase_fingerprint_gesture_support_title_supported">Вы можете переназначить жесты датчика отпечатка пальцев! :)</string>
     <string name="showcase_fingerprint_gesture_support_title_not_supported">Вы НЕ можете переназначить жесты датчика отпечатка пальцев!</string>
-    <string name="showcase_fingerprint_gesture_support_message_supported_unknown">Вам нужно включить службу спец.возможностей, чтобы Key Mapper мог проверить, может ли ваше устройство обнаружить жесты сканера отпечатков пальцев.</string>
-    <string name="showcase_fingerprint_gesture_support_message_supported">Ваше устройство может определить жесты сканера отпечатков пальцев! В верхней части главного экрана есть вкладка для переназначения этих жестов.</string>
-    <string name="showcase_fingerprint_gesture_support_message_not_supported">Возможно ваш датчик не поддерживает жесты или ваше устройство не позволяет сторонним приложениям определять жесты. К сожалению разработчик ничем не может помочь в этом случае. Некоторые устройства, например, открывают по свайпу вниз панель уведомлений и не отдают этот жест сторонним программам.</string>
-    <string name="showcase_fingerprint_gesture_support_button">Включить</string>
     <string name="showcase_setup_chosen_devices_again_title">Вам нужно снова произвести некоторые настройки</string>
     <string name="showcase_setup_chosen_devices_again_message">Похоже, вы использовали настройки, чтобы автоматически изменять клавиатуру или показать выбор метода ввода при подключении и отключении устройства Bluetooth. Key Mapper теперь позволяет использовать для этого любое устройство ввода, а не только устройства Bluetooth. К сожалению не существует способа переноса старых настроек. Таким образом чтобы этот функционал заработал вам придется выбрать устройство снова.</string>
     <string name="showcase_grant_shizuku_permission_denied_title">Выдать разрешение Shizuku</string>

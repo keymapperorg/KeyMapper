@@ -337,7 +337,6 @@
     <string name="button_done">Xong</string>
     <string name="button_save">Lưu</string>
     <string name="button_fix">Sửa chữa</string>
-    <string name="button_recording_trigger_countdown">%d…</string>
     <string name="button_add_constraint">Thêm hạm chế </string>
     <string name="button_choose_keycode">Chọn mã khóa</string>
     <string name="button_yes">Đúng!</string>
@@ -642,10 +641,6 @@
     <string name="showcase_fingerprint_gesture_support_title_supported_unknown">Ánh xạ lại cử chỉ đọc dấu vân tay</string>
     <string name="showcase_fingerprint_gesture_support_title_supported">Bạn có thể ánh xạ lại cử chỉ đọc dấu vân tay! :)</string>
     <string name="showcase_fingerprint_gesture_support_title_not_supported">Bạn không thể ánh xạ lại cử chỉ đọc dấu vân tay!</string>
-    <string name="showcase_fingerprint_gesture_support_message_supported_unknown">Bạn cần bật dịch vụ trợ năng để Key Mapper có thể kiểm tra xem thiết bị của bạn có thể phát hiện cử chỉ vân tay hay không.</string>
-    <string name="showcase_fingerprint_gesture_support_message_supported">Thiết bị của bạn có thể phát hiện cử chỉ vân tay! Có một tab ở đầu màn hình chính để ánh xạ lại cử chỉ vân tay.</string>
-    <string name="showcase_fingerprint_gesture_support_message_not_supported">Thiết bị của bạn không cho phép ứng dụng của bên thứ 3 phát hiện cử chỉ vân tay! Nhà phát triển không thể làm gì về điều này. Một số thiết bị có cài đặt vuốt xuống trên đầu đọc dấu vân tay để mở ngăn thông báo và không cho phép ứng dụng bên thứ 3 phát hiện cử chỉ vân tay.</string>
-    <string name="showcase_fingerprint_gesture_support_button">Cho phép</string>
     <string name="showcase_setup_chosen_devices_again_title">Bạn cần thiết lập lại một số cài đặt</string>
     <string name="showcase_setup_chosen_devices_again_message">Có vẻ như bạn đã sử dụng cài đặt để tự động thay đổi bàn phím hoặc hiển thị trình chọn phương thức nhập khi thiết bị Bluetooth kết nối và ngắt kết nối. Key Mapper hiện cho phép bạn sử dụng bất kỳ thiết bị nhập nào chứ không chỉ thiết bị Bluetooth. Không có cách nào để di chuyển cài đặt cũ theo cách mà chức năng mới sẽ hoạt động nên bạn sẽ phải chọn lại thiết bị.</string>
     <string name="showcase_grant_shizuku_permission_denied_title">Cấp phép cho Shizuku</string>

@@ -318,7 +318,6 @@
     <string name="button_done">Hecho</string>
     <string name="button_save">Guardar</string>
     <string name="button_fix">Arreglar</string>
-    <string name="button_recording_trigger_countdown">%d…</string>
     <string name="button_add_constraint">Añadir restricción</string>
     <string name="button_choose_keycode">Seleccionar código de tecla</string>
     <string name="button_yes">¡Sí!</string>
@@ -636,10 +635,6 @@
     <string name="showcase_fingerprint_gesture_support_title_supported_unknown">Reasignación de los gestos del lector de huellas dactilares</string>
     <string name="showcase_fingerprint_gesture_support_title_supported">¡Puedes reasignar los gestos del lector de huellas dactilares! :)</string>
     <string name="showcase_fingerprint_gesture_support_title_not_supported">¡No puedes reasignar los gestos del lector de huellas dactilares!</string>
-    <string name="showcase_fingerprint_gesture_support_message_supported_unknown">Tendrás que habilitar el servicio de accesibilidad para que Key Mapper pueda comprobar si tu dispositivo puede detectar los gestos de las huellas dactilares.</string>
-    <string name="showcase_fingerprint_gesture_support_message_supported">¡Tu dispositivo puede detectar los gestos de las huellas dactilares! Hay una pestaña en la parte superior de la pantalla de inicio para reasignar los gestos de las huellas dactilares.</string>
-    <string name="showcase_fingerprint_gesture_support_message_not_supported">Tu dispositivo no permite que las aplicaciones de terceros detecten los gestos de las huellas dactilares. No hay nada que el desarrollador pueda hacer al respecto. Algunos dispositivos tienen el ajuste de deslizar hacia abajo el lector de huellas dactilares para abrir el cajón de notificaciones y no permiten que las aplicaciones de terceros detecten los gestos de las huellas dactilares.</string>
-    <string name="showcase_fingerprint_gesture_support_button">Activar</string>
     <string name="showcase_setup_chosen_devices_again_title">Tienes que volver a configurar algunos ajustes</string>
     <string name="showcase_setup_chosen_devices_again_message">Parece que estabas usando la configuración para cambiar automáticamente el teclado o mostrar el selector de método de entrada cuando un dispositivo Bluetooth se conecta y desconecta. Ahora Key Mapper permite utilizar cualquier dispositivo de entrada y no sólo los dispositivos Bluetooth. No hay forma de migrar la configuración antigua de manera que la nueva característica funcione, así que tendrás que elegir los dispositivos de nuevo.</string>
     <string name="showcase_grant_shizuku_permission_denied_title">Concede permiso a Shizuku</string>
