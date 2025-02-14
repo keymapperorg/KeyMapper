@@ -1,5 +1,4 @@
-**Project back under slower development.**
-> **UPDATE**: I miss working on this project and Key Mapper still has so much potential so I am back! 😊
+**UPDATE**: I miss working on this project and Key Mapper still has so much potential so I am back! 😊
 > 
 > Well, working on this project was a fun ride 🎢! This project has taught me so much about Android, software development and how to collaborate with an online community. It has been my dream to lead a big FOSS project with people from all over the world so a **huge** thank you goes to everyone that spread the word and helped on GitHub along the way ☺.
 >
