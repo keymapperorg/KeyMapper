@@ -192,12 +192,12 @@ class ConstraintUiHelper(
         )
 
         Constraint.ScreenOff -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_outline_stay_current_portrait_24),
+            drawable = getDrawable(R.drawable.ic_baseline_mobile_off_24),
             tintType = TintType.OnSurface,
         )
 
         Constraint.ScreenOn -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_baseline_mobile_off_24),
+            drawable = getDrawable(R.drawable.ic_outline_stay_current_portrait_24),
             tintType = TintType.OnSurface,
         )
 
