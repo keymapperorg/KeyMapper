@@ -25,6 +25,7 @@ import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
 import io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback
 import io.github.sds100.keymapper.api.KeyEventRelayService
 import io.github.sds100.keymapper.api.KeyEventRelayServiceWrapperImpl
+import io.github.sds100.keymapper.floating.OverlayManagerImpl
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapId
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
@@ -162,7 +163,7 @@ class MyAccessibilityService :
     }
 
     var controller: AccessibilityServiceController? = null
-    private var overlaysManager: OverlaysManager? = null
+    private var overlaysManager: OverlayManagerImpl? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -199,7 +200,7 @@ class MyAccessibilityService :
             controller = Inject.accessibilityServiceController(this, keyEventRelayServiceWrapper)
         }
 
-        overlaysManager = OverlaysManager(this)
+        overlaysManager = OverlayManagerImpl(this)
         overlaysManager?.onServiceConnected()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
