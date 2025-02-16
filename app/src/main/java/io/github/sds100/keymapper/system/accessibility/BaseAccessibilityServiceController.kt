@@ -137,6 +137,9 @@ abstract class BaseAccessibilityServiceController(
             .withFlag(AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS)
             .withFlag(AccessibilityServiceInfo.DEFAULT)
             .withFlag(AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS)
+            // This is required for receive TYPE_WINDOWS_CHANGED events so can
+            // detect when to show/hide overlays.
+            .withFlag(AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             flags = flags.withFlag(AccessibilityServiceInfo.FLAG_ENABLE_ACCESSIBILITY_VOLUME)
@@ -153,8 +156,14 @@ abstract class BaseAccessibilityServiceController(
      */
     private var serviceFlags: MutableStateFlow<Int> = MutableStateFlow(initialServiceFlags)
 
-    private var serviceFeedbackType: MutableStateFlow<Int> = MutableStateFlow(0)
-    private var serviceEventTypes: MutableStateFlow<Int> = MutableStateFlow(0)
+    /**
+     * FEEDBACK_GENERIC is for some reason required on Android 8.0 to get accessibility events.
+     */
+    private var serviceFeedbackType: MutableStateFlow<Int> =
+        MutableStateFlow(AccessibilityServiceInfo.FEEDBACK_GENERIC)
+
+    private val initialEventTypes: Int = AccessibilityEvent.TYPE_WINDOWS_CHANGED
+    private var serviceEventTypes: MutableStateFlow<Int> = MutableStateFlow(initialEventTypes)
 
     init {
         serviceFlags.onEach { flags ->
@@ -171,10 +180,10 @@ abstract class BaseAccessibilityServiceController(
             }
         }.launchIn(coroutineScope)
 
-        serviceEventTypes.onEach { feedbackType ->
+        serviceEventTypes.onEach { eventTypes ->
             // check that it isn't null because this can only be called once the service is bound
             if (accessibilityService.serviceEventTypes != null) {
-                accessibilityService.serviceEventTypes = feedbackType
+                accessibilityService.serviceEventTypes = eventTypes
             }
         }.launchIn(coroutineScope)
 
@@ -247,20 +256,12 @@ abstract class BaseAccessibilityServiceController(
 
         settingsRepository.get(Keys.changeImeOnInputFocus).onEach { changeImeOnInputFocus ->
             if (changeImeOnInputFocus == true) {
-                serviceFeedbackType.value = serviceFeedbackType.value
-                    .withFlag(AccessibilityServiceInfo.FEEDBACK_GENERIC)
-
                 serviceEventTypes.value = serviceEventTypes.value
                     .withFlag(AccessibilityEvent.TYPE_VIEW_FOCUSED)
-                    .withFlag(AccessibilityEvent.TYPE_WINDOWS_CHANGED)
                     .withFlag(AccessibilityEvent.TYPE_VIEW_CLICKED)
             } else {
-                serviceFeedbackType.value = serviceFeedbackType.value
-                    .minusFlag(AccessibilityServiceInfo.FEEDBACK_GENERIC)
-
                 serviceEventTypes.value = serviceEventTypes.value
                     .minusFlag(AccessibilityEvent.TYPE_VIEW_FOCUSED)
-                    .minusFlag(AccessibilityEvent.TYPE_WINDOWS_CHANGED)
                     .minusFlag(AccessibilityEvent.TYPE_VIEW_CLICKED)
             }
         }.launchIn(coroutineScope)
@@ -409,7 +410,7 @@ abstract class BaseAccessibilityServiceController(
         }
     }
 
-    fun onAccessibilityEvent(event: AccessibilityEventModel?) {
+    fun onAccessibilityEvent(event: AccessibilityEventModel) {
         Timber.d("OnAccessibilityEvent $event")
         val focussedNode = accessibilityService.findFocussedNode(AccessibilityNodeInfo.FOCUS_INPUT)
 

@@ -162,7 +162,7 @@ class MyAccessibilityService :
     }
 
     var controller: AccessibilityServiceController? = null
-    private var overlayController: AccessibilityOverlayController? = null
+    private var overlaysManager: OverlaysManager? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -199,8 +199,8 @@ class MyAccessibilityService :
             controller = Inject.accessibilityServiceController(this, keyEventRelayServiceWrapper)
         }
 
-        overlayController = AccessibilityOverlayController(this)
-        overlayController?.onServiceConnected()
+        overlaysManager = OverlaysManager(this)
+        overlaysManager?.onServiceConnected()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             fingerprintGestureCallback =
@@ -262,7 +262,7 @@ class MyAccessibilityService :
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
 
-        overlayController?.onConfigurationChanged(newConfig)
+        overlaysManager?.onConfigurationChanged(newConfig)
     }
 
     override fun onLowMemory() {
@@ -275,7 +275,11 @@ class MyAccessibilityService :
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        controller?.onAccessibilityEvent(event?.toModel())
+        event ?: return
+
+        overlaysManager?.onAccessibilityEvent(event)
+
+        controller?.onAccessibilityEvent(event.toModel())
     }
 
     override fun onKeyEvent(event: KeyEvent?): Boolean {
