@@ -392,12 +392,6 @@ Pokud by měla být spárována nějaká WiFi síť, nechte ji prázdnou.</strin
     <string name="dialog_message_screen_pinning_warning">Použití tohoto spouštěče může způsobit černou obrazovku, když odemknete zařízení po použití nastavení připnutí obrazovky v nastavení zařízení. To lze opravit restartem. To se neděje na všech zařízeních, takže beware a vypněte nastavení, pokud tak učiní!</string>
     <string name="dialog_title_reset_fingerprint_maps">Obnovit mapy gesta otisků prstů</string>
     <string name="dialog_message_reset_fingerprint_maps">Jste si jisti, že chcete obnovit mapy gesta otisků prstů?</string>
-    <string name="dialog_title_key_mapper_crashed">Mapa klíče byla ukončena nebo havarována</string>
-    <string name="dialog_message_key_mapper_crashed">Je velmi pravděpodobné, že váš telefon ukončil klávesovou mapu, zatímco se pokoušel běžet na pozadí. Tohle není <b></b> chyba vývojáře a není nic, co by mohli udělat pro opravu, proto prosím neponechejte špatnou recenzi 😃.
-
-    \n\nSledujete průvodce dontkillmyapp.com před tím, aby váš telefon zastavil zabíjení Mapper?</string>
-    <string name="dialog_button_read_dont_kill_my_app_yes">Ano</string>
-    <string name="dialog_button_read_dont_kill_my_app_no">Ne</string>
     <string name="dialog_title_failed_to_create_bug_report">Nepodařilo se vytvořit hlášení o chybě</string>
     <string name="dialog_title_request_shizuku_permission">Požádat o povolení Shizuku</string>
     <string name="dialog_message_request_shizuku_permission">Vzhledem k tomu, že používáte Shizuku, důrazně doporučujeme udělit toto oprávnění, protože některé funkce v Mapovači klíčů lze provést, aniž byste museli cokoli konfigurovat (např. zadávání klíčových kódů bez použití klávesnice Key Mapper).</string>

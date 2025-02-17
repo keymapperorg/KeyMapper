@@ -345,8 +345,6 @@
     <string name="dialog_title_choose_flash">Elegir flash</string>
     <string name="dialog_title_cant_find_accessibility_settings_page">No se encontró la página de ajustes de accesibilidad</string>
     <string name="dialog_title_cant_record_trigger">¿No se puede grabar el activador?</string>
-    <string name="dialog_title_unsaved_changes">Descartar los cambios</string>
-    <string name="dialog_message_unsaved_changes">¿Estás seguro de que quieres descartar tus cambios?</string>
     <string name="dialog_message_root_prompt">Si sabes que tu teléfono no está rooteado o no sabes lo que es el root, no podrás utilizar las funciones que sólo funcionan en dispositivos rooteados. Cuando toques \"OK\", irás a los ajustes.            En los ajustes, desplázate hasta la parte inferior y toca \"Key Mapper tiene permisos root\" para poder utilizar las funciones/acciones de root.</string>
     <string name="dialog_message_downloading">Descargando…</string>
     <string name="dialog_message_long_press_warning">La pulsación larga sólo funciona para los botones físicos de volumen y navegación. Si lo activa para otras teclas, las teclas no funcionarán cuando no estén pulsadas durante mucho tiempo.</string>
@@ -398,12 +396,6 @@
     <string name="dialog_message_screen_pinning_warning">El uso de este activador puede causar una pantalla negra cuando se desbloquea el dispositivo después de usar la configuración de fijación de la pantalla en los ajustes del dispositivo. Esto se puede arreglar con un reinicio. ¡Esto no ocurre en todos los dispositivos, así que ten cuidado y desactiva el ajuste si lo hace!</string>
     <string name="dialog_title_reset_fingerprint_maps">Restablecer mapas gestuales de las huellas dactilares</string>
     <string name="dialog_message_reset_fingerprint_maps">¿Estás seguro de que quieres restablecer tus mapas gestuales de huellas dactilares?</string>
-    <string name="dialog_title_key_mapper_crashed">El Key Mapper ha detenido o estrellado</string>
-    <string name="dialog_message_key_mapper_crashed">Es muy probable que tu teléfono haya matado a Key Mapper mientras intentaba ejecutarse en segundo plano. Esto <b>no</b> es culpa del desarrollador y no hay nada que puedan hacer para solucionarlo, así que por favor no dejes una mala crítica 😃.
-
-     \n\n¿Has seguido la guía de dontkillmyapp.com para evitar que tu teléfono mate a Key Mapper?</string>
-    <string name="dialog_button_read_dont_kill_my_app_yes">Sí</string>
-    <string name="dialog_button_read_dont_kill_my_app_no">No</string>
     <string name="dialog_title_failed_to_create_bug_report">No se ha podido crear un informe de error</string>
     <string name="dialog_title_request_shizuku_permission">Preguntar por permiso a Shizuku</string>
     <string name="dialog_message_request_shizuku_permission">En tanto que estás usando Shizuku es muy recomendable conceder este permiso dado que algunas de las funcionalidades de Key Mapper pueden hacerse sin configurar nada (por ejemplo, introducir códigos de teclas sin usar el teclado de Key Mapper).</string>
@@ -417,7 +409,6 @@
     <string name="dialog_title_fix_dnd_trigger_error">Concede acceso a No molestar</string>
     <string name="dialog_message_fix_dnd_trigger_error">Se le llevará a la página de configuración de su dispositivo para gestionar qué aplicaciones pueden modificar el estado No molestar. Esto <b>no está presente en algunos dispositivos,</b> así que pulse No mostrar de nuevo si no ve posicionador de teclas en la lista.</string>
     <string name="pos_yes">Sí</string>
-    <string name="pos_confirm">Confirmar</string>
     <string name="pos_done">Hecho</string>
     <string name="pos_opt_in">Inscribirse</string>
     <string name="pos_grant_write_secure_settings_guide">Guía</string>
