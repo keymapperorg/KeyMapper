@@ -50,7 +50,7 @@ class AutomaticallyChangeImeSettings : BaseSettingsFragment() {
         SwitchPreferenceCompat(requireContext()).apply {
             key = Keys.changeImeOnInputFocus.name
 
-            setDefaultValue(false)
+            setDefaultValue(PreferenceDefaults.CHANGE_IME_ON_INPUT_FOCUS)
             isSingleLineTitle = false
             setTitle(R.string.title_pref_auto_change_ime_on_input_focus)
             setSummary(R.string.summary_pref_auto_change_ime_on_input_focus)
