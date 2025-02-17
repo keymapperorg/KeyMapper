@@ -278,7 +278,11 @@ class MyAccessibilityService :
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         event ?: return
 
-        overlaysManager?.onAccessibilityEvent(event)
+        if (event.eventType == AccessibilityEvent.TYPE_WINDOWS_CHANGED &&
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+        ) {
+            overlaysManager?.onWindowsChanged()
+        }
 
         controller?.onAccessibilityEvent(event.toModel())
     }
