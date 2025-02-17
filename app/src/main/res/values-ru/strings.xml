@@ -345,8 +345,8 @@
     <string name="dialog_title_choose_flash">Выберите мигание</string>
     <string name="dialog_title_cant_find_accessibility_settings_page">Страница настроек специальных возможностей не найдена</string>
     <string name="dialog_title_cant_record_trigger">Не удается записать событие?</string>
-    <string name="dialog_title_discard_changes">Отменить изменения</string>
-    <string name="dialog_message_discard_changes">Вы уверены, что хотите отменить ваши изменения?</string>
+    <string name="dialog_title_unsaved_changes">Отменить изменения</string>
+    <string name="dialog_message_unsaved_changes">Вы уверены, что хотите отменить ваши изменения?</string>
     <string name="dialog_message_root_prompt">Если вы знаете, что у вашего устройства нет Root прав или вы не знаете, что это такое вообще - вы не сможете использовать функции требующие Root прав. Когда вы нажмете на \'OK\' откроются соответствующие настройки.
             В настройках спуститесь вниз и нажмите на \'Key Mapper имеет Root права\' после этого вы сможете использовать эти функции.</string>
     <string name="dialog_message_downloading">Загрузка…</string>

@@ -487,8 +487,8 @@
     <string name="dialog_title_choose_flash">Choose flash</string>
     <string name="dialog_title_cant_find_accessibility_settings_page">Can\'t find the accessibility settings page</string>
     <string name="dialog_title_cant_record_trigger">Can\'t record trigger?</string>
-    <string name="dialog_title_discard_changes">Discard your changes</string>
-    <string name="dialog_message_discard_changes">Are you sure you want to discard your changes?</string>
+    <string name="dialog_title_unsaved_changes">Unsaved changes</string>
+    <string name="dialog_message_unsaved_changes"> You have unsaved changes. If you discard them, your edits will be lost.</string>
     <string name="dialog_message_root_prompt">If you know your phone isn\'t rooted or you don\'t know what root is, you can\'t use features which only work on rooted devices. When you tap \'OK\', you will be taken to the settings.
             In the settings, scroll to the bottom and tap \'Key Mapper has root permission\' so you can use root features/actions.</string>
     <string name="dialog_message_downloading">Downloading…</string>
@@ -598,7 +598,6 @@
     <string name="show_example">Show example</string>
 
     <string name="pos_yes">Yes</string>
-    <string name="pos_confirm">Confirm</string>
     <string name="pos_done">Done</string>
     <string name="pos_opt_in">Opt in</string>
     <string name="pos_grant_write_secure_settings_guide">Guide</string>
@@ -615,12 +614,14 @@
     <string name="pos_never_show_again">Never show again</string>
     <string name="pos_go_to_dont_kill_my_app">Open online guide</string>
     <string name="pos_apply">Apply</string>
+    <string name="pos_discard_changes">Discard changes</string>
 
     <string name="neg_turn_off">Turn off</string>
     <string name="neg_stay_out">Stay out</string>
     <string name="neg_no">No</string>
     <string name="neg_cancel">Cancel</string>
     <string name="neg_dont_show_again">Don\'t show again</string>
+    <string name="neg_keep_editing">Keep editing</string>
 
     <string name="neutral_hide">Hide</string>
     <string name="neutral_go_to_dont_kill_my_app">Online guide</string>

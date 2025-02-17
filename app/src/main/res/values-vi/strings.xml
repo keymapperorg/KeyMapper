@@ -364,8 +364,8 @@
     <string name="dialog_title_choose_flash">Chọn đèn nháy</string>
     <string name="dialog_title_cant_find_accessibility_settings_page">Không thể tìm thấy trang cài đặt trợ năng</string>
     <string name="dialog_title_cant_record_trigger">Không thể ghi kích hoạt?</string>
-    <string name="dialog_title_discard_changes">Hủy thay đổi của bạn</string>
-    <string name="dialog_message_discard_changes">Bạn có chắc chắn muốn hủy các thay đổi của mình không?</string>
+    <string name="dialog_title_unsaved_changes">Hủy thay đổi của bạn</string>
+    <string name="dialog_message_unsaved_changes">Bạn có chắc chắn muốn hủy các thay đổi của mình không?</string>
     <string name="dialog_message_root_prompt">Nếu bạn biết điện thoại của mình chưa được root hoặc bạn không biết root là gì thì bạn không thể sử dụng các tính năng chỉ hoạt động trên các thiết bị đã root. Khi bạn nhấn \'OK\', bạn sẽ được đưa đến cài đặt. Trong cài đặt, cuộn xuống cuối và nhấn \'Key Mapper có quyền root\' để bạn có thể sử dụng các tính năng/hành động gốc.</string>
     <string name="dialog_message_downloading">Đang tải xuống…</string>
     <string name="dialog_message_long_press_warning">Nhấn lâu chỉ có tác dụng với các nút âm lượng và điều hướng vật lý. Nếu bạn bật tính năng này cho các phím khác, các phím đó sẽ không hoạt động khi chúng không được nhấn lâu.</string>

@@ -367,8 +367,8 @@
     <string name="dialog_title_choose_flash">Escolha o flash</string>
     <string name="dialog_title_cant_find_accessibility_settings_page">Não consigo encontrar a página de configurações de acessibilidade</string>
     <string name="dialog_title_cant_record_trigger">Não é possível gravar o gatilho?</string>
-    <string name="dialog_title_discard_changes">Descartar suas alterações</string>
-    <string name="dialog_message_discard_changes">Tem certeza de que deseja descartar suas alterações?</string>
+    <string name="dialog_title_unsaved_changes">Descartar suas alterações</string>
+    <string name="dialog_message_unsaved_changes">Tem certeza de que deseja descartar suas alterações?</string>
     <string name="dialog_message_root_prompt">Se você sabe que seu telefone não está enraizado ou não sabe o que é root, não poderá usar recursos que funcionam apenas em dispositivos enraizados. Ao tocar em ‘OK’, você será levado às configurações.
             Nas configurações, role até a parte inferior e toque em \'Key Mapper tem permissão de root\' para que você possa usar recursos/ações de root.</string>
     <string name="dialog_message_downloading">Baixando…</string>

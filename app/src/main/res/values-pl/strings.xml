@@ -372,8 +372,8 @@
     <string name="dialog_title_choose_flash">Wybierz lampę błyskową</string>
     <string name="dialog_title_cant_find_accessibility_settings_page">Nie można wykryć strony ustawień ułatwień dostępu</string>
     <string name="dialog_title_cant_record_trigger">Nie możesz wprowadzić wyzwalacza?</string>
-    <string name="dialog_title_discard_changes">Odrzucenie zmian</string>
-    <string name="dialog_message_discard_changes">Czy na pewno chcesz odrzucić zmiany?</string>
+    <string name="dialog_title_unsaved_changes">Odrzucenie zmian</string>
+    <string name="dialog_message_unsaved_changes">Czy na pewno chcesz odrzucić zmiany?</string>
     <string name="dialog_message_root_prompt">Jeśli wiesz, że Twój telefon nie jest zrootowany lub nie wiesz, czym jest root, nie możesz korzystać z funkcji, które działają tylko na zrootowanych urządzeniach. Po kliknięciu \"OK\" zostaniesz przeniesiony do ustawień.
             W ustawieniach przewiń w dół i kliknij \"Key Mapper ma uprawnienia roota\", aby móc korzystać z funkcji/działań roota.</string>
     <string name="dialog_message_downloading">Pobieranie…</string>

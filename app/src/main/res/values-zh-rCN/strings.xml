@@ -368,8 +368,8 @@
     <string name="dialog_title_choose_flash">选择闪光灯</string>
     <string name="dialog_title_cant_find_accessibility_settings_page">无法找到无障碍服务设置页面</string>
     <string name="dialog_title_cant_record_trigger">无法录制触发器？</string>
-    <string name="dialog_title_discard_changes">放弃更改</string>
-    <string name="dialog_message_discard_changes">确定要放弃修改吗？</string>
+    <string name="dialog_title_unsaved_changes">放弃更改</string>
+    <string name="dialog_message_unsaved_changes">确定要放弃修改吗？</string>
     <string name="dialog_message_root_prompt">如果您知道您的手机没有 root 权限或者您不知道什么是 root，则您不能使用仅适用于有 root 权限的设备的功能。 当您点击“确定”时，您将进入设置。
              在设置中，滚动到底部并点击“Key Mapper 已经被授予 root 权限”，以便您可以使用 root 功能/操作。</string>
     <string name="dialog_message_downloading">正在下载...</string>

@@ -345,8 +345,8 @@
     <string name="dialog_title_choose_flash">Elegir flash</string>
     <string name="dialog_title_cant_find_accessibility_settings_page">No se encontró la página de ajustes de accesibilidad</string>
     <string name="dialog_title_cant_record_trigger">¿No se puede grabar el activador?</string>
-    <string name="dialog_title_discard_changes">Descartar los cambios</string>
-    <string name="dialog_message_discard_changes">¿Estás seguro de que quieres descartar tus cambios?</string>
+    <string name="dialog_title_unsaved_changes">Descartar los cambios</string>
+    <string name="dialog_message_unsaved_changes">¿Estás seguro de que quieres descartar tus cambios?</string>
     <string name="dialog_message_root_prompt">Si sabes que tu teléfono no está rooteado o no sabes lo que es el root, no podrás utilizar las funciones que sólo funcionan en dispositivos rooteados. Cuando toques \"OK\", irás a los ajustes.            En los ajustes, desplázate hasta la parte inferior y toca \"Key Mapper tiene permisos root\" para poder utilizar las funciones/acciones de root.</string>
     <string name="dialog_message_downloading">Descargando…</string>
     <string name="dialog_message_long_press_warning">La pulsación larga sólo funciona para los botones físicos de volumen y navegación. Si lo activa para otras teclas, las teclas no funcionarán cuando no estén pulsadas durante mucho tiempo.</string>
