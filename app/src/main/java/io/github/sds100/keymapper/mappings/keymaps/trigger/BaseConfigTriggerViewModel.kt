@@ -273,7 +273,10 @@ abstract class BaseConfigTriggerViewModel(
                 }
         }
 
-        recordTrigger.state.onEach { state ->
+        // Drop the first state in case it is in the Completed state so the
+        // "button not detected" bottom sheet isn't shown when
+        // the screen is opened.
+        recordTrigger.state.drop(1).onEach { state ->
             if (state is RecordTriggerState.Completed &&
                 state.recordedKeys.isEmpty() &&
                 onboarding.showNoKeysDetectedBottomSheet.first() &&
