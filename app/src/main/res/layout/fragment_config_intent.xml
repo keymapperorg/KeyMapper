@@ -335,11 +335,11 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             app:fabAlignmentMode="end"
-            app:paddingRightSystemWindowInsets="false" />
-            app:paddingBottomSystemWindowInsets="false"
             app:fabAnimationMode="slide"
             app:menuAlignmentMode="auto"
-            app:navigationIcon="@drawable/ic_baseline_arrow_back_24" />
+            app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
+            app:paddingBottomSystemWindowInsets="false"
+            app:paddingRightSystemWindowInsets="false" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"
