@@ -556,12 +556,10 @@
     <string name="dialog_title_reset_fingerprint_maps">Reset fingerprint gesture maps</string>
     <string name="dialog_message_reset_fingerprint_maps">Are you sure that you want to reset your fingerprint gesture maps?</string>
 
-    <string name="dialog_title_key_mapper_crashed">Key Mapper has been killed or crashed</string>
-    <string name="dialog_message_key_mapper_crashed">It is very likely that your phone killed Key Mapper while it was trying to run in the background. This is <b>not</b> the developer\'s fault and there is nothing they can do to fix it so please don\'t leave a bad review 😃.
-
-    \n\nHave you followed the guide on dontkillmyapp.com before to stop your phone from killing Key Mapper?</string>
-    <string name="dialog_button_read_dont_kill_my_app_yes">Yes</string>
-    <string name="dialog_button_read_dont_kill_my_app_no">No</string>
+    <string name="dialog_title_key_mapper_crashed">Key Mapper was interrupted</string>
+    <string name="dialog_message_key_mapper_crashed">Key Mapper tried to run in the background but was stopped by the system.\nThis can happen if you have battery or memory optimization turned on.\n\nTo fix this, you can try following an online guide.</string>
+    <string name="dialog_button_read_dont_kill_my_app_yes">Proceed</string>
+    <string name="dialog_button_read_dont_kill_my_app_no">Ignore</string>
 
     <string name="dialog_title_failed_to_create_bug_report">Failed to create bug report</string>
 
