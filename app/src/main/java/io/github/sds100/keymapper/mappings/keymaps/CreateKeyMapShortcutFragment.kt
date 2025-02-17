@@ -95,14 +95,14 @@ class CreateKeyMapShortcutFragment : SimpleRecyclerViewFragment<KeyMapListItem>(
 
     private fun showOnBackPressedWarning() {
         requireContext().alertDialog {
-            titleResource = R.string.dialog_title_discard_changes
-            messageResource = R.string.dialog_message_discard_changes
+            titleResource = R.string.dialog_title_unsaved_changes
+            messageResource = R.string.dialog_message_unsaved_changes
 
-            positiveButton(R.string.pos_confirm) {
+            positiveButton(R.string.pos_discard_changes) {
                 requireActivity().finish()
             }
 
-            negativeButton(R.string.neg_cancel) { it.cancel() }
+            negativeButton(R.string.neg_keep_editing) { it.cancel() }
             show()
         }
     }

@@ -48,6 +48,7 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- Keep this vertical so that the radio buttons show all their text on small displays. -->
                 <RadioGroup
                     android:id="@+id/radioGroupTarget"
                     android:layout_width="match_parent"
@@ -55,7 +56,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
                     android:checkedButton="@{viewModel.checkedTarget}"
-                    android:orientation="horizontal"
+                    android:orientation="vertical"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/textInputLayoutDescription">
@@ -335,11 +336,11 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             app:fabAlignmentMode="end"
-            app:paddingRightSystemWindowInsets="false" />
-            app:paddingBottomSystemWindowInsets="false"
             app:fabAnimationMode="slide"
             app:menuAlignmentMode="auto"
-            app:navigationIcon="@drawable/ic_baseline_arrow_back_24" />
+            app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
+            app:paddingBottomSystemWindowInsets="false"
+            app:paddingRightSystemWindowInsets="false" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"

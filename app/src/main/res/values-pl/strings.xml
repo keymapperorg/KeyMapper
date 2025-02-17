@@ -372,8 +372,6 @@
     <string name="dialog_title_choose_flash">Wybierz lampę błyskową</string>
     <string name="dialog_title_cant_find_accessibility_settings_page">Nie można wykryć strony ustawień ułatwień dostępu</string>
     <string name="dialog_title_cant_record_trigger">Nie możesz wprowadzić wyzwalacza?</string>
-    <string name="dialog_title_discard_changes">Odrzucenie zmian</string>
-    <string name="dialog_message_discard_changes">Czy na pewno chcesz odrzucić zmiany?</string>
     <string name="dialog_message_root_prompt">Jeśli wiesz, że Twój telefon nie jest zrootowany lub nie wiesz, czym jest root, nie możesz korzystać z funkcji, które działają tylko na zrootowanych urządzeniach. Po kliknięciu \"OK\" zostaniesz przeniesiony do ustawień.
             W ustawieniach przewiń w dół i kliknij \"Key Mapper ma uprawnienia roota\", aby móc korzystać z funkcji/działań roota.</string>
     <string name="dialog_message_downloading">Pobieranie…</string>
@@ -426,12 +424,6 @@
     <string name="dialog_message_screen_pinning_warning">Użycie tego wyzwalacza może spowodować czarny ekran po odblokowaniu urządzenia po użyciu fukcji przypinania ekranu w ustawieniach urządzenia. Można to naprawić przez ponowne uruchomienie urządzenia. Nie dzieje się tak na wszystkich urządzeniach, więc uważaj i wyłącz to ustawienie, jeśli tak się stanie!</string>
     <string name="dialog_title_reset_fingerprint_maps">Zresetuj mapy gestów czytnika linii papilarnych</string>
     <string name="dialog_message_reset_fingerprint_maps">Czy na pewno chcesz zresetować mapy gestów czytnika linii papilarnych?</string>
-    <string name="dialog_title_key_mapper_crashed">Key Mapper został zatrzymany lub uległ awarii</string>
-    <string name="dialog_message_key_mapper_crashed">Jest bardzo prawdopodobne, że Twoje urządzenie zatrzymało Key Mapper, gdy próbował działać w tle. <b>Nie jest</b> to wina programisty, więc nie zostawiaj złej recenzji 😃, ponieważ nie można nic zrobić z aplikacją, aby to naprawić.
-
-    \n\nCzy postępowałeś(-aś) już zgodnie z przewodnikiem na dontkillmyapp.com, aby uniemożliwić urządzeniu zatrzymanie Key Mapper?</string>
-    <string name="dialog_button_read_dont_kill_my_app_yes">Tak</string>
-    <string name="dialog_button_read_dont_kill_my_app_no">Nie</string>
     <string name="dialog_title_failed_to_create_bug_report">Nie udało się utworzyć zgłoszenie o błędzie</string>
     <string name="dialog_title_request_shizuku_permission">Poproś o uprawnienie Shizuku</string>
     <string name="dialog_message_request_shizuku_permission">Ponieważ używasz Shizuku, zdecydowanie zaleca się udzielenie tego uprawnienia, ponieważ niektóre funkcje Key Mappera można wykonać bez konieczności konfigurowania czegokolwiek (np. wprowadzanie kodów klawiszy bez użycia klawiatury Key Mapper).</string>
@@ -445,7 +437,6 @@
     <string name="dialog_title_fix_dnd_trigger_error">Udziel dostęp do trybu Nie przeszkadzać</string>
     <string name="dialog_message_fix_dnd_trigger_error">Spowoduje to przejście do strony ustawień urządzenia, na której możesz zarządzać aplikacjami, które mogą zmieniać stan Nie przeszkadzać. To <b>nie występuje na niektórych urządzeniach</b>, więc możesz kliknąć Nie wyświetlaj ponownie, jeśli nie widzisz aplikacji Key Mapper na tej liście.</string>
     <string name="pos_yes">Tak</string>
-    <string name="pos_confirm">Potwierdź</string>
     <string name="pos_done">Gotowe</string>
     <string name="pos_opt_in">Zaakceptuj</string>
     <string name="pos_grant_write_secure_settings_guide">Przewodnik</string>
