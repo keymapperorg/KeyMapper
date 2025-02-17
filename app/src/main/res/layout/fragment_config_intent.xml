@@ -48,6 +48,7 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- Keep this vertical so that the radio buttons show all their text on small displays. -->
                 <RadioGroup
                     android:id="@+id/radioGroupTarget"
                     android:layout_width="match_parent"
@@ -55,7 +56,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
                     android:checkedButton="@{viewModel.checkedTarget}"
-                    android:orientation="horizontal"
+                    android:orientation="vertical"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/textInputLayoutDescription">
