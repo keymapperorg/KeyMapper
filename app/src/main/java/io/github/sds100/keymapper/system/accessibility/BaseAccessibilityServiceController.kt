@@ -9,6 +9,7 @@ import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.data.Keys
+import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
 import io.github.sds100.keymapper.mappings.fingerprintmaps.DetectFingerprintMapsUseCase
@@ -42,6 +43,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
@@ -118,6 +120,16 @@ abstract class BaseAccessibilityServiceController(
     private val screenOffTriggersEnabled: StateFlow<Boolean> =
         detectKeyMapsUseCase.detectScreenOffTriggers
             .stateIn(coroutineScope, SharingStarted.Eagerly, false)
+
+    private val changeImeOnInputFocus: StateFlow<Boolean> =
+        settingsRepository
+            .get(Keys.changeImeOnInputFocus)
+            .map { it ?: PreferenceDefaults.CHANGE_IME_ON_INPUT_FOCUS }
+            .stateIn(
+                coroutineScope,
+                SharingStarted.Lazily,
+                PreferenceDefaults.CHANGE_IME_ON_INPUT_FOCUS,
+            )
 
     private val detectScreenOffKeyEventsController =
         DetectScreenOffKeyEventsController(
@@ -254,8 +266,8 @@ abstract class BaseAccessibilityServiceController(
             }
         }.launchIn(coroutineScope)
 
-        settingsRepository.get(Keys.changeImeOnInputFocus).onEach { changeImeOnInputFocus ->
-            if (changeImeOnInputFocus == true) {
+        changeImeOnInputFocus.onEach { changeImeOnInputFocus ->
+            if (changeImeOnInputFocus) {
                 serviceEventTypes.value = serviceEventTypes.value
                     .withFlag(AccessibilityEvent.TYPE_VIEW_FOCUSED)
                     .withFlag(AccessibilityEvent.TYPE_VIEW_CLICKED)
@@ -411,18 +423,20 @@ abstract class BaseAccessibilityServiceController(
     }
 
     fun onAccessibilityEvent(event: AccessibilityEventModel) {
-        Timber.d("OnAccessibilityEvent $event")
-        val focussedNode = accessibilityService.findFocussedNode(AccessibilityNodeInfo.FOCUS_INPUT)
+        if (changeImeOnInputFocus.value) {
+            val focussedNode =
+                accessibilityService.findFocussedNode(AccessibilityNodeInfo.FOCUS_INPUT)
 
-        if (focussedNode?.isEditable == true && focussedNode.isFocused) {
-            Timber.d("Got input focus")
-            coroutineScope.launch {
-                outputEvents.emit(ServiceEvent.OnInputFocusChange(isFocussed = true))
-            }
-        } else {
-            Timber.d("Lost input focus")
-            coroutineScope.launch {
-                outputEvents.emit(ServiceEvent.OnInputFocusChange(isFocussed = false))
+            if (focussedNode?.isEditable == true && focussedNode.isFocused) {
+                Timber.d("Got input focus")
+                coroutineScope.launch {
+                    outputEvents.emit(ServiceEvent.OnInputFocusChange(isFocussed = true))
+                }
+            } else {
+                Timber.d("Lost input focus")
+                coroutineScope.launch {
+                    outputEvents.emit(ServiceEvent.OnInputFocusChange(isFocussed = false))
+                }
             }
         }
     }

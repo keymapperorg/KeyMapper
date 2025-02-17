@@ -8,6 +8,7 @@ object PreferenceDefaults {
     const val DARK_THEME = "2"
 
     const val SHOW_TOAST_WHEN_AUTO_CHANGE_IME = true
+    const val CHANGE_IME_ON_INPUT_FOCUS = false
 
     const val FORCE_VIBRATE = false
     const val LONG_PRESS_DELAY = 500

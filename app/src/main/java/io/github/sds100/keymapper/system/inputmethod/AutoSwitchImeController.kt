@@ -87,7 +87,7 @@ class AutoSwitchImeController(
         }.launchIn(coroutineScope)
 
         preferenceRepository.get(Keys.changeImeOnInputFocus).onEach {
-            changeImeOnInputFocus = it ?: PreferenceDefaults.SHOW_TOAST_WHEN_AUTO_CHANGE_IME
+            changeImeOnInputFocus = it ?: PreferenceDefaults.CHANGE_IME_ON_INPUT_FOCUS
         }.launchIn(coroutineScope)
 
         preferenceRepository.get(Keys.showToastWhenAutoChangingIme).onEach {
