@@ -368,8 +368,6 @@
     <string name="dialog_title_choose_flash">选择闪光灯</string>
     <string name="dialog_title_cant_find_accessibility_settings_page">无法找到无障碍服务设置页面</string>
     <string name="dialog_title_cant_record_trigger">无法录制触发器？</string>
-    <string name="dialog_title_unsaved_changes">放弃更改</string>
-    <string name="dialog_message_unsaved_changes">确定要放弃修改吗？</string>
     <string name="dialog_message_root_prompt">如果您知道您的手机没有 root 权限或者您不知道什么是 root，则您不能使用仅适用于有 root 权限的设备的功能。 当您点击“确定”时，您将进入设置。
              在设置中，滚动到底部并点击“Key Mapper 已经被授予 root 权限”，以便您可以使用 root 功能/操作。</string>
     <string name="dialog_message_downloading">正在下载...</string>
@@ -422,12 +420,6 @@
     <string name="dialog_message_screen_pinning_warning">使用设备设置中的屏幕固定设置后解锁设备时，使用此触发器可能会导致黑屏。 这可以通过重新启动来解决。 并非所有设备都会发生这种情况，因此请注意并关闭设置！</string>
     <string name="dialog_title_reset_fingerprint_maps">重置指纹手势</string>
     <string name="dialog_message_reset_fingerprint_maps">您确定要重置指纹手势吗？</string>
-    <string name="dialog_title_key_mapper_crashed">Key Mapper 已崩溃或被强制关闭</string>
-    <string name="dialog_message_key_mapper_crashed">您的手机很可能强制关闭了试图后台运行的 Key Mapper。这<b>并非</b>开发者的过错，他们对修复这种问题也无能为力，所以请您不要因此打差评😃。
-
-    \n\n您有没有试着参照 dontkillmyapp.com 上的教程，阻止手机强制关闭 Key Mapper？</string>
-    <string name="dialog_button_read_dont_kill_my_app_yes">是</string>
-    <string name="dialog_button_read_dont_kill_my_app_no">否</string>
     <string name="dialog_title_failed_to_create_bug_report">错误报告生成失败</string>
     <string name="dialog_title_request_shizuku_permission">请求 Shizuku 权限</string>
     <string name="dialog_message_request_shizuku_permission">既然您在使用 Shizuku，我们强烈建议授予此权限，这样 Key Mapper 的一些功能就无需您的额外设置（例如，在不使用 Key Mapper 键盘的情况下输入键码）。</string>
@@ -441,7 +433,6 @@
     <string name="dialog_title_fix_dnd_trigger_error">授予“勿扰”权限</string>
     <string name="dialog_message_fix_dnd_trigger_error">即将跳转到可调整“勿扰”模式的设置页面，<b>一些设备不这样</b>所以勾选不再显示 如果你在列表里看不到Key Mapper</string>
     <string name="pos_yes">是</string>
-    <string name="pos_confirm">确认</string>
     <string name="pos_done">完成</string>
     <string name="pos_opt_in">选择加入</string>
     <string name="pos_grant_write_secure_settings_guide">指南</string>

@@ -364,8 +364,6 @@
     <string name="dialog_title_choose_flash">Chọn đèn nháy</string>
     <string name="dialog_title_cant_find_accessibility_settings_page">Không thể tìm thấy trang cài đặt trợ năng</string>
     <string name="dialog_title_cant_record_trigger">Không thể ghi kích hoạt?</string>
-    <string name="dialog_title_unsaved_changes">Hủy thay đổi của bạn</string>
-    <string name="dialog_message_unsaved_changes">Bạn có chắc chắn muốn hủy các thay đổi của mình không?</string>
     <string name="dialog_message_root_prompt">Nếu bạn biết điện thoại của mình chưa được root hoặc bạn không biết root là gì thì bạn không thể sử dụng các tính năng chỉ hoạt động trên các thiết bị đã root. Khi bạn nhấn \'OK\', bạn sẽ được đưa đến cài đặt. Trong cài đặt, cuộn xuống cuối và nhấn \'Key Mapper có quyền root\' để bạn có thể sử dụng các tính năng/hành động gốc.</string>
     <string name="dialog_message_downloading">Đang tải xuống…</string>
     <string name="dialog_message_long_press_warning">Nhấn lâu chỉ có tác dụng với các nút âm lượng và điều hướng vật lý. Nếu bạn bật tính năng này cho các phím khác, các phím đó sẽ không hoạt động khi chúng không được nhấn lâu.</string>
@@ -405,12 +403,6 @@
     <string name="dialog_message_screen_pinning_warning">Việc sử dụng trình kích hoạt này có thể gây ra màn hình đen khi bạn mở khóa thiết bị sau khi sử dụng cài đặt ghim màn hình trong cài đặt của thiết bị. Điều này có thể được khắc phục bằng cách khởi động lại. Điều này không xảy ra trên tất cả các thiết bị vì vậy hãy cẩn thận và tắt cài đặt nếu xảy ra!</string>
     <string name="dialog_title_reset_fingerprint_maps">Đặt lại bản đồ cử chỉ vân tay</string>
     <string name="dialog_message_reset_fingerprint_maps">Bạn có chắc chắn muốn đặt lại bản đồ cử chỉ vân tay của mình không?</string>
-    <string name="dialog_title_key_mapper_crashed">Key Mapper đã bị hỏng</string>
-    <string name="dialog_message_key_mapper_crashed">Rất có thể điện thoại của bạn đã tắt Key Mapper khi nó đang cố chạy ở chế độ nền. Đây <b>không</b> là lỗi của nhà phát triển và họ không thể làm gì để khắc phục nên vui lòng đừng để lại đánh giá xấu 😃.
-
- \n\nTrước đây, bạn đã làm theo hướng dẫn trên Dontkillmyapp.com để ngăn điện thoại của mình tắt Key Mapper chưa?</string>
-    <string name="dialog_button_read_dont_kill_my_app_yes">Đúng</string>
-    <string name="dialog_button_read_dont_kill_my_app_no">Không</string>
     <string name="dialog_title_failed_to_create_bug_report">Không tạo được báo cáo lỗi</string>
     <string name="dialog_title_request_shizuku_permission">Yêu cầu sự cho phép của Shizuku</string>
     <string name="dialog_message_request_shizuku_permission">Vì bạn đang sử dụng Shizuku nên bạn nên cấp quyền này vì một số tính năng trong Key Mapper có thể được thực hiện mà bạn không cần phải định cấu hình bất cứ điều gì (Ví dụ: nhập mã khóa mà không cần sử dụng bàn phím Key Mapper).</string>
@@ -424,7 +416,6 @@
     <string name="dialog_title_fix_dnd_trigger_error">Cấp quyền truy cập Không làm phiền</string>
     <string name="dialog_message_fix_dnd_trigger_error">Bạn sẽ được đưa đến trang cài đặt của thiết bị để quản lý những ứng dụng nào có thể sửa đổi trạng thái Không làm phiền. Tính năng này <b>không xuất hiện trên một số thiết bị</b> vì vậy hãy nhấn vào không hiển thị lại nếu bạn không thấy Key Mapper trong danh sách.</string>
     <string name="pos_yes">Đúng</string>
-    <string name="pos_confirm">Xác nhận</string>
     <string name="pos_done">Xong</string>
     <string name="pos_opt_in">Chọn tham gia</string>
     <string name="pos_grant_write_secure_settings_guide">Hướng dẫn</string>
