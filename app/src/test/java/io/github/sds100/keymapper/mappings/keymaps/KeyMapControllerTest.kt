@@ -36,6 +36,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.currentTime
 import kotlinx.coroutines.test.runTest
@@ -179,6 +180,192 @@ class KeyMapControllerTest {
             performActionsUseCase,
             detectConstraintsUseCase,
         )
+    }
+
+    /**
+     * Issue #1386
+     */
+    @Test
+    fun `Do not trigger both triggers if sequence trigger is triggered while waiting`() = runTest(testDispatcher) {
+        // GIVEN
+        val copyTrigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_J))
+        val copyAction = KeyMapAction(data = ActionData.CopyText)
+
+        val sequenceTrigger =
+            sequenceTrigger(triggerKey(KeyEvent.KEYCODE_J), triggerKey(KeyEvent.KEYCODE_K))
+        val enterAction = KeyMapAction(data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_ENTER))
+
+        keyMapListFlow.value = listOf(
+            KeyMap(0, trigger = copyTrigger, actionList = listOf(copyAction)),
+            KeyMap(1, trigger = sequenceTrigger, actionList = listOf(enterAction)),
+        )
+
+        // WHEN
+        mockTriggerKeyInput(copyTrigger.keys[0])
+        mockTriggerKeyInput(sequenceTrigger.keys[0])
+        mockTriggerKeyInput(sequenceTrigger.keys[1])
+        advanceTimeBy(SEQUENCE_TRIGGER_TIMEOUT)
+
+        // THEN
+        verify(performActionsUseCase, never()).perform(copyAction.data)
+        verify(performActionsUseCase, times(1)).perform(enterAction.data)
+    }
+
+    /**
+     * Issue #1386
+     */
+    @Test
+    fun `Wait for longest sequence trigger timeout before triggering overlapping parallel triggers if multiple sequence triggers`() = runTest(testDispatcher) {
+        // GIVEN
+        val copyTrigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_J))
+        val copyAction = KeyMapAction(data = ActionData.CopyText)
+
+        val sequenceTrigger1 =
+            Trigger(
+                keys = listOf(
+                    triggerKey(KeyEvent.KEYCODE_J),
+                    triggerKey(KeyEvent.KEYCODE_K),
+                ),
+                mode = TriggerMode.Sequence,
+                sequenceTriggerTimeout = 500,
+            )
+        val sequenceTriggerAction1 =
+            KeyMapAction(data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_ENTER))
+
+        // This has a different second key.
+        val sequenceTrigger2 =
+            Trigger(
+                keys = listOf(
+                    triggerKey(KeyEvent.KEYCODE_J),
+                    triggerKey(KeyEvent.KEYCODE_A),
+                ),
+                mode = TriggerMode.Sequence,
+                sequenceTriggerTimeout = 1000,
+            )
+        val sequenceTriggerAction2 =
+            KeyMapAction(data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_ENTER))
+
+        keyMapListFlow.value = listOf(
+            KeyMap(0, trigger = copyTrigger, actionList = listOf(copyAction)),
+            KeyMap(1, trigger = sequenceTrigger1, actionList = listOf(sequenceTriggerAction1)),
+            KeyMap(2, trigger = sequenceTrigger2, actionList = listOf(sequenceTriggerAction2)),
+        )
+
+        // WHEN
+        mockTriggerKeyInput(copyTrigger.keys[0])
+
+        // THEN
+        inOrder(performActionsUseCase) {
+            // The single key trigger should not be executed straight away. Wait for
+            // the longer sequence trigger delay.
+            verify(performActionsUseCase, never()).perform(copyAction.data)
+
+            // It still shouldn't be executed after the first sequence trigger delay.
+            advanceTimeBy(500)
+            verify(performActionsUseCase, never()).perform(copyAction.data)
+
+            advanceTimeBy(1000)
+            verify(performActionsUseCase, times(1)).perform(copyAction.data)
+            verify(performActionsUseCase, never()).perform(sequenceTriggerAction1.data)
+            verify(performActionsUseCase, never()).perform(sequenceTriggerAction2.data)
+        }
+    }
+
+    /**
+     * Issue #1386
+     */
+    @Test
+    fun `Wait for sequence trigger timeout before triggering overlapping parallel triggers 1`() = runTest(testDispatcher) {
+        // GIVEN
+        val copyTrigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_J))
+        val copyAction = KeyMapAction(data = ActionData.CopyText)
+
+        val pasteTrigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_K))
+        val pasteAction = KeyMapAction(data = ActionData.PasteText)
+
+        val sequenceTrigger =
+            sequenceTrigger(triggerKey(KeyEvent.KEYCODE_J), triggerKey(KeyEvent.KEYCODE_K))
+        val enterAction = KeyMapAction(data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_ENTER))
+
+        keyMapListFlow.value = listOf(
+            KeyMap(0, trigger = copyTrigger, actionList = listOf(copyAction)),
+            KeyMap(1, trigger = pasteTrigger, actionList = listOf(pasteAction)),
+            KeyMap(2, trigger = sequenceTrigger, actionList = listOf(enterAction)),
+        )
+
+        // WHEN
+        mockTriggerKeyInput(copyTrigger.keys[0])
+        advanceTimeBy(SEQUENCE_TRIGGER_TIMEOUT)
+
+        // THEN
+        verify(performActionsUseCase, times(1)).perform(copyAction.data)
+        verify(performActionsUseCase, never()).perform(pasteAction.data)
+        verify(performActionsUseCase, never()).perform(enterAction.data)
+    }
+
+    /**
+     * Issue #1386
+     */
+    @Test
+    fun `Immediately trigger a key that is the 2nd key in a sequence trigger`() =
+        runTest(testDispatcher) {
+        // GIVEN
+        val copyTrigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_J))
+        val copyAction = KeyMapAction(data = ActionData.CopyText)
+
+        val pasteTrigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_K))
+            val pasteAction = KeyMapAction(data = ActionData.PasteText)
+
+        val sequenceTrigger =
+            sequenceTrigger(triggerKey(KeyEvent.KEYCODE_J), triggerKey(KeyEvent.KEYCODE_K))
+        val enterAction = KeyMapAction(data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_ENTER))
+
+        keyMapListFlow.value = listOf(
+            KeyMap(0, trigger = copyTrigger, actionList = listOf(copyAction)),
+            KeyMap(1, trigger = pasteTrigger, actionList = listOf(pasteAction)),
+            KeyMap(2, trigger = sequenceTrigger, actionList = listOf(enterAction)),
+        )
+
+        // WHEN
+        mockTriggerKeyInput(pasteTrigger.keys[0])
+
+        // THEN
+        verify(performActionsUseCase, never()).perform(copyAction.data)
+        verify(performActionsUseCase, times(1)).perform(pasteAction.data)
+        verify(performActionsUseCase, never()).perform(enterAction.data)
+    }
+
+    /**
+     * Issue #1386
+     */
+    @Test
+    fun `Do not trigger parallel trigger if a sequence trigger with the same keys is triggered`() =
+        runTest(testDispatcher) {
+        // GIVEN
+        val copyTrigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_J))
+        val copyAction = KeyMapAction(data = ActionData.CopyText)
+
+            val pasteTrigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_K))
+            val pasteAction = KeyMapAction(data = ActionData.PasteText)
+
+        val sequenceTrigger =
+            sequenceTrigger(triggerKey(KeyEvent.KEYCODE_J), triggerKey(KeyEvent.KEYCODE_K))
+        val enterAction = KeyMapAction(data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_ENTER))
+
+        keyMapListFlow.value = listOf(
+            KeyMap(0, trigger = copyTrigger, actionList = listOf(copyAction)),
+            KeyMap(1, trigger = pasteTrigger, actionList = listOf(pasteAction)),
+            KeyMap(2, trigger = sequenceTrigger, actionList = listOf(enterAction)),
+        )
+
+        // WHEN
+        mockTriggerKeyInput(sequenceTrigger.keys[0])
+        mockTriggerKeyInput(sequenceTrigger.keys[1])
+
+        // THEN
+        verify(performActionsUseCase, never()).perform(copyAction.data)
+        verify(performActionsUseCase, never()).perform(pasteAction.data)
+        verify(performActionsUseCase, times(1)).perform(enterAction.data)
     }
 
     @Test
