@@ -1460,7 +1460,8 @@
 
     <!--  Floating buttons  -->
     <string name="floating_menu_tooltip_1">Tap </string>
-    <string name="floating_menu_tooltip_2"> to show/hide this menu.\n\nYou can place buttons in any app, even the lock screen.</string>
+    <string name="floating_menu_tooltip_2"> to show/hide this menu.</string>
+    <string name="floating_menu_tooltip_3">You can place buttons in any app, even the lock screen.</string>
     <string name="floating_menu_help">Help</string>
     <string name="floating_menu_switch_layout">Switch layout</string>
     <string name="floating_menu_add_button">Add button</string>
