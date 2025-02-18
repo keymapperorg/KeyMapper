@@ -309,31 +309,31 @@ class KeyMapControllerTest {
     @Test
     fun `Immediately trigger a key that is the 2nd key in a sequence trigger`() =
         runTest(testDispatcher) {
-        // GIVEN
-        val copyTrigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_J))
-        val copyAction = KeyMapAction(data = ActionData.CopyText)
+            // GIVEN
+            val copyTrigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_J))
+            val copyAction = KeyMapAction(data = ActionData.CopyText)
 
-        val pasteTrigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_K))
+            val pasteTrigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_K))
             val pasteAction = KeyMapAction(data = ActionData.PasteText)
 
-        val sequenceTrigger =
-            sequenceTrigger(triggerKey(KeyEvent.KEYCODE_J), triggerKey(KeyEvent.KEYCODE_K))
-        val enterAction = KeyMapAction(data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_ENTER))
+            val sequenceTrigger =
+                sequenceTrigger(triggerKey(KeyEvent.KEYCODE_J), triggerKey(KeyEvent.KEYCODE_K))
+            val enterAction = KeyMapAction(data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_ENTER))
 
-        keyMapListFlow.value = listOf(
-            KeyMap(0, trigger = copyTrigger, actionList = listOf(copyAction)),
-            KeyMap(1, trigger = pasteTrigger, actionList = listOf(pasteAction)),
-            KeyMap(2, trigger = sequenceTrigger, actionList = listOf(enterAction)),
-        )
+            keyMapListFlow.value = listOf(
+                KeyMap(0, trigger = copyTrigger, actionList = listOf(copyAction)),
+                KeyMap(1, trigger = pasteTrigger, actionList = listOf(pasteAction)),
+                KeyMap(2, trigger = sequenceTrigger, actionList = listOf(enterAction)),
+            )
 
-        // WHEN
-        mockTriggerKeyInput(pasteTrigger.keys[0])
+            // WHEN
+            mockTriggerKeyInput(pasteTrigger.keys[0])
 
-        // THEN
-        verify(performActionsUseCase, never()).perform(copyAction.data)
-        verify(performActionsUseCase, times(1)).perform(pasteAction.data)
-        verify(performActionsUseCase, never()).perform(enterAction.data)
-    }
+            // THEN
+            verify(performActionsUseCase, never()).perform(copyAction.data)
+            verify(performActionsUseCase, times(1)).perform(pasteAction.data)
+            verify(performActionsUseCase, never()).perform(enterAction.data)
+        }
 
     /**
      * Issue #1386
@@ -341,32 +341,32 @@ class KeyMapControllerTest {
     @Test
     fun `Do not trigger parallel trigger if a sequence trigger with the same keys is triggered`() =
         runTest(testDispatcher) {
-        // GIVEN
-        val copyTrigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_J))
-        val copyAction = KeyMapAction(data = ActionData.CopyText)
+            // GIVEN
+            val copyTrigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_J))
+            val copyAction = KeyMapAction(data = ActionData.CopyText)
 
             val pasteTrigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_K))
             val pasteAction = KeyMapAction(data = ActionData.PasteText)
 
-        val sequenceTrigger =
-            sequenceTrigger(triggerKey(KeyEvent.KEYCODE_J), triggerKey(KeyEvent.KEYCODE_K))
-        val enterAction = KeyMapAction(data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_ENTER))
+            val sequenceTrigger =
+                sequenceTrigger(triggerKey(KeyEvent.KEYCODE_J), triggerKey(KeyEvent.KEYCODE_K))
+            val enterAction = KeyMapAction(data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_ENTER))
 
-        keyMapListFlow.value = listOf(
-            KeyMap(0, trigger = copyTrigger, actionList = listOf(copyAction)),
-            KeyMap(1, trigger = pasteTrigger, actionList = listOf(pasteAction)),
-            KeyMap(2, trigger = sequenceTrigger, actionList = listOf(enterAction)),
-        )
+            keyMapListFlow.value = listOf(
+                KeyMap(0, trigger = copyTrigger, actionList = listOf(copyAction)),
+                KeyMap(1, trigger = pasteTrigger, actionList = listOf(pasteAction)),
+                KeyMap(2, trigger = sequenceTrigger, actionList = listOf(enterAction)),
+            )
 
-        // WHEN
-        mockTriggerKeyInput(sequenceTrigger.keys[0])
-        mockTriggerKeyInput(sequenceTrigger.keys[1])
+            // WHEN
+            mockTriggerKeyInput(sequenceTrigger.keys[0])
+            mockTriggerKeyInput(sequenceTrigger.keys[1])
 
-        // THEN
-        verify(performActionsUseCase, never()).perform(copyAction.data)
-        verify(performActionsUseCase, never()).perform(pasteAction.data)
-        verify(performActionsUseCase, times(1)).perform(enterAction.data)
-    }
+            // THEN
+            verify(performActionsUseCase, never()).perform(copyAction.data)
+            verify(performActionsUseCase, never()).perform(pasteAction.data)
+            verify(performActionsUseCase, times(1)).perform(enterAction.data)
+        }
 
     @Test
     fun `Hold down key event action while DPAD button is held down via motion events`() = runTest(testDispatcher) {
