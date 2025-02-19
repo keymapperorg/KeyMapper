@@ -367,8 +367,6 @@
     <string name="dialog_title_choose_flash">Escolha o flash</string>
     <string name="dialog_title_cant_find_accessibility_settings_page">Não consigo encontrar a página de configurações de acessibilidade</string>
     <string name="dialog_title_cant_record_trigger">Não é possível gravar o gatilho?</string>
-    <string name="dialog_title_discard_changes">Descartar suas alterações</string>
-    <string name="dialog_message_discard_changes">Tem certeza de que deseja descartar suas alterações?</string>
     <string name="dialog_message_root_prompt">Se você sabe que seu telefone não está enraizado ou não sabe o que é root, não poderá usar recursos que funcionam apenas em dispositivos enraizados. Ao tocar em ‘OK’, você será levado às configurações.
             Nas configurações, role até a parte inferior e toque em \'Key Mapper tem permissão de root\' para que você possa usar recursos/ações de root.</string>
     <string name="dialog_message_downloading">Baixando…</string>
@@ -421,12 +419,6 @@
     <string name="dialog_message_screen_pinning_warning">Usar este gatilho pode causar uma tela preta quando você desbloqueia seu dispositivo após usar a configuração de fixação de tela nas configurações do seu dispositivo. Isso pode ser corrigido com uma reinicialização. Isso não acontece em todos os dispositivos, então fique atento e desative a configuração se isso ocorrer!</string>
     <string name="dialog_title_reset_fingerprint_maps">Redefinir mapas de gestos de impressão digital</string>
     <string name="dialog_message_reset_fingerprint_maps">Você tem certeza de que deseja redefinir seus mapas de gestos de impressão digital?</string>
-    <string name="dialog_title_key_mapper_crashed">O Key Mapper foi fechado ou travou</string>
-    <string name="dialog_message_key_mapper_crashed">É muito provável que seu telefone tenha encerrado o Key Mapper enquanto ele tentava rodar em segundo plano. Isso é <b>não</b> é culpa do desenvolvedor e não há nada que eles possam fazer para corrigir isso, então, por favor, não deixe uma avaliação negativa 😃.
-
-     \n\nVocê já seguiu o guia em dontkillmyapp.com antes para impedir que seu telefone mate o Key Mapper?</string>
-    <string name="dialog_button_read_dont_kill_my_app_yes">Sim</string>
-    <string name="dialog_button_read_dont_kill_my_app_no">Não</string>
     <string name="dialog_title_failed_to_create_bug_report">Erro ao gerar relatório de erros</string>
     <string name="dialog_title_request_shizuku_permission">Solicitar permissão Shizuku</string>
     <string name="dialog_message_request_shizuku_permission">Como você está usando o Shizuku, é altamente recomendável conceder essa permissão, pois alguns recursos do Key Mapper podem ser feitos sem que você precise configurar nada (por exemplo, inserir códigos de chave sem nós).</string>
@@ -440,7 +432,6 @@
     <string name="dialog_title_fix_dnd_trigger_error">Conceder acesso Não Perturbe</string>
     <string name="dialog_message_fix_dnd_trigger_error">Você será levado à página de configurações do seu dispositivo para gerenciar quais aplicativos podem modificar o estado de Não Perturbe. Isso <b>não está presente em alguns dispositivos</b>, então toque em não mostrar novamente se você não vir o Key Mapper na lista.</string>
     <string name="pos_yes">Sim</string>
-    <string name="pos_confirm">Confirmar</string>
     <string name="pos_done">Concluído</string>
     <string name="pos_opt_in">Assinar</string>
     <string name="pos_grant_write_secure_settings_guide">Guia</string>

@@ -48,7 +48,7 @@ class CreateConstraintUseCaseImpl(
 
         if (!savedWifiSSIDsList.contains(ssid)) {
             if (savedWifiSSIDsList.size == 3) {
-                savedWifiSSIDsList.removeLast()
+                savedWifiSSIDsList.removeAt(savedWifiSSIDsList.lastIndex)
             }
 
             if (savedWifiSSIDsList.isEmpty()) {

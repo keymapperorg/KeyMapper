@@ -192,12 +192,12 @@ class ConstraintUiHelper(
         )
 
         Constraint.ScreenOff -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_outline_stay_current_portrait_24),
+            drawable = getDrawable(R.drawable.ic_baseline_mobile_off_24),
             tintType = TintType.OnSurface,
         )
 
         Constraint.ScreenOn -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_baseline_mobile_off_24),
+            drawable = getDrawable(R.drawable.ic_outline_stay_current_portrait_24),
             tintType = TintType.OnSurface,
         )
 
@@ -275,48 +275,6 @@ class ConstraintUiHelper(
             drawable = getDrawable(R.drawable.ic_battery_70),
             tintType = TintType.OnSurface,
         )
-    }
-
-    /**
-     * Get a title for a constraint that is not specific to a particular instance.
-     */
-    fun getGenericTitle(constraint: Constraint): String = when (constraint) {
-        is Constraint.AppInForeground -> getString(
-            R.string.constraint_app_foreground_description,
-            "",
-        )
-
-        is Constraint.AppNotInForeground -> getString(
-            R.string.constraint_app_not_foreground_description,
-            "",
-        )
-
-        is Constraint.AppNotPlayingMedia -> TODO()
-        is Constraint.AppPlayingMedia -> TODO()
-        is Constraint.BtDeviceConnected -> TODO()
-        is Constraint.BtDeviceDisconnected -> TODO()
-        Constraint.Charging -> TODO()
-        Constraint.DeviceIsLocked -> TODO()
-        Constraint.DeviceIsUnlocked -> TODO()
-        Constraint.Discharging -> TODO()
-        is Constraint.FlashlightOff -> TODO()
-        is Constraint.FlashlightOn -> TODO()
-        is Constraint.ImeChosen -> TODO()
-        is Constraint.ImeNotChosen -> TODO()
-        Constraint.InPhoneCall -> TODO()
-        Constraint.MediaPlaying -> TODO()
-        Constraint.NoMediaPlaying -> TODO()
-        Constraint.NotInPhoneCall -> TODO()
-        is Constraint.OrientationCustom -> TODO()
-        Constraint.OrientationLandscape -> TODO()
-        Constraint.OrientationPortrait -> TODO()
-        Constraint.PhoneRinging -> TODO()
-        Constraint.ScreenOff -> TODO()
-        Constraint.ScreenOn -> TODO()
-        is Constraint.WifiConnected -> TODO()
-        is Constraint.WifiDisconnected -> TODO()
-        Constraint.WifiOff -> TODO()
-        Constraint.WifiOn -> TODO()
     }
 
     private fun getAppIconInfo(packageName: String): IconInfo? = getAppIcon(packageName).handle(

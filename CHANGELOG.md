@@ -1,3 +1,17 @@
+## [2.8.1](https://github.com/sds100/KeyMapper/releases/tag/v2.8.1)
+
+#### 18 February 2025
+
+## Bug fixes
+
+- #1433 open Key Mapper by default and not the Assistant Trigger app.
+- #1386 wait for sequence trigger timeout before triggering other overlapping triggers.
+- #1449 improve the key mapper crashed dialog.
+- #1415 make the discard changes dialog less confusing.
+- #1440 do not show the "Button not detected?" bottom sheet every time you open the config key map screen in some cases.
+- #1447 the app bar when configuring an Intent action would extend to the top of the screen.
+- #1444 use the correct icon for screen on/off constraints.
+
 ## [2.8.0](https://github.com/sds100/KeyMapper/releases/tag/v2.8.0)
 
 #### 13 February 2025

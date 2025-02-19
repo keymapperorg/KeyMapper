@@ -374,10 +374,6 @@
     <string name="dialog_message_screen_pinning_warning">Použitie tohto spúšťača môže spôsobiť čiernu obrazovku pri odomknutí zariadenia po použití nastavenia pripovania obrazovky v nastaveniach zariadenia. To môže byť opravené reštartom. To sa nestane na všetkých zariadeniach, takže pozor a vypnite nastavenie, ak to robí!</string>
     <string name="dialog_title_reset_fingerprint_maps">Obnovenie máp gest odtlačkov prstov</string>
     <string name="dialog_message_reset_fingerprint_maps">Naozaj chcete resetovať mapy gest odtlačkov prstov?</string>
-    <string name="dialog_title_key_mapper_crashed">Key Mapper bol zabitý alebo zlyhal</string>
-    <string name="dialog_message_key_mapper_crashed">Je veľmi pravdepodobné, že váš telefón zabil Key Mapper, zatiaľ čo sa snažil bežať v pozadí. Toto <b>nie je</b> chyba vývojára a nie je nič, čo by mohli urobiť, aby to napravili, takže prosím, nenechávajte zlú recenziu 😃. \n\nNaásledujte návod na dontkillmyapp.com predtým, aby ste zastavili telefón pred zabitím Key Mapper?</string>
-    <string name="dialog_button_read_dont_kill_my_app_yes">Áno</string>
-    <string name="dialog_button_read_dont_kill_my_app_no">Nie</string>
     <string name="dialog_title_failed_to_create_bug_report">Nepodarilo sa vytvoriť hlásenie o chybe</string>
     <string name="pos_yes">Áno</string>
     <string name="pos_done">Hotovo</string>
