@@ -1469,5 +1469,12 @@
     <string name="floating_button_tooltip">Long press to move around and tap to change how it looks or delete it.</string>
     <string name="floating_button_menu_configure">Configure</string>
     <string name="floating_button_menu_use_trigger">Use trigger</string>
+    <string name="floating_button_config_delete_button">Delete</string>
+    <string name="floating_button_config_name_label">Name</string>
+    <string name="floating_button_config_button_size_label">Button size</string>
+    <string name="floating_button_config_cancel_button">Cancel</string>
+    <string name="floating_button_config_done_button">Done</string>
+    <string name="floating_button_config_edit_icon_caption">Tap to edit icon</string>
+    <string name="floating_button_config_empty_name_error">Name is required!</string>
 
 </resources>
