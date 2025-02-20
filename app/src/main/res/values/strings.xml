@@ -1471,7 +1471,7 @@
     <string name="floating_button_menu_use_trigger">Use trigger</string>
     <string name="floating_button_config_delete_button">Delete</string>
     <string name="floating_button_config_name_label">Name</string>
-    <string name="floating_button_config_button_size_label">Button size</string>
+    <string name="floating_button_config_button_size_label">Button size:</string>
     <string name="floating_button_config_cancel_button">Cancel</string>
     <string name="floating_button_config_done_button">Done</string>
     <string name="floating_button_config_edit_icon_caption">Tap to edit icon</string>
