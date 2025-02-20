@@ -111,11 +111,7 @@ class MyAccessibilityService :
             override fun onKeyEvent(event: KeyEvent?): Boolean {
                 event ?: return false
 
-                val device = if (event.device == null) {
-                    null
-                } else {
-                    InputDeviceUtils.createInputDeviceInfo(event.device)
-                }
+                val device = event.device?.let { InputDeviceUtils.createInputDeviceInfo(it) }
 
                 if (controller != null) {
                     return controller!!.onKeyEventFromIme(
