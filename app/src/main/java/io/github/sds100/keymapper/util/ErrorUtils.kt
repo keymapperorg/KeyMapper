@@ -151,6 +151,7 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider): String = when (thi
 
     is Error.ProductNotPurchased -> when (this.product) {
         ProductId.ASSISTANT_TRIGGER -> resourceProvider.getString(R.string.purchasing_error_assistant_not_purchased_home_screen)
+        ProductId.FLOATING_BUTTONS -> resourceProvider.getString(R.string.purchasing_error_floating_buttons_not_purchased_home_screen)
     }
 
     Error.PurchasingNotImplemented -> resourceProvider.getString(R.string.purchasing_error_not_implemented)
