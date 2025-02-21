@@ -14,6 +14,6 @@ class ConstraintListTypeConverter {
     fun toConstraintList(json: String) = Gson().fromJson<MutableList<ConstraintEntity>>(json)
 
     @TypeConverter
-    fun toJsonString(constraintList: MutableList<ConstraintEntity>) =
+    fun toJsonString(constraintList: List<ConstraintEntity>) =
         Gson().toJson(constraintList)!!
 }
