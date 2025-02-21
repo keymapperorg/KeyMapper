@@ -34,6 +34,12 @@ interface ServiceAdapter {
     suspend fun send(event: ServiceEvent): Result<*>
 
     /**
+     * Send an event to the service asynchronously. This method
+     * will return immediately and you won't be notified of whether it is sent.
+     */
+    fun sendAsync(event: ServiceEvent)
+
+    /**
      * A flow of events coming from the service.
      */
     val eventReceiver: SharedFlow<ServiceEvent>
