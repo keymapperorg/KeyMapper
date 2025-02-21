@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.system.accessibility
 
 import android.accessibilityservice.AccessibilityServiceInfo
+import android.content.res.Configuration
 import android.os.Build
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
@@ -279,7 +280,7 @@ abstract class BaseAccessibilityServiceController(
         }.launchIn(coroutineScope)
     }
 
-    fun onServiceConnected() {
+    open fun onServiceConnected() {
         accessibilityService.serviceFlags = serviceFlags.value
         accessibilityService.serviceFeedbackType = serviceFeedbackType.value
         accessibilityService.serviceEventTypes = serviceEventTypes.value
@@ -303,6 +304,9 @@ abstract class BaseAccessibilityServiceController(
                 denyFingerprintGestureDetection()
             }
         }
+    }
+
+    open fun onConfigurationChanged(newConfig: Configuration) {
     }
 
     fun onKeyEvent(
@@ -422,7 +426,7 @@ abstract class BaseAccessibilityServiceController(
         }
     }
 
-    fun onAccessibilityEvent(event: AccessibilityEventModel) {
+    open fun onAccessibilityEvent(event: AccessibilityEventModel) {
         if (changeImeOnInputFocus.value) {
             val focussedNode =
                 accessibilityService.findFocussedNode(AccessibilityNodeInfo.FOCUS_INPUT)

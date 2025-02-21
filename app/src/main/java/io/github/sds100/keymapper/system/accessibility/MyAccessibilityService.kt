@@ -25,7 +25,6 @@ import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
 import io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback
 import io.github.sds100.keymapper.api.KeyEventRelayService
 import io.github.sds100.keymapper.api.KeyEventRelayServiceWrapperImpl
-import io.github.sds100.keymapper.floating.OverlayManagerImpl
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapId
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
@@ -163,7 +162,6 @@ class MyAccessibilityService :
     }
 
     var controller: AccessibilityServiceController? = null
-    private var overlaysManager: OverlayManagerImpl? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -199,9 +197,6 @@ class MyAccessibilityService :
         if (controller == null) {
             controller = Inject.accessibilityServiceController(this, keyEventRelayServiceWrapper)
         }
-
-        overlaysManager = OverlayManagerImpl(this)
-        overlaysManager?.onServiceConnected()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             fingerprintGestureCallback =
@@ -263,7 +258,7 @@ class MyAccessibilityService :
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
 
-        overlaysManager?.onConfigurationChanged(newConfig)
+        controller?.onConfigurationChanged(newConfig)
     }
 
     override fun onLowMemory() {
@@ -277,12 +272,6 @@ class MyAccessibilityService :
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         event ?: return
-
-        if (event.eventType == AccessibilityEvent.TYPE_WINDOWS_CHANGED &&
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
-        ) {
-            overlaysManager?.onWindowsChanged()
-        }
 
         controller?.onAccessibilityEvent(event.toModel())
     }
