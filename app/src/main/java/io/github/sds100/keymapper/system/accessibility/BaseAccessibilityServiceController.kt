@@ -481,7 +481,9 @@ abstract class BaseAccessibilityServiceController(
             is ServiceEvent.HideKeyboard -> accessibilityService.hideKeyboard()
             is ServiceEvent.ShowKeyboard -> accessibilityService.showKeyboard()
             is ServiceEvent.ChangeIme -> accessibilityService.switchIme(event.imeId)
-            is ServiceEvent.DisableService -> accessibilityService.disableSelf()
+            is ServiceEvent.DisableService -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                accessibilityService.disableSelf()
+            }
 
             is ServiceEvent.TriggerKeyMap -> triggerKeyMapFromIntent(event.uid)
             else -> Unit
