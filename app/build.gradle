@@ -7,6 +7,7 @@ apply plugin: "kotlinx-serialization"
 apply plugin: "org.jetbrains.kotlin.plugin.parcelize"
 apply plugin: "org.jlleitschuh.gradle.ktlint"
 apply plugin: "org.jetbrains.kotlin.plugin.compose"
+apply plugin: "androidx.room"
 
 android {
 
@@ -147,6 +148,10 @@ android {
         variant.outputs.configureEach {
             outputFileName = "keymapper-${variant.versionName}.apk"
         }
+    }
+
+    room {
+        schemaDirectory "$projectDir/schemas"
     }
 }
 
