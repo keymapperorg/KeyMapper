@@ -14,5 +14,5 @@ class ExtraListTypeConverter {
     fun toExtraObject(string: String) = Gson().fromJson<MutableList<Extra>>(string)
 
     @TypeConverter
-    fun toString(extras: MutableList<Extra>) = Gson().toJson(extras)!!
+    fun toString(extras: List<Extra>) = Gson().toJson(extras)!!
 }

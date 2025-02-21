@@ -1,6 +1,7 @@
 apply plugin: "com.android.application"
 apply plugin: "kotlin-android"
 apply plugin: "kotlin-kapt"
+apply plugin: "com.google.devtools.ksp"
 apply plugin: "androidx.navigation.safeargs.kotlin"
 apply plugin: "kotlinx-serialization"
 apply plugin: "org.jetbrains.kotlin.plugin.parcelize"
@@ -218,7 +219,7 @@ dependencies {
     implementation "androidx.viewpager2:viewpager2:1.1.0"
     implementation "androidx.datastore:datastore-preferences:1.1.2"
     implementation "androidx.core:core-splashscreen:1.0.1"
-    kapt "androidx.room:room-compiler:$room_version"
+    ksp "androidx.room:room-compiler:$room_version"
 
     // Compose
     implementation "androidx.compose.ui:ui-android:1.7.8"
