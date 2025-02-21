@@ -21,6 +21,7 @@ import androidx.lifecycle.LifecycleRegistry
 import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
+import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
 import io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback
 import io.github.sds100.keymapper.api.KeyEventRelayService
@@ -190,6 +191,7 @@ class MyAccessibilityService :
         Timber.i("Accessibility service: onServiceConnected")
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
 
+        setTheme(R.style.AppTheme)
         /*
         I would put this in onCreate but for some reason on some devices getting the application
         context would return null
