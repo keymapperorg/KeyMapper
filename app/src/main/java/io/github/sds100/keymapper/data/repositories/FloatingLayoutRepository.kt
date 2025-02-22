@@ -13,14 +13,14 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 interface FloatingLayoutRepository {
     val layouts: Flow<State<List<FloatingLayoutEntityWithButtons>>>
     fun insert(vararg layout: FloatingLayoutEntity)
     fun update(vararg layout: FloatingLayoutEntity)
-    suspend fun get(uid: String): FloatingLayoutEntityWithButtons?
+    fun get(uid: String): Flow<FloatingLayoutEntityWithButtons?>
     fun delete(vararg uid: String)
+    suspend fun count(): Int
 }
 
 class RoomFloatingLayoutRepository(
@@ -45,15 +45,17 @@ class RoomFloatingLayoutRepository(
         }
     }
 
-    override suspend fun get(uid: String): FloatingLayoutEntityWithButtons? {
-        return withContext(dispatchers.io()) {
-            dao.getByUidWithButtons(uid)
-        }
+    override fun get(uid: String): Flow<FloatingLayoutEntityWithButtons?> {
+        return dao.getByUidWithButtonsFlow(uid)
     }
 
     override fun delete(vararg uid: String) {
         coroutineScope.launch(dispatchers.io()) {
             dao.deleteByUid(*uid)
         }
+    }
+
+    override suspend fun count(): Int {
+        return dao.count()
     }
 }

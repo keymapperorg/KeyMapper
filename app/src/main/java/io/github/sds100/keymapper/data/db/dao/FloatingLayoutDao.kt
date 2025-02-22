@@ -24,11 +24,18 @@ interface FloatingLayoutDao {
     suspend fun getByUidWithButtons(uid: String): FloatingLayoutEntityWithButtons?
 
     @Transaction
+    @Query("SELECT * FROM $TABLE_NAME WHERE $KEY_UID = (:uid)")
+    fun getByUidWithButtonsFlow(uid: String): Flow<FloatingLayoutEntityWithButtons?>
+
+    @Transaction
     @Query("SELECT * FROM $TABLE_NAME")
     fun getAllWithButtons(): Flow<List<FloatingLayoutEntityWithButtons>>
 
     @Query("SELECT * FROM $TABLE_NAME WHERE $KEY_UID = (:uid)")
     suspend fun getByUid(uid: String): FloatingLayoutEntity?
+
+    @Query("SELECT * FROM $TABLE_NAME WHERE $KEY_UID = (:uid)")
+    fun getByUidFlow(uid: String): Flow<FloatingLayoutEntity?>
 
     @Query("SELECT * FROM $TABLE_NAME")
     fun getAll(): Flow<List<FloatingLayoutEntity>>
@@ -47,4 +54,7 @@ interface FloatingLayoutDao {
 
     @Update
     suspend fun update(vararg layout: FloatingLayoutEntity)
+
+    @Query("SELECT COUNT(*) FROM $TABLE_NAME")
+    suspend fun count(): Int
 }
