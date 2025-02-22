@@ -223,7 +223,7 @@ class PerformActionsUseCaseImpl(
 
             is ActionData.Rotation.CycleRotations -> {
                 result = displayAdapter.disableAutoRotate().then {
-                    val currentOrientation = displayAdapter.orientation
+                    val currentOrientation = displayAdapter.cachedOrientation
 
                     val index = action.orientations.indexOf(currentOrientation)
 
@@ -442,8 +442,8 @@ class PerformActionsUseCaseImpl(
             }
 
             is ActionData.Rotation.SwitchOrientation -> {
-                if (displayAdapter.orientation == Orientation.ORIENTATION_180 ||
-                    displayAdapter.orientation == Orientation.ORIENTATION_0
+                if (displayAdapter.cachedOrientation == Orientation.ORIENTATION_180 ||
+                    displayAdapter.cachedOrientation == Orientation.ORIENTATION_0
                 ) {
                     result = displayAdapter.setOrientation(Orientation.ORIENTATION_90)
                 } else {

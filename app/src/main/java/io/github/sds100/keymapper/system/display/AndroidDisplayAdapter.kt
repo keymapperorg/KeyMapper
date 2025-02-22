@@ -63,7 +63,7 @@ class AndroidDisplayAdapter(
     override val isScreenOn = MutableStateFlow(true)
 
     private val displayManager: DisplayManager = ctx.getSystemService()!!
-    override var orientation: Orientation = getDisplayOrientation()
+    override var cachedOrientation: Orientation = getDisplayOrientation()
 
     override val size: Size
         get() = ctx.getRealDisplaySize()
@@ -72,15 +72,15 @@ class AndroidDisplayAdapter(
         displayManager.registerDisplayListener(
             object : DisplayManager.DisplayListener {
                 override fun onDisplayAdded(displayId: Int) {
-                    orientation = getDisplayOrientation()
+                    cachedOrientation = getDisplayOrientation()
                 }
 
                 override fun onDisplayRemoved(displayId: Int) {
-                    orientation = getDisplayOrientation()
+                    cachedOrientation = getDisplayOrientation()
                 }
 
                 override fun onDisplayChanged(displayId: Int) {
-                    orientation = getDisplayOrientation()
+                    cachedOrientation = getDisplayOrientation()
                 }
             },
             null,
@@ -212,6 +212,12 @@ class AndroidDisplayAdapter(
         } else {
             Error.FailedToModifySystemSetting(Settings.System.SCREEN_BRIGHTNESS_MODE)
         }
+    }
+
+    override fun fetchOrientation(): Orientation {
+        cachedOrientation = getDisplayOrientation()
+
+        return cachedOrientation
     }
 
     private fun getDisplayOrientation(): Orientation = when (val sdkRotation = displayManager.displays[0].rotation) {

@@ -38,7 +38,7 @@ class ConstraintSnapshotImpl(
 ) : ConstraintSnapshot {
     private val appInForeground: String? by lazy { accessibilityService.rootNode?.packageName }
     private val connectedBluetoothDevices: Set<BluetoothDeviceInfo> by lazy { devicesAdapter.connectedBluetoothDevices.value }
-    private val orientation: Orientation by lazy { displayAdapter.orientation }
+    private val orientation: Orientation by lazy { displayAdapter.cachedOrientation }
     private val isScreenOn: Boolean by lazy { displayAdapter.isScreenOn.firstBlocking() }
     private val appsPlayingMedia: List<String> by lazy { mediaAdapter.getPackagesPlayingMedia() }
     private val isWifiEnabled: Boolean by lazy { networkAdapter.isWifiEnabled() }
