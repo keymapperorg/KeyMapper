@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.hardware.display.DisplayManager
 import android.provider.Settings
+import android.util.Size
 import android.view.Surface
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
@@ -13,6 +14,7 @@ import io.github.sds100.keymapper.system.SettingsUtils
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
+import io.github.sds100.keymapper.util.getRealDisplaySize
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -63,6 +65,9 @@ class AndroidDisplayAdapter(
     private val displayManager: DisplayManager = ctx.getSystemService()!!
     override var orientation: Orientation = getDisplayOrientation()
 
+    override val size: Size
+        get() = ctx.getRealDisplaySize()
+
     init {
         displayManager.registerDisplayListener(
             object : DisplayManager.DisplayListener {
@@ -93,8 +98,7 @@ class AndroidDisplayAdapter(
         )
     }
 
-    override fun isAutoRotateEnabled(): Boolean =
-        SettingsUtils.getSystemSetting<Int>(ctx, Settings.System.ACCELEROMETER_ROTATION) == 1
+    override fun isAutoRotateEnabled(): Boolean = SettingsUtils.getSystemSetting<Int>(ctx, Settings.System.ACCELEROMETER_ROTATION) == 1
 
     override fun enableAutoRotate(): Result<*> {
         val success = SettingsUtils.putSystemSetting(ctx, Settings.System.ACCELEROMETER_ROTATION, 1)
@@ -195,11 +199,9 @@ class AndroidDisplayAdapter(
         }
     }
 
-    override fun enableAutoBrightness(): Result<*> =
-        setBrightnessMode(Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC)
+    override fun enableAutoBrightness(): Result<*> = setBrightnessMode(Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC)
 
-    override fun disableAutoBrightness(): Result<*> =
-        setBrightnessMode(Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL)
+    override fun disableAutoBrightness(): Result<*> = setBrightnessMode(Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL)
 
     private fun setBrightnessMode(mode: Int): Result<*> {
         val success =
@@ -212,13 +214,12 @@ class AndroidDisplayAdapter(
         }
     }
 
-    private fun getDisplayOrientation(): Orientation =
-        when (val sdkRotation = displayManager.displays[0].rotation) {
-            Surface.ROTATION_0 -> Orientation.ORIENTATION_0
-            Surface.ROTATION_90 -> Orientation.ORIENTATION_90
-            Surface.ROTATION_180 -> Orientation.ORIENTATION_180
-            Surface.ROTATION_270 -> Orientation.ORIENTATION_270
+    private fun getDisplayOrientation(): Orientation = when (val sdkRotation = displayManager.displays[0].rotation) {
+        Surface.ROTATION_0 -> Orientation.ORIENTATION_0
+        Surface.ROTATION_90 -> Orientation.ORIENTATION_90
+        Surface.ROTATION_180 -> Orientation.ORIENTATION_180
+        Surface.ROTATION_270 -> Orientation.ORIENTATION_270
 
-            else -> throw Exception("Don't know how to convert $sdkRotation to Orientation")
-        }
+        else -> throw Exception("Don't know how to convert $sdkRotation to Orientation")
+    }
 }

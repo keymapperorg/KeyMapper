@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.actions
 
 import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
+import io.github.sds100.keymapper.data.db.typeconverter.ConstantTypeConverters
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.Extra
 import io.github.sds100.keymapper.data.entities.getData
@@ -391,7 +392,7 @@ object ActionDataEntityMapper {
                         .then { extraValue ->
                             extraValue
                                 .split(",")
-                                .map { ORIENTATION_MAP.getKey(it)!! }
+                                .map { ConstantTypeConverters.ORIENTATION_MAP.getKey(it)!! }
                                 .success()
                         }.valueOrNull() ?: return null
 
@@ -602,7 +603,7 @@ object ActionDataEntityMapper {
         is ActionData.Rotation.CycleRotations -> listOf(
             Extra(
                 ActionEntity.EXTRA_ORIENTATIONS,
-                data.orientations.joinToString(",") { ORIENTATION_MAP[it]!! },
+                data.orientations.joinToString(",") { ConstantTypeConverters.ORIENTATION_MAP[it]!! },
             ),
         )
 
@@ -651,13 +652,6 @@ object ActionDataEntityMapper {
 
         else -> emptyList()
     }
-
-    private val ORIENTATION_MAP = mapOf(
-        Orientation.ORIENTATION_0 to "rotation_0",
-        Orientation.ORIENTATION_90 to "rotation_90",
-        Orientation.ORIENTATION_180 to "rotation_180",
-        Orientation.ORIENTATION_270 to "rotation_270",
-    )
 
     private val RINGER_MODE_MAP = mapOf(
         RingerMode.NORMAL to "option_ringer_mode_normal",

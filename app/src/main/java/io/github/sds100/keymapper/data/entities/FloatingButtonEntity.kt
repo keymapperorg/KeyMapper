@@ -54,7 +54,7 @@ data class FloatingButtonEntity(
     val y: Int,
 
     @ColumnInfo(name = KEY_ORIENTATION)
-    val orientation: Int,
+    val orientation: String,
 
     @ColumnInfo(name = KEY_DISPLAY_WIDTH)
     val displayWidth: Int,

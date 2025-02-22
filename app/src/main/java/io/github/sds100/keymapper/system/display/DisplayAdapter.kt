@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.system.display
 
+import android.util.Size
 import io.github.sds100.keymapper.util.Result
 import kotlinx.coroutines.flow.Flow
 
@@ -9,6 +10,7 @@ import kotlinx.coroutines.flow.Flow
 interface DisplayAdapter {
     val isScreenOn: Flow<Boolean>
     val orientation: Orientation
+    val size: Size
 
     fun isAutoRotateEnabled(): Boolean
     fun enableAutoRotate(): Result<*>

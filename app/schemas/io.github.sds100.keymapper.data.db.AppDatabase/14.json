@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 14,
-    "identityHash": "5283733f2d14efd89335a7b316e6512c",
+    "identityHash": "14ef5de90ad334c62e5fa0d5884e4cc5",
     "entities": [
       {
         "tableName": "keymaps",
@@ -194,7 +194,7 @@
       },
       {
         "tableName": "floating_buttons",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` TEXT NOT NULL, `layout_uid` TEXT NOT NULL, `name` TEXT NOT NULL, `icon` TEXT NOT NULL, `button_size` INTEGER NOT NULL, `x` INTEGER NOT NULL, `y` INTEGER NOT NULL, `orientation` INTEGER NOT NULL, `display_width` INTEGER NOT NULL, `display_height` INTEGER NOT NULL, PRIMARY KEY(`uid`), FOREIGN KEY(`layout_uid`) REFERENCES `floating_layouts`(`uid`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` TEXT NOT NULL, `layout_uid` TEXT NOT NULL, `name` TEXT NOT NULL, `icon` TEXT NOT NULL, `button_size` INTEGER NOT NULL, `x` INTEGER NOT NULL, `y` INTEGER NOT NULL, `orientation` TEXT NOT NULL, `display_width` INTEGER NOT NULL, `display_height` INTEGER NOT NULL, PRIMARY KEY(`uid`), FOREIGN KEY(`layout_uid`) REFERENCES `floating_layouts`(`uid`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "uid",
@@ -241,7 +241,7 @@
           {
             "fieldPath": "orientation",
             "columnName": "orientation",
-            "affinity": "INTEGER",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
@@ -282,7 +282,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5283733f2d14efd89335a7b316e6512c')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '14ef5de90ad334c62e5fa0d5884e4cc5')"
     ]
   }
 }
