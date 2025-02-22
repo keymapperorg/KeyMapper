@@ -159,7 +159,9 @@ object ServiceLocator {
 
     fun backupManager(context: Context): BackupManager {
         synchronized(this) {
-            return backupManager ?: createBackupManager(context)
+            return backupManager ?: createBackupManager(context).also {
+                this.backupManager = it
+            }
         }
     }
 
@@ -170,9 +172,7 @@ object ServiceLocator {
         settingsRepository(context),
         fingerprintMapRepository(context),
         soundsManager(context),
-    ).also {
-        this.backupManager = it
-    }
+    )
 
     @Volatile
     private var soundsManager: SoundsManager? = null
