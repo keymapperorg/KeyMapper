@@ -8,10 +8,9 @@ import androidx.room.PrimaryKey
 import io.github.sds100.keymapper.data.db.dao.FloatingButtonDao.Companion.KEY_BUTTON_SIZE
 import io.github.sds100.keymapper.data.db.dao.FloatingButtonDao.Companion.KEY_DISPLAY_HEIGHT
 import io.github.sds100.keymapper.data.db.dao.FloatingButtonDao.Companion.KEY_DISPLAY_WIDTH
-import io.github.sds100.keymapper.data.db.dao.FloatingButtonDao.Companion.KEY_ICON
 import io.github.sds100.keymapper.data.db.dao.FloatingButtonDao.Companion.KEY_LAYOUT_UID
-import io.github.sds100.keymapper.data.db.dao.FloatingButtonDao.Companion.KEY_NAME
 import io.github.sds100.keymapper.data.db.dao.FloatingButtonDao.Companion.KEY_ORIENTATION
+import io.github.sds100.keymapper.data.db.dao.FloatingButtonDao.Companion.KEY_TEXT
 import io.github.sds100.keymapper.data.db.dao.FloatingButtonDao.Companion.KEY_UID
 import io.github.sds100.keymapper.data.db.dao.FloatingButtonDao.Companion.KEY_X
 import io.github.sds100.keymapper.data.db.dao.FloatingButtonDao.Companion.KEY_Y
@@ -38,11 +37,8 @@ data class FloatingButtonEntity(
     @ColumnInfo(name = KEY_LAYOUT_UID)
     val layoutUid: String,
 
-    @ColumnInfo(name = KEY_NAME)
-    val name: String,
-
-    @ColumnInfo(name = KEY_ICON)
-    val icon: String,
+    @ColumnInfo(name = KEY_TEXT)
+    val text: String,
 
     @ColumnInfo(name = KEY_BUTTON_SIZE)
     val buttonSize: Int,
