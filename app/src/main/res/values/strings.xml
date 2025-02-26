@@ -1468,6 +1468,8 @@
     <string name="floating_menu_switch_layout">Switch layout</string>
     <string name="floating_menu_add_button">Add button</string>
     <string name="floating_menu_done_button">All done</string>
+    <string name="floating_menu_hide_buttons">Hide buttons</string>
+    <string name="floating_menu_show_buttons">Show buttons</string>
     <string name="floating_button_tooltip">Long press to move around and tap to change how it looks or delete it.</string>
     <string name="floating_button_menu_delete">Delete</string>
     <string name="floating_button_menu_configure">Configure</string>
