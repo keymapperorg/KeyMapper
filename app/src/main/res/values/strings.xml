@@ -1481,4 +1481,10 @@
     <string name="floating_button_config_done_button">Done</string>
     <string name="floating_button_config_empty_text_error">The button must have text!</string>
 
+    <!-- Home screen -->
+    <string name="home_nav_bar_key_maps">Key maps</string>
+    <string name="home_nav_bar_floating_buttons">Floating buttons</string>
+    <string name="home_nav_bar_fingerprint_maps">Fingerprint maps</string>
+
+
 </resources>
