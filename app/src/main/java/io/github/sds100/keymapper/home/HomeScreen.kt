@@ -2,11 +2,9 @@ package io.github.sds100.keymapper.home
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
-import androidx.compose.foundation.layout.displayCutout
+import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -84,6 +82,9 @@ fun HomeScreen(viewModel: HomeViewModel) {
     val scope = rememberCoroutineScope()
 
     HomeScreen(
+        modifier = Modifier
+            .systemBarsPadding()
+            .displayCutoutPadding(),
         onMenuClick = {
             scope.launch {
                 viewModel.navigate(NavigateEvent("settings", NavDestination.Settings))
@@ -188,15 +189,8 @@ private fun HomeScreen(
         },
     ) { innerPadding ->
         val layoutDirection = LocalLayoutDirection.current
-        val displayCutout = WindowInsets.displayCutout.asPaddingValues()
-        val startPadding =
-            displayCutout.calculateStartPadding(layoutDirection) + innerPadding.calculateStartPadding(
-                layoutDirection,
-            )
-        val endPadding =
-            displayCutout.calculateEndPadding(layoutDirection) + innerPadding.calculateEndPadding(
-                layoutDirection,
-            )
+        val startPadding = innerPadding.calculateStartPadding(layoutDirection)
+        val endPadding = innerPadding.calculateEndPadding(layoutDirection)
 
         NavHost(
             modifier = Modifier.padding(

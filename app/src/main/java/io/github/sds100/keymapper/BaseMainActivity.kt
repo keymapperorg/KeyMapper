@@ -3,6 +3,7 @@ package io.github.sds100.keymapper
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.MotionEvent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -48,6 +49,7 @@ abstract class BaseMainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
         if (viewModel.previousNightMode != currentNightMode) {

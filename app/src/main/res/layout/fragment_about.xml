@@ -366,10 +366,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             app:menuAlignmentMode="auto"
-            app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
-            app:paddingBottomSystemWindowInsets="false"
-            app:paddingLeftSystemWindowInsets="false"
-            app:paddingRightSystemWindowInsets="false" />
+            app:navigationIcon="@drawable/ic_baseline_arrow_back_24" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>
