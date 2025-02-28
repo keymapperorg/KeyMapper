@@ -175,8 +175,7 @@ abstract class BaseAccessibilityServiceController(
     private var serviceFeedbackType: MutableStateFlow<Int> =
         MutableStateFlow(AccessibilityServiceInfo.FEEDBACK_GENERIC)
 
-    private val initialEventTypes: Int = AccessibilityEvent.TYPE_WINDOWS_CHANGED
-    private var serviceEventTypes: MutableStateFlow<Int> = MutableStateFlow(initialEventTypes)
+    val serviceEventTypes: MutableStateFlow<Int> = MutableStateFlow(0)
 
     init {
         serviceFlags.onEach { flags ->
