@@ -8,7 +8,6 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.multidex.MultiDexApplication
-import com.google.android.material.color.DynamicColors
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.entities.LogEntryEntity
 import io.github.sds100.keymapper.logging.KeyMapperLoggingTree
@@ -190,7 +189,7 @@ class KeyMapperApp : MultiDexApplication() {
         super.onCreate()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            DynamicColors.applyToActivitiesIfAvailable(this)
+//            DynamicColors.applyToActivitiesIfAvailable(this)
         }
 
         ServiceLocator.settingsRepository(this).get(Keys.darkTheme)
