@@ -27,23 +27,26 @@ import io.github.sds100.keymapper.R
 @Composable
 fun TriggerKeyListItem(
     modifier: Modifier = Modifier,
-    model: TriggerKeyListItemState,
+    model: TriggerKeyListItemModel,
+    isReorderingEnabled: Boolean,
     onEditClick: () -> Unit = {},
     onRemoveClick: () -> Unit = {},
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
-        Icon(
-            imageVector = when (model.linkType) {
-                TriggerKeyLinkType.ARROW -> Icons.Filled.ArrowDownward
-                TriggerKeyLinkType.PLUS -> Icons.Filled.Add
-                TriggerKeyLinkType.HIDDEN -> null // Handle hidden case
-            } ?: return@Column, // Exit if linkType is HIDDEN
-            contentDescription = "Link Type",
-            tint = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(bottom = 8.dp),
-        )
+        if (model.linkType != TriggerKeyLinkType.HIDDEN) {
+            Icon(
+                imageVector = when (model.linkType) {
+                    TriggerKeyLinkType.ARROW -> Icons.Filled.ArrowDownward
+                    TriggerKeyLinkType.PLUS -> Icons.Filled.Add
+                    TriggerKeyLinkType.HIDDEN -> Icons.Filled.Add
+                },
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(bottom = 8.dp),
+            )
+        }
 
         Card(
             modifier = Modifier
@@ -56,7 +59,7 @@ fun TriggerKeyListItem(
                     .padding(8.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                if (model.isDragDropEnabled) {
+                if (isReorderingEnabled) {
                     IconButton(onClick = { /* Handle drag */ }) {
                         Icon(
                             imageVector = Icons.Filled.DragHandle,
@@ -119,13 +122,13 @@ fun TriggerKeyListItem(
 @Composable
 fun TriggerKeyListItemPreview() {
     TriggerKeyListItem(
-        model = TriggerKeyListItemState(
+        model = TriggerKeyListItemModel(
             id = "id",
             name = "Volume Up",
             clickTypeString = "Long Press",
             extraInfo = "External Keyboard",
             linkType = TriggerKeyLinkType.ARROW,
-            isDragDropEnabled = true,
         ),
+        isReorderingEnabled = true,
     )
 }

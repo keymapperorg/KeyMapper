@@ -36,7 +36,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -45,7 +44,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
@@ -79,125 +77,26 @@ abstract class BaseConfigTriggerViewModel(
     private val _openEditOptions = MutableSharedFlow<String>()
 
     /**
-     * value is the uid of the action
+     * value is the uid of the trigger key
      */
     val openEditOptions = _openEditOptions.asSharedFlow()
+
+    private val errorListItems = MutableStateFlow<List<TextListItem.Error>>(emptyList())
+
+    val state: StateFlow<State<ConfigTriggerState>> =
+        combine(
+            config.mapping,
+            errorListItems,
+            displayKeyMap.showDeviceDescriptors,
+        ) { mapping, errors, showDeviceDescriptors ->
+            buildUiState(mapping, errors, showDeviceDescriptors)
+        }.flowOn(Dispatchers.Default).stateIn(coroutineScope, SharingStarted.Eagerly, State.Loading)
 
     val recordTriggerState: StateFlow<RecordTriggerState> = recordTrigger.state.stateIn(
         coroutineScope,
         SharingStarted.Lazily,
         RecordTriggerState.Idle,
     )
-
-    val triggerModeButtonsEnabled: StateFlow<Boolean> = config.mapping.map { state ->
-        when (state) {
-            is State.Data -> state.data.trigger.keys.size > 1
-            State.Loading -> false
-        }
-    }.flowOn(Dispatchers.Default).stateIn(coroutineScope, SharingStarted.Eagerly, false)
-
-    val checkedTriggerModeRadioButton: StateFlow<Int> = config.mapping.map { state ->
-        when (state) {
-            is State.Data -> when (state.data.trigger.mode) {
-                is TriggerMode.Parallel -> R.id.radioButtonParallel
-                TriggerMode.Sequence -> R.id.radioButtonSequence
-                TriggerMode.Undefined -> R.id.radioButtonUndefined
-            }
-
-            State.Loading -> R.id.radioButtonUndefined
-        }
-    }.flowOn(Dispatchers.Default)
-        .stateIn(coroutineScope, SharingStarted.Eagerly, R.id.radioButtonUndefined)
-
-    val triggerKeyListItems: StateFlow<State<List<TriggerKeyListItemState>>> =
-        combine(
-            config.mapping,
-            displayKeyMap.showDeviceDescriptors,
-        ) { mappingState, showDeviceDescriptors ->
-
-            mappingState.mapData { keyMap ->
-                createListItems(keyMap.trigger, showDeviceDescriptors)
-            }
-        }.flowOn(Dispatchers.Default).stateIn(coroutineScope, SharingStarted.Eagerly, State.Loading)
-
-    /**
-     * The click type radio buttons are only visible if there is one key
-     * or there are only key code keys in the trigger. It is not possible to do a long press of
-     * non-key code keys in a parallel trigger.
-     */
-    val clickTypeRadioButtonsVisible: StateFlow<Boolean> = config.mapping.map { state ->
-        when (state) {
-            is State.Data -> {
-                val trigger = state.data.trigger
-
-                if (trigger.mode is TriggerMode.Parallel) {
-                    trigger.keys.all { it is KeyCodeTriggerKey }
-                } else {
-                    trigger.keys.size == 1
-                }
-            }
-
-            State.Loading -> false
-        }
-    }.flowOn(Dispatchers.Default).stateIn(coroutineScope, SharingStarted.Eagerly, false)
-
-    val doublePressButtonVisible: StateFlow<Boolean> = config.mapping.map { state ->
-        when (state) {
-            is State.Data -> state.data.trigger.keys.size == 1
-            State.Loading -> false
-        }
-    }.flowOn(Dispatchers.Default).stateIn(coroutineScope, SharingStarted.Eagerly, false)
-
-    /**
-     * Long press is only allowed for triggers that only use key code trigger keys.
-     */
-    val longPressButtonVisible: StateFlow<Boolean> = config.mapping.map { state ->
-        when (state) {
-            is State.Data -> state.data.trigger.keys.all { it is KeyCodeTriggerKey }
-            State.Loading -> false
-        }
-    }.flowOn(Dispatchers.Default).stateIn(coroutineScope, SharingStarted.Eagerly, false)
-
-    /**
-     * Only show the buttons for the trigger mode if keys have been added. The buttons
-     * shouldn't be shown when no trigger is selected because they aren't relevant
-     * for advanced triggers.
-     */
-    val triggerModeRadioButtonsVisible: StateFlow<Boolean> = config.mapping
-        .map { state ->
-            when (state) {
-                is State.Data -> state.data.trigger.keys.isNotEmpty()
-                State.Loading -> false
-            }
-        }
-        .stateIn(coroutineScope, SharingStarted.Eagerly, false)
-
-    val checkedClickTypeRadioButton: StateFlow<Int> = config.mapping.map { state ->
-        when (state) {
-            is State.Data -> {
-                val trigger = state.data.trigger
-
-                val clickType: ClickType? = when {
-                    trigger.mode is TriggerMode.Parallel -> trigger.mode.clickType
-                    trigger.keys.size == 1 -> trigger.keys[0].clickType
-                    else -> null
-                }
-
-                when (clickType) {
-                    ClickType.SHORT_PRESS -> R.id.radioButtonShortPress
-                    ClickType.LONG_PRESS -> R.id.radioButtonLongPress
-                    ClickType.DOUBLE_PRESS -> R.id.radioButtonDoublePress
-                    null -> R.id.radioButtonShortPress
-                }
-            }
-
-            State.Loading -> R.id.radioButtonShortPress
-        }
-    }.flowOn(Dispatchers.Default)
-        .stateIn(coroutineScope, SharingStarted.Eagerly, R.id.radioButtonShortPress)
-
-    private val _errorListItems = MutableStateFlow<List<TextListItem.Error>>(emptyList())
-    val errorListItems = _errorListItems.asStateFlow()
 
     private val _reportBug = MutableSharedFlow<Unit>()
     val reportBug = _reportBug.asSharedFlow()
@@ -234,14 +133,12 @@ abstract class BaseConfigTriggerViewModel(
         coroutineScope.launch(Dispatchers.Default) {
             rebuildErrorList.collectLatest { keyMapState ->
                 if (keyMapState !is State.Data) {
-                    _errorListItems.value = emptyList()
+                    errorListItems.value = emptyList()
                     return@collectLatest
                 }
 
                 val triggerErrors = displayKeyMap.getTriggerErrors(keyMapState.data)
-                val errorListItems = buildTriggerErrorListItems(triggerErrors)
-
-                _errorListItems.value = errorListItems
+                errorListItems.value = buildTriggerErrorListItems(triggerErrors)
             }
         }
 
@@ -288,6 +185,61 @@ abstract class BaseConfigTriggerViewModel(
             // reset this field when recording has completed
             isRecordingCompletionUserInitiated = false
         }.launchIn(coroutineScope)
+    }
+
+    private fun buildUiState(
+        keyMapState: State<KeyMap>,
+        errors: List<TextListItem.Error>,
+        showDeviceDescriptors: Boolean,
+    ): State<ConfigTriggerState> {
+        return keyMapState.mapData { keyMap ->
+
+            val trigger = keyMap.trigger
+            val triggerKeys = createListItems(trigger, showDeviceDescriptors)
+            val isReorderingEnabled = trigger.keys.size > 1
+            val triggerModeButtonsEnabled = keyMap.trigger.keys.size > 1
+
+            /**
+             * Only show the buttons for the trigger mode if keys have been added. The buttons
+             * shouldn't be shown when no trigger is selected because they aren't relevant
+             * for advanced triggers.
+             */
+            val triggerModeButtonsVisible = trigger.keys.isNotEmpty()
+
+            val clickTypeButtons = mutableSetOf<ClickType>()
+
+            /**
+             * The click type radio buttons are only visible if there is one key
+             * or there are only key code keys in the trigger. It is not possible to do a long press of
+             * non-key code keys in a parallel trigger.
+             */
+            if (trigger.keys.size == 1) {
+                clickTypeButtons.add(ClickType.SHORT_PRESS)
+                clickTypeButtons.add(ClickType.DOUBLE_PRESS)
+            }
+
+            if (trigger.keys.isNotEmpty() && trigger.mode !is TriggerMode.Sequence && trigger.keys.all { it is KeyCodeTriggerKey }) {
+                clickTypeButtons.add(ClickType.SHORT_PRESS)
+                clickTypeButtons.add(ClickType.LONG_PRESS)
+            }
+
+            val checkedClickType: ClickType? = when {
+                trigger.mode is TriggerMode.Parallel -> trigger.mode.clickType
+                trigger.keys.size == 1 -> trigger.keys[0].clickType
+                else -> null
+            }
+
+            ConfigTriggerState(
+                triggerKeys = triggerKeys,
+                errors = errors,
+                isReorderingEnabled = isReorderingEnabled,
+                clickTypeButtons = clickTypeButtons,
+                checkedClickType = checkedClickType,
+                triggerModeButtonsEnabled = triggerModeButtonsEnabled,
+                triggerModeButtonsVisible = triggerModeButtonsVisible,
+                checkedTriggerMode = trigger.mode,
+            )
+        }
     }
 
     private suspend fun onTriggerModeChanged(mode: TriggerMode) {
@@ -395,23 +347,19 @@ abstract class BaseConfigTriggerViewModel(
         }
     }
 
-    fun onParallelRadioButtonCheckedChange(isChecked: Boolean) {
-        if (isChecked) {
-            config.setParallelTriggerMode()
-        }
+    fun onParallelRadioButtonChecked() {
+        config.setParallelTriggerMode()
     }
 
-    fun onSequenceRadioButtonCheckedChange(isChecked: Boolean) {
-        if (isChecked) {
-            config.setSequenceTriggerMode()
-        }
+    fun onSequenceRadioButtonChecked() {
+        config.setSequenceTriggerMode()
     }
 
-    fun onClickTypeRadioButtonCheckedChange(buttonId: Int) {
-        when (buttonId) {
-            R.id.radioButtonShortPress -> config.setTriggerShortPress()
-            R.id.radioButtonLongPress -> config.setTriggerLongPress()
-            R.id.radioButtonDoublePress -> config.setTriggerDoublePress()
+    fun onClickTypeRadioButtonChecked(clickType: ClickType) {
+        when (clickType) {
+            ClickType.SHORT_PRESS -> config.setTriggerShortPress()
+            ClickType.LONG_PRESS -> config.setTriggerLongPress()
+            ClickType.DOUBLE_PRESS -> config.setTriggerDoublePress()
         }
     }
 
@@ -420,12 +368,6 @@ abstract class BaseConfigTriggerViewModel(
 
     open fun onTriggerKeyOptionsClick(id: String) {
         runBlocking { _openEditOptions.emit(id) }
-    }
-
-    fun onChooseDeviceClick(keyUid: String) {
-        coroutineScope.launch {
-            chooseDeviceForKeyCodeTriggerKey(keyUid)
-        }
     }
 
     private suspend fun chooseDeviceForKeyCodeTriggerKey(keyUid: String) {
@@ -539,7 +481,7 @@ abstract class BaseConfigTriggerViewModel(
     private fun createListItems(
         trigger: Trigger,
         showDeviceDescriptors: Boolean,
-    ): List<TriggerKeyListItemState> = trigger.keys.mapIndexed { index, key ->
+    ): List<TriggerKeyListItemModel> = trigger.keys.mapIndexed { index, key ->
         val clickTypeString = when (key.clickType) {
             ClickType.SHORT_PRESS -> null
             ClickType.LONG_PRESS -> getString(R.string.clicktype_long_press)
@@ -552,13 +494,12 @@ abstract class BaseConfigTriggerViewModel(
             else -> TriggerKeyLinkType.HIDDEN
         }
 
-        TriggerKeyListItemState(
+        TriggerKeyListItemModel(
             id = key.uid,
             name = getTriggerKeyName(key),
             clickTypeString = clickTypeString,
             extraInfo = getTriggerKeyExtraInfo(key, showDeviceDescriptors),
             linkType = linkDrawable,
-            isDragDropEnabled = trigger.keys.size > 1,
         )
     }
 
@@ -630,3 +571,25 @@ abstract class BaseConfigTriggerViewModel(
         onboarding.neverShowNoKeysRecordedBottomSheet()
     }
 }
+
+data class ConfigTriggerState(
+    val triggerKeys: List<TriggerKeyListItemModel> = emptyList(),
+    val errors: List<TextListItem.Error> = emptyList(),
+    val isReorderingEnabled: Boolean = false,
+    val clickTypeButtons: Set<ClickType> = emptySet(),
+    val checkedClickType: ClickType? = null,
+    val checkedTriggerMode: TriggerMode,
+    val triggerModeButtonsEnabled: Boolean = false,
+    val triggerModeButtonsVisible: Boolean = false,
+)
+
+data class TriggerKeyListItemModel(
+    val id: String,
+    val name: String,
+    /**
+     * null if should be hidden
+     */
+    val clickTypeString: String? = null,
+    val extraInfo: String?,
+    val linkType: TriggerKeyLinkType,
+)

@@ -1,27 +1,33 @@
 package io.github.sds100.keymapper.mappings.keymaps.trigger
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -29,12 +35,26 @@ import androidx.window.core.layout.WindowHeightSizeClass
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.mappings.ClickType
+import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.ui.TextListItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TriggerScreen(modifier: Modifier = Modifier, viewModel: ConfigTriggerViewModel) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val state by viewModel.setupGuiKeyboardState.collectAsStateWithLifecycle()
+    val setupGuiKeyboardState by viewModel.setupGuiKeyboardState.collectAsStateWithLifecycle()
+    val recordTriggerState by viewModel.recordTriggerState.collectAsState()
+
+    if (viewModel.showAdvancedTriggersBottomSheet) {
+        AdvancedTriggersBottomSheet(
+            modifier = Modifier.systemBarsPadding(),
+            viewModel = viewModel,
+            onDismissRequest = {
+                viewModel.showAdvancedTriggersBottomSheet = false
+            },
+            sheetState = sheetState,
+        )
+    }
 
     if (viewModel.showDpadTriggerSetupBottomSheet) {
         DpadTriggerSetupBottomSheet(
@@ -42,7 +62,7 @@ fun TriggerScreen(modifier: Modifier = Modifier, viewModel: ConfigTriggerViewMod
             onDismissRequest = {
                 viewModel.showDpadTriggerSetupBottomSheet = false
             },
-            guiKeyboardState = state,
+            guiKeyboardState = setupGuiKeyboardState,
             onEnableKeyboardClick = viewModel::onEnableGuiKeyboardClick,
             onChooseKeyboardClick = viewModel::onChooseGuiKeyboardClick,
             onNeverShowAgainClick = viewModel::onNeverShowSetupDpadClick,
@@ -60,6 +80,28 @@ fun TriggerScreen(modifier: Modifier = Modifier, viewModel: ConfigTriggerViewMod
             sheetState = sheetState,
         )
     }
+
+    val configState by viewModel.state.collectAsStateWithLifecycle()
+
+    when (val state = configState) {
+        is State.Loading -> Loading(modifier = modifier)
+        is State.Data -> {
+            TriggerScreenVertical(
+                modifier = modifier,
+                configState = state.data,
+                recordTriggerState = recordTriggerState,
+                onRemoveClick = viewModel::onRemoveKeyClick,
+                onEditClick = viewModel::onTriggerKeyOptionsClick,
+                onRecordTriggerClick = viewModel::onRecordTriggerButtonClick,
+                onAdvancedTriggersClick = {
+                    viewModel.showAdvancedTriggersBottomSheet = true
+                },
+                onSelectClickType = viewModel::onClickTypeRadioButtonChecked,
+                onSelectParallelMode = viewModel::onParallelRadioButtonChecked,
+                onSelectSequenceMode = viewModel::onSequenceRadioButtonChecked,
+            )
+        }
+    }
 }
 
 @Composable
@@ -69,41 +111,85 @@ private fun isHorizontalLayout(): Boolean {
     return windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT
 }
 
+@Composable
+private fun Loading(modifier: Modifier = Modifier) {
+    Box(modifier = modifier, contentAlignment = Alignment.Center) {
+        CircularProgressIndicator()
+    }
+}
+
 // TODO handle horizontal layout
 @Composable
-private fun TriggerScreen(
+private fun TriggerScreenVertical(
     modifier: Modifier = Modifier,
-    isHorizontalLayout: Boolean = false,
-    triggerList: List<TriggerKeyListItemState>,
-    onRemoveClick: (TriggerKeyListItemState) -> Unit = {},
-    onEditClick: (TriggerKeyListItemState) -> Unit = {},
+    configState: ConfigTriggerState,
+    recordTriggerState: RecordTriggerState,
+    onRemoveClick: (String) -> Unit = {},
+    onEditClick: (String) -> Unit = {},
+    onSelectClickType: (ClickType) -> Unit = {},
+    onSelectParallelMode: () -> Unit = {},
+    onSelectSequenceMode: () -> Unit = {},
+    onRecordTriggerClick: () -> Unit = {},
+    onAdvancedTriggersClick: () -> Unit = {},
 ) {
-    Column(modifier = modifier) {
-        TriggerList(
-            triggerList = triggerList,
-            onEditClick = onEditClick,
-            onRemoveClick = onRemoveClick,
-        )
+    Surface {
+        Column(modifier = modifier) {
+            TriggerList(
+                modifier = Modifier.weight(1f),
+                triggerList = configState.triggerKeys,
+                isReorderingEnabled = configState.isReorderingEnabled,
+                onEditClick = onEditClick,
+                onRemoveClick = onRemoveClick,
+            )
+
+            if (configState.clickTypeButtons.isNotEmpty()) {
+                ClickTypeRadioGroup(
+                    clickTypes = configState.clickTypeButtons,
+                    checkedClickType = configState.checkedClickType,
+                    onSelectClickType = onSelectClickType,
+                )
+            }
+
+            if (configState.triggerModeButtonsVisible) {
+                TriggerModeRadioGroup(
+                    mode = configState.checkedTriggerMode,
+                    isEnabled = configState.triggerModeButtonsEnabled,
+                    onSelectParallelMode = onSelectParallelMode,
+                    onSelectSequenceMode = onSelectSequenceMode,
+                )
+            }
+
+            RecordTriggerButtonRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
+                onRecordTriggerClick = onRecordTriggerClick,
+                recordTriggerState = recordTriggerState,
+                onAdvancedTriggersClick = onAdvancedTriggersClick,
+            )
+        }
     }
 }
 
 @Composable
 private fun TriggerList(
     modifier: Modifier = Modifier,
-    triggerList: List<TriggerKeyListItemState>,
-    onRemoveClick: (TriggerKeyListItemState) -> Unit,
-    onEditClick: (TriggerKeyListItemState) -> Unit,
+    triggerList: List<TriggerKeyListItemModel>,
+    isReorderingEnabled: Boolean,
+    onRemoveClick: (String) -> Unit,
+    onEditClick: (String) -> Unit,
 ) {
     LazyColumn(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier,
         contentPadding = PaddingValues(16.dp),
     ) {
-        items(triggerList) { trigger ->
+        items(triggerList, key = { it.id }) { trigger ->
             TriggerKeyListItem(
+                modifier = Modifier.fillMaxWidth(),
                 model = trigger,
-                onRemoveClick = { onRemoveClick(trigger) },
-                onEditClick = { onEditClick(trigger) },
-                modifier = Modifier.padding(bottom = 8.dp),
+                isReorderingEnabled = isReorderingEnabled,
+                onRemoveClick = { onRemoveClick(trigger.id) },
+                onEditClick = { onEditClick(trigger.id) },
             )
         }
     }
@@ -112,48 +198,35 @@ private fun TriggerList(
 @Composable
 private fun ClickTypeRadioGroup(
     modifier: Modifier = Modifier,
-    selectedClickType: ClickType,
+    clickTypes: Set<ClickType>,
+    checkedClickType: ClickType?,
     onSelectClickType: (ClickType) -> Unit,
 ) {
     Column(modifier = modifier) {
-        Text(
-            text = stringResource(R.string.press_dot_dot_dot),
-            style = MaterialTheme.typography.labelMedium,
-            modifier = Modifier.padding(bottom = 8.dp),
-        )
         Row(modifier = Modifier.fillMaxWidth()) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(end = 16.dp),
-            ) {
-                RadioButton(
-                    selected = selectedClickType == ClickType.SHORT_PRESS,
-                    onClick = { onSelectClickType(ClickType.SHORT_PRESS) },
+            if (clickTypes.contains(ClickType.SHORT_PRESS)) {
+                RadioButtonText(
+                    modifier = Modifier.weight(1f),
+                    isSelected = checkedClickType == ClickType.SHORT_PRESS,
+                    text = stringResource(R.string.radio_button_short_press),
+                    onSelect = { onSelectClickType(ClickType.SHORT_PRESS) },
                 )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(text = stringResource(R.string.radio_button_short_press))
             }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(end = 16.dp),
-            ) {
-                RadioButton(
-                    selected = selectedClickType == ClickType.LONG_PRESS,
-                    onClick = { onSelectClickType(ClickType.LONG_PRESS) },
+            if (clickTypes.contains(ClickType.LONG_PRESS)) {
+                RadioButtonText(
+                    modifier = Modifier.weight(1f),
+                    isSelected = checkedClickType == ClickType.LONG_PRESS,
+                    text = stringResource(R.string.radio_button_long_press),
+                    onSelect = { onSelectClickType(ClickType.LONG_PRESS) },
                 )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(text = stringResource(R.string.radio_button_long_press))
             }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(end = 16.dp),
-            ) {
-                RadioButton(
-                    selected = selectedClickType == ClickType.DOUBLE_PRESS,
-                    onClick = { onSelectClickType(ClickType.DOUBLE_PRESS) },
+            if (clickTypes.contains(ClickType.DOUBLE_PRESS)) {
+                RadioButtonText(
+                    modifier = Modifier.weight(1f),
+                    isSelected = checkedClickType == ClickType.DOUBLE_PRESS,
+                    text = stringResource(R.string.radio_button_double_press),
+                    onSelect = { onSelectClickType(ClickType.DOUBLE_PRESS) },
                 )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(text = stringResource(R.string.radio_button_double_press))
             }
         }
     }
@@ -163,61 +236,108 @@ private fun ClickTypeRadioGroup(
 private fun TriggerModeRadioGroup(
     modifier: Modifier = Modifier,
     mode: TriggerMode,
+    isEnabled: Boolean,
     onSelectParallelMode: () -> Unit,
     onSelectSequenceMode: () -> Unit,
 ) {
     Column(modifier = modifier) {
+        Text(
+            modifier = Modifier.padding(horizontal = 8.dp),
+            text = stringResource(R.string.press_dot_dot_dot),
+            style = MaterialTheme.typography.labelLarge,
+        )
+
         Row(modifier = Modifier.fillMaxWidth()) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(end = 16.dp),
-            ) {
-                RadioButton(
-                    selected = mode is TriggerMode.Parallel,
-                    onClick = onSelectParallelMode,
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(text = stringResource(R.string.radio_button_parallel))
-            }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(end = 16.dp),
-            ) {
-                RadioButton(
-                    selected = mode == TriggerMode.Sequence,
-                    onClick = onSelectSequenceMode,
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(text = stringResource(R.string.radio_button_sequence))
-            }
+            RadioButtonText(
+                modifier = Modifier.weight(1f),
+                isSelected = mode is TriggerMode.Parallel,
+                isEnabled = isEnabled,
+                text = stringResource(R.string.radio_button_parallel),
+                onSelect = onSelectParallelMode,
+            )
+            RadioButtonText(
+                modifier = Modifier.weight(1f),
+                isSelected = mode == TriggerMode.Sequence,
+                isEnabled = isEnabled,
+                text = stringResource(R.string.radio_button_sequence),
+                onSelect = onSelectSequenceMode,
+            )
         }
     }
 }
 
-@Preview
 @Composable
-fun TriggerScreenPreview() {
+private fun RadioButtonText(
+    modifier: Modifier = Modifier,
+    isSelected: Boolean,
+    isEnabled: Boolean = true,
+    text: String,
+    onSelect: () -> Unit,
+) {
+    Row(
+        modifier = modifier.clickable(onClick = onSelect),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        RadioButton(
+            selected = isSelected,
+            onClick = onSelect,
+            enabled = isEnabled,
+        )
+        Text(
+            text = text,
+            style = if (isEnabled) {
+                MaterialTheme.typography.bodyMedium
+            } else {
+                MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.surfaceVariant)
+            },
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+        )
+        Spacer(Modifier.width(8.dp))
+    }
+}
+
+@Preview(device = Devices.PIXEL)
+@Composable
+fun VerticalPreview() {
     val sampleList = listOf(
-        TriggerKeyListItemState(
+        TriggerKeyListItemModel(
             id = "vol_up",
             name = "Volume Up",
             clickTypeString = "Long Press",
             extraInfo = "External Keyboard",
-            linkType = TriggerKeyLinkType.ARROW,
-            isDragDropEnabled = true,
+            linkType = TriggerKeyLinkType.HIDDEN,
         ),
-        TriggerKeyListItemState(
+        TriggerKeyListItemModel(
             id = "vol_down",
             name = "Volume Down",
             clickTypeString = "Single Press",
             extraInfo = "Built-in Keyboard",
             linkType = TriggerKeyLinkType.PLUS,
-            isDragDropEnabled = false,
         ),
     )
     KeyMapperTheme {
-        TriggerScreen(
-            triggerList = sampleList,
+        TriggerScreenVertical(
+            configState = ConfigTriggerState(
+                triggerKeys = sampleList,
+                errors = listOf(
+                    TextListItem.Error(
+                        id = "error",
+                        text = stringResource(R.string.trigger_error_dnd_access_denied),
+                    ),
+                ),
+                isReorderingEnabled = false,
+                clickTypeButtons = setOf(
+                    ClickType.SHORT_PRESS,
+                    ClickType.LONG_PRESS,
+                    ClickType.DOUBLE_PRESS,
+                ),
+                checkedClickType = ClickType.LONG_PRESS,
+                checkedTriggerMode = TriggerMode.Sequence,
+                triggerModeButtonsEnabled = true,
+                triggerModeButtonsVisible = true,
+            ),
+            recordTriggerState = RecordTriggerState.Idle,
         )
     }
 }
