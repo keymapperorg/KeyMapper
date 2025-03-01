@@ -1486,5 +1486,7 @@
     <string name="home_nav_bar_floating_buttons">Floating buttons</string>
     <string name="home_nav_bar_fingerprint_maps">Fingerprint maps</string>
 
-
+    <!-- Trigger screen -->
+    <string name="trigger_key_list_item_remove">Remove</string>
+    <string name="trigger_key_list_item_edit">Edit</string>
 </resources>

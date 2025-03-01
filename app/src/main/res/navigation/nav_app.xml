@@ -22,7 +22,7 @@
     <fragment
         android:id="@+id/home_fragment"
         android:name="io.github.sds100.keymapper.home.HomeFragment"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_compose" />
 
     <action
         android:id="@+id/action_to_config_keymap"

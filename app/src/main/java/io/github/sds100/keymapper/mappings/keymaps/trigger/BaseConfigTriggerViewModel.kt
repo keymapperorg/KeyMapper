@@ -109,7 +109,7 @@ abstract class BaseConfigTriggerViewModel(
     }.flowOn(Dispatchers.Default)
         .stateIn(coroutineScope, SharingStarted.Eagerly, R.id.radioButtonUndefined)
 
-    val triggerKeyListItems: StateFlow<State<List<TriggerKeyListItem>>> =
+    val triggerKeyListItems: StateFlow<State<List<TriggerKeyListItemState>>> =
         combine(
             config.mapping,
             displayKeyMap.showDeviceDescriptors,
@@ -539,7 +539,7 @@ abstract class BaseConfigTriggerViewModel(
     private fun createListItems(
         trigger: Trigger,
         showDeviceDescriptors: Boolean,
-    ): List<TriggerKeyListItem> = trigger.keys.mapIndexed { index, key ->
+    ): List<TriggerKeyListItemState> = trigger.keys.mapIndexed { index, key ->
         val clickTypeString = when (key.clickType) {
             ClickType.SHORT_PRESS -> null
             ClickType.LONG_PRESS -> getString(R.string.clicktype_long_press)
@@ -552,14 +552,13 @@ abstract class BaseConfigTriggerViewModel(
             else -> TriggerKeyLinkType.HIDDEN
         }
 
-        TriggerKeyListItem(
+        TriggerKeyListItemState(
             id = key.uid,
             name = getTriggerKeyName(key),
             clickTypeString = clickTypeString,
             extraInfo = getTriggerKeyExtraInfo(key, showDeviceDescriptors),
             linkType = linkDrawable,
             isDragDropEnabled = trigger.keys.size > 1,
-            isChooseDeviceButtonVisible = key is KeyCodeTriggerKey,
         )
     }
 

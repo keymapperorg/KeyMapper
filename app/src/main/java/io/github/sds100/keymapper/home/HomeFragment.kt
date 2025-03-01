@@ -10,7 +10,8 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.viewpager2.widget.ViewPager2
-import io.github.sds100.keymapper.databinding.FragmentHomeBinding
+import io.github.sds100.keymapper.compose.KeyMapperTheme
+import io.github.sds100.keymapper.databinding.FragmentComposeBinding
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.ui.setupNavigation
@@ -21,13 +22,6 @@ class HomeFragment : Fragment() {
     private val homeViewModel: HomeViewModel by activityViewModels {
         Inject.homeViewModel(requireContext())
     }
-
-    /**
-     * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
-     */
-    private var _binding: FragmentHomeBinding? = null
-    private val binding: FragmentHomeBinding
-        get() = _binding!!
 
     private val backupMappingsLauncher =
         registerForActivityResult(CreateDocument(FileUtils.MIME_TYPE_ZIP)) {
@@ -82,25 +76,18 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        FragmentHomeBinding.inflate(inflater, container, false).apply {
-            _binding = this
-
+        FragmentComposeBinding.inflate(inflater, container, false).apply {
             composeView.apply {
                 // Dispose of the Composition when the view's LifecycleOwner
                 // is destroyed
                 setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
                 setContent {
-//                    KeyMapperTheme {
-                    HomeScreen(viewModel = homeViewModel)
-//                    }
+                    KeyMapperTheme {
+                        HomeScreen(viewModel = homeViewModel)
+                    }
                 }
             }
             return this.root
         }
-    }
-
-    override fun onDestroyView() {
-        _binding = null
-        super.onDestroyView()
     }
 }
