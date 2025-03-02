@@ -2,7 +2,9 @@ package io.github.sds100.keymapper.mappings.keymaps.trigger
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -11,6 +13,7 @@ import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -37,7 +40,14 @@ fun TriggerKeyListItem(
         ElevatedCard(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
+                .padding(start = 16.dp, end = 16.dp),
+            colors = CardDefaults.elevatedCardColors(
+                containerColor = if (isDragging) {
+                    MaterialTheme.colorScheme.surfaceContainerHighest
+                } else {
+                    MaterialTheme.colorScheme.surfaceContainer
+                },
+            ),
         ) {
             Row(
                 modifier = Modifier
@@ -47,7 +57,7 @@ fun TriggerKeyListItem(
             ) {
                 if (isReorderingEnabled) {
                     Icon(
-                        modifier = Modifier.size(40.dp),
+                        modifier = Modifier.size(24.dp),
                         imageVector = Icons.Filled.DragHandle,
                         contentDescription = "Drag",
                         tint = MaterialTheme.colorScheme.onSurface,
@@ -85,7 +95,7 @@ fun TriggerKeyListItem(
                         imageVector = Icons.Filled.Edit,
                         contentDescription = stringResource(R.string.trigger_key_list_item_edit),
                         tint = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.size(36.dp),
+                        modifier = Modifier.size(24.dp),
                     )
                 }
 
@@ -94,13 +104,18 @@ fun TriggerKeyListItem(
                         imageVector = Icons.Filled.Clear,
                         contentDescription = stringResource(R.string.trigger_key_list_item_remove),
                         tint = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.size(40.dp),
+                        modifier = Modifier.size(24.dp),
                     )
                 }
             }
         }
 
-        if (model.linkType != TriggerKeyLinkType.HIDDEN) {
+        if (model.linkType == TriggerKeyLinkType.HIDDEN) {
+            // Important! Show an empty spacer so the height of the card remains constant
+            // while dragging. If the height changes while dragging it can lead to janky
+            // behavior.
+            Spacer(Modifier.height(24.dp))
+        } else {
             Icon(
                 imageVector = when (model.linkType) {
                     TriggerKeyLinkType.ARROW -> Icons.Filled.ArrowDownward
@@ -110,8 +125,8 @@ fun TriggerKeyListItem(
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(bottom = 8.dp),
+                    .size(24.dp)
+                    .align(Alignment.CenterHorizontally),
             )
         }
     }
@@ -129,6 +144,22 @@ fun TriggerKeyListItemPreview() {
             linkType = TriggerKeyLinkType.ARROW,
         ),
         isReorderingEnabled = true,
-        isDragging = false
+        isDragging = false,
+    )
+}
+
+@Preview
+@Composable
+fun TriggerKeyListItemNoDragPreview() {
+    TriggerKeyListItem(
+        model = TriggerKeyListItemModel(
+            id = "id",
+            name = "Volume Up",
+            clickTypeString = "Long Press",
+            extraInfo = null,
+            linkType = TriggerKeyLinkType.ARROW,
+        ),
+        isReorderingEnabled = false,
+        isDragging = false,
     )
 }
