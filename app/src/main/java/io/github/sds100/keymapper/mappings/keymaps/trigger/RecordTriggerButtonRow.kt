@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.R
@@ -92,7 +93,11 @@ private fun AdvancedTriggersButton(
             enabled = isEnabled,
             onClick = onClick,
         ) {
-            Text(stringResource(R.string.button_advanced_triggers))
+            Text(
+                text = stringResource(R.string.button_advanced_triggers),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
         }
 
         Badge(

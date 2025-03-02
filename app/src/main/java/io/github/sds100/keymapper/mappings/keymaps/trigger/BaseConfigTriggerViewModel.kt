@@ -584,7 +584,7 @@ data class ConfigTriggerState(
     val isReorderingEnabled: Boolean = false,
     val clickTypeButtons: Set<ClickType> = emptySet(),
     val checkedClickType: ClickType? = null,
-    val checkedTriggerMode: TriggerMode,
+    val checkedTriggerMode: TriggerMode = TriggerMode.Undefined,
     val triggerModeButtonsEnabled: Boolean = false,
     val triggerModeButtonsVisible: Boolean = false,
 )

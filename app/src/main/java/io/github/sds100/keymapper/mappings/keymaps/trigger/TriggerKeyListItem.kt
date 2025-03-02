@@ -134,7 +134,7 @@ fun TriggerKeyListItem(
 
 @Preview
 @Composable
-fun TriggerKeyListItemPreview() {
+private fun TriggerKeyListItemPreview() {
     TriggerKeyListItem(
         model = TriggerKeyListItemModel(
             id = "id",
@@ -150,7 +150,7 @@ fun TriggerKeyListItemPreview() {
 
 @Preview
 @Composable
-fun TriggerKeyListItemNoDragPreview() {
+private fun TriggerKeyListItemNoDragPreview() {
     TriggerKeyListItem(
         model = TriggerKeyListItemModel(
             id = "id",
