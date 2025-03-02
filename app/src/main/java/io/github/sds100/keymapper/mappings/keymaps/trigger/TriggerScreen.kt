@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -43,6 +45,7 @@ import io.github.sds100.keymapper.compose.draggable.rememberDragDropState
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ui.TextListItem
+import io.github.sds100.keymapper.util.ui.compose.ListItemFixError
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -107,6 +110,7 @@ fun TriggerScreen(modifier: Modifier = Modifier, viewModel: ConfigTriggerViewMod
                     onSelectParallelMode = viewModel::onParallelRadioButtonChecked,
                     onSelectSequenceMode = viewModel::onSequenceRadioButtonChecked,
                     onMoveTriggerKey = viewModel::onMoveTriggerKey,
+                    onFixErrorClick = viewModel::onTriggerErrorClick,
                 )
             } else {
                 TriggerScreenVertical(
@@ -123,6 +127,7 @@ fun TriggerScreen(modifier: Modifier = Modifier, viewModel: ConfigTriggerViewMod
                     onSelectParallelMode = viewModel::onParallelRadioButtonChecked,
                     onSelectSequenceMode = viewModel::onSequenceRadioButtonChecked,
                     onMoveTriggerKey = viewModel::onMoveTriggerKey,
+                    onFixErrorClick = viewModel::onTriggerErrorClick,
                 )
             }
         }
@@ -156,9 +161,14 @@ private fun TriggerScreenVertical(
     onRecordTriggerClick: () -> Unit = {},
     onAdvancedTriggersClick: () -> Unit = {},
     onMoveTriggerKey: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> },
+    onFixErrorClick: (String) -> Unit = {},
 ) {
     Surface(modifier = modifier) {
         Column {
+            Spacer(Modifier.height(8.dp))
+
+            ErrorList(errors = configState.errors, onFixErrorClick = onFixErrorClick)
+
             Spacer(Modifier.height(8.dp))
 
             TriggerList(
@@ -212,6 +222,7 @@ private fun TriggerScreenHorizontal(
     onRecordTriggerClick: () -> Unit = {},
     onAdvancedTriggersClick: () -> Unit = {},
     onMoveTriggerKey: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> },
+    onFixErrorClick: (String) -> Unit = {},
 ) {
     Surface(modifier = modifier) {
         Row {
@@ -230,26 +241,32 @@ private fun TriggerScreenHorizontal(
             Spacer(Modifier.height(8.dp))
 
             Column(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.fillMaxHeight(),
                 verticalArrangement = Arrangement.Bottom,
             ) {
-                Spacer(Modifier.weight(1f))
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState()),
+                ) {
+                    ErrorList(errors = configState.errors, onFixErrorClick = onFixErrorClick)
 
-                if (configState.clickTypeButtons.isNotEmpty()) {
-                    ClickTypeRadioGroup(
-                        clickTypes = configState.clickTypeButtons,
-                        checkedClickType = configState.checkedClickType,
-                        onSelectClickType = onSelectClickType,
-                    )
-                }
+                    if (configState.clickTypeButtons.isNotEmpty()) {
+                        ClickTypeRadioGroup(
+                            clickTypes = configState.clickTypeButtons,
+                            checkedClickType = configState.checkedClickType,
+                            onSelectClickType = onSelectClickType,
+                        )
+                    }
 
-                if (configState.triggerModeButtonsVisible) {
-                    TriggerModeRadioGroup(
-                        mode = configState.checkedTriggerMode,
-                        isEnabled = configState.triggerModeButtonsEnabled,
-                        onSelectParallelMode = onSelectParallelMode,
-                        onSelectSequenceMode = onSelectSequenceMode,
-                    )
+                    if (configState.triggerModeButtonsVisible) {
+                        TriggerModeRadioGroup(
+                            mode = configState.checkedTriggerMode,
+                            isEnabled = configState.triggerModeButtonsEnabled,
+                            onSelectParallelMode = onSelectParallelMode,
+                            onSelectSequenceMode = onSelectSequenceMode,
+                        )
+                    }
                 }
 
                 RecordTriggerButtonRow(
@@ -299,6 +316,19 @@ private fun TriggerList(
                     onEditClick = { onEditClick(model.id) },
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun ErrorList(
+    modifier: Modifier = Modifier,
+    errors: List<TextListItem.Error>,
+    onFixErrorClick: (String) -> Unit = {},
+) {
+    Column(modifier = modifier) {
+        for (model in errors) {
+            ListItemFixError(model = model, onFixClick = { onFixErrorClick(model.id) })
         }
     }
 }
