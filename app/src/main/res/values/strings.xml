@@ -1492,4 +1492,9 @@
     <string name="trigger_key_options_title">Trigger key options</string>
     <string name="trigger_key_device_header">Device</string>
     <string name="trigger_key_click_types_header">Click type</string>
+    <string name="trigger_key_shortcut_use_floating_button">Use floating button</string>
+    <string name="trigger_key_shortcut_use_assistant">Use assistant trigger</string>
+    <string name="trigger_key_shortcut_add_floating_button">Floating button</string>
+    <string name="trigger_key_shortcut_add_assistant">Assistant trigger</string>
+
 </resources>

@@ -26,6 +26,11 @@ import kotlinx.coroutines.launch
 @Composable
 fun rememberDragDropState(
     lazyListState: LazyListState,
+    /**
+     * Ignore the last N items in the list. Do not allow dragging and dropping these items or
+     * placing other items in these positions.
+     */
+    ignoreLastItems: Int = 0,
     onMove: (Int, Int) -> Unit,
     onStart: () -> Unit = {},
     onEnd: () -> Unit = {},
@@ -34,6 +39,7 @@ fun rememberDragDropState(
     val state = remember(lazyListState) {
         DragDropState(
             state = lazyListState,
+            ignoreLastItems = ignoreLastItems,
             onStart = onStart,
             onMove = onMove,
             onEnd = onEnd,
@@ -56,6 +62,7 @@ fun rememberDragDropState(
  */
 class DragDropState internal constructor(
     private val state: LazyListState,
+    private val ignoreLastItems: Int,
     private val scope: CoroutineScope,
     private val onStart: () -> Unit,
     private val onMove: (Int, Int) -> Unit,
@@ -86,7 +93,8 @@ class DragDropState internal constructor(
         // check if the touch position is on drag handle
         state.layoutInfo.visibleItemsInfo
             .firstOrNull { item ->
-                offset.y.toInt() in item.offset..(item.offset + item.size)
+                item.index < state.layoutInfo.totalItemsCount - ignoreLastItems &&
+                    offset.y.toInt() in item.offset..(item.offset + item.size)
             }?.also {
                 draggingItemIndex = it.index
                 draggingItemInitialOffset = it.offset
@@ -130,6 +138,8 @@ class DragDropState internal constructor(
             middleOffset.toInt() in item.offset..item.offsetEnd &&
                 draggingItem.index != item.index
         }
+        val itemCount = state.layoutInfo.totalItemsCount
+
         if (targetItem != null) {
             val scrollToIndex = if (targetItem.index == state.firstVisibleItemIndex) {
                 draggingItem.index
@@ -138,20 +148,25 @@ class DragDropState internal constructor(
             } else {
                 null
             }
-            if (scrollToIndex != null) {
-                scope.launch {
-                    // this is needed to neutralize automatic keeping the first item first.
-                    state.scrollToItem(scrollToIndex, state.firstVisibleItemScrollOffset)
+
+            if (draggingItem.index < itemCount - ignoreLastItems && targetItem.index < itemCount - ignoreLastItems) {
+                if (scrollToIndex != null) {
+                    scope.launch {
+                        // this is needed to neutralize automatic keeping the first item first.
+                        state.scrollToItem(scrollToIndex, state.firstVisibleItemScrollOffset)
+                        onMove.invoke(draggingItem.index, targetItem.index)
+                    }
+                } else {
                     onMove.invoke(draggingItem.index, targetItem.index)
                 }
-            } else {
-                onMove.invoke(draggingItem.index, targetItem.index)
+                draggingItemIndex = targetItem.index
             }
-            draggingItemIndex = targetItem.index
         } else {
             val overscroll = when {
                 draggingItemDraggedDelta > 0 ->
-                    (endOffset - state.layoutInfo.viewportEndOffset).coerceAtLeast(0f)
+                    (endOffset - state.layoutInfo.viewportEndOffset).coerceAtLeast(
+                        0f,
+                    )
 
                 draggingItemDraggedDelta < 0 ->
                     (startOffset - state.layoutInfo.viewportStartOffset).coerceAtMost(0f)

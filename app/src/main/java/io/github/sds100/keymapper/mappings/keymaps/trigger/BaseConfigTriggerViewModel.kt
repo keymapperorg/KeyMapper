@@ -81,6 +81,9 @@ abstract class BaseConfigTriggerViewModel(
 
     private val errorListItems = MutableStateFlow<List<TextListItem.Error>>(emptyList())
 
+    val triggerKeyShortcuts: MutableStateFlow<Set<TriggerKeyShortcut>> =
+        MutableStateFlow(emptySet())
+
     // IMPORTANT! Do not flow on another thread because this causes the drag and drop
     // animations to be more janky.
     val state: StateFlow<State<ConfigTriggerState>> =
@@ -88,6 +91,7 @@ abstract class BaseConfigTriggerViewModel(
             config.mapping,
             errorListItems,
             displayKeyMap.showDeviceDescriptors,
+            triggerKeyShortcuts,
             transform = ::buildUiState,
         ).stateIn(coroutineScope, SharingStarted.Eagerly, State.Loading)
 
@@ -191,15 +195,24 @@ abstract class BaseConfigTriggerViewModel(
         }.launchIn(coroutineScope)
     }
 
+    open fun onClickTriggerKeyShortcut(shortcut: TriggerKeyShortcut) {}
+
     private fun buildUiState(
         keyMapState: State<KeyMap>,
         errors: List<TextListItem.Error>,
         showDeviceDescriptors: Boolean,
+        triggerKeyShortcuts: Set<TriggerKeyShortcut>,
     ): State<ConfigTriggerState> {
         return keyMapState.mapData { keyMap ->
 
             val trigger = keyMap.trigger
-            val triggerKeys = createListItems(trigger, showDeviceDescriptors)
+
+            if (trigger.keys.isEmpty()) {
+                return@mapData ConfigTriggerState.Empty(triggerKeyShortcuts)
+            }
+
+            val triggerKeys =
+                createListItems(trigger, showDeviceDescriptors, triggerKeyShortcuts.size)
             val isReorderingEnabled = trigger.keys.size > 1
             val triggerModeButtonsEnabled = keyMap.trigger.keys.size > 1
 
@@ -233,7 +246,7 @@ abstract class BaseConfigTriggerViewModel(
                 else -> null
             }
 
-            ConfigTriggerState(
+            ConfigTriggerState.Loaded(
                 triggerKeys = triggerKeys,
                 errors = errors,
                 isReorderingEnabled = isReorderingEnabled,
@@ -242,6 +255,7 @@ abstract class BaseConfigTriggerViewModel(
                 triggerModeButtonsEnabled = triggerModeButtonsEnabled,
                 triggerModeButtonsVisible = triggerModeButtonsVisible,
                 checkedTriggerMode = trigger.mode,
+                shortcuts = triggerKeyShortcuts,
             )
         }
     }
@@ -558,6 +572,7 @@ abstract class BaseConfigTriggerViewModel(
     private fun createListItems(
         trigger: Trigger,
         showDeviceDescriptors: Boolean,
+        shortcutCount: Int,
     ): List<TriggerKeyListItemModel> = trigger.keys.mapIndexed { index, key ->
         val clickType = if (trigger.mode is TriggerMode.Parallel) {
             trigger.mode.clickType
@@ -572,8 +587,8 @@ abstract class BaseConfigTriggerViewModel(
         }
 
         val linkDrawable = when {
-            trigger.mode is TriggerMode.Parallel && index < trigger.keys.lastIndex -> TriggerKeyLinkType.PLUS
-            trigger.mode is TriggerMode.Sequence && index < trigger.keys.lastIndex -> TriggerKeyLinkType.ARROW
+            trigger.mode is TriggerMode.Sequence && (index < trigger.keys.lastIndex || shortcutCount > 0) -> TriggerKeyLinkType.ARROW
+            (index < trigger.keys.lastIndex || shortcutCount > 0) -> TriggerKeyLinkType.PLUS
             else -> TriggerKeyLinkType.HIDDEN
         }
 
@@ -655,16 +670,23 @@ abstract class BaseConfigTriggerViewModel(
     }
 }
 
-data class ConfigTriggerState(
-    val triggerKeys: List<TriggerKeyListItemModel> = emptyList(),
-    val errors: List<TextListItem.Error> = emptyList(),
-    val isReorderingEnabled: Boolean = false,
-    val clickTypeButtons: Set<ClickType> = emptySet(),
-    val checkedClickType: ClickType? = null,
-    val checkedTriggerMode: TriggerMode = TriggerMode.Undefined,
-    val triggerModeButtonsEnabled: Boolean = false,
-    val triggerModeButtonsVisible: Boolean = false,
-)
+sealed class ConfigTriggerState {
+    data class Empty(
+        val shortcuts: Set<TriggerKeyShortcut> = emptySet(),
+    ) : ConfigTriggerState()
+
+    data class Loaded(
+        val triggerKeys: List<TriggerKeyListItemModel> = emptyList(),
+        val errors: List<TextListItem.Error> = emptyList(),
+        val isReorderingEnabled: Boolean = false,
+        val clickTypeButtons: Set<ClickType> = emptySet(),
+        val checkedClickType: ClickType? = null,
+        val checkedTriggerMode: TriggerMode = TriggerMode.Undefined,
+        val triggerModeButtonsEnabled: Boolean = false,
+        val triggerModeButtonsVisible: Boolean = false,
+        val shortcuts: Set<TriggerKeyShortcut> = emptySet(),
+    ) : ConfigTriggerState()
+}
 
 data class TriggerKeyListItemModel(
     val id: String,

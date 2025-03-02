@@ -28,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -122,6 +123,7 @@ fun TriggerScreen(modifier: Modifier = Modifier, viewModel: ConfigTriggerViewMod
                     onSelectSequenceMode = viewModel::onSequenceRadioButtonChecked,
                     onMoveTriggerKey = viewModel::onMoveTriggerKey,
                     onFixErrorClick = viewModel::onTriggerErrorClick,
+                    onClickShortcut = viewModel::onClickTriggerKeyShortcut,
                 )
             } else {
                 TriggerScreenVertical(
@@ -139,6 +141,7 @@ fun TriggerScreen(modifier: Modifier = Modifier, viewModel: ConfigTriggerViewMod
                     onSelectSequenceMode = viewModel::onSequenceRadioButtonChecked,
                     onMoveTriggerKey = viewModel::onMoveTriggerKey,
                     onFixErrorClick = viewModel::onTriggerErrorClick,
+                    onClickShortcut = viewModel::onClickTriggerKeyShortcut,
                 )
             }
         }
@@ -173,39 +176,67 @@ private fun TriggerScreenVertical(
     onAdvancedTriggersClick: () -> Unit = {},
     onMoveTriggerKey: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> },
     onFixErrorClick: (String) -> Unit = {},
+    onClickShortcut: (TriggerKeyShortcut) -> Unit = {},
 ) {
     Surface(modifier = modifier) {
         Column {
-            Spacer(Modifier.height(8.dp))
+            when (configState) {
+                is ConfigTriggerState.Empty -> {
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.Center,
+                    ) {
+                        Text(
+                            modifier = Modifier.padding(32.dp),
+                            text = stringResource(R.string.triggers_recyclerview_placeholder),
+                            textAlign = TextAlign.Center,
+                        )
 
-            ErrorList(errors = configState.errors, onFixErrorClick = onFixErrorClick)
+                        TriggerKeyShortcutRowNoTrigger(
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .fillMaxWidth(),
+                            shortcuts = configState.shortcuts,
+                            onClick = onClickShortcut,
+                        )
+                    }
+                }
 
-            Spacer(Modifier.height(8.dp))
+                is ConfigTriggerState.Loaded -> {
+                    Spacer(Modifier.height(8.dp))
 
-            TriggerList(
-                modifier = Modifier.weight(1f),
-                triggerList = configState.triggerKeys,
-                isReorderingEnabled = configState.isReorderingEnabled,
-                onEditClick = onEditClick,
-                onRemoveClick = onRemoveClick,
-                onMove = onMoveTriggerKey,
-            )
+                    ErrorList(errors = configState.errors, onFixErrorClick = onFixErrorClick)
 
-            if (configState.clickTypeButtons.isNotEmpty()) {
-                ClickTypeRadioGroup(
-                    clickTypes = configState.clickTypeButtons,
-                    checkedClickType = configState.checkedClickType,
-                    onSelectClickType = onSelectClickType,
-                )
-            }
+                    Spacer(Modifier.height(8.dp))
 
-            if (configState.triggerModeButtonsVisible) {
-                TriggerModeRadioGroup(
-                    mode = configState.checkedTriggerMode,
-                    isEnabled = configState.triggerModeButtonsEnabled,
-                    onSelectParallelMode = onSelectParallelMode,
-                    onSelectSequenceMode = onSelectSequenceMode,
-                )
+                    TriggerList(
+                        modifier = Modifier.weight(1f),
+                        triggerList = configState.triggerKeys,
+                        shortcuts = configState.shortcuts,
+                        isReorderingEnabled = configState.isReorderingEnabled,
+                        onEditClick = onEditClick,
+                        onRemoveClick = onRemoveClick,
+                        onMove = onMoveTriggerKey,
+                        onClickShortcut = onClickShortcut,
+                    )
+
+                    if (configState.clickTypeButtons.isNotEmpty()) {
+                        ClickTypeRadioGroup(
+                            clickTypes = configState.clickTypeButtons,
+                            checkedClickType = configState.checkedClickType,
+                            onSelectClickType = onSelectClickType,
+                        )
+                    }
+
+                    if (configState.triggerModeButtonsVisible) {
+                        TriggerModeRadioGroup(
+                            mode = configState.checkedTriggerMode,
+                            isEnabled = configState.triggerModeButtonsEnabled,
+                            onSelectParallelMode = onSelectParallelMode,
+                            onSelectSequenceMode = onSelectSequenceMode,
+                        )
+                    }
+                }
             }
 
             RecordTriggerButtonRow(
@@ -234,59 +265,92 @@ private fun TriggerScreenHorizontal(
     onAdvancedTriggersClick: () -> Unit = {},
     onMoveTriggerKey: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> },
     onFixErrorClick: (String) -> Unit = {},
+    onClickShortcut: (TriggerKeyShortcut) -> Unit = {},
 ) {
     Surface(modifier = modifier) {
-        Row {
-            TriggerList(
-                modifier = Modifier
-                    .widthIn(max = 400.dp)
-                    .fillMaxHeight()
-                    .padding(vertical = 8.dp),
-                triggerList = configState.triggerKeys,
-                isReorderingEnabled = configState.isReorderingEnabled,
-                onEditClick = onEditClick,
-                onRemoveClick = onRemoveClick,
-                onMove = onMoveTriggerKey,
-            )
-
-            Spacer(Modifier.height(8.dp))
-
-            Column(
-                modifier = Modifier.fillMaxHeight(),
-                verticalArrangement = Arrangement.Bottom,
-            ) {
-                Column(
+        when (configState) {
+            is ConfigTriggerState.Empty -> Row {
+                Text(
                     modifier = Modifier
-                        .weight(1f)
-                        .verticalScroll(rememberScrollState()),
-                ) {
-                    ErrorList(errors = configState.errors, onFixErrorClick = onFixErrorClick)
-
-                    if (configState.clickTypeButtons.isNotEmpty()) {
-                        ClickTypeRadioGroup(
-                            clickTypes = configState.clickTypeButtons,
-                            checkedClickType = configState.checkedClickType,
-                            onSelectClickType = onSelectClickType,
-                        )
-                    }
-
-                    if (configState.triggerModeButtonsVisible) {
-                        TriggerModeRadioGroup(
-                            mode = configState.checkedTriggerMode,
-                            isEnabled = configState.triggerModeButtonsEnabled,
-                            onSelectParallelMode = onSelectParallelMode,
-                            onSelectSequenceMode = onSelectSequenceMode,
-                        )
-                    }
-                }
-
-                RecordTriggerButtonRow(
-                    modifier = Modifier
-                        .padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
-                    onRecordTriggerClick = onRecordTriggerClick,
-                    recordTriggerState = recordTriggerState,
-                    onAdvancedTriggersClick = onAdvancedTriggersClick,
+                        .widthIn(max = 400.dp)
+                        .padding(32.dp),
+                    text = stringResource(R.string.triggers_recyclerview_placeholder),
+                    textAlign = TextAlign.Center,
                 )
+                Column {
+                    TriggerKeyShortcutRowNoTrigger(
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .fillMaxWidth()
+                            .weight(1f),
+                        shortcuts = configState.shortcuts,
+                        onClick = onClickShortcut,
+                    )
+                    RecordTriggerButtonRow(
+                        modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
+                        onRecordTriggerClick = onRecordTriggerClick,
+                        recordTriggerState = recordTriggerState,
+                        onAdvancedTriggersClick = onAdvancedTriggersClick,
+                    )
+                }
+            }
+
+            is ConfigTriggerState.Loaded -> Row {
+                TriggerList(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .widthIn(max = 400.dp)
+                        .padding(vertical = 8.dp),
+                    triggerList = configState.triggerKeys,
+                    shortcuts = configState.shortcuts,
+                    isReorderingEnabled = configState.isReorderingEnabled,
+                    onEditClick = onEditClick,
+                    onRemoveClick = onRemoveClick,
+                    onMove = onMoveTriggerKey,
+                    onClickShortcut = onClickShortcut,
+                )
+
+                Spacer(Modifier.height(8.dp))
+
+                Column(
+                    modifier = Modifier.fillMaxHeight(),
+                    verticalArrangement = Arrangement.Bottom,
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .verticalScroll(rememberScrollState()),
+                    ) {
+                        ErrorList(
+                            errors = configState.errors,
+                            onFixErrorClick = onFixErrorClick,
+                        )
+
+                        if (configState.clickTypeButtons.isNotEmpty()) {
+                            ClickTypeRadioGroup(
+                                clickTypes = configState.clickTypeButtons,
+                                checkedClickType = configState.checkedClickType,
+                                onSelectClickType = onSelectClickType,
+                            )
+                        }
+
+                        if (configState.triggerModeButtonsVisible) {
+                            TriggerModeRadioGroup(
+                                mode = configState.checkedTriggerMode,
+                                isEnabled = configState.triggerModeButtonsEnabled,
+                                onSelectParallelMode = onSelectParallelMode,
+                                onSelectSequenceMode = onSelectSequenceMode,
+                            )
+                        }
+                    }
+
+                    RecordTriggerButtonRow(
+                        modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
+                        onRecordTriggerClick = onRecordTriggerClick,
+                        recordTriggerState = recordTriggerState,
+                        onAdvancedTriggersClick = onAdvancedTriggersClick,
+                    )
+                }
             }
         }
     }
@@ -296,24 +360,38 @@ private fun TriggerScreenHorizontal(
 private fun TriggerList(
     modifier: Modifier = Modifier,
     triggerList: List<TriggerKeyListItemModel>,
+    shortcuts: Set<TriggerKeyShortcut>,
     isReorderingEnabled: Boolean,
     onRemoveClick: (String) -> Unit,
     onEditClick: (String) -> Unit,
     onMove: (fromIndex: Int, toIndex: Int) -> Unit,
+    onClickShortcut: (TriggerKeyShortcut) -> Unit,
 ) {
     val lazyListState = rememberLazyListState()
     val dragDropState = rememberDragDropState(
         lazyListState = lazyListState,
         onMove = onMove,
+        // Do not drag and drop the row of shortcuts
+        ignoreLastItems = 1,
     )
 
+    // Use dragContainer rather than .draggable() modifier because that causes
+    // dragging the first item to be always be dropped in the next position.
     LazyColumn(
-        // Use dragContainer rather than .draggable() modifier because that causes
-        // dragging the first item to be always be dropped in the next position.
-        modifier = modifier.dragContainer(dragDropState),
+        modifier = modifier.let { modifier ->
+            if (isReorderingEnabled) {
+                modifier.dragContainer(dragDropState)
+            } else {
+                modifier
+            }
+        },
         state = lazyListState,
     ) {
-        itemsIndexed(triggerList, key = { _, item -> item.id }) { index, model ->
+        itemsIndexed(
+            triggerList,
+            key = { _, item -> item.id },
+            contentType = { _, _ -> "key" },
+        ) { index, model ->
             DraggableItem(
                 dragDropState = dragDropState,
                 index = index,
@@ -327,6 +405,14 @@ private fun TriggerList(
                     onEditClick = { onEditClick(model.id) },
                 )
             }
+        }
+
+        item(key = "shortcuts", contentType = "shortcuts") {
+            TriggerKeyShortcutRow(
+                modifier = Modifier.fillMaxWidth(),
+                shortcuts = shortcuts,
+                onClick = { onClickShortcut(it) },
+            )
         }
     }
 }
@@ -427,12 +513,12 @@ private val sampleList = listOf(
         id = "vol_down",
         name = "Volume Down",
         clickTypeString = "Single Press",
-        extraInfo = "Built-in Keyboard",
-        linkType = TriggerKeyLinkType.HIDDEN,
+        extraInfo = null,
+        linkType = TriggerKeyLinkType.PLUS,
     ),
 )
 
-private val previewState = ConfigTriggerState(
+private val previewState = ConfigTriggerState.Loaded(
     triggerKeys = sampleList,
     errors = listOf(
         TextListItem.Error(
@@ -450,6 +536,7 @@ private val previewState = ConfigTriggerState(
     checkedTriggerMode = TriggerMode.Sequence,
     triggerModeButtonsEnabled = true,
     triggerModeButtonsVisible = true,
+    shortcuts = setOf(TriggerKeyShortcut.ASSISTANT),
 )
 
 @Preview(device = Devices.PIXEL)
@@ -458,6 +545,22 @@ private fun VerticalPreview() {
     KeyMapperTheme {
         TriggerScreenVertical(
             configState = previewState,
+            recordTriggerState = RecordTriggerState.Idle,
+        )
+    }
+}
+
+@Preview(device = Devices.PIXEL)
+@Composable
+private fun VerticalEmptyPreview() {
+    KeyMapperTheme {
+        TriggerScreenVertical(
+            configState = ConfigTriggerState.Empty(
+                shortcuts = setOf(
+                    TriggerKeyShortcut.ASSISTANT,
+                    TriggerKeyShortcut.FLOATING_BUTTON,
+                ),
+            ),
             recordTriggerState = RecordTriggerState.Idle,
         )
     }
@@ -479,7 +582,7 @@ private fun HorizontalPreview() {
 private fun HorizontalEmptyPreview() {
     KeyMapperTheme {
         TriggerScreenHorizontal(
-            configState = ConfigTriggerState(),
+            configState = ConfigTriggerState.Empty(shortcuts = setOf(TriggerKeyShortcut.ASSISTANT)),
             recordTriggerState = RecordTriggerState.Idle,
         )
     }
