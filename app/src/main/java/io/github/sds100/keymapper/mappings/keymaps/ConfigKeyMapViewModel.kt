@@ -11,7 +11,6 @@ import io.github.sds100.keymapper.constraints.ConfigConstraintsViewModel
 import io.github.sds100.keymapper.constraints.ConstraintUtils
 import io.github.sds100.keymapper.mappings.ConfigMappingUiState
 import io.github.sds100.keymapper.mappings.ConfigMappingViewModel
-import io.github.sds100.keymapper.mappings.keymaps.trigger.ConfigTriggerKeyViewModel
 import io.github.sds100.keymapper.mappings.keymaps.trigger.ConfigTriggerViewModel
 import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerUseCase
 import io.github.sds100.keymapper.mappings.keymaps.trigger.SetupGuiKeyboardUseCase
@@ -52,9 +51,6 @@ class ConfigKeyMapViewModel(
 
     override val editActionViewModel =
         EditKeyMapActionViewModel(viewModelScope, config, resourceProvider, createActionUseCase)
-
-    val configTriggerKeyViewModel =
-        ConfigTriggerKeyViewModel(viewModelScope, config, resourceProvider)
 
     override val configActionsViewModel = ConfigActionsViewModel(
         viewModelScope,

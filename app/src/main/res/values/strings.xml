@@ -1489,4 +1489,7 @@
     <!-- Trigger screen -->
     <string name="trigger_key_list_item_remove">Remove</string>
     <string name="trigger_key_list_item_edit">Edit</string>
+    <string name="trigger_key_options_title">Trigger key options</string>
+    <string name="trigger_key_device_header">Device</string>
+    <string name="trigger_key_click_types_header">Click type</string>
 </resources>

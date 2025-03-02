@@ -19,6 +19,7 @@ import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.dataOrNull
 import io.github.sds100.keymapper.util.mapData
+import io.github.sds100.keymapper.util.ui.CheckBoxListItem
 import io.github.sds100.keymapper.util.ui.DialogResponse
 import io.github.sds100.keymapper.util.ui.NavigationViewModel
 import io.github.sds100.keymapper.util.ui.NavigationViewModelImpl
@@ -46,8 +47,8 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 /**
  * Created by sds100 on 24/11/20.
@@ -66,19 +67,17 @@ abstract class BaseConfigTriggerViewModel(
     PopupViewModel by PopupViewModelImpl(),
     NavigationViewModel by NavigationViewModelImpl() {
 
+    companion object {
+        private const val DEVICE_ID_ANY = "any"
+        private const val DEVICE_ID_INTERNAL = "internal"
+    }
+
     val optionsViewModel = ConfigTriggerOptionsViewModel(
         coroutineScope,
         config,
         createKeyMapShortcut,
         resourceProvider,
     )
-
-    private val _openEditOptions = MutableSharedFlow<String>()
-
-    /**
-     * value is the uid of the trigger key
-     */
-    val openEditOptions = _openEditOptions.asSharedFlow()
 
     private val errorListItems = MutableStateFlow<List<TextListItem.Error>>(emptyList())
 
@@ -119,6 +118,11 @@ abstract class BaseConfigTriggerViewModel(
             isChosen,
         )
     }.stateIn(coroutineScope, SharingStarted.Lazily, SetupGuiKeyboardState.DEFAULT)
+
+    private val triggerKeyOptionsUid = MutableStateFlow<String?>(null)
+    val triggerKeyOptionsState: StateFlow<TriggerKeyOptionsState?> =
+        combine(config.mapping, triggerKeyOptionsUid, transform = ::buildKeyOptionsUiState)
+            .stateIn(coroutineScope, SharingStarted.Lazily, null)
 
     /**
      * Check whether the user stopped the trigger recording countdown. This
@@ -239,6 +243,83 @@ abstract class BaseConfigTriggerViewModel(
                 triggerModeButtonsVisible = triggerModeButtonsVisible,
                 checkedTriggerMode = trigger.mode,
             )
+        }
+    }
+
+    private suspend fun buildKeyOptionsUiState(
+        keyMapState: State<KeyMap>,
+        triggerKeyUid: String?,
+    ): TriggerKeyOptionsState? {
+        if (triggerKeyUid == null) {
+            return null
+        }
+
+        when (keyMapState) {
+            State.Loading -> return null
+            is State.Data -> {
+                val trigger = keyMapState.data.trigger
+                val key = trigger.keys.find { it.uid == triggerKeyUid }
+                    ?: return null
+
+                val showDeviceDescriptors = displayKeyMap.showDeviceDescriptors.first()
+
+                var deviceListItems = emptyList<CheckBoxListItem>()
+
+                if (key is KeyCodeTriggerKey) {
+                    deviceListItems = config.getAvailableTriggerKeyDevices()
+                        .map { device: TriggerKeyDevice ->
+                            buildDeviceListItem(
+                                device = device,
+                                showDeviceDescriptors = showDeviceDescriptors,
+                                isChecked = key.device == device,
+                            )
+                        }
+                }
+
+                return TriggerKeyOptionsState(
+                    doNotRemapChecked = !key.consumeEvent,
+                    clickType = key.clickType,
+                    showClickTypes = trigger.mode is TriggerMode.Sequence,
+                    devices = deviceListItems,
+                )
+            }
+        }
+    }
+
+    private fun buildDeviceListItem(
+        device: TriggerKeyDevice,
+        isChecked: Boolean,
+        showDeviceDescriptors: Boolean,
+    ): CheckBoxListItem {
+        return when (device) {
+            TriggerKeyDevice.Any -> CheckBoxListItem(
+                id = DEVICE_ID_ANY,
+                isChecked = isChecked,
+                label = getString(R.string.any_device),
+            )
+
+            TriggerKeyDevice.Internal -> CheckBoxListItem(
+                id = DEVICE_ID_INTERNAL,
+                isChecked = isChecked,
+                label = getString(R.string.this_device),
+            )
+
+            is TriggerKeyDevice.External -> {
+                val name = if (showDeviceDescriptors) {
+                    InputDeviceUtils.appendDeviceDescriptorToName(
+                        device.descriptor,
+                        device.name,
+                    )
+                } else {
+                    device.name
+                }
+
+                CheckBoxListItem(
+                    id = device.descriptor,
+                    isChecked = isChecked,
+                    label = name,
+                )
+            }
         }
     }
 
@@ -367,45 +448,41 @@ abstract class BaseConfigTriggerViewModel(
     fun onMoveTriggerKey(fromIndex: Int, toIndex: Int) = config.moveTriggerKey(fromIndex, toIndex)
 
     open fun onTriggerKeyOptionsClick(id: String) {
-        runBlocking { _openEditOptions.emit(id) }
+        triggerKeyOptionsUid.update { id }
     }
 
-    private suspend fun chooseDeviceForKeyCodeTriggerKey(keyUid: String) {
-        val idAny = "any"
-        val idInternal = "this_device"
-        val devices = config.getAvailableTriggerKeyDevices()
-        val showDeviceDescriptors = displayKeyMap.showDeviceDescriptors.first()
+    fun onDismissTriggerKeyOptions() {
+        triggerKeyOptionsUid.update { null }
+    }
 
-        val listItems = devices.map { device: TriggerKeyDevice ->
-            when (device) {
-                TriggerKeyDevice.Any -> idAny to getString(R.string.any_device)
-                TriggerKeyDevice.Internal -> idInternal to getString(R.string.this_device)
-                is TriggerKeyDevice.External -> {
-                    if (showDeviceDescriptors) {
-                        val name = InputDeviceUtils.appendDeviceDescriptorToName(
-                            device.descriptor,
-                            device.name,
-                        )
-                        device.descriptor to name
-                    } else {
-                        device.descriptor to device.name
-                    }
+    fun onCheckDoNotRemap(isChecked: Boolean) {
+        triggerKeyOptionsUid.value?.let { config.setTriggerKeyConsumeKeyEvent(it, !isChecked) }
+    }
+
+    fun onSelectKeyClickType(clickType: ClickType) {
+        triggerKeyOptionsUid.value?.let { config.setTriggerKeyClickType(it, clickType) }
+    }
+
+    fun onSelectTriggerKeyDevice(id: String) {
+        triggerKeyOptionsUid.value?.let { triggerKeyUid ->
+            val device = when (id) {
+                DEVICE_ID_ANY -> TriggerKeyDevice.Any
+                DEVICE_ID_INTERNAL -> TriggerKeyDevice.Internal
+                else -> {
+                    val device = config.getAvailableTriggerKeyDevices()
+                        .filterIsInstance<TriggerKeyDevice.External>()
+                        .firstOrNull { it.descriptor == id }
+                        ?: return
+
+                    TriggerKeyDevice.External(device.descriptor, device.name)
                 }
             }
+
+            config.setTriggerKeyDevice(
+                triggerKeyUid,
+                device,
+            )
         }
-
-        val triggerKeyDeviceId = showPopup(
-            "pick_trigger_key_device",
-            PopupUi.SingleChoice(listItems),
-        ) ?: return
-
-        val selectedTriggerKeyDevice = when (triggerKeyDeviceId) {
-            idAny -> TriggerKeyDevice.Any
-            idInternal -> TriggerKeyDevice.Internal
-            else -> devices.single { it is TriggerKeyDevice.External && it.descriptor == triggerKeyDeviceId }
-        }
-
-        config.setTriggerKeyDevice(keyUid, selectedTriggerKeyDevice)
     }
 
     fun onRecordTriggerButtonClick() {
@@ -598,4 +675,11 @@ data class TriggerKeyListItemModel(
     val clickTypeString: String? = null,
     val extraInfo: String?,
     val linkType: TriggerKeyLinkType,
+)
+
+data class TriggerKeyOptionsState(
+    val doNotRemapChecked: Boolean = false,
+    val clickType: ClickType,
+    val showClickTypes: Boolean,
+    val devices: List<CheckBoxListItem>,
 )

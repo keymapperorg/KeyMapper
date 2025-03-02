@@ -77,15 +77,6 @@ class ConfigKeyMapFragment : ConfigMappingFragment() {
             }
         }
 
-        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
-            viewModel.configTriggerViewModel.openEditOptions.collectLatest { triggerKeyUid ->
-                if (findNavController().currentDestination?.id == R.id.config_key_map_fragment) {
-                    viewModel.configTriggerKeyViewModel.setTriggerKeyToConfigure(triggerKeyUid)
-                    findNavController().navigate(ConfigKeyMapFragmentDirections.actionTriggerKeyOptionsFragment())
-                }
-            }
-        }
-
         viewModel.configTriggerViewModel.showPopups(this, binding)
         viewModel.configTriggerViewModel.optionsViewModel.showPopups(this, binding)
 

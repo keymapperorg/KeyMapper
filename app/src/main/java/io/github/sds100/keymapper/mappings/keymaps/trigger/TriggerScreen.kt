@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.mappings.keymaps.trigger
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -21,7 +19,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
@@ -31,7 +28,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -46,6 +42,7 @@ import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ui.TextListItem
 import io.github.sds100.keymapper.util.ui.compose.ListItemFixError
+import io.github.sds100.keymapper.util.ui.compose.RadioButtonTextRow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -87,6 +84,20 @@ fun TriggerScreen(modifier: Modifier = Modifier, viewModel: ConfigTriggerViewMod
             },
             viewModel = viewModel,
             sheetState = sheetState,
+        )
+    }
+
+    val triggerKeyOptionsState by viewModel.triggerKeyOptionsState.collectAsStateWithLifecycle()
+
+    if (triggerKeyOptionsState != null) {
+        TriggerKeyOptionsBottomSheet(
+            modifier = Modifier.systemBarsPadding(),
+            sheetState = sheetState,
+            state = triggerKeyOptionsState!!,
+            onDismissRequest = viewModel::onDismissTriggerKeyOptions,
+            onCheckDoNotRemap = viewModel::onCheckDoNotRemap,
+            onSelectClickType = viewModel::onSelectKeyClickType,
+            onSelectDevice = viewModel::onSelectTriggerKeyDevice,
         )
     }
 
@@ -343,27 +354,27 @@ private fun ClickTypeRadioGroup(
     Column(modifier = modifier) {
         Row(modifier = Modifier.fillMaxWidth()) {
             if (clickTypes.contains(ClickType.SHORT_PRESS)) {
-                RadioButtonText(
+                RadioButtonTextRow(
                     modifier = Modifier.weight(1f),
                     isSelected = checkedClickType == ClickType.SHORT_PRESS,
                     text = stringResource(R.string.radio_button_short_press),
-                    onSelect = { onSelectClickType(ClickType.SHORT_PRESS) },
+                    onSelected = { onSelectClickType(ClickType.SHORT_PRESS) },
                 )
             }
             if (clickTypes.contains(ClickType.LONG_PRESS)) {
-                RadioButtonText(
+                RadioButtonTextRow(
                     modifier = Modifier.weight(1f),
                     isSelected = checkedClickType == ClickType.LONG_PRESS,
                     text = stringResource(R.string.radio_button_long_press),
-                    onSelect = { onSelectClickType(ClickType.LONG_PRESS) },
+                    onSelected = { onSelectClickType(ClickType.LONG_PRESS) },
                 )
             }
             if (clickTypes.contains(ClickType.DOUBLE_PRESS)) {
-                RadioButtonText(
+                RadioButtonTextRow(
                     modifier = Modifier.weight(1f),
                     isSelected = checkedClickType == ClickType.DOUBLE_PRESS,
                     text = stringResource(R.string.radio_button_double_press),
-                    onSelect = { onSelectClickType(ClickType.DOUBLE_PRESS) },
+                    onSelected = { onSelectClickType(ClickType.DOUBLE_PRESS) },
                 )
             }
         }
@@ -386,52 +397,21 @@ private fun TriggerModeRadioGroup(
         )
 
         Row(modifier = Modifier.fillMaxWidth()) {
-            RadioButtonText(
+            RadioButtonTextRow(
                 modifier = Modifier.weight(1f),
                 isSelected = mode is TriggerMode.Parallel,
                 isEnabled = isEnabled,
                 text = stringResource(R.string.radio_button_parallel),
-                onSelect = onSelectParallelMode,
+                onSelected = onSelectParallelMode,
             )
-            RadioButtonText(
+            RadioButtonTextRow(
                 modifier = Modifier.weight(1f),
                 isSelected = mode == TriggerMode.Sequence,
                 isEnabled = isEnabled,
                 text = stringResource(R.string.radio_button_sequence),
-                onSelect = onSelectSequenceMode,
+                onSelected = onSelectSequenceMode,
             )
         }
-    }
-}
-
-@Composable
-private fun RadioButtonText(
-    modifier: Modifier = Modifier,
-    isSelected: Boolean,
-    isEnabled: Boolean = true,
-    text: String,
-    onSelect: () -> Unit,
-) {
-    Row(
-        modifier = modifier.clickable(enabled = isEnabled, onClick = onSelect),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        RadioButton(
-            selected = isSelected,
-            onClick = onSelect,
-            enabled = isEnabled,
-        )
-        Text(
-            text = text,
-            style = if (isEnabled) {
-                MaterialTheme.typography.bodyMedium
-            } else {
-                MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.surfaceVariant)
-            },
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-        )
-        Spacer(Modifier.width(8.dp))
     }
 }
 
