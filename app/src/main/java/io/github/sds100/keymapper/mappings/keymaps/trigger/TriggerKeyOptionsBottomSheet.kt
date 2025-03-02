@@ -30,8 +30,8 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.util.ui.CheckBoxListItem
-import io.github.sds100.keymapper.util.ui.compose.CheckBoxTextRow
-import io.github.sds100.keymapper.util.ui.compose.RadioButtonTextRow
+import io.github.sds100.keymapper.util.ui.compose.CheckBoxText
+import io.github.sds100.keymapper.util.ui.compose.RadioButtonText
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,6 +44,7 @@ fun TriggerKeyOptionsBottomSheet(
     onCheckDoNotRemap: (Boolean) -> Unit = {},
     onSelectClickType: (ClickType) -> Unit = {},
     onSelectDevice: (String) -> Unit = {},
+    onSelectAssistantType: (AssistantTriggerType) -> Unit = {},
 ) {
     ModalBottomSheet(
         modifier = modifier,
@@ -63,12 +64,16 @@ fun TriggerKeyOptionsBottomSheet(
                 style = MaterialTheme.typography.headlineMedium,
             )
 
-            CheckBoxTextRow(
-                modifier = Modifier.padding(8.dp),
-                text = stringResource(R.string.flag_dont_override_default_action),
-                isChecked = state.doNotRemapChecked,
-                onCheckedChange = onCheckDoNotRemap,
-            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            if (state is TriggerKeyOptionsState.KeyCode) {
+                CheckBoxText(
+                    modifier = Modifier.padding(8.dp),
+                    text = stringResource(R.string.flag_dont_override_default_action),
+                    isChecked = state.doNotRemapChecked,
+                    onCheckedChange = onCheckDoNotRemap,
+                )
+            }
 
             if (state.showClickTypes) {
                 Text(
@@ -80,19 +85,19 @@ fun TriggerKeyOptionsBottomSheet(
                 Row {
                     Spacer(Modifier.width(8.dp))
 
-                    RadioButtonTextRow(
+                    RadioButtonText(
                         modifier = Modifier.weight(1f),
                         isSelected = state.clickType == ClickType.SHORT_PRESS,
                         text = stringResource(R.string.radio_button_short_press),
                         onSelected = { onSelectClickType(ClickType.SHORT_PRESS) },
                     )
-                    RadioButtonTextRow(
+                    RadioButtonText(
                         modifier = Modifier.weight(1f),
                         isSelected = state.clickType == ClickType.LONG_PRESS,
                         text = stringResource(R.string.radio_button_long_press),
                         onSelected = { onSelectClickType(ClickType.LONG_PRESS) },
                     )
-                    RadioButtonTextRow(
+                    RadioButtonText(
                         modifier = Modifier.weight(1f),
                         isSelected = state.clickType == ClickType.DOUBLE_PRESS,
                         text = stringResource(R.string.radio_button_double_press),
@@ -103,18 +108,47 @@ fun TriggerKeyOptionsBottomSheet(
                 }
             }
 
-            Text(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                text = stringResource(R.string.trigger_key_device_header),
-                style = MaterialTheme.typography.titleSmall,
-            )
+            if (state is TriggerKeyOptionsState.KeyCode) {
+                Text(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    text = stringResource(R.string.trigger_key_device_header),
+                    style = MaterialTheme.typography.titleSmall,
+                )
 
-            for (device in state.devices) {
-                RadioButtonTextRow(
+                for (device in state.devices) {
+                    RadioButtonText(
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                        text = device.label,
+                        isSelected = device.isChecked,
+                        onSelected = { onSelectDevice(device.id) },
+                    )
+                }
+            } else if (state is TriggerKeyOptionsState.Assistant) {
+                Text(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    text = stringResource(R.string.trigger_key_assistant_type_header),
+                    style = MaterialTheme.typography.titleSmall,
+                )
+
+                RadioButtonText(
                     modifier = Modifier.padding(horizontal = 8.dp),
-                    text = device.label,
-                    isSelected = device.isChecked,
-                    onSelected = { onSelectDevice(device.id) },
+                    text = stringResource(R.string.assistant_any_trigger_name),
+                    isSelected = state.assistantType == AssistantTriggerType.ANY,
+                    onSelected = { onSelectAssistantType(AssistantTriggerType.ANY) },
+                )
+
+                RadioButtonText(
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    text = stringResource(R.string.assistant_device_trigger_name),
+                    isSelected = state.assistantType == AssistantTriggerType.DEVICE,
+                    onSelected = { onSelectAssistantType(AssistantTriggerType.DEVICE) },
+                )
+
+                RadioButtonText(
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    text = stringResource(R.string.assistant_voice_trigger_name),
+                    isSelected = state.assistantType == AssistantTriggerType.VOICE,
+                    onSelected = { onSelectAssistantType(AssistantTriggerType.VOICE) },
                 )
             }
 
@@ -162,7 +196,7 @@ private fun Preview() {
 
         TriggerKeyOptionsBottomSheet(
             sheetState = sheetState,
-            state = TriggerKeyOptionsState(
+            state = TriggerKeyOptionsState.KeyCode(
                 doNotRemapChecked = true,
                 clickType = ClickType.DOUBLE_PRESS,
                 showClickTypes = true,
@@ -178,6 +212,28 @@ private fun Preview() {
                         isChecked = false,
                     ),
                 ),
+            ),
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun AssistantPreview() {
+    KeyMapperTheme {
+        val sheetState = SheetState(
+            skipPartiallyExpanded = true,
+            density = LocalDensity.current,
+            initialValue = Expanded,
+        )
+
+        TriggerKeyOptionsBottomSheet(
+            sheetState = sheetState,
+            state = TriggerKeyOptionsState.Assistant(
+                assistantType = AssistantTriggerType.VOICE,
+                clickType = ClickType.DOUBLE_PRESS,
+                showClickTypes = true,
             ),
         )
     }

@@ -1491,6 +1491,7 @@
     <string name="trigger_key_list_item_edit">Edit</string>
     <string name="trigger_key_options_title">Trigger key options</string>
     <string name="trigger_key_device_header">Device</string>
+    <string name="trigger_key_assistant_type_header">Assistant type</string>
     <string name="trigger_key_click_types_header">Click type</string>
     <string name="trigger_key_shortcut_use_floating_button">Use floating button</string>
     <string name="trigger_key_shortcut_use_assistant">Use assistant trigger</string>

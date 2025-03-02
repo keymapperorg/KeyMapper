@@ -275,27 +275,37 @@ abstract class BaseConfigTriggerViewModel(
                 val key = trigger.keys.find { it.uid == triggerKeyUid }
                     ?: return null
 
-                val showDeviceDescriptors = displayKeyMap.showDeviceDescriptors.first()
+                val showClickTypes = trigger.mode is TriggerMode.Sequence
 
-                var deviceListItems = emptyList<CheckBoxListItem>()
+                when (key) {
+                    is KeyCodeTriggerKey -> {
+                        val showDeviceDescriptors = displayKeyMap.showDeviceDescriptors.first()
+                        var deviceListItems = emptyList<CheckBoxListItem>()
+                        deviceListItems = config.getAvailableTriggerKeyDevices()
+                            .map { device: TriggerKeyDevice ->
+                                buildDeviceListItem(
+                                    device = device,
+                                    showDeviceDescriptors = showDeviceDescriptors,
+                                    isChecked = key.device == device,
+                                )
+                            }
 
-                if (key is KeyCodeTriggerKey) {
-                    deviceListItems = config.getAvailableTriggerKeyDevices()
-                        .map { device: TriggerKeyDevice ->
-                            buildDeviceListItem(
-                                device = device,
-                                showDeviceDescriptors = showDeviceDescriptors,
-                                isChecked = key.device == device,
-                            )
-                        }
+                        return TriggerKeyOptionsState.KeyCode(
+                            doNotRemapChecked = !key.consumeEvent,
+                            clickType = key.clickType,
+                            showClickTypes = showClickTypes,
+                            devices = deviceListItems,
+                        )
+                    }
+
+                    is AssistantTriggerKey -> {
+                        return TriggerKeyOptionsState.Assistant(
+                            assistantType = key.type,
+                            clickType = key.clickType,
+                            showClickTypes = showClickTypes,
+                        )
+                    }
                 }
-
-                return TriggerKeyOptionsState(
-                    doNotRemapChecked = !key.consumeEvent,
-                    clickType = key.clickType,
-                    showClickTypes = trigger.mode is TriggerMode.Sequence,
-                    devices = deviceListItems,
-                )
             }
         }
     }
@@ -461,7 +471,7 @@ abstract class BaseConfigTriggerViewModel(
     fun onRemoveKeyClick(uid: String) = config.removeTriggerKey(uid)
     fun onMoveTriggerKey(fromIndex: Int, toIndex: Int) = config.moveTriggerKey(fromIndex, toIndex)
 
-    open fun onTriggerKeyOptionsClick(id: String) {
+    fun onTriggerKeyOptionsClick(id: String) {
         triggerKeyOptionsUid.update { id }
     }
 
@@ -477,15 +487,15 @@ abstract class BaseConfigTriggerViewModel(
         triggerKeyOptionsUid.value?.let { config.setTriggerKeyClickType(it, clickType) }
     }
 
-    fun onSelectTriggerKeyDevice(id: String) {
+    fun onSelectTriggerKeyDevice(descriptor: String) {
         triggerKeyOptionsUid.value?.let { triggerKeyUid ->
-            val device = when (id) {
+            val device = when (descriptor) {
                 DEVICE_ID_ANY -> TriggerKeyDevice.Any
                 DEVICE_ID_INTERNAL -> TriggerKeyDevice.Internal
                 else -> {
                     val device = config.getAvailableTriggerKeyDevices()
                         .filterIsInstance<TriggerKeyDevice.External>()
-                        .firstOrNull { it.descriptor == id }
+                        .firstOrNull { it.descriptor == descriptor }
                         ?: return
 
                     TriggerKeyDevice.External(device.descriptor, device.name)
@@ -496,6 +506,12 @@ abstract class BaseConfigTriggerViewModel(
                 triggerKeyUid,
                 device,
             )
+        }
+    }
+
+    fun onSelectTriggerKeyAssistantType(type: AssistantTriggerType) {
+        triggerKeyOptionsUid.value?.let { triggerKeyUid ->
+            config.setAssistantTriggerKeyType(triggerKeyUid, type)
         }
     }
 
@@ -699,9 +715,20 @@ data class TriggerKeyListItemModel(
     val linkType: TriggerKeyLinkType,
 )
 
-data class TriggerKeyOptionsState(
-    val doNotRemapChecked: Boolean = false,
-    val clickType: ClickType,
-    val showClickTypes: Boolean,
-    val devices: List<CheckBoxListItem>,
-)
+sealed class TriggerKeyOptionsState {
+    abstract val clickType: ClickType
+    abstract val showClickTypes: Boolean
+
+    data class KeyCode(
+        val doNotRemapChecked: Boolean = false,
+        override val clickType: ClickType,
+        override val showClickTypes: Boolean,
+        val devices: List<CheckBoxListItem>,
+    ) : TriggerKeyOptionsState()
+
+    data class Assistant(
+        val assistantType: AssistantTriggerType,
+        override val clickType: ClickType,
+        override val showClickTypes: Boolean,
+    ) : TriggerKeyOptionsState()
+}

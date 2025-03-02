@@ -3,8 +3,8 @@ package io.github.sds100.keymapper.util.ui.compose
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -15,27 +15,26 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun CheckBoxTextRow(
+fun RadioButtonText(
     modifier: Modifier = Modifier,
     text: String,
-    isChecked: Boolean,
+    isSelected: Boolean,
     isEnabled: Boolean = true,
-    onCheckedChange: (Boolean) -> Unit,
+    onSelected: () -> Unit,
 ) {
     Surface(modifier = modifier, shape = MaterialTheme.shapes.medium, color = Color.Transparent) {
         Row(
-            modifier = Modifier.clickable(enabled = isEnabled) { onCheckedChange(!isChecked) },
+            modifier = Modifier.clickable(enabled = isEnabled, onClick = onSelected),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Checkbox(
+            RadioButton(
+                selected = isSelected,
                 enabled = isEnabled,
-                checked = isChecked,
-                onCheckedChange = onCheckedChange,
+                onClick = onSelected,
             )
 
             Text(
                 modifier = Modifier.padding(end = 8.dp),
-
                 text = text,
                 style = if (isEnabled) {
                     MaterialTheme.typography.bodyMedium

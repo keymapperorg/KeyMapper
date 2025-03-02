@@ -43,7 +43,7 @@ import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ui.TextListItem
 import io.github.sds100.keymapper.util.ui.compose.ListItemFixError
-import io.github.sds100.keymapper.util.ui.compose.RadioButtonTextRow
+import io.github.sds100.keymapper.util.ui.compose.RadioButtonText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -99,6 +99,7 @@ fun TriggerScreen(modifier: Modifier = Modifier, viewModel: ConfigTriggerViewMod
             onCheckDoNotRemap = viewModel::onCheckDoNotRemap,
             onSelectClickType = viewModel::onSelectKeyClickType,
             onSelectDevice = viewModel::onSelectTriggerKeyDevice,
+            onSelectAssistantType = viewModel::onSelectTriggerKeyAssistantType,
         )
     }
 
@@ -440,7 +441,7 @@ private fun ClickTypeRadioGroup(
     Column(modifier = modifier) {
         Row(modifier = Modifier.fillMaxWidth()) {
             if (clickTypes.contains(ClickType.SHORT_PRESS)) {
-                RadioButtonTextRow(
+                RadioButtonText(
                     modifier = Modifier.weight(1f),
                     isSelected = checkedClickType == ClickType.SHORT_PRESS,
                     text = stringResource(R.string.radio_button_short_press),
@@ -448,7 +449,7 @@ private fun ClickTypeRadioGroup(
                 )
             }
             if (clickTypes.contains(ClickType.LONG_PRESS)) {
-                RadioButtonTextRow(
+                RadioButtonText(
                     modifier = Modifier.weight(1f),
                     isSelected = checkedClickType == ClickType.LONG_PRESS,
                     text = stringResource(R.string.radio_button_long_press),
@@ -456,7 +457,7 @@ private fun ClickTypeRadioGroup(
                 )
             }
             if (clickTypes.contains(ClickType.DOUBLE_PRESS)) {
-                RadioButtonTextRow(
+                RadioButtonText(
                     modifier = Modifier.weight(1f),
                     isSelected = checkedClickType == ClickType.DOUBLE_PRESS,
                     text = stringResource(R.string.radio_button_double_press),
@@ -483,14 +484,14 @@ private fun TriggerModeRadioGroup(
         )
 
         Row(modifier = Modifier.fillMaxWidth()) {
-            RadioButtonTextRow(
+            RadioButtonText(
                 modifier = Modifier.weight(1f),
                 isSelected = mode is TriggerMode.Parallel,
                 isEnabled = isEnabled,
                 text = stringResource(R.string.radio_button_parallel),
                 onSelected = onSelectParallelMode,
             )
-            RadioButtonTextRow(
+            RadioButtonText(
                 modifier = Modifier.weight(1f),
                 isSelected = mode == TriggerMode.Sequence,
                 isEnabled = isEnabled,
