@@ -106,7 +106,7 @@ class ConfigKeyMapUseCaseImpl(
             detectionSource = detectionSource,
         )
 
-        val newKeys = trigger.keys.plus(triggerKey)
+        var newKeys = trigger.keys.plus(triggerKey)
 
         val newMode = when {
             trigger.mode != TriggerMode.Sequence && containsKey -> TriggerMode.Sequence
@@ -114,7 +114,11 @@ class ConfigKeyMapUseCaseImpl(
 
             /* Automatically make it a parallel trigger when the user makes a trigger with more than one key
             because this is what most users are expecting when they make a trigger with multiple keys */
-            newKeys.size == 2 && !containsKey -> TriggerMode.Parallel(triggerKey.clickType)
+            newKeys.size == 2 && !containsKey -> {
+                newKeys = newKeys.map { it.setClickType(triggerKey.clickType) }
+                TriggerMode.Parallel(triggerKey.clickType)
+            }
+
             else -> trigger.mode
         }
 

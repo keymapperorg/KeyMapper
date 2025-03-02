@@ -482,7 +482,13 @@ abstract class BaseConfigTriggerViewModel(
         trigger: Trigger,
         showDeviceDescriptors: Boolean,
     ): List<TriggerKeyListItemModel> = trigger.keys.mapIndexed { index, key ->
-        val clickTypeString = when (key.clickType) {
+        val clickType = if (trigger.mode is TriggerMode.Parallel) {
+            trigger.mode.clickType
+        } else {
+            key.clickType
+        }
+
+        val clickTypeString = when (clickType) {
             ClickType.SHORT_PRESS -> null
             ClickType.LONG_PRESS -> getString(R.string.clicktype_long_press)
             ClickType.DOUBLE_PRESS -> getString(R.string.clicktype_double_press)
