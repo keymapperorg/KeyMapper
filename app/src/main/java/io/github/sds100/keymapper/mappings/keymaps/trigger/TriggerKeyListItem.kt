@@ -11,7 +11,7 @@ import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.Card
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -28,27 +28,13 @@ import io.github.sds100.keymapper.R
 fun TriggerKeyListItem(
     modifier: Modifier = Modifier,
     model: TriggerKeyListItemModel,
+    isDragging: Boolean,
     isReorderingEnabled: Boolean,
     onEditClick: () -> Unit = {},
     onRemoveClick: () -> Unit = {},
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
-        if (model.linkType != TriggerKeyLinkType.HIDDEN) {
-            Icon(
-                imageVector = when (model.linkType) {
-                    TriggerKeyLinkType.ARROW -> Icons.Filled.ArrowDownward
-                    TriggerKeyLinkType.PLUS -> Icons.Filled.Add
-                    TriggerKeyLinkType.HIDDEN -> Icons.Filled.Add
-                },
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(bottom = 8.dp),
-            )
-        }
-
-        Card(
+        ElevatedCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
@@ -60,14 +46,12 @@ fun TriggerKeyListItem(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 if (isReorderingEnabled) {
-                    IconButton(onClick = { /* Handle drag */ }) {
-                        Icon(
-                            imageVector = Icons.Filled.DragHandle,
-                            contentDescription = "Drag",
-                            tint = MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier.size(40.dp),
-                        )
-                    }
+                    Icon(
+                        modifier = Modifier.size(40.dp),
+                        imageVector = Icons.Filled.DragHandle,
+                        contentDescription = "Drag",
+                        tint = MaterialTheme.colorScheme.onSurface,
+                    )
                 }
 
                 Column(
@@ -115,6 +99,21 @@ fun TriggerKeyListItem(
                 }
             }
         }
+
+        if (model.linkType != TriggerKeyLinkType.HIDDEN) {
+            Icon(
+                imageVector = when (model.linkType) {
+                    TriggerKeyLinkType.ARROW -> Icons.Filled.ArrowDownward
+                    TriggerKeyLinkType.PLUS -> Icons.Filled.Add
+                    TriggerKeyLinkType.HIDDEN -> Icons.Filled.Add
+                },
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(bottom = 8.dp),
+            )
+        }
     }
 }
 
@@ -130,5 +129,6 @@ fun TriggerKeyListItemPreview() {
             linkType = TriggerKeyLinkType.ARROW,
         ),
         isReorderingEnabled = true,
+        isDragging = false
     )
 }

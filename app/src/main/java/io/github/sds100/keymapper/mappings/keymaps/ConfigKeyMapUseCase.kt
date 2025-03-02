@@ -25,7 +25,6 @@ import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.dataOrNull
 import io.github.sds100.keymapper.util.firstBlocking
 import io.github.sds100.keymapper.util.ifIsData
-import io.github.sds100.keymapper.util.moveElement
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -138,7 +137,7 @@ class ConfigKeyMapUseCaseImpl(
     override fun moveTriggerKey(fromIndex: Int, toIndex: Int) = editTrigger { trigger ->
         trigger.copy(
             keys = trigger.keys.toMutableList().apply {
-                moveElement(fromIndex, toIndex)
+                add(toIndex, removeAt(fromIndex))
             },
         )
     }

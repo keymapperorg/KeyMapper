@@ -42,7 +42,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
@@ -83,14 +82,15 @@ abstract class BaseConfigTriggerViewModel(
 
     private val errorListItems = MutableStateFlow<List<TextListItem.Error>>(emptyList())
 
+    // IMPORTANT! Do not flow on another thread because this causes the drag and drop
+    // animations to be more janky.
     val state: StateFlow<State<ConfigTriggerState>> =
         combine(
             config.mapping,
             errorListItems,
             displayKeyMap.showDeviceDescriptors,
-        ) { mapping, errors, showDeviceDescriptors ->
-            buildUiState(mapping, errors, showDeviceDescriptors)
-        }.flowOn(Dispatchers.Default).stateIn(coroutineScope, SharingStarted.Eagerly, State.Loading)
+            transform = ::buildUiState,
+        ).stateIn(coroutineScope, SharingStarted.Eagerly, State.Loading)
 
     val recordTriggerState: StateFlow<RecordTriggerState> = recordTrigger.state.stateIn(
         coroutineScope,

@@ -3,15 +3,16 @@ package io.github.sds100.keymapper.mappings.keymaps.trigger
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -21,7 +22,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,6 +34,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowHeightSizeClass
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
+import io.github.sds100.keymapper.compose.draggable.DraggableItem
+import io.github.sds100.keymapper.compose.draggable.dragContainer
+import io.github.sds100.keymapper.compose.draggable.rememberDragDropState
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ui.TextListItem
@@ -43,7 +46,7 @@ import io.github.sds100.keymapper.util.ui.TextListItem
 fun TriggerScreen(modifier: Modifier = Modifier, viewModel: ConfigTriggerViewModel) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val setupGuiKeyboardState by viewModel.setupGuiKeyboardState.collectAsStateWithLifecycle()
-    val recordTriggerState by viewModel.recordTriggerState.collectAsState()
+    val recordTriggerState by viewModel.recordTriggerState.collectAsStateWithLifecycle()
 
     if (viewModel.showAdvancedTriggersBottomSheet) {
         AdvancedTriggersBottomSheet(
@@ -99,6 +102,7 @@ fun TriggerScreen(modifier: Modifier = Modifier, viewModel: ConfigTriggerViewMod
                 onSelectClickType = viewModel::onClickTypeRadioButtonChecked,
                 onSelectParallelMode = viewModel::onParallelRadioButtonChecked,
                 onSelectSequenceMode = viewModel::onSequenceRadioButtonChecked,
+                onMoveTriggerKey = viewModel::onMoveTriggerKey,
             )
         }
     }
@@ -131,15 +135,19 @@ private fun TriggerScreenVertical(
     onSelectSequenceMode: () -> Unit = {},
     onRecordTriggerClick: () -> Unit = {},
     onAdvancedTriggersClick: () -> Unit = {},
+    onMoveTriggerKey: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> },
 ) {
     Surface {
         Column(modifier = modifier) {
+            Spacer(Modifier.height(8.dp))
+
             TriggerList(
                 modifier = Modifier.weight(1f),
                 triggerList = configState.triggerKeys,
                 isReorderingEnabled = configState.isReorderingEnabled,
                 onEditClick = onEditClick,
                 onRemoveClick = onRemoveClick,
+                onMove = onMoveTriggerKey,
             )
 
             if (configState.clickTypeButtons.isNotEmpty()) {
@@ -178,19 +186,34 @@ private fun TriggerList(
     isReorderingEnabled: Boolean,
     onRemoveClick: (String) -> Unit,
     onEditClick: (String) -> Unit,
+    onMove: (fromIndex: Int, toIndex: Int) -> Unit,
 ) {
+    val lazyListState = rememberLazyListState()
+    val dragDropState = rememberDragDropState(
+        lazyListState = lazyListState,
+        onMove = onMove,
+    )
+
     LazyColumn(
-        modifier = modifier,
-        contentPadding = PaddingValues(16.dp),
+        // Use dragContainer rather than .draggable() modifier because that causes
+        // dragging the first item to be always be dropped in the next position.
+        modifier = modifier.dragContainer(dragDropState),
+        state = lazyListState,
     ) {
-        items(triggerList, key = { it.id }) { trigger ->
-            TriggerKeyListItem(
-                modifier = Modifier.fillMaxWidth(),
-                model = trigger,
-                isReorderingEnabled = isReorderingEnabled,
-                onRemoveClick = { onRemoveClick(trigger.id) },
-                onEditClick = { onEditClick(trigger.id) },
-            )
+        itemsIndexed(triggerList, key = { _, item -> item.id }) { index, model ->
+            DraggableItem(
+                dragDropState = dragDropState,
+                index = index,
+            ) { isDragging ->
+                TriggerKeyListItem(
+                    modifier = Modifier.fillMaxWidth(),
+                    model = model,
+                    isDragging = isDragging,
+                    isReorderingEnabled = isReorderingEnabled,
+                    onRemoveClick = { onRemoveClick(model.id) },
+                    onEditClick = { onEditClick(model.id) },
+                )
+            }
         }
     }
 }
@@ -326,7 +349,7 @@ fun VerticalPreview() {
                         text = stringResource(R.string.trigger_error_dnd_access_denied),
                     ),
                 ),
-                isReorderingEnabled = false,
+                isReorderingEnabled = true,
                 clickTypeButtons = setOf(
                     ClickType.SHORT_PRESS,
                     ClickType.LONG_PRESS,

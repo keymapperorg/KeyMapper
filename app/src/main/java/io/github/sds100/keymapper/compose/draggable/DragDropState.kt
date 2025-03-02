@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.compose.draggable
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.lazy.LazyListItemInfo
 import androidx.compose.foundation.lazy.LazyListState
@@ -15,7 +16,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.pointer.pointerInput
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
@@ -48,6 +51,9 @@ fun rememberDragDropState(
     return state
 }
 
+/**
+ * This is copied from an official demo for drag and drop at https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:compose/foundation/foundation/integration-tests/foundation-demos/src/main/java/androidx/compose/foundation/demos/LazyColumnDragAndDropDemo.kt
+ */
 class DragDropState internal constructor(
     private val state: LazyListState,
     private val scope: CoroutineScope,
@@ -160,4 +166,16 @@ class DragDropState internal constructor(
 
     private val LazyListItemInfo.offsetEnd: Int
         get() = this.offset + this.size
+}
+
+fun Modifier.dragContainer(dragDropState: DragDropState): Modifier = this.pointerInput(dragDropState) {
+    detectDragGesturesAfterLongPress(
+        onDrag = { change, offset ->
+            change.consume()
+            dragDropState.onDrag(offset = offset)
+        },
+        onDragStart = { offset -> dragDropState.onDragStart(offset) },
+        onDragEnd = { dragDropState.onDragInterrupted() },
+        onDragCancel = { dragDropState.onDragInterrupted() },
+    )
 }
