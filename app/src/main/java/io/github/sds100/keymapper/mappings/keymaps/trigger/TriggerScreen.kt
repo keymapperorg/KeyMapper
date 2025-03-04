@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.mappings.keymaps.trigger
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -208,8 +209,6 @@ private fun TriggerScreenVertical(
 
                     ErrorList(errors = configState.errors, onFixErrorClick = onFixErrorClick)
 
-                    Spacer(Modifier.height(8.dp))
-
                     TriggerList(
                         modifier = Modifier.weight(1f),
                         triggerList = configState.triggerKeys,
@@ -300,8 +299,7 @@ private fun TriggerScreenHorizontal(
                 TriggerList(
                     modifier = Modifier
                         .fillMaxHeight()
-                        .widthIn(max = 400.dp)
-                        .padding(vertical = 8.dp),
+                        .widthIn(max = 400.dp),
                     triggerList = configState.triggerKeys,
                     shortcuts = configState.shortcuts,
                     isReorderingEnabled = configState.isReorderingEnabled,
@@ -387,6 +385,7 @@ private fun TriggerList(
             }
         },
         state = lazyListState,
+        contentPadding = PaddingValues(vertical = 8.dp),
     ) {
         itemsIndexed(
             triggerList,

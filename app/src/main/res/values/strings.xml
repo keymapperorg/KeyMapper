@@ -1409,8 +1409,8 @@
     <string name="advanced_triggers_sheet_text">The developer doesn\'t believe ads are a sustainable or user-friendly form of monetization so these paid triggers help support development ❤️. You will be given priority support as well.</string>
     <string name="assistant_trigger_product_title">Assistant trigger</string>
     <string name="assistant_trigger_product_description">Did you know you can remap your device assistant? Instead of launching Google Assistant or Bixby, your device can perform an action of your choice. It works even when the screen is off!</string>
-    <string name="assistant_trigger_purchase_thank_you_title">Thank you for supporting the app! ❤️</string>
-    <string name="assistant_trigger_purchase_thank_you_message">Your purchase was successful and you can now use the assistant triggers. As a paying user of Key Mapper you will receive priority support to help you use the app. There is now a button on this page to contact the developer.</string>
+    <string name="purchase_thank_you_title">Thank you for supporting the app! ❤️</string>
+    <string name="purchase_thank_you_message">Your purchase was successful. As a paying user of Key Mapper you will receive priority support to help you use the app. There is now a button on this page to contact the developer.</string>
     <string name="trigger_error_assistant_activity_not_chosen">You must select Key Mapper as the default digital assistant app for this trigger to work.</string>
     <string name="trigger_error_assistant_activity_not_chosen_short">Key Mapper must be the default assistant.</string>
     <string name="trigger_error_assistant_not_purchased">You must purchase the assistant trigger feature!</string>
@@ -1480,6 +1480,8 @@
     <string name="floating_button_config_cancel_button">Cancel</string>
     <string name="floating_button_config_done_button">Done</string>
     <string name="floating_button_config_empty_text_error">The button must have text!</string>
+    <string name="floating_buttons_product_title">Floating buttons</string>
+    <string name="floating_buttons_product_description">Floating buttons display over the apps you want. They work just like real buttons, and you can place, style, and map them however you like.</string>
 
     <!-- Home screen -->
     <string name="home_nav_bar_key_maps">Key maps</string>
