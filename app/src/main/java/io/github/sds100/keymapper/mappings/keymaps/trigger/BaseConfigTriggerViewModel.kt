@@ -27,16 +27,15 @@ import io.github.sds100.keymapper.util.ui.PopupUi
 import io.github.sds100.keymapper.util.ui.PopupViewModel
 import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.util.ui.ResourceProvider
-import io.github.sds100.keymapper.util.ui.TextListItem
 import io.github.sds100.keymapper.util.ui.ViewModelHelper
 import io.github.sds100.keymapper.util.ui.showPopup
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -79,21 +78,14 @@ abstract class BaseConfigTriggerViewModel(
         resourceProvider,
     )
 
-    private val errorListItems = MutableStateFlow<List<TextListItem.Error>>(emptyList())
-
     val triggerKeyShortcuts: MutableStateFlow<Set<TriggerKeyShortcut>> =
         MutableStateFlow(emptySet())
 
     // IMPORTANT! Do not flow on another thread because this causes the drag and drop
     // animations to be more janky.
-    val state: StateFlow<State<ConfigTriggerState>> =
-        combine(
-            config.mapping,
-            errorListItems,
-            displayKeyMap.showDeviceDescriptors,
-            triggerKeyShortcuts,
-            transform = ::buildUiState,
-        ).stateIn(coroutineScope, SharingStarted.Eagerly, State.Loading)
+    private val _state: MutableStateFlow<State<ConfigTriggerState>> =
+        MutableStateFlow(State.Loading)
+    val state: StateFlow<State<ConfigTriggerState>> = _state.asStateFlow()
 
     val recordTriggerState: StateFlow<RecordTriggerState> = recordTrigger.state.stateIn(
         coroutineScope,
@@ -136,29 +128,24 @@ abstract class BaseConfigTriggerViewModel(
     private var isRecordingCompletionUserInitiated: Boolean = false
 
     init {
-        val rebuildErrorList = MutableSharedFlow<State<KeyMap>>(replay = 1)
+        val rebuildState = MutableSharedFlow<State<KeyMap>>(replay = 1)
 
-        coroutineScope.launch(Dispatchers.Default) {
-            rebuildErrorList.collectLatest { keyMapState ->
-                if (keyMapState !is State.Data) {
-                    errorListItems.value = emptyList()
-                    return@collectLatest
-                }
-
-                val triggerErrors = displayKeyMap.getTriggerErrors(keyMapState.data)
-                errorListItems.value = buildTriggerErrorListItems(triggerErrors)
-            }
-        }
+        combine(
+            rebuildState,
+            displayKeyMap.showDeviceDescriptors,
+            triggerKeyShortcuts,
+            transform = ::buildUiState,
+        ).launchIn(coroutineScope)
 
         coroutineScope.launch {
             config.mapping.collect { mapping ->
-                rebuildErrorList.emit(mapping)
+                rebuildState.emit(mapping)
             }
         }
 
         coroutineScope.launch {
             displayKeyMap.invalidateTriggerErrors.collectLatest {
-                rebuildErrorList.emit(rebuildErrorList.first())
+                rebuildState.emit(rebuildState.first())
             }
         }
 
@@ -197,9 +184,8 @@ abstract class BaseConfigTriggerViewModel(
 
     open fun onClickTriggerKeyShortcut(shortcut: TriggerKeyShortcut) {}
 
-    private fun buildUiState(
+    private suspend fun buildUiState(
         keyMapState: State<KeyMap>,
-        errors: List<TextListItem.Error>,
         showDeviceDescriptors: Boolean,
         triggerKeyShortcuts: Set<TriggerKeyShortcut>,
     ): State<ConfigTriggerState> {
@@ -212,7 +198,7 @@ abstract class BaseConfigTriggerViewModel(
             }
 
             val triggerKeys =
-                createListItems(trigger, showDeviceDescriptors, triggerKeyShortcuts.size)
+                createListItems(keyMap, showDeviceDescriptors, triggerKeyShortcuts.size)
             val isReorderingEnabled = trigger.keys.size > 1
             val triggerModeButtonsEnabled = keyMap.trigger.keys.size > 1
 
@@ -248,7 +234,6 @@ abstract class BaseConfigTriggerViewModel(
 
             ConfigTriggerState.Loaded(
                 triggerKeys = triggerKeys,
-                errors = errors,
                 isReorderingEnabled = isReorderingEnabled,
                 clickTypeButtons = clickTypeButtons,
                 checkedClickType = checkedClickType,
@@ -418,40 +403,6 @@ abstract class BaseConfigTriggerViewModel(
         }
     }
 
-    private fun buildTriggerErrorListItems(triggerErrors: List<TriggerError>): List<TextListItem.Error> = triggerErrors.map { error ->
-        when (error) {
-            TriggerError.DND_ACCESS_DENIED -> TextListItem.Error(
-                id = error.toString(),
-                text = getString(R.string.trigger_error_dnd_access_denied),
-            )
-
-            TriggerError.SCREEN_OFF_ROOT_DENIED -> TextListItem.Error(
-                id = error.toString(),
-                text = getString(R.string.trigger_error_screen_off_root_permission_denied),
-            )
-
-            TriggerError.CANT_DETECT_IN_PHONE_CALL -> TextListItem.Error(
-                id = error.toString(),
-                text = getString(R.string.trigger_error_cant_detect_in_phone_call),
-            )
-
-            TriggerError.ASSISTANT_NOT_SELECTED -> TextListItem.Error(
-                id = error.toString(),
-                text = getString(R.string.trigger_error_assistant_activity_not_chosen),
-            )
-
-            TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED -> TextListItem.Error(
-                id = error.toString(),
-                text = getString(R.string.trigger_error_assistant_not_purchased),
-            )
-
-            TriggerError.DPAD_IME_NOT_SELECTED -> TextListItem.Error(
-                id = error.toString(),
-                text = getString(R.string.trigger_error_dpad_ime_not_selected),
-            )
-        }
-    }
-
     fun onParallelRadioButtonChecked() {
         config.setParallelTriggerMode()
     }
@@ -574,54 +525,68 @@ abstract class BaseConfigTriggerViewModel(
                     displayKeyMap.fixError(Error.PermissionDenied(Permission.DEVICE_ASSISTANT))
                 }
 
-                TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED -> {
+                TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED,
+                TriggerError.FLOATING_BUTTONS_NOT_PURCHASED,
+                -> {
                     showAdvancedTriggersBottomSheet = true
                 }
 
                 TriggerError.DPAD_IME_NOT_SELECTED -> {
                     showDpadTriggerSetupBottomSheet = true
                 }
+
+                TriggerError.FLOATING_BUTTON_DELETED -> TODO()
             }
         }
     }
 
-    private fun createListItems(
-        trigger: Trigger,
+    private suspend fun createListItems(
+        keyMap: KeyMap,
         showDeviceDescriptors: Boolean,
         shortcutCount: Int,
-    ): List<TriggerKeyListItemModel> = trigger.keys.mapIndexed { index, key ->
-        val clickType = if (trigger.mode is TriggerMode.Parallel) {
-            trigger.mode.clickType
-        } else {
-            key.clickType
-        }
+    ): List<TriggerKeyListItemModel> {
+        val trigger = keyMap.trigger
 
-        val clickTypeString = when (clickType) {
-            ClickType.SHORT_PRESS -> null
-            ClickType.LONG_PRESS -> getString(R.string.clicktype_long_press)
-            ClickType.DOUBLE_PRESS -> getString(R.string.clicktype_double_press)
-        }
+        return trigger.keys.mapIndexed { index, key ->
+            val error = displayKeyMap.getTriggerError(keyMap, key)
 
-        val linkDrawable = when {
-            trigger.mode is TriggerMode.Sequence && (index < trigger.keys.lastIndex || shortcutCount > 0) -> TriggerKeyLinkType.ARROW
-            (index < trigger.keys.lastIndex || shortcutCount > 0) -> TriggerKeyLinkType.PLUS
-            else -> TriggerKeyLinkType.HIDDEN
-        }
+            val clickType = if (trigger.mode is TriggerMode.Parallel) {
+                trigger.mode.clickType
+            } else {
+                key.clickType
+            }
 
-        TriggerKeyListItemModel(
-            id = key.uid,
-            name = getTriggerKeyName(key),
-            clickTypeString = clickTypeString,
-            extraInfo = getTriggerKeyExtraInfo(key, showDeviceDescriptors),
-            linkType = linkDrawable,
-        )
+            val linkType = when {
+                trigger.mode is TriggerMode.Sequence && (index < trigger.keys.lastIndex || shortcutCount > 0) -> TriggerKeyLinkType.ARROW
+                (index < trigger.keys.lastIndex || shortcutCount > 0) -> TriggerKeyLinkType.PLUS
+                else -> TriggerKeyLinkType.HIDDEN
+            }
+
+            when (key) {
+                is AssistantTriggerKey -> TriggerKeyListItemModel.Assistant(
+                    id = key.uid,
+                    assistantType = key.type,
+                    clickType = clickType,
+                    linkType = linkType,
+                    error = error,
+                )
+
+                is KeyCodeTriggerKey -> TriggerKeyListItemModel.KeyCode(
+                    id = key.uid,
+                    keyName = getTriggerKeyName(key),
+                    clickType = clickType,
+                    extraInfo = getTriggerKeyExtraInfo(key, showDeviceDescriptors),
+                    linkType = linkType,
+                    error = error,
+                )
+            }
+        }
     }
 
-    private fun getTriggerKeyExtraInfo(key: TriggerKey, showDeviceDescriptors: Boolean): String? {
-        if (key !is KeyCodeTriggerKey) {
-            return null
-        }
-
+    private fun getTriggerKeyExtraInfo(
+        key: KeyCodeTriggerKey,
+        showDeviceDescriptors: Boolean,
+    ): String {
         return buildString {
             append(getTriggerKeyDeviceName(key.device, showDeviceDescriptors))
             val midDot = getString(R.string.middot)
@@ -693,7 +658,6 @@ sealed class ConfigTriggerState {
 
     data class Loaded(
         val triggerKeys: List<TriggerKeyListItemModel> = emptyList(),
-        val errors: List<TextListItem.Error> = emptyList(),
         val isReorderingEnabled: Boolean = false,
         val clickTypeButtons: Set<ClickType> = emptySet(),
         val checkedClickType: ClickType? = null,
@@ -704,16 +668,38 @@ sealed class ConfigTriggerState {
     ) : ConfigTriggerState()
 }
 
-data class TriggerKeyListItemModel(
-    val id: String,
-    val name: String,
-    /**
-     * null if should be hidden
-     */
-    val clickTypeString: String? = null,
-    val extraInfo: String?,
-    val linkType: TriggerKeyLinkType,
-)
+sealed class TriggerKeyListItemModel {
+    abstract val id: String
+    abstract val linkType: TriggerKeyLinkType
+    abstract val error: TriggerError?
+    abstract val clickType: ClickType
+
+    data class KeyCode(
+        override val id: String,
+        override val linkType: TriggerKeyLinkType,
+        val keyName: String,
+        override val clickType: ClickType,
+        val extraInfo: String,
+        override val error: TriggerError?,
+    ) : TriggerKeyListItemModel()
+
+    data class Assistant(
+        override val id: String,
+        override val linkType: TriggerKeyLinkType,
+        val assistantType: AssistantTriggerType,
+        override val clickType: ClickType,
+        override val error: TriggerError?,
+    ) : TriggerKeyListItemModel()
+
+    data class FloatingButton(
+        override val id: String,
+        override val linkType: TriggerKeyLinkType,
+        val buttonName: String,
+        val layoutName: String,
+        override val clickType: ClickType,
+        override val error: TriggerError?,
+    ) : TriggerKeyListItemModel()
+}
 
 sealed class TriggerKeyOptionsState {
     abstract val clickType: ClickType

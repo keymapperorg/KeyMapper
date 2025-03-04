@@ -103,8 +103,7 @@
     <string name="clipboard_label_keymap_uid">Key map UUID</string>
     <string name="check_box_key_event_option_use_shell">Use shell (ROOT only)</string>
 
-    <string name="trigger_error_dnd_access_denied">Key Mapper requires permission to modify the Do Not Disturb mode if you want the buttons to work as expected in Do Not Disturb mode!</string>
-    <string name="trigger_error_dnd_access_denied_short">This trigger will not work as expected in Do Not Disturb mode!</string>
+    <string name="trigger_error_dnd_access_denied">Permission required to work properly in Do Not Disturb mode!</string>
     <string name="trigger_error_screen_off_root_permission_denied">The option to trigger when the screen is off needs root permission to work!</string>
     <string name="trigger_error_screen_off_root_permission_denied_short">Screen off triggers will not work!</string>
     <string name="trigger_error_cant_detect_in_phone_call">This trigger won\'t work while ringing or in a phone call!</string>
@@ -1413,10 +1412,12 @@
     <string name="purchase_thank_you_message">Your purchase was successful. As a paying user of Key Mapper you will receive priority support to help you use the app. There is now a button on this page to contact the developer.</string>
     <string name="trigger_error_assistant_activity_not_chosen">You must select Key Mapper as the default digital assistant app for this trigger to work.</string>
     <string name="trigger_error_assistant_activity_not_chosen_short">Key Mapper must be the default assistant.</string>
-    <string name="trigger_error_assistant_not_purchased">You must purchase the assistant trigger feature!</string>
+    <string name="trigger_error_assistant_not_purchased">You must purchase the assistant trigger feature.</string>
     <string name="advanced_triggers_learn_more_button">Learn more</string>
     <string name="notification_assistant_trigger_feature_title">New trigger! Did you know you can remap your digital assistant?</string>
     <string name="notification_assistant_trigger_feature_text">Instead of launching Google Assistant or Bixby, you can perform an action of your choice. Tap to learn more.</string>
+    <string name="trigger_error_floating_buttons_not_purchased">You must purchase floating buttons.</string>
+    <string name="trigger_error_floating_button_deleted">Floating button deleted.</string>
 
     <!--  Purchasing  -->
     <string name="unlock_product_button">Unlock (%s)</string>
@@ -1499,5 +1500,7 @@
     <string name="trigger_key_shortcut_use_assistant">Use assistant trigger</string>
     <string name="trigger_key_shortcut_add_floating_button">Floating button</string>
     <string name="trigger_key_shortcut_add_assistant">Assistant trigger</string>
+    <string name="trigger_key_floating_button_description">Floating button: %s</string>
+    <string name="trigger_key_floating_button_layout_description">%s layout</string>
 
 </resources>

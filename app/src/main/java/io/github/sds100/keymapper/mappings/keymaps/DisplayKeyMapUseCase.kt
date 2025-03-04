@@ -6,9 +6,11 @@ import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.DisplaySimpleMappingUseCase
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerKey
+import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerType
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerError
+import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKey
 import io.github.sds100.keymapper.purchasing.ProductId
 import io.github.sds100.keymapper.purchasing.PurchasingManager
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
@@ -137,11 +139,65 @@ class DisplayKeyMapUseCaseImpl(
 
         return errors
     }
+
+    override suspend fun getTriggerError(keyMap: KeyMap, key: TriggerKey): TriggerError? {
+        val isKeyMapperImeChosen = keyMapperImeHelper.isCompatibleImeChosen()
+
+        // can only detect volume button presses during a phone call with an input method service
+        if (!isKeyMapperImeChosen && keyMap.requiresImeKeyEventForwardingInPhoneCall(key)) {
+            return TriggerError.CANT_DETECT_IN_PHONE_CALL
+        }
+
+        val requiresDndAccess = key is KeyCodeTriggerKey && key.keyCode in keysThatRequireDndAccess
+
+        if (requiresDndAccess) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                !permissionAdapter.isGranted(Permission.ACCESS_NOTIFICATION_POLICY)
+            ) {
+                return TriggerError.DND_ACCESS_DENIED
+            }
+        }
+
+        if (keyMap.trigger.screenOffTrigger &&
+            !permissionAdapter.isGranted(Permission.ROOT) &&
+            keyMap.trigger.isDetectingWhenScreenOffAllowed()
+        ) {
+            return TriggerError.SCREEN_OFF_ROOT_DENIED
+        }
+
+        val isAssistantTriggerPurchased =
+            purchasingManager.isPurchased(ProductId.ASSISTANT_TRIGGER).valueIfFailure { false }
+
+        if (key is AssistantTriggerKey && !isAssistantTriggerPurchased) {
+            return TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED
+        }
+
+        val isKeyMapperDeviceAssistant = permissionAdapter.isGranted(Permission.DEVICE_ASSISTANT)
+
+        // Show an error if Key Mapper isn't selected as the device assistant
+        // and an assistant trigger is used. The error shouldn't be shown
+        // if the assistant trigger feature is not purchased.
+        if (key is AssistantTriggerKey && key.type == AssistantTriggerType.DEVICE && !isKeyMapperDeviceAssistant) {
+            return TriggerError.ASSISTANT_NOT_SELECTED
+        }
+
+        val containsDpadKey =
+            key is KeyCodeTriggerKey && InputEventUtils.isDpadKeyCode(key.keyCode) && key.detectionSource == KeyEventDetectionSource.INPUT_METHOD
+
+        if (showDpadImeSetupError.first() && !isKeyMapperImeChosen && containsDpadKey) {
+            return TriggerError.DPAD_IME_NOT_SELECTED
+        }
+
+        // TODO add floating button errors
+
+        return null
+    }
 }
 
 interface DisplayKeyMapUseCase : DisplaySimpleMappingUseCase {
     val invalidateTriggerErrors: Flow<Unit>
     suspend fun getTriggerErrors(keyMap: KeyMap): List<TriggerError>
+    suspend fun getTriggerError(keyMap: KeyMap, key: TriggerKey): TriggerError?
     val showTriggerKeyboardIconExplanation: Flow<Boolean>
     fun neverShowTriggerKeyboardIconExplanation()
 

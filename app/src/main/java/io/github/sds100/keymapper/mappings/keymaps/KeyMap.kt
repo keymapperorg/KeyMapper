@@ -12,6 +12,7 @@ import io.github.sds100.keymapper.mappings.keymaps.detection.KeyMapController
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.Trigger
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerEntityMapper
+import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKey
 import kotlinx.serialization.Serializable
 import java.util.UUID
 
@@ -40,26 +41,19 @@ data class KeyMap(
 
     fun isRepeatingActionsAllowed(): Boolean = KeyMapController.performActionOnDown(trigger)
 
-    fun isChangingActionRepeatRateAllowed(action: KeyMapAction): Boolean =
-        action.repeat && isRepeatingActionsAllowed()
+    fun isChangingActionRepeatRateAllowed(action: KeyMapAction): Boolean = action.repeat && isRepeatingActionsAllowed()
 
-    fun isChangingActionRepeatDelayAllowed(action: KeyMapAction): Boolean =
-        action.repeat && isRepeatingActionsAllowed()
+    fun isChangingActionRepeatDelayAllowed(action: KeyMapAction): Boolean = action.repeat && isRepeatingActionsAllowed()
 
-    fun isHoldingDownActionAllowed(action: KeyMapAction): Boolean =
-        KeyMapController.performActionOnDown(trigger) && action.data.canBeHeldDown()
+    fun isHoldingDownActionAllowed(action: KeyMapAction): Boolean = KeyMapController.performActionOnDown(trigger) && action.data.canBeHeldDown()
 
-    fun isHoldingDownActionBeforeRepeatingAllowed(action: KeyMapAction): Boolean =
-        action.repeat && action.holdDown
+    fun isHoldingDownActionBeforeRepeatingAllowed(action: KeyMapAction): Boolean = action.repeat && action.holdDown
 
-    fun isChangingRepeatModeAllowed(action: KeyMapAction): Boolean =
-        action.repeat && isRepeatingActionsAllowed()
+    fun isChangingRepeatModeAllowed(action: KeyMapAction): Boolean = action.repeat && isRepeatingActionsAllowed()
 
-    fun isChangingRepeatLimitAllowed(action: KeyMapAction): Boolean =
-        action.repeat && isRepeatingActionsAllowed()
+    fun isChangingRepeatLimitAllowed(action: KeyMapAction): Boolean = action.repeat && isRepeatingActionsAllowed()
 
-    fun isStopHoldingDownActionWhenTriggerPressedAgainAllowed(action: KeyMapAction): Boolean =
-        action.holdDown && !action.repeat
+    fun isStopHoldingDownActionWhenTriggerPressedAgainAllowed(action: KeyMapAction): Boolean = action.holdDown && !action.repeat
 }
 
 /**
@@ -69,6 +63,30 @@ data class KeyMap(
  * is incoming.
  */
 fun KeyMap.requiresImeKeyEventForwarding(): Boolean {
+    val hasPhoneCallAction =
+        actionList.any { it.data is ActionData.AnswerCall || it.data is ActionData.EndCall }
+
+    val hasVolumeKeys = trigger.keys
+        .mapNotNull { it as? KeyCodeTriggerKey }
+        .any {
+            it.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN ||
+                it.keyCode == KeyEvent.KEYCODE_VOLUME_UP
+        }
+
+    return hasVolumeKeys && hasPhoneCallAction
+}
+
+/**
+ * Whether this trigger key requires an input method to detect the key events.
+ * If the key map needs to answer or end a call then it must use an input method to detect
+ * the key events because volume key events are not sent to accessibility services when a call
+ * is incoming.
+ */
+fun KeyMap.requiresImeKeyEventForwardingInPhoneCall(triggerKey: TriggerKey): Boolean {
+    if (triggerKey !is KeyCodeTriggerKey) {
+        return false
+    }
+
     val hasPhoneCallAction =
         actionList.any { it.data is ActionData.AnswerCall || it.data is ActionData.EndCall }
 

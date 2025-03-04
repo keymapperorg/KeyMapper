@@ -42,8 +42,6 @@ import io.github.sds100.keymapper.compose.draggable.dragContainer
 import io.github.sds100.keymapper.compose.draggable.rememberDragDropState
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.util.State
-import io.github.sds100.keymapper.util.ui.TextListItem
-import io.github.sds100.keymapper.util.ui.compose.ListItemFixError
 import io.github.sds100.keymapper.util.ui.compose.RadioButtonText
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -207,8 +205,6 @@ private fun TriggerScreenVertical(
                 is ConfigTriggerState.Loaded -> {
                     Spacer(Modifier.height(8.dp))
 
-                    ErrorList(errors = configState.errors, onFixErrorClick = onFixErrorClick)
-
                     TriggerList(
                         modifier = Modifier.weight(1f),
                         triggerList = configState.triggerKeys,
@@ -320,11 +316,6 @@ private fun TriggerScreenHorizontal(
                             .weight(1f)
                             .verticalScroll(rememberScrollState()),
                     ) {
-                        ErrorList(
-                            errors = configState.errors,
-                            onFixErrorClick = onFixErrorClick,
-                        )
-
                         if (configState.clickTypeButtons.isNotEmpty()) {
                             ClickTypeRadioGroup(
                                 clickTypes = configState.clickTypeButtons,
@@ -418,19 +409,6 @@ private fun TriggerList(
 }
 
 @Composable
-private fun ErrorList(
-    modifier: Modifier = Modifier,
-    errors: List<TextListItem.Error>,
-    onFixErrorClick: (String) -> Unit = {},
-) {
-    Column(modifier = modifier) {
-        for (model in errors) {
-            ListItemFixError(model = model, onFixClick = { onFixErrorClick(model.id) })
-        }
-    }
-}
-
-@Composable
 private fun ClickTypeRadioGroup(
     modifier: Modifier = Modifier,
     clickTypes: Set<ClickType>,
@@ -502,30 +480,33 @@ private fun TriggerModeRadioGroup(
 }
 
 private val sampleList = listOf(
-    TriggerKeyListItemModel(
-        id = "vol_up",
-        name = "Volume Up",
-        clickTypeString = "Long Press",
+    TriggerKeyListItemModel.KeyCode(
+        id = "id",
+        keyName = "Volume Up",
+        clickType = ClickType.SHORT_PRESS,
         extraInfo = "External Keyboard",
-        linkType = TriggerKeyLinkType.PLUS,
+        linkType = TriggerKeyLinkType.ARROW,
+        error = null,
     ),
-    TriggerKeyListItemModel(
-        id = "vol_down",
-        name = "Volume Down",
-        clickTypeString = "Single Press",
-        extraInfo = null,
-        linkType = TriggerKeyLinkType.PLUS,
+    TriggerKeyListItemModel.FloatingButton(
+        id = "id",
+        buttonName = "😎",
+        layoutName = "Gaming",
+        clickType = ClickType.DOUBLE_PRESS,
+        linkType = TriggerKeyLinkType.ARROW,
+        error = null,
+    ),
+    TriggerKeyListItemModel.Assistant(
+        id = "id",
+        assistantType = AssistantTriggerType.DEVICE,
+        clickType = ClickType.DOUBLE_PRESS,
+        linkType = TriggerKeyLinkType.ARROW,
+        error = null,
     ),
 )
 
 private val previewState = ConfigTriggerState.Loaded(
     triggerKeys = sampleList,
-    errors = listOf(
-        TextListItem.Error(
-            id = "error",
-            text = "DND Access denied",
-        ),
-    ),
     isReorderingEnabled = true,
     clickTypeButtons = setOf(
         ClickType.SHORT_PRESS,

@@ -13,8 +13,12 @@ import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.outlined.Assistant
+import androidx.compose.material.icons.outlined.BubbleChart
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -23,9 +27,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.mappings.ClickType
 
 @Composable
 fun TriggerKeyListItem(
@@ -35,6 +41,7 @@ fun TriggerKeyListItem(
     isReorderingEnabled: Boolean,
     onEditClick: () -> Unit = {},
     onRemoveClick: () -> Unit = {},
+    onFixClick: () -> Unit = {},
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         ElevatedCard(
@@ -59,33 +66,90 @@ fun TriggerKeyListItem(
                     Icon(
                         modifier = Modifier.size(24.dp),
                         imageVector = Icons.Filled.DragHandle,
-                        contentDescription = "Drag",
+                        contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurface,
                     )
                 }
 
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 16.dp),
-                ) {
-                    Text(
-                        text = model.name,
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
-                    if (model.clickTypeString != null) {
-                        Text(
-                            text = model.clickTypeString,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurface,
+                // To save space only show the icon if there is no error.
+                if (model.error == null) {
+                    val icon = when (model) {
+                        is TriggerKeyListItemModel.Assistant -> Icons.Outlined.Assistant
+                        is TriggerKeyListItemModel.FloatingButton -> Icons.Outlined.BubbleChart
+                        else -> null
+                    }
+
+                    if (icon != null) {
+                        Icon(
+                            modifier = Modifier.size(24.dp),
+                            imageVector = icon,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurface,
                         )
                     }
-                    if (model.extraInfo != null) {
+                }
+
+                val primaryText = when (model) {
+                    is TriggerKeyListItemModel.Assistant -> when (model.assistantType) {
+                        AssistantTriggerType.ANY -> stringResource(R.string.assistant_any_trigger_name)
+                        AssistantTriggerType.VOICE -> stringResource(R.string.assistant_voice_trigger_name)
+                        AssistantTriggerType.DEVICE -> stringResource(R.string.assistant_device_trigger_name)
+                    }
+
+                    is TriggerKeyListItemModel.FloatingButton -> stringResource(
+                        R.string.trigger_key_floating_button_description,
+                        model.buttonName,
+                    )
+
+                    is TriggerKeyListItemModel.KeyCode -> model.keyName
+                }
+
+                if (model.error == null) {
+                    val clickTypeString = when (model.clickType) {
+                        ClickType.SHORT_PRESS -> null
+                        ClickType.LONG_PRESS -> stringResource(R.string.clicktype_long_press)
+                        ClickType.DOUBLE_PRESS -> stringResource(R.string.clicktype_double_press)
+                    }
+
+                    val tertiaryText = when (model) {
+                        is TriggerKeyListItemModel.KeyCode -> model.extraInfo
+                        is TriggerKeyListItemModel.FloatingButton -> stringResource(
+                            R.string.trigger_key_floating_button_layout_description,
+                            model.layoutName,
+                        )
+
+                        else -> null
+                    }
+
+                    TextColumn(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 16.dp),
+                        primaryText = primaryText,
+                        secondaryText = clickTypeString,
+                        tertiaryText = tertiaryText,
+                    )
+                } else {
+                    ErrorTextColumn(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 16.dp),
+                        primaryText = primaryText,
+                        errorText = getErrorMessage(model.error!!),
+                    )
+                }
+
+                if (model.error != null) {
+                    FilledTonalButton(
+                        modifier = Modifier.padding(end = 8.dp),
+                        onClick = onFixClick,
+                        colors = ButtonDefaults.filledTonalButtonColors(
+                            containerColor = MaterialTheme.colorScheme.error,
+                            contentColor = MaterialTheme.colorScheme.onError,
+                        ),
+                    ) {
                         Text(
-                            text = model.extraInfo,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface,
+                            text = stringResource(R.string.button_fix),
                         )
                     }
                 }
@@ -132,16 +196,88 @@ fun TriggerKeyListItem(
     }
 }
 
+@Composable
+private fun getErrorMessage(error: TriggerError): String {
+    return when (error) {
+        TriggerError.DND_ACCESS_DENIED -> stringResource(R.string.trigger_error_dnd_access_denied)
+        TriggerError.SCREEN_OFF_ROOT_DENIED -> stringResource(R.string.trigger_error_screen_off_root_permission_denied)
+        TriggerError.CANT_DETECT_IN_PHONE_CALL -> stringResource(R.string.trigger_error_cant_detect_in_phone_call)
+        TriggerError.ASSISTANT_NOT_SELECTED -> stringResource(R.string.trigger_error_assistant_activity_not_chosen)
+        TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED -> stringResource(R.string.trigger_error_assistant_not_purchased)
+        TriggerError.DPAD_IME_NOT_SELECTED -> stringResource(R.string.trigger_error_dpad_ime_not_selected)
+        TriggerError.FLOATING_BUTTON_DELETED -> stringResource(R.string.trigger_error_floating_button_deleted)
+        TriggerError.FLOATING_BUTTONS_NOT_PURCHASED -> stringResource(R.string.trigger_error_floating_buttons_not_purchased)
+    }
+}
+
+@Composable
+private fun TextColumn(
+    modifier: Modifier = Modifier,
+    primaryText: String,
+    secondaryText: String? = null,
+    tertiaryText: String? = null,
+) {
+    Column(
+        modifier = modifier,
+    ) {
+        Text(
+            text = primaryText,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+        if (secondaryText != null) {
+            Text(
+                text = secondaryText,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+        }
+        if (tertiaryText != null) {
+            Text(
+                text = tertiaryText,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+        }
+    }
+}
+
+@Composable
+private fun ErrorTextColumn(
+    modifier: Modifier = Modifier,
+    primaryText: String,
+    errorText: String,
+) {
+    Column(
+        modifier = modifier,
+    ) {
+        Text(
+            text = primaryText,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurface,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+
+        Text(
+            text = errorText,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.error,
+        )
+    }
+}
+
 @Preview
 @Composable
-private fun TriggerKeyListItemPreview() {
+private fun KeyCodePreview() {
     TriggerKeyListItem(
-        model = TriggerKeyListItemModel(
+        model = TriggerKeyListItemModel.KeyCode(
             id = "id",
-            name = "Volume Up",
-            clickTypeString = "Long Press",
+            keyName = "Volume Up",
+            clickType = ClickType.SHORT_PRESS,
             extraInfo = "External Keyboard",
             linkType = TriggerKeyLinkType.ARROW,
+            error = null,
         ),
         isReorderingEnabled = true,
         isDragging = false,
@@ -150,14 +286,65 @@ private fun TriggerKeyListItemPreview() {
 
 @Preview
 @Composable
-private fun TriggerKeyListItemNoDragPreview() {
+private fun NoDragPreview() {
     TriggerKeyListItem(
-        model = TriggerKeyListItemModel(
+        model = TriggerKeyListItemModel.KeyCode(
             id = "id",
-            name = "Volume Up",
-            clickTypeString = "Long Press",
-            extraInfo = null,
+            keyName = "Volume Up",
+            clickType = ClickType.LONG_PRESS,
+            extraInfo = "External Keyboard",
             linkType = TriggerKeyLinkType.ARROW,
+            error = null,
+        ),
+        isReorderingEnabled = false,
+        isDragging = false,
+    )
+}
+
+@Preview
+@Composable
+private fun AssistantPreview() {
+    TriggerKeyListItem(
+        model = TriggerKeyListItemModel.Assistant(
+            id = "id",
+            assistantType = AssistantTriggerType.DEVICE,
+            clickType = ClickType.DOUBLE_PRESS,
+            linkType = TriggerKeyLinkType.ARROW,
+            error = null,
+        ),
+        isReorderingEnabled = false,
+        isDragging = false,
+    )
+}
+
+@Preview
+@Composable
+private fun FloatingButtonPreview() {
+    TriggerKeyListItem(
+        model = TriggerKeyListItemModel.FloatingButton(
+            id = "id",
+            buttonName = "😎",
+            layoutName = "Gaming",
+            clickType = ClickType.DOUBLE_PRESS,
+            linkType = TriggerKeyLinkType.ARROW,
+            error = null,
+        ),
+        isReorderingEnabled = false,
+        isDragging = false,
+    )
+}
+
+@Preview
+@Composable
+private fun FloatingButtonErrorPreview() {
+    TriggerKeyListItem(
+        model = TriggerKeyListItemModel.FloatingButton(
+            id = "id",
+            buttonName = "😎",
+            layoutName = "Gaming",
+            clickType = ClickType.DOUBLE_PRESS,
+            linkType = TriggerKeyLinkType.ARROW,
+            error = TriggerError.FLOATING_BUTTON_DELETED,
         ),
         isReorderingEnabled = false,
         isDragging = false,

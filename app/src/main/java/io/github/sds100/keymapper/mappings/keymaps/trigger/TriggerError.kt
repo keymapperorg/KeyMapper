@@ -20,4 +20,8 @@ enum class TriggerError {
      * A Key Mapper IME must be used for DPAD triggers to work.
      */
     DPAD_IME_NOT_SELECTED,
+
+    FLOATING_BUTTON_DELETED,
+
+    FLOATING_BUTTONS_NOT_PURCHASED,
 }

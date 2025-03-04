@@ -104,7 +104,7 @@ class KeyMapListItemCreator(
         TriggerError.DND_ACCESS_DENIED ->
             ChipUi.Error(
                 id = TriggerError.DND_ACCESS_DENIED.toString(),
-                text = getString(R.string.trigger_error_dnd_access_denied_short),
+                text = getString(R.string.trigger_error_dnd_access_denied),
                 error = Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY),
             )
 
@@ -137,6 +137,8 @@ class KeyMapListItemCreator(
             text = getString(R.string.trigger_error_dpad_ime_not_selected_short),
             error = Error.DpadTriggerImeNotSelected,
         )
+
+        else -> TODO()
     }
 
     private fun StringBuilder.appendKeyCodeTriggerKeyName(
