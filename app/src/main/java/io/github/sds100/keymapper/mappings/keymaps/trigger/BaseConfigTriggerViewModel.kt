@@ -45,6 +45,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onEmpty
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -81,8 +82,6 @@ abstract class BaseConfigTriggerViewModel(
     val triggerKeyShortcuts: MutableStateFlow<Set<TriggerKeyShortcut>> =
         MutableStateFlow(emptySet())
 
-    // IMPORTANT! Do not flow on another thread because this causes the drag and drop
-    // animations to be more janky.
     private val _state: MutableStateFlow<State<ConfigTriggerState>> =
         MutableStateFlow(State.Loading)
     val state: StateFlow<State<ConfigTriggerState>> = _state.asStateFlow()
@@ -128,26 +127,18 @@ abstract class BaseConfigTriggerViewModel(
     private var isRecordingCompletionUserInitiated: Boolean = false
 
     init {
-        val rebuildState = MutableSharedFlow<State<KeyMap>>(replay = 1)
-
+        // IMPORTANT! Do not flow on another thread because this causes the drag and drop
+        // animations to be more janky.
         combine(
-            rebuildState,
+            displayKeyMap.invalidateTriggerErrors.onEmpty { emit(Unit) },
+            config.mapping,
             displayKeyMap.showDeviceDescriptors,
             triggerKeyShortcuts,
-            transform = ::buildUiState,
-        ).launchIn(coroutineScope)
-
-        coroutineScope.launch {
-            config.mapping.collect { mapping ->
-                rebuildState.emit(mapping)
+        ) { _, keyMap, showDeviceDescriptors, shortcuts ->
+            _state.update {
+                buildUiState(keyMap, showDeviceDescriptors, shortcuts)
             }
-        }
-
-        coroutineScope.launch {
-            displayKeyMap.invalidateTriggerErrors.collectLatest {
-                rebuildState.emit(rebuildState.first())
-            }
-        }
+        }.launchIn(coroutineScope)
 
         coroutineScope.launch {
             recordTrigger.onRecordKey.collectLatest {
@@ -190,7 +181,6 @@ abstract class BaseConfigTriggerViewModel(
         triggerKeyShortcuts: Set<TriggerKeyShortcut>,
     ): State<ConfigTriggerState> {
         return keyMapState.mapData { keyMap ->
-
             val trigger = keyMap.trigger
 
             if (trigger.keys.isEmpty()) {
@@ -500,9 +490,9 @@ abstract class BaseConfigTriggerViewModel(
         }
     }
 
-    fun onTriggerErrorClick(listItemId: String) {
+    fun onTriggerErrorClick(error: TriggerError) {
         coroutineScope.launch {
-            when (TriggerError.valueOf(listItemId)) {
+            when (error) {
                 TriggerError.DND_ACCESS_DENIED -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
                         resourceProvider = this@BaseConfigTriggerViewModel,
@@ -575,7 +565,10 @@ abstract class BaseConfigTriggerViewModel(
                     id = key.uid,
                     keyName = getTriggerKeyName(key),
                     clickType = clickType,
-                    extraInfo = getTriggerKeyExtraInfo(key, showDeviceDescriptors),
+                    extraInfo = getTriggerKeyExtraInfo(
+                        key,
+                        showDeviceDescriptors,
+                    ).takeIf { it.isNotBlank() },
                     linkType = linkType,
                     error = error,
                 )
@@ -679,7 +672,7 @@ sealed class TriggerKeyListItemModel {
         override val linkType: TriggerKeyLinkType,
         val keyName: String,
         override val clickType: ClickType,
-        val extraInfo: String,
+        val extraInfo: String?,
         override val error: TriggerError?,
     ) : TriggerKeyListItemModel()
 

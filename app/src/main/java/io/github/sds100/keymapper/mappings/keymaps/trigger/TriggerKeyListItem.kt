@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDownward
@@ -41,7 +42,7 @@ fun TriggerKeyListItem(
     isReorderingEnabled: Boolean,
     onEditClick: () -> Unit = {},
     onRemoveClick: () -> Unit = {},
-    onFixClick: () -> Unit = {},
+    onFixClick: (TriggerError) -> Unit = {},
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         ElevatedCard(
@@ -57,11 +58,11 @@ fun TriggerKeyListItem(
             ),
         ) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
+                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
+                Spacer(Modifier.width(8.dp))
+
                 if (isReorderingEnabled) {
                     Icon(
                         modifier = Modifier.size(24.dp),
@@ -70,6 +71,8 @@ fun TriggerKeyListItem(
                         tint = MaterialTheme.colorScheme.onSurface,
                     )
                 }
+
+                Spacer(Modifier.width(8.dp))
 
                 // To save space only show the icon if there is no error.
                 if (model.error == null) {
@@ -104,6 +107,8 @@ fun TriggerKeyListItem(
                     is TriggerKeyListItemModel.KeyCode -> model.keyName
                 }
 
+                Spacer(Modifier.width(8.dp))
+
                 if (model.error == null) {
                     val clickTypeString = when (model.clickType) {
                         ClickType.SHORT_PRESS -> null
@@ -124,7 +129,7 @@ fun TriggerKeyListItem(
                     TextColumn(
                         modifier = Modifier
                             .weight(1f)
-                            .padding(start = 16.dp),
+                            .padding(vertical = 8.dp),
                         primaryText = primaryText,
                         secondaryText = clickTypeString,
                         tertiaryText = tertiaryText,
@@ -133,7 +138,7 @@ fun TriggerKeyListItem(
                     ErrorTextColumn(
                         modifier = Modifier
                             .weight(1f)
-                            .padding(start = 16.dp),
+                            .padding(vertical = 8.dp),
                         primaryText = primaryText,
                         errorText = getErrorMessage(model.error!!),
                     )
@@ -141,8 +146,8 @@ fun TriggerKeyListItem(
 
                 if (model.error != null) {
                     FilledTonalButton(
-                        modifier = Modifier.padding(end = 8.dp),
-                        onClick = onFixClick,
+                        modifier = Modifier.padding(start = 8.dp),
+                        onClick = { onFixClick(model.error!!) },
                         colors = ButtonDefaults.filledTonalButtonColors(
                             containerColor = MaterialTheme.colorScheme.error,
                             contentColor = MaterialTheme.colorScheme.onError,
@@ -178,8 +183,10 @@ fun TriggerKeyListItem(
             // Important! Show an empty spacer so the height of the card remains constant
             // while dragging. If the height changes while dragging it can lead to janky
             // behavior.
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(32.dp))
         } else {
+            Spacer(Modifier.height(4.dp))
+
             Icon(
                 imageVector = when (model.linkType) {
                     TriggerKeyLinkType.ARROW -> Icons.Filled.ArrowDownward
@@ -192,6 +199,7 @@ fun TriggerKeyListItem(
                     .size(24.dp)
                     .align(Alignment.CenterHorizontally),
             )
+            Spacer(Modifier.height(4.dp))
         }
     }
 }
@@ -308,11 +316,27 @@ private fun AssistantPreview() {
         model = TriggerKeyListItemModel.Assistant(
             id = "id",
             assistantType = AssistantTriggerType.DEVICE,
-            clickType = ClickType.DOUBLE_PRESS,
+            clickType = ClickType.SHORT_PRESS,
             linkType = TriggerKeyLinkType.ARROW,
             error = null,
         ),
-        isReorderingEnabled = false,
+        isReorderingEnabled = true,
+        isDragging = false,
+    )
+}
+
+@Preview
+@Composable
+private fun AssistantErrorPreview() {
+    TriggerKeyListItem(
+        model = TriggerKeyListItemModel.Assistant(
+            id = "id",
+            assistantType = AssistantTriggerType.DEVICE,
+            clickType = ClickType.DOUBLE_PRESS,
+            linkType = TriggerKeyLinkType.ARROW,
+            error = TriggerError.ASSISTANT_NOT_SELECTED,
+        ),
+        isReorderingEnabled = true,
         isDragging = false,
     )
 }

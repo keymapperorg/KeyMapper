@@ -175,7 +175,7 @@ private fun TriggerScreenVertical(
     onRecordTriggerClick: () -> Unit = {},
     onAdvancedTriggersClick: () -> Unit = {},
     onMoveTriggerKey: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> },
-    onFixErrorClick: (String) -> Unit = {},
+    onFixErrorClick: (TriggerError) -> Unit = {},
     onClickShortcut: (TriggerKeyShortcut) -> Unit = {},
 ) {
     Surface(modifier = modifier) {
@@ -214,6 +214,7 @@ private fun TriggerScreenVertical(
                         onRemoveClick = onRemoveClick,
                         onMove = onMoveTriggerKey,
                         onClickShortcut = onClickShortcut,
+                        onFixErrorClick = onFixErrorClick,
                     )
 
                     if (configState.clickTypeButtons.isNotEmpty()) {
@@ -260,7 +261,7 @@ private fun TriggerScreenHorizontal(
     onRecordTriggerClick: () -> Unit = {},
     onAdvancedTriggersClick: () -> Unit = {},
     onMoveTriggerKey: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> },
-    onFixErrorClick: (String) -> Unit = {},
+    onFixErrorClick: (TriggerError) -> Unit = {},
     onClickShortcut: (TriggerKeyShortcut) -> Unit = {},
 ) {
     Surface(modifier = modifier) {
@@ -303,6 +304,7 @@ private fun TriggerScreenHorizontal(
                     onRemoveClick = onRemoveClick,
                     onMove = onMoveTriggerKey,
                     onClickShortcut = onClickShortcut,
+                    onFixErrorClick = onFixErrorClick,
                 )
 
                 Spacer(Modifier.height(8.dp))
@@ -354,6 +356,7 @@ private fun TriggerList(
     isReorderingEnabled: Boolean,
     onRemoveClick: (String) -> Unit,
     onEditClick: (String) -> Unit,
+    onFixErrorClick: (TriggerError) -> Unit,
     onMove: (fromIndex: Int, toIndex: Int) -> Unit,
     onClickShortcut: (TriggerKeyShortcut) -> Unit,
 ) {
@@ -394,6 +397,7 @@ private fun TriggerList(
                     isReorderingEnabled = isReorderingEnabled,
                     onRemoveClick = { onRemoveClick(model.id) },
                     onEditClick = { onEditClick(model.id) },
+                    onFixClick = onFixErrorClick,
                 )
             }
         }
