@@ -6,11 +6,9 @@ import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.DisplaySimpleMappingUseCase
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerKey
-import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerType
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerError
-import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKey
 import io.github.sds100.keymapper.purchasing.ProductId
 import io.github.sds100.keymapper.purchasing.PurchasingManager
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
@@ -18,12 +16,13 @@ import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
+import io.github.sds100.keymapper.util.dataOrNull
 import io.github.sds100.keymapper.util.valueIfFailure
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.onStart
 
 /**
  * Created by sds100 on 04/04/2021.
@@ -55,13 +54,28 @@ class DisplayKeyMapUseCaseImpl(
             }
         }
 
-    override val invalidateTriggerErrors: Flow<Unit> = merge(
-        permissionAdapter.onPermissionsUpdate,
-        preferences.get(Keys.neverShowDndAccessError).map { }.drop(1),
-        purchasingManager.onCompleteProductPurchase.map { },
-        inputMethodAdapter.chosenIme.map { },
-        showDpadImeSetupError.map { },
-    )
+    /**
+     * Cache the data required for checking errors to reduce the latency of repeatedly checking
+     * the errors.
+     */
+    override val triggerErrorSnapshot: Flow<TriggerErrorSnapshot> = combine(
+        permissionAdapter.onPermissionsUpdate.onStart { emit(Unit) },
+        purchasingManager.purchases,
+        inputMethodAdapter.chosenIme,
+        showDpadImeSetupError,
+    ) { _, purchases, _, showDpadImeSetupError ->
+        TriggerErrorSnapshot(
+            isKeyMapperImeChosen = keyMapperImeHelper.isCompatibleImeChosen(),
+            isDndAccessGranted = permissionAdapter.isGranted(Permission.ACCESS_NOTIFICATION_POLICY),
+            isRootGranted = permissionAdapter.isGranted(Permission.ROOT),
+            isAssistantTriggerPurchased = purchases.dataOrNull()
+                ?.contains(ProductId.ASSISTANT_TRIGGER) ?: false,
+            isKeyMapperDeviceAssistant = permissionAdapter.isGranted(Permission.DEVICE_ASSISTANT),
+            showDpadImeSetupError = showDpadImeSetupError,
+        )
+    }
+
+    override val invalidateTriggerErrors: Flow<Unit> = triggerErrorSnapshot.map { }
 
     override val showTriggerKeyboardIconExplanation: Flow<Boolean> =
         preferences.get(Keys.neverShowTriggerKeyboardIconExplanation).map { neverShow ->
@@ -80,6 +94,7 @@ class DisplayKeyMapUseCaseImpl(
         preferences.set(Keys.neverShowDpadImeTriggerError, true)
     }
 
+    // TODO Delete
     override suspend fun getTriggerErrors(keyMap: KeyMap): List<TriggerError> {
         val trigger = keyMap.trigger
         val errors = mutableListOf<TriggerError>()
@@ -139,65 +154,12 @@ class DisplayKeyMapUseCaseImpl(
 
         return errors
     }
-
-    override suspend fun getTriggerError(keyMap: KeyMap, key: TriggerKey): TriggerError? {
-        val isKeyMapperImeChosen = keyMapperImeHelper.isCompatibleImeChosen()
-
-        // can only detect volume button presses during a phone call with an input method service
-        if (!isKeyMapperImeChosen && keyMap.requiresImeKeyEventForwardingInPhoneCall(key)) {
-            return TriggerError.CANT_DETECT_IN_PHONE_CALL
-        }
-
-        val requiresDndAccess = key is KeyCodeTriggerKey && key.keyCode in keysThatRequireDndAccess
-
-        if (requiresDndAccess) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-                !permissionAdapter.isGranted(Permission.ACCESS_NOTIFICATION_POLICY)
-            ) {
-                return TriggerError.DND_ACCESS_DENIED
-            }
-        }
-
-        if (keyMap.trigger.screenOffTrigger &&
-            !permissionAdapter.isGranted(Permission.ROOT) &&
-            keyMap.trigger.isDetectingWhenScreenOffAllowed()
-        ) {
-            return TriggerError.SCREEN_OFF_ROOT_DENIED
-        }
-
-        val isAssistantTriggerPurchased =
-            purchasingManager.isPurchased(ProductId.ASSISTANT_TRIGGER).valueIfFailure { false }
-
-        if (key is AssistantTriggerKey && !isAssistantTriggerPurchased) {
-            return TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED
-        }
-
-        val isKeyMapperDeviceAssistant = permissionAdapter.isGranted(Permission.DEVICE_ASSISTANT)
-
-        // Show an error if Key Mapper isn't selected as the device assistant
-        // and an assistant trigger is used. The error shouldn't be shown
-        // if the assistant trigger feature is not purchased.
-        if (key is AssistantTriggerKey && key.type == AssistantTriggerType.DEVICE && !isKeyMapperDeviceAssistant) {
-            return TriggerError.ASSISTANT_NOT_SELECTED
-        }
-
-        val containsDpadKey =
-            key is KeyCodeTriggerKey && InputEventUtils.isDpadKeyCode(key.keyCode) && key.detectionSource == KeyEventDetectionSource.INPUT_METHOD
-
-        if (showDpadImeSetupError.first() && !isKeyMapperImeChosen && containsDpadKey) {
-            return TriggerError.DPAD_IME_NOT_SELECTED
-        }
-
-        // TODO add floating button errors
-
-        return null
-    }
 }
 
 interface DisplayKeyMapUseCase : DisplaySimpleMappingUseCase {
     val invalidateTriggerErrors: Flow<Unit>
+    val triggerErrorSnapshot: Flow<TriggerErrorSnapshot>
     suspend fun getTriggerErrors(keyMap: KeyMap): List<TriggerError>
-    suspend fun getTriggerError(keyMap: KeyMap, key: TriggerKey): TriggerError?
     val showTriggerKeyboardIconExplanation: Flow<Boolean>
     fun neverShowTriggerKeyboardIconExplanation()
 

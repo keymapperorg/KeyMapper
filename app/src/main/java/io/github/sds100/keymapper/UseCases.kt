@@ -222,6 +222,7 @@ object UseCases {
         keyEventRelayService,
         ServiceLocator.inputMethodAdapter(ctx),
     )
+
     fun sortKeyMapsUseCase(ctx: Context): SortKeyMapsUseCase = SortKeyMapsUseCaseImpl(
         ServiceLocator.settingsRepository(ctx),
         displaySimpleMapping(ctx),

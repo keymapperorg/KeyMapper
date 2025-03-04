@@ -11,6 +11,7 @@ import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapUseCase
 import io.github.sds100.keymapper.mappings.keymaps.CreateKeyMapShortcutUseCase
 import io.github.sds100.keymapper.mappings.keymaps.DisplayKeyMapUseCase
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
+import io.github.sds100.keymapper.mappings.keymaps.TriggerErrorSnapshot
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
@@ -45,7 +46,6 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.onEmpty
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -130,13 +130,13 @@ abstract class BaseConfigTriggerViewModel(
         // IMPORTANT! Do not flow on another thread because this causes the drag and drop
         // animations to be more janky.
         combine(
-            displayKeyMap.invalidateTriggerErrors.onEmpty { emit(Unit) },
+            displayKeyMap.triggerErrorSnapshot,
             config.mapping,
             displayKeyMap.showDeviceDescriptors,
             triggerKeyShortcuts,
-        ) { _, keyMap, showDeviceDescriptors, shortcuts ->
+        ) { triggerErrorSnapshot, keyMap, showDeviceDescriptors, shortcuts ->
             _state.update {
-                buildUiState(keyMap, showDeviceDescriptors, shortcuts)
+                buildUiState(keyMap, showDeviceDescriptors, shortcuts, triggerErrorSnapshot)
             }
         }.launchIn(coroutineScope)
 
@@ -179,6 +179,7 @@ abstract class BaseConfigTriggerViewModel(
         keyMapState: State<KeyMap>,
         showDeviceDescriptors: Boolean,
         triggerKeyShortcuts: Set<TriggerKeyShortcut>,
+        triggerErrorSnapshot: TriggerErrorSnapshot,
     ): State<ConfigTriggerState> {
         return keyMapState.mapData { keyMap ->
             val trigger = keyMap.trigger
@@ -188,7 +189,12 @@ abstract class BaseConfigTriggerViewModel(
             }
 
             val triggerKeys =
-                createListItems(keyMap, showDeviceDescriptors, triggerKeyShortcuts.size)
+                createListItems(
+                    keyMap,
+                    showDeviceDescriptors,
+                    triggerKeyShortcuts.size,
+                    triggerErrorSnapshot,
+                )
             val isReorderingEnabled = trigger.keys.size > 1
             val triggerModeButtonsEnabled = keyMap.trigger.keys.size > 1
 
@@ -534,11 +540,12 @@ abstract class BaseConfigTriggerViewModel(
         keyMap: KeyMap,
         showDeviceDescriptors: Boolean,
         shortcutCount: Int,
+        triggerErrorSnapshot: TriggerErrorSnapshot,
     ): List<TriggerKeyListItemModel> {
         val trigger = keyMap.trigger
 
         return trigger.keys.mapIndexed { index, key ->
-            val error = displayKeyMap.getTriggerError(keyMap, key)
+            val error = triggerErrorSnapshot.getTriggerError(keyMap, key)
 
             val clickType = if (trigger.mode is TriggerMode.Parallel) {
                 trigger.mode.clickType
