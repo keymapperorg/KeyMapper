@@ -19,6 +19,7 @@ data class TriggerErrorSnapshot(
     val isDndAccessGranted: Boolean,
     val isRootGranted: Boolean,
     val isAssistantTriggerPurchased: Boolean,
+    val isFloatingButtonsPurchased: Boolean,
     val isKeyMapperDeviceAssistant: Boolean,
     val showDpadImeSetupError: Boolean,
 ) {
@@ -66,6 +67,10 @@ data class TriggerErrorSnapshot(
 
         if (showDpadImeSetupError && !isKeyMapperImeChosen && containsDpadKey) {
             return TriggerError.DPAD_IME_NOT_SELECTED
+        }
+
+        if (!isFloatingButtonsPurchased) {
+            return TriggerError.FLOATING_BUTTONS_NOT_PURCHASED
         }
 
         // TODO add floating button errors

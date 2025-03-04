@@ -70,6 +70,8 @@ class DisplayKeyMapUseCaseImpl(
             isRootGranted = permissionAdapter.isGranted(Permission.ROOT),
             isAssistantTriggerPurchased = purchases.dataOrNull()
                 ?.contains(ProductId.ASSISTANT_TRIGGER) ?: false,
+            isFloatingButtonsPurchased = purchases.dataOrNull()
+                ?.contains(ProductId.FLOATING_BUTTONS) ?: false,
             isKeyMapperDeviceAssistant = permissionAdapter.isGranted(Permission.DEVICE_ASSISTANT),
             showDpadImeSetupError = showDpadImeSetupError,
         )
