@@ -30,7 +30,9 @@ import io.github.sds100.keymapper.util.dataOrNull
 import io.github.sds100.keymapper.util.firstBlocking
 import io.github.sds100.keymapper.util.ifIsData
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.map
+import timber.log.Timber
 
 /**
  * Created by sds100 on 16/02/2021.
@@ -44,8 +46,14 @@ class ConfigKeyMapUseCaseImpl(
 ) : BaseConfigMappingUseCase<KeyMapAction, KeyMap>(),
     ConfigKeyMapUseCase {
 
+    override val serviceEvents: SharedFlow<ServiceEvent> = serviceAdapter.eventReceiver
+
     private val showDeviceDescriptors: Flow<Boolean> =
         preferenceRepository.get(Keys.showDeviceDescriptors).map { it ?: false }
+
+    override fun addFloatingButtonTriggerKey(buttonUid: String) {
+        Timber.e("ADD FLOATING BUTTON $buttonUid")
+    }
 
     override fun addAssistantTriggerKey(type: AssistantTriggerType) = editTrigger { trigger ->
         val clickType = when (trigger.mode) {
@@ -539,6 +547,7 @@ interface ConfigKeyMapUseCase : ConfigMappingUseCase<KeyMapAction, KeyMap> {
         detectionSource: KeyEventDetectionSource,
     )
 
+    fun addFloatingButtonTriggerKey(buttonUid: String)
     fun addAssistantTriggerKey(type: AssistantTriggerType)
     fun removeTriggerKey(uid: String)
     fun getTriggerKey(uid: String): TriggerKey?
@@ -584,4 +593,5 @@ interface ConfigKeyMapUseCase : ConfigMappingUseCase<KeyMapAction, KeyMap> {
 
     suspend fun getFloatingLayoutCount(): Int
     suspend fun sendServiceEvent(event: ServiceEvent): Result<*>
+    val serviceEvents: SharedFlow<ServiceEvent>
 }

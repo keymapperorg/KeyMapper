@@ -40,6 +40,11 @@
             android:name="showAdvancedTriggers"
             android:defaultValue="false"
             app:argType="boolean" />
+        <argument
+            android:name="newFloatingButtonTriggerKey"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
     </action>
 
     <action
