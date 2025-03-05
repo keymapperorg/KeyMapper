@@ -17,6 +17,7 @@ import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.util.Error
+import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.dataOrNull
 import io.github.sds100.keymapper.util.mapData
@@ -476,23 +477,25 @@ abstract class BaseConfigTriggerViewModel(
                 RecordTriggerState.Idle,
                 -> recordTrigger.startRecording()
             }
+        }
+    }
 
-            if (result is Error.AccessibilityServiceDisabled) {
-                ViewModelHelper.handleAccessibilityServiceStoppedDialog(
-                    resourceProvider = this@BaseConfigTriggerViewModel,
-                    popupViewModel = this@BaseConfigTriggerViewModel,
-                    startService = displayKeyMap::startAccessibilityService,
-                )
-            }
+    suspend fun handleServiceEventResult(result: Result<*>) {
+        if (result is Error.AccessibilityServiceDisabled) {
+            ViewModelHelper.handleAccessibilityServiceStoppedDialog(
+                resourceProvider = this@BaseConfigTriggerViewModel,
+                popupViewModel = this@BaseConfigTriggerViewModel,
+                startService = displayKeyMap::startAccessibilityService,
+            )
+        }
 
-            if (result is Error.AccessibilityServiceCrashed) {
-                ViewModelHelper.handleAccessibilityServiceCrashedSnackBar(
-                    resourceProvider = this@BaseConfigTriggerViewModel,
-                    popupViewModel = this@BaseConfigTriggerViewModel,
-                    restartService = displayKeyMap::restartAccessibilityService,
-                    message = R.string.dialog_message_restart_accessibility_service_to_record_trigger,
-                )
-            }
+        if (result is Error.AccessibilityServiceCrashed) {
+            ViewModelHelper.handleAccessibilityServiceCrashedSnackBar(
+                resourceProvider = this@BaseConfigTriggerViewModel,
+                popupViewModel = this@BaseConfigTriggerViewModel,
+                restartService = displayKeyMap::restartAccessibilityService,
+                message = R.string.dialog_message_restart_accessibility_service_to_record_trigger,
+            )
         }
     }
 

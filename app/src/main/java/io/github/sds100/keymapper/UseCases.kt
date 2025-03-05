@@ -58,6 +58,8 @@ object UseCases {
         ServiceLocator.roomKeymapRepository(ctx),
         ServiceLocator.devicesAdapter(ctx),
         ServiceLocator.settingsRepository(ctx),
+        ServiceLocator.floatingLayoutRepository(ctx),
+        ServiceLocator.accessibilityServiceAdapter(ctx),
     )
 
     fun displaySimpleMapping(ctx: Context): DisplaySimpleMappingUseCase = DisplaySimpleMappingUseCaseImpl(

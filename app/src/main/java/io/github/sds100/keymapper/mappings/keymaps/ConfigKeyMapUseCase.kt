@@ -5,6 +5,7 @@ import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.data.Keys
+import io.github.sds100.keymapper.data.repositories.FloatingLayoutRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.BaseConfigMappingUseCase
 import io.github.sds100.keymapper.mappings.ClickType
@@ -17,10 +18,13 @@ import io.github.sds100.keymapper.mappings.keymaps.trigger.Trigger
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
+import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.util.Defaultable
+import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.util.ServiceEvent
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.dataOrNull
 import io.github.sds100.keymapper.util.firstBlocking
@@ -35,6 +39,8 @@ class ConfigKeyMapUseCaseImpl(
     private val keyMapRepository: KeyMapRepository,
     private val devicesAdapter: DevicesAdapter,
     private val preferenceRepository: PreferenceRepository,
+    private val floatingLayoutRepository: FloatingLayoutRepository,
+    private val serviceAdapter: ServiceAdapter,
 ) : BaseConfigMappingUseCase<KeyMapAction, KeyMap>(),
     ConfigKeyMapUseCase {
 
@@ -471,6 +477,14 @@ class ConfigKeyMapUseCaseImpl(
         mapping.value = State.Data(keyMap)
     }
 
+    override suspend fun getFloatingLayoutCount(): Int {
+        return floatingLayoutRepository.count()
+    }
+
+    override suspend fun sendServiceEvent(event: ServiceEvent): Result<*> {
+        return serviceAdapter.send(event)
+    }
+
     private fun setActionOption(
         uid: String,
         block: (action: KeyMapAction) -> KeyMapAction,
@@ -567,4 +581,7 @@ interface ConfigKeyMapUseCase : ConfigMappingUseCase<KeyMapAction, KeyMap> {
     fun setActionStopRepeatingWhenTriggerReleased(uid: String)
 
     fun setActionStopHoldingDownWhenTriggerPressedAgain(uid: String, enabled: Boolean)
+
+    suspend fun getFloatingLayoutCount(): Int
+    suspend fun sendServiceEvent(event: ServiceEvent): Result<*>
 }
