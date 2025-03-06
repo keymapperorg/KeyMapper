@@ -102,14 +102,18 @@ class ConfigKeyMapViewModel(
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
     override fun restoreState(state: Bundle) {
         val keyMap = state.getJsonSerializable<KeyMap>(STATE_KEY) ?: KeyMap()
         config.restoreState(keyMap)
     }
 
-    fun loadNewKeymap() {
+    fun loadNewKeymap(floatingButtonUid: String? = null) {
         config.loadNewKeyMap()
+        if (floatingButtonUid != null) {
+            viewModelScope.launch {
+                config.addFloatingButtonTriggerKey(floatingButtonUid)
+            }
+        }
     }
 
     fun loadKeymap(uid: String) {

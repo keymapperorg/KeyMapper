@@ -114,8 +114,7 @@
     <dialog
         android:id="@+id/sortMenuFragment"
         android:name="io.github.sds100.keymapper.sorting.SortMenuFragment"
-        android:label="fragment_sort_menu"
-        tools:layout="@layout/fragment_sort_menu" />
+        android:label="fragment_sort_menu" />
 
     <action
         android:id="@+id/action_global_sortingFragment"

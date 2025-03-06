@@ -45,7 +45,7 @@ class ConfigKeyMapFragment : ConfigMappingFragment() {
         if (savedInstanceState == null) {
             args.keymapUid.let {
                 if (it == null) {
-                    viewModel.loadNewKeymap()
+                    viewModel.loadNewKeymap(args.newFloatingButtonTriggerKey)
                 } else {
                     viewModel.loadKeymap(it)
                 }
