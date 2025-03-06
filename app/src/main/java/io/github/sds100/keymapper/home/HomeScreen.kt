@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.BubbleChart
@@ -17,7 +16,7 @@ import androidx.compose.material.icons.outlined.Gamepad
 import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -47,7 +46,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.mappings.keymaps.KeyMapListScreen
 import io.github.sds100.keymapper.mappings.keymaps.trigger.DpadTriggerSetupBottomSheet
+import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ui.NavDestination
 import io.github.sds100.keymapper.util.ui.NavigateEvent
 import kotlinx.coroutines.launch
@@ -91,22 +92,7 @@ fun HomeScreen(viewModel: HomeViewModel) {
             }
         },
         keyMapsContent = {
-            Text("Key maps")
-
-            LazyColumn(modifier = Modifier.fillMaxSize()) { }
-
-            FloatingActionButton(onClick = {
-                scope.launch {
-                    viewModel.navigate(
-                        NavigateEvent(
-                            "config_key_map",
-                            NavDestination.ConfigKeyMap(keyMapUid = null),
-                        ),
-                    )
-                }
-            }) {
-                Icon(Icons.Outlined.Add, contentDescription = null)
-            }
+            KeyMapListScreen(modifier = Modifier.fillMaxSize(), listItems = State.Loading)
         },
         floatingButtonsContent = {
             Text("Floating buttons")
@@ -114,6 +100,17 @@ fun HomeScreen(viewModel: HomeViewModel) {
         fingerprintMapsContent = {
             Text("Fingerprint maps")
         },
+        onNewKeyMapClick = {
+            scope.launch {
+                viewModel.navigate(
+                    NavigateEvent(
+                        "config_key_map",
+                        NavDestination.ConfigKeyMap(keyMapUid = null),
+                    ),
+                )
+            }
+        },
+        onNewFloatingLayoutCLick = {},
     )
 }
 
@@ -124,8 +121,12 @@ private fun HomeScreen(
     keyMapsContent: @Composable () -> Unit,
     floatingButtonsContent: @Composable () -> Unit,
     fingerprintMapsContent: @Composable () -> Unit,
+    onNewKeyMapClick: () -> Unit = {},
+    onNewFloatingLayoutCLick: () -> Unit = {},
 ) {
     val navController = rememberNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
 
     val navBarItems = listOf(
         HomeNavBarItem(
@@ -138,6 +139,7 @@ private fun HomeScreen(
             label = stringResource(R.string.home_nav_bar_floating_buttons),
             icon = Icons.Outlined.BubbleChart,
         ),
+        // TODO only show fingerprint maps if they are supported.
         HomeNavBarItem(
             HomeDestination.FingerprintMaps,
             label = stringResource(R.string.home_nav_bar_fingerprint_maps),
@@ -152,11 +154,27 @@ private fun HomeScreen(
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
         },
+        floatingActionButton = {
+            when (currentDestination?.route) {
+                HomeDestination.KeyMaps.route -> {
+                    ExtendedFloatingActionButton(
+                        onClick = onNewKeyMapClick,
+                        text = { Text(stringResource(R.string.home_fab_new_key_map)) },
+                        icon = { Icon(Icons.Outlined.Add, contentDescription = null) },
+                    )
+                }
+
+                HomeDestination.FloatingButtons.route -> {
+                    ExtendedFloatingActionButton(
+                        onClick = onNewFloatingLayoutCLick,
+                        text = { Text(stringResource(R.string.home_fab_new_floating_layout)) },
+                        icon = { Icon(Icons.Outlined.Add, contentDescription = null) },
+                    )
+                }
+            }
+        },
         bottomBar = {
             NavigationBar {
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentDestination = navBackStackEntry?.destination
-
                 navBarItems.forEach { item ->
                     NavigationBarItem(
                         icon = { Icon(item.icon, contentDescription = null) },
