@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
 import io.github.sds100.keymapper.backup.BackupManager
+import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.mapData
@@ -15,6 +16,7 @@ import kotlinx.coroutines.withContext
  */
 class ListKeyMapsUseCaseImpl(
     private val keyMapRepository: KeyMapRepository,
+    private val floatingButtonRepository: FloatingButtonRepository,
     private val backupManager: BackupManager,
     displayKeyMapUseCase: DisplayKeyMapUseCase,
 ) : ListKeyMapsUseCase,
@@ -28,8 +30,8 @@ class ListKeyMapsUseCaseImpl(
 
             withContext(Dispatchers.Default) {
                 val keyMaps = keyMapEntitiesState.mapData { keyMapEntities ->
-                    keyMapEntities.map {
-                        KeyMapEntityMapper.fromEntity(it)
+                    keyMapEntities.map { keyMap ->
+                        KeyMapEntityMapper.fromEntity(keyMap, floatingButtonRepository)
                     }
                 }
 

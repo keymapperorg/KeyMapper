@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.data.repositories
 
 import io.github.sds100.keymapper.data.db.dao.FloatingButtonDao
 import io.github.sds100.keymapper.data.entities.FloatingButtonEntity
+import io.github.sds100.keymapper.data.entities.FloatingButtonEntityWithLayout
 import io.github.sds100.keymapper.util.DefaultDispatcherProvider
 import io.github.sds100.keymapper.util.DispatcherProvider
 import io.github.sds100.keymapper.util.State
@@ -16,8 +17,8 @@ interface FloatingButtonRepository {
     val buttonsList: Flow<State<List<FloatingButtonEntity>>>
 
     fun insert(vararg button: FloatingButtonEntity)
-    fun update(vararg button: FloatingButtonEntity)
-    suspend fun get(uid: String): FloatingButtonEntity?
+    fun update(button: FloatingButtonEntity)
+    suspend fun get(uid: String): FloatingButtonEntityWithLayout?
     fun delete(vararg uid: String)
 }
 
@@ -36,13 +37,25 @@ class RoomFloatingButtonRepository(
         }
     }
 
-    override fun update(vararg button: FloatingButtonEntity) {
+    override fun update(button: FloatingButtonEntity) {
         coroutineScope.launch(dispatchers.default()) {
-            dao.update(*button)
+            dao.update(
+                FloatingButtonEntity(
+                    uid = button.uid,
+                    layoutUid = button.layoutUid,
+                    text = button.text,
+                    buttonSize = button.buttonSize,
+                    x = button.x,
+                    y = button.y,
+                    orientation = button.orientation,
+                    displayWidth = button.displayWidth,
+                    displayHeight = button.displayHeight,
+                ),
+            )
         }
     }
 
-    override suspend fun get(uid: String): FloatingButtonEntity? = dao.getByUid(uid)
+    override suspend fun get(uid: String): FloatingButtonEntityWithLayout? = dao.getByUidWithLayout(uid)
 
     override fun delete(vararg uid: String) {
         coroutineScope.launch(dispatchers.default()) {

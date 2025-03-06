@@ -36,6 +36,7 @@ sealed class TriggerKeyEntity : Parcelable {
             when (key) {
                 is AssistantTriggerKeyEntity -> Gson().toJsonTree(key)
                 is KeyCodeTriggerKeyEntity -> Gson().toJsonTree(key)
+                is FloatingButtonKeyEntity -> Gson().toJsonTree(key)
             }
         }
 
@@ -45,12 +46,30 @@ sealed class TriggerKeyEntity : Parcelable {
                 var uid: String? by json.byNullableString(key = NAME_UID)
                 uid = uid ?: UUID.randomUUID().toString()
 
-                if (json.obj.has(AssistantTriggerKeyEntity.NAME_ASSISTANT_TYPE)) {
-                    return@jsonDeserializer deserializeAssistantTriggerKey(json, uid!!)
-                } else {
-                    return@jsonDeserializer deserializeKeyCodeTriggerKey(json, uid!!)
+                when {
+                    json.obj.has(FloatingButtonKeyEntity.NAME_BUTTON_UID) -> {
+                        return@jsonDeserializer deserializeFloatingButtonKey(json, uid!!)
+                    }
+
+                    json.obj.has(AssistantTriggerKeyEntity.NAME_ASSISTANT_TYPE) -> {
+                        return@jsonDeserializer deserializeAssistantTriggerKey(json, uid!!)
+                    }
+
+                    else -> {
+                        return@jsonDeserializer deserializeKeyCodeTriggerKey(json, uid!!)
+                    }
                 }
             }
+
+        private fun deserializeFloatingButtonKey(
+            json: JsonElement,
+            uid: String,
+        ): FloatingButtonKeyEntity {
+            val buttonUid by json.byString(FloatingButtonKeyEntity.NAME_BUTTON_UID)
+            val clickType by json.byInt(NAME_CLICK_TYPE)
+
+            return FloatingButtonKeyEntity(buttonUid, clickType, uid)
+        }
 
         private fun deserializeAssistantTriggerKey(
             json: JsonElement,

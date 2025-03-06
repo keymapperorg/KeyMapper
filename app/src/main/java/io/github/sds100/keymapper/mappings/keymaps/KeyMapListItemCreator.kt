@@ -5,6 +5,7 @@ import io.github.sds100.keymapper.mappings.BaseMappingListItemCreator
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerType
+import io.github.sds100.keymapper.mappings.keymaps.trigger.FloatingButtonKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.mappings.keymaps.trigger.Trigger
@@ -56,6 +57,7 @@ class KeyMapListItemCreator(
                 when (key) {
                     is AssistantTriggerKey -> appendAssistantTriggerKeyName(key)
                     is KeyCodeTriggerKey -> appendKeyCodeTriggerKeyName(key, showDeviceDescriptors)
+                    is FloatingButtonKey -> appendFloatingButtonKeyName(key)
                 }
             }
         }
@@ -139,6 +141,28 @@ class KeyMapListItemCreator(
         )
 
         else -> TODO()
+    }
+
+    private fun StringBuilder.appendFloatingButtonKeyName(key: FloatingButtonKey) {
+        when (key.clickType) {
+            ClickType.LONG_PRESS -> append(longPressString).append(" ")
+            ClickType.DOUBLE_PRESS -> append(doublePressString).append(" ")
+            else -> Unit
+        }
+
+        if (key.button == null) {
+            append(getString(R.string.deleted_floating_button_text_key_map_list_item))
+        } else {
+            append(
+                getString(
+                    R.string.floating_button_text_key_map_list_item,
+                    arrayOf(
+                        key.button.appearance.text,
+                        key.button.layoutName,
+                    ),
+                ),
+            )
+        }
     }
 
     private fun StringBuilder.appendKeyCodeTriggerKeyName(

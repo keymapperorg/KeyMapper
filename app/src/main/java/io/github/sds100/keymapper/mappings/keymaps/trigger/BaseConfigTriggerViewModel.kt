@@ -176,7 +176,7 @@ abstract class BaseConfigTriggerViewModel(
 
     open fun onClickTriggerKeyShortcut(shortcut: TriggerKeyShortcut) {}
 
-    private suspend fun buildUiState(
+    private fun buildUiState(
         keyMapState: State<KeyMap>,
         showDeviceDescriptors: Boolean,
         triggerKeyShortcuts: Set<TriggerKeyShortcut>,
@@ -218,7 +218,7 @@ abstract class BaseConfigTriggerViewModel(
                 clickTypeButtons.add(ClickType.DOUBLE_PRESS)
             }
 
-            if (trigger.keys.isNotEmpty() && trigger.mode !is TriggerMode.Sequence && trigger.keys.all { it is KeyCodeTriggerKey }) {
+            if (trigger.keys.isNotEmpty() && trigger.mode !is TriggerMode.Sequence && trigger.keys.all { it !is AssistantTriggerKey }) {
                 clickTypeButtons.add(ClickType.SHORT_PRESS)
                 clickTypeButtons.add(ClickType.LONG_PRESS)
             }
@@ -262,15 +262,15 @@ abstract class BaseConfigTriggerViewModel(
                 when (key) {
                     is KeyCodeTriggerKey -> {
                         val showDeviceDescriptors = displayKeyMap.showDeviceDescriptors.first()
-                        var deviceListItems = emptyList<CheckBoxListItem>()
-                        deviceListItems = config.getAvailableTriggerKeyDevices()
-                            .map { device: TriggerKeyDevice ->
-                                buildDeviceListItem(
-                                    device = device,
-                                    showDeviceDescriptors = showDeviceDescriptors,
-                                    isChecked = key.device == device,
-                                )
-                            }
+                        val deviceListItems: List<CheckBoxListItem> =
+                            config.getAvailableTriggerKeyDevices()
+                                .map { device: TriggerKeyDevice ->
+                                    buildDeviceListItem(
+                                        device = device,
+                                        showDeviceDescriptors = showDeviceDescriptors,
+                                        isChecked = key.device == device,
+                                    )
+                                }
 
                         return TriggerKeyOptionsState.KeyCode(
                             doNotRemapChecked = !key.consumeEvent,
@@ -287,6 +287,12 @@ abstract class BaseConfigTriggerViewModel(
                             showClickTypes = showClickTypes,
                         )
                     }
+
+                    is FloatingButtonKey ->
+                        return TriggerKeyOptionsState.FloatingButton(
+                            clickType = key.clickType,
+                            showClickTypes = showClickTypes,
+                        )
                 }
             }
         }
@@ -539,7 +545,7 @@ abstract class BaseConfigTriggerViewModel(
         }
     }
 
-    private suspend fun createListItems(
+    private fun createListItems(
         keyMap: KeyMap,
         showDeviceDescriptors: Boolean,
         shortcutCount: Int,
@@ -582,6 +588,25 @@ abstract class BaseConfigTriggerViewModel(
                     linkType = linkType,
                     error = error,
                 )
+
+                is FloatingButtonKey -> {
+                    if (key.button == null) {
+                        TriggerKeyListItemModel.FloatingButtonDeleted(
+                            id = key.uid,
+                            clickType = clickType,
+                            linkType = linkType,
+                        )
+                    } else {
+                        TriggerKeyListItemModel.FloatingButton(
+                            id = key.uid,
+                            buttonName = key.button.appearance.text,
+                            layoutName = key.button.layoutName,
+                            clickType = clickType,
+                            linkType = linkType,
+                            error = error,
+                        )
+                    }
+                }
             }
         }
     }
@@ -600,21 +625,13 @@ abstract class BaseConfigTriggerViewModel(
         }
     }
 
-    private fun getTriggerKeyName(key: TriggerKey): String {
-        return when (key) {
-            is AssistantTriggerKey -> when (key.type) {
-                AssistantTriggerType.ANY -> getString(R.string.assistant_any_trigger_name)
-                AssistantTriggerType.VOICE -> getString(R.string.assistant_voice_trigger_name)
-                AssistantTriggerType.DEVICE -> getString(R.string.assistant_device_trigger_name)
-            }
+    private fun getTriggerKeyName(key: KeyCodeTriggerKey): String {
+        return buildString {
+            append(InputEventUtils.keyCodeToString(key.keyCode))
 
-            is KeyCodeTriggerKey -> buildString {
-                append(InputEventUtils.keyCodeToString(key.keyCode))
-
-                if (key.detectionSource == KeyEventDetectionSource.INPUT_METHOD) {
-                    val midDot = getString(R.string.middot)
-                    append(" $midDot ${getString(R.string.flag_detect_from_input_method)}")
-                }
+            if (key.detectionSource == KeyEventDetectionSource.INPUT_METHOD) {
+                val midDot = getString(R.string.middot)
+                append(" $midDot ${getString(R.string.flag_detect_from_input_method)}")
             }
         }
     }
@@ -702,6 +719,14 @@ sealed class TriggerKeyListItemModel {
         override val clickType: ClickType,
         override val error: TriggerError?,
     ) : TriggerKeyListItemModel()
+
+    data class FloatingButtonDeleted(
+        override val id: String,
+        override val linkType: TriggerKeyLinkType,
+        override val clickType: ClickType,
+    ) : TriggerKeyListItemModel() {
+        override val error: TriggerError = TriggerError.FLOATING_BUTTON_DELETED
+    }
 }
 
 sealed class TriggerKeyOptionsState {
@@ -717,6 +742,11 @@ sealed class TriggerKeyOptionsState {
 
     data class Assistant(
         val assistantType: AssistantTriggerType,
+        override val clickType: ClickType,
+        override val showClickTypes: Boolean,
+    ) : TriggerKeyOptionsState()
+
+    data class FloatingButton(
         override val clickType: ClickType,
         override val showClickTypes: Boolean,
     ) : TriggerKeyOptionsState()

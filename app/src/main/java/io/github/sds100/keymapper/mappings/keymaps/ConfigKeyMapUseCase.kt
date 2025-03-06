@@ -5,13 +5,16 @@ import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.data.Keys
+import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
 import io.github.sds100.keymapper.data.repositories.FloatingLayoutRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.floating.FloatingButtonEntityMapper
 import io.github.sds100.keymapper.mappings.BaseConfigMappingUseCase
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.ConfigMappingUseCase
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerType
+import io.github.sds100.keymapper.mappings.keymaps.trigger.FloatingButtonKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.mappings.keymaps.trigger.Trigger
@@ -32,7 +35,6 @@ import io.github.sds100.keymapper.util.ifIsData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.map
-import timber.log.Timber
 
 /**
  * Created by sds100 on 16/02/2021.
@@ -42,6 +44,7 @@ class ConfigKeyMapUseCaseImpl(
     private val devicesAdapter: DevicesAdapter,
     private val preferenceRepository: PreferenceRepository,
     private val floatingLayoutRepository: FloatingLayoutRepository,
+    private val floatingButtonRepository: FloatingButtonRepository,
     private val serviceAdapter: ServiceAdapter,
 ) : BaseConfigMappingUseCase<KeyMapAction, KeyMap>(),
     ConfigKeyMapUseCase {
@@ -51,8 +54,50 @@ class ConfigKeyMapUseCaseImpl(
     private val showDeviceDescriptors: Flow<Boolean> =
         preferenceRepository.get(Keys.showDeviceDescriptors).map { it ?: false }
 
-    override fun addFloatingButtonTriggerKey(buttonUid: String) {
-        Timber.e("ADD FLOATING BUTTON $buttonUid")
+    override suspend fun addFloatingButtonTriggerKey(buttonUid: String) = editTrigger { trigger ->
+        val clickType = when (trigger.mode) {
+            is TriggerMode.Parallel -> trigger.mode.clickType
+            TriggerMode.Sequence -> ClickType.SHORT_PRESS
+            TriggerMode.Undefined -> ClickType.SHORT_PRESS
+        }
+
+        // Check whether the trigger already contains the key because if so
+        // then it must be converted to a sequence trigger.
+        val containsKey = trigger.keys
+            .mapNotNull { it as? FloatingButtonKey }
+            .any { keyToCompare -> keyToCompare.buttonUid == buttonUid }
+
+        val button = floatingButtonRepository.get(buttonUid)
+            ?.let { entity ->
+                FloatingButtonEntityMapper.fromEntity(
+                    entity.button,
+                    entity.layout.name,
+                )
+            }
+
+        val triggerKey = FloatingButtonKey(
+            buttonUid = buttonUid,
+            button = button,
+            clickType = clickType,
+        )
+
+        var newKeys = trigger.keys.plus(triggerKey)
+
+        val newMode = when {
+            trigger.mode != TriggerMode.Sequence && containsKey -> TriggerMode.Sequence
+            newKeys.size <= 1 -> TriggerMode.Undefined
+
+            /* Automatically make it a parallel trigger when the user makes a trigger with more than one key
+            because this is what most users are expecting when they make a trigger with multiple keys */
+            newKeys.size == 2 && !containsKey -> {
+                newKeys = newKeys.map { it.setClickType(triggerKey.clickType) }
+                TriggerMode.Parallel(triggerKey.clickType)
+            }
+
+            else -> trigger.mode
+        }
+
+        trigger.copy(keys = newKeys, mode = newMode)
     }
 
     override fun addAssistantTriggerKey(type: AssistantTriggerType) = editTrigger { trigger ->
@@ -64,14 +109,14 @@ class ConfigKeyMapUseCaseImpl(
 
         // Check whether the trigger already contains the key because if so
         // then it must be converted to a sequence trigger.
-        val containsKey = trigger.keys.any { it is AssistantTriggerKey }
+        val containsAssistantKey = trigger.keys.any { it is AssistantTriggerKey }
 
         val triggerKey = AssistantTriggerKey(type = type, clickType = clickType)
 
         val newKeys = trigger.keys.plus(triggerKey)
 
         val newMode = when {
-            trigger.mode != TriggerMode.Sequence && containsKey -> TriggerMode.Sequence
+            trigger.mode != TriggerMode.Sequence && containsAssistantKey -> TriggerMode.Sequence
             newKeys.size <= 1 -> TriggerMode.Undefined
 
             /* Automatically make it a parallel trigger when the user makes a trigger with more than one key
@@ -79,7 +124,7 @@ class ConfigKeyMapUseCaseImpl(
 
             It must be a short press because long pressing the assistant key isn't supported.
              */
-            !containsKey -> TriggerMode.Parallel(ClickType.SHORT_PRESS)
+            !containsAssistantKey -> TriggerMode.Parallel(ClickType.SHORT_PRESS)
             else -> trigger.mode
         }
 
@@ -187,6 +232,7 @@ class ConfigKeyMapUseCaseImpl(
                     // You can't mix assistant trigger types in a parallel trigger because there is no notion of a "down" key event, which means they can't be pressed at the same time
                     is AssistantTriggerKey -> 0
                     is KeyCodeTriggerKey -> Pair(key.keyCode, key.device)
+                    is FloatingButtonKey -> key.buttonUid
                 }
             }
 
@@ -245,7 +291,7 @@ class ConfigKeyMapUseCaseImpl(
             // You can't set the trigger to a long press if it contains a key
             // that isn't detected with key codes. This is because there aren't
             // separate key events for the up and down press that can be timed.
-            if (trigger.keys.any { it !is KeyCodeTriggerKey }) {
+            if (trigger.keys.any { it is AssistantTriggerKey }) {
                 return@editTrigger trigger
             }
 
@@ -462,7 +508,7 @@ class ConfigKeyMapUseCaseImpl(
 
     override suspend fun loadKeyMap(uid: String) {
         val entity = keyMapRepository.get(uid) ?: return
-        val keyMap = KeyMapEntityMapper.fromEntity(entity)
+        val keyMap = KeyMapEntityMapper.fromEntity(entity, floatingButtonRepository)
 
         mapping.value = State.Data(keyMap)
     }
@@ -512,7 +558,7 @@ class ConfigKeyMapUseCaseImpl(
         }
     }
 
-    private fun editTrigger(block: (trigger: Trigger) -> Trigger) {
+    private inline fun editTrigger(block: (trigger: Trigger) -> Trigger) {
         editKeyMap { keyMap ->
             val newTrigger = block(keyMap.trigger)
 
@@ -534,12 +580,16 @@ class ConfigKeyMapUseCaseImpl(
         }
     }
 
-    private fun editKeyMap(block: (keymap: KeyMap) -> KeyMap) {
+    private inline fun editKeyMap(block: (keymap: KeyMap) -> KeyMap) {
         mapping.value.ifIsData { mapping.value = State.Data(block.invoke(it)) }
     }
 }
 
 interface ConfigKeyMapUseCase : ConfigMappingUseCase<KeyMapAction, KeyMap> {
+
+    suspend fun sendServiceEvent(event: ServiceEvent): Result<*>
+    val serviceEvents: SharedFlow<ServiceEvent>
+
     // trigger
     fun addKeyCodeTriggerKey(
         keyCode: Int,
@@ -547,7 +597,7 @@ interface ConfigKeyMapUseCase : ConfigMappingUseCase<KeyMapAction, KeyMap> {
         detectionSource: KeyEventDetectionSource,
     )
 
-    fun addFloatingButtonTriggerKey(buttonUid: String)
+    suspend fun addFloatingButtonTriggerKey(buttonUid: String)
     fun addAssistantTriggerKey(type: AssistantTriggerType)
     fun removeTriggerKey(uid: String)
     fun getTriggerKey(uid: String): TriggerKey?
@@ -592,6 +642,4 @@ interface ConfigKeyMapUseCase : ConfigMappingUseCase<KeyMapAction, KeyMap> {
     fun setActionStopHoldingDownWhenTriggerPressedAgain(uid: String, enabled: Boolean)
 
     suspend fun getFloatingLayoutCount(): Int
-    suspend fun sendServiceEvent(event: ServiceEvent): Result<*>
-    val serviceEvents: SharedFlow<ServiceEvent>
 }

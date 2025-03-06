@@ -1,12 +1,12 @@
 package io.github.sds100.keymapper.data.db.dao
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import io.github.sds100.keymapper.data.entities.FloatingButtonEntity
+import io.github.sds100.keymapper.data.entities.FloatingButtonEntityWithLayout
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -27,17 +27,14 @@ interface FloatingButtonDao {
     @Query("SELECT * FROM $TABLE_NAME WHERE $KEY_UID = (:uid)")
     suspend fun getByUid(uid: String): FloatingButtonEntity?
 
-    @Query("SELECT * FROM $TABLE_NAME WHERE $KEY_LAYOUT_UID = (:layoutUid)")
-    suspend fun getButtonsForLayout(layoutUid: String): List<FloatingButtonEntity>
+    @Query("SELECT * FROM $TABLE_NAME WHERE $KEY_UID = (:uid)")
+    suspend fun getByUidWithLayout(uid: String): FloatingButtonEntityWithLayout?
 
     @Query("SELECT * FROM $TABLE_NAME")
     fun getAll(): Flow<List<FloatingButtonEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(vararg button: FloatingButtonEntity)
-
-    @Delete
-    suspend fun delete(vararg button: FloatingButtonEntity)
 
     @Query("DELETE FROM $TABLE_NAME")
     suspend fun deleteAll()

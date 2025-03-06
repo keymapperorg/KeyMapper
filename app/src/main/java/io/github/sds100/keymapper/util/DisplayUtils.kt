@@ -18,12 +18,12 @@ fun Context.getDisplayDensity(): Float {
     return resources.displayMetrics.density
 }
 
-fun Context.getRealDisplaySize(): Size {
+fun Context.getRealDisplaySize(): SizeKM {
     val point = Point().apply {
         ContextCompat.getDisplayOrDefault(this@getRealDisplaySize).getRealSize(this)
     }
 
-    return Size(point.x, point.y)
+    return SizeKM(point.x, point.y)
 }
 
 fun Context.getApplicationDisplaySize(): Size {

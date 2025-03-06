@@ -105,6 +105,8 @@ fun TriggerKeyListItem(
                     )
 
                     is TriggerKeyListItemModel.KeyCode -> model.keyName
+
+                    is TriggerKeyListItemModel.FloatingButtonDeleted -> stringResource(R.string.trigger_error_floating_button_deleted)
                 }
 
                 Spacer(Modifier.width(8.dp))

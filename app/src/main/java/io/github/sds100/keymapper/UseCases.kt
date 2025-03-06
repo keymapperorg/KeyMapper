@@ -59,6 +59,7 @@ object UseCases {
         ServiceLocator.devicesAdapter(ctx),
         ServiceLocator.settingsRepository(ctx),
         ServiceLocator.floatingLayoutRepository(ctx),
+        ServiceLocator.floatingButtonRepository(ctx),
         ServiceLocator.accessibilityServiceAdapter(ctx),
     )
 
@@ -190,6 +191,7 @@ object UseCases {
     ) = DetectKeyMapsUseCaseImpl(
         detectMappings(ctx),
         ServiceLocator.roomKeymapRepository(ctx),
+        ServiceLocator.floatingButtonRepository(ctx),
         ServiceLocator.settingsRepository(ctx),
         ServiceLocator.suAdapter(ctx),
         ServiceLocator.displayAdapter(ctx),

@@ -1,8 +1,12 @@
 package io.github.sds100.keymapper.mappings.keymaps.trigger
 
+import io.github.sds100.keymapper.data.entities.AssistantTriggerKeyEntity
 import io.github.sds100.keymapper.data.entities.Extra
+import io.github.sds100.keymapper.data.entities.FloatingButtonKeyEntity
+import io.github.sds100.keymapper.data.entities.KeyCodeTriggerKeyEntity
 import io.github.sds100.keymapper.data.entities.TriggerEntity
 import io.github.sds100.keymapper.data.entities.getData
+import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.util.valueOrNull
@@ -55,10 +59,20 @@ data class Trigger(
 }
 
 object TriggerEntityMapper {
-    fun fromEntity(
+    suspend fun fromEntity(
         entity: TriggerEntity,
+        floatingButtonRepository: FloatingButtonRepository,
     ): Trigger {
-        val keys = entity.keys.map { TriggerKey.fromEntity(it) }
+        val keys = entity.keys.map { key ->
+            when (key) {
+                is AssistantTriggerKeyEntity -> AssistantTriggerKey.fromEntity(key)
+                is KeyCodeTriggerKeyEntity -> KeyCodeTriggerKey.fromEntity(key)
+                is FloatingButtonKeyEntity -> {
+                    val floatingButton = floatingButtonRepository.get(key.buttonUid)
+                    FloatingButtonKey.fromEntity(key, floatingButton)
+                }
+            }
+        }
 
         val mode = when {
             entity.mode == TriggerEntity.SEQUENCE && keys.size > 1 -> TriggerMode.Sequence
@@ -160,8 +174,16 @@ object TriggerEntityMapper {
             flags = flags.withFlag(TriggerEntity.TRIGGER_FLAG_SHOW_TOAST)
         }
 
+        val keys = trigger.keys.map { key ->
+            when (key) {
+                is AssistantTriggerKey -> AssistantTriggerKey.toEntity(key)
+                is KeyCodeTriggerKey -> KeyCodeTriggerKey.toEntity(key)
+                is FloatingButtonKey -> FloatingButtonKey.toEntity(key)
+            }
+        }
+
         return TriggerEntity(
-            keys = trigger.keys.map { TriggerKey.toEntity(it) },
+            keys = keys,
             extras = extras,
             mode = mode,
             flags = flags,

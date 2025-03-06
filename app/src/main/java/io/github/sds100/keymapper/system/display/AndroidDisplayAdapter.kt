@@ -6,13 +6,13 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.hardware.display.DisplayManager
 import android.provider.Settings
-import android.util.Size
 import android.view.Surface
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import io.github.sds100.keymapper.system.SettingsUtils
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.util.SizeKM
 import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.getRealDisplaySize
 import kotlinx.coroutines.CoroutineScope
@@ -65,7 +65,7 @@ class AndroidDisplayAdapter(
     private val displayManager: DisplayManager = ctx.getSystemService()!!
     override var cachedOrientation: Orientation = getDisplayOrientation()
 
-    override val size: Size
+    override val size: SizeKM
         get() = ctx.getRealDisplaySize()
 
     init {

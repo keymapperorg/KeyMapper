@@ -1483,6 +1483,8 @@
     <string name="floating_button_config_empty_text_error">The button must have text!</string>
     <string name="floating_buttons_product_title">Floating buttons</string>
     <string name="floating_buttons_product_description">Floating buttons display over the apps you want. They work just like real buttons, and you can place, style, and map them however you like.</string>
+    <string name="floating_button_text_key_map_list_item">Floating button %s (%s layout)</string>
+    <string name="deleted_floating_button_text_key_map_list_item">Deleted floating button</string>
 
     <!-- Home screen -->
     <string name="home_nav_bar_key_maps">Key maps</string>

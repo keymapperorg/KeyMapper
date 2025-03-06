@@ -5,6 +5,7 @@ import android.os.SystemClock
 import android.view.KeyEvent
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
+import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.DetectMappingUseCase
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
@@ -37,6 +38,7 @@ import timber.log.Timber
 class DetectKeyMapsUseCaseImpl(
     detectMappingUseCase: DetectMappingUseCase,
     private val keyMapRepository: KeyMapRepository,
+    private val floatingButtonRepository: FloatingButtonRepository,
     private val preferenceRepository: PreferenceRepository,
     private val suAdapter: SuAdapter,
     private val displayAdapter: DisplayAdapter,
@@ -57,7 +59,14 @@ class DetectKeyMapsUseCaseImpl(
                     null
                 }
             }
-            .map { entityList -> entityList.map { KeyMapEntityMapper.fromEntity(it) } }
+            .map { entityList ->
+                entityList.map {
+                    KeyMapEntityMapper.fromEntity(
+                        it,
+                        floatingButtonRepository,
+                    )
+                }
+            }
             .flowOn(Dispatchers.Default)
 
     override val keyMapsToTriggerFromOtherApps: Flow<List<KeyMap>> =
