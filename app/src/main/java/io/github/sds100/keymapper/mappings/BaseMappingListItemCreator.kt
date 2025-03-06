@@ -2,26 +2,25 @@ package io.github.sds100.keymapper.mappings
 
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.Action
-import io.github.sds100.keymapper.actions.ActionUiHelperOld
-import io.github.sds100.keymapper.constraints.ConstraintMode
-import io.github.sds100.keymapper.constraints.ConstraintUiHelperOld
+import io.github.sds100.keymapper.actions.ActionUiHelper
+import io.github.sds100.keymapper.constraints.ConstraintUiHelper
 import io.github.sds100.keymapper.util.Error
-import io.github.sds100.keymapper.util.ui.ChipUi
-import io.github.sds100.keymapper.util.ui.IconInfo
 import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.util.ui.compose.ComposeChipModel
+import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 
 /**
  * Created by sds100 on 18/03/2021.
  */
 abstract class BaseMappingListItemCreator<M : Mapping<A>, A : Action>(
     private val displayMapping: DisplaySimpleMappingUseCase,
-    private val actionUiHelper: ActionUiHelperOld<M, A>,
+    private val actionUiHelper: ActionUiHelper<M, A>,
     private val resourceProvider: ResourceProvider,
 ) : ResourceProvider by resourceProvider {
 
-    private val constraintUiHelper = ConstraintUiHelperOld(displayMapping, resourceProvider)
+    private val constraintUiHelper = ConstraintUiHelper(displayMapping, resourceProvider)
 
-    fun getActionChipList(mapping: M, showDeviceDescriptors: Boolean): List<ChipUi> = sequence {
+    fun getActionChipList(mapping: M, showDeviceDescriptors: Boolean): List<ComposeChipModel> = sequence {
         val midDot = getString(R.string.middot)
 
         mapping.actionList.forEach { action ->
@@ -59,52 +58,35 @@ abstract class BaseMappingListItemCreator<M : Mapping<A>, A : Action>(
                 }
             }
 
-            val icon: IconInfo? = actionUiHelper.getIcon(action.data)
-
+            val icon: ComposeIconInfo? = actionUiHelper.getIcon(action.data)
             val error: Error? = displayMapping.getError(action.data)
 
-            if (error == null) {
-                val chip = ChipUi.Normal(id = action.uid, text = chipText, icon = icon)
-                yield(chip)
+            val chip = if (error == null) {
+                ComposeChipModel.Normal(id = action.uid, text = chipText, icon = icon)
             } else {
-                val chip = ChipUi.Error(action.uid, chipText, error)
-
-                yield(chip)
+                ComposeChipModel.Error(action.uid, chipText)
             }
+
+            yield(chip)
         }
     }.toList()
 
-    fun getConstraintChipList(mapping: M): List<ChipUi> = sequence {
-        val constraintSeparatorText = when (mapping.constraintState.mode) {
-            ConstraintMode.AND -> getString(R.string.constraint_mode_and)
-            ConstraintMode.OR -> getString(R.string.constraint_mode_or)
-        }
-
-        mapping.constraintState.constraints.forEachIndexed { index, constraint ->
-            if (index != 0) {
-                yield(
-                    ChipUi.Transparent(
-                        id = constraintSeparatorText,
-                        text = constraintSeparatorText,
-                    ),
-                )
-            }
-
+    fun getConstraintChipList(mapping: M): List<ComposeChipModel> = sequence {
+        for (constraint in mapping.constraintState.constraints) {
             val text: String = constraintUiHelper.getTitle(constraint)
-            val icon: IconInfo? = constraintUiHelper.getIcon(constraint)
+            val icon: ComposeIconInfo? = constraintUiHelper.getIcon(constraint)
             val error: Error? = displayMapping.getConstraintError(constraint)
 
-            val chip: ChipUi = if (error == null) {
-                ChipUi.Normal(
+            val chip: ComposeChipModel = if (error == null) {
+                ComposeChipModel.Normal(
                     id = constraint.uid,
                     text = text,
                     icon = icon,
                 )
             } else {
-                ChipUi.Error(
+                ComposeChipModel.Error(
                     constraint.uid,
                     text,
-                    error,
                 )
             }
 
@@ -114,8 +96,8 @@ abstract class BaseMappingListItemCreator<M : Mapping<A>, A : Action>(
 
     fun createExtraInfoString(
         mapping: M,
-        actionChipList: List<ChipUi>,
-        constraintChipList: List<ChipUi>,
+        actionChipList: List<ComposeChipModel>,
+        constraintChipList: List<ComposeChipModel>,
     ) = buildString {
         val midDot by lazy { getString(R.string.middot) }
 
@@ -123,7 +105,7 @@ abstract class BaseMappingListItemCreator<M : Mapping<A>, A : Action>(
             append(getString(R.string.disabled))
         }
 
-        if (actionChipList.any { it is ChipUi.Error }) {
+        if (actionChipList.any { it is ComposeChipModel.Error }) {
             if (this.isNotEmpty()) {
                 append(" $midDot ")
             }
@@ -131,7 +113,7 @@ abstract class BaseMappingListItemCreator<M : Mapping<A>, A : Action>(
             append(getString(R.string.tap_actions_to_fix))
         }
 
-        if (constraintChipList.any { it is ChipUi.Error }) {
+        if (constraintChipList.any { it is ComposeChipModel.Error }) {
             if (this.isNotEmpty()) {
                 append(" $midDot ")
             }

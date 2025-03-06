@@ -276,8 +276,8 @@
     <string name="constraint_flashlight_off_description">%s flashlight is off</string>
     <string name="constraint_flashlight_on_description">%s flashlight is on</string>
 
-    <string name="constraint_mode_and">and</string>
-    <string name="constraint_mode_or">or</string>
+    <string name="constraint_mode_and">AND</string>
+    <string name="constraint_mode_or">OR</string>
 
     <string name="constraint_category_app">App</string>
     <string name="constraint_category_bluetooth">Bluetooth</string>

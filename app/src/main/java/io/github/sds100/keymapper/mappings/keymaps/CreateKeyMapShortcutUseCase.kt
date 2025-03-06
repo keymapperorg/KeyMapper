@@ -21,7 +21,7 @@ class CreateKeyMapShortcutUseCaseImpl(
     resourceProvider: ResourceProvider,
 ) : CreateKeyMapShortcutUseCase,
     ResourceProvider by resourceProvider {
-    private val actionUiHelper by lazy { KeyMapActionUiHelper(displayKeyMap, resourceProvider) }
+    private val actionUiHelper by lazy { KeyMapActionUiHelperOld(displayKeyMap, resourceProvider) }
 
     override val isSupported: Boolean
         get() = adapter.areLauncherShortcutsSupported

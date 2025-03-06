@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.actions.BaseActionUiHelper
+import io.github.sds100.keymapper.actions.BaseActionUiHelperOld
 import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.mappings.DisplayActionUseCase
 import io.github.sds100.keymapper.util.ui.ResourceProvider
@@ -10,10 +10,10 @@ import io.github.sds100.keymapper.util.ui.ResourceProvider
  * Created by sds100 on 04/03/2021.
  */
 
-class KeyMapActionUiHelper(
+class KeyMapActionUiHelperOld(
     displayActionUseCase: DisplayActionUseCase,
     resourceProvider: ResourceProvider,
-) : BaseActionUiHelper<KeyMap, KeyMapAction>(displayActionUseCase, resourceProvider) {
+) : BaseActionUiHelperOld<KeyMap, KeyMapAction>(displayActionUseCase, resourceProvider) {
 
     override fun getOptionLabels(mapping: KeyMap, action: KeyMapAction) = sequence {
         if (mapping.isRepeatingActionsAllowed() && action.repeat) {

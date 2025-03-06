@@ -57,7 +57,7 @@ class ConfigKeyMapViewModel(
         displayMapping,
         testAction,
         config,
-        KeyMapActionUiHelper(displayMapping, resourceProvider),
+        KeyMapActionUiHelperOld(displayMapping, resourceProvider),
         onboarding,
         resourceProvider,
     )

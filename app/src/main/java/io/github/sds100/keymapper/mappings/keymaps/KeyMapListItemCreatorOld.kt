@@ -28,7 +28,7 @@ class KeyMapListItemCreatorOld(
     resourceProvider: ResourceProvider,
 ) : BaseMappingListItemCreatorOld<KeyMap, KeyMapAction>(
     displayMapping,
-    KeyMapActionUiHelper(displayMapping, resourceProvider),
+    KeyMapActionUiHelperOld(displayMapping, resourceProvider),
     resourceProvider,
 ) {
     private val midDot by lazy { getString(R.string.middot) }

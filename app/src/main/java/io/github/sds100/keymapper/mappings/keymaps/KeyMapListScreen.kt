@@ -258,12 +258,12 @@ fun KeyMapListItem(
                             if (index < model.content.constraints.lastIndex) {
                                 when (model.content.constraintMode) {
                                     ConstraintMode.AND -> Text(
-                                        "AND",
+                                        stringResource(R.string.constraint_mode_and),
                                         style = MaterialTheme.typography.labelMedium,
                                     )
 
                                     ConstraintMode.OR -> Text(
-                                        "OR",
+                                        stringResource(R.string.constraint_mode_or),
                                         style = MaterialTheme.typography.labelMedium,
                                     )
                                 }

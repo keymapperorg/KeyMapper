@@ -131,6 +131,9 @@ open class KeyMapListViewModel(
             }
         }
 
+        // The list item content should be separate from the selection state
+        // because creating the content is an expensive operation and selection should be almost
+        // instantaneous.
         coroutineScope.launch(Dispatchers.Default) {
             combine(
                 listItemContentFlow,
