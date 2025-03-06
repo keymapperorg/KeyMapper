@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.mappings.keymaps
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.mappings.keymaps.trigger.SetupGuiKeyboardState
 import io.github.sds100.keymapper.mappings.keymaps.trigger.SetupGuiKeyboardUseCase
 import io.github.sds100.keymapper.sorting.SortKeyMapsUseCase
@@ -48,9 +49,9 @@ open class KeyMapListViewModel(
     ResourceProvider by resourceProvider,
     NavigationViewModel by NavigationViewModelImpl() {
 
-    private val listItemCreator = KeyMapListItemCreatorOld(listKeyMaps, resourceProvider)
+    private val listItemCreator = KeyMapListItemCreator(listKeyMaps, resourceProvider)
 
-    private val _state = MutableStateFlow<State<List<KeyMapListItem>>>(State.Loading)
+    private val _state = MutableStateFlow<State<List<KeyMapListItemModel>>>(State.Loading)
     val state = _state.asStateFlow()
 
     val setupGuiKeyboardState: StateFlow<SetupGuiKeyboardState> = combine(
@@ -67,8 +68,8 @@ open class KeyMapListViewModel(
     var showDpadTriggerSetupBottomSheet: Boolean by mutableStateOf(false)
 
     init {
-        val keyMapStateListFlow =
-            MutableStateFlow<State<List<KeyMapListItem.KeyMapUiState>>>(State.Loading)
+        val listItemContentFlow =
+            MutableStateFlow<State<List<KeyMapListItemModel.Content>>>(State.Loading)
 
         val rebuildUiState = MutableSharedFlow<State<List<KeyMap>>>(replay = 1)
 
@@ -85,9 +86,9 @@ open class KeyMapListViewModel(
             rebuildUiState,
             listKeyMaps.showDeviceDescriptors,
         ) { keyMapListState, showDeviceDescriptors ->
-            keyMapStateListFlow.value = State.Loading
+            listItemContentFlow.value = State.Loading
 
-            keyMapStateListFlow.value = keyMapListState.mapData { keyMapList ->
+            listItemContentFlow.value = keyMapListState.mapData { keyMapList ->
                 keyMapList.map { keyMap ->
                     listItemCreator.create(keyMap, showDeviceDescriptors)
                 }
@@ -132,34 +133,29 @@ open class KeyMapListViewModel(
 
         coroutineScope.launch(Dispatchers.Default) {
             combine(
-                keyMapStateListFlow,
+                listItemContentFlow,
                 multiSelectProvider.state,
             ) { keymapListState, selectionState ->
                 Pair(keymapListState, selectionState)
             }.collectLatest { pair ->
-                val (keyMapUiListState, selectionState) = pair
+                val (listItemContentList, selectionState) = pair
 
-                _state.value = keyMapUiListState.mapData { keyMapUiList ->
-                    val isSelectable = selectionState is SelectionState.Selecting<*>
-
-                    keyMapUiList.map { keymapUiState ->
+                _state.value = listItemContentList.mapData { contentList ->
+                    contentList.map { content ->
                         val isSelected = if (selectionState is SelectionState.Selecting<*>) {
-                            selectionState.selectedIds.contains(keymapUiState.uid)
+                            selectionState.selectedIds.contains(content.uid)
                         } else {
                             false
                         }
 
-                        KeyMapListItem(
-                            keymapUiState,
-                            KeyMapListItem.SelectionUiState(isSelected, isSelectable),
-                        )
+                        KeyMapListItemModel(isSelected, content)
                     }
                 }
             }
         }
     }
 
-    fun onKeymapCardClick(uid: String) {
+    fun onKeyMapCardClick(uid: String) {
         if (multiSelectProvider.state.value is SelectionState.Selecting<*>) {
             multiSelectProvider.toggleSelection(uid)
         } else {
@@ -169,7 +165,7 @@ open class KeyMapListViewModel(
         }
     }
 
-    fun onKeymapCardLongClick(uid: String) {
+    fun onKeyMapCardLongClick(uid: String) {
         if (multiSelectProvider.state.value is SelectionState.NotSelecting) {
             multiSelectProvider.startSelecting()
             multiSelectProvider.select(uid)
@@ -181,8 +177,7 @@ open class KeyMapListViewModel(
             state.value.apply {
                 if (this is State.Data) {
                     multiSelectProvider.select(
-                        *this.data.map { it.keyMapUiState.uid }
-                            .toTypedArray(),
+                        *this.data.map { it.uid }.toTypedArray(),
                     )
                 }
             }

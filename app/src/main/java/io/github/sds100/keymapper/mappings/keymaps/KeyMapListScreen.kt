@@ -29,6 +29,7 @@ import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,9 +43,11 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
+import io.github.sds100.keymapper.constraints.ConstraintMode
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerError
 import io.github.sds100.keymapper.util.State
@@ -53,7 +56,21 @@ import io.github.sds100.keymapper.util.ui.compose.ComposeChipModel
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 
 @Composable
-fun KeyMapListScreen(
+fun KeyMapListScreen(modifier: Modifier = Modifier, viewModel: KeyMapListViewModel) {
+    val listItems by viewModel.state.collectAsStateWithLifecycle()
+
+    KeyMapListScreen(
+        modifier = modifier,
+        listItems = listItems,
+        // TODO selection
+        isSelectable = false,
+        onClickKeyMap = viewModel::onKeyMapCardClick,
+        onLongClickKeyMap = viewModel::onKeyMapCardLongClick,
+    )
+}
+
+@Composable
+private fun KeyMapListScreen(
     modifier: Modifier = Modifier,
     listItems: State<List<KeyMapListItemModel>>,
     isSelectable: Boolean = false,
@@ -119,7 +136,7 @@ private fun KeyMapList(
                 // TODO select key maps
                 isSelectable = isSelectable,
                 model = model,
-                onClickKeyMap = { onClickKeyMap(model.uid) },
+                onClickKeyMap = { onClickKeyMap(model.content.uid) },
                 onSelectedChange = { TODO() },
                 onFixActionClick = { TODO() },
                 onFixConstraintClick = { TODO() },
@@ -132,6 +149,7 @@ private fun KeyMapList(
                 modifier = Modifier.fillMaxWidth(),
                 text = stringResource(R.string.home_key_map_list_footer_text),
                 textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodyMedium,
             )
         }
 
@@ -168,16 +186,16 @@ fun KeyMapListItem(
                     .fillMaxWidth()
                     .padding(start = 8.dp, top = 16.dp, end = 16.dp, bottom = 16.dp),
             ) {
-                if (model.extraInfo != null) {
+                if (model.content.extraInfo != null) {
                     Text(
-                        text = model.extraInfo,
+                        text = model.content.extraInfo,
                         style = MaterialTheme.typography.titleSmall,
                         color = MaterialTheme.colorScheme.error,
                         fontSize = 14.sp,
                     )
                 }
 
-                if (model.triggerDescription != null) {
+                if (model.content.triggerDescription != null) {
                     Row {
                         Text(
                             text = stringResource(R.string.trigger_header),
@@ -186,15 +204,15 @@ fun KeyMapListItem(
                         )
                         Spacer(Modifier.width(4.dp))
                         Text(
-                            text = model.triggerDescription,
+                            text = model.content.triggerDescription,
                             style = MaterialTheme.typography.bodyMedium,
                         )
                     }
                 }
 
-                if (model.triggerErrors.isNotEmpty()) {
+                if (model.content.triggerErrors.isNotEmpty()) {
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        for (error in model.triggerErrors) {
+                        for (error in model.content.triggerErrors) {
                             ErrorChip(
                                 onClick = { onTriggerErrorClick(error) },
                                 text = getTriggerErrorMessage(error),
@@ -203,7 +221,7 @@ fun KeyMapListItem(
                     }
                 }
 
-                if (model.actions.isNotEmpty()) {
+                if (model.content.actions.isNotEmpty()) {
                     Text(
                         text = stringResource(R.string.action_list_header),
                         style = MaterialTheme.typography.titleSmall,
@@ -211,7 +229,7 @@ fun KeyMapListItem(
                         modifier = Modifier.padding(top = 4.dp),
                     )
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        for (chipModel in model.actions) {
+                        for (chipModel in model.content.actions) {
                             ActionConstraintChip(
                                 chipModel,
                                 onClick = { onFixActionClick(chipModel.id) },
@@ -220,24 +238,41 @@ fun KeyMapListItem(
                     }
                 }
 
-                if (model.constraints.isNotEmpty()) {
+                if (model.content.constraints.isNotEmpty()) {
                     Text(
                         text = stringResource(R.string.constraint_list_header),
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(top = 4.dp),
                     )
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        for (chipModel in model.constraints) {
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        itemVerticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        for ((index, chipModel) in model.content.constraints.withIndex()) {
                             ActionConstraintChip(
                                 chipModel,
                                 onClick = { onFixConstraintClick(chipModel.id) },
                             )
+
+                            if (index < model.content.constraints.lastIndex) {
+                                when (model.content.constraintMode) {
+                                    ConstraintMode.AND -> Text(
+                                        "AND",
+                                        style = MaterialTheme.typography.labelMedium,
+                                    )
+
+                                    ConstraintMode.OR -> Text(
+                                        "OR",
+                                        style = MaterialTheme.typography.labelMedium,
+                                    )
+                                }
+                            }
                         }
                     }
                 }
 
-                if (model.optionsDescription != null) {
+                if (model.content.optionsDescription != null) {
                     Text(
                         text = stringResource(R.string.option_list_header),
                         style = MaterialTheme.typography.titleSmall,
@@ -245,7 +280,7 @@ fun KeyMapListItem(
                         modifier = Modifier.padding(top = 4.dp),
                     )
                     Text(
-                        text = model.optionsDescription,
+                        text = model.content.optionsDescription,
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }
@@ -346,54 +381,60 @@ private fun sampleList(): List<KeyMapListItemModel> {
 
     return listOf(
         KeyMapListItemModel(
-            uid = "0",
             isSelected = true,
-            triggerDescription = "Volume down + Volume up",
-            actions = listOf(
-                ComposeChipModel.Normal(
-                    id = "0",
-                    ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
-                    "Open Key Mapper",
+            KeyMapListItemModel.Content(
+                uid = "0",
+                triggerDescription = "Volume down + Volume up",
+                actions = listOf(
+                    ComposeChipModel.Normal(
+                        id = "0",
+                        ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
+                        "Open Key Mapper",
+                    ),
+                    ComposeChipModel.Error(
+                        id = "1",
+                        text = "Input KEYCODE_0 • Repeat until released",
+                    ),
+                    ComposeChipModel.Normal(
+                        id = "2",
+                        text = "Input KEYCODE_Q",
+                        icon = null,
+                    ),
+                    ComposeChipModel.Normal(
+                        id = "3",
+                        text = "Toggle flashlight",
+                        icon = ComposeIconInfo.Vector(Icons.Outlined.FlashlightOn),
+                    ),
                 ),
-                ComposeChipModel.Error(
-                    id = "1",
-                    text = "Input KEYCODE_0 • Repeat until released",
+                constraintMode = ConstraintMode.AND,
+                constraints = listOf(
+                    ComposeChipModel.Normal(
+                        id = "0",
+                        ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
+                        "Key Mapper is not open",
+                    ),
+                    ComposeChipModel.Error(
+                        id = "1",
+                        "Key Mapper is playing media",
+                    ),
                 ),
-                ComposeChipModel.Normal(
-                    id = "2",
-                    text = "Input KEYCODE_Q",
-                    icon = null,
-                ),
-                ComposeChipModel.Normal(
-                    id = "3",
-                    text = "Toggle flashlight",
-                    icon = ComposeIconInfo.Vector(Icons.Outlined.FlashlightOn),
-                ),
+                optionsDescription = "Vibrate",
+                triggerErrors = listOf(TriggerError.DND_ACCESS_DENIED),
+                extraInfo = null,
             ),
-            constraints = listOf(
-                ComposeChipModel.Normal(
-                    id = "0",
-                    ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
-                    "Key Mapper is not open",
-                ),
-                ComposeChipModel.Error(
-                    id = "1",
-                    "Key Mapper is playing media",
-                ),
-            ),
-            optionsDescription = "Vibrate",
-            triggerErrors = listOf(TriggerError.DND_ACCESS_DENIED),
-            extraInfo = null,
         ),
         KeyMapListItemModel(
-            uid = "1",
             isSelected = false,
-            triggerDescription = null,
-            actions = emptyList(),
-            constraints = emptyList(),
-            optionsDescription = null,
-            triggerErrors = emptyList(),
-            extraInfo = "Disabled • No trigger",
+            content = KeyMapListItemModel.Content(
+                uid = "1",
+                triggerDescription = null,
+                actions = emptyList(),
+                constraintMode = ConstraintMode.OR,
+                constraints = emptyList(),
+                optionsDescription = null,
+                triggerErrors = emptyList(),
+                extraInfo = "Disabled • No trigger",
+            ),
         ),
     )
 }

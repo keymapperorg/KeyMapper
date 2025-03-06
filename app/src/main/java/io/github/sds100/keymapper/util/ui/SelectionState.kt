@@ -5,5 +5,5 @@ package io.github.sds100.keymapper.util.ui
  */
 sealed class SelectionState {
     data class Selecting<T>(val selectedIds: Set<T>) : SelectionState()
-    object NotSelecting : SelectionState()
+    data object NotSelecting : SelectionState()
 }

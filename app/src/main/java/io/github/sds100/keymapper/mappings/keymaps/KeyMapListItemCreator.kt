@@ -10,15 +10,10 @@ import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.mappings.keymaps.trigger.Trigger
-import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerError
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
-import io.github.sds100.keymapper.purchasing.ProductId
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
-import io.github.sds100.keymapper.system.permissions.Permission
-import io.github.sds100.keymapper.util.Error
-import io.github.sds100.keymapper.util.ui.ChipUi
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 
 class KeyMapListItemCreator(
@@ -39,7 +34,7 @@ class KeyMapListItemCreator(
     suspend fun create(
         keyMap: KeyMap,
         showDeviceDescriptors: Boolean,
-    ): KeyMapListItemModel {
+    ): KeyMapListItemModel.Content {
         val triggerDescription = buildString {
             val separator = when (keyMap.trigger.mode) {
                 is TriggerMode.Parallel -> getString(R.string.plus)
@@ -87,58 +82,16 @@ class KeyMapListItemCreator(
 
         val triggerErrors = displayMapping.getTriggerErrors(keyMap)
 
-        val triggerErrorChips = triggerErrors.map(this::getTriggerChipError)
-
-        return KeyMapListItem.KeyMapUiState(
+        return KeyMapListItemModel.Content(
             uid = keyMap.uid,
-            actionChipList = actionChipList,
-            constraintChipList = constraintChipList,
             triggerDescription = triggerDescription,
-            optionsDescription = optionsDescription,
+            triggerErrors = triggerErrors,
+            actions = emptyList(),
+            constraints = emptyList(),
+            constraintMode = keyMap.constraintState.mode,
+            optionsDescription = optionsDescription.takeIf { it.isNotBlank() },
             extraInfo = extraInfo,
-            triggerErrorChipList = triggerErrorChips,
         )
-    }
-
-    private fun getTriggerChipError(error: TriggerError): ChipUi.Error = when (error) {
-        TriggerError.DND_ACCESS_DENIED ->
-            ChipUi.Error(
-                id = TriggerError.DND_ACCESS_DENIED.toString(),
-                text = getString(R.string.trigger_error_dnd_access_denied),
-                error = Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY),
-            )
-
-        TriggerError.SCREEN_OFF_ROOT_DENIED -> ChipUi.Error(
-            id = TriggerError.SCREEN_OFF_ROOT_DENIED.toString(),
-            text = getString(R.string.trigger_error_screen_off_root_permission_denied_short),
-            error = Error.PermissionDenied(Permission.ROOT),
-        )
-
-        TriggerError.CANT_DETECT_IN_PHONE_CALL -> ChipUi.Error(
-            id = TriggerError.SCREEN_OFF_ROOT_DENIED.toString(),
-            text = getString(R.string.trigger_error_cant_detect_in_phone_call),
-            error = Error.CantDetectKeyEventsInPhoneCall,
-        )
-
-        TriggerError.ASSISTANT_NOT_SELECTED -> ChipUi.Error(
-            id = error.toString(),
-            text = getString(R.string.trigger_error_assistant_activity_not_chosen),
-            error = Error.PermissionDenied(Permission.DEVICE_ASSISTANT),
-        )
-
-        TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED -> ChipUi.Error(
-            id = error.toString(),
-            text = getString(R.string.trigger_error_assistant_not_purchased),
-            error = Error.ProductNotPurchased(ProductId.ASSISTANT_TRIGGER),
-        )
-
-        TriggerError.DPAD_IME_NOT_SELECTED -> ChipUi.Error(
-            id = error.toString(),
-            text = getString(R.string.trigger_error_dpad_ime_not_selected_short),
-            error = Error.DpadTriggerImeNotSelected,
-        )
-
-        else -> TODO()
     }
 
     private fun StringBuilder.appendFloatingButtonKeyName(key: FloatingButtonKey) {

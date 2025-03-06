@@ -48,7 +48,6 @@ import androidx.navigation.compose.rememberNavController
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapListScreen
 import io.github.sds100.keymapper.mappings.keymaps.trigger.DpadTriggerSetupBottomSheet
-import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ui.NavDestination
 import io.github.sds100.keymapper.util.ui.NavigateEvent
 import kotlinx.coroutines.launch
@@ -92,7 +91,10 @@ fun HomeScreen(viewModel: HomeViewModel) {
             }
         },
         keyMapsContent = {
-            KeyMapListScreen(modifier = Modifier.fillMaxSize(), listItems = State.Loading)
+            KeyMapListScreen(
+                modifier = Modifier.fillMaxSize(),
+                viewModel = viewModel.keymapListViewModel,
+            )
         },
         floatingButtonsContent = {
             Text("Floating buttons")
