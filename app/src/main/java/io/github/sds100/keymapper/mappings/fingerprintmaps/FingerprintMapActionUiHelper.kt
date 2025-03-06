@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.mappings.fingerprintmaps
 
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.actions.BaseActionUiHelper
+import io.github.sds100.keymapper.actions.BaseActionUiHelperOld
 import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.mappings.DisplayActionUseCase
 import io.github.sds100.keymapper.util.ui.ResourceProvider
@@ -13,7 +13,7 @@ import io.github.sds100.keymapper.util.ui.ResourceProvider
 class FingerprintMapActionUiHelper(
     displayActionUseCase: DisplayActionUseCase,
     resourceProvider: ResourceProvider,
-) : BaseActionUiHelper<FingerprintMap, FingerprintMapAction>(
+) : BaseActionUiHelperOld<FingerprintMap, FingerprintMapAction>(
     displayActionUseCase,
     resourceProvider,
 ) {

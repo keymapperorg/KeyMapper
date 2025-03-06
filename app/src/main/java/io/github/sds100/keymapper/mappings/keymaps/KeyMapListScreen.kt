@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -132,6 +133,11 @@ private fun KeyMapList(
                 text = stringResource(R.string.home_key_map_list_footer_text),
                 textAlign = TextAlign.Center,
             )
+        }
+
+        // Give some space at the end of the list so that the FAB doesn't block the items.
+        item {
+            Spacer(Modifier.height(100.dp))
         }
     }
 }

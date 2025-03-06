@@ -46,7 +46,7 @@ class ConfigConstraintsViewModel(
     PopupViewModel by PopupViewModelImpl(),
     NavigationViewModel by NavigationViewModelImpl() {
 
-    private val uiHelper = ConstraintUiHelper(displayUseCase, resourceProvider)
+    private val uiHelper = ConstraintUiHelperOld(displayUseCase, resourceProvider)
 
     private val _state by lazy { MutableStateFlow(buildState(State.Loading)) }
     val state by lazy { _state.asStateFlow() }

@@ -1,14 +1,13 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.mappings.BaseMappingListItemCreator
+import io.github.sds100.keymapper.mappings.BaseMappingListItemCreatorOld
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerType
 import io.github.sds100.keymapper.mappings.keymaps.trigger.FloatingButtonKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyEventDetectionSource
-import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.mappings.keymaps.trigger.Trigger
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerError
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
@@ -21,10 +20,13 @@ import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.ui.ChipUi
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 
-class KeyMapListItemCreator(
+/**
+ * Created by sds100 on 19/03/2021.
+ */
+class KeyMapListItemCreatorOld(
     private val displayMapping: DisplayKeyMapUseCase,
     resourceProvider: ResourceProvider,
-) : BaseMappingListItemCreator<KeyMap, KeyMapAction>(
+) : BaseMappingListItemCreatorOld<KeyMap, KeyMapAction>(
     displayMapping,
     KeyMapActionUiHelper(displayMapping, resourceProvider),
     resourceProvider,
@@ -39,7 +41,7 @@ class KeyMapListItemCreator(
     suspend fun create(
         keyMap: KeyMap,
         showDeviceDescriptors: Boolean,
-    ): KeyMapListItemModel {
+    ): KeyMapListItem.KeyMapUiState {
         val triggerDescription = buildString {
             val separator = when (keyMap.trigger.mode) {
                 is TriggerMode.Parallel -> getString(R.string.plus)

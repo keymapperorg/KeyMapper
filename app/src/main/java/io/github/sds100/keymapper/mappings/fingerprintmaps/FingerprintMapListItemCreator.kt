@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.mappings.fingerprintmaps
 
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.mappings.BaseMappingListItemCreator
+import io.github.sds100.keymapper.mappings.BaseMappingListItemCreatorOld
 import io.github.sds100.keymapper.mappings.DisplaySimpleMappingUseCase
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 
@@ -11,7 +11,7 @@ import io.github.sds100.keymapper.util.ui.ResourceProvider
 class FingerprintMapListItemCreator(
     private val display: DisplaySimpleMappingUseCase,
     resourceProvider: ResourceProvider,
-) : BaseMappingListItemCreator<FingerprintMap, FingerprintMapAction>(
+) : BaseMappingListItemCreatorOld<FingerprintMap, FingerprintMapAction>(
     display,
     FingerprintMapActionUiHelper(display, resourceProvider),
     resourceProvider,

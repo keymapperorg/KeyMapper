@@ -52,7 +52,7 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
     private val displayActionUseCase: DisplayActionUseCase,
     private val testActionUseCase: TestActionUseCase,
     private val config: ConfigMappingUseCase<A, M>,
-    private val uiHelper: ActionUiHelper<M, A>,
+    private val uiHelper: ActionUiHelperOld<M, A>,
     private val onboardingUseCase: OnboardingUseCase,
     resourceProvider: ResourceProvider,
 ) : ResourceProvider by resourceProvider,

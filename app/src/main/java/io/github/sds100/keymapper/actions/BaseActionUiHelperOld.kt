@@ -1,14 +1,6 @@
 package io.github.sds100.keymapper.actions
 
 import android.view.KeyEvent
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ShortText
-import androidx.compose.material.icons.automirrored.outlined.VolumeUp
-import androidx.compose.material.icons.outlined.Android
-import androidx.compose.material.icons.outlined.DataObject
-import androidx.compose.material.icons.outlined.Link
-import androidx.compose.material.icons.outlined.Phone
-import androidx.compose.material.icons.outlined.TouchApp
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
 import io.github.sds100.keymapper.mappings.DisplayActionUseCase
@@ -23,18 +15,19 @@ import io.github.sds100.keymapper.system.volume.RingerModeUtils
 import io.github.sds100.keymapper.system.volume.VolumeStreamUtils
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.handle
+import io.github.sds100.keymapper.util.ui.IconInfo
 import io.github.sds100.keymapper.util.ui.ResourceProvider
-import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.util.ui.TintType
 import splitties.bitflags.hasFlag
 
 /**
  * Created by sds100 on 18/03/2021.
  */
 
-abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
+abstract class BaseActionUiHelperOld<MAPPING : Mapping<A>, A : Action>(
     displayActionUseCase: DisplayActionUseCase,
     resourceProvider: ResourceProvider,
-) : ActionUiHelper<MAPPING, A>,
+) : ActionUiHelperOld<MAPPING, A>,
     ResourceProvider by resourceProvider,
     DisplayActionUseCase by displayActionUseCase {
 
@@ -466,40 +459,58 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
         ActionData.DeviceControls -> getString(R.string.action_device_controls)
     }
 
-    override fun getIcon(action: ActionData): ComposeIconInfo? = when (action) {
+    override fun getIcon(action: ActionData): IconInfo? = when (action) {
         is ActionData.InputKeyEvent -> null
 
         is ActionData.App ->
             getAppIcon(action.packageName).handle(
-                onSuccess = { ComposeIconInfo.Drawable(it) },
-                onError = { ComposeIconInfo.Vector(Icons.Outlined.Android) },
+                onSuccess = { IconInfo(it, TintType.None) },
+                onError = { null },
             )
 
         is ActionData.AppShortcut -> {
             if (action.packageName.isNullOrBlank()) {
-                ComposeIconInfo.Vector(Icons.Outlined.Android)
+                null
             } else {
                 getAppIcon(action.packageName).handle(
-                    onSuccess = { ComposeIconInfo.Drawable(it) },
-                    onError = { ComposeIconInfo.Vector(Icons.Outlined.Android) },
+                    onSuccess = { IconInfo(it, TintType.None) },
+                    onError = { null },
                 )
             }
         }
 
-        is ActionData.Intent -> ComposeIconInfo.Vector(Icons.Outlined.DataObject)
-        is ActionData.PhoneCall -> ComposeIconInfo.Vector(Icons.Outlined.Phone)
-        is ActionData.TapScreen -> ComposeIconInfo.Vector(Icons.Outlined.TouchApp)
-        is ActionData.Text -> ComposeIconInfo.Vector(Icons.AutoMirrored.Outlined.ShortText)
-        is ActionData.Url -> ComposeIconInfo.Vector(Icons.Outlined.Link)
-        is ActionData.Sound -> ComposeIconInfo.Vector(Icons.AutoMirrored.Outlined.VolumeUp)
+        is ActionData.Intent -> null
 
-        else -> ComposeIconInfo.Vector(ActionUtils.getComposeIcon(action.id))
+        is ActionData.PhoneCall ->
+            IconInfo(
+                getDrawable(R.drawable.ic_outline_call_24),
+                tintType = TintType.OnSurface,
+            )
+
+        is ActionData.TapScreen -> IconInfo(
+            getDrawable(R.drawable.ic_outline_touch_app_24),
+            TintType.OnSurface,
+        )
+
+        is ActionData.Text -> null
+        is ActionData.Url -> null
+        is ActionData.Sound -> IconInfo(
+            getDrawable(R.drawable.ic_outline_volume_up_24),
+            TintType.OnSurface,
+        )
+
+        else -> ActionUtils.getIcon(action.id)?.let { iconRes ->
+            IconInfo(
+                getDrawable(iconRes),
+                TintType.OnSurface,
+            )
+        }
     }
 }
 
-interface ActionUiHelper<MAPPING : Mapping<A>, A : Action> {
+interface ActionUiHelperOld<MAPPING : Mapping<A>, A : Action> {
     fun getTitle(action: ActionData, showDeviceDescriptors: Boolean): String
     fun getOptionLabels(mapping: MAPPING, action: A): List<String>
-    fun getIcon(action: ActionData): ComposeIconInfo?
+    fun getIcon(action: ActionData): IconInfo?
     fun getError(action: ActionData): Error?
 }

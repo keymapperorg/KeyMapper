@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Valkyrie.Settings">
+    <option name="iconPackDestination" value="$PROJECT_DIR$/app/src/main/java/io/github/sds100/keymapper/util/ui/compose/icons" />
+    <option name="iconPackName" value="KeyMapperIcons" />
+    <option name="iconPackPackage" value="io.github.sds100.keymapper.util.ui.compose.icons" />
+    <option name="mode" value="IconPack" />
+    <option name="packageName" value="io.github.sds100.keymapper.util.ui.compose.icons" />
+  </component>
+</project>

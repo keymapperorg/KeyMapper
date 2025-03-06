@@ -38,7 +38,7 @@ class CreateKeyMapShortcutViewModel(
     PopupViewModel by PopupViewModelImpl(),
     ResourceProvider by resourceProvider {
 
-    private val listItemCreator = KeyMapListItemCreator(listUseCase, resourceProvider)
+    private val listItemCreator = KeyMapListItemCreatorOld(listUseCase, resourceProvider)
 
     private val _state = MutableStateFlow<State<List<KeyMapListItem>>>(State.Loading)
     val state = _state.asStateFlow()

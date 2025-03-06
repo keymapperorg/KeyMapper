@@ -13,7 +13,7 @@ import io.github.sds100.keymapper.util.ui.ResourceProvider
 /**
  * Created by sds100 on 18/03/2021.
  */
-abstract class BaseMappingListItemCreator<M : Mapping<A>, A : Action>(
+abstract class BaseMappingListItemCreatorOld<M : Mapping<A>, A : Action>(
     private val displayMapping: DisplaySimpleMappingUseCase,
     private val actionUiHelper: ActionUiHelperOld<M, A>,
     private val resourceProvider: ResourceProvider,
