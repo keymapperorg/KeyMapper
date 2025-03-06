@@ -12,7 +12,7 @@
     <string name="recyclerview_placeholder">¯\\_(ツ)_/¯\n\nNothing here!</string>
     <string name="triggers_recyclerview_placeholder">The first step is to add some buttons that will trigger the key map.\n\nFirst tap ‘Record trigger’ and then press the buttons that you want to remap. They will appear here.\n\nAlternatively, you can trigger a key map using an ‘advanced trigger’.</string>
     <string name="actions_recyclerview_placeholder">Add an action!</string>
-    <string name="keymap_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nCreate a key map!</string>
+    <string name="keymap_recyclerview_placeholder">Create a key map!</string>
     <string name="action_shortcut_list_recyclerview_placeholder">¯\\_(ツ)_/¯\n\nYou haven\'t chosen any actions for this shortcut!</string>
     <string name="no_key_maps">You haven\'t created any key maps!</string>
     <string name="everything_looks_good">Everything looks good!</string>
@@ -1493,6 +1493,7 @@
     <string name="home_fab_new_key_map">New key map</string>
     <string name="home_fab_new_floating_layout">New layout</string>
     <string name="home_key_map_list_footer_text">Tap a key map to configure it.\nLong press for more options.</string>
+    <string name="home_key_map_list_empty">Create a key map!</string>
 
     <!-- Trigger screen -->
     <string name="trigger_key_list_item_remove">Remove</string>

@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
@@ -20,6 +21,7 @@ import androidx.compose.material.icons.outlined.FlashlightOn
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
@@ -31,9 +33,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -51,39 +55,83 @@ import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 fun KeyMapListScreen(
     modifier: Modifier = Modifier,
     listItems: State<List<KeyMapListItemModel>>,
+    isSelectable: Boolean = false,
     onClickKeyMap: (String) -> Unit = {},
     onLongClickKeyMap: (String) -> Unit = {},
 ) {
     Surface(modifier = modifier) {
         when (listItems) {
-            is State.Loading -> {}
-            is State.Data -> LazyColumn(
-                state = rememberLazyListState(),
-                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                items(listItems.data, key = { it.uid }) { model ->
-                    KeyMapListItem(
-                        modifier = Modifier.fillMaxWidth(),
-                        // TODO select key maps
-                        isSelectable = false,
-                        model = model,
-                        onClickKeyMap = { onClickKeyMap(model.uid) },
-                        onSelectedChange = { TODO() },
-                        onFixActionClick = { TODO() },
-                        onFixConstraintClick = { TODO() },
-                        onTriggerErrorClick = { TODO() },
-                    )
-                }
-
-                item {
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = stringResource(R.string.home_key_map_list_footer_text),
-                        textAlign = TextAlign.Center,
-                    )
+            is State.Loading -> {
+                Box {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
             }
+
+            is State.Data -> {
+                if (listItems.data.isEmpty()) {
+                    EmptyKeyMapList(modifier = modifier)
+                } else {
+                    KeyMapList(modifier, listItems.data, isSelectable, onClickKeyMap)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun EmptyKeyMapList(modifier: Modifier = Modifier) {
+    Box(modifier) {
+        val shrug = stringResource(R.string.shrug)
+        val text = stringResource(R.string.home_key_map_list_empty)
+        Text(
+            modifier = Modifier.align(Alignment.Center),
+            text = buildAnnotatedString {
+                withStyle(MaterialTheme.typography.headlineLarge.toSpanStyle()) {
+                    append(shrug)
+                }
+                appendLine()
+                appendLine()
+                withStyle(MaterialTheme.typography.bodyLarge.toSpanStyle()) {
+                    append(text)
+                }
+            },
+        )
+    }
+}
+
+@Composable
+private fun KeyMapList(
+    modifier: Modifier = Modifier,
+    listItems: List<KeyMapListItemModel>,
+    isSelectable: Boolean,
+    onClickKeyMap: (String) -> Unit,
+) {
+    LazyColumn(
+        modifier = modifier,
+        state = rememberLazyListState(),
+        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        items(listItems, key = { it.uid }) { model ->
+            KeyMapListItem(
+                modifier = Modifier.fillMaxWidth(),
+                // TODO select key maps
+                isSelectable = isSelectable,
+                model = model,
+                onClickKeyMap = { onClickKeyMap(model.uid) },
+                onSelectedChange = { TODO() },
+                onFixActionClick = { TODO() },
+                onFixConstraintClick = { TODO() },
+                onTriggerErrorClick = { TODO() },
+            )
+        }
+
+        item {
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(R.string.home_key_map_list_footer_text),
+                textAlign = TextAlign.Center,
+            )
         }
     }
 }
@@ -100,7 +148,7 @@ fun KeyMapListItem(
     onTriggerErrorClick: (TriggerError) -> Unit,
 ) {
     OutlinedCard(modifier = modifier, onClick = onClickKeyMap) {
-        Row(modifier = Modifier.padding(start = 16.dp)) {
+        Row(modifier = Modifier.padding(start = 8.dp)) {
             if (isSelectable) {
                 Checkbox(
                     checked = model.isSelected,
@@ -112,7 +160,7 @@ fun KeyMapListItem(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 16.dp, end = 16.dp, bottom = 16.dp),
+                    .padding(start = 8.dp, top = 16.dp, end = 16.dp, bottom = 16.dp),
             ) {
                 if (model.extraInfo != null) {
                     Text(
@@ -293,7 +341,7 @@ private fun sampleList(): List<KeyMapListItemModel> {
     return listOf(
         KeyMapListItemModel(
             uid = "0",
-            isSelected = false,
+            isSelected = true,
             triggerDescription = "Volume down + Volume up",
             actions = listOf(
                 ComposeChipModel.Normal(
@@ -349,6 +397,18 @@ private fun sampleList(): List<KeyMapListItemModel> {
 private fun ListPreview() {
     KeyMapperTheme {
         KeyMapListScreen(modifier = Modifier.fillMaxSize(), listItems = State.Data(sampleList()))
+    }
+}
+
+@Preview
+@Composable
+private fun SelectableListPreview() {
+    KeyMapperTheme {
+        KeyMapListScreen(
+            modifier = Modifier.fillMaxSize(),
+            listItems = State.Data(sampleList()),
+            isSelectable = true,
+        )
     }
 }
 
