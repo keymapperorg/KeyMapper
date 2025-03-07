@@ -47,6 +47,7 @@ interface IAccessibilityService {
     ): Result<*>
 
     val rootNode: AccessibilityNodeModel?
+    val activeWindowPackage: Flow<String?>
 
     fun hideKeyboard()
     fun showKeyboard()

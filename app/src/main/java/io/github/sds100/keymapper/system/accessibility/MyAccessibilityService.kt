@@ -39,6 +39,7 @@ import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import timber.log.Timber
 
 /**
@@ -67,6 +68,9 @@ class MyAccessibilityService :
         get() {
             return rootInActiveWindow?.toModel()
         }
+
+    private val _activeWindowPackage: MutableStateFlow<String?> = MutableStateFlow(null)
+    override val activeWindowPackage: Flow<String?> = _activeWindowPackage
 
     override val isFingerprintGestureDetectionAvailable: Boolean
         get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -192,6 +196,8 @@ class MyAccessibilityService :
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
 
         setTheme(R.style.AppTheme)
+
+        _activeWindowPackage.update { rootInActiveWindow?.packageName?.toString() }
         /*
         I would put this in onCreate but for some reason on some devices getting the application
         context would return null
@@ -274,6 +280,11 @@ class MyAccessibilityService :
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         event ?: return
+
+        // This event type is only received if there are floating buttons.
+        if (event.eventType == AccessibilityEvent.TYPE_WINDOWS_CHANGED) {
+            _activeWindowPackage.update { rootInActiveWindow?.packageName?.toString() }
+        }
 
         controller?.onAccessibilityEvent(event.toModel())
     }
