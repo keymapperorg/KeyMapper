@@ -90,7 +90,7 @@ class KeyMapListItemCreator(
             constraints = constraintChipList,
             constraintMode = keyMap.constraintState.mode,
             optionsDescription = optionsDescription.takeIf { it.isNotBlank() },
-            extraInfo = extraInfo,
+            extraInfo = extraInfo.takeIf { it.isNotBlank() },
         )
     }
 
