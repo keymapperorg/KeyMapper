@@ -24,7 +24,7 @@ class TriggerFragment : Fragment() {
 
     class Info :
         FragmentInfo(
-            R.string.trigger_header,
+            R.string.tab_trigger,
             R.string.url_trigger_guide,
             { TriggerFragment() },
         )
