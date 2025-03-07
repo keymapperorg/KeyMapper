@@ -121,7 +121,7 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
                         resourceProvider = this@ConfigActionsViewModel,
                         popupViewModel = this@ConfigActionsViewModel,
                         neverShowDndTriggerErrorAgain = { displayActionUseCase.neverShowDndTriggerError() },
-                        fixError = { displayActionUseCase.fixError(it) },
+                        fixError = { displayActionUseCase.fixError(error) },
                     )
                 }
             } else {

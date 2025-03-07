@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.mappings.keymaps.trigger
 
-import android.os.Build
 import android.view.KeyEvent
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -15,7 +14,6 @@ import io.github.sds100.keymapper.mappings.keymaps.TriggerErrorSnapshot
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
-import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.State
@@ -508,27 +506,13 @@ abstract class BaseConfigTriggerViewModel(
     fun onTriggerErrorClick(error: TriggerError) {
         coroutineScope.launch {
             when (error) {
-                TriggerError.DND_ACCESS_DENIED -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                TriggerError.DND_ACCESS_DENIED ->
                     ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
                         resourceProvider = this@BaseConfigTriggerViewModel,
                         popupViewModel = this@BaseConfigTriggerViewModel,
                         neverShowDndTriggerErrorAgain = { displayKeyMap.neverShowDndTriggerError() },
-                        fixError = { displayKeyMap.fixError(it) },
+                        fixError = { displayKeyMap.fixTriggerError(error) },
                     )
-                }
-
-                TriggerError.SCREEN_OFF_ROOT_DENIED -> {
-                    val error = Error.PermissionDenied(Permission.ROOT)
-                    displayKeyMap.fixError(error)
-                }
-
-                TriggerError.CANT_DETECT_IN_PHONE_CALL -> {
-                    displayKeyMap.fixError(Error.CantDetectKeyEventsInPhoneCall)
-                }
-
-                TriggerError.ASSISTANT_NOT_SELECTED -> {
-                    displayKeyMap.fixError(Error.PermissionDenied(Permission.DEVICE_ASSISTANT))
-                }
 
                 TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED,
                 TriggerError.FLOATING_BUTTONS_NOT_PURCHASED,
@@ -540,7 +524,7 @@ abstract class BaseConfigTriggerViewModel(
                     showDpadTriggerSetupBottomSheet = true
                 }
 
-                TriggerError.FLOATING_BUTTON_DELETED -> TODO()
+                else -> displayKeyMap.fixTriggerError(error)
             }
         }
     }

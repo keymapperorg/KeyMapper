@@ -10,5 +10,9 @@ sealed class ComposeChipModel {
         override val text: String,
     ) : ComposeChipModel()
 
-    data class Error(override val id: String, override val text: String) : ComposeChipModel()
+    data class Error(
+        override val id: String,
+        override val text: String,
+        val error: io.github.sds100.keymapper.util.Error,
+    ) : ComposeChipModel()
 }

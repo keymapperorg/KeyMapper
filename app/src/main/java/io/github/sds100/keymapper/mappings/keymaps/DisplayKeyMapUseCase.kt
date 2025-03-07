@@ -16,6 +16,7 @@ import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
+import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.dataOrNull
 import io.github.sds100.keymapper.util.valueIfFailure
 import kotlinx.coroutines.flow.Flow
@@ -156,12 +157,35 @@ class DisplayKeyMapUseCaseImpl(
 
         return errors
     }
+
+    override suspend fun fixTriggerError(error: TriggerError) {
+        when (error) {
+            TriggerError.DND_ACCESS_DENIED -> fixError(Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY))
+            TriggerError.SCREEN_OFF_ROOT_DENIED -> fixError(Error.PermissionDenied(Permission.ROOT))
+            TriggerError.CANT_DETECT_IN_PHONE_CALL -> fixError(Error.CantDetectKeyEventsInPhoneCall)
+            TriggerError.ASSISTANT_NOT_SELECTED -> fixError(Error.PermissionDenied(Permission.DEVICE_ASSISTANT))
+            TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED -> fixError(
+                Error.ProductNotPurchased(
+                    ProductId.ASSISTANT_TRIGGER,
+                ),
+            )
+
+            TriggerError.DPAD_IME_NOT_SELECTED -> fixError(Error.DpadTriggerImeNotSelected)
+            TriggerError.FLOATING_BUTTON_DELETED -> {}
+            TriggerError.FLOATING_BUTTONS_NOT_PURCHASED -> fixError(
+                Error.ProductNotPurchased(
+                    ProductId.FLOATING_BUTTONS,
+                ),
+            )
+        }
+    }
 }
 
 interface DisplayKeyMapUseCase : DisplaySimpleMappingUseCase {
     val invalidateTriggerErrors: Flow<Unit>
     val triggerErrorSnapshot: Flow<TriggerErrorSnapshot>
     suspend fun getTriggerErrors(keyMap: KeyMap): List<TriggerError>
+    suspend fun fixTriggerError(error: TriggerError)
     val showTriggerKeyboardIconExplanation: Flow<Boolean>
     fun neverShowTriggerKeyboardIconExplanation()
 

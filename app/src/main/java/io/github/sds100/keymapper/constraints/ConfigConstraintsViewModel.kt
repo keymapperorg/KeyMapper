@@ -126,7 +126,7 @@ class ConfigConstraintsViewModel(
                         resourceProvider = this@ConfigConstraintsViewModel,
                         popupViewModel = this@ConfigConstraintsViewModel,
                         neverShowDndTriggerErrorAgain = { displayUseCase.neverShowDndTriggerError() },
-                        fixError = { displayUseCase.fixError(it) },
+                        fixError = { displayUseCase.fixError(error) },
                     )
                 }
             } else {

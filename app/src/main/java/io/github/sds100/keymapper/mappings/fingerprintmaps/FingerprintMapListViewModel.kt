@@ -153,7 +153,7 @@ class FingerprintMapListViewModel(
                         resourceProvider = this@FingerprintMapListViewModel,
                         popupViewModel = this@FingerprintMapListViewModel,
                         neverShowDndTriggerErrorAgain = { useCase.neverShowDndTriggerError() },
-                        fixError = { useCase.fixError(it) },
+                        fixError = { useCase.fixError(error) },
                     )
                 }
             } else {

@@ -158,7 +158,7 @@ object ViewModelHelper {
         resourceProvider: ResourceProvider,
         popupViewModel: PopupViewModel,
         neverShowDndTriggerErrorAgain: () -> Unit,
-        fixError: suspend (Error) -> Unit,
+        fixError: suspend () -> Unit,
     ) {
         val dialog = PopupUi.Dialog(
             title = resourceProvider.getString(R.string.dialog_title_fix_dnd_trigger_error),
@@ -172,7 +172,7 @@ object ViewModelHelper {
 
         if (dialogResponse == DialogResponse.POSITIVE) {
             val error = Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)
-            fixError.invoke(error)
+            fixError.invoke()
         } else if (dialogResponse == DialogResponse.NEUTRAL) {
             neverShowDndTriggerErrorAgain.invoke()
         }

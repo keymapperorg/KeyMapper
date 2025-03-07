@@ -6,12 +6,12 @@ import androidx.compose.runtime.setValue
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.mappings.keymaps.trigger.SetupGuiKeyboardState
 import io.github.sds100.keymapper.mappings.keymaps.trigger.SetupGuiKeyboardUseCase
+import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerError
 import io.github.sds100.keymapper.sorting.SortKeyMapsUseCase
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.mapData
-import io.github.sds100.keymapper.util.ui.ChipUi
 import io.github.sds100.keymapper.util.ui.MultiSelectProvider
 import io.github.sds100.keymapper.util.ui.NavDestination
 import io.github.sds100.keymapper.util.ui.NavigationViewModel
@@ -187,52 +187,39 @@ open class KeyMapListViewModel(
         }
     }
 
-    fun onTriggerErrorChipClick(chipModel: ChipUi) {
-        if (chipModel is ChipUi.Error) {
-            onFixError(chipModel.error)
+    fun onFixTriggerError(error: TriggerError) {
+        coroutineScope.launch {
+            when (error) {
+                TriggerError.DND_ACCESS_DENIED -> {
+                    ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
+                        resourceProvider = this@KeyMapListViewModel,
+                        popupViewModel = this@KeyMapListViewModel,
+                        neverShowDndTriggerErrorAgain = { listKeyMaps.neverShowDndTriggerError() },
+                        fixError = { listKeyMaps.fixTriggerError(error) },
+                    )
+                }
+
+                TriggerError.DPAD_IME_NOT_SELECTED -> {
+                    showDpadTriggerSetupBottomSheet = true
+                }
+
+                else -> {
+                    listKeyMaps.fixTriggerError(error)
+                }
+            }
         }
     }
 
-    fun onActionChipClick(chipModel: ChipUi) {
-        if (chipModel is ChipUi.Error) {
-            onFixError(chipModel.error)
-        }
-    }
-
-    fun onConstraintsChipClick(chipModel: ChipUi) {
-        if (chipModel is ChipUi.Error) {
-            onFixError(chipModel.error)
-        }
-    }
-
-    fun onEnableGuiKeyboardClick() {
-        setupGuiKeyboard.enableInputMethod()
-    }
-
-    fun onChooseGuiKeyboardClick() {
-        setupGuiKeyboard.chooseInputMethod()
-    }
-
-    fun onNeverShowSetupDpadClick() {
-        listKeyMaps.neverShowDpadImeSetupError()
-    }
-
-    private fun onFixError(error: Error) {
+    fun onFixClick(error: Error) {
         coroutineScope.launch {
             when (error) {
                 Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY) -> {
-                    coroutineScope.launch {
-                        ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
-                            resourceProvider = this@KeyMapListViewModel,
-                            popupViewModel = this@KeyMapListViewModel,
-                            neverShowDndTriggerErrorAgain = { listKeyMaps.neverShowDndTriggerError() },
-                            fixError = { listKeyMaps.fixError(it) },
-                        )
-                    }
-                }
-
-                Error.DpadTriggerImeNotSelected -> {
-                    showDpadTriggerSetupBottomSheet = true
+                    ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
+                        resourceProvider = this@KeyMapListViewModel,
+                        popupViewModel = this@KeyMapListViewModel,
+                        neverShowDndTriggerErrorAgain = { listKeyMaps.neverShowDndTriggerError() },
+                        fixError = { listKeyMaps.fixError(error) },
+                    )
                 }
 
                 else -> {
@@ -246,5 +233,17 @@ open class KeyMapListViewModel(
                 }
             }
         }
+    }
+
+    fun onEnableGuiKeyboardClick() {
+        setupGuiKeyboard.enableInputMethod()
+    }
+
+    fun onChooseGuiKeyboardClick() {
+        setupGuiKeyboard.chooseInputMethod()
+    }
+
+    fun onNeverShowSetupDpadClick() {
+        listKeyMaps.neverShowDpadImeSetupError()
     }
 }

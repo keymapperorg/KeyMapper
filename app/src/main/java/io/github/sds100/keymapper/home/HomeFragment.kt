@@ -15,6 +15,7 @@ import io.github.sds100.keymapper.databinding.FragmentComposeBinding
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.ui.setupNavigation
+import io.github.sds100.keymapper.util.ui.showPopups
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt
 
 class HomeFragment : Fragment() {
@@ -89,5 +90,11 @@ class HomeFragment : Fragment() {
             }
             return this.root
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        homeViewModel.keymapListViewModel.showPopups(this, view)
     }
 }

@@ -64,7 +64,7 @@ abstract class BaseMappingListItemCreator<M : Mapping<A>, A : Action>(
             val chip = if (error == null) {
                 ComposeChipModel.Normal(id = action.uid, text = chipText, icon = icon)
             } else {
-                ComposeChipModel.Error(action.uid, chipText)
+                ComposeChipModel.Error(action.uid, chipText, error)
             }
 
             yield(chip)
@@ -84,10 +84,7 @@ abstract class BaseMappingListItemCreator<M : Mapping<A>, A : Action>(
                     icon = icon,
                 )
             } else {
-                ComposeChipModel.Error(
-                    constraint.uid,
-                    text,
-                )
+                ComposeChipModel.Error(constraint.uid, text, error)
             }
 
             yield(chip)

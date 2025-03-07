@@ -19,16 +19,18 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Error
 import androidx.compose.material.icons.outlined.FlashlightOn
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,6 +52,7 @@ import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.constraints.ConstraintMode
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerError
+import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.drawable
 import io.github.sds100.keymapper.util.ui.compose.ComposeChipModel
@@ -66,6 +69,8 @@ fun KeyMapListScreen(modifier: Modifier = Modifier, viewModel: KeyMapListViewMod
         isSelectable = false,
         onClickKeyMap = viewModel::onKeyMapCardClick,
         onLongClickKeyMap = viewModel::onKeyMapCardLongClick,
+        onFixClick = viewModel::onFixClick,
+        onTriggerErrorClick = viewModel::onFixTriggerError,
     )
 }
 
@@ -76,6 +81,8 @@ private fun KeyMapListScreen(
     isSelectable: Boolean = false,
     onClickKeyMap: (String) -> Unit = {},
     onLongClickKeyMap: (String) -> Unit = {},
+    onFixClick: (Error) -> Unit = {},
+    onTriggerErrorClick: (TriggerError) -> Unit = {},
 ) {
     Surface(modifier = modifier) {
         when (listItems) {
@@ -89,7 +96,14 @@ private fun KeyMapListScreen(
                 if (listItems.data.isEmpty()) {
                     EmptyKeyMapList(modifier = modifier)
                 } else {
-                    KeyMapList(modifier, listItems.data, isSelectable, onClickKeyMap)
+                    KeyMapList(
+                        modifier,
+                        listItems.data,
+                        isSelectable,
+                        onClickKeyMap,
+                        onFixClick,
+                        onTriggerErrorClick,
+                    )
                 }
             }
         }
@@ -123,6 +137,8 @@ private fun KeyMapList(
     listItems: List<KeyMapListItemModel>,
     isSelectable: Boolean,
     onClickKeyMap: (String) -> Unit,
+    onFixClick: (Error) -> Unit,
+    onTriggerErrorClick: (TriggerError) -> Unit,
 ) {
     LazyColumn(
         modifier = modifier,
@@ -138,9 +154,8 @@ private fun KeyMapList(
                 model = model,
                 onClickKeyMap = { onClickKeyMap(model.content.uid) },
                 onSelectedChange = { TODO() },
-                onFixActionClick = { TODO() },
-                onFixConstraintClick = { TODO() },
-                onTriggerErrorClick = { TODO() },
+                onFixClick = onFixClick,
+                onTriggerErrorClick = onTriggerErrorClick,
             )
         }
 
@@ -167,11 +182,13 @@ private fun KeyMapListItem(
     model: KeyMapListItemModel,
     onClickKeyMap: () -> Unit,
     onSelectedChange: (Boolean) -> Unit,
-    onFixActionClick: (String) -> Unit,
-    onFixConstraintClick: (String) -> Unit,
+    onFixClick: (Error) -> Unit,
     onTriggerErrorClick: (TriggerError) -> Unit,
 ) {
-    OutlinedCard(modifier = modifier, onClick = onClickKeyMap) {
+    OutlinedCard(
+        modifier = modifier,
+        onClick = onClickKeyMap,
+    ) {
         Row(modifier = Modifier.padding(start = 8.dp)) {
             if (isSelectable) {
                 Checkbox(
@@ -208,6 +225,8 @@ private fun KeyMapListItem(
                             style = MaterialTheme.typography.bodyMedium,
                         )
                     }
+
+                    Spacer(Modifier.height(4.dp))
                 }
 
                 if (model.content.triggerErrors.isNotEmpty()) {
@@ -228,11 +247,16 @@ private fun KeyMapListItem(
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(top = 4.dp),
                     )
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Spacer(Modifier.height(4.dp))
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        itemVerticalAlignment = Alignment.CenterVertically,
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
                         for (chipModel in model.content.actions) {
                             ActionConstraintChip(
                                 chipModel,
-                                onClick = { onFixActionClick(chipModel.id) },
+                                onFixClick = onFixClick,
                             )
                         }
                     }
@@ -245,14 +269,16 @@ private fun KeyMapListItem(
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(top = 4.dp),
                     )
+                    Spacer(Modifier.height(4.dp))
                     FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         itemVerticalAlignment = Alignment.CenterVertically,
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         for ((index, chipModel) in model.content.constraints.withIndex()) {
                             ActionConstraintChip(
                                 chipModel,
-                                onClick = { onFixConstraintClick(chipModel.id) },
+                                onFixClick = onFixClick,
                             )
 
                             if (index < model.content.constraints.lastIndex) {
@@ -290,55 +316,37 @@ private fun KeyMapListItem(
 }
 
 @Composable
-private fun ActionConstraintChip(model: ComposeChipModel, onClick: () -> Unit) {
+private fun ActionConstraintChip(
+    model: ComposeChipModel,
+    onFixClick: (Error) -> Unit,
+) {
     when (model) {
         is ComposeChipModel.Normal -> {
-            val colors =
-                AssistChipDefaults.assistChipColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                    leadingIconContentColor = Color.Unspecified,
-                    labelColor = MaterialTheme.colorScheme.onSurface,
-                    disabledContainerColor = MaterialTheme.colorScheme.surfaceContainer,
-                    disabledLeadingIconContentColor = Color.Unspecified,
-                    disabledLabelColor = MaterialTheme.colorScheme.onSurface,
-                )
-            if (model.icon == null) {
-                AssistChip(
-                    onClick = {},
-                    enabled = false,
-                    label = { Text(model.text, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                    colors = colors,
-                    border = null,
-                )
-            } else {
-                AssistChip(
-                    onClick = {},
-                    enabled = false,
-                    label = { Text(model.text, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                    leadingIcon = {
-                        when (model.icon) {
+            CompactChip(
+                text = model.text,
+                icon = model.icon?.let { icon ->
+                    {
+                        when (icon) {
                             is ComposeIconInfo.Drawable -> Icon(
                                 modifier = Modifier.size(18.dp),
-                                painter = rememberDrawablePainter(model.icon.drawable),
+                                painter = rememberDrawablePainter(icon.drawable),
                                 contentDescription = null,
                                 tint = Color.Unspecified,
                             )
 
                             is ComposeIconInfo.Vector -> Icon(
                                 modifier = Modifier.size(18.dp),
-                                imageVector = model.icon.imageVector,
+                                imageVector = icon.imageVector,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.onSurface,
                             )
                         }
-                    },
-                    colors = colors,
-                    border = null,
-                )
-            }
+                    }
+                },
+            )
         }
 
-        is ComposeChipModel.Error -> ErrorChip(onClick, model.text)
+        is ComposeChipModel.Error -> ErrorChip(onClick = { onFixClick(model.error) }, model.text)
     }
 }
 
@@ -347,23 +355,85 @@ private fun ErrorChip(
     onClick: () -> Unit,
     text: String,
 ) {
-    AssistChip(
-        onClick = onClick,
-        label = { Text(text, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-        leadingIcon = {
+    CompactChip(
+        text = text,
+        icon = {
             Icon(
                 modifier = Modifier.size(18.dp),
                 imageVector = Icons.Outlined.Error,
                 contentDescription = null,
             )
         },
-        colors = AssistChipDefaults.assistChipColors(
-            containerColor = MaterialTheme.colorScheme.errorContainer,
-            leadingIconContentColor = MaterialTheme.colorScheme.onErrorContainer,
-            labelColor = MaterialTheme.colorScheme.onErrorContainer,
-        ),
-        border = null,
+        containerColor = MaterialTheme.colorScheme.errorContainer,
+        contentColor = MaterialTheme.colorScheme.onErrorContainer,
+        onClick = onClick,
     )
+}
+
+@Composable
+private fun CompactChip(
+    modifier: Modifier = Modifier,
+    text: String,
+    icon: (@Composable () -> Unit)? = null,
+    containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
+    contentColor: Color = MaterialTheme.colorScheme.onSurface,
+) {
+    Surface(
+        modifier = modifier,
+        color = containerColor,
+        shape = AssistChipDefaults.shape,
+    ) {
+        CompactChipContent(icon, text, contentColor)
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun CompactChip(
+    modifier: Modifier = Modifier,
+    text: String,
+    icon: (@Composable () -> Unit)? = null,
+    containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
+    contentColor: Color = MaterialTheme.colorScheme.onSurface,
+    onClick: () -> Unit,
+) {
+    CompositionLocalProvider(
+        LocalMinimumInteractiveComponentSize provides 16.dp,
+    ) {
+        Surface(
+            modifier = modifier,
+            color = containerColor,
+            shape = AssistChipDefaults.shape,
+            onClick = onClick,
+        ) {
+            CompactChipContent(icon, text, contentColor)
+        }
+    }
+}
+
+@Composable
+private fun CompactChipContent(
+    icon: @Composable (() -> Unit)?,
+    text: String,
+    contentColor: Color,
+) {
+    Row(
+        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        if (icon != null) {
+            icon()
+            Spacer(Modifier.width(4.dp))
+        }
+
+        Text(
+            text,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            style = MaterialTheme.typography.labelLarge,
+            color = contentColor,
+        )
+    }
 }
 
 @Composable
@@ -399,6 +469,7 @@ private fun sampleList(): List<KeyMapListItemModel> {
                     ComposeChipModel.Error(
                         id = "1",
                         text = "Input KEYCODE_0 • Repeat until released",
+                        error = Error.NoCompatibleImeChosen,
                     ),
                     ComposeChipModel.Normal(
                         id = "2",
@@ -421,6 +492,7 @@ private fun sampleList(): List<KeyMapListItemModel> {
                     ComposeChipModel.Error(
                         id = "1",
                         "Key Mapper is playing media",
+                        error = Error.AppNotFound(""),
                     ),
                 ),
                 optionsDescription = "Vibrate",
