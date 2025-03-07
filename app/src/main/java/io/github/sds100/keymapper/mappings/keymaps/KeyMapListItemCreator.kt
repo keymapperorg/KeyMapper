@@ -84,7 +84,7 @@ class KeyMapListItemCreator(
 
         return KeyMapListItemModel.Content(
             uid = keyMap.uid,
-            triggerDescription = triggerDescription,
+            triggerDescription = triggerDescription.takeIf { it.isNotBlank() },
             triggerErrors = triggerErrors,
             actions = actionChipList,
             constraints = constraintChipList,

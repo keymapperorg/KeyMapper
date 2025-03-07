@@ -298,10 +298,14 @@ private fun ActionConstraintChip(model: ComposeChipModel, onClick: () -> Unit) {
                     containerColor = MaterialTheme.colorScheme.surfaceContainer,
                     leadingIconContentColor = Color.Unspecified,
                     labelColor = MaterialTheme.colorScheme.onSurface,
+                    disabledContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+                    disabledLeadingIconContentColor = Color.Unspecified,
+                    disabledLabelColor = MaterialTheme.colorScheme.onSurface,
                 )
             if (model.icon == null) {
                 AssistChip(
                     onClick = {},
+                    enabled = false,
                     label = { Text(model.text, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                     colors = colors,
                     border = null,
@@ -309,6 +313,7 @@ private fun ActionConstraintChip(model: ComposeChipModel, onClick: () -> Unit) {
             } else {
                 AssistChip(
                     onClick = {},
+                    enabled = false,
                     label = { Text(model.text, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                     leadingIcon = {
                         when (model.icon) {
