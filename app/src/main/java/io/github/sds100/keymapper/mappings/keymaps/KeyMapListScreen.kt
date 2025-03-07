@@ -161,7 +161,7 @@ private fun KeyMapList(
 }
 
 @Composable
-fun KeyMapListItem(
+private fun KeyMapListItem(
     modifier: Modifier = Modifier,
     isSelectable: Boolean,
     model: KeyMapListItemModel,

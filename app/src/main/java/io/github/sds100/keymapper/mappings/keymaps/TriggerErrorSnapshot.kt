@@ -4,6 +4,7 @@ import android.os.Build
 import android.view.KeyEvent
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerType
+import io.github.sds100.keymapper.mappings.keymaps.trigger.FloatingButtonKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerError
@@ -69,8 +70,10 @@ data class TriggerErrorSnapshot(
             return TriggerError.DPAD_IME_NOT_SELECTED
         }
 
-        if (!isFloatingButtonsPurchased) {
+        if (!isFloatingButtonsPurchased && key is FloatingButtonKey) {
             return TriggerError.FLOATING_BUTTONS_NOT_PURCHASED
+        } else if (key is FloatingButtonKey && key.button == null) {
+            return TriggerError.FLOATING_BUTTON_DELETED
         }
 
         // TODO add floating button errors

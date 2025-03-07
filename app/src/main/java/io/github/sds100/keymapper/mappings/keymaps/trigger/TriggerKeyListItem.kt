@@ -148,7 +148,7 @@ fun TriggerKeyListItem(
 
                 if (model.error != null) {
                     FilledTonalButton(
-                        modifier = Modifier.padding(start = 8.dp),
+                        modifier = Modifier.padding(start = 8.dp, end = 8.dp),
                         onClick = { onFixClick(model.error!!) },
                         colors = ButtonDefaults.filledTonalButtonColors(
                             containerColor = MaterialTheme.colorScheme.error,

@@ -15,6 +15,7 @@ import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.util.ui.ResourceProvider
+import kotlinx.coroutines.flow.first
 
 class KeyMapListItemCreator(
     private val displayMapping: DisplayKeyMapUseCase,
@@ -80,7 +81,13 @@ class KeyMapListItemCreator(
             }
         }
 
-        val triggerErrors = displayMapping.getTriggerErrors(keyMap)
+        val triggerErrorSnapshot = displayMapping.triggerErrorSnapshot.first()
+        val triggerErrors = keyMap.trigger.keys.mapNotNull { key ->
+            triggerErrorSnapshot.getTriggerError(
+                keyMap,
+                key,
+            )
+        }
 
         return KeyMapListItemModel.Content(
             uid = keyMap.uid,
