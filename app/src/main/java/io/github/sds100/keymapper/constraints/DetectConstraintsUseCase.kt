@@ -30,7 +30,7 @@ class DetectConstraintsUseCaseImpl(
     private val powerAdapter: PowerAdapter,
 ) : DetectConstraintsUseCase {
 
-    override fun getSnapshot(): ConstraintSnapshotImpl = ConstraintSnapshotImpl(
+    override fun getSnapshot(): ConstraintSnapshot = LazyConstraintSnapshot(
         accessibilityService,
         mediaAdapter,
         devicesAdapter,
@@ -44,20 +44,20 @@ class DetectConstraintsUseCaseImpl(
     )
 
     override fun onDependencyChanged(dependency: ConstraintDependency): Flow<ConstraintDependency> {
-        when (dependency) {
-            ConstraintDependency.FOREGROUND_APP -> return accessibilityService.activeWindowPackage.map { dependency }
+        return when (dependency) {
+            ConstraintDependency.FOREGROUND_APP -> accessibilityService.activeWindowPackage.map { dependency }
             ConstraintDependency.APP_PLAYING_MEDIA -> TODO()
             ConstraintDependency.MEDIA_PLAYING -> TODO()
-            ConstraintDependency.CONNECTED_BT_DEVICES -> return devicesAdapter.connectedBluetoothDevices.map { dependency }
-            ConstraintDependency.SCREEN_STATE -> return displayAdapter.isScreenOn.map { dependency }
+            ConstraintDependency.CONNECTED_BT_DEVICES -> devicesAdapter.connectedBluetoothDevices.map { dependency }
+            ConstraintDependency.SCREEN_STATE -> displayAdapter.isScreenOn.map { dependency }
             ConstraintDependency.DISPLAY_ORIENTATION -> TODO()
             ConstraintDependency.FLASHLIGHT_STATE -> TODO()
             ConstraintDependency.WIFI_SSID -> TODO()
             ConstraintDependency.WIFI_STATE -> TODO()
-            ConstraintDependency.CHOSEN_IME -> return inputMethodAdapter.chosenIme.map { dependency }
+            ConstraintDependency.CHOSEN_IME -> inputMethodAdapter.chosenIme.map { dependency }
             ConstraintDependency.DEVICE_LOCKED_STATE -> TODO()
-            ConstraintDependency.PHONE_STATE -> return phoneAdapter.callStateFlow.map { dependency }
-            ConstraintDependency.CHARGING_STATE -> return powerAdapter.isCharging.map { dependency }
+            ConstraintDependency.PHONE_STATE -> phoneAdapter.callStateFlow.map { dependency }
+            ConstraintDependency.CHARGING_STATE -> powerAdapter.isCharging.map { dependency }
         }
     }
 }

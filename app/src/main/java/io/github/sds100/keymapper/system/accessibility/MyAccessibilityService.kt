@@ -269,19 +269,18 @@ class MyAccessibilityService :
         controller?.onConfigurationChanged(newConfig)
     }
 
-    override fun onLowMemory() {
+    override fun onTrimMemory(level: Int) {
         val memoryInfo = ActivityManager.MemoryInfo()
         getSystemService<ActivityManager>()?.getMemoryInfo(memoryInfo)
 
         Timber.i("Accessibility service: onLowMemory, total: ${memoryInfo.totalMem}, available: ${memoryInfo.availMem}, is low memory: ${memoryInfo.lowMemory}, threshold: ${memoryInfo.threshold}")
 
-        super.onLowMemory()
+        super.onTrimMemory(level)
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         event ?: return
 
-        // This event type is only received if there are floating buttons.
         if (event.eventType == AccessibilityEvent.TYPE_WINDOWS_CHANGED) {
             _activeWindowPackage.update { rootInActiveWindow?.packageName?.toString() }
         }

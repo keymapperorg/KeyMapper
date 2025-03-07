@@ -48,6 +48,9 @@ class ConfigKeyMapUseCaseTest {
             devicesAdapter = mock(),
             keyMapRepository = mock(),
             preferenceRepository = mock(),
+            floatingLayoutRepository = mock(),
+            floatingButtonRepository = mock(),
+            serviceAdapter = mock(),
         )
     }
 

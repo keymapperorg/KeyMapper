@@ -3,8 +3,8 @@ package io.github.sds100.keymapper.mappings.keymaps
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.actions.RepeatMode
-import io.github.sds100.keymapper.constraints.ConstraintSnapshotImpl
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
+import io.github.sds100.keymapper.constraints.LazyConstraintSnapshot
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCase
 import io.github.sds100.keymapper.mappings.keymaps.detection.TriggerKeyMapFromOtherAppsController
 import io.github.sds100.keymapper.mappings.keymaps.trigger.Trigger
@@ -30,7 +30,7 @@ import org.mockito.kotlin.verify
 
 @ExperimentalCoroutinesApi
 @RunWith(JUnitParamsRunner::class)
-class KeyCodeTriggerKeyMapFromOtherAppsControllerTest {
+class TriggerKeyMapFromOtherAppsControllerTest {
 
     companion object {
         private const val LONG_PRESS_DELAY = 500L
@@ -79,7 +79,7 @@ class KeyCodeTriggerKeyMapFromOtherAppsControllerTest {
         }
 
         detectConstraintsUseCase = mock {
-            on { getSnapshot() } doReturn ConstraintSnapshotImpl(
+            on { getSnapshot() } doReturn LazyConstraintSnapshot(
                 accessibilityService = mock(),
                 mediaAdapter = mock(),
                 devicesAdapter = mock(),
@@ -105,30 +105,29 @@ class KeyCodeTriggerKeyMapFromOtherAppsControllerTest {
      * #707
      */
     @Test
-    fun `Key map with repeat option, don't repeat when triggered if repeat until released`() =
-        runTest(testDispatcher) {
-            // GIVEN
-            val action =
-                KeyMapAction(
-                    data = ActionData.InputKeyEvent(keyCode = 1),
-                    repeat = true,
-                    repeatMode = RepeatMode.TRIGGER_RELEASED,
-                )
-            val keyMap = KeyMap(
-                actionList = listOf(action),
-                trigger = Trigger(triggerFromOtherApps = true),
+    fun `Key map with repeat option, don't repeat when triggered if repeat until released`() = runTest(testDispatcher) {
+        // GIVEN
+        val action =
+            KeyMapAction(
+                data = ActionData.InputKeyEvent(keyCode = 1),
+                repeat = true,
+                repeatMode = RepeatMode.TRIGGER_RELEASED,
             )
-            keyMapListFlow.value = listOf(keyMap)
+        val keyMap = KeyMap(
+            actionList = listOf(action),
+            trigger = Trigger(triggerFromOtherApps = true),
+        )
+        keyMapListFlow.value = listOf(keyMap)
 
-            advanceUntilIdle()
+        advanceUntilIdle()
 
-            // WHEN
-            controller.onDetected(keyMap.uid)
-            delay(500)
-            controller.reset() // stop any repeating that might be happening
-            advanceUntilIdle()
+        // WHEN
+        controller.onDetected(keyMap.uid)
+        delay(500)
+        controller.reset() // stop any repeating that might be happening
+        advanceUntilIdle()
 
-            // THEN
-            verify(performActionsUseCase, times(1)).perform(action.data)
-        }
+        // THEN
+        verify(performActionsUseCase, times(1)).perform(action.data)
+    }
 }

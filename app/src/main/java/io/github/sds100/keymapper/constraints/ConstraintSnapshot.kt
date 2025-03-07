@@ -24,7 +24,7 @@ import timber.log.Timber
 /**
  * This allows constraints to be checked lazily because some system calls take a significant amount of time.
  */
-class ConstraintSnapshotImpl(
+class LazyConstraintSnapshot(
     accessibilityService: IAccessibilityService,
     mediaAdapter: MediaAdapter,
     devicesAdapter: DevicesAdapter,
