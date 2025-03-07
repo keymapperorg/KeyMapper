@@ -4,11 +4,12 @@ import io.github.sds100.keymapper.backup.BackupManager
 import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.State
-import io.github.sds100.keymapper.util.mapData
+import io.github.sds100.keymapper.util.dataOrNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.withContext
 
 /**
@@ -25,17 +26,27 @@ class ListKeyMapsUseCaseImpl(
     override val keyMapList: Flow<State<List<KeyMap>>> = channelFlow {
         send(State.Loading)
 
-        keyMapRepository.keyMapList.collectLatest { keyMapEntitiesState ->
+        combine(
+            keyMapRepository.keyMapList,
+            floatingButtonRepository.buttonsList,
+        ) { keyMapListState, buttonListState ->
+            Pair(keyMapListState, buttonListState)
+        }.collectLatest { (keyMapListState, buttonListState) ->
             send(State.Loading)
 
             withContext(Dispatchers.Default) {
-                val keyMaps = keyMapEntitiesState.mapData { keyMapEntities ->
-                    keyMapEntities.map { keyMap ->
-                        KeyMapEntityMapper.fromEntity(keyMap, floatingButtonRepository)
-                    }
+                if (keyMapListState is State.Loading || buttonListState is State.Loading) {
+                    send(State.Loading)
                 }
 
-                send(keyMaps)
+                val keyMapList = keyMapListState.dataOrNull() ?: return@withContext
+                val buttonList = buttonListState.dataOrNull() ?: return@withContext
+
+                val keyMaps = keyMapList.map { keyMap ->
+                    KeyMapEntityMapper.fromEntity(keyMap, buttonList)
+                }
+
+                send(State.Data(keyMaps))
             }
         }
     }

@@ -6,8 +6,8 @@ import io.github.sds100.keymapper.actions.canBeHeldDown
 import io.github.sds100.keymapper.constraints.ConstraintEntityMapper
 import io.github.sds100.keymapper.constraints.ConstraintModeEntityMapper
 import io.github.sds100.keymapper.constraints.ConstraintState
+import io.github.sds100.keymapper.data.entities.FloatingButtonEntityWithLayout
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
-import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
 import io.github.sds100.keymapper.mappings.Mapping
 import io.github.sds100.keymapper.mappings.keymaps.detection.KeyMapController
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
@@ -104,7 +104,7 @@ fun KeyMap.requiresImeKeyEventForwardingInPhoneCall(triggerKey: TriggerKey): Boo
 object KeyMapEntityMapper {
     suspend fun fromEntity(
         entity: KeyMapEntity,
-        floatingButtonRepository: FloatingButtonRepository,
+        floatingButtons: List<FloatingButtonEntityWithLayout>,
     ): KeyMap {
         val actionList = entity.actionList.mapNotNull { KeymapActionEntityMapper.fromEntity(it) }
 
@@ -116,7 +116,7 @@ object KeyMapEntityMapper {
         return KeyMap(
             dbId = entity.id,
             uid = entity.uid,
-            trigger = TriggerEntityMapper.fromEntity(entity.trigger, floatingButtonRepository),
+            trigger = TriggerEntityMapper.fromEntity(entity.trigger, floatingButtons),
             actionList = actionList,
             constraintState = ConstraintState(constraintList, constraintMode),
             isEnabled = entity.isEnabled,

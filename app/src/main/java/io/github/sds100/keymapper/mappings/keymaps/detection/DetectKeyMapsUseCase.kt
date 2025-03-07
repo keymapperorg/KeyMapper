@@ -23,12 +23,12 @@ import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import io.github.sds100.keymapper.util.InputEventType
 import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.dataOrNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 import timber.log.Timber
 
 /**
@@ -50,24 +50,21 @@ class DetectKeyMapsUseCaseImpl(
 ) : DetectKeyMapsUseCase,
     DetectMappingUseCase by detectMappingUseCase {
 
-    override val allKeyMapList: Flow<List<KeyMap>> =
-        keyMapRepository.keyMapList
-            .mapNotNull { state ->
-                if (state is State.Data) {
-                    state.data
-                } else {
-                    null
-                }
-            }
-            .map { entityList ->
-                entityList.map {
-                    KeyMapEntityMapper.fromEntity(
-                        it,
-                        floatingButtonRepository,
-                    )
-                }
-            }
-            .flowOn(Dispatchers.Default)
+    override val allKeyMapList: Flow<List<KeyMap>> = combine(
+        keyMapRepository.keyMapList,
+        floatingButtonRepository.buttonsList,
+    ) { keyMapListState, buttonListState ->
+        if (keyMapListState is State.Loading || buttonListState is State.Loading) {
+            return@combine emptyList()
+        }
+
+        val keyMapList = keyMapListState.dataOrNull() ?: return@combine emptyList()
+        val buttonList = buttonListState.dataOrNull() ?: return@combine emptyList()
+
+        keyMapList.map { keyMap ->
+            KeyMapEntityMapper.fromEntity(keyMap, buttonList)
+        }
+    }.flowOn(Dispatchers.Default)
 
     override val keyMapsToTriggerFromOtherApps: Flow<List<KeyMap>> =
         allKeyMapList.map { keyMapList ->

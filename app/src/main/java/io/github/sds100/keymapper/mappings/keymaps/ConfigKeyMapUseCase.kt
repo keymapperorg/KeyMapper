@@ -5,6 +5,7 @@ import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.data.Keys
+import io.github.sds100.keymapper.data.entities.FloatingButtonEntityWithLayout
 import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
 import io.github.sds100.keymapper.data.repositories.FloatingLayoutRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
@@ -34,6 +35,8 @@ import io.github.sds100.keymapper.util.firstBlocking
 import io.github.sds100.keymapper.util.ifIsData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 /**
@@ -508,7 +511,12 @@ class ConfigKeyMapUseCaseImpl(
 
     override suspend fun loadKeyMap(uid: String) {
         val entity = keyMapRepository.get(uid) ?: return
-        val keyMap = KeyMapEntityMapper.fromEntity(entity, floatingButtonRepository)
+        val floatingButtons = floatingButtonRepository.buttonsList
+            .filterIsInstance<State.Data<List<FloatingButtonEntityWithLayout>>>()
+            .map { it.data }
+            .first()
+
+        val keyMap = KeyMapEntityMapper.fromEntity(entity, floatingButtons)
 
         mapping.value = State.Data(keyMap)
     }

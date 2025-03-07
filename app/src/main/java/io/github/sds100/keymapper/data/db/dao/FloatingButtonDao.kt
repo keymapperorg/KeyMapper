@@ -31,7 +31,7 @@ interface FloatingButtonDao {
     suspend fun getByUidWithLayout(uid: String): FloatingButtonEntityWithLayout?
 
     @Query("SELECT * FROM $TABLE_NAME")
-    fun getAll(): Flow<List<FloatingButtonEntity>>
+    fun getAll(): Flow<List<FloatingButtonEntityWithLayout>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(vararg button: FloatingButtonEntity)

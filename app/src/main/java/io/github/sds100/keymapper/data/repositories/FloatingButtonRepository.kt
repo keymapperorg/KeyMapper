@@ -9,12 +9,13 @@ import io.github.sds100.keymapper.util.State
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 interface FloatingButtonRepository {
-    val buttonsList: Flow<State<List<FloatingButtonEntity>>>
+    val buttonsList: Flow<State<List<FloatingButtonEntityWithLayout>>>
 
     fun insert(vararg button: FloatingButtonEntity)
     fun update(button: FloatingButtonEntity)
@@ -27,7 +28,7 @@ class RoomFloatingButtonRepository(
     private val coroutineScope: CoroutineScope,
     private val dispatchers: DispatcherProvider = DefaultDispatcherProvider(),
 ) : FloatingButtonRepository {
-    override val buttonsList = dao.getAll()
+    override val buttonsList: StateFlow<State<List<FloatingButtonEntityWithLayout>>> = dao.getAll()
         .map { State.Data(it) }
         .stateIn(coroutineScope, SharingStarted.Eagerly, State.Loading)
 

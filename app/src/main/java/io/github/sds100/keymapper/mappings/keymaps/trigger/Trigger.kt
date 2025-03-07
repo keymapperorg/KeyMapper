@@ -2,11 +2,11 @@ package io.github.sds100.keymapper.mappings.keymaps.trigger
 
 import io.github.sds100.keymapper.data.entities.AssistantTriggerKeyEntity
 import io.github.sds100.keymapper.data.entities.Extra
+import io.github.sds100.keymapper.data.entities.FloatingButtonEntityWithLayout
 import io.github.sds100.keymapper.data.entities.FloatingButtonKeyEntity
 import io.github.sds100.keymapper.data.entities.KeyCodeTriggerKeyEntity
 import io.github.sds100.keymapper.data.entities.TriggerEntity
 import io.github.sds100.keymapper.data.entities.getData
-import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.util.valueOrNull
@@ -61,14 +61,14 @@ data class Trigger(
 object TriggerEntityMapper {
     suspend fun fromEntity(
         entity: TriggerEntity,
-        floatingButtonRepository: FloatingButtonRepository,
+        floatingButtons: List<FloatingButtonEntityWithLayout>,
     ): Trigger {
         val keys = entity.keys.map { key ->
             when (key) {
                 is AssistantTriggerKeyEntity -> AssistantTriggerKey.fromEntity(key)
                 is KeyCodeTriggerKeyEntity -> KeyCodeTriggerKey.fromEntity(key)
                 is FloatingButtonKeyEntity -> {
-                    val floatingButton = floatingButtonRepository.get(key.buttonUid)
+                    val floatingButton = floatingButtons.find { it.button.uid == key.buttonUid }
                     FloatingButtonKey.fromEntity(key, floatingButton)
                 }
             }
