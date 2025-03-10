@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.backup.BackupRestoreMappingsUseCase
+import io.github.sds100.keymapper.floating.ListFloatingLayoutsUseCase
+import io.github.sds100.keymapper.floating.ListFloatingLayoutsViewModel
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapListViewModel
 import io.github.sds100.keymapper.mappings.fingerprintmaps.ListFingerprintMapsUseCase
@@ -64,6 +66,7 @@ class HomeViewModel(
     resourceProvider: ResourceProvider,
     private val setupGuiKeyboard: SetupGuiKeyboardUseCase,
     private val sortKeyMaps: SortKeyMapsUseCase,
+    private val listFloatingLayouts: ListFloatingLayoutsUseCase,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
     PopupViewModel by PopupViewModelImpl(),
@@ -106,6 +109,13 @@ class HomeViewModel(
             viewModelScope,
             listFingerprintMaps,
             resourceProvider,
+        )
+    }
+
+    val listFloatingLayoutsViewModel by lazy {
+        ListFloatingLayoutsViewModel(
+            viewModelScope,
+            listFloatingLayouts,
         )
     }
 
@@ -553,6 +563,7 @@ class HomeViewModel(
         private val resourceProvider: ResourceProvider,
         private val setupGuiKeyboard: SetupGuiKeyboardUseCase,
         private val sortKeyMaps: SortKeyMapsUseCase,
+        private val listFloatingLayouts: ListFloatingLayoutsUseCase,
     ) : ViewModelProvider.NewInstanceFactory() {
 
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeViewModel(
@@ -566,6 +577,7 @@ class HomeViewModel(
             resourceProvider,
             setupGuiKeyboard,
             sortKeyMaps,
+            listFloatingLayouts,
         ) as T
     }
 }

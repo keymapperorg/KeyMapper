@@ -37,7 +37,7 @@ class ChooseActionFragment : SimpleRecyclerViewFragment<ListItem>() {
 
     override var searchStateKey: String? = "choose_action_fragment_search"
 
-    private val args: ChooseActionFragmentArgs by navArgs()
+    private val args: ChooseActionFragmentArgs by navArgs<ChooseActionFragmentArgs>()
 
     private val viewModel by viewModels<ChooseActionViewModel> {
         Inject.chooseActionViewModel(requireContext())

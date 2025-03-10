@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.BubbleChart
-import androidx.compose.material.icons.outlined.Fingerprint
 import androidx.compose.material.icons.outlined.Gamepad
 import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -46,6 +45,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.floating.FloatingLayoutsScreen
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapListScreen
 import io.github.sds100.keymapper.mappings.keymaps.trigger.DpadTriggerSetupBottomSheet
 import io.github.sds100.keymapper.util.ui.NavDestination
@@ -97,10 +97,10 @@ fun HomeScreen(viewModel: HomeViewModel) {
             )
         },
         floatingButtonsContent = {
-            Text("Floating buttons")
-        },
-        fingerprintMapsContent = {
-            Text("Fingerprint maps")
+            FloatingLayoutsScreen(
+                Modifier.fillMaxSize(),
+                viewModel = viewModel.listFloatingLayoutsViewModel,
+            )
         },
         onNewKeyMapClick = {
             scope.launch {
@@ -122,7 +122,6 @@ private fun HomeScreen(
     onMenuClick: () -> Unit = {},
     keyMapsContent: @Composable () -> Unit,
     floatingButtonsContent: @Composable () -> Unit,
-    fingerprintMapsContent: @Composable () -> Unit,
     onNewKeyMapClick: () -> Unit = {},
     onNewFloatingLayoutCLick: () -> Unit = {},
 ) {
@@ -140,12 +139,6 @@ private fun HomeScreen(
             HomeDestination.FloatingButtons,
             label = stringResource(R.string.home_nav_bar_floating_buttons),
             icon = Icons.Outlined.BubbleChart,
-        ),
-        // TODO only show fingerprint maps if they are supported.
-        HomeNavBarItem(
-            HomeDestination.FingerprintMaps,
-            label = stringResource(R.string.home_nav_bar_fingerprint_maps),
-            icon = Icons.Outlined.Fingerprint,
         ),
     )
     val snackbarHostState = remember { SnackbarHostState() }
@@ -233,9 +226,6 @@ private fun HomeScreen(
             composable(HomeDestination.FloatingButtons.route) {
                 floatingButtonsContent()
             }
-            composable(HomeDestination.FingerprintMaps.route) {
-                fingerprintMapsContent()
-            }
         }
     }
 }
@@ -262,5 +252,5 @@ private fun HomeAppBar(onMenuClick: () -> Unit) {
 @Preview
 @Composable
 private fun NavigationPreview() {
-    HomeScreen(keyMapsContent = {}, floatingButtonsContent = {}, fingerprintMapsContent = {})
+    HomeScreen(keyMapsContent = {}, floatingButtonsContent = {})
 }

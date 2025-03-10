@@ -191,7 +191,7 @@ dependencies {
     implementation "dev.rikka.shizuku:provider:$shizuku_version"
     implementation "org.lsposed.hiddenapibypass:hiddenapibypass:4.3"
     proImplementation 'com.revenuecat.purchases:purchases:8.11.0'
-
+    proImplementation "com.airbnb.android:lottie-compose:6.6.3"
 
     // splitties
     implementation "com.louiscad.splitties:splitties-bitflags:$splitties_version"

@@ -9,7 +9,6 @@ import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.viewpager2.widget.ViewPager2
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.databinding.FragmentComposeBinding
 import io.github.sds100.keymapper.system.files.FileUtils
@@ -52,16 +51,7 @@ class HomeFragment : Fragment() {
             homeViewModel.onChoseRestoreFile(it.toString())
         }
 
-    private val onPageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
-        override fun onPageSelected(position: Int) {
-//            if (position == 0) {
-//                binding.fab.show()
-//            } else {
-//                binding.fab.hide()
-//            }
-        }
-    }
-
+    // TODO: quick start guide tap target. Delete tap target library?
     private var quickStartGuideTapTarget: MaterialTapTargetPrompt? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
