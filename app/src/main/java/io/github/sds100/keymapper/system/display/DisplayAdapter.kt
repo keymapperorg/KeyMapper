@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface DisplayAdapter {
     val isScreenOn: Flow<Boolean>
+    val orientation: Flow<Orientation>
     val cachedOrientation: Orientation
     val size: SizeKM
 

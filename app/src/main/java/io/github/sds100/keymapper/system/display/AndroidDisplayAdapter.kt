@@ -17,8 +17,10 @@ import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.getRealDisplaySize
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
 
 /**
@@ -63,7 +65,11 @@ class AndroidDisplayAdapter(
     override val isScreenOn = MutableStateFlow(true)
 
     private val displayManager: DisplayManager = ctx.getSystemService()!!
-    override var cachedOrientation: Orientation = getDisplayOrientation()
+
+    private val _orientation = MutableStateFlow(getDisplayOrientation())
+    override val orientation: Flow<Orientation> = _orientation
+    override val cachedOrientation: Orientation
+        get() = _orientation.value
 
     override val size: SizeKM
         get() = ctx.getRealDisplaySize()
@@ -72,15 +78,15 @@ class AndroidDisplayAdapter(
         displayManager.registerDisplayListener(
             object : DisplayManager.DisplayListener {
                 override fun onDisplayAdded(displayId: Int) {
-                    cachedOrientation = getDisplayOrientation()
+                    _orientation.update { getDisplayOrientation() }
                 }
 
                 override fun onDisplayRemoved(displayId: Int) {
-                    cachedOrientation = getDisplayOrientation()
+                    _orientation.update { getDisplayOrientation() }
                 }
 
                 override fun onDisplayChanged(displayId: Int) {
-                    cachedOrientation = getDisplayOrientation()
+                    _orientation.update { getDisplayOrientation() }
                 }
             },
             null,
@@ -215,9 +221,7 @@ class AndroidDisplayAdapter(
     }
 
     override fun fetchOrientation(): Orientation {
-        cachedOrientation = getDisplayOrientation()
-
-        return cachedOrientation
+        return _orientation.updateAndGet { getDisplayOrientation() }
     }
 
     private fun getDisplayOrientation(): Orientation = when (val sdkRotation = displayManager.displays[0].rotation) {

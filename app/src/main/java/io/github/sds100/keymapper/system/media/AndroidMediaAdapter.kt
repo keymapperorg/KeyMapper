@@ -13,6 +13,9 @@ import io.github.sds100.keymapper.system.volume.VolumeStream
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import java.io.FileNotFoundException
 
 /**
@@ -23,35 +26,36 @@ class AndroidMediaAdapter(context: Context) : MediaAdapter {
 
     private val audioManager: AudioManager by lazy { ctx.getSystemService()!! }
 
-    private var activeMediaSessions: List<MediaController> = emptyList()
+    private val activeMediaSessions: MutableStateFlow<List<MediaController>> =
+        MutableStateFlow(emptyList())
 
     private var mediaPlayerLock = Any()
     private var mediaPlayer: MediaPlayer? = null
 
-    override fun fastForward(packageName: String?): Result<*> =
-        sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_FAST_FORWARD, packageName)
+    override fun fastForward(packageName: String?): Result<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_FAST_FORWARD, packageName)
 
-    override fun rewind(packageName: String?): Result<*> =
-        sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_REWIND, packageName)
+    override fun rewind(packageName: String?): Result<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_REWIND, packageName)
 
-    override fun play(packageName: String?): Result<*> =
-        sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PLAY, packageName)
+    override fun play(packageName: String?): Result<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PLAY, packageName)
 
-    override fun pause(packageName: String?): Result<*> =
-        sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PAUSE, packageName)
+    override fun pause(packageName: String?): Result<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PAUSE, packageName)
 
-    override fun playPause(packageName: String?): Result<*> =
-        sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE, packageName)
+    override fun playPause(packageName: String?): Result<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE, packageName)
 
-    override fun previousTrack(packageName: String?): Result<*> =
-        sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PREVIOUS, packageName)
+    override fun previousTrack(packageName: String?): Result<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PREVIOUS, packageName)
 
-    override fun nextTrack(packageName: String?): Result<*> =
-        sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_NEXT, packageName)
+    override fun nextTrack(packageName: String?): Result<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_NEXT, packageName)
 
     override fun getPackagesPlayingMedia(): List<String> = activeMediaSessions
+        .value
         .filter { it.playbackState?.state == PlaybackState.STATE_PLAYING }
         .map { it.packageName }
+
+    override fun getPackagesPlayingMediaFlow() = activeMediaSessions
+        .map { list ->
+            list.filter { it.playbackState?.state == PlaybackState.STATE_PLAYING }
+                .map { it.packageName }
+        }
 
     override fun playSoundFile(uri: String, stream: VolumeStream): Result<*> {
         try {
@@ -106,7 +110,7 @@ class AndroidMediaAdapter(context: Context) : MediaAdapter {
     }
 
     fun onActiveMediaSessionChange(mediaSessions: List<MediaController>) {
-        activeMediaSessions = mediaSessions
+        activeMediaSessions.update { mediaSessions }
     }
 
     private fun sendMediaKeyEvent(keyCode: Int, packageName: String?): Result<*> {
@@ -114,7 +118,7 @@ class AndroidMediaAdapter(context: Context) : MediaAdapter {
             audioManager.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, keyCode))
             audioManager.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_UP, keyCode))
         } else {
-            for (session in activeMediaSessions) {
+            for (session in activeMediaSessions.value) {
                 if (session.packageName == packageName) {
                     session.dispatchMediaButtonEvent(KeyEvent(KeyEvent.ACTION_DOWN, keyCode))
                     session.dispatchMediaButtonEvent(KeyEvent(KeyEvent.ACTION_UP, keyCode))

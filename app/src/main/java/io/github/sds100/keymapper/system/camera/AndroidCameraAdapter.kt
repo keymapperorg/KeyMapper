@@ -10,6 +10,10 @@ import androidx.core.content.getSystemService
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import timber.log.Timber
 import kotlin.collections.set
 
@@ -21,7 +25,11 @@ class AndroidCameraAdapter(context: Context) : CameraAdapter {
 
     private val cameraManager: CameraManager by lazy { ctx.getSystemService()!! }
 
-    private val isFlashEnabledMap = mutableMapOf<CameraLens, Boolean>()
+    private val initialMap = mapOf(
+        CameraLens.FRONT to false,
+        CameraLens.BACK to false,
+    )
+    private val isFlashEnabledMap = MutableStateFlow(initialMap)
 
     private val torchCallback by lazy {
         @RequiresApi(Build.VERSION_CODES.M)
@@ -35,11 +43,11 @@ class AndroidCameraAdapter(context: Context) : CameraAdapter {
                         val lensFacing = camera.get(CameraCharacteristics.LENS_FACING)!!
 
                         when (lensFacing) {
-                            CameraCharacteristics.LENS_FACING_FRONT -> isFlashEnabledMap[CameraLens.FRONT] =
-                                enabled
+                            CameraCharacteristics.LENS_FACING_FRONT ->
+                                updateState(CameraLens.FRONT, enabled)
 
-                            CameraCharacteristics.LENS_FACING_BACK -> isFlashEnabledMap[CameraLens.BACK] =
-                                enabled
+                            CameraCharacteristics.LENS_FACING_BACK ->
+                                updateState(CameraLens.BACK, enabled)
                         }
                     } catch (e: Exception) {
                         Timber.e(e)
@@ -50,9 +58,6 @@ class AndroidCameraAdapter(context: Context) : CameraAdapter {
     }
 
     init {
-        isFlashEnabledMap[CameraLens.FRONT] = false
-        isFlashEnabledMap[CameraLens.BACK] = false
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             cameraManager.registerTorchCallback(torchCallback, null)
         }
@@ -77,10 +82,13 @@ class AndroidCameraAdapter(context: Context) : CameraAdapter {
 
     override fun disableFlashlight(lens: CameraLens): Result<*> = setFlashlightMode(false, lens)
 
-    override fun toggleFlashlight(lens: CameraLens): Result<*> =
-        setFlashlightMode(!isFlashEnabledMap[lens]!!, lens)
+    override fun toggleFlashlight(lens: CameraLens): Result<*> = setFlashlightMode(!isFlashEnabledMap.value[lens]!!, lens)
 
-    override fun isFlashlightOn(lens: CameraLens): Boolean = isFlashEnabledMap[lens] ?: false
+    override fun isFlashlightOn(lens: CameraLens): Boolean = isFlashEnabledMap.value[lens] ?: false
+
+    override fun isFlashlightOnFlow(lens: CameraLens): Flow<Boolean> {
+        return isFlashEnabledMap.map { it[lens] ?: false }
+    }
 
     private fun setFlashlightMode(
         enabled: Boolean,
@@ -128,6 +136,12 @@ class AndroidCameraAdapter(context: Context) : CameraAdapter {
         return when (lens) {
             CameraLens.FRONT -> Error.FrontFlashNotFound
             CameraLens.BACK -> Error.BackFlashNotFound
+        }
+    }
+
+    private fun updateState(lens: CameraLens, enabled: Boolean) {
+        isFlashEnabledMap.update { map ->
+            map.toMutableMap().apply { this[lens] = enabled }
         }
     }
 }
