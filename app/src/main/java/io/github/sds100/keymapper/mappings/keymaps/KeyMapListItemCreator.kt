@@ -37,6 +37,8 @@ class KeyMapListItemCreator(
         showDeviceDescriptors: Boolean,
     ): KeyMapListItemModel.Content {
         val triggerDescription = buildString {
+            // TODO: These look ugly. Use compose icon separators. Just store the key
+            // descriptions as a string list.
             val separator = when (keyMap.trigger.mode) {
                 is TriggerMode.Parallel -> getString(R.string.plus)
                 is TriggerMode.Sequence -> getString(R.string.arrow)

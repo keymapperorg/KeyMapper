@@ -22,7 +22,6 @@ import androidx.compose.material.icons.outlined.FlashlightOn
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
@@ -387,7 +386,6 @@ private fun CompactChip(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CompactChip(
     modifier: Modifier = Modifier,

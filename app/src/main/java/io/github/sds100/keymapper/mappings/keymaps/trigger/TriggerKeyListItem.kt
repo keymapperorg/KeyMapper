@@ -1,5 +1,8 @@
 package io.github.sds100.keymapper.mappings.keymaps.trigger
 
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,33 +25,52 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.compose.draggable.DragDropState
 import io.github.sds100.keymapper.mappings.ClickType
 
 @Composable
 fun TriggerKeyListItem(
     modifier: Modifier = Modifier,
     model: TriggerKeyListItemModel,
+    index: Int,
     isDragging: Boolean,
     isReorderingEnabled: Boolean,
+    dragDropState: DragDropState? = null,
     onEditClick: () -> Unit = {},
     onRemoveClick: () -> Unit = {},
     onFixClick: (TriggerError) -> Unit = {},
 ) {
+    val draggableState = rememberDraggableState {
+        dragDropState?.onDrag(Offset(0f, it))
+    }
+
     Column(modifier = modifier.fillMaxWidth()) {
         ElevatedCard(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp),
+                .padding(start = 16.dp, end = 16.dp)
+                .draggable(
+                    state = draggableState,
+                    orientation = Orientation.Vertical,
+                    startDragImmediately = false,
+                    onDragStarted = { offset ->
+                        dragDropState?.onDragStart(index, offset)
+                    },
+                    onDragStopped = { dragDropState?.onDragInterrupted() },
+                ),
             colors = CardDefaults.elevatedCardColors(
                 containerColor = if (isDragging) {
                     MaterialTheme.colorScheme.surfaceContainerHighest
@@ -146,37 +168,41 @@ fun TriggerKeyListItem(
                     )
                 }
 
-                if (model.error != null) {
-                    FilledTonalButton(
-                        modifier = Modifier.padding(start = 8.dp, end = 8.dp),
-                        onClick = { onFixClick(model.error!!) },
-                        colors = ButtonDefaults.filledTonalButtonColors(
-                            containerColor = MaterialTheme.colorScheme.error,
-                            contentColor = MaterialTheme.colorScheme.onError,
-                        ),
-                    ) {
-                        Text(
-                            text = stringResource(R.string.button_fix),
+                CompositionLocalProvider(
+                    LocalMinimumInteractiveComponentSize provides 16.dp,
+                ) {
+                    if (model.error != null) {
+                        FilledTonalButton(
+                            modifier = Modifier.padding(start = 8.dp, end = 8.dp),
+                            onClick = { onFixClick(model.error!!) },
+                            colors = ButtonDefaults.filledTonalButtonColors(
+                                containerColor = MaterialTheme.colorScheme.error,
+                                contentColor = MaterialTheme.colorScheme.onError,
+                            ),
+                        ) {
+                            Text(
+                                text = stringResource(R.string.button_fix),
+                            )
+                        }
+                    }
+
+                    IconButton(onClick = onEditClick) {
+                        Icon(
+                            imageVector = Icons.Filled.Edit,
+                            contentDescription = stringResource(R.string.trigger_key_list_item_edit),
+                            tint = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.size(24.dp),
                         )
                     }
-                }
 
-                IconButton(onClick = onEditClick) {
-                    Icon(
-                        imageVector = Icons.Filled.Edit,
-                        contentDescription = stringResource(R.string.trigger_key_list_item_edit),
-                        tint = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.size(24.dp),
-                    )
-                }
-
-                IconButton(onClick = onRemoveClick) {
-                    Icon(
-                        imageVector = Icons.Filled.Clear,
-                        contentDescription = stringResource(R.string.trigger_key_list_item_remove),
-                        tint = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.size(24.dp),
-                    )
+                    IconButton(onClick = onRemoveClick) {
+                        Icon(
+                            imageVector = Icons.Filled.Clear,
+                            contentDescription = stringResource(R.string.trigger_key_list_item_remove),
+                            tint = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.size(24.dp),
+                        )
+                    }
                 }
             }
         }
@@ -289,8 +315,9 @@ private fun KeyCodePreview() {
             linkType = TriggerKeyLinkType.ARROW,
             error = null,
         ),
-        isReorderingEnabled = true,
         isDragging = false,
+        isReorderingEnabled = true,
+        index = 0,
     )
 }
 
@@ -306,8 +333,9 @@ private fun NoDragPreview() {
             linkType = TriggerKeyLinkType.ARROW,
             error = null,
         ),
-        isReorderingEnabled = false,
         isDragging = false,
+        isReorderingEnabled = false,
+        index = 0,
     )
 }
 
@@ -322,8 +350,9 @@ private fun AssistantPreview() {
             linkType = TriggerKeyLinkType.ARROW,
             error = null,
         ),
-        isReorderingEnabled = true,
         isDragging = false,
+        isReorderingEnabled = true,
+        index = 0,
     )
 }
 
@@ -338,8 +367,9 @@ private fun AssistantErrorPreview() {
             linkType = TriggerKeyLinkType.ARROW,
             error = TriggerError.ASSISTANT_NOT_SELECTED,
         ),
-        isReorderingEnabled = true,
         isDragging = false,
+        isReorderingEnabled = true,
+        index = 0,
     )
 }
 
@@ -355,8 +385,9 @@ private fun FloatingButtonPreview() {
             linkType = TriggerKeyLinkType.ARROW,
             error = null,
         ),
-        isReorderingEnabled = false,
         isDragging = false,
+        isReorderingEnabled = false,
+        index = 0,
     )
 }
 
@@ -372,7 +403,8 @@ private fun FloatingButtonErrorPreview() {
             linkType = TriggerKeyLinkType.ARROW,
             error = TriggerError.FLOATING_BUTTON_DELETED,
         ),
-        isReorderingEnabled = false,
         isDragging = false,
+        isReorderingEnabled = false,
+        index = 0,
     )
 }

@@ -38,7 +38,6 @@ import androidx.window.core.layout.WindowHeightSizeClass
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.compose.draggable.DraggableItem
-import io.github.sds100.keymapper.compose.draggable.dragContainer
 import io.github.sds100.keymapper.compose.draggable.rememberDragDropState
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.util.State
@@ -371,13 +370,7 @@ private fun TriggerList(
     // Use dragContainer rather than .draggable() modifier because that causes
     // dragging the first item to be always be dropped in the next position.
     LazyColumn(
-        modifier = modifier.let { modifier ->
-            if (isReorderingEnabled) {
-                modifier.dragContainer(dragDropState)
-            } else {
-                modifier
-            }
-        },
+        modifier = modifier,
         state = lazyListState,
         contentPadding = PaddingValues(vertical = 8.dp),
     ) {
@@ -393,10 +386,12 @@ private fun TriggerList(
                 TriggerKeyListItem(
                     modifier = Modifier.fillMaxWidth(),
                     model = model,
+                    index = index,
                     isDragging = isDragging,
                     isReorderingEnabled = isReorderingEnabled,
-                    onRemoveClick = { onRemoveClick(model.id) },
+                    dragDropState = dragDropState,
                     onEditClick = { onEditClick(model.id) },
+                    onRemoveClick = { onRemoveClick(model.id) },
                     onFixClick = onFixErrorClick,
                 )
             }
