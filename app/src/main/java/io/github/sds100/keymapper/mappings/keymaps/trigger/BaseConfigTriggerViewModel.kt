@@ -481,6 +481,9 @@ abstract class BaseConfigTriggerViewModel(
                 RecordTriggerState.Idle,
                 -> recordTrigger.startRecording()
             }
+
+            // Show dialog if the accessibility service is disabled or crashed
+            handleServiceEventResult(result)
         }
     }
 
