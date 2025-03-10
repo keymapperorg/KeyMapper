@@ -1485,6 +1485,8 @@
     <string name="floating_buttons_product_description">Floating buttons display over the apps you want. They work just like real buttons, and you can place, style, and map them however you like.</string>
     <string name="floating_button_text_key_map_list_item">Floating button %s (%s layout)</string>
     <string name="deleted_floating_button_text_key_map_list_item">Deleted floating button</string>
+    <string name="floating_buttons_all_done_constraints_dialog_title">Constraints</string>
+    <string name="floating_buttons_all_done_constraints_dialog_message">Do you want this button to only be on screen in some apps? Add an “App in foreground” constraint for this key map in the “Constraints” tab.</string>
 
     <!-- Home screen -->
     <string name="home_nav_bar_key_maps">Key maps</string>
