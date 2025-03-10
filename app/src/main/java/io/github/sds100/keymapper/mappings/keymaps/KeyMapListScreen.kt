@@ -16,7 +16,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Error
 import androidx.compose.material.icons.outlined.FlashlightOn
 import androidx.compose.material3.AssistChipDefaults
@@ -34,8 +37,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -211,19 +217,12 @@ private fun KeyMapListItem(
                     )
                 }
 
-                if (model.content.triggerDescription != null) {
-                    Row {
-                        Text(
-                            text = stringResource(R.string.trigger_header),
-                            style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.Bold,
-                        )
-                        Spacer(Modifier.width(4.dp))
-                        Text(
-                            text = model.content.triggerDescription,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                    }
+                if (model.content.triggerKeys.isNotEmpty()) {
+                    TriggerDescription(
+                        modifier = Modifier.fillMaxWidth(),
+                        triggerKeys = model.content.triggerKeys,
+                        separator = model.content.triggerSeparatorIcon,
+                    )
 
                     Spacer(Modifier.height(4.dp))
                 }
@@ -312,6 +311,47 @@ private fun KeyMapListItem(
             }
         }
     }
+}
+
+@Composable
+private fun TriggerDescription(
+    modifier: Modifier = Modifier,
+    triggerKeys: List<String>,
+    separator: ImageVector,
+) {
+    val text = buildAnnotatedString {
+        append(stringResource(R.string.trigger_header))
+        append(" ")
+
+        for ((index, key) in triggerKeys.withIndex()) {
+            append(key)
+
+            if (index < triggerKeys.lastIndex) {
+                append(" ")
+                appendInlineContent("separator")
+                append(" ")
+            }
+        }
+    }
+
+    val inlineContent = mapOf(
+        "separator" to InlineTextContent(
+            placeholder = Placeholder(
+                width = 14.sp,
+                height = 14.sp,
+                placeholderVerticalAlign = PlaceholderVerticalAlign.TextCenter,
+            ),
+        ) {
+            Icon(imageVector = separator, contentDescription = null)
+        },
+    )
+
+    Text(
+        modifier = modifier,
+        text = text,
+        inlineContent = inlineContent,
+        style = MaterialTheme.typography.bodyMedium,
+    )
 }
 
 @Composable
@@ -457,7 +497,8 @@ private fun sampleList(): List<KeyMapListItemModel> {
             isSelected = true,
             KeyMapListItemModel.Content(
                 uid = "0",
-                triggerDescription = "Volume down + Volume up",
+                triggerKeys = listOf("Volume down", "Volume up"),
+                triggerSeparatorIcon = Icons.Outlined.Add,
                 actions = listOf(
                     ComposeChipModel.Normal(
                         id = "0",
@@ -502,7 +543,8 @@ private fun sampleList(): List<KeyMapListItemModel> {
             isSelected = false,
             content = KeyMapListItemModel.Content(
                 uid = "1",
-                triggerDescription = null,
+                triggerKeys = emptyList(),
+                triggerSeparatorIcon = Icons.Outlined.Add,
                 actions = emptyList(),
                 constraintMode = ConstraintMode.OR,
                 constraints = emptyList(),

@@ -1,5 +1,8 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowForward
+import androidx.compose.material.icons.outlined.Add
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.BaseMappingListItemCreator
 import io.github.sds100.keymapper.mappings.ClickType
@@ -36,25 +39,16 @@ class KeyMapListItemCreator(
         keyMap: KeyMap,
         showDeviceDescriptors: Boolean,
     ): KeyMapListItemModel.Content {
-        val triggerDescription = buildString {
-            // TODO: These look ugly. Use compose icon separators. Just store the key
-            // descriptions as a string list.
-            val separator = when (keyMap.trigger.mode) {
-                is TriggerMode.Parallel -> getString(R.string.plus)
-                is TriggerMode.Sequence -> getString(R.string.arrow)
-                is TriggerMode.Undefined -> null
-            }
+        val triggerSeparator = when (keyMap.trigger.mode) {
+            is TriggerMode.Parallel -> Icons.Outlined.Add
+            else -> Icons.AutoMirrored.Outlined.ArrowForward
+        }
 
-            keyMap.trigger.keys.forEachIndexed { index, key ->
-                if (index > 0) {
-                    append(" $separator ")
-                }
-
-                when (key) {
-                    is AssistantTriggerKey -> appendAssistantTriggerKeyName(key)
-                    is KeyCodeTriggerKey -> appendKeyCodeTriggerKeyName(key, showDeviceDescriptors)
-                    is FloatingButtonKey -> appendFloatingButtonKeyName(key)
-                }
+        val triggerKeys = keyMap.trigger.keys.map { key ->
+            when (key) {
+                is AssistantTriggerKey -> assistantTriggerKeyName(key)
+                is KeyCodeTriggerKey -> keyCodeTriggerKeyName(key, showDeviceDescriptors)
+                is FloatingButtonKey -> floatingButtonKeyName(key)
             }
         }
 
@@ -93,7 +87,8 @@ class KeyMapListItemCreator(
 
         return KeyMapListItemModel.Content(
             uid = keyMap.uid,
-            triggerDescription = triggerDescription.takeIf { it.isNotBlank() },
+            triggerKeys = triggerKeys,
+            triggerSeparatorIcon = triggerSeparator,
             triggerErrors = triggerErrors,
             actions = actionChipList,
             constraints = constraintChipList,
@@ -103,7 +98,7 @@ class KeyMapListItemCreator(
         )
     }
 
-    private fun StringBuilder.appendFloatingButtonKeyName(key: FloatingButtonKey) {
+    private fun floatingButtonKeyName(key: FloatingButtonKey): String = buildString {
         when (key.clickType) {
             ClickType.LONG_PRESS -> append(longPressString).append(" ")
             ClickType.DOUBLE_PRESS -> append(doublePressString).append(" ")
@@ -125,10 +120,10 @@ class KeyMapListItemCreator(
         }
     }
 
-    private fun StringBuilder.appendKeyCodeTriggerKeyName(
+    private fun keyCodeTriggerKeyName(
         key: KeyCodeTriggerKey,
         showDeviceDescriptors: Boolean,
-    ) {
+    ): String = buildString {
         when (key.clickType) {
             ClickType.LONG_PRESS -> append(longPressString).append(" ")
             ClickType.DOUBLE_PRESS -> append(doublePressString).append(" ")
@@ -167,7 +162,7 @@ class KeyMapListItemCreator(
         append(")")
     }
 
-    private fun StringBuilder.appendAssistantTriggerKeyName(key: AssistantTriggerKey) {
+    private fun assistantTriggerKeyName(key: AssistantTriggerKey): String = buildString {
         when (key.clickType) {
             ClickType.DOUBLE_PRESS -> append(doublePressString).append(" ")
             else -> Unit
