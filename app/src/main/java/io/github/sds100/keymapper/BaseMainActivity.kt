@@ -3,15 +3,18 @@ package io.github.sds100.keymapper
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.MotionEvent
+import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.ui.graphics.toArgb
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
+import io.github.sds100.keymapper.compose.ComposeColors
 import io.github.sds100.keymapper.databinding.ActivityMainBinding
 import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerController
 import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
@@ -49,7 +52,16 @@ abstract class BaseMainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.auto(
+                ComposeColors.surfaceContainerLight.toArgb(),
+                ComposeColors.surfaceContainerDark.toArgb(),
+            ),
+            navigationBarStyle = SystemBarStyle.auto(
+                ComposeColors.surfaceContainerLight.toArgb(),
+                ComposeColors.surfaceContainerDark.toArgb(),
+            )
+        )
         super.onCreate(savedInstanceState)
 
         if (viewModel.previousNightMode != currentNightMode) {

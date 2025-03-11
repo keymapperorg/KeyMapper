@@ -2,8 +2,12 @@ package io.github.sds100.keymapper.home
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.core.os.bundleOf
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import com.github.appintro.AppIntro2
@@ -26,13 +30,20 @@ class FixAppKillingActivity : AppIntro2() {
     private lateinit var requestPermissionDelegate: RequestPermissionDelegate
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
+        showStatusBar(true)
         val rootView: View = findViewById(R.id.background)
 
-        // Don't show behind the status/navigation bar on Android 15+
-        rootView.fitsSystemWindows = true
-        showStatusBar(true)
+        ViewCompat.setOnApplyWindowInsetsListener(rootView) { v, insets ->
+            val insets =
+                insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout() or WindowInsetsCompat.Type.ime())
+            // Only show behind status bar and not behind the navigation bar.
+            v.updatePadding(left = insets.left, right = insets.right, bottom = insets.bottom)
+            WindowInsetsCompat.CONSUMED
+        }
+
         viewModel.showPopups(this, rootView)
 
         isSkipButtonEnabled = false
