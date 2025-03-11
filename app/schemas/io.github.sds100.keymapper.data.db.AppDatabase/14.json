@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 14,
-    "identityHash": "8b1e8c5fef7ebf574a47e6df78633618",
+    "identityHash": "815ed11f71dd77069869b6024357a58b",
     "entities": [
       {
         "tableName": "keymaps",
@@ -257,7 +257,17 @@
             "uid"
           ]
         },
-        "indices": [],
+        "indices": [
+          {
+            "name": "index_floating_buttons_layout_uid",
+            "unique": false,
+            "columnNames": [
+              "layout_uid"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_floating_buttons_layout_uid` ON `${TABLE_NAME}` (`layout_uid`)"
+          }
+        ],
         "foreignKeys": [
           {
             "table": "floating_layouts",
@@ -276,7 +286,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8b1e8c5fef7ebf574a47e6df78633618')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '815ed11f71dd77069869b6024357a58b')"
     ]
   }
 }
