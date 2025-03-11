@@ -83,7 +83,7 @@ class KeyMapListItemCreator(
                 keyMap,
                 key,
             )
-        }
+        }.distinct()
 
         return KeyMapListItemModel.Content(
             uid = keyMap.uid,

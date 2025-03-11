@@ -228,7 +228,10 @@ private fun KeyMapListItem(
                 }
 
                 if (model.content.triggerErrors.isNotEmpty()) {
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
                         for (error in model.content.triggerErrors) {
                             ErrorChip(
                                 onClick = { onTriggerErrorClick(error) },
