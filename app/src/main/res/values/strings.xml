@@ -1496,6 +1496,11 @@
     <string name="home_fab_new_floating_layout">New layout</string>
     <string name="home_key_map_list_footer_text">Tap a key map to configure it.\nLong press for more options.</string>
     <string name="home_key_map_list_empty">Create a key map!</string>
+    <string name="home_floating_layouts_promo_title">Don’t have enough buttons?</string>
+    <string name="home_floating_layouts_promo_subtitle">Make your own!</string>
+    <string name="home_floating_layouts_promo_text">Floating buttons display over the apps you want. They work just like real buttons, and you can place, style, and map them however you like.</string>
+    <string name="home_floating_layouts_hide_promo_button">Hide this page</string>
+    <string name="home_floating_layouts_unlock_button">Unlock (%s)</string>
 
     <!-- Trigger screen -->
     <string name="trigger_key_list_item_remove">Remove</string>
