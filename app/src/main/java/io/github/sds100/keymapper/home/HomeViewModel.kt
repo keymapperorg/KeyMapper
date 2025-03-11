@@ -116,6 +116,7 @@ class HomeViewModel(
         ListFloatingLayoutsViewModel(
             viewModelScope,
             listFloatingLayouts,
+            resourceProvider
         )
     }
 

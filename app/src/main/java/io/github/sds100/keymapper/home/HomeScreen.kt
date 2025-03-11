@@ -61,6 +61,9 @@ private data class HomeNavBarItem(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(viewModel: HomeViewModel) {
+    val showNewLayoutFab by viewModel.listFloatingLayoutsViewModel.showNewLayoutFab
+        .collectAsStateWithLifecycle(false)
+
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val state by viewModel.keymapListViewModel.setupGuiKeyboardState.collectAsStateWithLifecycle()
 
@@ -102,17 +105,36 @@ fun HomeScreen(viewModel: HomeViewModel) {
                 viewModel = viewModel.listFloatingLayoutsViewModel,
             )
         },
-        onNewKeyMapClick = {
-            scope.launch {
-                viewModel.navigate(
-                    NavigateEvent(
-                        "config_key_map",
-                        NavDestination.ConfigKeyMap(keyMapUid = null),
-                    ),
-                )
+        floatingActionButton = { destination ->
+            when (destination) {
+                HomeDestination.KeyMaps.route -> {
+                    ExtendedFloatingActionButton(
+                        onClick = {
+                            scope.launch {
+                                viewModel.navigate(
+                                    NavigateEvent(
+                                        "config_key_map",
+                                        NavDestination.ConfigKeyMap(keyMapUid = null),
+                                    ),
+                                )
+                            }
+                        },
+                        text = { Text(stringResource(R.string.home_fab_new_key_map)) },
+                        icon = { Icon(Icons.Outlined.Add, contentDescription = null) },
+                    )
+                }
+
+                HomeDestination.FloatingButtons.route -> {
+                    if (showNewLayoutFab) {
+                        ExtendedFloatingActionButton(
+                            onClick = {},
+                            text = { Text(stringResource(R.string.home_fab_new_floating_layout)) },
+                            icon = { Icon(Icons.Outlined.Add, contentDescription = null) },
+                        )
+                    }
+                }
             }
         },
-        onNewFloatingLayoutCLick = {},
     )
 }
 
@@ -122,8 +144,7 @@ private fun HomeScreen(
     onMenuClick: () -> Unit = {},
     keyMapsContent: @Composable () -> Unit,
     floatingButtonsContent: @Composable () -> Unit,
-    onNewKeyMapClick: () -> Unit = {},
-    onNewFloatingLayoutCLick: () -> Unit = {},
+    floatingActionButton: @Composable (destination: String?) -> Unit = {},
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -149,25 +170,7 @@ private fun HomeScreen(
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
         },
-        floatingActionButton = {
-            when (currentDestination?.route) {
-                HomeDestination.KeyMaps.route -> {
-                    ExtendedFloatingActionButton(
-                        onClick = onNewKeyMapClick,
-                        text = { Text(stringResource(R.string.home_fab_new_key_map)) },
-                        icon = { Icon(Icons.Outlined.Add, contentDescription = null) },
-                    )
-                }
-
-                HomeDestination.FloatingButtons.route -> {
-                    ExtendedFloatingActionButton(
-                        onClick = onNewFloatingLayoutCLick,
-                        text = { Text(stringResource(R.string.home_fab_new_floating_layout)) },
-                        icon = { Icon(Icons.Outlined.Add, contentDescription = null) },
-                    )
-                }
-            }
-        },
+        floatingActionButton = { floatingActionButton(currentDestination?.route) },
         bottomBar = {
             // TODO only show nav bar if the user has not dismissed the floating layouts screen, OR it is purchased.
             NavigationBar {
