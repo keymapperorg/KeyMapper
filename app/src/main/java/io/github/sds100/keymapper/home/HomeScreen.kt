@@ -169,6 +169,7 @@ private fun HomeScreen(
             }
         },
         bottomBar = {
+            // TODO only show nav bar if the user has not dismissed the floating layouts screen, OR it is purchased.
             NavigationBar {
                 navBarItems.forEach { item ->
                     NavigationBarItem(

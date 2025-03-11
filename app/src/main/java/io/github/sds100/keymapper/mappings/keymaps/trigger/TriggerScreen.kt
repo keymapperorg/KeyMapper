@@ -387,6 +387,7 @@ private fun TriggerList(
                     modifier = Modifier.fillMaxWidth(),
                     model = model,
                     index = index,
+                    isDraggingEnabled = triggerList.size > 1,
                     isDragging = isDragging,
                     isReorderingEnabled = isReorderingEnabled,
                     dragDropState = dragDropState,

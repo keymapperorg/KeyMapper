@@ -46,6 +46,7 @@ fun TriggerKeyListItem(
     modifier: Modifier = Modifier,
     model: TriggerKeyListItemModel,
     index: Int,
+    isDraggingEnabled: Boolean = false,
     isDragging: Boolean,
     isReorderingEnabled: Boolean,
     dragDropState: DragDropState? = null,
@@ -64,6 +65,7 @@ fun TriggerKeyListItem(
                 .padding(start = 16.dp, end = 16.dp)
                 .draggable(
                     state = draggableState,
+                    enabled = isDraggingEnabled,
                     orientation = Orientation.Vertical,
                     startDragImmediately = false,
                     onDragStarted = { offset ->
