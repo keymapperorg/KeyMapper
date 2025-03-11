@@ -34,7 +34,7 @@ data class FloatingButtonEntity(
     @ColumnInfo(name = KEY_UID)
     val uid: String,
 
-    @ColumnInfo(name = KEY_LAYOUT_UID)
+    @ColumnInfo(name = KEY_LAYOUT_UID, index = true)
     val layoutUid: String,
 
     @ColumnInfo(name = KEY_TEXT)

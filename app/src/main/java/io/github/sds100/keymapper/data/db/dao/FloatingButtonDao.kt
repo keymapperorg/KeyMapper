@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import io.github.sds100.keymapper.data.entities.FloatingButtonEntity
 import io.github.sds100.keymapper.data.entities.FloatingButtonEntityWithLayout
@@ -27,9 +28,11 @@ interface FloatingButtonDao {
     @Query("SELECT * FROM $TABLE_NAME WHERE $KEY_UID = (:uid)")
     suspend fun getByUid(uid: String): FloatingButtonEntity?
 
+    @Transaction
     @Query("SELECT * FROM $TABLE_NAME WHERE $KEY_UID = (:uid)")
     suspend fun getByUidWithLayout(uid: String): FloatingButtonEntityWithLayout?
 
+    @Transaction
     @Query("SELECT * FROM $TABLE_NAME")
     fun getAll(): Flow<List<FloatingButtonEntityWithLayout>>
 
