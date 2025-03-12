@@ -132,6 +132,7 @@ private fun EmptyKeyMapList(modifier: Modifier = Modifier) {
                     append(text)
                 }
             },
+            textAlign = TextAlign.Center,
         )
     }
 }
