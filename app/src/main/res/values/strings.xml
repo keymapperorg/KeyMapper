@@ -1505,6 +1505,18 @@
     <string name="home_floating_layouts_unlock_button">Unlock (%s)</string>
     <string name="home_floating_layouts_empty_title">Thank you for supporting Key\u00A0Mapper\u00A0❤️!</string>
     <string name="home_floating_layouts_empty_text">Create your first layout!</string>
+    <string name="home_floating_layouts_edit_name_content_description">Change name of layout %s</string>
+    <string name="home_floating_layouts_delete_content_description">Delete layout %s</string>
+    <string name="home_floating_layouts_floating_buttons_subtitle">Floating buttons</string>
+    <string name="home_floating_layouts_no_floating_buttons_subtitle">No buttons</string>
+    <string name="home_floating_layouts_edit_buttons_button">Edit buttons</string>
+    <string name="home_floating_layouts_add_buttons_button">Add buttons</string>
+    <string name="home_floating_layouts_name_dialog_title">Change layout name</string>
+    <string name="home_floating_layouts_name_dialog_save">Save</string>
+    <string name="home_floating_layouts_name_dialog_empty_error">Name can not be empty!</string>
+    <string name="home_floating_layouts_name_dialog_unique_error">Name must be unique!</string>
+    <string name="home_floating_layouts_name_delete_dialog">Delete %s</string>
+    <string name="home_floating_layouts_name_delete_text"></string>
 
     <!-- Trigger screen -->
     <string name="trigger_key_list_item_remove">Remove</string>

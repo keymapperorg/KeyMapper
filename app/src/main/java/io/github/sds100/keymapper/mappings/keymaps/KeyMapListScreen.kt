@@ -214,7 +214,6 @@ private fun KeyMapListItem(
                         text = model.content.extraInfo,
                         style = MaterialTheme.typography.titleSmall,
                         color = MaterialTheme.colorScheme.error,
-                        fontSize = 14.sp,
                     )
                 }
 

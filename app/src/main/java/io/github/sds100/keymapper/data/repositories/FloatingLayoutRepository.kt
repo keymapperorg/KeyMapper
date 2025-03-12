@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.data.repositories
 
+import android.database.sqlite.SQLiteConstraintException
 import io.github.sds100.keymapper.data.db.dao.FloatingLayoutDao
 import io.github.sds100.keymapper.data.entities.FloatingLayoutEntity
 import io.github.sds100.keymapper.data.entities.FloatingLayoutEntityWithButtons
@@ -18,7 +19,12 @@ import kotlinx.coroutines.withContext
 interface FloatingLayoutRepository {
     val layouts: Flow<State<List<FloatingLayoutEntityWithButtons>>>
     suspend fun insert(vararg layout: FloatingLayoutEntity)
-    fun update(vararg layout: FloatingLayoutEntity)
+
+    /**
+     * @return whether the update happened successfully. It can be false if some constraints
+     * failed.
+     */
+    suspend fun update(vararg layout: FloatingLayoutEntity): Boolean
     fun get(uid: String): Flow<FloatingLayoutEntityWithButtons?>
     fun delete(vararg uid: String)
     suspend fun count(): Int
@@ -40,9 +46,14 @@ class RoomFloatingLayoutRepository(
         }
     }
 
-    override fun update(vararg layout: FloatingLayoutEntity) {
-        coroutineScope.launch(dispatchers.io()) {
-            dao.update(*layout)
+    override suspend fun update(vararg layout: FloatingLayoutEntity): Boolean {
+        return withContext(dispatchers.io()) {
+            try {
+                dao.update(*layout)
+                true
+            } catch (e: SQLiteConstraintException) {
+                false
+            }
         }
     }
 
