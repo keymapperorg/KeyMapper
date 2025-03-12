@@ -134,6 +134,7 @@ sealed class Error : Result<Nothing>() {
         data object Cancelled : PurchasingError()
         data object StoreProblem : PurchasingError()
         data object NetworkError : PurchasingError()
+        data object PaymentPending : PurchasingError()
         data class Unexpected(val message: String) : PurchasingError()
     }
 

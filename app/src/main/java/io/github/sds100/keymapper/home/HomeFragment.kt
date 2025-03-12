@@ -86,5 +86,6 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         homeViewModel.keymapListViewModel.showPopups(this, view)
+        homeViewModel.listFloatingLayoutsViewModel.showPopups(this, view)
     }
 }

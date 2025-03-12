@@ -147,6 +147,7 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider): String = when (thi
     Error.PurchasingError.NetworkError -> resourceProvider.getString(R.string.purchasing_error_network)
     Error.PurchasingError.ProductNotFound -> resourceProvider.getString(R.string.purchasing_error_product_not_found)
     Error.PurchasingError.StoreProblem -> resourceProvider.getString(R.string.purchasing_error_store_problem)
+    Error.PurchasingError.PaymentPending -> resourceProvider.getString(R.string.purchasing_error_payment_pending)
     is Error.PurchasingError.Unexpected -> this.message
 
     is Error.ProductNotPurchased -> when (this.product) {
