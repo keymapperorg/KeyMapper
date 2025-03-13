@@ -202,6 +202,7 @@ object Inject {
         ListFloatingLayoutsUseCaseImpl(
             ServiceLocator.floatingLayoutRepository(ctx),
             ServiceLocator.purchasingManager(ctx),
+            ServiceLocator.accessibilityServiceAdapter(ctx),
         ),
     )
 

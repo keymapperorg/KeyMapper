@@ -1,10 +1,7 @@
 package io.github.sds100.keymapper.home
 
-import androidx.activity.ComponentActivity
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,7 +23,6 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -40,8 +36,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -129,7 +123,7 @@ fun HomeScreen(viewModel: HomeViewModel) {
                 HomeDestination.FloatingButtons.route -> {
                     if (showNewLayoutFab) {
                         ExtendedFloatingActionButton(
-                            onClick = {},
+                            onClick = viewModel.listFloatingLayoutsViewModel::onNewLayoutClick,
                             text = { Text(stringResource(R.string.home_fab_new_floating_layout)) },
                             icon = { Icon(Icons.Outlined.Add, contentDescription = null) },
                         )
