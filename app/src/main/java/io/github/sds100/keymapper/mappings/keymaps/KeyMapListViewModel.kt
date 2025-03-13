@@ -203,6 +203,13 @@ open class KeyMapListViewModel(
                     showDpadTriggerSetupBottomSheet = true
                 }
 
+                TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED, TriggerError.FLOATING_BUTTONS_NOT_PURCHASED -> {
+                    navigate(
+                        "purchase_advanced_trigger",
+                        NavDestination.ConfigKeyMap(keyMapUid = null, showAdvancedTriggers = true),
+                    )
+                }
+
                 else -> {
                     listKeyMaps.fixTriggerError(error)
                 }
