@@ -129,7 +129,7 @@ class KeyMapperApp : MultiDexApplication() {
     }
     val phoneAdapter by lazy { AndroidPhoneAdapter(this, appCoroutineScope) }
     val intentAdapter by lazy { IntentAdapterImpl(this) }
-    val mediaAdapter by lazy { AndroidMediaAdapter(this) }
+    val mediaAdapter by lazy { AndroidMediaAdapter(this, appCoroutineScope) }
     val lockScreenAdapter by lazy { AndroidLockScreenAdapter(this) }
     val airplaneModeAdapter by lazy { AndroidAirplaneModeAdapter(this, suAdapter) }
     val networkAdapter by lazy { AndroidNetworkAdapter(this, suAdapter) }

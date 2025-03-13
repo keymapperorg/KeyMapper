@@ -51,7 +51,10 @@ class DetectConstraintsUseCaseImpl(
         return when (dependency) {
             ConstraintDependency.FOREGROUND_APP -> accessibilityService.activeWindowPackage.map { dependency }
             ConstraintDependency.APP_PLAYING_MEDIA, ConstraintDependency.MEDIA_PLAYING ->
-                mediaAdapter.getPackagesPlayingMediaFlow().map { dependency }
+                merge(
+                    mediaAdapter.getActiveMediaSessionPackagesFlow(),
+                    mediaAdapter.getActiveAudioContentTypesFlow(),
+                ).map { dependency }
 
             ConstraintDependency.CONNECTED_BT_DEVICES -> devicesAdapter.connectedBluetoothDevices.map { dependency }
             ConstraintDependency.SCREEN_STATE -> displayAdapter.isScreenOn.map { dependency }

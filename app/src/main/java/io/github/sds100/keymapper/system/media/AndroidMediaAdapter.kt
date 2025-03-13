@@ -3,25 +3,31 @@ package io.github.sds100.keymapper.system.media
 import android.content.Context
 import android.media.AudioAttributes
 import android.media.AudioManager
+import android.media.AudioPlaybackConfiguration
 import android.media.MediaPlayer
 import android.media.session.MediaController
 import android.media.session.PlaybackState
 import android.net.Uri
+import android.os.Build
 import android.view.KeyEvent
+import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
 import io.github.sds100.keymapper.system.volume.VolumeStream
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.io.FileNotFoundException
 
 /**
  * Created by sds100 on 21/04/2021.
  */
-class AndroidMediaAdapter(context: Context) : MediaAdapter {
+class AndroidMediaAdapter(context: Context, private val coroutineScope: CoroutineScope) : MediaAdapter {
     private val ctx = context.applicationContext
 
     private val audioManager: AudioManager by lazy { ctx.getSystemService()!! }
@@ -29,8 +35,36 @@ class AndroidMediaAdapter(context: Context) : MediaAdapter {
     private val activeMediaSessions: MutableStateFlow<List<MediaController>> =
         MutableStateFlow(emptyList())
 
+    private val audioContentTypes: MutableStateFlow<Set<Int>> =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            MutableStateFlow(getActiveAudioContentTypes())
+        } else {
+            MutableStateFlow(emptySet())
+        }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private val audioPlaybackCallback = object : AudioManager.AudioPlaybackCallback() {
+        override fun onPlaybackConfigChanged(configs: MutableList<AudioPlaybackConfiguration>?) {
+            audioContentTypes.update { getActiveAudioContentTypes() }
+        }
+    }
+
     private var mediaPlayerLock = Any()
     private var mediaPlayer: MediaPlayer? = null
+
+    init {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            coroutineScope.launch {
+                audioContentTypes.subscriptionCount.collect { count ->
+                    if (count == 0) {
+                        audioManager.unregisterAudioPlaybackCallback(audioPlaybackCallback)
+                    } else {
+                        audioManager.registerAudioPlaybackCallback(audioPlaybackCallback, null)
+                    }
+                }
+            }
+        }
+    }
 
     override fun fastForward(packageName: String?): Result<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_FAST_FORWARD, packageName)
 
@@ -46,16 +80,28 @@ class AndroidMediaAdapter(context: Context) : MediaAdapter {
 
     override fun nextTrack(packageName: String?): Result<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_NEXT, packageName)
 
-    override fun getPackagesPlayingMedia(): List<String> = activeMediaSessions
-        .value
-        .filter { it.playbackState?.state == PlaybackState.STATE_PLAYING }
-        .map { it.packageName }
+    override fun getActiveMediaSessionPackages(): List<String> {
+        return activeMediaSessions.value
+            .filter { it.playbackState?.state == PlaybackState.STATE_PLAYING }
+            .map { it.packageName }
+    }
 
-    override fun getPackagesPlayingMediaFlow() = activeMediaSessions
+    override fun getActiveMediaSessionPackagesFlow() = activeMediaSessions
         .map { list ->
             list.filter { it.playbackState?.state == PlaybackState.STATE_PLAYING }
                 .map { it.packageName }
         }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun getActiveAudioContentTypes(): Set<Int> {
+        return audioManager.activePlaybackConfigurations
+            .map { it.audioAttributes.contentType }
+            .toSet()
+    }
+
+    override fun getActiveAudioContentTypesFlow(): Flow<Set<Int>> {
+        return audioContentTypes
+    }
 
     override fun playSoundFile(uri: String, stream: VolumeStream): Result<*> {
         try {

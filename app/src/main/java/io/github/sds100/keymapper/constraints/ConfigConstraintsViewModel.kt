@@ -54,7 +54,7 @@ class ConfigConstraintsViewModel(
     init {
         val rebuildUiState = MutableSharedFlow<State<Mapping<*>>>()
 
-        coroutineScope.launch(Dispatchers.Default) {
+        coroutineScope.launch {
             rebuildUiState.collectLatest { mapping ->
                 _state.value = buildState(mapping.mapData { it.constraintState })
             }
