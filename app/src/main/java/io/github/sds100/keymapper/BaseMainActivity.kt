@@ -39,7 +39,7 @@ abstract class BaseMainActivity : AppCompatActivity() {
             "$PACKAGE_NAME.ACTION_USE_ASSISTANT_TRIGGER"
     }
 
-    private val viewModel by viewModels<ActivityViewModel> {
+    val viewModel by viewModels<ActivityViewModel> {
         ActivityViewModel.Factory(ServiceLocator.resourceProvider(this))
     }
 
@@ -60,7 +60,7 @@ abstract class BaseMainActivity : AppCompatActivity() {
             navigationBarStyle = SystemBarStyle.auto(
                 ComposeColors.surfaceContainerLight.toArgb(),
                 ComposeColors.surfaceContainerDark.toArgb(),
-            )
+            ),
         )
         super.onCreate(savedInstanceState)
 
@@ -95,6 +95,7 @@ abstract class BaseMainActivity : AppCompatActivity() {
             when (intent.action) {
                 ACTION_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG -> {
                     viewModel.onCantFindAccessibilitySettings()
+                    viewModel.handledActivityLaunchIntent = true
                 }
 
                 ACTION_USE_ASSISTANT_TRIGGER -> {
@@ -104,10 +105,9 @@ abstract class BaseMainActivity : AppCompatActivity() {
                             showAdvancedTriggers = true,
                         ),
                     )
+                    viewModel.handledActivityLaunchIntent = true
                 }
             }
-
-            viewModel.handledActivityLaunchIntent = true
         }
     }
 
