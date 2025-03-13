@@ -1065,8 +1065,6 @@
     <string name="assistant_trigger_product_description">Czy wiesz, że możesz zmienić przycisk asystenta urządzenia? Zamiast uruchamiać asystenta Google lub Bixby, urządzenie może wykonać niestandardową akcję. Działa nawet, gdy ekran jest wyłączony!</string>
     <string name="assistant_trigger_purchase_thank_you_title">Dziękujemy za wsparcie aplikacji! ❤️</string>
     <string name="assistant_trigger_purchase_thank_you_message">Zakup zakończył się sukcesem i teraz możesz używać wyzwalaczy asystenta. Jako płatny użytkownik Key Mapper otrzymasz priorytetową pomoc w korzystaniu z aplikacji. Na tej stronie znajduje się teraz przycisk, aby skontaktować się z programistą.</string>
-    <string name="trigger_error_assistant_activity_not_chosen">Aby ten wyzwalacz działał, musisz ustawić Key Mapper jako domyślną aplikację asystenta cyfrowego.</string>
-    <string name="trigger_error_assistant_activity_not_chosen_short">Key Mapper musi być domyślnym asystentem.</string>
     <string name="trigger_error_assistant_not_purchased">Musisz kupić funkcję wyzwalacza asystenta!</string>
     <string name="advanced_triggers_learn_more_button">Dowiedz się więcej</string>
     <string name="notification_assistant_trigger_feature_title">Nowy wyzwalacz! Czy wiesz, że możesz zmienić przycisk asystenta?</string>
