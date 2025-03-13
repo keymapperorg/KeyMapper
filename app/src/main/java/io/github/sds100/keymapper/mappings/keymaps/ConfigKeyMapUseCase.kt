@@ -34,15 +34,16 @@ import io.github.sds100.keymapper.util.dataOrNull
 import io.github.sds100.keymapper.util.firstBlocking
 import io.github.sds100.keymapper.util.ifIsData
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 
 /**
  * Created by sds100 on 16/02/2021.
  */
-class ConfigKeyMapUseCaseImpl(
+class ConfigKeyMapUseCaseController(
     private val keyMapRepository: KeyMapRepository,
     private val devicesAdapter: DevicesAdapter,
     private val preferenceRepository: PreferenceRepository,
@@ -52,55 +53,63 @@ class ConfigKeyMapUseCaseImpl(
 ) : BaseConfigMappingUseCase<KeyMapAction, KeyMap>(),
     ConfigKeyMapUseCase {
 
-    override val serviceEvents: SharedFlow<ServiceEvent> = serviceAdapter.eventReceiver
+    override val floatingButtonToUse: MutableStateFlow<String?> = MutableStateFlow(null)
+
+    override suspend fun useFloatingButtonTrigger(buttonUid: String) {
+        floatingButtonToUse.update { buttonUid }
+    }
 
     private val showDeviceDescriptors: Flow<Boolean> =
         preferenceRepository.get(Keys.showDeviceDescriptors).map { it ?: false }
 
-    override suspend fun addFloatingButtonTriggerKey(buttonUid: String) = editTrigger { trigger ->
-        val clickType = when (trigger.mode) {
-            is TriggerMode.Parallel -> trigger.mode.clickType
-            TriggerMode.Sequence -> ClickType.SHORT_PRESS
-            TriggerMode.Undefined -> ClickType.SHORT_PRESS
-        }
+    override suspend fun addFloatingButtonTriggerKey(buttonUid: String) {
+        floatingButtonToUse.update { null }
 
-        // Check whether the trigger already contains the key because if so
-        // then it must be converted to a sequence trigger.
-        val containsKey = trigger.keys
-            .mapNotNull { it as? FloatingButtonKey }
-            .any { keyToCompare -> keyToCompare.buttonUid == buttonUid }
-
-        val button = floatingButtonRepository.get(buttonUid)
-            ?.let { entity ->
-                FloatingButtonEntityMapper.fromEntity(
-                    entity.button,
-                    entity.layout.name,
-                )
+        editTrigger { trigger ->
+            val clickType = when (trigger.mode) {
+                is TriggerMode.Parallel -> trigger.mode.clickType
+                TriggerMode.Sequence -> ClickType.SHORT_PRESS
+                TriggerMode.Undefined -> ClickType.SHORT_PRESS
             }
 
-        val triggerKey = FloatingButtonKey(
-            buttonUid = buttonUid,
-            button = button,
-            clickType = clickType,
-        )
+            // Check whether the trigger already contains the key because if so
+            // then it must be converted to a sequence trigger.
+            val containsKey = trigger.keys
+                .mapNotNull { it as? FloatingButtonKey }
+                .any { keyToCompare -> keyToCompare.buttonUid == buttonUid }
 
-        var newKeys = trigger.keys.plus(triggerKey)
+            val button = floatingButtonRepository.get(buttonUid)
+                ?.let { entity ->
+                    FloatingButtonEntityMapper.fromEntity(
+                        entity.button,
+                        entity.layout.name,
+                    )
+                }
 
-        val newMode = when {
-            trigger.mode != TriggerMode.Sequence && containsKey -> TriggerMode.Sequence
-            newKeys.size <= 1 -> TriggerMode.Undefined
+            val triggerKey = FloatingButtonKey(
+                buttonUid = buttonUid,
+                button = button,
+                clickType = clickType,
+            )
 
-            /* Automatically make it a parallel trigger when the user makes a trigger with more than one key
-            because this is what most users are expecting when they make a trigger with multiple keys */
-            newKeys.size == 2 && !containsKey -> {
-                newKeys = newKeys.map { it.setClickType(triggerKey.clickType) }
-                TriggerMode.Parallel(triggerKey.clickType)
+            var newKeys = trigger.keys.plus(triggerKey)
+
+            val newMode = when {
+                trigger.mode != TriggerMode.Sequence && containsKey -> TriggerMode.Sequence
+                newKeys.size <= 1 -> TriggerMode.Undefined
+
+                /* Automatically make it a parallel trigger when the user makes a trigger with more than one key
+                because this is what most users are expecting when they make a trigger with multiple keys */
+                newKeys.size == 2 && !containsKey -> {
+                    newKeys = newKeys.map { it.setClickType(triggerKey.clickType) }
+                    TriggerMode.Parallel(triggerKey.clickType)
+                }
+
+                else -> trigger.mode
             }
 
-            else -> trigger.mode
+            trigger.copy(keys = newKeys, mode = newMode)
         }
-
-        trigger.copy(keys = newKeys, mode = newMode)
     }
 
     override fun addAssistantTriggerKey(type: AssistantTriggerType) = editTrigger { trigger ->
@@ -596,7 +605,6 @@ class ConfigKeyMapUseCaseImpl(
 interface ConfigKeyMapUseCase : ConfigMappingUseCase<KeyMapAction, KeyMap> {
 
     suspend fun sendServiceEvent(event: ServiceEvent): Result<*>
-    val serviceEvents: SharedFlow<ServiceEvent>
 
     // trigger
     fun addKeyCodeTriggerKey(
@@ -649,5 +657,7 @@ interface ConfigKeyMapUseCase : ConfigMappingUseCase<KeyMapAction, KeyMap> {
 
     fun setActionStopHoldingDownWhenTriggerPressedAgain(uid: String, enabled: Boolean)
 
+    val floatingButtonToUse: Flow<String?>
+    suspend fun useFloatingButtonTrigger(buttonUid: String)
     suspend fun getFloatingLayoutCount(): Int
 }

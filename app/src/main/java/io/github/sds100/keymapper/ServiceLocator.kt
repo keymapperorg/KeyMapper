@@ -19,6 +19,7 @@ import io.github.sds100.keymapper.data.repositories.RoomLogRepository
 import io.github.sds100.keymapper.data.repositories.SettingsPreferenceRepository
 import io.github.sds100.keymapper.logging.LogRepository
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapRepository
+import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapUseCaseController
 import io.github.sds100.keymapper.purchasing.PurchasingManagerImpl
 import io.github.sds100.keymapper.shizuku.ShizukuAdapter
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
@@ -186,6 +187,29 @@ object ServiceLocator {
                 this.soundsManager = it
             }
         }
+    }
+
+    @Volatile
+    private var configKeyMapsController: ConfigKeyMapUseCaseController? = null
+
+    fun configKeyMapsController(ctx: Context): ConfigKeyMapUseCaseController {
+        synchronized(this) {
+            return configKeyMapsController
+                ?: createConfigKeyMapsController(ctx).also {
+                    configKeyMapsController = it
+                }
+        }
+    }
+
+    private fun createConfigKeyMapsController(ctx: Context): ConfigKeyMapUseCaseController {
+        return ConfigKeyMapUseCaseController(
+            roomKeymapRepository(ctx),
+            devicesAdapter(ctx),
+            settingsRepository(ctx),
+            floatingLayoutRepository(ctx),
+            floatingButtonRepository(ctx),
+            accessibilityServiceAdapter(ctx),
+        )
     }
 
     fun fileAdapter(context: Context): FileAdapter = (context.applicationContext as KeyMapperApp).fileAdapter

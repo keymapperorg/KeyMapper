@@ -4,7 +4,7 @@ import android.view.KeyEvent
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.mappings.ClickType
-import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapUseCaseImpl
+import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapUseCaseController
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapAction
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerKey
@@ -40,11 +40,11 @@ class ConfigKeyMapUseCaseTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
 
-    private lateinit var useCase: ConfigKeyMapUseCaseImpl
+    private lateinit var useCase: ConfigKeyMapUseCaseController
 
     @Before
     fun init() {
-        useCase = ConfigKeyMapUseCaseImpl(
+        useCase = ConfigKeyMapUseCaseController(
             devicesAdapter = mock(),
             keyMapRepository = mock(),
             preferenceRepository = mock(),

@@ -15,7 +15,6 @@ import io.github.sds100.keymapper.mappings.PauseMappingsUseCaseImpl
 import io.github.sds100.keymapper.mappings.fingerprintmaps.AreFingerprintGesturesSupportedUseCaseImpl
 import io.github.sds100.keymapper.mappings.fingerprintmaps.DetectFingerprintMapsUseCaseImpl
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapUseCase
-import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapUseCaseImpl
 import io.github.sds100.keymapper.mappings.keymaps.CreateKeyMapShortcutUseCaseImpl
 import io.github.sds100.keymapper.mappings.keymaps.DisplayKeyMapUseCase
 import io.github.sds100.keymapper.mappings.keymaps.DisplayKeyMapUseCaseImpl
@@ -54,14 +53,8 @@ object UseCases {
         ServiceLocator.purchasingManager(ctx),
     )
 
-    fun configKeyMap(ctx: Context): ConfigKeyMapUseCase = ConfigKeyMapUseCaseImpl(
-        ServiceLocator.roomKeymapRepository(ctx),
-        ServiceLocator.devicesAdapter(ctx),
-        ServiceLocator.settingsRepository(ctx),
-        ServiceLocator.floatingLayoutRepository(ctx),
-        ServiceLocator.floatingButtonRepository(ctx),
-        ServiceLocator.accessibilityServiceAdapter(ctx),
-    )
+    fun configKeyMap(ctx: Context): ConfigKeyMapUseCase =
+        ServiceLocator.configKeyMapsController(ctx)
 
     fun displaySimpleMapping(ctx: Context): DisplaySimpleMappingUseCase = DisplaySimpleMappingUseCaseImpl(
         ServiceLocator.packageManagerAdapter(ctx),
