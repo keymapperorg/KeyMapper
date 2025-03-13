@@ -378,11 +378,6 @@ abstract class BaseConfigTriggerViewModel(
                 text = getString(R.string.trigger_error_cant_detect_in_phone_call),
             )
 
-            TriggerError.ASSISTANT_NOT_SELECTED -> TextListItem.Error(
-                id = error.toString(),
-                text = getString(R.string.trigger_error_assistant_activity_not_chosen),
-            )
-
             TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED -> TextListItem.Error(
                 id = error.toString(),
                 text = getString(R.string.trigger_error_assistant_not_purchased),
@@ -519,10 +514,6 @@ abstract class BaseConfigTriggerViewModel(
 
                 TriggerError.CANT_DETECT_IN_PHONE_CALL -> {
                     displayKeyMap.fixError(Error.CantDetectKeyEventsInPhoneCall)
-                }
-
-                TriggerError.ASSISTANT_NOT_SELECTED -> {
-                    displayKeyMap.fixError(Error.PermissionDenied(Permission.DEVICE_ASSISTANT))
                 }
 
                 TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED -> {

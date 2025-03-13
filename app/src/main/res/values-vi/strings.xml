@@ -1035,17 +1035,8 @@
     <!--  About  -->
     <!-- Advanced triggers -->
     <string name="assistant_any_trigger_name">Trợ lý bất kỳ</string>
-    <string name="assistant_device_trigger_name">Trợ lý thiết bị</string>
     <string name="assistant_voice_trigger_name">Trợ lý giọng nói</string>
     <string name="advanced_triggers_sheet_title">Trình kích hoạt nâng cao</string>
-    <string name="advanced_triggers_sheet_text">Nhà phát triển không tin rằng quảng cáo là hình thức kiếm tiền bền vững hoặc thân thiện với người dùng nên những trình kích hoạt trả phí này sẽ giúp hỗ trợ sự phát triển ❤️. Bạn cũng sẽ được ưu tiên hỗ trợ.</string>
-    <string name="assistant_trigger_product_title">Trình kích hoạt trợ lý</string>
-    <string name="assistant_trigger_product_description">Bạn có biết bạn có thể ánh xạ lại trợ lý thiết bị của mình không? Thay vì khởi chạy Google Assistant hoặc Bixby, thiết bị của bạn có thể thực hiện hành động mà bạn chọn. Nó hoạt động ngay cả khi màn hình tắt!</string>
-    <string name="assistant_trigger_purchase_thank_you_title">Cảm ơn bạn đã ủng hộ ứng dụng! ❤️</string>
-    <string name="assistant_trigger_purchase_thank_you_message">Giao dịch mua hàng của bạn đã thành công và bây giờ bạn có thể sử dụng trình kích hoạt trợ lý. Là người dùng trả phí của Key Mapper, bạn sẽ nhận được hỗ trợ ưu tiên để giúp bạn sử dụng ứng dụng. Hiện tại có một nút trên trang này để liên hệ với nhà phát triển.</string>
-    <string name="trigger_error_assistant_activity_not_chosen">Bạn phải chọn Key Mapper làm ứng dụng trợ lý kỹ thuật số mặc định để trình kích hoạt này hoạt động.</string>
-    <string name="trigger_error_assistant_activity_not_chosen_short">Key Mapper phải là trợ lý mặc định.</string>
-    <string name="trigger_error_assistant_not_purchased">Bạn phải mua tính năng kích hoạt trợ lý!</string>
     <string name="advanced_triggers_learn_more_button">Tìm hiểu thêm</string>
     <string name="notification_assistant_trigger_feature_title">Kích hoạt mới! Bạn có biết bạn có thể sắp xếp lại trợ lý kỹ thuật số của mình không?</string>
     <string name="notification_assistant_trigger_feature_text">Thay vì khởi chạy Google Assistant hoặc Bixby, bạn có thể thực hiện hành động mà mình chọn. Nhấn để tìm hiểu thêm.</string>

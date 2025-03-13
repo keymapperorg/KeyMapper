@@ -10,7 +10,7 @@ import io.github.sds100.keymapper.system.devices.InputDeviceUtils
  */
 data class MyMotionEvent(
     val metaState: Int,
-    val device: InputDeviceInfo,
+    val device: InputDeviceInfo?,
     val axisHatX: Float,
     val axisHatY: Float,
     val isDpad: Boolean,
@@ -19,7 +19,7 @@ data class MyMotionEvent(
         fun fromMotionEvent(event: MotionEvent): MyMotionEvent {
             return MyMotionEvent(
                 metaState = event.metaState,
-                device = InputDeviceUtils.createInputDeviceInfo(event.device),
+                device = event.device?.let { InputDeviceUtils.createInputDeviceInfo(it) },
                 axisHatX = event.getAxisValue(MotionEvent.AXIS_HAT_X),
                 axisHatY = event.getAxisValue(MotionEvent.AXIS_HAT_Y),
                 isDpad = InputEventUtils.isDpadDevice(event),

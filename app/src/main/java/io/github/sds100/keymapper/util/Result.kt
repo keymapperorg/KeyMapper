@@ -80,7 +80,6 @@ sealed class Error : Result<Nothing>() {
                     Permission.ANSWER_PHONE_CALL -> R.string.error_answer_end_phone_call_permission_denied
                     Permission.FIND_NEARBY_DEVICES -> R.string.error_find_nearby_devices_permission_denied
                     Permission.POST_NOTIFICATIONS -> R.string.error_notifications_permission_denied
-                    Permission.DEVICE_ASSISTANT -> R.string.trigger_error_assistant_activity_not_chosen_short
                 }
 
                 return resourceProvider.getString(resId)

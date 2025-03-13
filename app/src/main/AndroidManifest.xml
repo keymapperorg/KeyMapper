@@ -81,9 +81,14 @@
         android:theme="@style/AppTheme.NoActionBar"
         tools:ignore="GoogleAppIndexingWarning">
 
+        <!--  relinquishTaskIdentity is required because the intent-filter has the
+          DEFAULT category. If relinquishTaskIdentity is false then when the user resumes the
+           app from the launcher they are taken back to the SplashActivity, and consequently the
+           home fragment in MainActivity. -->
         <activity
             android:name=".SplashActivity"
             android:exported="true"
+            android:relinquishTaskIdentity="true"
             android:theme="@style/Theme.App.Starting">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

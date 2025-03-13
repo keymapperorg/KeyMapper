@@ -100,16 +100,6 @@ class RequestPermissionDelegate(
             Permission.POST_NOTIFICATIONS -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
-
-            Permission.DEVICE_ASSISTANT -> {
-                try {
-                    Intent(Settings.ACTION_VOICE_INPUT_SETTINGS).apply {
-                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                        startActivityForResultLauncher.launch(this)
-                    }
-                } catch (e: ActivityNotFoundException) {
-                }
-            }
         }
     }
 
