@@ -203,6 +203,7 @@ object Inject {
             ServiceLocator.floatingLayoutRepository(ctx),
             ServiceLocator.purchasingManager(ctx),
             ServiceLocator.accessibilityServiceAdapter(ctx),
+            ServiceLocator.settingsRepository(ctx),
         ),
     )
 

@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.BubbleChart
-import androidx.compose.material.icons.outlined.Gamepad
 import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -32,13 +30,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -51,15 +48,12 @@ import io.github.sds100.keymapper.util.ui.NavDestination
 import io.github.sds100.keymapper.util.ui.NavigateEvent
 import kotlinx.coroutines.launch
 
-private data class HomeNavBarItem(
-    val destination: HomeDestination,
-    val label: String,
-    val icon: ImageVector,
-)
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(viewModel: HomeViewModel) {
+    val navController = rememberNavController()
+    val navBarItems by viewModel.navBarItems.collectAsStateWithLifecycle()
+
     val showNewLayoutFab by viewModel.listFloatingLayoutsViewModel.showNewLayoutFab
         .collectAsStateWithLifecycle(false)
 
@@ -84,6 +78,8 @@ fun HomeScreen(viewModel: HomeViewModel) {
     val scope = rememberCoroutineScope()
 
     HomeScreen(
+        navController = navController,
+        navBarItems = navBarItems,
         onMenuClick = {
             scope.launch {
                 viewModel.navigate(NavigateEvent("settings", NavDestination.Settings))
@@ -99,6 +95,7 @@ fun HomeScreen(viewModel: HomeViewModel) {
             FloatingLayoutsScreen(
                 Modifier.fillMaxSize(),
                 viewModel = viewModel.listFloatingLayoutsViewModel,
+                navController = navController,
             )
         },
         floatingActionButton = { destination ->
@@ -137,27 +134,16 @@ fun HomeScreen(viewModel: HomeViewModel) {
 @Composable
 private fun HomeScreen(
     modifier: Modifier = Modifier,
+    navController: NavHostController,
+    navBarItems: List<HomeNavBarItem>,
     onMenuClick: () -> Unit = {},
     keyMapsContent: @Composable () -> Unit,
     floatingButtonsContent: @Composable () -> Unit,
     floatingActionButton: @Composable (destination: String?) -> Unit = {},
 ) {
-    val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
-    val navBarItems = listOf(
-        HomeNavBarItem(
-            HomeDestination.KeyMaps,
-            label = stringResource(R.string.home_nav_bar_key_maps),
-            icon = Icons.Outlined.Gamepad,
-        ),
-        HomeNavBarItem(
-            HomeDestination.FloatingButtons,
-            label = stringResource(R.string.home_nav_bar_floating_buttons),
-            icon = Icons.Outlined.BubbleChart,
-        ),
-    )
     val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
@@ -168,7 +154,10 @@ private fun HomeScreen(
         },
         floatingActionButton = { floatingActionButton(currentDestination?.route) },
         bottomBar = {
-            // TODO only show nav bar if the user has not dismissed the floating layouts screen, OR it is purchased.
+            if (navBarItems.size <= 1) {
+                return@Scaffold
+            }
+
             NavigationBar {
                 navBarItems.forEach { item ->
                     NavigationBarItem(
@@ -247,10 +236,4 @@ private fun HomeAppBar(onMenuClick: () -> Unit) {
         colors = TopAppBarDefaults.topAppBarColors()
             .copy(containerColor = MaterialTheme.colorScheme.surfaceContainer),
     )
-}
-
-@Preview
-@Composable
-private fun NavigationPreview() {
-    HomeScreen(keyMapsContent = {}, floatingButtonsContent = {})
 }

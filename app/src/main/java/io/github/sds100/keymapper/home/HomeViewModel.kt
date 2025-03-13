@@ -1,5 +1,9 @@
 package io.github.sds100.keymapper.home
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.BubbleChart
+import androidx.compose.material.icons.outlined.Gamepad
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -41,6 +45,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -82,6 +87,10 @@ class HomeViewModel(
     }
 
     private val multiSelectProvider: MultiSelectProvider<String> = MultiSelectProviderImpl()
+    val navBarItems: StateFlow<List<HomeNavBarItem>> =
+        listFloatingLayouts.showFloatingLayouts
+            .map(::buildNavBarItems)
+            .stateIn(viewModelScope, SharingStarted.Eagerly, buildNavBarItems(false))
 
     val menuViewModel by lazy {
         HomeMenuViewModel(
@@ -116,7 +125,7 @@ class HomeViewModel(
         ListFloatingLayoutsViewModel(
             viewModelScope,
             listFloatingLayouts,
-            resourceProvider
+            resourceProvider,
         )
     }
 
@@ -149,6 +158,7 @@ class HomeViewModel(
             ),
         )
 
+    // TODO delete unused stuff in home view model
     val tabsState =
         combine(
             multiSelectProvider.state,
@@ -297,6 +307,29 @@ class HomeViewModel(
                 showUpgradeGuiKeyboardDialog()
             }
         }
+    }
+
+    private fun buildNavBarItems(showFloatingLayouts: Boolean): List<HomeNavBarItem> {
+        val items = mutableListOf<HomeNavBarItem>()
+        items.add(
+            HomeNavBarItem(
+                HomeDestination.KeyMaps,
+                getString(R.string.home_nav_bar_key_maps),
+                icon = Icons.Outlined.Gamepad,
+            ),
+        )
+
+        if (showFloatingLayouts) {
+            items.add(
+                HomeNavBarItem(
+                    HomeDestination.FloatingButtons,
+                    getString(R.string.home_nav_bar_floating_buttons),
+                    icon = Icons.Outlined.BubbleChart,
+                ),
+            )
+        }
+
+        return items
     }
 
     private suspend fun showWhatsNewDialog() {
@@ -602,4 +635,10 @@ data class HomeTabsState(
 data class HomeErrorListState(
     val listItems: List<ListItem>,
     val isVisible: Boolean,
+)
+
+data class HomeNavBarItem(
+    val destination: HomeDestination,
+    val label: String,
+    val icon: ImageVector,
 )
