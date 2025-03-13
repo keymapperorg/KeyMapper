@@ -1427,6 +1427,7 @@
     <string name="purchasing_error_product_not_found">This product was not found.</string>
     <string name="purchasing_error_store_problem">Google Play encountered an error.</string>
     <string name="purchasing_error_payment_pending">We are waiting for confirmation from Google Play that your purchase was successful. Reopen the Key\u00A0Mapper app when your card has been successfully charged.</string>
+    <string name="purchasing_error_purchase_invalid">Invalid purchase.</string>
     <string name="purchasing_pending_error_dialog_title">Payment pending</string>
     <string name="purchasing_error_dialog_title">Something went wrong 😕</string>
     <string name="purchasing_error_dialog_button_retry">Retry</string>
