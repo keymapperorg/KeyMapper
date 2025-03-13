@@ -1409,8 +1409,6 @@
     <string name="advanced_triggers_sheet_text">The developer doesn\'t believe ads are a sustainable or user-friendly form of monetization so these paid triggers help support development\u00A0❤️. You will be given priority support as well.</string>
     <string name="assistant_trigger_product_title">Side\u00A0key &amp; Assistant trigger</string>
     <string name="assistant_trigger_product_description">Did you know you can remap your side key, power button, or device assistant? Instead of launching the assistant or the power menu, your device can perform an action of your choice. It works even when the screen is off!</string>
-    <string name="assistant_trigger_purchase_thank_you_title">Thank you for supporting the app\u00A0❤️!</string>
-    <string name="assistant_trigger_purchase_thank_you_message">Your purchase was successful. As a paying user of Key\u00A0Mapper you will receive priority support to help you use the app. There is now a button on this page to contact the developer.</string>
     <string name="trigger_error_assistant_not_purchased">You must purchase the assistant trigger feature.</string>
     <string name="advanced_triggers_learn_more_button">Learn more</string>
     <string name="notification_assistant_trigger_feature_title">New trigger! Did you know you can remap your digital assistant?</string>
@@ -1440,7 +1438,8 @@
     <string name="customer_email_body" translatable="false">Please fill the following information so I can help you.\n\n1. Device model:\n2. Android version:\n3. Key maps (make a back up in the home screen menu):\n4. Screenshot of Key Mapper home screen:\n5. Describe the problem you are having:</string>
     <string name="purchasing_not_implemented_bottom_sheet_text">The advanced triggers are paid feature but you downloaded the FOSS build of Key Mapper that does not include this module or Google Play billing. Please download Key Mapper from Google Play to get access to this feature.</string>
     <string name="purchasing_download_key_mapper_from_google_play">Download Play build</string>
-
+    <string name="purchase_thank_you_title">Thank you for supporting the app\u00A0❤️!</string>
+    <string name="purchase_thank_you_message">Your purchase was successful. As a paying user of Key\u00A0Mapper you will receive priority support to help you use the app. There is now a button on this page to contact the developer.</string>
 
     <!--  Dpad trigger setup bottom sheet  -->
     <string name="dpad_trigger_setup_bottom_sheet_title">Want to remap DPAD buttons?</string>

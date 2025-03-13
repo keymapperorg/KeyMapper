@@ -3,7 +3,6 @@ package io.github.sds100.keymapper.mappings.keymaps
 import android.os.Build
 import android.view.KeyEvent
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerKey
-import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerType
 import io.github.sds100.keymapper.mappings.keymaps.trigger.FloatingButtonKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyEventDetectionSource
@@ -21,7 +20,6 @@ data class TriggerErrorSnapshot(
     val isRootGranted: Boolean,
     val isAssistantTriggerPurchased: Boolean,
     val isFloatingButtonsPurchased: Boolean,
-    val isKeyMapperDeviceAssistant: Boolean,
     val showDpadImeSetupError: Boolean,
 ) {
     companion object {
@@ -54,13 +52,6 @@ data class TriggerErrorSnapshot(
 
         if (key is AssistantTriggerKey && !isAssistantTriggerPurchased) {
             return TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED
-        }
-
-        // Show an error if Key Mapper isn't selected as the device assistant
-        // and an assistant trigger is used. The error shouldn't be shown
-        // if the assistant trigger feature is not purchased.
-        if (key is AssistantTriggerKey && key.type == AssistantTriggerType.DEVICE && !isKeyMapperDeviceAssistant) {
-            return TriggerError.ASSISTANT_NOT_SELECTED
         }
 
         val containsDpadKey =

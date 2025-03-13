@@ -240,7 +240,6 @@ private fun getErrorMessage(error: TriggerError): String {
         TriggerError.DND_ACCESS_DENIED -> stringResource(R.string.trigger_error_dnd_access_denied)
         TriggerError.SCREEN_OFF_ROOT_DENIED -> stringResource(R.string.trigger_error_screen_off_root_permission_denied)
         TriggerError.CANT_DETECT_IN_PHONE_CALL -> stringResource(R.string.trigger_error_cant_detect_in_phone_call)
-        TriggerError.ASSISTANT_NOT_SELECTED -> stringResource(R.string.trigger_error_assistant_activity_not_chosen)
         TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED -> stringResource(R.string.trigger_error_assistant_not_purchased)
         TriggerError.DPAD_IME_NOT_SELECTED -> stringResource(R.string.trigger_error_dpad_ime_not_selected)
         TriggerError.FLOATING_BUTTON_DELETED -> stringResource(R.string.trigger_error_floating_button_deleted)
@@ -367,7 +366,7 @@ private fun AssistantErrorPreview() {
             assistantType = AssistantTriggerType.DEVICE,
             clickType = ClickType.DOUBLE_PRESS,
             linkType = TriggerKeyLinkType.ARROW,
-            error = TriggerError.ASSISTANT_NOT_SELECTED,
+            error = TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED,
         ),
         isDragging = false,
         isReorderingEnabled = true,

@@ -73,7 +73,6 @@ class DisplayKeyMapUseCaseImpl(
                 ?.contains(ProductId.ASSISTANT_TRIGGER) ?: false,
             isFloatingButtonsPurchased = purchases.dataOrNull()
                 ?.contains(ProductId.FLOATING_BUTTONS) ?: false,
-            isKeyMapperDeviceAssistant = permissionAdapter.isGranted(Permission.DEVICE_ASSISTANT),
             showDpadImeSetupError = showDpadImeSetupError,
         )
     }
@@ -154,7 +153,6 @@ class DisplayKeyMapUseCaseImpl(
             TriggerError.DND_ACCESS_DENIED -> fixError(Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY))
             TriggerError.SCREEN_OFF_ROOT_DENIED -> fixError(Error.PermissionDenied(Permission.ROOT))
             TriggerError.CANT_DETECT_IN_PHONE_CALL -> fixError(Error.CantDetectKeyEventsInPhoneCall)
-            TriggerError.ASSISTANT_NOT_SELECTED -> fixError(Error.PermissionDenied(Permission.DEVICE_ASSISTANT))
             TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED -> fixError(
                 Error.ProductNotPurchased(
                     ProductId.ASSISTANT_TRIGGER,
