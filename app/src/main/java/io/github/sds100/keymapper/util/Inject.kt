@@ -19,7 +19,6 @@ import io.github.sds100.keymapper.api.KeyEventRelayServiceWrapper
 import io.github.sds100.keymapper.backup.BackupRestoreMappingsUseCaseImpl
 import io.github.sds100.keymapper.constraints.ChooseConstraintViewModel
 import io.github.sds100.keymapper.constraints.CreateConstraintUseCaseImpl
-import io.github.sds100.keymapper.floating.ListFloatingLayoutsUseCaseImpl
 import io.github.sds100.keymapper.home.FixAppKillingViewModel
 import io.github.sds100.keymapper.home.HomeViewModel
 import io.github.sds100.keymapper.home.ShowHomeScreenAlertsUseCaseImpl
@@ -199,12 +198,7 @@ object Inject {
             UseCases.displayKeyMap(ctx),
             ServiceLocator.resourceProvider(ctx),
         ),
-        ListFloatingLayoutsUseCaseImpl(
-            ServiceLocator.floatingLayoutRepository(ctx),
-            ServiceLocator.purchasingManager(ctx),
-            ServiceLocator.accessibilityServiceAdapter(ctx),
-            ServiceLocator.settingsRepository(ctx),
-        ),
+        UseCases.listFloatingLayouts(ctx),
     )
 
     fun settingsViewModel(context: Context): SettingsViewModel.Factory = SettingsViewModel.Factory(

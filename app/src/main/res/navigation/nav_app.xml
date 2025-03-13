@@ -68,6 +68,11 @@
         app:popExitAnim="@anim/slide_out_right" />
 
     <action
+        android:id="@+id/to_chooseFloatingLayoutFragment"
+        app:destination="@id/chooseFloatingLayoutFragment"
+        app:enterAnim="@anim/slide_in_right" />
+
+    <action
         android:id="@+id/to_settingsFragment"
         app:destination="@id/nav_settings"
         app:enterAnim="@anim/slide_in_right"
@@ -399,9 +404,13 @@
     <fragment
         android:id="@+id/chooseActionFragment"
         android:name="io.github.sds100.keymapper.actions.ChooseActionFragment"
-        android:label="ChooseActionFragmentNew">
+        android:label="ChooseActionFragment">
         <argument
             android:name="requestKey"
             app:argType="string" />
     </fragment>
+    <fragment
+        android:id="@+id/chooseFloatingLayoutFragment"
+        android:name="io.github.sds100.keymapper.floating.ChooseFloatingLayoutFragment"
+        android:label="ChooseFloatingLayoutFragment" />
 </navigation>

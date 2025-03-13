@@ -1488,6 +1488,9 @@
     <string name="deleted_floating_button_text_key_map_list_item">Deleted floating button</string>
     <string name="floating_buttons_all_done_constraints_dialog_title">Constraints</string>
     <string name="floating_buttons_all_done_constraints_dialog_message">Do you want this button to only be on screen in some apps? Add an “App in foreground” constraint for this key map in the “Constraints” tab.</string>
+    <string name="choose_floating_layout_title">Choose a layout</string>
+    <string name="bottom_app_bar_back_content_description">Back</string>
+    <string name="bottom_app_bar_help_content_description">Help</string>
 
     <!-- Home screen -->
     <string name="home_nav_bar_key_maps">Key maps</string>

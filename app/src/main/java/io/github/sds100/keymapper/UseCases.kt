@@ -8,6 +8,8 @@ import io.github.sds100.keymapper.actions.PerformActionsUseCaseImpl
 import io.github.sds100.keymapper.api.KeyEventRelayServiceWrapper
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCaseImpl
 import io.github.sds100.keymapper.constraints.GetConstraintErrorUseCaseImpl
+import io.github.sds100.keymapper.floating.ListFloatingLayoutsUseCase
+import io.github.sds100.keymapper.floating.ListFloatingLayoutsUseCaseImpl
 import io.github.sds100.keymapper.mappings.DetectMappingUseCaseImpl
 import io.github.sds100.keymapper.mappings.DisplaySimpleMappingUseCase
 import io.github.sds100.keymapper.mappings.DisplaySimpleMappingUseCaseImpl
@@ -41,6 +43,13 @@ import io.github.sds100.keymapper.system.inputmethod.ToggleCompatibleImeUseCaseI
  */
 object UseCases {
 
+    fun listFloatingLayouts(ctx: Context): ListFloatingLayoutsUseCase = ListFloatingLayoutsUseCaseImpl(
+        ServiceLocator.floatingLayoutRepository(ctx),
+        ServiceLocator.purchasingManager(ctx),
+        ServiceLocator.accessibilityServiceAdapter(ctx),
+        ServiceLocator.settingsRepository(ctx),
+    )
+
     fun displayPackages(ctx: Context): DisplayAppsUseCase = DisplayAppsUseCaseImpl(
         ServiceLocator.packageManagerAdapter(ctx),
     )
@@ -53,8 +62,7 @@ object UseCases {
         ServiceLocator.purchasingManager(ctx),
     )
 
-    fun configKeyMap(ctx: Context): ConfigKeyMapUseCase =
-        ServiceLocator.configKeyMapsController(ctx)
+    fun configKeyMap(ctx: Context): ConfigKeyMapUseCase = ServiceLocator.configKeyMapsController(ctx)
 
     fun displaySimpleMapping(ctx: Context): DisplaySimpleMappingUseCase = DisplaySimpleMappingUseCaseImpl(
         ServiceLocator.packageManagerAdapter(ctx),
