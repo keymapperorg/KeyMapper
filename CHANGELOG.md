@@ -1,3 +1,12 @@
+## [2.8.2](https://github.com/sds100/KeyMapper/releases/tag/v2.8.2)
+
+## Changes
+
+- #1514, #1454 Improving naming of assistant trigger to also refer to the side key and do not force the user to select Key Mapper as the assistant.  
+
+## Bug fixes
+- #1461 fix: crash on startup due to getting MotionEvent device
+- 
 ## [2.8.1](https://github.com/sds100/KeyMapper/releases/tag/v2.8.1)
 
 #### 18 February 2025
