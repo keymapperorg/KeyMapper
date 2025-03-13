@@ -19,5 +19,4 @@ enum class Permission {
     ANSWER_PHONE_CALL,
     FIND_NEARBY_DEVICES,
     POST_NOTIFICATIONS,
-    DEVICE_ASSISTANT,
 }
