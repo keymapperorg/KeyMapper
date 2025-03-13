@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.mappings.keymaps.detection
 
 import android.view.KeyEvent
+import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
 import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
@@ -62,11 +63,11 @@ class DpadMotionEventTracker {
      * @return An array of key events. Empty if no DPAD buttons changed.
      */
     fun convertMotionEvent(event: MyMotionEvent): List<MyKeyEvent> {
-        val oldState = dpadState[event.device.descriptor] ?: 0
+        val oldState = dpadState[event.device.getDescriptor()] ?: 0
         val newState = eventToDpadState(event)
         val diff = oldState xor newState
 
-        dpadState[event.device.descriptor] = newState
+        dpadState[event.device.getDescriptor()] = newState
 
         // If no dpad keys changed then return null
         if (diff == 0) {
@@ -112,6 +113,10 @@ class DpadMotionEventTracker {
 
     fun reset() {
         dpadState.clear()
+    }
+
+    private fun InputDeviceInfo?.getDescriptor(): String {
+        return this?.descriptor ?: ""
     }
 
     private fun eventToDpadState(event: MyMotionEvent): Int {

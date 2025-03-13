@@ -138,15 +138,6 @@ class DisplayKeyMapUseCaseImpl(
             errors.add(TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED)
         }
 
-        val isKeyMapperDeviceAssistant = permissionAdapter.isGranted(Permission.DEVICE_ASSISTANT)
-
-        // Show an error if Key Mapper isn't selected as the device assistant
-        // and an assistant trigger is used. The error shouldn't be shown
-        // if the assistant trigger feature is not purchased.
-        if (containsDeviceAssistantTrigger && isAssistantTriggerPurchased && !isKeyMapperDeviceAssistant) {
-            errors.add(TriggerError.ASSISTANT_NOT_SELECTED)
-        }
-
         val containsDpadKey = trigger.keys
             .mapNotNull { it as? KeyCodeTriggerKey }
             .any { InputEventUtils.isDpadKeyCode(it.keyCode) && it.detectionSource == KeyEventDetectionSource.INPUT_METHOD }

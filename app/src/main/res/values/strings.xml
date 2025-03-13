@@ -1401,17 +1401,16 @@
     <!--  About  -->
 
     <!-- Advanced triggers -->
+    <string name="assistant_activity_name">Key Mapper: side key</string>
     <string name="assistant_any_trigger_name">Any assistant</string>
-    <string name="assistant_device_trigger_name">Device assistant</string>
+    <string name="assistant_device_trigger_name">Side key/power button</string>
     <string name="assistant_voice_trigger_name">Voice assistant</string>
     <string name="advanced_triggers_sheet_title">Advanced triggers</string>
     <string name="advanced_triggers_sheet_text">The developer doesn\'t believe ads are a sustainable or user-friendly form of monetization so these paid triggers help support development\u00A0❤️. You will be given priority support as well.</string>
-    <string name="assistant_trigger_product_title">Assistant trigger</string>
-    <string name="assistant_trigger_product_description">Did you know you can remap your device assistant? Instead of launching Google Assistant or Bixby, your device can perform an action of your choice. It works even when the screen is off!</string>
-    <string name="purchase_thank_you_title">Thank you for supporting the app\u00A0❤️!</string>
-    <string name="purchase_thank_you_message">Your purchase was successful. As a paying user of Key\u00A0Mapper you will receive priority support to help you use the app. There is now a button on this page to contact the developer.</string>
-    <string name="trigger_error_assistant_activity_not_chosen">You must select Key\u00A0Mapper as the default digital assistant app for this trigger to work.</string>
-    <string name="trigger_error_assistant_activity_not_chosen_short">Key\u00A0Mapper must be the default assistant.</string>
+    <string name="assistant_trigger_product_title">Side\u00A0key &amp; Assistant trigger</string>
+    <string name="assistant_trigger_product_description">Did you know you can remap your side key, power button, or device assistant? Instead of launching the assistant or the power menu, your device can perform an action of your choice. It works even when the screen is off!</string>
+    <string name="assistant_trigger_purchase_thank_you_title">Thank you for supporting the app\u00A0❤️!</string>
+    <string name="assistant_trigger_purchase_thank_you_message">Your purchase was successful. As a paying user of Key\u00A0Mapper you will receive priority support to help you use the app. There is now a button on this page to contact the developer.</string>
     <string name="trigger_error_assistant_not_purchased">You must purchase the assistant trigger feature.</string>
     <string name="advanced_triggers_learn_more_button">Learn more</string>
     <string name="notification_assistant_trigger_feature_title">New trigger! Did you know you can remap your digital assistant?</string>

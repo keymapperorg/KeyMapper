@@ -100,22 +100,6 @@ class RequestPermissionDelegate(
             Permission.POST_NOTIFICATIONS -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
-
-            Permission.DEVICE_ASSISTANT -> {
-                try {
-                    Intent(Settings.ACTION_VOICE_INPUT_SETTINGS).apply {
-                        addFlags(
-                            Intent.FLAG_ACTIVITY_NEW_TASK
-                                or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                                or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
-                                // Add this flag so user only has to press back once.
-                                or Intent.FLAG_ACTIVITY_NO_HISTORY,
-                        )
-                        startActivityForResultLauncher.launch(this)
-                    }
-                } catch (e: ActivityNotFoundException) {
-                }
-            }
         }
     }
 
