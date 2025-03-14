@@ -1491,11 +1491,12 @@
     <string name="choose_floating_layout_title">Choose a layout</string>
     <string name="bottom_app_bar_back_content_description">Back</string>
     <string name="bottom_app_bar_help_content_description">Help</string>
-    <string name="floating_menu_done_dialog_title">Go back to Key Mapper</string>
-    <string name="floating_menu_done_dialog_go_back_button">Go back</string>
-    <string name="floating_menu_done_dialog_cancel_button">Cancel</string>
-    <string name="floating_menu_done_dialog_text_no_buttons">Do you want go back or cancel and create a floating button?</string>
-    <string name="floating_menu_done_dialog_text_buttons">Do you want go back or cancel and use one of the floating buttons as a trigger?</string>
+    <string name="floating_menu_done_dialog_title">Need some help?</string>
+    <string name="floating_menu_done_dialog_create_button">Create button</string>
+    <string name="floating_menu_done_dialog_choose_button">Choose button</string>
+    <string name="floating_menu_done_dialog_quit_button">Quit</string>
+    <string name="floating_menu_done_dialog_text_no_buttons">You need to create a floating button before you can use it as a trigger.</string>
+    <string name="floating_menu_done_dialog_text_buttons">You need to choose one floating button to use as a trigger.</string>
 
     <!-- Home screen -->
     <string name="home_nav_bar_key_maps">Key maps</string>

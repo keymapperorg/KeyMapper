@@ -35,6 +35,7 @@ import io.github.sds100.keymapper.util.firstBlocking
 import io.github.sds100.keymapper.util.ifIsData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -55,12 +56,12 @@ class ConfigKeyMapUseCaseController(
 
     override val floatingButtonToUse: MutableStateFlow<String?> = MutableStateFlow(null)
 
-    override suspend fun useFloatingButtonTrigger(buttonUid: String) {
+    override fun useFloatingButtonTrigger(buttonUid: String) {
         floatingButtonToUse.update { buttonUid }
     }
 
     private val showDeviceDescriptors: Flow<Boolean> =
-        preferenceRepository.get(Keys.showDeviceDescriptors).map { it ?: false }
+        preferenceRepository.get(Keys.showDeviceDescriptors).map { it == true }
 
     override suspend fun addFloatingButtonTriggerKey(buttonUid: String) {
         floatingButtonToUse.update { null }
@@ -657,7 +658,7 @@ interface ConfigKeyMapUseCase : ConfigMappingUseCase<KeyMapAction, KeyMap> {
 
     fun setActionStopHoldingDownWhenTriggerPressedAgain(uid: String, enabled: Boolean)
 
-    val floatingButtonToUse: Flow<String?>
-    suspend fun useFloatingButtonTrigger(buttonUid: String)
+    val floatingButtonToUse: StateFlow<String?>
+    fun useFloatingButtonTrigger(buttonUid: String)
     suspend fun getFloatingLayoutCount(): Int
 }

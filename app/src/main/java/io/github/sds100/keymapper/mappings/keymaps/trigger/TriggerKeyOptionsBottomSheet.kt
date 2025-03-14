@@ -46,6 +46,8 @@ fun TriggerKeyOptionsBottomSheet(
     onSelectDevice: (String) -> Unit = {},
     onSelectAssistantType: (AssistantTriggerType) -> Unit = {},
 ) {
+    // TODO show a button in the config trigger key bottom sheet to change how the floating button is placed and looked
+
     ModalBottomSheet(
         modifier = modifier,
         onDismissRequest = onDismissRequest,
