@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -35,51 +34,62 @@ fun CustomDialog(
     BasicAlertDialog(
         onDismissRequest = onDismissRequest,
     ) {
-        Surface(
-            color = AlertDialogDefaults.containerColor,
-            shape = AlertDialogDefaults.shape,
-            tonalElevation = AlertDialogDefaults.TonalElevation
-        ) {
-            Column {
+        CustomDialogContent(title, text, confirmButton, dismissButton, content)
+    }
+}
+
+@Composable
+fun CustomDialogContent(
+    title: String,
+    text: String? = null,
+    confirmButton: @Composable () -> Unit,
+    dismissButton: @Composable () -> Unit = {},
+    content: @Composable (BoxScope.() -> Unit),
+) {
+    Surface(
+        color = AlertDialogDefaults.containerColor,
+        shape = AlertDialogDefaults.shape,
+        tonalElevation = AlertDialogDefaults.TonalElevation,
+    ) {
+        Column {
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                modifier = Modifier
+                    .align(Alignment.Start)
+                    .fillMaxWidth()
+                    .padding(start = 24.dp, end = 24.dp),
+                text = title,
+                style = MaterialTheme.typography.headlineSmall,
+                color = AlertDialogDefaults.titleContentColor,
+            )
+            if (text != null) {
                 Spacer(modifier = Modifier.height(16.dp))
+
                 Text(
                     modifier = Modifier
                         .align(Alignment.Start)
                         .fillMaxWidth()
                         .padding(start = 24.dp, end = 24.dp),
-                    text = title,
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = AlertDialogDefaults.titleContentColor,
+                    text = text,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = AlertDialogDefaults.textContentColor,
                 )
-                if (text != null) {
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Text(
-                        modifier = Modifier
-                            .align(Alignment.Start)
-                            .fillMaxWidth()
-                            .padding(start = 24.dp, end = 24.dp),
-                        text = text,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = AlertDialogDefaults.textContentColor,
-                    )
-                }
-                Spacer(modifier = Modifier.height(16.dp))
+            }
+            Spacer(modifier = Modifier.height(16.dp))
 //                HorizontalDivider()
-                Box(Modifier.weight(1f, fill = false), content = content)
+            Box(Modifier.weight(1f, fill = false), content = content)
 //                HorizontalDivider()
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.End)
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.End,
-                ) {
-                    dismissButton()
-                    Spacer(modifier = Modifier.width(16.dp))
-                    confirmButton()
-                }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.End)
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.End,
+            ) {
+                dismissButton()
+                Spacer(modifier = Modifier.width(16.dp))
+                confirmButton()
             }
         }
     }
