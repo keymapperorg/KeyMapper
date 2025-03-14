@@ -113,7 +113,7 @@ abstract class BaseConfigTriggerViewModel(
         )
     }.stateIn(coroutineScope, SharingStarted.Lazily, SetupGuiKeyboardState.DEFAULT)
 
-    private val triggerKeyOptionsUid = MutableStateFlow<String?>(null)
+    val triggerKeyOptionsUid = MutableStateFlow<String?>(null)
     val triggerKeyOptionsState: StateFlow<TriggerKeyOptionsState?> =
         combine(config.mapping, triggerKeyOptionsUid, transform = ::buildKeyOptionsUiState)
             .stateIn(coroutineScope, SharingStarted.Lazily, null)
@@ -286,11 +286,13 @@ abstract class BaseConfigTriggerViewModel(
                         )
                     }
 
-                    is FloatingButtonKey ->
+                    is FloatingButtonKey -> {
                         return TriggerKeyOptionsState.FloatingButton(
                             clickType = key.clickType,
                             showClickTypes = showClickTypes,
+                            isPurchased = displayKeyMap.isFloatingButtonsPurchased(),
                         )
+                    }
                 }
             }
         }
@@ -736,5 +738,6 @@ sealed class TriggerKeyOptionsState {
     data class FloatingButton(
         override val clickType: ClickType,
         override val showClickTypes: Boolean,
+        val isPurchased: Boolean,
     ) : TriggerKeyOptionsState()
 }

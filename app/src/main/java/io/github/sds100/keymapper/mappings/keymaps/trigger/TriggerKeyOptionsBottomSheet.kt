@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
@@ -45,6 +46,7 @@ fun TriggerKeyOptionsBottomSheet(
     onSelectClickType: (ClickType) -> Unit = {},
     onSelectDevice: (String) -> Unit = {},
     onSelectAssistantType: (AssistantTriggerType) -> Unit = {},
+    onEditFloatingLayoutClick: () -> Unit = {},
 ) {
     // TODO show a button in the config trigger key bottom sheet to change how the floating button is placed and looked
 
@@ -152,7 +154,18 @@ fun TriggerKeyOptionsBottomSheet(
                     isSelected = state.assistantType == AssistantTriggerType.VOICE,
                     onSelected = { onSelectAssistantType(AssistantTriggerType.VOICE) },
                 )
+            } else if (state is TriggerKeyOptionsState.FloatingButton && state.isPurchased) {
+                FilledTonalButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    onClick = onEditFloatingLayoutClick,
+                ) {
+                    Text(stringResource(R.string.floating_button_trigger_option_edit_layout))
+                }
             }
+
+            Spacer(Modifier.height(8.dp))
 
             val helpUrl = stringResource(R.string.url_trigger_key_options_guide)
             val scope = rememberCoroutineScope()
@@ -169,12 +182,19 @@ fun TriggerKeyOptionsBottomSheet(
 
                 Spacer(Modifier.width(16.dp))
 
-                FilledTonalButton(modifier = Modifier.weight(1f), onClick = {
-                    scope.launch {
-                        sheetState.hide()
-                        onDismissRequest()
-                    }
-                }) {
+                FilledTonalButton(
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.filledTonalButtonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                    ),
+                    onClick = {
+                        scope.launch {
+                            sheetState.hide()
+                            onDismissRequest()
+                        }
+                    },
+                ) {
                     Text(stringResource(R.string.button_done))
                 }
                 Spacer(Modifier.width(16.dp))
@@ -236,6 +256,28 @@ private fun AssistantPreview() {
                 assistantType = AssistantTriggerType.VOICE,
                 clickType = ClickType.DOUBLE_PRESS,
                 showClickTypes = true,
+            ),
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun FloatingButtonPreview() {
+    KeyMapperTheme {
+        val sheetState = SheetState(
+            skipPartiallyExpanded = true,
+            density = LocalDensity.current,
+            initialValue = Expanded,
+        )
+
+        TriggerKeyOptionsBottomSheet(
+            sheetState = sheetState,
+            state = TriggerKeyOptionsState.FloatingButton(
+                clickType = ClickType.SHORT_PRESS,
+                showClickTypes = false,
+                isPurchased = true,
             ),
         )
     }

@@ -98,6 +98,7 @@ fun TriggerScreen(modifier: Modifier = Modifier, viewModel: ConfigTriggerViewMod
             onSelectClickType = viewModel::onSelectKeyClickType,
             onSelectDevice = viewModel::onSelectTriggerKeyDevice,
             onSelectAssistantType = viewModel::onSelectTriggerKeyAssistantType,
+            onEditFloatingLayoutClick = viewModel::onEditFloatingLayoutClick,
         )
     }
 

@@ -70,9 +70,9 @@ class DisplayKeyMapUseCaseImpl(
             isDndAccessGranted = permissionAdapter.isGranted(Permission.ACCESS_NOTIFICATION_POLICY),
             isRootGranted = permissionAdapter.isGranted(Permission.ROOT),
             isAssistantTriggerPurchased = purchases.dataOrNull()
-                ?.contains(ProductId.ASSISTANT_TRIGGER) ?: false,
+                ?.contains(ProductId.ASSISTANT_TRIGGER) == true,
             isFloatingButtonsPurchased = purchases.dataOrNull()
-                ?.contains(ProductId.FLOATING_BUTTONS) ?: false,
+                ?.contains(ProductId.FLOATING_BUTTONS) == true,
             showDpadImeSetupError = showDpadImeSetupError,
         )
     }
@@ -94,6 +94,10 @@ class DisplayKeyMapUseCaseImpl(
 
     override fun neverShowDpadImeSetupError() {
         preferences.set(Keys.neverShowDpadImeTriggerError, true)
+    }
+
+    override suspend fun isFloatingButtonsPurchased(): Boolean {
+        return purchasingManager.isPurchased(ProductId.FLOATING_BUTTONS).valueIfFailure { false }
     }
 
     // TODO Delete
@@ -127,8 +131,6 @@ class DisplayKeyMapUseCaseImpl(
         }
 
         val containsAssistantTrigger = trigger.keys.any { it is AssistantTriggerKey }
-        val containsDeviceAssistantTrigger =
-            trigger.keys.any { it is AssistantTriggerKey && it.requiresDeviceAssistant() }
 
         val isAssistantTriggerPurchased =
             purchasingManager.isPurchased(ProductId.ASSISTANT_TRIGGER).valueIfFailure { false }
@@ -174,6 +176,7 @@ interface DisplayKeyMapUseCase : DisplaySimpleMappingUseCase {
     val invalidateTriggerErrors: Flow<Unit>
     val triggerErrorSnapshot: Flow<TriggerErrorSnapshot>
     suspend fun getTriggerErrors(keyMap: KeyMap): List<TriggerError>
+    suspend fun isFloatingButtonsPurchased(): Boolean
     suspend fun fixTriggerError(error: TriggerError)
     val showTriggerKeyboardIconExplanation: Flow<Boolean>
     fun neverShowTriggerKeyboardIconExplanation()
