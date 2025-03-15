@@ -3,7 +3,7 @@
 什么能被重新映射？
 
  * 音量键。
- * 通过 Google 助手、Pixel Active Edge 按电源键，双击 Bixby 按钮。
+ * Power button, side key, and voice assistant button (one time purchase to support development).
  * 蓝牙/有线键盘。
  * 支持设备上的指纹手势。
  * 游戏手柄上的方向按钮。

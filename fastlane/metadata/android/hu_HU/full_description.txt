@@ -3,7 +3,7 @@ New trigger! 🎉 Remap your Assistant & Bixby, and DPAD buttons!
 Mit lehet átállítani?
 
  * Hangerőszabályzó gombok.
- * Power button via Google Assistant, Pixel Active Edge, Double press Bixby button.
+ * Power button, side key, and voice assistant button (one time purchase to support development).
  * Bluetooth/vezetékes billentyűzeteket.
  * Ujjlenyomat-gesztusok a támogatott eszközökön.
  * DPAD buttons on game controllers.

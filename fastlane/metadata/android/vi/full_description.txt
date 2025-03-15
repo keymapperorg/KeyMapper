@@ -3,7 +3,7 @@ Kích hoạt mới! 🎉 Remap your Assistant & Bixby, and DPAD buttons!
 Những gì có thể được ánh xạ lại?
 
  * Nút âm lượng.
- * Nút nguồn thông qua Google Assistant, Pixel Active Edge, Nhấn đúp vào nút Bixby.
+ * Power button, side key, and voice assistant button (one time purchase to support development).
  * Bàn phím Bluetooth/có dây.
  * Cử chỉ vân tay trên các thiết bị được hỗ trợ.
  * DPAD buttons on game controllers.
