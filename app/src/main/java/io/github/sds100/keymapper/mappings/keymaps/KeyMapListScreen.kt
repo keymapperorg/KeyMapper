@@ -70,6 +70,7 @@ fun KeyMapListScreen(modifier: Modifier = Modifier, viewModel: KeyMapListViewMod
     KeyMapListScreen(
         modifier = modifier,
         listItems = listItems,
+        footerText = stringResource(R.string.home_key_map_list_footer_text),
         // TODO selection
         isSelectable = false,
         onClickKeyMap = viewModel::onKeyMapCardClick,
@@ -83,6 +84,7 @@ fun KeyMapListScreen(modifier: Modifier = Modifier, viewModel: KeyMapListViewMod
 fun KeyMapListScreen(
     modifier: Modifier = Modifier,
     listItems: State<List<KeyMapListItemModel>>,
+    footerText: String = stringResource(R.string.home_key_map_list_footer_text),
     isSelectable: Boolean = false,
     onClickKeyMap: (String) -> Unit = {},
     onLongClickKeyMap: (String) -> Unit = {},
@@ -104,6 +106,7 @@ fun KeyMapListScreen(
                     KeyMapList(
                         modifier,
                         listItems.data,
+                        footerText,
                         isSelectable,
                         onClickKeyMap,
                         onFixClick,
@@ -141,6 +144,7 @@ private fun EmptyKeyMapList(modifier: Modifier = Modifier) {
 private fun KeyMapList(
     modifier: Modifier = Modifier,
     listItems: List<KeyMapListItemModel>,
+    footerText: String,
     isSelectable: Boolean,
     onClickKeyMap: (String) -> Unit,
     onFixClick: (Error) -> Unit,
@@ -168,7 +172,7 @@ private fun KeyMapList(
         item {
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = stringResource(R.string.home_key_map_list_footer_text),
+                text = footerText,
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodyMedium,
             )

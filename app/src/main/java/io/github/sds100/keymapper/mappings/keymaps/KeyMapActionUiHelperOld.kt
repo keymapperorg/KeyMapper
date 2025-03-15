@@ -10,6 +10,7 @@ import io.github.sds100.keymapper.util.ui.ResourceProvider
  * Created by sds100 on 04/03/2021.
  */
 
+// TODO remove and replace action list with compose UI.
 class KeyMapActionUiHelperOld(
     displayActionUseCase: DisplayActionUseCase,
     resourceProvider: ResourceProvider,

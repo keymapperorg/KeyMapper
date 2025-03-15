@@ -1,21 +1,16 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
 import android.content.Intent
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapListItemModel
-import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.mapData
-import io.github.sds100.keymapper.util.ui.ChipUi
-import io.github.sds100.keymapper.util.ui.PopupUi
-import io.github.sds100.keymapper.util.ui.PopupViewModel
-import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.util.ui.ResourceProvider
-import io.github.sds100.keymapper.util.ui.ViewModelHelper
-import io.github.sds100.keymapper.util.ui.showPopup
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -23,6 +18,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
@@ -36,7 +32,6 @@ class CreateKeyMapShortcutViewModel(
     private val createShortcutUseCase: CreateKeyMapShortcutUseCase,
     resourceProvider: ResourceProvider,
 ) : ViewModel(),
-    PopupViewModel by PopupViewModelImpl(),
     ResourceProvider by resourceProvider {
 
     private val listItemCreator = KeyMapListItemCreator(listKeyMaps, resourceProvider)
@@ -46,6 +41,9 @@ class CreateKeyMapShortcutViewModel(
 
     private val _returnIntentResult = MutableSharedFlow<Intent>()
     val returnIntentResult = _returnIntentResult.asSharedFlow()
+
+    var showShortcutNameDialog: Boolean by mutableStateOf(false)
+    val shortcutNameDialogResult = MutableStateFlow<String?>(null)
 
     init {
         val rebuildUiState = MutableSharedFlow<State<List<KeyMap>>>(replay = 1)
@@ -100,14 +98,14 @@ class CreateKeyMapShortcutViewModel(
             val intent = if (keyMap.actionList.size == 1) {
                 createShortcutUseCase.createIntentForSingleAction(keyMap.uid, keyMap.actionList[0])
             } else {
-                val key = "create_launcher_shortcut"
-                val shortcutName = showPopup(
-                    key,
-                    PopupUi.Text(
-                        getString(R.string.hint_shortcut_name),
-                        allowEmpty = false,
-                    ),
-                ) ?: return@launch
+                showShortcutNameDialog = true
+
+                val shortcutName = shortcutNameDialogResult.filterNotNull().first()
+                shortcutNameDialogResult.value = null
+
+                if (shortcutName.isBlank()) {
+                    return@launch
+                }
 
                 createShortcutUseCase.createIntentForMultipleActions(
                     keyMapUid = keyMap.uid,
@@ -118,36 +116,6 @@ class CreateKeyMapShortcutViewModel(
             configKeyMapUseCase.save()
 
             _returnIntentResult.emit(intent)
-        }
-    }
-
-    fun onTriggerErrorChipClick(chipModel: ChipUi) {
-        if (chipModel is ChipUi.Error) {
-            showDialogAndFixError(chipModel.error)
-        }
-    }
-
-    fun onActionChipClick(chipModel: ChipUi) {
-        if (chipModel is ChipUi.Error) {
-            showDialogAndFixError(chipModel.error)
-        }
-    }
-
-    fun onConstraintsChipClick(chipModel: ChipUi) {
-        if (chipModel is ChipUi.Error) {
-            showDialogAndFixError(chipModel.error)
-        }
-    }
-
-    private fun showDialogAndFixError(error: Error) {
-        viewModelScope.launch {
-            ViewModelHelper.showFixErrorDialog(
-                resourceProvider = this@CreateKeyMapShortcutViewModel,
-                popupViewModel = this@CreateKeyMapShortcutViewModel,
-                error,
-            ) {
-                listKeyMaps.fixError(error)
-            }
         }
     }
 
