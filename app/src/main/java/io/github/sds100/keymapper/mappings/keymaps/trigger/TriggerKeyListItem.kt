@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.draggable.DragDropState
 import io.github.sds100.keymapper.mappings.ClickType
-import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintGestureType
+import io.github.sds100.keymapper.mappings.FingerprintGestureType
 
 @Composable
 fun TriggerKeyListItem(

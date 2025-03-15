@@ -11,14 +11,12 @@ import io.github.sds100.keymapper.data.db.AppDatabase
 import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
 import io.github.sds100.keymapper.data.repositories.FloatingLayoutRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.data.repositories.RoomFingerprintMapRepository
 import io.github.sds100.keymapper.data.repositories.RoomFloatingButtonRepository
 import io.github.sds100.keymapper.data.repositories.RoomFloatingLayoutRepository
 import io.github.sds100.keymapper.data.repositories.RoomKeyMapRepository
 import io.github.sds100.keymapper.data.repositories.RoomLogRepository
 import io.github.sds100.keymapper.data.repositories.SettingsPreferenceRepository
 import io.github.sds100.keymapper.logging.LogRepository
-import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapRepository
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapUseCaseController
 import io.github.sds100.keymapper.purchasing.PurchasingManagerImpl
 import io.github.sds100.keymapper.shizuku.ShizukuAdapter
@@ -80,22 +78,6 @@ object ServiceLocator {
                 (context.applicationContext as KeyMapperApp).appCoroutineScope,
             ).also {
                 this.roomKeymapRepository = it
-            }
-        }
-    }
-
-    @Volatile
-    private var fingerprintMapRepository: FingerprintMapRepository? = null
-
-    private val Context.legacyFingerprintMapDataStore by preferencesDataStore("fingerprint_gestures")
-    fun fingerprintMapRepository(context: Context): FingerprintMapRepository {
-        synchronized(this) {
-            return fingerprintMapRepository ?: RoomFingerprintMapRepository(
-                database(context).fingerprintMapDao(),
-                (context.applicationContext as KeyMapperApp).appCoroutineScope,
-                devicesAdapter(context),
-            ).also {
-                this.fingerprintMapRepository = it
             }
         }
     }
@@ -172,7 +154,6 @@ object ServiceLocator {
         fileAdapter(context),
         roomKeymapRepository(context),
         settingsRepository(context),
-        fingerprintMapRepository(context),
         soundsManager(context),
     )
 
@@ -298,4 +279,6 @@ object ServiceLocator {
         AppDatabase.MIGRATION_12_13,
         AppDatabase.MIGRATION_13_14,
     ).build()
+
+    private val Context.legacyFingerprintMapDataStore by preferencesDataStore("fingerprint_gestures")
 }

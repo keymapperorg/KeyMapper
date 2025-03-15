@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.mappings.fingerprintmaps
+package io.github.sds100.keymapper.mappings
 
 import android.os.Build
 import io.github.sds100.keymapper.data.Keys

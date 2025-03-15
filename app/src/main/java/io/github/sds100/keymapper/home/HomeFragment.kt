@@ -30,13 +30,6 @@ class HomeFragment : Fragment() {
             homeViewModel.onChoseBackupFile(it.toString())
         }
 
-    private val backupFingerprintMapsLauncher =
-        registerForActivityResult(CreateDocument(FileUtils.MIME_TYPE_ZIP)) {
-            it ?: return@registerForActivityResult
-
-            homeViewModel.backupFingerprintMaps(it.toString())
-        }
-
     private val backupKeyMapsLauncher =
         registerForActivityResult(CreateDocument(FileUtils.MIME_TYPE_ZIP)) {
             it ?: return@registerForActivityResult
@@ -59,7 +52,6 @@ class HomeFragment : Fragment() {
 
         homeViewModel.setupNavigation(this)
         homeViewModel.keymapListViewModel.setupNavigation(this)
-        homeViewModel.fingerprintMapListViewModel.setupNavigation(this)
     }
 
     override fun onCreateView(

@@ -6,7 +6,7 @@ import androidx.compose.material.icons.outlined.Add
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.BaseMappingListItemCreator
 import io.github.sds100.keymapper.mappings.ClickType
-import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintGestureType
+import io.github.sds100.keymapper.mappings.FingerprintGestureType
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerType
 import io.github.sds100.keymapper.mappings.keymaps.trigger.FingerprintTriggerKey

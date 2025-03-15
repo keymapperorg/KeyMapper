@@ -26,7 +26,7 @@ import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
 import io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback
 import io.github.sds100.keymapper.api.KeyEventRelayService
 import io.github.sds100.keymapper.api.KeyEventRelayServiceWrapperImpl
-import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintGestureType
+import io.github.sds100.keymapper.mappings.FingerprintGestureType
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.inputevents.MyKeyEvent

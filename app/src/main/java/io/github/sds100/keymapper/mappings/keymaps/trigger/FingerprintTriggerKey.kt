@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.mappings.keymaps.trigger
 import io.github.sds100.keymapper.data.entities.FingerprintTriggerKeyEntity
 import io.github.sds100.keymapper.data.entities.TriggerKeyEntity
 import io.github.sds100.keymapper.mappings.ClickType
-import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintGestureType
+import io.github.sds100.keymapper.mappings.FingerprintGestureType
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.util.UUID

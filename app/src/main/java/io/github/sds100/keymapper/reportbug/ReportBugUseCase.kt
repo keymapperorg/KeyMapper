@@ -71,7 +71,7 @@ class ReportBugUseCaseImpl(
             // mappings
             val mappingsFile = fileAdapter.getFile(tempFolder, FILE_MAPPINGS)
 
-            backupManager.backupMappings(mappingsFile.uri).onFailure {
+            backupManager.backupEverything(mappingsFile.uri).onFailure {
                 return it
             }
 

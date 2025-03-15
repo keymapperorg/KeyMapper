@@ -209,9 +209,6 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
             NavDestination.About -> NavAppDirections.actionGlobalAboutFragment()
             NavDestination.Settings -> NavAppDirections.toSettingsFragment()
 
-            is NavDestination.ConfigFingerprintMap ->
-                NavAppDirections.actionToConfigFingerprintMap(destination.fingerprintMapId.toString())
-
             is NavDestination.ConfigKeyMap ->
                 NavAppDirections.actionToConfigKeymap(
                     destination.keyMapUid,

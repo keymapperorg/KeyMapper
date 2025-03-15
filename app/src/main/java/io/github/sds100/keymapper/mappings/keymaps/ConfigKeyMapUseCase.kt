@@ -13,7 +13,7 @@ import io.github.sds100.keymapper.floating.FloatingButtonEntityMapper
 import io.github.sds100.keymapper.mappings.BaseConfigMappingUseCase
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.ConfigMappingUseCase
-import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintGestureType
+import io.github.sds100.keymapper.mappings.FingerprintGestureType
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerType
 import io.github.sds100.keymapper.mappings.keymaps.trigger.FingerprintTriggerKey

@@ -12,8 +12,6 @@ import io.github.sds100.keymapper.backup.BackupRestoreMappingsUseCase
 import io.github.sds100.keymapper.floating.ListFloatingLayoutsUseCase
 import io.github.sds100.keymapper.floating.ListFloatingLayoutsViewModel
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
-import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapListViewModel
-import io.github.sds100.keymapper.mappings.fingerprintmaps.ListFingerprintMapsUseCase
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapListViewModel
 import io.github.sds100.keymapper.mappings.keymaps.ListKeyMapsUseCase
 import io.github.sds100.keymapper.mappings.keymaps.trigger.SetupGuiKeyboardUseCase
@@ -62,7 +60,6 @@ import kotlinx.coroutines.launch
  */
 class HomeViewModel(
     private val listKeyMaps: ListKeyMapsUseCase,
-    private val listFingerprintMaps: ListFingerprintMapsUseCase,
     private val pauseMappings: PauseMappingsUseCase,
     private val backupRestore: BackupRestoreMappingsUseCase,
     private val showAlertsUseCase: ShowHomeScreenAlertsUseCase,
@@ -113,14 +110,6 @@ class HomeViewModel(
         )
     }
 
-    val fingerprintMapListViewModel by lazy {
-        FingerprintMapListViewModel(
-            viewModelScope,
-            listFingerprintMaps,
-            resourceProvider,
-        )
-    }
-
     val listFloatingLayoutsViewModel by lazy {
         ListFloatingLayoutsViewModel(
             viewModelScope,
@@ -157,44 +146,6 @@ class HomeViewModel(
                 text = "",
             ),
         )
-
-    // TODO delete unused stuff in home view model
-    val tabsState =
-        combine(
-            multiSelectProvider.state,
-            listFingerprintMaps.showFingerprintMaps,
-        ) { selectionState, showFingerprintMaps ->
-
-            val tabs = sequence {
-                yield(HomeTab.KEY_EVENTS)
-
-                if (showFingerprintMaps) {
-                    yield(HomeTab.FINGERPRINT_MAPS)
-                }
-            }.toList()
-
-            val showTabs = when {
-                tabs.size == 1 -> false
-                selectionState is SelectionState.Selecting<*> -> false
-                else -> true
-            }
-
-            HomeTabsState(
-                enableViewPagerSwiping = showTabs,
-                showTabs = showTabs,
-                tabs = tabs,
-            )
-        }
-            .flowOn(Dispatchers.Default)
-            .stateIn(
-                viewModelScope,
-                SharingStarted.Lazily,
-                HomeTabsState(
-                    enableViewPagerSwiping = false,
-                    showTabs = false,
-                    emptyList(),
-                ),
-            )
 
     val appBarState = multiSelectProvider.state.map {
         when (it) {
@@ -465,14 +416,6 @@ class HomeViewModel(
         listKeyMaps.duplicateKeyMap(*selectedIds.toTypedArray())
     }
 
-    fun backupFingerprintMaps(uri: String) {
-        viewModelScope.launch {
-            val result = listFingerprintMaps.backupFingerprintMaps(uri)
-
-            onBackupResult(result)
-        }
-    }
-
     fun backupSelectedKeyMaps(uri: String) {
         viewModelScope.launch {
             val selectionState = multiSelectProvider.state.first()
@@ -588,7 +531,6 @@ class HomeViewModel(
     @Suppress("UNCHECKED_CAST")
     class Factory(
         private val listKeyMaps: ListKeyMapsUseCase,
-        private val listFingerprintMaps: ListFingerprintMapsUseCase,
         private val pauseMappings: PauseMappingsUseCase,
         private val backupRestore: BackupRestoreMappingsUseCase,
         private val showAlertsUseCase: ShowHomeScreenAlertsUseCase,
@@ -602,7 +544,6 @@ class HomeViewModel(
 
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeViewModel(
             listKeyMaps,
-            listFingerprintMaps,
             pauseMappings,
             backupRestore,
             showAlertsUseCase,
@@ -625,12 +566,6 @@ enum class HomeAppBarState {
     NORMAL,
     MULTI_SELECTING,
 }
-
-data class HomeTabsState(
-    val enableViewPagerSwiping: Boolean = true,
-    val showTabs: Boolean = false,
-    val tabs: List<HomeTab>,
-)
 
 data class HomeErrorListState(
     val listItems: List<ListItem>,

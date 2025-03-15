@@ -139,7 +139,7 @@ class BackupManagerTest {
             copyFileToPrivateFolder(dataJsonFile, destination = "backup.zip/data.json")
 
             // WHEN
-            val result = backupManager.restoreMappings(zipFile.uri)
+            val result = backupManager.restore(zipFile.uri)
             advanceUntilIdle()
 
             // THEN
@@ -168,7 +168,7 @@ class BackupManagerTest {
 
             // WHEN
 
-            val result = backupManager.restoreMappings(zipFile.uri)
+            val result = backupManager.restore(zipFile.uri)
 
             // THEN
             assertThat(result, `is`(Success(Unit)))
@@ -191,7 +191,7 @@ class BackupManagerTest {
         copyFileToPrivateFolder(dataJsonFile, destination = "backup.zip/data.json")
 
         // WHEN
-        val result = backupManager.restoreMappings(zipFile.uri)
+        val result = backupManager.restore(zipFile.uri)
 
         // THEN
         assertThat(result, `is`(Success(Unit)))
@@ -209,7 +209,7 @@ class BackupManagerTest {
             copyFileToPrivateFolder(soundFile, destination = "backup.zip/sounds/sound.ogg")
 
             // WHEN
-            val result = backupManager.restoreMappings(zipFile.uri)
+            val result = backupManager.restore(zipFile.uri)
 
             // THEN
             assertThat(result, `is`(Success(Unit)))
@@ -257,7 +257,7 @@ class BackupManagerTest {
             val backupZip = File(temporaryFolder.root, "backup.zip")
             backupZip.mkdirs()
 
-            val result = backupManager.backupMappings(uri = backupZip.path)
+            val result = backupManager.backupEverything(uri = backupZip.path)
 
             // THEN
             assertThat(result, `is`(Success(backupZip.path)))
@@ -332,7 +332,7 @@ class BackupManagerTest {
         val fileName = "legacy-backup-test-data.json"
 
         // WHEN
-        val result = backupManager.restoreMappings(copyFileToPrivateFolder(fileName))
+        val result = backupManager.restore(copyFileToPrivateFolder(fileName))
 
         // THEN
         assertThat(result, `is`(Success(Unit)))
@@ -345,7 +345,7 @@ class BackupManagerTest {
         runTest(testDispatcher) {
             val fileName = "restore-keymaps-no-db-version.json"
 
-            val result = backupManager.restoreMappings(copyFileToPrivateFolder(fileName))
+            val result = backupManager.restore(copyFileToPrivateFolder(fileName))
 
             assertThat(result, `is`(Success(Unit)))
             verify(mockKeyMapRepository, times(1)).insert(any(), any())
@@ -356,7 +356,7 @@ class BackupManagerTest {
         runTest(testDispatcher) {
             val fileName = "restore-legacy-single-fingerprint-map.json"
 
-            val result = backupManager.restoreMappings(copyFileToPrivateFolder(fileName))
+            val result = backupManager.restore(copyFileToPrivateFolder(fileName))
 
             assertThat(result, `is`(Success(Unit)))
             verify(mockFingerprintMapRepository, times(1)).update(any())
@@ -367,7 +367,7 @@ class BackupManagerTest {
         runTest(testDispatcher) {
             val fileName = "restore-all-legacy-fingerprint-maps.json"
 
-            val result = backupManager.restoreMappings(copyFileToPrivateFolder(fileName))
+            val result = backupManager.restore(copyFileToPrivateFolder(fileName))
 
             assertThat(result, `is`(Success(Unit)))
             verify(mockFingerprintMapRepository, times(1)).update(any(), any(), any(), any())
@@ -378,7 +378,7 @@ class BackupManagerTest {
         runTest(testDispatcher) {
             val fileName = "restore-many-keymaps.json"
 
-            val result = backupManager.restoreMappings(copyFileToPrivateFolder(fileName))
+            val result = backupManager.restore(copyFileToPrivateFolder(fileName))
 
             assertThat(result, `is`(Success(Unit)))
             verify(mockKeyMapRepository, times(1)).insert(any(), any(), any(), any())
@@ -389,7 +389,7 @@ class BackupManagerTest {
         runTest(testDispatcher) {
             val fileName = "restore-keymap-db-version-too-big.json"
 
-            val result = backupManager.restoreMappings(copyFileToPrivateFolder(fileName))
+            val result = backupManager.restore(copyFileToPrivateFolder(fileName))
 
             assertThat(result, `is`(Error.BackupVersionTooNew))
             verify(mockKeyMapRepository, never()).insert(anyVararg())
@@ -400,7 +400,7 @@ class BackupManagerTest {
         runTest(testDispatcher) {
             val fileName = "restore-legacy-fingerprint-map-version-too-big.json"
 
-            val result = backupManager.restoreMappings(copyFileToPrivateFolder(fileName))
+            val result = backupManager.restore(copyFileToPrivateFolder(fileName))
 
             assertThat(result, `is`(Error.BackupVersionTooNew))
             verify(mockFingerprintMapRepository, never()).update(anyVararg())
@@ -410,7 +410,7 @@ class BackupManagerTest {
     fun `restore empty file, show empty json error message`() = runTest(testDispatcher) {
         val fileName = "empty.json"
 
-        val result = backupManager.restoreMappings(copyFileToPrivateFolder(fileName))
+        val result = backupManager.restore(copyFileToPrivateFolder(fileName))
 
         assertThat(result, `is`(Error.EmptyJson))
     }
@@ -419,7 +419,7 @@ class BackupManagerTest {
     fun `restore corrupt file, show corrupt json message`() = runTest(testDispatcher) {
         val fileName = "corrupt.json"
 
-        val result = backupManager.restoreMappings(copyFileToPrivateFolder(fileName))
+        val result = backupManager.restore(copyFileToPrivateFolder(fileName))
 
         assertThat(result, IsInstanceOf(Error.CorruptJsonFile::class.java))
     }

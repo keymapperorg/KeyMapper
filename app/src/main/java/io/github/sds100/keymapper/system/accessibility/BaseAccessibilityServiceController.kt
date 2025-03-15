@@ -12,10 +12,9 @@ import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.mappings.FingerprintGestureType
+import io.github.sds100.keymapper.mappings.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
-import io.github.sds100.keymapper.mappings.fingerprintmaps.DetectFingerprintMapsUseCase
-import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintGestureMapController
-import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintGestureType
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCase
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectScreenOffKeyEventsController
 import io.github.sds100.keymapper.mappings.keymaps.detection.DpadMotionEventTracker
@@ -45,7 +44,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.isActive
@@ -67,7 +65,7 @@ abstract class BaseAccessibilityServiceController(
     private val detectConstraintsUseCase: DetectConstraintsUseCase,
     private val performActionsUseCase: PerformActionsUseCase,
     private val detectKeyMapsUseCase: DetectKeyMapsUseCase,
-    private val detectFingerprintMapsUseCase: DetectFingerprintMapsUseCase,
+    private val fingerprintGesturesSupported: FingerprintGesturesSupportedUseCase,
     rerouteKeyEventsUseCase: RerouteKeyEventsUseCase,
     private val pauseMappingsUseCase: PauseMappingsUseCase,
     private val devicesAdapter: DevicesAdapter,
@@ -86,13 +84,6 @@ abstract class BaseAccessibilityServiceController(
     private val triggerKeyMapFromOtherAppsController = TriggerKeyMapFromOtherAppsController(
         coroutineScope,
         detectKeyMapsUseCase,
-        performActionsUseCase,
-        detectConstraintsUseCase,
-    )
-
-    private val fingerprintMapController = FingerprintGestureMapController(
-        coroutineScope,
-        detectFingerprintMapsUseCase,
         performActionsUseCase,
         detectConstraintsUseCase,
     )
@@ -202,13 +193,10 @@ abstract class BaseAccessibilityServiceController(
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             combine(
-                detectFingerprintMapsUseCase.fingerprintMaps,
+                detectKeyMapsUseCase.requestFingerprintGestureDetection,
                 isPaused,
-            ) { fingerprintMaps, isPaused ->
-                if (fingerprintMaps.toList()
-                        .any { it.isEnabled && it.actionList.isNotEmpty() } &&
-                    !isPaused
-                ) {
+            ) { request, isPaused ->
+                if (request && !isPaused) {
                     requestFingerprintGestureDetection()
                 } else {
                     denyFingerprintGestureDetection()
@@ -218,7 +206,6 @@ abstract class BaseAccessibilityServiceController(
 
         pauseMappingsUseCase.isPaused.distinctUntilChanged().onEach {
             keyMapController.reset()
-            fingerprintMapController.reset()
             triggerKeyMapFromOtherAppsController.reset()
         }.launchIn(coroutineScope)
 
@@ -248,14 +235,14 @@ abstract class BaseAccessibilityServiceController(
 
         combine(
             pauseMappingsUseCase.isPaused,
-            merge(detectKeyMapsUseCase.allKeyMapList, detectFingerprintMapsUseCase.fingerprintMaps),
-        ) { isPaused, mappings ->
+            detectKeyMapsUseCase.allKeyMapList,
+        ) { isPaused, keyMaps ->
             val enableAccessibilityVolumeStream: Boolean
 
             if (isPaused) {
                 enableAccessibilityVolumeStream = false
             } else {
-                enableAccessibilityVolumeStream = mappings.any { mapping ->
+                enableAccessibilityVolumeStream = keyMaps.any { mapping ->
                     mapping.isEnabled && mapping.actionList.any { it.data is ActionData.Sound }
                 }
             }
@@ -294,8 +281,8 @@ abstract class BaseAccessibilityServiceController(
             /* Don't update whether fingerprint gesture detection is supported if it has
              * been supported at some point. Just in case the fingerprint reader is being
              * used while this is called. */
-            if (detectFingerprintMapsUseCase.isSupported.firstBlocking() != true) {
-                detectFingerprintMapsUseCase.setSupported(
+            if (fingerprintGesturesSupported.isSupported.firstBlocking() != true) {
+                fingerprintGesturesSupported.setSupported(
                     accessibilityService.isFingerprintGestureDetectionAvailable,
                 )
             }

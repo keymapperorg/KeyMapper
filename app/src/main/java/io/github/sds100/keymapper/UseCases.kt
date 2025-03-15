@@ -13,9 +13,8 @@ import io.github.sds100.keymapper.floating.ListFloatingLayoutsUseCaseImpl
 import io.github.sds100.keymapper.mappings.DetectMappingUseCaseImpl
 import io.github.sds100.keymapper.mappings.DisplaySimpleMappingUseCase
 import io.github.sds100.keymapper.mappings.DisplaySimpleMappingUseCaseImpl
+import io.github.sds100.keymapper.mappings.FingerprintGesturesSupportedUseCaseImpl
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCaseImpl
-import io.github.sds100.keymapper.mappings.fingerprintmaps.DetectFingerprintMapsUseCaseImpl
-import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintGesturesSupportedUseCaseImpl
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapUseCase
 import io.github.sds100.keymapper.mappings.keymaps.CreateKeyMapShortcutUseCaseImpl
 import io.github.sds100.keymapper.mappings.keymaps.DisplayKeyMapUseCase
@@ -201,12 +200,6 @@ object UseCases {
         service,
         ShizukuInputEventInjector(),
         ServiceLocator.permissionAdapter(ctx),
-    )
-
-    fun detectFingerprintMaps(ctx: Context) = DetectFingerprintMapsUseCaseImpl(
-        ServiceLocator.fingerprintMapRepository(ctx),
-        fingerprintGesturesSupported(ctx),
-        detectMappings(ctx),
     )
 
     fun rerouteKeyEvents(ctx: Context, keyEventRelayService: KeyEventRelayServiceWrapper) = RerouteKeyEventsUseCaseImpl(

@@ -11,7 +11,7 @@ import io.github.sds100.keymapper.constraints.ConfigConstraintsViewModel
 import io.github.sds100.keymapper.constraints.ConstraintUtils
 import io.github.sds100.keymapper.mappings.ConfigMappingUiState
 import io.github.sds100.keymapper.mappings.ConfigMappingViewModel
-import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintGesturesSupportedUseCase
+import io.github.sds100.keymapper.mappings.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.mappings.keymaps.trigger.ConfigTriggerViewModel
 import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerUseCase
 import io.github.sds100.keymapper.mappings.keymaps.trigger.SetupGuiKeyboardUseCase

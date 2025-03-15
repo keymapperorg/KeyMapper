@@ -24,10 +24,7 @@ import io.github.sds100.keymapper.home.HomeViewModel
 import io.github.sds100.keymapper.home.ShowHomeScreenAlertsUseCaseImpl
 import io.github.sds100.keymapper.logging.DisplayLogUseCaseImpl
 import io.github.sds100.keymapper.logging.LogViewModel
-import io.github.sds100.keymapper.mappings.fingerprintmaps.ConfigFingerprintMapUseCaseImpl
-import io.github.sds100.keymapper.mappings.fingerprintmaps.ConfigFingerprintMapViewModel
-import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintGesturesSupportedUseCaseImpl
-import io.github.sds100.keymapper.mappings.fingerprintmaps.ListFingerprintMapsUseCaseImpl
+import io.github.sds100.keymapper.mappings.FingerprintGesturesSupportedUseCaseImpl
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapViewModel
 import io.github.sds100.keymapper.mappings.keymaps.CreateKeyMapShortcutViewModel
 import io.github.sds100.keymapper.mappings.keymaps.ListKeyMapsUseCaseImpl
@@ -142,17 +139,6 @@ object Inject {
         FingerprintGesturesSupportedUseCaseImpl(ServiceLocator.settingsRepository(ctx)),
     )
 
-    fun configFingerprintMapViewModel(
-        ctx: Context,
-    ): ConfigFingerprintMapViewModel.Factory = ConfigFingerprintMapViewModel.Factory(
-        ConfigFingerprintMapUseCaseImpl(ServiceLocator.fingerprintMapRepository(ctx)),
-        TestActionUseCaseImpl(ServiceLocator.accessibilityServiceAdapter(ctx)),
-        UseCases.displaySimpleMapping(ctx),
-        UseCases.onboarding(ctx),
-        UseCases.createAction(ctx),
-        ServiceLocator.resourceProvider(ctx),
-    )
-
     fun createActionShortcutViewModel(
         ctx: Context,
     ): CreateKeyMapShortcutViewModel.Factory = CreateKeyMapShortcutViewModel.Factory(
@@ -173,12 +159,6 @@ object Inject {
             ServiceLocator.floatingButtonRepository(ctx),
             ServiceLocator.backupManager(ctx),
             UseCases.displayKeyMap(ctx),
-        ),
-        ListFingerprintMapsUseCaseImpl(
-            ServiceLocator.fingerprintMapRepository(ctx),
-            ServiceLocator.backupManager(ctx),
-            ServiceLocator.settingsRepository(ctx),
-            UseCases.displaySimpleMapping(ctx),
         ),
         UseCases.pauseMappings(ctx),
         BackupRestoreMappingsUseCaseImpl(ServiceLocator.backupManager(ctx)),
@@ -269,7 +249,7 @@ object Inject {
             service = service,
             keyEventRelayService = keyEventRelayService,
         ),
-        detectFingerprintMapsUseCase = UseCases.detectFingerprintMaps(service),
+        fingerprintGesturesSupportedUseCase = UseCases.fingerprintGesturesSupported(service),
         pauseMappingsUseCase = UseCases.pauseMappings(service),
         devicesAdapter = ServiceLocator.devicesAdapter(service),
         suAdapter = ServiceLocator.suAdapter(service),

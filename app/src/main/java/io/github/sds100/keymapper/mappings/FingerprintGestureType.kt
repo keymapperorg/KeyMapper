@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.mappings.fingerprintmaps
+package io.github.sds100.keymapper.mappings
 
 enum class FingerprintGestureType {
     SWIPE_DOWN,

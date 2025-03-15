@@ -11,6 +11,7 @@ import io.github.sds100.keymapper.mappings.DetectMappingUseCase
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapEntityMapper
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapRepository
+import io.github.sds100.keymapper.mappings.keymaps.trigger.FingerprintTriggerKey
 import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.display.DisplayAdapter
 import io.github.sds100.keymapper.system.inputevents.InputEventInjector
@@ -65,6 +66,13 @@ class DetectKeyMapsUseCaseImpl(
             KeyMapEntityMapper.fromEntity(keyMap, buttonList)
         }
     }.flowOn(Dispatchers.Default)
+
+    override val requestFingerprintGestureDetection: Flow<Boolean> =
+        allKeyMapList.map { keyMaps ->
+            keyMaps.any { keyMap ->
+                keyMap.isEnabled && keyMap.trigger.keys.any { it is FingerprintTriggerKey }
+            }
+        }
 
     override val keyMapsToTriggerFromOtherApps: Flow<List<KeyMap>> =
         allKeyMapList.map { keyMapList ->
@@ -157,6 +165,7 @@ class DetectKeyMapsUseCaseImpl(
 
 interface DetectKeyMapsUseCase : DetectMappingUseCase {
     val allKeyMapList: Flow<List<KeyMap>>
+    val requestFingerprintGestureDetection: Flow<Boolean>
     val keyMapsToTriggerFromOtherApps: Flow<List<KeyMap>>
     val detectScreenOffTriggers: Flow<Boolean>
 

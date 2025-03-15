@@ -7,7 +7,6 @@ import io.github.sds100.keymapper.actions.swipescreen.SwipePickCoordinateResult
 import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.constraints.ConstraintId
-import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintGestureType
 import io.github.sds100.keymapper.system.apps.ActivityInfo
 import io.github.sds100.keymapper.system.apps.ChooseAppShortcutResult
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
@@ -38,7 +37,6 @@ sealed class NavDestination<R> {
         const val ID_SETTINGS = "settings"
         const val ID_ABOUT = "about"
         const val ID_CONFIG_KEY_MAP = "config_key_map"
-        const val ID_CONFIG_FINGERPRINT_MAP = "config_fingerprint_map"
     }
 
     data class ChooseApp(
@@ -116,10 +114,6 @@ sealed class NavDestination<R> {
 
     data class ConfigKeyMap(val keyMapUid: String?, val showAdvancedTriggers: Boolean = false) : NavDestination<Unit>() {
         override val id: String = ID_CONFIG_KEY_MAP
-    }
-
-    data class ConfigFingerprintMap(val fingerprintMapId: FingerprintGestureType) : NavDestination<Unit>() {
-        override val id: String = ID_CONFIG_FINGERPRINT_MAP
     }
 
     data object ChooseFloatingLayout : NavDestination<Unit>() {

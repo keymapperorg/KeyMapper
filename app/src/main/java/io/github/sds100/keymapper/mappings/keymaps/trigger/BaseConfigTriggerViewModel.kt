@@ -6,8 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.ClickType
-import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintGestureType
-import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintGesturesSupportedUseCase
+import io.github.sds100.keymapper.mappings.FingerprintGestureType
+import io.github.sds100.keymapper.mappings.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapUseCase
 import io.github.sds100.keymapper.mappings.keymaps.CreateKeyMapShortcutUseCase
 import io.github.sds100.keymapper.mappings.keymaps.DisplayKeyMapUseCase

@@ -13,11 +13,10 @@ class BackupRestoreMappingsUseCaseImpl(
 
     override val onAutomaticBackupResult: Flow<Result<*>> = backupManager.onAutomaticBackupResult
 
-    override suspend fun backupAllMappings(uri: String): Result<String> =
-        backupManager.backupMappings(uri)
+    override suspend fun backupAllMappings(uri: String): Result<String> = backupManager.backupEverything(uri)
 
     override suspend fun restoreMappings(uri: String): Result<*> =
-        backupManager.restoreMappings(uri)
+        backupManager.restore(uri)
 }
 
 interface BackupRestoreMappingsUseCase {

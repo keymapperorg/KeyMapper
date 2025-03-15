@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.mappings.ClickType
-import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintGestureType
+import io.github.sds100.keymapper.mappings.FingerprintGestureType
 import io.github.sds100.keymapper.util.ui.CheckBoxListItem
 import io.github.sds100.keymapper.util.ui.compose.CheckBoxText
 import io.github.sds100.keymapper.util.ui.compose.RadioButtonText
