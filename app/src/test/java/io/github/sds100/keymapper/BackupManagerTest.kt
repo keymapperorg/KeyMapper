@@ -8,7 +8,7 @@ import io.github.sds100.keymapper.actions.sound.SoundsManager
 import io.github.sds100.keymapper.backup.BackupManagerImpl
 import io.github.sds100.keymapper.data.db.AppDatabase
 import io.github.sds100.keymapper.data.entities.ActionEntity
-import io.github.sds100.keymapper.data.entities.Extra
+import io.github.sds100.keymapper.data.entities.EntityExtra
 import io.github.sds100.keymapper.data.entities.FingerprintMapEntity
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.data.repositories.FakePreferenceRepository
@@ -282,7 +282,7 @@ class BackupManagerTest {
             val action = ActionEntity(
                 type = ActionEntity.Type.SOUND,
                 data = soundFileUid,
-                extra = Extra(ActionEntity.EXTRA_SOUND_FILE_DESCRIPTION, "sound_description"),
+                extra = EntityExtra(ActionEntity.EXTRA_SOUND_FILE_DESCRIPTION, "sound_description"),
             )
 
             val keyMapList = listOf(KeyMapEntity(id = 0, actionList = listOf(action)))

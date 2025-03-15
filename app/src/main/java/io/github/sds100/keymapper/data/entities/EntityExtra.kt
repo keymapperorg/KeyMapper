@@ -14,7 +14,7 @@ import kotlinx.parcelize.Parcelize
  */
 
 @Parcelize
-data class Extra(
+data class EntityExtra(
     @SerializedName(NAME_ID)
     val id: String,
 
@@ -31,12 +31,12 @@ data class Extra(
             val id by it.json.byString(NAME_ID)
             val data by it.json.byString(NAME_DATA)
 
-            Extra(id, data)
+            EntityExtra(id, data)
         }
     }
 }
 
-fun List<Extra>.getData(extraId: String): Result<String> {
+fun List<EntityExtra>.getData(extraId: String): Result<String> {
     return find { it.id == extraId }.let {
         it ?: return@let Error.ExtraNotFound(extraId)
 

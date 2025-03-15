@@ -4,7 +4,7 @@ import io.github.sds100.keymapper.actions.canBeHeldDown
 import io.github.sds100.keymapper.constraints.ConstraintEntityMapper
 import io.github.sds100.keymapper.constraints.ConstraintModeEntityMapper
 import io.github.sds100.keymapper.constraints.ConstraintState
-import io.github.sds100.keymapper.data.entities.Extra
+import io.github.sds100.keymapper.data.entities.EntityExtra
 import io.github.sds100.keymapper.data.entities.FingerprintMapEntity
 import io.github.sds100.keymapper.data.entities.getData
 import io.github.sds100.keymapper.mappings.Mapping
@@ -91,10 +91,10 @@ object FingerprintMapEntityMapper {
     }
 
     fun toEntity(model: FingerprintMap): FingerprintMapEntity {
-        val extras: List<Extra> = sequence {
+        val extras: List<EntityExtra> = sequence {
             if (model.isChangingVibrationDurationAllowed() && model.vibrateDuration != null) {
                 yield(
-                    Extra(
+                    EntityExtra(
                         FingerprintMapEntity.EXTRA_VIBRATION_DURATION,
                         model.vibrateDuration.toString(),
                     ),

@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.data.repositories
 import io.github.sds100.keymapper.TestDispatcherProvider
 import io.github.sds100.keymapper.data.db.dao.FingerprintMapDao
 import io.github.sds100.keymapper.data.entities.ActionEntity
-import io.github.sds100.keymapper.data.entities.Extra
+import io.github.sds100.keymapper.data.entities.EntityExtra
 import io.github.sds100.keymapper.data.entities.FingerprintMapEntity
 import io.github.sds100.keymapper.system.devices.FakeDevicesAdapter
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
@@ -106,8 +106,11 @@ class FingerprintMapRepositoryTest {
                 type = ActionEntity.Type.KEY_EVENT,
                 data = "1",
                 extras = listOf(
-                    Extra(ActionEntity.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR, FAKE_KEYBOARD.descriptor),
-                    Extra(ActionEntity.EXTRA_KEY_EVENT_DEVICE_NAME, FAKE_KEYBOARD.name),
+                    EntityExtra(
+                        ActionEntity.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR,
+                        FAKE_KEYBOARD.descriptor,
+                    ),
+                    EntityExtra(ActionEntity.EXTRA_KEY_EVENT_DEVICE_NAME, FAKE_KEYBOARD.name),
                 ),
             )
 
@@ -130,8 +133,11 @@ class FingerprintMapRepositoryTest {
                 type = ActionEntity.Type.KEY_EVENT,
                 data = "1",
                 extras = listOf(
-                    Extra(ActionEntity.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR, FAKE_KEYBOARD.descriptor),
-                    Extra(ActionEntity.EXTRA_KEY_EVENT_DEVICE_NAME, ""),
+                    EntityExtra(
+                        ActionEntity.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR,
+                        FAKE_KEYBOARD.descriptor,
+                    ),
+                    EntityExtra(ActionEntity.EXTRA_KEY_EVENT_DEVICE_NAME, ""),
                 ),
             )
 
@@ -154,8 +160,11 @@ class FingerprintMapRepositoryTest {
                 type = ActionEntity.Type.KEY_EVENT,
                 data = "1",
                 extras = listOf(
-                    Extra(ActionEntity.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR, FAKE_KEYBOARD.descriptor),
-                    Extra(ActionEntity.EXTRA_KEY_EVENT_DEVICE_NAME, ""),
+                    EntityExtra(
+                        ActionEntity.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR,
+                        FAKE_KEYBOARD.descriptor,
+                    ),
+                    EntityExtra(ActionEntity.EXTRA_KEY_EVENT_DEVICE_NAME, ""),
                 ),
             )
 
@@ -177,8 +186,11 @@ class FingerprintMapRepositoryTest {
 
             val expectedAction = action.copy(
                 extras = listOf(
-                    Extra(ActionEntity.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR, FAKE_KEYBOARD.descriptor),
-                    Extra(ActionEntity.EXTRA_KEY_EVENT_DEVICE_NAME, FAKE_KEYBOARD.name),
+                    EntityExtra(
+                        ActionEntity.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR,
+                        FAKE_KEYBOARD.descriptor,
+                    ),
+                    EntityExtra(ActionEntity.EXTRA_KEY_EVENT_DEVICE_NAME, FAKE_KEYBOARD.name),
                 ),
             )
 
@@ -195,7 +207,7 @@ class FingerprintMapRepositoryTest {
             val action = ActionEntity(
                 type = ActionEntity.Type.KEY_EVENT,
                 data = "1",
-                extra = Extra(
+                extra = EntityExtra(
                     ActionEntity.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR,
                     FAKE_KEYBOARD.descriptor,
                 ),
@@ -219,8 +231,11 @@ class FingerprintMapRepositoryTest {
 
             val expectedAction = action.copy(
                 extras = listOf(
-                    Extra(ActionEntity.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR, FAKE_KEYBOARD.descriptor),
-                    Extra(ActionEntity.EXTRA_KEY_EVENT_DEVICE_NAME, FAKE_KEYBOARD.name),
+                    EntityExtra(
+                        ActionEntity.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR,
+                        FAKE_KEYBOARD.descriptor,
+                    ),
+                    EntityExtra(ActionEntity.EXTRA_KEY_EVENT_DEVICE_NAME, FAKE_KEYBOARD.name),
                 ),
             )
 
@@ -237,7 +252,7 @@ class FingerprintMapRepositoryTest {
             val action = ActionEntity(
                 type = ActionEntity.Type.KEY_EVENT,
                 data = "1",
-                extra = Extra(
+                extra = EntityExtra(
                     ActionEntity.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR,
                     FAKE_KEYBOARD.descriptor,
                 ),

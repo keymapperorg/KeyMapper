@@ -23,7 +23,7 @@ import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.db.AppDatabase
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.ConstraintEntity
-import io.github.sds100.keymapper.data.entities.Extra
+import io.github.sds100.keymapper.data.entities.EntityExtra
 import io.github.sds100.keymapper.data.entities.FingerprintMapEntity
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.data.entities.TriggerEntity
@@ -116,7 +116,7 @@ class BackupManagerImpl(
             .registerTypeAdapter(TriggerKeyEntity.SERIALIZER)
             .registerTypeAdapter(TriggerKeyEntity.DESERIALIZER)
             .registerTypeAdapter(ActionEntity.DESERIALIZER)
-            .registerTypeAdapter(Extra.DESERIALIZER)
+            .registerTypeAdapter(EntityExtra.DESERIALIZER)
             .registerTypeAdapter(ConstraintEntity.DESERIALIZER)
             .create()
     }

@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.mappings.keymaps.trigger
 
 import io.github.sds100.keymapper.data.entities.AssistantTriggerKeyEntity
-import io.github.sds100.keymapper.data.entities.Extra
+import io.github.sds100.keymapper.data.entities.EntityExtra
 import io.github.sds100.keymapper.data.entities.FingerprintTriggerKeyEntity
 import io.github.sds100.keymapper.data.entities.FloatingButtonEntityWithLayout
 import io.github.sds100.keymapper.data.entities.FloatingButtonKeyEntity
@@ -111,11 +111,11 @@ object TriggerEntityMapper {
     }
 
     fun toEntity(trigger: Trigger): TriggerEntity {
-        val extras = mutableListOf<Extra>()
+        val extras = mutableListOf<EntityExtra>()
 
         if (trigger.isChangingSequenceTriggerTimeoutAllowed() && trigger.sequenceTriggerTimeout != null) {
             extras.add(
-                Extra(
+                EntityExtra(
                     TriggerEntity.EXTRA_SEQUENCE_TRIGGER_TIMEOUT,
                     trigger.sequenceTriggerTimeout.toString(),
                 ),
@@ -124,7 +124,7 @@ object TriggerEntityMapper {
 
         if (trigger.isChangingLongPressDelayAllowed() && trigger.longPressDelay != null) {
             extras.add(
-                Extra(
+                EntityExtra(
                     TriggerEntity.EXTRA_LONG_PRESS_DELAY,
                     trigger.longPressDelay.toString(),
                 ),
@@ -133,7 +133,7 @@ object TriggerEntityMapper {
 
         if (trigger.isChangingDoublePressDelayAllowed() && trigger.doublePressDelay != null) {
             extras.add(
-                Extra(
+                EntityExtra(
                     TriggerEntity.EXTRA_DOUBLE_PRESS_DELAY,
                     trigger.doublePressDelay.toString(),
                 ),
@@ -142,7 +142,7 @@ object TriggerEntityMapper {
 
         if (trigger.isChangingVibrationDurationAllowed() && trigger.vibrateDuration != null) {
             extras.add(
-                Extra(
+                EntityExtra(
                     TriggerEntity.EXTRA_VIBRATION_DURATION,
                     trigger.vibrateDuration.toString(),
                 ),

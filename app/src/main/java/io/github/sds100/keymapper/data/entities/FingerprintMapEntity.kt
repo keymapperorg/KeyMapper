@@ -35,7 +35,7 @@ data class FingerprintMapEntity(
 
     @SerializedName(NAME_EXTRAS)
     @ColumnInfo(name = FingerprintMapDao.KEY_EXTRAS)
-    val extras: List<Extra> = listOf(),
+    val extras: List<EntityExtra> = listOf(),
 
     @SerializedName(NAME_FLAGS)
     @ColumnInfo(name = FingerprintMapDao.KEY_FLAGS)
@@ -70,7 +70,7 @@ data class FingerprintMapEntity(
             val actionList = it.context.deserialize<List<ActionEntity>>(actionListJson)
 
             val extrasJson by it.json.byArray(NAME_EXTRAS)
-            val extras = it.context.deserialize<List<Extra>>(extrasJson)
+            val extras = it.context.deserialize<List<EntityExtra>>(extrasJson)
 
             val constraintsJson by it.json.byArray(NAME_CONSTRAINTS)
             val constraints = it.context.deserialize<List<ConstraintEntity>>(constraintsJson)
@@ -94,6 +94,7 @@ data class FingerprintMapEntity(
 
         const val FLAG_VIBRATE = 1
         const val FLAG_SHOW_TOAST = 2
+        const val FLAG_MIGRATED_TO_KEY_MAP = 4
         const val EXTRA_VIBRATION_DURATION = "extra_vibration_duration"
     }
 }

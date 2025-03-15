@@ -76,6 +76,7 @@ object ServiceLocator {
         synchronized(this) {
             return roomKeymapRepository ?: RoomKeyMapRepository(
                 database(context).keyMapDao(),
+                database(context).fingerprintMapDao(),
                 (context.applicationContext as KeyMapperApp).appCoroutineScope,
             ).also {
                 this.roomKeymapRepository = it

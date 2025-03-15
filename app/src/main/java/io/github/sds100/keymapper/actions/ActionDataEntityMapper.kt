@@ -3,10 +3,9 @@ package io.github.sds100.keymapper.actions
 import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
 import io.github.sds100.keymapper.data.db.typeconverter.ConstantTypeConverters
 import io.github.sds100.keymapper.data.entities.ActionEntity
-import io.github.sds100.keymapper.data.entities.Extra
+import io.github.sds100.keymapper.data.entities.EntityExtra
 import io.github.sds100.keymapper.data.entities.getData
 import io.github.sds100.keymapper.system.camera.CameraLens
-import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.system.intents.IntentExtraModel
 import io.github.sds100.keymapper.system.intents.IntentTarget
 import io.github.sds100.keymapper.system.volume.DndMode
@@ -543,12 +542,12 @@ object ActionDataEntityMapper {
         else -> SYSTEM_ACTION_ID_MAP[data.id]!!
     }
 
-    private fun getExtras(data: ActionData): List<Extra> = when (data) {
+    private fun getExtras(data: ActionData): List<EntityExtra> = when (data) {
         is ActionData.Intent ->
             listOf(
-                Extra(ActionEntity.EXTRA_INTENT_DESCRIPTION, data.description),
-                Extra(ActionEntity.EXTRA_INTENT_TARGET, INTENT_TARGET_MAP[data.target]!!),
-                Extra(ActionEntity.EXTRA_INTENT_EXTRAS, Json.encodeToString(data.extras)),
+                EntityExtra(ActionEntity.EXTRA_INTENT_DESCRIPTION, data.description),
+                EntityExtra(ActionEntity.EXTRA_INTENT_TARGET, INTENT_TARGET_MAP[data.target]!!),
+                EntityExtra(ActionEntity.EXTRA_INTENT_EXTRAS, Json.encodeToString(data.extras)),
             )
 
         is ActionData.InputKeyEvent -> sequence {
@@ -558,68 +557,79 @@ object ActionDataEntityMapper {
                 } else {
                     "false"
                 }
-                yield(Extra(ActionEntity.EXTRA_KEY_EVENT_USE_SHELL, string))
+                yield(EntityExtra(ActionEntity.EXTRA_KEY_EVENT_USE_SHELL, string))
             }
 
             if (data.metaState != 0) {
-                yield(Extra(ActionEntity.EXTRA_KEY_EVENT_META_STATE, data.metaState.toString()))
+                yield(
+                    EntityExtra(
+                        ActionEntity.EXTRA_KEY_EVENT_META_STATE,
+                        data.metaState.toString(),
+                    ),
+                )
             }
 
             if (data.device != null) {
                 yield(
-                    Extra(ActionEntity.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR, data.device.descriptor),
+                    EntityExtra(
+                        ActionEntity.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR,
+                        data.device.descriptor,
+                    ),
                 )
 
                 yield(
-                    Extra(ActionEntity.EXTRA_KEY_EVENT_DEVICE_NAME, data.device.name),
+                    EntityExtra(ActionEntity.EXTRA_KEY_EVENT_DEVICE_NAME, data.device.name),
                 )
             }
         }.toList()
 
         is ActionData.App -> emptyList()
         is ActionData.AppShortcut -> sequence {
-            yield(Extra(ActionEntity.EXTRA_SHORTCUT_TITLE, data.shortcutTitle))
-            data.packageName?.let { yield(Extra(ActionEntity.EXTRA_PACKAGE_NAME, it)) }
+            yield(EntityExtra(ActionEntity.EXTRA_SHORTCUT_TITLE, data.shortcutTitle))
+            data.packageName?.let { yield(EntityExtra(ActionEntity.EXTRA_PACKAGE_NAME, it)) }
         }.toList()
 
         is ActionData.PhoneCall -> emptyList()
 
         is ActionData.DoNotDisturb.Enable -> listOf(
-            Extra(ActionEntity.EXTRA_DND_MODE, DND_MODE_MAP[data.dndMode]!!),
+            EntityExtra(ActionEntity.EXTRA_DND_MODE, DND_MODE_MAP[data.dndMode]!!),
         )
 
         is ActionData.DoNotDisturb.Toggle -> listOf(
-            Extra(ActionEntity.EXTRA_DND_MODE, DND_MODE_MAP[data.dndMode]!!),
+            EntityExtra(ActionEntity.EXTRA_DND_MODE, DND_MODE_MAP[data.dndMode]!!),
         )
 
         is ActionData.Volume.SetRingerMode -> listOf(
-            Extra(ActionEntity.EXTRA_RINGER_MODE, RINGER_MODE_MAP[data.ringerMode]!!),
+            EntityExtra(ActionEntity.EXTRA_RINGER_MODE, RINGER_MODE_MAP[data.ringerMode]!!),
         )
 
         is ActionData.ControlMediaForApp -> listOf(
-            Extra(ActionEntity.EXTRA_PACKAGE_NAME, data.packageName),
+            EntityExtra(ActionEntity.EXTRA_PACKAGE_NAME, data.packageName),
         )
 
         is ActionData.Rotation.CycleRotations -> listOf(
-            Extra(
+            EntityExtra(
                 ActionEntity.EXTRA_ORIENTATIONS,
                 data.orientations.joinToString(",") { ConstantTypeConverters.ORIENTATION_MAP[it]!! },
             ),
         )
 
         is ActionData.Flashlight -> listOf(
-            Extra(ActionEntity.EXTRA_LENS, LENS_MAP[data.lens]!!),
+            EntityExtra(ActionEntity.EXTRA_LENS, LENS_MAP[data.lens]!!),
         )
 
         is ActionData.SwitchKeyboard -> listOf(
-            Extra(ActionEntity.EXTRA_IME_ID, data.imeId),
-            Extra(ActionEntity.EXTRA_IME_NAME, data.savedImeName),
+            EntityExtra(ActionEntity.EXTRA_IME_ID, data.imeId),
+            EntityExtra(ActionEntity.EXTRA_IME_NAME, data.savedImeName),
         )
 
         is ActionData.Volume ->
             when (data) {
                 is ActionData.Volume.Stream -> listOf(
-                    Extra(ActionEntity.EXTRA_STREAM_TYPE, VOLUME_STREAM_MAP[data.volumeStream]!!),
+                    EntityExtra(
+                        ActionEntity.EXTRA_STREAM_TYPE,
+                        VOLUME_STREAM_MAP[data.volumeStream]!!,
+                    ),
                 )
 
                 else -> emptyList()
@@ -627,19 +637,19 @@ object ActionDataEntityMapper {
 
         is ActionData.TapScreen -> sequence {
             if (!data.description.isNullOrBlank()) {
-                yield(Extra(ActionEntity.EXTRA_COORDINATE_DESCRIPTION, data.description))
+                yield(EntityExtra(ActionEntity.EXTRA_COORDINATE_DESCRIPTION, data.description))
             }
         }.toList()
 
         is ActionData.SwipeScreen -> sequence {
             if (!data.description.isNullOrBlank()) {
-                yield(Extra(ActionEntity.EXTRA_COORDINATE_DESCRIPTION, data.description))
+                yield(EntityExtra(ActionEntity.EXTRA_COORDINATE_DESCRIPTION, data.description))
             }
         }.toList()
 
         is ActionData.PinchScreen -> sequence {
             if (!data.description.isNullOrBlank()) {
-                yield(Extra(ActionEntity.EXTRA_COORDINATE_DESCRIPTION, data.description))
+                yield(EntityExtra(ActionEntity.EXTRA_COORDINATE_DESCRIPTION, data.description))
             }
         }.toList()
 
@@ -647,7 +657,7 @@ object ActionDataEntityMapper {
         is ActionData.Url -> emptyList()
 
         is ActionData.Sound -> listOf(
-            Extra(ActionEntity.EXTRA_SOUND_FILE_DESCRIPTION, data.soundDescription),
+            EntityExtra(ActionEntity.EXTRA_SOUND_FILE_DESCRIPTION, data.soundDescription),
         )
 
         else -> emptyList()

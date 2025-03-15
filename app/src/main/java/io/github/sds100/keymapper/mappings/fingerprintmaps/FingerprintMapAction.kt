@@ -5,7 +5,7 @@ import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.ActionDataEntityMapper
 import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.data.entities.ActionEntity
-import io.github.sds100.keymapper.data.entities.Extra
+import io.github.sds100.keymapper.data.entities.EntityExtra
 import io.github.sds100.keymapper.data.entities.getData
 import io.github.sds100.keymapper.mappings.isDelayBeforeNextActionAllowed
 import io.github.sds100.keymapper.util.valueOrNull
@@ -99,10 +99,10 @@ object FingerprintMapActionEntityMapper {
         fingerprintMap.actionList.mapNotNull { action ->
             val base = ActionDataEntityMapper.toEntity(action.data)
 
-            val extras = mutableListOf<Extra>().apply {
+            val extras = mutableListOf<EntityExtra>().apply {
                 if (fingerprintMap.isDelayBeforeNextActionAllowed() && action.delayBeforeNextAction != null) {
                     add(
-                        Extra(
+                        EntityExtra(
                             ActionEntity.EXTRA_DELAY_BEFORE_NEXT_ACTION,
                             action.delayBeforeNextAction.toString(),
                         ),
@@ -110,12 +110,12 @@ object FingerprintMapActionEntityMapper {
                 }
 
                 if (action.multiplier != null) {
-                    add(Extra(ActionEntity.EXTRA_MULTIPLIER, action.multiplier.toString()))
+                    add(EntityExtra(ActionEntity.EXTRA_MULTIPLIER, action.multiplier.toString()))
                 }
 
                 if (fingerprintMap.isHoldingDownActionBeforeRepeatingAllowed(action) && action.holdDownDuration != null) {
                     add(
-                        Extra(
+                        EntityExtra(
                             ActionEntity.EXTRA_HOLD_DOWN_DURATION,
                             action.holdDownDuration.toString(),
                         ),
@@ -125,7 +125,7 @@ object FingerprintMapActionEntityMapper {
                 if (fingerprintMap.isChangingRepeatModeAllowed(action) && action.repeatMode == RepeatMode.TRIGGER_PRESSED_AGAIN
                 ) {
                     add(
-                        Extra(
+                        EntityExtra(
                             ActionEntity.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR,
                             ActionEntity.STOP_REPEAT_BEHAVIOUR_TRIGGER_PRESSED_AGAIN.toString(),
                         ),
@@ -134,7 +134,7 @@ object FingerprintMapActionEntityMapper {
 
                 if (fingerprintMap.isChangingRepeatModeAllowed(action) && action.repeatMode == RepeatMode.LIMIT_REACHED) {
                     add(
-                        Extra(
+                        EntityExtra(
                             ActionEntity.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR,
                             ActionEntity.STOP_REPEAT_BEHAVIOUR_LIMIT_REACHED.toString(),
                         ),
@@ -142,11 +142,11 @@ object FingerprintMapActionEntityMapper {
                 }
 
                 if (fingerprintMap.isChangingActionRepeatRateAllowed(action) && action.repeatRate != null) {
-                    add(Extra(ActionEntity.EXTRA_REPEAT_RATE, action.repeatRate.toString()))
+                    add(EntityExtra(ActionEntity.EXTRA_REPEAT_RATE, action.repeatRate.toString()))
                 }
 
                 if (fingerprintMap.isChangingRepeatLimitAllowed(action) && action.repeatLimit != null) {
-                    add(Extra(ActionEntity.EXTRA_REPEAT_LIMIT, action.repeatLimit.toString()))
+                    add(EntityExtra(ActionEntity.EXTRA_REPEAT_LIMIT, action.repeatLimit.toString()))
                 }
             }
 
