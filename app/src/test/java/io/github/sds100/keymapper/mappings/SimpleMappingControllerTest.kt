@@ -1,11 +1,13 @@
 package io.github.sds100.keymapper.mappings
 
 import io.github.sds100.keymapper.actions.ActionData
-import io.github.sds100.keymapper.actions.FakeAction
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.constraints.LazyConstraintSnapshot
+import io.github.sds100.keymapper.mappings.keymaps.Action
+import io.github.sds100.keymapper.mappings.keymaps.KeyMap
+import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCase
 import junitparams.JUnitParamsRunner
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,7 +47,7 @@ class SimpleMappingControllerTest {
     private val testScope = TestScope(testDispatcher)
 
     private lateinit var controller: SimpleMappingController
-    private lateinit var detectMappingUseCase: DetectMappingUseCase
+    private lateinit var detectMappingUseCase: DetectKeyMapsUseCase
     private lateinit var performActionsUseCase: PerformActionsUseCase
     private lateinit var detectConstraintsUseCase: DetectConstraintsUseCase
 
@@ -98,98 +100,94 @@ class SimpleMappingControllerTest {
      * #663
      */
     @Test
-    fun `action with repeat until limit reached shouldn't stop repeating when trigger is detected again`() =
-        runTest(testDispatcher) {
-            // GIVEN
-            val action = FakeAction(
-                data = ActionData.InputKeyEvent(1),
-                repeat = true,
-                repeatMode = RepeatMode.LIMIT_REACHED,
-                repeatLimit = 2,
-            )
+    fun `action with repeat until limit reached shouldn't stop repeating when trigger is detected again`() = runTest(testDispatcher) {
+        // GIVEN
+        val action = Action(
+            data = ActionData.InputKeyEvent(1),
+            repeat = true,
+            repeatMode = RepeatMode.LIMIT_REACHED,
+            repeatLimit = 2,
+        )
 
-            // WHEN
-            controller.onDetected("id", FakeMapping(actionList = listOf(action)))
-            controller.onDetected("id", FakeMapping(actionList = listOf(action)))
-            advanceUntilIdle()
+        // WHEN
+        controller.onDetected(KeyMap(actionList = listOf(action)))
+        controller.onDetected(KeyMap(actionList = listOf(action)))
+        advanceUntilIdle()
 
-            // THEN
-            // 3 times because it performs once and then repeats twice. It starts performing again when it is triggered again
-            verify(performActionsUseCase, atLeast(3)).perform(action.data)
-        }
-
-    /**
-     * issue #663
-     */
-    @Test
-    fun `when triggering action that repeats until limit reached, then stop repeating when the limit has been reached`() =
-        runTest(testDispatcher) {
-            // GIVEN
-            val action = FakeAction(
-                data = ActionData.InputKeyEvent(keyCode = 1),
-                repeat = true,
-                repeatLimit = 13,
-                repeatMode = RepeatMode.LIMIT_REACHED,
-            )
-
-            // WHEN
-            controller.onDetected("id", FakeMapping(actionList = listOf(action)))
-            advanceUntilIdle()
-
-            // THEN
-            verify(performActionsUseCase, times(action.repeatLimit!! + 1)).perform(action.data)
-        }
+        // THEN
+        // 3 times because it performs once and then repeats twice. It starts performing again when it is triggered again
+        verify(performActionsUseCase, atLeast(3)).perform(action.data)
+    }
 
     /**
      * issue #663
      */
     @Test
-    fun `when triggering action that repeats until pressed again with repeat limit, then stop repeating when the trigger has been pressed again`() =
-        runTest(testDispatcher) {
-            // GIVEN
-            val action = FakeAction(
-                data = ActionData.InputKeyEvent(keyCode = 1),
-                repeat = true,
-                repeatLimit = 10,
-                repeatRate = 100,
-                repeatMode = RepeatMode.TRIGGER_PRESSED_AGAIN,
-            )
+    fun `when triggering action that repeats until limit reached, then stop repeating when the limit has been reached`() = runTest(testDispatcher) {
+        // GIVEN
+        val action = Action(
+            data = ActionData.InputKeyEvent(keyCode = 1),
+            repeat = true,
+            repeatLimit = 13,
+            repeatMode = RepeatMode.LIMIT_REACHED,
+        )
 
-            // WHEN
-            controller.onDetected("id", FakeMapping(actionList = listOf(action)))
-            testScheduler.apply {
-                advanceTimeBy(200)
-                runCurrent()
-            }
-            controller.onDetected("id", FakeMapping(actionList = listOf(action)))
+        // WHEN
+        controller.onDetected(KeyMap(actionList = listOf(action)))
+        advanceUntilIdle()
 
-            // THEN
-            verify(performActionsUseCase, times(3)).perform(action.data)
-        }
+        // THEN
+        verify(performActionsUseCase, times(action.repeatLimit!! + 1)).perform(action.data)
+    }
 
     /**
      * issue #663
      */
     @Test
-    fun `when triggering action that repeats until pressed again with repeat limit, then stop repeating when limit reached and trigger hasn't been pressed again`() =
-        runTest(testDispatcher) {
-            // GIVEN
-            val action = FakeAction(
-                data = ActionData.InputKeyEvent(keyCode = 1),
-                repeat = true,
-                repeatLimit = 10,
-                repeatMode = RepeatMode.TRIGGER_PRESSED_AGAIN,
-            )
+    fun `when triggering action that repeats until pressed again with repeat limit, then stop repeating when the trigger has been pressed again`() = runTest(testDispatcher) {
+        // GIVEN
+        val action = Action(
+            data = ActionData.InputKeyEvent(keyCode = 1),
+            repeat = true,
+            repeatLimit = 10,
+            repeatRate = 100,
+            repeatMode = RepeatMode.TRIGGER_PRESSED_AGAIN,
+        )
 
-            // WHEN
-            controller.onDetected("id", FakeMapping(actionList = listOf(action)))
-            testScheduler.apply {
-                advanceTimeBy(5000)
-                runCurrent()
-            }
-            controller.onDetected("id", FakeMapping(actionList = listOf(action)))
-
-            // THEN
-            verify(performActionsUseCase, times(action.repeatLimit!! + 1)).perform(action.data)
+        // WHEN
+        controller.onDetected(KeyMap(actionList = listOf(action)))
+        testScheduler.apply {
+            advanceTimeBy(200)
+            runCurrent()
         }
+        controller.onDetected(KeyMap(actionList = listOf(action)))
+
+        // THEN
+        verify(performActionsUseCase, times(3)).perform(action.data)
+    }
+
+    /**
+     * issue #663
+     */
+    @Test
+    fun `when triggering action that repeats until pressed again with repeat limit, then stop repeating when limit reached and trigger hasn't been pressed again`() = runTest(testDispatcher) {
+            // GIVEN
+        val action = Action(
+            data = ActionData.InputKeyEvent(keyCode = 1),
+            repeat = true,
+            repeatLimit = 10,
+            repeatMode = RepeatMode.TRIGGER_PRESSED_AGAIN,
+        )
+
+        // WHEN
+        controller.onDetected(KeyMap(actionList = listOf(action)))
+        testScheduler.apply {
+            advanceTimeBy(5000)
+            runCurrent()
+        }
+        controller.onDetected(KeyMap(actionList = listOf(action)))
+
+        // THEN
+        verify(performActionsUseCase, times(action.repeatLimit!! + 1)).perform(action.data)
+    }
 }
