@@ -154,10 +154,7 @@ fun TriggerKeyListItem(
 
                     val tertiaryText = when (model) {
                         is TriggerKeyListItemModel.KeyCode -> model.extraInfo
-                        is TriggerKeyListItemModel.FloatingButton -> stringResource(
-                            R.string.trigger_key_floating_button_layout_description,
-                            model.layoutName,
-                        )
+                        is TriggerKeyListItemModel.FloatingButton -> model.layoutName
 
                         else -> null
                     }
