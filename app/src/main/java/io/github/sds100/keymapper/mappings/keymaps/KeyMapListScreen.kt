@@ -80,7 +80,7 @@ fun KeyMapListScreen(modifier: Modifier = Modifier, viewModel: KeyMapListViewMod
 }
 
 @Composable
-private fun KeyMapListScreen(
+fun KeyMapListScreen(
     modifier: Modifier = Modifier,
     listItems: State<List<KeyMapListItemModel>>,
     isSelectable: Boolean = false,

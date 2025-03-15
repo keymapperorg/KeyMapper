@@ -1,21 +1,24 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
 import android.app.Activity
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.activity.compose.BackHandler
+import androidx.compose.material3.Text
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.stringResource
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import com.airbnb.epoxy.EpoxyRecyclerView
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
-import io.github.sds100.keymapper.keymap
+import io.github.sds100.keymapper.compose.KeyMapperTheme
+import io.github.sds100.keymapper.databinding.FragmentComposeBinding
 import io.github.sds100.keymapper.util.Inject
-import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
-import io.github.sds100.keymapper.util.str
-import io.github.sds100.keymapper.util.ui.ChipUi
-import io.github.sds100.keymapper.util.ui.OnChipClickCallback
-import io.github.sds100.keymapper.util.ui.SimpleRecyclerViewFragment
 import io.github.sds100.keymapper.util.ui.showPopups
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.messageResource
@@ -23,23 +26,47 @@ import splitties.alertdialog.appcompat.negativeButton
 import splitties.alertdialog.appcompat.positiveButton
 import splitties.alertdialog.appcompat.titleResource
 
-/**
- * Created by sds100 on 08/09/20.
- */
-
-class CreateKeyMapShortcutFragment : SimpleRecyclerViewFragment<KeyMapListItem>() {
+class CreateKeyMapShortcutFragment : Fragment() {
 
     private val viewModel by activityViewModels<CreateKeyMapShortcutViewModel> {
         Inject.createActionShortcutViewModel(requireContext())
     }
 
-    override val listItems: Flow<State<List<KeyMapListItem>>>
-        get() = viewModel.state
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
+        FragmentComposeBinding.inflate(inflater, container, false).apply {
+            composeView.apply {
+                // Dispose of the Composition when the view's LifecycleOwner
+                // is destroyed
+                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                setContent {
+                    val listItems by viewModel.state.collectAsStateWithLifecycle()
+                    KeyMapperTheme {
+                        Text(text = stringResource(R.string.caption_create_keymap_shortcut))
+                        Scaffold {
+                            KeyMapListScreen(
+                                listItems = listItems,
+                                isSelectable = false,
+                            )
+                        }
+                    }
 
-    override fun subscribeUi(binding: FragmentSimpleRecyclerviewBinding) {
-        super.subscribeUi(binding)
+                    BackHandler {
+                        // TODO warning dialog
+                    }
+                }
+            }
+            return this.root
+        }
+    }
 
-        viewModel.showPopups(this, binding)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewModel.showPopups(this, view)
 
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.returnIntentResult.collectLatest { intent ->
@@ -47,50 +74,6 @@ class CreateKeyMapShortcutFragment : SimpleRecyclerViewFragment<KeyMapListItem>(
                 requireActivity().finish()
             }
         }
-
-        binding.caption = str(R.string.caption_create_keymap_shortcut)
-    }
-
-    override fun populateList(
-        recyclerView: EpoxyRecyclerView,
-        listItems: List<KeyMapListItem>,
-    ) {
-        recyclerView.withModels {
-            listItems.forEach { listItem ->
-                keymap {
-                    id(listItem.keyMapUiState.uid)
-                    keyMapUiState(listItem.keyMapUiState)
-
-                    selectionState(listItem.selectionUiState)
-
-                    onTriggerErrorClick(object : OnChipClickCallback {
-                        override fun onChipClick(chipModel: ChipUi) {
-                            viewModel.onTriggerErrorChipClick(chipModel)
-                        }
-                    })
-
-                    onActionChipClick(object : OnChipClickCallback {
-                        override fun onChipClick(chipModel: ChipUi) {
-                            viewModel.onActionChipClick(chipModel)
-                        }
-                    })
-
-                    onConstraintChipClick(object : OnChipClickCallback {
-                        override fun onChipClick(chipModel: ChipUi) {
-                            viewModel.onConstraintsChipClick(chipModel)
-                        }
-                    })
-
-                    onCardClick { _ ->
-                        viewModel.onKeyMapCardClick(listItem.keyMapUiState.uid)
-                    }
-                }
-            }
-        }
-    }
-
-    override fun onBackPressed() {
-        showOnBackPressedWarning()
     }
 
     private fun showOnBackPressedWarning() {

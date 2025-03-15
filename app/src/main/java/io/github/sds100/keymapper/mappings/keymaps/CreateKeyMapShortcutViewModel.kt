@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.mapData
@@ -31,16 +32,16 @@ import kotlinx.coroutines.launch
  */
 class CreateKeyMapShortcutViewModel(
     private val configKeyMapUseCase: ConfigKeyMapUseCase,
-    private val listUseCase: ListKeyMapsUseCase,
+    private val listKeyMaps: ListKeyMapsUseCase,
     private val createShortcutUseCase: CreateKeyMapShortcutUseCase,
     resourceProvider: ResourceProvider,
 ) : ViewModel(),
     PopupViewModel by PopupViewModelImpl(),
     ResourceProvider by resourceProvider {
 
-    private val listItemCreator = KeyMapListItemCreatorOld(listUseCase, resourceProvider)
+    private val listItemCreator = KeyMapListItemCreator(listKeyMaps, resourceProvider)
 
-    private val _state = MutableStateFlow<State<List<KeyMapListItem>>>(State.Loading)
+    private val _state = MutableStateFlow<State<List<KeyMapListItemModel>>>(State.Loading)
     val state = _state.asStateFlow()
 
     private val _returnIntentResult = MutableSharedFlow<Intent>()
@@ -51,28 +52,25 @@ class CreateKeyMapShortcutViewModel(
 
         combine(
             rebuildUiState,
-            listUseCase.showDeviceDescriptors,
+            listKeyMaps.showDeviceDescriptors,
         ) { keyMapListState, showDeviceDescriptors ->
-            val selectionUiState =
-                KeyMapListItem.SelectionUiState(isSelected = false, isSelectable = false)
-
             _state.value = keyMapListState.mapData { keyMapList ->
                 keyMapList.map { keyMap ->
                     val keyMapListUiState = listItemCreator.create(keyMap, showDeviceDescriptors)
 
-                    KeyMapListItem(keyMapListUiState, selectionUiState)
+                    KeyMapListItemModel(isSelected = false, keyMapListUiState)
                 }
             }
         }.launchIn(viewModelScope)
 
         viewModelScope.launch {
-            listUseCase.keyMapList.collectLatest {
+            listKeyMaps.keyMapList.collectLatest {
                 rebuildUiState.emit(it)
             }
         }
 
         viewModelScope.launch {
-            listUseCase.invalidateActionErrors.drop(1).collectLatest {
+            listKeyMaps.invalidateActionErrors.drop(1).collectLatest {
                 /*
                 Don't get the key maps from the repository because there can be a race condition
                 when restoring key maps. This happens because when the activity is resumed the
@@ -86,7 +84,7 @@ class CreateKeyMapShortcutViewModel(
 
     fun onKeyMapCardClick(uid: String) {
         viewModelScope.launch {
-            val state = listUseCase.keyMapList.first { it is State.Data }
+            val state = listKeyMaps.keyMapList.first { it is State.Data }
 
             if (state !is State.Data) return@launch
 
@@ -148,7 +146,7 @@ class CreateKeyMapShortcutViewModel(
                 popupViewModel = this@CreateKeyMapShortcutViewModel,
                 error,
             ) {
-                listUseCase.fixError(error)
+                listKeyMaps.fixError(error)
             }
         }
     }
@@ -161,12 +159,11 @@ class CreateKeyMapShortcutViewModel(
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>) =
-            CreateKeyMapShortcutViewModel(
-                configKeyMapUseCase,
-                listUseCase,
-                createShortcutUseCase,
-                resourceProvider,
-            ) as T
+        override fun <T : ViewModel> create(modelClass: Class<T>) = CreateKeyMapShortcutViewModel(
+            configKeyMapUseCase,
+            listUseCase,
+            createShortcutUseCase,
+            resourceProvider,
+        ) as T
     }
 }

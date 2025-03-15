@@ -95,6 +95,8 @@ open class KeyMapListViewModel(
             }
         }.flowOn(Dispatchers.Default).launchIn(coroutineScope)
 
+        // TODO use error snapshot for action and constraint errors too. Don't need
+        // any of this rebuildUiState stuff.
         coroutineScope.launch {
             listKeyMaps.invalidateActionErrors.drop(1).collectLatest {
                 /*
