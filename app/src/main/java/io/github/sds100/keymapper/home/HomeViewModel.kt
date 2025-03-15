@@ -17,6 +17,7 @@ import io.github.sds100.keymapper.mappings.keymaps.ListKeyMapsUseCase
 import io.github.sds100.keymapper.mappings.keymaps.trigger.SetupGuiKeyboardUseCase
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.sorting.SortKeyMapsUseCase
+import io.github.sds100.keymapper.sorting.SortViewModel
 import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
 import io.github.sds100.keymapper.util.Error
@@ -110,6 +111,10 @@ class HomeViewModel(
             listFloatingLayouts,
             resourceProvider,
         )
+    }
+
+    val sortViewModel by lazy {
+        SortViewModel(viewModelScope, sortKeyMaps)
     }
 
     private val _showQuickStartGuideHint = MutableStateFlow(false)

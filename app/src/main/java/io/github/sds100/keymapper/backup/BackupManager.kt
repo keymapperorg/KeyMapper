@@ -170,6 +170,7 @@ class BackupManagerImpl(
         backupAsync(outputFile, keyMapsToBackup).await().then { Success(uri) }
     }
 
+    // TODO back up floating buttons and floating layouts as well.
     override suspend fun backupEverything(uri: String): Result<String> = withContext(dispatchers.default()) {
         val outputFile = fileAdapter.getFileFromUri(uri)
 

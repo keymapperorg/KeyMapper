@@ -36,7 +36,6 @@ import io.github.sds100.keymapper.reportbug.ReportBugViewModel
 import io.github.sds100.keymapper.settings.ConfigSettingsUseCaseImpl
 import io.github.sds100.keymapper.settings.SettingsViewModel
 import io.github.sds100.keymapper.sorting.SortKeyMapsUseCaseImpl
-import io.github.sds100.keymapper.sorting.SortViewModel
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceController
 import io.github.sds100.keymapper.system.accessibility.MyAccessibilityService
 import io.github.sds100.keymapper.system.apps.ChooseActivityViewModel
@@ -276,10 +275,5 @@ object Inject {
             ServiceLocator.fileAdapter(ctx),
         ),
         ServiceLocator.resourceProvider(ctx),
-    )
-
-    fun sortViewModel(ctx: Context): SortViewModel.Factory = SortViewModel.Factory(
-        UseCases.sortKeyMapsUseCase(ctx),
-        ServiceLocator.settingsRepository(ctx),
     )
 }

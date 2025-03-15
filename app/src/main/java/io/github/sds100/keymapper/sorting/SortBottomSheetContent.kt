@@ -555,9 +555,9 @@ private fun SortBottomSheetPreview() {
 @Composable
 private fun sortFieldText(sortField: SortField): String {
     return when (sortField) {
-        SortField.TRIGGER -> stringResource(R.string.trigger_header)
-        SortField.ACTIONS -> stringResource(R.string.action_list_header)
-        SortField.CONSTRAINTS -> stringResource(R.string.constraint_list_header)
-        SortField.OPTIONS -> stringResource(R.string.option_list_header)
+        SortField.TRIGGER -> stringResource(R.string.sort_bottom_sheet_trigger)
+        SortField.ACTIONS -> stringResource(R.string.sort_bottom_sheet_actions)
+        SortField.CONSTRAINTS -> stringResource(R.string.sort_bottom_sheet_constraints)
+        SortField.OPTIONS -> stringResource(R.string.sort_bottom_sheet_options)
     }
 }

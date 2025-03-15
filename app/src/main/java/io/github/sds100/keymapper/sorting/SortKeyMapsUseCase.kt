@@ -18,6 +18,12 @@ class SortKeyMapsUseCaseImpl(
     private val displaySimpleMappingUseCase: DisplayKeyMapUseCase,
 ) : SortKeyMapsUseCase {
 
+    override val showHelp = preferenceRepository.get(Keys.sortShowHelp).map { it ?: true }
+
+    override fun setShowHelp(show: Boolean) {
+        preferenceRepository.set(Keys.sortShowHelp, show)
+    }
+
     /**
      * Observes the order in which key map fields should be sorted, prioritizing specific fields.
      * For example, if the order is [TRIGGER, ACTIONS, CONSTRAINTS, OPTIONS],
@@ -88,6 +94,9 @@ class SortKeyMapsUseCaseImpl(
 }
 
 interface SortKeyMapsUseCase {
+    val showHelp: Flow<Boolean>
+    fun setShowHelp(show: Boolean)
+
     fun observeSortFieldOrder(): Flow<List<SortFieldOrder>>
     fun setSortFieldOrder(sortFieldOrders: List<SortFieldOrder>)
     fun observeKeyMapsSorter(): Flow<Comparator<KeyMap>>

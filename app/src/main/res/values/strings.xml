@@ -302,6 +302,9 @@
     <string name="url_trigger_options_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/trigger-options</string>
     <string name="url_action_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/action</string>
     <string name="url_constraints_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/constraints</string>
+    <string name="url_fingerprint_map_options_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/fingerprint-map-options</string>
+    <string name="url_quick_start_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/quick-start</string>
+    <string name="url_faq" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/faq</string>
     <string name="url_grant_write_secure_settings_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/grant-write-secure-settings</string>
     <string name="url_dont_kill_my_app" translatable="false">https://dontkillmyapp.com</string>
     <string name="url_keymap_action_options_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/keymap-action-options</string>
@@ -1327,6 +1330,9 @@
     <string name="home_floating_layouts_name_delete_cancel">Cancel</string>
     <string name="home_floating_layouts_hide_dialog_title">Hide floating layouts</string>
     <string name="home_floating_layouts_hide_dialog_text">You can find floating buttons in the Advanced Triggers button when creating a trigger.</string>
+    <string name="home_app_bar_menu">Menu</string>
+    <string name="home_app_bar_sort">Sort</string>
+    <string name="home_app_bar_help">Help</string>
 
     <!-- Trigger screen -->
     <string name="trigger_key_list_item_remove">Remove</string>
@@ -1347,5 +1353,9 @@
     <string name="trigger_key_fingerprint_gesture_down">Swipe down fingerprint reader</string>
     <string name="trigger_key_fingerprint_gesture_left">Swipe left fingerprint reader</string>
     <string name="trigger_key_fingerprint_gesture_right">Swipe right fingerprint reader</string>
+    <string name="sort_bottom_sheet_trigger">Trigger</string>
+    <string name="sort_bottom_sheet_actions">Actions</string>
+    <string name="sort_bottom_sheet_constraints">Constraints</string>
+    <string name="sort_bottom_sheet_options">Options</string>
 
 </resources>

@@ -8,7 +8,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.HelpOutline
+import androidx.compose.material.icons.automirrored.outlined.Sort
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.BubbleChart
+import androidx.compose.material.icons.outlined.Gamepad
 import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -26,12 +30,17 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -41,9 +50,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.floating.FloatingLayoutsScreen
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapListScreen
 import io.github.sds100.keymapper.mappings.keymaps.trigger.DpadTriggerSetupBottomSheet
+import io.github.sds100.keymapper.sorting.SortBottomSheet
 import io.github.sds100.keymapper.util.ui.NavDestination
 import io.github.sds100.keymapper.util.ui.NavigateEvent
 import kotlinx.coroutines.launch
@@ -51,6 +62,8 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(viewModel: HomeViewModel) {
+    val homeState by viewModel.state.collectAsStateWithLifecycle()
+
     val navController = rememberNavController()
     val navBarItems by viewModel.navBarItems.collectAsStateWithLifecycle()
 
@@ -58,7 +71,7 @@ fun HomeScreen(viewModel: HomeViewModel) {
         .collectAsStateWithLifecycle(false)
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val state by viewModel.keymapListViewModel.setupGuiKeyboardState.collectAsStateWithLifecycle()
+    val setupGuiKeyboardState by viewModel.keymapListViewModel.setupGuiKeyboardState.collectAsStateWithLifecycle()
 
     if (viewModel.keymapListViewModel.showDpadTriggerSetupBottomSheet) {
         DpadTriggerSetupBottomSheet(
@@ -67,7 +80,7 @@ fun HomeScreen(viewModel: HomeViewModel) {
                 viewModel.keymapListViewModel.showDpadTriggerSetupBottomSheet =
                     false
             },
-            guiKeyboardState = state,
+            guiKeyboardState = setupGuiKeyboardState,
             onEnableKeyboardClick = viewModel.keymapListViewModel::onEnableGuiKeyboardClick,
             onChooseKeyboardClick = viewModel.keymapListViewModel::onChooseGuiKeyboardClick,
             onNeverShowAgainClick = viewModel.keymapListViewModel::onNeverShowSetupDpadClick,
@@ -75,15 +88,31 @@ fun HomeScreen(viewModel: HomeViewModel) {
         )
     }
 
+    var showSortBottomSheet by rememberSaveable { mutableStateOf(false) }
+
+    if (showSortBottomSheet) {
+        SortBottomSheet(
+            onDismissRequest = { showSortBottomSheet = false },
+            viewModel = viewModel.sortViewModel,
+        )
+    }
+
     val scope = rememberCoroutineScope()
+    val uriHandler = LocalUriHandler.current
+    val helpUrl = stringResource(R.string.url_quick_start_guide)
 
     HomeScreen(
+        state = homeState,
         navController = navController,
         navBarItems = navBarItems,
-        onMenuClick = {
-            scope.launch {
-                viewModel.navigate(NavigateEvent("settings", NavDestination.Settings))
-            }
+        topAppBar = {
+            HomeAppBar(
+                onMenuClick = {},
+                onSortClick = { showSortBottomSheet = true },
+                onHelpClick = {
+                    uriHandler.openUri(helpUrl)
+                },
+            )
         },
         keyMapsContent = {
             KeyMapListScreen(
@@ -134,9 +163,10 @@ fun HomeScreen(viewModel: HomeViewModel) {
 @Composable
 private fun HomeScreen(
     modifier: Modifier = Modifier,
+    state: HomeState,
     navController: NavHostController,
     navBarItems: List<HomeNavBarItem>,
-    onMenuClick: () -> Unit = {},
+    topAppBar: @Composable () -> Unit,
     keyMapsContent: @Composable () -> Unit,
     floatingButtonsContent: @Composable () -> Unit,
     floatingActionButton: @Composable (destination: String?) -> Unit = {},
@@ -148,7 +178,7 @@ private fun HomeScreen(
 
     Scaffold(
         modifier = modifier,
-        topBar = { HomeAppBar(onMenuClick = onMenuClick) },
+        topBar = topAppBar,
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
         },
@@ -221,19 +251,128 @@ private fun HomeScreen(
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-private fun HomeAppBar(onMenuClick: () -> Unit) {
+private fun HomeAppBar(
+    onMenuClick: () -> Unit = {},
+    onSortClick: () -> Unit = {},
+    onHelpClick: () -> Unit = {},
+) {
     CenterAlignedTopAppBar(
         title = {
             Text("Running")
         },
         navigationIcon = {
             IconButton(onClick = onMenuClick) {
-                Icon(Icons.Outlined.Menu, contentDescription = null)
+                Icon(
+                    Icons.Outlined.Menu,
+                    contentDescription = stringResource(R.string.home_app_bar_menu),
+                )
             }
         },
         actions = {
+            IconButton(onClick = onSortClick) {
+                Icon(
+                    Icons.AutoMirrored.Outlined.Sort,
+                    contentDescription = stringResource(R.string.home_app_bar_sort),
+                )
+            }
+            IconButton(onClick = onHelpClick) {
+                Icon(
+                    Icons.AutoMirrored.Outlined.HelpOutline,
+                    contentDescription = stringResource(R.string.home_app_bar_help),
+                )
+            }
         },
         colors = TopAppBarDefaults.topAppBarColors()
             .copy(containerColor = MaterialTheme.colorScheme.surfaceContainer),
     )
+}
+
+private fun sampleNavBarItems(): List<HomeNavBarItem> {
+    return listOf(
+        HomeNavBarItem(
+            icon = Icons.Outlined.Gamepad,
+            label = "Key Maps",
+            destination = HomeDestination.KeyMaps,
+        ),
+        HomeNavBarItem(
+            icon = Icons.Outlined.BubbleChart,
+            label = "Floating Buttons",
+            destination = HomeDestination.FloatingButtons,
+        ),
+    )
+}
+
+@Preview
+@Composable
+private fun HomeStateRunningPreview() {
+    KeyMapperTheme {
+        HomeScreen(
+            state = HomeState.Normal(warnings = emptyList(), isPaused = false),
+            navController = rememberNavController(),
+            navBarItems = sampleNavBarItems(),
+            topAppBar = { HomeAppBar() },
+            keyMapsContent = {},
+            floatingButtonsContent = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun HomeStatePausedPreview() {
+    KeyMapperTheme {
+        HomeScreen(
+            state = HomeState.Normal(warnings = emptyList(), isPaused = true),
+            navController = rememberNavController(),
+            navBarItems = sampleNavBarItems(),
+            topAppBar = { HomeAppBar() },
+            keyMapsContent = {},
+            floatingButtonsContent = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun HomeStateWarningsPreview() {
+    KeyMapperTheme {
+        HomeScreen(
+            state = HomeState.Normal(
+                warnings = listOf(
+                    HomeWarningListItem(
+                        id = "0",
+                        text = stringResource(R.string.home_error_accessibility_service_is_disabled),
+                    ),
+                    HomeWarningListItem(
+                        id = "1",
+                        text = stringResource(R.string.home_error_is_battery_optimised),
+                    ),
+                ),
+                isPaused = true,
+            ),
+            navController = rememberNavController(),
+            navBarItems = sampleNavBarItems(),
+            topAppBar = { HomeAppBar() },
+            keyMapsContent = {},
+            floatingButtonsContent = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun HomeStateSelectingPreview() {
+    KeyMapperTheme {
+        HomeScreen(
+            state = HomeState.Selecting(
+                selectionCount = 4,
+                allKeyMapsEnabled = true,
+            ),
+            navController = rememberNavController(),
+            navBarItems = sampleNavBarItems(),
+            topAppBar = { HomeAppBar() },
+            keyMapsContent = {},
+            floatingButtonsContent = {},
+        )
+    }
 }
