@@ -37,7 +37,7 @@ class ConfigFingerprintMapFragment : ConfigMappingFragment() {
 
         // only load the fingerprint map if opening this fragment for the first time
         if (savedInstanceState == null) {
-            viewModel.loadFingerprintMap(FingerprintMapId.valueOf(args.gestureId))
+            viewModel.loadFingerprintMap(FingerprintGestureType.valueOf(args.gestureId))
         }
 
         setFragmentResultListener(ConfigConstraintsFragment.CHOOSE_CONSTRAINT_REQUEST_KEY) { _, result ->

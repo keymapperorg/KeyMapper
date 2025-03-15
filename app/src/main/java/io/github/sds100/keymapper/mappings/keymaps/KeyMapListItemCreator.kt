@@ -6,8 +6,10 @@ import androidx.compose.material.icons.outlined.Add
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.BaseMappingListItemCreator
 import io.github.sds100.keymapper.mappings.ClickType
+import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintGestureType
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerType
+import io.github.sds100.keymapper.mappings.keymaps.trigger.FingerprintTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.FloatingButtonKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyEventDetectionSource
@@ -49,6 +51,7 @@ class KeyMapListItemCreator(
                 is AssistantTriggerKey -> assistantTriggerKeyName(key)
                 is KeyCodeTriggerKey -> keyCodeTriggerKeyName(key, showDeviceDescriptors)
                 is FloatingButtonKey -> floatingButtonKeyName(key)
+                is FingerprintTriggerKey -> fingerprintKeyName(key)
             }
         }
 
@@ -172,6 +175,20 @@ class KeyMapListItemCreator(
             AssistantTriggerType.ANY -> append(anyAssistantString)
             AssistantTriggerType.VOICE -> append(voiceAssistantString)
             AssistantTriggerType.DEVICE -> append(deviceAssistantString)
+        }
+    }
+
+    private fun fingerprintKeyName(key: FingerprintTriggerKey): String = buildString {
+        when (key.clickType) {
+            ClickType.DOUBLE_PRESS -> append(doublePressString).append(" ")
+            else -> Unit
+        }
+
+        when (key.type) {
+            FingerprintGestureType.SWIPE_DOWN -> append(getString(R.string.trigger_key_fingerprint_gesture_down))
+            FingerprintGestureType.SWIPE_UP -> append(getString(R.string.trigger_key_fingerprint_gesture_up))
+            FingerprintGestureType.SWIPE_LEFT -> append(getString(R.string.fingerprint_gesture_left))
+            FingerprintGestureType.SWIPE_RIGHT -> append(getString(R.string.fingerprint_gesture_right))
         }
     }
 

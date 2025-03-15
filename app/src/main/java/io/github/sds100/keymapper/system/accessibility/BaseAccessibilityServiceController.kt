@@ -15,7 +15,7 @@ import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
 import io.github.sds100.keymapper.mappings.fingerprintmaps.DetectFingerprintMapsUseCase
 import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintGestureMapController
-import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapId
+import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintGestureType
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCase
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectScreenOffKeyEventsController
 import io.github.sds100.keymapper.mappings.keymaps.detection.DpadMotionEventTracker
@@ -445,7 +445,7 @@ abstract class BaseAccessibilityServiceController(
         }
     }
 
-    fun onFingerprintGesture(id: FingerprintMapId) {
+    fun onFingerprintGesture(id: FingerprintGestureType) {
         fingerprintMapController.onGesture(id)
     }
 

@@ -22,10 +22,10 @@ class FingerprintMapListItemCreator(
         showDeviceDescriptors: Boolean,
     ): FingerprintMapListItem {
         val header = when (fingerprintMap.id) {
-            FingerprintMapId.SWIPE_DOWN -> getString(R.string.header_fingerprint_gesture_down)
-            FingerprintMapId.SWIPE_UP -> getString(R.string.header_fingerprint_gesture_up)
-            FingerprintMapId.SWIPE_LEFT -> getString(R.string.header_fingerprint_gesture_left)
-            FingerprintMapId.SWIPE_RIGHT -> getString(R.string.header_fingerprint_gesture_right)
+            FingerprintGestureType.SWIPE_DOWN -> getString(R.string.fingerprint_gesture_down)
+            FingerprintGestureType.SWIPE_UP -> getString(R.string.fingerprint_gesture_up)
+            FingerprintGestureType.SWIPE_LEFT -> getString(R.string.fingerprint_gesture_left)
+            FingerprintGestureType.SWIPE_RIGHT -> getString(R.string.fingerprint_gesture_right)
         }
 
         val midDot = getString(R.string.middot)

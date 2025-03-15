@@ -110,7 +110,7 @@ class ConfigFingerprintMapViewModel(
         config.restoreState(fingerprintMap)
     }
 
-    fun loadFingerprintMap(id: FingerprintMapId) {
+    fun loadFingerprintMap(id: FingerprintGestureType) {
         viewModelScope.launch {
             config.loadFingerprintMap(id)
         }

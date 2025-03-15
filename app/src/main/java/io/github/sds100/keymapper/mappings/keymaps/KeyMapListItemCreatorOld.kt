@@ -58,6 +58,7 @@ class KeyMapListItemCreatorOld(
                     is AssistantTriggerKey -> appendAssistantTriggerKeyName(key)
                     is KeyCodeTriggerKey -> appendKeyCodeTriggerKeyName(key, showDeviceDescriptors)
                     is FloatingButtonKey -> appendFloatingButtonKeyName(key)
+                    else -> TODO()
                 }
             }
         }

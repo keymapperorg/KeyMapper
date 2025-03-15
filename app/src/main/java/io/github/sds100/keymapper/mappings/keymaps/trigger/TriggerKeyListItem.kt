@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.outlined.Assistant
 import androidx.compose.material.icons.outlined.BubbleChart
+import androidx.compose.material.icons.outlined.Fingerprint
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -40,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.draggable.DragDropState
 import io.github.sds100.keymapper.mappings.ClickType
+import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintGestureType
 
 @Composable
 fun TriggerKeyListItem(
@@ -103,6 +105,7 @@ fun TriggerKeyListItem(
                     val icon = when (model) {
                         is TriggerKeyListItemModel.Assistant -> Icons.Outlined.Assistant
                         is TriggerKeyListItemModel.FloatingButton -> Icons.Outlined.BubbleChart
+                        is TriggerKeyListItemModel.FingerprintGesture -> Icons.Outlined.Fingerprint
                         else -> null
                     }
 
@@ -131,6 +134,13 @@ fun TriggerKeyListItem(
                     is TriggerKeyListItemModel.KeyCode -> model.keyName
 
                     is TriggerKeyListItemModel.FloatingButtonDeleted -> stringResource(R.string.trigger_error_floating_button_deleted)
+
+                    is TriggerKeyListItemModel.FingerprintGesture -> when (model.gestureType) {
+                        FingerprintGestureType.SWIPE_UP -> stringResource(R.string.trigger_key_fingerprint_gesture_up)
+                        FingerprintGestureType.SWIPE_DOWN -> stringResource(R.string.trigger_key_fingerprint_gesture_down)
+                        FingerprintGestureType.SWIPE_LEFT -> stringResource(R.string.trigger_key_fingerprint_gesture_left)
+                        FingerprintGestureType.SWIPE_RIGHT -> stringResource(R.string.trigger_key_fingerprint_gesture_right)
+                    }
                 }
 
                 Spacer(Modifier.width(8.dp))

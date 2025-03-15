@@ -9,9 +9,9 @@ import kotlinx.coroutines.flow.map
 /**
  * Created by sds100 on 02/04/2021.
  */
-class AreFingerprintGesturesSupportedUseCaseImpl(
+class FingerprintGesturesSupportedUseCaseImpl(
     private val preferenceRepository: PreferenceRepository,
-) : AreFingerprintGesturesSupportedUseCase {
+) : FingerprintGesturesSupportedUseCase {
     override val isSupported: Flow<Boolean?> =
         preferenceRepository.get(Keys.fingerprintGesturesAvailable).map {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return@map false
@@ -24,7 +24,7 @@ class AreFingerprintGesturesSupportedUseCaseImpl(
     }
 }
 
-interface AreFingerprintGesturesSupportedUseCase {
+interface FingerprintGesturesSupportedUseCase {
     /**
      * Is null if support is unknown
      */

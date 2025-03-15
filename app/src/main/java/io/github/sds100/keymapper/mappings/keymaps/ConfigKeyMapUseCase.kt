@@ -13,8 +13,10 @@ import io.github.sds100.keymapper.floating.FloatingButtonEntityMapper
 import io.github.sds100.keymapper.mappings.BaseConfigMappingUseCase
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.ConfigMappingUseCase
+import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintGestureType
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerType
+import io.github.sds100.keymapper.mappings.keymaps.trigger.FingerprintTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.FloatingButtonKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyEventDetectionSource
@@ -144,6 +146,37 @@ class ConfigKeyMapUseCaseController(
         trigger.copy(keys = newKeys, mode = newMode)
     }
 
+    override fun addFingerprintGesture(type: FingerprintGestureType) = editTrigger { trigger ->
+        val clickType = when (trigger.mode) {
+            is TriggerMode.Parallel -> trigger.mode.clickType
+            TriggerMode.Sequence -> ClickType.SHORT_PRESS
+            TriggerMode.Undefined -> ClickType.SHORT_PRESS
+        }
+
+        // Check whether the trigger already contains the key because if so
+        // then it must be converted to a sequence trigger.
+        val containsFingerprintGesture = trigger.keys.any { it is FingerprintTriggerKey }
+
+        val triggerKey = FingerprintTriggerKey(type = type, clickType = clickType)
+
+        val newKeys = trigger.keys.plus(triggerKey)
+
+        val newMode = when {
+            trigger.mode != TriggerMode.Sequence && containsFingerprintGesture -> TriggerMode.Sequence
+            newKeys.size <= 1 -> TriggerMode.Undefined
+
+            /* Automatically make it a parallel trigger when the user makes a trigger with more than one key
+            because this is what most users are expecting when they make a trigger with multiple keys.
+
+            It must be a short press because long pressing the assistant key isn't supported.
+             */
+            !containsFingerprintGesture -> TriggerMode.Parallel(ClickType.SHORT_PRESS)
+            else -> trigger.mode
+        }
+
+        trigger.copy(keys = newKeys, mode = newMode)
+    }
+
     override fun addKeyCodeTriggerKey(
         keyCode: Int,
         device: TriggerKeyDevice,
@@ -243,7 +276,7 @@ class ConfigKeyMapUseCaseController(
             .distinctBy { key ->
                 when (key) {
                     // You can't mix assistant trigger types in a parallel trigger because there is no notion of a "down" key event, which means they can't be pressed at the same time
-                    is AssistantTriggerKey -> 0
+                    is AssistantTriggerKey, is FingerprintTriggerKey -> 0
                     is KeyCodeTriggerKey -> Pair(key.keyCode, key.device)
                     is FloatingButtonKey -> key.buttonUid
                 }
@@ -361,6 +394,16 @@ class ConfigKeyMapUseCaseController(
     override fun setAssistantTriggerKeyType(keyUid: String, type: AssistantTriggerType) {
         editTriggerKey(keyUid) { key ->
             if (key is AssistantTriggerKey) {
+                key.copy(type = type)
+            } else {
+                key
+            }
+        }
+    }
+
+    override fun setFingerprintGestureType(keyUid: String, type: FingerprintGestureType) {
+        editTriggerKey(keyUid) { key ->
+            if (key is FingerprintTriggerKey) {
                 key.copy(type = type)
             } else {
                 key
@@ -616,6 +659,7 @@ interface ConfigKeyMapUseCase : ConfigMappingUseCase<KeyMapAction, KeyMap> {
 
     suspend fun addFloatingButtonTriggerKey(buttonUid: String)
     fun addAssistantTriggerKey(type: AssistantTriggerType)
+    fun addFingerprintGesture(type: FingerprintGestureType)
     fun removeTriggerKey(uid: String)
     fun getTriggerKey(uid: String): TriggerKey?
     fun moveTriggerKey(fromIndex: Int, toIndex: Int)
@@ -636,6 +680,7 @@ interface ConfigKeyMapUseCase : ConfigMappingUseCase<KeyMapAction, KeyMap> {
     fun setTriggerKeyDevice(keyUid: String, device: TriggerKeyDevice)
     fun setTriggerKeyConsumeKeyEvent(keyUid: String, consumeKeyEvent: Boolean)
     fun setAssistantTriggerKeyType(keyUid: String, type: AssistantTriggerType)
+    fun setFingerprintGestureType(keyUid: String, type: FingerprintGestureType)
 
     fun setVibrateEnabled(enabled: Boolean)
     fun setVibrationDuration(duration: Defaultable<Int>)

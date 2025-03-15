@@ -85,7 +85,7 @@ class ConfigFingerprintMapUseCaseImpl(
     override fun setActionHoldDownDuration(uid: String, holdDownDuration: Int?) =
         setActionOption(uid) { it.copy(holdDownDuration = holdDownDuration) }
 
-    override suspend fun loadFingerprintMap(id: FingerprintMapId) {
+    override suspend fun loadFingerprintMap(id: FingerprintGestureType) {
         val entity = repository.get(FingerprintMapIdEntityMapper.toEntity(id))
         val fingerprintMap = FingerprintMapEntityMapper.fromEntity(entity)
 
@@ -138,7 +138,7 @@ interface ConfigFingerprintMapUseCase : ConfigMappingUseCase<FingerprintMapActio
 
     fun getState(): State<FingerprintMap>
     fun restoreState(fingerprintMap: FingerprintMap)
-    suspend fun loadFingerprintMap(id: FingerprintMapId)
+    suspend fun loadFingerprintMap(id: FingerprintGestureType)
 
     fun setActionRepeatEnabled(uid: String, repeat: Boolean)
     fun setActionHoldDownEnabled(uid: String, holdDown: Boolean)

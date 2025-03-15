@@ -34,7 +34,7 @@ class FingerprintGestureMapController(
         }
     }
 
-    fun onGesture(id: FingerprintMapId) {
+    fun onGesture(id: FingerprintGestureType) {
         Timber.d("Fingerprint gesture: $id")
         val fingerprintMap = fingerprintMaps?.find { it.id == id } ?: return
 

@@ -14,8 +14,8 @@ import io.github.sds100.keymapper.mappings.DetectMappingUseCaseImpl
 import io.github.sds100.keymapper.mappings.DisplaySimpleMappingUseCase
 import io.github.sds100.keymapper.mappings.DisplaySimpleMappingUseCaseImpl
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCaseImpl
-import io.github.sds100.keymapper.mappings.fingerprintmaps.AreFingerprintGesturesSupportedUseCaseImpl
 import io.github.sds100.keymapper.mappings.fingerprintmaps.DetectFingerprintMapsUseCaseImpl
+import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintGesturesSupportedUseCaseImpl
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapUseCase
 import io.github.sds100.keymapper.mappings.keymaps.CreateKeyMapShortcutUseCaseImpl
 import io.github.sds100.keymapper.mappings.keymaps.DisplayKeyMapUseCase
@@ -108,7 +108,7 @@ object UseCases {
 
     fun isActionSupported(ctx: Context) = IsActionSupportedUseCaseImpl(ServiceLocator.systemFeatureAdapter(ctx))
 
-    fun fingerprintGesturesSupported(ctx: Context) = AreFingerprintGesturesSupportedUseCaseImpl(ServiceLocator.settingsRepository(ctx))
+    fun fingerprintGesturesSupported(ctx: Context) = FingerprintGesturesSupportedUseCaseImpl(ServiceLocator.settingsRepository(ctx))
 
     fun pauseMappings(ctx: Context) = PauseMappingsUseCaseImpl(
         ServiceLocator.settingsRepository(ctx),

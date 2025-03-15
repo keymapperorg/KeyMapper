@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Assistant
 import androidx.compose.material.icons.filled.BubbleChart
-import androidx.compose.material.icons.outlined.BubbleChart
+import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -48,6 +48,7 @@ fun TriggerKeyShortcutRowNoTrigger(
                 text = when (shortcut) {
                     TriggerKeyShortcut.ASSISTANT -> stringResource(R.string.trigger_key_shortcut_use_assistant)
                     TriggerKeyShortcut.FLOATING_BUTTON -> stringResource(R.string.trigger_key_shortcut_use_floating_button)
+                    TriggerKeyShortcut.FINGERPRINT_GESTURE -> stringResource(R.string.trigger_key_shortcut_use_fingerprint_gesture)
                 },
                 icon = getShortcutIcon(shortcut),
             )
@@ -59,6 +60,7 @@ fun TriggerKeyShortcutRowNoTrigger(
 private fun getShortcutIcon(shortcut: TriggerKeyShortcut) = when (shortcut) {
     TriggerKeyShortcut.ASSISTANT -> Icons.Filled.Assistant
     TriggerKeyShortcut.FLOATING_BUTTON -> Icons.Filled.BubbleChart
+    TriggerKeyShortcut.FINGERPRINT_GESTURE -> Icons.Filled.Fingerprint
 }
 
 @Composable
@@ -81,6 +83,7 @@ fun TriggerKeyShortcutRow(
                 text = when (shortcut) {
                     TriggerKeyShortcut.ASSISTANT -> stringResource(R.string.trigger_key_shortcut_add_assistant)
                     TriggerKeyShortcut.FLOATING_BUTTON -> stringResource(R.string.trigger_key_shortcut_add_floating_button)
+                    TriggerKeyShortcut.FINGERPRINT_GESTURE -> stringResource(R.string.trigger_key_shortcut_add_fingerprint_gesture)
                 },
                 icon = getShortcutIcon(shortcut),
             )
@@ -121,6 +124,7 @@ private fun Preview() {
                 shortcuts = setOf(
                     TriggerKeyShortcut.ASSISTANT,
                     TriggerKeyShortcut.FLOATING_BUTTON,
+                    TriggerKeyShortcut.FINGERPRINT_GESTURE,
                 ),
             )
         }
@@ -136,6 +140,7 @@ private fun PreviewNoTrigger() {
                 shortcuts = setOf(
                     TriggerKeyShortcut.ASSISTANT,
                     TriggerKeyShortcut.FLOATING_BUTTON,
+                    TriggerKeyShortcut.FINGERPRINT_GESTURE,
                 ),
             )
         }

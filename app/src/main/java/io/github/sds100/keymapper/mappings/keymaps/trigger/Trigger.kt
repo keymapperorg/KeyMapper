@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.mappings.keymaps.trigger
 
 import io.github.sds100.keymapper.data.entities.AssistantTriggerKeyEntity
 import io.github.sds100.keymapper.data.entities.Extra
+import io.github.sds100.keymapper.data.entities.FingerprintTriggerKeyEntity
 import io.github.sds100.keymapper.data.entities.FloatingButtonEntityWithLayout
 import io.github.sds100.keymapper.data.entities.FloatingButtonKeyEntity
 import io.github.sds100.keymapper.data.entities.KeyCodeTriggerKeyEntity
@@ -71,6 +72,8 @@ object TriggerEntityMapper {
                     val floatingButton = floatingButtons.find { it.button.uid == key.buttonUid }
                     FloatingButtonKey.fromEntity(key, floatingButton)
                 }
+
+                is FingerprintTriggerKeyEntity -> FingerprintTriggerKey.fromEntity(key)
             }
         }
 
@@ -179,6 +182,7 @@ object TriggerEntityMapper {
                 is AssistantTriggerKey -> AssistantTriggerKey.toEntity(key)
                 is KeyCodeTriggerKey -> KeyCodeTriggerKey.toEntity(key)
                 is FloatingButtonKey -> FloatingButtonKey.toEntity(key)
+                is FingerprintTriggerKey -> FingerprintTriggerKey.toEntity(key)
             }
         }
 

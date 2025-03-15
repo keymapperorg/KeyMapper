@@ -7,7 +7,7 @@ import io.github.sds100.keymapper.util.ui.ChipUi
  */
 
 data class FingerprintMapListItem(
-    val id: FingerprintMapId,
+    val id: FingerprintGestureType,
     val header: String,
     val actionChipList: List<ChipUi>,
     val constraintChipList: List<ChipUi>,

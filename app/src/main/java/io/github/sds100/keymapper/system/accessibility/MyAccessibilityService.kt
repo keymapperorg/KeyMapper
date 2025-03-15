@@ -26,7 +26,7 @@ import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
 import io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback
 import io.github.sds100.keymapper.api.KeyEventRelayService
 import io.github.sds100.keymapper.api.KeyEventRelayServiceWrapperImpl
-import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapId
+import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintGestureType
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
@@ -208,18 +208,18 @@ class MyAccessibilityService :
                     override fun onGestureDetected(gesture: Int) {
                         super.onGestureDetected(gesture)
 
-                        val id: FingerprintMapId = when (gesture) {
+                        val id: FingerprintGestureType = when (gesture) {
                             FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_DOWN ->
-                                FingerprintMapId.SWIPE_DOWN
+                                FingerprintGestureType.SWIPE_DOWN
 
                             FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_UP ->
-                                FingerprintMapId.SWIPE_UP
+                                FingerprintGestureType.SWIPE_UP
 
                             FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_LEFT ->
-                                FingerprintMapId.SWIPE_LEFT
+                                FingerprintGestureType.SWIPE_LEFT
 
                             FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_RIGHT ->
-                                FingerprintMapId.SWIPE_RIGHT
+                                FingerprintGestureType.SWIPE_RIGHT
 
                             else -> return
                         }

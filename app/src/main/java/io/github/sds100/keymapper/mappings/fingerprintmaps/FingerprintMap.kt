@@ -19,7 +19,7 @@ import splitties.bitflags.withFlag
 
 @Serializable
 data class FingerprintMap(
-    val id: FingerprintMapId,
+    val id: FingerprintGestureType,
     override val actionList: List<FingerprintMapAction> = emptyList(),
     override val constraintState: ConstraintState = ConstraintState(),
     override val isEnabled: Boolean = true,
@@ -49,18 +49,18 @@ data class FingerprintMap(
 }
 
 object FingerprintMapIdEntityMapper {
-    fun toEntity(id: FingerprintMapId): Int = when (id) {
-        FingerprintMapId.SWIPE_DOWN -> FingerprintMapEntity.ID_SWIPE_DOWN
-        FingerprintMapId.SWIPE_UP -> FingerprintMapEntity.ID_SWIPE_UP
-        FingerprintMapId.SWIPE_LEFT -> FingerprintMapEntity.ID_SWIPE_LEFT
-        FingerprintMapId.SWIPE_RIGHT -> FingerprintMapEntity.ID_SWIPE_RIGHT
+    fun toEntity(id: FingerprintGestureType): Int = when (id) {
+        FingerprintGestureType.SWIPE_DOWN -> FingerprintMapEntity.ID_SWIPE_DOWN
+        FingerprintGestureType.SWIPE_UP -> FingerprintMapEntity.ID_SWIPE_UP
+        FingerprintGestureType.SWIPE_LEFT -> FingerprintMapEntity.ID_SWIPE_LEFT
+        FingerprintGestureType.SWIPE_RIGHT -> FingerprintMapEntity.ID_SWIPE_RIGHT
     }
 
-    fun fromEntity(id: Int): FingerprintMapId = when (id) {
-        FingerprintMapEntity.ID_SWIPE_DOWN -> FingerprintMapId.SWIPE_DOWN
-        FingerprintMapEntity.ID_SWIPE_UP -> FingerprintMapId.SWIPE_UP
-        FingerprintMapEntity.ID_SWIPE_LEFT -> FingerprintMapId.SWIPE_LEFT
-        FingerprintMapEntity.ID_SWIPE_RIGHT -> FingerprintMapId.SWIPE_RIGHT
+    fun fromEntity(id: Int): FingerprintGestureType = when (id) {
+        FingerprintMapEntity.ID_SWIPE_DOWN -> FingerprintGestureType.SWIPE_DOWN
+        FingerprintMapEntity.ID_SWIPE_UP -> FingerprintGestureType.SWIPE_UP
+        FingerprintMapEntity.ID_SWIPE_LEFT -> FingerprintGestureType.SWIPE_LEFT
+        FingerprintMapEntity.ID_SWIPE_RIGHT -> FingerprintGestureType.SWIPE_RIGHT
 
         else -> throw IllegalArgumentException("Don't know how to get fingerprint map with id $id")
     }

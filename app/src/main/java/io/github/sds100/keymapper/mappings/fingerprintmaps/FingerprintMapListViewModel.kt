@@ -77,7 +77,7 @@ class FingerprintMapListViewModel(
         }
     }
 
-    fun onEnabledSwitchChange(id: FingerprintMapId, checked: Boolean) {
+    fun onEnabledSwitchChange(id: FingerprintGestureType, checked: Boolean) {
         if (checked) {
             useCase.enableFingerprintMap(id)
         } else {
@@ -85,7 +85,7 @@ class FingerprintMapListViewModel(
         }
     }
 
-    fun onCardClick(id: FingerprintMapId) {
+    fun onCardClick(id: FingerprintGestureType) {
         coroutineScope.launch {
             navigate("config_fingerprint_map", NavDestination.ConfigFingerprintMap(id))
         }

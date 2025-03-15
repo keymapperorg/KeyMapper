@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.mappings.ClickType
+import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintGestureType
 import io.github.sds100.keymapper.util.ui.CheckBoxListItem
 import io.github.sds100.keymapper.util.ui.compose.CheckBoxText
 import io.github.sds100.keymapper.util.ui.compose.RadioButtonText
@@ -46,6 +47,7 @@ fun TriggerKeyOptionsBottomSheet(
     onSelectClickType: (ClickType) -> Unit = {},
     onSelectDevice: (String) -> Unit = {},
     onSelectAssistantType: (AssistantTriggerType) -> Unit = {},
+    onSelectFingerprintGestureType: (FingerprintGestureType) -> Unit = {},
     onEditFloatingLayoutClick: () -> Unit = {},
 ) {
     // TODO show a button in the config trigger key bottom sheet to change how the floating button is placed and looked
@@ -153,6 +155,40 @@ fun TriggerKeyOptionsBottomSheet(
                     text = stringResource(R.string.assistant_voice_trigger_name),
                     isSelected = state.assistantType == AssistantTriggerType.VOICE,
                     onSelected = { onSelectAssistantType(AssistantTriggerType.VOICE) },
+                )
+            } else if (state is TriggerKeyOptionsState.FingerprintGesture) {
+                Text(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    text = stringResource(R.string.trigger_key_fingerprint_gesture_type_header),
+                    style = MaterialTheme.typography.titleSmall,
+                )
+
+                RadioButtonText(
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    text = stringResource(R.string.fingerprint_gesture_down),
+                    isSelected = state.gestureType == FingerprintGestureType.SWIPE_DOWN,
+                    onSelected = { onSelectFingerprintGestureType(FingerprintGestureType.SWIPE_DOWN) },
+                )
+
+                RadioButtonText(
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    text = stringResource(R.string.fingerprint_gesture_up),
+                    isSelected = state.gestureType == FingerprintGestureType.SWIPE_UP,
+                    onSelected = { onSelectFingerprintGestureType(FingerprintGestureType.SWIPE_UP) },
+                )
+
+                RadioButtonText(
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    text = stringResource(R.string.fingerprint_gesture_left),
+                    isSelected = state.gestureType == FingerprintGestureType.SWIPE_LEFT,
+                    onSelected = { onSelectFingerprintGestureType(FingerprintGestureType.SWIPE_LEFT) },
+                )
+
+                RadioButtonText(
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    text = stringResource(R.string.fingerprint_gesture_right),
+                    isSelected = state.gestureType == FingerprintGestureType.SWIPE_RIGHT,
+                    onSelected = { onSelectFingerprintGestureType(FingerprintGestureType.SWIPE_RIGHT) },
                 )
             } else if (state is TriggerKeyOptionsState.FloatingButton && state.isPurchased) {
                 FilledTonalButton(

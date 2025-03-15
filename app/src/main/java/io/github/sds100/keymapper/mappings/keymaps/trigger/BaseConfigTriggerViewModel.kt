@@ -6,12 +6,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.ClickType
+import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintGestureType
+import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapUseCase
 import io.github.sds100.keymapper.mappings.keymaps.CreateKeyMapShortcutUseCase
 import io.github.sds100.keymapper.mappings.keymaps.DisplayKeyMapUseCase
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.mappings.keymaps.TriggerErrorSnapshot
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
+import io.github.sds100.keymapper.purchasing.ProductId
+import io.github.sds100.keymapper.purchasing.PurchasingManager
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.util.Error
@@ -60,7 +64,9 @@ abstract class BaseConfigTriggerViewModel(
     private val recordTrigger: RecordTriggerUseCase,
     private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
     private val displayKeyMap: DisplayKeyMapUseCase,
+    private val purchasingManager: PurchasingManager,
     private val setupGuiKeyboard: SetupGuiKeyboardUseCase,
+    private val fingerprintGesturesSupported: FingerprintGesturesSupportedUseCase,
     resourceProvider: ResourceProvider,
 ) : ResourceProvider by resourceProvider,
     PopupViewModel by PopupViewModelImpl(),
@@ -170,9 +176,51 @@ abstract class BaseConfigTriggerViewModel(
             // reset this field when recording has completed
             isRecordingCompletionUserInitiated = false
         }.launchIn(coroutineScope)
+
+        coroutineScope.launch {
+            combine(
+                fingerprintGesturesSupported.isSupported,
+                purchasingManager.purchases,
+            ) { isFingerprintGesturesSupported, purchases ->
+                val newShortcuts = mutableSetOf<TriggerKeyShortcut>()
+
+                if (isFingerprintGesturesSupported == true) {
+                    newShortcuts.add(TriggerKeyShortcut.FINGERPRINT_GESTURE)
+                }
+
+                if (purchases is State.Data) {
+                    if (purchases.data.contains(ProductId.ASSISTANT_TRIGGER)) {
+                        newShortcuts.add(TriggerKeyShortcut.ASSISTANT)
+                    }
+
+                    if (purchases.data.contains(ProductId.FLOATING_BUTTONS)) {
+                        newShortcuts.add(TriggerKeyShortcut.FLOATING_BUTTON)
+                    }
+                }
+                newShortcuts
+            }.collect { shortcuts ->
+                triggerKeyShortcuts.update { shortcuts }
+            }
+        }
     }
 
-    open fun onClickTriggerKeyShortcut(shortcut: TriggerKeyShortcut) {}
+    open fun onClickTriggerKeyShortcut(shortcut: TriggerKeyShortcut) {
+        if (shortcut == TriggerKeyShortcut.FINGERPRINT_GESTURE) {
+            coroutineScope.launch {
+                val listItems = listOf(
+                    FingerprintGestureType.SWIPE_DOWN to getString(R.string.fingerprint_gesture_down),
+                    FingerprintGestureType.SWIPE_UP to getString(R.string.fingerprint_gesture_up),
+                    FingerprintGestureType.SWIPE_LEFT to getString(R.string.fingerprint_gesture_left),
+                    FingerprintGestureType.SWIPE_RIGHT to getString(R.string.fingerprint_gesture_right),
+                )
+
+                val selectedType = showPopup("pick_assistant_type", PopupUi.SingleChoice(listItems))
+                    ?: return@launch
+
+                config.addFingerprintGesture(type = selectedType)
+            }
+        }
+    }
 
     private fun buildUiState(
         keyMapState: State<KeyMap>,
@@ -291,6 +339,14 @@ abstract class BaseConfigTriggerViewModel(
                             clickType = key.clickType,
                             showClickTypes = showClickTypes,
                             isPurchased = displayKeyMap.isFloatingButtonsPurchased(),
+                        )
+                    }
+
+                    is FingerprintTriggerKey -> {
+                        return TriggerKeyOptionsState.FingerprintGesture(
+                            gestureType = key.type,
+                            clickType = key.clickType,
+                            showClickTypes = showClickTypes,
                         )
                     }
                 }
@@ -469,6 +525,12 @@ abstract class BaseConfigTriggerViewModel(
         }
     }
 
+    fun onSelectFingerprintGestureType(type: FingerprintGestureType) {
+        triggerKeyOptionsUid.value?.let { triggerKeyUid ->
+            config.setFingerprintGestureType(triggerKeyUid, type)
+        }
+    }
+
     fun onRecordTriggerButtonClick() {
         coroutineScope.launch {
             val recordTriggerState = recordTrigger.state.firstOrNull() ?: return@launch
@@ -561,6 +623,14 @@ abstract class BaseConfigTriggerViewModel(
                 is AssistantTriggerKey -> TriggerKeyListItemModel.Assistant(
                     id = key.uid,
                     assistantType = key.type,
+                    clickType = clickType,
+                    linkType = linkType,
+                    error = error,
+                )
+
+                is FingerprintTriggerKey -> TriggerKeyListItemModel.FingerprintGesture(
+                    id = key.uid,
+                    gestureType = key.type,
                     clickType = clickType,
                     linkType = linkType,
                     error = error,
@@ -700,6 +770,14 @@ sealed class TriggerKeyListItemModel {
         override val error: TriggerError?,
     ) : TriggerKeyListItemModel()
 
+    data class FingerprintGesture(
+        override val id: String,
+        override val linkType: TriggerKeyLinkType,
+        val gestureType: FingerprintGestureType,
+        override val clickType: ClickType,
+        override val error: TriggerError?,
+    ) : TriggerKeyListItemModel()
+
     data class FloatingButton(
         override val id: String,
         override val linkType: TriggerKeyLinkType,
@@ -731,6 +809,12 @@ sealed class TriggerKeyOptionsState {
 
     data class Assistant(
         val assistantType: AssistantTriggerType,
+        override val clickType: ClickType,
+        override val showClickTypes: Boolean,
+    ) : TriggerKeyOptionsState()
+
+    data class FingerprintGesture(
+        val gestureType: FingerprintGestureType,
         override val clickType: ClickType,
         override val showClickTypes: Boolean,
     ) : TriggerKeyOptionsState()

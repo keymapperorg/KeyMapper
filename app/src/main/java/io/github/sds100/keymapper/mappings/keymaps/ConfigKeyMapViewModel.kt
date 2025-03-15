@@ -11,6 +11,7 @@ import io.github.sds100.keymapper.constraints.ConfigConstraintsViewModel
 import io.github.sds100.keymapper.constraints.ConstraintUtils
 import io.github.sds100.keymapper.mappings.ConfigMappingUiState
 import io.github.sds100.keymapper.mappings.ConfigMappingViewModel
+import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.mappings.keymaps.trigger.ConfigTriggerViewModel
 import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerUseCase
 import io.github.sds100.keymapper.mappings.keymaps.trigger.SetupGuiKeyboardUseCase
@@ -41,6 +42,7 @@ class ConfigKeyMapViewModel(
     resourceProvider: ResourceProvider,
     purchasingManager: PurchasingManager,
     setupGuiKeyboardUseCase: SetupGuiKeyboardUseCase,
+    fingerprintGesturesSupported: FingerprintGesturesSupportedUseCase,
 ) : ViewModel(),
     ConfigMappingViewModel,
     ResourceProvider by resourceProvider {
@@ -72,6 +74,7 @@ class ConfigKeyMapViewModel(
         resourceProvider,
         purchasingManager,
         setupGuiKeyboardUseCase,
+        fingerprintGesturesSupported,
     )
 
     override val configConstraintsViewModel = ConfigConstraintsViewModel(
@@ -138,6 +141,7 @@ class ConfigKeyMapViewModel(
         private val resourceProvider: ResourceProvider,
         private val purchasingManager: PurchasingManager,
         private val setupGuiKeyboardUseCase: SetupGuiKeyboardUseCase,
+        private val fingerprintGesturesSupported: FingerprintGesturesSupportedUseCase,
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -152,6 +156,7 @@ class ConfigKeyMapViewModel(
             resourceProvider,
             purchasingManager,
             setupGuiKeyboardUseCase,
+            fingerprintGesturesSupported,
         ) as T
     }
 }

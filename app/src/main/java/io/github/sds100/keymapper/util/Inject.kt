@@ -26,6 +26,7 @@ import io.github.sds100.keymapper.logging.DisplayLogUseCaseImpl
 import io.github.sds100.keymapper.logging.LogViewModel
 import io.github.sds100.keymapper.mappings.fingerprintmaps.ConfigFingerprintMapUseCaseImpl
 import io.github.sds100.keymapper.mappings.fingerprintmaps.ConfigFingerprintMapViewModel
+import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintGesturesSupportedUseCaseImpl
 import io.github.sds100.keymapper.mappings.fingerprintmaps.ListFingerprintMapsUseCaseImpl
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapViewModel
 import io.github.sds100.keymapper.mappings.keymaps.CreateKeyMapShortcutViewModel
@@ -138,6 +139,7 @@ object Inject {
             ServiceLocator.inputMethodAdapter(ctx),
             ServiceLocator.packageManagerAdapter(ctx),
         ),
+        FingerprintGesturesSupportedUseCaseImpl(ServiceLocator.settingsRepository(ctx)),
     )
 
     fun configFingerprintMapViewModel(

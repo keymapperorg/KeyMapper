@@ -41,19 +41,19 @@ class ListFingerprintMapsUseCaseImpl(
         preferenceRepository.get(Keys.fingerprintGesturesAvailable).map {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return@map false
 
-            it ?: false
+            it == true
         }
 
     override fun resetFingerprintMaps() {
         fingerprintMapRepository.reset()
     }
 
-    override fun enableFingerprintMap(id: FingerprintMapId) {
+    override fun enableFingerprintMap(id: FingerprintGestureType) {
         val entityId = FingerprintMapIdEntityMapper.toEntity(id)
         fingerprintMapRepository.enableFingerprintMap(entityId)
     }
 
-    override fun disableFingerprintMap(id: FingerprintMapId) {
+    override fun disableFingerprintMap(id: FingerprintGestureType) {
         val entityId = FingerprintMapIdEntityMapper.toEntity(id)
         fingerprintMapRepository.disableFingerprintMap(entityId)
     }
@@ -66,8 +66,8 @@ interface ListFingerprintMapsUseCase : DisplaySimpleMappingUseCase {
     val fingerprintMaps: Flow<List<FingerprintMap>>
     val showFingerprintMaps: Flow<Boolean>
 
-    fun enableFingerprintMap(id: FingerprintMapId)
-    fun disableFingerprintMap(id: FingerprintMapId)
+    fun enableFingerprintMap(id: FingerprintGestureType)
+    fun disableFingerprintMap(id: FingerprintGestureType)
     fun resetFingerprintMaps()
     suspend fun backupFingerprintMaps(uri: String): Result<String>
 }
