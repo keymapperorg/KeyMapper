@@ -100,6 +100,7 @@ private fun AdvancedTriggersButton(
             )
         }
 
+        // TODO hide NEW when they have looked at the advanced triggers
         Badge(
             modifier = Modifier
                 .align(Alignment.TopEnd)

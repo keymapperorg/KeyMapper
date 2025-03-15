@@ -48,10 +48,8 @@ fun TriggerKeyOptionsBottomSheet(
     onSelectDevice: (String) -> Unit = {},
     onSelectAssistantType: (AssistantTriggerType) -> Unit = {},
     onSelectFingerprintGestureType: (FingerprintGestureType) -> Unit = {},
-    onEditFloatingLayoutClick: () -> Unit = {},
+    onEditFloatingButtonClick: () -> Unit = {},
 ) {
-    // TODO show a button in the config trigger key bottom sheet to change how the floating button is placed and looked
-
     ModalBottomSheet(
         modifier = modifier,
         onDismissRequest = onDismissRequest,
@@ -195,9 +193,9 @@ fun TriggerKeyOptionsBottomSheet(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
-                    onClick = onEditFloatingLayoutClick,
+                    onClick = onEditFloatingButtonClick,
                 ) {
-                    Text(stringResource(R.string.floating_button_trigger_option_edit_layout))
+                    Text(stringResource(R.string.floating_button_trigger_option_configure_button))
                 }
             }
 

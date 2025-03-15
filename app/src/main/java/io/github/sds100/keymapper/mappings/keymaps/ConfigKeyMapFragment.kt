@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -24,6 +25,7 @@ import io.github.sds100.keymapper.constraints.ChooseConstraintFragment
 import io.github.sds100.keymapper.constraints.ConfigConstraintsFragment
 import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.databinding.FragmentConfigKeyMapBinding
+import io.github.sds100.keymapper.floating.FloatingButtonConfigActivity
 import io.github.sds100.keymapper.mappings.keymaps.trigger.ConfigTriggerOptionsFragment
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerFragment
 import io.github.sds100.keymapper.system.url.UrlUtils
@@ -206,6 +208,15 @@ class ConfigKeyMapFragment : Fragment() {
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.configTriggerViewModel.fixAppKilling.collectLatest {
                 findNavController().navigate(NavAppDirections.goToFixAppKillingActivity())
+            }
+        }
+
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
+            viewModel.configTriggerViewModel.launchFloatingButtonConfigActivity.collectLatest { buttonUid ->
+                Intent(requireContext(), FloatingButtonConfigActivity::class.java).apply {
+                    putExtra(FloatingButtonConfigActivity.EXTRA_BUTTON_UID, buttonUid)
+                    startActivity(this)
+                }
             }
         }
     }

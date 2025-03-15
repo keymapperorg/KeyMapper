@@ -98,7 +98,7 @@ fun TriggerScreen(modifier: Modifier = Modifier, viewModel: ConfigTriggerViewMod
             onSelectClickType = viewModel::onSelectKeyClickType,
             onSelectDevice = viewModel::onSelectTriggerKeyDevice,
             onSelectAssistantType = viewModel::onSelectTriggerKeyAssistantType,
-            onEditFloatingLayoutClick = viewModel::onEditFloatingLayoutClick,
+            onEditFloatingButtonClick = viewModel::onEditFloatingButtonClick,
             onSelectFingerprintGestureType = viewModel::onSelectFingerprintGestureType,
         )
     }
@@ -284,6 +284,7 @@ private fun TriggerScreenHorizontal(
                         shortcuts = configState.shortcuts,
                         onClick = onClickShortcut,
                     )
+
                     RecordTriggerButtonRow(
                         modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
                         onRecordTriggerClick = onRecordTriggerClick,

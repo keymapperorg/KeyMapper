@@ -1295,7 +1295,7 @@
     <string name="floating_menu_done_dialog_quit_button">Quit</string>
     <string name="floating_menu_done_dialog_text_no_buttons">You need to create a floating button before you can use it as a trigger.</string>
     <string name="floating_menu_done_dialog_text_buttons">You need to choose one floating button to use as a trigger.</string>
-    <string name="floating_button_trigger_option_edit_layout">Edit layout</string>
+    <string name="floating_button_trigger_option_configure_button">Configure button</string>
 
     <!-- Home screen -->
     <string name="home_nav_bar_key_maps">Key maps</string>
