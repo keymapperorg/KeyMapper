@@ -121,7 +121,7 @@ abstract class BaseConfigTriggerViewModel(
 
     val triggerKeyOptionsUid = MutableStateFlow<String?>(null)
     val triggerKeyOptionsState: StateFlow<TriggerKeyOptionsState?> =
-        combine(config.mapping, triggerKeyOptionsUid, transform = ::buildKeyOptionsUiState)
+        combine(config.keyMap, triggerKeyOptionsUid, transform = ::buildKeyOptionsUiState)
             .stateIn(coroutineScope, SharingStarted.Lazily, null)
 
     /**
@@ -136,7 +136,7 @@ abstract class BaseConfigTriggerViewModel(
         // animations to be more janky.
         combine(
             displayKeyMap.triggerErrorSnapshot,
-            config.mapping,
+            config.keyMap,
             displayKeyMap.showDeviceDescriptors,
             triggerKeyShortcuts,
         ) { triggerErrorSnapshot, keyMap, showDeviceDescriptors, shortcuts ->
@@ -152,7 +152,7 @@ abstract class BaseConfigTriggerViewModel(
         }
 
         coroutineScope.launch {
-            config.mapping
+            config.keyMap
                 .mapNotNull { it.dataOrNull()?.trigger?.mode }
                 .distinctUntilChanged()
                 .drop(1)

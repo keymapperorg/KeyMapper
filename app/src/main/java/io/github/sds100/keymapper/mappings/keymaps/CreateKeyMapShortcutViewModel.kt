@@ -33,8 +33,10 @@ class CreateKeyMapShortcutViewModel(
     resourceProvider: ResourceProvider,
 ) : ViewModel(),
     ResourceProvider by resourceProvider {
+    private val actionUiHelper = KeyMapActionUiHelper(listKeyMaps, resourceProvider)
 
-    private val listItemCreator = KeyMapListItemCreator(listKeyMaps, resourceProvider)
+    private val listItemCreator =
+        KeyMapListItemCreator(actionUiHelper, listKeyMaps, resourceProvider)
 
     private val _state = MutableStateFlow<State<List<KeyMapListItemModel>>>(State.Loading)
     val state = _state.asStateFlow()
@@ -89,7 +91,7 @@ class CreateKeyMapShortcutViewModel(
             configKeyMapUseCase.loadKeyMap(uid)
             configKeyMapUseCase.setTriggerFromOtherAppsEnabled(true)
 
-            val keyMapState = configKeyMapUseCase.mapping.first()
+            val keyMapState = configKeyMapUseCase.keyMap.first()
 
             if (keyMapState !is State.Data) return@launch
 

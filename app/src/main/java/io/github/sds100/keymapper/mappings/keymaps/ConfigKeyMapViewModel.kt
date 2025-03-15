@@ -9,8 +9,6 @@ import io.github.sds100.keymapper.actions.CreateActionUseCase
 import io.github.sds100.keymapper.actions.TestActionUseCase
 import io.github.sds100.keymapper.constraints.ConfigConstraintsViewModel
 import io.github.sds100.keymapper.constraints.ConstraintUtils
-import io.github.sds100.keymapper.mappings.ConfigMappingUiState
-import io.github.sds100.keymapper.mappings.ConfigMappingViewModel
 import io.github.sds100.keymapper.mappings.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.mappings.keymaps.trigger.ConfigTriggerViewModel
 import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerUseCase
@@ -19,12 +17,9 @@ import io.github.sds100.keymapper.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.purchasing.PurchasingManager
 import io.github.sds100.keymapper.ui.utils.getJsonSerializable
 import io.github.sds100.keymapper.ui.utils.putJsonSerializable
-import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.firstBlocking
 import io.github.sds100.keymapper.util.ifIsData
 import io.github.sds100.keymapper.util.ui.ResourceProvider
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 /**
@@ -44,17 +39,16 @@ class ConfigKeyMapViewModel(
     setupGuiKeyboardUseCase: SetupGuiKeyboardUseCase,
     fingerprintGesturesSupported: FingerprintGesturesSupportedUseCase,
 ) : ViewModel(),
-    ConfigMappingViewModel,
     ResourceProvider by resourceProvider {
 
     companion object {
         private const val STATE_KEY = "config_keymap"
     }
 
-    override val editActionViewModel =
+    val editActionViewModel =
         EditKeyMapActionViewModel(viewModelScope, config, resourceProvider, createActionUseCase)
 
-    override val configActionsViewModel = ConfigActionsViewModel(
+    val configActionsViewModel = ConfigActionsViewModel(
         viewModelScope,
         displayMapping,
         testAction,
@@ -77,7 +71,7 @@ class ConfigKeyMapViewModel(
         fingerprintGesturesSupported,
     )
 
-    override val configConstraintsViewModel = ConfigConstraintsViewModel(
+    val configConstraintsViewModel = ConfigConstraintsViewModel(
         viewModelScope,
         displayMapping,
         config,
@@ -85,27 +79,15 @@ class ConfigKeyMapViewModel(
         resourceProvider,
     )
 
-    override val state = MutableStateFlow<ConfigMappingUiState>(buildUiState(State.Loading))
+    fun save() = config.save()
 
-    override fun setEnabled(enabled: Boolean) = config.setEnabled(enabled)
-
-    init {
-        viewModelScope.launch {
-            config.mapping.collectLatest {
-                state.value = buildUiState(it)
-            }
-        }
-    }
-
-    override fun save() = config.save()
-
-    override fun saveState(outState: Bundle) {
-        config.mapping.firstBlocking().ifIsData {
+    fun saveState(outState: Bundle) {
+        config.keyMap.firstBlocking().ifIsData {
             outState.putJsonSerializable(STATE_KEY, it)
         }
     }
 
-    override fun restoreState(state: Bundle) {
+    fun restoreState(state: Bundle) {
         val keyMap = state.getJsonSerializable<KeyMap>(STATE_KEY) ?: KeyMap()
         config.restoreState(keyMap)
     }
@@ -123,11 +105,6 @@ class ConfigKeyMapViewModel(
         viewModelScope.launch {
             config.loadKeyMap(uid)
         }
-    }
-
-    private fun buildUiState(configState: State<KeyMap>): ConfigKeymapUiState = when (configState) {
-        is State.Data -> ConfigKeymapUiState(configState.data.isEnabled)
-        is State.Loading -> ConfigKeymapUiState(isEnabled = false)
     }
 
     class Factory(
@@ -160,7 +137,3 @@ class ConfigKeyMapViewModel(
         ) as T
     }
 }
-
-data class ConfigKeymapUiState(
-    override val isEnabled: Boolean,
-) : ConfigMappingUiState

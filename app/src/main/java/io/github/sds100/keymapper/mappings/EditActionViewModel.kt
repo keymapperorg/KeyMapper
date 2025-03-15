@@ -1,10 +1,12 @@
 package io.github.sds100.keymapper.mappings
 
-import io.github.sds100.keymapper.actions.Action
 import io.github.sds100.keymapper.actions.CreateActionUseCase
 import io.github.sds100.keymapper.actions.CreateActionViewModel
 import io.github.sds100.keymapper.actions.CreateActionViewModelImpl
 import io.github.sds100.keymapper.actions.isEditable
+import io.github.sds100.keymapper.mappings.keymaps.Action
+import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapUseCase
+import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ui.ListItem
 import io.github.sds100.keymapper.util.ui.NavDestination
@@ -25,17 +27,17 @@ import kotlinx.coroutines.launch
  * Created by sds100 on 12/04/2021.
  */
 
-abstract class EditActionViewModel<M : Mapping<A>, A : Action>(
+abstract class EditActionViewModel(
     private val resourceProvider: ResourceProvider,
     private val coroutineScope: CoroutineScope,
-    private val configUseCase: ConfigMappingUseCase<A, M>,
+    private val configUseCase: ConfigKeyMapUseCase,
     createActionUseCase: CreateActionUseCase,
 ) : OptionsViewModel,
     CreateActionViewModel by CreateActionViewModelImpl(createActionUseCase, resourceProvider) {
     private val _actionUid = MutableStateFlow<String?>(null)
     val actionUid = _actionUid.asStateFlow()
 
-    override val state = combine(configUseCase.mapping, _actionUid) { mapping, actionUid ->
+    override val state = combine(configUseCase.keyMap, _actionUid) { mapping, actionUid ->
 
         when {
             mapping is State.Data -> {
@@ -71,7 +73,7 @@ abstract class EditActionViewModel<M : Mapping<A>, A : Action>(
                 return@launch
             }
 
-            val mappingState = configUseCase.mapping.first()
+            val mappingState = configUseCase.keyMap.first()
 
             if (mappingState !is State.Data) {
                 return@launch
@@ -99,7 +101,7 @@ abstract class EditActionViewModel<M : Mapping<A>, A : Action>(
         }
     }
 
-    abstract fun createListItems(mapping: M, action: A): List<ListItem>
+    abstract fun createListItems(mapping: KeyMap, action: Action): List<ListItem>
 }
 
 data class EditActionUiState(

@@ -10,9 +10,6 @@ import io.github.sds100.keymapper.constraints.DetectConstraintsUseCaseImpl
 import io.github.sds100.keymapper.constraints.GetConstraintErrorUseCaseImpl
 import io.github.sds100.keymapper.floating.ListFloatingLayoutsUseCase
 import io.github.sds100.keymapper.floating.ListFloatingLayoutsUseCaseImpl
-import io.github.sds100.keymapper.mappings.DetectMappingUseCaseImpl
-import io.github.sds100.keymapper.mappings.DisplaySimpleMappingUseCase
-import io.github.sds100.keymapper.mappings.DisplaySimpleMappingUseCaseImpl
 import io.github.sds100.keymapper.mappings.FingerprintGesturesSupportedUseCaseImpl
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCaseImpl
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapUseCase
@@ -56,22 +53,16 @@ object UseCases {
     fun displayKeyMap(ctx: Context): DisplayKeyMapUseCase = DisplayKeyMapUseCaseImpl(
         ServiceLocator.permissionAdapter(ctx),
         ServiceLocator.inputMethodAdapter(ctx),
-        displaySimpleMapping(ctx),
-        ServiceLocator.settingsRepository(ctx),
-        ServiceLocator.purchasingManager(ctx),
-    )
-
-    fun configKeyMap(ctx: Context): ConfigKeyMapUseCase = ServiceLocator.configKeyMapsController(ctx)
-
-    fun displaySimpleMapping(ctx: Context): DisplaySimpleMappingUseCase = DisplaySimpleMappingUseCaseImpl(
         ServiceLocator.packageManagerAdapter(ctx),
-        ServiceLocator.permissionAdapter(ctx),
-        ServiceLocator.inputMethodAdapter(ctx),
         ServiceLocator.settingsRepository(ctx),
         ServiceLocator.accessibilityServiceAdapter(ctx),
+        ServiceLocator.settingsRepository(ctx),
+        ServiceLocator.purchasingManager(ctx),
         getActionError(ctx),
         getConstraintError(ctx),
     )
+
+    fun configKeyMap(ctx: Context): ConfigKeyMapUseCase = ServiceLocator.configKeyMapsController(ctx)
 
     fun getActionError(ctx: Context) = GetActionErrorUseCaseImpl(
         ServiceLocator.packageManagerAdapter(ctx),
@@ -177,19 +168,11 @@ object UseCases {
         ServiceLocator.notificationReceiverAdapter(ctx),
     )
 
-    fun detectMappings(ctx: Context) = DetectMappingUseCaseImpl(
-        ServiceLocator.vibratorAdapter(ctx),
-        ServiceLocator.settingsRepository(ctx),
-        ServiceLocator.popupMessageAdapter(ctx),
-        ServiceLocator.resourceProvider(ctx),
-    )
-
     fun detectKeyMaps(
         ctx: Context,
         service: IAccessibilityService,
         keyEventRelayService: KeyEventRelayServiceWrapper,
     ) = DetectKeyMapsUseCaseImpl(
-        detectMappings(ctx),
         ServiceLocator.roomKeymapRepository(ctx),
         ServiceLocator.floatingButtonRepository(ctx),
         ServiceLocator.settingsRepository(ctx),
@@ -199,7 +182,10 @@ object UseCases {
         keyMapperImeMessenger(ctx, keyEventRelayService),
         service,
         ShizukuInputEventInjector(),
+        ServiceLocator.popupMessageAdapter(ctx),
         ServiceLocator.permissionAdapter(ctx),
+        ServiceLocator.resourceProvider(ctx),
+        ServiceLocator.vibratorAdapter(ctx),
     )
 
     fun rerouteKeyEvents(ctx: Context, keyEventRelayService: KeyEventRelayServiceWrapper) = RerouteKeyEventsUseCaseImpl(
@@ -223,7 +209,6 @@ object UseCases {
 
     fun sortKeyMapsUseCase(ctx: Context): SortKeyMapsUseCase = SortKeyMapsUseCaseImpl(
         ServiceLocator.settingsRepository(ctx),
-        displaySimpleMapping(ctx),
-        ServiceLocator.resourceProvider(ctx),
+        displayKeyMap(ctx),
     )
 }

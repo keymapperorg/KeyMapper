@@ -9,7 +9,7 @@
         android:id="@+id/config_key_map_fragment"
         android:name="io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapFragment"
         android:label="Edit Keymap"
-        tools:layout="@layout/fragment_config_mapping">
+        tools:layout="@layout/fragment_config_key_map">
 
         <argument
             android:name="keymapUid"

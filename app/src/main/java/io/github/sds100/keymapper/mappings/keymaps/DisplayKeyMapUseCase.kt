@@ -1,23 +1,34 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.KeyEvent
+import io.github.sds100.keymapper.actions.GetActionErrorUseCase
+import io.github.sds100.keymapper.constraints.GetConstraintErrorUseCase
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.mappings.DisplaySimpleMappingUseCase
+import io.github.sds100.keymapper.mappings.DisplayActionUseCase
+import io.github.sds100.keymapper.mappings.DisplayConstraintUseCase
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerError
 import io.github.sds100.keymapper.purchasing.ProductId
 import io.github.sds100.keymapper.purchasing.PurchasingManager
+import io.github.sds100.keymapper.shizuku.ShizukuUtils
+import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
+import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.util.Error
+import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.dataOrNull
+import io.github.sds100.keymapper.util.otherwise
+import io.github.sds100.keymapper.util.then
 import io.github.sds100.keymapper.util.valueIfFailure
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -32,11 +43,16 @@ import kotlinx.coroutines.flow.onStart
 class DisplayKeyMapUseCaseImpl(
     private val permissionAdapter: PermissionAdapter,
     private val inputMethodAdapter: InputMethodAdapter,
-    displaySimpleMappingUseCase: DisplaySimpleMappingUseCase,
+    private val packageManager: PackageManagerAdapter,
+    private val preferenceRepository: PreferenceRepository,
+    private val accessibilityServiceAdapter: ServiceAdapter,
     private val preferences: PreferenceRepository,
     private val purchasingManager: PurchasingManager,
+    getActionError: GetActionErrorUseCase,
+    getConstraintError: GetConstraintErrorUseCase,
 ) : DisplayKeyMapUseCase,
-    DisplaySimpleMappingUseCase by displaySimpleMappingUseCase {
+    GetActionErrorUseCase by getActionError,
+    GetConstraintErrorUseCase by getConstraintError {
     private companion object {
         val keysThatRequireDndAccess = arrayOf(
             KeyEvent.KEYCODE_VOLUME_DOWN,
@@ -44,7 +60,7 @@ class DisplayKeyMapUseCaseImpl(
         )
     }
 
-    private val keyMapperImeHelper: KeyMapperImeHelper = KeyMapperImeHelper(inputMethodAdapter)
+    private val keyMapperImeHelper = KeyMapperImeHelper(inputMethodAdapter)
 
     private val showDpadImeSetupError: Flow<Boolean> =
         preferences.get(Keys.neverShowDpadImeTriggerError).map { neverShow ->
@@ -87,6 +103,9 @@ class DisplayKeyMapUseCaseImpl(
                 !neverShow
             }
         }
+
+    override val showDeviceDescriptors: Flow<Boolean> =
+        preferenceRepository.get(Keys.showDeviceDescriptors).map { it == true }
 
     override fun neverShowTriggerKeyboardIconExplanation() {
         preferences.set(Keys.neverShowTriggerKeyboardIconExplanation, true)
@@ -170,9 +189,56 @@ class DisplayKeyMapUseCaseImpl(
             )
         }
     }
+
+    override fun getAppName(packageName: String): Result<String> = packageManager.getAppName(packageName)
+
+    override fun getAppIcon(packageName: String): Result<Drawable> = packageManager.getAppIcon(packageName)
+
+    override fun getInputMethodLabel(imeId: String): Result<String> = inputMethodAdapter.getInfoById(imeId).then { Success(it.label) }
+
+    override suspend fun fixError(error: Error) {
+        when (error) {
+            is Error.AppDisabled -> packageManager.enableApp(error.packageName)
+            is Error.AppNotFound -> packageManager.downloadApp(error.packageName)
+            Error.NoCompatibleImeChosen ->
+                keyMapperImeHelper.chooseCompatibleInputMethod().otherwise {
+                    inputMethodAdapter.showImePicker(fromForeground = true)
+                }
+
+            Error.NoCompatibleImeEnabled -> keyMapperImeHelper.enableCompatibleInputMethods()
+            is Error.ImeDisabled -> inputMethodAdapter.enableIme(error.ime.id)
+            is Error.PermissionDenied -> permissionAdapter.request(error.permission)
+            is Error.ShizukuNotStarted -> packageManager.openApp(ShizukuUtils.SHIZUKU_PACKAGE)
+            is Error.CantDetectKeyEventsInPhoneCall -> {
+                if (!keyMapperImeHelper.isCompatibleImeEnabled()) {
+                    keyMapperImeHelper.enableCompatibleInputMethods()
+                }
+
+                // wait for compatible ime to be enabled then choose it.
+                keyMapperImeHelper.isCompatibleImeEnabledFlow.first { it }
+
+                keyMapperImeHelper.chooseCompatibleInputMethod().otherwise {
+                    inputMethodAdapter.showImePicker(fromForeground = true)
+                }
+            }
+
+            else -> Unit
+        }
+    }
+
+    override fun startAccessibilityService(): Boolean = accessibilityServiceAdapter.start()
+
+    override fun restartAccessibilityService(): Boolean = accessibilityServiceAdapter.restart()
+
+    override fun neverShowDndTriggerError() {
+        preferenceRepository.set(Keys.neverShowDndAccessError, true)
+    }
 }
 
-interface DisplayKeyMapUseCase : DisplaySimpleMappingUseCase {
+interface DisplayKeyMapUseCase :
+    DisplayActionUseCase,
+    DisplayConstraintUseCase {
+
     val invalidateTriggerErrors: Flow<Unit>
     val triggerErrorSnapshot: Flow<TriggerErrorSnapshot>
     suspend fun getTriggerErrors(keyMap: KeyMap): List<TriggerError>
@@ -180,6 +246,7 @@ interface DisplayKeyMapUseCase : DisplaySimpleMappingUseCase {
     suspend fun fixTriggerError(error: TriggerError)
     val showTriggerKeyboardIconExplanation: Flow<Boolean>
     fun neverShowTriggerKeyboardIconExplanation()
+    override val showDeviceDescriptors: Flow<Boolean>
 
     fun neverShowDpadImeSetupError()
 }

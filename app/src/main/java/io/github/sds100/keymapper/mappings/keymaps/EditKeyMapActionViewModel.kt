@@ -5,7 +5,6 @@ import io.github.sds100.keymapper.actions.CreateActionUseCase
 import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.mappings.EditActionViewModel
 import io.github.sds100.keymapper.mappings.OptionMinimums
-import io.github.sds100.keymapper.mappings.isDelayBeforeNextActionAllowed
 import io.github.sds100.keymapper.util.Defaultable
 import io.github.sds100.keymapper.util.ui.CheckBoxListItem
 import io.github.sds100.keymapper.util.ui.DividerListItem
@@ -27,7 +26,7 @@ class EditKeyMapActionViewModel(
     val config: ConfigKeyMapUseCase,
     resourceProvider: ResourceProvider,
     createActionUseCase: CreateActionUseCase,
-) : EditActionViewModel<KeyMap, KeyMapAction>(
+) : EditActionViewModel(
     resourceProvider,
     coroutineScope,
     config,
@@ -113,7 +112,7 @@ class EditKeyMapActionViewModel(
         }
     }
 
-    override fun createListItems(keyMap: KeyMap, action: KeyMapAction): List<ListItem> = sequence {
+    override fun createListItems(keyMap: KeyMap, action: Action): List<ListItem> = sequence {
         if (keyMap.isRepeatingActionsAllowed()) {
             yield(
                 CheckBoxListItem(
@@ -148,7 +147,7 @@ class EditKeyMapActionViewModel(
                     sliderModel = SliderModel(
                         value = Defaultable.create(action.repeatDelay),
                         isDefaultStepEnabled = true,
-                        min = KeyMapAction.REPEAT_DELAY_MIN,
+                        min = Action.REPEAT_DELAY_MIN,
                         max = 5000,
                         stepSize = 5,
                     ),

@@ -107,11 +107,11 @@ class KeyMapControllerTest {
         private const val VIBRATION_DURATION = 100L
         private const val HOLD_DOWN_DURATION = 1000L
 
-        private val TEST_ACTION: KeyMapAction = KeyMapAction(
+        private val TEST_ACTION: Action = Action(
             data = ActionData.Flashlight.Toggle(CameraLens.BACK),
         )
 
-        private val TEST_ACTION_2: KeyMapAction = KeyMapAction(
+        private val TEST_ACTION_2: Action = Action(
             data = ActionData.App(FAKE_PACKAGE_NAME),
         )
     }
@@ -238,11 +238,11 @@ class KeyMapControllerTest {
     fun `Do not trigger both triggers if sequence trigger is triggered while waiting`() = runTest(testDispatcher) {
         // GIVEN
         val copyTrigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_J))
-        val copyAction = KeyMapAction(data = ActionData.CopyText)
+        val copyAction = Action(data = ActionData.CopyText)
 
         val sequenceTrigger =
             sequenceTrigger(triggerKey(KeyEvent.KEYCODE_J), triggerKey(KeyEvent.KEYCODE_K))
-        val enterAction = KeyMapAction(data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_ENTER))
+        val enterAction = Action(data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_ENTER))
 
         keyMapListFlow.value = listOf(
             KeyMap(0, trigger = copyTrigger, actionList = listOf(copyAction)),
@@ -267,7 +267,7 @@ class KeyMapControllerTest {
     fun `Wait for longest sequence trigger timeout before triggering overlapping parallel triggers if multiple sequence triggers`() = runTest(testDispatcher) {
         // GIVEN
         val copyTrigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_J))
-        val copyAction = KeyMapAction(data = ActionData.CopyText)
+        val copyAction = Action(data = ActionData.CopyText)
 
         val sequenceTrigger1 =
             Trigger(
@@ -279,7 +279,7 @@ class KeyMapControllerTest {
                 sequenceTriggerTimeout = 500,
             )
         val sequenceTriggerAction1 =
-            KeyMapAction(data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_ENTER))
+            Action(data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_ENTER))
 
         // This has a different second key.
         val sequenceTrigger2 =
@@ -292,7 +292,7 @@ class KeyMapControllerTest {
                 sequenceTriggerTimeout = 1000,
             )
         val sequenceTriggerAction2 =
-            KeyMapAction(data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_ENTER))
+            Action(data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_ENTER))
 
         keyMapListFlow.value = listOf(
             KeyMap(0, trigger = copyTrigger, actionList = listOf(copyAction)),
@@ -327,14 +327,14 @@ class KeyMapControllerTest {
     fun `Wait for sequence trigger timeout before triggering overlapping parallel triggers 1`() = runTest(testDispatcher) {
         // GIVEN
         val copyTrigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_J))
-        val copyAction = KeyMapAction(data = ActionData.CopyText)
+        val copyAction = Action(data = ActionData.CopyText)
 
         val pasteTrigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_K))
-        val pasteAction = KeyMapAction(data = ActionData.PasteText)
+        val pasteAction = Action(data = ActionData.PasteText)
 
         val sequenceTrigger =
             sequenceTrigger(triggerKey(KeyEvent.KEYCODE_J), triggerKey(KeyEvent.KEYCODE_K))
-        val enterAction = KeyMapAction(data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_ENTER))
+        val enterAction = Action(data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_ENTER))
 
         keyMapListFlow.value = listOf(
             KeyMap(0, trigger = copyTrigger, actionList = listOf(copyAction)),
@@ -359,14 +359,14 @@ class KeyMapControllerTest {
     fun `Immediately trigger a key that is the 2nd key in a sequence trigger`() = runTest(testDispatcher) {
         // GIVEN
         val copyTrigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_J))
-        val copyAction = KeyMapAction(data = ActionData.CopyText)
+        val copyAction = Action(data = ActionData.CopyText)
 
         val pasteTrigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_K))
-        val pasteAction = KeyMapAction(data = ActionData.PasteText)
+        val pasteAction = Action(data = ActionData.PasteText)
 
         val sequenceTrigger =
             sequenceTrigger(triggerKey(KeyEvent.KEYCODE_J), triggerKey(KeyEvent.KEYCODE_K))
-        val enterAction = KeyMapAction(data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_ENTER))
+        val enterAction = Action(data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_ENTER))
 
         keyMapListFlow.value = listOf(
             KeyMap(0, trigger = copyTrigger, actionList = listOf(copyAction)),
@@ -390,14 +390,14 @@ class KeyMapControllerTest {
     fun `Do not trigger parallel trigger if a sequence trigger with the same keys is triggered`() = runTest(testDispatcher) {
         // GIVEN
         val copyTrigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_J))
-        val copyAction = KeyMapAction(data = ActionData.CopyText)
+        val copyAction = Action(data = ActionData.CopyText)
 
         val pasteTrigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_K))
-        val pasteAction = KeyMapAction(data = ActionData.PasteText)
+        val pasteAction = Action(data = ActionData.PasteText)
 
         val sequenceTrigger =
             sequenceTrigger(triggerKey(KeyEvent.KEYCODE_J), triggerKey(KeyEvent.KEYCODE_K))
-        val enterAction = KeyMapAction(data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_ENTER))
+        val enterAction = Action(data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_ENTER))
 
         keyMapListFlow.value = listOf(
             KeyMap(0, trigger = copyTrigger, actionList = listOf(copyAction)),
@@ -426,7 +426,7 @@ class KeyMapControllerTest {
             ),
         )
 
-        val action = KeyMapAction(
+        val action = Action(
             data = ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_Q),
             holdDown = true,
         )
@@ -813,7 +813,7 @@ class KeyMapControllerTest {
                     clickType = ClickType.LONG_PRESS,
                 ),
             ),
-            actionList = listOf(KeyMapAction(data = actionData)),
+            actionList = listOf(Action(data = actionData)),
             constraintState = ConstraintState(
                 constraints = setOf(Constraint.FlashlightOn(CameraLens.BACK)),
             ),
@@ -915,7 +915,7 @@ class KeyMapControllerTest {
     fun `don't consume down and up event if no valid actions to perform`() = runTest(testDispatcher) {
         // GIVEN
         val trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN))
-        val actionList = listOf(KeyMapAction(data = ActionData.InputKeyEvent(2)))
+        val actionList = listOf(Action(data = ActionData.InputKeyEvent(2)))
 
         keyMapListFlow.value = listOf(KeyMap(trigger = trigger, actionList = actionList))
 
@@ -942,8 +942,8 @@ class KeyMapControllerTest {
         val trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN))
 
         val actionList = listOf(
-            KeyMapAction(data = ActionData.InputKeyEvent(1), delayBeforeNextAction = 1000),
-            KeyMapAction(data = ActionData.InputKeyEvent(2)),
+            Action(data = ActionData.InputKeyEvent(1), delayBeforeNextAction = 1000),
+            Action(data = ActionData.InputKeyEvent(2)),
         )
 
         keyMapListFlow.value = listOf(
@@ -968,7 +968,7 @@ class KeyMapControllerTest {
         // GIVEN
         val trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN))
 
-        val action = KeyMapAction(
+        val action = Action(
             data = ActionData.InputKeyEvent(1),
             repeat = true,
             repeatMode = RepeatMode.LIMIT_REACHED,
@@ -997,17 +997,17 @@ class KeyMapControllerTest {
         // GIVEN
         val trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN))
 
-        val action1 = KeyMapAction(
+        val action1 = Action(
             data = ActionData.InputKeyEvent(keyCode = 1),
             delayBeforeNextAction = 500,
         )
 
-        val action2 = KeyMapAction(
+        val action2 = Action(
             data = ActionData.InputKeyEvent(keyCode = 2),
             delayBeforeNextAction = 1000,
         )
 
-        val action3 = KeyMapAction(
+        val action3 = Action(
             data = ActionData.InputKeyEvent(keyCode = 3),
         )
 
@@ -1073,7 +1073,7 @@ class KeyMapControllerTest {
     @Test
     fun `when triggering action that repeats until limit reached, then stop repeating when the limit has been reached and not when the trigger is released`() = runTest(testDispatcher) {
         // GIVEN
-        val action = KeyMapAction(
+        val action = Action(
             data = ActionData.InputKeyEvent(keyCode = 1),
             repeat = true,
             repeatMode = RepeatMode.LIMIT_REACHED,
@@ -1101,7 +1101,7 @@ class KeyMapControllerTest {
     @Test
     fun `when triggering action that repeats until pressed again with repeat limit, then stop repeating when the trigger has been pressed again`() = runTest(testDispatcher) {
         // GIVEN
-        val action = KeyMapAction(
+        val action = Action(
             data = ActionData.InputKeyEvent(keyCode = 1),
             repeat = true,
             repeatMode = RepeatMode.TRIGGER_PRESSED_AGAIN,
@@ -1135,7 +1135,7 @@ class KeyMapControllerTest {
     @Test
     fun `when triggering action that repeats until pressed again with repeat limit, then stop repeating when limit reached and trigger hasn't been pressed again`() = runTest(testDispatcher) {
         // GIVEN
-        val action = KeyMapAction(
+        val action = Action(
             data = ActionData.InputKeyEvent(keyCode = 1),
             repeat = true,
             repeatMode = RepeatMode.TRIGGER_PRESSED_AGAIN,
@@ -1168,7 +1168,7 @@ class KeyMapControllerTest {
     @Test
     fun `when triggering action that repeats until released with repeat limit, then stop repeating when the trigger has been released`() = runTest(testDispatcher) {
         // GIVEN
-        val action = KeyMapAction(
+        val action = Action(
             data = ActionData.InputKeyEvent(keyCode = 1),
             repeat = true,
             repeatMode = RepeatMode.TRIGGER_RELEASED,
@@ -1197,7 +1197,7 @@ class KeyMapControllerTest {
     @Test
     fun `when triggering action that repeats until released with repeat limit, then stop repeating when the limit has been reached and the action is still being held down`() = runTest(testDispatcher) {
         // GIVEN
-        val action = KeyMapAction(
+        val action = Action(
             data = ActionData.InputKeyEvent(keyCode = 1),
             repeat = true,
             repeatMode = RepeatMode.TRIGGER_RELEASED,
@@ -1231,14 +1231,14 @@ class KeyMapControllerTest {
                 trigger = parallelTrigger(
                     triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
                 ),
-                actionList = listOf(KeyMapAction(data = ActionData.InputKeyEvent(keyCode = 45))),
+                actionList = listOf(Action(data = ActionData.InputKeyEvent(keyCode = 45))),
             ),
             KeyMap(
                 trigger = parallelTrigger(
                     triggerKey(KeyEvent.KEYCODE_VOLUME_UP),
                     triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
                 ),
-                actionList = listOf(KeyMapAction(data = ActionData.InputKeyEvent(keyCode = 81))),
+                actionList = listOf(Action(data = ActionData.InputKeyEvent(keyCode = 81))),
             ),
         )
 
@@ -1299,14 +1299,14 @@ class KeyMapControllerTest {
                 trigger = parallelTrigger(
                     triggerKey(KeyEvent.KEYCODE_P),
                 ),
-                actionList = listOf(KeyMapAction(data = ActionData.InputKeyEvent(keyCode = 45))),
+                actionList = listOf(Action(data = ActionData.InputKeyEvent(keyCode = 45))),
             ),
             KeyMap(
                 trigger = parallelTrigger(
                     triggerKey(KeyEvent.KEYCODE_META_LEFT),
                     triggerKey(KeyEvent.KEYCODE_P),
                 ),
-                actionList = listOf(KeyMapAction(data = ActionData.InputKeyEvent(keyCode = 81))),
+                actionList = listOf(Action(data = ActionData.InputKeyEvent(keyCode = 81))),
             ),
         )
 
@@ -1362,14 +1362,14 @@ class KeyMapControllerTest {
                     triggerKey(KeyEvent.KEYCODE_SHIFT_LEFT),
                     triggerKey(KeyEvent.KEYCODE_1),
                 ),
-                actionList = listOf(KeyMapAction(data = ActionData.InputKeyEvent(keyCode = 1))),
+                actionList = listOf(Action(data = ActionData.InputKeyEvent(keyCode = 1))),
             ),
             KeyMap(
                 trigger = parallelTrigger(
                     triggerKey(KeyEvent.KEYCODE_CTRL_LEFT),
                     triggerKey(KeyEvent.KEYCODE_1),
                 ),
-                actionList = listOf(KeyMapAction(data = ActionData.InputKeyEvent(keyCode = 2))),
+                actionList = listOf(Action(data = ActionData.InputKeyEvent(keyCode = 2))),
             ),
         )
 
@@ -1539,7 +1539,7 @@ class KeyMapControllerTest {
     @Test
     fun `don't repeat when trigger is released for an action that has these options when the trigger is held down`() = runTest(testDispatcher) {
         // GIVEN
-        val action = KeyMapAction(
+        val action = Action(
             data = ActionData.InputKeyEvent(keyCode = 1),
             repeat = true,
             delayBeforeNextAction = 10,
@@ -1583,14 +1583,14 @@ class KeyMapControllerTest {
     fun `don't initialise repeating if repeat when trigger is released after failed long press`() = runTest(testDispatcher) {
         // given
         val trigger1 = parallelTrigger(triggerKey(keyCode = 1))
-        val action1 = KeyMapAction(
+        val action1 = Action(
             data = ActionData.InputKeyEvent(keyCode = 2),
             repeat = true,
         )
 
         val trigger2 =
             parallelTrigger(triggerKey(clickType = ClickType.LONG_PRESS, keyCode = 1))
-        val action2 = KeyMapAction(
+        val action2 = Action(
             data = ActionData.InputKeyEvent(keyCode = 3),
             repeat = true,
         )
@@ -1632,14 +1632,14 @@ class KeyMapControllerTest {
     fun `don't initialise repeating if repeat when trigger is released after failed failed double press`() = runTest(testDispatcher) {
         // given
         val trigger1 = parallelTrigger(triggerKey(keyCode = 1))
-        val action1 = KeyMapAction(
+        val action1 = Action(
             data = ActionData.InputKeyEvent(keyCode = 2),
             repeat = true,
         )
 
         val trigger2 =
             sequenceTrigger(triggerKey(clickType = ClickType.DOUBLE_PRESS, keyCode = 1))
-        val action2 = KeyMapAction(data = ActionData.InputKeyEvent(keyCode = 3))
+        val action2 = Action(data = ActionData.InputKeyEvent(keyCode = 3))
 
         keyMapListFlow.value = listOf(
             KeyMap(0, trigger = trigger1, actionList = listOf(action1)),
@@ -1680,21 +1680,21 @@ class KeyMapControllerTest {
     fun `don't initialise repeating if repeat when trigger is released after failed double press and failed long press`() = runTest(testDispatcher) {
         // given
         val trigger1 = parallelTrigger(triggerKey(keyCode = 1))
-        val action1 = KeyMapAction(
+        val action1 = Action(
             data = ActionData.InputKeyEvent(keyCode = 2),
             repeat = true,
         )
 
         val trigger2 =
             parallelTrigger(triggerKey(clickType = ClickType.LONG_PRESS, keyCode = 1))
-        val action2 = KeyMapAction(
+        val action2 = Action(
             data = ActionData.InputKeyEvent(keyCode = 3),
             repeat = true,
         )
 
         val trigger3 =
             sequenceTrigger(triggerKey(clickType = ClickType.DOUBLE_PRESS, keyCode = 1))
-        val action3 = KeyMapAction(data = ActionData.InputKeyEvent(keyCode = 4))
+        val action3 = Action(data = ActionData.InputKeyEvent(keyCode = 4))
 
         keyMapListFlow.value = listOf(
             KeyMap(0, trigger = trigger1, actionList = listOf(action1)),
@@ -1740,7 +1740,7 @@ class KeyMapControllerTest {
     fun `initialise repeating if repeat until pressed again on failed long press`() = runTest(testDispatcher) {
         // given
         val trigger1 = parallelTrigger(triggerKey(keyCode = 1))
-        val action1 = KeyMapAction(
+        val action1 = Action(
             data = ActionData.InputKeyEvent(keyCode = 2),
             repeat = true,
             repeatMode = RepeatMode.TRIGGER_PRESSED_AGAIN,
@@ -1748,7 +1748,7 @@ class KeyMapControllerTest {
 
         val trigger2 =
             parallelTrigger(triggerKey(clickType = ClickType.LONG_PRESS, keyCode = 1))
-        val action2 = KeyMapAction(data = ActionData.InputKeyEvent(keyCode = 3), repeat = true)
+        val action2 = Action(data = ActionData.InputKeyEvent(keyCode = 3), repeat = true)
 
         keyMapListFlow.value = listOf(
             KeyMap(0, trigger = trigger1, actionList = listOf(action1)),
@@ -1789,7 +1789,7 @@ class KeyMapControllerTest {
     fun `initialise repeating if repeat until pressed again on failed double press`() = runTest(testDispatcher) {
         // given
         val trigger1 = parallelTrigger(triggerKey(keyCode = 1))
-        val action1 = KeyMapAction(
+        val action1 = Action(
             data = ActionData.InputKeyEvent(keyCode = 2),
             repeat = true,
             repeatMode = RepeatMode.TRIGGER_PRESSED_AGAIN,
@@ -1797,7 +1797,7 @@ class KeyMapControllerTest {
 
         val trigger2 =
             sequenceTrigger(triggerKey(clickType = ClickType.DOUBLE_PRESS, keyCode = 1))
-        val action2 = KeyMapAction(data = ActionData.InputKeyEvent(keyCode = 3))
+        val action2 = Action(data = ActionData.InputKeyEvent(keyCode = 3))
 
         keyMapListFlow.value = listOf(
             KeyMap(0, trigger = trigger1, actionList = listOf(action1)),
@@ -1843,7 +1843,7 @@ class KeyMapControllerTest {
     fun `initialise repeating if repeat until pressed again on failed double press and failed long press`() = runTest(testDispatcher) {
         // given
         val trigger1 = parallelTrigger(triggerKey(keyCode = 1))
-        val action1 = KeyMapAction(
+        val action1 = Action(
             data = ActionData.InputKeyEvent(keyCode = 2),
             repeat = true,
             repeatMode = RepeatMode.TRIGGER_PRESSED_AGAIN,
@@ -1851,14 +1851,14 @@ class KeyMapControllerTest {
 
         val trigger2 =
             parallelTrigger(triggerKey(clickType = ClickType.LONG_PRESS, keyCode = 1))
-        val action2 = KeyMapAction(
+        val action2 = Action(
             data = ActionData.InputKeyEvent(keyCode = 3),
             repeat = true,
         )
 
         val trigger3 =
             sequenceTrigger(triggerKey(clickType = ClickType.DOUBLE_PRESS, keyCode = 1))
-        val action3 = KeyMapAction(data = ActionData.InputKeyEvent(keyCode = 4))
+        val action3 = Action(data = ActionData.InputKeyEvent(keyCode = 4))
 
         keyMapListFlow.value = listOf(
             KeyMap(0, trigger = trigger1, actionList = listOf(action1)),
@@ -1932,7 +1932,7 @@ class KeyMapControllerTest {
             ),
         )
 
-        val action = KeyMapAction(
+        val action = Action(
             data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_META_LEFT),
             holdDown = true,
         )
@@ -2175,7 +2175,7 @@ class KeyMapControllerTest {
         val trigger =
             singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_A, clickType = ClickType.LONG_PRESS))
 
-        val action = KeyMapAction(
+        val action = Action(
             data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_B),
             holdDown = true,
             stopHoldDownWhenTriggerPressedAgain = true,
@@ -2218,7 +2218,7 @@ class KeyMapControllerTest {
             KeyMap(
                 0,
                 trigger = trigger,
-                actionList = listOf(KeyMapAction(data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_ALT_LEFT))),
+                actionList = listOf(Action(data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_ALT_LEFT))),
             ),
         )
 
@@ -2433,7 +2433,7 @@ class KeyMapControllerTest {
     @Parameters(method = "params_repeatAction")
     fun parallelTrigger_holdDown_repeatAction10Times(description: String, trigger: Trigger) = runTest(testDispatcher) {
         // given
-        val action = KeyMapAction(
+        val action = Action(
             data = ActionData.Volume.Up(showVolumeUi = false),
             repeat = true,
         )

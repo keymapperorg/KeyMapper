@@ -56,7 +56,7 @@ class ConfigTriggerViewModelTest {
     fun init() {
         fakeOnboarding = FakeOnboardingUseCase()
 
-        keyMap = MutableStateFlow(KeyMap())
+        this@ConfigTriggerViewModelTest.keyMap = MutableStateFlow(KeyMap())
         onRecordKey = MutableSharedFlow()
 
         mockRecordTrigger = mock {
@@ -65,7 +65,7 @@ class ConfigTriggerViewModelTest {
         }
 
         mockConfigKeyMapUseCase = mock {
-            on { mapping }.then { keyMap.map { State.Data(it) } }
+            on { this.keyMap }.then { this@ConfigTriggerViewModelTest.keyMap.map { State.Data(it) } }
         }
 
         fakeResourceProvider = FakeResourceProvider()

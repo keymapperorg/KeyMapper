@@ -11,7 +11,7 @@ import io.github.sds100.keymapper.util.Inject
  * Created by sds100 on 22/11/20.
  */
 
-class KeyMapConfigActionsFragment : ConfigActionsFragment<KeyMapAction>() {
+class KeyMapConfigActionsFragment : ConfigActionsFragment() {
 
     class Info :
         FragmentInfo(
@@ -26,6 +26,6 @@ class KeyMapConfigActionsFragment : ConfigActionsFragment<KeyMapAction>() {
         Inject.configKeyMapViewModel(requireContext())
     }
 
-    override val configActionsViewModel: ConfigActionsViewModel<KeyMapAction, KeyMap>
+    override val configActionsViewModel: ConfigActionsViewModel
         get() = configKeyMapViewModel.configActionsViewModel
 }

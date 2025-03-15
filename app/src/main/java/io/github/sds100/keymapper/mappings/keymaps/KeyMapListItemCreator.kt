@@ -4,7 +4,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowForward
 import androidx.compose.material.icons.outlined.Add
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.mappings.BaseMappingListItemCreator
+import io.github.sds100.keymapper.actions.ActionUiHelper
+import io.github.sds100.keymapper.constraints.ConstraintUiHelper
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.FingerprintGestureType
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerKey
@@ -19,17 +20,17 @@ import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
+import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.util.ui.compose.ComposeChipModel
+import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 import kotlinx.coroutines.flow.first
 
 class KeyMapListItemCreator(
+    private val actionUiHelper: ActionUiHelper,
     private val displayMapping: DisplayKeyMapUseCase,
     resourceProvider: ResourceProvider,
-) : BaseMappingListItemCreator<KeyMap, KeyMapAction>(
-    displayMapping,
-    KeyMapActionUiHelper(displayMapping, resourceProvider),
-    resourceProvider,
-) {
+) : ResourceProvider by resourceProvider {
     private val midDot by lazy { getString(R.string.middot) }
     private val longPressString by lazy { getString(R.string.clicktype_long_press) }
     private val doublePressString by lazy { getString(R.string.clicktype_double_press) }
@@ -99,6 +100,118 @@ class KeyMapListItemCreator(
             optionsDescription = optionsDescription.takeIf { it.isNotBlank() },
             extraInfo = extraInfo.takeIf { it.isNotBlank() },
         )
+    }
+
+    private val constraintUiHelper = ConstraintUiHelper(displayMapping, resourceProvider)
+
+    private fun getActionChipList(
+        keyMap: KeyMap,
+        showDeviceDescriptors: Boolean,
+    ): List<ComposeChipModel> = sequence {
+        val midDot = getString(R.string.middot)
+
+        keyMap.actionList.forEach { action ->
+            val actionTitle: String = if (action.multiplier != null) {
+                "${action.multiplier}x ${
+                    actionUiHelper.getTitle(
+                        action.data,
+                        showDeviceDescriptors,
+                    )
+                }"
+            } else {
+                actionUiHelper.getTitle(action.data, showDeviceDescriptors)
+            }
+
+            val chipText = buildString {
+                append(actionTitle)
+
+                actionUiHelper.getOptionLabels(keyMap, action).forEach { label ->
+                    append(" $midDot ")
+
+                    append(label)
+                }
+
+                if (keyMap.isDelayBeforeNextActionAllowed() && action.delayBeforeNextAction != null) {
+                    if (this@buildString.isNotBlank()) {
+                        append(" $midDot ")
+                    }
+
+                    append(
+                        getString(
+                            R.string.action_title_wait,
+                            action.delayBeforeNextAction!!,
+                        ),
+                    )
+                }
+            }
+
+            val icon: ComposeIconInfo? = actionUiHelper.getIcon(action.data)
+            val error: Error? = displayMapping.getError(action.data)
+
+            val chip = if (error == null) {
+                ComposeChipModel.Normal(id = action.uid, text = chipText, icon = icon)
+            } else {
+                ComposeChipModel.Error(action.uid, chipText, error)
+            }
+
+            yield(chip)
+        }
+    }.toList()
+
+    private fun getConstraintChipList(keyMap: KeyMap): List<ComposeChipModel> = sequence {
+        for (constraint in keyMap.constraintState.constraints) {
+            val text: String = constraintUiHelper.getTitle(constraint)
+            val icon: ComposeIconInfo? = constraintUiHelper.getIcon(constraint)
+            val error: Error? = displayMapping.getConstraintError(constraint)
+
+            val chip: ComposeChipModel = if (error == null) {
+                ComposeChipModel.Normal(
+                    id = constraint.uid,
+                    text = text,
+                    icon = icon,
+                )
+            } else {
+                ComposeChipModel.Error(constraint.uid, text, error)
+            }
+
+            yield(chip)
+        }
+    }.toList()
+
+    private fun createExtraInfoString(
+        keyMap: KeyMap,
+        actionChipList: List<ComposeChipModel>,
+        constraintChipList: List<ComposeChipModel>,
+    ) = buildString {
+        val midDot by lazy { getString(R.string.middot) }
+
+        if (!keyMap.isEnabled) {
+            append(getString(R.string.disabled))
+        }
+
+        if (actionChipList.any { it is ComposeChipModel.Error }) {
+            if (this.isNotEmpty()) {
+                append(" $midDot ")
+            }
+
+            append(getString(R.string.tap_actions_to_fix))
+        }
+
+        if (constraintChipList.any { it is ComposeChipModel.Error }) {
+            if (this.isNotEmpty()) {
+                append(" $midDot ")
+            }
+
+            append(getString(R.string.tap_constraints_to_fix))
+        }
+
+        if (actionChipList.isEmpty()) {
+            if (this.isNotEmpty()) {
+                append(" $midDot ")
+            }
+
+            append(getString(R.string.no_actions))
+        }
     }
 
     private fun floatingButtonKeyName(key: FloatingButtonKey): String = buildString {

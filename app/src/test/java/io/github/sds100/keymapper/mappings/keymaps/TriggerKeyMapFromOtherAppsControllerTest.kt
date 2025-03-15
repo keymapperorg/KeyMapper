@@ -108,7 +108,7 @@ class TriggerKeyMapFromOtherAppsControllerTest {
     fun `Key map with repeat option, don't repeat when triggered if repeat until released`() = runTest(testDispatcher) {
         // GIVEN
         val action =
-            KeyMapAction(
+            Action(
                 data = ActionData.InputKeyEvent(keyCode = 1),
                 repeat = true,
                 repeatMode = RepeatMode.TRIGGER_RELEASED,

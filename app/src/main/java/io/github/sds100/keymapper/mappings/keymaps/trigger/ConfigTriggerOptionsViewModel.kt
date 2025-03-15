@@ -59,7 +59,7 @@ class ConfigTriggerOptionsViewModel(
 
     init {
         coroutineScope.launch {
-            config.mapping.collectLatest { state ->
+            config.keyMap.collectLatest { state ->
                 _state.value = withContext(Dispatchers.Default) {
                     buildUiState(state)
                 }
@@ -88,7 +88,7 @@ class ConfigTriggerOptionsViewModel(
 
     fun createLauncherShortcut() {
         coroutineScope.launch {
-            val mapping = config.mapping.firstOrNull()?.dataOrNull() ?: return@launch
+            val mapping = config.keyMap.firstOrNull()?.dataOrNull() ?: return@launch
             val keyMapUid = mapping.uid
 
             val result = if (mapping.actionList.size == 1) {

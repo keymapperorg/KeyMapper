@@ -24,9 +24,9 @@ import kotlinx.coroutines.flow.collectLatest
 /**
  * Created by sds100 on 22/11/20.
  */
-abstract class ConfigActionsFragment<A : Action> : RecyclerViewFragment<ActionListItem, FragmentActionListBinding>() {
+abstract class ConfigActionsFragment : RecyclerViewFragment<ActionListItem, FragmentActionListBinding>() {
 
-    abstract val configActionsViewModel: ConfigActionsViewModel<A, *>
+    abstract val configActionsViewModel: ConfigActionsViewModel
 
     override val listItems: Flow<State<List<ActionListItem>>>
         get() = configActionsViewModel.state
@@ -72,7 +72,7 @@ abstract class ConfigActionsFragment<A : Action> : RecyclerViewFragment<ActionLi
         .andCallbacks(object : EpoxyTouchHelper.DragCallbacks<ActionBindingModel_>() {
 
             override fun isDragEnabledForModel(model: ActionBindingModel_?): Boolean =
-                model?.state()?.dragAndDrop ?: false
+                model?.state()?.dragAndDrop == true
 
             override fun onModelMoved(
                 fromPosition: Int,

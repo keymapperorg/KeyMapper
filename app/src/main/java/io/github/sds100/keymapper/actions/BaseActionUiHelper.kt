@@ -12,7 +12,8 @@ import androidx.compose.material.icons.outlined.TouchApp
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
 import io.github.sds100.keymapper.mappings.DisplayActionUseCase
-import io.github.sds100.keymapper.mappings.Mapping
+import io.github.sds100.keymapper.mappings.keymaps.Action
+import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.system.camera.CameraLensUtils
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.display.OrientationUtils
@@ -27,14 +28,10 @@ import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 import splitties.bitflags.hasFlag
 
-/**
- * Created by sds100 on 18/03/2021.
- */
-
-abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
+abstract class BaseActionUiHelper(
     displayActionUseCase: DisplayActionUseCase,
     resourceProvider: ResourceProvider,
-) : ActionUiHelper<MAPPING, A>,
+) : ActionUiHelper,
     ResourceProvider by resourceProvider,
     DisplayActionUseCase by displayActionUseCase {
 
@@ -497,9 +494,9 @@ abstract class BaseActionUiHelper<MAPPING : Mapping<A>, A : Action>(
     }
 }
 
-interface ActionUiHelper<MAPPING : Mapping<A>, A : Action> {
+interface ActionUiHelper {
     fun getTitle(action: ActionData, showDeviceDescriptors: Boolean): String
-    fun getOptionLabels(mapping: MAPPING, action: A): List<String>
+    fun getOptionLabels(keyMap: KeyMap, action: Action): List<String>
     fun getIcon(action: ActionData): ComposeIconInfo?
     fun getError(action: ActionData): Error?
 }

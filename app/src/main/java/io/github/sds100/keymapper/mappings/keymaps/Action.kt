@@ -1,13 +1,11 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
-import io.github.sds100.keymapper.actions.Action
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.ActionDataEntityMapper
 import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.EntityExtra
 import io.github.sds100.keymapper.data.entities.getData
-import io.github.sds100.keymapper.mappings.isDelayBeforeNextActionAllowed
 import io.github.sds100.keymapper.util.success
 import io.github.sds100.keymapper.util.then
 import io.github.sds100.keymapper.util.valueOrNull
@@ -21,36 +19,36 @@ import java.util.UUID
  */
 
 @Serializable
-data class KeyMapAction(
-    override val uid: String = UUID.randomUUID().toString(),
-    override val data: ActionData,
+data class Action(
+    val uid: String = UUID.randomUUID().toString(),
+    val data: ActionData,
 
-    override val repeat: Boolean = false,
-    override val repeatMode: RepeatMode = RepeatMode.TRIGGER_RELEASED,
-    override val repeatRate: Int? = null,
+    val repeat: Boolean = false,
+    val repeatMode: RepeatMode = RepeatMode.TRIGGER_RELEASED,
+    val repeatRate: Int? = null,
     val repeatDelay: Int? = null,
-    override val repeatLimit: Int? = null,
+    val repeatLimit: Int? = null,
 
-    override val holdDown: Boolean = false,
+    val holdDown: Boolean = false,
     val stopHoldDownWhenTriggerPressedAgain: Boolean = false,
-    override val holdDownDuration: Int? = null,
+    val holdDownDuration: Int? = null,
 
-    override val multiplier: Int? = null,
-    override val delayBeforeNextAction: Int? = null,
-) : Action {
+    val multiplier: Int? = null,
+    val delayBeforeNextAction: Int? = null,
+) {
     companion object {
         const val REPEAT_DELAY_MIN = 0
     }
 }
 
 object KeymapActionEntityMapper {
-    fun fromEntity(entity: ActionEntity): KeyMapAction? {
+    fun fromEntity(entity: ActionEntity): Action? {
         val data = ActionDataEntityMapper.fromEntity(entity) ?: return null
 
         val stopHoldDownWhenTriggerPressedAgain: Boolean =
             entity.extras.getData(ActionEntity.EXTRA_CUSTOM_HOLD_DOWN_BEHAVIOUR).then {
                 (it == ActionEntity.STOP_HOLD_DOWN_BEHAVIOR_TRIGGER_PRESSED_AGAIN.toString()).success()
-            }.valueOrNull() ?: false
+            }.valueOrNull() == true
 
         val repeatRate =
             entity.extras.getData(ActionEntity.EXTRA_REPEAT_RATE).valueOrNull()?.toIntOrNull()
@@ -96,7 +94,7 @@ object KeymapActionEntityMapper {
             .valueOrNull()
             ?.toIntOrNull()
 
-        return KeyMapAction(
+        return Action(
             uid = entity.uid,
             data = data,
             repeat = entity.flags.hasFlag(ActionEntity.ACTION_FLAG_REPEAT),

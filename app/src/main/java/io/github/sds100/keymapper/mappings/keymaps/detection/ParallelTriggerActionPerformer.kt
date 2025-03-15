@@ -4,7 +4,7 @@ import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.data.PreferenceDefaults
-import io.github.sds100.keymapper.mappings.keymaps.KeyMapAction
+import io.github.sds100.keymapper.mappings.keymaps.Action
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.util.InputEventType
 import kotlinx.coroutines.CoroutineScope
@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
 class ParallelTriggerActionPerformer(
     private val coroutineScope: CoroutineScope,
     private val useCase: PerformActionsUseCase,
-    private val actionList: List<KeyMapAction>,
+    private val actionList: List<Action>,
 ) {
     private var actionIsHeldDown = BooleanArray(actionList.size) { false }
 
@@ -184,7 +184,7 @@ class ParallelTriggerActionPerformer(
     }
 
     private fun performAction(
-        action: KeyMapAction,
+        action: Action,
         inputEventType: InputEventType,
         metaState: Int,
     ) {

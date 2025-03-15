@@ -4,9 +4,9 @@ import android.view.KeyEvent
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.mappings.ClickType
+import io.github.sds100.keymapper.mappings.keymaps.Action
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapUseCaseController
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
-import io.github.sds100.keymapper.mappings.keymaps.KeyMapAction
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerType
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
@@ -56,7 +56,7 @@ class ConfigKeyMapUseCaseTest {
 
     @Test
     fun `Enable hold down option for key event actions when the trigger is a DPAD button`() = runTest(testDispatcher) {
-        useCase.mapping.value = State.Data(KeyMap())
+        useCase.keyMap.value = State.Data(KeyMap())
         useCase.addKeyCodeTriggerKey(
             KeyEvent.KEYCODE_DPAD_LEFT,
             TriggerKeyDevice.Any,
@@ -65,7 +65,7 @@ class ConfigKeyMapUseCaseTest {
 
         useCase.addAction(ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_W))
 
-        val actionList = useCase.mapping.value.dataOrNull()!!.actionList
+        val actionList = useCase.keyMap.value.dataOrNull()!!.actionList
         assertThat(actionList[0].holdDown, `is`(true))
         assertThat(actionList[0].repeat, `is`(false))
     }
@@ -75,7 +75,7 @@ class ConfigKeyMapUseCaseTest {
      */
     @Test
     fun `Remove device assistant trigger if setting mode to parallel and voice assistant already exists`() = runTest(testDispatcher) {
-        useCase.mapping.value = State.Data(KeyMap())
+        useCase.keyMap.value = State.Data(KeyMap())
 
         useCase.addKeyCodeTriggerKey(
             KeyEvent.KEYCODE_VOLUME_DOWN,
@@ -86,7 +86,7 @@ class ConfigKeyMapUseCaseTest {
         useCase.addAssistantTriggerKey(AssistantTriggerType.DEVICE)
         useCase.setParallelTriggerMode()
 
-        val trigger = useCase.mapping.value.dataOrNull()!!.trigger
+        val trigger = useCase.keyMap.value.dataOrNull()!!.trigger
         assertThat(trigger.keys, hasSize(2))
         assertThat(trigger.keys[0], instanceOf(KeyCodeTriggerKey::class.java))
         assertThat(trigger.keys[1], instanceOf(AssistantTriggerKey::class.java))
@@ -94,7 +94,7 @@ class ConfigKeyMapUseCaseTest {
 
     @Test
     fun `Remove voice assistant trigger if setting mode to parallel and device assistant already exists`() = runTest(testDispatcher) {
-        useCase.mapping.value = State.Data(KeyMap())
+        useCase.keyMap.value = State.Data(KeyMap())
 
         useCase.addKeyCodeTriggerKey(
             KeyEvent.KEYCODE_VOLUME_DOWN,
@@ -105,7 +105,7 @@ class ConfigKeyMapUseCaseTest {
         useCase.addAssistantTriggerKey(AssistantTriggerType.VOICE)
         useCase.setParallelTriggerMode()
 
-        val trigger = useCase.mapping.value.dataOrNull()!!.trigger
+        val trigger = useCase.keyMap.value.dataOrNull()!!.trigger
         assertThat(trigger.keys, hasSize(2))
         assertThat(trigger.keys[0], instanceOf(KeyCodeTriggerKey::class.java))
         assertThat(trigger.keys[1], instanceOf(AssistantTriggerKey::class.java))
@@ -113,7 +113,7 @@ class ConfigKeyMapUseCaseTest {
 
     @Test
     fun `Set click type to short press when adding assistant key to multiple long press trigger keys`() = runTest(testDispatcher) {
-        useCase.mapping.value = State.Data(KeyMap())
+        useCase.keyMap.value = State.Data(KeyMap())
 
         useCase.addKeyCodeTriggerKey(
             KeyEvent.KEYCODE_VOLUME_DOWN,
@@ -129,13 +129,13 @@ class ConfigKeyMapUseCaseTest {
 
         useCase.addAssistantTriggerKey(AssistantTriggerType.ANY)
 
-        val trigger = useCase.mapping.value.dataOrNull()!!.trigger
+        val trigger = useCase.keyMap.value.dataOrNull()!!.trigger
         assertThat(trigger.mode, `is`(TriggerMode.Parallel(clickType = ClickType.SHORT_PRESS)))
     }
 
     @Test
     fun `Set click type to short press when adding assistant key to double press trigger key`() = runTest(testDispatcher) {
-        useCase.mapping.value = State.Data(KeyMap())
+        useCase.keyMap.value = State.Data(KeyMap())
 
         useCase.addKeyCodeTriggerKey(
             KeyEvent.KEYCODE_VOLUME_DOWN,
@@ -145,13 +145,13 @@ class ConfigKeyMapUseCaseTest {
         useCase.setTriggerDoublePress()
         useCase.addAssistantTriggerKey(AssistantTriggerType.ANY)
 
-        val trigger = useCase.mapping.value.dataOrNull()!!.trigger
+        val trigger = useCase.keyMap.value.dataOrNull()!!.trigger
         assertThat(trigger.mode, `is`(TriggerMode.Parallel(clickType = ClickType.SHORT_PRESS)))
     }
 
     @Test
     fun `Set click type to short press when adding assistant key to long press trigger key`() = runTest(testDispatcher) {
-        useCase.mapping.value = State.Data(KeyMap())
+        useCase.keyMap.value = State.Data(KeyMap())
 
         useCase.addKeyCodeTriggerKey(
             KeyEvent.KEYCODE_VOLUME_DOWN,
@@ -161,7 +161,7 @@ class ConfigKeyMapUseCaseTest {
         useCase.setTriggerLongPress()
         useCase.addAssistantTriggerKey(AssistantTriggerType.ANY)
 
-        val trigger = useCase.mapping.value.dataOrNull()!!.trigger
+        val trigger = useCase.keyMap.value.dataOrNull()!!.trigger
         assertThat(trigger.mode, `is`(TriggerMode.Parallel(clickType = ClickType.SHORT_PRESS)))
     }
 
@@ -180,10 +180,10 @@ class ConfigKeyMapUseCaseTest {
             ),
         )
 
-        useCase.mapping.value = State.Data(keyMap)
+        useCase.keyMap.value = State.Data(keyMap)
         useCase.setTriggerLongPress()
 
-        val trigger = useCase.mapping.value.dataOrNull()!!.trigger
+        val trigger = useCase.keyMap.value.dataOrNull()!!.trigger
         assertThat(trigger.mode, `is`(TriggerMode.Parallel(clickType = ClickType.SHORT_PRESS)))
     }
 
@@ -210,7 +210,7 @@ class ConfigKeyMapUseCaseTest {
 
         for (modifierKeyCode in modifierKeys) {
             // GIVEN
-            useCase.mapping.value = State.Data(KeyMap())
+            useCase.keyMap.value = State.Data(KeyMap())
 
             // WHEN
             useCase.addKeyCodeTriggerKey(
@@ -220,7 +220,7 @@ class ConfigKeyMapUseCaseTest {
             )
 
             // THEN
-            val trigger = useCase.mapping.value.dataOrNull()!!.trigger
+            val trigger = useCase.keyMap.value.dataOrNull()!!.trigger
 
             assertThat(trigger.keys[0].consumeEvent, `is`(false))
         }
@@ -232,7 +232,7 @@ class ConfigKeyMapUseCaseTest {
     @Test
     fun `when add non-modifier key trigger, do ont enable do not remap option`() = runTest(testDispatcher) {
         // GIVEN
-        useCase.mapping.value = State.Data(KeyMap())
+        useCase.keyMap.value = State.Data(KeyMap())
 
         // WHEN
         useCase.addKeyCodeTriggerKey(
@@ -242,7 +242,7 @@ class ConfigKeyMapUseCaseTest {
         )
 
         // THEN
-        val trigger = useCase.mapping.value.dataOrNull()!!.trigger
+        val trigger = useCase.keyMap.value.dataOrNull()!!.trigger
 
         assertThat(trigger.keys[0].consumeEvent, `is`(true))
     }
@@ -254,14 +254,14 @@ class ConfigKeyMapUseCaseTest {
     @Test
     fun `when add answer phone call action, then add phone ringing constraint`() = runTest(testDispatcher) {
         // GIVEN
-        useCase.mapping.value = State.Data(KeyMap())
+        useCase.keyMap.value = State.Data(KeyMap())
         val action = ActionData.AnswerCall
 
         // WHEN
         useCase.addAction(action)
 
         // THEN
-        val keyMap = useCase.mapping.value.dataOrNull()!!
+        val keyMap = useCase.keyMap.value.dataOrNull()!!
         assertThat(keyMap.constraintState.constraints, contains(Constraint.PhoneRinging))
     }
 
@@ -272,14 +272,14 @@ class ConfigKeyMapUseCaseTest {
     @Test
     fun `when add end phone call action, then add in phone call constraint`() = runTest(testDispatcher) {
         // GIVEN
-        useCase.mapping.value = State.Data(KeyMap())
+        useCase.keyMap.value = State.Data(KeyMap())
         val action = ActionData.EndCall
 
         // WHEN
         useCase.addAction(action)
 
         // THEN
-        val keyMap = useCase.mapping.value.dataOrNull()!!
+        val keyMap = useCase.keyMap.value.dataOrNull()!!
         assertThat(keyMap.constraintState.constraints, contains(Constraint.InPhoneCall))
     }
 
@@ -289,7 +289,7 @@ class ConfigKeyMapUseCaseTest {
     @Test
     fun `key map with hold down action, load key map, hold down flag shouldn't disappear`() = runTest(testDispatcher) {
         // given
-        val action = KeyMapAction(
+        val action = Action(
             data = ActionData.TapScreen(100, 100, null),
             holdDown = true,
         )
@@ -301,20 +301,20 @@ class ConfigKeyMapUseCaseTest {
         )
 
         // when
-        useCase.mapping.value = State.Data(keyMap)
+        useCase.keyMap.value = State.Data(keyMap)
 
         // then
-        assertThat(useCase.mapping.value.dataOrNull()!!.actionList, `is`(listOf(action)))
+        assertThat(useCase.keyMap.value.dataOrNull()!!.actionList, `is`(listOf(action)))
     }
 
     @Test
     fun `add modifier key event action, enable hold down option and disable repeat option`() = runTest(testDispatcher) {
         InputEventUtils.MODIFIER_KEYCODES.forEach { keyCode ->
-            useCase.mapping.value = State.Data(KeyMap())
+            useCase.keyMap.value = State.Data(KeyMap())
 
             useCase.addAction(ActionData.InputKeyEvent(keyCode))
 
-            useCase.mapping.value.dataOrNull()!!.actionList
+            useCase.keyMap.value.dataOrNull()!!.actionList
                 .single()
                 .let {
                     assertThat(it.holdDown, `is`(true))

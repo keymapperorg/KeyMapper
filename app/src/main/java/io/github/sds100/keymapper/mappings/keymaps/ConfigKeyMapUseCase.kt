@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.mappings.keymaps
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.constraints.Constraint
+import io.github.sds100.keymapper.constraints.ConstraintMode
 import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.entities.FloatingButtonEntityWithLayout
@@ -10,9 +11,7 @@ import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
 import io.github.sds100.keymapper.data.repositories.FloatingLayoutRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.floating.FloatingButtonEntityMapper
-import io.github.sds100.keymapper.mappings.BaseConfigMappingUseCase
 import io.github.sds100.keymapper.mappings.ClickType
-import io.github.sds100.keymapper.mappings.ConfigMappingUseCase
 import io.github.sds100.keymapper.mappings.FingerprintGestureType
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerType
@@ -35,6 +34,7 @@ import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.dataOrNull
 import io.github.sds100.keymapper.util.firstBlocking
 import io.github.sds100.keymapper.util.ifIsData
+import io.github.sds100.keymapper.util.moveElement
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -53,8 +53,8 @@ class ConfigKeyMapUseCaseController(
     private val floatingLayoutRepository: FloatingLayoutRepository,
     private val floatingButtonRepository: FloatingButtonRepository,
     private val serviceAdapter: ServiceAdapter,
-) : BaseConfigMappingUseCase<KeyMapAction, KeyMap>(),
-    ConfigKeyMapUseCase {
+) : ConfigKeyMapUseCase {
+    override val keyMap = MutableStateFlow<State<KeyMap>>(State.Loading)
 
     override val floatingButtonToUse: MutableStateFlow<String?> = MutableStateFlow(null)
 
@@ -64,6 +64,68 @@ class ConfigKeyMapUseCaseController(
 
     private val showDeviceDescriptors: Flow<Boolean> =
         preferenceRepository.get(Keys.showDeviceDescriptors).map { it == true }
+
+    override fun addConstraint(constraint: Constraint): Boolean {
+        var containsConstraint = false
+
+        keyMap.value.ifIsData { mapping ->
+            val oldState = mapping.constraintState
+
+            containsConstraint = oldState.constraints.contains(constraint)
+            val newState = oldState.copy(constraints = oldState.constraints.plus(constraint))
+
+            setConstraintState(newState)
+        }
+
+        return !containsConstraint
+    }
+
+    override fun removeConstraint(id: String) {
+        keyMap.value.ifIsData { mapping ->
+            val newList = mapping.constraintState.constraints.toMutableSet().apply {
+                removeAll { it.uid == id }
+            }
+
+            setConstraintState(mapping.constraintState.copy(constraints = newList))
+        }
+    }
+
+    override fun setAndMode() {
+        keyMap.value.ifIsData { mapping ->
+            setConstraintState(mapping.constraintState.copy(mode = ConstraintMode.AND))
+        }
+    }
+
+    override fun setOrMode() {
+        keyMap.value.ifIsData { mapping ->
+            setConstraintState(mapping.constraintState.copy(mode = ConstraintMode.OR))
+        }
+    }
+
+    override fun addAction(data: ActionData) = keyMap.value.ifIsData { mapping ->
+        mapping.actionList.toMutableList().apply {
+            add(createAction(data))
+            setActionList(this)
+        }
+    }
+
+    override fun moveAction(fromIndex: Int, toIndex: Int) {
+        keyMap.value.ifIsData { mapping ->
+            mapping.actionList.toMutableList().apply {
+                moveElement(fromIndex, toIndex)
+                setActionList(this)
+            }
+        }
+    }
+
+    override fun removeAction(uid: String) {
+        keyMap.value.ifIsData { mapping ->
+            mapping.actionList.toMutableList().apply {
+                removeAll { it.uid == uid }
+                setActionList(this)
+            }
+        }
+    }
 
     override suspend fun addFloatingButtonTriggerKey(buttonUid: String) {
         floatingButtonToUse.update { null }
@@ -252,7 +314,7 @@ class ConfigKeyMapUseCaseController(
     }
 
     override fun getTriggerKey(uid: String): TriggerKey? {
-        return mapping.value.dataOrNull()?.trigger?.keys?.find { it.uid == uid }
+        return keyMap.value.dataOrNull()?.trigger?.keys?.find { it.uid == uid }
     }
 
     override fun setParallelTriggerMode() = editTrigger { trigger ->
@@ -516,12 +578,12 @@ class ConfigKeyMapUseCaseController(
 
     override fun setDelayBeforeNextAction(uid: String, delay: Int?) = setActionOption(uid) { it.copy(delayBeforeNextAction = delay) }
 
-    override fun createAction(data: ActionData): KeyMapAction {
+    private fun createAction(data: ActionData): Action {
         var holdDown = false
         var repeat = false
 
         if (data is ActionData.InputKeyEvent) {
-            val trigger = mapping.value.dataOrNull()?.trigger
+            val trigger = keyMap.value.dataOrNull()?.trigger
 
             val containsDpadKey: Boolean = if (trigger == null) {
                 false
@@ -547,18 +609,18 @@ class ConfigKeyMapUseCaseController(
             addConstraint(Constraint.InPhoneCall)
         }
 
-        return KeyMapAction(
+        return Action(
             data = data,
             repeat = repeat,
             holdDown = holdDown,
         )
     }
 
-    override fun setActionList(actionList: List<KeyMapAction>) {
+    private fun setActionList(actionList: List<Action>) {
         editKeyMap { it.copy(actionList = actionList) }
     }
 
-    override fun setConstraintState(constraintState: ConstraintState) {
+    private fun setConstraintState(constraintState: ConstraintState) {
         editKeyMap { it.copy(constraintState = constraintState) }
     }
 
@@ -569,17 +631,15 @@ class ConfigKeyMapUseCaseController(
             .map { it.data }
             .first()
 
-        val keyMap = KeyMapEntityMapper.fromEntity(entity, floatingButtons)
-
-        mapping.value = State.Data(keyMap)
+        keyMap.value = State.Data(KeyMapEntityMapper.fromEntity(entity, floatingButtons))
     }
 
     override fun loadNewKeyMap() {
-        mapping.value = State.Data(KeyMap())
+        keyMap.value = State.Data(KeyMap())
     }
 
     override fun save() {
-        val keyMap = mapping.value.dataOrNull() ?: return
+        val keyMap = keyMap.value.dataOrNull() ?: return
 
         if (keyMap.dbId == null) {
             keyMapRepository.insert(KeyMapEntityMapper.toEntity(keyMap, 0))
@@ -589,7 +649,7 @@ class ConfigKeyMapUseCaseController(
     }
 
     override fun restoreState(keyMap: KeyMap) {
-        mapping.value = State.Data(keyMap)
+        this.keyMap.value = State.Data(keyMap)
     }
 
     override suspend fun getFloatingLayoutCount(): Int {
@@ -602,7 +662,7 @@ class ConfigKeyMapUseCaseController(
 
     private fun setActionOption(
         uid: String,
-        block: (action: KeyMapAction) -> KeyMapAction,
+        block: (action: Action) -> Action,
     ) {
         editKeyMap { keyMap ->
             val newActionList = keyMap.actionList.map { action ->
@@ -642,12 +702,33 @@ class ConfigKeyMapUseCaseController(
     }
 
     private inline fun editKeyMap(block: (keymap: KeyMap) -> KeyMap) {
-        mapping.value.ifIsData { mapping.value = State.Data(block.invoke(it)) }
+        keyMap.value.ifIsData { keyMap.value = State.Data(block.invoke(it)) }
     }
 }
 
-interface ConfigKeyMapUseCase : ConfigMappingUseCase<KeyMapAction, KeyMap> {
+interface ConfigKeyMapUseCase {
+    val keyMap: Flow<State<KeyMap>>
 
+    fun save()
+
+    fun setEnabled(enabled: Boolean)
+
+    fun addAction(data: ActionData)
+    fun moveAction(fromIndex: Int, toIndex: Int)
+    fun removeAction(uid: String)
+
+    fun setActionData(uid: String, data: ActionData)
+    fun setActionMultiplier(uid: String, multiplier: Int?)
+    fun setDelayBeforeNextAction(uid: String, delay: Int?)
+    fun setActionRepeatRate(uid: String, repeatRate: Int?)
+    fun setActionRepeatLimit(uid: String, repeatLimit: Int?)
+    fun setActionStopRepeatingWhenTriggerPressedAgain(uid: String)
+    fun setActionStopRepeatingWhenLimitReached(uid: String)
+
+    fun addConstraint(constraint: Constraint): Boolean
+    fun removeConstraint(id: String)
+    fun setAndMode()
+    fun setOrMode()
     suspend fun sendServiceEvent(event: ServiceEvent): Result<*>
 
     // trigger

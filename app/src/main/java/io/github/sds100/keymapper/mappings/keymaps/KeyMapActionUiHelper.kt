@@ -13,9 +13,9 @@ import io.github.sds100.keymapper.util.ui.ResourceProvider
 class KeyMapActionUiHelper(
     displayActionUseCase: DisplayActionUseCase,
     resourceProvider: ResourceProvider,
-) : BaseActionUiHelper<KeyMap, KeyMapAction>(displayActionUseCase, resourceProvider) {
+) : BaseActionUiHelper(displayActionUseCase, resourceProvider) {
 
-    override fun getOptionLabels(mapping: KeyMap, action: KeyMapAction) = sequence {
+    override fun getOptionLabels(mapping: KeyMap, action: Action) = sequence {
         if (mapping.isRepeatingActionsAllowed() && action.repeat) {
             val repeatDescription = buildString {
                 append(getString(R.string.flag_repeat_build_description_start))

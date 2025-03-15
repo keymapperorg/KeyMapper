@@ -6,18 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import io.github.sds100.keymapper.databinding.FragmentEditActionBinding
 import io.github.sds100.keymapper.mappings.EditActionViewModel
-import io.github.sds100.keymapper.mappings.Mapping
 import io.github.sds100.keymapper.mappings.OptionsBottomSheetFragment
 
-/**
- * Created by sds100 on 26/07/2021.
- */
-abstract class BaseEditActionFragment<M : Mapping<A>, A : Action> : OptionsBottomSheetFragment<FragmentEditActionBinding>() {
+abstract class BaseEditActionFragment : OptionsBottomSheetFragment<FragmentEditActionBinding>() {
 
-    abstract override val viewModel: EditActionViewModel<M, A>
+    abstract override val viewModel: EditActionViewModel
 
-    override fun bind(inflater: LayoutInflater, container: ViewGroup?): FragmentEditActionBinding =
-        FragmentEditActionBinding.inflate(inflater, container, false)
+    override fun bind(inflater: LayoutInflater, container: ViewGroup?): FragmentEditActionBinding = FragmentEditActionBinding.inflate(inflater, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

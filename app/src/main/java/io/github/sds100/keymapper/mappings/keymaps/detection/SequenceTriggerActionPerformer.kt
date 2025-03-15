@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.mappings.keymaps.detection
 
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
-import io.github.sds100.keymapper.mappings.keymaps.KeyMapAction
+import io.github.sds100.keymapper.mappings.keymaps.Action
 import io.github.sds100.keymapper.util.InputEventType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 class SequenceTriggerActionPerformer(
     private val coroutineScope: CoroutineScope,
     private val useCase: PerformActionsUseCase,
-    private val actionList: List<KeyMapAction>,
+    private val actionList: List<Action>,
 ) {
     private var job: Job? = null
 
@@ -38,7 +38,7 @@ class SequenceTriggerActionPerformer(
         job = null
     }
 
-    private fun performAction(action: KeyMapAction, metaState: Int) {
+    private fun performAction(action: Action, metaState: Int) {
         repeat(action.multiplier ?: 1) {
             useCase.perform(action.data, InputEventType.DOWN_UP, metaState)
         }

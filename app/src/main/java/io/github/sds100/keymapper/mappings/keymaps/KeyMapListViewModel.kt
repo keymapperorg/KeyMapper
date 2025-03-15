@@ -49,7 +49,9 @@ open class KeyMapListViewModel(
     ResourceProvider by resourceProvider,
     NavigationViewModel by NavigationViewModelImpl() {
 
-    private val listItemCreator = KeyMapListItemCreator(listKeyMaps, resourceProvider)
+    private val actionUiHelper = KeyMapActionUiHelper(listKeyMaps, resourceProvider)
+    private val listItemCreator =
+        KeyMapListItemCreator(actionUiHelper, listKeyMaps, resourceProvider)
 
     private val _state = MutableStateFlow<State<List<KeyMapListItemModel>>>(State.Loading)
     val state = _state.asStateFlow()

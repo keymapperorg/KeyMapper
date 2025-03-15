@@ -2,10 +2,9 @@ package io.github.sds100.keymapper.actions
 
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.home.ChooseAppStoreModel
-import io.github.sds100.keymapper.mappings.ConfigMappingUseCase
 import io.github.sds100.keymapper.mappings.DisplayActionUseCase
-import io.github.sds100.keymapper.mappings.Mapping
-import io.github.sds100.keymapper.mappings.isDelayBeforeNextActionAllowed
+import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapUseCase
+import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.util.Error
@@ -38,7 +37,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -47,12 +45,12 @@ import kotlinx.coroutines.runBlocking
  * Created by sds100 on 22/11/20.
  */
 
-class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
+class ConfigActionsViewModel(
     private val coroutineScope: CoroutineScope,
     private val displayActionUseCase: DisplayActionUseCase,
     private val testActionUseCase: TestActionUseCase,
-    private val config: ConfigMappingUseCase<A, M>,
-    private val uiHelper: ActionUiHelperOld<M, A>,
+    private val config: ConfigKeyMapUseCase,
+    private val uiHelper: ActionUiHelperOld,
     private val onboardingUseCase: OnboardingUseCase,
     resourceProvider: ResourceProvider,
 ) : ResourceProvider by resourceProvider,
@@ -73,7 +71,7 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
     val navigateToShizukuSetup = _navigateToShizukuSetup.asSharedFlow()
 
     init {
-        val rebuildUiState = MutableSharedFlow<State<M>>()
+        val rebuildUiState = MutableSharedFlow<State<KeyMap>>()
 
         combine(
             rebuildUiState,
@@ -85,21 +83,21 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
         }.launchIn(coroutineScope)
 
         coroutineScope.launch {
-            config.mapping.collectLatest {
+            config.keyMap.collectLatest {
                 rebuildUiState.emit(it)
             }
         }
 
         coroutineScope.launch {
             displayActionUseCase.invalidateActionErrors.collectLatest {
-                rebuildUiState.emit(config.mapping.firstOrNull() ?: return@collectLatest)
+                rebuildUiState.emit(config.keyMap.firstOrNull() ?: return@collectLatest)
             }
         }
     }
 
     fun onModelClick(uid: String) {
         coroutineScope.launch(Dispatchers.Default) {
-            config.mapping.first().ifIsData { data ->
+            config.keyMap.first().ifIsData { data ->
                 val actionData = data.actionList.singleOrNull { it.uid == uid }?.data
                     ?: return@launch
 
@@ -327,10 +325,13 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
         }
     }
 
-    private fun createListItems(mapping: M, showDeviceDescriptors: Boolean): List<ActionListItem> {
-        val actionCount = mapping.actionList.size
+    private fun createListItems(
+        keyMap: KeyMap,
+        showDeviceDescriptors: Boolean,
+    ): List<ActionListItem> {
+        val actionCount = keyMap.actionList.size
 
-        return mapping.actionList.map { action ->
+        return keyMap.actionList.map { action ->
 
             val title: String = if (action.multiplier != null && action.multiplier!! > 1) {
                 val multiplier = action.multiplier
@@ -345,7 +346,7 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
             val extraInfo = buildString {
                 val midDot = getString(R.string.middot)
 
-                uiHelper.getOptionLabels(mapping, action).forEachIndexed { index, label ->
+                uiHelper.getOptionLabels(keyMap, action).forEachIndexed { index, label ->
                     if (index != 0) {
                         append(" $midDot ")
                     }
@@ -354,7 +355,7 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
                 }
 
                 action.delayBeforeNextAction.apply {
-                    if (mapping.isDelayBeforeNextActionAllowed() && action.delayBeforeNextAction != null) {
+                    if (keyMap.isDelayBeforeNextActionAllowed() && action.delayBeforeNextAction != null) {
                         if (this@buildString.isNotBlank()) {
                             append(" $midDot ")
                         }

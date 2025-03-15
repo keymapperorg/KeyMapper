@@ -178,7 +178,6 @@ object Inject {
         SortKeyMapsUseCaseImpl(
             ServiceLocator.settingsRepository(ctx),
             UseCases.displayKeyMap(ctx),
-            ServiceLocator.resourceProvider(ctx),
         ),
         UseCases.listFloatingLayouts(ctx),
     )

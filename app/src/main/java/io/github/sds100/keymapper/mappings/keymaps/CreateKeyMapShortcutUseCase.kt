@@ -26,7 +26,7 @@ class CreateKeyMapShortcutUseCaseImpl(
     override val isSupported: Boolean
         get() = adapter.areLauncherShortcutsSupported
 
-    override fun pinShortcutForSingleAction(keyMapUid: String, action: KeyMapAction): Result<*> {
+    override fun pinShortcutForSingleAction(keyMapUid: String, action: Action): Result<*> {
         return adapter.pinShortcut(createShortcutForSingleAction(keyMapUid, action))
     }
 
@@ -39,7 +39,7 @@ class CreateKeyMapShortcutUseCaseImpl(
 
     override fun createIntentForSingleAction(
         keyMapUid: String,
-        action: KeyMapAction,
+        action: Action,
     ): Intent {
         return adapter.createShortcutResultIntent(createShortcutForSingleAction(keyMapUid, action))
     }
@@ -55,7 +55,7 @@ class CreateKeyMapShortcutUseCaseImpl(
 
     private fun createShortcutForSingleAction(
         keyMapUid: String,
-        action: KeyMapAction,
+        action: Action,
     ): ShortcutInfoCompat {
         val iconInfo = actionUiHelper.getIcon(action.data)
 
@@ -105,7 +105,7 @@ interface CreateKeyMapShortcutUseCase {
 
     fun pinShortcutForSingleAction(
         keyMapUid: String,
-        action: KeyMapAction,
+        action: Action,
     ): Result<*>
 
     fun pinShortcutForMultipleActions(
@@ -115,7 +115,7 @@ interface CreateKeyMapShortcutUseCase {
 
     fun createIntentForSingleAction(
         keyMapUid: String,
-        action: KeyMapAction,
+        action: Action,
     ): Intent
 
     fun createIntentForMultipleActions(

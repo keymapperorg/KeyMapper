@@ -8,7 +8,6 @@ import io.github.sds100.keymapper.constraints.ConstraintModeEntityMapper
 import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.data.entities.FloatingButtonEntityWithLayout
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
-import io.github.sds100.keymapper.mappings.Mapping
 import io.github.sds100.keymapper.mappings.keymaps.detection.KeyMapController
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.Trigger
@@ -26,35 +25,37 @@ data class KeyMap(
     val dbId: Long? = null,
     val uid: String = UUID.randomUUID().toString(),
     val trigger: Trigger = Trigger(),
-    override val actionList: List<KeyMapAction> = emptyList(),
-    override val constraintState: ConstraintState = ConstraintState(),
-    override val isEnabled: Boolean = true,
-) : Mapping<KeyMapAction> {
+    val actionList: List<Action> = emptyList(),
+    val constraintState: ConstraintState = ConstraintState(),
+    val isEnabled: Boolean = true,
+) {
 
-    override val showToast: Boolean
+    val showToast: Boolean
         get() = trigger.showToast
 
-    override val vibrate: Boolean
+    val vibrate: Boolean
         get() = trigger.vibrate
 
-    override val vibrateDuration: Int?
+    val vibrateDuration: Int?
         get() = trigger.vibrateDuration
 
     fun isRepeatingActionsAllowed(): Boolean = KeyMapController.performActionOnDown(trigger)
 
-    fun isChangingActionRepeatRateAllowed(action: KeyMapAction): Boolean = action.repeat && isRepeatingActionsAllowed()
+    fun isChangingActionRepeatRateAllowed(action: Action): Boolean = action.repeat && isRepeatingActionsAllowed()
 
-    fun isChangingActionRepeatDelayAllowed(action: KeyMapAction): Boolean = action.repeat && isRepeatingActionsAllowed()
+    fun isChangingActionRepeatDelayAllowed(action: Action): Boolean = action.repeat && isRepeatingActionsAllowed()
 
-    fun isHoldingDownActionAllowed(action: KeyMapAction): Boolean = KeyMapController.performActionOnDown(trigger) && action.data.canBeHeldDown()
+    fun isHoldingDownActionAllowed(action: Action): Boolean = KeyMapController.performActionOnDown(trigger) && action.data.canBeHeldDown()
 
-    fun isHoldingDownActionBeforeRepeatingAllowed(action: KeyMapAction): Boolean = action.repeat && action.holdDown
+    fun isHoldingDownActionBeforeRepeatingAllowed(action: Action): Boolean = action.repeat && action.holdDown
 
-    fun isChangingRepeatModeAllowed(action: KeyMapAction): Boolean = action.repeat && isRepeatingActionsAllowed()
+    fun isChangingRepeatModeAllowed(action: Action): Boolean = action.repeat && isRepeatingActionsAllowed()
 
-    fun isChangingRepeatLimitAllowed(action: KeyMapAction): Boolean = action.repeat && isRepeatingActionsAllowed()
+    fun isChangingRepeatLimitAllowed(action: Action): Boolean = action.repeat && isRepeatingActionsAllowed()
 
-    fun isStopHoldingDownActionWhenTriggerPressedAgainAllowed(action: KeyMapAction): Boolean = action.holdDown && !action.repeat
+    fun isStopHoldingDownActionWhenTriggerPressedAgainAllowed(action: Action): Boolean = action.holdDown && !action.repeat
+
+    fun isDelayBeforeNextActionAllowed(): Boolean = actionList.isNotEmpty()
 }
 
 /**

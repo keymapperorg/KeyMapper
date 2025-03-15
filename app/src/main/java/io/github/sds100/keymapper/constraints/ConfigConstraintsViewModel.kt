@@ -1,9 +1,9 @@
 package io.github.sds100.keymapper.constraints
 
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.mappings.ConfigMappingUseCase
 import io.github.sds100.keymapper.mappings.DisplayConstraintUseCase
-import io.github.sds100.keymapper.mappings.Mapping
+import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapUseCase
+import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.State
@@ -24,7 +24,6 @@ import io.github.sds100.keymapper.util.ui.ViewModelHelper
 import io.github.sds100.keymapper.util.ui.navigate
 import io.github.sds100.keymapper.util.ui.showPopup
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -39,7 +38,7 @@ import kotlinx.coroutines.launch
 class ConfigConstraintsViewModel(
     private val coroutineScope: CoroutineScope,
     private val displayUseCase: DisplayConstraintUseCase,
-    private val configMappingUseCase: ConfigMappingUseCase<*, *>,
+    private val configMappingUseCase: ConfigKeyMapUseCase,
     private val allowedConstraints: List<ConstraintId>,
     resourceProvider: ResourceProvider,
 ) : ResourceProvider by resourceProvider,
@@ -52,7 +51,7 @@ class ConfigConstraintsViewModel(
     val state by lazy { _state.asStateFlow() }
 
     init {
-        val rebuildUiState = MutableSharedFlow<State<Mapping<*>>>()
+        val rebuildUiState = MutableSharedFlow<State<KeyMap>>()
 
         coroutineScope.launch {
             rebuildUiState.collectLatest { mapping ->
@@ -61,7 +60,7 @@ class ConfigConstraintsViewModel(
         }
 
         coroutineScope.launch {
-            configMappingUseCase.mapping.collectLatest {
+            configMappingUseCase.keyMap.collectLatest {
                 rebuildUiState.emit(it)
             }
         }
@@ -69,7 +68,7 @@ class ConfigConstraintsViewModel(
         coroutineScope.launch {
             displayUseCase.invalidateConstraintErrors.collectLatest {
                 rebuildUiState.emit(
-                    configMappingUseCase.mapping.firstOrNull() ?: return@collectLatest,
+                    configMappingUseCase.keyMap.firstOrNull() ?: return@collectLatest,
                 )
             }
         }
@@ -105,7 +104,7 @@ class ConfigConstraintsViewModel(
 
     fun onListItemClick(id: String) {
         coroutineScope.launch {
-            configMappingUseCase.mapping.firstOrNull()?.ifIsData { mapping ->
+            configMappingUseCase.keyMap.firstOrNull()?.ifIsData { mapping ->
                 val constraint = mapping.constraintState.constraints.singleOrNull { it.uid == id }
                     ?: return@launch
 

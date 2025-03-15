@@ -10,13 +10,13 @@ import io.github.sds100.keymapper.util.str
 /**
  * Created by sds100 on 12/04/2021.
  */
-class EditKeyMapActionFragment : BaseEditActionFragment<KeyMap, KeyMapAction>() {
+class EditKeyMapActionFragment : BaseEditActionFragment() {
 
     private val configKeyMapViewModel: ConfigKeyMapViewModel by navGraphViewModels(R.id.nav_config_keymap) {
         Inject.configKeyMapViewModel(requireContext())
     }
 
-    override val viewModel: EditActionViewModel<KeyMap, KeyMapAction>
+    override val viewModel: EditActionViewModel
         get() = configKeyMapViewModel.editActionViewModel
 
     override val helpUrl: String
