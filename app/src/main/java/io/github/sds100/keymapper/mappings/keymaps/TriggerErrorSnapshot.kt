@@ -67,7 +67,9 @@ data class TriggerErrorSnapshot(
             return TriggerError.FLOATING_BUTTON_DELETED
         }
 
-        // TODO add floating button errors
+        // TODO if button deleted go through the process of adding the button again.
+        // TODO do not show "button deleted" twice in trigger key list item
+        // TODO do not show the settings button on trigger key list item
 
         return null
     }

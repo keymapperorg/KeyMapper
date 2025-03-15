@@ -1215,7 +1215,8 @@
     <string name="notification_assistant_trigger_feature_title">New trigger! Did you know you can remap your side key, power button, or device assistant?</string>
     <string name="notification_assistant_trigger_feature_text">Instead of launching the assistant or the power menu, your device can perform an action of your choice. Tap to learn more.</string>
     <string name="trigger_error_floating_buttons_not_purchased">You must purchase floating buttons.</string>
-    <string name="trigger_error_floating_button_deleted">Floating button deleted.</string>
+    <string name="trigger_error_floating_button_deleted">Button was deleted.</string>
+    <string name="trigger_error_floating_button_deleted_title">Floating button</string>
 
     <!--  Purchasing  -->
     <string name="unlock_product_button">Unlock (%s)</string>

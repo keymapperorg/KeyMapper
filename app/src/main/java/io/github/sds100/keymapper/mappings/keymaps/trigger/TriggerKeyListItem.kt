@@ -133,7 +133,7 @@ fun TriggerKeyListItem(
 
                     is TriggerKeyListItemModel.KeyCode -> model.keyName
 
-                    is TriggerKeyListItemModel.FloatingButtonDeleted -> stringResource(R.string.trigger_error_floating_button_deleted)
+                    is TriggerKeyListItemModel.FloatingButtonDeleted -> stringResource(R.string.trigger_error_floating_button_deleted_title)
 
                     is TriggerKeyListItemModel.FingerprintGesture -> when (model.gestureType) {
                         FingerprintGestureType.SWIPE_UP -> stringResource(R.string.trigger_key_fingerprint_gesture_up)
@@ -195,13 +195,15 @@ fun TriggerKeyListItem(
                         }
                     }
 
-                    IconButton(onClick = onEditClick) {
-                        Icon(
-                            imageVector = Icons.Outlined.Settings,
-                            contentDescription = stringResource(R.string.trigger_key_list_item_edit),
-                            tint = MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier.size(24.dp),
-                        )
+                    if (model !is TriggerKeyListItemModel.FloatingButtonDeleted) {
+                        IconButton(onClick = onEditClick) {
+                            Icon(
+                                imageVector = Icons.Outlined.Settings,
+                                contentDescription = stringResource(R.string.trigger_key_list_item_edit),
+                                tint = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.size(24.dp),
+                            )
+                        }
                     }
 
                     IconButton(onClick = onRemoveClick) {
@@ -403,13 +405,10 @@ private fun FloatingButtonPreview() {
 @Composable
 private fun FloatingButtonErrorPreview() {
     TriggerKeyListItem(
-        model = TriggerKeyListItemModel.FloatingButton(
+        model = TriggerKeyListItemModel.FloatingButtonDeleted(
             id = "id",
-            buttonName = "😎",
-            layoutName = "Gaming",
             clickType = ClickType.DOUBLE_PRESS,
             linkType = TriggerKeyLinkType.ARROW,
-            error = TriggerError.FLOATING_BUTTON_DELETED,
         ),
         isDragging = false,
         isReorderingEnabled = false,
