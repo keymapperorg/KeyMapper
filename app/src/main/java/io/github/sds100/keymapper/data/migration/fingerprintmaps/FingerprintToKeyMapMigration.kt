@@ -9,7 +9,15 @@ import io.github.sds100.keymapper.data.entities.TriggerKeyEntity
 import splitties.bitflags.hasFlag
 
 object FingerprintToKeyMapMigration {
-    fun migrate(entity: FingerprintMapEntity): KeyMapEntity {
+    fun migrate(entity: FingerprintMapEntity): KeyMapEntity? {
+        if (entity.flags.hasFlag(FingerprintMapEntity.FLAG_MIGRATED_TO_KEY_MAP)) {
+            return null
+        }
+
+        if (entity.isEnabled && entity.actionList.isEmpty() && entity.constraintList.isEmpty()) {
+            return null
+        }
+
         val triggerKey = FingerprintTriggerKeyEntity(
             type = when (entity.id) {
                 FingerprintMapEntity.ID_SWIPE_DOWN -> FingerprintTriggerKeyEntity.ID_SWIPE_DOWN

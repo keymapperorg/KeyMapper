@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import splitties.bitflags.hasFlag
 import java.util.UUID
 
 class RoomKeyMapRepository(
@@ -119,11 +118,7 @@ class RoomKeyMapRepository(
         val entities = fingerprintMapDao.getAll().first()
 
         for (entity in entities) {
-            if (entity.flags.hasFlag(FingerprintMapEntity.FLAG_MIGRATED_TO_KEY_MAP)) {
-                continue
-            }
-
-            val keyMapEntity = FingerprintToKeyMapMigration.migrate(entity)
+            val keyMapEntity = FingerprintToKeyMapMigration.migrate(entity) ?: continue
             keyMapDao.insert(keyMapEntity)
 
             val migratedFingerprintMapEntity =

@@ -355,7 +355,7 @@ class BackupManagerImpl(
             }
 
             for (entity in migratedFingerprintMaps) {
-                keyMapRepository.insert(FingerprintToKeyMapMigration.migrate(entity))
+                FingerprintToKeyMapMigration.migrate(entity)?.let { keyMapRepository.insert(it) }
             }
 
             val settingsJsonNameToPreferenceKeyMap = mapOf(
