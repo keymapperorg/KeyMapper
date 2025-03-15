@@ -445,8 +445,8 @@ abstract class BaseAccessibilityServiceController(
         }
     }
 
-    fun onFingerprintGesture(id: FingerprintGestureType) {
-        fingerprintMapController.onGesture(id)
+    fun onFingerprintGesture(type: FingerprintGestureType) {
+        keyMapController.onFingerprintGesture(type)
     }
 
     private fun triggerKeyMapFromIntent(uid: String) {

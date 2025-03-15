@@ -71,22 +71,23 @@ class ConfigTriggerViewModelTest {
         fakeResourceProvider = FakeResourceProvider()
 
         viewModel = ConfigTriggerViewModel(
-            testScope,
-            fakeOnboarding,
-            mockConfigKeyMapUseCase,
-            mockRecordTrigger,
-            mock(),
-            mock {
+            coroutineScope = testScope,
+            onboarding = fakeOnboarding,
+            config = mockConfigKeyMapUseCase,
+            recordTrigger = mockRecordTrigger,
+            createKeyMapShortcut = mock(),
+            displayKeyMap = mock {
                 on { invalidateTriggerErrors }.then { flow<Unit> { } }
                 on { showDeviceDescriptors }.then { flow<Unit> { } }
                 onBlocking { getTriggerErrors(any()) }.thenReturn(emptyList())
             },
-            fakeResourceProvider,
+            resourceProvider = fakeResourceProvider,
             purchasingManager = mock(lenient = true) {
                 onBlocking { isPurchased(ProductId.ASSISTANT_TRIGGER) }.thenReturn(Success(false))
                 onBlocking { getProductPrice(ProductId.ASSISTANT_TRIGGER) }.thenReturn(Success(""))
             },
-            mock(),
+            setupGuiKeyboardUseCase = mock(),
+            fingerprintGesturesSupported = mock(),
         )
     }
 
