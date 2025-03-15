@@ -24,9 +24,7 @@ import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.getFullMessage
 import io.github.sds100.keymapper.util.ui.DialogResponse
-import io.github.sds100.keymapper.util.ui.ListItem
 import io.github.sds100.keymapper.util.ui.MultiSelectProvider
-import io.github.sds100.keymapper.util.ui.MultiSelectProviderImpl
 import io.github.sds100.keymapper.util.ui.NavDestination
 import io.github.sds100.keymapper.util.ui.NavigationViewModel
 import io.github.sds100.keymapper.util.ui.NavigationViewModelImpl
@@ -35,11 +33,10 @@ import io.github.sds100.keymapper.util.ui.PopupViewModel
 import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.SelectionState
-import io.github.sds100.keymapper.util.ui.TextListItem
 import io.github.sds100.keymapper.util.ui.ViewModelHelper
 import io.github.sds100.keymapper.util.ui.navigate
 import io.github.sds100.keymapper.util.ui.showPopup
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -49,7 +46,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -77,13 +73,11 @@ class HomeViewModel(
     private companion object {
         const val ID_ACCESSIBILITY_SERVICE_DISABLED_LIST_ITEM = "accessibility_service_disabled"
         const val ID_ACCESSIBILITY_SERVICE_CRASHED_LIST_ITEM = "accessibility_service_crashed"
-        const val ID_ACCESSIBILITY_SERVICE_ENABLED_LIST_ITEM = "accessibility_service_enabled"
         const val ID_BATTERY_OPTIMISATION_LIST_ITEM = "battery_optimised"
-        const val ID_MAPPINGS_PAUSED_LIST_ITEM = "mappings_paused"
         const val ID_LOGGING_ENABLED_LIST_ITEM = "logging_enabled"
     }
 
-    private val multiSelectProvider: MultiSelectProvider<String> = MultiSelectProviderImpl()
+    private val multiSelectProvider: MultiSelectProvider = MultiSelectProvider()
     val navBarItems: StateFlow<List<HomeNavBarItem>> =
         listFloatingLayouts.showFloatingLayouts
             .map(::buildNavBarItems)
@@ -124,55 +118,17 @@ class HomeViewModel(
     private val _shareBackup = MutableSharedFlow<String>()
     val shareBackup = _shareBackup.asSharedFlow()
 
-    val selectionCountViewState = multiSelectProvider.state.map {
-        when (it) {
-            SelectionState.NotSelecting -> SelectionCountViewState(
-                isVisible = false,
-                text = "",
-            )
-
-            is SelectionState.Selecting<*> -> SelectionCountViewState(
-                isVisible = true,
-                text = getString(R.string.selection_count, it.selectedIds.size),
-            )
-        }
-    }
-        .flowOn(Dispatchers.Default)
-        .stateIn(
-            viewModelScope,
-            SharingStarted.Lazily,
-            SelectionCountViewState(
-                isVisible = false,
-                text = "",
-            ),
-        )
-
-    val appBarState = multiSelectProvider.state.map {
-        when (it) {
-            SelectionState.NotSelecting -> HomeAppBarState.NORMAL
-            is SelectionState.Selecting<*> -> HomeAppBarState.MULTI_SELECTING
-        }
-    }
-        .flowOn(Dispatchers.Default)
-        .stateIn(
-            viewModelScope,
-            SharingStarted.Lazily,
-            HomeAppBarState.NORMAL,
-        )
-
-    val errorListState = combine(
+    private val warnings: Flow<List<HomeWarningListItem>> = combine(
         showAlertsUseCase.isBatteryOptimised,
         showAlertsUseCase.accessibilityServiceState,
         showAlertsUseCase.hideAlerts,
-        showAlertsUseCase.areMappingsPaused,
         showAlertsUseCase.isLoggingEnabled,
-    ) { isBatteryOptimised, serviceState, isHidden, areMappingsPaused, isLoggingEnabled ->
-        val listItems = sequence {
-
+    ) { isBatteryOptimised, serviceState, isHidden, isLoggingEnabled ->
+        sequence {
             when (serviceState) {
                 ServiceState.CRASHED ->
                     yield(
-                        TextListItem.Error(
+                        HomeWarningListItem(
                             ID_ACCESSIBILITY_SERVICE_CRASHED_LIST_ITEM,
                             getString(R.string.home_error_accessibility_service_is_crashed),
                         ),
@@ -180,59 +136,51 @@ class HomeViewModel(
 
                 ServiceState.DISABLED ->
                     yield(
-                        TextListItem.Error(
+                        HomeWarningListItem(
                             ID_ACCESSIBILITY_SERVICE_DISABLED_LIST_ITEM,
                             getString(R.string.home_error_accessibility_service_is_disabled),
                         ),
                     )
 
-                ServiceState.ENABLED ->
-                    yield(
-                        TextListItem.Success(
-                            ID_ACCESSIBILITY_SERVICE_ENABLED_LIST_ITEM,
-                            getString(R.string.home_success_accessibility_service_is_enabled),
-                        ),
-                    )
+                ServiceState.ENABLED -> {}
             }
 
             if (isBatteryOptimised) {
                 yield(
-                    TextListItem.Error(
+                    HomeWarningListItem(
                         ID_BATTERY_OPTIMISATION_LIST_ITEM,
                         getString(R.string.home_error_is_battery_optimised),
                     ),
                 )
             } // don't show a success message for this
 
-            if (areMappingsPaused) {
-                yield(
-                    TextListItem.Error(
-                        ID_MAPPINGS_PAUSED_LIST_ITEM,
-                        getString(R.string.home_error_key_maps_paused),
-                        customButtonText = getString(R.string.home_error_key_maps_paused_button),
-                    ),
-                )
-            }
-
             if (isLoggingEnabled) {
                 yield(
-                    TextListItem.Error(
+                    HomeWarningListItem(
                         ID_LOGGING_ENABLED_LIST_ITEM,
                         getString(R.string.home_error_logging_enabled),
-                        customButtonText = getString(R.string.home_error_logging_enabled_button),
                     ),
                 )
             }
         }.toList()
-        HomeErrorListState(listItems, !isHidden)
-    }.flowOn(Dispatchers.Default)
-        .stateIn(viewModelScope, SharingStarted.Lazily, HomeErrorListState(emptyList(), false))
+    }
 
-    private val _showMenu = MutableSharedFlow<Unit>()
-    val showMenu = _showMenu.asSharedFlow()
-
-    private val _closeKeyMapper = MutableSharedFlow<Unit>()
-    val closeKeyMapper = _closeKeyMapper.asSharedFlow()
+    val state: StateFlow<HomeState> =
+        combine(
+            multiSelectProvider.state,
+            warnings,
+            showAlertsUseCase.areKeyMapsPaused,
+            listKeyMaps.areAllEnabled,
+        ) { selectionState, warnings, isPaused, areAllEnabled ->
+            if (selectionState !is SelectionState.Selecting) {
+                HomeState.Selecting(
+                    multiSelectProvider.getSelectedIds().size,
+                    areAllEnabled,
+                )
+            } else {
+                HomeState.Normal(warnings, isPaused)
+            }
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, HomeState.Normal())
 
     init {
         viewModelScope.launch {
@@ -350,68 +298,28 @@ class HomeViewModel(
         onboarding.shownQuickStartGuideHint()
     }
 
-    fun onAppBarNavigationButtonClick() {
-        viewModelScope.launch {
-            if (multiSelectProvider.state.value is SelectionState.Selecting<*>) {
-                multiSelectProvider.stopSelecting()
-            } else {
-                _showMenu.emit(Unit)
-            }
-        }
-    }
-
-    fun onBackPressed() {
-        viewModelScope.launch {
-            if (multiSelectProvider.state.value is SelectionState.Selecting<*>) {
-                multiSelectProvider.stopSelecting()
-            } else {
-                _closeKeyMapper.emit(Unit)
-            }
-        }
-    }
-
-    fun onFabPressed() {
-        viewModelScope.launch {
-            val selectionState = multiSelectProvider.state.value
-            if (selectionState is SelectionState.Selecting<*>) {
-                val selectedIds = selectionState.selectedIds as Set<String>
-
-                listKeyMaps.deleteKeyMap(*selectedIds.toTypedArray())
-
-                multiSelectProvider.stopSelecting()
-            } else {
-                navigate("create_new_keymap", NavDestination.ConfigKeyMap(keyMapUid = null))
-            }
-        }
-    }
-
     fun onSelectAllClick() {
         keymapListViewModel.selectAll()
     }
 
-    fun onEnableSelectedKeymapsClick() {
+    fun onSetKeyMapsEnabledClick(enabled: Boolean) {
         val selectionState = multiSelectProvider.state.value
 
-        if (selectionState !is SelectionState.Selecting<*>) return
-        val selectedIds = selectionState.selectedIds as Set<String>
+        if (selectionState !is SelectionState.Selecting) return
+        val selectedIds = selectionState.selectedIds
 
-        listKeyMaps.enableKeyMap(*selectedIds.toTypedArray())
-    }
-
-    fun onDisableSelectedKeymapsClick() {
-        val selectionState = multiSelectProvider.state.value
-
-        if (selectionState !is SelectionState.Selecting<*>) return
-        val selectedIds = selectionState.selectedIds as Set<String>
-
-        listKeyMaps.disableKeyMap(*selectedIds.toTypedArray())
+        if (enabled) {
+            listKeyMaps.enableKeyMap(*selectedIds.toTypedArray())
+        } else {
+            listKeyMaps.disableKeyMap(*selectedIds.toTypedArray())
+        }
     }
 
     fun onDuplicateSelectedKeymapsClick() {
         val selectionState = multiSelectProvider.state.value
 
-        if (selectionState !is SelectionState.Selecting<*>) return
-        val selectedIds = selectionState.selectedIds as Set<String>
+        if (selectionState !is SelectionState.Selecting) return
+        val selectedIds = selectionState.selectedIds
 
         listKeyMaps.duplicateKeyMap(*selectedIds.toTypedArray())
     }
@@ -420,9 +328,9 @@ class HomeViewModel(
         viewModelScope.launch {
             val selectionState = multiSelectProvider.state.first()
 
-            if (selectionState !is SelectionState.Selecting<*>) return@launch
+            if (selectionState !is SelectionState.Selecting) return@launch
 
-            val selectedIds = selectionState.selectedIds as Set<String>
+            val selectedIds = selectionState.selectedIds
 
             launch {
                 val result = listKeyMaps.backupKeyMaps(*selectedIds.toTypedArray(), uri = uri)
@@ -434,7 +342,7 @@ class HomeViewModel(
         }
     }
 
-    fun onFixErrorListItemClick(id: String) {
+    fun onFixWarningClick(id: String) {
         viewModelScope.launch {
             when (id) {
                 ID_ACCESSIBILITY_SERVICE_DISABLED_LIST_ITEM -> {
@@ -465,7 +373,6 @@ class HomeViewModel(
                     )
 
                 ID_BATTERY_OPTIMISATION_LIST_ITEM -> showAlertsUseCase.disableBatteryOptimisation()
-                ID_MAPPINGS_PAUSED_LIST_ITEM -> showAlertsUseCase.resumeMappings()
                 ID_LOGGING_ENABLED_LIST_ITEM -> showAlertsUseCase.disableLogging()
             }
         }
@@ -557,19 +464,17 @@ class HomeViewModel(
     }
 }
 
-data class SelectionCountViewState(
-    val isVisible: Boolean,
-    val text: String,
-)
-
-enum class HomeAppBarState {
-    NORMAL,
-    MULTI_SELECTING,
+sealed class HomeState {
+    data class Selecting(val selectionCount: Int, val allKeyMapsEnabled: Boolean) : HomeState()
+    data class Normal(
+        val warnings: List<HomeWarningListItem> = emptyList(),
+        val isPaused: Boolean = false,
+    ) : HomeState()
 }
 
-data class HomeErrorListState(
-    val listItems: List<ListItem>,
-    val isVisible: Boolean,
+data class HomeWarningListItem(
+    val id: String,
+    val text: String,
 )
 
 data class HomeNavBarItem(

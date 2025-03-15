@@ -38,11 +38,11 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-open class KeyMapListViewModel(
+class KeyMapListViewModel(
     private val coroutineScope: CoroutineScope,
     private val listKeyMaps: ListKeyMapsUseCase,
     resourceProvider: ResourceProvider,
-    private val multiSelectProvider: MultiSelectProvider<String>,
+    private val multiSelectProvider: MultiSelectProvider,
     private val setupGuiKeyboard: SetupGuiKeyboardUseCase,
     private val sortKeyMaps: SortKeyMapsUseCase,
 ) : PopupViewModel by PopupViewModelImpl(),
@@ -149,7 +149,7 @@ open class KeyMapListViewModel(
 
                 _state.value = listItemContentList.mapData { contentList ->
                     contentList.map { content ->
-                        val isSelected = if (selectionState is SelectionState.Selecting<*>) {
+                        val isSelected = if (selectionState is SelectionState.Selecting) {
                             selectionState.selectedIds.contains(content.uid)
                         } else {
                             false
@@ -163,7 +163,7 @@ open class KeyMapListViewModel(
     }
 
     fun onKeyMapCardClick(uid: String) {
-        if (multiSelectProvider.state.value is SelectionState.Selecting<*>) {
+        if (multiSelectProvider.state.value is SelectionState.Selecting) {
             multiSelectProvider.toggleSelection(uid)
         } else {
             coroutineScope.launch {

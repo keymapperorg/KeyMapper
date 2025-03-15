@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
 /**
@@ -51,6 +52,10 @@ class ListKeyMapsUseCaseImpl(
         }
     }
 
+    override val areAllEnabled: Flow<Boolean> = keyMapList.map { state ->
+        state.dataOrNull()?.all { it.isEnabled } == true
+    }
+
     override fun deleteKeyMap(vararg uid: String) {
         keyMapRepository.delete(*uid)
     }
@@ -72,6 +77,8 @@ class ListKeyMapsUseCaseImpl(
 
 interface ListKeyMapsUseCase : DisplayKeyMapUseCase {
     val keyMapList: Flow<State<List<KeyMap>>>
+    val areAllEnabled: Flow<Boolean>
+
     fun deleteKeyMap(vararg uid: String)
     fun enableKeyMap(vararg uid: String)
     fun disableKeyMap(vararg uid: String)

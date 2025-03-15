@@ -9,7 +9,6 @@ import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ifIsData
 import io.github.sds100.keymapper.util.mapData
 import io.github.sds100.keymapper.util.ui.MultiSelectProvider
-import io.github.sds100.keymapper.util.ui.MultiSelectProviderImpl
 import io.github.sds100.keymapper.util.ui.PopupUi
 import io.github.sds100.keymapper.util.ui.PopupViewModel
 import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
@@ -43,7 +42,7 @@ class LogViewModel(
 ) : ViewModel(),
     PopupViewModel by PopupViewModelImpl(),
     ResourceProvider by resourceProvider {
-    private val multiSelectProvider: MultiSelectProvider<Int> = MultiSelectProviderImpl()
+    private val multiSelectProvider: MultiSelectProvider = MultiSelectProvider()
 
     private val _listItems = MutableStateFlow<State<List<LogEntryListItem>>>(State.Loading)
     val listItems = _listItems.asStateFlow()
@@ -56,7 +55,7 @@ class LogViewModel(
     val appBarState: StateFlow<LogAppBarState> = multiSelectProvider.state
         .map { selectionState ->
             when (selectionState) {
-                is SelectionState.Selecting<*> -> LogAppBarState.MULTI_SELECTING
+                is SelectionState.Selecting -> LogAppBarState.MULTI_SELECTING
                 else -> LogAppBarState.NORMAL
             }
         }
@@ -68,14 +67,13 @@ class LogViewModel(
     val goBack = _goBack.asSharedFlow()
 
     val dragSelectionHandler = object : DragSelectionProcessor.ISelectionHandler {
-        override fun getSelection(): MutableSet<Int> =
-            multiSelectProvider.getSelectedIds().toMutableSet()
+        override fun getSelection(): MutableSet<Int> = multiSelectProvider.getSelectedIds().map { it.toInt() }.toMutableSet()
 
         override fun isSelected(index: Int): Boolean {
             listItems.value.ifIsData {
                 val id = it.getOrNull(index)?.id ?: return false
 
-                return multiSelectProvider.isSelected(id)
+                return multiSelectProvider.isSelected(id.toString())
             }
 
             return false
@@ -89,7 +87,7 @@ class LogViewModel(
         ) {
             listItems.value.ifIsData { listItems ->
                 val selectedListItems = listItems.slice(start..end)
-                val selectedIds = selectedListItems.map { it.id }.toTypedArray()
+                val selectedIds = selectedListItems.map { it.id.toString() }.toTypedArray()
 
                 if (calledFromOnStart) {
                     multiSelectProvider.startSelecting()
@@ -112,8 +110,8 @@ class LogViewModel(
         ) { log, showShortMessages, selectionState ->
             _listItems.value = log.mapData { logEntries ->
                 logEntries.map { entry ->
-                    val isSelected = if (selectionState is SelectionState.Selecting<*>) {
-                        selectionState.selectedIds.contains(entry.id)
+                    val isSelected = if (selectionState is SelectionState.Selecting) {
+                        selectionState.selectedIds.contains(entry.id.toString())
                     } else {
                         false
                     }
@@ -144,7 +142,7 @@ class LogViewModel(
     }
 
     fun onListItemClick(id: Int) {
-        multiSelectProvider.toggleSelection(id)
+        multiSelectProvider.toggleSelection(id.toString())
     }
 
     fun onBackPressed() {
@@ -164,7 +162,7 @@ class LogViewModel(
     }
 
     private suspend fun getSelectedLogEntries(): Set<Int> = if (multiSelectProvider.isSelecting()) {
-        multiSelectProvider.getSelectedIds()
+        multiSelectProvider.getSelectedIds().map { it.toInt() }.toSet()
     } else {
         val logState = useCase.log.first()
 
@@ -207,8 +205,7 @@ class LogViewModel(
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>) =
-            LogViewModel(useCase, resourceProvider) as T
+        override fun <T : ViewModel> create(modelClass: Class<T>) = LogViewModel(useCase, resourceProvider) as T
     }
 }
 
