@@ -323,7 +323,11 @@ private fun TriggerDescription(
     separator: ImageVector,
 ) {
     val text = buildAnnotatedString {
+        pushStyle(
+            MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold).toSpanStyle(),
+        )
         append(stringResource(R.string.trigger_header))
+        pop()
         append(" ")
 
         for ((index, key) in triggerKeys.withIndex()) {
