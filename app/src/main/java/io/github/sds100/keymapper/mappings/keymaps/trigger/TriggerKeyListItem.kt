@@ -16,10 +16,10 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.DragHandle
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.outlined.Assistant
 import androidx.compose.material.icons.outlined.BubbleChart
 import androidx.compose.material.icons.outlined.Fingerprint
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -197,7 +197,7 @@ fun TriggerKeyListItem(
 
                     IconButton(onClick = onEditClick) {
                         Icon(
-                            imageVector = Icons.Filled.Edit,
+                            imageVector = Icons.Outlined.Settings,
                             contentDescription = stringResource(R.string.trigger_key_list_item_edit),
                             tint = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.size(24.dp),
