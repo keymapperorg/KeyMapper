@@ -1,11 +1,18 @@
 package io.github.sds100.keymapper.home
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -394,31 +401,51 @@ private fun AppBarStatus(
     onTogglePausedClick: () -> Unit,
 ) {
     if (homeState.warnings.isEmpty()) {
-        if (homeState.isPaused) {
-            FilledTonalButton(
-                onClick = onTogglePausedClick,
-                colors = ButtonDefaults.filledTonalButtonColors(
-                    containerColor = MaterialTheme.colorScheme.errorContainer,
-                    contentColor = MaterialTheme.colorScheme.onErrorContainer,
-                ),
-                contentPadding = PaddingValues(horizontal = 12.dp),
+        val buttonContainerColor by animateColorAsState(
+            targetValue = if (homeState.isPaused) {
+                MaterialTheme.colorScheme.errorContainer
+            } else {
+                LocalCustomColorsPalette.current.greenContainer
+            },
+        )
+
+        val buttonContentColor by animateColorAsState(
+            targetValue = if (homeState.isPaused) {
+                MaterialTheme.colorScheme.onErrorContainer
+            } else {
+                LocalCustomColorsPalette.current.onGreenContainer
+            },
+        )
+
+        FilledTonalButton(
+            onClick = onTogglePausedClick,
+            colors = ButtonDefaults.filledTonalButtonColors(
+                containerColor = buttonContainerColor,
+                contentColor = buttonContentColor,
+            ),
+            contentPadding = PaddingValues(horizontal = 12.dp),
+        ) {
+            AnimatedVisibility(
+                visible = !homeState.isPaused,
+                enter = fadeIn() + slideInHorizontally() + expandHorizontally(),
+                exit = fadeOut() + slideOutHorizontally() + shrinkHorizontally(),
             ) {
-                Icon(Icons.Outlined.PauseCircle, contentDescription = null)
-                Spacer(modifier = Modifier.padding(4.dp))
-                Text(stringResource(R.string.home_app_bar_status_paused))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Outlined.PlayArrow, contentDescription = null)
+                    Spacer(modifier = Modifier.padding(4.dp))
+                    Text(stringResource(R.string.home_app_bar_status_running))
+                }
             }
-        } else {
-            FilledTonalButton(
-                onClick = onTogglePausedClick,
-                colors = ButtonDefaults.filledTonalButtonColors(
-                    containerColor = LocalCustomColorsPalette.current.greenContainer,
-                    contentColor = LocalCustomColorsPalette.current.onGreenContainer,
-                ),
-                contentPadding = PaddingValues(horizontal = 12.dp),
+            AnimatedVisibility(
+                visible = homeState.isPaused,
+                enter = fadeIn() + slideInHorizontally() + expandHorizontally(),
+                exit = fadeOut() + slideOutHorizontally() + shrinkHorizontally(),
             ) {
-                Icon(Icons.Outlined.PlayArrow, contentDescription = null)
-                Spacer(modifier = Modifier.padding(4.dp))
-                Text(stringResource(R.string.home_app_bar_status_running))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Outlined.PauseCircle, contentDescription = null)
+                    Spacer(modifier = Modifier.padding(4.dp))
+                    Text(stringResource(R.string.home_app_bar_status_paused))
+                }
             }
         }
     } else {
