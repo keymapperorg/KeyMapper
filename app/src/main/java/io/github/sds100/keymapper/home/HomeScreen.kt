@@ -2,33 +2,56 @@ package io.github.sds100.keymapper.home
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.automirrored.outlined.Sort
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.BubbleChart
+import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material.icons.outlined.Gamepad
 import androidx.compose.material.icons.outlined.Menu
+import androidx.compose.material.icons.outlined.PauseCircle
+import androidx.compose.material.icons.outlined.PlayArrow
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,10 +60,15 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -51,6 +79,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
+import io.github.sds100.keymapper.compose.LocalCustomColorsPalette
 import io.github.sds100.keymapper.floating.FloatingLayoutsScreen
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapListScreen
 import io.github.sds100.keymapper.mappings.keymaps.trigger.DpadTriggerSetupBottomSheet
@@ -61,7 +90,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(viewModel: HomeViewModel) {
+fun HomeScreen(viewModel: HomeViewModel, onMenuClick: () -> Unit) {
     val homeState by viewModel.state.collectAsStateWithLifecycle()
 
     val navController = rememberNavController()
@@ -100,18 +129,23 @@ fun HomeScreen(viewModel: HomeViewModel) {
     val scope = rememberCoroutineScope()
     val uriHandler = LocalUriHandler.current
     val helpUrl = stringResource(R.string.url_quick_start_guide)
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     HomeScreen(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         state = homeState,
         navController = navController,
         navBarItems = navBarItems,
         topAppBar = {
             HomeAppBar(
-                onMenuClick = {},
+                scrollBehavior = scrollBehavior,
+                homeState = homeState,
+                onMenuClick = onMenuClick,
                 onSortClick = { showSortBottomSheet = true },
                 onHelpClick = {
                     uriHandler.openUri(helpUrl)
                 },
+                onFixWarningClick = viewModel::onFixWarningClick,
             )
         },
         keyMapsContent = {
@@ -160,6 +194,7 @@ fun HomeScreen(viewModel: HomeViewModel) {
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeScreen(
     modifier: Modifier = Modifier,
@@ -191,7 +226,31 @@ private fun HomeScreen(
             NavigationBar {
                 navBarItems.forEach { item ->
                     NavigationBarItem(
-                        icon = { Icon(item.icon, contentDescription = null) },
+                        icon = {
+                            if (item.badge == null) {
+                                Icon(item.icon, contentDescription = null)
+                            } else {
+                                BadgedBox(
+                                    badge = {
+                                        Badge(
+                                            modifier = Modifier
+                                                .height(22.dp)
+                                                .padding(start = 10.dp),
+                                            containerColor = MaterialTheme.colorScheme.primary,
+                                            contentColor = MaterialTheme.colorScheme.onPrimary,
+                                        ) {
+                                            Text(
+                                                modifier = Modifier.padding(horizontal = 2.dp),
+                                                text = item.badge,
+                                                style = MaterialTheme.typography.labelLarge,
+                                            )
+                                        }
+                                    },
+                                ) {
+                                    Icon(item.icon, contentDescription = null)
+                                }
+                            }
+                        },
                         label = { Text(item.label) },
                         selected = currentDestination?.hierarchy?.any { it.route == item.destination.route } == true,
                         onClick = {
@@ -252,39 +311,176 @@ private fun HomeScreen(
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 private fun HomeAppBar(
+    homeState: HomeState,
     onMenuClick: () -> Unit = {},
     onSortClick: () -> Unit = {},
     onHelpClick: () -> Unit = {},
+    onPausedClick: () -> Unit = {},
+    onFixWarningClick: (String) -> Unit = {},
+    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
 ) {
-    CenterAlignedTopAppBar(
-        title = {
-            Text("Running")
-        },
-        navigationIcon = {
-            IconButton(onClick = onMenuClick) {
-                Icon(
-                    Icons.Outlined.Menu,
-                    contentDescription = stringResource(R.string.home_app_bar_menu),
-                )
+    val colorTransitionFraction by
+        remember(scrollBehavior) {
+            // derivedStateOf to prevent redundant recompositions when the content scrolls.
+            derivedStateOf {
+                val overlappingFraction = scrollBehavior?.state?.overlappedFraction ?: 0f
+                if (overlappingFraction > 0.01f) 1f else 0f
             }
-        },
-        actions = {
-            IconButton(onClick = onSortClick) {
-                Icon(
-                    Icons.AutoMirrored.Outlined.Sort,
-                    contentDescription = stringResource(R.string.home_app_bar_sort),
-                )
-            }
-            IconButton(onClick = onHelpClick) {
-                Icon(
-                    Icons.AutoMirrored.Outlined.HelpOutline,
-                    contentDescription = stringResource(R.string.home_app_bar_help),
-                )
-            }
-        },
-        colors = TopAppBarDefaults.topAppBarColors()
-            .copy(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+        }
+    val appBarColors = TopAppBarDefaults.topAppBarColors()
+
+    val appBarContainerColor by animateColorAsState(
+        targetValue = lerp(
+            appBarColors.containerColor,
+            appBarColors.scrolledContainerColor,
+            FastOutLinearInEasing.transform(colorTransitionFraction),
+        ),
+        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
     )
+
+    Column {
+        CenterAlignedTopAppBar(
+            scrollBehavior = scrollBehavior,
+            title = {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    if (homeState is HomeState.Normal) {
+                        AppBarStatus(homeState = homeState, onPausedClick = onPausedClick)
+                    }
+                }
+            },
+            navigationIcon = {
+                IconButton(onClick = onMenuClick) {
+                    Icon(
+                        Icons.Outlined.Menu,
+                        contentDescription = stringResource(R.string.home_app_bar_menu),
+                    )
+                }
+            },
+            actions = {
+                IconButton(onClick = onSortClick) {
+                    Icon(
+                        Icons.AutoMirrored.Outlined.Sort,
+                        contentDescription = stringResource(R.string.home_app_bar_sort),
+                    )
+                }
+                IconButton(onClick = onHelpClick) {
+                    Icon(
+                        Icons.AutoMirrored.Outlined.HelpOutline,
+                        contentDescription = stringResource(R.string.home_app_bar_help),
+                    )
+                }
+            },
+            colors = appBarColors,
+        )
+        if (homeState is HomeState.Normal && homeState.warnings.isNotEmpty()) {
+            // Footer area that collapses with the app bar
+//            AnimatedVisibility(visible = scrollBehavior.state.overlappedFraction == 0f) {
+            Surface(color = appBarContainerColor) {
+                WarningList(
+                    warnings = homeState.warnings,
+                    onFixClick = onFixWarningClick,
+                )
+            }
+//            }
+        }
+    }
+}
+
+@Composable
+private fun AppBarStatus(
+    homeState: HomeState.Normal,
+    onPausedClick: () -> Unit,
+) {
+    if (homeState.warnings.isEmpty()) {
+        if (homeState.isPaused) {
+            FilledTonalButton(
+                onClick = onPausedClick,
+                colors = ButtonDefaults.filledTonalButtonColors(
+                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                    contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                ),
+                contentPadding = PaddingValues(horizontal = 12.dp),
+            ) {
+                Icon(Icons.Outlined.PauseCircle, contentDescription = null)
+                Spacer(modifier = Modifier.padding(4.dp))
+                Text(stringResource(R.string.home_app_bar_status_paused))
+            }
+        } else {
+            FilledTonalButton(
+                onClick = onPausedClick,
+                colors = ButtonDefaults.filledTonalButtonColors(
+                    containerColor = LocalCustomColorsPalette.current.greenContainer,
+                    contentColor = LocalCustomColorsPalette.current.onGreenContainer,
+                ),
+                contentPadding = PaddingValues(horizontal = 12.dp),
+            ) {
+                Icon(Icons.Outlined.PlayArrow, contentDescription = null)
+                Spacer(modifier = Modifier.padding(4.dp))
+                Text(stringResource(R.string.home_app_bar_status_running))
+            }
+        }
+    } else {
+        FilledTonalButton(
+            onClick = {},
+            enabled = false,
+            colors = ButtonDefaults.filledTonalButtonColors(
+                containerColor = MaterialTheme.colorScheme.errorContainer,
+                contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                disabledContainerColor = MaterialTheme.colorScheme.errorContainer,
+                disabledContentColor = MaterialTheme.colorScheme.onErrorContainer,
+            ),
+            contentPadding = PaddingValues(horizontal = 12.dp),
+        ) {
+            Icon(Icons.Outlined.ErrorOutline, contentDescription = null)
+            Spacer(modifier = Modifier.padding(4.dp))
+            Text(
+                pluralStringResource(
+                    R.plurals.home_app_bar_status_warnings,
+                    homeState.warnings.size,
+                    homeState.warnings.size,
+                ),
+            )
+        }
+    }
+}
+
+@Composable
+private fun WarningList(
+    modifier: Modifier = Modifier,
+    warnings: List<HomeWarningListItem>,
+    onFixClick: (String) -> Unit,
+) {
+    OutlinedCard(
+        modifier = Modifier.padding(horizontal = 8.dp),
+        colors = CardDefaults.outlinedCardColors(containerColor = Color.Transparent),
+    ) {
+        Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            for (warning in warnings) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = warning.text,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    FilledTonalButton(
+                        onClick = { onFixClick(warning.id) },
+                        colors = ButtonDefaults.filledTonalButtonColors(
+                            containerColor = MaterialTheme.colorScheme.error,
+                            contentColor = MaterialTheme.colorScheme.onError,
+                        ),
+                    ) {
+                        Text(stringResource(R.string.button_fix))
+                    }
+                }
+            }
+        }
+    }
 }
 
 private fun sampleNavBarItems(): List<HomeNavBarItem> {
@@ -298,79 +494,88 @@ private fun sampleNavBarItems(): List<HomeNavBarItem> {
             icon = Icons.Outlined.BubbleChart,
             label = "Floating Buttons",
             destination = HomeDestination.FloatingButtons,
+            badge = "NEW!",
         ),
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 private fun HomeStateRunningPreview() {
+    val state = HomeState.Normal(warnings = emptyList(), isPaused = false)
     KeyMapperTheme {
         HomeScreen(
-            state = HomeState.Normal(warnings = emptyList(), isPaused = false),
+            state = state,
             navController = rememberNavController(),
             navBarItems = sampleNavBarItems(),
-            topAppBar = { HomeAppBar() },
             keyMapsContent = {},
+            topAppBar = { HomeAppBar(state) },
             floatingButtonsContent = {},
         )
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 private fun HomeStatePausedPreview() {
+    val state = HomeState.Normal(warnings = emptyList(), isPaused = true)
     KeyMapperTheme {
         HomeScreen(
-            state = HomeState.Normal(warnings = emptyList(), isPaused = true),
+            state = state,
             navController = rememberNavController(),
             navBarItems = sampleNavBarItems(),
-            topAppBar = { HomeAppBar() },
+            topAppBar = { HomeAppBar(state) },
             keyMapsContent = {},
             floatingButtonsContent = {},
         )
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 private fun HomeStateWarningsPreview() {
+    val state = HomeState.Normal(
+        warnings = listOf(
+            HomeWarningListItem(
+                id = "0",
+                text = stringResource(R.string.home_error_accessibility_service_is_disabled),
+            ),
+            HomeWarningListItem(
+                id = "1",
+                text = stringResource(R.string.home_error_is_battery_optimised),
+            ),
+        ),
+        isPaused = true,
+    )
     KeyMapperTheme {
         HomeScreen(
-            state = HomeState.Normal(
-                warnings = listOf(
-                    HomeWarningListItem(
-                        id = "0",
-                        text = stringResource(R.string.home_error_accessibility_service_is_disabled),
-                    ),
-                    HomeWarningListItem(
-                        id = "1",
-                        text = stringResource(R.string.home_error_is_battery_optimised),
-                    ),
-                ),
-                isPaused = true,
-            ),
+            state = state,
             navController = rememberNavController(),
             navBarItems = sampleNavBarItems(),
-            topAppBar = { HomeAppBar() },
+            topAppBar = { HomeAppBar(state) },
             keyMapsContent = {},
             floatingButtonsContent = {},
         )
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 private fun HomeStateSelectingPreview() {
+    val state = HomeState.Selecting(
+        selectionCount = 4,
+        allKeyMapsEnabled = true,
+    )
     KeyMapperTheme {
         HomeScreen(
-            state = HomeState.Selecting(
-                selectionCount = 4,
-                allKeyMapsEnabled = true,
-            ),
+            state = state,
             navController = rememberNavController(),
             navBarItems = sampleNavBarItems(),
-            topAppBar = { HomeAppBar() },
+            topAppBar = { HomeAppBar(state) },
             keyMapsContent = {},
             floatingButtonsContent = {},
         )

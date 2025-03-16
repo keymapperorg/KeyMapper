@@ -1357,5 +1357,11 @@
     <string name="sort_bottom_sheet_actions">Actions</string>
     <string name="sort_bottom_sheet_constraints">Constraints</string>
     <string name="sort_bottom_sheet_options">Options</string>
+    <string name="home_app_bar_status_paused">Paused</string>
+    <plurals name="home_app_bar_status_warnings">
+        <item quantity="one">1 warning</item>
+        <item quantity="other">%d warnings</item>
+    </plurals>
+    <string name="home_app_bar_status_running">Running</string>
 
 </resources>

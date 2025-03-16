@@ -177,7 +177,7 @@ class HomeViewModel(
             showAlertsUseCase.areKeyMapsPaused,
             listKeyMaps.areAllEnabled,
         ) { selectionState, warnings, isPaused, areAllEnabled ->
-            if (selectionState !is SelectionState.Selecting) {
+            if (selectionState is SelectionState.Selecting) {
                 HomeState.Selecting(
                     multiSelectProvider.getSelectedIds().size,
                     areAllEnabled,
@@ -220,6 +220,7 @@ class HomeViewModel(
                 HomeDestination.KeyMaps,
                 getString(R.string.home_nav_bar_key_maps),
                 icon = Icons.Outlined.Gamepad,
+                badge = null
             ),
         )
 
@@ -229,6 +230,7 @@ class HomeViewModel(
                     HomeDestination.FloatingButtons,
                     getString(R.string.home_nav_bar_floating_buttons),
                     icon = Icons.Outlined.BubbleChart,
+                    badge = getString(R.string.button_advanced_triggers_badge)
                 ),
             )
         }
@@ -486,4 +488,5 @@ data class HomeNavBarItem(
     val destination: HomeDestination,
     val label: String,
     val icon: ImageVector,
+    val badge: String? = null
 )

@@ -41,7 +41,11 @@ object ComposeColors {
     val surfaceContainerHighestLight = Color(0xFFE2E2E9)
     val redLight = Color(0xffd32f2f)
     val onRedLight = Color(0xFFFFFFFF)
-    val greenLight = Color(0xff4CAF50)
+    val greenLight = Color(0xFF3B6939)
+    val onGreenLight = Color(0xFFFFFFFF)
+    val greenContainerLight = Color(0xFFBCF0B4)
+    val onGreenContainerLight = Color(0xFF235024)
+
 
     val primaryDark = Color(0xFFAAC7FF)
     val onPrimaryDark = Color(0xFF0A305F)
@@ -80,5 +84,9 @@ object ComposeColors {
     val surfaceContainerHighestDark = Color(0xFF33353A)
     val redDark = Color(0xffff7961)
     val onRedDark = Color(0xFFFFFFFF)
-    val greenDark = Color(0xff80e27e)
+    val greenDark = Color(0xFFA1D39A)
+    val onGreenDark = Color(0xFF0A390F)
+    val greenContainerDark = Color(0xFF235024)
+    val onGreenContainerDark = Color(0xFFBCF0B4)
+
 }
