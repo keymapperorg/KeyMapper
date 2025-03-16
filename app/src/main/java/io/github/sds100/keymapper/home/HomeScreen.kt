@@ -194,7 +194,6 @@ fun HomeScreen(viewModel: HomeViewModel, onMenuClick: () -> Unit) {
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeScreen(
     modifier: Modifier = Modifier,
@@ -319,11 +318,12 @@ private fun HomeAppBar(
     onFixWarningClick: (String) -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
 ) {
+    // This is taken from the AppBar color code.
     val colorTransitionFraction by
         remember(scrollBehavior) {
             // derivedStateOf to prevent redundant recompositions when the content scrolls.
             derivedStateOf {
-                val overlappingFraction = scrollBehavior?.state?.overlappedFraction ?: 0f
+                val overlappingFraction = scrollBehavior.state.overlappedFraction
                 if (overlappingFraction > 0.01f) 1f else 0f
             }
         }
@@ -373,15 +373,13 @@ private fun HomeAppBar(
             colors = appBarColors,
         )
         if (homeState is HomeState.Normal && homeState.warnings.isNotEmpty()) {
-            // Footer area that collapses with the app bar
-//            AnimatedVisibility(visible = scrollBehavior.state.overlappedFraction == 0f) {
             Surface(color = appBarContainerColor) {
                 WarningList(
+                    modifier = Modifier.padding(bottom = 8.dp),
                     warnings = homeState.warnings,
                     onFixClick = onFixWarningClick,
                 )
             }
-//            }
         }
     }
 }
@@ -450,12 +448,12 @@ private fun WarningList(
     warnings: List<HomeWarningListItem>,
     onFixClick: (String) -> Unit,
 ) {
-    OutlinedCard(
-        modifier = Modifier.padding(horizontal = 8.dp),
-        colors = CardDefaults.outlinedCardColors(containerColor = Color.Transparent),
-    ) {
-        Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            for (warning in warnings) {
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        for (warning in warnings) {
+            OutlinedCard(
+                modifier = Modifier.padding(horizontal = 8.dp),
+                colors = CardDefaults.outlinedCardColors(containerColor = Color.Transparent),
+            ) {
                 Row(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically,

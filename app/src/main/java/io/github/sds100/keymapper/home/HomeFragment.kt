@@ -84,6 +84,7 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        homeViewModel.showPopups(this, view)
         homeViewModel.keymapListViewModel.showPopups(this, view)
         homeViewModel.listFloatingLayoutsViewModel.showPopups(this, view)
     }

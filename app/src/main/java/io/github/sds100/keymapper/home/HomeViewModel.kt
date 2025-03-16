@@ -220,7 +220,7 @@ class HomeViewModel(
                 HomeDestination.KeyMaps,
                 getString(R.string.home_nav_bar_key_maps),
                 icon = Icons.Outlined.Gamepad,
-                badge = null
+                badge = null,
             ),
         )
 
@@ -230,7 +230,7 @@ class HomeViewModel(
                     HomeDestination.FloatingButtons,
                     getString(R.string.home_nav_bar_floating_buttons),
                     icon = Icons.Outlined.BubbleChart,
-                    badge = getString(R.string.button_advanced_triggers_badge)
+                    badge = getString(R.string.button_advanced_triggers_badge),
                 ),
             )
         }
@@ -488,5 +488,5 @@ data class HomeNavBarItem(
     val destination: HomeDestination,
     val label: String,
     val icon: ImageVector,
-    val badge: String? = null
+    val badge: String? = null,
 )
