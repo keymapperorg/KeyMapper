@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.home
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -7,12 +8,11 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkHorizontally
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.automirrored.outlined.Sort
@@ -350,13 +351,11 @@ private fun HomeAppBar(
         CenterAlignedTopAppBar(
             scrollBehavior = scrollBehavior,
             title = {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    if (homeState is HomeState.Normal) {
-                        AppBarStatus(
-                            homeState = homeState,
-                            onTogglePausedClick = onTogglePausedClick,
-                        )
-                    }
+                if (homeState is HomeState.Normal) {
+                    AppBarStatus(
+                        homeState = homeState,
+                        onTogglePausedClick = onTogglePausedClick,
+                    )
                 }
             },
             navigationIcon = {
@@ -400,75 +399,92 @@ private fun AppBarStatus(
     homeState: HomeState.Normal,
     onTogglePausedClick: () -> Unit,
 ) {
-    if (homeState.warnings.isEmpty()) {
-        val buttonContainerColor by animateColorAsState(
-            targetValue = if (homeState.isPaused) {
-                MaterialTheme.colorScheme.errorContainer
-            } else {
-                LocalCustomColorsPalette.current.greenContainer
-            },
-        )
+    val pausedButtonContainerColor by animateColorAsState(
+        targetValue = if (homeState.isPaused) {
+            MaterialTheme.colorScheme.errorContainer
+        } else {
+            LocalCustomColorsPalette.current.greenContainer
+        },
+    )
 
-        val buttonContentColor by animateColorAsState(
-            targetValue = if (homeState.isPaused) {
-                MaterialTheme.colorScheme.onErrorContainer
-            } else {
-                LocalCustomColorsPalette.current.onGreenContainer
-            },
-        )
+    val pausedButtonContentColor by animateColorAsState(
+        targetValue = if (homeState.isPaused) {
+            MaterialTheme.colorScheme.onErrorContainer
+        } else {
+            LocalCustomColorsPalette.current.onGreenContainer
+        },
+    )
 
+    Row {
         FilledTonalButton(
+            modifier = Modifier.widthIn(min = 8.dp),
             onClick = onTogglePausedClick,
             colors = ButtonDefaults.filledTonalButtonColors(
-                containerColor = buttonContainerColor,
-                contentColor = buttonContentColor,
+                containerColor = pausedButtonContainerColor,
+                contentColor = pausedButtonContentColor,
             ),
             contentPadding = PaddingValues(horizontal = 12.dp),
         ) {
-            AnimatedVisibility(
-                visible = !homeState.isPaused,
-                enter = fadeIn() + slideInHorizontally() + expandHorizontally(),
-                exit = fadeOut() + slideOutHorizontally() + shrinkHorizontally(),
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Outlined.PlayArrow, contentDescription = null)
-                    Spacer(modifier = Modifier.padding(4.dp))
-                    Text(stringResource(R.string.home_app_bar_status_running))
-                }
+            val buttonIcon = if (homeState.isPaused) {
+                Icons.Outlined.PlayArrow
+            } else {
+                Icons.Outlined.PauseCircle
             }
-            AnimatedVisibility(
-                visible = homeState.isPaused,
-                enter = fadeIn() + slideInHorizontally() + expandHorizontally(),
-                exit = fadeOut() + slideOutHorizontally() + shrinkHorizontally(),
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Outlined.PauseCircle, contentDescription = null)
-                    Spacer(modifier = Modifier.padding(4.dp))
-                    Text(stringResource(R.string.home_app_bar_status_paused))
+
+            val transition =
+                slideInVertically { height -> -height } + fadeIn() togetherWith slideOutVertically { height -> height } + fadeOut()
+
+            AnimatedContent(targetState = buttonIcon, transitionSpec = { transition }) { icon ->
+                Icon(icon, contentDescription = null)
+            }
+
+            val buttonText = if (homeState.warnings.isEmpty()) {
+                if (homeState.isPaused) {
+                    stringResource(R.string.home_app_bar_status_paused)
+                } else {
+                    stringResource(R.string.home_app_bar_status_running)
+                }
+            } else {
+                null
+            }
+
+            AnimatedContent(
+                targetState = buttonText,
+                transitionSpec = { transition },
+            ) { text ->
+                if (text != null) {
+                    Row {
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(text)
+                    }
                 }
             }
         }
-    } else {
-        FilledTonalButton(
-            onClick = {},
-            enabled = false,
-            colors = ButtonDefaults.filledTonalButtonColors(
-                containerColor = MaterialTheme.colorScheme.errorContainer,
-                contentColor = MaterialTheme.colorScheme.onErrorContainer,
-                disabledContainerColor = MaterialTheme.colorScheme.errorContainer,
-                disabledContentColor = MaterialTheme.colorScheme.onErrorContainer,
-            ),
-            contentPadding = PaddingValues(horizontal = 12.dp),
-        ) {
-            Icon(Icons.Outlined.ErrorOutline, contentDescription = null)
-            Spacer(modifier = Modifier.padding(4.dp))
-            Text(
-                pluralStringResource(
-                    R.plurals.home_app_bar_status_warnings,
-                    homeState.warnings.size,
-                    homeState.warnings.size,
+
+        Spacer(modifier = Modifier.padding(4.dp))
+
+        AnimatedVisibility(homeState.warnings.isNotEmpty()) {
+            FilledTonalButton(
+                onClick = {},
+                enabled = false,
+                colors = ButtonDefaults.filledTonalButtonColors(
+                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                    contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                    disabledContainerColor = MaterialTheme.colorScheme.errorContainer,
+                    disabledContentColor = MaterialTheme.colorScheme.onErrorContainer,
                 ),
-            )
+                contentPadding = PaddingValues(horizontal = 12.dp),
+            ) {
+                Icon(Icons.Outlined.ErrorOutline, contentDescription = null)
+                Spacer(modifier = Modifier.padding(4.dp))
+                Text(
+                    pluralStringResource(
+                        R.plurals.home_app_bar_status_warnings,
+                        homeState.warnings.size,
+                        homeState.warnings.size,
+                    ),
+                )
+            }
         }
     }
 }
