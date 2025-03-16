@@ -145,6 +145,7 @@ fun HomeScreen(viewModel: HomeViewModel, onMenuClick: () -> Unit) {
                 onHelpClick = {
                     uriHandler.openUri(helpUrl)
                 },
+                onTogglePausedClick = viewModel::onTogglePausedClick,
                 onFixWarningClick = viewModel::onFixWarningClick,
             )
         },
@@ -314,7 +315,7 @@ private fun HomeAppBar(
     onMenuClick: () -> Unit = {},
     onSortClick: () -> Unit = {},
     onHelpClick: () -> Unit = {},
-    onPausedClick: () -> Unit = {},
+    onTogglePausedClick: () -> Unit = {},
     onFixWarningClick: (String) -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
 ) {
@@ -344,7 +345,10 @@ private fun HomeAppBar(
             title = {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     if (homeState is HomeState.Normal) {
-                        AppBarStatus(homeState = homeState, onPausedClick = onPausedClick)
+                        AppBarStatus(
+                            homeState = homeState,
+                            onTogglePausedClick = onTogglePausedClick,
+                        )
                     }
                 }
             },
@@ -387,12 +391,12 @@ private fun HomeAppBar(
 @Composable
 private fun AppBarStatus(
     homeState: HomeState.Normal,
-    onPausedClick: () -> Unit,
+    onTogglePausedClick: () -> Unit,
 ) {
     if (homeState.warnings.isEmpty()) {
         if (homeState.isPaused) {
             FilledTonalButton(
-                onClick = onPausedClick,
+                onClick = onTogglePausedClick,
                 colors = ButtonDefaults.filledTonalButtonColors(
                     containerColor = MaterialTheme.colorScheme.errorContainer,
                     contentColor = MaterialTheme.colorScheme.onErrorContainer,
@@ -405,7 +409,7 @@ private fun AppBarStatus(
             }
         } else {
             FilledTonalButton(
-                onClick = onPausedClick,
+                onClick = onTogglePausedClick,
                 colors = ButtonDefaults.filledTonalButtonColors(
                     containerColor = LocalCustomColorsPalette.current.greenContainer,
                     contentColor = LocalCustomColorsPalette.current.onGreenContainer,

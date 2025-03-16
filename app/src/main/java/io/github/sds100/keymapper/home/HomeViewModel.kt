@@ -385,6 +385,16 @@ class HomeViewModel(
         }
     }
 
+    fun onTogglePausedClick() {
+        viewModelScope.launch {
+            if (pauseMappings.isPaused.first()) {
+                pauseMappings.resume()
+            } else {
+                pauseMappings.pause()
+            }
+        }
+    }
+
     fun onChoseRestoreFile(uri: String) {
         viewModelScope.launch {
             when (val result = backupRestore.restoreMappings(uri)) {
