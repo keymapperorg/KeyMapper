@@ -382,13 +382,15 @@ private fun HomeAppBar(
             },
             colors = appBarColors,
         )
-        if (homeState is HomeState.Normal && homeState.warnings.isNotEmpty()) {
-            Surface(color = appBarContainerColor) {
-                WarningList(
-                    modifier = Modifier.padding(bottom = 8.dp),
-                    warnings = homeState.warnings,
-                    onFixClick = onFixWarningClick,
-                )
+        if (homeState is HomeState.Normal) {
+            AnimatedVisibility(homeState.warnings.isNotEmpty()) {
+                Surface(color = appBarContainerColor) {
+                    WarningList(
+                        modifier = Modifier.padding(bottom = 8.dp),
+                        warnings = homeState.warnings,
+                        onFixClick = onFixWarningClick,
+                    )
+                }
             }
         }
     }
