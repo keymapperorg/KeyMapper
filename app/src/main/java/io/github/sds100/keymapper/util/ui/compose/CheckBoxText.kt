@@ -24,17 +24,20 @@ fun CheckBoxText(
 ) {
     Surface(modifier = modifier, shape = MaterialTheme.shapes.medium, color = Color.Transparent) {
         Row(
-            modifier = Modifier.clickable(enabled = isEnabled) { onCheckedChange(!isChecked) },
+            modifier = Modifier
+                .clickable(enabled = isEnabled) { onCheckedChange(!isChecked) }
+                .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Checkbox(
                 enabled = isEnabled,
                 checked = isChecked,
-                onCheckedChange = onCheckedChange,
+                // This is null so tapping on the checkbox highlights the whole row.
+                onCheckedChange = null,
             )
 
             Text(
-                modifier = Modifier.padding(end = 8.dp),
+                modifier = Modifier.padding(horizontal = 8.dp),
 
                 text = text,
                 style = if (isEnabled) {

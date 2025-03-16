@@ -24,17 +24,20 @@ fun RadioButtonText(
 ) {
     Surface(modifier = modifier, shape = MaterialTheme.shapes.medium, color = Color.Transparent) {
         Row(
-            modifier = Modifier.clickable(enabled = isEnabled, onClick = onSelected),
+            modifier = Modifier
+                .clickable(enabled = isEnabled, onClick = onSelected)
+                .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             RadioButton(
                 selected = isSelected,
                 enabled = isEnabled,
-                onClick = onSelected,
+                // This is null so tapping on the radio button highlights the whole row.
+                onClick = null,
             )
 
             Text(
-                modifier = Modifier.padding(end = 8.dp),
+                modifier = Modifier.padding(horizontal = 8.dp),
                 text = text,
                 style = if (isEnabled) {
                     MaterialTheme.typography.bodyMedium
