@@ -6,7 +6,8 @@
 
 ## Bug fixes
 - #1461 fix: crash on startup due to getting MotionEvent device
-- 
+- #1518 fix: detect apps playing media without a notification for media constraints
+
 ## [2.8.1](https://github.com/sds100/KeyMapper/releases/tag/v2.8.1)
 
 #### 18 February 2025
