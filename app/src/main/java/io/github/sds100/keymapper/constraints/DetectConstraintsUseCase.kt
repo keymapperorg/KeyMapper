@@ -53,7 +53,7 @@ class DetectConstraintsUseCaseImpl(
             ConstraintDependency.APP_PLAYING_MEDIA, ConstraintDependency.MEDIA_PLAYING ->
                 merge(
                     mediaAdapter.getActiveMediaSessionPackagesFlow(),
-                    mediaAdapter.getActiveAudioContentTypesFlow(),
+                    mediaAdapter.getActiveAudioVolumeStreamsFlow(),
                 ).map { dependency }
 
             ConstraintDependency.CONNECTED_BT_DEVICES -> devicesAdapter.connectedBluetoothDevices.map { dependency }

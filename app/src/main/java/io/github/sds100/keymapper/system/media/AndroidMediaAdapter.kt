@@ -35,9 +35,9 @@ class AndroidMediaAdapter(context: Context, private val coroutineScope: Coroutin
     private val activeMediaSessions: MutableStateFlow<List<MediaController>> =
         MutableStateFlow(emptyList())
 
-    private val audioContentTypes: MutableStateFlow<Set<Int>> =
+    private val audioVolumeControlStreams: MutableStateFlow<Set<Int>> =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            MutableStateFlow(getActiveAudioContentTypes())
+            MutableStateFlow(getActiveAudioVolumeStreams())
         } else {
             MutableStateFlow(emptySet())
         }
@@ -45,7 +45,7 @@ class AndroidMediaAdapter(context: Context, private val coroutineScope: Coroutin
     @RequiresApi(Build.VERSION_CODES.O)
     private val audioPlaybackCallback = object : AudioManager.AudioPlaybackCallback() {
         override fun onPlaybackConfigChanged(configs: MutableList<AudioPlaybackConfiguration>?) {
-            audioContentTypes.update { getActiveAudioContentTypes() }
+            audioVolumeControlStreams.update { getActiveAudioVolumeStreams() }
         }
     }
 
@@ -55,7 +55,7 @@ class AndroidMediaAdapter(context: Context, private val coroutineScope: Coroutin
     init {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             coroutineScope.launch {
-                audioContentTypes.subscriptionCount.collect { count ->
+                audioVolumeControlStreams.subscriptionCount.collect { count ->
                     if (count == 0) {
                         audioManager.unregisterAudioPlaybackCallback(audioPlaybackCallback)
                     } else {
@@ -93,14 +93,14 @@ class AndroidMediaAdapter(context: Context, private val coroutineScope: Coroutin
         }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override fun getActiveAudioContentTypes(): Set<Int> {
+    override fun getActiveAudioVolumeStreams(): Set<Int> {
         return audioManager.activePlaybackConfigurations
-            .map { it.audioAttributes.contentType }
+            .map { it.audioAttributes.volumeControlStream }
             .toSet()
     }
 
-    override fun getActiveAudioContentTypesFlow(): Flow<Set<Int>> {
-        return audioContentTypes
+    override fun getActiveAudioVolumeStreamsFlow(): Flow<Set<Int>> {
+        return audioVolumeControlStreams
     }
 
     override fun playSoundFile(uri: String, stream: VolumeStream): Result<*> {
