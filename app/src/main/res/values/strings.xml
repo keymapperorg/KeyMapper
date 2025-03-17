@@ -1402,7 +1402,7 @@
     <!--  About  -->
 
     <!-- Advanced triggers -->
-    <string name="assistant_activity_name">Key Mapper: side key</string>
+    <string name="assistant_activity_name">Key Mapper: Side Key</string>
     <string name="assistant_any_trigger_name">Any assistant</string>
     <string name="assistant_device_trigger_name">Side key/power button</string>
     <string name="assistant_voice_trigger_name">Voice assistant</string>
