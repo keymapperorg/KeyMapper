@@ -242,8 +242,6 @@ class KeyMapperApp : MultiDexApplication() {
             @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
             fun onResume() {
                 // when the user returns to the app let everything know that the permissions could have changed
-                permissionAdapter.onPermissionsChanged()
-                accessibilityServiceAdapter.updateWhetherServiceIsEnabled()
                 notificationController.onOpenApp()
 
                 if (BuildConfig.DEBUG && permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)) {

@@ -13,6 +13,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -33,14 +34,14 @@ import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.BubbleChart
 import androidx.compose.material.icons.outlined.BugReport
 import androidx.compose.material.icons.outlined.Download
-import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material.icons.outlined.Gamepad
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.IosShare
 import androidx.compose.material.icons.outlined.MoreVert
-import androidx.compose.material.icons.outlined.PauseCircle
-import androidx.compose.material.icons.outlined.PlayCircleOutline
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.rounded.ErrorOutline
+import androidx.compose.material.icons.rounded.PauseCircle
+import androidx.compose.material.icons.rounded.PlayCircleOutline
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ButtonDefaults
@@ -292,7 +293,13 @@ private fun HomeScreen(
                                 }
                             }
                         },
-                        label = { Text(item.label, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                        label = {
+                            Text(
+                                item.label,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        },
                         selected = currentDestination?.hierarchy?.any { it.route == item.destination.route } == true,
                         onClick = {
                             // don't do anything if clicking on the current
@@ -552,17 +559,17 @@ private fun AppBarStatus(
         val buttonText: String
 
         if (homeState.isPaused) {
-            buttonIcon = Icons.Outlined.PauseCircle
+            buttonIcon = Icons.Rounded.PauseCircle
             buttonText = stringResource(R.string.home_app_bar_status_paused)
         } else if (homeState.warnings.isNotEmpty()) {
-            buttonIcon = Icons.Outlined.ErrorOutline
+            buttonIcon = Icons.Rounded.ErrorOutline
             buttonText = pluralStringResource(
                 R.plurals.home_app_bar_status_warnings,
                 homeState.warnings.size,
                 homeState.warnings.size,
             )
         } else {
-            buttonIcon = Icons.Outlined.PlayCircleOutline
+            buttonIcon = Icons.Rounded.PlayCircleOutline
             buttonText = stringResource(R.string.home_app_bar_status_running)
         }
 
@@ -591,16 +598,30 @@ private fun WarningList(
     warnings: List<HomeWarningListItem>,
     onFixClick: (String) -> Unit,
 ) {
-    Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        for (warning in warnings) {
-            OutlinedCard(
-                modifier = Modifier.padding(horizontal = 8.dp),
-                colors = CardDefaults.outlinedCardColors(containerColor = Color.Transparent),
-            ) {
+    OutlinedCard(
+        modifier = modifier.padding(horizontal = 8.dp),
+        colors = CardDefaults.outlinedCardColors(
+            containerColor = Color.Transparent,
+        ),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.error),
+    ) {
+        Column(
+            Modifier.padding(vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            for (warning in warnings) {
                 Row(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                    modifier = Modifier.padding(horizontal = 16.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
+                    Icon(
+                        Icons.Rounded.ErrorOutline,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.error,
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
                     Text(
                         modifier = Modifier.weight(1f),
                         text = warning.text,
