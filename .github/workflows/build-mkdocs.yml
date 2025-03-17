@@ -1,12 +1,9 @@
-name: Build mkdocs 
-
+name: Build mkdocs
 
 on:
   push:
     branches:
-      - master 
-
-
+      - master
       - main
 permissions:
   contents: write
@@ -18,12 +15,10 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: 3.x
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           key: ${{ github.ref }}
           path: .cache
       - run: pip install mkdocs-material
       - run: pip install mkdocs-redirects
-
-
       - run: mkdocs gh-deploy --force

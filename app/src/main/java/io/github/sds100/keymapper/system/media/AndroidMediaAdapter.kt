@@ -7,7 +7,9 @@ import android.media.MediaPlayer
 import android.media.session.MediaController
 import android.media.session.PlaybackState
 import android.net.Uri
+import android.os.Build
 import android.view.KeyEvent
+import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
 import io.github.sds100.keymapper.system.volume.VolumeStream
 import io.github.sds100.keymapper.util.Error
@@ -28,30 +30,32 @@ class AndroidMediaAdapter(context: Context) : MediaAdapter {
     private var mediaPlayerLock = Any()
     private var mediaPlayer: MediaPlayer? = null
 
-    override fun fastForward(packageName: String?): Result<*> =
-        sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_FAST_FORWARD, packageName)
+    override fun fastForward(packageName: String?): Result<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_FAST_FORWARD, packageName)
 
-    override fun rewind(packageName: String?): Result<*> =
-        sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_REWIND, packageName)
+    override fun rewind(packageName: String?): Result<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_REWIND, packageName)
 
-    override fun play(packageName: String?): Result<*> =
-        sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PLAY, packageName)
+    override fun play(packageName: String?): Result<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PLAY, packageName)
 
-    override fun pause(packageName: String?): Result<*> =
-        sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PAUSE, packageName)
+    override fun pause(packageName: String?): Result<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PAUSE, packageName)
 
-    override fun playPause(packageName: String?): Result<*> =
-        sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE, packageName)
+    override fun playPause(packageName: String?): Result<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE, packageName)
 
-    override fun previousTrack(packageName: String?): Result<*> =
-        sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PREVIOUS, packageName)
+    override fun previousTrack(packageName: String?): Result<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PREVIOUS, packageName)
 
-    override fun nextTrack(packageName: String?): Result<*> =
-        sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_NEXT, packageName)
+    override fun nextTrack(packageName: String?): Result<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_NEXT, packageName)
 
-    override fun getPackagesPlayingMedia(): List<String> = activeMediaSessions
-        .filter { it.playbackState?.state == PlaybackState.STATE_PLAYING }
-        .map { it.packageName }
+    override fun getActiveMediaSessionPackages(): List<String> {
+        return activeMediaSessions
+            .filter { it.playbackState?.state == PlaybackState.STATE_PLAYING }
+            .map { it.packageName }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun getActiveAudioContentTypes(): Set<Int> {
+        return audioManager.activePlaybackConfigurations
+            .map { it.audioAttributes.contentType }
+            .toSet()
+    }
 
     override fun playSoundFile(uri: String, stream: VolumeStream): Result<*> {
         try {

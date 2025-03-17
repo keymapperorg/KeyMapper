@@ -945,7 +945,7 @@
     <string name="stream_system">System</string>
     <string name="stream_voice_call">Voice call</string>
 
-    <string name="ringer_mode_normal">Ring</string>
+    <string name="ringer_mode_normal">Normal</string>
     <string name="ringer_mode_vibrate">Vibrate</string>
     <string name="ringer_mode_silent">Silent</string>
 
@@ -1147,8 +1147,8 @@
     <string name="action_increase_stream_formatted">Increase %s stream</string>
     <string name="action_decrease_stream">Decrease stream</string>
     <string name="action_decrease_stream_formatted">Decrease %s stream</string>
-    <string name="action_cycle_ringer_mode">Cycle through ringer modes (Ring, Vibrate, Silent)</string>
-    <string name="action_cycle_vibrate_ring">Cycle through ringer modes (Ring, Vibrate)</string>
+    <string name="action_cycle_ringer_mode">Cycle ringer modes (Normal, Vibrate, Silent)</string>
+    <string name="action_cycle_vibrate_ring">Cycle ringer modes (Normal, Vibrate)</string>
     <string name="action_change_ringer_mode">Change ringer mode</string>
     <string name="action_change_ringer_mode_formatted">Change to %s mode</string>
     <string name="action_toggle_dnd_mode">Toggle Do Not Disturb mode</string>
@@ -1402,7 +1402,7 @@
     <!--  About  -->
 
     <!-- Advanced triggers -->
-    <string name="assistant_activity_name">Key Mapper: side key</string>
+    <string name="assistant_activity_name">Key Mapper: Side Key</string>
     <string name="assistant_any_trigger_name">Any assistant</string>
     <string name="assistant_device_trigger_name">Side key/power button</string>
     <string name="assistant_voice_trigger_name">Voice assistant</string>
@@ -1414,8 +1414,8 @@
     <string name="assistant_trigger_purchase_thank_you_message">Your purchase was successful. As a paying user of Key\u00A0Mapper you will receive priority support to help you use the app. There is now a button on this page to contact the developer.</string>
     <string name="trigger_error_assistant_not_purchased">You must purchase the assistant trigger feature.</string>
     <string name="advanced_triggers_learn_more_button">Learn more</string>
-    <string name="notification_assistant_trigger_feature_title">New trigger! Did you know you can remap your digital assistant?</string>
-    <string name="notification_assistant_trigger_feature_text">Instead of launching Google Assistant or Bixby, you can perform an action of your choice. Tap to learn more.</string>
+    <string name="notification_assistant_trigger_feature_title">New trigger! Did you know you can remap your side key, power button, or device assistant?</string>
+    <string name="notification_assistant_trigger_feature_text">Instead of launching the assistant or the power menu, your device can perform an action of your choice. Tap to learn more.</string>
 
     <!--  Purchasing  -->
     <string name="unlock_product_button">Unlock (%s)</string>

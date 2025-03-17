@@ -3,7 +3,7 @@ New trigger! 🎉 Remap your Assistant & Bixby, and DPAD buttons!
 ¿Qué se puede reasignar?
 
  * Botones de volumen.
- * Power button via Google Assistant, Pixel Active Edge, Double press Bixby button.
+ * Power button, side key, and voice assistant button (one time purchase to support development).
  * Teclados Bluetooth/con cable.
  * Gestos con la huella dactilar en los dispositivos compatibles.
  * DPAD buttons on game controllers.

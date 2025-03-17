@@ -599,7 +599,6 @@
     <string name="stream_ring">Zvonenie</string>
     <string name="stream_system">Systém</string>
     <string name="stream_voice_call">Hlasový hovor</string>
-    <string name="ringer_mode_normal">Zvonenie</string>
     <string name="ringer_mode_vibrate">Vibrovanie</string>
     <string name="ringer_mode_silent">Tichý</string>
     <string name="lens_front">Predná strana</string>
@@ -767,8 +766,6 @@
     <string name="action_increase_stream_formatted">Zvýšenie streamu %s</string>
     <string name="action_decrease_stream">Znížit stream</string>
     <string name="action_decrease_stream_formatted">Znížiť %s stream</string>
-    <string name="action_cycle_ringer_mode">Prechádzanie režimami zvonenia (Zvoniť, Vibrovať, Tichý)</string>
-    <string name="action_cycle_vibrate_ring">Prechádzajte režimami zvonenia (Zvoniť, Vibrovať)</string>
     <string name="action_change_ringer_mode">Zmena režimu zvonenia</string>
     <string name="action_change_ringer_mode_formatted">Zmena na režim %s</string>
     <string name="action_toggle_dnd_mode">Prepnúť režim Nerušiť</string>

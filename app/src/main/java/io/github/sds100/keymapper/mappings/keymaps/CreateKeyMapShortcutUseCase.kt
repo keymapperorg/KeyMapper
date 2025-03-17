@@ -1,15 +1,13 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
 import android.content.Intent
-import android.graphics.Color
-import androidx.core.content.pm.ShortcutInfoCompat
+import android.graphics.drawable.Drawable
 import androidx.core.os.bundleOf
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.api.Api
 import io.github.sds100.keymapper.system.apps.AppShortcutAdapter
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.ui.ResourceProvider
-import io.github.sds100.keymapper.util.ui.TintType
 
 /**
  * Created by sds100 on 23/03/2021.
@@ -17,109 +15,72 @@ import io.github.sds100.keymapper.util.ui.TintType
 
 class CreateKeyMapShortcutUseCaseImpl(
     private val adapter: AppShortcutAdapter,
-    displayKeyMap: DisplayKeyMapUseCase,
     resourceProvider: ResourceProvider,
 ) : CreateKeyMapShortcutUseCase,
     ResourceProvider by resourceProvider {
-    private val actionUiHelper by lazy { KeyMapActionUiHelper(displayKeyMap, resourceProvider) }
 
     override val isSupported: Boolean
         get() = adapter.areLauncherShortcutsSupported
 
-    override fun pinShortcutForSingleAction(keyMapUid: String, action: KeyMapAction): Result<*> {
-        return adapter.pinShortcut(createShortcutForSingleAction(keyMapUid, action))
-    }
-
-    override fun pinShortcutForMultipleActions(
+    override fun pinShortcut(
         keyMapUid: String,
         shortcutLabel: String,
+        icon: Drawable?,
     ): Result<*> {
-        return adapter.pinShortcut(createShortcutForMultipleActions(keyMapUid, shortcutLabel))
-    }
-
-    override fun createIntentForSingleAction(
-        keyMapUid: String,
-        action: KeyMapAction,
-    ): Intent {
-        return adapter.createShortcutResultIntent(createShortcutForSingleAction(keyMapUid, action))
-    }
-
-    override fun createIntentForMultipleActions(keyMapUid: String, shortcutLabel: String): Intent {
-        return adapter.createShortcutResultIntent(
-            createShortcutForMultipleActions(
-                keyMapUid,
-                shortcutLabel,
-            ),
-        )
-    }
-
-    private fun createShortcutForSingleAction(
-        keyMapUid: String,
-        action: KeyMapAction,
-    ): ShortcutInfoCompat {
-        val iconInfo = actionUiHelper.getIcon(action.data)
-
-        // If the action doesn't have an icon then use the key mapper icon
-        // for the launcher shortcut.
-        if (iconInfo == null) {
-            return adapter.createLauncherShortcut(
+        val shortcut = if (icon == null) {
+            adapter.createLauncherShortcut(
                 iconResId = R.mipmap.ic_launcher_round,
-                label = actionUiHelper.getTitle(action.data, showDeviceDescriptors = false),
+                label = shortcutLabel,
+                intentAction = Api.ACTION_TRIGGER_KEYMAP_BY_UID,
+                bundleOf(Api.EXTRA_KEYMAP_UID to keyMapUid),
+            )
+        } else {
+            adapter.createLauncherShortcut(
+                icon = icon,
+                label = shortcutLabel,
                 intentAction = Api.ACTION_TRIGGER_KEYMAP_BY_UID,
                 bundleOf(Api.EXTRA_KEYMAP_UID to keyMapUid),
             )
         }
-
-        val icon = iconInfo.drawable
-
-        when (iconInfo.tintType) {
-            // Always set the icon as black if it needs to be on surface because the
-            // background is white. Also, getting the colorOnSurface attribute
-            // from the application context doesn't seem to work correctly.
-            TintType.OnSurface -> icon.setTint(Color.BLACK)
-            is TintType.Color -> icon.setTint(iconInfo.tintType.color)
-            else -> {}
-        }
-
-        return adapter.createLauncherShortcut(
-            icon = icon,
-            label = actionUiHelper.getTitle(action.data, showDeviceDescriptors = false),
-            intentAction = Api.ACTION_TRIGGER_KEYMAP_BY_UID,
-            bundleOf(Api.EXTRA_KEYMAP_UID to keyMapUid),
-        )
+        return adapter.pinShortcut(shortcut)
     }
 
-    private fun createShortcutForMultipleActions(
+    override fun createIntent(
         keyMapUid: String,
         shortcutLabel: String,
-    ): ShortcutInfoCompat = adapter.createLauncherShortcut(
-        iconResId = R.mipmap.ic_launcher_round,
-        label = shortcutLabel,
-        intentAction = Api.ACTION_TRIGGER_KEYMAP_BY_UID,
-        bundleOf(Api.EXTRA_KEYMAP_UID to keyMapUid),
-    )
+        icon: Drawable?,
+    ): Intent {
+        val shortcut = if (icon == null) {
+            adapter.createLauncherShortcut(
+                iconResId = R.mipmap.ic_launcher_round,
+                label = shortcutLabel,
+                intentAction = Api.ACTION_TRIGGER_KEYMAP_BY_UID,
+                bundleOf(Api.EXTRA_KEYMAP_UID to keyMapUid),
+            )
+        } else {
+            adapter.createLauncherShortcut(
+                icon = icon,
+                label = shortcutLabel,
+                intentAction = Api.ACTION_TRIGGER_KEYMAP_BY_UID,
+                bundleOf(Api.EXTRA_KEYMAP_UID to keyMapUid),
+            )
+        }
+        return adapter.createShortcutResultIntent(shortcut)
+    }
 }
 
 interface CreateKeyMapShortcutUseCase {
     val isSupported: Boolean
 
-    fun pinShortcutForSingleAction(
-        keyMapUid: String,
-        action: KeyMapAction,
-    ): Result<*>
-
-    fun pinShortcutForMultipleActions(
+    fun pinShortcut(
         keyMapUid: String,
         shortcutLabel: String,
+        icon: Drawable?,
     ): Result<*>
 
-    fun createIntentForSingleAction(
-        keyMapUid: String,
-        action: KeyMapAction,
-    ): Intent
-
-    fun createIntentForMultipleActions(
+    fun createIntent(
         keyMapUid: String,
         shortcutLabel: String,
+        icon: Drawable?,
     ): Intent
 }

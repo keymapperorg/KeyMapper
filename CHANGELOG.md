@@ -1,4 +1,19 @@
+## [2.8.3](https://github.com/sds100/KeyMapper/releases/tag/v2.8.3)
+
+#### 17 March 2025
+
+## Changed
+
+- #1474 always allow specifying a name for key map launcher shortcuts
+- #1533 simplify naming of ringer mode actions
+
+## Bug fixes
+
+- #1535 side key/assistant trigger does not trigger from non-assistant buttons
+
 ## [2.8.2](https://github.com/sds100/KeyMapper/releases/tag/v2.8.2)
+
+#### 12 March 2025
 
 ## Changes
 

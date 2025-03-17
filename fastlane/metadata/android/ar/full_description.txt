@@ -3,7 +3,7 @@ New trigger! 🎉 Remap your Assistant & Bixby, and DPAD buttons!
 ما الذي يمكن إعادة تعيينه؟
 
  * أزرار الصوت.
- * Power button via Google Assistant, Pixel Active Edge, Double press Bixby button.
+ * Power button, side key, and voice assistant button (one time purchase to support development).
  * بلوتوث / لوحات المفاتيح السلكية.
  * إيماءات بصمات الأصابع على الأجهزة المدعومة.
  * DPAD buttons on game controllers.
