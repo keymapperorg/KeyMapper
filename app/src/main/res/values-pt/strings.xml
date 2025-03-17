@@ -675,7 +675,6 @@
     <string name="stream_ring">Anel de Transmissão </string>
     <string name="stream_system">Sistema</string>
     <string name="stream_voice_call">Chamada de voz</string>
-    <string name="ringer_mode_normal">Modo de toque normal </string>
     <string name="ringer_mode_vibrate">Vibrar</string>
     <string name="ringer_mode_silent">Silencioso</string>
     <string name="lens_front">Frente</string>
@@ -856,8 +855,6 @@
     <string name="action_increase_stream_formatted">Aumentar fluxo %s</string>
     <string name="action_decrease_stream">Diminuir fluxo</string>
     <string name="action_decrease_stream_formatted">Diminuir fluxo %s</string>
-    <string name="action_cycle_ringer_mode">Alternar entre os modos de toque (Toque, Vibrar, Silencioso)</string>
-    <string name="action_cycle_vibrate_ring">Alternar entre os modos de toque (Toque, Vibrar)</string>
     <string name="action_change_ringer_mode">Alterar modo de toque</string>
     <string name="action_change_ringer_mode_formatted">Alterar para o modo %s</string>
     <string name="action_toggle_dnd_mode">Alternar modo Não perturbe</string>

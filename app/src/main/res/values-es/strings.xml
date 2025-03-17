@@ -647,7 +647,6 @@
     <string name="stream_ring">Tonos</string>
     <string name="stream_system">Sistema</string>
     <string name="stream_voice_call">Llamada de voz</string>
-    <string name="ringer_mode_normal">Tonos</string>
     <string name="ringer_mode_vibrate">Vibrar</string>
     <string name="ringer_mode_silent">Silencioso</string>
     <string name="lens_front">Frontal</string>
@@ -820,8 +819,6 @@
     <string name="action_increase_stream_formatted">Incrementar flujo %s</string>
     <string name="action_decrease_stream">Reducir flujo</string>
     <string name="action_decrease_stream_formatted">Reducir flujo %s</string>
-    <string name="action_cycle_ringer_mode">Recorrido por los modos de timbre (timbre, vibración, silencio)</string>
-    <string name="action_cycle_vibrate_ring">Recorrido por los modos de timbre (timbre, vibración)</string>
     <string name="action_change_ringer_mode">Cambiar volumen del timbre</string>
     <string name="action_change_ringer_mode_formatted">Cambiar a modo %s</string>
     <string name="action_toggle_dnd_mode">Cambiar modo No molestar</string>
