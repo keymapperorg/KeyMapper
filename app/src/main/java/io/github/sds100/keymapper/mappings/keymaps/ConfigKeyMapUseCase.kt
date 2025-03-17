@@ -35,18 +35,22 @@ import io.github.sds100.keymapper.util.dataOrNull
 import io.github.sds100.keymapper.util.firstBlocking
 import io.github.sds100.keymapper.util.ifIsData
 import io.github.sds100.keymapper.util.moveElement
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 /**
  * Created by sds100 on 16/02/2021.
  */
 class ConfigKeyMapUseCaseController(
+    private val coroutineScope: CoroutineScope,
     private val keyMapRepository: KeyMapRepository,
     private val devicesAdapter: DevicesAdapter,
     private val preferenceRepository: PreferenceRepository,
@@ -58,12 +62,36 @@ class ConfigKeyMapUseCaseController(
 
     override val floatingButtonToUse: MutableStateFlow<String?> = MutableStateFlow(null)
 
+    private val showDeviceDescriptors: Flow<Boolean> =
+        preferenceRepository.get(Keys.showDeviceDescriptors).map { it == true }
+
+    init {
+        // Update button data in the key map whenever the floating buttons changes.
+        coroutineScope.launch {
+            floatingButtonRepository.buttonsList
+                .filterIsInstance<State.Data<List<FloatingButtonEntityWithLayout>>>()
+                .map { it.data }
+                .collectLatest(::updateFloatingButtonTriggerKeys)
+        }
+    }
+
+    private fun updateFloatingButtonTriggerKeys(buttons: List<FloatingButtonEntityWithLayout>) {
+        keyMap.update { keyMapState ->
+            if (keyMapState is State.Data) {
+                val trigger = keyMapState.data.trigger
+                val newKeyMap =
+                    keyMapState.data.copy(trigger = trigger.updateFloatingButtonData(buttons))
+
+                State.Data(newKeyMap)
+            } else {
+                keyMapState
+            }
+        }
+    }
+
     override fun useFloatingButtonTrigger(buttonUid: String) {
         floatingButtonToUse.update { buttonUid }
     }
-
-    private val showDeviceDescriptors: Flow<Boolean> =
-        preferenceRepository.get(Keys.showDeviceDescriptors).map { it == true }
 
     override fun addConstraint(constraint: Constraint): Boolean {
         var containsConstraint = false
@@ -625,17 +653,18 @@ class ConfigKeyMapUseCaseController(
     }
 
     override suspend fun loadKeyMap(uid: String) {
+        keyMap.update { State.Loading }
         val entity = keyMapRepository.get(uid) ?: return
         val floatingButtons = floatingButtonRepository.buttonsList
             .filterIsInstance<State.Data<List<FloatingButtonEntityWithLayout>>>()
             .map { it.data }
             .first()
 
-        keyMap.value = State.Data(KeyMapEntityMapper.fromEntity(entity, floatingButtons))
+        keyMap.update { State.Data(KeyMapEntityMapper.fromEntity(entity, floatingButtons)) }
     }
 
     override fun loadNewKeyMap() {
-        keyMap.value = State.Data(KeyMap())
+        keyMap.update { State.Data(KeyMap()) }
     }
 
     override fun save() {
