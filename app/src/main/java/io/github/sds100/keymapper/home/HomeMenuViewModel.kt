@@ -1,8 +1,9 @@
 package io.github.sds100.keymapper.home
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
-import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
 import io.github.sds100.keymapper.util.ui.NavDestination
 import io.github.sds100.keymapper.util.ui.NavigationViewModel
@@ -11,17 +12,11 @@ import io.github.sds100.keymapper.util.ui.PopupUi
 import io.github.sds100.keymapper.util.ui.PopupViewModel
 import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.util.ui.ResourceProvider
-import io.github.sds100.keymapper.util.ui.ViewModelHelper
 import io.github.sds100.keymapper.util.ui.navigate
 import io.github.sds100.keymapper.util.ui.showPopup
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
@@ -30,32 +25,11 @@ import kotlinx.coroutines.runBlocking
  */
 class HomeMenuViewModel(
     private val coroutineScope: CoroutineScope,
-    private val alertsUseCase: ShowHomeScreenAlertsUseCase,
-    private val pauseMappings: PauseMappingsUseCase,
     private val showImePicker: ShowInputMethodPickerUseCase,
     resourceProvider: ResourceProvider,
 ) : ResourceProvider by resourceProvider,
     PopupViewModel by PopupViewModelImpl(),
     NavigationViewModel by NavigationViewModelImpl() {
-
-    val toggleMappingsButtonState: StateFlow<ToggleMappingsButtonState?> =
-        combine(
-            pauseMappings.isPaused,
-            alertsUseCase.accessibilityServiceState,
-        ) { isPaused, serviceState ->
-            when (serviceState) {
-                ServiceState.ENABLED ->
-                    if (isPaused) {
-                        ToggleMappingsButtonState.PAUSED
-                    } else {
-                        ToggleMappingsButtonState.RESUMED
-                    }
-
-                ServiceState.CRASHED -> ToggleMappingsButtonState.SERVICE_CRASHED
-
-                ServiceState.DISABLED -> ToggleMappingsButtonState.SERVICE_DISABLED
-            }
-        }.stateIn(coroutineScope, SharingStarted.Eagerly, null)
 
     private val _chooseBackupFile = MutableSharedFlow<Unit>()
     val chooseBackupFile = _chooseBackupFile.asSharedFlow()
@@ -63,78 +37,46 @@ class HomeMenuViewModel(
     private val _chooseRestoreFile = MutableSharedFlow<Unit>()
     val chooseRestoreFile = _chooseRestoreFile.asSharedFlow()
 
-    private val _dismiss = MutableSharedFlow<Unit>()
-    val dismiss = _dismiss
-
-    fun onToggleMappingsButtonClick() {
-        coroutineScope.launch {
-            val areMappingsPaused = pauseMappings.isPaused.first()
-
-            val serviceState = alertsUseCase.accessibilityServiceState.first()
-
-            when {
-                serviceState == ServiceState.CRASHED ->
-                    if (!alertsUseCase.restartAccessibilityService()) {
-                        ViewModelHelper.handleCantFindAccessibilitySettings(
-                            this@HomeMenuViewModel,
-                            this@HomeMenuViewModel,
-                        )
-                    }
-
-                serviceState == ServiceState.DISABLED ->
-                    if (!alertsUseCase.startAccessibilityService()) {
-                        ViewModelHelper.handleCantFindAccessibilitySettings(
-                            resourceProvider = this@HomeMenuViewModel,
-                            popupViewModel = this@HomeMenuViewModel,
-                        )
-                    }
-
-                areMappingsPaused -> pauseMappings.resume()
-                !areMappingsPaused -> pauseMappings.pause()
-            }
-
-            _dismiss.emit(Unit)
-        }
-    }
+    var showMenuBottomSheet by mutableStateOf(false)
 
     fun onShowInputMethodPickerClick() {
         showImePicker.show(fromForeground = true)
-        runBlocking { _dismiss.emit(Unit) }
+        showMenuBottomSheet = false
     }
 
     fun onOpenSettingsClick() {
         // dismiss afterwards so it is more responsive
         coroutineScope.launch {
             navigate("settings", NavDestination.Settings)
-            _dismiss.emit(Unit)
+            showMenuBottomSheet = false
         }
     }
 
     fun onOpenAboutClick() {
         coroutineScope.launch {
             navigate("about", NavDestination.About)
-            _dismiss.emit(Unit)
+            showMenuBottomSheet = false
         }
     }
 
     fun onBackupAllClick() {
         runBlocking {
             _chooseBackupFile.emit(Unit)
-            _dismiss.emit(Unit)
+            showMenuBottomSheet = false
         }
     }
 
     fun onRestoreClick() {
         runBlocking {
             _chooseRestoreFile.emit(Unit)
-            _dismiss.emit(Unit)
+            showMenuBottomSheet = false
         }
     }
 
     fun onReportBugClick() {
         coroutineScope.launch {
             navigate("report-bug", NavDestination.ReportBug)
-            _dismiss.emit(Unit)
+            showMenuBottomSheet = false
         }
     }
 

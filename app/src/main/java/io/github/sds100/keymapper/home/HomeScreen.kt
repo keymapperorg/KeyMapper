@@ -35,7 +35,7 @@ import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material.icons.outlined.Gamepad
 import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material.icons.outlined.PauseCircle
-import androidx.compose.material.icons.outlined.PlayArrow
+import androidx.compose.material.icons.outlined.PlayCircleOutline
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ButtonDefaults
@@ -61,15 +61,13 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalUriHandler
@@ -98,7 +96,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(viewModel: HomeViewModel, onMenuClick: () -> Unit) {
+fun HomeScreen(viewModel: HomeViewModel) {
     val homeState by viewModel.state.collectAsStateWithLifecycle()
 
     val navController = rememberNavController()
@@ -125,13 +123,16 @@ fun HomeScreen(viewModel: HomeViewModel, onMenuClick: () -> Unit) {
         )
     }
 
-    var showSortBottomSheet by rememberSaveable { mutableStateOf(false) }
-
-    if (showSortBottomSheet) {
+    if (viewModel.showSortBottomSheet) {
         SortBottomSheet(
-            onDismissRequest = { showSortBottomSheet = false },
             viewModel = viewModel.sortViewModel,
+            onDismissRequest = { viewModel.showSortBottomSheet = false },
+            sheetState = sheetState,
         )
+    }
+
+    if (viewModel.menuViewModel.showMenuBottomSheet) {
+        HomeMenuBottomSheet(viewModel = viewModel.menuViewModel, sheetState = sheetState)
     }
 
     val scope = rememberCoroutineScope()
@@ -148,11 +149,9 @@ fun HomeScreen(viewModel: HomeViewModel, onMenuClick: () -> Unit) {
             HomeAppBar(
                 scrollBehavior = scrollBehavior,
                 homeState = homeState,
-                onMenuClick = onMenuClick,
-                onSortClick = { showSortBottomSheet = true },
-                onHelpClick = {
-                    uriHandler.openUri(helpUrl)
-                },
+                onMenuClick = { viewModel.menuViewModel.showMenuBottomSheet = true },
+                onSortClick = { viewModel.showSortBottomSheet = true },
+                onHelpClick = { uriHandler.openUri(helpUrl) },
                 onTogglePausedClick = viewModel::onTogglePausedClick,
                 onFixWarningClick = viewModel::onFixWarningClick,
             )
@@ -402,7 +401,7 @@ private fun AppBarStatus(
     onTogglePausedClick: () -> Unit,
 ) {
     val pausedButtonContainerColor by animateColorAsState(
-        targetValue = if (homeState.isPaused) {
+        targetValue = if (homeState.isPaused || homeState.warnings.isNotEmpty()) {
             MaterialTheme.colorScheme.errorContainer
         } else {
             LocalCustomColorsPalette.current.greenContainer
@@ -410,82 +409,54 @@ private fun AppBarStatus(
     )
 
     val pausedButtonContentColor by animateColorAsState(
-        targetValue = if (homeState.isPaused) {
+        targetValue = if (homeState.isPaused || homeState.warnings.isNotEmpty()) {
             MaterialTheme.colorScheme.onErrorContainer
         } else {
             LocalCustomColorsPalette.current.onGreenContainer
         },
     )
 
-    Row {
-        FilledTonalButton(
-            modifier = Modifier.widthIn(min = 8.dp),
-            onClick = onTogglePausedClick,
-            colors = ButtonDefaults.filledTonalButtonColors(
-                containerColor = pausedButtonContainerColor,
-                contentColor = pausedButtonContentColor,
-            ),
-            contentPadding = PaddingValues(horizontal = 12.dp),
-        ) {
-            val buttonIcon = if (homeState.isPaused) {
-                Icons.Outlined.PlayArrow
-            } else {
-                Icons.Outlined.PauseCircle
-            }
+    FilledTonalButton(
+        modifier = Modifier.widthIn(min = 8.dp),
+        onClick = onTogglePausedClick,
+        colors = ButtonDefaults.filledTonalButtonColors(
+            containerColor = pausedButtonContainerColor,
+            contentColor = pausedButtonContentColor,
+        ),
+        contentPadding = PaddingValues(horizontal = 12.dp),
+    ) {
+        val buttonIcon: ImageVector
+        val buttonText: String
 
-            val transition =
-                slideInVertically { height -> -height } + fadeIn() togetherWith slideOutVertically { height -> height } + fadeOut()
-
-            AnimatedContent(targetState = buttonIcon, transitionSpec = { transition }) { icon ->
-                Icon(icon, contentDescription = null)
-            }
-
-            val buttonText = if (homeState.warnings.isEmpty()) {
-                if (homeState.isPaused) {
-                    stringResource(R.string.home_app_bar_status_paused)
-                } else {
-                    stringResource(R.string.home_app_bar_status_running)
-                }
-            } else {
-                null
-            }
-
-            AnimatedContent(
-                targetState = buttonText,
-                transitionSpec = { transition },
-            ) { text ->
-                if (text != null) {
-                    Row {
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(text)
-                    }
-                }
-            }
+        if (homeState.isPaused) {
+            buttonIcon = Icons.Outlined.PauseCircle
+            buttonText = stringResource(R.string.home_app_bar_status_paused)
+        } else if (homeState.warnings.isNotEmpty()) {
+            buttonIcon = Icons.Outlined.ErrorOutline
+            buttonText = pluralStringResource(
+                R.plurals.home_app_bar_status_warnings,
+                homeState.warnings.size,
+                homeState.warnings.size,
+            )
+        } else {
+            buttonIcon = Icons.Outlined.PlayCircleOutline
+            buttonText = stringResource(R.string.home_app_bar_status_running)
         }
 
-        Spacer(modifier = Modifier.padding(4.dp))
+        val transition =
+            slideInVertically { height -> -height } + fadeIn() togetherWith slideOutVertically { height -> height } + fadeOut()
 
-        AnimatedVisibility(homeState.warnings.isNotEmpty()) {
-            FilledTonalButton(
-                onClick = {},
-                enabled = false,
-                colors = ButtonDefaults.filledTonalButtonColors(
-                    containerColor = MaterialTheme.colorScheme.errorContainer,
-                    contentColor = MaterialTheme.colorScheme.onErrorContainer,
-                    disabledContainerColor = MaterialTheme.colorScheme.errorContainer,
-                    disabledContentColor = MaterialTheme.colorScheme.onErrorContainer,
-                ),
-                contentPadding = PaddingValues(horizontal = 12.dp),
-            ) {
-                Icon(Icons.Outlined.ErrorOutline, contentDescription = null)
-                Spacer(modifier = Modifier.padding(4.dp))
-                Text(
-                    pluralStringResource(
-                        R.plurals.home_app_bar_status_warnings,
-                        homeState.warnings.size,
-                        homeState.warnings.size,
-                    ),
-                )
+        AnimatedContent(targetState = buttonIcon, transitionSpec = { transition }) { icon ->
+            Icon(icon, contentDescription = null)
+        }
+
+        AnimatedContent(
+            targetState = buttonText,
+            transitionSpec = { transition },
+        ) { text ->
+            Row {
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(text)
             }
         }
     }
@@ -595,7 +566,7 @@ private fun HomeStateWarningsPreview() {
                 text = stringResource(R.string.home_error_is_battery_optimised),
             ),
         ),
-        isPaused = true,
+        isPaused = false,
     )
     KeyMapperTheme {
         HomeScreen(

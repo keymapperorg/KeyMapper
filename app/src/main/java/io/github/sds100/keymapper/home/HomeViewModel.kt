@@ -3,6 +3,9 @@ package io.github.sds100.keymapper.home
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BubbleChart
 import androidx.compose.material.icons.outlined.Gamepad
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -87,8 +90,6 @@ class HomeViewModel(
     val menuViewModel by lazy {
         HomeMenuViewModel(
             viewModelScope,
-            showAlertsUseCase,
-            pauseMappings,
             showImePicker,
             resourceProvider,
         )
@@ -116,6 +117,8 @@ class HomeViewModel(
     val sortViewModel by lazy {
         SortViewModel(viewModelScope, sortKeyMaps)
     }
+
+    var showSortBottomSheet by mutableStateOf(false)
 
     private val _showQuickStartGuideHint = MutableStateFlow(false)
     val showQuickStartGuideHint = _showQuickStartGuideHint.asStateFlow()

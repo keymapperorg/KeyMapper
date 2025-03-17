@@ -42,6 +42,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -74,16 +75,19 @@ import io.github.sds100.keymapper.compose.draggable.rememberDragDropState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SortBottomSheet(
-    onDismissRequest: () -> Unit,
     viewModel: SortViewModel,
+    sheetState: SheetState,
+    onDismissRequest: () -> Unit,
 ) {
     val sortFieldOrderList by viewModel.sortFieldOrder.collectAsStateWithLifecycle()
     val showHelp by viewModel.showHelp.collectAsStateWithLifecycle()
 
     SortBottomSheet(
         modifier = Modifier.statusBarsPadding(),
+        sheetState = sheetState,
         sortFieldOrderList = sortFieldOrderList,
         showHelp = showHelp,
         onDismissRequest = onDismissRequest,
@@ -101,6 +105,7 @@ fun SortBottomSheet(
 @Composable
 private fun SortBottomSheet(
     modifier: Modifier = Modifier,
+    sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
     onDismissRequest: () -> Unit,
     sortFieldOrderList: List<SortFieldOrder>,
     showHelp: Boolean,
@@ -112,7 +117,6 @@ private fun SortBottomSheet(
     onShowHelpClick: () -> Unit,
     onShowExample: () -> Unit,
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val coroutineScope = rememberCoroutineScope()
 
     ModalBottomSheet(
@@ -532,6 +536,7 @@ private fun SortBottomSheetPreview() {
 
     KeyMapperTheme {
         Surface {
+            @OptIn(ExperimentalMaterial3Api::class)
             SortBottomSheet(
                 // Preview hack, breaks if you run it
                 modifier = Modifier

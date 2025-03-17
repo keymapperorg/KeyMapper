@@ -9,8 +9,6 @@ import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.findNavController
-import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.databinding.FragmentComposeBinding
 import io.github.sds100.keymapper.system.files.FileUtils
@@ -70,9 +68,6 @@ class HomeFragment : Fragment() {
                     KeyMapperTheme {
                         HomeScreen(
                             viewModel = homeViewModel,
-                            onMenuClick = {
-                                findNavController().navigate(NavAppDirections.toSettingsFragment())
-                            },
                         )
                     }
                 }
