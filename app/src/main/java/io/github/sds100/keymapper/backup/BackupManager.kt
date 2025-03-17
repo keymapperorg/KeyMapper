@@ -51,12 +51,11 @@ import io.github.sds100.keymapper.util.UuidGenerator
 import io.github.sds100.keymapper.util.onFailure
 import io.github.sds100.keymapper.util.then
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -132,10 +131,10 @@ class BackupManagerImpl(
                     ?: return@collectLatest
 
                 val outputFile = fileAdapter.getFileFromUri(backupLocation)
-                val result = backupAsync(
-                    outputFile,
-                    backupData.keyMapList,
-                ).await()
+                val result = backupAsync(backupData.keyMapList).then { file ->
+                    file.inputStream()?.copyTo(outputFile.outputStream()!!)
+                    Success(Unit)
+                }
 
                 onAutomaticBackupResult.emit(result)
             }
@@ -160,27 +159,31 @@ class BackupManagerImpl(
         }.launchIn(coroutineScope)
     }
 
-    override suspend fun backupKeyMaps(uri: String, keyMapIds: List<String>): Result<String> = withContext(dispatchers.default()) {
-        val outputFile = fileAdapter.getFileFromUri(uri)
-        val allKeyMaps = keyMapRepository.keyMapList
-            .first { it is State.Data } as State.Data
+    // TODO back up the entire floating layouts associated with the selected key maps.
+    override suspend fun backupKeyMaps(keyMapIds: List<String>): Result<IFile> {
+        return withContext(dispatchers.default()) {
+            val allKeyMaps = keyMapRepository.keyMapList
+                .filterIsInstance<State.Data<List<KeyMapEntity>>>()
+                .first()
 
-        val keyMapsToBackup = allKeyMaps.data.filter { keyMapIds.contains(it.uid) }
+            val keyMapsToBackup = allKeyMaps.data.filter { keyMapIds.contains(it.uid) }
 
-        backupAsync(outputFile, keyMapsToBackup).await().then { Success(uri) }
+            backupAsync(keyMapsToBackup)
+        }
     }
 
     // TODO back up floating buttons and floating layouts as well.
-    override suspend fun backupEverything(uri: String): Result<String> = withContext(dispatchers.default()) {
-        val outputFile = fileAdapter.getFileFromUri(uri)
+    override suspend fun backupEverything(): Result<IFile> {
+        return withContext(dispatchers.io()) {
+            val keyMaps =
+                keyMapRepository.keyMapList
+                    .filterIsInstance<State.Data<List<KeyMapEntity>>>()
+                    .first()
 
-        val keyMaps =
-            keyMapRepository.keyMapList.first { it is State.Data } as State.Data
-
-        backupAsync(outputFile, keyMaps.data).await().then { Success(uri) }
+            backupAsync(keyMaps.data)
+        }
     }
 
-    @Suppress("BlockingMethodInNonBlockingContext")
     override suspend fun restore(uri: String): Result<*> {
         return withContext(dispatchers.default()) {
             val restoreUuid = uuidGenerator.random()
@@ -224,7 +227,6 @@ class BackupManagerImpl(
         }
     }
 
-    @Suppress("DEPRECATION")
     private suspend fun restore(inputStream: InputStream, soundFiles: List<IFile>): Result<*> {
         try {
             val parser = JsonParser()
@@ -400,101 +402,100 @@ class BackupManagerImpl(
         }
     }
 
-    @Suppress("BlockingMethodInNonBlockingContext")
-    private fun backupAsync(
-        output: IFile,
-        keyMapList: List<KeyMapEntity>? = null,
-    ): Deferred<Result<*>> = coroutineScope.async(dispatchers.io()) {
-        var tempBackupDir: IFile? = null
-
-        try {
-            // delete the contents of the file
-            output.clear()
-
-            val backupModel = BackupModel(
-                AppDatabase.DATABASE_VERSION,
-                Constants.VERSION_CODE,
-                keyMapList,
-                defaultLongPressDelay =
-                preferenceRepository
-                    .get(Keys.defaultLongPressDelay)
-                    .first()
-                    .takeIf { it != PreferenceDefaults.LONG_PRESS_DELAY },
-                defaultDoublePressDelay =
-                preferenceRepository
-                    .get(Keys.defaultDoublePressDelay)
-                    .first()
-                    .takeIf { it != PreferenceDefaults.DOUBLE_PRESS_DELAY },
-                defaultRepeatDelay =
-                preferenceRepository
-                    .get(Keys.defaultRepeatDelay)
-                    .first()
-                    .takeIf { it != PreferenceDefaults.REPEAT_DELAY },
-                defaultRepeatRate =
-                preferenceRepository
-                    .get(Keys.defaultRepeatRate)
-                    .first()
-                    .takeIf { it != PreferenceDefaults.REPEAT_RATE },
-                defaultSequenceTriggerTimeout =
-                preferenceRepository
-                    .get(Keys.defaultSequenceTriggerTimeout)
-                    .first()
-                    .takeIf { it != PreferenceDefaults.SEQUENCE_TRIGGER_TIMEOUT },
-                defaultVibrationDuration =
-                preferenceRepository
-                    .get(Keys.defaultVibrateDuration)
-                    .first()
-                    .takeIf { it != PreferenceDefaults.VIBRATION_DURATION },
-            )
-
-            val json = gson.toJson(backupModel)
-
+    private suspend fun backupAsync(keyMapList: List<KeyMapEntity>? = null): Result<IFile> {
+        return withContext(dispatchers.io()) {
             val backupUid = uuidGenerator.random()
 
-            tempBackupDir = fileAdapter.getPrivateFile("$TEMP_BACKUP_ROOT_DIR/$backupUid")
+            val tempBackupDir = fileAdapter.getPrivateFile("$TEMP_BACKUP_ROOT_DIR/$backupUid")
             tempBackupDir.createDirectory()
 
-            val filesToBackup = mutableSetOf<IFile>()
+            val outputFileName = BackupUtils.createBackupFileName()
+            val output: IFile =
+                fileAdapter.getPrivateFile("${tempBackupDir.path}/$outputFileName")
 
-            val dataJsonFile = fileAdapter.getFile(tempBackupDir, DATA_JSON_FILE_NAME)
-            dataJsonFile.createFile()
+            try {
+                // delete the contents of the file
+                output.clear()
 
-            dataJsonFile.outputStream()?.bufferedWriter()?.use {
-                it.write(json)
-            }
+                val backupModel = BackupModel(
+                    AppDatabase.DATABASE_VERSION,
+                    Constants.VERSION_CODE,
+                    keyMapList,
+                    defaultLongPressDelay =
+                    preferenceRepository
+                        .get(Keys.defaultLongPressDelay)
+                        .first()
+                        .takeIf { it != PreferenceDefaults.LONG_PRESS_DELAY },
+                    defaultDoublePressDelay =
+                    preferenceRepository
+                        .get(Keys.defaultDoublePressDelay)
+                        .first()
+                        .takeIf { it != PreferenceDefaults.DOUBLE_PRESS_DELAY },
+                    defaultRepeatDelay =
+                    preferenceRepository
+                        .get(Keys.defaultRepeatDelay)
+                        .first()
+                        .takeIf { it != PreferenceDefaults.REPEAT_DELAY },
+                    defaultRepeatRate =
+                    preferenceRepository
+                        .get(Keys.defaultRepeatRate)
+                        .first()
+                        .takeIf { it != PreferenceDefaults.REPEAT_RATE },
+                    defaultSequenceTriggerTimeout =
+                    preferenceRepository
+                        .get(Keys.defaultSequenceTriggerTimeout)
+                        .first()
+                        .takeIf { it != PreferenceDefaults.SEQUENCE_TRIGGER_TIMEOUT },
+                    defaultVibrationDuration =
+                    preferenceRepository
+                        .get(Keys.defaultVibrateDuration)
+                        .first()
+                        .takeIf { it != PreferenceDefaults.VIBRATION_DURATION },
+                )
 
-            filesToBackup.add(dataJsonFile)
+                val json = gson.toJson(backupModel)
 
-            // backup all sounds
-            val soundsToBackup = soundsManager.soundFiles.value.map { it.uid }
+                val filesToBackup = mutableSetOf<IFile>()
 
-            if (soundsToBackup.isNotEmpty()) {
-                val soundsBackupDirectory = fileAdapter.getFile(tempBackupDir, SOUNDS_DIR_NAME)
-                soundsBackupDirectory.createDirectory()
+                val dataJsonFile = fileAdapter.getFile(tempBackupDir, DATA_JSON_FILE_NAME)
+                dataJsonFile.createFile()
 
-                soundsToBackup.forEach { soundUid ->
-                    soundsManager.getSound(soundUid)
-                        .then { soundFile ->
-                            soundFile.copyTo(soundsBackupDirectory)
-                        }.onFailure {
-                            return@async it
-                        }
+                dataJsonFile.outputStream()?.bufferedWriter()?.use {
+                    it.write(json)
                 }
 
-                filesToBackup.add(soundsBackupDirectory)
+                filesToBackup.add(dataJsonFile)
+
+                // backup all sounds
+                val soundsToBackup = soundsManager.soundFiles.value.map { it.uid }
+
+                if (soundsToBackup.isNotEmpty()) {
+                    val soundsBackupDirectory = fileAdapter.getFile(tempBackupDir, SOUNDS_DIR_NAME)
+                    soundsBackupDirectory.createDirectory()
+
+                    soundsToBackup.forEach { soundUid ->
+                        soundsManager.getSound(soundUid)
+                            .then { soundFile ->
+                                soundFile.copyTo(soundsBackupDirectory)
+                            }.onFailure {
+                                return@withContext it
+                            }
+                    }
+
+                    filesToBackup.add(soundsBackupDirectory)
+                }
+
+                return@withContext fileAdapter.createZipFile(output, filesToBackup)
+                    .then { Success(output) }
+            } catch (e: Exception) {
+                Timber.e(e)
+
+                if (throwExceptions) {
+                    throw e
+                }
+
+                return@withContext Error.Exception(e)
             }
-
-            return@async fileAdapter.createZipFile(output, filesToBackup)
-        } catch (e: Exception) {
-            Timber.e(e)
-
-            if (throwExceptions) {
-                throw e
-            }
-
-            return@async Error.Exception(e)
-        } finally {
-            tempBackupDir?.delete()
         }
     }
 
@@ -538,11 +539,11 @@ interface BackupManager {
     /**
      * @return the URI to the back up
      */
-    suspend fun backupKeyMaps(uri: String, keyMapIds: List<String>): Result<String>
+    suspend fun backupKeyMaps(keyMapIds: List<String>): Result<IFile>
 
     /**
-     * @return the URI to the back up
+     * @return the URI to the back up file which can then be used for sharing.
      */
-    suspend fun backupEverything(uri: String): Result<String>
+    suspend fun backupEverything(): Result<IFile>
     suspend fun restore(uri: String): Result<*>
 }

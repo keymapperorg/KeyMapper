@@ -185,6 +185,7 @@ object ServiceLocator {
 
     private fun createConfigKeyMapsController(ctx: Context): ConfigKeyMapUseCaseController {
         return ConfigKeyMapUseCaseController(
+            appCoroutineScope(ctx),
             roomKeymapRepository(ctx),
             devicesAdapter(ctx),
             settingsRepository(ctx),

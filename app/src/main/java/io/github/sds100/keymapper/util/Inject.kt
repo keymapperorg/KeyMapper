@@ -167,7 +167,6 @@ object Inject {
             ServiceLocator.accessibilityServiceAdapter(ctx),
             UseCases.pauseMappings(ctx),
         ),
-        UseCases.showImePicker(ctx),
         UseCases.onboarding(ctx),
         ServiceLocator.resourceProvider(ctx),
         SetupGuiKeyboardUseCaseImpl(

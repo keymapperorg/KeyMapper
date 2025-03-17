@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.data.entities.FloatingButtonKeyEntity
 import io.github.sds100.keymapper.data.entities.KeyCodeTriggerKeyEntity
 import io.github.sds100.keymapper.data.entities.TriggerEntity
 import io.github.sds100.keymapper.data.entities.getData
+import io.github.sds100.keymapper.floating.FloatingButtonEntityMapper
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.util.valueOrNull
@@ -57,10 +58,32 @@ data class Trigger(
     }
 
     fun isChangingSequenceTriggerTimeoutAllowed(): Boolean = keys.isNotEmpty() && keys.size > 1 && mode is TriggerMode.Sequence
+
+    fun updateFloatingButtonData(buttons: List<FloatingButtonEntityWithLayout>): Trigger {
+        val newTriggerKeys = keys.map { key ->
+            if (key is FloatingButtonKey) {
+                val buttonLayout = buttons.find { it.button.uid == key.buttonUid }
+
+                if (buttonLayout == null) {
+                    key.copy(button = null)
+                } else {
+                    val buttonData = FloatingButtonEntityMapper.fromEntity(
+                        buttonLayout.button,
+                        buttonLayout.layout.name,
+                    )
+                    key.copy(button = buttonData)
+                }
+            } else {
+                key
+            }
+        }
+
+        return copy(keys = newTriggerKeys)
+    }
 }
 
 object TriggerEntityMapper {
-    suspend fun fromEntity(
+    fun fromEntity(
         entity: TriggerEntity,
         floatingButtons: List<FloatingButtonEntityWithLayout>,
     ): Trigger {

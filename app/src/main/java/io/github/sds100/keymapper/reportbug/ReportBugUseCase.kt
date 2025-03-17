@@ -10,8 +10,10 @@ import io.github.sds100.keymapper.system.files.IFile
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.ifIsData
 import io.github.sds100.keymapper.util.onFailure
+import io.github.sds100.keymapper.util.then
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
@@ -71,9 +73,13 @@ class ReportBugUseCaseImpl(
             // mappings
             val mappingsFile = fileAdapter.getFile(tempFolder, FILE_MAPPINGS)
 
-            backupManager.backupEverything(mappingsFile.uri).onFailure {
-                return it
-            }
+            // TODO testing this works.
+            backupManager.backupEverything()
+                .then { file ->
+                    file.inputStream()?.copyTo(mappingsFile.outputStream()!!)
+                    Success(Unit)
+                }
+                .onFailure { return it }
 
             // log
             val logFile = fileAdapter.getFile(tempFolder, FILE_LOG)

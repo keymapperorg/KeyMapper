@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.backup
 
+import io.github.sds100.keymapper.system.files.IFile
 import io.github.sds100.keymapper.util.Result
 import kotlinx.coroutines.flow.Flow
 
@@ -13,14 +14,13 @@ class BackupRestoreMappingsUseCaseImpl(
 
     override val onAutomaticBackupResult: Flow<Result<*>> = backupManager.onAutomaticBackupResult
 
-    override suspend fun backupAllMappings(uri: String): Result<String> = backupManager.backupEverything(uri)
+    override suspend fun backupEverything(): Result<IFile> = backupManager.backupEverything()
 
-    override suspend fun restoreMappings(uri: String): Result<*> =
-        backupManager.restore(uri)
+    override suspend fun restoreMappings(uri: String): Result<*> = backupManager.restore(uri)
 }
 
 interface BackupRestoreMappingsUseCase {
     val onAutomaticBackupResult: Flow<Result<*>>
-    suspend fun backupAllMappings(uri: String): Result<String>
+    suspend fun backupEverything(): Result<IFile>
     suspend fun restoreMappings(uri: String): Result<*>
 }

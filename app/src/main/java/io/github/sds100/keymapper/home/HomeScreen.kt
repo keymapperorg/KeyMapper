@@ -31,16 +31,23 @@ import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.automirrored.outlined.Sort
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.BubbleChart
+import androidx.compose.material.icons.outlined.BugReport
+import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material.icons.outlined.Gamepad
-import androidx.compose.material.icons.outlined.Menu
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.IosShare
+import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.PauseCircle
 import androidx.compose.material.icons.outlined.PlayCircleOutline
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilledTonalButton
@@ -59,22 +66,29 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -90,13 +104,19 @@ import io.github.sds100.keymapper.floating.FloatingLayoutsScreen
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapListScreen
 import io.github.sds100.keymapper.mappings.keymaps.trigger.DpadTriggerSetupBottomSheet
 import io.github.sds100.keymapper.sorting.SortBottomSheet
+import io.github.sds100.keymapper.util.ShareUtils
 import io.github.sds100.keymapper.util.ui.NavDestination
 import io.github.sds100.keymapper.util.ui.NavigateEvent
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(viewModel: HomeViewModel) {
+fun HomeScreen(
+    viewModel: HomeViewModel,
+    onSettingsClick: () -> Unit,
+    onAboutClick: () -> Unit,
+    onReportBugClick: () -> Unit,
+) {
     val homeState by viewModel.state.collectAsStateWithLifecycle()
 
     val navController = rememberNavController()
@@ -131,27 +151,42 @@ fun HomeScreen(viewModel: HomeViewModel) {
         )
     }
 
-    if (viewModel.menuViewModel.showMenuBottomSheet) {
-        HomeMenuBottomSheet(viewModel = viewModel.menuViewModel, sheetState = sheetState)
-    }
-
     val scope = rememberCoroutineScope()
     val uriHandler = LocalUriHandler.current
     val helpUrl = stringResource(R.string.url_quick_start_guide)
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    val snackbarState = remember { SnackbarHostState() }
+    val ctx = LocalContext.current
+
+    viewModel.exportState.also { exportState ->
+        if (exportState is ExportState.Error) {
+            scope.launch {
+                snackbarState.showSnackbar(exportState.error)
+                viewModel.exportState = ExportState.Idle
+            }
+        } else if (exportState is ExportState.Finished) {
+            ShareUtils.sendZipFile(ctx, exportState.uri.toUri())
+        }
+    }
+
+    val isExporting by remember { derivedStateOf { viewModel.exportState is ExportState.Exporting } }
 
     HomeScreen(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        state = homeState,
         navController = navController,
+        snackBarState = snackbarState,
         navBarItems = navBarItems,
         topAppBar = {
             HomeAppBar(
+                isExporting = isExporting,
                 scrollBehavior = scrollBehavior,
                 homeState = homeState,
-                onMenuClick = { viewModel.menuViewModel.showMenuBottomSheet = true },
+                onSettingsClick = onSettingsClick,
+                onAboutClick = onAboutClick,
+                onReportBugClick = onReportBugClick,
                 onSortClick = { viewModel.showSortBottomSheet = true },
                 onHelpClick = { uriHandler.openUri(helpUrl) },
+                onExportClick = viewModel::onExportClick,
                 onTogglePausedClick = viewModel::onTogglePausedClick,
                 onFixWarningClick = viewModel::onFixWarningClick,
             )
@@ -205,8 +240,8 @@ fun HomeScreen(viewModel: HomeViewModel) {
 @Composable
 private fun HomeScreen(
     modifier: Modifier = Modifier,
-    state: HomeState,
     navController: NavHostController,
+    snackBarState: SnackbarHostState = SnackbarHostState(),
     navBarItems: List<HomeNavBarItem>,
     topAppBar: @Composable () -> Unit,
     keyMapsContent: @Composable () -> Unit,
@@ -216,13 +251,11 @@ private fun HomeScreen(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
-    val snackbarHostState = remember { SnackbarHostState() }
-
     Scaffold(
         modifier = modifier,
         topBar = topAppBar,
         snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState)
+            SnackbarHost(hostState = snackBarState)
         },
         floatingActionButton = { floatingActionButton(currentDestination?.route) },
         bottomBar = {
@@ -319,11 +352,16 @@ private fun HomeScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 private fun HomeAppBar(
     homeState: HomeState,
-    onMenuClick: () -> Unit = {},
+    onSettingsClick: () -> Unit = {},
+    onAboutClick: () -> Unit = {},
+    onReportBugClick: () -> Unit = {},
     onSortClick: () -> Unit = {},
     onHelpClick: () -> Unit = {},
     onTogglePausedClick: () -> Unit = {},
     onFixWarningClick: (String) -> Unit = {},
+    isExporting: Boolean = false,
+    onExportClick: () -> Unit = {},
+    onImportClick: () -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
 ) {
     // This is taken from the AppBar color code.
@@ -346,6 +384,16 @@ private fun HomeAppBar(
         animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
     )
 
+    var expandedDropdown by rememberSaveable { mutableStateOf(false) }
+
+    DisposableEffect(isExporting) {
+        onDispose {
+            if (!isExporting) {
+                expandedDropdown = false
+            }
+        }
+    }
+
     Column {
         CenterAlignedTopAppBar(
             scrollBehavior = scrollBehavior,
@@ -358,30 +406,58 @@ private fun HomeAppBar(
                 }
             },
             navigationIcon = {
-                IconButton(onClick = onMenuClick) {
-                    Icon(
-                        Icons.Outlined.Menu,
-                        contentDescription = stringResource(R.string.home_app_bar_menu),
-                    )
-                }
-            },
-            actions = {
                 IconButton(onClick = onSortClick) {
                     Icon(
                         Icons.AutoMirrored.Outlined.Sort,
                         contentDescription = stringResource(R.string.home_app_bar_sort),
                     )
                 }
+            },
+            actions = {
                 IconButton(onClick = onHelpClick) {
                     Icon(
                         Icons.AutoMirrored.Outlined.HelpOutline,
                         contentDescription = stringResource(R.string.home_app_bar_help),
                     )
                 }
+
+                IconButton(onClick = { expandedDropdown = true }) {
+                    Icon(
+                        Icons.Outlined.MoreVert,
+                        contentDescription = stringResource(R.string.home_app_bar_more),
+                    )
+                }
+
+                HomeDropdownMenu(
+                    expanded = expandedDropdown,
+                    onSettingsClick = {
+                        expandedDropdown = false
+                        onSettingsClick()
+                    },
+                    onReportBugClick = {
+                        expandedDropdown = false
+                        onReportBugClick()
+                    },
+                    onAboutClick = {
+                        expandedDropdown = false
+                        onAboutClick()
+                    },
+                    onExportClick = {
+                        onExportClick()
+                    },
+                    onImportClick = {
+                        expandedDropdown = false
+                        onImportClick()
+                    },
+                    isExporting = isExporting,
+                    onDismissRequest = { expandedDropdown = false },
+                )
             },
             colors = appBarColors,
         )
         if (homeState is HomeState.Normal) {
+            // TODO open share sheet when backing up
+            // TODO handle the case that no app can be found for picking a file
             AnimatedVisibility(homeState.warnings.isNotEmpty()) {
                 Surface(color = appBarContainerColor) {
                     WarningList(
@@ -392,6 +468,52 @@ private fun HomeAppBar(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun HomeDropdownMenu(
+    expanded: Boolean,
+    isExporting: Boolean,
+    onSettingsClick: () -> Unit = {},
+    onReportBugClick: () -> Unit = {},
+    onAboutClick: () -> Unit = {},
+    onExportClick: () -> Unit = {},
+    onImportClick: () -> Unit = {},
+    onDismissRequest: () -> Unit = {},
+) {
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = onDismissRequest,
+        offset = DpOffset(x = 16.dp, y = 0.dp),
+    ) {
+        DropdownMenuItem(
+            leadingIcon = { Icon(Icons.Outlined.Settings, contentDescription = null) },
+            text = { Text(stringResource(R.string.home_menu_settings)) },
+            onClick = onSettingsClick,
+        )
+        DropdownMenuItem(
+            leadingIcon = { Icon(Icons.Outlined.IosShare, contentDescription = null) },
+            text = {
+                Text(stringResource(R.string.home_menu_export))
+            },
+            onClick = onExportClick,
+        )
+        DropdownMenuItem(
+            leadingIcon = { Icon(Icons.Outlined.Download, contentDescription = null) },
+            text = { Text(stringResource(R.string.home_menu_import)) },
+            onClick = onImportClick,
+        )
+        DropdownMenuItem(
+            leadingIcon = { Icon(Icons.Outlined.BugReport, contentDescription = null) },
+            text = { Text(stringResource(R.string.home_menu_report_bug)) },
+            onClick = onReportBugClick,
+        )
+        DropdownMenuItem(
+            leadingIcon = { Icon(Icons.Outlined.Info, contentDescription = null) },
+            text = { Text(stringResource(R.string.home_menu_about)) },
+            onClick = onAboutClick,
+        )
     }
 }
 
@@ -524,11 +646,10 @@ private fun HomeStateRunningPreview() {
     val state = HomeState.Normal(warnings = emptyList(), isPaused = false)
     KeyMapperTheme {
         HomeScreen(
-            state = state,
             navController = rememberNavController(),
             navBarItems = sampleNavBarItems(),
-            keyMapsContent = {},
             topAppBar = { HomeAppBar(state) },
+            keyMapsContent = {},
             floatingButtonsContent = {},
         )
     }
@@ -541,7 +662,6 @@ private fun HomeStatePausedPreview() {
     val state = HomeState.Normal(warnings = emptyList(), isPaused = true)
     KeyMapperTheme {
         HomeScreen(
-            state = state,
             navController = rememberNavController(),
             navBarItems = sampleNavBarItems(),
             topAppBar = { HomeAppBar(state) },
@@ -570,7 +690,6 @@ private fun HomeStateWarningsPreview() {
     )
     KeyMapperTheme {
         HomeScreen(
-            state = state,
             navController = rememberNavController(),
             navBarItems = sampleNavBarItems(),
             topAppBar = { HomeAppBar(state) },
@@ -590,12 +709,33 @@ private fun HomeStateSelectingPreview() {
     )
     KeyMapperTheme {
         HomeScreen(
-            state = state,
             navController = rememberNavController(),
             navBarItems = sampleNavBarItems(),
             topAppBar = { HomeAppBar(state) },
             keyMapsContent = {},
             floatingButtonsContent = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun DropdownPreview() {
+    KeyMapperTheme {
+        HomeDropdownMenu(
+            expanded = true,
+            isExporting = false,
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun DropdownExportingPreview() {
+    KeyMapperTheme {
+        HomeDropdownMenu(
+            expanded = true,
+            isExporting = true,
         )
     }
 }

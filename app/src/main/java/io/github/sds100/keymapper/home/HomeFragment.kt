@@ -5,13 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.findNavController
+import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.databinding.FragmentComposeBinding
-import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.ui.setupNavigation
 import io.github.sds100.keymapper.util.ui.showPopups
@@ -22,20 +22,6 @@ class HomeFragment : Fragment() {
     private val homeViewModel: HomeViewModel by activityViewModels {
         Inject.homeViewModel(requireContext())
     }
-
-    private val backupMappingsLauncher =
-        registerForActivityResult(CreateDocument(FileUtils.MIME_TYPE_ZIP)) {
-            it ?: return@registerForActivityResult
-
-            homeViewModel.onChoseBackupFile(it.toString())
-        }
-
-    private val backupKeyMapsLauncher =
-        registerForActivityResult(CreateDocument(FileUtils.MIME_TYPE_ZIP)) {
-            it ?: return@registerForActivityResult
-
-            homeViewModel.backupSelectedKeyMaps(it.toString())
-        }
 
     private val restoreMappingsLauncher =
         registerForActivityResult(ActivityResultContracts.GetContent()) {
@@ -68,6 +54,15 @@ class HomeFragment : Fragment() {
                     KeyMapperTheme {
                         HomeScreen(
                             viewModel = homeViewModel,
+                            onSettingsClick = {
+                                findNavController().navigate(NavAppDirections.toSettingsFragment())
+                            },
+                            onAboutClick = {
+                                findNavController().navigate(NavAppDirections.actionGlobalAboutFragment())
+                            },
+                            onReportBugClick = {
+                                findNavController().navigate(NavAppDirections.goToReportBugActivity())
+                            },
                         )
                     }
                 }

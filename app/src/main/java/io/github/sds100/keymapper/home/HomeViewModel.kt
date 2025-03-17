@@ -22,11 +22,12 @@ import io.github.sds100.keymapper.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.sorting.SortKeyMapsUseCase
 import io.github.sds100.keymapper.sorting.SortViewModel
 import io.github.sds100.keymapper.system.accessibility.ServiceState
-import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.getFullMessage
+import io.github.sds100.keymapper.util.onFailure
+import io.github.sds100.keymapper.util.onSuccess
 import io.github.sds100.keymapper.util.ui.DialogResponse
 import io.github.sds100.keymapper.util.ui.MultiSelectProvider
 import io.github.sds100.keymapper.util.ui.NavDestination
@@ -63,7 +64,6 @@ class HomeViewModel(
     private val pauseMappings: PauseMappingsUseCase,
     private val backupRestore: BackupRestoreMappingsUseCase,
     private val showAlertsUseCase: ShowHomeScreenAlertsUseCase,
-    private val showImePicker: ShowInputMethodPickerUseCase,
     private val onboarding: OnboardingUseCase,
     resourceProvider: ResourceProvider,
     private val setupGuiKeyboard: SetupGuiKeyboardUseCase,
@@ -86,14 +86,6 @@ class HomeViewModel(
         listFloatingLayouts.showFloatingLayouts
             .map(::buildNavBarItems)
             .stateIn(viewModelScope, SharingStarted.Eagerly, buildNavBarItems(false))
-
-    val menuViewModel by lazy {
-        HomeMenuViewModel(
-            viewModelScope,
-            showImePicker,
-            resourceProvider,
-        )
-    }
 
     val keymapListViewModel by lazy {
         KeyMapListViewModel(
@@ -125,6 +117,8 @@ class HomeViewModel(
 
     private val _shareBackup = MutableSharedFlow<String>()
     val shareBackup = _shareBackup.asSharedFlow()
+
+    var exportState: ExportState by mutableStateOf(ExportState.Idle)
 
     private val warnings: Flow<List<HomeWarningListItem>> = combine(
         showAlertsUseCase.isBatteryOptimised,
@@ -398,6 +392,21 @@ class HomeViewModel(
         }
     }
 
+    fun onExportClick() {
+        viewModelScope.launch {
+            if (exportState != ExportState.Idle) {
+                return@launch
+            }
+
+            exportState = ExportState.Exporting
+            backupRestore.backupEverything().onSuccess {
+                exportState = ExportState.Finished(it.uri)
+            }.onFailure {
+                exportState = ExportState.Error(it.getFullMessage(this@HomeViewModel))
+            }
+        }
+    }
+
     fun onChoseRestoreFile(uri: String) {
         viewModelScope.launch {
             when (val result = backupRestore.restoreMappings(uri)) {
@@ -416,14 +425,6 @@ class HomeViewModel(
                     ),
                 )
             }
-        }
-    }
-
-    fun onChoseBackupFile(uri: String) {
-        viewModelScope.launch {
-            val result = backupRestore.backupAllMappings(uri)
-
-            onBackupResult(result)
         }
     }
 
@@ -461,7 +462,6 @@ class HomeViewModel(
         private val pauseMappings: PauseMappingsUseCase,
         private val backupRestore: BackupRestoreMappingsUseCase,
         private val showAlertsUseCase: ShowHomeScreenAlertsUseCase,
-        private val showImePicker: ShowInputMethodPickerUseCase,
         private val onboarding: OnboardingUseCase,
         private val resourceProvider: ResourceProvider,
         private val setupGuiKeyboard: SetupGuiKeyboardUseCase,
@@ -474,7 +474,6 @@ class HomeViewModel(
             pauseMappings,
             backupRestore,
             showAlertsUseCase,
-            showImePicker,
             onboarding,
             resourceProvider,
             setupGuiKeyboard,
@@ -482,6 +481,13 @@ class HomeViewModel(
             listFloatingLayouts,
         ) as T
     }
+}
+
+sealed class ExportState {
+    data object Idle : ExportState()
+    data object Exporting : ExportState()
+    data class Finished(val uri: String) : ExportState()
+    data class Error(val error: String) : ExportState()
 }
 
 sealed class HomeState {

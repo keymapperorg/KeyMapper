@@ -4,7 +4,9 @@ import io.github.sds100.keymapper.backup.BackupManager
 import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.dataOrNull
+import io.github.sds100.keymapper.util.then
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
@@ -72,7 +74,7 @@ class ListKeyMapsUseCaseImpl(
         keyMapRepository.duplicate(*uid)
     }
 
-    override suspend fun backupKeyMaps(vararg uid: String, uri: String): Result<String> = backupManager.backupKeyMaps(uri, uid.asList())
+    override suspend fun backupKeyMaps(vararg uid: String, uri: String): Result<String> = backupManager.backupKeyMaps(uid.asList()).then { Success(it.uri) }
 }
 
 interface ListKeyMapsUseCase : DisplayKeyMapUseCase {
