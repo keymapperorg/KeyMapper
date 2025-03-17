@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -20,6 +21,7 @@ import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.ArrowForward
 import androidx.compose.material.icons.outlined.Error
 import androidx.compose.material.icons.outlined.FlashlightOn
 import androidx.compose.material3.AssistChipDefaults
@@ -185,6 +187,8 @@ private fun KeyMapList(
     }
 }
 
+val chipHeight = 26.dp
+
 @Composable
 private fun KeyMapListItem(
     modifier: Modifier = Modifier,
@@ -202,39 +206,51 @@ private fun KeyMapListItem(
         Row(modifier = Modifier.padding(start = 8.dp)) {
             if (isSelectable) {
                 Checkbox(
+                    modifier = Modifier.align(Alignment.CenterVertically),
                     checked = model.isSelected,
                     onCheckedChange = onSelectedChange,
-                    modifier = Modifier.align(Alignment.CenterVertically),
                 )
             }
 
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 8.dp, top = 16.dp, end = 16.dp, bottom = 16.dp),
+                    .padding(start = 8.dp, top = 8.dp, end = 16.dp, bottom = 8.dp),
             ) {
                 if (model.content.extraInfo != null) {
-                    Text(
-                        text = model.content.extraInfo,
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.error,
-                    )
+                    Row(
+                        modifier = Modifier.heightIn(min = chipHeight),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = model.content.extraInfo,
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.error,
+                        )
+                    }
                 }
 
                 if (model.content.triggerKeys.isNotEmpty()) {
-                    TriggerDescription(
-                        modifier = Modifier.fillMaxWidth(),
-                        triggerKeys = model.content.triggerKeys,
-                        separator = model.content.triggerSeparatorIcon,
-                    )
-
-                    Spacer(Modifier.height(4.dp))
+                    Row(
+                        modifier = Modifier.heightIn(min = chipHeight),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        TriggerDescription(
+                            modifier = Modifier.fillMaxWidth(),
+                            triggerKeys = model.content.triggerKeys,
+                            separator = model.content.triggerSeparatorIcon,
+                        )
+                    }
+                    Spacer(Modifier.height(8.dp))
                 }
 
                 if (model.content.triggerErrors.isNotEmpty()) {
                     FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(
+                            4.dp,
+                            alignment = Alignment.CenterVertically,
+                        ),
                     ) {
                         for (error in model.content.triggerErrors) {
                             ErrorChip(
@@ -243,21 +259,24 @@ private fun KeyMapListItem(
                             )
                         }
                     }
+
+                    Spacer(Modifier.height(8.dp))
                 }
 
                 if (model.content.actions.isNotEmpty()) {
-                    Text(
-                        text = stringResource(R.string.action_list_header),
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(top = 4.dp),
-                    )
-                    Spacer(Modifier.height(4.dp))
                     FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         itemVerticalAlignment = Alignment.CenterVertically,
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(
+                            8.dp,
+                            alignment = Alignment.CenterVertically,
+                        ),
                     ) {
+                        Text(
+                            text = stringResource(R.string.action_list_header),
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold,
+                        )
                         for (chipModel in model.content.actions) {
                             ActionConstraintChip(
                                 chipModel,
@@ -265,21 +284,24 @@ private fun KeyMapListItem(
                             )
                         }
                     }
+
+                    Spacer(Modifier.height(8.dp))
                 }
 
                 if (model.content.constraints.isNotEmpty()) {
-                    Text(
-                        text = stringResource(R.string.constraint_list_header),
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(top = 4.dp),
-                    )
-                    Spacer(Modifier.height(4.dp))
                     FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         itemVerticalAlignment = Alignment.CenterVertically,
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(
+                            8.dp,
+                            alignment = Alignment.CenterVertically,
+                        ),
                     ) {
+                        Text(
+                            text = stringResource(R.string.constraint_list_header),
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold,
+                        )
                         for ((index, chipModel) in model.content.constraints.withIndex()) {
                             ActionConstraintChip(
                                 chipModel,
@@ -301,19 +323,26 @@ private fun KeyMapListItem(
                             }
                         }
                     }
+                    Spacer(Modifier.height(8.dp))
                 }
 
+                // TODO make this a list and put it on the same line as trigger
                 if (model.content.optionsDescription != null) {
-                    Text(
-                        text = stringResource(R.string.option_list_header),
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(top = 4.dp),
-                    )
-                    Text(
-                        text = model.content.optionsDescription,
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
+                    Row(
+                        modifier = Modifier.heightIn(min = chipHeight),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = stringResource(R.string.option_list_header),
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold,
+                        )
+                        Spacer(Modifier.width(4.dp))
+                        Text(
+                            text = model.content.optionsDescription,
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
                 }
             }
         }
@@ -429,7 +458,7 @@ private fun CompactChip(
     contentColor: Color = MaterialTheme.colorScheme.onSurface,
 ) {
     Surface(
-        modifier = modifier,
+        modifier = modifier.height(chipHeight),
         color = containerColor,
         shape = AssistChipDefaults.shape,
     ) {
@@ -450,7 +479,7 @@ private fun CompactChip(
         LocalMinimumInteractiveComponentSize provides 16.dp,
     ) {
         Surface(
-            modifier = modifier,
+            modifier = modifier.height(chipHeight),
             color = containerColor,
             shape = AssistChipDefaults.shape,
             onClick = onClick,
@@ -507,8 +536,8 @@ private fun sampleList(): List<KeyMapListItemModel> {
             isSelected = true,
             KeyMapListItemModel.Content(
                 uid = "0",
-                triggerKeys = listOf("Volume down", "Volume up"),
-                triggerSeparatorIcon = Icons.Outlined.Add,
+                triggerKeys = listOf("Volume down", "Volume up", "Volume down"),
+                triggerSeparatorIcon = Icons.Outlined.ArrowForward,
                 actions = listOf(
                     ComposeChipModel.Normal(
                         id = "0",
@@ -546,13 +575,39 @@ private fun sampleList(): List<KeyMapListItemModel> {
                 ),
                 optionsDescription = "Vibrate",
                 triggerErrors = listOf(TriggerError.DND_ACCESS_DENIED),
+                extraInfo = "Disabled • No trigger",
+            ),
+        ),
+        KeyMapListItemModel(
+            isSelected = true,
+            KeyMapListItemModel.Content(
+                uid = "1",
+                triggerKeys = listOf("Volume down", "Volume up"),
+                triggerSeparatorIcon = Icons.Outlined.Add,
+                actions = listOf(
+                    ComposeChipModel.Normal(
+                        id = "0",
+                        ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
+                        "Open Key Mapper",
+                    ),
+                ),
+                constraintMode = ConstraintMode.AND,
+                constraints = listOf(
+                    ComposeChipModel.Normal(
+                        id = "0",
+                        ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
+                        "Key Mapper is not open",
+                    ),
+                ),
+                optionsDescription = "Vibrate",
+                triggerErrors = emptyList(),
                 extraInfo = null,
             ),
         ),
         KeyMapListItemModel(
             isSelected = false,
             content = KeyMapListItemModel.Content(
-                uid = "1",
+                uid = "2",
                 triggerKeys = emptyList(),
                 triggerSeparatorIcon = Icons.Outlined.Add,
                 actions = emptyList(),

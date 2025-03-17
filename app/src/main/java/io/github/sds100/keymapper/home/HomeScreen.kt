@@ -85,6 +85,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -291,7 +292,7 @@ private fun HomeScreen(
                                 }
                             }
                         },
-                        label = { Text(item.label) },
+                        label = { Text(item.label, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                         selected = currentDestination?.hierarchy?.any { it.route == item.destination.route } == true,
                         onClick = {
                             // don't do anything if clicking on the current

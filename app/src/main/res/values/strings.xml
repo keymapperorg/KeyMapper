@@ -112,10 +112,10 @@
     <!--  Action descriptions  -->
 
     <!--  Headers  -->
-    <string name="option_list_header">Options</string>
-    <string name="action_list_header">Actions</string>
+    <string name="option_list_header">Options:</string>
+    <string name="action_list_header">Actions:</string>
     <string name="trigger_header">Trigger: </string>
-    <string name="constraint_list_header">Constraints</string>
+    <string name="constraint_list_header">Constraints:</string>
     <string name="fingerprint_gesture_up">Swipe up</string>
     <string name="fingerprint_gesture_down">Swipe down</string>
     <string name="fingerprint_gesture_left">Swipe left</string>
