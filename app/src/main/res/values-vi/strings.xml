@@ -658,7 +658,6 @@
     <string name="stream_ring">Chuông</string>
     <string name="stream_system">Hệ thống</string>
     <string name="stream_voice_call">Cuộc gọi thoại</string>
-    <string name="ringer_mode_normal">Chuông</string>
     <string name="ringer_mode_vibrate">Rung</string>
     <string name="ringer_mode_silent">Im lặng</string>
     <string name="lens_front">Đằng trước</string>
@@ -839,8 +838,6 @@
     <string name="action_increase_stream_formatted">Tăng luồng %s</string>
     <string name="action_decrease_stream">Giảm luồng</string>
     <string name="action_decrease_stream_formatted">Giảm luồng %s</string>
-    <string name="action_cycle_ringer_mode">Chuyển qua các chế độ chuông (Rung, Rung, Im lặng)</string>
-    <string name="action_cycle_vibrate_ring">Chuyển qua các chế độ chuông (Ring, Vibrate)</string>
     <string name="action_change_ringer_mode">Thay đổi chế độ chuông</string>
     <string name="action_change_ringer_mode_formatted">Thay đổi sang chế độ %s</string>
     <string name="action_toggle_dnd_mode">Chuyển đổi chế độ Không làm phiền</string>
@@ -1038,8 +1035,6 @@
     <string name="assistant_voice_trigger_name">Trợ lý giọng nói</string>
     <string name="advanced_triggers_sheet_title">Trình kích hoạt nâng cao</string>
     <string name="advanced_triggers_learn_more_button">Tìm hiểu thêm</string>
-    <string name="notification_assistant_trigger_feature_title">Kích hoạt mới! Bạn có biết bạn có thể sắp xếp lại trợ lý kỹ thuật số của mình không?</string>
-    <string name="notification_assistant_trigger_feature_text">Thay vì khởi chạy Google Assistant hoặc Bixby, bạn có thể thực hiện hành động mà mình chọn. Nhấn để tìm hiểu thêm.</string>
     <!--  Purchasing  -->
     <string name="unlock_product_button">Mở khóa (%s)</string>
     <string name="use_product_button">Sử dụng</string>

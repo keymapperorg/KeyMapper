@@ -648,7 +648,6 @@
     <string name="stream_ring">Звонок</string>
     <string name="stream_system">Система</string>
     <string name="stream_voice_call">Голосовой вызов</string>
-    <string name="ringer_mode_normal">Звонок</string>
     <string name="ringer_mode_vibrate">Вибрация</string>
     <string name="ringer_mode_silent">Бесшумный звонок</string>
     <string name="lens_front">Передняя камера</string>
@@ -821,8 +820,6 @@
     <string name="action_increase_stream_formatted">Громче поток %s</string>
     <string name="action_decrease_stream">Тише поток</string>
     <string name="action_decrease_stream_formatted">Тише поток %s</string>
-    <string name="action_cycle_ringer_mode">Цикл режимов звонка (Обычный звонок, Вибрация, Без звука)</string>
-    <string name="action_cycle_vibrate_ring">Цикл режимов звонка (Обычный звонок, Вибрация)</string>
     <string name="action_change_ringer_mode">Изменить режим звонка</string>
     <string name="action_change_ringer_mode_formatted">Сменить режим звонка %s</string>
     <string name="action_toggle_dnd_mode">Переключить режим \"Не беспокоить\"</string>

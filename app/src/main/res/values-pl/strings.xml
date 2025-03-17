@@ -680,7 +680,6 @@
     <string name="stream_ring">Dzwonek</string>
     <string name="stream_system">System</string>
     <string name="stream_voice_call">Połączenie głosowe</string>
-    <string name="ringer_mode_normal">Dzwonek</string>
     <string name="ringer_mode_vibrate">Wibruj</string>
     <string name="ringer_mode_silent">Wycisz</string>
     <string name="lens_front">Kamera przednia</string>
@@ -861,8 +860,6 @@
     <string name="action_increase_stream_formatted">Zwiększ strumień %s</string>
     <string name="action_decrease_stream">Zmniejsz strumień</string>
     <string name="action_decrease_stream_formatted">Zmniejsz strumień %s</string>
-    <string name="action_cycle_ringer_mode">Przełącz pomiędzy trybami dzwonka (dzwonek, wibracja, wycisz)</string>
-    <string name="action_cycle_vibrate_ring">Przełącz pomiędzy trybami dzwonka (dzwonek, wibracja)</string>
     <string name="action_change_ringer_mode">Zmień tryb dzwonka</string>
     <string name="action_change_ringer_mode_formatted">Przełącz na tryb %s</string>
     <string name="action_toggle_dnd_mode">Włącz/wyłącz tryb Nie przeszkadzać</string>
@@ -1060,8 +1057,6 @@
     <string name="assistant_voice_trigger_name">Asystent głosowy</string>
     <string name="advanced_triggers_sheet_title">Zaawansowane wyzwalacze</string>
     <string name="advanced_triggers_learn_more_button">Dowiedz się więcej</string>
-    <string name="notification_assistant_trigger_feature_title">Nowy wyzwalacz! Czy wiesz, że możesz zmienić przycisk asystenta?</string>
-    <string name="notification_assistant_trigger_feature_text">Zamiast uruchamiać Asystenta Google lub Bixby, możesz wykonać wybrane działanie. Kliknij, aby dowiedzieć się więcej.</string>
     <!--  Purchasing  -->
     <string name="unlock_product_button">Odblokuj (%s)</string>
     <string name="use_product_button">Użyj</string>

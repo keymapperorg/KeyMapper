@@ -676,7 +676,6 @@
     <string name="stream_ring">铃声</string>
     <string name="stream_system">系统</string>
     <string name="stream_voice_call">语音通话</string>
-    <string name="ringer_mode_normal">铃声</string>
     <string name="ringer_mode_vibrate">振动</string>
     <string name="ringer_mode_silent">静音</string>
     <string name="lens_front">前</string>
@@ -857,8 +856,6 @@
     <string name="action_increase_stream_formatted">增加 %s 流</string>
     <string name="action_decrease_stream">减少流</string>
     <string name="action_decrease_stream_formatted">减少 %s 流</string>
-    <string name="action_cycle_ringer_mode">循环切换铃声模式(铃响、振动、静音)</string>
-    <string name="action_cycle_vibrate_ring">循环切换铃声模式(铃响、振动)</string>
     <string name="action_change_ringer_mode">更改铃声模式</string>
     <string name="action_change_ringer_mode_formatted">更改为 %s 模式</string>
     <string name="action_toggle_dnd_mode">切换勿扰模式</string>
