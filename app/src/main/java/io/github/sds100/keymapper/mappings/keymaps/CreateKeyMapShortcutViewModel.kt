@@ -1,9 +1,8 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
 import android.content.Intent
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import android.graphics.Color
+import android.graphics.drawable.Drawable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -11,6 +10,9 @@ import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.mapData
 import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.util.ui.TintType
+import io.github.sds100.keymapper.util.ui.ViewModelHelper
+import io.github.sds100.keymapper.util.ui.showPopup
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -35,6 +37,7 @@ class CreateKeyMapShortcutViewModel(
     ResourceProvider by resourceProvider {
     private val actionUiHelper = KeyMapActionUiHelper(listKeyMaps, resourceProvider)
 
+    private val actionUiHelper = KeyMapActionUiHelper(listUseCase, resourceProvider)
     private val listItemCreator =
         KeyMapListItemCreator(actionUiHelper, listKeyMaps, resourceProvider)
 
@@ -97,23 +100,52 @@ class CreateKeyMapShortcutViewModel(
 
             val keyMap = keyMapState.data
 
-            val intent = if (keyMap.actionList.size == 1) {
-                createShortcutUseCase.createIntentForSingleAction(keyMap.uid, keyMap.actionList[0])
-            } else {
-                showShortcutNameDialog = true
+            val key = "create_launcher_shortcut"
+            val defaultShortcutName: String
+            val icon: Drawable?
 
-                val shortcutName = shortcutNameDialogResult.filterNotNull().first()
-                shortcutNameDialogResult.value = null
-
-                if (shortcutName.isBlank()) {
-                    return@launch
-                }
-
-                createShortcutUseCase.createIntentForMultipleActions(
-                    keyMapUid = keyMap.uid,
-                    shortcutLabel = shortcutName,
+            if (keyMap.actionList.size == 1) {
+                val action = keyMap.actionList.first().data
+                defaultShortcutName = actionUiHelper.getTitle(
+                    action,
+                    showDeviceDescriptors = false,
                 )
+
+                val iconInfo = actionUiHelper.getIcon(action)
+
+                if (iconInfo == null) {
+                    icon = null
+                } else {
+                    when (iconInfo.tintType) {
+                        // Always set the icon as black if it needs to be on surface because the
+                        // background is white. Also, getting the colorOnSurface attribute
+                        // from the application context doesn't seem to work correctly.
+                        TintType.OnSurface -> iconInfo.drawable.setTint(Color.BLACK)
+                        is TintType.Color -> iconInfo.drawable.setTint(iconInfo.tintType.color)
+                        else -> {}
+                    }
+
+                    icon = iconInfo.drawable
+                }
+            } else {
+                defaultShortcutName = ""
+                icon = null
             }
+
+            val shortcutName = showPopup(
+                key,
+                PopupUi.Text(
+                    getString(R.string.hint_shortcut_name),
+                    allowEmpty = false,
+                    text = defaultShortcutName,
+                ),
+            ) ?: return@launch
+
+            val intent = createShortcutUseCase.createIntent(
+                keyMapUid = keyMap.uid,
+                shortcutLabel = shortcutName,
+                icon = icon,
+            )
 
             configKeyMapUseCase.save()
 

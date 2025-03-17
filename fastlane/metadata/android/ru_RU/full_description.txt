@@ -3,7 +3,7 @@ New trigger! 🎉 Remap your Assistant & Bixby, and DPAD buttons!
 Что можно переназначить?
 
  * Кнопки громкости.
- * Power button via Google Assistant, Pixel Active Edge, Double press Bixby button.
+ * Power button, side key, and voice assistant button (one time purchase to support development).
  * Проводные и Bluetooth клавиатуры.
  * Жесты отпечатка пальца на поддерживаемых устройствах.
  * DPAD buttons on game controllers.

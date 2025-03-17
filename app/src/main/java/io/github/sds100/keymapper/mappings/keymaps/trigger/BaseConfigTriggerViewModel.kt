@@ -80,6 +80,7 @@ abstract class BaseConfigTriggerViewModel(
     val optionsViewModel = ConfigTriggerOptionsViewModel(
         coroutineScope,
         config,
+        displayKeyMap,
         createKeyMapShortcut,
         resourceProvider,
     )

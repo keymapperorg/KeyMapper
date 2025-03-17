@@ -1,10 +1,14 @@
 package io.github.sds100.keymapper.mappings.keymaps.trigger
 
+import android.graphics.Color
+import android.graphics.drawable.Drawable
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.mappings.OptionMinimums
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapUseCase
 import io.github.sds100.keymapper.mappings.keymaps.CreateKeyMapShortcutUseCase
+import io.github.sds100.keymapper.mappings.keymaps.DisplayKeyMapUseCase
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
+import io.github.sds100.keymapper.mappings.keymaps.KeyMapActionUiHelper
 import io.github.sds100.keymapper.util.Defaultable
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.dataOrNull
@@ -21,6 +25,7 @@ import io.github.sds100.keymapper.util.ui.SliderListItem
 import io.github.sds100.keymapper.util.ui.SliderMaximums
 import io.github.sds100.keymapper.util.ui.SliderModel
 import io.github.sds100.keymapper.util.ui.SliderStepSizes
+import io.github.sds100.keymapper.util.ui.TintType
 import io.github.sds100.keymapper.util.ui.showPopup
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,6 +42,7 @@ import kotlinx.coroutines.withContext
 class ConfigTriggerOptionsViewModel(
     private val coroutineScope: CoroutineScope,
     private val config: ConfigKeyMapUseCase,
+    private val displayUseCase: DisplayKeyMapUseCase,
     private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
     resourceProvider: ResourceProvider,
 ) : ResourceProvider by resourceProvider,
@@ -54,6 +60,7 @@ class ConfigTriggerOptionsViewModel(
         private const val ID_SHOW_TOAST = "show_toast"
     }
 
+    private val actionUiHelper = KeyMapActionUiHelper(displayUseCase, resourceProvider)
     private val _state by lazy { MutableStateFlow(buildUiState(State.Loading)) }
     val state by lazy { _state.asStateFlow() }
 
@@ -91,23 +98,48 @@ class ConfigTriggerOptionsViewModel(
             val mapping = config.keyMap.firstOrNull()?.dataOrNull() ?: return@launch
             val keyMapUid = mapping.uid
 
-            val result = if (mapping.actionList.size == 1) {
-                createKeyMapShortcut.pinShortcutForSingleAction(keyMapUid, mapping.actionList[0])
-            } else {
-                val key = "create_launcher_shortcut"
-                val shortcutLabel = showPopup(
-                    key,
-                    PopupUi.Text(
-                        getString(R.string.hint_shortcut_name),
-                        allowEmpty = false,
-                    ),
-                ) ?: return@launch
+            val key = "create_launcher_shortcut"
+            val defaultShortcutName: String
+            val icon: Drawable?
 
-                createKeyMapShortcut.pinShortcutForMultipleActions(
-                    keyMapUid = keyMapUid,
-                    shortcutLabel = shortcutLabel,
+            if (mapping.actionList.size == 1) {
+                val action = mapping.actionList.first().data
+                defaultShortcutName = actionUiHelper.getTitle(
+                    action,
+                    showDeviceDescriptors = false,
                 )
+
+                val iconInfo = actionUiHelper.getIcon(action)
+
+                if (iconInfo == null) {
+                    icon = null
+                } else {
+                    when (iconInfo.tintType) {
+                        // Always set the icon as black if it needs to be on surface because the
+                        // background is white. Also, getting the colorOnSurface attribute
+                        // from the application context doesn't seem to work correctly.
+                        TintType.OnSurface -> iconInfo.drawable.setTint(Color.BLACK)
+                        is TintType.Color -> iconInfo.drawable.setTint(iconInfo.tintType.color)
+                        else -> {}
+                    }
+
+                    icon = iconInfo.drawable
+                }
+            } else {
+                defaultShortcutName = ""
+                icon = null
             }
+
+            val shortcutName = showPopup(
+                key,
+                PopupUi.Text(
+                    getString(R.string.hint_shortcut_name),
+                    allowEmpty = false,
+                    text = defaultShortcutName,
+                ),
+            ) ?: return@launch
+
+            val result = createKeyMapShortcut.pinShortcut(keyMapUid, shortcutName, icon)
 
             result.onFailure { error ->
                 val snackBar = PopupUi.SnackBar(
@@ -119,123 +151,122 @@ class ConfigTriggerOptionsViewModel(
         }
     }
 
-    private fun buildUiState(configState: State<KeyMap>): State<List<ListItem>> =
-        configState.mapData { keyMap ->
-            sequence {
-                val trigger = keyMap.trigger
-                val keyMapUid = keyMap.uid
+    private fun buildUiState(configState: State<KeyMap>): State<List<ListItem>> = configState.mapData { keyMap ->
+        sequence {
+            val trigger = keyMap.trigger
+            val keyMapUid = keyMap.uid
 
-                yield(
-                    TriggerFromOtherAppsListItem(
-                        id = ID_TRIGGER_FROM_OTHER_APPS,
-                        isEnabled = trigger.triggerFromOtherApps,
-                        keyMapUid = keyMapUid,
-                        label = getString(R.string.flag_trigger_from_other_apps),
-                        isCreateLauncherShortcutButtonEnabled = createKeyMapShortcut.isSupported,
-                    ),
-                )
+            yield(
+                TriggerFromOtherAppsListItem(
+                    id = ID_TRIGGER_FROM_OTHER_APPS,
+                    isEnabled = trigger.triggerFromOtherApps,
+                    keyMapUid = keyMapUid,
+                    label = getString(R.string.flag_trigger_from_other_apps),
+                    isCreateLauncherShortcutButtonEnabled = createKeyMapShortcut.isSupported,
+                ),
+            )
 
+            yield(
+                CheckBoxListItem(
+                    id = ID_SHOW_TOAST,
+                    isChecked = trigger.showToast,
+                    label = getString(R.string.flag_show_toast),
+                ),
+            )
+
+            if (trigger.isDetectingWhenScreenOffAllowed()) {
                 yield(
                     CheckBoxListItem(
-                        id = ID_SHOW_TOAST,
-                        isChecked = trigger.showToast,
-                        label = getString(R.string.flag_show_toast),
+                        id = ID_SCREEN_OFF_TRIGGER,
+                        isChecked = trigger.screenOffTrigger,
+                        label = getString(R.string.flag_detect_triggers_screen_off),
                     ),
                 )
+            }
 
-                if (trigger.isDetectingWhenScreenOffAllowed()) {
-                    yield(
-                        CheckBoxListItem(
-                            id = ID_SCREEN_OFF_TRIGGER,
-                            isChecked = trigger.screenOffTrigger,
-                            label = getString(R.string.flag_detect_triggers_screen_off),
-                        ),
-                    )
-                }
+            if (trigger.isVibrateAllowed()) {
+                yield(
+                    CheckBoxListItem(
+                        id = ID_VIBRATE,
+                        isChecked = trigger.vibrate,
+                        label = getString(R.string.flag_vibrate),
+                    ),
+                )
+            }
 
-                if (trigger.isVibrateAllowed()) {
-                    yield(
-                        CheckBoxListItem(
-                            id = ID_VIBRATE,
-                            isChecked = trigger.vibrate,
-                            label = getString(R.string.flag_vibrate),
-                        ),
-                    )
-                }
+            if (trigger.isLongPressDoubleVibrationAllowed()) {
+                yield(
+                    CheckBoxListItem(
+                        id = ID_LONG_PRESS_DOUBLE_VIBRATION,
+                        isChecked = trigger.longPressDoubleVibration,
+                        label = getString(R.string.flag_long_press_double_vibration),
+                    ),
+                )
+            }
 
-                if (trigger.isLongPressDoubleVibrationAllowed()) {
-                    yield(
-                        CheckBoxListItem(
-                            id = ID_LONG_PRESS_DOUBLE_VIBRATION,
-                            isChecked = trigger.longPressDoubleVibration,
-                            label = getString(R.string.flag_long_press_double_vibration),
+            if (trigger.isChangingVibrationDurationAllowed()) {
+                yield(
+                    SliderListItem(
+                        id = ID_VIBRATE_DURATION,
+                        label = getString(R.string.extra_label_vibration_duration),
+                        SliderModel(
+                            value = Defaultable.create(trigger.vibrateDuration),
+                            isDefaultStepEnabled = true,
+                            min = OptionMinimums.VIBRATION_DURATION,
+                            max = SliderMaximums.VIBRATION_DURATION,
+                            stepSize = SliderStepSizes.VIBRATION_DURATION,
                         ),
-                    )
-                }
+                    ),
+                )
+            }
 
-                if (trigger.isChangingVibrationDurationAllowed()) {
-                    yield(
-                        SliderListItem(
-                            id = ID_VIBRATE_DURATION,
-                            label = getString(R.string.extra_label_vibration_duration),
-                            SliderModel(
-                                value = Defaultable.create(trigger.vibrateDuration),
-                                isDefaultStepEnabled = true,
-                                min = OptionMinimums.VIBRATION_DURATION,
-                                max = SliderMaximums.VIBRATION_DURATION,
-                                stepSize = SliderStepSizes.VIBRATION_DURATION,
-                            ),
+            if (trigger.isChangingLongPressDelayAllowed()) {
+                yield(
+                    SliderListItem(
+                        id = ID_LONG_PRESS_DELAY,
+                        label = getString(R.string.extra_label_long_press_delay_timeout),
+                        SliderModel(
+                            value = Defaultable.create(trigger.longPressDelay),
+                            isDefaultStepEnabled = true,
+                            min = OptionMinimums.TRIGGER_LONG_PRESS_DELAY,
+                            max = SliderMaximums.TRIGGER_LONG_PRESS_DELAY,
+                            stepSize = SliderStepSizes.TRIGGER_LONG_PRESS_DELAY,
                         ),
-                    )
-                }
+                    ),
+                )
+            }
 
-                if (trigger.isChangingLongPressDelayAllowed()) {
-                    yield(
-                        SliderListItem(
-                            id = ID_LONG_PRESS_DELAY,
-                            label = getString(R.string.extra_label_long_press_delay_timeout),
-                            SliderModel(
-                                value = Defaultable.create(trigger.longPressDelay),
-                                isDefaultStepEnabled = true,
-                                min = OptionMinimums.TRIGGER_LONG_PRESS_DELAY,
-                                max = SliderMaximums.TRIGGER_LONG_PRESS_DELAY,
-                                stepSize = SliderStepSizes.TRIGGER_LONG_PRESS_DELAY,
-                            ),
+            if (trigger.isChangingDoublePressDelayAllowed()) {
+                yield(
+                    SliderListItem(
+                        id = ID_DOUBLE_PRESS_DELAY,
+                        label = getString(R.string.extra_label_double_press_delay_timeout),
+                        SliderModel(
+                            value = Defaultable.create(trigger.doublePressDelay),
+                            isDefaultStepEnabled = true,
+                            min = OptionMinimums.TRIGGER_DOUBLE_PRESS_DELAY,
+                            max = SliderMaximums.TRIGGER_DOUBLE_PRESS_DELAY,
+                            stepSize = SliderStepSizes.TRIGGER_DOUBLE_PRESS_DELAY,
                         ),
-                    )
-                }
+                    ),
+                )
+            }
 
-                if (trigger.isChangingDoublePressDelayAllowed()) {
-                    yield(
-                        SliderListItem(
-                            id = ID_DOUBLE_PRESS_DELAY,
-                            label = getString(R.string.extra_label_double_press_delay_timeout),
-                            SliderModel(
-                                value = Defaultable.create(trigger.doublePressDelay),
-                                isDefaultStepEnabled = true,
-                                min = OptionMinimums.TRIGGER_DOUBLE_PRESS_DELAY,
-                                max = SliderMaximums.TRIGGER_DOUBLE_PRESS_DELAY,
-                                stepSize = SliderStepSizes.TRIGGER_DOUBLE_PRESS_DELAY,
-                            ),
+            if (trigger.isChangingSequenceTriggerTimeoutAllowed()) {
+                yield(
+                    SliderListItem(
+                        id = ID_SEQUENCE_TRIGGER_TIMEOUT,
+                        label = getString(R.string.extra_label_sequence_trigger_timeout),
+                        SliderModel(
+                            value = Defaultable.create(trigger.sequenceTriggerTimeout),
+                            isDefaultStepEnabled = true,
+                            min = OptionMinimums.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT,
+                            max = SliderMaximums.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT,
+                            stepSize = SliderStepSizes.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT,
                         ),
-                    )
-                }
-
-                if (trigger.isChangingSequenceTriggerTimeoutAllowed()) {
-                    yield(
-                        SliderListItem(
-                            id = ID_SEQUENCE_TRIGGER_TIMEOUT,
-                            label = getString(R.string.extra_label_sequence_trigger_timeout),
-                            SliderModel(
-                                value = Defaultable.create(trigger.sequenceTriggerTimeout),
-                                isDefaultStepEnabled = true,
-                                min = OptionMinimums.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT,
-                                max = SliderMaximums.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT,
-                                stepSize = SliderStepSizes.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT,
-                            ),
-                        ),
-                    )
-                }
-            }.toList()
-        }
+                    ),
+                )
+            }
+        }.toList()
+    }
 }

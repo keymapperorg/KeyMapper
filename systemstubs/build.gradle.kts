@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "io.github.sds100.keymapper.systemstubs"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 21

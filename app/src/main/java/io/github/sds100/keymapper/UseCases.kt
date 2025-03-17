@@ -92,7 +92,6 @@ object UseCases {
 
     fun createKeymapShortcut(ctx: Context) = CreateKeyMapShortcutUseCaseImpl(
         ServiceLocator.appShortcutAdapter(ctx),
-        displayKeyMap(ctx),
         ServiceLocator.resourceProvider(ctx),
     )
 

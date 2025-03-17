@@ -3,7 +3,7 @@ Nowy wyzwalacz! 🎉 Remap your Assistant & Bixby, and DPAD buttons!
 Funkcje jakich przycisków można zmienić?
 
  * Przyciski głośności.
- * Przycisk zasilania za pośrednictwem asystenta Google, Pixel Active Edge, dwukrotne naciśnięcie przycisku Bixby.
+ * Power button, side key, and voice assistant button (one time purchase to support development).
  * Klawiatury przewodowe i Bluetooth.
  * Gesty czytnika linii papilarnych na obsługiwanych urządzeniach.
  * DPAD buttons on game controllers.
