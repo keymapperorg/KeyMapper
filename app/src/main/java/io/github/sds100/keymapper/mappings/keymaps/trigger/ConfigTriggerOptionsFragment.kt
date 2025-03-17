@@ -29,7 +29,7 @@ class ConfigTriggerOptionsFragment : SimpleRecyclerViewFragment<ListItem>() {
 
     class Info :
         FragmentInfo(
-            R.string.option_list_header,
+            R.string.tab_options,
             R.string.url_trigger_options_guide,
             { ConfigTriggerOptionsFragment() },
         )

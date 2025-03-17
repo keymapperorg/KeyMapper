@@ -13,7 +13,7 @@ import io.github.sds100.keymapper.util.Inject
 class ConfigKeyMapConstraintsFragment : ConfigConstraintsFragment() {
     class Info :
         FragmentInfo(
-            R.string.constraint_list_header,
+            R.string.tab_constraints,
             R.string.url_constraints_guide,
             { ConfigKeyMapConstraintsFragment() },
         )

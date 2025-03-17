@@ -21,7 +21,6 @@ import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.ArrowForward
 import androidx.compose.material.icons.outlined.Error
 import androidx.compose.material.icons.outlined.FlashlightOn
 import androidx.compose.material3.AssistChipDefaults
@@ -203,13 +202,17 @@ private fun KeyMapListItem(
         modifier = modifier,
         onClick = onClickKeyMap,
     ) {
-        Row(modifier = Modifier.padding(start = 8.dp)) {
+        Row(modifier = Modifier.padding(start = 16.dp)) {
             if (isSelectable) {
-                Checkbox(
-                    modifier = Modifier.align(Alignment.CenterVertically),
-                    checked = model.isSelected,
-                    onCheckedChange = onSelectedChange,
-                )
+                CompositionLocalProvider(
+                    LocalMinimumInteractiveComponentSize provides 16.dp,
+                ) {
+                    Checkbox(
+                        modifier = Modifier.align(Alignment.CenterVertically),
+                        checked = model.isSelected,
+                        onCheckedChange = onSelectedChange,
+                    )
+                }
             }
 
             Column(
@@ -311,12 +314,12 @@ private fun KeyMapListItem(
                             if (index < model.content.constraints.lastIndex) {
                                 when (model.content.constraintMode) {
                                     ConstraintMode.AND -> Text(
-                                        stringResource(R.string.constraint_mode_and),
+                                        text = stringResource(R.string.constraint_mode_and),
                                         style = MaterialTheme.typography.labelMedium,
                                     )
 
                                     ConstraintMode.OR -> Text(
-                                        stringResource(R.string.constraint_mode_or),
+                                        text = stringResource(R.string.constraint_mode_or),
                                         style = MaterialTheme.typography.labelMedium,
                                     )
                                 }
@@ -537,7 +540,7 @@ private fun sampleList(): List<KeyMapListItemModel> {
             KeyMapListItemModel.Content(
                 uid = "0",
                 triggerKeys = listOf("Volume down", "Volume up", "Volume down"),
-                triggerSeparatorIcon = Icons.Outlined.ArrowForward,
+                triggerSeparatorIcon = Icons.AutoMirrored.Outlined.ArrowForward,
                 actions = listOf(
                     ComposeChipModel.Normal(
                         id = "0",

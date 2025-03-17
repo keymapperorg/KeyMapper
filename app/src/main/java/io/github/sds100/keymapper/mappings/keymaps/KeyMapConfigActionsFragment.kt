@@ -15,7 +15,7 @@ class KeyMapConfigActionsFragment : ConfigActionsFragment() {
 
     class Info :
         FragmentInfo(
-            R.string.action_list_header,
+            R.string.tab_actions,
             R.string.url_action_guide,
             { KeyMapConfigActionsFragment() },
         )
