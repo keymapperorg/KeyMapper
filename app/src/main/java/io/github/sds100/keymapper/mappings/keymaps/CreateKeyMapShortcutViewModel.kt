@@ -1,6 +1,8 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.Drawable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -13,6 +15,7 @@ import io.github.sds100.keymapper.util.ui.PopupUi
 import io.github.sds100.keymapper.util.ui.PopupViewModel
 import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.util.ui.TintType
 import io.github.sds100.keymapper.util.ui.ViewModelHelper
 import io.github.sds100.keymapper.util.ui.showPopup
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -38,6 +41,7 @@ class CreateKeyMapShortcutViewModel(
     PopupViewModel by PopupViewModelImpl(),
     ResourceProvider by resourceProvider {
 
+    private val actionUiHelper = KeyMapActionUiHelper(listUseCase, resourceProvider)
     private val listItemCreator = KeyMapListItemCreator(listUseCase, resourceProvider)
 
     private val _state = MutableStateFlow<State<List<KeyMapListItem>>>(State.Loading)
@@ -99,23 +103,52 @@ class CreateKeyMapShortcutViewModel(
 
             val keyMap = keyMapState.data
 
-            val intent = if (keyMap.actionList.size == 1) {
-                createShortcutUseCase.createIntentForSingleAction(keyMap.uid, keyMap.actionList[0])
-            } else {
-                val key = "create_launcher_shortcut"
-                val shortcutName = showPopup(
-                    key,
-                    PopupUi.Text(
-                        getString(R.string.hint_shortcut_name),
-                        allowEmpty = false,
-                    ),
-                ) ?: return@launch
+            val key = "create_launcher_shortcut"
+            val defaultShortcutName: String
+            val icon: Drawable?
 
-                createShortcutUseCase.createIntentForMultipleActions(
-                    keyMapUid = keyMap.uid,
-                    shortcutLabel = shortcutName,
+            if (keyMap.actionList.size == 1) {
+                val action = keyMap.actionList.first().data
+                defaultShortcutName = actionUiHelper.getTitle(
+                    action,
+                    showDeviceDescriptors = false,
                 )
+
+                val iconInfo = actionUiHelper.getIcon(action)
+
+                if (iconInfo == null) {
+                    icon = null
+                } else {
+                    when (iconInfo.tintType) {
+                        // Always set the icon as black if it needs to be on surface because the
+                        // background is white. Also, getting the colorOnSurface attribute
+                        // from the application context doesn't seem to work correctly.
+                        TintType.OnSurface -> iconInfo.drawable.setTint(Color.BLACK)
+                        is TintType.Color -> iconInfo.drawable.setTint(iconInfo.tintType.color)
+                        else -> {}
+                    }
+
+                    icon = iconInfo.drawable
+                }
+            } else {
+                defaultShortcutName = ""
+                icon = null
             }
+
+            val shortcutName = showPopup(
+                key,
+                PopupUi.Text(
+                    getString(R.string.hint_shortcut_name),
+                    allowEmpty = false,
+                    text = defaultShortcutName,
+                ),
+            ) ?: return@launch
+
+            val intent = createShortcutUseCase.createIntent(
+                keyMapUid = keyMap.uid,
+                shortcutLabel = shortcutName,
+                icon = icon,
+            )
 
             configKeyMapUseCase.save()
 
@@ -161,12 +194,11 @@ class CreateKeyMapShortcutViewModel(
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>) =
-            CreateKeyMapShortcutViewModel(
-                configKeyMapUseCase,
-                listUseCase,
-                createShortcutUseCase,
-                resourceProvider,
-            ) as T
+        override fun <T : ViewModel> create(modelClass: Class<T>) = CreateKeyMapShortcutViewModel(
+            configKeyMapUseCase,
+            listUseCase,
+            createShortcutUseCase,
+            resourceProvider,
+        ) as T
     }
 }
