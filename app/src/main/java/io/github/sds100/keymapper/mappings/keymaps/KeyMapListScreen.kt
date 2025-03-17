@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowForward
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Error
 import androidx.compose.material.icons.outlined.FlashlightOn
@@ -246,7 +247,6 @@ private fun KeyMapListItem(
                             separator = model.content.triggerSeparatorIcon,
                         )
                     }
-                    Spacer(Modifier.height(8.dp))
                 }
 
                 if (model.content.triggerErrors.isNotEmpty()) {
@@ -264,11 +264,10 @@ private fun KeyMapListItem(
                             )
                         }
                     }
-
-                    Spacer(Modifier.height(8.dp))
                 }
 
                 if (model.content.actions.isNotEmpty()) {
+                    Spacer(Modifier.height(8.dp))
                     FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         itemVerticalAlignment = Alignment.CenterVertically,
@@ -289,11 +288,10 @@ private fun KeyMapListItem(
                             )
                         }
                     }
-
-                    Spacer(Modifier.height(8.dp))
                 }
 
                 if (model.content.constraints.isNotEmpty()) {
+                    Spacer(Modifier.height(8.dp))
                     FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         itemVerticalAlignment = Alignment.CenterVertically,
@@ -328,11 +326,11 @@ private fun KeyMapListItem(
                             }
                         }
                     }
-                    Spacer(Modifier.height(8.dp))
                 }
 
                 // TODO make this a list and put it on the same line as trigger
                 if (model.content.optionsDescription != null) {
+                    Spacer(Modifier.height(8.dp))
                     Row(
                         modifier = Modifier.heightIn(min = chipHeight),
                         verticalAlignment = Alignment.CenterVertically,
@@ -610,9 +608,55 @@ private fun sampleList(): List<KeyMapListItemModel> {
             ),
         ),
         KeyMapListItemModel(
+            isSelected = true,
+            KeyMapListItemModel.Content(
+                uid = "2",
+                triggerKeys = listOf("Volume down", "Volume up"),
+                triggerSeparatorIcon = Icons.Outlined.Add,
+                actions = listOf(
+                    ComposeChipModel.Normal(
+                        id = "0",
+                        ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
+                        "Open Key Mapper",
+                    ),
+                ),
+                constraintMode = ConstraintMode.AND,
+                constraints = listOf(
+                    ComposeChipModel.Normal(
+                        id = "0",
+                        ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
+                        "Key Mapper is not open",
+                    ),
+                ),
+                optionsDescription = null,
+                triggerErrors = emptyList(),
+                extraInfo = null,
+            ),
+        ),
+        KeyMapListItemModel(
+            isSelected = true,
+            KeyMapListItemModel.Content(
+                uid = "3",
+                triggerKeys = listOf("Volume down", "Volume up"),
+                triggerSeparatorIcon = Icons.Outlined.Add,
+                actions = listOf(
+                    ComposeChipModel.Normal(
+                        id = "0",
+                        ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
+                        "Open Key Mapper",
+                    ),
+                ),
+                constraintMode = ConstraintMode.AND,
+                constraints = emptyList(),
+                optionsDescription = null,
+                triggerErrors = emptyList(),
+                extraInfo = null,
+            ),
+        ),
+        KeyMapListItemModel(
             isSelected = false,
             content = KeyMapListItemModel.Content(
-                uid = "2",
+                uid = "4",
                 triggerKeys = emptyList(),
                 triggerSeparatorIcon = Icons.Outlined.Add,
                 actions = emptyList(),
