@@ -51,9 +51,9 @@ class AndroidMediaAdapter(context: Context) : MediaAdapter {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override fun getActiveAudioContentTypes(): Set<Int> {
+    override fun getActiveAudioVolumeStreams(): Set<Int> {
         return audioManager.activePlaybackConfigurations
-            .map { it.audioAttributes.contentType }
+            .map { it.audioAttributes.volumeControlStream }
             .toSet()
     }
 

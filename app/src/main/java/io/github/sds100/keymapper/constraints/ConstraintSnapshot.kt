@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.constraints
 
-import android.media.AudioAttributes
+import android.media.AudioManager
 import android.os.Build
 import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
@@ -43,9 +43,9 @@ class ConstraintSnapshotImpl(
     private val isScreenOn: Boolean by lazy { displayAdapter.isScreenOn.firstBlocking() }
     private val appsPlayingMedia: List<String> by lazy { mediaAdapter.getActiveMediaSessionPackages() }
 
-    private val audioContentTypes: Set<Int> by lazy {
+    private val audioVolumeStreams: Set<Int> by lazy {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            mediaAdapter.getActiveAudioContentTypes()
+            mediaAdapter.getActiveAudioVolumeStreams()
         } else {
             emptySet()
         }
@@ -65,9 +65,8 @@ class ConstraintSnapshotImpl(
         }
     }
 
-    private fun isMediaContentTypePlaying(): Boolean {
-        return audioContentTypes.contains(AudioAttributes.CONTENT_TYPE_MOVIE) ||
-            audioContentTypes.contains(AudioAttributes.CONTENT_TYPE_MUSIC)
+    private fun isMediaPlaying(): Boolean {
+        return audioVolumeStreams.contains(AudioManager.STREAM_MUSIC) || appsPlayingMedia.isNotEmpty()
     }
 
     override fun isSatisfied(constraint: Constraint): Boolean {
@@ -77,7 +76,7 @@ class ConstraintSnapshotImpl(
             is Constraint.AppPlayingMedia -> {
                 if (appsPlayingMedia.contains(constraint.packageName)) {
                     return true
-                } else if (appInForeground == constraint.packageName && isMediaContentTypePlaying()) {
+                } else if (appInForeground == constraint.packageName && isMediaPlaying()) {
                     return true
                 } else {
                     return false
@@ -86,13 +85,11 @@ class ConstraintSnapshotImpl(
 
             is Constraint.AppNotPlayingMedia ->
                 appsPlayingMedia.none { it == constraint.packageName } &&
-                    !(appInForeground == constraint.packageName && isMediaContentTypePlaying())
+                    !(appInForeground == constraint.packageName && isMediaPlaying())
 
-            Constraint.MediaPlaying ->
-                isMediaContentTypePlaying() || appsPlayingMedia.isNotEmpty()
+            Constraint.MediaPlaying -> isMediaPlaying()
 
-            Constraint.NoMediaPlaying ->
-                !isMediaContentTypePlaying() && appsPlayingMedia.isEmpty()
+            Constraint.NoMediaPlaying -> !isMediaPlaying()
 
             is Constraint.BtDeviceConnected -> {
                 connectedBluetoothDevices.any { it.address == constraint.bluetoothAddress }

@@ -23,7 +23,7 @@ interface MediaAdapter {
      * the AudioAttributes class.
      */
     @RequiresApi(Build.VERSION_CODES.O)
-    fun getActiveAudioContentTypes(): Set<Int>
+    fun getActiveAudioVolumeStreams(): Set<Int>
     fun fastForward(packageName: String? = null): Result<*>
     fun rewind(packageName: String? = null): Result<*>
     fun play(packageName: String? = null): Result<*>
