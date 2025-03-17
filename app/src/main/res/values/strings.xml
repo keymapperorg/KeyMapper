@@ -945,7 +945,7 @@
     <string name="stream_system">System</string>
     <string name="stream_voice_call">Voice call</string>
 
-    <string name="ringer_mode_normal">Ring</string>
+    <string name="ringer_mode_normal">Normal</string>
     <string name="ringer_mode_vibrate">Vibrate</string>
     <string name="ringer_mode_silent">Silent</string>
 
@@ -1147,8 +1147,8 @@
     <string name="action_increase_stream_formatted">Increase %s stream</string>
     <string name="action_decrease_stream">Decrease stream</string>
     <string name="action_decrease_stream_formatted">Decrease %s stream</string>
-    <string name="action_cycle_ringer_mode">Cycle through ringer modes (Ring, Vibrate, Silent)</string>
-    <string name="action_cycle_vibrate_ring">Cycle through ringer modes (Ring, Vibrate)</string>
+    <string name="action_cycle_ringer_mode">Cycle ringer modes (Normal, Vibrate, Silent)</string>
+    <string name="action_cycle_vibrate_ring">Cycle ringer modes (Normal, Vibrate)</string>
     <string name="action_change_ringer_mode">Change ringer mode</string>
     <string name="action_change_ringer_mode_formatted">Change to %s mode</string>
     <string name="action_toggle_dnd_mode">Toggle Do Not Disturb mode</string>
