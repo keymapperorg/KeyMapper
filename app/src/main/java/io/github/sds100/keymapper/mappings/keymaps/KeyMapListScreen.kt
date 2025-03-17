@@ -7,12 +7,12 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -186,7 +186,7 @@ private fun KeyMapList(
     }
 }
 
-val chipHeight = 26.dp
+val chipHeight = 28.dp
 
 @Composable
 private fun KeyMapListItem(
@@ -202,13 +202,15 @@ private fun KeyMapListItem(
         modifier = modifier,
         onClick = onClickKeyMap,
     ) {
-        Row(modifier = Modifier.padding(start = 16.dp)) {
+        Row {
             if (isSelectable) {
                 CompositionLocalProvider(
                     LocalMinimumInteractiveComponentSize provides 16.dp,
                 ) {
                     Checkbox(
-                        modifier = Modifier.align(Alignment.CenterVertically),
+                        modifier = Modifier
+                            .padding(start = 16.dp)
+                            .align(Alignment.CenterVertically),
                         checked = model.isSelected,
                         onCheckedChange = onSelectedChange,
                     )
@@ -218,7 +220,7 @@ private fun KeyMapListItem(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 8.dp, top = 8.dp, end = 16.dp, bottom = 8.dp),
+                    .padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 8.dp),
             ) {
                 if (model.content.extraInfo != null) {
                     Row(
@@ -410,14 +412,14 @@ private fun ActionConstraintChip(
                     {
                         when (icon) {
                             is ComposeIconInfo.Drawable -> Icon(
-                                modifier = Modifier.size(18.dp),
+                                modifier = Modifier.fillMaxHeight(),
                                 painter = rememberDrawablePainter(icon.drawable),
                                 contentDescription = null,
                                 tint = Color.Unspecified,
                             )
 
                             is ComposeIconInfo.Vector -> Icon(
-                                modifier = Modifier.size(18.dp),
+                                modifier = Modifier.fillMaxHeight(),
                                 imageVector = icon.imageVector,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.onSurface,
@@ -441,7 +443,7 @@ private fun ErrorChip(
         text = text,
         icon = {
             Icon(
-                modifier = Modifier.size(18.dp),
+                modifier = Modifier.fillMaxHeight(),
                 imageVector = Icons.Outlined.Error,
                 contentDescription = null,
             )
