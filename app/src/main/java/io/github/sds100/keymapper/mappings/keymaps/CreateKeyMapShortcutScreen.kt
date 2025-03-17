@@ -54,10 +54,10 @@ fun CreateKeyMapShortcutScreen(
         modifier = modifier,
         listItems = listItems,
         showShortcutNameDialog = viewModel.showShortcutNameDialog,
-        dismissShortcutNameDialog = { viewModel.showShortcutNameDialog = false },
+        dismissShortcutNameDialog = { viewModel.showShortcutNameDialog = null },
         onShortcutNameResult = { name ->
             viewModel.shortcutNameDialogResult.value = name
-            viewModel.showShortcutNameDialog = false
+            viewModel.showShortcutNameDialog = null
         },
         onClickKeyMap = viewModel::onKeyMapCardClick,
         finishActivity = finishActivity,
@@ -71,7 +71,7 @@ private fun CreateKeyMapShortcutScreen(
     listItems: State<List<KeyMapListItemModel>>,
     onClickKeyMap: (String) -> Unit = {},
     finishActivity: () -> Unit = {},
-    showShortcutNameDialog: Boolean,
+    showShortcutNameDialog: String?,
     dismissShortcutNameDialog: () -> Unit = {},
     onShortcutNameResult: (String) -> Unit = {},
 ) {
@@ -84,10 +84,11 @@ private fun CreateKeyMapShortcutScreen(
         )
     }
 
-    if (showShortcutNameDialog) {
+    if (showShortcutNameDialog != null) {
         ShortcutNameDialog(
             onSaveClick = onShortcutNameResult,
             onDismissRequest = dismissShortcutNameDialog,
+            initialText = showShortcutNameDialog,
         )
     }
 
@@ -149,8 +150,9 @@ private fun BackDialog(
 private fun ShortcutNameDialog(
     onSaveClick: (name: String) -> Unit = { },
     onDismissRequest: () -> Unit = {},
+    initialText: String = "",
 ) {
-    var newName by rememberSaveable { mutableStateOf("") }
+    var newName by rememberSaveable { mutableStateOf(initialText) }
     val isError by remember { derivedStateOf { newName.isBlank() } }
 
     CustomDialog(
@@ -263,7 +265,7 @@ private fun Preview() {
     KeyMapperTheme {
         CreateKeyMapShortcutScreen(
             listItems = State.Data(sampleList()),
-            showShortcutNameDialog = false,
+            showShortcutNameDialog = null,
         )
     }
 }

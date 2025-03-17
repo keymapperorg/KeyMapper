@@ -3,6 +3,9 @@ package io.github.sds100.keymapper.mappings.keymaps
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.Drawable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -11,8 +14,6 @@ import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.mapData
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.TintType
-import io.github.sds100.keymapper.util.ui.ViewModelHelper
-import io.github.sds100.keymapper.util.ui.showPopup
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -35,9 +36,8 @@ class CreateKeyMapShortcutViewModel(
     resourceProvider: ResourceProvider,
 ) : ViewModel(),
     ResourceProvider by resourceProvider {
+    private val actionUiHelperOld = KeyMapActionUiHelperOld(listKeyMaps, resourceProvider)
     private val actionUiHelper = KeyMapActionUiHelper(listKeyMaps, resourceProvider)
-
-    private val actionUiHelper = KeyMapActionUiHelper(listUseCase, resourceProvider)
     private val listItemCreator =
         KeyMapListItemCreator(actionUiHelper, listKeyMaps, resourceProvider)
 
@@ -47,7 +47,7 @@ class CreateKeyMapShortcutViewModel(
     private val _returnIntentResult = MutableSharedFlow<Intent>()
     val returnIntentResult = _returnIntentResult.asSharedFlow()
 
-    var showShortcutNameDialog: Boolean by mutableStateOf(false)
+    var showShortcutNameDialog: String? by mutableStateOf(null)
     val shortcutNameDialogResult = MutableStateFlow<String?>(null)
 
     init {
@@ -106,12 +106,12 @@ class CreateKeyMapShortcutViewModel(
 
             if (keyMap.actionList.size == 1) {
                 val action = keyMap.actionList.first().data
-                defaultShortcutName = actionUiHelper.getTitle(
+                defaultShortcutName = actionUiHelperOld.getTitle(
                     action,
                     showDeviceDescriptors = false,
                 )
 
-                val iconInfo = actionUiHelper.getIcon(action)
+                val iconInfo = actionUiHelperOld.getIcon(action)
 
                 if (iconInfo == null) {
                     icon = null
@@ -132,14 +132,14 @@ class CreateKeyMapShortcutViewModel(
                 icon = null
             }
 
-            val shortcutName = showPopup(
-                key,
-                PopupUi.Text(
-                    getString(R.string.hint_shortcut_name),
-                    allowEmpty = false,
-                    text = defaultShortcutName,
-                ),
-            ) ?: return@launch
+            showShortcutNameDialog = defaultShortcutName
+
+            val shortcutName = shortcutNameDialogResult.filterNotNull().first()
+            shortcutNameDialogResult.value = null
+
+            if (shortcutName.isBlank()) {
+                return@launch
+            }
 
             val intent = createShortcutUseCase.createIntent(
                 keyMapUid = keyMap.uid,
