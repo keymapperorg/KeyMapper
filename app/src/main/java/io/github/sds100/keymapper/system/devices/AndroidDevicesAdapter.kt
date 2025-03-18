@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.system.devices
 
-import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.hardware.input.InputManager
 import android.os.Handler
@@ -45,6 +45,8 @@ class AndroidDevicesAdapter(
     override val pairedBluetoothDevices = MutableStateFlow<List<BluetoothDeviceInfo>>(emptyList())
 
     override val connectedBluetoothDevices = MutableStateFlow<Set<BluetoothDeviceInfo>>(emptySet())
+
+    private val bluetoothManager: BluetoothManager? = ctx.getSystemService()
 
     init {
         coroutineScope.launch {
@@ -140,7 +142,7 @@ class AndroidDevicesAdapter(
     }
 
     private fun updatePairedBluetoothDevices() {
-        val adapter = BluetoothAdapter.getDefaultAdapter()
+        val adapter = bluetoothManager?.adapter
 
         if (adapter == null || !permissionAdapter.isGranted(Permission.FIND_NEARBY_DEVICES)) {
             pairedBluetoothDevices.value = emptyList()
@@ -152,11 +154,10 @@ class AndroidDevicesAdapter(
                 return@mapNotNull null
             }
 
-            if (device.address == null || device.name == null) {
-                return@mapNotNull null
-            }
+            val address = device.address ?: return@mapNotNull null
+            val name = device.name ?: return@mapNotNull null
 
-            BluetoothDeviceInfo(device.address, device.name)
+            BluetoothDeviceInfo(address, name)
         }
 
         pairedBluetoothDevices.value = devices ?: emptyList()
