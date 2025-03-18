@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ErrorOutline
+import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -30,7 +30,7 @@ fun ListItemFixError(
 ) {
     Row(modifier = modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
         Icon(
-            imageVector = Icons.Outlined.ErrorOutline,
+            imageVector = Icons.Rounded.ErrorOutline,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.error,
         )

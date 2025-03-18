@@ -30,9 +30,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDownward
-import androidx.compose.material.icons.filled.ArrowUpward
-import androidx.compose.material.icons.filled.DragHandle
+import androidx.compose.material.icons.rounded.ArrowDownward
+import androidx.compose.material.icons.rounded.ArrowUpward
+import androidx.compose.material.icons.rounded.DragHandle
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -395,8 +395,8 @@ private fun SortFieldListItem(
 
                 val imageVector = when (sortOrder) {
                     SortOrder.NONE -> return@AnimatedContent
-                    SortOrder.ASCENDING -> Icons.Default.ArrowUpward
-                    SortOrder.DESCENDING -> Icons.Default.ArrowDownward
+                    SortOrder.ASCENDING -> Icons.Rounded.ArrowUpward
+                    SortOrder.DESCENDING -> Icons.Rounded.ArrowDownward
                 }
 
                 Icon(
@@ -419,7 +419,7 @@ private fun SortFieldListItem(
         ) {
             Icon(
                 modifier = Modifier.align(Alignment.Center),
-                imageVector = Icons.Default.DragHandle,
+                imageVector = Icons.Rounded.DragHandle,
                 contentDescription = stringResource(
                     R.string.drag_handle_for,
                     sortFieldText(sortField),

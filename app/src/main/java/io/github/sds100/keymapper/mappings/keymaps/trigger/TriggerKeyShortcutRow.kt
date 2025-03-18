@@ -8,9 +8,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Assistant
-import androidx.compose.material.icons.filled.BubbleChart
-import androidx.compose.material.icons.filled.Fingerprint
+import androidx.compose.material.icons.rounded.Assistant
+import androidx.compose.material.icons.rounded.BubbleChart
+import androidx.compose.material.icons.rounded.Fingerprint
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -58,9 +58,9 @@ fun TriggerKeyShortcutRowNoTrigger(
 
 @Composable
 private fun getShortcutIcon(shortcut: TriggerKeyShortcut) = when (shortcut) {
-    TriggerKeyShortcut.ASSISTANT -> Icons.Filled.Assistant
-    TriggerKeyShortcut.FLOATING_BUTTON -> Icons.Filled.BubbleChart
-    TriggerKeyShortcut.FINGERPRINT_GESTURE -> Icons.Filled.Fingerprint
+    TriggerKeyShortcut.ASSISTANT -> Icons.Rounded.Assistant
+    TriggerKeyShortcut.FLOATING_BUTTON -> Icons.Rounded.BubbleChart
+    TriggerKeyShortcut.FINGERPRINT_GESTURE -> Icons.Rounded.Fingerprint
 }
 
 @Composable

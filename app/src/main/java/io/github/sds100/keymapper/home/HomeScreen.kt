@@ -28,19 +28,19 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.HelpOutline
-import androidx.compose.material.icons.automirrored.outlined.Sort
-import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.automirrored.rounded.HelpOutline
+import androidx.compose.material.icons.automirrored.rounded.Sort
 import androidx.compose.material.icons.outlined.BubbleChart
-import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.Gamepad
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.IosShare
-import androidx.compose.material.icons.outlined.MoreVert
-import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.ErrorOutline
-import androidx.compose.material.icons.rounded.PauseCircle
+import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.IosShare
+import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.rounded.PauseCircleOutline
 import androidx.compose.material.icons.rounded.PlayCircleOutline
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ButtonDefaults
@@ -87,7 +87,6 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -218,7 +217,7 @@ fun HomeScreen(
                             }
                         },
                         text = { Text(stringResource(R.string.home_fab_new_key_map)) },
-                        icon = { Icon(Icons.Outlined.Add, contentDescription = null) },
+                        icon = { Icon(Icons.Rounded.Add, contentDescription = null) },
                     )
                 }
 
@@ -227,7 +226,7 @@ fun HomeScreen(
                         ExtendedFloatingActionButton(
                             onClick = viewModel.listFloatingLayoutsViewModel::onNewLayoutClick,
                             text = { Text(stringResource(R.string.home_fab_new_floating_layout)) },
-                            icon = { Icon(Icons.Outlined.Add, contentDescription = null) },
+                            icon = { Icon(Icons.Rounded.Add, contentDescription = null) },
                         )
                     }
                 }
@@ -412,7 +411,7 @@ private fun HomeAppBar(
             navigationIcon = {
                 IconButton(onClick = onSortClick) {
                     Icon(
-                        Icons.AutoMirrored.Outlined.Sort,
+                        Icons.AutoMirrored.Rounded.Sort,
                         contentDescription = stringResource(R.string.home_app_bar_sort),
                     )
                 }
@@ -420,14 +419,14 @@ private fun HomeAppBar(
             actions = {
                 IconButton(onClick = onHelpClick) {
                     Icon(
-                        Icons.AutoMirrored.Outlined.HelpOutline,
+                        Icons.AutoMirrored.Rounded.HelpOutline,
                         contentDescription = stringResource(R.string.home_app_bar_help),
                     )
                 }
 
                 IconButton(onClick = { expandedDropdown = true }) {
                     Icon(
-                        Icons.Outlined.MoreVert,
+                        Icons.Rounded.MoreVert,
                         contentDescription = stringResource(R.string.home_app_bar_more),
                     )
                 }
@@ -483,28 +482,27 @@ private fun HomeDropdownMenu(
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = onDismissRequest,
-        offset = DpOffset(x = 16.dp, y = 0.dp),
     ) {
         // TODO use Rounded and outlined icons in the app
         DropdownMenuItem(
-            leadingIcon = { Icon(Icons.Outlined.Settings, contentDescription = null) },
+            leadingIcon = { Icon(Icons.Rounded.Settings, contentDescription = null) },
             text = { Text(stringResource(R.string.home_menu_settings)) },
             onClick = onSettingsClick,
         )
         DropdownMenuItem(
-            leadingIcon = { Icon(Icons.Outlined.IosShare, contentDescription = null) },
+            leadingIcon = { Icon(Icons.Rounded.IosShare, contentDescription = null) },
             text = {
                 Text(stringResource(R.string.home_menu_export))
             },
             onClick = onExportClick,
         )
         DropdownMenuItem(
-            leadingIcon = { Icon(Icons.Outlined.Download, contentDescription = null) },
+            leadingIcon = { Icon(Icons.Rounded.Download, contentDescription = null) },
             text = { Text(stringResource(R.string.home_menu_import)) },
             onClick = onImportClick,
         )
         DropdownMenuItem(
-            leadingIcon = { Icon(Icons.Outlined.Info, contentDescription = null) },
+            leadingIcon = { Icon(Icons.Rounded.Info, contentDescription = null) },
             text = { Text(stringResource(R.string.home_menu_about)) },
             onClick = onAboutClick,
         )
@@ -545,7 +543,7 @@ private fun AppBarStatus(
         val buttonText: String
 
         if (homeState.isPaused) {
-            buttonIcon = Icons.Rounded.PauseCircle
+            buttonIcon = Icons.Rounded.PauseCircleOutline
             buttonText = stringResource(R.string.home_app_bar_status_paused)
         } else if (homeState.warnings.isNotEmpty()) {
             buttonIcon = Icons.Rounded.ErrorOutline

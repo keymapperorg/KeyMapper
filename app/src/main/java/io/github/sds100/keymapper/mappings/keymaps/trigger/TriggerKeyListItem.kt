@@ -14,12 +14,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDownward
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.outlined.Assistant
 import androidx.compose.material.icons.outlined.BubbleChart
 import androidx.compose.material.icons.outlined.Fingerprint
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.rounded.Clear
+import androidx.compose.material.icons.rounded.DragHandle
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -92,7 +92,7 @@ fun TriggerKeyListItem(
                 if (isReorderingEnabled) {
                     Icon(
                         modifier = Modifier.size(24.dp),
-                        imageVector = Icons.Filled.DragHandle,
+                        imageVector = Icons.Rounded.DragHandle,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurface,
                     )
@@ -208,7 +208,7 @@ fun TriggerKeyListItem(
 
                     IconButton(onClick = onRemoveClick) {
                         Icon(
-                            imageVector = Icons.Filled.Clear,
+                            imageVector = Icons.Rounded.Clear,
                             contentDescription = stringResource(R.string.trigger_key_list_item_remove),
                             tint = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.size(24.dp),
