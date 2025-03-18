@@ -15,6 +15,7 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.BadParcelableException
 import android.os.Build
+import android.os.DeadSystemException
 import android.os.TransactionTooLargeException
 import android.provider.MediaStore
 import android.provider.Settings
@@ -99,7 +100,9 @@ class AndroidPackageManagerAdapter(
                     try {
                         packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
                             .mapNotNull { createPackageInfoModel(it) }
-                    } catch (e: BadParcelableException) {
+                    } catch (_: BadParcelableException) {
+                        emptyList()
+                    } catch (_: DeadSystemException) {
                         emptyList()
                     }
                 }
