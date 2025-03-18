@@ -2,11 +2,14 @@ package io.github.sds100.keymapper.system.bluetooth
 
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import androidx.core.content.ContextCompat
+import androidx.core.content.getSystemService
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
@@ -24,13 +27,14 @@ class AndroidBluetoothAdapter(
     private val coroutineScope: CoroutineScope,
 ) : io.github.sds100.keymapper.system.bluetooth.BluetoothAdapter {
 
-    private val adapter: BluetoothAdapter? by lazy { BluetoothAdapter.getDefaultAdapter() }
+    private val bluetoothManager: BluetoothManager? = context.getSystemService()
+    private val adapter: BluetoothAdapter? = bluetoothManager?.adapter
 
     override val onDeviceConnect = MutableSharedFlow<BluetoothDeviceInfo>()
     override val onDeviceDisconnect = MutableSharedFlow<BluetoothDeviceInfo>()
     override val onDevicePairedChange = MutableSharedFlow<BluetoothDeviceInfo>()
     override val isBluetoothEnabled =
-        MutableStateFlow(BluetoothAdapter.getDefaultAdapter()?.isEnabled ?: false)
+        MutableStateFlow(adapter?.isEnabled ?: false)
 
     private val ctx: Context = context.applicationContext
     private val broadcastReceiver = object : BroadcastReceiver() {
@@ -47,7 +51,12 @@ class AndroidBluetoothAdapter(
             addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
             addAction(BluetoothAdapter.ACTION_STATE_CHANGED)
 
-            ctx.registerReceiver(broadcastReceiver, this)
+            ContextCompat.registerReceiver(
+                ctx,
+                broadcastReceiver,
+                this,
+                ContextCompat.RECEIVER_NOT_EXPORTED,
+            )
         }
     }
 
@@ -58,14 +67,14 @@ class AndroidBluetoothAdapter(
                     intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
                         ?: return
 
-                device.address ?: return
-                device.name ?: return
-
                 coroutineScope.launch {
+                    val address = device.address ?: return@launch
+                    val name = device.name ?: return@launch
+
                     onDeviceConnect.emit(
                         BluetoothDeviceInfo(
-                            address = device.address,
-                            name = device.name,
+                            address = address,
+                            name = name,
                         ),
                     )
                 }
@@ -76,14 +85,14 @@ class AndroidBluetoothAdapter(
                     intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
                         ?: return
 
-                device.address ?: return
-                device.name ?: return
-
                 coroutineScope.launch {
+                    val address = device.address ?: return@launch
+                    val name = device.name ?: return@launch
+
                     onDeviceDisconnect.emit(
                         BluetoothDeviceInfo(
-                            address = device.address,
-                            name = device.name,
+                            address = address,
+                            name = name,
                         ),
                     )
                 }
@@ -93,9 +102,6 @@ class AndroidBluetoothAdapter(
                 val device =
                     intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
                         ?: return
-
-                device.address ?: return
-                device.name ?: return
 
                 coroutineScope.launch {
                     val address = device.address ?: return@launch
@@ -128,7 +134,7 @@ class AndroidBluetoothAdapter(
             return Error.SystemFeatureNotSupported(PackageManager.FEATURE_BLUETOOTH)
         }
 
-        adapter?.enable()
+        adapter.enable()
 
         return Success(Unit)
     }
@@ -138,7 +144,7 @@ class AndroidBluetoothAdapter(
             return Error.SystemFeatureNotSupported(PackageManager.FEATURE_BLUETOOTH)
         }
 
-        adapter?.disable()
+        adapter.disable()
 
         return Success(Unit)
     }
