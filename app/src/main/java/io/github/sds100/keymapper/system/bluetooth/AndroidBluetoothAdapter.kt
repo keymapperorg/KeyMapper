@@ -98,10 +98,13 @@ class AndroidBluetoothAdapter(
                 device.name ?: return
 
                 coroutineScope.launch {
+                    val address = device.address ?: return@launch
+                    val name = device.name ?: return@launch
+
                     onDevicePairedChange.emit(
                         BluetoothDeviceInfo(
-                            address = device.address,
-                            name = device.name,
+                            address = address,
+                            name = name,
                         ),
                     )
                 }
