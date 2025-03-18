@@ -328,22 +328,15 @@ private fun KeyMapListItem(
                     }
                 }
 
-                // TODO make this a list and put it on the same line as trigger
-                if (model.content.optionsDescription != null) {
+                if (model.content.options.isNotEmpty()) {
                     Spacer(Modifier.height(8.dp))
                     Row(
                         modifier = Modifier.heightIn(min = chipHeight),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Text(
-                            text = stringResource(R.string.option_list_header),
-                            style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.Bold,
-                        )
-                        Spacer(Modifier.width(4.dp))
-                        Text(
-                            text = model.content.optionsDescription,
-                            style = MaterialTheme.typography.bodyMedium,
+                        OptionsDescription(
+                            modifier = Modifier.fillMaxWidth(),
+                            options = model.content.options,
                         )
                     }
                 }
@@ -393,6 +386,36 @@ private fun TriggerDescription(
         modifier = modifier,
         text = text,
         inlineContent = inlineContent,
+        style = MaterialTheme.typography.bodyMedium,
+    )
+}
+
+@Composable
+private fun OptionsDescription(
+    modifier: Modifier = Modifier,
+    options: List<String>,
+) {
+    val dot = stringResource(R.string.middot)
+    val text = buildAnnotatedString {
+        pushStyle(
+            MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold).toSpanStyle(),
+        )
+        append(stringResource(R.string.option_list_header))
+        pop()
+        append(" ")
+
+        for ((index, option) in options.withIndex()) {
+            append(option)
+
+            if (index < options.lastIndex) {
+                append(" $dot ")
+            }
+        }
+    }
+
+    Text(
+        modifier = modifier,
+        text = text,
         style = MaterialTheme.typography.bodyMedium,
     )
 }
@@ -576,7 +599,7 @@ private fun sampleList(): List<KeyMapListItemModel> {
                         error = Error.AppNotFound(""),
                     ),
                 ),
-                optionsDescription = "Vibrate",
+                options = listOf("Vibrate"),
                 triggerErrors = listOf(TriggerError.DND_ACCESS_DENIED),
                 extraInfo = "Disabled • No trigger",
             ),
@@ -602,7 +625,10 @@ private fun sampleList(): List<KeyMapListItemModel> {
                         "Key Mapper is not open",
                     ),
                 ),
-                optionsDescription = "Vibrate",
+                options = listOf(
+                    "Vibrate",
+                    "Vibrate when keys are initially pressed and again when long pressed",
+                ),
                 triggerErrors = emptyList(),
                 extraInfo = null,
             ),
@@ -628,7 +654,7 @@ private fun sampleList(): List<KeyMapListItemModel> {
                         "Key Mapper is not open",
                     ),
                 ),
-                optionsDescription = null,
+                options = emptyList(),
                 triggerErrors = emptyList(),
                 extraInfo = null,
             ),
@@ -648,7 +674,7 @@ private fun sampleList(): List<KeyMapListItemModel> {
                 ),
                 constraintMode = ConstraintMode.AND,
                 constraints = emptyList(),
-                optionsDescription = null,
+                options = emptyList(),
                 triggerErrors = emptyList(),
                 extraInfo = null,
             ),
@@ -662,7 +688,7 @@ private fun sampleList(): List<KeyMapListItemModel> {
                 actions = emptyList(),
                 constraintMode = ConstraintMode.OR,
                 constraints = emptyList(),
-                optionsDescription = null,
+                options = emptyList(),
                 triggerErrors = emptyList(),
                 extraInfo = "Disabled • No trigger",
             ),

@@ -18,7 +18,7 @@ data class KeyMapListItemModel(
         val actions: List<ComposeChipModel>,
         val constraintMode: ConstraintMode,
         val constraints: List<ComposeChipModel>,
-        val optionsDescription: String?,
+        val options: List<String>,
         val extraInfo: String?,
     )
 }

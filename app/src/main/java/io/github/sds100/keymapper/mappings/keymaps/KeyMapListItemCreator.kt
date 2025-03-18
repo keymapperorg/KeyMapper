@@ -56,15 +56,7 @@ class KeyMapListItemCreator(
             }
         }
 
-        val optionsDescription = buildString {
-            getTriggerOptionLabels(keyMap.trigger).forEachIndexed { index, label ->
-                if (index != 0) {
-                    append(" $midDot ")
-                }
-
-                append(label)
-            }
-        }
+        val options = getTriggerOptionLabels(keyMap.trigger)
 
         val actionChipList = getActionChipList(keyMap, showDeviceDescriptors)
         val constraintChipList = getConstraintChipList(keyMap)
@@ -96,7 +88,7 @@ class KeyMapListItemCreator(
             actions = actionChipList,
             constraints = constraintChipList,
             constraintMode = keyMap.constraintState.mode,
-            optionsDescription = optionsDescription.takeIf { it.isNotBlank() },
+            options = options,
             extraInfo = extraInfo.takeIf { it.isNotBlank() },
         )
     }
