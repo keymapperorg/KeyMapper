@@ -44,6 +44,7 @@ class GetActionErrorUseCaseImpl(
         soundsManager.soundFiles.drop(1).map { },
         shizukuAdapter.isStarted.drop(1).map { },
         shizukuAdapter.isInstalled.drop(1).map { },
+        packageManager.onPackagesChanged,
     )
 
     override fun getError(action: ActionData): Error? {
