@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.ContentResolver
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
+import android.graphics.ImageDecoder.DecodeException
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
@@ -35,8 +36,13 @@ object FileUtils {
 
     fun decodeBitmapFromUri(contentResolver: ContentResolver, uri: Uri): Bitmap? {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            return ImageDecoder.createSource(contentResolver, uri)
-                .decodeBitmap { _, _ -> }
+            return try {
+                ImageDecoder.createSource(contentResolver, uri).decodeBitmap { _, _ -> }
+            } catch (e: DecodeException) {
+                null
+            } catch (e: IOException) {
+                null
+            }
         } else {
             try {
                 @Suppress("DEPRECATION")
