@@ -710,7 +710,7 @@
     <string name="flag_show_volume_dialog">Show volume dialog</string>
     <string name="flag_vibrate">Vibrate</string>
     <string name="flag_show_toast">Show an on-screen message</string>
-    <string name="flag_long_press_double_vibration">Vibrate when keys are initially pressed and again when long pressed.</string>
+    <string name="flag_long_press_double_vibration">Vibrate again on long press</string>
     <string name="flag_detect_triggers_screen_off">Detect trigger when the screen is off</string>
 
     <string name="flag_repeat_build_description_start">Repeat</string>
