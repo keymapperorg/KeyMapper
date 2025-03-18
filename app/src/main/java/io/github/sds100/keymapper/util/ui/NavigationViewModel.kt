@@ -204,8 +204,6 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
                 requestKey,
             )
 
-            NavDestination.FixAppKilling -> NavAppDirections.goToFixAppKillingActivity()
-            NavDestination.ReportBug -> NavAppDirections.goToReportBugActivity()
             NavDestination.About -> NavAppDirections.actionGlobalAboutFragment()
             NavDestination.Settings -> NavAppDirections.toSettingsFragment()
 

@@ -96,14 +96,6 @@ sealed class NavDestination<R> {
         override val id: String = ID_CHOOSE_BLUETOOTH_DEVICE
     }
 
-    data object ReportBug : NavDestination<Unit>() {
-        override val id: String = ID_REPORT_BUG
-    }
-
-    data object FixAppKilling : NavDestination<Unit>() {
-        override val id: String = ID_FIX_APP_KILLING
-    }
-
     data object Settings : NavDestination<Unit>() {
         override val id: String = ID_SETTINGS
     }

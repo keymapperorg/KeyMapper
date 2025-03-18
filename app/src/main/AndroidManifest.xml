@@ -88,7 +88,7 @@
            app from the launcher they are taken back to the SplashActivity, and consequently the
            home fragment in MainActivity. -->
         <activity
-            android:name=".SplashActivity"
+            android:name=".MainActivity"
             android:exported="true"
             android:relinquishTaskIdentity="true"
             android:theme="@style/Theme.App.Starting">
@@ -107,11 +107,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".onboarding.AppIntroActivity" />
-        <activity android:name=".MainActivity" />
-        <activity android:name=".reportbug.ReportBugActivity" />
-        <activity android:name=".home.FixAppKillingActivity" />
 
         <!-- Use a different task affinity so this activity doesn't close other activities -->
         <activity
@@ -229,7 +224,8 @@
             android:exported="true"
             android:icon="@drawable/ic_tile_pause"
             android:label="@string/tile_pause"
-            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+            tools:targetApi="24">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
@@ -240,7 +236,8 @@
             android:exported="true"
             android:icon="@drawable/ic_tile_keyboard"
             android:label="@string/tile_toggle_keymapper_keyboard"
-            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+            tools:targetApi="24">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>

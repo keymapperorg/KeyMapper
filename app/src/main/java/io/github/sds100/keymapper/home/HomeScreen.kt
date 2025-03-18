@@ -32,7 +32,6 @@ import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.automirrored.outlined.Sort
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.BubbleChart
-import androidx.compose.material.icons.outlined.BugReport
 import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.Gamepad
 import androidx.compose.material.icons.outlined.Info
@@ -117,7 +116,6 @@ fun HomeScreen(
     viewModel: HomeViewModel,
     onSettingsClick: () -> Unit,
     onAboutClick: () -> Unit,
-    onReportBugClick: () -> Unit,
 ) {
     val homeState by viewModel.state.collectAsStateWithLifecycle()
 
@@ -185,7 +183,6 @@ fun HomeScreen(
                 homeState = homeState,
                 onSettingsClick = onSettingsClick,
                 onAboutClick = onAboutClick,
-                onReportBugClick = onReportBugClick,
                 onSortClick = { viewModel.showSortBottomSheet = true },
                 onHelpClick = { uriHandler.openUri(helpUrl) },
                 onExportClick = viewModel::onExportClick,
@@ -362,7 +359,6 @@ private fun HomeAppBar(
     homeState: HomeState,
     onSettingsClick: () -> Unit = {},
     onAboutClick: () -> Unit = {},
-    onReportBugClick: () -> Unit = {},
     onSortClick: () -> Unit = {},
     onHelpClick: () -> Unit = {},
     onTogglePausedClick: () -> Unit = {},
@@ -442,22 +438,18 @@ private fun HomeAppBar(
                         expandedDropdown = false
                         onSettingsClick()
                     },
-                    onReportBugClick = {
-                        expandedDropdown = false
-                        onReportBugClick()
-                    },
                     onAboutClick = {
                         expandedDropdown = false
                         onAboutClick()
                     },
                     onExportClick = {
+                        expandedDropdown = false
                         onExportClick()
                     },
                     onImportClick = {
                         expandedDropdown = false
                         onImportClick()
                     },
-                    isExporting = isExporting,
                     onDismissRequest = { expandedDropdown = false },
                 )
             },
@@ -482,9 +474,7 @@ private fun HomeAppBar(
 @Composable
 private fun HomeDropdownMenu(
     expanded: Boolean,
-    isExporting: Boolean,
     onSettingsClick: () -> Unit = {},
-    onReportBugClick: () -> Unit = {},
     onAboutClick: () -> Unit = {},
     onExportClick: () -> Unit = {},
     onImportClick: () -> Unit = {},
@@ -495,6 +485,7 @@ private fun HomeDropdownMenu(
         onDismissRequest = onDismissRequest,
         offset = DpOffset(x = 16.dp, y = 0.dp),
     ) {
+        // TODO use Rounded and outlined icons in the app
         DropdownMenuItem(
             leadingIcon = { Icon(Icons.Outlined.Settings, contentDescription = null) },
             text = { Text(stringResource(R.string.home_menu_settings)) },
@@ -511,11 +502,6 @@ private fun HomeDropdownMenu(
             leadingIcon = { Icon(Icons.Outlined.Download, contentDescription = null) },
             text = { Text(stringResource(R.string.home_menu_import)) },
             onClick = onImportClick,
-        )
-        DropdownMenuItem(
-            leadingIcon = { Icon(Icons.Outlined.BugReport, contentDescription = null) },
-            text = { Text(stringResource(R.string.home_menu_report_bug)) },
-            onClick = onReportBugClick,
         )
         DropdownMenuItem(
             leadingIcon = { Icon(Icons.Outlined.Info, contentDescription = null) },
@@ -746,7 +732,6 @@ private fun DropdownPreview() {
     KeyMapperTheme {
         HomeDropdownMenu(
             expanded = true,
-            isExporting = false,
         )
     }
 }
@@ -757,7 +742,6 @@ private fun DropdownExportingPreview() {
     KeyMapperTheme {
         HomeDropdownMenu(
             expanded = true,
-            isExporting = true,
         )
     }
 }

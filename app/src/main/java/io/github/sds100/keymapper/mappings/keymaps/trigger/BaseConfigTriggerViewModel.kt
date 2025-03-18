@@ -34,11 +34,9 @@ import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.ViewModelHelper
 import io.github.sds100.keymapper.util.ui.showPopup
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
@@ -97,12 +95,6 @@ abstract class BaseConfigTriggerViewModel(
         SharingStarted.Lazily,
         RecordTriggerState.Idle,
     )
-
-    private val _reportBug = MutableSharedFlow<Unit>()
-    val reportBug = _reportBug.asSharedFlow()
-
-    private val _fixAppKilling = MutableSharedFlow<Unit>()
-    val fixAppKilling = _fixAppKilling.asSharedFlow()
 
     var showAdvancedTriggersBottomSheet: Boolean by mutableStateOf(false)
     var showDpadTriggerSetupBottomSheet: Boolean by mutableStateOf(false)

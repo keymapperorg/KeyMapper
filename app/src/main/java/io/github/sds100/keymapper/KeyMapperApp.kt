@@ -252,7 +252,7 @@ class KeyMapperApp : MultiDexApplication() {
 
         appCoroutineScope.launch {
             notificationController.openApp.collectLatest { intentAction ->
-                Intent(this@KeyMapperApp, SplashActivity::class.java).apply {
+                Intent(this@KeyMapperApp, MainActivity::class.java).apply {
                     action = intentAction
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK
 

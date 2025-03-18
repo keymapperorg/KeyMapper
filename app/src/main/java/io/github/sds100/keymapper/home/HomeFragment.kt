@@ -60,9 +60,6 @@ class HomeFragment : Fragment() {
                             onAboutClick = {
                                 findNavController().navigate(NavAppDirections.actionGlobalAboutFragment())
                             },
-                            onReportBugClick = {
-                                findNavController().navigate(NavAppDirections.goToReportBugActivity())
-                            },
                         )
                     }
                 }

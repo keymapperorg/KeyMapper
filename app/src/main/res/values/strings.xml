@@ -729,52 +729,6 @@
     <string name="flag_detect_from_input_method">⌨</string>
     <!--flags-->
 
-    <!-- Showcase -->
-    <string name="showcase_accessibility_service_title_enabled">Accessibility service is enabled :)</string>
-    <string name="showcase_accessibility_service_description_enabled">All good. Key Mapper can now detect your button presses.</string>
-
-    <string name="showcase_accessibility_service_title_crashed">Restart the accessibility service</string>
-    <string name="showcase_accessibility_service_description_crashed">The accessibility services is enabled but it has been killed by your phone or it has crashed. Restart it.</string>
-    <string name="showcase_accessibility_service_button_restart">Restart</string>
-
-    <string name="showcase_accessibility_service_title_disabled">Enable the accessibility service</string>
-    <string name="showcase_accessibility_service_description_disabled">@string/accessibility_service_explanation</string>
-
-    <string name="showcase_note_from_the_developer_title">Note from the developer</string>
-    <string name="showcase_note_from_the_developer_description">There is no guarantee that every action will work on your device and that every button can be detected. This is because there are many flavours of Android, and OEMs can break features by accident or intentionally. If something doesn\'t work, please notify the developer and refrain from giving the app a poor rating since the issue is often out of the developer\'s control. =)</string>
-
-    <string name="showcase_disable_battery_optimisation_title">Key Mapper may stop working randomly!</string>
-    <string name="showcase_disable_battery_optimisation_message_bad">CRITICAL!!! Tap \"turn off\" to hopefully prevent Android from stopping the app while it is in the background. Your OEM\'s skin such as MIUI or Samsung Experience may have other \"battery saving\" features so you MUST turn them off for Key Mapper as well by following the guide at dontkillmyapp.com</string>
-    <string name="showcase_disable_battery_optimisation_message_good">Stock Android battery optimisation is off. This is not good enough for most devices so go to dontkillmyapp.com for tutorials which show how to turn off even more app-killing features on your device.</string>
-    <string name="showcase_disable_battery_optimisation_button_turn_off">Turn off</string>
-    <string name="showcase_disable_battery_optimisation_button_dont_kill_my_app">Go to dontkillmyapp.com</string>
-
-    <string name="showcase_contributing_title">Contributing</string>
-    <string name="showcase_contributing_description">"This app is open source! You can start contributing by heading over to the keymapperorg/KeyMapper repo on GitHub and by joining the Discord server. Even if you can\'t code, you can contribute by helping others and testing the latest features."</string>
-
-    <string name="showcase_setup_chosen_devices_again_title">You need to setup some settings again</string>
-    <string name="showcase_setup_chosen_devices_again_message">It looks like you were using the setting to automatically change the keyboard or show the input method picker when a Bluetooth device connects and disconnects. Key Mapper now allows you to use any input device and not just Bluetooth devices. There isn\'t a way to migrate the old settings in a way that the new functionality will work so you\'ll have to choose the devices again.</string>
-
-    <string name="showcase_grant_shizuku_permission_denied_title">Grant Shizuku permission</string>
-    <string name="showcase_grant_shizuku_permission_denied_message">It looks like you have Shizuku installed. It is recommended to grant Key Mapper permission to use Shizuku so that Key Mapper can do more things without user input. For example input button presses without you having to use the \'Key Mapper keyboard\'. Tap \'more info\' to read all the benefits. Tap \'grant\' to grant the permission.</string>
-
-    <string name="showcase_grant_shizuku_permission_granted_title">Shizuku permission granted!</string>
-    <string name="showcase_grant_shizuku_permission_granted_message">You have granted Key Mapper Shizuku permission successfully.</string>
-    <string name="showcase_more_shizuku_info">More info</string>
-    <string name="showcase_request_shizuku_permission">Grant</string>
-
-    <string name="showcase_shizuku_not_started_title">Shizuku is not started</string>
-    <string name="showcase_shizuku_not_started_message">Shizuku must be started before you grant Key Mapper permission to use it. Tap \'Launch Shizuku\' to open the Shizuku app so that you can start it.</string>
-    <string name="showcase_shizuku_launch_shizuku_app">Launch Shizuku</string>
-
-    <string name="showcase_notification_permission_denied_title">Grant notification permission</string>
-    <string name="showcase_notification_permission_denied_message">Some features of Key Mapper require permission to post notifications, for example, there is a notification to pause/resume your key maps. Tap \'grant\' to give permission.</string>
-    <string name="showcase_notification_permission_granted_title">Notifications can be shown!</string>
-    <string name="showcase_notification_permission_granted_message">You have successfully granted Key Mapper permission to show notifications.</string>
-    <string name="showcase_notification_permission_button">Grant</string>
-
-    <!-- Showcase -->
-
     <!-- system action options -->
     <string name="stream_accessibility">Accessibility</string>
     <string name="stream_alarm">Alarm</string>
@@ -1351,7 +1305,6 @@
     <string name="home_menu_about">About</string>
     <string name="home_menu_export">Export</string>
     <string name="home_menu_import">Import</string>
-    <string name="home_menu_report_bug">Report bug</string>
 
     <!-- Trigger screen -->
     <string name="trigger_key_list_item_remove">Remove</string>

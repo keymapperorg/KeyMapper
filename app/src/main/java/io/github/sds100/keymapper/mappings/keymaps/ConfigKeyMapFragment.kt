@@ -19,7 +19,6 @@ import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
-import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.constraints.ChooseConstraintFragment
 import io.github.sds100.keymapper.constraints.ConfigConstraintsFragment
@@ -98,7 +97,7 @@ class ConfigKeyMapFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
+    ): View {
         FragmentConfigKeyMapBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
             viewModel = this@ConfigKeyMapFragment.viewModel
@@ -198,18 +197,6 @@ class ConfigKeyMapFragment : Fragment() {
 
         viewModel.configTriggerViewModel.showPopups(this, binding)
         viewModel.configTriggerViewModel.optionsViewModel.showPopups(this, binding)
-
-        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
-            viewModel.configTriggerViewModel.reportBug.collectLatest {
-                findNavController().navigate(NavAppDirections.goToReportBugActivity())
-            }
-        }
-
-        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
-            viewModel.configTriggerViewModel.fixAppKilling.collectLatest {
-                findNavController().navigate(NavAppDirections.goToFixAppKillingActivity())
-            }
-        }
 
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.configTriggerViewModel.launchFloatingButtonConfigActivity.collectLatest { buttonUid ->

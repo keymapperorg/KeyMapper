@@ -178,7 +178,6 @@ dependencies {
     implementation "com.google.android.material:material:1.13.0-alpha11"
     implementation "com.github.salomonbrys.kotson:kotson:2.5.0"
     implementation "com.airbnb.android:epoxy:$epoxy_version"
-    implementation "com.github.AppIntro:AppIntro:6.1.0"
     implementation "com.airbnb.android:epoxy-databinding:$epoxy_version"
     kapt "com.airbnb.android:epoxy-processor:$epoxy_version"
     implementation "com.jakewharton.timber:timber:5.0.1"

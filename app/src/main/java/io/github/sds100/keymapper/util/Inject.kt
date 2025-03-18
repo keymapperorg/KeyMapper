@@ -19,7 +19,6 @@ import io.github.sds100.keymapper.api.KeyEventRelayServiceWrapper
 import io.github.sds100.keymapper.backup.BackupRestoreMappingsUseCaseImpl
 import io.github.sds100.keymapper.constraints.ChooseConstraintViewModel
 import io.github.sds100.keymapper.constraints.CreateConstraintUseCaseImpl
-import io.github.sds100.keymapper.home.FixAppKillingViewModel
 import io.github.sds100.keymapper.home.HomeViewModel
 import io.github.sds100.keymapper.home.ShowHomeScreenAlertsUseCaseImpl
 import io.github.sds100.keymapper.logging.DisplayLogUseCaseImpl
@@ -29,10 +28,6 @@ import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapViewModel
 import io.github.sds100.keymapper.mappings.keymaps.CreateKeyMapShortcutViewModel
 import io.github.sds100.keymapper.mappings.keymaps.ListKeyMapsUseCaseImpl
 import io.github.sds100.keymapper.mappings.keymaps.trigger.SetupGuiKeyboardUseCaseImpl
-import io.github.sds100.keymapper.onboarding.AppIntroUseCaseImpl
-import io.github.sds100.keymapper.onboarding.AppIntroViewModel
-import io.github.sds100.keymapper.reportbug.ReportBugUseCaseImpl
-import io.github.sds100.keymapper.reportbug.ReportBugViewModel
 import io.github.sds100.keymapper.settings.ConfigSettingsUseCaseImpl
 import io.github.sds100.keymapper.settings.SettingsViewModel
 import io.github.sds100.keymapper.sorting.SortKeyMapsUseCaseImpl
@@ -192,39 +187,6 @@ object Inject {
             ServiceLocator.devicesAdapter(context),
         ),
         ServiceLocator.resourceProvider(context),
-    )
-
-    fun appIntroViewModel(
-        context: Context,
-        slides: List<String>,
-    ): AppIntroViewModel.Factory = AppIntroViewModel.Factory(
-        AppIntroUseCaseImpl(
-            ServiceLocator.permissionAdapter(context),
-            ServiceLocator.accessibilityServiceAdapter(context),
-            ServiceLocator.settingsRepository(context),
-            ServiceLocator.shizukuAdapter(context),
-        ),
-        slides,
-        ServiceLocator.resourceProvider(context),
-    )
-
-    fun reportBugViewModel(
-        context: Context,
-    ): ReportBugViewModel.Factory = ReportBugViewModel.Factory(
-        ReportBugUseCaseImpl(
-            ServiceLocator.fileAdapter(context),
-            ServiceLocator.logRepository(context),
-            ServiceLocator.backupManager(context),
-        ),
-        UseCases.controlAccessibilityService(context),
-        ServiceLocator.resourceProvider(context),
-    )
-
-    fun fixCrashViewModel(
-        context: Context,
-    ): FixAppKillingViewModel.Factory = FixAppKillingViewModel.Factory(
-        ServiceLocator.resourceProvider(context),
-        UseCases.controlAccessibilityService(context),
     )
 
     fun accessibilityServiceController(
