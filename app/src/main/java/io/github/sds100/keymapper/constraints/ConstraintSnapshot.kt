@@ -133,9 +133,18 @@ class LazyConstraintSnapshot(
             is Constraint.ImeNotChosen -> chosenImeId != constraint.imeId
             Constraint.DeviceIsLocked -> isLocked
             Constraint.DeviceIsUnlocked -> !isLocked
-            Constraint.InPhoneCall -> callState == CallState.IN_PHONE_CALL
-            Constraint.NotInPhoneCall -> callState == CallState.NONE
-            Constraint.PhoneRinging -> callState == CallState.RINGING
+            Constraint.InPhoneCall ->
+                callState == CallState.IN_PHONE_CALL ||
+                    audioVolumeStreams.contains(AudioManager.STREAM_VOICE_CALL)
+
+            Constraint.NotInPhoneCall ->
+                callState == CallState.NONE &&
+                    !audioVolumeStreams.contains(AudioManager.STREAM_VOICE_CALL)
+
+            Constraint.PhoneRinging ->
+                callState == CallState.RINGING ||
+                    audioVolumeStreams.contains(AudioManager.STREAM_RING)
+
             Constraint.Charging -> isCharging
             Constraint.Discharging -> !isCharging
         }
