@@ -66,7 +66,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -170,6 +169,9 @@ fun HomeScreen(
 
     val isExporting by remember { derivedStateOf { viewModel.exportState is ExportState.Exporting } }
 
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+
     HomeScreen(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         navController = navController,
@@ -177,7 +179,6 @@ fun HomeScreen(
         navBarItems = navBarItems,
         topAppBar = {
             HomeAppBar(
-                isExporting = isExporting,
                 scrollBehavior = scrollBehavior,
                 homeState = homeState,
                 onSettingsClick = onSettingsClick,
@@ -202,35 +203,29 @@ fun HomeScreen(
                 navController = navController,
             )
         },
-        floatingActionButton = { destination ->
-            when (destination) {
-                HomeDestination.KeyMaps.route -> {
-                    ExtendedFloatingActionButton(
-                        onClick = {
-                            scope.launch {
-                                viewModel.navigate(
-                                    NavigateEvent(
-                                        "config_key_map",
-                                        NavDestination.ConfigKeyMap(keyMapUid = null),
-                                    ),
-                                )
-                            }
-                        },
-                        text = { Text(stringResource(R.string.home_fab_new_key_map)) },
-                        icon = { Icon(Icons.Rounded.Add, contentDescription = null) },
-                    )
-                }
-
-                HomeDestination.FloatingButtons.route -> {
-                    if (showNewLayoutFab) {
-                        ExtendedFloatingActionButton(
-                            onClick = viewModel.listFloatingLayoutsViewModel::onNewLayoutClick,
-                            text = { Text(stringResource(R.string.home_fab_new_floating_layout)) },
-                            icon = { Icon(Icons.Rounded.Add, contentDescription = null) },
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                onClick = {
+                    scope.launch {
+                        viewModel.navigate(
+                            NavigateEvent(
+                                "config_key_map",
+                                NavDestination.ConfigKeyMap(keyMapUid = null),
+                            ),
                         )
                     }
-                }
-            }
+                },
+                text = {
+                    val fabText = when (currentDestination?.route) {
+                        HomeDestination.FloatingButtons.route -> stringResource(R.string.home_fab_new_floating_layout)
+                        else -> stringResource(R.string.home_fab_new_key_map)
+                    }
+                    AnimatedContent(fabText) { text ->
+                        Text(text)
+                    }
+                },
+                icon = { Icon(Icons.Rounded.Add, contentDescription = null) },
+            )
         },
     )
 }
@@ -244,7 +239,7 @@ private fun HomeScreen(
     topAppBar: @Composable () -> Unit,
     keyMapsContent: @Composable () -> Unit,
     floatingButtonsContent: @Composable () -> Unit,
-    floatingActionButton: @Composable (destination: String?) -> Unit = {},
+    floatingActionButton: @Composable () -> Unit = {},
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
@@ -255,7 +250,7 @@ private fun HomeScreen(
         snackbarHost = {
             SnackbarHost(hostState = snackBarState)
         },
-        floatingActionButton = { floatingActionButton(currentDestination?.route) },
+        floatingActionButton = floatingActionButton,
         bottomBar = {
             if (navBarItems.size <= 1) {
                 return@Scaffold
@@ -362,7 +357,6 @@ private fun HomeAppBar(
     onHelpClick: () -> Unit = {},
     onTogglePausedClick: () -> Unit = {},
     onFixWarningClick: (String) -> Unit = {},
-    isExporting: Boolean = false,
     onExportClick: () -> Unit = {},
     onImportClick: () -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
@@ -388,14 +382,6 @@ private fun HomeAppBar(
     )
 
     var expandedDropdown by rememberSaveable { mutableStateOf(false) }
-
-    DisposableEffect(isExporting) {
-        onDispose {
-            if (!isExporting) {
-                expandedDropdown = false
-            }
-        }
-    }
 
     Column {
         CenterAlignedTopAppBar(
