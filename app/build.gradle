@@ -181,7 +181,6 @@ dependencies {
     implementation "com.airbnb.android:epoxy-databinding:$epoxy_version"
     kapt "com.airbnb.android:epoxy-processor:$epoxy_version"
     implementation "com.jakewharton.timber:timber:5.0.1"
-    implementation "uk.co.samuelwall:material-tap-target-prompt:3.1.0"
     implementation "net.lingala.zip4j:zip4j:2.8.0"
     implementation "com.anggrayudi:storage:0.8.1"
     implementation "com.github.MFlisar:DragSelectRecyclerView:0.3"

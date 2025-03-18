@@ -15,7 +15,6 @@ import io.github.sds100.keymapper.databinding.FragmentComposeBinding
 import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.ui.setupNavigation
 import io.github.sds100.keymapper.util.ui.showPopups
-import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt
 
 class HomeFragment : Fragment() {
 
@@ -30,8 +29,7 @@ class HomeFragment : Fragment() {
             homeViewModel.onChoseRestoreFile(it.toString())
         }
 
-    // TODO: quick start guide tap target. Delete tap target library?
-    private var quickStartGuideTapTarget: MaterialTapTargetPrompt? = null
+    // TODO: quick start guide tap target
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
