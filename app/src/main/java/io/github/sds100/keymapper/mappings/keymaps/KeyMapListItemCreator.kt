@@ -24,7 +24,6 @@ import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.compose.ComposeChipModel
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
-import kotlinx.coroutines.flow.first
 
 class KeyMapListItemCreator(
     private val actionUiHelper: ActionUiHelper,
@@ -41,6 +40,7 @@ class KeyMapListItemCreator(
     suspend fun create(
         keyMap: KeyMap,
         showDeviceDescriptors: Boolean,
+        triggerErrorSnapshot: TriggerErrorSnapshot,
     ): KeyMapListItemModel.Content {
         val triggerSeparator = when (keyMap.trigger.mode) {
             is TriggerMode.Parallel -> Icons.Outlined.Add
@@ -81,7 +81,6 @@ class KeyMapListItemCreator(
             }
         }
 
-        val triggerErrorSnapshot = displayMapping.triggerErrorSnapshot.first()
         val triggerErrors = keyMap.trigger.keys.mapNotNull { key ->
             triggerErrorSnapshot.getTriggerError(
                 keyMap,
@@ -139,7 +138,7 @@ class KeyMapListItemCreator(
                     append(
                         getString(
                             R.string.action_title_wait,
-                            action.delayBeforeNextAction!!,
+                            action.delayBeforeNextAction,
                         ),
                     )
                 }

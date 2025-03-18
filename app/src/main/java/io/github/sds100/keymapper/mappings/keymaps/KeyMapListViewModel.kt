@@ -87,12 +87,13 @@ class KeyMapListViewModel(
         combine(
             rebuildUiState,
             listKeyMaps.showDeviceDescriptors,
-        ) { keyMapListState, showDeviceDescriptors ->
+            listKeyMaps.triggerErrorSnapshot,
+        ) { keyMapListState, showDeviceDescriptors, triggerErrorSnapshot ->
             listItemContentFlow.value = State.Loading
 
             listItemContentFlow.value = keyMapListState.mapData { keyMapList ->
                 keyMapList.map { keyMap ->
-                    listItemCreator.create(keyMap, showDeviceDescriptors)
+                    listItemCreator.create(keyMap, showDeviceDescriptors, triggerErrorSnapshot)
                 }
             }
         }.flowOn(Dispatchers.Default).launchIn(coroutineScope)

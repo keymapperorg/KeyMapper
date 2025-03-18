@@ -25,16 +25,20 @@ import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.dataOrNull
 import io.github.sds100.keymapper.util.otherwise
 import io.github.sds100.keymapper.util.then
 import io.github.sds100.keymapper.util.valueIfFailure
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.withTimeout
 
 /**
  * Created by sds100 on 04/04/2021.
@@ -72,12 +76,24 @@ class DisplayKeyMapUseCaseImpl(
         }
 
     /**
+     * This waits for the purchases to be processed with a timeout so the UI doesn't
+     * say there are no purchases while it is loading.
+     */
+    private val purchasesFlow: Flow<State<Set<ProductId>>> = callbackFlow {
+        withTimeout(3000L) {
+            purchasingManager.purchases.filterIsInstance<State.Data<Set<ProductId>>>().first()
+        }
+
+        purchasingManager.purchases.collect(this::send)
+    }
+
+    /**
      * Cache the data required for checking errors to reduce the latency of repeatedly checking
      * the errors.
      */
     override val triggerErrorSnapshot: Flow<TriggerErrorSnapshot> = combine(
         permissionAdapter.onPermissionsUpdate.onStart { emit(Unit) },
-        purchasingManager.purchases,
+        purchasesFlow,
         inputMethodAdapter.chosenIme,
         showDpadImeSetupError,
     ) { _, purchases, _, showDpadImeSetupError ->
@@ -85,10 +101,7 @@ class DisplayKeyMapUseCaseImpl(
             isKeyMapperImeChosen = keyMapperImeHelper.isCompatibleImeChosen(),
             isDndAccessGranted = permissionAdapter.isGranted(Permission.ACCESS_NOTIFICATION_POLICY),
             isRootGranted = permissionAdapter.isGranted(Permission.ROOT),
-            isAssistantTriggerPurchased = purchases.dataOrNull()
-                ?.contains(ProductId.ASSISTANT_TRIGGER) == true,
-            isFloatingButtonsPurchased = purchases.dataOrNull()
-                ?.contains(ProductId.FLOATING_BUTTONS) == true,
+            purchases = purchases.dataOrNull() ?: emptySet(),
             showDpadImeSetupError = showDpadImeSetupError,
         )
     }

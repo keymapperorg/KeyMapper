@@ -56,10 +56,12 @@ class CreateKeyMapShortcutViewModel(
         combine(
             rebuildUiState,
             listKeyMaps.showDeviceDescriptors,
-        ) { keyMapListState, showDeviceDescriptors ->
+            listKeyMaps.triggerErrorSnapshot,
+        ) { keyMapListState, showDeviceDescriptors, triggerErrorSnapshot ->
             _state.value = keyMapListState.mapData { keyMapList ->
                 keyMapList.map { keyMap ->
-                    val keyMapListUiState = listItemCreator.create(keyMap, showDeviceDescriptors)
+                    val keyMapListUiState =
+                        listItemCreator.create(keyMap, showDeviceDescriptors, triggerErrorSnapshot)
 
                     KeyMapListItemModel(isSelected = false, keyMapListUiState)
                 }
