@@ -3,7 +3,8 @@
 #### TO BE RELEASED
 
 ## Bug fixes
-- #1518 fix: detect more apps that are playing media (fix to previous fix)
+- #1518 detect more apps that are playing media (fix to previous fix)
+- #1545 support phone call constraints in more apps
 
 ## [2.8.3](https://github.com/sds100/KeyMapper/releases/tag/v2.8.3)
 
