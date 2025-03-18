@@ -97,7 +97,7 @@ class RoomKeyMapRepository(
     override fun enableById(vararg uid: String) {
         coroutineScope.launch(dispatchers.io()) {
             uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE).forEach {
-                keyMapDao.enableKeymapByUid(*it)
+                keyMapDao.enableKeyMapByUid(*it)
             }
 
             requestBackup()
@@ -107,7 +107,7 @@ class RoomKeyMapRepository(
     override fun disableById(vararg uid: String) {
         coroutineScope.launch(dispatchers.io()) {
             uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE).forEach {
-                keyMapDao.disableKeymapByUid(*it)
+                keyMapDao.disableKeyMapByUid(*it)
             }
 
             requestBackup()

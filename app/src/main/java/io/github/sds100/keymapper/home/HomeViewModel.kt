@@ -470,7 +470,7 @@ sealed class ExportState {
 }
 
 sealed class HomeState {
-    data class Selecting(val selectionCount: Int, val allKeyMapsEnabled: Boolean) : HomeState()
+    data class Selecting(val selectionCount: Int, val selectedKeyMapsEnabled: Boolean) : HomeState()
     data class Normal(
         val warnings: List<HomeWarningListItem> = emptyList(),
         val isPaused: Boolean = false,

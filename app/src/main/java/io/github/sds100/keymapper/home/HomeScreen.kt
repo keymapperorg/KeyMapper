@@ -706,7 +706,7 @@ private fun HomeStateWarningsPreview() {
 private fun HomeStateSelectingPreview() {
     val state = HomeState.Selecting(
         selectionCount = 4,
-        allKeyMapsEnabled = true,
+        selectedKeyMapsEnabled = true,
     )
     KeyMapperTheme {
         HomeScreen(

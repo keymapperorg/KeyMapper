@@ -44,12 +44,12 @@ interface KeyMapDao {
     suspend fun enableAll()
 
     @Query("UPDATE $TABLE_NAME SET $KEY_ENABLED=1 WHERE $KEY_UID in (:uid)")
-    suspend fun enableKeymapByUid(vararg uid: String)
+    suspend fun enableKeyMapByUid(vararg uid: String)
 
     @Query("UPDATE $TABLE_NAME SET $KEY_ENABLED=0 WHERE $KEY_UID in (:uid)")
-    suspend fun disableKeymapByUid(vararg uid: String)
+    suspend fun disableKeyMapByUid(vararg uid: String)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insert(vararg keyMap: KeyMapEntity)
 
     @Delete
@@ -61,6 +61,6 @@ interface KeyMapDao {
     @Query("DELETE FROM $TABLE_NAME WHERE $KEY_UID in (:uid)")
     suspend fun deleteById(vararg uid: String)
 
-    @Update
+    @Update(onConflict = OnConflictStrategy.ABORT)
     suspend fun update(vararg keyMap: KeyMapEntity)
 }

@@ -82,10 +82,10 @@ class KeyMapRepositoryTest {
                 // WHEN, THEN
                 // split job up into batches of 200 key maps
                 repository.enableById(*keyMapList.map { it.uid }.toTypedArray())
-                verify(mockDao, times(5)).enableKeymapByUid(anyVararg())
+                verify(mockDao, times(5)).enableKeyMapByUid(anyVararg())
 
                 repository.disableById(*keyMapList.map { it.uid }.toTypedArray())
-                verify(mockDao, times(5)).disableKeymapByUid(anyVararg())
+                verify(mockDao, times(5)).disableKeyMapByUid(anyVararg())
 
                 repository.delete(*keyMapList.map { it.uid }.toTypedArray())
                 verify(mockDao, times(5)).deleteById(anyVararg())
