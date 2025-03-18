@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.data.db.dao
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
@@ -39,7 +40,7 @@ interface FloatingLayoutDao {
     @Query("SELECT * FROM $TABLE_NAME")
     fun getAll(): Flow<List<FloatingLayoutEntity>>
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insert(vararg layout: FloatingLayoutEntity)
 
     @Delete

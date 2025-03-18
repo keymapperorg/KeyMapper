@@ -17,5 +17,9 @@ object Migration13To14 {
         )
 
         database.execSQL("CREATE INDEX IF NOT EXISTS `index_floating_buttons_layout_uid` ON `floating_buttons` (`layout_uid`)")
+
+        // Create index for key maps to ensure all key maps have unique UIDs
+
+        database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_keymaps_uid` ON `keymaps` (`uid`)")
     }
 }
