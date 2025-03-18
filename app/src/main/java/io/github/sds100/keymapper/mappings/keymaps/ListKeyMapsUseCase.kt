@@ -1,7 +1,10 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
 import io.github.sds100.keymapper.backup.BackupManager
+import io.github.sds100.keymapper.backup.BackupUtils
 import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
+import io.github.sds100.keymapper.system.files.FileAdapter
+import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.Success
@@ -21,6 +24,7 @@ import kotlinx.coroutines.withContext
 class ListKeyMapsUseCaseImpl(
     private val keyMapRepository: KeyMapRepository,
     private val floatingButtonRepository: FloatingButtonRepository,
+    private val fileAdapter: FileAdapter,
     private val backupManager: BackupManager,
     displayKeyMapUseCase: DisplayKeyMapUseCase,
 ) : ListKeyMapsUseCase,
@@ -74,7 +78,13 @@ class ListKeyMapsUseCaseImpl(
         keyMapRepository.duplicate(*uid)
     }
 
-    override suspend fun backupKeyMaps(vararg uid: String, uri: String): Result<String> = backupManager.backupKeyMaps(uid.asList()).then { Success(it.uri) }
+    override suspend fun backupKeyMaps(vararg uid: String, uri: String): Result<String> {
+        val fileName = BackupUtils.createBackupFileName()
+
+        return fileAdapter.openDownloadsFile(fileName, FileUtils.MIME_TYPE_ZIP).then {
+            backupManager.backupKeyMaps(it, uid.asList())
+        }.then { Success(it.uri) }
+    }
 }
 
 interface ListKeyMapsUseCase : DisplayKeyMapUseCase {

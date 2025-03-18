@@ -140,6 +140,7 @@ object Inject {
         ListKeyMapsUseCaseImpl(
             ServiceLocator.roomKeymapRepository(ctx),
             ServiceLocator.floatingButtonRepository(ctx),
+            ServiceLocator.fileAdapter(ctx),
             ServiceLocator.backupManager(ctx),
             UseCases.displayKeyMap(ctx),
         ),
@@ -151,11 +152,15 @@ object Inject {
         ListKeyMapsUseCaseImpl(
             ServiceLocator.roomKeymapRepository(ctx),
             ServiceLocator.floatingButtonRepository(ctx),
+            ServiceLocator.fileAdapter(ctx),
             ServiceLocator.backupManager(ctx),
             UseCases.displayKeyMap(ctx),
         ),
         UseCases.pauseMappings(ctx),
-        BackupRestoreMappingsUseCaseImpl(ServiceLocator.backupManager(ctx)),
+        BackupRestoreMappingsUseCaseImpl(
+            ServiceLocator.fileAdapter(ctx),
+            ServiceLocator.backupManager(ctx),
+        ),
         ShowHomeScreenAlertsUseCaseImpl(
             ServiceLocator.settingsRepository(ctx),
             ServiceLocator.permissionAdapter(ctx),

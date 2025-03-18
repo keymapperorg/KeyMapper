@@ -157,17 +157,29 @@ fun HomeScreen(
     val ctx = LocalContext.current
 
     viewModel.exportState.also { exportState ->
-        if (exportState is ExportState.Error) {
-            scope.launch {
-                snackbarState.showSnackbar(exportState.error)
-                viewModel.exportState = ExportState.Idle
+        when (exportState) {
+            is ExportState.Error -> {
+                val text = stringResource(R.string.home_export_error_snackbar, exportState.error)
+                scope.launch {
+                    snackbarState.showSnackbar(text)
+                    viewModel.exportState = ExportState.Idle
+                }
             }
-        } else if (exportState is ExportState.Finished) {
-            ShareUtils.sendZipFile(ctx, exportState.uri.toUri())
+
+            is ExportState.Finished -> {
+                ShareUtils.sendZipFile(ctx, exportState.uri.toUri())
+            }
+
+            ExportState.Exporting -> {
+                val text = stringResource(R.string.home_exporting_snackbar)
+                scope.launch {
+                    snackbarState.showSnackbar(text)
+                }
+            }
+
+            ExportState.Idle -> {}
         }
     }
-
-    val isExporting by remember { derivedStateOf { viewModel.exportState is ExportState.Exporting } }
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
@@ -469,7 +481,6 @@ private fun HomeDropdownMenu(
         expanded = expanded,
         onDismissRequest = onDismissRequest,
     ) {
-        // TODO use Rounded and outlined icons in the app
         DropdownMenuItem(
             leadingIcon = { Icon(Icons.Rounded.Settings, contentDescription = null) },
             text = { Text(stringResource(R.string.home_menu_settings)) },
@@ -477,9 +488,7 @@ private fun HomeDropdownMenu(
         )
         DropdownMenuItem(
             leadingIcon = { Icon(Icons.Rounded.IosShare, contentDescription = null) },
-            text = {
-                Text(stringResource(R.string.home_menu_export))
-            },
+            text = { Text(stringResource(R.string.home_menu_export)) },
             onClick = onExportClick,
         )
         DropdownMenuItem(

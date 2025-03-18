@@ -10,6 +10,7 @@ interface FileAdapter {
     fun openAsset(fileName: String): InputStream
 
     fun getPicturesFolder(): String
+    fun openDownloadsFile(fileName: String, mimeType: String): Result<IFile>
 
     fun getPrivateFile(path: String): IFile
     fun getFile(parent: IFile, path: String): IFile

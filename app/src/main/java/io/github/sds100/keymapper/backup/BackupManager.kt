@@ -131,10 +131,7 @@ class BackupManagerImpl(
                     ?: return@collectLatest
 
                 val outputFile = fileAdapter.getFileFromUri(backupLocation)
-                val result = backupAsync(backupData.keyMapList).then { file ->
-                    file.inputStream()?.copyTo(outputFile.outputStream()!!)
-                    Success(Unit)
-                }
+                val result = backupAsync(outputFile, backupData.keyMapList)
 
                 onAutomaticBackupResult.emit(result)
             }
@@ -160,7 +157,7 @@ class BackupManagerImpl(
     }
 
     // TODO back up the entire floating layouts associated with the selected key maps.
-    override suspend fun backupKeyMaps(keyMapIds: List<String>): Result<IFile> {
+    override suspend fun backupKeyMaps(output: IFile, keyMapIds: List<String>): Result<IFile> {
         return withContext(dispatchers.default()) {
             val allKeyMaps = keyMapRepository.keyMapList
                 .filterIsInstance<State.Data<List<KeyMapEntity>>>()
@@ -168,19 +165,19 @@ class BackupManagerImpl(
 
             val keyMapsToBackup = allKeyMaps.data.filter { keyMapIds.contains(it.uid) }
 
-            backupAsync(keyMapsToBackup)
+            backupAsync(output, keyMapsToBackup)
         }
     }
 
     // TODO back up floating buttons and floating layouts as well.
-    override suspend fun backupEverything(): Result<IFile> {
+    override suspend fun backupEverything(output: IFile): Result<IFile> {
         return withContext(dispatchers.io()) {
             val keyMaps =
                 keyMapRepository.keyMapList
                     .filterIsInstance<State.Data<List<KeyMapEntity>>>()
                     .first()
 
-            backupAsync(keyMaps.data)
+            backupAsync(output, keyMaps.data)
         }
     }
 
@@ -402,16 +399,15 @@ class BackupManagerImpl(
         }
     }
 
-    private suspend fun backupAsync(keyMapList: List<KeyMapEntity>? = null): Result<IFile> {
+    private suspend fun backupAsync(
+        output: IFile,
+        keyMapList: List<KeyMapEntity>? = null,
+    ): Result<IFile> {
         return withContext(dispatchers.io()) {
             val backupUid = uuidGenerator.random()
 
             val tempBackupDir = fileAdapter.getPrivateFile("$TEMP_BACKUP_ROOT_DIR/$backupUid")
             tempBackupDir.createDirectory()
-
-            val outputFileName = BackupUtils.createBackupFileName()
-            val output: IFile =
-                fileAdapter.getPrivateFile("${tempBackupDir.path}/$outputFileName")
 
             try {
                 // delete the contents of the file
@@ -539,11 +535,11 @@ interface BackupManager {
     /**
      * @return the URI to the back up
      */
-    suspend fun backupKeyMaps(keyMapIds: List<String>): Result<IFile>
+    suspend fun backupKeyMaps(output: IFile, keyMapIds: List<String>): Result<IFile>
 
     /**
      * @return the URI to the back up file which can then be used for sharing.
      */
-    suspend fun backupEverything(): Result<IFile>
+    suspend fun backupEverything(output: IFile): Result<IFile>
     suspend fun restore(uri: String): Result<*>
 }

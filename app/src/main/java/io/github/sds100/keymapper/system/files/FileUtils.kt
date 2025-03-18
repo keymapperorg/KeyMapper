@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.system.files
 
+import android.annotation.SuppressLint
 import android.content.ContentResolver
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
@@ -9,7 +10,7 @@ import android.provider.MediaStore
 import androidx.core.graphics.decodeBitmap
 import java.io.FileNotFoundException
 import java.io.IOException
-import java.text.DateFormat
+import java.text.SimpleDateFormat
 import java.util.Calendar
 
 /**
@@ -24,9 +25,10 @@ object FileUtils {
     const val MIME_TYPE_AUDIO = "audio/*"
     const val MIME_TYPE_ZIP = "application/zip"
 
+    @SuppressLint("SimpleDateFormat")
     fun createFileDate(): String {
         val date = Calendar.getInstance().time
-        val format = DateFormat.getDateTimeInstance()
+        val format = SimpleDateFormat("yyyyMMdd-HHmmss")
 
         return format.format(date)
     }

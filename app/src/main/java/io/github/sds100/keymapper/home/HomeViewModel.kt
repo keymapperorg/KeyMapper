@@ -400,7 +400,7 @@ class HomeViewModel(
 
             exportState = ExportState.Exporting
             backupRestore.backupEverything().onSuccess {
-                exportState = ExportState.Finished(it.uri)
+                exportState = ExportState.Finished(it)
             }.onFailure {
                 exportState = ExportState.Error(it.getFullMessage(this@HomeViewModel))
             }
@@ -428,31 +428,10 @@ class HomeViewModel(
         }
     }
 
-    private suspend fun onBackupResult(result: Result<String>) {
-        when (result) {
-            is Success -> {
-                val response = showPopup(
-                    "successful_backup_result",
-                    PopupUi.SnackBar(
-                        message = getString(R.string.toast_backup_successful),
-                        actionText = getString(R.string.share_backup),
-                    ),
-                )
-
-                if (response != null) {
-                    val uri = result.value
-
-                    _shareBackup.emit(uri)
-                }
-            }
-
-            is Error -> showPopup(
-                "backup_error",
-                PopupUi.Ok(
-                    title = getString(R.string.toast_backup_failed),
-                    message = result.getFullMessage(this@HomeViewModel),
-                ),
-            )
+    private fun onBackupResult(result: Result<String>) {
+        exportState = when (result) {
+            is Success -> ExportState.Finished(result.value)
+            is Error -> ExportState.Error(result.getFullMessage(this@HomeViewModel))
         }
     }
 
