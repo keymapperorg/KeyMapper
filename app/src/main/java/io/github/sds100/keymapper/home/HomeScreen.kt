@@ -75,7 +75,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -579,10 +578,8 @@ private fun WarningList(
 ) {
     OutlinedCard(
         modifier = modifier.padding(horizontal = 8.dp),
-        colors = CardDefaults.outlinedCardColors(
-            containerColor = Color.Transparent,
-        ),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.error),
+        elevation = CardDefaults.outlinedCardElevation(defaultElevation = 5.dp),
     ) {
         Column(
             Modifier.padding(vertical = 8.dp),
@@ -690,6 +687,34 @@ private fun HomeStateWarningsPreview() {
         isPaused = false,
     )
     KeyMapperTheme {
+        HomeScreen(
+            navController = rememberNavController(),
+            navBarItems = sampleNavBarItems(),
+            topAppBar = { HomeAppBar(state) },
+            keyMapsContent = {},
+            floatingButtonsContent = {},
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun HomeStateWarningsDarkPreview() {
+    val state = HomeState.Normal(
+        warnings = listOf(
+            HomeWarningListItem(
+                id = "0",
+                text = stringResource(R.string.home_error_accessibility_service_is_disabled),
+            ),
+            HomeWarningListItem(
+                id = "1",
+                text = stringResource(R.string.home_error_is_battery_optimised),
+            ),
+        ),
+        isPaused = false,
+    )
+    KeyMapperTheme(darkTheme = true) {
         HomeScreen(
             navController = rememberNavController(),
             navBarItems = sampleNavBarItems(),
