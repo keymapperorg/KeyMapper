@@ -27,6 +27,7 @@ nav:
       - Code base: contributing/codebase.md
   - Report Issues: report-issues.md
   - Known Issues: known-issues.md
+  - Privacy policy: privacy-policy.md
 
 theme:
   name: material
