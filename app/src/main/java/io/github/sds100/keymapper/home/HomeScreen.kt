@@ -58,6 +58,7 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -119,9 +120,6 @@ fun HomeScreen(
     val navController = rememberNavController()
     val navBarItems by viewModel.navBarItems.collectAsStateWithLifecycle()
 
-    val showNewLayoutFab by viewModel.listFloatingLayoutsViewModel.showNewLayoutFab
-        .collectAsStateWithLifecycle(false)
-
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val setupGuiKeyboardState by viewModel.keymapListViewModel.setupGuiKeyboardState.collectAsStateWithLifecycle()
 
@@ -158,6 +156,7 @@ fun HomeScreen(
     viewModel.exportState.also { exportState ->
         when (exportState) {
             is ExportState.Error -> {
+                snackbarState.currentSnackbarData?.dismiss()
                 val text = stringResource(R.string.home_export_error_snackbar, exportState.error)
                 scope.launch {
                     snackbarState.showSnackbar(text)
@@ -166,17 +165,21 @@ fun HomeScreen(
             }
 
             is ExportState.Finished -> {
+                snackbarState.currentSnackbarData?.dismiss()
                 ShareUtils.sendZipFile(ctx, exportState.uri.toUri())
+                viewModel.exportState = ExportState.Idle
             }
 
             ExportState.Exporting -> {
                 val text = stringResource(R.string.home_exporting_snackbar)
                 scope.launch {
-                    snackbarState.showSnackbar(text)
+                    snackbarState.showSnackbar(text, duration = SnackbarDuration.Indefinite)
                 }
             }
 
-            ExportState.Idle -> {}
+            ExportState.Idle -> {
+                snackbarState.currentSnackbarData?.dismiss()
+            }
         }
     }
 
@@ -215,28 +218,44 @@ fun HomeScreen(
             )
         },
         floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = {
-                    scope.launch {
-                        viewModel.navigate(
-                            NavigateEvent(
-                                "config_key_map",
-                                NavDestination.ConfigKeyMap(keyMapUid = null),
-                            ),
-                        )
-                    }
-                },
-                text = {
-                    val fabText = when (currentDestination?.route) {
-                        HomeDestination.FloatingButtons.route -> stringResource(R.string.home_fab_new_floating_layout)
-                        else -> stringResource(R.string.home_fab_new_key_map)
-                    }
-                    AnimatedContent(fabText) { text ->
-                        Text(text)
-                    }
-                },
-                icon = { Icon(Icons.Rounded.Add, contentDescription = null) },
-            )
+            val showFab = if (homeState is HomeState.Normal) {
+                if (currentDestination?.route == HomeDestination.FloatingButtons.route) {
+                    (homeState as HomeState.Normal).showNewLayoutButton
+                } else {
+                    true
+                }
+            } else {
+                false
+            }
+
+            if (showFab) {
+                ExtendedFloatingActionButton(
+                    onClick = {
+                        if (currentDestination?.route == HomeDestination.FloatingButtons.route) {
+                            viewModel.listFloatingLayoutsViewModel.onNewLayoutClick()
+                        } else {
+                            scope.launch {
+                                viewModel.navigate(
+                                    NavigateEvent(
+                                        "config_key_map",
+                                        NavDestination.ConfigKeyMap(keyMapUid = null),
+                                    ),
+                                )
+                            }
+                        }
+                    },
+                    text = {
+                        val fabText = when (currentDestination?.route) {
+                            HomeDestination.FloatingButtons.route -> stringResource(R.string.home_fab_new_floating_layout)
+                            else -> stringResource(R.string.home_fab_new_key_map)
+                        }
+                        AnimatedContent(fabText) { text ->
+                            Text(text)
+                        }
+                    },
+                    icon = { Icon(Icons.Rounded.Add, contentDescription = null) },
+                )
+            }
         },
     )
 }
@@ -452,7 +471,6 @@ private fun HomeAppBar(
             colors = appBarColors,
         )
         if (homeState is HomeState.Normal) {
-            // TODO open share sheet when backing up
             // TODO handle the case that no app can be found for picking a file
             AnimatedVisibility(homeState.warnings.isNotEmpty()) {
                 Surface(color = appBarContainerColor) {

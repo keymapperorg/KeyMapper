@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.backup.BackupRestoreMappingsUseCase
+import io.github.sds100.keymapper.floating.FloatingLayoutsState
 import io.github.sds100.keymapper.floating.ListFloatingLayoutsUseCase
 import io.github.sds100.keymapper.floating.ListFloatingLayoutsViewModel
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
@@ -173,14 +174,19 @@ class HomeViewModel(
             warnings,
             showAlertsUseCase.areKeyMapsPaused,
             listKeyMaps.areAllEnabled,
-        ) { selectionState, warnings, isPaused, areAllEnabled ->
+            listFloatingLayoutsViewModel.state,
+        ) { selectionState, warnings, isPaused, areAllEnabled, floatingLayoutsState ->
             if (selectionState is SelectionState.Selecting) {
                 HomeState.Selecting(
                     multiSelectProvider.getSelectedIds().size,
                     areAllEnabled,
                 )
             } else {
-                HomeState.Normal(warnings, isPaused)
+                HomeState.Normal(
+                    warnings,
+                    isPaused,
+                    showNewLayoutButton = floatingLayoutsState is FloatingLayoutsState.Purchased,
+                )
             }
         }.stateIn(viewModelScope, SharingStarted.Eagerly, HomeState.Normal())
 
@@ -474,6 +480,7 @@ sealed class HomeState {
     data class Normal(
         val warnings: List<HomeWarningListItem> = emptyList(),
         val isPaused: Boolean = false,
+        val showNewLayoutButton: Boolean = false,
     ) : HomeState()
 }
 
