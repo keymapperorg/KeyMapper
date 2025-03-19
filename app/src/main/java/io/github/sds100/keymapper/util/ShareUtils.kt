@@ -22,7 +22,7 @@ object ShareUtils {
     fun sendZipFile(ctx: Context, file: Uri) {
         try {
             Intent(Intent.ACTION_SEND).apply {
-                type = FileUtils.MIME_TYPE_ZIP
+                type = FileUtils.MIME_TYPE_ALL
                 putExtra(Intent.EXTRA_STREAM, file)
                 ctx.startActivity(this)
             }

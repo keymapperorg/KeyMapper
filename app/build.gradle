@@ -238,6 +238,7 @@ dependencies {
     implementation 'androidx.compose.material3.adaptive:adaptive-android'
     implementation "androidx.compose.material3.adaptive:adaptive-navigation"
     implementation "com.google.accompanist:accompanist-drawablepainter:0.35.0-alpha"
+    implementation "androidx.activity:activity-compose:1.10.1"
     debugImplementation "androidx.compose.ui:ui-tooling"
     debug_releaseImplementation "androidx.compose.ui:ui-tooling"
 

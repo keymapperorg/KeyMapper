@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -21,15 +20,6 @@ class HomeFragment : Fragment() {
     private val homeViewModel: HomeViewModel by activityViewModels {
         Inject.homeViewModel(requireContext())
     }
-
-    private val restoreMappingsLauncher =
-        registerForActivityResult(ActivityResultContracts.GetContent()) {
-            it ?: return@registerForActivityResult
-
-            homeViewModel.onChoseRestoreFile(it.toString())
-        }
-
-    // TODO: quick start guide tap target
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

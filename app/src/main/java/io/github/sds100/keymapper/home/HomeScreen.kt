@@ -1,5 +1,7 @@
 package io.github.sds100.keymapper.home
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
@@ -103,6 +105,7 @@ import io.github.sds100.keymapper.floating.FloatingLayoutsScreen
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapListScreen
 import io.github.sds100.keymapper.mappings.keymaps.trigger.DpadTriggerSetupBottomSheet
 import io.github.sds100.keymapper.sorting.SortBottomSheet
+import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.util.ShareUtils
 import io.github.sds100.keymapper.util.ui.NavDestination
 import io.github.sds100.keymapper.util.ui.NavigateEvent
@@ -146,6 +149,13 @@ fun HomeScreen(
         )
     }
 
+    val importFileLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            uri ?: return@rememberLauncherForActivityResult
+
+            viewModel.onChooseImportFile(uri.toString())
+        }
+
     val scope = rememberCoroutineScope()
     val uriHandler = LocalUriHandler.current
     val helpUrl = stringResource(R.string.url_quick_start_guide)
@@ -153,31 +163,47 @@ fun HomeScreen(
     val snackbarState = remember { SnackbarHostState() }
     val ctx = LocalContext.current
 
-    viewModel.exportState.also { exportState ->
+    viewModel.importExportState.also { exportState ->
         when (exportState) {
-            is ExportState.Error -> {
+            is ImportExportState.Error -> {
                 snackbarState.currentSnackbarData?.dismiss()
                 val text = stringResource(R.string.home_export_error_snackbar, exportState.error)
                 scope.launch {
                     snackbarState.showSnackbar(text)
-                    viewModel.exportState = ExportState.Idle
+                    viewModel.importExportState = ImportExportState.Idle
                 }
             }
 
-            is ExportState.Finished -> {
-                snackbarState.currentSnackbarData?.dismiss()
-                ShareUtils.sendZipFile(ctx, exportState.uri.toUri())
-                viewModel.exportState = ExportState.Idle
-            }
-
-            ExportState.Exporting -> {
+            ImportExportState.Exporting -> {
                 val text = stringResource(R.string.home_exporting_snackbar)
                 scope.launch {
                     snackbarState.showSnackbar(text, duration = SnackbarDuration.Indefinite)
                 }
             }
 
-            ExportState.Idle -> {
+            ImportExportState.Importing -> {
+                val text = stringResource(R.string.home_importing_snackbar)
+                scope.launch {
+                    snackbarState.showSnackbar(text, duration = SnackbarDuration.Indefinite)
+                }
+            }
+
+            is ImportExportState.FinishedExport -> {
+                snackbarState.currentSnackbarData?.dismiss()
+                ShareUtils.sendZipFile(ctx, exportState.uri.toUri())
+                viewModel.importExportState = ImportExportState.Idle
+            }
+
+            is ImportExportState.FinishedImport -> {
+                snackbarState.currentSnackbarData?.dismiss()
+                val text = stringResource(R.string.home_importing_finished_snackbar)
+                scope.launch {
+                    snackbarState.showSnackbar(text, duration = SnackbarDuration.Short)
+                    viewModel.importExportState = ImportExportState.Idle
+                }
+            }
+
+            ImportExportState.Idle -> {
                 snackbarState.currentSnackbarData?.dismiss()
             }
         }
@@ -200,6 +226,7 @@ fun HomeScreen(
                 onSortClick = { viewModel.showSortBottomSheet = true },
                 onHelpClick = { uriHandler.openUri(helpUrl) },
                 onExportClick = viewModel::onExportClick,
+                onImportClick = { importFileLauncher.launch(FileUtils.MIME_TYPE_ALL) },
                 onTogglePausedClick = viewModel::onTogglePausedClick,
                 onFixWarningClick = viewModel::onFixWarningClick,
             )

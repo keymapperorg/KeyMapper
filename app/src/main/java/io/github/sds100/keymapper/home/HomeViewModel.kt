@@ -119,7 +119,7 @@ class HomeViewModel(
     private val _shareBackup = MutableSharedFlow<String>()
     val shareBackup = _shareBackup.asSharedFlow()
 
-    var exportState: ExportState by mutableStateOf(ExportState.Idle)
+    var importExportState: ImportExportState by mutableStateOf(ImportExportState.Idle)
 
     private val warnings: Flow<List<HomeWarningListItem>> = combine(
         showAlertsUseCase.isBatteryOptimised,
@@ -304,10 +304,6 @@ class HomeViewModel(
         }
     }
 
-    fun approvedQuickStartGuideTapTarget() {
-        onboarding.shownQuickStartGuideHint()
-    }
-
     fun onSelectAllClick() {
         keymapListViewModel.selectAll()
     }
@@ -325,7 +321,7 @@ class HomeViewModel(
         }
     }
 
-    fun onDuplicateSelectedKeymapsClick() {
+    fun onDuplicateSelectedKeyMapsClick() {
         val selectionState = multiSelectProvider.state.value
 
         if (selectionState !is SelectionState.Selecting) return
@@ -334,7 +330,7 @@ class HomeViewModel(
         listKeyMaps.duplicateKeyMap(*selectedIds.toTypedArray())
     }
 
-    fun backupSelectedKeyMaps(uri: String) {
+    fun exportSelectedKeyMaps(uri: String) {
         viewModelScope.launch {
             val selectionState = multiSelectProvider.state.first()
 
@@ -345,7 +341,7 @@ class HomeViewModel(
             launch {
                 val result = listKeyMaps.backupKeyMaps(*selectedIds.toTypedArray(), uri = uri)
 
-                onBackupResult(result)
+//                onBackupResult(result)
             }
 
             multiSelectProvider.stopSelecting()
@@ -400,44 +396,28 @@ class HomeViewModel(
 
     fun onExportClick() {
         viewModelScope.launch {
-            if (exportState != ExportState.Idle) {
+            if (importExportState != ImportExportState.Idle) {
                 return@launch
             }
 
-            exportState = ExportState.Exporting
+            importExportState = ImportExportState.Exporting
             backupRestore.backupEverything().onSuccess {
-                exportState = ExportState.Finished(it)
+                importExportState = ImportExportState.FinishedExport(it)
             }.onFailure {
-                exportState = ExportState.Error(it.getFullMessage(this@HomeViewModel))
+                importExportState = ImportExportState.Error(it.getFullMessage(this@HomeViewModel))
             }
         }
     }
 
-    fun onChoseRestoreFile(uri: String) {
+    fun onChooseImportFile(uri: String) {
         viewModelScope.launch {
-            when (val result = backupRestore.restoreMappings(uri)) {
-                is Success -> {
-                    showPopup(
-                        "successful_restore_result",
-                        PopupUi.SnackBar(getString(R.string.toast_restore_successful)),
-                    )
-                }
+            importExportState = ImportExportState.Importing
 
-                is Error -> showPopup(
-                    "restore_error",
-                    PopupUi.Ok(
-                        title = getString(R.string.toast_restore_failed),
-                        message = result.getFullMessage(this@HomeViewModel),
-                    ),
-                )
+            backupRestore.restoreKeyMaps(uri).onSuccess {
+                importExportState = ImportExportState.FinishedImport
+            }.onFailure {
+                importExportState = ImportExportState.Error(it.getFullMessage(this@HomeViewModel))
             }
-        }
-    }
-
-    private fun onBackupResult(result: Result<String>) {
-        exportState = when (result) {
-            is Success -> ExportState.Finished(result.value)
-            is Error -> ExportState.Error(result.getFullMessage(this@HomeViewModel))
         }
     }
 
@@ -468,11 +448,13 @@ class HomeViewModel(
     }
 }
 
-sealed class ExportState {
-    data object Idle : ExportState()
-    data object Exporting : ExportState()
-    data class Finished(val uri: String) : ExportState()
-    data class Error(val error: String) : ExportState()
+sealed class ImportExportState {
+    data object Idle : ImportExportState()
+    data object Exporting : ImportExportState()
+    data class FinishedExport(val uri: String) : ImportExportState()
+    data object Importing : ImportExportState()
+    data object FinishedImport : ImportExportState()
+    data class Error(val error: String) : ImportExportState()
 }
 
 sealed class HomeState {

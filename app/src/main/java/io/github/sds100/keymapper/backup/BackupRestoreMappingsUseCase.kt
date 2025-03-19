@@ -26,11 +26,11 @@ class BackupRestoreMappingsUseCaseImpl(
         }.then { Success(it.uri) }
     }
 
-    override suspend fun restoreMappings(uri: String): Result<*> = backupManager.restore(uri)
+    override suspend fun restoreKeyMaps(uri: String): Result<*> = backupManager.restore(uri)
 }
 
 interface BackupRestoreMappingsUseCase {
     val onAutomaticBackupResult: Flow<Result<*>>
     suspend fun backupEverything(): Result<String>
-    suspend fun restoreMappings(uri: String): Result<*>
+    suspend fun restoreKeyMaps(uri: String): Result<*>
 }
