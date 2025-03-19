@@ -24,6 +24,7 @@ import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyEventDetectionSour
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsController
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsUseCase
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
+import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
 import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
@@ -296,6 +297,22 @@ abstract class BaseAccessibilityServiceController(
     open fun onConfigurationChanged(newConfig: Configuration) {
     }
 
+    /**
+     * Returns an MyKeyEvent which is either the same or more unique
+     */
+    private fun getUniqueEvent(event: MyKeyEvent): MyKeyEvent {
+        // Guard to ignore processing when not applicable
+        if (event.keyCode != KeyEvent.KEYCODE_UNKNOWN) return event
+
+        val eventProxy = event.copy(
+            // Fallback to scanCode when keyCode is unknown as it's typically more unique
+            // Add offset to go past possible keyCode values
+            keyCode = event.scanCode + InputEventUtils.KEYCODE_TO_SCANCODE_OFFSET,
+        )
+
+        return eventProxy
+    }
+
     fun onKeyEvent(
         event: MyKeyEvent,
         detectionSource: KeyEventDetectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
@@ -305,11 +322,14 @@ abstract class BaseAccessibilityServiceController(
         if (recordingTrigger) {
             if (event.action == KeyEvent.ACTION_DOWN) {
                 Timber.d("Recorded key ${KeyEvent.keyCodeToString(event.keyCode)}, $detailedLogInfo")
+
+                val uniqueEvent: MyKeyEvent = getUniqueEvent(event)
+
                 coroutineScope.launch {
                     outputEvents.emit(
                         ServiceEvent.RecordedTriggerKey(
-                            event.keyCode,
-                            event.device,
+                            uniqueEvent.keyCode,
+                            uniqueEvent.device,
                             detectionSource,
                         ),
                     )
@@ -327,16 +347,17 @@ abstract class BaseAccessibilityServiceController(
         } else {
             try {
                 var consume: Boolean
+                val uniqueEvent: MyKeyEvent = getUniqueEvent(event)
 
-                consume = keyMapController.onKeyEvent(event)
+                consume = keyMapController.onKeyEvent(uniqueEvent)
 
                 if (!consume) {
-                    consume = rerouteKeyEventsController.onKeyEvent(event)
+                    consume = rerouteKeyEventsController.onKeyEvent(uniqueEvent)
                 }
 
-                when (event.action) {
-                    KeyEvent.ACTION_DOWN -> Timber.d("Down ${KeyEvent.keyCodeToString(event.keyCode)} - consumed: $consume, $detailedLogInfo")
-                    KeyEvent.ACTION_UP -> Timber.d("Up ${KeyEvent.keyCodeToString(event.keyCode)} - consumed: $consume, $detailedLogInfo")
+                when (uniqueEvent.action) {
+                    KeyEvent.ACTION_DOWN -> Timber.d("Down ${KeyEvent.keyCodeToString(uniqueEvent.keyCode)} - consumed: $consume, $detailedLogInfo")
+                    KeyEvent.ACTION_UP -> Timber.d("Up ${KeyEvent.keyCodeToString(uniqueEvent.keyCode)} - consumed: $consume, $detailedLogInfo")
                 }
 
                 return consume
