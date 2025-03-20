@@ -437,17 +437,16 @@ private fun HomeScreen(
         val startPadding = innerPadding.calculateStartPadding(layoutDirection)
         val endPadding = innerPadding.calculateEndPadding(layoutDirection)
 
-        Box(
-            modifier = Modifier.padding(
-                top = innerPadding.calculateTopPadding(),
-                bottom = innerPadding.calculateBottomPadding(),
-                start = startPadding,
-                end = endPadding,
-            ),
-            contentAlignment = Alignment.BottomCenter,
-        ) {
+        Box(contentAlignment = Alignment.BottomCenter) {
             NavHost(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(
+                        top = innerPadding.calculateTopPadding(),
+                        bottom = innerPadding.calculateBottomPadding(),
+                        start = startPadding,
+                        end = endPadding,
+                    ),
                 contentAlignment = Alignment.TopCenter,
                 navController = navController,
                 startDestination = HomeDestination.KeyMaps.route,
@@ -911,7 +910,8 @@ private fun SelectionBottomSheet(
     Surface(
         modifier = modifier
             .widthIn(max = BottomSheetDefaults.SheetMaxWidth)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .systemBarsPadding(),
         shadowElevation = 5.dp,
         shape = BottomSheetDefaults.ExpandedShape,
         tonalElevation = BottomSheetDefaults.Elevation,
