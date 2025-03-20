@@ -263,15 +263,6 @@
                                     layout="@layout/list_item_about_item"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    bind:icon="@{@drawable/profile_pic_gl513}"
-                                    bind:subtitle="@{@string/about_team_gl513_role}"
-                                    bind:title="@{@string/about_team_gl513_name}"
-                                    bind:url="@{@string/about_team_gl513_url}" />
-
-                                <include
-                                    layout="@layout/list_item_about_item"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
                                     bind:icon="@{@drawable/profile_pic_kekero}"
                                     bind:subtitle="@{@string/about_team_kekero_role}"
                                     bind:title="@{@string/about_team_kekero_name}"

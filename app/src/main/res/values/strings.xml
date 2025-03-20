@@ -1142,12 +1142,8 @@
     <string name="about_team_sds100_url" translatable="false">https://github.com/sds100</string>
 
     <string name="about_team_jambl3r_name" translatable="false">Jack Ambler (jambl3r)</string>
-    <string name="about_team_jambl3r_role">Community moderator/support</string>
+    <string name="about_team_jambl3r_role">User Experience Designer</string>
     <string name="about_team_jambl3r_url" translatable="false">https://linkedin.com/in/jambl3r</string>
-
-    <string name="about_team_gl513_name" translatable="false">GL513</string>
-    <string name="about_team_gl513_role">Community moderator/support</string>
-    <string name="about_team_gl513_url" translatable="false">https://gl513.github.io/</string>
 
     <string name="about_team_kekero_name" translatable="false">Katie (kekero)</string>
     <string name="about_team_kekero_role">Translator (Polish)</string>
