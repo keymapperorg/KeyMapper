@@ -3,7 +3,7 @@
     <string name="slogan">Unleash your keys!</string>
 
     <string name="accessibility_service_explanation">Key Mapper requires the use of an accessibility service so that it can detect and change what your button presses do while you are outside of the app. Your key maps will only work once you have enabled the accessibility service. It must also be turned on to create a trigger and test actions.</string>
-    <string name="selection_count">%d selected</string>
+    <string name="selection_count"> selected</string>
     <string name="ime_service_label" translatable="false">Key Mapper Basic Input Method</string>
     <string name="enable">Enable</string>
     <string name="shrug" translatable="false">¯\\_(ツ)_/¯</string>
@@ -1296,6 +1296,7 @@
     <string name="home_app_bar_sort">Sort</string>
     <string name="home_app_bar_more">More</string>
     <string name="home_app_bar_help">Help</string>
+    <string name="home_app_bar_select_all">Select all</string>
     <string name="home_app_bar_cancel_selecting">Stop selecting</string>
     <string name="home_app_bar_status_paused">Paused</string>
     <plurals name="home_app_bar_status_warnings">

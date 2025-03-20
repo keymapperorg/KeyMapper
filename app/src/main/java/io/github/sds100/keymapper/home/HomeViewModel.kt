@@ -444,6 +444,10 @@ class HomeViewModel(
         _importExportState.value = ImportExportState.Idle
     }
 
+    fun onBackClick() {
+        multiSelectProvider.stopSelecting()
+    }
+
     @Suppress("UNCHECKED_CAST")
     class Factory(
         private val listKeyMaps: ListKeyMapsUseCase,

@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.home
 
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
@@ -61,6 +62,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
@@ -231,6 +233,7 @@ fun HomeScreen(
     HomeScreen(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         navController = navController,
+        homeState = homeState,
         snackBarState = snackbarState,
         navBarItems = navBarItems,
         topAppBar = {
@@ -245,6 +248,8 @@ fun HomeScreen(
                 onImportClick = { importFileLauncher.launch(FileUtils.MIME_TYPE_ALL) },
                 onTogglePausedClick = viewModel::onTogglePausedClick,
                 onFixWarningClick = viewModel::onFixWarningClick,
+                onBackClick = viewModel::onBackClick,
+                onSelectAllClick = viewModel::onSelectAllClick,
             )
         },
         keyMapsContent = {
@@ -306,6 +311,7 @@ fun HomeScreen(
 @Composable
 private fun HomeScreen(
     modifier: Modifier = Modifier,
+    homeState: HomeState,
     navController: NavHostController,
     snackBarState: SnackbarHostState = SnackbarHostState(),
     navBarItems: List<HomeNavBarItem>,
@@ -325,7 +331,7 @@ private fun HomeScreen(
         },
         floatingActionButton = floatingActionButton,
         bottomBar = {
-            if (navBarItems.size <= 1) {
+            if (navBarItems.size <= 1 || homeState is HomeState.Selecting) {
                 return@Scaffold
             }
 
@@ -432,6 +438,8 @@ private fun HomeAppBar(
     onFixWarningClick: (String) -> Unit = {},
     onExportClick: () -> Unit = {},
     onImportClick: () -> Unit = {},
+    onBackClick: () -> Unit = {},
+    onSelectAllClick: () -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
 ) {
     // This is taken from the AppBar color code.
@@ -443,7 +451,17 @@ private fun HomeAppBar(
                 if (overlappingFraction > 0.01f) 1f else 0f
             }
         }
-    val appBarColors = TopAppBarDefaults.topAppBarColors()
+    val appBarColors = if (homeState is HomeState.Selecting) {
+        TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            scrolledContainerColor = MaterialTheme.colorScheme.primaryContainer,
+            navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            actionIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        )
+    } else {
+        TopAppBarDefaults.centerAlignedTopAppBarColors()
+    }
 
     val appBarContainerColor by animateColorAsState(
         targetValue = lerp(
@@ -456,39 +474,32 @@ private fun HomeAppBar(
 
     var expandedDropdown by rememberSaveable { mutableStateOf(false) }
 
+    BackHandler(onBack = onBackClick)
+
     Column {
         CenterAlignedTopAppBar(
             scrollBehavior = scrollBehavior,
             title = {
-                AnimatedContent(
-                    homeState,
-                    transitionSpec = {
-                        selectedTextTransition(targetState, initialState)
-                    },
-                ) { homeState ->
-                    when (homeState) {
-                        is HomeState.Normal -> {
-                            AppBarStatus(
-                                homeState = homeState,
-                                onTogglePausedClick = onTogglePausedClick,
-                            )
-                        }
+                when (homeState) {
+                    is HomeState.Normal -> AppBarStatus(
+                        homeState = homeState,
+                        onTogglePausedClick = onTogglePausedClick,
+                    )
 
-                        is HomeState.Selecting -> {
-                            Text(stringResource(R.string.selection_count, homeState.selectionCount))
-                        }
-                    }
+                    is HomeState.Selecting -> SelectedText(selectionCount = homeState.selectionCount)
                 }
             },
             navigationIcon = {
-                IconButton(onClick = onSortClick) {
-                    AnimatedContent(homeState is HomeState.Selecting) { isSelecting ->
-                        if (isSelecting) {
+                AnimatedContent(homeState is HomeState.Selecting) { isSelecting ->
+                    if (isSelecting) {
+                        IconButton(onClick = onBackClick) {
                             Icon(
                                 Icons.AutoMirrored.Rounded.ArrowBack,
                                 contentDescription = stringResource(R.string.home_app_bar_cancel_selecting),
                             )
-                        } else {
+                        }
+                    } else {
+                        IconButton(onClick = onSortClick) {
                             Icon(
                                 Icons.AutoMirrored.Rounded.Sort,
                                 contentDescription = stringResource(R.string.home_app_bar_sort),
@@ -498,80 +509,101 @@ private fun HomeAppBar(
                 }
             },
             actions = {
-                IconButton(onClick = onHelpClick) {
-                    Icon(
-                        Icons.AutoMirrored.Rounded.HelpOutline,
-                        contentDescription = stringResource(R.string.home_app_bar_help),
-                    )
-                }
+                AnimatedContent(homeState is HomeState.Selecting) { isSelecting ->
+                    if (isSelecting) {
+                        OutlinedButton(
+                            modifier = Modifier.padding(horizontal = 8.dp),
+                            onClick = onSelectAllClick,
+                        ) {
+                            Text(stringResource(R.string.home_app_bar_select_all))
+                        }
+                    } else {
+                        Row {
+                            IconButton(onClick = onHelpClick) {
+                                Icon(
+                                    Icons.AutoMirrored.Rounded.HelpOutline,
+                                    contentDescription = stringResource(R.string.home_app_bar_help),
+                                )
+                            }
 
-                IconButton(onClick = { expandedDropdown = true }) {
-                    Icon(
-                        Icons.Rounded.MoreVert,
-                        contentDescription = stringResource(R.string.home_app_bar_more),
-                    )
-                }
+                            IconButton(onClick = { expandedDropdown = true }) {
+                                Icon(
+                                    Icons.Rounded.MoreVert,
+                                    contentDescription = stringResource(R.string.home_app_bar_more),
+                                )
+                            }
 
-                HomeDropdownMenu(
-                    expanded = expandedDropdown,
-                    onSettingsClick = {
-                        expandedDropdown = false
-                        onSettingsClick()
-                    },
-                    onAboutClick = {
-                        expandedDropdown = false
-                        onAboutClick()
-                    },
-                    onExportClick = {
-                        expandedDropdown = false
-                        onExportClick()
-                    },
-                    onImportClick = {
-                        expandedDropdown = false
-                        onImportClick()
-                    },
-                    onDismissRequest = { expandedDropdown = false },
-                )
+                            HomeDropdownMenu(
+                                expanded = expandedDropdown,
+                                onSettingsClick = {
+                                    expandedDropdown = false
+                                    onSettingsClick()
+                                },
+                                onAboutClick = {
+                                    expandedDropdown = false
+                                    onAboutClick()
+                                },
+                                onExportClick = {
+                                    expandedDropdown = false
+                                    onExportClick()
+                                },
+                                onImportClick = {
+                                    expandedDropdown = false
+                                    onImportClick()
+                                },
+                                onDismissRequest = { expandedDropdown = false },
+                            )
+                        }
+                    }
+                }
             },
             colors = appBarColors,
         )
-        if (homeState is HomeState.Normal) {
-            // TODO handle the case that no app can be found for picking a file
-            AnimatedVisibility(homeState.warnings.isNotEmpty()) {
-                Surface(color = appBarContainerColor) {
-                    WarningList(
-                        modifier = Modifier.padding(bottom = 8.dp),
-                        warnings = homeState.warnings,
-                        onFixClick = onFixWarningClick,
-                    )
-                }
+        AnimatedVisibility(homeState is HomeState.Normal && homeState.warnings.isNotEmpty()) {
+            Surface(color = appBarContainerColor) {
+                WarningList(
+                    modifier = Modifier.padding(bottom = 8.dp),
+                    warnings = (homeState as? HomeState.Normal)?.warnings ?: emptyList(),
+                    onFixClick = onFixWarningClick,
+                )
             }
         }
     }
 }
 
+@Composable
+private fun SelectedText(modifier: Modifier = Modifier, selectionCount: Int) {
+    Row {
+        AnimatedContent(
+            selectionCount,
+            transitionSpec = {
+                selectedTextTransition(
+                    targetState,
+                    initialState,
+                )
+            },
+        ) { selectionCount ->
+            Text(selectionCount.toString())
+        }
+
+        Spacer(Modifier.width(4.dp))
+
+        Text(stringResource(R.string.selection_count))
+    }
+}
+
 private fun selectedTextTransition(
-    targetState: HomeState,
-    initialState: HomeState,
+    targetState: Int,
+    initialState: Int,
 ): ContentTransform {
-    val prevCount = when (initialState) {
-        is HomeState.Normal -> 0
-        is HomeState.Selecting -> initialState.selectionCount
-    }
-
-    val count = when (targetState) {
-        is HomeState.Normal -> 0
-        is HomeState.Selecting -> targetState.selectionCount
-    }
-
     return slideInVertically { height ->
-        if (count > prevCount) {
+        if (targetState > initialState) {
             -height
         } else {
             height
         }
     } + fadeIn() togetherWith slideOutVertically { height ->
-        if (count > prevCount) {
+        if (targetState > initialState) {
             height
         } else {
             -height
@@ -813,6 +845,7 @@ private fun HomeStateRunningPreview() {
     KeyMapperTheme {
         HomeScreen(
             navController = rememberNavController(),
+            homeState = state,
             navBarItems = sampleNavBarItems(),
             topAppBar = { HomeAppBar(state) },
             keyMapsContent = {},
@@ -829,6 +862,7 @@ private fun HomeStatePausedPreview() {
     KeyMapperTheme {
         HomeScreen(
             navController = rememberNavController(),
+            homeState = state,
             navBarItems = sampleNavBarItems(),
             topAppBar = { HomeAppBar(state) },
             keyMapsContent = {},
@@ -857,6 +891,7 @@ private fun HomeStateWarningsPreview() {
     KeyMapperTheme {
         HomeScreen(
             navController = rememberNavController(),
+            homeState = state,
             navBarItems = sampleNavBarItems(),
             topAppBar = { HomeAppBar(state) },
             keyMapsContent = {},
@@ -885,6 +920,7 @@ private fun HomeStateWarningsDarkPreview() {
     KeyMapperTheme(darkTheme = true) {
         HomeScreen(
             navController = rememberNavController(),
+            homeState = state,
             navBarItems = sampleNavBarItems(),
             topAppBar = { HomeAppBar(state) },
             keyMapsContent = {},
@@ -904,6 +940,7 @@ private fun HomeStateSelectingPreview() {
     KeyMapperTheme {
         HomeScreen(
             navController = rememberNavController(),
+            homeState = state,
             navBarItems = sampleNavBarItems(),
             topAppBar = { HomeAppBar(state) },
             keyMapsContent = {},
