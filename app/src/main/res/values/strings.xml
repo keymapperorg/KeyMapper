@@ -1321,7 +1321,19 @@
     <string name="home_importing_dialog_append">Append</string>
     <string name="home_importing_dialog_replace">Replace</string>
     <string name="home_multi_select_duplicate">Duplicate</string>
+    <string name="home_multi_select_delete">Delete</string>
+    <string name="home_multi_select_export">Export</string>
+    <string name="home_enabled_key_maps_enabled">Enabled</string>
+    <string name="home_enabled_key_maps_disabled">Disabled</string>
+    <string name="home_enabled_key_maps_mixed">Mixed</string>
 
+    <plurals name="home_key_maps_delete_dialog_title">
+        <item quantity="one">Delete 1 key map</item>
+        <item quantity="other">Delete %d key maps</item>
+    </plurals>
+    <string name="home_key_maps_delete_dialog_text">Are you sure you want to delete these key maps?</string>
+    <string name="home_key_maps_delete_yes">Yes, delete</string>
+    <string name="home_key_maps_delete_cancel">Cancel</string>
     <!-- Trigger screen -->
     <string name="trigger_key_list_item_remove">Remove</string>
     <string name="trigger_key_list_item_edit">Edit</string>

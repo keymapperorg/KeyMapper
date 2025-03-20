@@ -18,9 +18,13 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -33,6 +37,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.HelpOutline
@@ -41,6 +46,7 @@ import androidx.compose.material.icons.outlined.BubbleChart
 import androidx.compose.material.icons.outlined.Gamepad
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ContentCopy
+import androidx.compose.material.icons.rounded.DeleteOutline
 import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.material.icons.rounded.Info
@@ -73,10 +79,12 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -234,6 +242,19 @@ fun HomeScreen(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
+    var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
+
+    if (showDeleteDialog) {
+        DeleteKeyMapsDialog(
+            keyMapCount = (homeState as? HomeState.Selecting)?.selectionCount ?: 0,
+            onDismissRequest = { showDeleteDialog = false },
+            onDeleteClick = {
+                viewModel.onDeleteSelectedKeyMapsClick()
+                showDeleteDialog = false
+            },
+        )
+    }
+
     HomeScreen(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         navController = navController,
@@ -309,6 +330,16 @@ fun HomeScreen(
                 )
             }
         },
+        selectionBottomSheet = { state ->
+            SelectionBottomSheet(
+                enabled = state.selectionCount > 0,
+                selectedKeyMapsEnabled = state.selectedKeyMapsEnabled,
+                onEnabledKeyMapsChange = viewModel::onEnabledKeyMapsChange,
+                onDuplicateClick = viewModel::onDuplicateSelectedKeyMapsClick,
+                onExportClick = viewModel::onExportSelectedKeyMaps,
+                onDeleteClick = { showDeleteDialog = true },
+            )
+        },
     )
 }
 
@@ -323,6 +354,7 @@ private fun HomeScreen(
     keyMapsContent: @Composable () -> Unit,
     floatingButtonsContent: @Composable () -> Unit,
     floatingActionButton: @Composable () -> Unit = {},
+    selectionBottomSheet: @Composable (state: HomeState.Selecting) -> Unit = {},
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
@@ -437,12 +469,9 @@ private fun HomeScreen(
                 enter = slideInVertically { it },
                 exit = slideOutVertically { it },
             ) {
-                @OptIn(ExperimentalMaterial3Api::class)
-                SelectionBottomSheet(
-                    modifier = Modifier
-                        .widthIn(max = BottomSheetDefaults.SheetMaxWidth)
-                        .fillMaxWidth(),
-                )
+                if (homeState is HomeState.Selecting) {
+                    selectionBottomSheet(homeState)
+                }
             }
         }
     }
@@ -831,21 +860,173 @@ private fun ImportDialog(
 }
 
 @Composable
-private fun SelectionBottomSheet(modifier: Modifier = Modifier) {
+private fun DeleteKeyMapsDialog(
+    modifier: Modifier = Modifier,
+    keyMapCount: Int,
+    onDismissRequest: () -> Unit,
+    onDeleteClick: () -> Unit,
+) {
+    AlertDialog(
+        modifier = modifier,
+        onDismissRequest = onDismissRequest,
+        title = {
+            Text(
+                pluralStringResource(
+                    R.plurals.home_key_maps_delete_dialog_title,
+                    keyMapCount,
+                    keyMapCount,
+                ),
+            )
+        },
+        text = {
+            Text(
+                stringResource(R.string.home_key_maps_delete_dialog_text, keyMapCount),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = onDeleteClick) {
+                Text(stringResource(R.string.home_key_maps_delete_yes))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text(stringResource(R.string.home_key_maps_delete_cancel))
+            }
+        },
+    )
+}
+
+@Composable
+private fun SelectionBottomSheet(
+    modifier: Modifier = Modifier,
+    enabled: Boolean,
+    selectedKeyMapsEnabled: SelectedKeyMapsEnabled,
+    onDuplicateClick: () -> Unit = {},
+    onDeleteClick: () -> Unit = {},
+    onExportClick: () -> Unit = {},
+    onEnabledKeyMapsChange: (Boolean) -> Unit = {},
+) {
     @OptIn(ExperimentalMaterial3Api::class)
     Surface(
-        modifier = modifier,
+        modifier = modifier
+            .widthIn(max = BottomSheetDefaults.SheetMaxWidth)
+            .fillMaxWidth(),
         shadowElevation = 5.dp,
         shape = BottomSheetDefaults.ExpandedShape,
         tonalElevation = BottomSheetDefaults.Elevation,
         color = BottomSheetDefaults.ContainerColor,
     ) {
-        Row(modifier = Modifier.padding(16.dp)) {
-            Column {
-                Icon(Icons.Rounded.ContentCopy, null)
-                Text(stringResource(R.string.home_multi_select_duplicate))
+        Row(
+            modifier = Modifier
+                .padding(16.dp)
+                .height(intrinsicSize = IntrinsicSize.Min),
+        ) {
+            Row(modifier = Modifier.horizontalScroll(state = rememberScrollState())) {
+                SelectionButton(
+                    text = stringResource(R.string.home_multi_select_duplicate),
+                    icon = Icons.Rounded.ContentCopy,
+                    enabled = enabled,
+                    onClick = onDuplicateClick,
+                )
+
+                SelectionButton(
+                    text = stringResource(R.string.home_multi_select_delete),
+                    icon = Icons.Rounded.DeleteOutline,
+                    enabled = enabled,
+                    onClick = onDeleteClick,
+                )
+
+                SelectionButton(
+                    text = stringResource(R.string.home_multi_select_export),
+                    icon = Icons.Rounded.IosShare,
+                    enabled = enabled,
+                    onClick = onExportClick,
+                )
             }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            VerticalDivider(modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp))
+
+            KeyMapsEnabledSwitch(
+                state = selectedKeyMapsEnabled,
+                enabled = enabled,
+                onCheckedChange = onEnabledKeyMapsChange,
+            )
         }
+    }
+}
+
+@Composable
+private fun SelectionButton(
+    modifier: Modifier = Modifier,
+    text: String,
+    icon: ImageVector,
+    enabled: Boolean,
+    onClick: () -> Unit,
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    Column(
+        modifier
+            .padding(4.dp)
+            .width(72.dp)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = onClick,
+                enabled = enabled,
+            ),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        IconButton(onClick = onClick, interactionSource = interactionSource, enabled = enabled) {
+            Icon(icon, text)
+        }
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelLarge,
+            color = if (enabled) {
+                MaterialTheme.colorScheme.onSurface
+            } else {
+                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+            },
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
+}
+
+@Composable
+private fun KeyMapsEnabledSwitch(
+    modifier: Modifier = Modifier,
+    state: SelectedKeyMapsEnabled,
+    enabled: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+) {
+    Column(
+        modifier.padding(4.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Switch(
+            checked = state == SelectedKeyMapsEnabled.ALL,
+            onCheckedChange = onCheckedChange,
+            enabled = enabled,
+        )
+        val text = when (state) {
+            SelectedKeyMapsEnabled.ALL -> stringResource(R.string.home_enabled_key_maps_enabled)
+            SelectedKeyMapsEnabled.NONE -> stringResource(R.string.home_enabled_key_maps_disabled)
+            SelectedKeyMapsEnabled.MIXED -> stringResource(R.string.home_enabled_key_maps_mixed)
+        }
+
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelLarge,
+            color = if (enabled) {
+                MaterialTheme.colorScheme.onSurface
+            } else {
+                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+            },
+        )
     }
 }
 
@@ -976,7 +1157,7 @@ private fun HomeStateWarningsDarkPreview() {
 private fun HomeStateSelectingPreview() {
     val state = HomeState.Selecting(
         selectionCount = 4,
-        selectedKeyMapsEnabled = true,
+        selectedKeyMapsEnabled = SelectedKeyMapsEnabled.MIXED,
     )
     KeyMapperTheme {
         HomeScreen(
@@ -986,6 +1167,38 @@ private fun HomeStateSelectingPreview() {
             topAppBar = { HomeAppBar(state) },
             keyMapsContent = {},
             floatingButtonsContent = {},
+            selectionBottomSheet = {
+                SelectionBottomSheet(
+                    enabled = true,
+                    selectedKeyMapsEnabled = SelectedKeyMapsEnabled.ALL,
+                )
+            },
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun HomeStateSelectingDisabledPreview() {
+    val state = HomeState.Selecting(
+        selectionCount = 4,
+        selectedKeyMapsEnabled = SelectedKeyMapsEnabled.MIXED,
+    )
+    KeyMapperTheme {
+        HomeScreen(
+            navController = rememberNavController(),
+            homeState = state,
+            navBarItems = sampleNavBarItems(),
+            topAppBar = { HomeAppBar(state) },
+            keyMapsContent = {},
+            floatingButtonsContent = {},
+            selectionBottomSheet = {
+                SelectionBottomSheet(
+                    enabled = false,
+                    selectedKeyMapsEnabled = SelectedKeyMapsEnabled.NONE,
+                )
+            },
         )
     }
 }

@@ -17,6 +17,7 @@ import io.github.sds100.keymapper.floating.FloatingLayoutsState
 import io.github.sds100.keymapper.floating.ListFloatingLayoutsUseCase
 import io.github.sds100.keymapper.floating.ListFloatingLayoutsViewModel
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
+import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapListViewModel
 import io.github.sds100.keymapper.mappings.keymaps.ListKeyMapsUseCase
 import io.github.sds100.keymapper.mappings.keymaps.trigger.SetupGuiKeyboardUseCase
@@ -26,6 +27,7 @@ import io.github.sds100.keymapper.sorting.SortViewModel
 import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.getFullMessage
 import io.github.sds100.keymapper.util.onFailure
@@ -52,6 +54,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -175,14 +178,36 @@ class HomeViewModel(
             multiSelectProvider.state,
             warnings,
             showAlertsUseCase.areKeyMapsPaused,
-            listKeyMaps.areAllEnabled,
+            listKeyMaps.keyMapList.filterIsInstance<State.Data<List<KeyMap>>>(),
             listFloatingLayoutsViewModel.state,
-        ) { selectionState, warnings, isPaused, areAllEnabled, floatingLayoutsState ->
+        ) { selectionState, warnings, isPaused, keyMaps, floatingLayoutsState ->
 
             if (selectionState is SelectionState.Selecting) {
+
+                var selectedKeyMapsEnabled: SelectedKeyMapsEnabled? = null
+
+                for (keyMap in keyMaps.data) {
+                    if (keyMap.uid in selectionState.selectedIds) {
+                        if (selectedKeyMapsEnabled == null) {
+                            if (keyMap.isEnabled) {
+                                selectedKeyMapsEnabled = SelectedKeyMapsEnabled.ALL
+                            } else {
+                                selectedKeyMapsEnabled = SelectedKeyMapsEnabled.NONE
+                            }
+                        } else {
+                            if ((keyMap.isEnabled && selectedKeyMapsEnabled == SelectedKeyMapsEnabled.NONE) ||
+                                (!keyMap.isEnabled && selectedKeyMapsEnabled == SelectedKeyMapsEnabled.ALL)
+                            ) {
+                                selectedKeyMapsEnabled = SelectedKeyMapsEnabled.MIXED
+                                break
+                            }
+                        }
+                    }
+                }
+
                 HomeState.Selecting(
                     multiSelectProvider.getSelectedIds().size,
-                    areAllEnabled,
+                    selectedKeyMapsEnabled ?: SelectedKeyMapsEnabled.NONE,
                 )
             } else {
                 HomeState.Normal(
@@ -311,7 +336,7 @@ class HomeViewModel(
         keymapListViewModel.selectAll()
     }
 
-    fun onSetKeyMapsEnabledClick(enabled: Boolean) {
+    fun onEnabledKeyMapsChange(enabled: Boolean) {
         val selectionState = multiSelectProvider.state.value
 
         if (selectionState !is SelectionState.Selecting) return
@@ -333,21 +358,30 @@ class HomeViewModel(
         listKeyMaps.duplicateKeyMap(*selectedIds.toTypedArray())
     }
 
-    fun exportSelectedKeyMaps(uri: String) {
+    fun onDeleteSelectedKeyMapsClick() {
+        val selectionState = multiSelectProvider.state.value
+
+        if (selectionState !is SelectionState.Selecting) return
+        val selectedIds = selectionState.selectedIds.toTypedArray()
+
+        listKeyMaps.deleteKeyMap(*selectedIds)
+        multiSelectProvider.deselect(*selectedIds)
+    }
+
+    fun onExportSelectedKeyMaps() {
+        val selectionState = multiSelectProvider.state.value
+
+        if (selectionState !is SelectionState.Selecting) return
+
         viewModelScope.launch {
-            val selectionState = multiSelectProvider.state.first()
-
-            if (selectionState !is SelectionState.Selecting) return@launch
-
             val selectedIds = selectionState.selectedIds
 
-            launch {
-                val result = listKeyMaps.backupKeyMaps(*selectedIds.toTypedArray(), uri = uri)
-
-//                onBackupResult(result)
+            listKeyMaps.backupKeyMaps(*selectedIds.toTypedArray()).onSuccess {
+                _importExportState.value = ImportExportState.FinishedExport(it)
+            }.onFailure {
+                _importExportState.value =
+                    ImportExportState.Error(it.getFullMessage(this@HomeViewModel))
             }
-
-            multiSelectProvider.stopSelecting()
         }
     }
 
@@ -487,12 +521,22 @@ sealed class ImportExportState {
 }
 
 sealed class HomeState {
-    data class Selecting(val selectionCount: Int, val selectedKeyMapsEnabled: Boolean) : HomeState()
+    data class Selecting(
+        val selectionCount: Int,
+        val selectedKeyMapsEnabled: SelectedKeyMapsEnabled,
+    ) : HomeState()
+
     data class Normal(
         val warnings: List<HomeWarningListItem> = emptyList(),
         val isPaused: Boolean = false,
         val showNewLayoutButton: Boolean = false,
     ) : HomeState()
+}
+
+enum class SelectedKeyMapsEnabled {
+    ALL,
+    NONE,
+    MIXED,
 }
 
 data class HomeWarningListItem(

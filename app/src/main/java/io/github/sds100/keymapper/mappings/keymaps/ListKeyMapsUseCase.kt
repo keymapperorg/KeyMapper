@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
 /**
@@ -58,10 +57,6 @@ class ListKeyMapsUseCaseImpl(
         }
     }
 
-    override val areAllEnabled: Flow<Boolean> = keyMapList.map { state ->
-        state.dataOrNull()?.all { it.isEnabled } == true
-    }
-
     override fun deleteKeyMap(vararg uid: String) {
         keyMapRepository.delete(*uid)
     }
@@ -78,7 +73,7 @@ class ListKeyMapsUseCaseImpl(
         keyMapRepository.duplicate(*uid)
     }
 
-    override suspend fun backupKeyMaps(vararg uid: String, uri: String): Result<String> {
+    override suspend fun backupKeyMaps(vararg uid: String): Result<String> {
         val fileName = BackupUtils.createBackupFileName()
 
         return fileAdapter.openDownloadsFile(fileName, FileUtils.MIME_TYPE_ZIP).then {
@@ -90,11 +85,10 @@ class ListKeyMapsUseCaseImpl(
 
 interface ListKeyMapsUseCase : DisplayKeyMapUseCase {
     val keyMapList: Flow<State<List<KeyMap>>>
-    val areAllEnabled: Flow<Boolean>
 
     fun deleteKeyMap(vararg uid: String)
     fun enableKeyMap(vararg uid: String)
     fun disableKeyMap(vararg uid: String)
     fun duplicateKeyMap(vararg uid: String)
-    suspend fun backupKeyMaps(vararg uid: String, uri: String): Result<String>
+    suspend fun backupKeyMaps(vararg uid: String): Result<String>
 }
