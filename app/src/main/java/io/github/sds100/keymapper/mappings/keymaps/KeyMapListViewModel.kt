@@ -35,6 +35,7 @@ import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -55,6 +56,10 @@ class KeyMapListViewModel(
 
     private val _state = MutableStateFlow<State<List<KeyMapListItemModel>>>(State.Loading)
     val state = _state.asStateFlow()
+
+    val isSelectable: StateFlow<Boolean> =
+        multiSelectProvider.state.map { it is SelectionState.Selecting }
+            .stateIn(coroutineScope, SharingStarted.Eagerly, false)
 
     val setupGuiKeyboardState: StateFlow<SetupGuiKeyboardState> = combine(
         setupGuiKeyboard.isInstalled,
@@ -177,6 +182,14 @@ class KeyMapListViewModel(
         if (multiSelectProvider.state.value is SelectionState.NotSelecting) {
             multiSelectProvider.startSelecting()
             multiSelectProvider.select(uid)
+        }
+    }
+
+    fun onKeyMapSelectedChanged(uid: String, isSelected: Boolean) {
+        if (isSelected) {
+            multiSelectProvider.select(uid)
+        } else {
+            multiSelectProvider.deselect(uid)
         }
     }
 

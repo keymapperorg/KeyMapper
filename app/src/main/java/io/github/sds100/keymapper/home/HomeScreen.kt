@@ -4,6 +4,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.animateColorAsState
@@ -30,6 +31,7 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.HelpOutline
 import androidx.compose.material.icons.automirrored.rounded.Sort
 import androidx.compose.material.icons.outlined.BubbleChart
@@ -458,19 +460,41 @@ private fun HomeAppBar(
         CenterAlignedTopAppBar(
             scrollBehavior = scrollBehavior,
             title = {
-                if (homeState is HomeState.Normal) {
-                    AppBarStatus(
-                        homeState = homeState,
-                        onTogglePausedClick = onTogglePausedClick,
-                    )
+                AnimatedContent(
+                    homeState,
+                    transitionSpec = {
+                        selectedTextTransition(targetState, initialState)
+                    },
+                ) { homeState ->
+                    when (homeState) {
+                        is HomeState.Normal -> {
+                            AppBarStatus(
+                                homeState = homeState,
+                                onTogglePausedClick = onTogglePausedClick,
+                            )
+                        }
+
+                        is HomeState.Selecting -> {
+                            Text(stringResource(R.string.selection_count, homeState.selectionCount))
+                        }
+                    }
                 }
             },
             navigationIcon = {
                 IconButton(onClick = onSortClick) {
-                    Icon(
-                        Icons.AutoMirrored.Rounded.Sort,
-                        contentDescription = stringResource(R.string.home_app_bar_sort),
-                    )
+                    AnimatedContent(homeState is HomeState.Selecting) { isSelecting ->
+                        if (isSelecting) {
+                            Icon(
+                                Icons.AutoMirrored.Rounded.ArrowBack,
+                                contentDescription = stringResource(R.string.home_app_bar_cancel_selecting),
+                            )
+                        } else {
+                            Icon(
+                                Icons.AutoMirrored.Rounded.Sort,
+                                contentDescription = stringResource(R.string.home_app_bar_sort),
+                            )
+                        }
+                    }
                 }
             },
             actions = {
@@ -524,6 +548,35 @@ private fun HomeAppBar(
             }
         }
     }
+}
+
+private fun selectedTextTransition(
+    targetState: HomeState,
+    initialState: HomeState,
+): ContentTransform {
+    val prevCount = when (initialState) {
+        is HomeState.Normal -> 0
+        is HomeState.Selecting -> initialState.selectionCount
+    }
+
+    val count = when (targetState) {
+        is HomeState.Normal -> 0
+        is HomeState.Selecting -> targetState.selectionCount
+    }
+
+    return slideInVertically { height ->
+        if (count > prevCount) {
+            -height
+        } else {
+            height
+        }
+    } + fadeIn() togetherWith slideOutVertically { height ->
+        if (count > prevCount) {
+            height
+        } else {
+            -height
+        }
+    } + fadeOut()
 }
 
 @Composable

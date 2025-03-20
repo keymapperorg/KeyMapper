@@ -178,6 +178,7 @@ class HomeViewModel(
             listKeyMaps.areAllEnabled,
             listFloatingLayoutsViewModel.state,
         ) { selectionState, warnings, isPaused, areAllEnabled, floatingLayoutsState ->
+
             if (selectionState is SelectionState.Selecting) {
                 HomeState.Selecting(
                     multiSelectProvider.getSelectedIds().size,

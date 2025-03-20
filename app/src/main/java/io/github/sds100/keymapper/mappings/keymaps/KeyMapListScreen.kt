@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,7 +41,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
@@ -68,15 +71,16 @@ import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 @Composable
 fun KeyMapListScreen(modifier: Modifier = Modifier, viewModel: KeyMapListViewModel) {
     val listItems by viewModel.state.collectAsStateWithLifecycle()
+    val isSelectable by viewModel.isSelectable.collectAsStateWithLifecycle()
 
     KeyMapListScreen(
         modifier = modifier,
         listItems = listItems,
         footerText = stringResource(R.string.home_key_map_list_footer_text),
-        // TODO selection
-        isSelectable = false,
+        isSelectable = isSelectable,
         onClickKeyMap = viewModel::onKeyMapCardClick,
         onLongClickKeyMap = viewModel::onKeyMapCardLongClick,
+        onSelectedChange = viewModel::onKeyMapSelectedChanged,
         onFixClick = viewModel::onFixClick,
         onTriggerErrorClick = viewModel::onFixTriggerError,
     )
@@ -90,6 +94,7 @@ fun KeyMapListScreen(
     isSelectable: Boolean = false,
     onClickKeyMap: (String) -> Unit = {},
     onLongClickKeyMap: (String) -> Unit = {},
+    onSelectedChange: (String, Boolean) -> Unit = { _, _ -> },
     onFixClick: (Error) -> Unit = {},
     onTriggerErrorClick: (TriggerError) -> Unit = {},
 ) {
@@ -111,6 +116,8 @@ fun KeyMapListScreen(
                         footerText,
                         isSelectable,
                         onClickKeyMap,
+                        onLongClickKeyMap,
+                        onSelectedChange,
                         onFixClick,
                         onTriggerErrorClick,
                     )
@@ -149,9 +156,13 @@ private fun KeyMapList(
     footerText: String,
     isSelectable: Boolean,
     onClickKeyMap: (String) -> Unit,
+    onLongClickKeyMap: (String) -> Unit,
+    onSelectedChange: (String, Boolean) -> Unit,
     onFixClick: (Error) -> Unit,
     onTriggerErrorClick: (TriggerError) -> Unit,
 ) {
+    val haptics = LocalHapticFeedback.current
+
     LazyColumn(
         modifier = modifier,
         state = rememberLazyListState(),
@@ -161,11 +172,14 @@ private fun KeyMapList(
         items(listItems, key = { it.uid }) { model ->
             KeyMapListItem(
                 modifier = Modifier.fillMaxWidth(),
-                // TODO select key maps
                 isSelectable = isSelectable,
                 model = model,
                 onClickKeyMap = { onClickKeyMap(model.content.uid) },
-                onSelectedChange = { TODO() },
+                onLongClickKeyMap = {
+                    haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                    onLongClickKeyMap(model.content.uid)
+                },
+                onSelectedChange = { onSelectedChange(model.content.uid, it) },
                 onFixClick = onFixClick,
                 onTriggerErrorClick = onTriggerErrorClick,
             )
@@ -195,6 +209,7 @@ private fun KeyMapListItem(
     isSelectable: Boolean,
     model: KeyMapListItemModel,
     onClickKeyMap: () -> Unit,
+    onLongClickKeyMap: () -> Unit,
     onSelectedChange: (Boolean) -> Unit,
     onFixClick: (Error) -> Unit,
     onTriggerErrorClick: (TriggerError) -> Unit,
@@ -203,7 +218,12 @@ private fun KeyMapListItem(
         modifier = modifier,
         onClick = onClickKeyMap,
     ) {
-        Row {
+        Row(
+            modifier = Modifier.combinedClickable(
+                onClick = onClickKeyMap,
+                onLongClick = onLongClickKeyMap,
+            ),
+        ) {
             if (isSelectable) {
                 CompositionLocalProvider(
                     LocalMinimumInteractiveComponentSize provides 16.dp,

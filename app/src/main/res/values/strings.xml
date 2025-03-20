@@ -1296,6 +1296,7 @@
     <string name="home_app_bar_sort">Sort</string>
     <string name="home_app_bar_more">More</string>
     <string name="home_app_bar_help">Help</string>
+    <string name="home_app_bar_cancel_selecting">Stop selecting</string>
     <string name="home_app_bar_status_paused">Paused</string>
     <plurals name="home_app_bar_status_warnings">
         <item quantity="one">1 warning</item>
