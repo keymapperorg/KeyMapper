@@ -22,7 +22,9 @@ object ShareUtils {
     fun sendZipFile(ctx: Context, file: Uri) {
         try {
             Intent(Intent.ACTION_SEND).apply {
-                type = FileUtils.MIME_TYPE_ALL
+                // Use ZIP Mime type. Tested with ALL and a bunch of unrelated apps show like
+                // Google Maps.
+                type = FileUtils.MIME_TYPE_ZIP
                 putExtra(Intent.EXTRA_STREAM, file)
                 ctx.startActivity(this)
             }
