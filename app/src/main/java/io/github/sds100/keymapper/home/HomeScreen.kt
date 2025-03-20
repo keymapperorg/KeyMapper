@@ -19,6 +19,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -26,6 +27,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -38,6 +40,7 @@ import androidx.compose.material.icons.automirrored.rounded.Sort
 import androidx.compose.material.icons.outlined.BubbleChart
 import androidx.compose.material.icons.outlined.Gamepad
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.material.icons.rounded.Info
@@ -49,6 +52,7 @@ import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -401,26 +405,44 @@ private fun HomeScreen(
         val startPadding = innerPadding.calculateStartPadding(layoutDirection)
         val endPadding = innerPadding.calculateEndPadding(layoutDirection)
 
-        NavHost(
+        Box(
             modifier = Modifier.padding(
                 top = innerPadding.calculateTopPadding(),
                 bottom = innerPadding.calculateBottomPadding(),
                 start = startPadding,
                 end = endPadding,
             ),
-            contentAlignment = Alignment.TopCenter,
-            navController = navController,
-            startDestination = HomeDestination.KeyMaps.route,
-            // use no animations because otherwise the transition freezes
-            // when quickly navigating to another page while the transition is still happening.
-            enterTransition = { EnterTransition.None },
-            exitTransition = { ExitTransition.None },
+            contentAlignment = Alignment.BottomCenter,
         ) {
-            composable(HomeDestination.KeyMaps.route) {
-                keyMapsContent()
+            NavHost(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.TopCenter,
+                navController = navController,
+                startDestination = HomeDestination.KeyMaps.route,
+                // use no animations because otherwise the transition freezes
+                // when quickly navigating to another page while the transition is still happening.
+                enterTransition = { EnterTransition.None },
+                exitTransition = { ExitTransition.None },
+            ) {
+                composable(HomeDestination.KeyMaps.route) {
+                    keyMapsContent()
+                }
+                composable(HomeDestination.FloatingButtons.route) {
+                    floatingButtonsContent()
+                }
             }
-            composable(HomeDestination.FloatingButtons.route) {
-                floatingButtonsContent()
+
+            AnimatedVisibility(
+                visible = homeState is HomeState.Selecting,
+                enter = slideInVertically { it },
+                exit = slideOutVertically { it },
+            ) {
+                @OptIn(ExperimentalMaterial3Api::class)
+                SelectionBottomSheet(
+                    modifier = Modifier
+                        .widthIn(max = BottomSheetDefaults.SheetMaxWidth)
+                        .fillMaxWidth(),
+                )
             }
         }
     }
@@ -806,6 +828,25 @@ private fun ImportDialog(
             }
         },
     )
+}
+
+@Composable
+private fun SelectionBottomSheet(modifier: Modifier = Modifier) {
+    @OptIn(ExperimentalMaterial3Api::class)
+    Surface(
+        modifier = modifier,
+        shadowElevation = 5.dp,
+        shape = BottomSheetDefaults.ExpandedShape,
+        tonalElevation = BottomSheetDefaults.Elevation,
+        color = BottomSheetDefaults.ContainerColor,
+    ) {
+        Row(modifier = Modifier.padding(16.dp)) {
+            Column {
+                Icon(Icons.Rounded.ContentCopy, null)
+                Text(stringResource(R.string.home_multi_select_duplicate))
+            }
+        }
+    }
 }
 
 private fun sampleNavBarItems(): List<HomeNavBarItem> {

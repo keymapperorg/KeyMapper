@@ -1320,6 +1320,7 @@
     <string name="home_importing_dialog_cancel">Cancel</string>
     <string name="home_importing_dialog_append">Append</string>
     <string name="home_importing_dialog_replace">Replace</string>
+    <string name="home_multi_select_duplicate">Duplicate</string>
 
     <!-- Trigger screen -->
     <string name="trigger_key_list_item_remove">Remove</string>
