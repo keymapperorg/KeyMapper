@@ -228,7 +228,7 @@ dependencies {
     ksp "androidx.room:room-compiler:$room_version"
 
     // Compose
-    Dependency composeBom = platform('androidx.compose:compose-bom-beta:2025.02.00')
+    Dependency composeBom = platform('androidx.compose:compose-bom-beta:2025.03.00')
     implementation composeBom
     implementation 'androidx.compose.foundation:foundation'
     implementation "androidx.compose.ui:ui-android"
