@@ -3,10 +3,10 @@ package io.github.sds100.keymapper.system.files
 import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Context
-import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
 import com.anggrayudi.storage.file.toDocumentFile
 import io.github.sds100.keymapper.util.Error
@@ -41,7 +41,7 @@ class AndroidFileAdapter(context: Context) : FileAdapter {
     }
 
     override fun getFileFromUri(uri: String): IFile {
-        val documentFile = DocumentFile.fromSingleUri(ctx, Uri.parse(uri))!!
+        val documentFile = DocumentFile.fromSingleUri(ctx, uri.toUri())!!
 
         return DocumentFileWrapper(documentFile, ctx)
     }

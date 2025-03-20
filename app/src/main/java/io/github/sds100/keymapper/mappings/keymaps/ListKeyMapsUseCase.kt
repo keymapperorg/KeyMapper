@@ -83,7 +83,8 @@ class ListKeyMapsUseCaseImpl(
 
         return fileAdapter.openDownloadsFile(fileName, FileUtils.MIME_TYPE_ZIP).then {
             backupManager.backupKeyMaps(it, uid.asList())
-        }.then { Success(it.uri) }
+            Success(it.uri)
+        }
     }
 }
 

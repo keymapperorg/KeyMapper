@@ -873,6 +873,7 @@
     <string name="error_shizuku_permission_denied">Shizuku permission is denied!</string>
     <string name="error_shizuku_not_started">Shizuku is not started!</string>
     <string name="error_no_file_name">This file has no name!</string>
+    <string name="error_invalid_backup">Invalid file. Must be a zip exported from Key Mapper.</string>
     <string name="error_choose_bluetooth_devices_permission_denied">You must grant Key Mapper permission to see your paired Bluetooth devices.</string>
 
     <string name="error_access_fine_location_permission_denied">Denied permission to read fine location!</string>
@@ -1309,6 +1310,14 @@
     <string name="home_importing_finished_snackbar">Importing successful!</string>
     <string name="home_exporting_snackbar">Exporting…</string>
     <string name="home_export_error_snackbar">Failed: %s</string>
+    <plurals name="home_importing_dialog_title">
+        <item quantity="one">Importing 1 key map</item>
+        <item quantity="other">Importing %d key maps</item>
+    </plurals>
+    <string name="home_importing_dialog_text">Would you like to replace all your existing key maps or append them to the list?</string>
+    <string name="home_importing_dialog_cancel">Cancel</string>
+    <string name="home_importing_dialog_append">Append</string>
+    <string name="home_importing_dialog_replace">Replace</string>
 
     <!-- Trigger screen -->
     <string name="trigger_key_list_item_remove">Remove</string>

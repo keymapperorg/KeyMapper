@@ -21,12 +21,17 @@ class BackupRestoreMappingsUseCaseImpl(
     override suspend fun backupEverything(): Result<String> {
         val fileName = BackupUtils.createBackupFileName()
 
-        return fileAdapter.openDownloadsFile(fileName, FileUtils.MIME_TYPE_ZIP).then {
-            backupManager.backupEverything(it)
-        }.then { Success(it.uri) }
+        return fileAdapter.openDownloadsFile(fileName, FileUtils.MIME_TYPE_ZIP).then { file ->
+            backupManager.backupEverything(file)
+            Success(file.uri)
+        }
     }
 
-    override suspend fun restoreKeyMaps(uri: String): Result<*> = backupManager.restore(uri)
+    // TODO use proper replace type
+    override suspend fun restoreKeyMaps(uri: String): Result<*> {
+        val file = fileAdapter.getFileFromUri(uri)
+        return backupManager.restore(file, RestoreType.REPLACE)
+    }
 }
 
 interface BackupRestoreMappingsUseCase {

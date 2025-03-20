@@ -666,6 +666,15 @@ private fun WarningList(
     }
 }
 
+@Composable
+private fun ImportingDialog(
+    modifier: Modifier = Modifier,
+    onDismissRequest: () -> Unit,
+    onAddClick: () -> Unit,
+    onReplaceClick: () -> Unit,
+) {
+}
+
 private fun sampleNavBarItems(): List<HomeNavBarItem> {
     return listOf(
         HomeNavBarItem(

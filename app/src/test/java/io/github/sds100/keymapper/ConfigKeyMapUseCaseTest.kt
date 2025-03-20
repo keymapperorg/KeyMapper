@@ -20,6 +20,7 @@ import io.github.sds100.keymapper.util.dataOrNull
 import io.github.sds100.keymapper.util.singleKeyTrigger
 import io.github.sds100.keymapper.util.triggerKey
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.MatcherAssert.assertThat
@@ -39,12 +40,14 @@ import org.mockito.kotlin.mock
 class ConfigKeyMapUseCaseTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
+    private val testScope = TestScope(testDispatcher)
 
     private lateinit var useCase: ConfigKeyMapUseCaseController
 
     @Before
     fun init() {
         useCase = ConfigKeyMapUseCaseController(
+            coroutineScope = testScope,
             devicesAdapter = mock(),
             keyMapRepository = mock(),
             preferenceRepository = mock(),

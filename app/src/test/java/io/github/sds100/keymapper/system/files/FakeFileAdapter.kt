@@ -24,6 +24,10 @@ class FakeFileAdapter(
         throw Exception()
     }
 
+    override fun openDownloadsFile(fileName: String, mimeType: String): Result<IFile> {
+        throw Exception()
+    }
+
     override fun getPrivateFile(path: String): IFile {
         val file = File(privateFolder, path)
 
