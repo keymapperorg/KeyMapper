@@ -394,14 +394,14 @@ class BackupManagerImpl(
                     fileAdapter.extractZipFile(file, zipDestination)
                 }
             } else {
-                file.copyTo(zipDestination, DATA_JSON_FILE_NAME)
+                withContext(dispatchers.io()) {
+                    file.copyTo(zipDestination, DATA_JSON_FILE_NAME)
+                }
             }
 
             return Success(zipDestination)
         } catch (e: IOException) {
             return Error.UnknownIOError
-        } finally {
-            zipDestination.delete()
         }
     }
 
@@ -485,9 +485,7 @@ class BackupManagerImpl(
     }
 
     private suspend fun replaceKeyMapsInRepository(keyMaps: List<KeyMapEntity>) = withContext(dispatchers.default()) {
-        val keyMapUids = keyMaps.map { it.uid }
-        keyMapRepository.delete(*keyMapUids.toTypedArray())
-
+        keyMapRepository.deleteAll()
         keyMapRepository.insert(*keyMaps.toTypedArray())
     }
 

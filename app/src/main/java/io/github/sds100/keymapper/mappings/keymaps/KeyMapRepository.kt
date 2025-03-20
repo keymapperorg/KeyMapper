@@ -15,6 +15,7 @@ interface KeyMapRepository {
     fun update(vararg keyMap: KeyMapEntity)
     suspend fun get(uid: String): KeyMapEntity?
     fun delete(vararg uid: String)
+    suspend fun deleteAll()
 
     fun duplicate(vararg uid: String)
     fun enableById(vararg uid: String)

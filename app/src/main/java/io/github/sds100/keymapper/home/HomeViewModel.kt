@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.backup.BackupRestoreMappingsUseCase
+import io.github.sds100.keymapper.backup.RestoreType
 import io.github.sds100.keymapper.floating.FloatingLayoutsState
 import io.github.sds100.keymapper.floating.ListFloatingLayoutsUseCase
 import io.github.sds100.keymapper.floating.ListFloatingLayoutsViewModel
@@ -119,7 +120,8 @@ class HomeViewModel(
     private val _shareBackup = MutableSharedFlow<String>()
     val shareBackup = _shareBackup.asSharedFlow()
 
-    var importExportState: ImportExportState by mutableStateOf(ImportExportState.Idle)
+    private val _importExportState = MutableStateFlow<ImportExportState>(ImportExportState.Idle)
+    val importExportState: StateFlow<ImportExportState> = _importExportState.asStateFlow()
 
     private val warnings: Flow<List<HomeWarningListItem>> = combine(
         showAlertsUseCase.isBatteryOptimised,
@@ -396,29 +398,49 @@ class HomeViewModel(
 
     fun onExportClick() {
         viewModelScope.launch {
-            if (importExportState != ImportExportState.Idle) {
+            if (_importExportState.value != ImportExportState.Idle) {
                 return@launch
             }
 
-            importExportState = ImportExportState.Exporting
+            _importExportState.value = ImportExportState.Exporting
             backupRestore.backupEverything().onSuccess {
-                importExportState = ImportExportState.FinishedExport(it)
+                _importExportState.value = ImportExportState.FinishedExport(it)
             }.onFailure {
-                importExportState = ImportExportState.Error(it.getFullMessage(this@HomeViewModel))
+                _importExportState.value =
+                    ImportExportState.Error(it.getFullMessage(this@HomeViewModel))
             }
         }
     }
 
     fun onChooseImportFile(uri: String) {
         viewModelScope.launch {
-            importExportState = ImportExportState.Importing
-
-            backupRestore.restoreKeyMaps(uri).onSuccess {
-                importExportState = ImportExportState.FinishedImport
+            backupRestore.getKeyMapCountInBackup(uri).onSuccess {
+                _importExportState.value = ImportExportState.ConfirmImport(uri, it)
             }.onFailure {
-                importExportState = ImportExportState.Error(it.getFullMessage(this@HomeViewModel))
+                _importExportState.value =
+                    ImportExportState.Error(it.getFullMessage(this@HomeViewModel))
             }
         }
+    }
+
+    fun onConfirmImport(restoreType: RestoreType) {
+        val state = _importExportState.value as? ImportExportState.ConfirmImport
+        state ?: return
+
+        _importExportState.value = ImportExportState.Importing
+
+        viewModelScope.launch {
+            backupRestore.restoreKeyMaps(state.fileUri, restoreType).onSuccess {
+                _importExportState.value = ImportExportState.FinishedImport
+            }.onFailure {
+                _importExportState.value =
+                    ImportExportState.Error(it.getFullMessage(this@HomeViewModel))
+            }
+        }
+    }
+
+    fun setImportExportIdle() {
+        _importExportState.value = ImportExportState.Idle
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -452,6 +474,8 @@ sealed class ImportExportState {
     data object Idle : ImportExportState()
     data object Exporting : ImportExportState()
     data class FinishedExport(val uri: String) : ImportExportState()
+
+    data class ConfirmImport(val fileUri: String, val keyMapCount: Int) : ImportExportState()
     data object Importing : ImportExportState()
     data object FinishedImport : ImportExportState()
     data class Error(val error: String) : ImportExportState()

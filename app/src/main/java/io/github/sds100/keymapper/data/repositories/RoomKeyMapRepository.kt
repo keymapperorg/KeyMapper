@@ -42,6 +42,8 @@ class RoomKeyMapRepository(
     init {
         coroutineScope.launch {
             migrateFingerprintMaps()
+
+            requestBackup()
         }
     }
 
@@ -52,6 +54,12 @@ class RoomKeyMapRepository(
             }
 
             requestBackup()
+        }
+    }
+
+    override suspend fun deleteAll() {
+        withContext(dispatchers.io()) {
+            keyMapDao.deleteAll()
         }
     }
 

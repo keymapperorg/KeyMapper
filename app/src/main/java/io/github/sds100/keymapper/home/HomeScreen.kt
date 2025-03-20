@@ -43,6 +43,7 @@ import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.PauseCircleOutline
 import androidx.compose.material.icons.rounded.PlayCircleOutline
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ButtonDefaults
@@ -65,6 +66,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -99,6 +101,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.backup.RestoreType
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.compose.LocalCustomColorsPalette
 import io.github.sds100.keymapper.floating.FloatingLayoutsScreen
@@ -163,14 +166,15 @@ fun HomeScreen(
     val snackbarState = remember { SnackbarHostState() }
     val ctx = LocalContext.current
 
-    viewModel.importExportState.also { exportState ->
+    val importExportState by viewModel.importExportState.collectAsStateWithLifecycle()
+    importExportState.also { exportState ->
         when (exportState) {
             is ImportExportState.Error -> {
-                snackbarState.currentSnackbarData?.dismiss()
                 val text = stringResource(R.string.home_export_error_snackbar, exportState.error)
                 scope.launch {
-                    snackbarState.showSnackbar(text)
-                    viewModel.importExportState = ImportExportState.Idle
+                    snackbarState.currentSnackbarData?.dismiss()
+                    snackbarState.showSnackbar(text, duration = SnackbarDuration.Short)
+                    viewModel.setImportExportIdle()
                 }
             }
 
@@ -191,20 +195,30 @@ fun HomeScreen(
             is ImportExportState.FinishedExport -> {
                 snackbarState.currentSnackbarData?.dismiss()
                 ShareUtils.sendZipFile(ctx, exportState.uri.toUri())
-                viewModel.importExportState = ImportExportState.Idle
+                viewModel.setImportExportIdle()
             }
 
             is ImportExportState.FinishedImport -> {
-                snackbarState.currentSnackbarData?.dismiss()
                 val text = stringResource(R.string.home_importing_finished_snackbar)
                 scope.launch {
+                    snackbarState.currentSnackbarData?.dismiss()
                     snackbarState.showSnackbar(text, duration = SnackbarDuration.Short)
-                    viewModel.importExportState = ImportExportState.Idle
+                    viewModel.setImportExportIdle()
                 }
             }
 
             ImportExportState.Idle -> {
                 snackbarState.currentSnackbarData?.dismiss()
+            }
+
+            is ImportExportState.ConfirmImport -> {
+                snackbarState.currentSnackbarData?.dismiss()
+                ImportDialog(
+                    keyMapCount = exportState.keyMapCount,
+                    onDismissRequest = viewModel::setImportExportIdle,
+                    onAppendClick = { viewModel.onConfirmImport(RestoreType.APPEND) },
+                    onReplaceClick = { viewModel.onConfirmImport(RestoreType.REPLACE) },
+                )
             }
         }
     }
@@ -667,12 +681,46 @@ private fun WarningList(
 }
 
 @Composable
-private fun ImportingDialog(
+private fun ImportDialog(
     modifier: Modifier = Modifier,
+    keyMapCount: Int,
     onDismissRequest: () -> Unit,
-    onAddClick: () -> Unit,
+    onAppendClick: () -> Unit,
     onReplaceClick: () -> Unit,
 ) {
+    AlertDialog(
+        modifier = modifier,
+        onDismissRequest = onDismissRequest,
+        title = {
+            Text(
+                pluralStringResource(
+                    R.plurals.home_importing_dialog_title,
+                    keyMapCount,
+                    keyMapCount,
+                ),
+            )
+        },
+        text = {
+            Text(
+                stringResource(R.string.home_importing_dialog_text, keyMapCount),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = onAppendClick) {
+                Text(stringResource(R.string.home_importing_dialog_append))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text(stringResource(R.string.home_importing_dialog_cancel))
+            }
+
+            TextButton(onClick = onReplaceClick) {
+                Text(stringResource(R.string.home_importing_dialog_replace))
+            }
+        },
+    )
 }
 
 private fun sampleNavBarItems(): List<HomeNavBarItem> {
@@ -689,6 +737,19 @@ private fun sampleNavBarItems(): List<HomeNavBarItem> {
             badge = "NEW!",
         ),
     )
+}
+
+@Preview
+@Composable
+private fun ImportDialogPreview() {
+    KeyMapperTheme {
+        ImportDialog(
+            keyMapCount = 3,
+            onDismissRequest = {},
+            onAppendClick = {},
+            onReplaceClick = {},
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
