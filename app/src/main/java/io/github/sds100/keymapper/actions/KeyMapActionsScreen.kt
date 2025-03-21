@@ -8,10 +8,18 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.FlashlightOn
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,14 +28,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.compose.draggable.DraggableItem
 import io.github.sds100.keymapper.compose.draggable.rememberDragDropState
 import io.github.sds100.keymapper.mappings.ShortcutModel
 import io.github.sds100.keymapper.mappings.ShortcutRow
+import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 
 @Composable
 fun KeyMapActionsScreen(modifier: Modifier = Modifier, viewModel: ConfigActionsViewModel) {
@@ -42,6 +54,7 @@ fun KeyMapActionsScreen(modifier: Modifier = Modifier, viewModel: ConfigActionsV
         onFixErrorClick = viewModel::onFixError,
         onClickShortcut = viewModel::onClickShortcut,
         onTestClick = viewModel::onTestClick,
+        onAddClick = viewModel::onAddActionClick,
     )
 }
 
@@ -49,6 +62,7 @@ fun KeyMapActionsScreen(modifier: Modifier = Modifier, viewModel: ConfigActionsV
 private fun KeyMapActionsScreen(
     modifier: Modifier = Modifier,
     state: State<ConfigActionsState>,
+    onAddClick: () -> Unit = {},
     onRemoveClick: (String) -> Unit = {},
     onEditClick: (String) -> Unit = {},
     onMoveAction: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> },
@@ -65,6 +79,7 @@ private fun KeyMapActionsScreen(
                         Column(
                             modifier = Modifier.weight(1f),
                             verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
                             Text(
                                 modifier = Modifier.padding(32.dp),
@@ -72,13 +87,22 @@ private fun KeyMapActionsScreen(
                                 textAlign = TextAlign.Center,
                             )
 
-                            ShortcutRow(
-                                modifier = Modifier
-                                    .padding(16.dp)
-                                    .fillMaxWidth(),
-                                shortcuts = state.data.shortcuts,
-                                onClick = onClickShortcut,
+                            Text(
+                                text = stringResource(R.string.recently_used_actions),
+                                style = MaterialTheme.typography.titleSmall,
                             )
+
+                            if (state.data.shortcuts.isNotEmpty()) {
+                                Spacer(Modifier.height(8.dp))
+
+                                ShortcutRow(
+                                    modifier = Modifier
+                                        .padding(horizontal = 16.dp)
+                                        .fillMaxWidth(),
+                                    shortcuts = state.data.shortcuts,
+                                    onClick = onClickShortcut,
+                                )
+                            }
                         }
                     }
 
@@ -98,6 +122,19 @@ private fun KeyMapActionsScreen(
                             onTestClick = onTestClick,
                         )
                     }
+                }
+
+                FilledTonalButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    onClick = onAddClick,
+                    colors = ButtonDefaults.filledTonalButtonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                    ),
+                ) {
+                    Text(stringResource(R.string.button_add_action))
                 }
             }
         }
@@ -129,7 +166,11 @@ private fun ActionList(
         lazyListState = lazyListState,
         onMove = onMove,
         // Do not drag and drop the row of shortcuts
-        ignoreLastItems = 1,
+        ignoreLastItems = if (shortcuts.isEmpty()) {
+            0
+        } else {
+            1
+        },
     )
 
     // Use dragContainer rather than .draggable() modifier because that causes
@@ -138,6 +179,7 @@ private fun ActionList(
         modifier = modifier,
         state = lazyListState,
         contentPadding = PaddingValues(vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         itemsIndexed(
             actionList,
@@ -164,12 +206,83 @@ private fun ActionList(
             }
         }
 
-        item(key = "shortcuts", contentType = "shortcuts") {
-            ShortcutRow(
-                modifier = Modifier.fillMaxWidth(),
-                shortcuts = shortcuts,
-                onClick = { onClickShortcut(it) },
-            )
+        if (shortcuts.isNotEmpty()) {
+            item(key = "shortcuts", contentType = "shortcuts") {
+                Column {
+                    Icon(
+                        imageVector = Icons.Rounded.Add,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier
+                            .size(24.dp)
+                            .align(Alignment.CenterHorizontally),
+                    )
+                    ShortcutRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        shortcuts = shortcuts,
+                        onClick = { onClickShortcut(it) },
+                    )
+                }
+            }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun EmptyPreview() {
+    KeyMapperTheme {
+        KeyMapActionsScreen(
+            state = State.Data(
+                ConfigActionsState.Empty(
+                    shortcuts = setOf(
+                        ShortcutModel(
+                            icon = ComposeIconInfo.Vector(Icons.Rounded.FlashlightOn),
+                            text = "Toggle Back flashlight",
+                            data = ActionData.Flashlight.Toggle(lens = CameraLens.BACK),
+                        ),
+                    ),
+                ),
+            ),
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun LoadedPreview() {
+    KeyMapperTheme {
+        KeyMapActionsScreen(
+            state = State.Data(
+                ConfigActionsState.Loaded(
+                    actions = listOf(
+                        ActionListItemModel(
+                            id = "1",
+                            icon = ComposeIconInfo.Vector(Icons.Rounded.FlashlightOn),
+                            text = "Toggle Back flashlight",
+                            secondaryText = "Repeat until released",
+                            error = "Flashlight not found",
+                            isErrorFixable = true,
+                        ),
+                        ActionListItemModel(
+                            id = "2",
+                            icon = ComposeIconInfo.Vector(Icons.Rounded.FlashlightOn),
+                            text = "Toggle Back flashlight",
+                            secondaryText = "Repeat until released",
+                            error = null,
+                            isErrorFixable = true,
+                        ),
+                    ),
+                    shortcuts = setOf(
+                        ShortcutModel(
+                            icon = ComposeIconInfo.Vector(Icons.Rounded.FlashlightOn),
+                            text = "Toggle Back flashlight",
+                            data = ActionData.Flashlight.Toggle(lens = CameraLens.BACK),
+                        ),
+                    ),
+                    isReorderingEnabled = true,
+                ),
+            ),
+        )
     }
 }

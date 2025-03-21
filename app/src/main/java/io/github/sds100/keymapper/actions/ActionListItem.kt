@@ -15,7 +15,6 @@ import androidx.compose.material.icons.outlined.ClearAll
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material.icons.rounded.DragHandle
-import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.material.icons.rounded.PlayCircleOutline
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
@@ -32,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
@@ -97,24 +97,19 @@ fun ActionListItem(
 
                 Spacer(Modifier.width(8.dp))
 
-                when {
-                    model.error != null -> Icon(
-                        modifier = Modifier.size(24.dp),
-                        imageVector = Icons.Rounded.ErrorOutline,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.error,
-                    )
+                if (model.error == null) {
+                    when {
+                        model.icon is ComposeIconInfo.Vector -> Icon(
+                            modifier = Modifier.size(24.dp),
+                            imageVector = model.icon.imageVector,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurface,
+                        )
 
-                    model.icon is ComposeIconInfo.Vector -> Icon(
-                        modifier = Modifier.size(24.dp),
-                        imageVector = model.icon.imageVector,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurface,
-                    )
-
-                    model.icon is ComposeIconInfo.Drawable -> {
-                        val painter = rememberDrawablePainter(model.icon.drawable)
-                        Icon(painter = painter, contentDescription = null)
+                        model.icon is ComposeIconInfo.Drawable -> {
+                            val painter = rememberDrawablePainter(model.icon.drawable)
+                            Icon(painter = painter, contentDescription = null)
+                        }
                     }
                 }
 
@@ -197,12 +192,16 @@ private fun TextColumn(
             text = primaryText,
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurface,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
         )
         if (secondaryText != null) {
             Text(
                 text = secondaryText,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
         }
         if (errorText != null) {

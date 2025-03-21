@@ -372,7 +372,11 @@ private fun TriggerList(
         lazyListState = lazyListState,
         onMove = onMove,
         // Do not drag and drop the row of shortcuts
-        ignoreLastItems = 1,
+        ignoreLastItems = if (shortcuts.isEmpty()) {
+            0
+        } else {
+            1
+        },
     )
 
     // Use dragContainer rather than .draggable() modifier because that causes
@@ -489,7 +493,7 @@ private fun TriggerModeRadioGroup(
 
 private val sampleList = listOf(
     TriggerKeyListItemModel.KeyCode(
-        id = "id",
+        id = "id1",
         keyName = "Volume Up",
         clickType = ClickType.SHORT_PRESS,
         extraInfo = "External Keyboard",
@@ -497,7 +501,7 @@ private val sampleList = listOf(
         error = null,
     ),
     TriggerKeyListItemModel.FloatingButton(
-        id = "id",
+        id = "id2",
         buttonName = "😎",
         layoutName = "Gaming",
         clickType = ClickType.DOUBLE_PRESS,
@@ -505,7 +509,7 @@ private val sampleList = listOf(
         error = null,
     ),
     TriggerKeyListItemModel.Assistant(
-        id = "id",
+        id = "id3",
         assistantType = AssistantTriggerType.DEVICE,
         clickType = ClickType.DOUBLE_PRESS,
         linkType = TriggerKeyLinkType.ARROW,

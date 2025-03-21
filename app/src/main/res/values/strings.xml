@@ -9,7 +9,6 @@
     <string name="shrug" translatable="false">¯\\_(ツ)_/¯</string>
     <string name="recyclerview_placeholder">¯\\_(ツ)_/¯\n\nNothing here!</string>
     <string name="triggers_recyclerview_placeholder">The first step is to add some buttons that will trigger the key map.\n\nFirst tap ‘Record trigger’ and then press the buttons that you want to remap. They will appear here.\n\nAlternatively, you can trigger a key map using an ‘advanced trigger’.\n\nYou can mix and match any keys!</string>
-    <string name="actions_recyclerview_placeholder">Add actions to set what the key map should do once triggered.</string>
     <string name="choose_action_warning_requires_root">Requires root</string>
     <string name="press_dot_dot_dot">Press…</string>
     <string name="no_actions">No actions</string>
@@ -1357,6 +1356,7 @@
     <string name="action_list_item_remove">Remove</string>
     <string name="action_list_item_edit">Edit</string>
     <string name="action_list_item_test">Test</string>
-
+    <string name="actions_recyclerview_placeholder">Add actions to set what the key map should do once triggered.</string>
+    <string name="recently_used_actions">Recently used actions</string>
 
 </resources>

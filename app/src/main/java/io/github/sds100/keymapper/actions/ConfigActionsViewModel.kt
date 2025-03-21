@@ -336,6 +336,10 @@ class ConfigActionsViewModel(
         errorSnapshot: ActionErrorSnapshot,
         showDeviceDescriptors: Boolean,
     ): ConfigActionsState {
+        if (keyMap.actionList.isEmpty()) {
+            return ConfigActionsState.Empty(shortcuts = shortcuts)
+        }
+
         val actions = createListItems(keyMap, showDeviceDescriptors, errorSnapshot)
 
         return ConfigActionsState.Loaded(

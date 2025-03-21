@@ -12,12 +12,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.outlined.Assistant
 import androidx.compose.material.icons.outlined.BubbleChart
 import androidx.compose.material.icons.outlined.Fingerprint
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.ArrowDownward
 import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material.icons.rounded.DragHandle
 import androidx.compose.material3.ButtonDefaults
@@ -228,9 +228,9 @@ fun TriggerKeyListItem(
 
             Icon(
                 imageVector = when (model.linkType) {
-                    TriggerKeyLinkType.ARROW -> Icons.Filled.ArrowDownward
-                    TriggerKeyLinkType.PLUS -> Icons.Filled.Add
-                    TriggerKeyLinkType.HIDDEN -> Icons.Filled.Add
+                    TriggerKeyLinkType.ARROW -> Icons.Rounded.ArrowDownward
+                    TriggerKeyLinkType.PLUS -> Icons.Rounded.Add
+                    TriggerKeyLinkType.HIDDEN -> Icons.Rounded.Add
                 },
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurface,
