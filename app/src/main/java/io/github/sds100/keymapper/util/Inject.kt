@@ -50,7 +50,6 @@ object Inject {
     fun chooseActionViewModel(ctx: Context): ChooseActionViewModel.Factory = ChooseActionViewModel.Factory(
         UseCases.createAction(ctx),
         ServiceLocator.resourceProvider(ctx),
-        UseCases.isActionSupported(ctx),
     )
 
     fun chooseAppViewModel(context: Context): ChooseAppViewModel.Factory = ChooseAppViewModel.Factory(

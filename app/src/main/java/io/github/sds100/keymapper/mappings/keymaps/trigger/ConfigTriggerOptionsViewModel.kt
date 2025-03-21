@@ -3,12 +3,12 @@ package io.github.sds100.keymapper.mappings.keymaps.trigger
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.actions.ActionUiHelper
 import io.github.sds100.keymapper.mappings.OptionMinimums
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapUseCase
 import io.github.sds100.keymapper.mappings.keymaps.CreateKeyMapShortcutUseCase
 import io.github.sds100.keymapper.mappings.keymaps.DisplayKeyMapUseCase
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
-import io.github.sds100.keymapper.mappings.keymaps.KeyMapActionUiHelperOld
 import io.github.sds100.keymapper.util.Defaultable
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.dataOrNull
@@ -60,7 +60,7 @@ class ConfigTriggerOptionsViewModel(
         private const val ID_SHOW_TOAST = "show_toast"
     }
 
-    private val actionUiHelperOld = KeyMapActionUiHelperOld(displayUseCase, resourceProvider)
+    private val actionUiHelper = ActionUiHelper(displayUseCase, resourceProvider)
     private val _state by lazy { MutableStateFlow(buildUiState(State.Loading)) }
     val state by lazy { _state.asStateFlow() }
 
@@ -104,12 +104,12 @@ class ConfigTriggerOptionsViewModel(
 
             if (mapping.actionList.size == 1) {
                 val action = mapping.actionList.first().data
-                defaultShortcutName = actionUiHelperOld.getTitle(
+                defaultShortcutName = actionUiHelper.getTitle(
                     action,
                     showDeviceDescriptors = false,
                 )
 
-                val iconInfo = actionUiHelperOld.getIcon(action)
+                val iconInfo = actionUiHelper.getDrawableIcon(action)
 
                 if (iconInfo == null) {
                     icon = null

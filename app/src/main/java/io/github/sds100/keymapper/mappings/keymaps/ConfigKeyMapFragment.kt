@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -20,11 +19,11 @@ import androidx.navigation.navGraphViewModels
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.actions.ConfigActionsFragment
 import io.github.sds100.keymapper.constraints.ChooseConstraintFragment
 import io.github.sds100.keymapper.constraints.ConfigConstraintsFragment
 import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.databinding.FragmentConfigKeyMapBinding
-import io.github.sds100.keymapper.floating.FloatingButtonConfigActivity
 import io.github.sds100.keymapper.mappings.keymaps.trigger.ConfigTriggerOptionsFragment
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerFragment
 import io.github.sds100.keymapper.system.url.UrlUtils
@@ -41,7 +40,6 @@ import io.github.sds100.keymapper.util.ui.TwoFragments
 import io.github.sds100.keymapper.util.ui.setupNavigation
 import io.github.sds100.keymapper.util.ui.showPopups
 import io.github.sds100.keymapper.util.viewLifecycleScope
-import kotlinx.coroutines.flow.collectLatest
 import splitties.alertdialog.appcompat.messageResource
 import splitties.alertdialog.appcompat.negativeButton
 import splitties.alertdialog.appcompat.positiveButton
@@ -71,7 +69,7 @@ class ConfigKeyMapFragment : Fragment() {
                 if (it == null) {
                     viewModel.loadNewKeymap(args.newFloatingButtonTriggerKey)
                 } else {
-                    viewModel.loadKeymap(it)
+                    viewModel.loadKeyMap(it)
                 }
             }
 
@@ -117,8 +115,6 @@ class ConfigKeyMapFragment : Fragment() {
             WindowInsetsCompat.CONSUMED
         }
 
-        viewModel.editActionViewModel.showPopups(this, binding)
-
         val fragmentInfoList = getFragmentInfoList()
 
         binding.viewPager.adapter = GenericFragmentPagerAdapter(
@@ -135,8 +131,6 @@ class ConfigKeyMapFragment : Fragment() {
 
             tab.text = tabTitleRes?.let { str(it) }
         }.attach()
-
-        viewModel.configActionsViewModel.showPopups(this, binding)
 
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             binding.invalidateHelpMenuItemVisibility(
@@ -186,26 +180,11 @@ class ConfigKeyMapFragment : Fragment() {
                 else -> false
             }
         }
-        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
-            viewModel.configActionsViewModel.openEditOptions.collectLatest { actionUid ->
-                if (findNavController().currentDestination?.id == R.id.config_key_map_fragment) {
-                    viewModel.editActionViewModel.setActionToConfigure(actionUid)
-                    findNavController().navigate(ConfigKeyMapFragmentDirections.actionConfigKeymapFragmentToActionOptionsFragment())
-                }
-            }
-        }
 
+        viewModel.configActionsViewModel.showPopups(this, binding)
         viewModel.configTriggerViewModel.showPopups(this, binding)
         viewModel.configTriggerViewModel.optionsViewModel.showPopups(this, binding)
-
-        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
-            viewModel.configTriggerViewModel.launchFloatingButtonConfigActivity.collectLatest { buttonUid ->
-                Intent(requireContext(), FloatingButtonConfigActivity::class.java).apply {
-                    putExtra(FloatingButtonConfigActivity.EXTRA_BUTTON_UID, buttonUid)
-                    startActivity(this)
-                }
-            }
-        }
+        viewModel.editActionViewModel.showPopups(this, binding)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -236,7 +215,7 @@ class ConfigKeyMapFragment : Fragment() {
             int(R.integer.fragment_id_trigger) -> it to TriggerFragment.Info()
             int(R.integer.fragment_id_trigger_options) -> it to ConfigTriggerOptionsFragment.Info()
             int(R.integer.fragment_id_constraint_list) -> it to ConfigKeyMapConstraintsFragment.Info()
-            int(R.integer.fragment_id_action_list) -> it to KeyMapConfigActionsFragment.Info()
+            int(R.integer.fragment_id_action_list) -> it to ConfigActionsFragment.Info()
 
             int(R.integer.fragment_id_constraints_and_options) ->
                 it to FragmentInfo(R.string.tab_constraints_and_more) {
@@ -285,7 +264,7 @@ class ConfigKeyMapFragment : Fragment() {
     class TriggerAndActionsFragment :
         TwoFragments(
             TriggerFragment.Info(),
-            KeyMapConfigActionsFragment.Info(),
+            ConfigActionsFragment.Info(),
         )
 
     class ConstraintsAndOptionsFragment :
@@ -298,7 +277,7 @@ class ConfigKeyMapFragment : Fragment() {
         FourFragments(
             TriggerFragment.Info(),
             ConfigTriggerOptionsFragment.Info(),
-            KeyMapConfigActionsFragment.Info(),
+            ConfigActionsFragment.Info(),
             ConfigKeyMapConstraintsFragment.Info(),
         )
 }

@@ -1,10 +1,10 @@
 package io.github.sds100.keymapper.mappings
 
+import io.github.sds100.keymapper.actions.Action
 import io.github.sds100.keymapper.actions.CreateActionUseCase
 import io.github.sds100.keymapper.actions.CreateActionViewModel
 import io.github.sds100.keymapper.actions.CreateActionViewModelImpl
 import io.github.sds100.keymapper.actions.isEditable
-import io.github.sds100.keymapper.mappings.keymaps.Action
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapUseCase
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.util.State

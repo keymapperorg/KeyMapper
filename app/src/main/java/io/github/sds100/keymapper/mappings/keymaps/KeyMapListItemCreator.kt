@@ -4,6 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowForward
 import androidx.compose.material.icons.outlined.Add
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.actions.ActionErrorSnapshot
 import io.github.sds100.keymapper.actions.ActionUiHelper
 import io.github.sds100.keymapper.constraints.ConstraintUiHelper
 import io.github.sds100.keymapper.mappings.ClickType
@@ -16,6 +17,7 @@ import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.mappings.keymaps.trigger.Trigger
+import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerErrorSnapshot
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
@@ -26,7 +28,6 @@ import io.github.sds100.keymapper.util.ui.compose.ComposeChipModel
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 
 class KeyMapListItemCreator(
-    private val actionUiHelper: ActionUiHelper,
     private val displayMapping: DisplayKeyMapUseCase,
     resourceProvider: ResourceProvider,
 ) : ResourceProvider by resourceProvider {
@@ -37,10 +38,13 @@ class KeyMapListItemCreator(
     private val voiceAssistantString by lazy { getString(R.string.assistant_voice_trigger_name) }
     private val deviceAssistantString by lazy { getString(R.string.assistant_device_trigger_name) }
 
-    suspend fun create(
+    private val actionUiHelper = ActionUiHelper(displayMapping, resourceProvider)
+
+    fun create(
         keyMap: KeyMap,
         showDeviceDescriptors: Boolean,
         triggerErrorSnapshot: TriggerErrorSnapshot,
+        actionErrorSnapshot: ActionErrorSnapshot,
     ): KeyMapListItemModel.Content {
         val triggerSeparator = when (keyMap.trigger.mode) {
             is TriggerMode.Parallel -> Icons.Outlined.Add
@@ -58,7 +62,7 @@ class KeyMapListItemCreator(
 
         val options = getTriggerOptionLabels(keyMap.trigger)
 
-        val actionChipList = getActionChipList(keyMap, showDeviceDescriptors)
+        val actionChipList = getActionChipList(keyMap, showDeviceDescriptors, actionErrorSnapshot)
         val constraintChipList = getConstraintChipList(keyMap)
 
         val extraInfo = buildString {
@@ -98,6 +102,7 @@ class KeyMapListItemCreator(
     private fun getActionChipList(
         keyMap: KeyMap,
         showDeviceDescriptors: Boolean,
+        errorSnapshot: ActionErrorSnapshot,
     ): List<ComposeChipModel> = sequence {
         val midDot = getString(R.string.middot)
 
@@ -136,8 +141,8 @@ class KeyMapListItemCreator(
                 }
             }
 
-            val icon: ComposeIconInfo? = actionUiHelper.getIcon(action.data)
-            val error: Error? = displayMapping.getError(action.data)
+            val icon: ComposeIconInfo = actionUiHelper.getIcon(action.data)
+            val error: Error? = errorSnapshot.getError(action.data)
 
             val chip = if (error == null) {
                 ComposeChipModel.Normal(id = action.uid, text = chipText, icon = icon)

@@ -817,7 +817,9 @@ class PerformActionsUseCaseImpl(
         result?.showErrorMessageOnFail()
     }
 
-    override fun getError(action: ActionData): Error? = getActionError.getError(action)
+    override fun getErrorSnapshot(): ActionErrorSnapshot {
+        return getActionError.actionErrorSnapshot.firstBlocking()
+    }
 
     override val defaultRepeatDelay: Flow<Long> =
         preferenceRepository.get(Keys.defaultRepeatDelay)
@@ -908,5 +910,5 @@ interface PerformActionsUseCase {
         keyMetaState: Int = 0,
     )
 
-    fun getError(action: ActionData): Error?
+    fun getErrorSnapshot(): ActionErrorSnapshot
 }

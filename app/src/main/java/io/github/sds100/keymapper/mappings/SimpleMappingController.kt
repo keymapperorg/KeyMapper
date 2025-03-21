@@ -1,11 +1,11 @@
 package io.github.sds100.keymapper.mappings
 
+import io.github.sds100.keymapper.actions.Action
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.constraints.isSatisfied
 import io.github.sds100.keymapper.data.PreferenceDefaults
-import io.github.sds100.keymapper.mappings.keymaps.Action
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCase
 import io.github.sds100.keymapper.util.InputEventType
@@ -69,10 +69,12 @@ abstract class SimpleMappingController(
         performActionJobs[keyMap.uid]?.cancel()
 
         performActionJobs[keyMap.uid] = coroutineScope.launch {
+            val errorSnapshot = performActionsUseCase.getErrorSnapshot()
+
             val repeatJobs = mutableListOf<RepeatJob>()
 
             keyMap.actionList.forEach { action ->
-                if (performActionsUseCase.getError(action.data) != null) return@forEach
+                if (errorSnapshot.getError(action.data) != null) return@forEach
 
                 if (action.repeat && action.repeatMode != RepeatMode.TRIGGER_RELEASED) {
                     var alreadyRepeating = false
@@ -162,7 +164,7 @@ abstract class SimpleMappingController(
 
             if (action.repeatLimit != null) {
                 continueRepeating =
-                    repeatCount < action.repeatLimit!! + 1 // this value is how many times it should REPEAT. The first repeat happens after the first time it is performed
+                    repeatCount < action.repeatLimit + 1 // this value is how many times it should REPEAT. The first repeat happens after the first time it is performed
             }
 
             delay(repeatRate)

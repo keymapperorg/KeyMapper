@@ -24,15 +24,12 @@ import io.github.sds100.keymapper.util.ui.ViewModelHelper
 import io.github.sds100.keymapper.util.ui.navigate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -50,9 +47,7 @@ class KeyMapListViewModel(
     ResourceProvider by resourceProvider,
     NavigationViewModel by NavigationViewModelImpl() {
 
-    private val actionUiHelper = KeyMapActionUiHelper(listKeyMaps, resourceProvider)
-    private val listItemCreator =
-        KeyMapListItemCreator(actionUiHelper, listKeyMaps, resourceProvider)
+    private val listItemCreator = KeyMapListItemCreator(listKeyMaps, resourceProvider)
 
     private val _state = MutableStateFlow<State<List<KeyMapListItemModel>>>(State.Loading)
     val state = _state.asStateFlow()
@@ -78,68 +73,34 @@ class KeyMapListViewModel(
         val listItemContentFlow =
             MutableStateFlow<State<List<KeyMapListItemModel.Content>>>(State.Loading)
 
-        val rebuildUiState = MutableSharedFlow<State<List<KeyMap>>>(replay = 1)
-
-        combine(
+        val keyMapListFlow = combine(
             listKeyMaps.keyMapList,
             sortKeyMaps.observeKeyMapsSorter(),
         ) { keyMapList, sorter ->
-            keyMapList
-                .mapData { list -> list.sortedWith(sorter) }
-                .also { rebuildUiState.emit(it) }
-        }.flowOn(Dispatchers.Default).launchIn(coroutineScope)
+            keyMapList.mapData { list -> list.sortedWith(sorter) }
+        }.flowOn(Dispatchers.Default)
 
         combine(
-            rebuildUiState,
+            keyMapListFlow,
             listKeyMaps.showDeviceDescriptors,
             listKeyMaps.triggerErrorSnapshot,
-        ) { keyMapListState, showDeviceDescriptors, triggerErrorSnapshot ->
+            listKeyMaps.actionErrorSnapshot,
+        ) { keyMapListState, showDeviceDescriptors, triggerErrorSnapshot, actionErrorSnapshot ->
             listItemContentFlow.value = State.Loading
 
             listItemContentFlow.value = keyMapListState.mapData { keyMapList ->
                 keyMapList.map { keyMap ->
-                    listItemCreator.create(keyMap, showDeviceDescriptors, triggerErrorSnapshot)
+                    listItemCreator.create(
+                        keyMap,
+                        showDeviceDescriptors,
+                        triggerErrorSnapshot,
+                        actionErrorSnapshot,
+                    )
                 }
             }
         }.flowOn(Dispatchers.Default).launchIn(coroutineScope)
 
-        // TODO use error snapshot for action and constraint errors too. Don't need
-        // any of this rebuildUiState stuff.
-        coroutineScope.launch {
-            listKeyMaps.invalidateActionErrors.drop(1).collectLatest {
-                /*
-                Don't get the key maps from the repository because there can be a race condition
-                when restoring key maps. This happens because when the activity is resumed the
-                key maps in the repository are being updated and this flow is collected
-                at the same time.
-                 */
-                rebuildUiState.emit(rebuildUiState.first())
-            }
-        }
-
-        coroutineScope.launch {
-            listKeyMaps.invalidateTriggerErrors.drop(1).collectLatest {
-                /*
-                Don't get the key maps from the repository because there can be a race condition
-                when restoring key maps. This happens because when the activity is resumed the
-                key maps in the repository are being updated and this flow is collected
-                at the same time.
-                 */
-                rebuildUiState.emit(rebuildUiState.first())
-            }
-        }
-
-        coroutineScope.launch {
-            listKeyMaps.invalidateConstraintErrors.drop(1).collectLatest {
-                /*
-                Don't get the key maps from the repository because there can be a race condition
-                when restoring key maps. This happens because when the activity is resumed the
-                key maps in the repository are being updated and this flow is collected
-                at the same time.
-                 */
-                rebuildUiState.emit(rebuildUiState.first())
-            }
-        }
+        // TODO use error snapshot for constraint errors too
 
         // The list item content should be separate from the selection state
         // because creating the content is an expensive operation and selection should be almost

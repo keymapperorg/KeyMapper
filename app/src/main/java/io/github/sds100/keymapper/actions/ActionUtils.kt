@@ -340,7 +340,7 @@ object ActionUtils {
     }
 
     @DrawableRes
-    fun getIcon(id: ActionId): Int? = when (id) {
+    fun getDrawableIcon(id: ActionId): Int? = when (id) {
         ActionId.TOGGLE_WIFI -> R.drawable.ic_outline_wifi_24
         ActionId.ENABLE_WIFI -> R.drawable.ic_outline_wifi_24
         ActionId.DISABLE_WIFI -> R.drawable.ic_outline_wifi_off_24
@@ -456,6 +456,7 @@ object ActionUtils {
 
         ActionId.TOGGLE_SPLIT_SCREEN -> Build.VERSION_CODES.N
         ActionId.GO_LAST_APP -> Build.VERSION_CODES.N
+        ActionId.TAP_SCREEN -> Build.VERSION_CODES.N
 
         ActionId.VOLUME_MUTE,
         ActionId.VOLUME_UNMUTE,

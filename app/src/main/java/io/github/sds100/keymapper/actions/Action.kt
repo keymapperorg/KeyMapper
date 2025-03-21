@@ -1,11 +1,9 @@
-package io.github.sds100.keymapper.mappings.keymaps
+package io.github.sds100.keymapper.actions
 
-import io.github.sds100.keymapper.actions.ActionData
-import io.github.sds100.keymapper.actions.ActionDataEntityMapper
-import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.EntityExtra
 import io.github.sds100.keymapper.data.entities.getData
+import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.util.success
 import io.github.sds100.keymapper.util.then
 import io.github.sds100.keymapper.util.valueOrNull

@@ -1,7 +1,9 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
 import android.view.KeyEvent
+import io.github.sds100.keymapper.actions.Action
 import io.github.sds100.keymapper.actions.ActionData
+import io.github.sds100.keymapper.actions.KeymapActionEntityMapper
 import io.github.sds100.keymapper.actions.canBeHeldDown
 import io.github.sds100.keymapper.constraints.ConstraintEntityMapper
 import io.github.sds100.keymapper.constraints.ConstraintModeEntityMapper

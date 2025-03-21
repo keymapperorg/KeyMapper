@@ -1,13 +1,9 @@
-package io.github.sds100.keymapper.mappings.keymaps
+package io.github.sds100.keymapper.mappings.keymaps.trigger
 
 import android.os.Build
 import android.view.KeyEvent
-import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerKey
-import io.github.sds100.keymapper.mappings.keymaps.trigger.FloatingButtonKey
-import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
-import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyEventDetectionSource
-import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerError
-import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKey
+import io.github.sds100.keymapper.mappings.keymaps.KeyMap
+import io.github.sds100.keymapper.mappings.keymaps.requiresImeKeyEventForwardingInPhoneCall
 import io.github.sds100.keymapper.purchasing.ProductId
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 
@@ -28,6 +24,7 @@ data class TriggerErrorSnapshot(
             KeyEvent.KEYCODE_VOLUME_UP,
         )
     }
+
     fun getTriggerError(keyMap: KeyMap, key: TriggerKey): TriggerError? {
         if (key is AssistantTriggerKey && !purchases.contains(ProductId.ASSISTANT_TRIGGER)) {
             return TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED
@@ -68,7 +65,6 @@ data class TriggerErrorSnapshot(
 
         // TODO if button deleted go through the process of adding the button again.
         // TODO do not show "button deleted" twice in trigger key list item
-        // TODO do not show the settings button on trigger key list item
 
         return null
     }

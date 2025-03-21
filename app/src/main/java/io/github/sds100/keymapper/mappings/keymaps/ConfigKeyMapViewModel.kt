@@ -53,7 +53,6 @@ class ConfigKeyMapViewModel(
         displayMapping,
         testAction,
         config,
-        KeyMapActionUiHelperOld(displayMapping, resourceProvider),
         onboarding,
         resourceProvider,
     )
@@ -101,7 +100,7 @@ class ConfigKeyMapViewModel(
         }
     }
 
-    fun loadKeymap(uid: String) {
+    fun loadKeyMap(uid: String) {
         viewModelScope.launch {
             config.loadKeyMap(uid)
         }

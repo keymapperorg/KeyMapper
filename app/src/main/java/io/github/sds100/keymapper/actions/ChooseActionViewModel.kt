@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.system.permissions.Permission
+import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.containsQuery
 import io.github.sds100.keymapper.util.getFullMessage
@@ -34,7 +35,6 @@ import kotlinx.coroutines.launch
 class ChooseActionViewModel(
     private val useCase: CreateActionUseCase,
     resourceProvider: ResourceProvider,
-    private val isActionSupported: IsActionSupportedUseCase,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
     CreateActionViewModel by CreateActionViewModelImpl(useCase, resourceProvider) {
@@ -102,7 +102,7 @@ class ChooseActionViewModel(
         val groupedActionIds = mutableMapOf<ActionCategory, List<ActionId>>()
 
         CATEGORY_ORDER.forEach { category ->
-            val actionIds = ActionId.values().filter { ActionUtils.getCategory(it) == category }
+            val actionIds = ActionId.entries.filter { ActionUtils.getCategory(it) == category }
             groupedActionIds[category] = actionIds
         }
 
@@ -118,12 +118,14 @@ class ChooseActionViewModel(
         val childrenListItems = mutableListOf<DefaultSimpleListItem>()
 
         for (actionId in actionIds) {
-            val error = isActionSupported.invoke(actionId)
+            // TODO
+//            val error = isActionSupported.invoke(actionId)
+            val error: Error? = null
             val isSupported = error == null
 
             val title = getString(ActionUtils.getTitle(actionId))
 
-            val icon = ActionUtils.getIcon(actionId)?.let {
+            val icon = ActionUtils.getDrawableIcon(actionId)?.let {
                 IconInfo(
                     getDrawable(it),
                     TintType.OnSurface,
@@ -224,10 +226,8 @@ class ChooseActionViewModel(
     class Factory(
         private val useCase: CreateActionUseCase,
         private val resourceProvider: ResourceProvider,
-        private val isActionSupported: IsActionSupportedUseCase,
     ) : ViewModelProvider.NewInstanceFactory() {
 
-        override fun <T : ViewModel> create(modelClass: Class<T>): T =
-            ChooseActionViewModel(useCase, resourceProvider, isActionSupported) as T
+        override fun <T : ViewModel> create(modelClass: Class<T>): T = ChooseActionViewModel(useCase, resourceProvider) as T
     }
 }

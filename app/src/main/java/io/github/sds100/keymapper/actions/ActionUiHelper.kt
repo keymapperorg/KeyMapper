@@ -1,10 +1,11 @@
 package io.github.sds100.keymapper.actions
 
 import android.view.KeyEvent
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Android
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
 import io.github.sds100.keymapper.mappings.DisplayActionUseCase
-import io.github.sds100.keymapper.mappings.keymaps.Action
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.system.camera.CameraLensUtils
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
@@ -14,25 +15,20 @@ import io.github.sds100.keymapper.system.intents.IntentTarget
 import io.github.sds100.keymapper.system.volume.DndModeUtils
 import io.github.sds100.keymapper.system.volume.RingerModeUtils
 import io.github.sds100.keymapper.system.volume.VolumeStreamUtils
-import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.handle
 import io.github.sds100.keymapper.util.ui.IconInfo
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.TintType
+import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 import splitties.bitflags.hasFlag
 
-/**
- * Created by sds100 on 18/03/2021.
- */
-
-abstract class BaseActionUiHelperOld(
+class ActionUiHelper(
     displayActionUseCase: DisplayActionUseCase,
     resourceProvider: ResourceProvider,
-) : ActionUiHelperOld,
-    ResourceProvider by resourceProvider,
+) : ResourceProvider by resourceProvider,
     DisplayActionUseCase by displayActionUseCase {
 
-    override fun getTitle(action: ActionData, showDeviceDescriptors: Boolean): String = when (action) {
+    fun getTitle(action: ActionData, showDeviceDescriptors: Boolean): String = when (action) {
         is ActionData.App ->
             getAppName(action.packageName).handle(
                 onSuccess = { getString(R.string.description_open_app, it) },
@@ -460,7 +456,28 @@ abstract class BaseActionUiHelperOld(
         ActionData.DeviceControls -> getString(R.string.action_device_controls)
     }
 
-    override fun getIcon(action: ActionData): IconInfo? = when (action) {
+    fun getIcon(action: ActionData): ComposeIconInfo = when (action) {
+        is ActionData.App ->
+            getAppIcon(action.packageName).handle(
+                onSuccess = { ComposeIconInfo.Drawable(it) },
+                onError = { ComposeIconInfo.Vector(Icons.Outlined.Android) },
+            )
+
+        is ActionData.AppShortcut -> {
+            if (action.packageName.isNullOrBlank()) {
+                ComposeIconInfo.Vector(Icons.Outlined.Android)
+            } else {
+                getAppIcon(action.packageName).handle(
+                    onSuccess = { ComposeIconInfo.Drawable(it) },
+                    onError = { ComposeIconInfo.Vector(Icons.Outlined.Android) },
+                )
+            }
+        }
+
+        else -> ComposeIconInfo.Vector(ActionUtils.getComposeIcon(action.id))
+    }
+
+    fun getDrawableIcon(action: ActionData): IconInfo? = when (action) {
         is ActionData.InputKeyEvent -> null
 
         is ActionData.App ->
@@ -500,18 +517,80 @@ abstract class BaseActionUiHelperOld(
             TintType.OnSurface,
         )
 
-        else -> ActionUtils.getIcon(action.id)?.let { iconRes ->
+        else -> ActionUtils.getDrawableIcon(action.id)?.let { iconRes ->
             IconInfo(
                 getDrawable(iconRes),
                 TintType.OnSurface,
             )
         }
     }
-}
 
-interface ActionUiHelperOld {
-    fun getTitle(action: ActionData, showDeviceDescriptors: Boolean): String
-    fun getOptionLabels(mapping: KeyMap, action: Action): List<String>
-    fun getIcon(action: ActionData): IconInfo?
-    fun getError(action: ActionData): Error?
+    fun getOptionLabels(keyMap: KeyMap, action: Action) = buildList {
+        if (keyMap.isRepeatingActionsAllowed() && action.repeat) {
+            val repeatDescription = buildString {
+                append(getString(R.string.flag_repeat_build_description_start))
+
+                val repeatLimit = when {
+                    action.repeatLimit != null -> action.repeatLimit
+                    action.repeatMode == RepeatMode.LIMIT_REACHED -> 1 // and is null
+                    else -> null
+                }
+
+                if (repeatLimit != null) {
+                    append(" ")
+                    append(getString(R.string.flag_repeat_build_description_limit, repeatLimit))
+                }
+
+                if (action.repeatRate != null) {
+                    append(" ")
+                    append(
+                        getString(
+                            R.string.flag_repeat_build_description_repeat_rate,
+                            action.repeatRate,
+                        ),
+                    )
+                }
+
+                if (action.repeatDelay != null) {
+                    append(" ")
+                    append(
+                        getString(
+                            R.string.flag_repeat_build_description_repeat_delay,
+                            action.repeatDelay,
+                        ),
+                    )
+                }
+
+                append(" ")
+
+                when (action.repeatMode) {
+                    RepeatMode.TRIGGER_RELEASED -> {
+                        append(getString(R.string.flag_repeat_build_description_until_released))
+                    }
+
+                    RepeatMode.TRIGGER_PRESSED_AGAIN -> {
+                        append(getString(R.string.flag_repeat_build_description_until_pressed_again))
+                    }
+
+                    else -> Unit
+                }
+            }
+
+            add(repeatDescription)
+        }
+
+        if (keyMap.isHoldingDownActionAllowed(action) &&
+            action.holdDown &&
+            !action.stopHoldDownWhenTriggerPressedAgain
+        ) {
+            add(getString(R.string.flag_hold_down))
+        }
+
+        if (keyMap.isHoldingDownActionAllowed(action) &&
+            action.holdDown &&
+            action.stopHoldDownWhenTriggerPressedAgain
+        ) {
+            add(getString(R.string.flag_hold_down_until_pressed_again))
+        }
+    }
 }

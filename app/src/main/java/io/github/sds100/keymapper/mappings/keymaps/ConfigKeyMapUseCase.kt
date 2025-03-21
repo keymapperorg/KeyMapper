@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
+import io.github.sds100.keymapper.actions.Action
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.constraints.Constraint
@@ -42,6 +43,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -64,6 +66,9 @@ class ConfigKeyMapUseCaseController(
 
     private val showDeviceDescriptors: Flow<Boolean> =
         preferenceRepository.get(Keys.showDeviceDescriptors).map { it == true }
+
+    // TODO: get the list of key maps and store in key maps when they were last updated. Store the updated time as nullable long. First show the actions last used while configuring.
+    override val recentlyUsedActions: Flow<Set<ActionData>> = flowOf(emptySet())
 
     init {
         // Update button data in the key map whenever the floating buttons changes.
@@ -805,6 +810,7 @@ interface ConfigKeyMapUseCase {
     fun getAvailableTriggerKeyDevices(): List<TriggerKeyDevice>
 
     // actions
+    val recentlyUsedActions: Flow<Set<ActionData>>
     fun setActionRepeatEnabled(uid: String, repeat: Boolean)
     fun setActionRepeatDelay(uid: String, repeatDelay: Int?)
     fun setActionHoldDownEnabled(uid: String, holdDown: Boolean)

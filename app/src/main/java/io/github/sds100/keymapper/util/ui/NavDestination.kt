@@ -32,11 +32,10 @@ sealed class NavDestination<R> {
         const val ID_CHOOSE_ACTION = "choose_action"
         const val ID_CHOOSE_CONSTRAINT = "choose_constraint"
         const val ID_CHOOSE_BLUETOOTH_DEVICE = "choose_bluetooth_device"
-        const val ID_REPORT_BUG = "report_bug"
-        const val ID_FIX_APP_KILLING = "fix_app_killing"
         const val ID_SETTINGS = "settings"
         const val ID_ABOUT = "about"
         const val ID_CONFIG_KEY_MAP = "config_key_map"
+        const val ID_SHIZUKU_SETTINGS = "shizuku_settings"
     }
 
     data class ChooseApp(
@@ -110,5 +109,9 @@ sealed class NavDestination<R> {
 
     data object ChooseFloatingLayout : NavDestination<Unit>() {
         override val id: String = "choose_floating_layout"
+    }
+
+    data object ShizukuSettings : NavDestination<Unit>() {
+        override val id: String = ID_SHIZUKU_SETTINGS
     }
 }

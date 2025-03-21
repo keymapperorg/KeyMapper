@@ -17,6 +17,8 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Fingerprint
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -40,7 +42,10 @@ import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.compose.draggable.DraggableItem
 import io.github.sds100.keymapper.compose.draggable.rememberDragDropState
 import io.github.sds100.keymapper.mappings.ClickType
+import io.github.sds100.keymapper.mappings.ShortcutModel
+import io.github.sds100.keymapper.mappings.ShortcutRow
 import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.util.ui.compose.RadioButtonText
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -193,7 +198,7 @@ private fun TriggerScreenVertical(
                             textAlign = TextAlign.Center,
                         )
 
-                        TriggerKeyShortcutRowNoTrigger(
+                        ShortcutRow(
                             modifier = Modifier
                                 .padding(16.dp)
                                 .fillMaxWidth(),
@@ -276,7 +281,7 @@ private fun TriggerScreenHorizontal(
                     textAlign = TextAlign.Center,
                 )
                 Column {
-                    TriggerKeyShortcutRowNoTrigger(
+                    ShortcutRow(
                         modifier = Modifier
                             .padding(16.dp)
                             .fillMaxWidth()
@@ -354,7 +359,7 @@ private fun TriggerScreenHorizontal(
 private fun TriggerList(
     modifier: Modifier = Modifier,
     triggerList: List<TriggerKeyListItemModel>,
-    shortcuts: Set<TriggerKeyShortcut>,
+    shortcuts: Set<ShortcutModel<TriggerKeyShortcut>>,
     isReorderingEnabled: Boolean,
     onRemoveClick: (String) -> Unit,
     onEditClick: (String) -> Unit,
@@ -402,7 +407,7 @@ private fun TriggerList(
         }
 
         item(key = "shortcuts", contentType = "shortcuts") {
-            TriggerKeyShortcutRow(
+            ShortcutRow(
                 modifier = Modifier.fillMaxWidth(),
                 shortcuts = shortcuts,
                 onClick = { onClickShortcut(it) },
@@ -520,7 +525,13 @@ private val previewState = ConfigTriggerState.Loaded(
     checkedTriggerMode = TriggerMode.Sequence,
     triggerModeButtonsEnabled = true,
     triggerModeButtonsVisible = true,
-    shortcuts = setOf(TriggerKeyShortcut.ASSISTANT),
+    shortcuts = setOf(
+        ShortcutModel(
+            icon = ComposeIconInfo.Vector(Icons.Rounded.Fingerprint),
+            text = "Fingerprint gesture",
+            data = TriggerKeyShortcut.FINGERPRINT_GESTURE,
+        ),
+    ),
 )
 
 @Preview(device = Devices.PIXEL)
@@ -541,8 +552,11 @@ private fun VerticalEmptyPreview() {
         TriggerScreenVertical(
             configState = ConfigTriggerState.Empty(
                 shortcuts = setOf(
-                    TriggerKeyShortcut.ASSISTANT,
-                    TriggerKeyShortcut.FLOATING_BUTTON,
+                    ShortcutModel(
+                        icon = ComposeIconInfo.Vector(Icons.Rounded.Fingerprint),
+                        text = "Fingerprint gesture",
+                        data = TriggerKeyShortcut.FINGERPRINT_GESTURE,
+                    ),
                 ),
             ),
             recordTriggerState = RecordTriggerState.Idle,
@@ -566,7 +580,15 @@ private fun HorizontalPreview() {
 private fun HorizontalEmptyPreview() {
     KeyMapperTheme {
         TriggerScreenHorizontal(
-            configState = ConfigTriggerState.Empty(shortcuts = setOf(TriggerKeyShortcut.ASSISTANT)),
+            configState = ConfigTriggerState.Empty(
+                shortcuts = setOf(
+                    ShortcutModel(
+                        icon = ComposeIconInfo.Vector(Icons.Rounded.Fingerprint),
+                        text = "Fingerprint gesture",
+                        data = TriggerKeyShortcut.FINGERPRINT_GESTURE,
+                    ),
+                ),
+            ),
             recordTriggerState = RecordTriggerState.Idle,
         )
     }

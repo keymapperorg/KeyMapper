@@ -9,6 +9,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import io.github.sds100.keymapper.actions.ActionUiHelper
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.mapData
@@ -18,12 +19,9 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
 
 /**
@@ -36,10 +34,8 @@ class CreateKeyMapShortcutViewModel(
     resourceProvider: ResourceProvider,
 ) : ViewModel(),
     ResourceProvider by resourceProvider {
-    private val actionUiHelperOld = KeyMapActionUiHelperOld(listKeyMaps, resourceProvider)
-    private val actionUiHelper = KeyMapActionUiHelper(listKeyMaps, resourceProvider)
-    private val listItemCreator =
-        KeyMapListItemCreator(actionUiHelper, listKeyMaps, resourceProvider)
+    private val actionUiHelper = ActionUiHelper(listKeyMaps, resourceProvider)
+    private val listItemCreator = KeyMapListItemCreator(listKeyMaps, resourceProvider)
 
     private val _state = MutableStateFlow<State<List<KeyMapListItemModel>>>(State.Loading)
     val state = _state.asStateFlow()
@@ -51,38 +47,27 @@ class CreateKeyMapShortcutViewModel(
     val shortcutNameDialogResult = MutableStateFlow<String?>(null)
 
     init {
-        val rebuildUiState = MutableSharedFlow<State<List<KeyMap>>>(replay = 1)
 
-        combine(
-            rebuildUiState,
-            listKeyMaps.showDeviceDescriptors,
-            listKeyMaps.triggerErrorSnapshot,
-        ) { keyMapListState, showDeviceDescriptors, triggerErrorSnapshot ->
-            _state.value = keyMapListState.mapData { keyMapList ->
-                keyMapList.map { keyMap ->
-                    val keyMapListUiState =
-                        listItemCreator.create(keyMap, showDeviceDescriptors, triggerErrorSnapshot)
+        viewModelScope.launch {
+            combine(
+                listKeyMaps.keyMapList,
+                listKeyMaps.showDeviceDescriptors,
+                listKeyMaps.triggerErrorSnapshot,
+                listKeyMaps.actionErrorSnapshot,
+            ) { keyMapListState, showDeviceDescriptors, triggerErrorSnapshot, actionErrorSnapshot ->
+                _state.value = keyMapListState.mapData { keyMapList ->
+                    keyMapList.map { keyMap ->
+                        val keyMapListUiState =
+                            listItemCreator.create(
+                                keyMap,
+                                showDeviceDescriptors,
+                                triggerErrorSnapshot,
+                                actionErrorSnapshot,
+                            )
 
-                    KeyMapListItemModel(isSelected = false, keyMapListUiState)
+                        KeyMapListItemModel(isSelected = false, keyMapListUiState)
+                    }
                 }
-            }
-        }.launchIn(viewModelScope)
-
-        viewModelScope.launch {
-            listKeyMaps.keyMapList.collectLatest {
-                rebuildUiState.emit(it)
-            }
-        }
-
-        viewModelScope.launch {
-            listKeyMaps.invalidateActionErrors.drop(1).collectLatest {
-                /*
-                Don't get the key maps from the repository because there can be a race condition
-                when restoring key maps. This happens because when the activity is resumed the
-                key maps in the repository are being updated and this flow is collected
-                at the same time.
-                 */
-                rebuildUiState.emit(rebuildUiState.first())
             }
         }
     }
@@ -108,12 +93,12 @@ class CreateKeyMapShortcutViewModel(
 
             if (keyMap.actionList.size == 1) {
                 val action = keyMap.actionList.first().data
-                defaultShortcutName = actionUiHelperOld.getTitle(
+                defaultShortcutName = actionUiHelper.getTitle(
                     action,
                     showDeviceDescriptors = false,
                 )
 
-                val iconInfo = actionUiHelperOld.getIcon(action)
+                val iconInfo = actionUiHelper.getDrawableIcon(action)
 
                 if (iconInfo == null) {
                     icon = null

@@ -13,6 +13,7 @@ import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerError
+import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerErrorSnapshot
 import io.github.sds100.keymapper.purchasing.ProductId
 import io.github.sds100.keymapper.purchasing.PurchasingManager
 import io.github.sds100.keymapper.shizuku.ShizukuUtils
@@ -105,8 +106,6 @@ class DisplayKeyMapUseCaseImpl(
             showDpadImeSetupError = showDpadImeSetupError,
         )
     }
-
-    override val invalidateTriggerErrors: Flow<Unit> = triggerErrorSnapshot.map { }
 
     override val showTriggerKeyboardIconExplanation: Flow<Boolean> =
         preferences.get(Keys.neverShowTriggerKeyboardIconExplanation).map { neverShow ->
@@ -252,7 +251,6 @@ interface DisplayKeyMapUseCase :
     DisplayActionUseCase,
     DisplayConstraintUseCase {
 
-    val invalidateTriggerErrors: Flow<Unit>
     val triggerErrorSnapshot: Flow<TriggerErrorSnapshot>
     suspend fun getTriggerErrors(keyMap: KeyMap): List<TriggerError>
     suspend fun isFloatingButtonsPurchased(): Boolean

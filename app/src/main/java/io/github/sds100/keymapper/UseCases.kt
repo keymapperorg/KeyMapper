@@ -3,7 +3,6 @@ package io.github.sds100.keymapper
 import android.content.Context
 import io.github.sds100.keymapper.actions.CreateActionUseCaseImpl
 import io.github.sds100.keymapper.actions.GetActionErrorUseCaseImpl
-import io.github.sds100.keymapper.actions.IsActionSupportedUseCaseImpl
 import io.github.sds100.keymapper.actions.PerformActionsUseCaseImpl
 import io.github.sds100.keymapper.api.KeyEventRelayServiceWrapper
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCaseImpl
@@ -94,8 +93,6 @@ object UseCases {
         ServiceLocator.appShortcutAdapter(ctx),
         ServiceLocator.resourceProvider(ctx),
     )
-
-    fun isActionSupported(ctx: Context) = IsActionSupportedUseCaseImpl(ServiceLocator.systemFeatureAdapter(ctx))
 
     fun fingerprintGesturesSupported(ctx: Context) = FingerprintGesturesSupportedUseCaseImpl(ServiceLocator.settingsRepository(ctx))
 
