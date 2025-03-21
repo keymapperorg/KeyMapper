@@ -34,6 +34,7 @@ import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
@@ -99,7 +100,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.pluralStringResource
@@ -182,7 +182,6 @@ fun HomeScreen(
     val helpUrl = stringResource(R.string.url_quick_start_guide)
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val snackbarState = remember { SnackbarHostState() }
-    val ctx = LocalContext.current
 
     val importExportState by viewModel.importExportState.collectAsStateWithLifecycle()
     importExportState.also { exportState ->
@@ -917,8 +916,7 @@ private fun SelectionBottomSheet(
     Surface(
         modifier = modifier
             .widthIn(max = BottomSheetDefaults.SheetMaxWidth)
-            .fillMaxWidth()
-            .systemBarsPadding(),
+            .fillMaxWidth(),
         shadowElevation = 5.dp,
         shape = BottomSheetDefaults.ExpandedShape,
         tonalElevation = BottomSheetDefaults.Elevation,
@@ -927,6 +925,7 @@ private fun SelectionBottomSheet(
         Row(
             modifier = Modifier
                 .padding(16.dp)
+                .navigationBarsPadding()
                 .height(intrinsicSize = IntrinsicSize.Min),
         ) {
             Row(modifier = Modifier.horizontalScroll(state = rememberScrollState())) {

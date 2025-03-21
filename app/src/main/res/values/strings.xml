@@ -1358,5 +1358,6 @@
     <string name="action_list_item_test">Test</string>
     <string name="actions_recyclerview_placeholder">Add actions to set what the key map should do once triggered.</string>
     <string name="recently_used_actions">Recently used actions</string>
+    <string name="action_options_title">Action options</string>
 
 </resources>

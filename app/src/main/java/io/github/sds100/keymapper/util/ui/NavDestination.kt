@@ -36,6 +36,7 @@ sealed class NavDestination<R> {
         const val ID_ABOUT = "about"
         const val ID_CONFIG_KEY_MAP = "config_key_map"
         const val ID_SHIZUKU_SETTINGS = "shizuku_settings"
+        const val ID_CONFIG_FLOATING_BUTTON = "config_floating_button"
     }
 
     data class ChooseApp(
@@ -113,5 +114,9 @@ sealed class NavDestination<R> {
 
     data object ShizukuSettings : NavDestination<Unit>() {
         override val id: String = ID_SHIZUKU_SETTINGS
+    }
+
+    data object ConfigFloatingButton : NavDestination<Unit>() {
+        override val id: String = ID_CONFIG_FLOATING_BUTTON
     }
 }

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -17,11 +18,13 @@ import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.FlashlightOn
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -40,10 +43,24 @@ import io.github.sds100.keymapper.mappings.ShortcutRow
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
+import kotlinx.coroutines.flow.update
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun KeyMapActionsScreen(modifier: Modifier = Modifier, viewModel: ConfigActionsViewModel) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val optionsState by viewModel.actionOptionsState.collectAsStateWithLifecycle()
+
+    if (optionsState != null) {
+        ActionOptionsBottomSheet(
+            modifier = Modifier.systemBarsPadding(),
+            sheetState = sheetState,
+            state = optionsState!!,
+            onDismissRequest = { viewModel.actionOptionsUid.update { null } },
+            callback = viewModel,
+        )
+    }
 
     KeyMapActionsScreen(
         modifier = modifier,
@@ -87,12 +104,12 @@ private fun KeyMapActionsScreen(
                                 textAlign = TextAlign.Center,
                             )
 
-                            Text(
-                                text = stringResource(R.string.recently_used_actions),
-                                style = MaterialTheme.typography.titleSmall,
-                            )
-
                             if (state.data.shortcuts.isNotEmpty()) {
+                                Text(
+                                    text = stringResource(R.string.recently_used_actions),
+                                    style = MaterialTheme.typography.titleSmall,
+                                )
+
                                 Spacer(Modifier.height(8.dp))
 
                                 ShortcutRow(

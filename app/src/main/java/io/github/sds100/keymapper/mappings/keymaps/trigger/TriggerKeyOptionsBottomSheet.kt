@@ -1,6 +1,8 @@
 package io.github.sds100.keymapper.mappings.keymaps.trigger
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,17 +11,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.HelpOutline
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue.Expanded
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
@@ -58,15 +64,31 @@ fun TriggerKeyOptionsBottomSheet(
         dragHandle = {},
     ) {
         val uriHandler = LocalUriHandler.current
+        val helpUrl = stringResource(R.string.url_trigger_key_options_guide)
+        val scope = rememberCoroutineScope()
 
         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center,
-                text = stringResource(R.string.trigger_key_options_title),
-                style = MaterialTheme.typography.headlineMedium,
-            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Box(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    modifier = Modifier.align(Alignment.Center),
+                    textAlign = TextAlign.Center,
+                    text = stringResource(R.string.trigger_key_options_title),
+                    style = MaterialTheme.typography.headlineMedium,
+                )
+
+                IconButton(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(horizontal = 8.dp),
+                    onClick = { uriHandler.openUri(helpUrl) },
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Rounded.HelpOutline,
+                        contentDescription = null,
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -86,7 +108,11 @@ fun TriggerKeyOptionsBottomSheet(
                     style = MaterialTheme.typography.titleSmall,
                 )
 
-                Row {
+                FlowRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp),
+                ) {
                     Spacer(Modifier.width(8.dp))
 
                     RadioButtonText(
@@ -188,37 +214,31 @@ fun TriggerKeyOptionsBottomSheet(
                     isSelected = state.gestureType == FingerprintGestureType.SWIPE_RIGHT,
                     onSelected = { onSelectFingerprintGestureType(FingerprintGestureType.SWIPE_RIGHT) },
                 )
-            } else if (state is TriggerKeyOptionsState.FloatingButton && state.isPurchased) {
-                // TODO add button to edit layout next to it
-                FilledTonalButton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    onClick = onEditFloatingButtonClick,
-                ) {
-                    Text(stringResource(R.string.floating_button_trigger_option_configure_button))
-                }
             }
 
             Spacer(Modifier.height(8.dp))
 
-            val helpUrl = stringResource(R.string.url_trigger_key_options_guide)
-            val scope = rememberCoroutineScope()
-
-            Row {
-                Spacer(Modifier.width(16.dp))
-
-                OutlinedButton(
-                    modifier = Modifier.weight(1f),
-                    onClick = { uriHandler.openUri(helpUrl) },
-                ) {
-                    Text(stringResource(R.string.button_help))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+            ) {
+                if (state is TriggerKeyOptionsState.FloatingButton && state.isPurchased) {
+                    // TODO add button to edit layout next to it
+                    FilledTonalButton(
+                        modifier = Modifier.weight(0.5f),
+                        onClick = onEditFloatingButtonClick,
+                    ) {
+                        Text(stringResource(R.string.floating_button_trigger_option_configure_button))
+                    }
+                } else {
+                    Spacer(Modifier.weight(0.5f))
                 }
 
                 Spacer(Modifier.width(16.dp))
 
                 FilledTonalButton(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(0.5f),
                     colors = ButtonDefaults.filledTonalButtonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = MaterialTheme.colorScheme.onPrimary,
@@ -230,9 +250,10 @@ fun TriggerKeyOptionsBottomSheet(
                         }
                     },
                 ) {
+                    Spacer(Modifier.width(16.dp))
                     Text(stringResource(R.string.button_done))
+                    Spacer(Modifier.width(16.dp))
                 }
-                Spacer(Modifier.width(16.dp))
             }
 
             Spacer(Modifier.height(16.dp))

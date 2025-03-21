@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.view.KeyEvent
 import io.github.sds100.keymapper.actions.GetActionErrorUseCase
 import io.github.sds100.keymapper.constraints.GetConstraintErrorUseCase
@@ -9,9 +8,6 @@ import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.DisplayActionUseCase
 import io.github.sds100.keymapper.mappings.DisplayConstraintUseCase
-import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerKey
-import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
-import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerError
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerErrorSnapshot
 import io.github.sds100.keymapper.purchasing.ProductId
@@ -19,7 +15,6 @@ import io.github.sds100.keymapper.purchasing.PurchasingManager
 import io.github.sds100.keymapper.shizuku.ShizukuUtils
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
-import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.system.permissions.Permission
@@ -82,7 +77,9 @@ class DisplayKeyMapUseCaseImpl(
      */
     private val purchasesFlow: Flow<State<Set<ProductId>>> = callbackFlow {
         withTimeout(3000L) {
-            purchasingManager.purchases.filterIsInstance<State.Data<Set<ProductId>>>().first()
+            val value =
+                purchasingManager.purchases.filterIsInstance<State.Data<Set<ProductId>>>().first()
+            send(value)
         }
 
         purchasingManager.purchases.collect(this::send)
@@ -129,56 +126,6 @@ class DisplayKeyMapUseCaseImpl(
 
     override suspend fun isFloatingButtonsPurchased(): Boolean {
         return purchasingManager.isPurchased(ProductId.FLOATING_BUTTONS).valueIfFailure { false }
-    }
-
-    // TODO Delete
-    override suspend fun getTriggerErrors(keyMap: KeyMap): List<TriggerError> {
-        val trigger = keyMap.trigger
-        val errors = mutableListOf<TriggerError>()
-        val isKeyMapperImeChosen = keyMapperImeHelper.isCompatibleImeChosen()
-
-        // can only detect volume button presses during a phone call with an input method service
-        if (!isKeyMapperImeChosen && keyMap.requiresImeKeyEventForwarding()) {
-            errors.add(TriggerError.CANT_DETECT_IN_PHONE_CALL)
-        }
-
-        val requiresDndAccess = trigger.keys
-            .mapNotNull { it as? KeyCodeTriggerKey }
-            .any { it.keyCode in keysThatRequireDndAccess }
-
-        if (requiresDndAccess) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-                !permissionAdapter.isGranted(Permission.ACCESS_NOTIFICATION_POLICY)
-            ) {
-                errors.add(TriggerError.DND_ACCESS_DENIED)
-            }
-        }
-
-        if (trigger.screenOffTrigger &&
-            !permissionAdapter.isGranted(Permission.ROOT) &&
-            trigger.isDetectingWhenScreenOffAllowed()
-        ) {
-            errors.add(TriggerError.SCREEN_OFF_ROOT_DENIED)
-        }
-
-        val containsAssistantTrigger = trigger.keys.any { it is AssistantTriggerKey }
-
-        val isAssistantTriggerPurchased =
-            purchasingManager.isPurchased(ProductId.ASSISTANT_TRIGGER).valueIfFailure { false }
-
-        if (containsAssistantTrigger && !isAssistantTriggerPurchased) {
-            errors.add(TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED)
-        }
-
-        val containsDpadKey = trigger.keys
-            .mapNotNull { it as? KeyCodeTriggerKey }
-            .any { InputEventUtils.isDpadKeyCode(it.keyCode) && it.detectionSource == KeyEventDetectionSource.INPUT_METHOD }
-
-        if (showDpadImeSetupError.first() && !isKeyMapperImeChosen && containsDpadKey) {
-            errors.add(TriggerError.DPAD_IME_NOT_SELECTED)
-        }
-
-        return errors
     }
 
     override suspend fun fixTriggerError(error: TriggerError) {
@@ -252,7 +199,6 @@ interface DisplayKeyMapUseCase :
     DisplayConstraintUseCase {
 
     val triggerErrorSnapshot: Flow<TriggerErrorSnapshot>
-    suspend fun getTriggerErrors(keyMap: KeyMap): List<TriggerError>
     suspend fun isFloatingButtonsPurchased(): Boolean
     suspend fun fixTriggerError(error: TriggerError)
     val showTriggerKeyboardIconExplanation: Flow<Boolean>

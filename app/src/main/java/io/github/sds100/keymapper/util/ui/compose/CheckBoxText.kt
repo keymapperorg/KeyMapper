@@ -37,13 +37,13 @@ fun CheckBoxText(
             )
 
             Text(
-                modifier = Modifier.padding(horizontal = 8.dp),
+                modifier = Modifier.padding(horizontal = 16.dp),
 
                 text = text,
                 style = if (isEnabled) {
-                    MaterialTheme.typography.bodyMedium
+                    MaterialTheme.typography.bodyLarge
                 } else {
-                    MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.surfaceVariant)
+                    MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.surfaceVariant)
                 },
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,

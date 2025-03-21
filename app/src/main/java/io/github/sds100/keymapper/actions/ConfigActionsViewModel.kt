@@ -53,7 +53,8 @@ class ConfigActionsViewModel(
     resourceProvider: ResourceProvider,
 ) : ResourceProvider by resourceProvider,
     PopupViewModel by PopupViewModelImpl(),
-    NavigationViewModel by NavigationViewModelImpl() {
+    NavigationViewModel by NavigationViewModelImpl(),
+    ActionOptionsBottomSheetCallback {
 
     private val uiHelper = ActionUiHelper(displayAction, resourceProvider)
 
@@ -65,11 +66,10 @@ class ConfigActionsViewModel(
             actions.map(::buildShortcut).toSet()
         }.stateIn(coroutineScope, SharingStarted.Lazily, emptySet())
 
-    // TODO
-//    val triggerKeyOptionsUid = MutableStateFlow<String?>(null)
-//    val triggerKeyOptionsState: StateFlow<TriggerKeyOptionsState?> =
-//        combine(config.keyMap, triggerKeyOptionsUid, transform = ::buildKeyOptionsUiState)
-//            .stateIn(coroutineScope, SharingStarted.Lazily, null)
+    val actionOptionsUid = MutableStateFlow<String?>(null)
+    val actionOptionsState: StateFlow<ActionOptionsState?> =
+        combine(config.keyMap, actionOptionsUid, transform = ::buildOptionsState)
+            .stateIn(coroutineScope, SharingStarted.Lazily, null)
 
     private val actionErrorSnapshot: StateFlow<ActionErrorSnapshot?> =
         displayAction.actionErrorSnapshot.stateIn(coroutineScope, SharingStarted.Lazily, null)
@@ -152,13 +152,37 @@ class ConfigActionsViewModel(
     }
 
     fun onEditClick(actionUid: String) {
-        // TODO
+        actionOptionsUid.value = actionUid
     }
 
     fun onTestClick(actionUid: String) {
         coroutineScope.launch {
             val actionData = getActionData(actionUid) ?: return@launch
             attemptTestAction(actionData)
+        }
+    }
+
+    override fun onEditClick() {
+        // TODO
+    }
+
+    override fun onReplaceClick() {
+        // TODO
+    }
+
+    override fun onRepeatCheckedChange(checked: Boolean) {
+        actionOptionsUid.value?.let { uid -> config.setActionRepeatEnabled(uid, checked) }
+    }
+
+    override fun onSelectRepeatMode(repeatMode: RepeatMode) {
+        actionOptionsUid.value?.let { uid ->
+            when (repeatMode) {
+                RepeatMode.TRIGGER_RELEASED -> config.setActionStopRepeatingWhenTriggerReleased(uid)
+                RepeatMode.LIMIT_REACHED -> config.setActionStopRepeatingWhenLimitReached(uid)
+                RepeatMode.TRIGGER_PRESSED_AGAIN -> config.setActionStopRepeatingWhenTriggerPressedAgain(
+                    uid,
+                )
+            }
         }
     }
 
@@ -403,6 +427,55 @@ class ConfigActionsViewModel(
             )
         }
     }
+
+    private fun buildOptionsState(keyMap: State<KeyMap>, actionUid: String?): ActionOptionsState? {
+        if (actionUid == null) {
+            return null
+        }
+        val keyMap = keyMap.dataOrNull() ?: return null
+        val action = keyMap.actionList.find { it.uid == actionUid } ?: return null
+
+        val allowedRepeatModes = mutableSetOf<RepeatMode>()
+
+        if (keyMap.isChangingRepeatModeAllowed(action)) {
+            allowedRepeatModes.add(RepeatMode.TRIGGER_RELEASED)
+            allowedRepeatModes.add(RepeatMode.TRIGGER_PRESSED_AGAIN)
+            allowedRepeatModes.add(RepeatMode.LIMIT_REACHED)
+        }
+
+        return ActionOptionsState(
+            showEditButton = false,
+
+            showRepeat = keyMap.isRepeatingActionsAllowed(),
+            isRepeatChecked = action.repeat,
+
+            showRepeatRate = false,
+            repeatRate = null,
+
+            showRepeatDelay = false,
+            repeatDelay = null,
+
+            showRepeatLimit = false,
+            repeatLimit = null,
+
+            allowedRepeatModes = allowedRepeatModes,
+            repeatMode = action.repeatMode,
+
+            showHoldDown = false,
+            isHoldDownChecked = false,
+
+            showHoldDownDuration = false,
+            holdDownDuration = null,
+
+            showHoldDownMode = false,
+            holdDownMode = HoldDownMode.TRIGGER_RELEASED,
+
+            showDelayBeforeNextAction = false,
+            delayBeforeNextAction = null,
+
+            multiplier = 1,
+        )
+    }
 }
 
 sealed class ConfigActionsState {
@@ -424,4 +497,38 @@ data class ActionListItemModel(
     val secondaryText: String?,
     val error: String? = null,
     val isErrorFixable: Boolean = true,
+)
+
+data class ActionOptionsState(
+    val showEditButton: Boolean,
+
+    val showRepeat: Boolean,
+    val isRepeatChecked: Boolean,
+
+    val showRepeatRate: Boolean,
+    val repeatRate: Int?,
+
+    val showRepeatDelay: Boolean,
+    val repeatDelay: Int?,
+
+    val showRepeatLimit: Boolean,
+    val repeatLimit: Int?,
+
+    val allowedRepeatModes: Set<RepeatMode>,
+    val repeatMode: RepeatMode,
+
+    val showHoldDown: Boolean,
+    val isHoldDownChecked: Boolean,
+
+    val showHoldDownDuration: Boolean,
+    val holdDownDuration: Int?,
+
+    val showHoldDownMode: Boolean,
+    val holdDownMode: HoldDownMode,
+
+    val showDelayBeforeNextAction: Boolean,
+    val delayBeforeNextAction: Int?,
+
+    // TODO show "How many times every repeat" as label instead of "How many times" if repeat is also allowed.
+    val multiplier: Int,
 )

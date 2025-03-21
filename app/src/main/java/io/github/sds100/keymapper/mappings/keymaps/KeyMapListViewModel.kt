@@ -31,7 +31,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -70,9 +69,6 @@ class KeyMapListViewModel(
     var showDpadTriggerSetupBottomSheet: Boolean by mutableStateOf(false)
 
     init {
-        val listItemContentFlow =
-            MutableStateFlow<State<List<KeyMapListItemModel.Content>>>(State.Loading)
-
         val keyMapListFlow = combine(
             listKeyMaps.keyMapList,
             sortKeyMaps.observeKeyMapsSorter(),
@@ -80,25 +76,24 @@ class KeyMapListViewModel(
             keyMapList.mapData { list -> list.sortedWith(sorter) }
         }.flowOn(Dispatchers.Default)
 
-        combine(
-            keyMapListFlow,
-            listKeyMaps.showDeviceDescriptors,
-            listKeyMaps.triggerErrorSnapshot,
-            listKeyMaps.actionErrorSnapshot,
-        ) { keyMapListState, showDeviceDescriptors, triggerErrorSnapshot, actionErrorSnapshot ->
-            listItemContentFlow.value = State.Loading
-
-            listItemContentFlow.value = keyMapListState.mapData { keyMapList ->
-                keyMapList.map { keyMap ->
-                    listItemCreator.create(
-                        keyMap,
-                        showDeviceDescriptors,
-                        triggerErrorSnapshot,
-                        actionErrorSnapshot,
-                    )
+        val listItemContentFlow =
+            combine(
+                keyMapListFlow,
+                listKeyMaps.showDeviceDescriptors,
+                listKeyMaps.triggerErrorSnapshot,
+                listKeyMaps.actionErrorSnapshot,
+            ) { keyMapListState, showDeviceDescriptors, triggerErrorSnapshot, actionErrorSnapshot ->
+                keyMapListState.mapData { keyMapList ->
+                    keyMapList.map { keyMap ->
+                        listItemCreator.create(
+                            keyMap,
+                            showDeviceDescriptors,
+                            triggerErrorSnapshot,
+                            actionErrorSnapshot,
+                        )
+                    }
                 }
-            }
-        }.flowOn(Dispatchers.Default).launchIn(coroutineScope)
+            }.flowOn(Dispatchers.Default)
 
         // TODO use error snapshot for constraint errors too
 

@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.constraints.ConstraintMode
 import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.entities.FloatingButtonEntityWithLayout
+import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
 import io.github.sds100.keymapper.data.repositories.FloatingLayoutRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
@@ -37,16 +38,20 @@ import io.github.sds100.keymapper.util.firstBlocking
 import io.github.sds100.keymapper.util.ifIsData
 import io.github.sds100.keymapper.util.moveElement
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * Created by sds100 on 16/02/2021.
@@ -68,7 +73,16 @@ class ConfigKeyMapUseCaseController(
         preferenceRepository.get(Keys.showDeviceDescriptors).map { it == true }
 
     // TODO: get the list of key maps and store in key maps when they were last updated. Store the updated time as nullable long. First show the actions last used while configuring.
-    override val recentlyUsedActions: Flow<Set<ActionData>> = flowOf(emptySet())
+    override val recentlyUsedActions: StateFlow<Set<ActionData>> =
+        combine(
+            keyMap,
+            keyMapRepository.keyMapList,
+            transform = ::getActionShortcuts,
+        ).stateIn(
+            coroutineScope,
+            SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+            emptySet(),
+        )
 
     init {
         // Update button data in the key map whenever the floating buttons changes.
@@ -711,6 +725,19 @@ class ConfigKeyMapUseCaseController(
                 actionList = newActionList,
             )
         }
+    }
+
+    private suspend fun getActionShortcuts(
+        keyMap: State<KeyMap>,
+        keyMapList: State<List<KeyMapEntity>>,
+    ): Set<ActionData> {
+        val keyMap = keyMap.dataOrNull() ?: return emptySet()
+        val keyMapList = keyMapList.dataOrNull() ?: return emptySet()
+
+        withContext(Dispatchers.Default) {
+        }
+
+        return emptySet()
     }
 
     private inline fun editTrigger(block: (trigger: Trigger) -> Trigger) {

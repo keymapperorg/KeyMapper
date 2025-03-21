@@ -4,9 +4,13 @@ import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -30,6 +34,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.draggable.DragDropState
+import io.github.sds100.keymapper.util.drawable
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 
 @Composable
@@ -61,6 +68,8 @@ fun ActionListItem(
         ElevatedCard(
             modifier = Modifier
                 .fillMaxWidth()
+                .heightIn(min = 48.dp)
+                .height(IntrinsicSize.Min)
                 .padding(start = 16.dp, end = 16.dp)
                 .draggable(
                     state = draggableState,
@@ -81,7 +90,7 @@ fun ActionListItem(
             ),
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxSize(),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Spacer(Modifier.width(8.dp))
@@ -98,17 +107,22 @@ fun ActionListItem(
                 Spacer(Modifier.width(8.dp))
 
                 if (model.error == null) {
-                    when {
-                        model.icon is ComposeIconInfo.Vector -> Icon(
+                    when (model.icon) {
+                        is ComposeIconInfo.Vector -> Icon(
                             modifier = Modifier.size(24.dp),
                             imageVector = model.icon.imageVector,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurface,
                         )
 
-                        model.icon is ComposeIconInfo.Drawable -> {
+                        is ComposeIconInfo.Drawable -> {
                             val painter = rememberDrawablePainter(model.icon.drawable)
-                            Icon(painter = painter, contentDescription = null)
+                            Icon(
+                                modifier = Modifier.size(24.dp),
+                                painter = painter,
+                                contentDescription = null,
+                                tint = Color.Unspecified,
+                            )
                         }
                     }
                 }
@@ -192,7 +206,7 @@ private fun TextColumn(
             text = primaryText,
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurface,
-            maxLines = 1,
+            maxLines = 2,
             overflow = TextOverflow.Ellipsis,
         )
         if (secondaryText != null) {
@@ -200,7 +214,7 @@ private fun TextColumn(
                 text = secondaryText,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 1,
+                maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
         }
@@ -228,6 +242,44 @@ private fun NoDragPreview() {
         ),
         isDragging = false,
         isReorderingEnabled = false,
+        index = 0,
+    )
+}
+
+@Preview
+@Composable
+private fun NoDragOneLinePreview() {
+    ActionListItem(
+        model = ActionListItemModel(
+            id = "id",
+            text = "Dismiss most recent notification",
+            secondaryText = null,
+            error = null,
+            isErrorFixable = true,
+            icon = ComposeIconInfo.Vector(Icons.Outlined.ClearAll),
+        ),
+        isDragging = false,
+        isReorderingEnabled = false,
+        index = 0,
+    )
+}
+
+@Preview
+@Composable
+private fun DragDrawablePreview() {
+    val drawable = LocalContext.current.drawable(R.mipmap.ic_launcher_round)
+
+    ActionListItem(
+        model = ActionListItemModel(
+            id = "id",
+            text = "Dismiss most recent notification",
+            secondaryText = "Repeat until released",
+            error = null,
+            isErrorFixable = true,
+            icon = ComposeIconInfo.Drawable(drawable),
+        ),
+        isDragging = false,
+        isReorderingEnabled = true,
         index = 0,
     )
 }

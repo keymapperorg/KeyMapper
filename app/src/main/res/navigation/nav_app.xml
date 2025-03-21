@@ -365,4 +365,12 @@
         android:id="@+id/chooseFloatingLayoutFragment"
         android:name="io.github.sds100.keymapper.floating.ChooseFloatingLayoutFragment"
         android:label="ChooseFloatingLayoutFragment" />
+
+    <activity
+        android:id="@+id/configFloatingButtonActivity"
+        android:name="io.github.sds100.keymapper.floating.FloatingButtonConfigActivity" />
+
+    <action
+        android:id="@+id/to_configFloatingButton"
+        app:destination="@id/configFloatingButtonActivity" />
 </navigation>

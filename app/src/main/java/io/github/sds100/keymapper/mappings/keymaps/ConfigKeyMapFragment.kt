@@ -78,14 +78,13 @@ class ConfigKeyMapFragment : Fragment() {
             }
         }
 
-        viewModel.configTriggerViewModel.setupNavigation(this)
-
         setFragmentResultListener(ConfigConstraintsFragment.CHOOSE_CONSTRAINT_REQUEST_KEY) { _, result ->
             result.getJsonSerializable<Constraint>(ChooseConstraintFragment.EXTRA_CONSTRAINT)?.let {
                 viewModel.configConstraintsViewModel.onChosenNewConstraint(it)
             }
         }
 
+        viewModel.configTriggerViewModel.setupNavigation(this)
         viewModel.configActionsViewModel.setupNavigation(this)
         viewModel.editActionViewModel.setupNavigation(this)
         viewModel.configConstraintsViewModel.setupNavigation(this)

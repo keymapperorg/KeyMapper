@@ -4,10 +4,13 @@ import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -64,6 +67,8 @@ fun TriggerKeyListItem(
         ElevatedCard(
             modifier = Modifier
                 .fillMaxWidth()
+                .heightIn(min = 48.dp)
+                .height(IntrinsicSize.Min)
                 .padding(start = 16.dp, end = 16.dp)
                 .draggable(
                     state = draggableState,
@@ -84,7 +89,7 @@ fun TriggerKeyListItem(
             ),
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxSize(),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Spacer(Modifier.width(8.dp))
@@ -301,7 +306,7 @@ private fun ErrorTextColumn(
             text = primaryText,
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurface,
-            maxLines = 1,
+            maxLines = 2,
             overflow = TextOverflow.Ellipsis,
         )
 
