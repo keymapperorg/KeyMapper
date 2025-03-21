@@ -21,6 +21,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.withStateAtLeast
 import androidx.navigation.findNavController
 import com.anggrayudi.storage.extension.openInputStream
 import com.anggrayudi.storage.extension.openOutputStream
@@ -88,14 +89,11 @@ abstract class BaseMainActivity : AppCompatActivity() {
 
             when (intent.action) {
                 ACTION_SAVE_FILE -> {
-                    val fileUri =
-                        IntentCompat.getParcelableExtra(intent, EXTRA_FILE_URI, Uri::class.java)
-                            ?: return
-
-                    val fileName = fileUri.toDocumentFile(this@BaseMainActivity)?.name ?: return
-
-                    originalFileUri = fileUri
-                    saveFileLauncher.launch(fileName)
+                    lifecycleScope.launch {
+                        withStateAtLeast(Lifecycle.State.RESUMED) {
+                            selectFileLocationAndSave(intent)
+                        }
+                    }
                 }
             }
         }
@@ -181,6 +179,7 @@ abstract class BaseMainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         viewModel.previousNightMode = currentNightMode
+        unregisterReceiver(broadcastReceiver)
         super.onDestroy()
     }
 
@@ -206,5 +205,15 @@ abstract class BaseMainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun selectFileLocationAndSave(intent: Intent) {
+        val fileUri =
+            IntentCompat.getParcelableExtra(intent, EXTRA_FILE_URI, Uri::class.java) ?: return
+
+        val fileName = fileUri.toDocumentFile(this@BaseMainActivity)?.name ?: return
+
+        originalFileUri = fileUri
+        saveFileLauncher.launch(fileName)
     }
 }
