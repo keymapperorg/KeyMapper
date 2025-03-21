@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Build
 import android.service.chooser.ChooserAction
 import androidx.core.app.ShareCompat
+import androidx.core.net.toUri
 import io.github.sds100.keymapper.BaseMainActivity
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
@@ -16,14 +17,13 @@ import io.github.sds100.keymapper.R
 object ShareUtils {
     fun sendMail(ctx: Context, email: String, subject: String, body: String) {
         try {
-            val intent = ShareCompat.IntentBuilder(ctx)
-                .setEmailTo(arrayOf(email))
-                .setSubject(subject)
-                .setText(body)
-                .setType("message/rfc822")
-                .createChooserIntent()
+            val intent = Intent(Intent.ACTION_SENDTO).apply {
+                data = "mailto:$email".toUri()
+                putExtra(Intent.EXTRA_SUBJECT, subject)
+                putExtra(Intent.EXTRA_TEXT, body)
+            }
 
-            ctx.startActivity(intent)
+            ctx.startActivity(Intent.createChooser(intent, null))
         } catch (_: ActivityNotFoundException) {
         }
     }
