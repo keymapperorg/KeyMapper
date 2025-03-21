@@ -167,8 +167,8 @@ class ConfigActionsViewModel(
             val newActionData = editAction(oldAction.data)
 
             if (newActionData != null) {
-                config.setActionData(actionUid, newActionData)
                 actionOptionsUid.update { null }
+                config.setActionData(actionUid, newActionData)
             }
         }
     }
@@ -179,8 +179,8 @@ class ConfigActionsViewModel(
             val newActionData =
                 navigate("replace_action", NavDestination.ChooseAction) ?: return@launch
 
-            config.setActionData(actionUid, newActionData)
             actionOptionsUid.update { null }
+            config.setActionData(actionUid, newActionData)
         }
     }
 

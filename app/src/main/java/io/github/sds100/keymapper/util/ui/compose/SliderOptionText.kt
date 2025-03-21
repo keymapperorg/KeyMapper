@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.util.ui.compose
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -95,15 +96,23 @@ fun SliderOptionText(
             Spacer(modifier = Modifier.width(8.dp))
 
             ElevatedButton(onClick = { showDialog = true }) {
-                Text(valueText(value))
+                val text = if (value == defaultValue) {
+                    stringResource(R.string.slider_default_button, valueText(value))
+                } else {
+                    valueText(value)
+                }
+
+                Text(text)
             }
 
             if (defaultValue != null) {
-                IconButton(onClick = { onValueChange(defaultValue) }) {
-                    Icon(
-                        Icons.Rounded.RestartAlt,
-                        contentDescription = stringResource(R.string.slider_reset_content_description),
-                    )
+                AnimatedVisibility(visible = value != defaultValue) {
+                    IconButton(onClick = { onValueChange(defaultValue) }) {
+                        Icon(
+                            Icons.Rounded.RestartAlt,
+                            contentDescription = stringResource(R.string.slider_reset_content_description),
+                        )
+                    }
                 }
             }
         }
@@ -164,6 +173,26 @@ private fun ValueDialog(
 @Preview
 @Composable
 private fun Preview() {
+    KeyMapperTheme {
+        Surface {
+            SliderOptionText(
+                modifier = Modifier.width(400.dp),
+                title = "Repeat delay",
+                value = 50f,
+                defaultValue = 500f,
+                valueText = { "${it.roundToInt()} ms" },
+                isEnabled = true,
+                onValueChange = {},
+                valueRange = 0f..1000f,
+                stepSize = 50,
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewDefault() {
     KeyMapperTheme {
         Surface {
             SliderOptionText(

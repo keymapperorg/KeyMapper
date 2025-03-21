@@ -1360,5 +1360,7 @@
     <string name="recently_used_actions">Recently used actions</string>
     <string name="action_options_title">Action options</string>
     <string name="slider_reset_content_description">Reset</string>
+    <string name="slider_default_button">Default: %s</string>
+
 
 </resources>
