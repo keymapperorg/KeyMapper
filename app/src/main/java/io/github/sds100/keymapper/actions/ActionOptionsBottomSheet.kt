@@ -138,6 +138,31 @@ fun ActionOptionsBottomSheet(
                 )
             }
 
+            if (state.showRepeatLimit) {
+                Spacer(Modifier.height(8.dp))
+
+                val noLimitString = stringResource(R.string.button_slider_repeat_no_limit)
+
+                SliderOptionText(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    title = stringResource(R.string.extra_label_repeat_limit),
+                    defaultValue = state.defaultRepeatLimit.toFloat(),
+                    value = state.repeatLimit.toFloat(),
+                    valueText = { value ->
+                        if (value.toInt() == Int.MAX_VALUE) {
+                            noLimitString
+                        } else {
+                            "${value.toInt()}x"
+                        }
+                    },
+                    onValueChange = { callback.onRepeatLimitChanged(it.toInt()) },
+                    valueRange = 1f..SliderMaximums.ACTION_REPEAT_LIMIT.toFloat(),
+                    stepSize = SliderStepSizes.ACTION_REPEAT_LIMIT,
+                )
+            }
+
             if (state.allowedRepeatModes.isNotEmpty()) {
                 Spacer(Modifier.height(8.dp))
 
@@ -221,6 +246,7 @@ interface ActionOptionsBottomSheetCallback {
     fun onRepeatCheckedChange(checked: Boolean) = run { }
     fun onSelectRepeatMode(repeatMode: RepeatMode) = run { }
     fun onRepeatRateChanged(rate: Int) = run { }
+    fun onRepeatLimitChanged(limit: Int) = run { }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -246,10 +272,12 @@ private fun Preview() {
                 defaultRepeatRate = 500,
 
                 showRepeatDelay = true,
-                repeatDelay = null,
+                repeatDelay = 400,
+                defaultRepeatDelay = 400,
 
                 showRepeatLimit = true,
-                repeatLimit = 10,
+                repeatLimit = Int.MAX_VALUE,
+                defaultRepeatLimit = Int.MAX_VALUE,
 
                 allowedRepeatModes = setOf(
                     RepeatMode.TRIGGER_RELEASED,
@@ -262,15 +290,18 @@ private fun Preview() {
                 isHoldDownChecked = false,
 
                 showHoldDownDuration = true,
-                holdDownDuration = null,
+                holdDownDuration = 400,
+                defaultHoldDownDuration = 400,
 
                 showHoldDownMode = true,
                 holdDownMode = HoldDownMode.TRIGGER_PRESSED_AGAIN,
 
                 showDelayBeforeNextAction = true,
                 delayBeforeNextAction = 10000,
+                defaultDelayBeforeNextAction = 5000,
 
                 multiplier = 4,
+                defaultMultiplier = 1,
             ),
             callback = object : ActionOptionsBottomSheetCallback {},
         )
@@ -300,10 +331,12 @@ private fun PreviewNoEditButton() {
                 defaultRepeatRate = 500,
 
                 showRepeatDelay = true,
-                repeatDelay = null,
+                repeatDelay = 400,
+                defaultRepeatDelay = 400,
 
                 showRepeatLimit = true,
                 repeatLimit = 10,
+                defaultRepeatLimit = Int.MAX_VALUE,
 
                 allowedRepeatModes = setOf(
                     RepeatMode.TRIGGER_RELEASED,
@@ -316,15 +349,18 @@ private fun PreviewNoEditButton() {
                 isHoldDownChecked = false,
 
                 showHoldDownDuration = true,
-                holdDownDuration = null,
+                holdDownDuration = 400,
+                defaultHoldDownDuration = 400,
 
                 showHoldDownMode = true,
                 holdDownMode = HoldDownMode.TRIGGER_PRESSED_AGAIN,
 
                 showDelayBeforeNextAction = true,
                 delayBeforeNextAction = 10000,
+                defaultDelayBeforeNextAction = 5000,
 
                 multiplier = 4,
+                defaultMultiplier = 1,
             ),
             callback = object : ActionOptionsBottomSheetCallback {},
         )

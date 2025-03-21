@@ -621,13 +621,45 @@ class ConfigKeyMapUseCaseController(
         }
     }
 
-    override fun setActionRepeatDelay(uid: String, repeatDelay: Int) = setActionOption(uid) { it.copy(repeatDelay = repeatDelay) }
+    override fun setActionRepeatDelay(uid: String, repeatDelay: Int) {
+        setActionOption(uid) { action ->
+            if (repeatDelay == defaultRepeatDelay.value) {
+                action.copy(repeatDelay = null)
+            } else {
+                action.copy(repeatDelay = repeatDelay)
+            }
+        }
+    }
 
-    override fun setActionRepeatLimit(uid: String, repeatLimit: Int) = setActionOption(uid) { it.copy(repeatLimit = repeatLimit) }
+    override fun setActionRepeatLimit(uid: String, repeatLimit: Int) {
+        setActionOption(uid) { action ->
+            if (action.repeatMode == RepeatMode.LIMIT_REACHED) {
+                if (repeatLimit == 1) {
+                    action.copy(repeatLimit = null)
+                } else {
+                    action.copy(repeatLimit = repeatLimit)
+                }
+            } else {
+                if (repeatLimit == Int.MAX_VALUE) {
+                    action.copy(repeatLimit = null)
+                } else {
+                    action.copy(repeatLimit = repeatLimit)
+                }
+            }
+        }
+    }
 
     override fun setActionHoldDownEnabled(uid: String, holdDown: Boolean) = setActionOption(uid) { it.copy(holdDown = holdDown) }
 
-    override fun setActionHoldDownDuration(uid: String, holdDownDuration: Int) = setActionOption(uid) { it.copy(holdDownDuration = holdDownDuration) }
+    override fun setActionHoldDownDuration(uid: String, holdDownDuration: Int) {
+        setActionOption(uid) { action ->
+            if (holdDownDuration == defaultHoldDownDuration.value) {
+                action.copy(holdDownDuration = null)
+            } else {
+                action.copy(holdDownDuration = holdDownDuration)
+            }
+        }
+    }
 
     override fun setActionStopRepeatingWhenTriggerPressedAgain(uid: String) = setActionOption(uid) { it.copy(repeatMode = RepeatMode.TRIGGER_PRESSED_AGAIN) }
 
@@ -637,7 +669,15 @@ class ConfigKeyMapUseCaseController(
 
     override fun setActionStopHoldingDownWhenTriggerPressedAgain(uid: String, enabled: Boolean) = setActionOption(uid) { it.copy(stopHoldDownWhenTriggerPressedAgain = enabled) }
 
-    override fun setActionMultiplier(uid: String, multiplier: Int) = setActionOption(uid) { it.copy(multiplier = multiplier) }
+    override fun setActionMultiplier(uid: String, multiplier: Int) {
+        setActionOption(uid) { action ->
+            if (multiplier == 1) {
+                action.copy(multiplier = null)
+            } else {
+                action.copy(multiplier = multiplier)
+            }
+        }
+    }
 
     override fun setDelayBeforeNextAction(uid: String, delay: Int) = setActionOption(uid) { it.copy(delayBeforeNextAction = delay) }
 

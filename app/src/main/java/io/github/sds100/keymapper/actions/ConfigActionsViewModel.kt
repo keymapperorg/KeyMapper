@@ -188,6 +188,10 @@ class ConfigActionsViewModel(
         actionOptionsUid.value?.let { uid -> config.setActionRepeatEnabled(uid, checked) }
     }
 
+    override fun onRepeatLimitChanged(limit: Int) {
+        actionOptionsUid.value?.let { uid -> config.setActionRepeatLimit(uid, limit) }
+    }
+
     override fun onSelectRepeatMode(repeatMode: RepeatMode) {
         actionOptionsUid.value?.let { uid ->
             when (repeatMode) {
@@ -465,6 +469,13 @@ class ConfigActionsViewModel(
         }
 
         val defaultRepeatRate = config.defaultRepeatRate.first()
+        val defaultRepeatDelay = config.defaultRepeatDelay.first()
+        val defaultHoldDownDuration = config.defaultHoldDownDuration.first()
+        val defaultRepeatLimit = if (action.repeatMode == RepeatMode.LIMIT_REACHED) {
+            1
+        } else {
+            Int.MAX_VALUE
+        }
 
         return ActionOptionsState(
             showEditButton = action.data.isEditable(),
@@ -477,10 +488,12 @@ class ConfigActionsViewModel(
             defaultRepeatRate = defaultRepeatRate,
 
             showRepeatDelay = false,
-            repeatDelay = null,
+            repeatDelay = action.repeatDelay ?: defaultRepeatDelay,
+            defaultRepeatDelay = defaultRepeatDelay,
 
-            showRepeatLimit = false,
-            repeatLimit = null,
+            showRepeatLimit = keyMap.isChangingRepeatLimitAllowed(action),
+            repeatLimit = action.repeatLimit ?: defaultRepeatLimit,
+            defaultRepeatLimit = defaultRepeatLimit,
 
             allowedRepeatModes = allowedRepeatModes,
             repeatMode = action.repeatMode,
@@ -489,15 +502,18 @@ class ConfigActionsViewModel(
             isHoldDownChecked = false,
 
             showHoldDownDuration = false,
-            holdDownDuration = null,
+            holdDownDuration = action.holdDownDuration ?: defaultHoldDownDuration,
+            defaultHoldDownDuration = defaultHoldDownDuration,
 
             showHoldDownMode = false,
             holdDownMode = HoldDownMode.TRIGGER_RELEASED,
 
             showDelayBeforeNextAction = false,
-            delayBeforeNextAction = null,
+            delayBeforeNextAction = action.delayBeforeNextAction ?: 0,
+            defaultDelayBeforeNextAction = 0,
 
-            multiplier = 1,
+            multiplier = action.multiplier ?: 1,
+            defaultMultiplier = 1,
         )
     }
 }
@@ -534,10 +550,12 @@ data class ActionOptionsState(
     val defaultRepeatRate: Int,
 
     val showRepeatDelay: Boolean,
-    val repeatDelay: Int?,
+    val repeatDelay: Int,
+    val defaultRepeatDelay: Int,
 
     val showRepeatLimit: Boolean,
-    val repeatLimit: Int?,
+    val repeatLimit: Int,
+    val defaultRepeatLimit: Int,
 
     val allowedRepeatModes: Set<RepeatMode>,
     val repeatMode: RepeatMode,
@@ -546,14 +564,17 @@ data class ActionOptionsState(
     val isHoldDownChecked: Boolean,
 
     val showHoldDownDuration: Boolean,
-    val holdDownDuration: Int?,
+    val holdDownDuration: Int,
+    val defaultHoldDownDuration: Int,
 
     val showHoldDownMode: Boolean,
     val holdDownMode: HoldDownMode,
 
     val showDelayBeforeNextAction: Boolean,
-    val delayBeforeNextAction: Int?,
+    val delayBeforeNextAction: Int,
+    val defaultDelayBeforeNextAction: Int,
 
     // TODO show "How many times every repeat" as label instead of "How many times" if repeat is also allowed.
     val multiplier: Int,
+    val defaultMultiplier: Int,
 )
