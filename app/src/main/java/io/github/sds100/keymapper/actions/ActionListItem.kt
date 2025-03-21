@@ -60,6 +60,7 @@ fun ActionListItem(
     onFixClick: () -> Unit = {},
     onTestClick: () -> Unit = {},
 ) {
+    // TODO show arrow between action list items. (Add buttons in that row to add delays or whatever?)
     val draggableState = rememberDraggableState {
         dragDropState?.onDrag(Offset(0f, it))
     }

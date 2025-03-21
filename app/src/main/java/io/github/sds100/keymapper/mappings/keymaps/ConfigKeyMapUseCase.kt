@@ -679,7 +679,15 @@ class ConfigKeyMapUseCaseController(
         }
     }
 
-    override fun setDelayBeforeNextAction(uid: String, delay: Int) = setActionOption(uid) { it.copy(delayBeforeNextAction = delay) }
+    override fun setDelayBeforeNextAction(uid: String, delay: Int) {
+        setActionOption(uid) { action ->
+            if (delay == 0) {
+                action.copy(delayBeforeNextAction = null)
+            } else {
+                action.copy(delayBeforeNextAction = delay)
+            }
+        }
+    }
 
     private fun createAction(data: ActionData): Action {
         var holdDown = false

@@ -17,6 +17,7 @@ import androidx.compose.material.icons.automirrored.rounded.HelpOutline
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -163,6 +164,23 @@ fun ActionOptionsBottomSheet(
                 )
             }
 
+            if (state.showRepeatDelay) {
+                Spacer(Modifier.height(8.dp))
+
+                SliderOptionText(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    title = stringResource(R.string.extra_label_repeat_delay),
+                    defaultValue = state.defaultRepeatDelay.toFloat(),
+                    value = state.repeatDelay.toFloat(),
+                    valueText = { "${it.toInt()} ms" },
+                    onValueChange = { callback.onRepeatDelayChanged(it.toInt()) },
+                    valueRange = 0f..SliderMaximums.ACTION_REPEAT_DELAY.toFloat(),
+                    stepSize = SliderStepSizes.ACTION_REPEAT_DELAY,
+                )
+            }
+
             if (state.allowedRepeatModes.isNotEmpty()) {
                 Spacer(Modifier.height(8.dp))
 
@@ -206,7 +224,85 @@ fun ActionOptionsBottomSheet(
                 }
             }
 
+            if (state.showRepeat) {
+                Spacer(Modifier.height(8.dp))
+                HorizontalDivider()
+            }
+
+            if (state.showHoldDown) {
+                Spacer(Modifier.height(8.dp))
+
+                CheckBoxText(
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    text = stringResource(R.string.flag_hold_down),
+                    isChecked = state.isHoldDownChecked,
+                    onCheckedChange = callback::onHoldDownCheckedChange,
+                )
+            }
+
+            if (state.showHoldDownDuration) {
+                Spacer(Modifier.height(8.dp))
+
+                SliderOptionText(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    title = stringResource(R.string.extra_label_hold_down_duration),
+                    defaultValue = state.defaultHoldDownDuration.toFloat(),
+                    value = state.holdDownDuration.toFloat(),
+                    valueText = { "${it.toInt()} ms" },
+                    onValueChange = { callback.onHoldDownDurationChanged(it.toInt()) },
+                    valueRange = 0f..SliderMaximums.ACTION_HOLD_DOWN_DURATION.toFloat(),
+                    stepSize = SliderStepSizes.ACTION_HOLD_DOWN_DURATION,
+                )
+            }
+
             Spacer(Modifier.height(8.dp))
+
+            if (state.showHoldDown) {
+                Spacer(Modifier.height(8.dp))
+                HorizontalDivider()
+            }
+
+            if (state.showDelayBeforeNextAction) {
+                Spacer(Modifier.height(8.dp))
+
+                SliderOptionText(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    title = stringResource(R.string.extra_label_delay_before_next_action),
+                    defaultValue = state.defaultDelayBeforeNextAction.toFloat(),
+                    value = state.delayBeforeNextAction.toFloat(),
+                    valueText = { "${it.toInt()} ms" },
+                    onValueChange = { callback.onDelayBeforeNextActionChanged(it.toInt()) },
+                    valueRange = 0f..SliderMaximums.DELAY_BEFORE_NEXT_ACTION.toFloat(),
+                    stepSize = SliderStepSizes.DELAY_BEFORE_NEXT_ACTION,
+                )
+            }
+
+            Spacer(Modifier.height(8.dp))
+
+            SliderOptionText(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                title = if (state.showRepeat && state.isRepeatChecked) {
+                    stringResource(R.string.extra_label_action_multiplier_with_repeat)
+                } else {
+                    stringResource(R.string.extra_label_action_multiplier)
+                },
+                defaultValue = state.defaultMultiplier.toFloat(),
+                value = state.multiplier.toFloat(),
+                valueText = { "${it.toInt()}x" },
+                onValueChange = { callback.onMultiplierChanged(it.toInt()) },
+                valueRange = 1f..SliderMaximums.ACTION_MULTIPLIER.toFloat(),
+                stepSize = SliderStepSizes.ACTION_MULTIPLIER,
+            )
+
+            Spacer(Modifier.height(8.dp))
+
+            HorizontalDivider()
 
             Row(
                 modifier = Modifier
@@ -247,6 +343,11 @@ interface ActionOptionsBottomSheetCallback {
     fun onSelectRepeatMode(repeatMode: RepeatMode) = run { }
     fun onRepeatRateChanged(rate: Int) = run { }
     fun onRepeatLimitChanged(limit: Int) = run { }
+    fun onRepeatDelayChanged(delay: Int) = run { }
+    fun onHoldDownCheckedChange(checked: Boolean) = run { }
+    fun onHoldDownDurationChanged(duration: Int) = run { }
+    fun onDelayBeforeNextActionChanged(delay: Int) = run { }
+    fun onMultiplierChanged(multiplier: Int) = run { }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

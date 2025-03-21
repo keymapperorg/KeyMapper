@@ -192,6 +192,30 @@ class ConfigActionsViewModel(
         actionOptionsUid.value?.let { uid -> config.setActionRepeatLimit(uid, limit) }
     }
 
+    override fun onRepeatRateChanged(rate: Int) {
+        actionOptionsUid.value?.let { uid -> config.setActionRepeatRate(uid, rate) }
+    }
+
+    override fun onRepeatDelayChanged(delay: Int) {
+        actionOptionsUid.value?.let { uid -> config.setActionRepeatDelay(uid, delay) }
+    }
+
+    override fun onHoldDownCheckedChange(checked: Boolean) {
+        actionOptionsUid.value?.let { uid -> config.setActionHoldDownEnabled(uid, checked) }
+    }
+
+    override fun onHoldDownDurationChanged(duration: Int) {
+        actionOptionsUid.value?.let { uid -> config.setActionHoldDownDuration(uid, duration) }
+    }
+
+    override fun onDelayBeforeNextActionChanged(delay: Int) {
+        actionOptionsUid.value?.let { uid -> config.setDelayBeforeNextAction(uid, delay) }
+    }
+
+    override fun onMultiplierChanged(multiplier: Int) {
+        actionOptionsUid.value?.let { uid -> config.setActionMultiplier(uid, multiplier) }
+    }
+
     override fun onSelectRepeatMode(repeatMode: RepeatMode) {
         actionOptionsUid.value?.let { uid ->
             when (repeatMode) {
@@ -202,10 +226,6 @@ class ConfigActionsViewModel(
                 )
             }
         }
-    }
-
-    override fun onRepeatRateChanged(rate: Int) {
-        actionOptionsUid.value?.let { uid -> config.setActionRepeatRate(uid, rate) }
     }
 
     private suspend fun attemptTestAction(actionData: ActionData) {
@@ -487,7 +507,7 @@ class ConfigActionsViewModel(
             repeatRate = action.repeatRate ?: defaultRepeatRate,
             defaultRepeatRate = defaultRepeatRate,
 
-            showRepeatDelay = false,
+            showRepeatDelay = keyMap.isChangingActionRepeatDelayAllowed(action),
             repeatDelay = action.repeatDelay ?: defaultRepeatDelay,
             defaultRepeatDelay = defaultRepeatDelay,
 
@@ -498,17 +518,21 @@ class ConfigActionsViewModel(
             allowedRepeatModes = allowedRepeatModes,
             repeatMode = action.repeatMode,
 
-            showHoldDown = false,
-            isHoldDownChecked = false,
+            showHoldDown = keyMap.isHoldingDownActionAllowed(action),
+            isHoldDownChecked = action.holdDown,
 
-            showHoldDownDuration = false,
+            showHoldDownDuration = keyMap.isHoldingDownActionBeforeRepeatingAllowed(action),
             holdDownDuration = action.holdDownDuration ?: defaultHoldDownDuration,
             defaultHoldDownDuration = defaultHoldDownDuration,
 
-            showHoldDownMode = false,
-            holdDownMode = HoldDownMode.TRIGGER_RELEASED,
+            showHoldDownMode = keyMap.isStopHoldingDownActionWhenTriggerPressedAgainAllowed(action),
+            holdDownMode = if (action.stopHoldDownWhenTriggerPressedAgain) {
+                HoldDownMode.TRIGGER_PRESSED_AGAIN
+            } else {
+                HoldDownMode.TRIGGER_RELEASED
+            },
 
-            showDelayBeforeNextAction = false,
+            showDelayBeforeNextAction = keyMap.isDelayBeforeNextActionAllowed(),
             delayBeforeNextAction = action.delayBeforeNextAction ?: 0,
             defaultDelayBeforeNextAction = 0,
 

@@ -68,7 +68,7 @@ fun SliderOptionText(
 
     Column(modifier = modifier) {
         Text(
-            modifier = Modifier.padding(vertical = 8.dp),
+            modifier = Modifier,
             text = title,
             style = MaterialTheme.typography.titleSmall,
             maxLines = 1,
