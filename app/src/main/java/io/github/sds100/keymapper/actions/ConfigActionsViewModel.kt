@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.actions
 
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.home.ChooseAppStoreModel
-import io.github.sds100.keymapper.mappings.DisplayActionUseCase
 import io.github.sds100.keymapper.mappings.ShortcutModel
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapUseCase
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap

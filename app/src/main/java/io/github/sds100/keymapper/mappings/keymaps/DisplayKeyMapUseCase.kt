@@ -2,12 +2,12 @@ package io.github.sds100.keymapper.mappings.keymaps
 
 import android.graphics.drawable.Drawable
 import android.view.KeyEvent
+import io.github.sds100.keymapper.actions.DisplayActionUseCase
 import io.github.sds100.keymapper.actions.GetActionErrorUseCase
+import io.github.sds100.keymapper.constraints.DisplayConstraintUseCase
 import io.github.sds100.keymapper.constraints.GetConstraintErrorUseCase
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.mappings.DisplayActionUseCase
-import io.github.sds100.keymapper.mappings.DisplayConstraintUseCase
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerError
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerErrorSnapshot
 import io.github.sds100.keymapper.purchasing.ProductId
