@@ -15,13 +15,14 @@ import io.github.sds100.keymapper.R
 
 object ShareUtils {
     fun sendMail(ctx: Context, email: String, subject: String, body: String) {
-        // TODO use fancy share sheet
         try {
-            val intent = Intent(Intent.ACTION_SEND)
-            intent.type = "vnd.android.cursor.item/email"
-            intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
-            intent.putExtra(Intent.EXTRA_SUBJECT, subject)
-            intent.putExtra(Intent.EXTRA_TEXT, body)
+            val intent = ShareCompat.IntentBuilder(ctx)
+                .setEmailTo(arrayOf(email))
+                .setSubject(subject)
+                .setText(body)
+                .setType("message/rfc822")
+                .createChooserIntent()
+
             ctx.startActivity(intent)
         } catch (_: ActivityNotFoundException) {
         }
