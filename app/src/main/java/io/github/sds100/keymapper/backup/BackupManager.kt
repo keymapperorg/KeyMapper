@@ -85,6 +85,12 @@ class BackupManagerImpl(
         private const val DATA_JSON_FILE_NAME = "data.json"
         private const val SOUNDS_DIR_NAME = "sounds"
 
+        // This is where completed back ups are stored in private app data.
+        // IMPORTANT! This must be the same as the path in res/xml/provider_paths.xml
+        // so when sharing back up files other apps can read them.
+        const val BACKUP_DIR = "backups"
+
+        // This is where the temp files for creating a back up are stored.
         private const val TEMP_BACKUP_ROOT_DIR = "backup_temp"
         private const val TEMP_RESTORE_ROOT_DIR = "restore_temp"
     }

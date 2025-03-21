@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.backup
 
 import io.github.sds100.keymapper.system.files.FileAdapter
-import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.onFailure
@@ -23,9 +22,14 @@ class BackupRestoreMappingsUseCaseImpl(
     override suspend fun backupEverything(): Result<String> {
         val fileName = BackupUtils.createBackupFileName()
 
-        return fileAdapter.openDownloadsFile(fileName, FileUtils.MIME_TYPE_ZIP).then { file ->
+        // Share in private files so the share sheet can show the file name. This is some quirk
+        // of the storage access framework https://issuetracker.google.com/issues/268079113.
+        // Saving it directly to Downloads with the MediaStore returns a content URI
+        // that only contains a numerical ID, not the file name.
+        return fileAdapter.getPrivateFile("${BackupManagerImpl.BACKUP_DIR}/$fileName").let { file ->
+            file.createFile()
             backupManager.backupEverything(file)
-            Success(file.uri)
+            Success(fileAdapter.getPublicUriForPrivateFile(file))
         }
     }
 

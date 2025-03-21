@@ -206,8 +206,9 @@ class HomeViewModel(
                 }
 
                 HomeState.Selecting(
-                    multiSelectProvider.getSelectedIds().size,
-                    selectedKeyMapsEnabled ?: SelectedKeyMapsEnabled.NONE,
+                    selectionCount = multiSelectProvider.getSelectedIds().size,
+                    selectedKeyMapsEnabled = selectedKeyMapsEnabled ?: SelectedKeyMapsEnabled.NONE,
+                    isAllSelected = selectionState.selectedIds.size == keyMaps.data.size,
                 )
             } else {
                 HomeState.Normal(
@@ -333,7 +334,15 @@ class HomeViewModel(
     }
 
     fun onSelectAllClick() {
-        keymapListViewModel.selectAll()
+        state.value.also { state ->
+            if (state is HomeState.Selecting) {
+                if (state.isAllSelected) {
+                    multiSelectProvider.clear()
+                } else {
+                    keymapListViewModel.selectAll()
+                }
+            }
+        }
     }
 
     fun onEnabledKeyMapsChange(enabled: Boolean) {
@@ -524,6 +533,7 @@ sealed class HomeState {
     data class Selecting(
         val selectionCount: Int,
         val selectedKeyMapsEnabled: SelectedKeyMapsEnabled,
+        val isAllSelected: Boolean,
     ) : HomeState()
 
     data class Normal(

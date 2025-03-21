@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.home
 
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
@@ -47,7 +48,6 @@ import androidx.compose.material.icons.outlined.Gamepad
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material.icons.rounded.DeleteOutline
-import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.IosShare
@@ -128,6 +128,8 @@ import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.util.ShareUtils
 import io.github.sds100.keymapper.util.ui.NavDestination
 import io.github.sds100.keymapper.util.ui.NavigateEvent
+import io.github.sds100.keymapper.util.ui.compose.icons.Import
+import io.github.sds100.keymapper.util.ui.compose.icons.KeyMapperIcons
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -210,7 +212,7 @@ fun HomeScreen(
 
             is ImportExportState.FinishedExport -> {
                 snackbarState.currentSnackbarData?.dismiss()
-                ShareUtils.sendZipFile(ctx, exportState.uri.toUri())
+                LocalActivity.current?.let { ShareUtils.shareFile(it, exportState.uri.toUri()) }
                 viewModel.setImportExportIdle()
             }
 
@@ -560,12 +562,17 @@ private fun HomeAppBar(
             },
             actions = {
                 AnimatedContent(homeState is HomeState.Selecting) { isSelecting ->
-                    if (isSelecting) {
+                    if (isSelecting && homeState is HomeState.Selecting) {
                         OutlinedButton(
                             modifier = Modifier.padding(horizontal = 8.dp),
                             onClick = onSelectAllClick,
                         ) {
-                            Text(stringResource(R.string.home_app_bar_select_all))
+                            val text = if (homeState.isAllSelected) {
+                                stringResource(R.string.home_app_bar_deselect_all)
+                            } else {
+                                stringResource(R.string.home_app_bar_select_all)
+                            }
+                            Text(text)
                         }
                     } else {
                         Row {
@@ -685,7 +692,7 @@ private fun HomeDropdownMenu(
             onClick = onExportClick,
         )
         DropdownMenuItem(
-            leadingIcon = { Icon(Icons.Rounded.Download, contentDescription = null) },
+            leadingIcon = { Icon(KeyMapperIcons.Import, contentDescription = null) },
             text = { Text(stringResource(R.string.home_menu_import)) },
             onClick = onImportClick,
         )
@@ -1158,6 +1165,7 @@ private fun HomeStateSelectingPreview() {
     val state = HomeState.Selecting(
         selectionCount = 4,
         selectedKeyMapsEnabled = SelectedKeyMapsEnabled.MIXED,
+        isAllSelected = false,
     )
     KeyMapperTheme {
         HomeScreen(
@@ -1184,6 +1192,7 @@ private fun HomeStateSelectingDisabledPreview() {
     val state = HomeState.Selecting(
         selectionCount = 4,
         selectedKeyMapsEnabled = SelectedKeyMapsEnabled.MIXED,
+        isAllSelected = true,
     )
     KeyMapperTheme {
         HomeScreen(

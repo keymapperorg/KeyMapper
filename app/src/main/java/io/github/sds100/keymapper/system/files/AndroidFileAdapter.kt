@@ -6,9 +6,11 @@ import android.content.Context
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
 import com.anggrayudi.storage.file.toDocumentFile
+import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
@@ -53,6 +55,7 @@ class AndroidFileAdapter(context: Context) : FileAdapter {
             val contentValues = ContentValues().apply {
                 put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
                 put(MediaStore.MediaColumns.MIME_TYPE, mimeType)
+                put(MediaStore.MediaColumns.IS_DOWNLOAD, 1)
                 put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
             }
 
@@ -61,6 +64,7 @@ class AndroidFileAdapter(context: Context) : FileAdapter {
                     ?: return Error.UnknownIOError
 
             val file = DocumentFile.fromSingleUri(ctx, uri) ?: return Error.UnknownIOError
+
             return Success(DocumentFileWrapper(file, ctx))
         } else {
             val downloadsFile =
@@ -122,5 +126,13 @@ class AndroidFileAdapter(context: Context) : FileAdapter {
         }
 
         return Success(Unit)
+    }
+
+    override fun getPublicUriForPrivateFile(privateFile: IFile): String {
+        return FileProvider.getUriForFile(
+            ctx,
+            "${Constants.PACKAGE_NAME}.provider",
+            privateFile.toJavaFile(),
+        ).toString()
     }
 }

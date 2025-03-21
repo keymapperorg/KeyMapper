@@ -189,6 +189,7 @@ fun TriggerKeyOptionsBottomSheet(
                     onSelected = { onSelectFingerprintGestureType(FingerprintGestureType.SWIPE_RIGHT) },
                 )
             } else if (state is TriggerKeyOptionsState.FloatingButton && state.isPurchased) {
+                // TODO add button to edit layout next to it
                 FilledTonalButton(
                     modifier = Modifier
                         .fillMaxWidth()

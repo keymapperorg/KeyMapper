@@ -1,15 +1,14 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
 import io.github.sds100.keymapper.backup.BackupManager
+import io.github.sds100.keymapper.backup.BackupManagerImpl
 import io.github.sds100.keymapper.backup.BackupUtils
 import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
 import io.github.sds100.keymapper.system.files.FileAdapter
-import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.dataOrNull
-import io.github.sds100.keymapper.util.then
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
@@ -76,9 +75,14 @@ class ListKeyMapsUseCaseImpl(
     override suspend fun backupKeyMaps(vararg uid: String): Result<String> {
         val fileName = BackupUtils.createBackupFileName()
 
-        return fileAdapter.openDownloadsFile(fileName, FileUtils.MIME_TYPE_ZIP).then {
-            backupManager.backupKeyMaps(it, uid.asList())
-            Success(it.uri)
+        // Share in private files so the share sheet can show the file name. This is some quirk
+        // of the storage access framework https://issuetracker.google.com/issues/268079113.
+        // Saving it directly to Downloads with the MediaStore returns a content URI
+        // that only contains a numerical ID, not the file name.
+        return fileAdapter.getPrivateFile("${BackupManagerImpl.BACKUP_DIR}/$fileName").let { file ->
+            file.createFile()
+            backupManager.backupKeyMaps(file, uid.asList())
+            Success(fileAdapter.getPublicUriForPrivateFile(file))
         }
     }
 }

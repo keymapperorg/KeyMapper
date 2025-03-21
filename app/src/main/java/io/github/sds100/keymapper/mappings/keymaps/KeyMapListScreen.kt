@@ -76,7 +76,11 @@ fun KeyMapListScreen(modifier: Modifier = Modifier, viewModel: KeyMapListViewMod
     KeyMapListScreen(
         modifier = modifier,
         listItems = listItems,
-        footerText = stringResource(R.string.home_key_map_list_footer_text),
+        footerText = if (isSelectable) {
+            null
+        } else {
+            stringResource(R.string.home_key_map_list_footer_text)
+        },
         isSelectable = isSelectable,
         onClickKeyMap = viewModel::onKeyMapCardClick,
         onLongClickKeyMap = viewModel::onKeyMapCardLongClick,
@@ -90,7 +94,7 @@ fun KeyMapListScreen(modifier: Modifier = Modifier, viewModel: KeyMapListViewMod
 fun KeyMapListScreen(
     modifier: Modifier = Modifier,
     listItems: State<List<KeyMapListItemModel>>,
-    footerText: String = stringResource(R.string.home_key_map_list_footer_text),
+    footerText: String? = stringResource(R.string.home_key_map_list_footer_text),
     isSelectable: Boolean = false,
     onClickKeyMap: (String) -> Unit = {},
     onLongClickKeyMap: (String) -> Unit = {},
@@ -153,7 +157,7 @@ private fun EmptyKeyMapList(modifier: Modifier = Modifier) {
 private fun KeyMapList(
     modifier: Modifier = Modifier,
     listItems: List<KeyMapListItemModel>,
-    footerText: String,
+    footerText: String?,
     isSelectable: Boolean,
     onClickKeyMap: (String) -> Unit,
     onLongClickKeyMap: (String) -> Unit,
@@ -185,13 +189,15 @@ private fun KeyMapList(
             )
         }
 
-        item {
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = footerText,
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.bodyMedium,
-            )
+        if (footerText != null) {
+            item {
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = footerText,
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
         }
 
         // Give some space at the end of the list so that the FAB doesn't block the items.

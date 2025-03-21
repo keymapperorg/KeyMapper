@@ -72,6 +72,16 @@ class MultiSelectProvider {
         }
     }
 
+    fun clear() {
+        state.update { state ->
+            if (state is SelectionState.Selecting) {
+                state.copy(selectedIds = emptySet())
+            } else {
+                state
+            }
+        }
+    }
+
     fun reset() {
         state.value = SelectionState.NotSelecting
     }

@@ -1293,6 +1293,7 @@
     <string name="home_app_bar_more">More</string>
     <string name="home_app_bar_help">Help</string>
     <string name="home_app_bar_select_all">Select all</string>
+    <string name="home_app_bar_deselect_all">Deselect all</string>
     <string name="home_app_bar_cancel_selecting">Stop selecting</string>
     <string name="home_app_bar_status_paused">Paused</string>
     <plurals name="home_app_bar_status_warnings">
@@ -1330,6 +1331,8 @@
     <string name="home_key_maps_delete_dialog_text">Are you sure you want to delete these key maps?</string>
     <string name="home_key_maps_delete_yes">Yes, delete</string>
     <string name="home_key_maps_delete_cancel">Cancel</string>
+    <string name="home_export_share_sheet_save_to_files">Save to files</string>
+
     <!-- Trigger screen -->
     <string name="trigger_key_list_item_remove">Remove</string>
     <string name="trigger_key_list_item_edit">Edit</string>
