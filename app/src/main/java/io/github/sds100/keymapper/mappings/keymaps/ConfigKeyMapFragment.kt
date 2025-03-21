@@ -86,7 +86,6 @@ class ConfigKeyMapFragment : Fragment() {
 
         viewModel.configTriggerViewModel.setupNavigation(this)
         viewModel.configActionsViewModel.setupNavigation(this)
-        viewModel.editActionViewModel.setupNavigation(this)
         viewModel.configConstraintsViewModel.setupNavigation(this)
     }
 
@@ -183,7 +182,6 @@ class ConfigKeyMapFragment : Fragment() {
         viewModel.configActionsViewModel.showPopups(this, binding)
         viewModel.configTriggerViewModel.showPopups(this, binding)
         viewModel.configTriggerViewModel.optionsViewModel.showPopups(this, binding)
-        viewModel.editActionViewModel.showPopups(this, binding)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

@@ -37,8 +37,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
+import io.github.sds100.keymapper.util.ui.SliderMaximums
+import io.github.sds100.keymapper.util.ui.SliderStepSizes
 import io.github.sds100.keymapper.util.ui.compose.CheckBoxText
 import io.github.sds100.keymapper.util.ui.compose.RadioButtonText
+import io.github.sds100.keymapper.util.ui.compose.SliderOptionText
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -60,6 +63,7 @@ fun ActionOptionsBottomSheet(
         val uriHandler = LocalUriHandler.current
         val helpUrl = stringResource(R.string.url_keymap_action_options_guide)
         val scope = rememberCoroutineScope()
+        val sliderDefaultText = stringResource(R.string.slider_default)
 
         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
             Spacer(modifier = Modifier.height(12.dp))
@@ -91,11 +95,15 @@ fun ActionOptionsBottomSheet(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
             ) {
-                OutlinedButton(modifier = Modifier.weight(1f), onClick = callback::onEditClick) {
-                    Text(stringResource(R.string.button_edit_action))
+                if (state.showEditButton) {
+                    OutlinedButton(
+                        modifier = Modifier.weight(1f),
+                        onClick = callback::onEditClick,
+                    ) {
+                        Text(stringResource(R.string.button_edit_action))
+                    }
+                    Spacer(Modifier.width(16.dp))
                 }
-
-                Spacer(Modifier.width(16.dp))
 
                 OutlinedButton(modifier = Modifier.weight(1f), onClick = callback::onReplaceClick) {
                     Text(stringResource(R.string.button_replace_action))
@@ -110,6 +118,23 @@ fun ActionOptionsBottomSheet(
                     text = stringResource(R.string.flag_repeat_actions),
                     isChecked = state.isRepeatChecked,
                     onCheckedChange = callback::onRepeatCheckedChange,
+                )
+            }
+
+            if (state.showRepeatRate) {
+                Spacer(Modifier.height(8.dp))
+
+                SliderOptionText(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    title = stringResource(R.string.extra_label_repeat_rate),
+                    defaultValue = state.defaultRepeatRate.toFloat(),
+                    value = state.repeatRate.toFloat(),
+                    valueText = { "${it.toInt()} ms" },
+                    onValueChange = { callback.onRepeatRateChanged(it.toInt()) },
+                    valueRange = 0f..SliderMaximums.ACTION_REPEAT_RATE.toFloat(),
+                    stepSize = SliderStepSizes.ACTION_REPEAT_RATE,
                 )
             }
 
@@ -195,6 +220,7 @@ interface ActionOptionsBottomSheetCallback {
     fun onReplaceClick() = run { }
     fun onRepeatCheckedChange(checked: Boolean) = run { }
     fun onSelectRepeatMode(repeatMode: RepeatMode) = run { }
+    fun onRepeatRateChanged(rate: Int) = run { }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -217,6 +243,61 @@ private fun Preview() {
 
                 showRepeatRate = true,
                 repeatRate = 400,
+                defaultRepeatRate = 500,
+
+                showRepeatDelay = true,
+                repeatDelay = null,
+
+                showRepeatLimit = true,
+                repeatLimit = 10,
+
+                allowedRepeatModes = setOf(
+                    RepeatMode.TRIGGER_RELEASED,
+                    RepeatMode.LIMIT_REACHED,
+                    RepeatMode.TRIGGER_PRESSED_AGAIN,
+                ),
+                repeatMode = RepeatMode.TRIGGER_RELEASED,
+
+                showHoldDown = true,
+                isHoldDownChecked = false,
+
+                showHoldDownDuration = true,
+                holdDownDuration = null,
+
+                showHoldDownMode = true,
+                holdDownMode = HoldDownMode.TRIGGER_PRESSED_AGAIN,
+
+                showDelayBeforeNextAction = true,
+                delayBeforeNextAction = 10000,
+
+                multiplier = 4,
+            ),
+            callback = object : ActionOptionsBottomSheetCallback {},
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun PreviewNoEditButton() {
+    KeyMapperTheme {
+        val sheetState = SheetState(
+            skipPartiallyExpanded = true,
+            density = LocalDensity.current,
+            initialValue = Expanded,
+        )
+
+        ActionOptionsBottomSheet(
+            sheetState = sheetState,
+            state = ActionOptionsState(
+                showEditButton = false,
+                showRepeat = true,
+                isRepeatChecked = true,
+
+                showRepeatRate = true,
+                repeatRate = 400,
+                defaultRepeatRate = 500,
 
                 showRepeatDelay = true,
                 repeatDelay = null,

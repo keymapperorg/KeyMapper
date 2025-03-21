@@ -86,22 +86,6 @@ class EditKeyMapActionViewModel(
     override fun setSliderValue(id: String, value: Defaultable<Int>) {
         val actionUid = actionUid.value ?: return
 
-        when (id) {
-            ID_REPEAT_DELAY -> config.setActionRepeatDelay(actionUid, value.nullIfDefault())
-            ID_REPEAT_RATE -> config.setActionRepeatRate(actionUid, value.nullIfDefault())
-            ID_HOLD_DOWN_DURATION -> config.setActionHoldDownDuration(
-                actionUid,
-                value.nullIfDefault(),
-            )
-
-            ID_MULTIPLIER -> config.setActionMultiplier(actionUid, value.nullIfDefault())
-            ID_DELAY_BEFORE_NEXT_ACTION -> config.setDelayBeforeNextAction(
-                actionUid,
-                value.nullIfDefault(),
-            )
-
-            ID_REPEAT_LIMIT -> config.setActionRepeatLimit(actionUid, value.nullIfDefault())
-        }
     }
 
     override fun setCheckboxValue(id: String, value: Boolean) {

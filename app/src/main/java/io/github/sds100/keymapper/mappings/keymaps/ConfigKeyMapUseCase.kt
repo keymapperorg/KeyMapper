@@ -15,6 +15,8 @@ import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.floating.FloatingButtonEntityMapper
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.FingerprintGestureType
+import io.github.sds100.keymapper.mappings.GetDefaultKeyMapOptionsUseCase
+import io.github.sds100.keymapper.mappings.GetDefaultKeyMapOptionsUseCaseImpl
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerType
 import io.github.sds100.keymapper.mappings.keymaps.trigger.FingerprintTriggerKey
@@ -64,7 +66,11 @@ class ConfigKeyMapUseCaseController(
     private val floatingLayoutRepository: FloatingLayoutRepository,
     private val floatingButtonRepository: FloatingButtonRepository,
     private val serviceAdapter: ServiceAdapter,
-) : ConfigKeyMapUseCase {
+) : ConfigKeyMapUseCase,
+    GetDefaultKeyMapOptionsUseCase by GetDefaultKeyMapOptionsUseCaseImpl(
+        coroutineScope,
+        preferenceRepository,
+    ) {
     override val keyMap = MutableStateFlow<State<KeyMap>>(State.Loading)
 
     override val floatingButtonToUse: MutableStateFlow<String?> = MutableStateFlow(null)
@@ -601,17 +607,27 @@ class ConfigKeyMapUseCaseController(
         }
     }
 
-    override fun setActionRepeatEnabled(uid: String, repeat: Boolean) = setActionOption(uid) { it.copy(repeat = repeat) }
+    override fun setActionRepeatEnabled(uid: String, repeat: Boolean) {
+        setActionOption(uid) { action -> action.copy(repeat = repeat) }
+    }
 
-    override fun setActionRepeatRate(uid: String, repeatRate: Int?) = setActionOption(uid) { it.copy(repeatRate = repeatRate) }
+    override fun setActionRepeatRate(uid: String, repeatRate: Int) {
+        setActionOption(uid) { action ->
+            if (repeatRate == defaultRepeatRate.value) {
+                action.copy(repeatRate = null)
+            } else {
+                action.copy(repeatRate = repeatRate)
+            }
+        }
+    }
 
-    override fun setActionRepeatDelay(uid: String, repeatDelay: Int?) = setActionOption(uid) { it.copy(repeatDelay = repeatDelay) }
+    override fun setActionRepeatDelay(uid: String, repeatDelay: Int) = setActionOption(uid) { it.copy(repeatDelay = repeatDelay) }
 
-    override fun setActionRepeatLimit(uid: String, repeatLimit: Int?) = setActionOption(uid) { it.copy(repeatLimit = repeatLimit) }
+    override fun setActionRepeatLimit(uid: String, repeatLimit: Int) = setActionOption(uid) { it.copy(repeatLimit = repeatLimit) }
 
     override fun setActionHoldDownEnabled(uid: String, holdDown: Boolean) = setActionOption(uid) { it.copy(holdDown = holdDown) }
 
-    override fun setActionHoldDownDuration(uid: String, holdDownDuration: Int?) = setActionOption(uid) { it.copy(holdDownDuration = holdDownDuration) }
+    override fun setActionHoldDownDuration(uid: String, holdDownDuration: Int) = setActionOption(uid) { it.copy(holdDownDuration = holdDownDuration) }
 
     override fun setActionStopRepeatingWhenTriggerPressedAgain(uid: String) = setActionOption(uid) { it.copy(repeatMode = RepeatMode.TRIGGER_PRESSED_AGAIN) }
 
@@ -621,9 +637,9 @@ class ConfigKeyMapUseCaseController(
 
     override fun setActionStopHoldingDownWhenTriggerPressedAgain(uid: String, enabled: Boolean) = setActionOption(uid) { it.copy(stopHoldDownWhenTriggerPressedAgain = enabled) }
 
-    override fun setActionMultiplier(uid: String, multiplier: Int?) = setActionOption(uid) { it.copy(multiplier = multiplier) }
+    override fun setActionMultiplier(uid: String, multiplier: Int) = setActionOption(uid) { it.copy(multiplier = multiplier) }
 
-    override fun setDelayBeforeNextAction(uid: String, delay: Int?) = setActionOption(uid) { it.copy(delayBeforeNextAction = delay) }
+    override fun setDelayBeforeNextAction(uid: String, delay: Int) = setActionOption(uid) { it.copy(delayBeforeNextAction = delay) }
 
     private fun createAction(data: ActionData): Action {
         var holdDown = false
@@ -727,6 +743,7 @@ class ConfigKeyMapUseCaseController(
         }
     }
 
+    // TODO just store a history in preferences so that they remain even when key maps are deleted
     private suspend fun getActionShortcuts(
         keyMap: State<KeyMap>,
         keyMapList: State<List<KeyMapEntity>>,
@@ -767,7 +784,7 @@ class ConfigKeyMapUseCaseController(
     }
 }
 
-interface ConfigKeyMapUseCase {
+interface ConfigKeyMapUseCase : GetDefaultKeyMapOptionsUseCase {
     val keyMap: Flow<State<KeyMap>>
 
     fun save()
@@ -778,13 +795,21 @@ interface ConfigKeyMapUseCase {
     fun moveAction(fromIndex: Int, toIndex: Int)
     fun removeAction(uid: String)
 
+    val recentlyUsedActions: Flow<Set<ActionData>>
     fun setActionData(uid: String, data: ActionData)
-    fun setActionMultiplier(uid: String, multiplier: Int?)
-    fun setDelayBeforeNextAction(uid: String, delay: Int?)
-    fun setActionRepeatRate(uid: String, repeatRate: Int?)
-    fun setActionRepeatLimit(uid: String, repeatLimit: Int?)
+    fun setActionMultiplier(uid: String, multiplier: Int)
+    fun setDelayBeforeNextAction(uid: String, delay: Int)
+    fun setActionRepeatRate(uid: String, repeatRate: Int)
+    fun setActionRepeatLimit(uid: String, repeatLimit: Int)
     fun setActionStopRepeatingWhenTriggerPressedAgain(uid: String)
     fun setActionStopRepeatingWhenLimitReached(uid: String)
+    fun setActionRepeatEnabled(uid: String, repeat: Boolean)
+    fun setActionRepeatDelay(uid: String, repeatDelay: Int)
+    fun setActionHoldDownEnabled(uid: String, holdDown: Boolean)
+    fun setActionHoldDownDuration(uid: String, holdDownDuration: Int)
+    fun setActionStopRepeatingWhenTriggerReleased(uid: String)
+
+    fun setActionStopHoldingDownWhenTriggerPressedAgain(uid: String, enabled: Boolean)
 
     fun addConstraint(constraint: Constraint): Boolean
     fun removeConstraint(id: String)
@@ -835,16 +860,6 @@ interface ConfigKeyMapUseCase {
     fun setShowToastEnabled(enabled: Boolean)
 
     fun getAvailableTriggerKeyDevices(): List<TriggerKeyDevice>
-
-    // actions
-    val recentlyUsedActions: Flow<Set<ActionData>>
-    fun setActionRepeatEnabled(uid: String, repeat: Boolean)
-    fun setActionRepeatDelay(uid: String, repeatDelay: Int?)
-    fun setActionHoldDownEnabled(uid: String, holdDown: Boolean)
-    fun setActionHoldDownDuration(uid: String, holdDownDuration: Int?)
-    fun setActionStopRepeatingWhenTriggerReleased(uid: String)
-
-    fun setActionStopHoldingDownWhenTriggerPressedAgain(uid: String, enabled: Boolean)
 
     val floatingButtonToUse: StateFlow<String?>
     fun useFloatingButtonTrigger(buttonUid: String)

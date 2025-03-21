@@ -205,7 +205,7 @@
     <string name="extra_label_double_press_delay_timeout">Double press timeout (ms)</string>
     <string name="extra_label_repeat_delay">Delay until repeat (ms)</string>
     <string name="extra_label_repeat_limit">Repeat limit</string>
-    <string name="extra_label_repeat_rate">Repeat every… (ms)</string>
+    <string name="extra_label_repeat_rate">Repeat every…</string>
     <string name="extra_label_vibration_duration">Vibration duration (ms)</string>
     <string name="extra_label_action_multiplier">How many times</string>
     <string name="extra_label_action_multiplier_with_repeat">How many times every repeat</string>
@@ -1359,5 +1359,6 @@
     <string name="actions_recyclerview_placeholder">Add actions to set what the key map should do once triggered.</string>
     <string name="recently_used_actions">Recently used actions</string>
     <string name="action_options_title">Action options</string>
+    <string name="slider_reset_content_description">Reset</string>
 
 </resources>

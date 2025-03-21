@@ -36,7 +36,6 @@ class ChooseActionViewModel(
     private val useCase: CreateActionUseCase,
     resourceProvider: ResourceProvider,
 ) : ViewModel(),
-    ResourceProvider by resourceProvider,
     CreateActionViewModel by CreateActionViewModelImpl(useCase, resourceProvider) {
 
     companion object {

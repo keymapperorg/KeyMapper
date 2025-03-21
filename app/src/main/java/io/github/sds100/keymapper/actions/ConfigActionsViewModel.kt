@@ -17,11 +17,7 @@ import io.github.sds100.keymapper.util.mapData
 import io.github.sds100.keymapper.util.onFailure
 import io.github.sds100.keymapper.util.ui.DialogResponse
 import io.github.sds100.keymapper.util.ui.NavDestination
-import io.github.sds100.keymapper.util.ui.NavigationViewModel
-import io.github.sds100.keymapper.util.ui.NavigationViewModelImpl
 import io.github.sds100.keymapper.util.ui.PopupUi
-import io.github.sds100.keymapper.util.ui.PopupViewModel
-import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.ViewModelHelper
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
@@ -38,6 +34,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /**
@@ -47,13 +44,12 @@ import kotlinx.coroutines.launch
 class ConfigActionsViewModel(
     private val coroutineScope: CoroutineScope,
     private val displayAction: DisplayActionUseCase,
+    private val createAction: CreateActionUseCase,
     private val testAction: TestActionUseCase,
     private val config: ConfigKeyMapUseCase,
     private val onboarding: OnboardingUseCase,
     resourceProvider: ResourceProvider,
-) : ResourceProvider by resourceProvider,
-    PopupViewModel by PopupViewModelImpl(),
-    NavigationViewModel by NavigationViewModelImpl(),
+) : CreateActionViewModel by CreateActionViewModelImpl(createAction, resourceProvider),
     ActionOptionsBottomSheetCallback {
 
     private val uiHelper = ActionUiHelper(displayAction, resourceProvider)
@@ -163,11 +159,29 @@ class ConfigActionsViewModel(
     }
 
     override fun onEditClick() {
-        // TODO
+        val actionUid = actionOptionsUid.value ?: return
+        coroutineScope.launch {
+            val keyMap = config.keyMap.first().dataOrNull() ?: return@launch
+
+            val oldAction = keyMap.actionList.find { it.uid == actionUid } ?: return@launch
+            val newActionData = editAction(oldAction.data)
+
+            if (newActionData != null) {
+                config.setActionData(actionUid, newActionData)
+                actionOptionsUid.update { null }
+            }
+        }
     }
 
     override fun onReplaceClick() {
-        // TODO
+        val actionUid = actionOptionsUid.value ?: return
+        coroutineScope.launch {
+            val newActionData =
+                navigate("replace_action", NavDestination.ChooseAction) ?: return@launch
+
+            config.setActionData(actionUid, newActionData)
+            actionOptionsUid.update { null }
+        }
     }
 
     override fun onRepeatCheckedChange(checked: Boolean) {
@@ -184,6 +198,10 @@ class ConfigActionsViewModel(
                 )
             }
         }
+    }
+
+    override fun onRepeatRateChanged(rate: Int) {
+        actionOptionsUid.value?.let { uid -> config.setActionRepeatRate(uid, rate) }
     }
 
     private suspend fun attemptTestAction(actionData: ActionData) {
@@ -428,7 +446,10 @@ class ConfigActionsViewModel(
         }
     }
 
-    private fun buildOptionsState(keyMap: State<KeyMap>, actionUid: String?): ActionOptionsState? {
+    private suspend fun buildOptionsState(
+        keyMap: State<KeyMap>,
+        actionUid: String?,
+    ): ActionOptionsState? {
         if (actionUid == null) {
             return null
         }
@@ -443,14 +464,17 @@ class ConfigActionsViewModel(
             allowedRepeatModes.add(RepeatMode.LIMIT_REACHED)
         }
 
+        val defaultRepeatRate = config.defaultRepeatRate.first()
+
         return ActionOptionsState(
-            showEditButton = false,
+            showEditButton = action.data.isEditable(),
 
             showRepeat = keyMap.isRepeatingActionsAllowed(),
             isRepeatChecked = action.repeat,
 
-            showRepeatRate = false,
-            repeatRate = null,
+            showRepeatRate = keyMap.isChangingActionRepeatRateAllowed(action),
+            repeatRate = action.repeatRate ?: defaultRepeatRate,
+            defaultRepeatRate = defaultRepeatRate,
 
             showRepeatDelay = false,
             repeatDelay = null,
@@ -506,7 +530,8 @@ data class ActionOptionsState(
     val isRepeatChecked: Boolean,
 
     val showRepeatRate: Boolean,
-    val repeatRate: Int?,
+    val repeatRate: Int,
+    val defaultRepeatRate: Int,
 
     val showRepeatDelay: Boolean,
     val repeatDelay: Int?,
