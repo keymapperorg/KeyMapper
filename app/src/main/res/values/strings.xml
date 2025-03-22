@@ -1361,6 +1361,6 @@
     <string name="action_options_title">Action options</string>
     <string name="slider_reset_content_description">Reset</string>
     <string name="slider_default_button">Default: %s</string>
-
+    <string name="choose_action_title">Choose an action</string>
 
 </resources>

@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.actions
 
-import android.os.Build
 import io.github.sds100.keymapper.actions.sound.SoundsManager
 import io.github.sds100.keymapper.shizuku.ShizukuAdapter
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
@@ -23,7 +22,8 @@ class LazyActionErrorSnapshot(
     cameraAdapter: CameraAdapter,
     private val soundsManager: SoundsManager,
     shizukuAdapter: ShizukuAdapter,
-) : ActionErrorSnapshot {
+) : ActionErrorSnapshot,
+    IsActionSupportedUseCase by IsActionSupportedUseCaseImpl(systemFeatureAdapter) {
     private val keyMapperImeHelper = KeyMapperImeHelper(inputMethodAdapter)
 
     private val isCompatibleImeEnabled by lazy { keyMapperImeHelper.isCompatibleImeEnabled() }
@@ -44,27 +44,11 @@ class LazyActionErrorSnapshot(
         }
     }
 
-    private val systemFeatures by lazy { systemFeatureAdapter.getSystemFeatures() }
-
     override fun getError(action: ActionData): Error? {
-        if (Build.VERSION.SDK_INT != 0) {
-            val minApi = ActionUtils.getMinApi(action.id)
+        val isSupportedError = isSupported(action.id)
 
-            if (Build.VERSION.SDK_INT < minApi) {
-                return Error.SdkVersionTooLow(minApi)
-            }
-
-            val maxApi = ActionUtils.getMaxApi(action.id)
-
-            if (Build.VERSION.SDK_INT > maxApi) {
-                return Error.SdkVersionTooHigh(maxApi)
-            }
-        }
-
-        ActionUtils.getRequiredSystemFeatures(action.id).forEach { feature ->
-            if (!systemFeatures.contains(feature)) {
-                return Error.SystemFeatureNotSupported(feature)
-            }
+        if (isSupportedError != null) {
+            return isSupportedError
         }
 
         if (action.canUseShizukuToPerform() && isShizukuInstalled) {

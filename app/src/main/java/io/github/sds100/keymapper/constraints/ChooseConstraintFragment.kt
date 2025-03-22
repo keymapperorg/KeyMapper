@@ -8,26 +8,24 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.airbnb.epoxy.EpoxyRecyclerView
 import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
 import io.github.sds100.keymapper.simple
-import io.github.sds100.keymapper.simpleGrid
 import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.RecyclerViewUtils
-import io.github.sds100.keymapper.util.ui.SimpleListItem
+import io.github.sds100.keymapper.util.ui.SimpleListItemOld
 import io.github.sds100.keymapper.util.ui.SimpleRecyclerViewFragment
 import io.github.sds100.keymapper.util.ui.setupNavigation
 import io.github.sds100.keymapper.util.ui.showPopups
 import io.github.sds100.keymapper.util.viewLifecycleScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 /**
  * A placeholder fragment containing a simple view.
  */
-class ChooseConstraintFragment : SimpleRecyclerViewFragment<SimpleListItem>() {
+class ChooseConstraintFragment : SimpleRecyclerViewFragment<SimpleListItemOld>() {
 
     companion object {
         const val EXTRA_CONSTRAINT = "extra_constraint"
@@ -39,7 +37,7 @@ class ChooseConstraintFragment : SimpleRecyclerViewFragment<SimpleListItem>() {
         Inject.chooseConstraintListViewModel(requireContext())
     }
 
-    override val listItems: Flow<State<List<SimpleListItem>>>
+    override val listItems: Flow<State<List<SimpleListItemOld>>>
         get() = viewModel.listItems
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,29 +71,18 @@ class ChooseConstraintFragment : SimpleRecyclerViewFragment<SimpleListItem>() {
 
     override fun populateList(
         recyclerView: EpoxyRecyclerView,
-        listItems: List<SimpleListItem>,
+        listItems: List<SimpleListItemOld>,
     ) {
         RecyclerViewUtils.setSpanCountForSimpleListItemGrid(recyclerView)
 
         recyclerView.withModels {
             listItems.forEach { listItem ->
-                if (spanCount == 1) {
-                    simple {
-                        id(listItem.id)
-                        model(listItem)
+                simple {
+                    id(listItem.id)
+                    model(listItem)
 
-                        onClickListener { _ ->
-                            viewModel.onListItemClick(listItem.id)
-                        }
-                    }
-                } else {
-                    simpleGrid {
-                        id(listItem.id)
-                        model(listItem)
-
-                        onClickListener { _ ->
-                            viewModel.onListItemClick(listItem.id)
-                        }
+                    onClickListener { _ ->
+                        viewModel.onListItemClick(listItem.id)
                     }
                 }
             }

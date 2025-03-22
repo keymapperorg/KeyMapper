@@ -16,7 +16,7 @@ import io.github.sds100.keymapper.util.ui.PopupUi
 import io.github.sds100.keymapper.util.ui.PopupViewModel
 import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.util.ui.ResourceProvider
-import io.github.sds100.keymapper.util.ui.SimpleListItem
+import io.github.sds100.keymapper.util.ui.SimpleListItemOld
 import io.github.sds100.keymapper.util.ui.TintType
 import io.github.sds100.keymapper.util.ui.navigate
 import io.github.sds100.keymapper.util.ui.showPopup
@@ -86,7 +86,7 @@ class ChooseConstraintViewModel(
         )
     }
 
-    private val _listItems = MutableStateFlow<State<List<SimpleListItem>>>(State.Loading)
+    private val _listItems = MutableStateFlow<State<List<SimpleListItemOld>>>(State.Loading)
     val listItems = _listItems.asStateFlow()
 
     private val _returnResult = MutableSharedFlow<Constraint>()

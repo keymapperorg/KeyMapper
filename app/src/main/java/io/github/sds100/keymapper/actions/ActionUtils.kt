@@ -12,13 +12,9 @@ import androidx.compose.material.icons.automirrored.outlined.Undo
 import androidx.compose.material.icons.automirrored.outlined.VolumeDown
 import androidx.compose.material.icons.automirrored.outlined.VolumeMute
 import androidx.compose.material.icons.automirrored.outlined.VolumeUp
-import androidx.compose.material.icons.outlined.Abc
 import androidx.compose.material.icons.outlined.AirplanemodeActive
 import androidx.compose.material.icons.outlined.AirplanemodeInactive
-import androidx.compose.material.icons.outlined.Android
 import androidx.compose.material.icons.outlined.Assistant
-import androidx.compose.material.icons.outlined.Bluetooth
-import androidx.compose.material.icons.outlined.BluetoothDisabled
 import androidx.compose.material.icons.outlined.BrightnessAuto
 import androidx.compose.material.icons.outlined.BrightnessHigh
 import androidx.compose.material.icons.outlined.BrightnessLow
@@ -27,9 +23,6 @@ import androidx.compose.material.icons.outlined.CallEnd
 import androidx.compose.material.icons.outlined.CameraAlt
 import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.ClearAll
-import androidx.compose.material.icons.outlined.ContentCopy
-import androidx.compose.material.icons.outlined.ContentCut
-import androidx.compose.material.icons.outlined.ContentPaste
 import androidx.compose.material.icons.outlined.DataObject
 import androidx.compose.material.icons.outlined.DoNotDisturb
 import androidx.compose.material.icons.outlined.DoNotDisturbOff
@@ -64,8 +57,15 @@ import androidx.compose.material.icons.outlined.StayCurrentPortrait
 import androidx.compose.material.icons.outlined.Swipe
 import androidx.compose.material.icons.outlined.TouchApp
 import androidx.compose.material.icons.outlined.ViewArray
-import androidx.compose.material.icons.outlined.Wifi
-import androidx.compose.material.icons.outlined.WifiOff
+import androidx.compose.material.icons.rounded.Abc
+import androidx.compose.material.icons.rounded.Android
+import androidx.compose.material.icons.rounded.Bluetooth
+import androidx.compose.material.icons.rounded.BluetoothDisabled
+import androidx.compose.material.icons.rounded.ContentCopy
+import androidx.compose.material.icons.rounded.ContentCut
+import androidx.compose.material.icons.rounded.ContentPaste
+import androidx.compose.material.icons.rounded.Wifi
+import androidx.compose.material.icons.rounded.WifiOff
 import androidx.compose.ui.graphics.vector.ImageVector
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
@@ -651,12 +651,12 @@ object ActionUtils {
     }
 
     fun getComposeIcon(id: ActionId): ImageVector = when (id) {
-        ActionId.TOGGLE_WIFI -> Icons.Outlined.Wifi
-        ActionId.ENABLE_WIFI -> Icons.Outlined.Wifi
-        ActionId.DISABLE_WIFI -> Icons.Outlined.WifiOff
-        ActionId.TOGGLE_BLUETOOTH -> Icons.Outlined.Bluetooth
-        ActionId.ENABLE_BLUETOOTH -> Icons.Outlined.Bluetooth
-        ActionId.DISABLE_BLUETOOTH -> Icons.Outlined.BluetoothDisabled
+        ActionId.TOGGLE_WIFI -> Icons.Rounded.Wifi
+        ActionId.ENABLE_WIFI -> Icons.Rounded.Wifi
+        ActionId.DISABLE_WIFI -> Icons.Rounded.WifiOff
+        ActionId.TOGGLE_BLUETOOTH -> Icons.Rounded.Bluetooth
+        ActionId.ENABLE_BLUETOOTH -> Icons.Rounded.Bluetooth
+        ActionId.DISABLE_BLUETOOTH -> Icons.Rounded.BluetoothDisabled
         ActionId.TOGGLE_MOBILE_DATA -> Icons.Outlined.SignalCellular4Bar
         ActionId.ENABLE_MOBILE_DATA -> Icons.Outlined.SignalCellular4Bar
         ActionId.DISABLE_MOBILE_DATA -> Icons.Outlined.SignalCellularOff
@@ -722,9 +722,9 @@ object ActionUtils {
         ActionId.SHOW_KEYBOARD -> Icons.Outlined.Keyboard
         ActionId.HIDE_KEYBOARD -> Icons.Outlined.KeyboardHide
         ActionId.SHOW_KEYBOARD_PICKER -> Icons.Outlined.Keyboard
-        ActionId.TEXT_CUT -> Icons.Outlined.ContentCut
-        ActionId.TEXT_COPY -> Icons.Outlined.ContentCopy
-        ActionId.TEXT_PASTE -> Icons.Outlined.ContentPaste
+        ActionId.TEXT_CUT -> Icons.Rounded.ContentCut
+        ActionId.TEXT_COPY -> Icons.Rounded.ContentCopy
+        ActionId.TEXT_PASTE -> Icons.Rounded.ContentPaste
         ActionId.SELECT_WORD_AT_CURSOR -> KeyMapperIcons.MatchWord
         ActionId.SWITCH_KEYBOARD -> Icons.Outlined.Keyboard
         ActionId.TOGGLE_AIRPLANE_MODE -> Icons.Outlined.AirplanemodeActive
@@ -740,10 +740,10 @@ object ActionUtils {
         ActionId.CONSUME_KEY_EVENT -> Icons.Outlined.Cancel
         ActionId.OPEN_SETTINGS -> Icons.Outlined.Settings
         ActionId.SHOW_POWER_MENU -> Icons.Outlined.PowerSettingsNew
-        ActionId.APP -> Icons.Outlined.Android
+        ActionId.APP -> Icons.Rounded.Android
         ActionId.APP_SHORTCUT -> Icons.AutoMirrored.Outlined.OpenInNew
-        ActionId.KEY_CODE -> Icons.Outlined.Abc
-        ActionId.KEY_EVENT -> Icons.Outlined.Abc
+        ActionId.KEY_CODE -> Icons.Rounded.Abc
+        ActionId.KEY_EVENT -> Icons.Rounded.Abc
         ActionId.TAP_SCREEN -> Icons.Outlined.TouchApp
         ActionId.SWIPE_SCREEN -> Icons.Outlined.Swipe
         ActionId.PINCH_SCREEN -> Icons.Outlined.Pinch

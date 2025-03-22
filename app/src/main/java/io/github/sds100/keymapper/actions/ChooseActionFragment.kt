@@ -1,50 +1,44 @@
 package io.github.sds100.keymapper.actions
 
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.withStateAtLeast
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.GridLayoutManager
-import com.airbnb.epoxy.EpoxyRecyclerView
-import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
-import io.github.sds100.keymapper.sectionHeader
-import io.github.sds100.keymapper.simple
-import io.github.sds100.keymapper.simpleGrid
+import io.github.sds100.keymapper.compose.KeyMapperTheme
+import io.github.sds100.keymapper.databinding.FragmentComposeBinding
 import io.github.sds100.keymapper.util.Inject
-import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
-import io.github.sds100.keymapper.util.ui.DefaultSimpleListItem
-import io.github.sds100.keymapper.util.ui.ListItem
-import io.github.sds100.keymapper.util.ui.RecyclerViewUtils
-import io.github.sds100.keymapper.util.ui.SectionHeaderListItem
-import io.github.sds100.keymapper.util.ui.SimpleRecyclerViewFragment
 import io.github.sds100.keymapper.util.ui.setupNavigation
 import io.github.sds100.keymapper.util.ui.showPopups
 import io.github.sds100.keymapper.util.viewLifecycleScope
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-/**
- * Created by sds100 on 22/07/2021.
- */
-class ChooseActionFragment : SimpleRecyclerViewFragment<ListItem>() {
+class ChooseActionFragment : Fragment() {
 
     companion object {
         const val EXTRA_ACTION = "extra_action"
     }
-
-    override var searchStateKey: String? = "choose_action_fragment_search"
 
     private val args: ChooseActionFragmentArgs by navArgs<ChooseActionFragmentArgs>()
 
     private val viewModel by viewModels<ChooseActionViewModel> {
         Inject.chooseActionViewModel(requireContext())
     }
-
-    override val listItems: Flow<State<List<ListItem>>>
-        get() = viewModel.listItems
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,78 +47,46 @@ class ChooseActionFragment : SimpleRecyclerViewFragment<ListItem>() {
 
         launchRepeatOnLifecycle(Lifecycle.State.CREATED) {
             viewModel.returnAction.collectLatest { action ->
-                viewLifecycleScope.launchWhenResumed {
-                    returnResult(EXTRA_ACTION to Json.encodeToString(action))
-                }
-            }
-        }
-    }
-
-    override fun subscribeUi(binding: FragmentSimpleRecyclerviewBinding) {
-        super.subscribeUi(binding)
-
-        viewModel.showPopups(this, binding)
-
-        binding.epoxyRecyclerView.apply {
-            RecyclerViewUtils.applySimpleListItemDecorations(this)
-
-            layoutManager = GridLayoutManager(requireContext(), 1)
-            clipToPadding = false
-            clipChildren = false
-        }
-    }
-
-    override fun populateList(
-        recyclerView: EpoxyRecyclerView,
-        listItems: List<ListItem>,
-    ) {
-        recyclerView.setRecycledViewPool(null)
-        RecyclerViewUtils.setSpanCountForSimpleListItemGrid(recyclerView)
-
-        recyclerView.withModels {
-            listItems.forEach { listItem ->
-                if (listItem is DefaultSimpleListItem) {
-                    if (spanCount == 1) {
-                        simple {
-                            id(listItem.id)
-                            model(listItem)
-
-                            onClickListener { _ ->
-                                viewModel.onListItemClick(listItem.id)
-                            }
-                        }
-                    } else {
-                        simpleGrid {
-                            id(listItem.id)
-                            model(listItem)
-
-                            onClickListener { _ ->
-                                viewModel.onListItemClick(listItem.id)
-                            }
-                        }
-                    }
-                }
-
-                if (listItem is SectionHeaderListItem) {
-                    sectionHeader {
-                        id(listItem.id)
-                        header(listItem.text)
-
-                        // headers should always go across the whole recycler view.
-                        spanSizeOverride { totalSpanCount, position, itemCount ->
-                            totalSpanCount
-                        }
+                viewLifecycleScope.launch {
+                    withStateAtLeast(Lifecycle.State.RESUMED) {
+                        setFragmentResult(
+                            args.requestKey,
+                            bundleOf(EXTRA_ACTION to Json.encodeToString(action)),
+                        )
+                        findNavController().navigateUp()
                     }
                 }
             }
         }
     }
 
-    override fun onSearchQuery(query: String?) {
-        super.onSearchQuery(query)
-
-        viewModel.searchQuery.value = query
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
+        FragmentComposeBinding.inflate(inflater, container, false).apply {
+            composeView.apply {
+                // Dispose of the Composition when the view's LifecycleOwner
+                // is destroyed
+                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                setContent {
+                    KeyMapperTheme {
+                        ChooseActionScreen(
+                            modifier = Modifier.fillMaxSize(),
+                            viewModel = viewModel,
+                            onNavigateBack = findNavController()::navigateUp,
+                        )
+                    }
+                }
+            }
+            return this.root
+        }
     }
 
-    override fun getRequestKey(): String = args.requestKey
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewModel.showPopups(this, view)
+    }
 }
