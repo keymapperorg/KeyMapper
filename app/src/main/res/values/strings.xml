@@ -1362,5 +1362,7 @@
     <string name="slider_reset_content_description">Reset</string>
     <string name="slider_default_button">Default: %s</string>
     <string name="choose_action_title">Choose an action</string>
+    <string name="search_placeholder">Search…</string>
+    <string name="action_list_empty">Nothing here!</string>
 
 </resources>

@@ -99,7 +99,9 @@ private fun KeyMapActionsScreen(
                             horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
                             Text(
-                                modifier = Modifier.padding(32.dp),
+                                modifier = Modifier
+                                    .padding(32.dp)
+                                    .fillMaxWidth(),
                                 text = stringResource(R.string.actions_recyclerview_placeholder),
                                 textAlign = TextAlign.Center,
                             )

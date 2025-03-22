@@ -167,6 +167,7 @@ private fun KeyMapList(
 ) {
     val haptics = LocalHapticFeedback.current
 
+    // TODO use lazy vertical grid
     LazyColumn(
         modifier = modifier,
         state = rememberLazyListState(),
