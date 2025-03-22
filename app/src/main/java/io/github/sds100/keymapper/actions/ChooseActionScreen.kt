@@ -4,15 +4,18 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Android
 import androidx.compose.material.icons.rounded.Bluetooth
 import androidx.compose.material.icons.rounded.Search
@@ -35,6 +38,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
@@ -89,62 +93,84 @@ private fun ChooseActionScreen(
     Scaffold(
         modifier = modifier.displayCutoutPadding(),
         bottomBar = {
-            BottomAppBar(actions = {
-                IconButton(onClick = {
-                    if (isExpanded) {
-                        onCloseSearch()
-                        isExpanded = false
-                    } else {
-                        onNavigateBack()
-                    }
-                }) {
-                    Icon(
-                        Icons.AutoMirrored.Outlined.ArrowBack,
-                        contentDescription = stringResource(R.string.bottom_app_bar_back_content_description),
-                    )
-                }
-
-                DockedSearchBar(
-                    modifier = Modifier.align(Alignment.CenterVertically),
-                    inputField = {
-                        SearchBarDefaults.InputField(
-                            modifier = Modifier.align(Alignment.CenterVertically),
-                            onSearch = {
-                                onQueryChange(it)
-                                isExpanded = false
-                            },
-                            leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = null) },
-                            enabled = state is State.Data,
-                            placeholder = { Text(stringResource(R.string.search_placeholder)) },
-                            query = query ?: "",
-                            onQueryChange = onQueryChange,
-                            expanded = isExpanded,
-                            onExpandedChange = { expanded ->
-                                if (expanded) {
-                                    isExpanded = true
-                                } else {
-                                    onCloseSearch()
-                                    isExpanded = false
-                                }
-                            },
-                        )
-                    },
-                    // This is false to prevent an empty "content" showing underneath.
-                    expanded = isExpanded,
-                    onExpandedChange = { expanded ->
-                        if (expanded) {
-                            isExpanded = true
-                        } else {
+            BottomAppBar(
+                modifier = Modifier.imePadding(),
+                actions = {
+                    IconButton(onClick = {
+                        if (isExpanded) {
                             onCloseSearch()
                             isExpanded = false
+                        } else {
+                            onNavigateBack()
                         }
-                    },
-                    content = {},
-                )
-            })
+                    }) {
+                        Icon(
+                            Icons.AutoMirrored.Rounded.ArrowBack,
+                            contentDescription = stringResource(R.string.bottom_app_bar_back_content_description),
+                        )
+                    }
+
+                    DockedSearchBar(
+                        modifier = Modifier.align(Alignment.CenterVertically),
+                        inputField = {
+                            SearchBarDefaults.InputField(
+                                modifier = Modifier.align(Alignment.CenterVertically),
+                                onSearch = {
+                                    onQueryChange(it)
+                                    isExpanded = false
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        Icons.Rounded.Search,
+                                        contentDescription = null,
+                                    )
+                                },
+                                enabled = state is State.Data,
+                                placeholder = { Text(stringResource(R.string.search_placeholder)) },
+                                query = query ?: "",
+                                onQueryChange = onQueryChange,
+                                expanded = isExpanded,
+                                onExpandedChange = { expanded ->
+                                    if (expanded) {
+                                        isExpanded = true
+                                    } else {
+                                        onCloseSearch()
+                                        isExpanded = false
+                                    }
+                                },
+                            )
+                        },
+                        // This is false to prevent an empty "content" showing underneath.
+                        expanded = isExpanded,
+                        onExpandedChange = { expanded ->
+                            if (expanded) {
+                                isExpanded = true
+                            } else {
+                                onCloseSearch()
+                                isExpanded = false
+                            }
+                        },
+                        content = {},
+                    )
+                },
+            )
         },
-    ) { contentPadding ->
-        Surface(Modifier.padding(contentPadding)) {
+    ) { innerPadding ->
+        val layoutDirection = LocalLayoutDirection.current
+        val startPadding = innerPadding.calculateStartPadding(layoutDirection)
+        val endPadding = innerPadding.calculateEndPadding(layoutDirection)
+
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(
+                    top = innerPadding.calculateTopPadding(),
+                    bottom = innerPadding.calculateBottomPadding(),
+                    start = startPadding,
+                    end = endPadding,
+                ),
+
+        ) {
             Column {
                 Text(
                     modifier = Modifier.padding(

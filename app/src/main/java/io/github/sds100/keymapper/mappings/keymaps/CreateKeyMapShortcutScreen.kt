@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.FlashlightOn
 import androidx.compose.material3.AlertDialog
@@ -99,7 +99,7 @@ private fun CreateKeyMapShortcutScreen(
                 actions = {
                     IconButton(onClick = { showBackDialog = true }) {
                         Icon(
-                            Icons.AutoMirrored.Outlined.ArrowBack,
+                            Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.bottom_app_bar_back_content_description),
                         )
                     }

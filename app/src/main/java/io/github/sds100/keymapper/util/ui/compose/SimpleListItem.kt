@@ -57,7 +57,7 @@ fun SimpleListItem(
 
             when (model.icon) {
                 is ComposeIconInfo.Vector -> Icon(
-                    modifier = Modifier.size(28.dp),
+                    modifier = Modifier.size(26.dp),
                     imageVector = model.icon.imageVector,
                     contentDescription = null,
                     tint = LocalContentColor.current,
@@ -66,7 +66,7 @@ fun SimpleListItem(
                 is ComposeIconInfo.Drawable -> {
                     val painter = rememberDrawablePainter(model.icon.drawable)
                     Icon(
-                        modifier = Modifier.size(28.dp),
+                        modifier = Modifier.size(26.dp),
                         painter = painter,
                         contentDescription = null,
                         tint = Color.Unspecified,
@@ -76,7 +76,9 @@ fun SimpleListItem(
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            Column {
+            Column(
+                modifier = Modifier.padding(end = 16.dp),
+            ) {
                 Text(
                     text = model.title,
                     style = MaterialTheme.typography.bodyMedium,
@@ -98,8 +100,6 @@ fun SimpleListItem(
                     )
                 }
             }
-
-            Spacer(modifier = Modifier.width(16.dp))
         }
     }
 }
@@ -162,7 +162,6 @@ private fun PreviewDrawable() {
     KeyMapperTheme {
         Surface {
             SimpleListItem(
-                modifier = Modifier.fillMaxWidth(),
                 model = SimpleListItemModel(
                     "app",
                     title = "Key Mapper",
