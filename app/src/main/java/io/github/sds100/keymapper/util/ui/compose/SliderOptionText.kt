@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.RestartAlt
 import androidx.compose.material3.ElevatedButton
@@ -31,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpSize
@@ -45,7 +47,7 @@ fun SliderOptionText(
     modifier: Modifier = Modifier,
     title: String,
     value: Float,
-    defaultValue: Float? = null,
+    defaultValue: Float,
     valueText: (Float) -> String,
     isEnabled: Boolean = true,
     onValueChange: (Float) -> Unit,
@@ -56,11 +58,20 @@ fun SliderOptionText(
 
     if (showDialog) {
         ValueDialog(
-            initialValue = value.roundToInt(),
+            initialValue = if (value == defaultValue) {
+                null
+            } else {
+                value.roundToInt()
+            },
+            placeholderValue = valueText(defaultValue),
             title = title,
             onDismissRequest = { showDialog = false },
-            onSaveClick = {
-                onValueChange(it.toFloat())
+            onSaveClick = { newValue ->
+                if (newValue == null) {
+                    onValueChange(defaultValue)
+                } else {
+                    onValueChange(newValue.toFloat())
+                }
                 showDialog = false
             },
         )
@@ -105,14 +116,12 @@ fun SliderOptionText(
                 Text(text)
             }
 
-            if (defaultValue != null) {
-                AnimatedVisibility(visible = value != defaultValue) {
-                    IconButton(onClick = { onValueChange(defaultValue) }) {
-                        Icon(
-                            Icons.Rounded.RestartAlt,
-                            contentDescription = stringResource(R.string.slider_reset_content_description),
-                        )
-                    }
+            AnimatedVisibility(visible = value != defaultValue) {
+                IconButton(onClick = { onValueChange(defaultValue) }) {
+                    Icon(
+                        Icons.Rounded.RestartAlt,
+                        contentDescription = stringResource(R.string.slider_reset_content_description),
+                    )
                 }
             }
         }
@@ -121,19 +130,21 @@ fun SliderOptionText(
 
 @Composable
 private fun ValueDialog(
-    initialValue: Int,
+    initialValue: Int?,
+    placeholderValue: String?,
     title: String,
     onDismissRequest: () -> Unit,
-    onSaveClick: (Int) -> Unit,
+    onSaveClick: (Int?) -> Unit,
 ) {
-    var newValue by rememberSaveable { mutableStateOf(initialValue.toString()) }
-    val isError by remember { derivedStateOf { newValue.isBlank() || newValue.toIntOrNull() == null } }
+    var newValue by rememberSaveable { mutableStateOf(initialValue?.toString() ?: "") }
+    var isChanged by rememberSaveable { mutableStateOf(false) }
+    val isError by remember { derivedStateOf { isChanged && newValue.toIntOrNull() == null } }
 
     CustomDialog(
         title = title,
         confirmButton = {
             TextButton(
-                onClick = { newValue.toIntOrNull()?.let { onSaveClick(it) } },
+                onClick = { onSaveClick(newValue.toIntOrNull()) },
                 enabled = !isError,
             ) {
                 Text(stringResource(R.string.pos_save))
@@ -151,21 +162,32 @@ private fun ValueDialog(
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
             value = newValue,
-            onValueChange = { newValue = it },
+            placeholder = if (placeholderValue == null) {
+                null
+            } else {
+                {
+                    Text(placeholderValue)
+                }
+            },
+            onValueChange = {
+                isChanged = true
+                newValue = it
+            },
             singleLine = true,
             maxLines = 1,
             isError = isError,
             supportingText = {
-                when {
-                    newValue.isBlank() -> {
-                        Text(stringResource(R.string.error_cant_be_empty))
-                    }
+                if (!isChanged) {
+                    return@TextField
+                }
 
+                when {
                     newValue.toIntOrNull() == null -> {
                         Text(stringResource(R.string.error_invalid_number))
                     }
                 }
             },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         )
     }
 }
@@ -215,7 +237,8 @@ private fun PreviewDefault() {
 private fun PreviewDialog() {
     KeyMapperTheme {
         ValueDialog(
-            initialValue = 500,
+            initialValue = null,
+            placeholderValue = "Default: 300",
             title = "Repeat delay",
             onDismissRequest = {},
             onSaveClick = {},
