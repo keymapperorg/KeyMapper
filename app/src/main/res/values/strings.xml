@@ -1364,5 +1364,8 @@
     <string name="choose_action_title">Choose an action</string>
     <string name="search_placeholder">Search…</string>
     <string name="action_list_empty">Nothing here!</string>
-
+    <string name="action_list_delete_dialog_title">Delete action</string>
+    <string name="action_list_delete_dialog_text">Are you sure you want to delete this action?</string>
+    <string name="action_list_delete_yes">Yes, delete</string>
+    <string name="action_list_delete_cancel">Cancel</string>
 </resources>

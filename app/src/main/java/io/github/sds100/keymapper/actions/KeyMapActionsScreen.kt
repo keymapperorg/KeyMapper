@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.FlashlightOn
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -21,9 +22,13 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -85,6 +90,32 @@ private fun KeyMapActionsScreen(
     onTestClick: (String) -> Unit = {},
     onClickShortcut: (ActionData) -> Unit = {},
 ) {
+    var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
+    var actionToDelete by rememberSaveable { mutableStateOf<String?>(null) }
+
+    if (showDeleteDialog && actionToDelete != null) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = {
+                Text(stringResource(R.string.action_list_delete_dialog_title))
+            },
+            text = { Text(stringResource(R.string.action_list_delete_dialog_text)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    onRemoveClick(actionToDelete!!)
+                    showDeleteDialog = false
+                }) {
+                    Text(stringResource(R.string.action_list_delete_yes))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) {
+                    Text(stringResource(R.string.action_list_delete_cancel))
+                }
+            },
+        )
+    }
+
     when (state) {
         State.Loading -> Loading()
         is State.Data<ConfigActionsState> -> Surface(modifier = modifier) {
@@ -131,7 +162,10 @@ private fun KeyMapActionsScreen(
                             actionList = state.data.actions,
                             shortcuts = state.data.shortcuts,
                             isReorderingEnabled = state.data.isReorderingEnabled,
-                            onRemoveClick = onRemoveClick,
+                            onRemoveClick = {
+                                actionToDelete = it
+                                showDeleteDialog = true
+                            },
                             onEditClick = onEditClick,
                             onFixErrorClick = onFixErrorClick,
                             onMove = onMoveAction,
