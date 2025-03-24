@@ -13,7 +13,6 @@ import io.github.sds100.keymapper.util.isFixable
 object ViewModelHelper {
     suspend fun handleKeyMapperCrashedDialog(
         resourceProvider: ResourceProvider,
-        navigationViewModel: NavigationViewModel,
         popupViewModel: PopupViewModel,
         restartService: () -> Boolean,
     ) {
@@ -26,28 +25,15 @@ object ViewModelHelper {
 
         val response = popupViewModel.showPopup("app_crashed_prompt", dialog) ?: return
 
-        // TODO handle key mapper crashed dialog
-//        when (response) {
-//            DialogResponse.POSITIVE -> navigationViewModel.navigate(
-//                "fix_app_killing",
-//                NavDestination.FixAppKilling,
-//            )
-//
-//            DialogResponse.NEUTRAL -> {
-//                val restartServiceDialog = PopupUi.Ok(
-//                    message = resourceProvider.getString(R.string.dialog_message_restart_accessibility_service),
-//                )
-//
-//                popupViewModel.showPopup("restart_accessibility_service", restartServiceDialog)
-//                    ?: return
-//
-//                if (!restartService.invoke()) {
-//                    handleCantFindAccessibilitySettings(resourceProvider, popupViewModel)
-//                }
-//            }
-//
-//            else -> Unit
-//        }
+        when (response) {
+            DialogResponse.POSITIVE -> {
+                val popup =
+                    PopupUi.OpenUrl(resourceProvider.getString(R.string.url_dont_kill_my_app))
+                popupViewModel.showPopup("dont_kill_my_app", popup)
+            }
+
+            else -> Unit
+        }
     }
 
     suspend fun showAccessibilityServiceExplanationDialog(

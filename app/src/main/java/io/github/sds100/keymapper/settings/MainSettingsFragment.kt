@@ -465,18 +465,17 @@ class MainSettingsFragment : BaseSettingsFragment() {
         }
 
         // report issue to developer
-        Preference(requireContext()).apply {
-            isSingleLineTitle = false
-            setTitle(R.string.title_pref_report_issue)
-
-            setOnPreferenceClickListener {
-                // TODO create a bug report package and open share sheet.
-
-                true
-            }
-
-            addPreference(this)
-        }
+//        Preference(requireContext()).apply {
+//            isSingleLineTitle = false
+//            setTitle(R.string.title_pref_report_issue)
+//
+//            setOnPreferenceClickListener {
+//
+//                true
+//            }
+//
+//            addPreference(this)
+//        }
     }
 
     @SuppressLint("NewApi")

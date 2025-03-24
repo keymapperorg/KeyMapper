@@ -425,7 +425,6 @@ class HomeViewModel(
                 ID_ACCESSIBILITY_SERVICE_CRASHED_LIST_ITEM ->
                     ViewModelHelper.handleKeyMapperCrashedDialog(
                         resourceProvider = this@HomeViewModel,
-                        navigationViewModel = this@HomeViewModel,
                         popupViewModel = this@HomeViewModel,
                         restartService = showAlertsUseCase::restartAccessibilityService,
                     )
