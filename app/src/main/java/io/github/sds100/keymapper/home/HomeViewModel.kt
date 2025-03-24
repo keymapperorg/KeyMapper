@@ -46,18 +46,15 @@ import io.github.sds100.keymapper.util.ui.ViewModelHelper
 import io.github.sds100.keymapper.util.ui.navigate
 import io.github.sds100.keymapper.util.ui.showPopup
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -88,9 +85,19 @@ class HomeViewModel(
 
     private val multiSelectProvider: MultiSelectProvider = MultiSelectProvider()
     val navBarItems: StateFlow<List<HomeNavBarItem>> =
-        listFloatingLayouts.showFloatingLayouts
-            .map(::buildNavBarItems)
-            .stateIn(viewModelScope, SharingStarted.Eagerly, buildNavBarItems(false))
+        combine(
+            listFloatingLayouts.showFloatingLayouts,
+            onboarding.hasViewedAdvancedTriggers,
+            transform = ::buildNavBarItems,
+        )
+            .stateIn(
+                viewModelScope,
+                SharingStarted.Eagerly,
+                buildNavBarItems(
+                    showFloatingLayouts = false,
+                    viewedAdvancedTriggers = false,
+                ),
+            )
 
     val keymapListViewModel by lazy {
         KeyMapListViewModel(
@@ -116,12 +123,6 @@ class HomeViewModel(
     }
 
     var showSortBottomSheet by mutableStateOf(false)
-
-    private val _showQuickStartGuideHint = MutableStateFlow(false)
-    val showQuickStartGuideHint = _showQuickStartGuideHint.asStateFlow()
-
-    private val _shareBackup = MutableSharedFlow<String>()
-    val shareBackup = _shareBackup.asSharedFlow()
 
     private val _importExportState = MutableStateFlow<ImportExportState>(ImportExportState.Idle)
     val importExportState: StateFlow<ImportExportState> = _importExportState.asStateFlow()
@@ -234,8 +235,6 @@ class HomeViewModel(
             if (showWhatsNew) {
                 showWhatsNewDialog()
             }
-
-            _showQuickStartGuideHint.value = showQuickStartGuideHint
         }.launchIn(viewModelScope)
 
         viewModelScope.launch {
@@ -245,7 +244,10 @@ class HomeViewModel(
         }
     }
 
-    private fun buildNavBarItems(showFloatingLayouts: Boolean): List<HomeNavBarItem> {
+    private fun buildNavBarItems(
+        showFloatingLayouts: Boolean,
+        viewedAdvancedTriggers: Boolean,
+    ): List<HomeNavBarItem> {
         val items = mutableListOf<HomeNavBarItem>()
         items.add(
             HomeNavBarItem(
@@ -262,7 +264,11 @@ class HomeViewModel(
                     HomeDestination.FloatingButtons,
                     getString(R.string.home_nav_bar_floating_buttons),
                     icon = Icons.Outlined.BubbleChart,
-                    badge = getString(R.string.button_advanced_triggers_badge),
+                    badge = if (viewedAdvancedTriggers) {
+                        null
+                    } else {
+                        getString(R.string.button_advanced_triggers_badge)
+                    },
                 ),
             )
         }
