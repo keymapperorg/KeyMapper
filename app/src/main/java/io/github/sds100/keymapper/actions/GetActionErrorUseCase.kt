@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
+import timber.log.Timber
 
 class GetActionErrorUseCaseImpl(
     private val packageManager: PackageManagerAdapter,
@@ -36,9 +37,11 @@ class GetActionErrorUseCaseImpl(
     )
 
     override val actionErrorSnapshot: Flow<ActionErrorSnapshot> = channelFlow {
+        Timber.d("ON ACTION ERROR SNAPSHOT 1")
         send(createSnapshot())
 
         invalidateActionErrors.collectLatest {
+            Timber.d("ON ACTION ERROR SNAPSHOT 2")
             send(createSnapshot())
         }
     }

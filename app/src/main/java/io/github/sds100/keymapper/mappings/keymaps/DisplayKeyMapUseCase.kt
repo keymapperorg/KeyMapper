@@ -35,6 +35,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.withTimeout
+import timber.log.Timber
 
 /**
  * Created by sds100 on 04/04/2021.
@@ -95,6 +96,7 @@ class DisplayKeyMapUseCaseImpl(
         inputMethodAdapter.chosenIme,
         showDpadImeSetupError,
     ) { _, purchases, _, showDpadImeSetupError ->
+        Timber.d("ON TRIGGER SNAPSHOT")
         TriggerErrorSnapshot(
             isKeyMapperImeChosen = keyMapperImeHelper.isCompatibleImeChosen(),
             isDndAccessGranted = permissionAdapter.isGranted(Permission.ACCESS_NOTIFICATION_POLICY),

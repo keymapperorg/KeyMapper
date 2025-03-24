@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
+import timber.log.Timber
 
 class GetConstraintErrorUseCaseImpl(
     private val packageManager: PackageManagerAdapter,
@@ -26,9 +27,11 @@ class GetConstraintErrorUseCaseImpl(
     )
 
     override val constraintErrorSnapshot: Flow<ConstraintErrorSnapshot> = channelFlow {
+        Timber.d("ON CONSTRAINT SNAPSHOT 1")
         send(createSnapshot())
 
         invalidateConstraintErrors.collectLatest {
+            Timber.d("ON CONSTRAINT SNAPSHOT 2")
             send(createSnapshot())
         }
     }
