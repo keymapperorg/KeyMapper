@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Fingerprint
@@ -16,6 +17,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -23,6 +26,7 @@ import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyShortcut
+import io.github.sds100.keymapper.util.drawable
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 
 @Composable
@@ -47,11 +51,21 @@ fun <T> ShortcutRow(
                     when (shortcut.icon) {
                         is ComposeIconInfo.Drawable -> {
                             val painter = rememberDrawablePainter(shortcut.icon.drawable)
-                            Icon(painter = painter, contentDescription = null)
+                            Icon(
+                                modifier = Modifier.size(24.dp),
+                                painter = painter,
+                                contentDescription = null,
+                                tint = Color.Unspecified,
+                            )
                         }
 
                         is ComposeIconInfo.Vector -> {
-                            Icon(imageVector = shortcut.icon.imageVector, contentDescription = null)
+                            Icon(
+                                modifier = Modifier.size(24.dp),
+                                imageVector = shortcut.icon.imageVector,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
                         }
                     }
                 },
@@ -71,7 +85,7 @@ private fun ShortcutButton(
         modifier = modifier,
         onClick = onClick,
         shape = MaterialTheme.shapes.medium,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {
         Row(
             modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
@@ -79,20 +93,45 @@ private fun ShortcutButton(
         ) {
             icon()
             Spacer(modifier = Modifier.width(8.dp))
-            Text(text = text, style = MaterialTheme.typography.titleSmall)
+            Text(
+                text = text,
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
     }
 }
 
 @Preview
 @Composable
-private fun Preview() {
+private fun PreviewVector() {
     KeyMapperTheme {
         Surface {
             ShortcutRow(
                 shortcuts = setOf(
                     ShortcutModel(
                         icon = ComposeIconInfo.Vector(Icons.Rounded.Fingerprint),
+                        text = stringResource(R.string.trigger_key_shortcut_add_fingerprint_gesture),
+                        data = TriggerKeyShortcut.FINGERPRINT_GESTURE,
+                    ),
+                ),
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewDrawable() {
+    val ctx = LocalContext.current
+    val icon = ctx.drawable(R.mipmap.ic_launcher_round)
+
+    KeyMapperTheme {
+        Surface {
+            ShortcutRow(
+                shortcuts = setOf(
+                    ShortcutModel(
+                        icon = ComposeIconInfo.Drawable(icon),
                         text = stringResource(R.string.trigger_key_shortcut_add_fingerprint_gesture),
                         data = TriggerKeyShortcut.FINGERPRINT_GESTURE,
                     ),

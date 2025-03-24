@@ -17,13 +17,14 @@ import androidx.compose.material.icons.rounded.FlashlightOn
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -46,10 +47,22 @@ import io.github.sds100.keymapper.util.drawable
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.util.ui.compose.RadioButtonText
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ConstraintsScreen(modifier: Modifier = Modifier, viewModel: ConfigConstraintsViewModel) {
+fun ConstraintsScreen(
+    modifier: Modifier = Modifier,
+    viewModel: ConfigConstraintsViewModel,
+    snackbarHost: SnackbarHostState,
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    if (viewModel.showDuplicateConstraintsSnackbar) {
+        val message = stringResource(R.string.error_duplicate_constraint)
+
+        LaunchedEffect(viewModel.showDuplicateConstraintsSnackbar) {
+            snackbarHost.showSnackbar(message)
+            viewModel.showDuplicateConstraintsSnackbar = false
+        }
+    }
 
     ConstraintsScreen(
         modifier = modifier,

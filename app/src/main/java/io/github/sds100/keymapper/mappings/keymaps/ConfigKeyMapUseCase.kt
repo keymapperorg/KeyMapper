@@ -8,7 +8,6 @@ import io.github.sds100.keymapper.constraints.ConstraintMode
 import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.entities.FloatingButtonEntityWithLayout
-import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
 import io.github.sds100.keymapper.data.repositories.FloatingLayoutRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
@@ -48,12 +47,14 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import java.util.LinkedList
 
 /**
  * Created by sds100 on 16/02/2021.
@@ -78,20 +79,37 @@ class ConfigKeyMapUseCaseController(
     private val showDeviceDescriptors: Flow<Boolean> =
         preferenceRepository.get(Keys.showDeviceDescriptors).map { it == true }
 
-    // TODO: get the list of key maps and store in key maps when they were last updated. Store the updated time as nullable long. First show the actions last used while configuring.
-    // DO NOT show the repeat options etc, just store the ActionId.
-    override val recentlyUsedActions: StateFlow<Set<ActionData>> =
+    /**
+     * The most recently used is first.
+     */
+    override val recentlyUsedActions: StateFlow<List<ActionData>> =
+        preferenceRepository.get(Keys.recentlyUsedActions)
+            .map(::getActionShortcuts)
+            .map { it }
+            .stateIn(
+                coroutineScope,
+                SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+                emptyList(),
+            )
+
+    /**
+     * The most recently used is first.
+     */
+    override val recentlyUsedConstraints: StateFlow<List<Constraint>> =
         combine(
-            keyMap,
-            keyMapRepository.keyMapList,
-            transform = ::getActionShortcuts,
-        ).stateIn(
+            preferenceRepository.get(Keys.recentlyUsedConstraints).map(::getConstraintShortcuts),
+            keyMap.filterIsInstance<State.Data<KeyMap>>(),
+        ) { shortcuts, keyMap ->
+
+            // Do not include constraints that the key map already contains.
+            shortcuts
+                .filter { !keyMap.data.constraintState.constraints.contains(it) }
+                .take(3)
+        }.stateIn(
             coroutineScope,
             SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
-            emptySet(),
+            emptyList(),
         )
-
-    override val recentlyUsedConstraints: Flow<Set<Constraint>> = flowOf(emptySet())
 
     init {
         // Update button data in the key map whenever the floating buttons changes.
@@ -133,6 +151,23 @@ class ConfigKeyMapUseCaseController(
             setConstraintState(newState)
         }
 
+        preferenceRepository.update(
+            Keys.recentlyUsedConstraints,
+            { old ->
+                val oldList: List<Constraint> = if (old == null) {
+                    emptyList()
+                } else {
+                    Json.decodeFromString<List<Constraint>>(old)
+                }
+
+                val newShortcuts = LinkedList(oldList)
+                    .also { it.addFirst(constraint) }
+                    .distinct()
+
+                Json.encodeToString(newShortcuts as List<Constraint>)
+            },
+        )
+
         return !containsConstraint
     }
 
@@ -163,6 +198,23 @@ class ConfigKeyMapUseCaseController(
             add(createAction(data))
             setActionList(this)
         }
+
+        preferenceRepository.update(
+            Keys.recentlyUsedActions,
+            { old ->
+                val oldList: List<ActionData> = if (old == null) {
+                    emptyList()
+                } else {
+                    Json.decodeFromString<List<ActionData>>(old)
+                }
+
+                val newShortcuts = LinkedList(oldList)
+                    .also { it.addFirst(data) }
+                    .distinct()
+
+                Json.encodeToString(newShortcuts as List<ActionData>)
+            },
+        )
     }
 
     override fun moveAction(fromIndex: Int, toIndex: Int) {
@@ -818,18 +870,38 @@ class ConfigKeyMapUseCaseController(
         }
     }
 
-    // TODO just store a history in preferences so that they remain even when key maps are deleted
-    private suspend fun getActionShortcuts(
-        keyMap: State<KeyMap>,
-        keyMapList: State<List<KeyMapEntity>>,
-    ): Set<ActionData> {
-        val keyMap = keyMap.dataOrNull() ?: return emptySet()
-        val keyMapList = keyMapList.dataOrNull() ?: return emptySet()
-
-        withContext(Dispatchers.Default) {
+    private suspend fun getActionShortcuts(json: String?): List<ActionData> {
+        if (json == null) {
+            return emptyList()
         }
 
-        return emptySet()
+        try {
+            return withContext(Dispatchers.Default) {
+                val list = Json.decodeFromString<List<ActionData>>(json)
+
+                list.distinct()
+            }
+        } catch (_: Exception) {
+            preferenceRepository.set(Keys.recentlyUsedActions, null)
+            return emptyList()
+        }
+    }
+
+    private suspend fun getConstraintShortcuts(json: String?): List<Constraint> {
+        if (json == null) {
+            return emptyList()
+        }
+
+        try {
+            return withContext(Dispatchers.Default) {
+                val list = Json.decodeFromString<List<Constraint>>(json)
+
+                list.distinct()
+            }
+        } catch (_: Exception) {
+            preferenceRepository.set(Keys.recentlyUsedConstraints, null)
+            return emptyList()
+        }
     }
 
     private inline fun editTrigger(block: (trigger: Trigger) -> Trigger) {
@@ -870,7 +942,7 @@ interface ConfigKeyMapUseCase : GetDefaultKeyMapOptionsUseCase {
     fun moveAction(fromIndex: Int, toIndex: Int)
     fun removeAction(uid: String)
 
-    val recentlyUsedActions: Flow<Set<ActionData>>
+    val recentlyUsedActions: Flow<List<ActionData>>
     fun setActionData(uid: String, data: ActionData)
     fun setActionMultiplier(uid: String, multiplier: Int)
     fun setDelayBeforeNextAction(uid: String, delay: Int)
@@ -886,7 +958,7 @@ interface ConfigKeyMapUseCase : GetDefaultKeyMapOptionsUseCase {
 
     fun setActionStopHoldingDownWhenTriggerPressedAgain(uid: String, enabled: Boolean)
 
-    val recentlyUsedConstraints: Flow<Set<Constraint>>
+    val recentlyUsedConstraints: Flow<List<Constraint>>
     fun addConstraint(constraint: Constraint): Boolean
     fun removeConstraint(id: String)
     fun setAndMode()

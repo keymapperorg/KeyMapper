@@ -1,6 +1,8 @@
 package io.github.sds100.keymapper.constraints
 
-import io.github.sds100.keymapper.R
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapUseCase
 import io.github.sds100.keymapper.mappings.keymaps.ShortcutModel
 import io.github.sds100.keymapper.system.permissions.Permission
@@ -13,14 +15,12 @@ import io.github.sds100.keymapper.util.mapData
 import io.github.sds100.keymapper.util.ui.NavDestination
 import io.github.sds100.keymapper.util.ui.NavigationViewModel
 import io.github.sds100.keymapper.util.ui.NavigationViewModelImpl
-import io.github.sds100.keymapper.util.ui.PopupUi
 import io.github.sds100.keymapper.util.ui.PopupViewModel
 import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.ViewModelHelper
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.util.ui.navigate
-import io.github.sds100.keymapper.util.ui.showPopup
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -65,6 +65,8 @@ class ConfigConstraintsViewModel(
             SharingStarted.Lazily,
             null,
         )
+
+    var showDuplicateConstraintsSnackbar: Boolean by mutableStateOf(false)
 
     init {
         combine(
@@ -136,13 +138,7 @@ class ConfigConstraintsViewModel(
             val isDuplicate = !config.addConstraint(constraint)
 
             if (isDuplicate) {
-                coroutineScope.launch {
-                    val snackBar = PopupUi.SnackBar(
-                        message = getString(R.string.error_duplicate_constraint),
-                    )
-
-                    showPopup("duplicate_constraint", snackBar)
-                }
+                showDuplicateConstraintsSnackbar = true
             }
         }
     }

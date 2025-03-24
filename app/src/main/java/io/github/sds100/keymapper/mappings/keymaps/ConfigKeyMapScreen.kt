@@ -31,6 +31,8 @@ import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
@@ -65,6 +67,7 @@ fun ConfigKeyMapScreen(
     navigateBack: () -> Unit,
 ) {
     val isKeyMapEnabled by viewModel.isEnabled.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     ConfigKeyMapScreen(
         modifier = modifier,
@@ -77,7 +80,11 @@ fun ConfigKeyMapScreen(
             ActionsScreen(Modifier.fillMaxSize(), viewModel.configActionsViewModel)
         },
         constraintsScreen = {
-            ConstraintsScreen(Modifier.fillMaxSize(), viewModel.configConstraintsViewModel)
+            ConstraintsScreen(
+                Modifier.fillMaxSize(),
+                viewModel.configConstraintsViewModel,
+                snackbarHostState,
+            )
         },
         optionsScreen = {
             KeyMapOptionsScreen(
@@ -90,6 +97,7 @@ fun ConfigKeyMapScreen(
             viewModel.save()
             navigateBack()
         },
+        snackbarHostState = snackbarHostState,
     )
 }
 
@@ -105,6 +113,7 @@ private fun ConfigKeyMapScreen(
     optionsScreen: @Composable () -> Unit,
     navigateBack: () -> Unit = {},
     onDoneClick: () -> Unit = {},
+    snackbarHostState: SnackbarHostState = SnackbarHostState(),
 ) {
     val scope = rememberCoroutineScope()
     val triggerHelpUrl = stringResource(R.string.url_trigger_guide)
@@ -130,6 +139,7 @@ private fun ConfigKeyMapScreen(
 
     Scaffold(
         modifier.displayCutoutPadding(),
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
             KeyMapAppBar(
                 isKeyMapEnabled = isKeyMapEnabled,

@@ -6,7 +6,7 @@ import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.permissions.SystemFeatureAdapter
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
@@ -25,7 +25,7 @@ class GetConstraintErrorUseCaseImpl(
         packageManager.onPackagesChanged,
     )
 
-    override val constraintErrorSnapshot: Flow<ConstraintErrorSnapshot> = callbackFlow {
+    override val constraintErrorSnapshot: Flow<ConstraintErrorSnapshot> = channelFlow {
         send(createSnapshot())
 
         invalidateConstraintErrors.collectLatest {
