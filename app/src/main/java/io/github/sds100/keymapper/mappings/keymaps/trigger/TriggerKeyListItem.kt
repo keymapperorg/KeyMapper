@@ -45,6 +45,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.draggable.DragDropState
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.FingerprintGestureType
+import io.github.sds100.keymapper.util.ui.LinkType
 
 @Composable
 fun TriggerKeyListItem(
@@ -223,7 +224,7 @@ fun TriggerKeyListItem(
             }
         }
 
-        if (model.linkType == TriggerKeyLinkType.HIDDEN) {
+        if (model.linkType == LinkType.HIDDEN) {
             // Important! Show an empty spacer so the height of the card remains constant
             // while dragging. If the height changes while dragging it can lead to janky
             // behavior.
@@ -233,9 +234,9 @@ fun TriggerKeyListItem(
 
             Icon(
                 imageVector = when (model.linkType) {
-                    TriggerKeyLinkType.ARROW -> Icons.Rounded.ArrowDownward
-                    TriggerKeyLinkType.PLUS -> Icons.Rounded.Add
-                    TriggerKeyLinkType.HIDDEN -> Icons.Rounded.Add
+                    LinkType.ARROW -> Icons.Rounded.ArrowDownward
+                    LinkType.PLUS -> Icons.Rounded.Add
+                    LinkType.HIDDEN -> Icons.Rounded.Add
                 },
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurface,
@@ -327,7 +328,7 @@ private fun KeyCodePreview() {
             keyName = "Volume Up",
             clickType = ClickType.SHORT_PRESS,
             extraInfo = "External Keyboard",
-            linkType = TriggerKeyLinkType.ARROW,
+            linkType = LinkType.ARROW,
             error = null,
         ),
         isDragging = false,
@@ -345,7 +346,7 @@ private fun NoDragPreview() {
             keyName = "Volume Up",
             clickType = ClickType.LONG_PRESS,
             extraInfo = "External Keyboard",
-            linkType = TriggerKeyLinkType.ARROW,
+            linkType = LinkType.ARROW,
             error = null,
         ),
         isDragging = false,
@@ -362,7 +363,7 @@ private fun AssistantPreview() {
             id = "id",
             assistantType = AssistantTriggerType.DEVICE,
             clickType = ClickType.SHORT_PRESS,
-            linkType = TriggerKeyLinkType.ARROW,
+            linkType = LinkType.ARROW,
             error = null,
         ),
         isDragging = false,
@@ -379,7 +380,7 @@ private fun AssistantErrorPreview() {
             id = "id",
             assistantType = AssistantTriggerType.DEVICE,
             clickType = ClickType.DOUBLE_PRESS,
-            linkType = TriggerKeyLinkType.ARROW,
+            linkType = LinkType.ARROW,
             error = TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED,
         ),
         isDragging = false,
@@ -397,7 +398,7 @@ private fun FloatingButtonPreview() {
             buttonName = "😎",
             layoutName = "Gaming",
             clickType = ClickType.DOUBLE_PRESS,
-            linkType = TriggerKeyLinkType.ARROW,
+            linkType = LinkType.ARROW,
             error = null,
         ),
         isDragging = false,
@@ -413,7 +414,7 @@ private fun FloatingButtonErrorPreview() {
         model = TriggerKeyListItemModel.FloatingButtonDeleted(
             id = "id",
             clickType = ClickType.DOUBLE_PRESS,
-            linkType = TriggerKeyLinkType.ARROW,
+            linkType = LinkType.ARROW,
         ),
         isDragging = false,
         isReorderingEnabled = false,

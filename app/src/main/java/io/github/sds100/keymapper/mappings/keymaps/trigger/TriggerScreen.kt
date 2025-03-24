@@ -45,6 +45,7 @@ import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.ShortcutModel
 import io.github.sds100.keymapper.mappings.ShortcutRow
 import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.ui.LinkType
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.util.ui.compose.RadioButtonText
 
@@ -497,7 +498,7 @@ private val sampleList = listOf(
         keyName = "Volume Up",
         clickType = ClickType.SHORT_PRESS,
         extraInfo = "External Keyboard",
-        linkType = TriggerKeyLinkType.ARROW,
+        linkType = LinkType.ARROW,
         error = null,
     ),
     TriggerKeyListItemModel.FloatingButton(
@@ -505,14 +506,14 @@ private val sampleList = listOf(
         buttonName = "😎",
         layoutName = "Gaming",
         clickType = ClickType.DOUBLE_PRESS,
-        linkType = TriggerKeyLinkType.ARROW,
+        linkType = LinkType.ARROW,
         error = null,
     ),
     TriggerKeyListItemModel.Assistant(
         id = "id3",
         assistantType = AssistantTriggerType.DEVICE,
         clickType = ClickType.DOUBLE_PRESS,
-        linkType = TriggerKeyLinkType.ARROW,
+        linkType = LinkType.ARROW,
         error = null,
     ),
 )

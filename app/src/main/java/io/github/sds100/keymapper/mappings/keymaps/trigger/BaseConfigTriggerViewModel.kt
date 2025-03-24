@@ -29,6 +29,7 @@ import io.github.sds100.keymapper.util.dataOrNull
 import io.github.sds100.keymapper.util.mapData
 import io.github.sds100.keymapper.util.ui.CheckBoxListItem
 import io.github.sds100.keymapper.util.ui.DialogResponse
+import io.github.sds100.keymapper.util.ui.LinkType
 import io.github.sds100.keymapper.util.ui.NavigationViewModel
 import io.github.sds100.keymapper.util.ui.NavigationViewModelImpl
 import io.github.sds100.keymapper.util.ui.PopupUi
@@ -624,9 +625,9 @@ abstract class BaseConfigTriggerViewModel(
             }
 
             val linkType = when {
-                trigger.mode is TriggerMode.Sequence && (index < trigger.keys.lastIndex || shortcutCount > 0) -> TriggerKeyLinkType.ARROW
-                (index < trigger.keys.lastIndex || shortcutCount > 0) -> TriggerKeyLinkType.PLUS
-                else -> TriggerKeyLinkType.HIDDEN
+                trigger.mode is TriggerMode.Sequence && (index < trigger.keys.lastIndex || shortcutCount > 0) -> LinkType.ARROW
+                (index < trigger.keys.lastIndex || shortcutCount > 0) -> LinkType.PLUS
+                else -> LinkType.HIDDEN
             }
 
             when (key) {
@@ -759,13 +760,13 @@ sealed class ConfigTriggerState {
 
 sealed class TriggerKeyListItemModel {
     abstract val id: String
-    abstract val linkType: TriggerKeyLinkType
+    abstract val linkType: LinkType
     abstract val error: TriggerError?
     abstract val clickType: ClickType
 
     data class KeyCode(
         override val id: String,
-        override val linkType: TriggerKeyLinkType,
+        override val linkType: LinkType,
         val keyName: String,
         override val clickType: ClickType,
         val extraInfo: String?,
@@ -774,7 +775,7 @@ sealed class TriggerKeyListItemModel {
 
     data class Assistant(
         override val id: String,
-        override val linkType: TriggerKeyLinkType,
+        override val linkType: LinkType,
         val assistantType: AssistantTriggerType,
         override val clickType: ClickType,
         override val error: TriggerError?,
@@ -782,7 +783,7 @@ sealed class TriggerKeyListItemModel {
 
     data class FingerprintGesture(
         override val id: String,
-        override val linkType: TriggerKeyLinkType,
+        override val linkType: LinkType,
         val gestureType: FingerprintGestureType,
         override val clickType: ClickType,
         override val error: TriggerError?,
@@ -790,7 +791,7 @@ sealed class TriggerKeyListItemModel {
 
     data class FloatingButton(
         override val id: String,
-        override val linkType: TriggerKeyLinkType,
+        override val linkType: LinkType,
         val buttonName: String,
         val layoutName: String,
         override val clickType: ClickType,
@@ -799,7 +800,7 @@ sealed class TriggerKeyListItemModel {
 
     data class FloatingButtonDeleted(
         override val id: String,
-        override val linkType: TriggerKeyLinkType,
+        override val linkType: LinkType,
         override val clickType: ClickType,
     ) : TriggerKeyListItemModel() {
         override val error: TriggerError = TriggerError.FLOATING_BUTTON_DELETED

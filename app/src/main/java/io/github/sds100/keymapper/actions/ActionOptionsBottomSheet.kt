@@ -304,6 +304,8 @@ fun ActionOptionsBottomSheet(
 
             HorizontalDivider()
 
+            Spacer(Modifier.height(8.dp))
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -351,7 +353,7 @@ interface ActionOptionsBottomSheetCallback {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(heightDp = 1000)
 @Composable
 private fun Preview() {
     KeyMapperTheme {

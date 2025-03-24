@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ClearAll
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.ArrowDownward
 import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material.icons.rounded.DragHandle
 import androidx.compose.material.icons.rounded.PlayCircleOutline
@@ -44,6 +46,7 @@ import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.draggable.DragDropState
 import io.github.sds100.keymapper.util.drawable
+import io.github.sds100.keymapper.util.ui.LinkType
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 
 @Composable
@@ -190,6 +193,29 @@ fun ActionListItem(
                 }
             }
         }
+
+        if (model.linkType == LinkType.HIDDEN) {
+            // Important! Show an empty spacer so the height of the card remains constant
+            // while dragging. If the height changes while dragging it can lead to janky
+            // behavior.
+            Spacer(Modifier.height(32.dp))
+        } else {
+            Spacer(Modifier.height(4.dp))
+
+            Icon(
+                imageVector = when (model.linkType) {
+                    LinkType.ARROW -> Icons.Rounded.ArrowDownward
+                    LinkType.PLUS -> Icons.Rounded.Add
+                    LinkType.HIDDEN -> Icons.Rounded.Add
+                },
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier
+                    .size(24.dp)
+                    .align(Alignment.CenterHorizontally),
+            )
+            Spacer(Modifier.height(4.dp))
+        }
     }
 }
 
@@ -253,7 +279,7 @@ private fun NoDragOneLinePreview() {
     ActionListItem(
         model = ActionListItemModel(
             id = "id",
-            text = "Dismiss most recent notification",
+            text = "Clear all",
             secondaryText = null,
             error = null,
             isErrorFixable = true,

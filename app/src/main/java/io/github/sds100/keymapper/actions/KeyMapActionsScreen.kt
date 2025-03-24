@@ -8,19 +8,16 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.FlashlightOn
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -42,6 +39,7 @@ import io.github.sds100.keymapper.mappings.ShortcutModel
 import io.github.sds100.keymapper.mappings.ShortcutRow
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.ui.LinkType
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 import kotlinx.coroutines.flow.update
 
@@ -198,7 +196,6 @@ private fun ActionList(
         modifier = modifier,
         state = lazyListState,
         contentPadding = PaddingValues(vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         itemsIndexed(
             actionList,
@@ -227,21 +224,11 @@ private fun ActionList(
 
         if (shortcuts.isNotEmpty()) {
             item(key = "shortcuts", contentType = "shortcuts") {
-                Column {
-                    Icon(
-                        imageVector = Icons.Rounded.Add,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier
-                            .size(24.dp)
-                            .align(Alignment.CenterHorizontally),
-                    )
-                    ShortcutRow(
-                        modifier = Modifier.fillMaxWidth(),
-                        shortcuts = shortcuts,
-                        onClick = { onClickShortcut(it) },
-                    )
-                }
+                ShortcutRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    shortcuts = shortcuts,
+                    onClick = { onClickShortcut(it) },
+                )
             }
         }
     }
@@ -282,6 +269,7 @@ private fun LoadedPreview() {
                             secondaryText = "Repeat until released",
                             error = "Flashlight not found",
                             isErrorFixable = true,
+                            linkType = LinkType.ARROW,
                         ),
                         ActionListItemModel(
                             id = "2",
@@ -290,6 +278,7 @@ private fun LoadedPreview() {
                             secondaryText = "Repeat until released",
                             error = null,
                             isErrorFixable = true,
+                            linkType = LinkType.PLUS,
                         ),
                     ),
                     shortcuts = setOf(

@@ -15,6 +15,7 @@ import io.github.sds100.keymapper.util.isFixable
 import io.github.sds100.keymapper.util.mapData
 import io.github.sds100.keymapper.util.onFailure
 import io.github.sds100.keymapper.util.ui.DialogResponse
+import io.github.sds100.keymapper.util.ui.LinkType
 import io.github.sds100.keymapper.util.ui.NavDestination
 import io.github.sds100.keymapper.util.ui.PopupUi
 import io.github.sds100.keymapper.util.ui.ResourceProvider
@@ -405,7 +406,7 @@ class ConfigActionsViewModel(
             return ConfigActionsState.Empty(shortcuts = shortcuts)
         }
 
-        val actions = createListItems(keyMap, showDeviceDescriptors, errorSnapshot)
+        val actions = createListItems(keyMap, showDeviceDescriptors, errorSnapshot, shortcuts.size)
 
         return ConfigActionsState.Loaded(
             actions = actions,
@@ -418,8 +419,9 @@ class ConfigActionsViewModel(
         keyMap: KeyMap,
         showDeviceDescriptors: Boolean,
         errorSnapshot: ActionErrorSnapshot,
+        shortcutCount: Int,
     ): List<ActionListItemModel> {
-        return keyMap.actionList.map { action ->
+        return keyMap.actionList.mapIndexed { index, action ->
 
             val title: String = if (action.multiplier != null && action.multiplier > 1) {
                 val multiplier = action.multiplier
@@ -458,6 +460,12 @@ class ConfigActionsViewModel(
                 }
             }.takeIf { it.isNotBlank() }
 
+            val linkType = when {
+                index == keyMap.actionList.lastIndex && shortcutCount > 0 -> LinkType.PLUS
+                index < keyMap.actionList.lastIndex -> LinkType.ARROW
+                else -> LinkType.HIDDEN
+            }
+
             ActionListItemModel(
                 id = action.uid,
                 icon = icon,
@@ -465,6 +473,7 @@ class ConfigActionsViewModel(
                 secondaryText = extraInfo,
                 error = error?.getFullMessage(this),
                 isErrorFixable = error?.isFixable ?: true,
+                linkType = linkType,
             )
         }
     }
@@ -560,6 +569,7 @@ data class ActionListItemModel(
     val secondaryText: String?,
     val error: String? = null,
     val isErrorFixable: Boolean = true,
+    val linkType: LinkType = LinkType.HIDDEN,
 )
 
 data class ActionOptionsState(

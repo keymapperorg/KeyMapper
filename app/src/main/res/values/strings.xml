@@ -203,14 +203,14 @@
     <string name="extra_label_sequence_trigger_timeout">Sequence trigger timeout (ms)</string>
     <string name="extra_label_long_press_delay_timeout">Long press delay (ms)</string>
     <string name="extra_label_double_press_delay_timeout">Double press timeout (ms)</string>
-    <string name="extra_label_repeat_delay">Delay until repeat (ms)</string>
+    <string name="extra_label_repeat_delay">Delay until repeat</string>
     <string name="extra_label_repeat_limit">Repeat limit</string>
     <string name="extra_label_repeat_rate">Repeat every…</string>
     <string name="extra_label_vibration_duration">Vibration duration (ms)</string>
     <string name="extra_label_action_multiplier">How many times</string>
     <string name="extra_label_action_multiplier_with_repeat">How many times every repeat</string>
-    <string name="extra_label_delay_before_next_action">Delay before next action (ms)</string>
-    <string name="extra_label_hold_down_duration">Hold down duration (ms)</string>
+    <string name="extra_label_delay_before_next_action">Delay before next action</string>
+    <string name="extra_label_hold_down_duration">Hold down duration</string>
     <string name="extra_label_swipe_duration">Swipe duration (ms)</string>
     <string name="extra_label_swipe_finger_count">Finger count</string>
     <string name="extra_label_swipe_select_start_end_label">Coordinates to set with screenshot</string>
