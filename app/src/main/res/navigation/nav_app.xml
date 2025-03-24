@@ -306,10 +306,6 @@
         tools:layout="@layout/fragment_simple_recyclerview">
 
         <argument
-            android:name="supportedConstraints"
-            app:argType="string" />
-
-        <argument
             android:name="requestKey"
             app:argType="string" />
     </fragment>

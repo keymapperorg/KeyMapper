@@ -8,7 +8,6 @@ import io.github.sds100.keymapper.actions.ConfigActionsViewModel
 import io.github.sds100.keymapper.actions.CreateActionUseCase
 import io.github.sds100.keymapper.actions.TestActionUseCase
 import io.github.sds100.keymapper.constraints.ConfigConstraintsViewModel
-import io.github.sds100.keymapper.constraints.ConstraintUtils
 import io.github.sds100.keymapper.mappings.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.mappings.keymaps.trigger.ConfigTriggerViewModel
 import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerUseCase
@@ -72,7 +71,6 @@ class ConfigKeyMapViewModel(
         viewModelScope,
         config,
         displayMapping,
-        ConstraintUtils.KEY_MAP_ALLOWED_CONSTRAINTS,
         resourceProvider,
     )
 

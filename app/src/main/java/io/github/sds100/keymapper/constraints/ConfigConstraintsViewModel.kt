@@ -43,7 +43,6 @@ class ConfigConstraintsViewModel(
     private val coroutineScope: CoroutineScope,
     private val config: ConfigKeyMapUseCase,
     private val displayConstraint: DisplayConstraintUseCase,
-    private val allowedConstraints: List<ConstraintId>,
     resourceProvider: ResourceProvider,
 ) : ResourceProvider by resourceProvider,
     PopupViewModel by PopupViewModelImpl(),
@@ -131,7 +130,7 @@ class ConfigConstraintsViewModel(
     fun addConstraint() {
         coroutineScope.launch {
             val constraint =
-                navigate("add_constraint", NavDestination.ChooseConstraint(allowedConstraints))
+                navigate("add_constraint", NavDestination.ChooseConstraint)
                     ?: return@launch
 
             val isDuplicate = !config.addConstraint(constraint)

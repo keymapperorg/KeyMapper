@@ -6,7 +6,6 @@ import io.github.sds100.keymapper.actions.sound.ChooseSoundFileResult
 import io.github.sds100.keymapper.actions.swipescreen.SwipePickCoordinateResult
 import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.constraints.Constraint
-import io.github.sds100.keymapper.constraints.ConstraintId
 import io.github.sds100.keymapper.system.apps.ActivityInfo
 import io.github.sds100.keymapper.system.apps.ChooseAppShortcutResult
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
@@ -88,7 +87,7 @@ sealed class NavDestination<R> {
         override val id: String = ID_CHOOSE_ACTION
     }
 
-    data class ChooseConstraint(val supportedConstraints: List<ConstraintId>) : NavDestination<Constraint>() {
+    data object ChooseConstraint : NavDestination<Constraint>() {
         override val id: String = ID_CHOOSE_CONSTRAINT
     }
 

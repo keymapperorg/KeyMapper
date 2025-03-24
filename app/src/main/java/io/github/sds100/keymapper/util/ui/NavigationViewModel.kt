@@ -196,7 +196,6 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
             is NavDestination.ChooseSound -> NavAppDirections.chooseSoundFile(requestKey)
             NavDestination.ChooseAction -> NavAppDirections.toChooseActionFragment(requestKey)
             is NavDestination.ChooseConstraint -> NavAppDirections.chooseConstraint(
-                supportedConstraints = Json.encodeToString(destination.supportedConstraints),
                 requestKey = requestKey,
             )
 

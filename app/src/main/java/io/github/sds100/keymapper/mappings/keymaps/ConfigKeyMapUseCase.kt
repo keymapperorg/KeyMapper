@@ -80,6 +80,7 @@ class ConfigKeyMapUseCaseController(
         preferenceRepository.get(Keys.showDeviceDescriptors).map { it == true }
 
     // TODO: get the list of key maps and store in key maps when they were last updated. Store the updated time as nullable long. First show the actions last used while configuring.
+    // DO NOT show the repeat options etc, just store the ActionId.
     override val recentlyUsedActions: StateFlow<Set<ActionData>> =
         combine(
             keyMap,
