@@ -55,6 +55,7 @@ fun TriggerKeyOptionsBottomSheet(
     onSelectAssistantType: (AssistantTriggerType) -> Unit = {},
     onSelectFingerprintGestureType: (FingerprintGestureType) -> Unit = {},
     onEditFloatingButtonClick: () -> Unit = {},
+    onEditFloatingLayoutClick: () -> Unit = {},
 ) {
     ModalBottomSheet(
         modifier = modifier,
@@ -218,27 +219,41 @@ fun TriggerKeyOptionsBottomSheet(
 
             Spacer(Modifier.height(8.dp))
 
+            if (state is TriggerKeyOptionsState.FloatingButton && state.isPurchased) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                ) {
+                    FilledTonalButton(
+                        modifier = Modifier.weight(1f),
+                        onClick = onEditFloatingButtonClick,
+                    ) {
+                        Text(stringResource(R.string.floating_button_trigger_option_configure_button))
+                    }
+
+                    Spacer(Modifier.width(16.dp))
+
+                    FilledTonalButton(
+                        modifier = Modifier.weight(1f),
+                        onClick = onEditFloatingLayoutClick,
+                    ) {
+                        Text(stringResource(R.string.floating_button_trigger_option_edit_layout))
+                    }
+                }
+            }
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
             ) {
-                if (state is TriggerKeyOptionsState.FloatingButton && state.isPurchased) {
-                    // TODO add button to edit layout next to it
-                    FilledTonalButton(
-                        modifier = Modifier.weight(0.5f),
-                        onClick = onEditFloatingButtonClick,
-                    ) {
-                        Text(stringResource(R.string.floating_button_trigger_option_configure_button))
-                    }
-                } else {
-                    Spacer(Modifier.weight(0.5f))
-                }
+                Spacer(Modifier.weight(1f))
 
                 Spacer(Modifier.width(16.dp))
 
                 FilledTonalButton(
-                    modifier = Modifier.weight(0.5f),
+                    modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.filledTonalButtonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = MaterialTheme.colorScheme.onPrimary,

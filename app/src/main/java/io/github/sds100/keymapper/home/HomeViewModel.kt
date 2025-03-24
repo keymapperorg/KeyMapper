@@ -296,12 +296,7 @@ class HomeViewModel(
 
     private suspend fun onAutomaticBackupResult(result: Result<*>) {
         when (result) {
-            is Success -> {
-                showPopup(
-                    "successful_automatic_backup_result",
-                    PopupUi.SnackBar(getString(R.string.toast_automatic_backup_successful)),
-                )
-            }
+            is Success -> {}
 
             is Error -> {
                 val response = showPopup(

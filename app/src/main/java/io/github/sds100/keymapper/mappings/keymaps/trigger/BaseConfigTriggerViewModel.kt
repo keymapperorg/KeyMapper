@@ -590,11 +590,10 @@ abstract class BaseConfigTriggerViewModel(
         }
 
         if (result is Error.AccessibilityServiceCrashed) {
-            ViewModelHelper.handleAccessibilityServiceCrashedSnackBar(
+            ViewModelHelper.handleAccessibilityServiceCrashedDialog(
                 resourceProvider = this@BaseConfigTriggerViewModel,
                 popupViewModel = this@BaseConfigTriggerViewModel,
                 restartService = displayKeyMap::restartAccessibilityService,
-                message = R.string.dialog_message_restart_accessibility_service_to_record_trigger,
             )
         }
     }

@@ -240,11 +240,10 @@ class ConfigActionsViewModel(
             }
 
             if (error is Error.AccessibilityServiceCrashed) {
-                ViewModelHelper.handleAccessibilityServiceCrashedSnackBar(
+                ViewModelHelper.handleAccessibilityServiceCrashedDialog(
                     resourceProvider = this,
                     popupViewModel = this,
                     restartService = displayAction::restartAccessibilityService,
-                    message = R.string.dialog_message_restart_accessibility_service_to_test_action,
                 )
             }
         }

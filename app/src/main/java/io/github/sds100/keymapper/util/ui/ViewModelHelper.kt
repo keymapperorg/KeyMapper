@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.util.ui
 
-import androidx.annotation.StringRes
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.util.Error
@@ -94,18 +93,23 @@ object ViewModelHelper {
         }
     }
 
-    suspend fun handleAccessibilityServiceCrashedSnackBar(
+    suspend fun handleAccessibilityServiceCrashedDialog(
         resourceProvider: ResourceProvider,
         popupViewModel: PopupViewModel,
         restartService: () -> Boolean,
-        @StringRes message: Int,
     ) {
-        val snackBar = PopupUi.SnackBar(
-            message = resourceProvider.getString(message),
-            actionText = resourceProvider.getString(R.string.pos_restart),
+        val dialog = PopupUi.Dialog(
+            title = resourceProvider.getString(R.string.dialog_title_accessibility_service_explanation),
+            message = resourceProvider.getString(R.string.dialog_message_restart_accessibility_service),
+            positiveButtonText = resourceProvider.getString(R.string.pos_restart),
+            negativeButtonText = resourceProvider.getString(R.string.neg_cancel),
         )
 
-        popupViewModel.showPopup("snackbar_restart_service", snackBar) ?: return
+        val response = popupViewModel.showPopup("accessibility_service_explanation", dialog)
+
+        if (response != DialogResponse.POSITIVE) {
+            return
+        }
 
         if (!restartService.invoke()) {
             handleCantFindAccessibilitySettings(resourceProvider, popupViewModel)

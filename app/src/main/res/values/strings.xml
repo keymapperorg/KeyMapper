@@ -450,9 +450,6 @@
     <string name="dialog_title_disable_battery_optimisation">Disable battery optimisation</string>
     <string name="dialog_message_disable_battery_optimisation">You <b>MUST</b> read this <b>all</b> otherwise you will get <b>frustrated</b> in the future!\n\nTapping \"fix partially\" <b>might</b> prevent Android from stopping the app while it is in the background.\n\n<b>This is NOT ENOUGH</b>. Your OEM\'s skin such as MIUI or Samsung Experience may have other app killing features so you MUST turn them off for Key Mapper as well by following the online guide at dontkillmyapp.com.</string>
 
-    <string name="dialog_message_restart_accessibility_service_to_record_trigger">Restart the accessibility service by turning it <i>off</i> and <i>on</i> so that you can record a trigger.</string>
-
-    <string name="dialog_message_restart_accessibility_service_to_test_action">Restart the accessibility service by turning it <i>off</i> and <i>on</i> so that you can test the action.</string>
     <string name="dialog_message_restart_accessibility_service">Restart the accessibility service by turning it <i>off</i> and <i>on</i>.</string>
 
     <string name="dialog_message_screen_pinning_warning">Using this trigger may cause a black screen when you unlock your device after using the screen pinning setting in your device\'s settings. This can be fixed with a reboot. This doesn\'t happen on all devices so beware and turn off the setting if it does!</string>
@@ -1252,6 +1249,7 @@
     <string name="floating_menu_done_dialog_text_no_buttons">You need to create a floating button before you can use it as a trigger.</string>
     <string name="floating_menu_done_dialog_text_buttons">You need to choose one floating button to use as a trigger.</string>
     <string name="floating_button_trigger_option_configure_button">Configure button</string>
+    <string name="floating_button_trigger_option_edit_layout">Edit layout</string>
 
     <!-- Home screen -->
     <string name="sort_bottom_sheet_trigger">Trigger</string>

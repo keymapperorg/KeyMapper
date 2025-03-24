@@ -302,8 +302,6 @@ class AccessibilityServiceAdapter(
     }
 
     private suspend fun getState(): ServiceState {
-        // TODO remove
-        return ServiceState.CRASHED
         /* get a list of all the enabled accessibility services.
          * The AccessibilityManager.getEnabledAccessibilityServices() method just returns an empty
          * list. :(*/
