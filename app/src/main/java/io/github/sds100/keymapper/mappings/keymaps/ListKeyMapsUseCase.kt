@@ -37,22 +37,20 @@ class ListKeyMapsUseCaseImpl(
         ) { keyMapListState, buttonListState ->
             Pair(keyMapListState, buttonListState)
         }.collectLatest { (keyMapListState, buttonListState) ->
-            send(State.Loading)
+            if (keyMapListState is State.Loading || buttonListState is State.Loading) {
+                send(State.Loading)
+            }
 
-            withContext(Dispatchers.Default) {
-                if (keyMapListState is State.Loading || buttonListState is State.Loading) {
-                    send(State.Loading)
-                }
+            val keyMapList = keyMapListState.dataOrNull() ?: return@collectLatest
+            val buttonList = buttonListState.dataOrNull() ?: return@collectLatest
 
-                val keyMapList = keyMapListState.dataOrNull() ?: return@withContext
-                val buttonList = buttonListState.dataOrNull() ?: return@withContext
-
-                val keyMaps = keyMapList.map { keyMap ->
+            val keyMaps = withContext(Dispatchers.Default) {
+                keyMapList.map { keyMap ->
                     KeyMapEntityMapper.fromEntity(keyMap, buttonList)
                 }
-
-                send(State.Data(keyMaps))
             }
+
+            send(State.Data(keyMaps))
         }
     }
 

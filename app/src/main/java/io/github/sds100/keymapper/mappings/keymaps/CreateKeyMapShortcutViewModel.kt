@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
@@ -47,7 +48,6 @@ class CreateKeyMapShortcutViewModel(
     val shortcutNameDialogResult = MutableStateFlow<String?>(null)
 
     init {
-
         viewModelScope.launch {
             combine(
                 listKeyMaps.keyMapList,
@@ -58,7 +58,7 @@ class CreateKeyMapShortcutViewModel(
             ) { keyMapListState, showDeviceDescriptors, triggerErrorSnapshot, actionErrorSnapshot, constraintErrorSnapshot ->
                 _state.value = keyMapListState.mapData { keyMapList ->
                     keyMapList.map { keyMap ->
-                        val keyMapListUiState =
+                        val listItem =
                             listItemCreator.create(
                                 keyMap,
                                 showDeviceDescriptors,
@@ -67,10 +67,10 @@ class CreateKeyMapShortcutViewModel(
                                 constraintErrorSnapshot,
                             )
 
-                        KeyMapListItemModel(isSelected = false, keyMapListUiState)
+                        KeyMapListItemModel(isSelected = false, listItem)
                     }
                 }
-            }
+            }.collect()
         }
     }
 
