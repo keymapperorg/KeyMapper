@@ -83,4 +83,9 @@ object Keys {
 
     // Stored as a JSON list of Constraint objects.
     val recentlyUsedConstraints = stringPreferencesKey("key_recently_used_constraints")
+
+    /**
+     * Whether the user viewed the advanced triggers.
+     */
+    val viewedAdvancedTriggers = booleanPreferencesKey("key_viewed_advanced_triggers")
 }

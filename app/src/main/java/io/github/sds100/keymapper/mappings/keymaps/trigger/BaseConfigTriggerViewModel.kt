@@ -177,9 +177,16 @@ abstract class BaseConfigTriggerViewModel(
             config.keyMap,
             displayKeyMap.showDeviceDescriptors,
             triggerKeyShortcuts,
-        ) { triggerErrorSnapshot, keyMap, showDeviceDescriptors, shortcuts ->
+            onboarding.hasViewedAdvancedTriggers,
+        ) { triggerErrorSnapshot, keyMap, showDeviceDescriptors, shortcuts, viewedAdvancedTriggers ->
             _state.update {
-                buildUiState(keyMap, showDeviceDescriptors, shortcuts, triggerErrorSnapshot)
+                buildUiState(
+                    keyMap,
+                    showDeviceDescriptors,
+                    shortcuts,
+                    triggerErrorSnapshot,
+                    viewedAdvancedTriggers,
+                )
             }
         }.launchIn(coroutineScope)
 
@@ -234,17 +241,26 @@ abstract class BaseConfigTriggerViewModel(
         }
     }
 
+    fun onAdvancedTriggersClick() {
+        onboarding.viewedAdvancedTriggers()
+        showAdvancedTriggersBottomSheet = true
+    }
+
     private fun buildUiState(
         keyMapState: State<KeyMap>,
         showDeviceDescriptors: Boolean,
         triggerKeyShortcuts: Set<ShortcutModel<TriggerKeyShortcut>>,
         triggerErrorSnapshot: TriggerErrorSnapshot,
+        viewedAdvancedTriggers: Boolean,
     ): State<ConfigTriggerState> {
         return keyMapState.mapData { keyMap ->
             val trigger = keyMap.trigger
 
             if (trigger.keys.isEmpty()) {
-                return@mapData ConfigTriggerState.Empty(triggerKeyShortcuts)
+                return@mapData ConfigTriggerState.Empty(
+                    triggerKeyShortcuts,
+                    !viewedAdvancedTriggers,
+                )
             }
 
             val triggerKeys =
@@ -296,6 +312,7 @@ abstract class BaseConfigTriggerViewModel(
                 triggerModeButtonsVisible = triggerModeButtonsVisible,
                 checkedTriggerMode = trigger.mode,
                 shortcuts = triggerKeyShortcuts,
+                showNewBadge = !viewedAdvancedTriggers,
             )
         }
     }
@@ -743,8 +760,12 @@ abstract class BaseConfigTriggerViewModel(
 }
 
 sealed class ConfigTriggerState {
+    abstract val shortcuts: Set<ShortcutModel<TriggerKeyShortcut>>
+    abstract val showNewBadge: Boolean
+
     data class Empty(
-        val shortcuts: Set<ShortcutModel<TriggerKeyShortcut>> = emptySet(),
+        override val shortcuts: Set<ShortcutModel<TriggerKeyShortcut>> = emptySet(),
+        override val showNewBadge: Boolean,
     ) : ConfigTriggerState()
 
     data class Loaded(
@@ -755,7 +776,8 @@ sealed class ConfigTriggerState {
         val checkedTriggerMode: TriggerMode = TriggerMode.Undefined,
         val triggerModeButtonsEnabled: Boolean = false,
         val triggerModeButtonsVisible: Boolean = false,
-        val shortcuts: Set<ShortcutModel<TriggerKeyShortcut>> = emptySet(),
+        override val shortcuts: Set<ShortcutModel<TriggerKeyShortcut>> = emptySet(),
+        override val showNewBadge: Boolean,
     ) : ConfigTriggerState()
 }
 

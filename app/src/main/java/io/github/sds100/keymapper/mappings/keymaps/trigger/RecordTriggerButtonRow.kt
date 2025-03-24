@@ -31,6 +31,7 @@ fun RecordTriggerButtonRow(
     onRecordTriggerClick: () -> Unit = {},
     recordTriggerState: RecordTriggerState,
     onAdvancedTriggersClick: () -> Unit = {},
+    showNewBadge: Boolean,
 ) {
     Row(modifier) {
         RecordTriggerButton(
@@ -47,6 +48,7 @@ fun RecordTriggerButtonRow(
             modifier = Modifier.weight(1f),
             isEnabled = recordTriggerState !is RecordTriggerState.CountingDown,
             onClick = onAdvancedTriggersClick,
+            showNewBadge = showNewBadge,
         )
     }
 }
@@ -83,6 +85,7 @@ private fun RecordTriggerButton(
 private fun AdvancedTriggersButton(
     modifier: Modifier,
     isEnabled: Boolean,
+    showNewBadge: Boolean,
     onClick: () -> Unit,
 ) {
     Box(modifier = modifier) {
@@ -100,19 +103,20 @@ private fun AdvancedTriggersButton(
             )
         }
 
-        // TODO hide NEW when they have looked at the advanced triggers
-        Badge(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .height(36.dp),
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-        ) {
-            Text(
-                modifier = Modifier.padding(horizontal = 8.dp),
-                text = stringResource(R.string.button_advanced_triggers_badge),
-                style = MaterialTheme.typography.labelLarge,
-            )
+        if (showNewBadge) {
+            Badge(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .height(36.dp),
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            ) {
+                Text(
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    text = stringResource(R.string.button_advanced_triggers_badge),
+                    style = MaterialTheme.typography.labelLarge,
+                )
+            }
         }
     }
 }
@@ -125,6 +129,7 @@ private fun PreviewCountingDown() {
             RecordTriggerButtonRow(
                 modifier = Modifier.fillMaxWidth(),
                 recordTriggerState = RecordTriggerState.CountingDown(3),
+                showNewBadge = true,
             )
         }
     }
@@ -138,6 +143,7 @@ private fun PreviewStopped() {
             RecordTriggerButtonRow(
                 modifier = Modifier.fillMaxWidth(),
                 recordTriggerState = RecordTriggerState.Idle,
+                showNewBadge = false,
             )
         }
     }

@@ -145,7 +145,6 @@ fun ActionOptionsBottomSheet(
 
                 val noLimitString = stringResource(R.string.button_slider_repeat_no_limit)
 
-                // TODO fix use placeholder text for the default value instead of showing big number.
                 SliderOptionText(
                     modifier = Modifier
                         .fillMaxWidth()

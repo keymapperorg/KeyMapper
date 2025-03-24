@@ -607,7 +607,6 @@ data class ActionOptionsState(
     val delayBeforeNextAction: Int,
     val defaultDelayBeforeNextAction: Int,
 
-    // TODO show "How many times every repeat" as label instead of "How many times" if repeat is also allowed.
     val multiplier: Int,
     val defaultMultiplier: Int,
 )

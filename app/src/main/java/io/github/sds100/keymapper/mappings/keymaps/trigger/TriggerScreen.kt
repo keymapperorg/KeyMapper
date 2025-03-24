@@ -122,9 +122,7 @@ fun TriggerScreen(modifier: Modifier = Modifier, viewModel: ConfigTriggerViewMod
                     onRemoveClick = viewModel::onRemoveKeyClick,
                     onEditClick = viewModel::onTriggerKeyOptionsClick,
                     onRecordTriggerClick = viewModel::onRecordTriggerButtonClick,
-                    onAdvancedTriggersClick = {
-                        viewModel.showAdvancedTriggersBottomSheet = true
-                    },
+                    onAdvancedTriggersClick = viewModel::onAdvancedTriggersClick,
                     onSelectClickType = viewModel::onClickTypeRadioButtonChecked,
                     onSelectParallelMode = viewModel::onParallelRadioButtonChecked,
                     onSelectSequenceMode = viewModel::onSequenceRadioButtonChecked,
@@ -140,9 +138,7 @@ fun TriggerScreen(modifier: Modifier = Modifier, viewModel: ConfigTriggerViewMod
                     onRemoveClick = viewModel::onRemoveKeyClick,
                     onEditClick = viewModel::onTriggerKeyOptionsClick,
                     onRecordTriggerClick = viewModel::onRecordTriggerButtonClick,
-                    onAdvancedTriggersClick = {
-                        viewModel.showAdvancedTriggersBottomSheet = true
-                    },
+                    onAdvancedTriggersClick = viewModel::onAdvancedTriggersClick,
                     onSelectClickType = viewModel::onClickTypeRadioButtonChecked,
                     onSelectParallelMode = viewModel::onParallelRadioButtonChecked,
                     onSelectSequenceMode = viewModel::onSequenceRadioButtonChecked,
@@ -252,6 +248,7 @@ private fun TriggerScreenVertical(
                 onRecordTriggerClick = onRecordTriggerClick,
                 recordTriggerState = recordTriggerState,
                 onAdvancedTriggersClick = onAdvancedTriggersClick,
+                showNewBadge = configState.showNewBadge,
             )
         }
     }
@@ -298,6 +295,7 @@ private fun TriggerScreenHorizontal(
                         onRecordTriggerClick = onRecordTriggerClick,
                         recordTriggerState = recordTriggerState,
                         onAdvancedTriggersClick = onAdvancedTriggersClick,
+                        showNewBadge = configState.showNewBadge,
                     )
                 }
             }
@@ -353,6 +351,7 @@ private fun TriggerScreenHorizontal(
                         onRecordTriggerClick = onRecordTriggerClick,
                         recordTriggerState = recordTriggerState,
                         onAdvancedTriggersClick = onAdvancedTriggersClick,
+                        showNewBadge = configState.showNewBadge,
                     )
                 }
             }
@@ -541,6 +540,7 @@ private val previewState = ConfigTriggerState.Loaded(
             data = TriggerKeyShortcut.FINGERPRINT_GESTURE,
         ),
     ),
+    showNewBadge = true,
 )
 
 @Preview(device = Devices.PIXEL)
@@ -567,6 +567,7 @@ private fun VerticalEmptyPreview() {
                         data = TriggerKeyShortcut.FINGERPRINT_GESTURE,
                     ),
                 ),
+                showNewBadge = true,
             ),
             recordTriggerState = RecordTriggerState.Idle,
         )
@@ -597,6 +598,8 @@ private fun HorizontalEmptyPreview() {
                         data = TriggerKeyShortcut.FINGERPRINT_GESTURE,
                     ),
                 ),
+                showNewBadge = true,
+
             ),
             recordTriggerState = RecordTriggerState.Idle,
         )
