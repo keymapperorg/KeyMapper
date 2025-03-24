@@ -1,69 +1,56 @@
 package io.github.sds100.keymapper.constraints
 
+import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
-import com.airbnb.epoxy.EpoxyRecyclerView
-import io.github.sds100.keymapper.constraint
-import io.github.sds100.keymapper.databinding.FragmentConstraintListBinding
-import io.github.sds100.keymapper.util.State
-import io.github.sds100.keymapper.util.ui.RecyclerViewFragment
-import io.github.sds100.keymapper.util.ui.showPopups
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.fragment.app.Fragment
+import androidx.navigation.navGraphViewModels
+import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.compose.KeyMapperTheme
+import io.github.sds100.keymapper.databinding.FragmentComposeBinding
+import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapViewModel
+import io.github.sds100.keymapper.util.FragmentInfo
+import io.github.sds100.keymapper.util.Inject
 
-/**
- * Created by sds100 on 29/11/20.
- */
-abstract class ConfigConstraintsFragment : RecyclerViewFragment<ConstraintListItem, FragmentConstraintListBinding>() {
+class ConfigConstraintsFragment : Fragment() {
 
-    companion object {
-        const val CHOOSE_CONSTRAINT_REQUEST_KEY = "request_choose_constraint"
+    class Info :
+        FragmentInfo(
+            R.string.tab_constraints,
+            R.string.url_constraints_guide,
+            { ConfigConstraintsFragment() },
+        )
+
+    val viewModel: ConfigConstraintsViewModel by lazy {
+        navGraphViewModels<ConfigKeyMapViewModel>(R.id.nav_config_keymap) {
+            Inject.configKeyMapViewModel(requireContext())
+        }.value.configConstraintsViewModel
     }
 
-    abstract val configConstraintsViewModel: ConfigConstraintsViewModel
-
-    override val listItems: Flow<State<List<ConstraintListItem>>>
-        get() = configConstraintsViewModel.state.map { it.constraintList }
-
-    override fun bind(
+    override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-    ) = FragmentConstraintListBinding.inflate(inflater, container, false).apply {
-        lifecycleOwner = viewLifecycleOwner
-    }
-
-    override fun subscribeUi(binding: FragmentConstraintListBinding) {
-        binding.viewModel = configConstraintsViewModel
-        configConstraintsViewModel.showPopups(this, binding)
-
-        binding.setOnAddConstraintClick {
-            configConstraintsViewModel.onAddConstraintClick()
-        }
-    }
-
-    override fun populateList(
-        recyclerView: EpoxyRecyclerView,
-        listItems: List<ConstraintListItem>,
-    ) {
-        recyclerView.withModels {
-            listItems.forEach { listItem ->
-                constraint {
-                    id(listItem.id)
-                    model(listItem)
-                    onCardClick { _ ->
-                        configConstraintsViewModel.onListItemClick(listItem.id)
-                    }
-
-                    onRemoveClick { _ ->
-                        configConstraintsViewModel.onRemoveConstraintClick(listItem.id)
+        savedInstanceState: Bundle?,
+    ): View {
+        FragmentComposeBinding.inflate(inflater, container, false).apply {
+            composeView.apply {
+                // Dispose of the Composition when the view's LifecycleOwner
+                // is destroyed
+                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                setContent {
+                    KeyMapperTheme {
+                        ConstraintsScreen(
+                            modifier = Modifier.fillMaxSize(),
+                            viewModel = viewModel,
+                        )
                     }
                 }
             }
+            return this.root
         }
     }
-
-    override fun getRecyclerView(binding: FragmentConstraintListBinding) = binding.epoxyRecyclerView
-    override fun getProgressBar(binding: FragmentConstraintListBinding) = binding.progressBar
-    override fun getEmptyListPlaceHolderTextView(binding: FragmentConstraintListBinding) =
-        binding.emptyListPlaceHolder
 }

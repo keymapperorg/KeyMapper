@@ -78,6 +78,7 @@ object UseCases {
         ServiceLocator.permissionAdapter(ctx),
         ServiceLocator.systemFeatureAdapter(ctx),
         ServiceLocator.inputMethodAdapter(ctx),
+        ServiceLocator.cameraAdapter(ctx),
     )
 
     fun onboarding(ctx: Context) = OnboardingUseCaseImpl(

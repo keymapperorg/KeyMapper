@@ -70,8 +70,8 @@ class ConfigKeyMapViewModel(
 
     val configConstraintsViewModel = ConfigConstraintsViewModel(
         viewModelScope,
-        displayMapping,
         config,
+        displayMapping,
         ConstraintUtils.KEY_MAP_ALLOWED_CONSTRAINTS,
         resourceProvider,
     )

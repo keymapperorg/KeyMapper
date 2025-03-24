@@ -49,6 +49,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -89,6 +90,8 @@ class ConfigKeyMapUseCaseController(
             SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
             emptySet(),
         )
+
+    override val recentlyUsedConstraints: Flow<Set<Constraint>> = flowOf(emptySet())
 
     init {
         // Update button data in the key map whenever the floating buttons changes.
@@ -859,6 +862,7 @@ interface ConfigKeyMapUseCase : GetDefaultKeyMapOptionsUseCase {
 
     fun setActionStopHoldingDownWhenTriggerPressedAgain(uid: String, enabled: Boolean)
 
+    val recentlyUsedConstraints: Flow<Set<Constraint>>
     fun addConstraint(constraint: Constraint): Boolean
     fun removeConstraint(id: String)
     fun setAndMode()

@@ -54,7 +54,8 @@ class CreateKeyMapShortcutViewModel(
                 listKeyMaps.showDeviceDescriptors,
                 listKeyMaps.triggerErrorSnapshot,
                 listKeyMaps.actionErrorSnapshot,
-            ) { keyMapListState, showDeviceDescriptors, triggerErrorSnapshot, actionErrorSnapshot ->
+                listKeyMaps.constraintErrorSnapshot,
+            ) { keyMapListState, showDeviceDescriptors, triggerErrorSnapshot, actionErrorSnapshot, constraintErrorSnapshot ->
                 _state.value = keyMapListState.mapData { keyMapList ->
                     keyMapList.map { keyMap ->
                         val keyMapListUiState =
@@ -63,6 +64,7 @@ class CreateKeyMapShortcutViewModel(
                                 showDeviceDescriptors,
                                 triggerErrorSnapshot,
                                 actionErrorSnapshot,
+                                constraintErrorSnapshot,
                             )
 
                         KeyMapListItemModel(isSelected = false, keyMapListUiState)

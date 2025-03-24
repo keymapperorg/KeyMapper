@@ -46,7 +46,7 @@ class ConfigActionsFragment : Fragment() {
                 setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
                 setContent {
                     KeyMapperTheme {
-                        KeyMapActionsScreen(
+                        ActionsScreen(
                             modifier = Modifier.fillMaxSize(),
                             viewModel = viewModel,
                         )

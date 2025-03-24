@@ -6,6 +6,7 @@ import androidx.compose.material.icons.outlined.Add
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.ActionErrorSnapshot
 import io.github.sds100.keymapper.actions.ActionUiHelper
+import io.github.sds100.keymapper.constraints.ConstraintErrorSnapshot
 import io.github.sds100.keymapper.constraints.ConstraintUiHelper
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.FingerprintGestureType
@@ -45,6 +46,7 @@ class KeyMapListItemCreator(
         showDeviceDescriptors: Boolean,
         triggerErrorSnapshot: TriggerErrorSnapshot,
         actionErrorSnapshot: ActionErrorSnapshot,
+        constraintErrorSnapshot: ConstraintErrorSnapshot,
     ): KeyMapListItemModel.Content {
         val triggerSeparator = when (keyMap.trigger.mode) {
             is TriggerMode.Parallel -> Icons.Outlined.Add
@@ -63,7 +65,7 @@ class KeyMapListItemCreator(
         val options = getTriggerOptionLabels(keyMap.trigger)
 
         val actionChipList = getActionChipList(keyMap, showDeviceDescriptors, actionErrorSnapshot)
-        val constraintChipList = getConstraintChipList(keyMap)
+        val constraintChipList = getConstraintChipList(keyMap, constraintErrorSnapshot)
 
         val extraInfo = buildString {
             append(createExtraInfoString(keyMap, actionChipList, constraintChipList))
@@ -154,11 +156,14 @@ class KeyMapListItemCreator(
         }
     }.toList()
 
-    private fun getConstraintChipList(keyMap: KeyMap): List<ComposeChipModel> = sequence {
+    private fun getConstraintChipList(
+        keyMap: KeyMap,
+        errorSnapshot: ConstraintErrorSnapshot,
+    ): List<ComposeChipModel> = sequence {
         for (constraint in keyMap.constraintState.constraints) {
             val text: String = constraintUiHelper.getTitle(constraint)
-            val icon: ComposeIconInfo? = constraintUiHelper.getIcon(constraint)
-            val error: Error? = displayMapping.getConstraintError(constraint)
+            val icon: ComposeIconInfo = constraintUiHelper.getIcon(constraint)
+            val error: Error? = errorSnapshot.getError(constraint)
 
             val chip: ComposeChipModel = if (error == null) {
                 ComposeChipModel.Normal(

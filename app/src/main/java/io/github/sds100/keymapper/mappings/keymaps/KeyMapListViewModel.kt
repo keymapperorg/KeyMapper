@@ -82,7 +82,8 @@ class KeyMapListViewModel(
                 listKeyMaps.showDeviceDescriptors,
                 listKeyMaps.triggerErrorSnapshot,
                 listKeyMaps.actionErrorSnapshot,
-            ) { keyMapListState, showDeviceDescriptors, triggerErrorSnapshot, actionErrorSnapshot ->
+                listKeyMaps.constraintErrorSnapshot,
+            ) { keyMapListState, showDeviceDescriptors, triggerErrorSnapshot, actionErrorSnapshot, constraintErrorSnapshot ->
                 keyMapListState.mapData { keyMapList ->
                     keyMapList.map { keyMap ->
                         listItemCreator.create(
@@ -90,12 +91,11 @@ class KeyMapListViewModel(
                             showDeviceDescriptors,
                             triggerErrorSnapshot,
                             actionErrorSnapshot,
+                            constraintErrorSnapshot,
                         )
                     }
                 }
             }.flowOn(Dispatchers.Default)
-
-        // TODO use error snapshot for constraint errors too
 
         // The list item content should be separate from the selection state
         // because creating the content is an expensive operation and selection should be almost

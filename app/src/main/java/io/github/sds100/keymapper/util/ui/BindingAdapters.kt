@@ -9,8 +9,6 @@ import androidx.annotation.ColorInt
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.widget.addTextChangedListener
 import androidx.databinding.BindingAdapter
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.chip.ChipGroup
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.slider.Slider
 import com.google.android.material.textfield.TextInputLayout
@@ -19,7 +17,6 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.system.url.UrlUtils
 import io.github.sds100.keymapper.util.str
 import io.github.sds100.keymapper.util.styledColor
-import io.github.sds100.keymapper.util.styledColorSL
 import io.github.sds100.keymapper.util.styledFloat
 
 /**
@@ -103,60 +100,6 @@ fun SquareImageButton.openUrlOnClick(url: Int?) {
 
     setOnClickListener {
         UrlUtils.openUrl(context, context.str(url))
-    }
-}
-
-@BindingAdapter("app:chipUiModels", "app:onChipClickCallback", requireAll = true)
-fun ChipGroup.setChipUiModels(
-    models: List<ChipUi>,
-    callback: OnChipClickCallback,
-) {
-    removeAllViews()
-
-    val colorTintError by lazy { styledColorSL(R.attr.colorError) }
-    val colorOnSurface by lazy { styledColorSL(R.attr.colorOnSurface) }
-
-    models.forEach { model ->
-        when (model) {
-            is ChipUi.Error -> {
-                MaterialButton(context, null, R.attr.errorChipButtonStyle).apply {
-                    id = View.generateViewId()
-
-                    text = model.text
-                    setOnClickListener { callback.onChipClick(model) }
-                    addView(this)
-                }
-            }
-
-            is ChipUi.Normal -> {
-                MaterialButton(context, null, R.attr.normalChipButtonStyle).apply {
-                    id = View.generateViewId()
-
-                    this.text = model.text
-                    this.icon = model.icon?.drawable
-
-                    if (model.icon != null) {
-                        this.iconTint = when (model.icon.tintType) {
-                            TintType.None -> null
-                            TintType.OnSurface -> colorOnSurface
-                            TintType.Error -> colorTintError
-                            is TintType.Color -> ColorStateList.valueOf(model.icon.tintType.color)
-                        }
-                    }
-
-                    addView(this)
-                }
-            }
-
-            is ChipUi.Transparent -> {
-                MaterialButton(context, null, R.attr.transparentChipButtonStyle).apply {
-                    id = View.generateViewId()
-
-                    text = model.text
-                    addView(this)
-                }
-            }
-        }
     }
 }
 

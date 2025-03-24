@@ -11,7 +11,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -20,14 +19,11 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.ConfigActionsFragment
-import io.github.sds100.keymapper.constraints.ChooseConstraintFragment
 import io.github.sds100.keymapper.constraints.ConfigConstraintsFragment
-import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.databinding.FragmentConfigKeyMapBinding
 import io.github.sds100.keymapper.mappings.keymaps.trigger.ConfigTriggerOptionsFragment
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerFragment
 import io.github.sds100.keymapper.system.url.UrlUtils
-import io.github.sds100.keymapper.ui.utils.getJsonSerializable
 import io.github.sds100.keymapper.util.FragmentInfo
 import io.github.sds100.keymapper.util.GenericFragmentPagerAdapter
 import io.github.sds100.keymapper.util.Inject
@@ -75,12 +71,6 @@ class ConfigKeyMapFragment : Fragment() {
 
             if (args.showAdvancedTriggers) {
                 viewModel.configTriggerViewModel.showAdvancedTriggersBottomSheet = true
-            }
-        }
-
-        setFragmentResultListener(ConfigConstraintsFragment.CHOOSE_CONSTRAINT_REQUEST_KEY) { _, result ->
-            result.getJsonSerializable<Constraint>(ChooseConstraintFragment.EXTRA_CONSTRAINT)?.let {
-                viewModel.configConstraintsViewModel.onChosenNewConstraint(it)
             }
         }
 
@@ -179,9 +169,10 @@ class ConfigKeyMapFragment : Fragment() {
             }
         }
 
-        viewModel.configActionsViewModel.showPopups(this, binding)
         viewModel.configTriggerViewModel.showPopups(this, binding)
         viewModel.configTriggerViewModel.optionsViewModel.showPopups(this, binding)
+        viewModel.configActionsViewModel.showPopups(this, binding)
+        viewModel.configConstraintsViewModel.showPopups(this, binding)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -211,7 +202,7 @@ class ConfigKeyMapFragment : Fragment() {
         when (it) {
             int(R.integer.fragment_id_trigger) -> it to TriggerFragment.Info()
             int(R.integer.fragment_id_trigger_options) -> it to ConfigTriggerOptionsFragment.Info()
-            int(R.integer.fragment_id_constraint_list) -> it to ConfigKeyMapConstraintsFragment.Info()
+            int(R.integer.fragment_id_constraint_list) -> it to ConfigConstraintsFragment.Info()
             int(R.integer.fragment_id_action_list) -> it to ConfigActionsFragment.Info()
 
             int(R.integer.fragment_id_constraints_and_options) ->
@@ -267,7 +258,7 @@ class ConfigKeyMapFragment : Fragment() {
     class ConstraintsAndOptionsFragment :
         TwoFragments(
             ConfigTriggerOptionsFragment.Info(),
-            ConfigKeyMapConstraintsFragment.Info(),
+            ConfigConstraintsFragment.Info(),
         )
 
     class AllFragments :
@@ -275,6 +266,6 @@ class ConfigKeyMapFragment : Fragment() {
             TriggerFragment.Info(),
             ConfigTriggerOptionsFragment.Info(),
             ConfigActionsFragment.Info(),
-            ConfigKeyMapConstraintsFragment.Info(),
+            ConfigConstraintsFragment.Info(),
         )
 }

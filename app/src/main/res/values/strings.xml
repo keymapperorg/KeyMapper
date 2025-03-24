@@ -64,8 +64,6 @@
     <string name="reset">Reset</string>
     <string name="enable_device_admin_message">Once you have enabled the device admin, you must DEACTIVATE it if you want to uninstall Key Mapper.</string>
 
-    <string name="constraints_recyclerview_placeholder">Add a constraint!</string>
-
     <string name="action_title_wait">Wait %sms</string>
 
     <string name="action_title_intent_start_activity">Start activity: %s</string>
@@ -1368,4 +1366,15 @@
     <string name="action_list_delete_dialog_text">Are you sure you want to delete this action?</string>
     <string name="action_list_delete_yes">Yes, delete</string>
     <string name="action_list_delete_cancel">Cancel</string>
+
+
+    <!--  Constraint screen  -->
+    <string name="constraints_recyclerview_placeholder">Add constraints if you want key maps to only work in some situations.</string>
+    <string name="recently_used_constraints">Recently used constraints</string>
+    <string name="constraint_list_item_remove">Remove</string>
+    <string name="constraint_list_delete_dialog_title">Delete constraint</string>
+    <string name="constraint_list_delete_dialog_text">Are you sure you want to delete this constraint?</string>
+    <string name="constraint_list_delete_yes">Yes, delete</string>
+    <string name="constraint_list_delete_cancel">Cancel</string>
+    <string name="constraint_mode_title">Logic mode</string>
 </resources>

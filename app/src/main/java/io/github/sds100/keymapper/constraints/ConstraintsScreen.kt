@@ -1,16 +1,16 @@
-package io.github.sds100.keymapper.actions
+package io.github.sds100.keymapper.constraints
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.FlashlightOn
@@ -23,7 +23,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,6 +30,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,79 +38,61 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
-import io.github.sds100.keymapper.compose.draggable.DraggableItem
-import io.github.sds100.keymapper.compose.draggable.rememberDragDropState
 import io.github.sds100.keymapper.mappings.ShortcutModel
 import io.github.sds100.keymapper.mappings.ShortcutRow
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.util.State
-import io.github.sds100.keymapper.util.ui.LinkType
+import io.github.sds100.keymapper.util.drawable
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
-import kotlinx.coroutines.flow.update
+import io.github.sds100.keymapper.util.ui.compose.RadioButtonText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun KeyMapActionsScreen(modifier: Modifier = Modifier, viewModel: ConfigActionsViewModel) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+fun ConstraintsScreen(modifier: Modifier = Modifier, viewModel: ConfigConstraintsViewModel) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val optionsState by viewModel.actionOptionsState.collectAsStateWithLifecycle()
 
-    if (optionsState != null) {
-        ActionOptionsBottomSheet(
-            modifier = Modifier.systemBarsPadding(),
-            sheetState = sheetState,
-            state = optionsState!!,
-            onDismissRequest = { viewModel.actionOptionsUid.update { null } },
-            callback = viewModel,
-        )
-    }
-
-    KeyMapActionsScreen(
+    ConstraintsScreen(
         modifier = modifier,
         state = state,
         onRemoveClick = viewModel::onRemoveClick,
-        onEditClick = viewModel::onEditClick,
-        onMoveAction = viewModel::onMoveAction,
         onFixErrorClick = viewModel::onFixError,
         onClickShortcut = viewModel::onClickShortcut,
-        onTestClick = viewModel::onTestClick,
-        onAddClick = viewModel::onAddActionClick,
+        onAddClick = viewModel::addConstraint,
+        onSelectMode = viewModel::onSelectMode,
     )
 }
 
 @Composable
-private fun KeyMapActionsScreen(
+private fun ConstraintsScreen(
     modifier: Modifier = Modifier,
-    state: State<ConfigActionsState>,
+    state: State<ConfigConstraintsState>,
     onAddClick: () -> Unit = {},
     onRemoveClick: (String) -> Unit = {},
-    onEditClick: (String) -> Unit = {},
-    onMoveAction: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> },
     onFixErrorClick: (String) -> Unit = {},
-    onTestClick: (String) -> Unit = {},
-    onClickShortcut: (ActionData) -> Unit = {},
+    onClickShortcut: (Constraint) -> Unit = {},
+    onSelectMode: (ConstraintMode) -> Unit = {},
 ) {
     var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
-    var actionToDelete by rememberSaveable { mutableStateOf<String?>(null) }
+    var constraintToDelete by rememberSaveable { mutableStateOf<String?>(null) }
 
-    if (showDeleteDialog && actionToDelete != null) {
+    if (showDeleteDialog && constraintToDelete != null) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
             title = {
-                Text(stringResource(R.string.action_list_delete_dialog_title))
+                Text(stringResource(R.string.constraint_list_delete_dialog_title))
             },
-            text = { Text(stringResource(R.string.action_list_delete_dialog_text)) },
+            text = { Text(stringResource(R.string.constraint_list_delete_dialog_text)) },
             confirmButton = {
                 TextButton(onClick = {
-                    onRemoveClick(actionToDelete!!)
+                    onRemoveClick(constraintToDelete!!)
                     showDeleteDialog = false
                 }) {
-                    Text(stringResource(R.string.action_list_delete_yes))
+                    Text(stringResource(R.string.constraint_list_delete_yes))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteDialog = false }) {
-                    Text(stringResource(R.string.action_list_delete_cancel))
+                    Text(stringResource(R.string.constraint_list_delete_cancel))
                 }
             },
         )
@@ -118,10 +100,10 @@ private fun KeyMapActionsScreen(
 
     when (state) {
         State.Loading -> Loading()
-        is State.Data<ConfigActionsState> -> Surface(modifier = modifier) {
+        is State.Data<ConfigConstraintsState> -> Surface(modifier = modifier) {
             Column {
                 when (state.data) {
-                    is ConfigActionsState.Empty -> {
+                    is ConfigConstraintsState.Empty -> {
                         Column(
                             modifier = Modifier.weight(1f),
                             verticalArrangement = Arrangement.Center,
@@ -131,13 +113,13 @@ private fun KeyMapActionsScreen(
                                 modifier = Modifier
                                     .padding(32.dp)
                                     .fillMaxWidth(),
-                                text = stringResource(R.string.actions_recyclerview_placeholder),
+                                text = stringResource(R.string.constraints_recyclerview_placeholder),
                                 textAlign = TextAlign.Center,
                             )
 
                             if (state.data.shortcuts.isNotEmpty()) {
                                 Text(
-                                    text = stringResource(R.string.recently_used_actions),
+                                    text = stringResource(R.string.recently_used_constraints),
                                     style = MaterialTheme.typography.titleSmall,
                                 )
 
@@ -154,24 +136,28 @@ private fun KeyMapActionsScreen(
                         }
                     }
 
-                    is ConfigActionsState.Loaded -> {
+                    is ConfigConstraintsState.Loaded -> {
                         Spacer(Modifier.height(8.dp))
 
-                        ActionList(
+                        ConstraintList(
                             modifier = Modifier.weight(1f),
-                            actionList = state.data.actions,
+                            constraintList = state.data.constraintList,
                             shortcuts = state.data.shortcuts,
-                            isReorderingEnabled = state.data.isReorderingEnabled,
                             onRemoveClick = {
-                                actionToDelete = it
+                                constraintToDelete = it
                                 showDeleteDialog = true
                             },
-                            onEditClick = onEditClick,
                             onFixErrorClick = onFixErrorClick,
-                            onMove = onMoveAction,
                             onClickShortcut = onClickShortcut,
-                            onTestClick = onTestClick,
                         )
+
+                        if (state.data.constraintList.size > 1) {
+                            ConstraintModeRow(
+                                modifier = Modifier.fillMaxWidth(),
+                                mode = state.data.selectedMode,
+                                onSelectMode = onSelectMode,
+                            )
+                        }
                     }
                 }
 
@@ -185,9 +171,40 @@ private fun KeyMapActionsScreen(
                         contentColor = MaterialTheme.colorScheme.onPrimary,
                     ),
                 ) {
-                    Text(stringResource(R.string.button_add_action))
+                    Text(stringResource(R.string.button_add_constraint))
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun ConstraintModeRow(
+    modifier: Modifier = Modifier,
+    mode: ConstraintMode,
+    onSelectMode: (ConstraintMode) -> Unit,
+) {
+    Column(modifier = modifier) {
+        Text(
+            modifier = Modifier.padding(horizontal = 8.dp),
+            text = stringResource(R.string.constraint_mode_title),
+            style = MaterialTheme.typography.labelLarge,
+        )
+
+        Row(modifier = Modifier.fillMaxWidth()) {
+            RadioButtonText(
+                modifier = Modifier.weight(1f),
+                isSelected = mode == ConstraintMode.AND,
+                text = stringResource(R.string.constraint_mode_and),
+                onSelected = { onSelectMode(ConstraintMode.AND) },
+            )
+
+            RadioButtonText(
+                modifier = Modifier.weight(1f),
+                isSelected = mode == ConstraintMode.OR,
+                text = stringResource(R.string.constraint_mode_or),
+                onSelected = { onSelectMode(ConstraintMode.OR) },
+            )
         }
     }
 }
@@ -200,29 +217,15 @@ private fun Loading(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun ActionList(
+private fun ConstraintList(
     modifier: Modifier = Modifier,
-    actionList: List<ActionListItemModel>,
-    shortcuts: Set<ShortcutModel<ActionData>>,
-    isReorderingEnabled: Boolean,
+    constraintList: List<ConstraintListItemModel>,
+    shortcuts: Set<ShortcutModel<Constraint>>,
     onRemoveClick: (String) -> Unit,
-    onEditClick: (String) -> Unit,
     onFixErrorClick: (String) -> Unit,
-    onMove: (fromIndex: Int, toIndex: Int) -> Unit,
-    onClickShortcut: (ActionData) -> Unit,
-    onTestClick: (String) -> Unit,
+    onClickShortcut: (Constraint) -> Unit,
 ) {
     val lazyListState = rememberLazyListState()
-    val dragDropState = rememberDragDropState(
-        lazyListState = lazyListState,
-        onMove = onMove,
-        // Do not drag and drop the row of shortcuts
-        ignoreLastItems = if (shortcuts.isEmpty()) {
-            0
-        } else {
-            1
-        },
-    )
 
     // Use dragContainer rather than .draggable() modifier because that causes
     // dragging the first item to be always be dropped in the next position.
@@ -231,38 +234,34 @@ private fun ActionList(
         state = lazyListState,
         contentPadding = PaddingValues(vertical = 8.dp),
     ) {
-        itemsIndexed(
-            actionList,
-            key = { _, item -> item.id },
-            contentType = { _, _ -> "key" },
-        ) { index, model ->
-            DraggableItem(
-                dragDropState = dragDropState,
-                index = index,
-            ) { isDragging ->
-                ActionListItem(
-                    modifier = Modifier.fillMaxWidth(),
-                    model = model,
-                    index = index,
-                    isDraggingEnabled = actionList.size > 1,
-                    isDragging = isDragging,
-                    isReorderingEnabled = isReorderingEnabled,
-                    dragDropState = dragDropState,
-                    onEditClick = { onEditClick(model.id) },
-                    onRemoveClick = { onRemoveClick(model.id) },
-                    onFixClick = { onFixErrorClick(model.id) },
-                    onTestClick = { onTestClick(model.id) },
-                )
-            }
+        items(
+            constraintList,
+            key = { item -> item.id },
+            contentType = { _ -> "constraint" },
+        ) { model ->
+            ConstraintListItem(
+                modifier = Modifier.fillMaxWidth(),
+                model = model,
+                onRemoveClick = { onRemoveClick(model.id) },
+                onFixClick = { onFixErrorClick(model.id) },
+            )
         }
 
         if (shortcuts.isNotEmpty()) {
             item(key = "shortcuts", contentType = "shortcuts") {
-                ShortcutRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    shortcuts = shortcuts,
-                    onClick = { onClickShortcut(it) },
-                )
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = stringResource(R.string.recently_used_constraints),
+                        style = MaterialTheme.typography.titleSmall,
+                    )
+                    Spacer(Modifier.height(8.dp))
+
+                    ShortcutRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        shortcuts = shortcuts,
+                        onClick = { onClickShortcut(it) },
+                    )
+                }
             }
         }
     }
@@ -272,14 +271,14 @@ private fun ActionList(
 @Composable
 private fun EmptyPreview() {
     KeyMapperTheme {
-        KeyMapActionsScreen(
+        ConstraintsScreen(
             state = State.Data(
-                ConfigActionsState.Empty(
+                ConfigConstraintsState.Empty(
                     shortcuts = setOf(
                         ShortcutModel(
                             icon = ComposeIconInfo.Vector(Icons.Rounded.FlashlightOn),
-                            text = "Toggle Back flashlight",
-                            data = ActionData.Flashlight.Toggle(lens = CameraLens.BACK),
+                            text = "Flashlight is on",
+                            data = Constraint.FlashlightOn(lens = CameraLens.BACK),
                         ),
                     ),
                 ),
@@ -292,37 +291,37 @@ private fun EmptyPreview() {
 @Composable
 private fun LoadedPreview() {
     KeyMapperTheme {
-        KeyMapActionsScreen(
+        val ctx = LocalContext.current
+
+        ConstraintsScreen(
             state = State.Data(
-                ConfigActionsState.Loaded(
-                    actions = listOf(
-                        ActionListItemModel(
+                ConfigConstraintsState.Loaded(
+                    constraintList = listOf(
+                        ConstraintListItemModel(
                             id = "1",
                             icon = ComposeIconInfo.Vector(Icons.Rounded.FlashlightOn),
-                            text = "Toggle Back flashlight",
-                            secondaryText = "Repeat until released",
+                            constraintModeLink = ConstraintMode.AND,
+                            text = "Flashlight is on",
                             error = "Flashlight not found",
                             isErrorFixable = true,
-                            linkType = LinkType.ARROW,
                         ),
-                        ActionListItemModel(
+                        ConstraintListItemModel(
                             id = "2",
-                            icon = ComposeIconInfo.Vector(Icons.Rounded.FlashlightOn),
-                            text = "Toggle Back flashlight",
-                            secondaryText = "Repeat until released",
+                            icon = ComposeIconInfo.Drawable(ctx.drawable(R.mipmap.ic_launcher_round)),
+                            constraintModeLink = null,
+                            text = "Key Mapper in foreground",
                             error = null,
                             isErrorFixable = true,
-                            linkType = LinkType.PLUS,
                         ),
                     ),
                     shortcuts = setOf(
                         ShortcutModel(
                             icon = ComposeIconInfo.Vector(Icons.Rounded.FlashlightOn),
-                            text = "Toggle Back flashlight",
-                            data = ActionData.Flashlight.Toggle(lens = CameraLens.BACK),
+                            text = "Flashlight is on",
+                            data = Constraint.FlashlightOn(lens = CameraLens.BACK),
                         ),
                     ),
-                    isReorderingEnabled = true,
+                    selectedMode = ConstraintMode.AND,
                 ),
             ),
         )

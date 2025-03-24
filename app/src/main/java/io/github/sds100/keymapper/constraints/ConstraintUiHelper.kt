@@ -21,6 +21,7 @@ import androidx.compose.material.icons.outlined.StayCurrentPortrait
 import androidx.compose.material.icons.outlined.StopCircle
 import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.material.icons.outlined.WifiOff
+import androidx.compose.material.icons.rounded.Android
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.system.camera.CameraLensUtils
 import io.github.sds100.keymapper.system.display.Orientation
@@ -161,11 +162,19 @@ class ConstraintUiHelper(
         Constraint.Discharging -> getString(R.string.constraint_discharging)
     }
 
-    fun getIcon(constraint: Constraint): ComposeIconInfo? = when (constraint) {
+    fun getIcon(constraint: Constraint): ComposeIconInfo = when (constraint) {
         is Constraint.AppInForeground -> getAppIconInfo(constraint.packageName)
+            ?: ComposeIconInfo.Vector(Icons.Rounded.Android)
+
         is Constraint.AppNotInForeground -> getAppIconInfo(constraint.packageName)
+            ?: ComposeIconInfo.Vector(Icons.Rounded.Android)
+
         is Constraint.AppPlayingMedia -> getAppIconInfo(constraint.packageName)
+            ?: ComposeIconInfo.Vector(Icons.Rounded.Android)
+
         is Constraint.AppNotPlayingMedia -> getAppIconInfo(constraint.packageName)
+            ?: ComposeIconInfo.Vector(Icons.Rounded.Android)
+
         Constraint.MediaPlaying -> ComposeIconInfo.Vector(Icons.Outlined.PlayArrow)
 
         Constraint.NoMediaPlaying -> ComposeIconInfo.Vector(Icons.Outlined.StopCircle)
