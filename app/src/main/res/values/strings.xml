@@ -318,6 +318,9 @@
     <string name="url_rate" translatable="false">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper</string>
     <string name="url_website" translatable="false">https://keymapperorg.github.io/KeyMapper</string>
     <string name="url_advanced_triggers" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/advanced-triggers</string>
+    <string name="url_floating_buttons_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/floating-buttons</string>
+    <string name="url_floating_layouts_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/floating-layouts</string>
+    <string name="url_floating_button_config_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/floating-button-config</string>
 
     <string name="url_play_store_keymapper_gui_keyboard" translatable="false">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper.inputmethod.latin</string>
     <string name="url_fdroid_keymapper_gui_keyboard" translatable="false">https://f-droid.org/en/packages/io.github.sds100.keymapper.inputmethod.latin</string>

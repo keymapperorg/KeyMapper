@@ -63,9 +63,6 @@ data class TriggerErrorSnapshot(
             return TriggerError.DPAD_IME_NOT_SELECTED
         }
 
-        // TODO if button deleted go through the process of adding the button again.
-        // TODO do not show "button deleted" twice in trigger key list item
-
         return null
     }
 }
