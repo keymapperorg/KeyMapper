@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.home
 
+import android.os.Build
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BubbleChart
 import androidx.compose.material.icons.outlined.Gamepad
@@ -10,6 +11,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.backup.BackupRestoreMappingsUseCase
 import io.github.sds100.keymapper.backup.RestoreType
@@ -258,7 +260,7 @@ class HomeViewModel(
             ),
         )
 
-        if (showFloatingLayouts) {
+        if (showFloatingLayouts && Build.VERSION.SDK_INT >= Constants.MIN_API_FLOATING_BUTTONS) {
             items.add(
                 HomeNavBarItem(
                     HomeDestination.FloatingButtons,
