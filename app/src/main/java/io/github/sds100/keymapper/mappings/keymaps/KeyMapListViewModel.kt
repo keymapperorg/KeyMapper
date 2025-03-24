@@ -34,7 +34,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class KeyMapListViewModel(
     private val coroutineScope: CoroutineScope,
@@ -77,7 +76,6 @@ class KeyMapListViewModel(
             keyMapList.mapData { list -> list.sortedWith(sorter) }
         }.flowOn(Dispatchers.Default)
 
-        Timber.d("ON COLLECT KEY MAPS")
         val listItemContentFlow =
             combine(
                 keyMapListFlow,
