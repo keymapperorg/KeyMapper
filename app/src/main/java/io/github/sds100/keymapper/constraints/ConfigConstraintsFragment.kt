@@ -13,17 +13,9 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.databinding.FragmentComposeBinding
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapViewModel
-import io.github.sds100.keymapper.util.FragmentInfo
 import io.github.sds100.keymapper.util.Inject
 
 class ConfigConstraintsFragment : Fragment() {
-
-    class Info :
-        FragmentInfo(
-            R.string.tab_constraints,
-            R.string.url_constraints_guide,
-            { ConfigConstraintsFragment() },
-        )
 
     val viewModel: ConfigConstraintsViewModel by lazy {
         navGraphViewModels<ConfigKeyMapViewModel>(R.id.nav_config_keymap) {

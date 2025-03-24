@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.mappings
+package io.github.sds100.keymapper.mappings.keymaps
 
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 

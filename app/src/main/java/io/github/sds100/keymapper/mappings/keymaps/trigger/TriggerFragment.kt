@@ -13,7 +13,6 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.databinding.FragmentComposeBinding
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapViewModel
-import io.github.sds100.keymapper.util.FragmentInfo
 import io.github.sds100.keymapper.util.Inject
 
 /**
@@ -21,13 +20,6 @@ import io.github.sds100.keymapper.util.Inject
  */
 
 class TriggerFragment : Fragment() {
-
-    class Info :
-        FragmentInfo(
-            R.string.tab_trigger,
-            R.string.url_trigger_guide,
-            { TriggerFragment() },
-        )
 
     private val configTriggerViewModel: ConfigTriggerViewModel by lazy {
         navGraphViewModels<ConfigKeyMapViewModel>(R.id.nav_config_keymap) {

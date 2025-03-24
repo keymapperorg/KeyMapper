@@ -12,17 +12,9 @@ import androidx.navigation.navGraphViewModels
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.databinding.FragmentComposeBinding
-import io.github.sds100.keymapper.util.FragmentInfo
 import io.github.sds100.keymapper.util.Inject
 
 class ConfigKeyMapOptionsFragment : Fragment() {
-
-    class Info :
-        FragmentInfo(
-            R.string.tab_options,
-            R.string.url_trigger_options_guide,
-            { ConfigKeyMapOptionsFragment() },
-        )
 
     private val configKeyMapViewModel: ConfigKeyMapViewModel by navGraphViewModels(R.id.nav_config_keymap) {
         Inject.configKeyMapViewModel(requireContext())

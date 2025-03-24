@@ -42,8 +42,8 @@ import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.compose.draggable.DraggableItem
 import io.github.sds100.keymapper.compose.draggable.rememberDragDropState
 import io.github.sds100.keymapper.mappings.ClickType
-import io.github.sds100.keymapper.mappings.ShortcutModel
-import io.github.sds100.keymapper.mappings.ShortcutRow
+import io.github.sds100.keymapper.mappings.keymaps.ShortcutModel
+import io.github.sds100.keymapper.mappings.keymaps.ShortcutRow
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ui.LinkType
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
@@ -226,6 +226,7 @@ private fun TriggerScreenVertical(
 
                     if (configState.clickTypeButtons.isNotEmpty()) {
                         ClickTypeRadioGroup(
+                            modifier = Modifier.padding(horizontal = 8.dp),
                             clickTypes = configState.clickTypeButtons,
                             checkedClickType = configState.checkedClickType,
                             onSelectClickType = onSelectClickType,
@@ -234,6 +235,7 @@ private fun TriggerScreenVertical(
 
                     if (configState.triggerModeButtonsVisible) {
                         TriggerModeRadioGroup(
+                            modifier = Modifier.padding(horizontal = 8.dp),
                             mode = configState.checkedTriggerMode,
                             isEnabled = configState.triggerModeButtonsEnabled,
                             onSelectParallelMode = onSelectParallelMode,
@@ -328,6 +330,7 @@ private fun TriggerScreenHorizontal(
                     ) {
                         if (configState.clickTypeButtons.isNotEmpty()) {
                             ClickTypeRadioGroup(
+                                modifier = Modifier.padding(horizontal = 8.dp),
                                 clickTypes = configState.clickTypeButtons,
                                 checkedClickType = configState.checkedClickType,
                                 onSelectClickType = onSelectClickType,
@@ -336,6 +339,7 @@ private fun TriggerScreenHorizontal(
 
                         if (configState.triggerModeButtonsVisible) {
                             TriggerModeRadioGroup(
+                                modifier = Modifier.padding(horizontal = 8.dp),
                                 mode = configState.checkedTriggerMode,
                                 isEnabled = configState.triggerModeButtonsEnabled,
                                 onSelectParallelMode = onSelectParallelMode,

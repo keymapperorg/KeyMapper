@@ -40,8 +40,8 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.compose.draggable.DraggableItem
 import io.github.sds100.keymapper.compose.draggable.rememberDragDropState
-import io.github.sds100.keymapper.mappings.ShortcutModel
-import io.github.sds100.keymapper.mappings.ShortcutRow
+import io.github.sds100.keymapper.mappings.keymaps.ShortcutModel
+import io.github.sds100.keymapper.mappings.keymaps.ShortcutRow
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ui.LinkType

@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.mappings
+package io.github.sds100.keymapper.mappings.keymaps
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement

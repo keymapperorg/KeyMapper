@@ -22,7 +22,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 @Composable
 fun rememberDragDropState(
@@ -91,7 +90,6 @@ class DragDropState internal constructor(
         private set
 
     fun onDragStart(index: Int, offset: Offset) {
-        Timber.e("ON DRAG START $index")
         // Calculate the offset of the item in the list
         val lazyItem = state.layoutInfo.visibleItemsInfo
             .firstOrNull { it.index == index }
