@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.util.ui.SliderMaximums
+import io.github.sds100.keymapper.util.ui.SliderMinimums
 import io.github.sds100.keymapper.util.ui.SliderStepSizes
 import io.github.sds100.keymapper.util.ui.compose.CheckBoxText
 import io.github.sds100.keymapper.util.ui.compose.RadioButtonText
@@ -253,7 +254,7 @@ fun ActionOptionsBottomSheet(
                     value = state.holdDownDuration.toFloat(),
                     valueText = { "${it.toInt()} ms" },
                     onValueChange = { callback.onHoldDownDurationChanged(it.toInt()) },
-                    valueRange = 0f..SliderMaximums.ACTION_HOLD_DOWN_DURATION.toFloat(),
+                    valueRange = SliderMinimums.ACTION_HOLD_DOWN_DURATION.toFloat()..SliderMaximums.ACTION_HOLD_DOWN_DURATION.toFloat(),
                     stepSize = SliderStepSizes.ACTION_HOLD_DOWN_DURATION,
                 )
             }
@@ -277,7 +278,7 @@ fun ActionOptionsBottomSheet(
                     value = state.delayBeforeNextAction.toFloat(),
                     valueText = { "${it.toInt()} ms" },
                     onValueChange = { callback.onDelayBeforeNextActionChanged(it.toInt()) },
-                    valueRange = 0f..SliderMaximums.DELAY_BEFORE_NEXT_ACTION.toFloat(),
+                    valueRange = SliderMinimums.DELAY_BEFORE_NEXT_ACTION.toFloat()..SliderMaximums.DELAY_BEFORE_NEXT_ACTION.toFloat(),
                     stepSize = SliderStepSizes.DELAY_BEFORE_NEXT_ACTION,
                 )
             }
@@ -297,7 +298,7 @@ fun ActionOptionsBottomSheet(
                 value = state.multiplier.toFloat(),
                 valueText = { "${it.toInt()}x" },
                 onValueChange = { callback.onMultiplierChanged(it.toInt()) },
-                valueRange = 1f..SliderMaximums.ACTION_MULTIPLIER.toFloat(),
+                valueRange = SliderMinimums.ACTION_MULTIPLIER.toFloat()..SliderMaximums.ACTION_MULTIPLIER.toFloat(),
                 stepSize = SliderStepSizes.ACTION_MULTIPLIER,
             )
 

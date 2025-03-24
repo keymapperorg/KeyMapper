@@ -26,7 +26,7 @@ fun CheckBoxText(
         Row(
             modifier = Modifier
                 .clickable(enabled = isEnabled) { onCheckedChange(!isChecked) }
-                .padding(12.dp),
+                .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Checkbox(
@@ -37,7 +37,7 @@ fun CheckBoxText(
             )
 
             Text(
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier.padding(horizontal = 8.dp),
 
                 text = text,
                 style = if (isEnabled) {

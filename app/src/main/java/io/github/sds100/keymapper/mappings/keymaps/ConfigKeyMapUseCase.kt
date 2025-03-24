@@ -31,7 +31,6 @@ import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
-import io.github.sds100.keymapper.util.Defaultable
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.ServiceEvent
 import io.github.sds100.keymapper.util.State
@@ -532,16 +531,40 @@ class ConfigKeyMapUseCaseController(
 
     override fun setVibrateEnabled(enabled: Boolean) = editTrigger { it.copy(vibrate = enabled) }
 
-    override fun setVibrationDuration(duration: Defaultable<Int>) = editTrigger { it.copy(vibrateDuration = duration.nullIfDefault()) }
-
-    override fun setLongPressDelay(delay: Defaultable<Int>) = editTrigger { it.copy(longPressDelay = delay.nullIfDefault()) }
-
-    override fun setDoublePressDelay(delay: Defaultable<Int>) {
-        editTrigger { it.copy(doublePressDelay = delay.nullIfDefault()) }
+    override fun setVibrationDuration(duration: Int) = editTrigger { trigger ->
+        if (duration == defaultVibrateDuration.value) {
+            trigger.copy(vibrateDuration = null)
+        } else {
+            trigger.copy(vibrateDuration = duration)
+        }
     }
 
-    override fun setSequenceTriggerTimeout(delay: Defaultable<Int>) {
-        editTrigger { it.copy(sequenceTriggerTimeout = delay.nullIfDefault()) }
+    override fun setLongPressDelay(delay: Int) = editTrigger { trigger ->
+        if (delay == defaultLongPressDelay.value) {
+            trigger.copy(longPressDelay = null)
+        } else {
+            trigger.copy(longPressDelay = delay)
+        }
+    }
+
+    override fun setDoublePressDelay(delay: Int) {
+        editTrigger { trigger ->
+            if (delay == defaultDoublePressDelay.value) {
+                trigger.copy(doublePressDelay = null)
+            } else {
+                trigger.copy(doublePressDelay = delay)
+            }
+        }
+    }
+
+    override fun setSequenceTriggerTimeout(delay: Int) {
+        editTrigger { trigger ->
+            if (delay == defaultSequenceTriggerTimeout.value) {
+                trigger.copy(sequenceTriggerTimeout = null)
+            } else {
+                trigger.copy(sequenceTriggerTimeout = delay)
+            }
+        }
     }
 
     override fun setLongPressDoubleVibrationEnabled(enabled: Boolean) {
@@ -903,10 +926,10 @@ interface ConfigKeyMapUseCase : GetDefaultKeyMapOptionsUseCase {
     fun setFingerprintGestureType(keyUid: String, type: FingerprintGestureType)
 
     fun setVibrateEnabled(enabled: Boolean)
-    fun setVibrationDuration(duration: Defaultable<Int>)
-    fun setLongPressDelay(delay: Defaultable<Int>)
-    fun setDoublePressDelay(delay: Defaultable<Int>)
-    fun setSequenceTriggerTimeout(delay: Defaultable<Int>)
+    fun setVibrationDuration(duration: Int)
+    fun setLongPressDelay(delay: Int)
+    fun setDoublePressDelay(delay: Int)
+    fun setSequenceTriggerTimeout(delay: Int)
     fun setLongPressDoubleVibrationEnabled(enabled: Boolean)
     fun setTriggerWhenScreenOff(enabled: Boolean)
     fun setTriggerFromOtherAppsEnabled(enabled: Boolean)

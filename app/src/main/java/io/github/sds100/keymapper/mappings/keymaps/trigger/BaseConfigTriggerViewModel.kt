@@ -13,6 +13,7 @@ import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.FingerprintGestureType
 import io.github.sds100.keymapper.mappings.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.mappings.ShortcutModel
+import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapOptionsViewModel
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapUseCase
 import io.github.sds100.keymapper.mappings.keymaps.CreateKeyMapShortcutUseCase
 import io.github.sds100.keymapper.mappings.keymaps.DisplayKeyMapUseCase
@@ -81,7 +82,7 @@ abstract class BaseConfigTriggerViewModel(
         private const val DEVICE_ID_INTERNAL = "internal"
     }
 
-    val optionsViewModel = ConfigTriggerOptionsViewModel(
+    val optionsViewModel = ConfigKeyMapOptionsViewModel(
         coroutineScope,
         config,
         displayKeyMap,

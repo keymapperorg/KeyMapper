@@ -21,7 +21,6 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.ConfigActionsFragment
 import io.github.sds100.keymapper.constraints.ConfigConstraintsFragment
 import io.github.sds100.keymapper.databinding.FragmentConfigKeyMapBinding
-import io.github.sds100.keymapper.mappings.keymaps.trigger.ConfigTriggerOptionsFragment
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerFragment
 import io.github.sds100.keymapper.system.url.UrlUtils
 import io.github.sds100.keymapper.util.FragmentInfo
@@ -201,7 +200,7 @@ class ConfigKeyMapFragment : Fragment() {
     private fun getFragmentInfoList() = intArray(R.array.config_keymap_fragments).map {
         when (it) {
             int(R.integer.fragment_id_trigger) -> it to TriggerFragment.Info()
-            int(R.integer.fragment_id_trigger_options) -> it to ConfigTriggerOptionsFragment.Info()
+            int(R.integer.fragment_id_trigger_options) -> it to ConfigKeyMapOptionsFragment.Info()
             int(R.integer.fragment_id_constraint_list) -> it to ConfigConstraintsFragment.Info()
             int(R.integer.fragment_id_action_list) -> it to ConfigActionsFragment.Info()
 
@@ -257,14 +256,14 @@ class ConfigKeyMapFragment : Fragment() {
 
     class ConstraintsAndOptionsFragment :
         TwoFragments(
-            ConfigTriggerOptionsFragment.Info(),
+            ConfigKeyMapOptionsFragment.Info(),
             ConfigConstraintsFragment.Info(),
         )
 
     class AllFragments :
         FourFragments(
             TriggerFragment.Info(),
-            ConfigTriggerOptionsFragment.Info(),
+            ConfigKeyMapOptionsFragment.Info(),
             ConfigActionsFragment.Info(),
             ConfigConstraintsFragment.Info(),
         )

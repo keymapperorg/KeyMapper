@@ -70,7 +70,7 @@
     <string name="action_title_intent_start_service">Start service: %s</string>
     <string name="action_title_intent_send_broadcast">Send broadcast: %s</string>
 
-    <string name="clipboard_label_keymap_uid">Key map UUID</string>
+    <string name="clipboard_label_keymap_uid">Key map id</string>
     <string name="check_box_key_event_option_use_shell">Use shell (ROOT only)</string>
 
     <string name="trigger_error_dnd_access_denied">Permission required to work properly in Do Not Disturb mode!</string>
@@ -198,13 +198,13 @@
     <!--  Toasts  -->
 
     <!-- Extra labels -->
-    <string name="extra_label_sequence_trigger_timeout">Sequence trigger timeout (ms)</string>
-    <string name="extra_label_long_press_delay_timeout">Long press delay (ms)</string>
-    <string name="extra_label_double_press_delay_timeout">Double press timeout (ms)</string>
+    <string name="extra_label_sequence_trigger_timeout">Sequence trigger timeout</string>
+    <string name="extra_label_long_press_delay_timeout">Long press delay</string>
+    <string name="extra_label_double_press_delay_timeout">Double press timeout</string>
     <string name="extra_label_repeat_delay">Delay until repeat</string>
     <string name="extra_label_repeat_limit">Repeat limit</string>
     <string name="extra_label_repeat_rate">Repeat every…</string>
-    <string name="extra_label_vibration_duration">Vibration duration (ms)</string>
+    <string name="extra_label_vibration_duration">Vibration duration</string>
     <string name="extra_label_action_multiplier">How many times</string>
     <string name="extra_label_action_multiplier_with_repeat">How many times every repeat</string>
     <string name="extra_label_delay_before_next_action">Delay before next action</string>
@@ -723,6 +723,7 @@
     <string name="flag_hold_down_until_pressed_again">Hold down until pressed again</string>
     <string name="flag_dont_override_default_action">Do not remap</string>
     <string name="flag_trigger_from_other_apps">Allow other apps to trigger this key map</string>
+    <string name="flag_trigger_from_other_apps_copy_uid">Copy key map id</string>
     <string name="flag_detect_from_input_method">⌨</string>
     <!--flags-->
 
