@@ -18,8 +18,12 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.HelpOutline
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -27,11 +31,17 @@ import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
@@ -40,7 +50,7 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.window.core.layout.WindowSizeClass
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.ActionsScreen
 import io.github.sds100.keymapper.compose.KeyMapperTheme
@@ -54,11 +64,12 @@ fun ConfigKeyMapScreen(
     viewModel: ConfigKeyMapViewModel,
     navigateBack: () -> Unit,
 ) {
-    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+    val isKeyMapEnabled by viewModel.isEnabled.collectAsStateWithLifecycle()
 
     ConfigKeyMapScreen(
         modifier = modifier,
-        windowSizeClass = windowSizeClass,
+        isKeyMapEnabled = isKeyMapEnabled,
+        onKeyMapEnabledChange = viewModel::onEnabledChanged,
         triggerScreen = {
             TriggerScreen(Modifier.fillMaxSize(), viewModel.configTriggerViewModel)
         },
@@ -86,7 +97,8 @@ fun ConfigKeyMapScreen(
 @Composable
 private fun ConfigKeyMapScreen(
     modifier: Modifier = Modifier,
-    windowSizeClass: WindowSizeClass,
+    isKeyMapEnabled: Boolean,
+    onKeyMapEnabledChange: (Boolean) -> Unit = {},
     triggerScreen: @Composable () -> Unit,
     actionScreen: @Composable () -> Unit,
     constraintsScreen: @Composable () -> Unit,
@@ -94,27 +106,63 @@ private fun ConfigKeyMapScreen(
     navigateBack: () -> Unit = {},
     onDoneClick: () -> Unit = {},
 ) {
-    // TODO help button on app bar depending on which tab is shown
-
     val scope = rememberCoroutineScope()
+    val triggerHelpUrl = stringResource(R.string.url_trigger_guide)
+    val actionsHelpUrl = stringResource(R.string.url_action_guide)
+    val constraintsHelpUrl = stringResource(R.string.url_constraints_guide)
+    val optionsHelpUrl = stringResource(R.string.url_trigger_options_guide)
+
+    var currentTab: ConfigKeyMapTab? by remember { mutableStateOf(null) }
+    val uriHandler = LocalUriHandler.current
+
+    var showBackDialog by rememberSaveable { mutableStateOf(false) }
+
+    if (showBackDialog) {
+        BackDialog(
+            onDismiss = { showBackDialog = false },
+            onDiscardClick = navigateBack,
+        )
+    }
 
     BackHandler {
-        // TODO
-        navigateBack()
+        showBackDialog = true
     }
 
     Scaffold(
         modifier.displayCutoutPadding(),
         bottomBar = {
-            KeyMapAppBar(onBackClick = {
-                // TODO back pressed dialog
-            }, onDoneClick = onDoneClick)
+            KeyMapAppBar(
+                isKeyMapEnabled = isKeyMapEnabled,
+                onKeyMapEnabledChange = onKeyMapEnabledChange,
+                onBackClick = {
+                    showBackDialog = true
+                },
+                onDoneClick = onDoneClick,
+                showHelpButton = currentTab == ConfigKeyMapTab.TRIGGER ||
+                    currentTab == ConfigKeyMapTab.ACTIONS ||
+                    currentTab == ConfigKeyMapTab.CONSTRAINTS ||
+                    currentTab == ConfigKeyMapTab.OPTIONS,
+                onHelpClick = {
+                    val url = when (currentTab) {
+                        ConfigKeyMapTab.TRIGGER -> triggerHelpUrl
+                        ConfigKeyMapTab.ACTIONS -> actionsHelpUrl
+                        ConfigKeyMapTab.CONSTRAINTS -> constraintsHelpUrl
+                        ConfigKeyMapTab.OPTIONS -> optionsHelpUrl
+                        else -> return@KeyMapAppBar
+                    }
+
+                    if (url.isNotEmpty()) {
+                        uriHandler.openUri(url)
+                    }
+                },
+            )
         },
     ) { innerPadding ->
         BoxWithConstraints(modifier = Modifier.padding(innerPadding)) {
             val tabs = determineTabs(maxWidth, maxHeight)
             val isVerticalTwoScreen = maxWidth < 720.dp
             val pagerState = rememberPagerState(pageCount = { tabs.size }, initialPage = 0)
+            currentTab = tabs.getOrNull(pagerState.targetPage)
 
             Column(Modifier.fillMaxSize()) {
                 if (tabs.size > 1) {
@@ -167,19 +215,19 @@ private fun ConfigKeyMapScreen(
                             if (isVerticalTwoScreen) {
                                 VerticalTwoScreens(
                                     topTitle = stringResource(R.string.tab_trigger),
-                                    topHelpUrl = stringResource(R.string.url_trigger_guide),
+                                    topHelpUrl = triggerHelpUrl,
                                     topScreen = triggerScreen,
                                     bottomTitle = stringResource(R.string.tab_actions),
-                                    bottomHelpUrl = stringResource(R.string.url_action_guide),
+                                    bottomHelpUrl = actionsHelpUrl,
                                     bottomScreen = actionScreen,
                                 )
                             } else {
                                 HorizontalTwoScreens(
                                     leftTitle = stringResource(R.string.tab_trigger),
-                                    leftHelpUrl = stringResource(R.string.url_trigger_guide),
+                                    leftHelpUrl = triggerHelpUrl,
                                     leftScreen = triggerScreen,
                                     rightTitle = stringResource(R.string.tab_actions),
-                                    rightHelpUrl = stringResource(R.string.url_action_guide),
+                                    rightHelpUrl = actionsHelpUrl,
                                     rightScreen = actionScreen,
                                 )
                             }
@@ -189,19 +237,19 @@ private fun ConfigKeyMapScreen(
                             if (isVerticalTwoScreen) {
                                 VerticalTwoScreens(
                                     topTitle = stringResource(R.string.tab_constraints),
-                                    topHelpUrl = stringResource(R.string.url_constraints_guide),
+                                    topHelpUrl = constraintsHelpUrl,
                                     topScreen = constraintsScreen,
                                     bottomTitle = stringResource(R.string.tab_options),
-                                    bottomHelpUrl = stringResource(R.string.url_trigger_options_guide),
+                                    bottomHelpUrl = optionsHelpUrl,
                                     bottomScreen = optionsScreen,
                                 )
                             } else {
                                 HorizontalTwoScreens(
                                     leftTitle = stringResource(R.string.tab_constraints),
-                                    leftHelpUrl = stringResource(R.string.url_constraints_guide),
+                                    leftHelpUrl = constraintsHelpUrl,
                                     leftScreen = constraintsScreen,
                                     rightTitle = stringResource(R.string.tab_options),
-                                    rightHelpUrl = stringResource(R.string.url_trigger_options_guide),
+                                    rightHelpUrl = optionsHelpUrl,
                                     rightScreen = optionsScreen,
                                 )
                             }
@@ -209,16 +257,16 @@ private fun ConfigKeyMapScreen(
 
                         ConfigKeyMapTab.ALL -> FourScreens(
                             topLeftTitle = stringResource(R.string.tab_trigger),
-                            topLeftHelpUrl = stringResource(R.string.url_trigger_guide),
+                            topLeftHelpUrl = triggerHelpUrl,
                             topLeftScreen = triggerScreen,
                             topRightTitle = stringResource(R.string.tab_actions),
-                            topRightHelpUrl = stringResource(R.string.url_action_guide),
+                            topRightHelpUrl = actionsHelpUrl,
                             topRightScreen = actionScreen,
                             bottomLeftTitle = stringResource(R.string.tab_constraints),
-                            bottomLeftHelpUrl = stringResource(R.string.url_constraints_guide),
+                            bottomLeftHelpUrl = constraintsHelpUrl,
                             bottomLeftScreen = constraintsScreen,
                             bottomRightTitle = stringResource(R.string.tab_options),
-                            bottomRightHelpUrl = stringResource(R.string.url_trigger_options_guide),
+                            bottomRightHelpUrl = optionsHelpUrl,
                             bottomRightScreen = optionsScreen,
                         )
                     }
@@ -231,19 +279,62 @@ private fun ConfigKeyMapScreen(
 @Composable
 private fun KeyMapAppBar(
     modifier: Modifier = Modifier,
+    isKeyMapEnabled: Boolean,
+    onKeyMapEnabledChange: (Boolean) -> Unit = {},
+    showHelpButton: Boolean,
+    onHelpClick: () -> Unit,
     onBackClick: () -> Unit,
     onDoneClick: () -> Unit,
 ) {
-    // TODO enabled switch
-    // TODO only show help button if one screen per tab
     BottomAppBar(
         modifier = modifier,
         floatingActionButton = {
+            ExtendedFloatingActionButton(
+                onClick = onDoneClick,
+                text = { Text(stringResource(R.string.button_done)) },
+                icon = {
+                    Icon(Icons.Rounded.Check, stringResource(R.string.button_done))
+                },
+                elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(),
+            )
         },
         actions = {
             IconButton(onClick = onBackClick) {
                 Icon(Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.action_go_back))
             }
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            val text = if (isKeyMapEnabled) {
+                stringResource(R.string.switch_enabled)
+            } else {
+                stringResource(R.string.switch_disabled)
+            }
+
+            Text(
+                text = text,
+                style = MaterialTheme.typography.labelLarge,
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Switch(
+                checked = isKeyMapEnabled,
+                onCheckedChange = onKeyMapEnabledChange,
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            if (showHelpButton) {
+                IconButton(onClick = onHelpClick) {
+                    Icon(
+                        Icons.AutoMirrored.Rounded.HelpOutline,
+                        stringResource(R.string.action_help),
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.width(8.dp))
         },
     )
 }
@@ -421,6 +512,24 @@ private fun ScreenCard(
     }
 }
 
+@Composable
+private fun BackDialog(
+    onDismiss: () -> Unit,
+    onDiscardClick: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.dialog_title_unsaved_changes)) },
+        text = { Text(stringResource(R.string.dialog_message_unsaved_changes)) },
+        confirmButton = {
+            TextButton(onClick = onDiscardClick) { Text(stringResource(R.string.pos_discard_changes)) }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.neg_keep_editing)) }
+        },
+    )
+}
+
 private fun determineTabs(maxWidth: Dp, maxHeight: Dp): List<ConfigKeyMapTab> {
     return when {
         maxWidth >= 800.dp && maxHeight >= 800.dp -> listOf(ConfigKeyMapTab.ALL)
@@ -469,7 +578,7 @@ private fun SmallScreenPreview() {
     KeyMapperTheme {
         ConfigKeyMapScreen(
             modifier = Modifier.fillMaxSize(),
-            windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass,
+            isKeyMapEnabled = false,
             triggerScreen = {},
             actionScreen = {},
             constraintsScreen = {},
@@ -485,7 +594,7 @@ private fun MediumScreenPreview() {
     KeyMapperTheme {
         ConfigKeyMapScreen(
             modifier = Modifier.fillMaxSize(),
-            windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass,
+            isKeyMapEnabled = true,
             triggerScreen = {},
             actionScreen = {},
             constraintsScreen = {},
@@ -501,7 +610,7 @@ private fun MediumScreenLandscapePreview() {
     KeyMapperTheme {
         ConfigKeyMapScreen(
             modifier = Modifier.fillMaxSize(),
-            windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass,
+            isKeyMapEnabled = true,
             triggerScreen = {},
             actionScreen = {},
             constraintsScreen = {},
@@ -517,7 +626,7 @@ private fun LargeScreenPreview() {
     KeyMapperTheme {
         ConfigKeyMapScreen(
             modifier = Modifier.fillMaxSize(),
-            windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass,
+            isKeyMapEnabled = true,
             triggerScreen = {},
             actionScreen = {},
             constraintsScreen = {},

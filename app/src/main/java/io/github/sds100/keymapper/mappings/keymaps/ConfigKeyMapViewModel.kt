@@ -16,9 +16,14 @@ import io.github.sds100.keymapper.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.purchasing.PurchasingManager
 import io.github.sds100.keymapper.ui.utils.getJsonSerializable
 import io.github.sds100.keymapper.ui.utils.putJsonSerializable
+import io.github.sds100.keymapper.util.dataOrNull
 import io.github.sds100.keymapper.util.firstBlocking
 import io.github.sds100.keymapper.util.ifIsData
 import io.github.sds100.keymapper.util.ui.ResourceProvider
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 /**
@@ -74,6 +79,10 @@ class ConfigKeyMapViewModel(
         resourceProvider,
     )
 
+    val isEnabled: StateFlow<Boolean> = config.keyMap
+        .map { state -> state.dataOrNull()?.isEnabled ?: true }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, true)
+
     fun save() = config.save()
 
     fun saveState(outState: Bundle) {
@@ -100,6 +109,10 @@ class ConfigKeyMapViewModel(
         viewModelScope.launch {
             config.loadKeyMap(uid)
         }
+    }
+
+    fun onEnabledChanged(enabled: Boolean) {
+        config.setEnabled(enabled)
     }
 
     class Factory(

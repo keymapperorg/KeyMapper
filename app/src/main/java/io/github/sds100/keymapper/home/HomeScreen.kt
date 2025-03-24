@@ -29,17 +29,21 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
-import androidx.compose.foundation.layout.displayCutoutPadding
+import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
@@ -363,7 +367,8 @@ private fun HomeScreen(
 
     Scaffold(
         modifier = modifier
-            .displayCutoutPadding()
+            // Only take the horizontal because the status bar is the same color as the app bar
+            .windowInsetsPadding(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal))
             .navigationBarsPadding(),
         topBar = topAppBar,
         snackbarHost = {
@@ -632,7 +637,7 @@ private fun HomeAppBar(
 
 @Composable
 private fun SelectedText(modifier: Modifier = Modifier, selectionCount: Int) {
-    Row {
+    Row(modifier) {
         AnimatedContent(
             selectionCount,
             transitionSpec = {
@@ -1161,7 +1166,7 @@ private fun HomeStateWarningsDarkPreview() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun HomeStateSelectingPreview() {
     val state = HomeState.Selecting(

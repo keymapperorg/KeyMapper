@@ -187,7 +187,7 @@ class KeyMapListItemCreator(
         val midDot by lazy { getString(R.string.middot) }
 
         if (!keyMap.isEnabled) {
-            append(getString(R.string.disabled))
+            append(getString(R.string.switch_disabled))
         }
 
         if (actionChipList.any { it is ComposeChipModel.Error }) {

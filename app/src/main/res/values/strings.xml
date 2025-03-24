@@ -59,7 +59,7 @@
     <string name="create_key_map_shortcut_footer">Tap a key map to use as a shortcut.</string>
 
     <string name="switch_enabled">Enabled</string>
-    <string name="disabled">Disabled</string>
+    <string name="switch_disabled">Disabled</string>
 
     <string name="reset">Reset</string>
     <string name="enable_device_admin_message">Once you have enabled the device admin, you must DEACTIVATE it if you want to uninstall Key Mapper.</string>
