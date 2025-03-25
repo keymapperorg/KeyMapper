@@ -1373,6 +1373,7 @@
     <string name="action_list_delete_dialog_text">Are you sure you want to delete this action?</string>
     <string name="action_list_delete_yes">Yes, delete</string>
     <string name="action_list_delete_cancel">Cancel</string>
+    <string name="action_list_explanation_header">Run these actions when you trigger the key map:</string>
 
 
     <!--  Constraint screen  -->

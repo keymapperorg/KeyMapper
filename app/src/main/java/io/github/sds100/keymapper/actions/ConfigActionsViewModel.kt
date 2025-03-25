@@ -460,7 +460,6 @@ class ConfigActionsViewModel(
             }.takeIf { it.isNotBlank() }
 
             val linkType = when {
-                index == keyMap.actionList.lastIndex && shortcutCount > 0 -> LinkType.PLUS
                 index < keyMap.actionList.lastIndex -> LinkType.ARROW
                 else -> LinkType.HIDDEN
             }

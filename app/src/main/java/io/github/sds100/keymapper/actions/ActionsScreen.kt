@@ -157,6 +157,18 @@ private fun ActionsScreen(
                     is ConfigActionsState.Loaded -> {
                         Spacer(Modifier.height(8.dp))
 
+                        if (state.data.actions.isNotEmpty()) {
+                            Spacer(Modifier.height(8.dp))
+
+                            Text(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                text = stringResource(R.string.action_list_explanation_header),
+                                style = MaterialTheme.typography.titleSmall,
+                            )
+                        }
+
+                        Spacer(Modifier.height(8.dp))
+
                         ActionList(
                             modifier = Modifier.weight(1f),
                             actionList = state.data.actions,
@@ -258,11 +270,20 @@ private fun ActionList(
 
         if (shortcuts.isNotEmpty()) {
             item(key = "shortcuts", contentType = "shortcuts") {
-                ShortcutRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    shortcuts = shortcuts,
-                    onClick = { onClickShortcut(it) },
-                )
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = stringResource(R.string.recently_used_actions),
+                        style = MaterialTheme.typography.titleSmall,
+                    )
+
+                    Spacer(Modifier.height(8.dp))
+
+                    ShortcutRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        shortcuts = shortcuts,
+                        onClick = { onClickShortcut(it) },
+                    )
+                }
             }
         }
     }
@@ -312,7 +333,6 @@ private fun LoadedPreview() {
                             secondaryText = "Repeat until released",
                             error = null,
                             isErrorFixable = true,
-                            linkType = LinkType.PLUS,
                         ),
                     ),
                     shortcuts = setOf(
