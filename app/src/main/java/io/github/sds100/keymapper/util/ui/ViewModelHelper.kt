@@ -20,6 +20,7 @@ object ViewModelHelper {
             message = resourceProvider.getText(R.string.dialog_message_key_mapper_crashed),
             positiveButtonText = resourceProvider.getString(R.string.dialog_button_read_dont_kill_my_app_yes),
             negativeButtonText = resourceProvider.getString(R.string.dialog_button_read_dont_kill_my_app_no),
+            neutralButtonText = resourceProvider.getString(R.string.pos_restart),
         )
 
         val response = popupViewModel.showPopup("app_crashed_prompt", dialog) ?: return
@@ -30,6 +31,8 @@ object ViewModelHelper {
                     PopupUi.OpenUrl(resourceProvider.getString(R.string.url_dont_kill_my_app))
                 popupViewModel.showPopup("dont_kill_my_app", popup)
             }
+
+            DialogResponse.NEUTRAL -> restartService()
 
             else -> Unit
         }

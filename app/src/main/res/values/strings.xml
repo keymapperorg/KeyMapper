@@ -461,7 +461,7 @@
     <string name="dialog_message_screen_pinning_warning">Using this trigger may cause a black screen when you unlock your device after using the screen pinning setting in your device\'s settings. This can be fixed with a reboot. This doesn\'t happen on all devices so beware and turn off the setting if it does!</string>
 
     <string name="dialog_title_key_mapper_crashed">Key Mapper was interrupted</string>
-    <string name="dialog_message_key_mapper_crashed">Key Mapper tried to run in the background but was stopped by the system.\nThis can happen if you have battery or memory optimization turned on.\n\nTo fix this, you can try following an online guide.</string>
+    <string name="dialog_message_key_mapper_crashed">Key Mapper tried to run in the background but was stopped by the system.\nThis can happen if you have battery or memory optimization turned on.\n\nTo fix this, you can try following an online guide. You should also restart the service when you\'re done.</string>
     <string name="dialog_button_read_dont_kill_my_app_yes">Proceed</string>
     <string name="dialog_button_read_dont_kill_my_app_no">Ignore</string>
 
