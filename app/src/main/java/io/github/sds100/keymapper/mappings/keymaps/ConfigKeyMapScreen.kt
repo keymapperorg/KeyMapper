@@ -203,6 +203,7 @@ private fun ConfigKeyMapScreen(
                             selectedTabIndex = pagerState.targetPage,
                             divider = {},
                             edgePadding = 0.dp,
+                            contentColor = MaterialTheme.colorScheme.onSurface,
                         ) {
                             Tabs()
                         }
@@ -210,6 +211,7 @@ private fun ConfigKeyMapScreen(
                         PrimaryTabRow(
                             selectedTabIndex = pagerState.targetPage,
                             divider = {},
+                            contentColor = MaterialTheme.colorScheme.onSurface,
                         ) {
                             Tabs()
                         }
