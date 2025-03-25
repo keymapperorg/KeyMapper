@@ -1,36 +1,36 @@
 New trigger! 🎉 Remap your Assistant & Bixby, and DPAD buttons!
 
-O que pode ser remapeado?
+What can be remapped?
 
- * Botões de volume.
+ * Volume buttons.
  * Power button, side key, and voice assistant button (one time purchase to support development).
- * Teclados Bluetooth/com fio.
- * Gestos de impressão digital em dispositivos suportados.
+ * Bluetooth/wired keyboards.
+ * Fingerprint gestures on supported devices.
  * DPAD buttons on game controllers.
- * Botões em outros dispositivos conectados também devem funcionar.
+ * Buttons on other connected devices should also work.
 
-Você pode combinar várias teclas de um dispositivo específico ou de qualquer dispositivo para formar um "gatilho". Cada gatilho pode ter múltiplas ações. As teclas podem ser configuradas para serem pressionadas ao mesmo tempo ou uma após a outra em sequência. As teclas podem ser remapeadas quando pressionadas brevemente, longamente ou duas vezes. Um mapa de teclas pode ter um conjunto de "restrições" para que ele só tenha efeito em determinadas situações.
+You can combine multiple keys from a specific device or any device to form a "trigger". Each trigger can have multiple actions. The keys can be set to be pressed at the same time or one after another in a sequence. Keys can be remapped when they are short pressed, long pressed or double pressed. A keymap can have a set of "constraints" so it only has an effect in certain situations.
 
-O que não pode ser remapeado?
- * Botões do mouse
+What can’t be remapped?
+ * Mouse buttons
  * Thumb sticks or triggers on game controllers
 
-Your key maps do not work if the screen is OFF. Esta é uma limitação do Android. Não há nada que o desenvolvedor possa fazer.
+Your key maps do not work if the screen is OFF. This is a limitation in Android. There is nothing the dev can do.
 
-O que posso fazer para remapear minhas chaves?
-Algumas ações só funcionarão em dispositivos com root e em versões específicas do Android.
+What can I remap my keys to do?
+Some actions will only work on rooted devices and specific Android versions.
 
-Há muitos recursos para listar aqui, então confira a lista completa aqui: https://docs.keymapper.club/user-guide/actions
+There are too many features to list here so check out the full list here: https://docs.keymapper.club/user-guide/actions
 
-Permissões
-Você não precisa conceder todas as permissões para que o aplicativo funcione. O aplicativo informará se é necessário conceder uma permissão para que um recurso funcione.
+Permissions
+You don't have to grant all the permissions for the app to work. The app will tell you if a permission needs to be granted for a feature to work.
 
- * Serviço de Acessibilidade: Requisito básico para o remapeamento para o trabalho. It is needed so the app can listen to and block key events.
- * Administrador do dispositivo: para desligar a tela ao usar a ação para desligar a tela.
- * Modificar configurações do sistema: para alterar as configurações de brilho e rotação.
- * Câmera: Para controlar a lanterna.
+ * Accessibility Service: Basic requirement for remapping to work. It is needed so the app can listen to and block key events.
+ * Device Admin: To turn the screen off when using the action to turn off the screen.
+ * Modify System Settings: To change the brightness and rotation settings.
+ * Camera: To control the flashlight.
 
- Em alguns dispositivos, habilitar o serviço de acessibilidade desabilitará a "criptografia de dados aprimorada".
+ On some devices, enabling the accessibility service will disable "enhanced data encryption".
 
 Discord: www.keymapper.club
-Site: docs.keymapper.club
+Website: docs.keymapper.club

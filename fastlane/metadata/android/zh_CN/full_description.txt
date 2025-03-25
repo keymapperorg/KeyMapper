@@ -1,36 +1,36 @@
-新的触发器！ 🎉重新映射你的助手键和Bixby键，还有方向按钮！
+New trigger! 🎉 Remap your Assistant & Bixby, and DPAD buttons!
 
-什么能被重新映射？
+What can be remapped?
 
- * 音量键。
+ * Volume buttons.
  * Power button, side key, and voice assistant button (one time purchase to support development).
- * 蓝牙/有线键盘。
- * 支持设备上的指纹手势。
- * 游戏手柄上的方向按钮。
- * 其他已连接的设备的按钮也应该起作用。
+ * Bluetooth/wired keyboards.
+ * Fingerprint gestures on supported devices.
+ * DPAD buttons on game controllers.
+ * Buttons on other connected devices should also work.
 
-你可以组合来自特定设备或多个设备的多个按键来构成“触发器”。 每个触发器都可以有多个动作。 可以将按键设置为同时按下或依次按下。 按键可以在它们被短按、长按或双击时被重新映射。 按键映射可以有一组“约束，因此它仅在某些情况下有效。
+You can combine multiple keys from a specific device or any device to form a "trigger". Each trigger can have multiple actions. The keys can be set to be pressed at the same time or one after another in a sequence. Keys can be remapped when they are short pressed, long pressed or double pressed. A keymap can have a set of "constraints" so it only has an effect in certain situations.
 
-什么不可以重新映射？
- * 鼠标键
+What can’t be remapped?
+ * Mouse buttons
  * Thumb sticks or triggers on game controllers
 
-Your key maps do not work if the screen is OFF. 这是Android中的一个限制。 开发者无能为力。
+Your key maps do not work if the screen is OFF. This is a limitation in Android. There is nothing the dev can do.
 
-我重新映射我的按键能些做什么？
-某些动作只在已root的设备和特定的Android版本上起作用。
+What can I remap my keys to do?
+Some actions will only work on rooted devices and specific Android versions.
 
-功能太多以至于难以列出，因此请在此处查看完整列表：https://docs.keymapper.club/user-guide/actions
+There are too many features to list here so check out the full list here: https://docs.keymapper.club/user-guide/actions
 
-权限
-你无需授予所有权限来让这个应用工作。 如果一个功能需要授予权限才能工作，这个应用将告诉你。
+Permissions
+You don't have to grant all the permissions for the app to work. The app will tell you if a permission needs to be granted for a feature to work.
 
- * 无障碍服务: 让重新映射工作的基本要求。 It is needed so the app can listen to and block key events.
- * 设备管理员: 用于在使用关闭屏幕的动作时关闭屏幕。
- * 修改系统设置: 用于更改亮度和旋转设置。
- * 相机: 用于控制闪光灯。
+ * Accessibility Service: Basic requirement for remapping to work. It is needed so the app can listen to and block key events.
+ * Device Admin: To turn the screen off when using the action to turn off the screen.
+ * Modify System Settings: To change the brightness and rotation settings.
+ * Camera: To control the flashlight.
 
- 在某些设备上，启用无障碍服务将会禁用“增强数据加密”。
+ On some devices, enabling the accessibility service will disable "enhanced data encryption".
 
 Discord: www.keymapper.club
-网站: docs.keymapper.club
+Website: docs.keymapper.club
