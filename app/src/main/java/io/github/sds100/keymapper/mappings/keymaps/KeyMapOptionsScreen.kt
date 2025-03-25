@@ -124,17 +124,15 @@ private fun Loaded(
             Spacer(Modifier.height(8.dp))
         }
 
-        if (state.showToast) {
-            CheckBoxText(
-                modifier = Modifier
-                    .padding(horizontal = 8.dp)
-                    .fillMaxWidth(),
-                text = stringResource(R.string.flag_show_toast),
-                isChecked = state.showToast,
-                onCheckedChange = callback::onShowToastChanged,
-            )
-            Spacer(Modifier.height(8.dp))
-        }
+        CheckBoxText(
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+                .fillMaxWidth(),
+            text = stringResource(R.string.flag_show_toast),
+            isChecked = state.showToast,
+            onCheckedChange = callback::onShowToastChanged,
+        )
+        Spacer(Modifier.height(8.dp))
 
         if (state.showVibrate) {
             CheckBoxText(
