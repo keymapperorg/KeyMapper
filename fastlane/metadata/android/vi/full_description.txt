@@ -1,36 +1,36 @@
-Kích hoạt mới! 🎉 Remap your Assistant & Bixby, and DPAD buttons!
+New trigger! 🎉 Remap your Assistant & Bixby, and DPAD buttons!
 
-Những gì có thể được ánh xạ lại?
+What can be remapped?
 
- * Nút âm lượng.
+ * Volume buttons.
  * Power button, side key, and voice assistant button (one time purchase to support development).
- * Bàn phím Bluetooth/có dây.
- * Cử chỉ vân tay trên các thiết bị được hỗ trợ.
+ * Bluetooth/wired keyboards.
+ * Fingerprint gestures on supported devices.
  * DPAD buttons on game controllers.
- * Các nút trên các thiết bị được kết nối khác cũng sẽ hoạt động.
+ * Buttons on other connected devices should also work.
 
-Bạn có thể kết hợp nhiều phím từ một thiết bị cụ thể hoặc bất kỳ thiết bị nào để tạo thành một "trình kích hoạt". Mỗi trigger có thể có nhiều hành động. Các phím có thể được cài đặt để nhấn cùng lúc hoặc lần lượt theo trình tự. Các phím có thể được ánh xạ lại khi chúng được nhấn nhanh, nhấn lâu hoặc nhấn đúp. Sơ đồ bàn phím có thể có một tập hợp các "ràng buộc" nên nó chỉ có tác dụng trong một số trường hợp nhất định.
+You can combine multiple keys from a specific device or any device to form a "trigger". Each trigger can have multiple actions. The keys can be set to be pressed at the same time or one after another in a sequence. Keys can be remapped when they are short pressed, long pressed or double pressed. A keymap can have a set of "constraints" so it only has an effect in certain situations.
 
-Những gì không thể được ánh xạ lại?
- * Nút chuột
+What can’t be remapped?
+ * Mouse buttons
  * Thumb sticks or triggers on game controllers
 
-Sơ đồ phím của bạn không hoạt động nếu màn hình TẮT. Đây là một hạn chế trong Android. Dev không thể làm gì được.
+Your key maps do not work if the screen is OFF. This is a limitation in Android. There is nothing the dev can do.
 
-Tôi có thể sắp xếp lại chìa khóa của mình để làm gì?
-Một số hành động sẽ chỉ hoạt động trên các thiết bị đã root và các phiên bản Android cụ thể.
+What can I remap my keys to do?
+Some actions will only work on rooted devices and specific Android versions.
 
-Có quá nhiều tính năng để liệt kê ở đây, vì vậy hãy xem danh sách đầy đủ tại đây: https://docs.keymapper.club/user-guide/actions
+There are too many features to list here so check out the full list here: https://docs.keymapper.club/user-guide/actions
 
-Quyền
-Bạn không cần phải cấp tất cả các quyền để ứng dụng hoạt động. Ứng dụng sẽ cho bạn biết liệu có cần cấp quyền để một tính năng hoạt động hay không.
+Permissions
+You don't have to grant all the permissions for the app to work. The app will tell you if a permission needs to be granted for a feature to work.
 
- * Dịch vụ trợ năng: Yêu cầu cơ bản để ánh xạ lại hoạt động. Nó cần thiết để ứng dụng có thể nghe và chặn các sự kiện quan trọng.
- * Quản trị thiết bị: Để tắt màn hình khi sử dụng thao tác tắt màn hình.
- * Sửa đổi cài đặt hệ thống: Để thay đổi cài đặt độ sáng và xoay.
- * Camera: Để điều khiển đèn pin.
+ * Accessibility Service: Basic requirement for remapping to work. It is needed so the app can listen to and block key events.
+ * Device Admin: To turn the screen off when using the action to turn off the screen.
+ * Modify System Settings: To change the brightness and rotation settings.
+ * Camera: To control the flashlight.
 
- Trên một số thiết bị, việc bật dịch vụ trợ năng sẽ vô hiệu hóa "mã hóa dữ liệu nâng cao".
+ On some devices, enabling the accessibility service will disable "enhanced data encryption".
 
 Discord: www.keymapper.club
 Website: docs.keymapper.club
