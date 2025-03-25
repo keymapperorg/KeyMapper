@@ -424,6 +424,7 @@ class HomeViewModel(
                         resourceProvider = this@HomeViewModel,
                         popupViewModel = this@HomeViewModel,
                         restartService = showAlertsUseCase::restartAccessibilityService,
+                        ignoreCrashed = showAlertsUseCase::acknowledgeCrashed,
                     )
 
                 ID_BATTERY_OPTIMISATION_LIST_ITEM -> showAlertsUseCase.disableBatteryOptimisation()

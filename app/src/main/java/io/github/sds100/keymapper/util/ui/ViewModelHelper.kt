@@ -14,6 +14,7 @@ object ViewModelHelper {
         resourceProvider: ResourceProvider,
         popupViewModel: PopupViewModel,
         restartService: () -> Boolean,
+        ignoreCrashed: () -> Unit,
     ) {
         val dialog = PopupUi.Dialog(
             title = resourceProvider.getString(R.string.dialog_title_key_mapper_crashed),
@@ -32,9 +33,9 @@ object ViewModelHelper {
                 popupViewModel.showPopup("dont_kill_my_app", popup)
             }
 
-            DialogResponse.NEUTRAL -> restartService()
+            DialogResponse.NEGATIVE -> ignoreCrashed()
 
-            else -> Unit
+            DialogResponse.NEUTRAL -> restartService()
         }
     }
 

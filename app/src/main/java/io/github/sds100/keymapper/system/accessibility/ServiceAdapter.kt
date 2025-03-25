@@ -27,6 +27,7 @@ interface ServiceAdapter {
     fun stop(): Boolean
 
     suspend fun isCrashed(): Boolean
+    fun acknowledgeCrashed()
 
     /**
      * Send an event to the service.

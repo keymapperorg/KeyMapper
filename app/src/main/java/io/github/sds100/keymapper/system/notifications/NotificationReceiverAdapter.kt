@@ -88,6 +88,7 @@ class NotificationReceiverAdapter(
     override fun stop(): Boolean = openSettingsPage()
 
     override suspend fun isCrashed(): Boolean = false
+    override fun acknowledgeCrashed() {}
 
     private fun openSettingsPage(): Boolean {
         Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS).apply {

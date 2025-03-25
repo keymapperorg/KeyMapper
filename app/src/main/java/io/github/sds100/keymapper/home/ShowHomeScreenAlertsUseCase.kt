@@ -41,6 +41,10 @@ class ShowHomeScreenAlertsUseCaseImpl(
 
     override fun restartAccessibilityService(): Boolean = accessibilityServiceAdapter.restart()
 
+    override fun acknowledgeCrashed() {
+        accessibilityServiceAdapter.acknowledgeCrashed()
+    }
+
     override fun resumeMappings() {
         pauseMappingsUseCase.resume()
     }
@@ -54,6 +58,7 @@ interface ShowHomeScreenAlertsUseCase {
     val accessibilityServiceState: Flow<ServiceState>
     fun startAccessibilityService(): Boolean
     fun restartAccessibilityService(): Boolean
+    fun acknowledgeCrashed()
 
     val hideAlerts: Flow<Boolean>
     fun disableBatteryOptimisation()
