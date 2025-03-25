@@ -23,6 +23,10 @@ import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.ConstraintEntity
 import io.github.sds100.keymapper.data.entities.EntityExtra
 import io.github.sds100.keymapper.data.entities.FingerprintMapEntity
+import io.github.sds100.keymapper.data.entities.FloatingButtonEntity
+import io.github.sds100.keymapper.data.entities.FloatingButtonEntityWithLayout
+import io.github.sds100.keymapper.data.entities.FloatingLayoutEntity
+import io.github.sds100.keymapper.data.entities.FloatingLayoutEntityWithButtons
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.data.entities.TriggerEntity
 import io.github.sds100.keymapper.data.entities.TriggerKeyEntity
@@ -34,6 +38,8 @@ import io.github.sds100.keymapper.data.migration.MigrationUtils
 import io.github.sds100.keymapper.data.migration.fingerprintmaps.FingerprintMapMigration0To1
 import io.github.sds100.keymapper.data.migration.fingerprintmaps.FingerprintMapMigration1To2
 import io.github.sds100.keymapper.data.migration.fingerprintmaps.FingerprintToKeyMapMigration
+import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
+import io.github.sds100.keymapper.data.repositories.FloatingLayoutRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapRepository
 import io.github.sds100.keymapper.system.files.FileAdapter
@@ -74,6 +80,8 @@ class BackupManagerImpl(
     private val fileAdapter: FileAdapter,
     private val keyMapRepository: KeyMapRepository,
     private val preferenceRepository: PreferenceRepository,
+    private val floatingLayoutRepository: FloatingLayoutRepository,
+    private val floatingButtonRepository: FloatingButtonRepository,
     private val soundsManager: SoundsManager,
     private val throwExceptions: Boolean = false,
     private val dispatchers: DispatcherProvider = DefaultDispatcherProvider(),
@@ -107,6 +115,8 @@ class BackupManagerImpl(
             .registerTypeAdapter(ActionEntity.DESERIALIZER)
             .registerTypeAdapter(EntityExtra.DESERIALIZER)
             .registerTypeAdapter(ConstraintEntity.DESERIALIZER)
+            .registerTypeAdapter(FloatingLayoutEntity.DESERIALIZER)
+            .registerTypeAdapter(FloatingButtonEntity.DESERIALIZER)
             .create()
     }
 
@@ -149,7 +159,6 @@ class BackupManagerImpl(
         }.launchIn(coroutineScope)
     }
 
-    // TODO back up the entire floating layouts associated with the selected key maps.
     override suspend fun backupKeyMaps(output: IFile, keyMapIds: List<String>): Result<Unit> {
         return withContext(dispatchers.default()) {
             val allKeyMaps = keyMapRepository.keyMapList
@@ -164,7 +173,6 @@ class BackupManagerImpl(
         }
     }
 
-    // TODO back up floating buttons and floating layouts as well.
     override suspend fun backupEverything(output: IFile): Result<Unit> {
         return withContext(dispatchers.io()) {
             val keyMaps =
@@ -335,6 +343,14 @@ class BackupManagerImpl(
             val defaultRepeatRate by rootElement.byNullableInt(BackupContent.NAME_DEFAULT_REPEAT_RATE)
             val defaultSequenceTriggerTimeout by rootElement.byNullableInt(BackupContent.NAME_DEFAULT_SEQUENCE_TRIGGER_TIMEOUT)
 
+            val floatingLayoutsJson by rootElement.byNullableArray(BackupContent.NAME_FLOATING_LAYOUTS)
+            val floatingLayouts: List<FloatingLayoutEntity>? =
+                floatingLayoutsJson?.map { json -> gson.fromJson(json) }
+
+            val floatingButtonsJson by rootElement.byNullableArray(BackupContent.NAME_FLOATING_BUTTONS)
+            val floatingButtons: List<FloatingButtonEntity>? =
+                floatingButtonsJson?.map { json -> gson.fromJson(json) }
+
             val content = BackupContent(
                 dbVersion = backupDbVersion,
                 appVersion = backupAppVersion,
@@ -345,6 +361,8 @@ class BackupManagerImpl(
                 defaultRepeatDelay = defaultRepeatDelay,
                 defaultRepeatRate = defaultRepeatRate,
                 defaultSequenceTriggerTimeout = defaultSequenceTriggerTimeout,
+                floatingLayouts = floatingLayouts,
+                floatingButtons = floatingButtons,
             )
 
             return@withContext Success(content)
@@ -467,6 +485,14 @@ class BackupManagerImpl(
                 }
             }
 
+            if (backupContent.floatingLayouts != null) {
+                floatingLayoutRepository.insert(*backupContent.floatingLayouts.toTypedArray())
+            }
+
+            if (backupContent.floatingButtons != null) {
+                floatingButtonRepository.insert(*backupContent.floatingButtons.toTypedArray())
+            }
+
             return Success(Unit)
         } catch (e: MalformedJsonException) {
             return Error.CorruptJsonFile(e.message ?: "")
@@ -509,6 +535,18 @@ class BackupManagerImpl(
                 // delete the contents of the file
                 output.clear()
 
+                val floatingLayouts = floatingLayoutRepository.layouts
+                    .filterIsInstance<State.Data<List<FloatingLayoutEntityWithButtons>>>()
+                    .first()
+                    .data
+                    .map { it.layout }
+
+                val floatingButtons = floatingButtonRepository.buttonsList
+                    .filterIsInstance<State.Data<List<FloatingButtonEntityWithLayout>>>()
+                    .first()
+                    .data
+                    .map { it.button }
+
                 val backupContent = BackupContent(
                     AppDatabase.DATABASE_VERSION,
                     Constants.VERSION_CODE,
@@ -543,6 +581,8 @@ class BackupManagerImpl(
                         .get(Keys.defaultVibrateDuration)
                         .first()
                         .takeIf { it != PreferenceDefaults.VIBRATION_DURATION },
+                    floatingLayouts = floatingLayouts,
+                    floatingButtons = floatingButtons,
                 )
 
                 val json = gson.toJson(backupContent)

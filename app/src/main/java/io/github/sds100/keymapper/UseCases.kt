@@ -170,7 +170,7 @@ object UseCases {
         service: IAccessibilityService,
         keyEventRelayService: KeyEventRelayServiceWrapper,
     ) = DetectKeyMapsUseCaseImpl(
-        ServiceLocator.roomKeymapRepository(ctx),
+        ServiceLocator.roomKeyMapRepository(ctx),
         ServiceLocator.floatingButtonRepository(ctx),
         ServiceLocator.settingsRepository(ctx),
         ServiceLocator.suAdapter(ctx),

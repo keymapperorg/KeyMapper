@@ -137,7 +137,7 @@ object Inject {
     ): CreateKeyMapShortcutViewModel.Factory = CreateKeyMapShortcutViewModel.Factory(
         UseCases.configKeyMap(ctx),
         ListKeyMapsUseCaseImpl(
-            ServiceLocator.roomKeymapRepository(ctx),
+            ServiceLocator.roomKeyMapRepository(ctx),
             ServiceLocator.floatingButtonRepository(ctx),
             ServiceLocator.fileAdapter(ctx),
             ServiceLocator.backupManager(ctx),
@@ -149,7 +149,7 @@ object Inject {
 
     fun homeViewModel(ctx: Context): HomeViewModel.Factory = HomeViewModel.Factory(
         ListKeyMapsUseCaseImpl(
-            ServiceLocator.roomKeymapRepository(ctx),
+            ServiceLocator.roomKeyMapRepository(ctx),
             ServiceLocator.floatingButtonRepository(ctx),
             ServiceLocator.fileAdapter(ctx),
             ServiceLocator.backupManager(ctx),

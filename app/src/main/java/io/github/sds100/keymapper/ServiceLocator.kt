@@ -70,7 +70,7 @@ object ServiceLocator {
     @Volatile
     private var roomKeymapRepository: RoomKeyMapRepository? = null
 
-    fun roomKeymapRepository(context: Context): RoomKeyMapRepository {
+    fun roomKeyMapRepository(context: Context): RoomKeyMapRepository {
         synchronized(this) {
             return roomKeymapRepository ?: RoomKeyMapRepository(
                 database(context).keyMapDao(),
@@ -152,8 +152,10 @@ object ServiceLocator {
     private fun createBackupManager(context: Context): BackupManager = backupManager ?: BackupManagerImpl(
         (context.applicationContext as KeyMapperApp).appCoroutineScope,
         fileAdapter(context),
-        roomKeymapRepository(context),
+        roomKeyMapRepository(context),
         settingsRepository(context),
+        floatingLayoutRepository(context),
+        floatingButtonRepository(context),
         soundsManager(context),
     )
 
@@ -186,7 +188,7 @@ object ServiceLocator {
     private fun createConfigKeyMapsController(ctx: Context): ConfigKeyMapUseCaseController {
         return ConfigKeyMapUseCaseController(
             appCoroutineScope(ctx),
-            roomKeymapRepository(ctx),
+            roomKeyMapRepository(ctx),
             devicesAdapter(ctx),
             settingsRepository(ctx),
             floatingLayoutRepository(ctx),
