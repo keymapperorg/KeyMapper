@@ -4,6 +4,7 @@ import android.view.KeyEvent
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.github.sds100.keymapper.actions.Action
 import io.github.sds100.keymapper.actions.ActionData
+import io.github.sds100.keymapper.actions.ActionErrorSnapshot
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.constraints.Constraint
@@ -921,7 +922,11 @@ class KeyMapControllerTest {
         keyMapListFlow.value = listOf(KeyMap(trigger = trigger, actionList = actionList))
 
         // WHEN
-        whenever(performActionsUseCase.getError(actionList[0].data)).thenReturn(Error.NoCompatibleImeChosen)
+        whenever(performActionsUseCase.getErrorSnapshot()).thenReturn(object : ActionErrorSnapshot {
+            override fun getError(action: ActionData): Error {
+                return Error.NoCompatibleImeChosen
+            }
+        })
 
         assertThat(
             inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_DOWN),

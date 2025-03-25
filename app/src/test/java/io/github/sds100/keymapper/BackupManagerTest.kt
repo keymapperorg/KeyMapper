@@ -107,6 +107,8 @@ class BackupManagerTest {
             dispatchers = dispatcherProvider,
             soundsManager = mockSoundsManager,
             uuidGenerator = mockUuidGenerator,
+            floatingButtonRepository = mock(),
+            floatingLayoutRepository = mock(),
         )
 
         parser = JsonParser()

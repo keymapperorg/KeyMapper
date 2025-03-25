@@ -204,7 +204,7 @@ class BackupManagerImpl(
     private suspend fun parseBackupContent(jsonFile: InputStream): Result<BackupContent> = withContext(dispatchers.io()) {
         try {
             val rootElement = jsonFile.bufferedReader().use {
-                val element = JsonParser.parseReader(it)
+                val element = JsonParser().parse(it)
 
                 if (element.isJsonNull) {
                     return@withContext Error.EmptyJson

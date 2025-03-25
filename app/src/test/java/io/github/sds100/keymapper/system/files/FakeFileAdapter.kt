@@ -42,6 +42,10 @@ class FakeFileAdapter(
         return JavaFile(File(uri))
     }
 
+    override fun getPublicUriForPrivateFile(privateFile: IFile): String {
+        return ""
+    }
+
     override fun createZipFile(destination: IFile, files: Set<IFile>): Result<*> {
         runBlocking {
             files.forEach { file ->

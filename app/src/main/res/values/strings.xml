@@ -292,6 +292,7 @@
     <!-- Click types -->
 
     <!-- URLs -->
+    <string name="url_play_store_listing" translatable="false">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper</string>
     <string name="url_license" translatable="false">https://github.com/keymapperorg/KeyMapper/blob/master/LICENSE.md</string>
     <string name="url_changelog" translatable="false">https://github.com/keymapperorg/KeyMapper/blob/master/CHANGELOG.md</string>
     <string name="url_translate" translatable="false">https://keymapperorg.github.io/KeyMapper/contributing/#translating</string>
@@ -1179,7 +1180,7 @@
     <string name="loading_product_button">Loading…</string>
     <string name="retry_loading_price_button">Retry fetching price</string>
     <string name="purchasing_error_cancelled">Purchase cancelled.</string>
-    <string name="purchasing_error_not_implemented">This requires a paid feature that can only be bought by downloading Key\u00A0Mapper from Google Play.</string>
+    <string name="purchasing_error_not_implemented">This requires a paid feature that can only be bought by downloading Key Mapper from Google Play.</string>
     <string name="purchasing_error_network">Network error encountered. Do you have an internet connection?</string>
     <string name="purchasing_error_product_not_found">This product was not found.</string>
     <string name="purchasing_error_store_problem">Google Play encountered an error.</string>
@@ -1196,6 +1197,8 @@
     <string name="customer_email_body" translatable="false">Please fill the following information so I can help you.\n\n1. Device model:\n2. Android version:\n3. Key maps (make a back up in the home screen menu):\n4. Screenshot of Key Mapper home screen:\n5. Describe the problem you are having:</string>
     <string name="purchase_thank_you_title">Thank you for supporting the app\u00A0❤️!</string>
     <string name="purchase_thank_you_message">Your purchase was successful. As a paying user of Key\u00A0Mapper you will receive priority support to help you use the app. There is now a button on this page to contact the developer.</string>
+    <string name="purchasing_not_implemented_bottom_sheet_text">The advanced triggers are paid feature but you downloaded the FOSS build of Key Mapper that does not include this module or Google Play billing. Please download Key Mapper from Google Play to get access to this feature.</string>
+    <string name="purchasing_download_key_mapper_from_google_play">Download Play build</string>
 
     <!--  Dpad trigger setup bottom sheet  -->
     <string name="dpad_trigger_setup_bottom_sheet_title">Want to remap DPAD buttons?</string>
