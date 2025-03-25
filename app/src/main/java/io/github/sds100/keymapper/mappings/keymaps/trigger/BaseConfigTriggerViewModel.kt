@@ -456,6 +456,20 @@ abstract class BaseConfigTriggerViewModel(
         // need to be dismissed before it is added.
         config.addKeyCodeTriggerKey(key.keyCode, key.device, key.detectionSource)
 
+        if (key.keyCode >= InputEventUtils.KEYCODE_TO_SCANCODE_OFFSET) {
+            if (onboarding.shownKeyCodeToScanCodeTriggerExplanation) {
+                return
+            }
+
+            val dialog = PopupUi.Ok(
+                message = getString(R.string.dialog_message_keycode_to_scancode_trigger_explanation),
+            )
+
+            showPopup("keycode_to_scancode_message", dialog)
+
+            onboarding.shownKeyCodeToScanCodeTriggerExplanation = true
+        }
+
         if (key.keyCode == KeyEvent.KEYCODE_CAPS_LOCK) {
             val dialog = PopupUi.Ok(
                 message = getString(R.string.dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout),
