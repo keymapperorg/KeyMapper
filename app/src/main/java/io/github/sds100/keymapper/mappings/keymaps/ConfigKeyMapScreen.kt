@@ -202,6 +202,7 @@ private fun ConfigKeyMapScreen(
                         PrimaryScrollableTabRow(
                             selectedTabIndex = pagerState.targetPage,
                             divider = {},
+                            edgePadding = 0.dp,
                         ) {
                             Tabs()
                         }
