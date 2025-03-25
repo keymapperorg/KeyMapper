@@ -1,3 +1,8 @@
-You can now remap the power button/side key on your phone and the DPAD buttons on your game controller!
+Key Mapper 3.0 is here! 🎉
 
-Many other bug fixes. See all the changes at http://changelog.keymapper.club.
+🫧 This release introduces Floating Buttons: you can create custom on-screen buttons to trigger key maps.
+❤️ There are also tonnes of improvements to make your key mapping experience more enjoyable.
+
+👀 Grouping key maps into folders and sharing constraints are in the pipeline.
+
+See all the changes at http://changelog.keymapper.club.
