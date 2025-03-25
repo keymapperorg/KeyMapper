@@ -151,8 +151,11 @@ class LazyConstraintSnapshot(
 
             Constraint.Charging -> isCharging
             Constraint.Discharging -> !isCharging
-            Constraint.LockScreenShowing -> isLockscreenShowing
-            Constraint.LockScreenNotShowing -> !isLockscreenShowing
+
+            // The keyguard manager still reports the lock screen as showing if you are in
+            // an another activity like the camera app while the phone is locked.
+            Constraint.LockScreenShowing -> isLockscreenShowing && appInForeground == "com.android.systemui"
+            Constraint.LockScreenNotShowing -> !isLockscreenShowing || appInForeground != "com.android.systemui"
         }
 
         if (isSatisfied) {

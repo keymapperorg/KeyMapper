@@ -74,7 +74,10 @@ class DetectConstraintsUseCaseImpl(
             }
 
             ConstraintDependency.LOCK_SCREEN_SHOWING ->
-                lockScreenAdapter.isLockScreenShowingFlow().map { dependency }
+                merge(
+                    lockScreenAdapter.isLockScreenShowingFlow(),
+                    accessibilityService.activeWindowPackage,
+                ).map { dependency }
 
             ConstraintDependency.PHONE_STATE -> phoneAdapter.callStateFlow.map { dependency }
             ConstraintDependency.CHARGING_STATE -> powerAdapter.isCharging.map { dependency }
