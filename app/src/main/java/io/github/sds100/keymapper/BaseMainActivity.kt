@@ -157,7 +157,7 @@ abstract class BaseMainActivity : AppCompatActivity() {
                 return@launchRepeatOnLifecycle
             }
 
-            when (intent.action) {
+            when (intent?.action) {
                 ACTION_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG -> {
                     viewModel.onCantFindAccessibilitySettings()
                     viewModel.handledActivityLaunchIntent = true
@@ -228,10 +228,15 @@ abstract class BaseMainActivity : AppCompatActivity() {
         }
     }
 
-    private fun importKeyMaps(intent: Intent) {
+    private fun importKeyMaps(intent: Intent?) {
+        intent ?: return
+
         if (intent.action == Intent.ACTION_VIEW) {
             intent.data?.let {
                 homeViewModel.onChooseImportFile(it.toString())
+
+                // Do not want to import again on a configuration change so set it to null
+                this.intent = null
             }
         }
     }
