@@ -250,7 +250,7 @@ class KeyMapListItemCreator(
         append(InputEventUtils.keyCodeToString(key.keyCode))
 
         val deviceName = when (key.device) {
-            is TriggerKeyDevice.Internal -> getString(R.string.this_device)
+            is TriggerKeyDevice.Internal -> null
             is TriggerKeyDevice.Any -> getString(R.string.any_device)
             is TriggerKeyDevice.External -> {
                 if (showDeviceDescriptors) {
@@ -264,19 +264,23 @@ class KeyMapListItemCreator(
             }
         }
 
-        append(" (")
+        if (deviceName != null || key.detectionSource == KeyEventDetectionSource.INPUT_METHOD || !key.consumeEvent) {
+            append(" (")
 
-        if (key.detectionSource == KeyEventDetectionSource.INPUT_METHOD) {
-            append("${getString(R.string.flag_detect_from_input_method)} $midDot ")
+            if (key.detectionSource == KeyEventDetectionSource.INPUT_METHOD) {
+                append("${getString(R.string.flag_detect_from_input_method)} $midDot ")
+            }
+
+            if (deviceName != null) {
+                append(deviceName)
+            }
+
+            if (!key.consumeEvent) {
+                append(" $midDot ${getString(R.string.flag_dont_override_default_action)}")
+            }
+
+            append(")")
         }
-
-        append(deviceName)
-
-        if (!key.consumeEvent) {
-            append(" $midDot ${getString(R.string.flag_dont_override_default_action)}")
-        }
-
-        append(")")
     }
 
     private fun assistantTriggerKeyName(key: AssistantTriggerKey): String = buildString {
