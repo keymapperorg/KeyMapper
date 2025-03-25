@@ -12,6 +12,7 @@ nav:
   - User Guide:
       - Key Maps: user-guide/keymaps.md
       - Fingerprint Gesture Maps (2.2.0+, Android 8.0+): user-guide/fingerprint-gestures.md
+      - Floating Buttons (3.0.0+, Android 11.0+): user-guide/floating-buttons.md
       - Actions: user-guide/actions.md
       - Constraints: user-guide/constraints.md
       - Settings: user-guide/settings.md
