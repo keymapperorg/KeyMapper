@@ -903,14 +903,6 @@ class KeyMapController(
                             }
 
                             detectedShortPressTriggers.add(triggerIndex)
-
-                            val vibrateDuration = when {
-                                trigger.vibrate -> vibrateDuration(trigger)
-                                forceVibrate.value -> defaultVibrateDuration.value
-                                else -> -1L
-                            }
-
-                            vibrateDurations.add(vibrateDuration)
                         }
                     } else {
                         performActionsAfterSequenceTriggerTimeout[triggerIndex]?.cancel()
@@ -1023,11 +1015,13 @@ class KeyMapController(
             useCase.showTriggeredToast()
         }
 
-        if (forceVibrate.value) {
-            useCase.vibrate(defaultVibrateDuration.value)
-        } else {
-            vibrateDurations.maxOrNull()?.let {
-                useCase.vibrate(it)
+        if (vibrateDurations.isNotEmpty()) {
+            if (forceVibrate.value) {
+                useCase.vibrate(defaultVibrateDuration.value)
+            } else {
+                vibrateDurations.maxOrNull()?.let {
+                    useCase.vibrate(it)
+                }
             }
         }
 
@@ -1385,12 +1379,6 @@ class KeyMapController(
                     if (trigger.showToast) {
                         showToast = true
                     }
-
-                    triggerActions[triggerIndex].forEachIndexed { _, _ ->
-                        if (trigger.vibrate) {
-                            vibrateDurations.add(vibrateDuration(trigger))
-                        }
-                    }
                 }
 
                 iterator.remove()
@@ -1419,14 +1407,6 @@ class KeyMapController(
                 vibrateDurations.maxOrNull()?.let {
                     useCase.vibrate(it)
                 }
-            }
-        }
-
-        if (forceVibrate.value) {
-            useCase.vibrate(defaultVibrateDuration.value)
-        } else {
-            vibrateDurations.maxOrNull()?.let {
-                useCase.vibrate(it)
             }
         }
 
@@ -1556,14 +1536,6 @@ class KeyMapController(
 
         if (showToast) {
             useCase.showTriggeredToast()
-        }
-
-        if (forceVibrate.value) {
-            useCase.vibrate(defaultVibrateDuration.value)
-        } else {
-            vibrateDurations.maxOrNull()?.let {
-                useCase.vibrate(it)
-            }
         }
 
         detectedTriggerIndexes.forEach { triggerIndex ->
