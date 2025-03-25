@@ -43,12 +43,14 @@ class MultiSelectProvider {
     fun isSelecting(): Boolean = state.value is SelectionState.Selecting
 
     fun getSelectedIds(): Set<String> {
-        val selectionState = state.value
+        synchronized(lock) {
+            val selectionState = state.value
 
-        if (selectionState is SelectionState.Selecting) {
-            return selectionState.selectedIds
-        } else {
-            return emptySet()
+            if (selectionState is SelectionState.Selecting) {
+                return selectionState.selectedIds
+            } else {
+                return emptySet()
+            }
         }
     }
 

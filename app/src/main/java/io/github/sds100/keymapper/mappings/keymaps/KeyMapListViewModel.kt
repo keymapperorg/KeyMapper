@@ -11,6 +11,7 @@ import io.github.sds100.keymapper.sorting.SortKeyMapsUseCase
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.ifIsData
 import io.github.sds100.keymapper.util.mapData
 import io.github.sds100.keymapper.util.ui.MultiSelectProvider
 import io.github.sds100.keymapper.util.ui.NavDestination
@@ -108,6 +109,13 @@ class KeyMapListViewModel(
             ) { keymapListState, selectionState ->
                 Pair(keymapListState, selectionState)
             }.collectLatest { (listItemContentList, selectionState) ->
+                // Stop selecting when there are no key maps
+                listItemContentList.ifIsData { list ->
+                    if (list.isEmpty()) {
+                        multiSelectProvider.stopSelecting()
+                    }
+                }
+
                 _state.value = listItemContentList.mapData { contentList ->
                     contentList.map { content ->
                         val isSelected = if (selectionState is SelectionState.Selecting) {
@@ -126,6 +134,10 @@ class KeyMapListViewModel(
     fun onKeyMapCardClick(uid: String) {
         if (multiSelectProvider.state.value is SelectionState.Selecting) {
             multiSelectProvider.toggleSelection(uid)
+
+            if (multiSelectProvider.getSelectedIds().isEmpty()) {
+                multiSelectProvider.stopSelecting()
+            }
         } else {
             coroutineScope.launch {
                 navigate("config_key_map", NavDestination.ConfigKeyMap(uid))
@@ -145,6 +157,10 @@ class KeyMapListViewModel(
             multiSelectProvider.select(uid)
         } else {
             multiSelectProvider.deselect(uid)
+
+            if (multiSelectProvider.getSelectedIds().isEmpty()) {
+                multiSelectProvider.stopSelecting()
+            }
         }
     }
 

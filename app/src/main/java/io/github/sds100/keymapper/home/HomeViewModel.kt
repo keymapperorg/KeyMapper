@@ -340,7 +340,7 @@ class HomeViewModel(
         state.value.also { state ->
             if (state is HomeState.Selecting) {
                 if (state.isAllSelected) {
-                    multiSelectProvider.clear()
+                    multiSelectProvider.stopSelecting()
                 } else {
                     keymapListViewModel.selectAll()
                 }
