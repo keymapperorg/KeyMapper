@@ -39,7 +39,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import splitties.bitflags.minusFlag
 import splitties.bitflags.withFlag
-import kotlin.collections.set
 
 /**
  * Created by sds100 on 05/05/2020.
@@ -116,24 +115,23 @@ class KeyMapController(
                 val triggerKeysThatSendRepeatedKeyEvents = mutableSetOf<KeyCodeTriggerKey>()
 
                 // Only process key maps that can be triggered
-                val validKeyMaps = value.filter { keyMap ->
-                    keyMap.actionList.isNotEmpty() &&
-                        keyMap.isEnabled &&
-                        keyMap.trigger.keys.all { it is KeyCodeTriggerKey }
+                val validKeyMaps = value.filter {
+                    it.actionList.isNotEmpty() && it.isEnabled
                 }
 
                 for ((triggerIndex, keyMap) in validKeyMaps.withIndex()) {
 
                     // TRIGGER STUFF
                     keyMap.trigger.keys
-                        .mapNotNull { it as? KeyCodeTriggerKey }
+                        .filter { it is KeyCodeTriggerKey || it is FingerprintTriggerKey }
                         .forEachIndexed { keyIndex, key ->
-                            if (key.detectionSource == KeyEventDetectionSource.INPUT_METHOD && key.consumeEvent) {
+                            if (key is KeyCodeTriggerKey && key.detectionSource == KeyEventDetectionSource.INPUT_METHOD && key.consumeEvent) {
                                 triggerKeysThatSendRepeatedKeyEvents.add(key)
                             }
 
                             if (keyMap.trigger.mode == TriggerMode.Sequence &&
-                                key.clickType == ClickType.LONG_PRESS
+                                key.clickType == ClickType.LONG_PRESS &&
+                                key is KeyCodeTriggerKey
                             ) {
 
                                 if (keyMap.trigger.keys.size > 1) {
@@ -141,28 +139,29 @@ class KeyMapController(
                                 }
                             }
 
-                            if ((
-                                    keyMap.trigger.mode == TriggerMode.Sequence ||
-                                        keyMap.trigger.mode == TriggerMode.Undefined
-                                    ) &&
+                            if (keyMap.trigger.mode !is TriggerMode.Parallel &&
                                 key.clickType == ClickType.DOUBLE_PRESS
                             ) {
                                 doublePressKeys.add(TriggerKeyLocation(triggerIndex, keyIndex))
                             }
 
-                            when (key.device) {
-                                TriggerKeyDevice.Internal -> {
-                                    detectInternalEvents = true
+                            when (key) {
+                                is KeyCodeTriggerKey -> when (key.device) {
+                                    TriggerKeyDevice.Internal -> {
+                                        detectInternalEvents = true
+                                    }
+
+                                    TriggerKeyDevice.Any -> {
+                                        detectInternalEvents = true
+                                        detectExternalEvents = true
+                                    }
+
+                                    is TriggerKeyDevice.External -> {
+                                        detectExternalEvents = true
+                                    }
                                 }
 
-                                TriggerKeyDevice.Any -> {
-                                    detectInternalEvents = true
-                                    detectExternalEvents = true
-                                }
-
-                                is TriggerKeyDevice.External -> {
-                                    detectExternalEvents = true
-                                }
+                                else -> {}
                             }
                         }
 
@@ -342,13 +341,11 @@ class KeyMapController(
                 for (triggerIndex in parallelTriggers) {
                     val trigger = triggers[triggerIndex]
 
-                    trigger.keys
-                        .mapNotNull { it as? KeyCodeTriggerKey }
-                        .forEachIndexed { keyIndex, key ->
-                            if (isModifierKey(key.keyCode)) {
-                                parallelTriggerModifierKeyIndices.add(triggerIndex to keyIndex)
-                            }
+                    trigger.keys.forEachIndexed { keyIndex, key ->
+                        if (key is KeyCodeTriggerKey && isModifierKey(key.keyCode)) {
+                            parallelTriggerModifierKeyIndices.add(triggerIndex to keyIndex)
                         }
+                    }
                 }
 
                 reset()
@@ -631,19 +628,11 @@ class KeyMapController(
         return onKeyEventPostFilter(keyEvent)
     }
 
-    fun onFingerprintGesture(type: FingerprintGestureType) {
-        val event = FingerprintGestureEvent(type, clickType = null)
-        onKeyDown(event)
-        onKeyUp(event)
-    }
-
     private fun onKeyEventPostFilter(keyEvent: MyKeyEvent): Boolean {
         metaStateFromKeyEvent = keyEvent.metaState
 
         // remove the metastate from any modifier keys that remapped and are pressed down
-        for (it in parallelTriggerModifierKeyIndices) {
-            val triggerIndex = it.first
-            val eventIndex = it.second
+        for ((triggerIndex, eventIndex) in parallelTriggerModifierKeyIndices) {
             val key = triggers[triggerIndex].keys[eventIndex]
 
             if (key !is KeyCodeTriggerKey) {
@@ -656,12 +645,14 @@ class KeyMapController(
             }
         }
 
-        val event = if (keyEvent.device != null && keyEvent.device.isExternal) {
+        val device = keyEvent.device
+
+        val event = if (device != null && device.isExternal) {
             KeyCodeEvent(
                 keyCode = keyEvent.keyCode,
                 clickType = null,
-                descriptor = keyEvent.device.descriptor,
-                deviceId = keyEvent.device.id,
+                descriptor = device.descriptor,
+                deviceId = device.id,
                 scanCode = keyEvent.scanCode,
                 repeatCount = keyEvent.repeatCount,
             )
@@ -670,7 +661,7 @@ class KeyMapController(
                 keyCode = keyEvent.keyCode,
                 clickType = null,
                 descriptor = null,
-                deviceId = keyEvent.device?.id ?: 0,
+                deviceId = device?.id ?: 0,
                 scanCode = keyEvent.scanCode,
                 repeatCount = keyEvent.repeatCount,
             )
@@ -740,13 +731,17 @@ class KeyMapController(
                 val triggerKeys = triggers[triggerIndex].keys
 
                 // consume the event if the trigger contains this keycode.
-                for ((keyIndex, key) in triggerKeys.withIndex()) {
-                    if (key !is KeyCodeTriggerKey) {
-                        continue
-                    }
+                for (key in triggerKeys) {
+                    when {
+                        key is FingerprintTriggerKey && event is FingerprintGestureEvent ->
+                            if (key.consumeEvent) {
+                                consumeEvent = true
+                            }
 
-                    if (event is KeyCodeEvent && key.keyCode == event.keyCode && triggerKeys[keyIndex].consumeKeyEvent) {
-                        consumeEvent = true
+                        key is KeyCodeTriggerKey && event is KeyCodeEvent ->
+                            if (key.keyCode == event.keyCode && key.consumeEvent) {
+                                consumeEvent = true
+                            }
                     }
                 }
             }
@@ -770,7 +765,7 @@ class KeyMapController(
 
                 triggers[triggerIndex].keys.forEachIndexed { eventIndex, event ->
                     if (event == doublePressEvent &&
-                        triggers[triggerIndex].keys[eventIndex].consumeKeyEvent
+                        triggers[triggerIndex].keys[eventIndex].consumeEvent
                     ) {
                         consumeEvent = true
                     }
@@ -860,7 +855,7 @@ class KeyMapController(
 
             // Perform short press action
             if (trigger.matchingEventAtIndex(event.withShortPress, lastMatchedIndex)) {
-                if (trigger.keys[lastMatchedIndex].consumeKeyEvent) {
+                if (trigger.keys[lastMatchedIndex].consumeEvent) {
                     consumeEvent = true
                 }
 
@@ -931,7 +926,7 @@ class KeyMapController(
 
             // Perform long press action
             if (trigger.matchingEventAtIndex(event.withLongPress, lastMatchedIndex)) {
-                if (trigger.keys[lastMatchedIndex].consumeKeyEvent) {
+                if (trigger.keys[lastMatchedIndex].consumeEvent) {
                     consumeEvent = true
                 }
 
@@ -952,11 +947,11 @@ class KeyMapController(
             }
         }
 
-        if (event is KeyCodeEvent &&
-            modifierKeyEventActions &&
+        if (modifierKeyEventActions &&
             !isModifierKeyCode &&
             metaStateFromActions != 0 &&
-            !mappedToParallelTriggerAction
+            !mappedToParallelTriggerAction &&
+            event is KeyCodeEvent
         ) {
             consumeEvent = true
             keyCodesToImitateUpAction.add(event.keyCode)
@@ -1030,6 +1025,8 @@ class KeyMapController(
             return true
         }
 
+        // If don't consume the event then check if there is a sequence trigger that
+        // uses this event.
         for (triggerIndex in sequenceTriggers) {
             if (!triggersSatisfiedByConstraints.contains(triggerIndex)) {
                 continue
@@ -1046,7 +1043,7 @@ class KeyMapController(
                     else -> false
                 }
 
-                if (matchingEvent && key.consumeKeyEvent) {
+                if (matchingEvent && key.consumeEvent) {
                     return true
                 }
             }
@@ -1084,10 +1081,12 @@ class KeyMapController(
 
         var metaStateFromActionsToRemove = 0
 
-        if (event is KeyCodeEvent && keyCodesToImitateUpAction.contains(event.keyCode)) {
-            consumeEvent = true
-            imitateUpKeyEvent = true
-            keyCodesToImitateUpAction.remove(event.keyCode)
+        if (event is KeyCodeEvent) {
+            if (keyCodesToImitateUpAction.contains(event.keyCode)) {
+                consumeEvent = true
+                imitateUpKeyEvent = true
+                keyCodesToImitateUpAction.remove(event.keyCode)
+            }
         }
 
         val constraintSnapshot by lazy { detectConstraints.getSnapshot() }
@@ -1132,7 +1131,7 @@ class KeyMapController(
 
                             triggers[triggerIndex].keys.forEachIndexed { keyIndex, key ->
                                 if (key == doublePressKey &&
-                                    triggers[triggerIndex].keys[keyIndex].consumeKeyEvent
+                                    triggers[triggerIndex].keys[keyIndex].consumeEvent
                                 ) {
                                     consumeEvent = true
                                 }
@@ -1184,7 +1183,7 @@ class KeyMapController(
 
             // if the next event matches the event just pressed
             if (trigger.matchingEventAtIndex(encodedEventWithClickType, nextIndex)) {
-                if (trigger.keys[nextIndex].consumeKeyEvent) {
+                if (trigger.keys[nextIndex].consumeEvent) {
                     consumeEvent = true
                 }
 
@@ -1302,23 +1301,20 @@ class KeyMapController(
 
                     parallelTriggerEventsAwaitingRelease[triggerIndex][keyIndex] = false
 
-                    if (triggers[triggerIndex].keys[keyIndex].consumeKeyEvent) {
+                    if (triggers[triggerIndex].keys[keyIndex].consumeEvent) {
                         consumeEvent = true
                     }
                 }
 
                 // long press
                 if (keyAwaitingRelease &&
-                    trigger.matchingEventAtIndex(
-                        event.withLongPress,
-                        keyIndex,
-                    )
+                    trigger.matchingEventAtIndex(event.withLongPress, keyIndex)
                 ) {
                     parallelTriggerEventsAwaitingRelease[triggerIndex][keyIndex] = false
 
                     parallelTriggerLongPressJobs[triggerIndex]?.cancel()
 
-                    if (triggers[triggerIndex].keys[keyIndex].consumeKeyEvent) {
+                    if (triggers[triggerIndex].keys[keyIndex].consumeEvent) {
                         consumeEvent = true
                     }
 
@@ -1418,8 +1414,7 @@ class KeyMapController(
             useCase.showTriggeredToast()
         }
 
-        if (event is KeyCodeEvent &&
-            imitateKeyAfterDoublePressTimeout.isNotEmpty() &&
+        if (imitateKeyAfterDoublePressTimeout.isNotEmpty() &&
             detectedSequenceTriggerIndexes.isEmpty() &&
             detectedParallelTriggerIndexes.isEmpty() &&
             !longPressSingleKeyTriggerJustReleased
@@ -1439,20 +1434,22 @@ class KeyMapController(
                         return@launch
                     }
 
-                    useCase.imitateButtonPress(
-                        event.keyCode,
-                        inputEventType = InputEventType.DOWN_UP,
-                        scanCode = event.scanCode,
-                    )
+                    if (event is KeyCodeEvent) {
+                        useCase.imitateButtonPress(
+                            event.keyCode,
+                            inputEventType = InputEventType.DOWN_UP,
+                            scanCode = event.scanCode,
+                        )
+                    }
                 }
             }
             // only imitate a key if an action isn't going to be performed
-        } else if (event is KeyCodeEvent &&
-            (imitateDownUpKeyEvent || imitateUpKeyEvent) &&
+        } else if ((imitateDownUpKeyEvent || imitateUpKeyEvent) &&
             detectedSequenceTriggerIndexes.isEmpty() &&
             detectedParallelTriggerIndexes.isEmpty() &&
             !shortPressSingleKeyTriggerJustReleased &&
-            !mappedToDoublePress
+            !mappedToDoublePress &&
+            event is KeyCodeEvent
         ) {
             val keyEventAction = if (imitateUpKeyEvent) {
                 InputEventType.UP
@@ -1472,6 +1469,12 @@ class KeyMapController(
         }
 
         return consumeEvent
+    }
+
+    fun onFingerprintGesture(type: FingerprintGestureType) {
+        val event = FingerprintGestureEvent(type, clickType = null)
+        onKeyDown(event)
+        onKeyUp(event)
     }
 
     fun reset() {
@@ -1500,6 +1503,8 @@ class KeyMapController(
 
         parallelTriggerActionPerformers.values.forEach { it.reset() }
         sequenceTriggerActionPerformers.values.forEach { it.reset() }
+
+        dpadMotionEventTracker.reset()
 
         performActionsAfterSequenceTriggerTimeout.forEach { (_, job) -> job.cancel() }
         performActionsAfterSequenceTriggerTimeout.clear()
@@ -1551,41 +1556,8 @@ class KeyMapController(
         return detectedTriggerIndexes.isNotEmpty()
     }
 
-    /**
-     * For parallel triggers only.
-     */
-    private fun performActionsAfterSequenceTriggerTimeout(
-        triggerIndex: Int,
-        sequenceTriggerIndex: Int,
-    ) = coroutineScope.launch {
-        val timeout = sequenceTriggerTimeout(triggers[sequenceTriggerIndex])
-
-        delay(timeout)
-
-        // If it equals -1 then it means the sequence trigger was triggered
-        // and it reset the counter.
-        if (lastMatchedEventIndices[sequenceTriggerIndex] == -1) {
-            return@launch
-        }
-
-        parallelTriggerActionPerformers[triggerIndex]?.onTriggered(
-            calledOnTriggerRelease = true,
-            metaState = metaStateFromActions.withFlag(metaStateFromKeyEvent),
-        )
-
-        if (triggers[triggerIndex].vibrate ||
-            forceVibrate.value ||
-            triggers[triggerIndex].longPressDoubleVibration
-        ) {
-            useCase.vibrate(vibrateDuration(triggers[triggerIndex]))
-        }
-
-        if (triggers[triggerIndex].showToast) {
-            useCase.showTriggeredToast()
-        }
-    }
-
-    private fun encodeActionList(actions: List<Action>): IntArray = actions.map { getActionKey(it) }.toIntArray()
+    private fun encodeActionList(actions: List<Action>): IntArray =
+        actions.map { getActionKey(it) }.toIntArray()
 
     /**
      * @return the key for the action in [actionMap]. Returns -1 if the [action] can't be found.
@@ -1639,12 +1611,44 @@ class KeyMapController(
         }
     }
 
+    /**
+     * For parallel triggers only.
+     */
+    private fun performActionsAfterSequenceTriggerTimeout(
+        triggerIndex: Int,
+        sequenceTriggerIndex: Int,
+    ) = coroutineScope.launch {
+        val timeout = sequenceTriggerTimeout(triggers[sequenceTriggerIndex])
+
+        delay(timeout)
+
+        // If it equals -1 then it means the sequence trigger was triggered
+        // and it reset the counter.
+        if (lastMatchedEventIndices[sequenceTriggerIndex] == -1) {
+            return@launch
+        }
+
+        parallelTriggerActionPerformers[triggerIndex]?.onTriggered(
+            calledOnTriggerRelease = true,
+            metaState = metaStateFromActions.withFlag(metaStateFromKeyEvent),
+        )
+
+        if (triggers[triggerIndex].vibrate ||
+            forceVibrate.value ||
+            triggers[triggerIndex].longPressDoubleVibration
+        ) {
+            useCase.vibrate(vibrateDuration(triggers[triggerIndex]))
+        }
+
+        if (triggers[triggerIndex].showToast) {
+            useCase.showTriggeredToast()
+        }
+    }
+
     private fun Trigger.matchingEventAtIndex(event: Event, index: Int): Boolean {
         if (index >= this.keys.size) return false
 
-        val key = this.keys[index]
-
-        return key.matchesEvent(event)
+        return this.keys[index].matchesEvent(event)
     }
 
     private fun TriggerKey.matchesEvent(event: Event): Boolean {
@@ -1693,13 +1697,17 @@ class KeyMapController(
         }
     }
 
-    private fun longPressDelay(trigger: Trigger): Long = trigger.longPressDelay?.toLong() ?: defaultLongPressDelay.value
+    private fun longPressDelay(trigger: Trigger): Long =
+        trigger.longPressDelay?.toLong() ?: defaultLongPressDelay.value
 
-    private fun doublePressTimeout(trigger: Trigger): Long = trigger.doublePressDelay?.toLong() ?: defaultDoublePressDelay.value
+    private fun doublePressTimeout(trigger: Trigger): Long =
+        trigger.doublePressDelay?.toLong() ?: defaultDoublePressDelay.value
 
-    private fun vibrateDuration(trigger: Trigger): Long = trigger.vibrateDuration?.toLong() ?: defaultVibrateDuration.value
+    private fun vibrateDuration(trigger: Trigger): Long =
+        trigger.vibrateDuration?.toLong() ?: defaultVibrateDuration.value
 
-    private fun sequenceTriggerTimeout(trigger: Trigger): Long = trigger.sequenceTriggerTimeout?.toLong() ?: defaultSequenceTriggerTimeout.value
+    private fun sequenceTriggerTimeout(trigger: Trigger): Long =
+        trigger.sequenceTriggerTimeout?.toLong() ?: defaultSequenceTriggerTimeout.value
 
     private fun setActionMapAndOptions(actions: Set<Action>) {
         var key = 0
@@ -1771,11 +1779,4 @@ class KeyMapController(
     ) : Event()
 
     private data class TriggerKeyLocation(val triggerIndex: Int, val keyIndex: Int)
-
-    private val TriggerKey.consumeKeyEvent: Boolean
-        get() = if (this is KeyCodeTriggerKey) {
-            this.consumeEvent
-        } else {
-            false
-        }
 }
