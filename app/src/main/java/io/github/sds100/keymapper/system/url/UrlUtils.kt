@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.system.url
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
+import androidx.core.net.toUri
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.success
@@ -14,7 +14,7 @@ import io.github.sds100.keymapper.util.success
 
 object UrlUtils {
     fun openUrl(ctx: Context, url: String): Result<*> {
-        Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+        Intent(Intent.ACTION_VIEW, url.toUri()).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
 
             try {
