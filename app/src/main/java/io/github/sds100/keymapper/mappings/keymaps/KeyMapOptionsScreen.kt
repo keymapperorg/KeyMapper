@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.mappings.keymaps
 import android.content.ClipData
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -264,35 +266,45 @@ private fun TriggerFromOtherAppsSection(
                     )
                 }
             }
-
-            val clipboard = LocalClipboard.current
-            val scope = rememberCoroutineScope()
-            val clipboardLabel = stringResource(R.string.clipboard_label_keymap_uid)
-
-            IconButton(
-                modifier = Modifier.padding(vertical = 8.dp),
-                onClick = {
-                    scope.launch {
-                        clipboard.setClipEntry(
-                            ClipEntry(ClipData.newPlainText(clipboardLabel, keyMapUid)),
-                        )
-                    }
-                },
-            ) {
-                Icon(
-                    Icons.Rounded.ContentCopy,
-                    contentDescription = stringResource(R.string.flag_trigger_from_other_apps_copy_uid),
-                )
-            }
         }
 
         AnimatedVisibility(isChecked) {
             Column {
-                Text(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    text = keyMapUid,
-                    style = MaterialTheme.typography.labelLarge,
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        text = keyMapUid,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = MaterialTheme.typography.labelLarge,
+                    )
+
+                    val clipboard = LocalClipboard.current
+                    val scope = rememberCoroutineScope()
+                    val clipboardLabel = stringResource(R.string.clipboard_label_keymap_uid)
+
+                    IconButton(
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp)
+                            .size(36.dp),
+                        onClick = {
+                            scope.launch {
+                                clipboard.setClipEntry(
+                                    ClipEntry(ClipData.newPlainText(clipboardLabel, keyMapUid)),
+                                )
+                            }
+                        },
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.ContentCopy,
+                            contentDescription = stringResource(R.string.flag_trigger_from_other_apps_copy_uid),
+                        )
+                    }
+                }
 
                 Spacer(Modifier.height(8.dp))
 
