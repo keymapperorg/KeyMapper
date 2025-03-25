@@ -64,7 +64,7 @@ object ConstraintUtils {
 
         ConstraintId.IME_CHOSEN,
         ConstraintId.IME_NOT_CHOSEN,
-            -> ComposeIconInfo.Vector(Icons.Outlined.Keyboard)
+        -> ComposeIconInfo.Vector(Icons.Outlined.Keyboard)
 
         ConstraintId.DEVICE_IS_LOCKED -> ComposeIconInfo.Vector(Icons.Outlined.Lock)
         ConstraintId.DEVICE_IS_UNLOCKED -> ComposeIconInfo.Vector(Icons.Outlined.LockOpen)
