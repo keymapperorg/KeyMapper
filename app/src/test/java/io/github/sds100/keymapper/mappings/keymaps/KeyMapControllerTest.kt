@@ -191,6 +191,293 @@ class KeyMapControllerTest {
         )
     }
 
+    /**
+     * #1507
+     */
+    @Test
+    fun `vibrate once with short press and long and double press trigger times out`() = runTest(testDispatcher) {
+        // GIVEN
+        val shortPressTrigger = Trigger(
+            keys = listOf(
+                triggerKey(
+                    KeyEvent.KEYCODE_VOLUME_DOWN,
+                    clickType = ClickType.SHORT_PRESS,
+                ),
+            ),
+            vibrate = true,
+        )
+
+        val longPressTrigger = Trigger(
+            keys = listOf(
+                triggerKey(
+                    KeyEvent.KEYCODE_VOLUME_DOWN,
+                    clickType = ClickType.LONG_PRESS,
+                ),
+            ),
+            vibrate = true,
+        )
+
+        val doublePressTrigger = Trigger(
+            keys = listOf(
+                triggerKey(
+                    KeyEvent.KEYCODE_VOLUME_DOWN,
+                    clickType = ClickType.DOUBLE_PRESS,
+                ),
+            ),
+            vibrate = true,
+        )
+
+        keyMapListFlow.value = listOf(
+            KeyMap(0, trigger = shortPressTrigger, actionList = listOf(TEST_ACTION)),
+            KeyMap(1, trigger = doublePressTrigger, actionList = listOf(TEST_ACTION_2)),
+            KeyMap(2, trigger = longPressTrigger, actionList = listOf(TEST_ACTION_2)),
+        )
+
+        // WHEN
+        mockTriggerKeyInput(shortPressTrigger.keys[0])
+        advanceUntilIdle()
+
+        // THEN
+        verify(detectKeyMapsUseCase, times(1)).vibrate(VIBRATION_DURATION)
+    }
+
+    /**
+     * #1507
+     */
+    @Test
+    fun `vibrate once with short press and double press trigger times out`() = runTest(testDispatcher) {
+        // GIVEN
+        val shortPressTrigger = Trigger(
+            keys = listOf(
+                triggerKey(
+                    KeyEvent.KEYCODE_VOLUME_DOWN,
+                    clickType = ClickType.SHORT_PRESS,
+                ),
+            ),
+            vibrate = true,
+        )
+
+        val doublePressTrigger = Trigger(
+            keys = listOf(
+                triggerKey(
+                    KeyEvent.KEYCODE_VOLUME_DOWN,
+                    clickType = ClickType.DOUBLE_PRESS,
+                ),
+            ),
+            vibrate = true,
+        )
+
+        keyMapListFlow.value = listOf(
+            KeyMap(0, trigger = shortPressTrigger, actionList = listOf(TEST_ACTION)),
+            KeyMap(1, trigger = doublePressTrigger, actionList = listOf(TEST_ACTION_2)),
+        )
+
+        // WHEN
+        mockTriggerKeyInput(shortPressTrigger.keys[0])
+        advanceUntilIdle()
+
+        // THEN
+        verify(detectKeyMapsUseCase, times(1)).vibrate(VIBRATION_DURATION)
+    }
+
+    /**
+     * #1507
+     */
+    @Test
+    fun `vibrate once with short press and double press trigger`() = runTest(testDispatcher) {
+        // GIVEN
+        val shortPressTrigger = Trigger(
+            keys = listOf(
+                triggerKey(
+                    KeyEvent.KEYCODE_VOLUME_DOWN,
+                    clickType = ClickType.SHORT_PRESS,
+                ),
+            ),
+            vibrate = true,
+        )
+
+        val doublePressTrigger = Trigger(
+            keys = listOf(
+                triggerKey(
+                    KeyEvent.KEYCODE_VOLUME_DOWN,
+                    clickType = ClickType.DOUBLE_PRESS,
+                ),
+            ),
+            vibrate = true,
+        )
+
+        keyMapListFlow.value = listOf(
+            KeyMap(0, trigger = shortPressTrigger, actionList = listOf(TEST_ACTION)),
+            KeyMap(1, trigger = doublePressTrigger, actionList = listOf(TEST_ACTION_2)),
+        )
+
+        // WHEN
+        mockTriggerKeyInput(doublePressTrigger.keys[0])
+        advanceUntilIdle()
+
+        // THEN
+        verify(detectKeyMapsUseCase, times(1)).vibrate(VIBRATION_DURATION)
+    }
+
+    /**
+     * #1507
+     */
+    @Test
+    fun `vibrate once with short press and long press trigger times out`() = runTest(testDispatcher) {
+        // GIVEN
+        val shortPressTrigger = Trigger(
+            keys = listOf(
+                triggerKey(
+                    KeyEvent.KEYCODE_VOLUME_DOWN,
+                    clickType = ClickType.SHORT_PRESS,
+                ),
+            ),
+            vibrate = true,
+        )
+
+        val longPressTrigger = Trigger(
+            keys = listOf(
+                triggerKey(
+                    KeyEvent.KEYCODE_VOLUME_DOWN,
+                    clickType = ClickType.LONG_PRESS,
+                ),
+            ),
+            longPressDoubleVibration = true,
+            vibrate = true,
+        )
+
+        keyMapListFlow.value = listOf(
+            KeyMap(0, trigger = shortPressTrigger, actionList = listOf(TEST_ACTION)),
+            KeyMap(1, trigger = longPressTrigger, actionList = listOf(TEST_ACTION_2)),
+        )
+
+        // WHEN
+        mockTriggerKeyInput(shortPressTrigger.keys[0])
+        advanceUntilIdle()
+
+        // THEN
+        verify(detectKeyMapsUseCase, times(1)).vibrate(VIBRATION_DURATION)
+    }
+
+    /**
+     * #1507
+     */
+    @Test
+    fun `vibrate once with short press and long press trigger with double vibration and long press times out`() = runTest(testDispatcher) {
+        // GIVEN
+        val shortPressTrigger = Trigger(
+            keys = listOf(
+                triggerKey(
+                    KeyEvent.KEYCODE_VOLUME_DOWN,
+                    clickType = ClickType.SHORT_PRESS,
+                ),
+            ),
+            vibrate = true,
+        )
+
+        val longPressTrigger = Trigger(
+            keys = listOf(
+                triggerKey(
+                    KeyEvent.KEYCODE_VOLUME_DOWN,
+                    clickType = ClickType.LONG_PRESS,
+                ),
+            ),
+            longPressDoubleVibration = true,
+            vibrate = true,
+        )
+
+        keyMapListFlow.value = listOf(
+            KeyMap(0, trigger = shortPressTrigger, actionList = listOf(TEST_ACTION)),
+            KeyMap(1, trigger = longPressTrigger, actionList = listOf(TEST_ACTION_2)),
+        )
+
+        // WHEN
+        mockTriggerKeyInput(shortPressTrigger.keys[0])
+        advanceUntilIdle()
+
+        // THEN
+        verify(detectKeyMapsUseCase, times(1)).vibrate(VIBRATION_DURATION)
+    }
+
+    /**
+     * #1507
+     */
+    @Test
+    fun `vibrate twice with short press and long press trigger with double vibration`() = runTest(testDispatcher) {
+        // GIVEN
+        val shortPressTrigger = Trigger(
+            keys = listOf(
+                triggerKey(
+                    KeyEvent.KEYCODE_VOLUME_DOWN,
+                    clickType = ClickType.SHORT_PRESS,
+                ),
+            ),
+            vibrate = true,
+        )
+
+        val longPressTrigger = Trigger(
+            keys = listOf(
+                triggerKey(
+                    KeyEvent.KEYCODE_VOLUME_DOWN,
+                    clickType = ClickType.LONG_PRESS,
+                ),
+            ),
+            longPressDoubleVibration = true,
+            vibrate = true,
+        )
+
+        keyMapListFlow.value = listOf(
+            KeyMap(0, trigger = shortPressTrigger, actionList = listOf(TEST_ACTION)),
+            KeyMap(1, trigger = longPressTrigger, actionList = listOf(TEST_ACTION_2)),
+        )
+
+        // WHEN
+        mockTriggerKeyInput(longPressTrigger.keys[0])
+        advanceUntilIdle()
+
+        // THEN
+        verify(detectKeyMapsUseCase, times(2)).vibrate(VIBRATION_DURATION)
+    }
+
+    /**
+     * #1507
+     */
+    @Test
+    fun `vibrate once with short press and long press trigger`() = runTest(testDispatcher) {
+        // GIVEN
+        val shortPressTrigger = Trigger(
+            keys = listOf(
+                triggerKey(
+                    KeyEvent.KEYCODE_VOLUME_DOWN,
+                    clickType = ClickType.SHORT_PRESS,
+                ),
+            ),
+            vibrate = true,
+        )
+
+        val longPressTrigger = Trigger(
+            keys = listOf(
+                triggerKey(
+                    KeyEvent.KEYCODE_VOLUME_DOWN,
+                    clickType = ClickType.LONG_PRESS,
+                ),
+            ),
+            vibrate = true,
+        )
+
+        keyMapListFlow.value = listOf(
+            KeyMap(0, trigger = shortPressTrigger, actionList = listOf(TEST_ACTION)),
+            KeyMap(1, trigger = longPressTrigger, actionList = listOf(TEST_ACTION_2)),
+        )
+
+        // WHEN
+        mockTriggerKeyInput(longPressTrigger.keys[0])
+        advanceUntilIdle()
+
+        // THEN
+        verify(detectKeyMapsUseCase, times(1)).vibrate(VIBRATION_DURATION)
+    }
+
     @Test
     fun `Sequence trigger with fingerprint gesture and key code`() = runTest(testDispatcher) {
         // GIVEN

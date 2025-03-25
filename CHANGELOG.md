@@ -21,6 +21,7 @@ in Jetpack Compose, resulting in many improvements to the user experience.
 - #1518 detect more apps that are playing media (fix to previous fix).
 - #1545 support phone call constraints in more apps.
 - #1536 'Edit action' sometimes does not appear.
+- #1507 only vibrate once when mixing short, long, and double press key maps.
 - Prevent various system errors from crashing the apps.
 
 ## [2.8.3](https://github.com/sds100/KeyMapper/releases/tag/v2.8.3)

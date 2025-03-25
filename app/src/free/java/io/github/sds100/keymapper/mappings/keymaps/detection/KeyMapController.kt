@@ -933,8 +933,8 @@ class KeyMapController(
                 if (lastMatchedIndex == trigger.keys.lastIndex) {
                     awaitingLongPress = true
 
-                    if (trigger.longPressDoubleVibration) {
-                        useCase.vibrate(vibrateDuration(trigger))
+                    if (trigger.vibrate && trigger.longPressDoubleVibration) {
+                        vibrateDurations.add(vibrateDuration(trigger))
                     }
 
                     val oldJob = parallelTriggerLongPressJobs[triggerIndex]
@@ -996,14 +996,24 @@ class KeyMapController(
 
                 else -> {
                     for (triggerIndex in detectedShortPressTriggers) {
-                        if (triggers[triggerIndex].showToast) {
-                            showToast = true
-                        }
+                        val trigger = triggers[triggerIndex]
 
                         parallelTriggerActionPerformers[triggerIndex]?.onTriggered(
                             calledOnTriggerRelease = false,
                             metaState = metaStateFromKeyEvent.withFlag(metaStateFromActions),
                         )
+
+                        if (trigger.showToast) {
+                            showToast = true
+                        }
+
+                        val vibrateDuration = when {
+                            trigger.vibrate -> vibrateDuration(trigger)
+                            forceVibrate.value -> defaultVibrateDuration.value
+                            else -> -1L
+                        }
+
+                        vibrateDurations.add(vibrateDuration)
                     }
                 }
             }
@@ -1402,6 +1412,16 @@ class KeyMapController(
             )
         }
 
+        if (detectedSequenceTriggerIndexes.isNotEmpty() || detectedParallelTriggerIndexes.isNotEmpty()) {
+            if (forceVibrate.value) {
+                useCase.vibrate(defaultVibrateDuration.value)
+            } else {
+                vibrateDurations.maxOrNull()?.let {
+                    useCase.vibrate(it)
+                }
+            }
+        }
+
         if (forceVibrate.value) {
             useCase.vibrate(defaultVibrateDuration.value)
         } else {
@@ -1553,11 +1573,24 @@ class KeyMapController(
             )
         }
 
+        if (detectedTriggerIndexes.isNotEmpty()) {
+            if (showToast) {
+                useCase.showTriggeredToast()
+            }
+
+            if (forceVibrate.value) {
+                useCase.vibrate(defaultVibrateDuration.value)
+            } else {
+                vibrateDurations.maxOrNull()?.let {
+                    useCase.vibrate(it)
+                }
+            }
+        }
+
         return detectedTriggerIndexes.isNotEmpty()
     }
 
-    private fun encodeActionList(actions: List<Action>): IntArray =
-        actions.map { getActionKey(it) }.toIntArray()
+    private fun encodeActionList(actions: List<Action>): IntArray = actions.map { getActionKey(it) }.toIntArray()
 
     /**
      * @return the key for the action in [actionMap]. Returns -1 if the [action] can't be found.
@@ -1697,17 +1730,13 @@ class KeyMapController(
         }
     }
 
-    private fun longPressDelay(trigger: Trigger): Long =
-        trigger.longPressDelay?.toLong() ?: defaultLongPressDelay.value
+    private fun longPressDelay(trigger: Trigger): Long = trigger.longPressDelay?.toLong() ?: defaultLongPressDelay.value
 
-    private fun doublePressTimeout(trigger: Trigger): Long =
-        trigger.doublePressDelay?.toLong() ?: defaultDoublePressDelay.value
+    private fun doublePressTimeout(trigger: Trigger): Long = trigger.doublePressDelay?.toLong() ?: defaultDoublePressDelay.value
 
-    private fun vibrateDuration(trigger: Trigger): Long =
-        trigger.vibrateDuration?.toLong() ?: defaultVibrateDuration.value
+    private fun vibrateDuration(trigger: Trigger): Long = trigger.vibrateDuration?.toLong() ?: defaultVibrateDuration.value
 
-    private fun sequenceTriggerTimeout(trigger: Trigger): Long =
-        trigger.sequenceTriggerTimeout?.toLong() ?: defaultSequenceTriggerTimeout.value
+    private fun sequenceTriggerTimeout(trigger: Trigger): Long = trigger.sequenceTriggerTimeout?.toLong() ?: defaultSequenceTriggerTimeout.value
 
     private fun setActionMapAndOptions(actions: Set<Action>) {
         var key = 0
