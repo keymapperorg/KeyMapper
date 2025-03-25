@@ -181,10 +181,15 @@ private fun ConfigKeyMapScreen(
                         for ((index, tab) in tabs.withIndex()) {
                             Tab(
                                 selected = pagerState.targetPage == index,
-                                text = { Text(getTabTitle(tab), maxLines = 1) },
+                                text = {
+                                    Text(
+                                        text = getTabTitle(tab),
+                                        maxLines = 1,
+                                    )
+                                },
                                 onClick = {
                                     scope.launch {
-                                        pagerState.scrollToPage(
+                                        pagerState.animateScrollToPage(
                                             tabs.indexOf(tab),
                                         )
                                     }
@@ -196,14 +201,12 @@ private fun ConfigKeyMapScreen(
                     if (this@BoxWithConstraints.maxWidth < 500.dp) {
                         PrimaryScrollableTabRow(
                             selectedTabIndex = pagerState.targetPage,
-                            modifier = Modifier.fillMaxWidth(),
                             divider = {},
                         ) {
                             Tabs()
                         }
                     } else {
                         PrimaryTabRow(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
                             selectedTabIndex = pagerState.targetPage,
                             divider = {},
                         ) {
