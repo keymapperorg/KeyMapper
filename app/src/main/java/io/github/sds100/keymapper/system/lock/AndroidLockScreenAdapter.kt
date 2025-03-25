@@ -31,12 +31,14 @@ class AndroidLockScreenAdapter(context: Context) : LockScreenAdapter {
             context ?: return
 
             when (intent.action) {
-                Intent.ACTION_SCREEN_ON, Intent.ACTION_SCREEN_OFF, Intent.ACTION_USER_PRESENT -> {
+                Intent.ACTION_SCREEN_ON, Intent.ACTION_SCREEN_OFF, Intent.ACTION_USER_PRESENT, Intent.ACTION_USER_UNLOCKED -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
                         isLockedFlow.update {
                             isLocked()
                         }
                     }
+
+                    isLockscreenShowingFlow.update { isLockScreenShowing() }
                 }
             }
         }
@@ -50,23 +52,27 @@ class AndroidLockScreenAdapter(context: Context) : LockScreenAdapter {
         }
     }
 
+    private val isLockscreenShowingFlow = MutableStateFlow(isLockScreenShowing())
+
     init {
         // There is no broadcast or callback for when the screen is locked for user apps.
         // There is a way in Tiramisu but the permission SUBSCRIBE_TO_KEYGUARD_LOCKED_STATE
         // is only granted to system apps. So monitor whether the screen is turned on instead.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            val filter = IntentFilter()
-            filter.addAction(Intent.ACTION_SCREEN_ON)
-            filter.addAction(Intent.ACTION_SCREEN_OFF)
-            filter.addAction(Intent.ACTION_USER_PRESENT)
+        val filter = IntentFilter()
+        filter.addAction(Intent.ACTION_SCREEN_ON)
+        filter.addAction(Intent.ACTION_SCREEN_OFF)
+        filter.addAction(Intent.ACTION_USER_PRESENT)
 
-            ContextCompat.registerReceiver(
-                ctx,
-                broadcastReceiver,
-                filter,
-                ContextCompat.RECEIVER_EXPORTED,
-            )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            filter.addAction(Intent.ACTION_USER_UNLOCKED)
         }
+
+        ContextCompat.registerReceiver(
+            ctx,
+            broadcastReceiver,
+            filter,
+            ContextCompat.RECEIVER_EXPORTED,
+        )
     }
 
     override fun isLockedFlow(): Flow<Boolean> = isLockedFlow
@@ -78,4 +84,7 @@ class AndroidLockScreenAdapter(context: Context) : LockScreenAdapter {
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP_MR1)
     override fun isLocked(): Boolean = keyguardManager.isDeviceLocked
+
+    override fun isLockScreenShowing(): Boolean = keyguardManager.isKeyguardLocked
+    override fun isLockScreenShowingFlow(): Flow<Boolean> = isLockscreenShowingFlow
 }

@@ -78,6 +78,8 @@ class ChooseConstraintViewModel(
 
             ConstraintId.DEVICE_IS_LOCKED,
             ConstraintId.DEVICE_IS_UNLOCKED,
+            ConstraintId.LOCK_SCREEN_SHOWING,
+            ConstraintId.LOCK_SCREEN_NOT_SHOWING,
 
             ConstraintId.IN_PHONE_CALL,
             ConstraintId.NOT_IN_PHONE_CALL,
@@ -183,6 +185,12 @@ class ChooseConstraintViewModel(
 
                 ConstraintId.DISCHARGING ->
                     _returnResult.emit(Constraint.Discharging)
+
+                ConstraintId.LOCK_SCREEN_SHOWING ->
+                    _returnResult.emit(Constraint.LockScreenShowing)
+
+                ConstraintId.LOCK_SCREEN_NOT_SHOWING ->
+                    _returnResult.emit(Constraint.LockScreenNotShowing)
             }
         }
     }

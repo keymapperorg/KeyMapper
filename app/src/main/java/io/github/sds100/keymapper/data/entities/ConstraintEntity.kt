@@ -62,6 +62,8 @@ data class ConstraintEntity(
 
         const val DEVICE_IS_LOCKED = "is_locked"
         const val DEVICE_IS_UNLOCKED = "is_unlocked"
+        const val LOCK_SCREEN_SHOWING = "lock_screen_showing"
+        const val LOCK_SCREEN_NOT_SHOWING = "lock_screen_not_showing"
 
         const val IN_PHONE_CALL = "in_phone_call"
         const val NOT_IN_PHONE_CALL = "not_in_phone_call"

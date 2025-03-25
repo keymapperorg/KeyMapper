@@ -12,6 +12,7 @@ enum class ConstraintDependency {
     WIFI_STATE,
     CHOSEN_IME,
     DEVICE_LOCKED_STATE,
+    LOCK_SCREEN_SHOWING,
     PHONE_STATE,
     CHARGING_STATE,
 }

@@ -16,4 +16,7 @@ interface LockScreenAdapter {
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP_MR1)
     fun isLockedFlow(): Flow<Boolean>
+
+    fun isLockScreenShowing(): Boolean
+    fun isLockScreenShowingFlow(): Flow<Boolean>
 }

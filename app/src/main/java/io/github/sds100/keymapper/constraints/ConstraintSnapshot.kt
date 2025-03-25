@@ -65,6 +65,10 @@ class LazyConstraintSnapshot(
         }
     }
 
+    private val isLockscreenShowing: Boolean by lazy {
+        lockScreenAdapter.isLockScreenShowing()
+    }
+
     private fun isMediaPlaying(): Boolean {
         return audioVolumeStreams.contains(AudioManager.STREAM_MUSIC) || appsPlayingMedia.isNotEmpty()
     }
@@ -147,6 +151,8 @@ class LazyConstraintSnapshot(
 
             Constraint.Charging -> isCharging
             Constraint.Discharging -> !isCharging
+            Constraint.LockScreenShowing -> isLockscreenShowing
+            Constraint.LockScreenNotShowing -> !isLockscreenShowing
         }
 
         if (isSatisfied) {

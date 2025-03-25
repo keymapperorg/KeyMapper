@@ -123,6 +123,8 @@ class KeyMapConstraintsComparator(
 
             Constraint.WifiOff -> Success("")
             Constraint.WifiOn -> Success("")
+            Constraint.LockScreenNotShowing -> Success("")
+            Constraint.LockScreenShowing -> Success("")
         }
     }
 }

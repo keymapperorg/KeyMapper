@@ -15,6 +15,7 @@ import androidx.compose.material.icons.outlined.LockOpen
 import androidx.compose.material.icons.outlined.MobileOff
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.RingVolume
+import androidx.compose.material.icons.outlined.ScreenLockPortrait
 import androidx.compose.material.icons.outlined.SignalWifiStatusbarNull
 import androidx.compose.material.icons.outlined.StayCurrentLandscape
 import androidx.compose.material.icons.outlined.StayCurrentPortrait
@@ -75,6 +76,8 @@ object ConstraintUtils {
 
         ConstraintId.CHARGING -> ComposeIconInfo.Vector(Icons.Outlined.BatteryChargingFull)
         ConstraintId.DISCHARGING -> ComposeIconInfo.Vector(Icons.Outlined.Battery2Bar)
+        ConstraintId.LOCK_SCREEN_SHOWING -> ComposeIconInfo.Vector(Icons.Outlined.ScreenLockPortrait)
+        ConstraintId.LOCK_SCREEN_NOT_SHOWING -> ComposeIconInfo.Vector(Icons.Outlined.LockOpen)
     }
 
     fun getTitleStringId(constraintId: ConstraintId): Int = when (constraintId) {
@@ -109,5 +112,7 @@ object ConstraintUtils {
         ConstraintId.PHONE_RINGING -> R.string.constraint_phone_ringing
         ConstraintId.CHARGING -> R.string.constraint_charging
         ConstraintId.DISCHARGING -> R.string.constraint_discharging
+        ConstraintId.LOCK_SCREEN_SHOWING -> R.string.constraint_lock_screen_showing
+        ConstraintId.LOCK_SCREEN_NOT_SHOWING -> R.string.constraint_lock_screen_not_showing
     }
 }

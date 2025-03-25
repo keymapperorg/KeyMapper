@@ -272,6 +272,8 @@
 
     <string name="constraint_device_is_locked">Device is locked</string>
     <string name="constraint_device_is_unlocked">Device is unlocked</string>
+    <string name="constraint_lock_screen_showing">Lockscreen is showing</string>
+    <string name="constraint_lock_screen_not_showing">Lockscreen is not showing</string>
 
     <string name="constraint_in_phone_call">In phone call</string>
     <string name="constraint_not_in_phone_call">Not in phone call</string>

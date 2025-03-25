@@ -5,6 +5,7 @@
 ## Added
 
 - #1407 New trigger! Add floating buttons on top of other apps to input key maps.
+- #1502 Constraint for lockscreen is (not) showing.
 
 ## Changed
 

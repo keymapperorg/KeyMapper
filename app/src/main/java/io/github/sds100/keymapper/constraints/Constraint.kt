@@ -156,6 +156,16 @@ sealed class Constraint {
     }
 
     @Serializable
+    data object LockScreenShowing : Constraint() {
+        override val id: ConstraintId = ConstraintId.LOCK_SCREEN_SHOWING
+    }
+
+    @Serializable
+    data object LockScreenNotShowing : Constraint() {
+        override val id: ConstraintId = ConstraintId.LOCK_SCREEN_NOT_SHOWING
+    }
+
+    @Serializable
     data object InPhoneCall : Constraint() {
         override val id: ConstraintId = ConstraintId.IN_PHONE_CALL
     }
@@ -270,6 +280,8 @@ object ConstraintEntityMapper {
 
             ConstraintEntity.DEVICE_IS_UNLOCKED -> Constraint.DeviceIsUnlocked
             ConstraintEntity.DEVICE_IS_LOCKED -> Constraint.DeviceIsLocked
+            ConstraintEntity.LOCK_SCREEN_SHOWING -> Constraint.LockScreenShowing
+            ConstraintEntity.LOCK_SCREEN_NOT_SHOWING -> Constraint.LockScreenNotShowing
 
             ConstraintEntity.PHONE_RINGING -> Constraint.PhoneRinging
             ConstraintEntity.IN_PHONE_CALL -> Constraint.InPhoneCall
@@ -405,6 +417,8 @@ object ConstraintEntityMapper {
 
         Constraint.DeviceIsLocked -> ConstraintEntity(ConstraintEntity.DEVICE_IS_LOCKED)
         Constraint.DeviceIsUnlocked -> ConstraintEntity(ConstraintEntity.DEVICE_IS_UNLOCKED)
+        Constraint.LockScreenShowing -> ConstraintEntity(ConstraintEntity.LOCK_SCREEN_SHOWING)
+        Constraint.LockScreenNotShowing -> ConstraintEntity(ConstraintEntity.LOCK_SCREEN_NOT_SHOWING)
         Constraint.InPhoneCall -> ConstraintEntity(ConstraintEntity.IN_PHONE_CALL)
         Constraint.NotInPhoneCall -> ConstraintEntity(ConstraintEntity.NOT_IN_PHONE_CALL)
         Constraint.PhoneRinging -> ConstraintEntity(ConstraintEntity.PHONE_RINGING)
