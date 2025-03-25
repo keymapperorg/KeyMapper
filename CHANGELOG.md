@@ -2,13 +2,13 @@
 
 #### TO BE RELEASED
 
+## Added
+
+- #1407 New trigger! Add floating buttons on top of other apps to input key maps.
+
 ## Changed
 
 - #1203 show a share sheet after exporting key maps rather than asking where to store it. This solves the problem when no apps are installed to select where to back it up. You can still find the file in the Downloads file.
-
-## [2.8.4](https://github.com/sds100/KeyMapper/releases/tag/v2.8.4)
-
-#### TO BE RELEASED
 
 ## Bug fixes
 - #1518 detect more apps that are playing media (fix to previous fix).
