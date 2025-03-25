@@ -65,7 +65,6 @@ fun ActionOptionsBottomSheet(
         val uriHandler = LocalUriHandler.current
         val helpUrl = stringResource(R.string.url_keymap_action_options_guide)
         val scope = rememberCoroutineScope()
-        val sliderDefaultText = stringResource(R.string.slider_default)
 
         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
             Spacer(modifier = Modifier.height(12.dp))
@@ -116,7 +115,9 @@ fun ActionOptionsBottomSheet(
                 Spacer(Modifier.height(8.dp))
 
                 CheckBoxText(
-                    modifier = Modifier.padding(horizontal = 8.dp),
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .fillMaxWidth(),
                     text = stringResource(R.string.flag_repeat_actions),
                     isChecked = state.isRepeatChecked,
                     onCheckedChange = callback::onRepeatCheckedChange,
@@ -234,7 +235,9 @@ fun ActionOptionsBottomSheet(
                 Spacer(Modifier.height(8.dp))
 
                 CheckBoxText(
-                    modifier = Modifier.padding(horizontal = 8.dp),
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .fillMaxWidth(),
                     text = stringResource(R.string.flag_hold_down),
                     isChecked = state.isHoldDownChecked,
                     onCheckedChange = callback::onHoldDownCheckedChange,

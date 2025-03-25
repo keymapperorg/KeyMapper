@@ -37,7 +37,7 @@ fun CheckBoxText(
             )
 
             Text(
-                modifier = Modifier.padding(horizontal = 8.dp),
+                modifier = Modifier.padding(horizontal = 12.dp),
 
                 text = text,
                 style = if (isEnabled) {

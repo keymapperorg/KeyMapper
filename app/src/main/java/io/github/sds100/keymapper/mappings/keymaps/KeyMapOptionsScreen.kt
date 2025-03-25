@@ -112,7 +112,9 @@ private fun Loaded(
 
         if (state.showScreenOffTrigger) {
             CheckBoxText(
-                modifier = Modifier.padding(horizontal = 8.dp),
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+                    .fillMaxWidth(),
                 text = stringResource(R.string.flag_detect_triggers_screen_off),
                 isChecked = state.screenOffTrigger,
                 onCheckedChange = callback::onScreenOffTriggerChanged,
@@ -122,7 +124,9 @@ private fun Loaded(
 
         if (state.showToast) {
             CheckBoxText(
-                modifier = Modifier.padding(horizontal = 8.dp),
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+                    .fillMaxWidth(),
                 text = stringResource(R.string.flag_show_toast),
                 isChecked = state.showToast,
                 onCheckedChange = callback::onShowToastChanged,
@@ -132,7 +136,9 @@ private fun Loaded(
 
         if (state.showVibrate) {
             CheckBoxText(
-                modifier = Modifier.padding(horizontal = 8.dp),
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+                    .fillMaxWidth(),
                 text = stringResource(R.string.flag_vibrate),
                 isChecked = state.vibrate,
                 onCheckedChange = callback::onVibrateChanged,
@@ -158,7 +164,9 @@ private fun Loaded(
 
         if (state.showLongPressDoubleVibration) {
             CheckBoxText(
-                modifier = Modifier.padding(horizontal = 8.dp),
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+                    .fillMaxWidth(),
                 text = stringResource(R.string.flag_long_press_double_vibration),
                 isChecked = state.longPressDoubleVibration,
                 onCheckedChange = callback::onLongPressDoubleVibrationChanged,
@@ -247,7 +255,7 @@ private fun TriggerFromOtherAppsSection(
                     )
 
                     Text(
-                        modifier = Modifier.padding(horizontal = 8.dp),
+                        modifier = Modifier.padding(horizontal = 12.dp),
 
                         text = stringResource(R.string.flag_trigger_from_other_apps),
                         style = MaterialTheme.typography.bodyLarge,
@@ -277,8 +285,6 @@ private fun TriggerFromOtherAppsSection(
                 )
             }
         }
-
-        Spacer(Modifier.height(8.dp))
 
         AnimatedVisibility(isChecked) {
             Column {
