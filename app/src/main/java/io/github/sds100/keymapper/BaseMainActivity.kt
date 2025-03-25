@@ -29,12 +29,14 @@ import com.anggrayudi.storage.extension.toDocumentFile
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.compose.ComposeColors
 import io.github.sds100.keymapper.databinding.ActivityMainBinding
+import io.github.sds100.keymapper.home.HomeViewModel
 import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerController
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
 import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
 import io.github.sds100.keymapper.system.permissions.RequestPermissionDelegate
+import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.showPopups
 import kotlinx.coroutines.Dispatchers
@@ -70,6 +72,10 @@ abstract class BaseMainActivity : AppCompatActivity() {
 
     val viewModel by viewModels<ActivityViewModel> {
         ActivityViewModel.Factory(ServiceLocator.resourceProvider(this))
+    }
+
+    val homeViewModel by viewModels<HomeViewModel> {
+        Inject.homeViewModel(this)
     }
 
     private val currentNightMode: Int
@@ -179,6 +185,8 @@ abstract class BaseMainActivity : AppCompatActivity() {
                 ContextCompat.RECEIVER_EXPORTED,
             )
         }
+
+        importKeyMaps(intent)
     }
 
     override fun onResume() {
@@ -200,6 +208,12 @@ abstract class BaseMainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+
+        importKeyMaps(intent)
+    }
+
     override fun onGenericMotionEvent(event: MotionEvent?): Boolean {
         event ?: return super.onGenericMotionEvent(event)
 
@@ -211,6 +225,14 @@ abstract class BaseMainActivity : AppCompatActivity() {
         } else {
             // IMPORTANT! return super so that the back navigation button still works.
             super.onGenericMotionEvent(event)
+        }
+    }
+
+    private fun importKeyMaps(intent: Intent) {
+        if (intent.action == Intent.ACTION_VIEW) {
+            intent.data?.let {
+                homeViewModel.onChooseImportFile(it.toString())
+            }
         }
     }
 
