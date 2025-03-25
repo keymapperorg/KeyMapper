@@ -602,6 +602,7 @@ class CreateActionViewModelImpl(
 }
 
 interface CreateActionViewModel :
+    ResourceProvider,
     PopupViewModel,
     NavigationViewModel {
     suspend fun editAction(oldData: ActionData): ActionData?

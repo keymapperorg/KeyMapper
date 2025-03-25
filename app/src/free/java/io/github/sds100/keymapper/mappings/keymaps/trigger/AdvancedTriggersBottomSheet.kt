@@ -59,6 +59,8 @@ private fun AdvancedTriggersBottomSheet(
         // Hide drag handle because other bottom sheets don't have it
         dragHandle = {},
     ) {
+        Spacer(modifier = Modifier.height(8.dp))
+
         Text(
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,

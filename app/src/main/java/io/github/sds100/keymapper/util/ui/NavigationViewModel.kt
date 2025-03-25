@@ -32,7 +32,6 @@ import io.github.sds100.keymapper.system.bluetooth.ChooseBluetoothDeviceFragment
 import io.github.sds100.keymapper.system.intents.ConfigIntentFragment
 import io.github.sds100.keymapper.system.intents.ConfigIntentResult
 import io.github.sds100.keymapper.ui.utils.getJsonSerializable
-import io.github.sds100.keymapper.util.ui.NavDestination.Companion.getId
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -136,13 +135,13 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
     navigate.onEach { event ->
         val (requestKey, destination) = event
 
-        pendingResults[requestKey] = destination.getId()
+        pendingResults[requestKey] = destination.id
 
         fragment.clearFragmentResultListener(requestKey)
 
         fragment.setFragmentResultListener(requestKey) { _, bundle ->
             pendingResults.remove(event.key)
-            sendNavResultFromBundle(event.key, event.destination.getId(), bundle)
+            sendNavResultFromBundle(event.key, event.destination.id, bundle)
         }
 
         val direction = when (destination) {
@@ -197,7 +196,6 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
             is NavDestination.ChooseSound -> NavAppDirections.chooseSoundFile(requestKey)
             NavDestination.ChooseAction -> NavAppDirections.toChooseActionFragment(requestKey)
             is NavDestination.ChooseConstraint -> NavAppDirections.chooseConstraint(
-                supportedConstraints = Json.encodeToString(destination.supportedConstraints),
                 requestKey = requestKey,
             )
 
@@ -205,19 +203,18 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
                 requestKey,
             )
 
-            NavDestination.FixAppKilling -> NavAppDirections.goToFixAppKillingActivity()
-            NavDestination.ReportBug -> NavAppDirections.goToReportBugActivity()
             NavDestination.About -> NavAppDirections.actionGlobalAboutFragment()
             NavDestination.Settings -> NavAppDirections.toSettingsFragment()
-
-            is NavDestination.ConfigFingerprintMap ->
-                NavAppDirections.actionToConfigFingerprintMap(destination.id.toString())
 
             is NavDestination.ConfigKeyMap ->
                 NavAppDirections.actionToConfigKeymap(
                     destination.keyMapUid,
                     showAdvancedTriggers = destination.showAdvancedTriggers,
                 )
+
+            is NavDestination.ChooseFloatingLayout -> NavAppDirections.toChooseFloatingLayoutFragment()
+            NavDestination.ShizukuSettings -> NavAppDirections.toShizukuSettingsFragment()
+            NavDestination.ConfigFloatingButton -> NavAppDirections.toConfigFloatingButton()
         }
 
         fragment.findNavController().navigate(direction)

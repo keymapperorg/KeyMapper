@@ -22,7 +22,7 @@
     <fragment
         android:id="@+id/home_fragment"
         android:name="io.github.sds100.keymapper.home.HomeFragment"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_compose" />
 
     <action
         android:id="@+id/action_to_config_keymap"
@@ -40,18 +40,11 @@
             android:name="showAdvancedTriggers"
             android:defaultValue="false"
             app:argType="boolean" />
-    </action>
-
-    <action
-        android:id="@+id/action_to_config_fingerprint_map"
-        app:destination="@id/nav_config_fingerprint_map"
-        app:enterAnim="@anim/slide_in_right"
-        app:exitAnim="@anim/slide_out_left"
-        app:popEnterAnim="@anim/slide_in_left"
-        app:popExitAnim="@anim/slide_out_right">
         <argument
-            android:name="gestureId"
-            app:argType="string" />
+            android:name="newFloatingButtonTriggerKey"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
     </action>
 
     <action
@@ -61,6 +54,11 @@
         app:exitAnim="@anim/slide_out_left"
         app:popEnterAnim="@anim/slide_in_left"
         app:popExitAnim="@anim/slide_out_right" />
+
+    <action
+        android:id="@+id/to_chooseFloatingLayoutFragment"
+        app:destination="@id/chooseFloatingLayoutFragment"
+        app:enterAnim="@anim/slide_in_right" />
 
     <action
         android:id="@+id/to_settingsFragment"
@@ -79,7 +77,6 @@
         app:popExitAnim="@anim/slide_out_right" />
 
     <include app:graph="@navigation/nav_config_keymap" />
-    <include app:graph="@navigation/nav_config_fingerprint_map" />
     <include app:graph="@navigation/nav_settings" />
 
     <fragment
@@ -94,28 +91,6 @@
         app:exitAnim="@anim/slide_out_left"
         app:popEnterAnim="@anim/slide_in_left"
         app:popExitAnim="@anim/slide_out_right" />
-
-    <dialog
-        android:id="@+id/menuFragment"
-        android:name="io.github.sds100.keymapper.home.MenuFragment"
-        android:label="fragment_menu"
-        tools:layout="@layout/fragment_menu" />
-
-    <action
-        android:id="@+id/action_global_menuFragment"
-        app:destination="@id/menuFragment"
-        app:enterAnim="@anim/slide_in_bottom" />
-
-    <dialog
-        android:id="@+id/sortMenuFragment"
-        android:name="io.github.sds100.keymapper.sorting.SortMenuFragment"
-        android:label="fragment_sort_menu"
-        tools:layout="@layout/fragment_sort_menu" />
-
-    <action
-        android:id="@+id/action_global_sortingFragment"
-        app:destination="@id/sortMenuFragment"
-        app:enterAnim="@anim/slide_in_bottom" />
 
     <action
         android:id="@+id/chooseApp"
@@ -331,10 +306,6 @@
         tools:layout="@layout/fragment_simple_recyclerview">
 
         <argument
-            android:name="supportedConstraints"
-            app:argType="string" />
-
-        <argument
             android:name="requestKey"
             app:argType="string" />
     </fragment>
@@ -374,20 +345,6 @@
         app:popEnterAnim="@anim/slide_in_left"
         app:popExitAnim="@anim/slide_out_right" />
 
-    <action
-        android:id="@+id/goToReportBugActivity"
-        app:destination="@id/reportBugActivity" />
-    <action
-        android:id="@+id/goToFixAppKillingActivity"
-        app:destination="@id/fixAppKillingActivity" />
-    <activity
-        android:id="@+id/reportBugActivity"
-        android:name="io.github.sds100.keymapper.reportbug.ReportBugActivity"
-        android:label="ReportBugActivity" />
-    <activity
-        android:id="@+id/fixAppKillingActivity"
-        android:name="io.github.sds100.keymapper.home.FixAppKillingActivity"
-        android:label="FixCrashActivity" />
     <fragment
         android:id="@+id/shizukuSettingsFragment"
         android:name="io.github.sds100.keymapper.settings.ShizukuSettingsFragment"
@@ -395,9 +352,21 @@
     <fragment
         android:id="@+id/chooseActionFragment"
         android:name="io.github.sds100.keymapper.actions.ChooseActionFragment"
-        android:label="ChooseActionFragmentNew">
+        android:label="ChooseActionFragment">
         <argument
             android:name="requestKey"
             app:argType="string" />
     </fragment>
+    <fragment
+        android:id="@+id/chooseFloatingLayoutFragment"
+        android:name="io.github.sds100.keymapper.floating.ChooseFloatingLayoutFragment"
+        android:label="ChooseFloatingLayoutFragment" />
+
+    <activity
+        android:id="@+id/configFloatingButtonActivity"
+        android:name="io.github.sds100.keymapper.floating.FloatingButtonConfigActivity" />
+
+    <action
+        android:id="@+id/to_configFloatingButton"
+        app:destination="@id/configFloatingButtonActivity" />
 </navigation>

@@ -12,11 +12,15 @@ import androidx.core.content.getSystemService
 import io.github.sds100.keymapper.system.SettingsUtils
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.util.SizeKM
 import io.github.sds100.keymapper.util.Success
+import io.github.sds100.keymapper.util.getRealDisplaySize
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
 
 /**
@@ -61,21 +65,28 @@ class AndroidDisplayAdapter(
     override val isScreenOn = MutableStateFlow(true)
 
     private val displayManager: DisplayManager = ctx.getSystemService()!!
-    override var orientation: Orientation = getDisplayOrientation()
+
+    private val _orientation = MutableStateFlow(getDisplayOrientation())
+    override val orientation: Flow<Orientation> = _orientation
+    override val cachedOrientation: Orientation
+        get() = _orientation.value
+
+    override val size: SizeKM
+        get() = ctx.getRealDisplaySize()
 
     init {
         displayManager.registerDisplayListener(
             object : DisplayManager.DisplayListener {
                 override fun onDisplayAdded(displayId: Int) {
-                    orientation = getDisplayOrientation()
+                    _orientation.update { getDisplayOrientation() }
                 }
 
                 override fun onDisplayRemoved(displayId: Int) {
-                    orientation = getDisplayOrientation()
+                    _orientation.update { getDisplayOrientation() }
                 }
 
                 override fun onDisplayChanged(displayId: Int) {
-                    orientation = getDisplayOrientation()
+                    _orientation.update { getDisplayOrientation() }
                 }
             },
             null,
@@ -93,8 +104,7 @@ class AndroidDisplayAdapter(
         )
     }
 
-    override fun isAutoRotateEnabled(): Boolean =
-        SettingsUtils.getSystemSetting<Int>(ctx, Settings.System.ACCELEROMETER_ROTATION) == 1
+    override fun isAutoRotateEnabled(): Boolean = SettingsUtils.getSystemSetting<Int>(ctx, Settings.System.ACCELEROMETER_ROTATION) == 1
 
     override fun enableAutoRotate(): Result<*> {
         val success = SettingsUtils.putSystemSetting(ctx, Settings.System.ACCELEROMETER_ROTATION, 1)
@@ -195,11 +205,9 @@ class AndroidDisplayAdapter(
         }
     }
 
-    override fun enableAutoBrightness(): Result<*> =
-        setBrightnessMode(Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC)
+    override fun enableAutoBrightness(): Result<*> = setBrightnessMode(Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC)
 
-    override fun disableAutoBrightness(): Result<*> =
-        setBrightnessMode(Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL)
+    override fun disableAutoBrightness(): Result<*> = setBrightnessMode(Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL)
 
     private fun setBrightnessMode(mode: Int): Result<*> {
         val success =
@@ -212,13 +220,16 @@ class AndroidDisplayAdapter(
         }
     }
 
-    private fun getDisplayOrientation(): Orientation =
-        when (val sdkRotation = displayManager.displays[0].rotation) {
-            Surface.ROTATION_0 -> Orientation.ORIENTATION_0
-            Surface.ROTATION_90 -> Orientation.ORIENTATION_90
-            Surface.ROTATION_180 -> Orientation.ORIENTATION_180
-            Surface.ROTATION_270 -> Orientation.ORIENTATION_270
+    override fun fetchOrientation(): Orientation {
+        return _orientation.updateAndGet { getDisplayOrientation() }
+    }
 
-            else -> throw Exception("Don't know how to convert $sdkRotation to Orientation")
-        }
+    private fun getDisplayOrientation(): Orientation = when (val sdkRotation = displayManager.displays[0].rotation) {
+        Surface.ROTATION_0 -> Orientation.ORIENTATION_0
+        Surface.ROTATION_90 -> Orientation.ORIENTATION_90
+        Surface.ROTATION_180 -> Orientation.ORIENTATION_180
+        Surface.ROTATION_270 -> Orientation.ORIENTATION_270
+
+        else -> throw Exception("Don't know how to convert $sdkRotation to Orientation")
+    }
 }

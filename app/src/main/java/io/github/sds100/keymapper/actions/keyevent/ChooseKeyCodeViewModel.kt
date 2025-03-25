@@ -8,7 +8,7 @@ import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.filterByQuery
 import io.github.sds100.keymapper.util.ui.DefaultSimpleListItem
-import io.github.sds100.keymapper.util.ui.SimpleListItem
+import io.github.sds100.keymapper.util.ui.SimpleListItemOld
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +28,7 @@ class ChooseKeyCodeViewModel : ViewModel() {
 
     val searchQuery = MutableStateFlow<String?>(null)
 
-    private val _state = MutableStateFlow<State<List<SimpleListItem>>>(State.Loading)
+    private val _state = MutableStateFlow<State<List<SimpleListItemOld>>>(State.Loading)
     val state = _state.asStateFlow()
 
     private val allListItems = flow {

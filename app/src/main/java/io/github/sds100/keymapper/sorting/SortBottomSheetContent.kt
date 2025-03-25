@@ -30,9 +30,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDownward
-import androidx.compose.material.icons.filled.ArrowUpward
-import androidx.compose.material.icons.filled.DragHandle
+import androidx.compose.material.icons.rounded.ArrowDownward
+import androidx.compose.material.icons.rounded.ArrowUpward
+import androidx.compose.material.icons.rounded.DragHandle
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -42,6 +42,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -74,16 +75,19 @@ import io.github.sds100.keymapper.compose.draggable.rememberDragDropState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SortBottomSheet(
-    onDismissRequest: () -> Unit,
     viewModel: SortViewModel,
+    sheetState: SheetState,
+    onDismissRequest: () -> Unit,
 ) {
     val sortFieldOrderList by viewModel.sortFieldOrder.collectAsStateWithLifecycle()
     val showHelp by viewModel.showHelp.collectAsStateWithLifecycle()
 
     SortBottomSheet(
         modifier = Modifier.statusBarsPadding(),
+        sheetState = sheetState,
         sortFieldOrderList = sortFieldOrderList,
         showHelp = showHelp,
         onDismissRequest = onDismissRequest,
@@ -101,6 +105,7 @@ fun SortBottomSheet(
 @Composable
 private fun SortBottomSheet(
     modifier: Modifier = Modifier,
+    sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
     onDismissRequest: () -> Unit,
     sortFieldOrderList: List<SortFieldOrder>,
     showHelp: Boolean,
@@ -112,7 +117,6 @@ private fun SortBottomSheet(
     onShowHelpClick: () -> Unit,
     onShowExample: () -> Unit,
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val coroutineScope = rememberCoroutineScope()
 
     ModalBottomSheet(
@@ -391,8 +395,8 @@ private fun SortFieldListItem(
 
                 val imageVector = when (sortOrder) {
                     SortOrder.NONE -> return@AnimatedContent
-                    SortOrder.ASCENDING -> Icons.Default.ArrowUpward
-                    SortOrder.DESCENDING -> Icons.Default.ArrowDownward
+                    SortOrder.ASCENDING -> Icons.Rounded.ArrowUpward
+                    SortOrder.DESCENDING -> Icons.Rounded.ArrowDownward
                 }
 
                 Icon(
@@ -415,7 +419,7 @@ private fun SortFieldListItem(
         ) {
             Icon(
                 modifier = Modifier.align(Alignment.Center),
-                imageVector = Icons.Default.DragHandle,
+                imageVector = Icons.Rounded.DragHandle,
                 contentDescription = stringResource(
                     R.string.drag_handle_for,
                     sortFieldText(sortField),
@@ -532,6 +536,7 @@ private fun SortBottomSheetPreview() {
 
     KeyMapperTheme {
         Surface {
+            @OptIn(ExperimentalMaterial3Api::class)
             SortBottomSheet(
                 // Preview hack, breaks if you run it
                 modifier = Modifier
@@ -555,9 +560,9 @@ private fun SortBottomSheetPreview() {
 @Composable
 private fun sortFieldText(sortField: SortField): String {
     return when (sortField) {
-        SortField.TRIGGER -> stringResource(R.string.trigger_header)
-        SortField.ACTIONS -> stringResource(R.string.action_list_header)
-        SortField.CONSTRAINTS -> stringResource(R.string.constraint_list_header)
-        SortField.OPTIONS -> stringResource(R.string.option_list_header)
+        SortField.TRIGGER -> stringResource(R.string.sort_bottom_sheet_trigger)
+        SortField.ACTIONS -> stringResource(R.string.sort_bottom_sheet_actions)
+        SortField.CONSTRAINTS -> stringResource(R.string.sort_bottom_sheet_constraints)
+        SortField.OPTIONS -> stringResource(R.string.sort_bottom_sheet_options)
     }
 }

@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.util.ui
 
-import androidx.annotation.StringRes
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.util.Error
@@ -13,7 +12,6 @@ import io.github.sds100.keymapper.util.isFixable
 object ViewModelHelper {
     suspend fun handleKeyMapperCrashedDialog(
         resourceProvider: ResourceProvider,
-        navigationViewModel: NavigationViewModel,
         popupViewModel: PopupViewModel,
         restartService: () -> Boolean,
     ) {
@@ -27,22 +25,10 @@ object ViewModelHelper {
         val response = popupViewModel.showPopup("app_crashed_prompt", dialog) ?: return
 
         when (response) {
-            DialogResponse.POSITIVE -> navigationViewModel.navigate(
-                "fix_app_killing",
-                NavDestination.FixAppKilling,
-            )
-
-            DialogResponse.NEUTRAL -> {
-                val restartServiceDialog = PopupUi.Ok(
-                    message = resourceProvider.getString(R.string.dialog_message_restart_accessibility_service),
-                )
-
-                popupViewModel.showPopup("restart_accessibility_service", restartServiceDialog)
-                    ?: return
-
-                if (!restartService.invoke()) {
-                    handleCantFindAccessibilitySettings(resourceProvider, popupViewModel)
-                }
+            DialogResponse.POSITIVE -> {
+                val popup =
+                    PopupUi.OpenUrl(resourceProvider.getString(R.string.url_dont_kill_my_app))
+                popupViewModel.showPopup("dont_kill_my_app", popup)
             }
 
             else -> Unit
@@ -107,18 +93,23 @@ object ViewModelHelper {
         }
     }
 
-    suspend fun handleAccessibilityServiceCrashedSnackBar(
+    suspend fun handleAccessibilityServiceCrashedDialog(
         resourceProvider: ResourceProvider,
         popupViewModel: PopupViewModel,
         restartService: () -> Boolean,
-        @StringRes message: Int,
     ) {
-        val snackBar = PopupUi.SnackBar(
-            message = resourceProvider.getString(message),
-            actionText = resourceProvider.getString(R.string.pos_restart),
+        val dialog = PopupUi.Dialog(
+            title = resourceProvider.getString(R.string.dialog_title_accessibility_service_explanation),
+            message = resourceProvider.getString(R.string.dialog_message_restart_accessibility_service),
+            positiveButtonText = resourceProvider.getString(R.string.pos_restart),
+            negativeButtonText = resourceProvider.getString(R.string.neg_cancel),
         )
 
-        popupViewModel.showPopup("snackbar_restart_service", snackBar) ?: return
+        val response = popupViewModel.showPopup("accessibility_service_explanation", dialog)
+
+        if (response != DialogResponse.POSITIVE) {
+            return
+        }
 
         if (!restartService.invoke()) {
             handleCantFindAccessibilitySettings(resourceProvider, popupViewModel)
@@ -158,7 +149,7 @@ object ViewModelHelper {
         resourceProvider: ResourceProvider,
         popupViewModel: PopupViewModel,
         neverShowDndTriggerErrorAgain: () -> Unit,
-        fixError: suspend (Error) -> Unit,
+        fixError: suspend () -> Unit,
     ) {
         val dialog = PopupUi.Dialog(
             title = resourceProvider.getString(R.string.dialog_title_fix_dnd_trigger_error),
@@ -172,7 +163,7 @@ object ViewModelHelper {
 
         if (dialogResponse == DialogResponse.POSITIVE) {
             val error = Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)
-            fixError.invoke(error)
+            fixError.invoke()
         } else if (dialogResponse == DialogResponse.NEUTRAL) {
             neverShowDndTriggerErrorAgain.invoke()
         }

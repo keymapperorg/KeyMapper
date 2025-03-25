@@ -5,7 +5,7 @@ package io.github.sds100.keymapper.util
  */
 sealed class State<out T> {
     data class Data<T>(val data: T) : State<T>()
-    object Loading : State<Nothing>()
+    data object Loading : State<Nothing>()
 }
 
 fun <T> State<T>.dataOrNull(): T? = when (this) {

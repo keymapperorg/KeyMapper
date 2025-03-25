@@ -77,4 +77,15 @@ object Keys {
         booleanPreferencesKey("key_never_show_no_keys_recorded_error")
     val sortOrderJson = stringPreferencesKey("key_keymaps_sort_order_json")
     val sortShowHelp = booleanPreferencesKey("key_keymaps_sort_show_help")
+
+    // Stored as a JSON list of ActionData objects.
+    val recentlyUsedActions = stringPreferencesKey("key_recently_used_actions")
+
+    // Stored as a JSON list of Constraint objects.
+    val recentlyUsedConstraints = stringPreferencesKey("key_recently_used_constraints")
+
+    /**
+     * Whether the user viewed the advanced triggers.
+     */
+    val viewedAdvancedTriggers = booleanPreferencesKey("key_viewed_advanced_triggers")
 }

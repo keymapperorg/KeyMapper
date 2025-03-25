@@ -1,13 +1,33 @@
 package io.github.sds100.keymapper.constraints
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Battery2Bar
+import androidx.compose.material.icons.outlined.BatteryChargingFull
+import androidx.compose.material.icons.outlined.BluetoothConnected
+import androidx.compose.material.icons.outlined.BluetoothDisabled
+import androidx.compose.material.icons.outlined.Call
+import androidx.compose.material.icons.outlined.CallEnd
+import androidx.compose.material.icons.outlined.FlashlightOff
+import androidx.compose.material.icons.outlined.FlashlightOn
+import androidx.compose.material.icons.outlined.Keyboard
+import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.LockOpen
+import androidx.compose.material.icons.outlined.MobileOff
+import androidx.compose.material.icons.outlined.PlayArrow
+import androidx.compose.material.icons.outlined.RingVolume
+import androidx.compose.material.icons.outlined.SignalWifiStatusbarNull
+import androidx.compose.material.icons.outlined.StayCurrentLandscape
+import androidx.compose.material.icons.outlined.StayCurrentPortrait
+import androidx.compose.material.icons.outlined.StopCircle
+import androidx.compose.material.icons.outlined.Wifi
+import androidx.compose.material.icons.outlined.WifiOff
+import androidx.compose.material.icons.rounded.Android
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.mappings.DisplayConstraintUseCase
 import io.github.sds100.keymapper.system.camera.CameraLensUtils
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.util.handle
-import io.github.sds100.keymapper.util.ui.IconInfo
 import io.github.sds100.keymapper.util.ui.ResourceProvider
-import io.github.sds100.keymapper.util.ui.TintType
+import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.util.valueIfFailure
 
 /**
@@ -142,143 +162,79 @@ class ConstraintUiHelper(
         Constraint.Discharging -> getString(R.string.constraint_discharging)
     }
 
-    fun getIcon(constraint: Constraint): IconInfo? = when (constraint) {
+    fun getIcon(constraint: Constraint): ComposeIconInfo = when (constraint) {
         is Constraint.AppInForeground -> getAppIconInfo(constraint.packageName)
+            ?: ComposeIconInfo.Vector(Icons.Rounded.Android)
+
         is Constraint.AppNotInForeground -> getAppIconInfo(constraint.packageName)
+            ?: ComposeIconInfo.Vector(Icons.Rounded.Android)
+
         is Constraint.AppPlayingMedia -> getAppIconInfo(constraint.packageName)
+            ?: ComposeIconInfo.Vector(Icons.Rounded.Android)
+
         is Constraint.AppNotPlayingMedia -> getAppIconInfo(constraint.packageName)
-        Constraint.MediaPlaying -> IconInfo(
-            getDrawable(R.drawable.ic_outline_play_arrow_24),
-            TintType.OnSurface,
-        )
+            ?: ComposeIconInfo.Vector(Icons.Rounded.Android)
 
-        Constraint.NoMediaPlaying -> IconInfo(
-            getDrawable(R.drawable.ic_outline_stop_circle_24),
-            TintType.OnSurface,
-        )
+        Constraint.MediaPlaying -> ComposeIconInfo.Vector(Icons.Outlined.PlayArrow)
 
-        is Constraint.BtDeviceConnected -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_outline_bluetooth_connected_24),
-            tintType = TintType.OnSurface,
-        )
+        Constraint.NoMediaPlaying -> ComposeIconInfo.Vector(Icons.Outlined.StopCircle)
 
-        is Constraint.BtDeviceDisconnected -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_outline_bluetooth_disabled_24),
-            tintType = TintType.OnSurface,
-        )
+        is Constraint.BtDeviceConnected -> ComposeIconInfo.Vector(Icons.Outlined.BluetoothConnected)
+
+        is Constraint.BtDeviceDisconnected -> ComposeIconInfo.Vector(Icons.Outlined.BluetoothDisabled)
 
         is Constraint.OrientationCustom -> {
             val resId = when (constraint.orientation) {
-                Orientation.ORIENTATION_0 -> R.drawable.ic_outline_stay_current_portrait_24
-                Orientation.ORIENTATION_90 -> R.drawable.ic_outline_stay_current_landscape_24
-                Orientation.ORIENTATION_180 -> R.drawable.ic_outline_stay_current_portrait_24
-                Orientation.ORIENTATION_270 -> R.drawable.ic_outline_stay_current_landscape_24
+                Orientation.ORIENTATION_0 -> Icons.Outlined.StayCurrentPortrait
+                Orientation.ORIENTATION_90 -> Icons.Outlined.StayCurrentLandscape
+                Orientation.ORIENTATION_180 -> Icons.Outlined.StayCurrentPortrait
+                Orientation.ORIENTATION_270 -> Icons.Outlined.StayCurrentLandscape
             }
 
-            IconInfo(
-                drawable = getDrawable(resId),
-                tintType = TintType.OnSurface,
-            )
+            ComposeIconInfo.Vector(resId)
         }
 
-        Constraint.OrientationLandscape -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_outline_stay_current_landscape_24),
-            tintType = TintType.OnSurface,
-        )
+        Constraint.OrientationLandscape -> ComposeIconInfo.Vector(Icons.Outlined.StayCurrentLandscape)
 
-        Constraint.OrientationPortrait -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_outline_stay_current_portrait_24),
-            tintType = TintType.OnSurface,
-        )
+        Constraint.OrientationPortrait -> ComposeIconInfo.Vector(Icons.Outlined.StayCurrentPortrait)
 
-        Constraint.ScreenOff -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_baseline_mobile_off_24),
-            tintType = TintType.OnSurface,
-        )
+        Constraint.ScreenOff -> ComposeIconInfo.Vector(Icons.Outlined.MobileOff)
 
-        Constraint.ScreenOn -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_outline_stay_current_portrait_24),
-            tintType = TintType.OnSurface,
-        )
+        Constraint.ScreenOn -> ComposeIconInfo.Vector(Icons.Outlined.StayCurrentPortrait)
 
-        is Constraint.FlashlightOff -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_flashlight_off),
-            tintType = TintType.OnSurface,
-        )
+        is Constraint.FlashlightOff -> ComposeIconInfo.Vector(Icons.Outlined.FlashlightOff)
 
-        is Constraint.FlashlightOn -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_flashlight),
-            tintType = TintType.OnSurface,
-        )
+        is Constraint.FlashlightOn -> ComposeIconInfo.Vector(Icons.Outlined.FlashlightOn)
 
-        is Constraint.WifiConnected -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_outline_wifi_24),
-            tintType = TintType.OnSurface,
-        )
+        is Constraint.WifiConnected -> ComposeIconInfo.Vector(Icons.Outlined.Wifi)
 
-        is Constraint.WifiDisconnected -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_outline_signal_wifi_statusbar_null_24),
-            tintType = TintType.OnSurface,
-        )
+        is Constraint.WifiDisconnected -> ComposeIconInfo.Vector(Icons.Outlined.SignalWifiStatusbarNull)
 
-        Constraint.WifiOff -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_outline_wifi_off_24),
-            tintType = TintType.OnSurface,
-        )
+        Constraint.WifiOff -> ComposeIconInfo.Vector(Icons.Outlined.WifiOff)
 
-        Constraint.WifiOn -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_outline_wifi_24),
-            tintType = TintType.OnSurface,
-        )
+        Constraint.WifiOn -> ComposeIconInfo.Vector(Icons.Outlined.Wifi)
 
-        is Constraint.ImeChosen -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_outline_keyboard_24),
-            tintType = TintType.OnSurface,
-        )
+        is Constraint.ImeChosen -> ComposeIconInfo.Vector(Icons.Outlined.Keyboard)
 
-        is Constraint.ImeNotChosen -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_outline_keyboard_24),
-            tintType = TintType.OnSurface,
-        )
+        is Constraint.ImeNotChosen -> ComposeIconInfo.Vector(Icons.Outlined.Keyboard)
 
-        Constraint.DeviceIsLocked -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_outline_lock_24),
-            tintType = TintType.OnSurface,
-        )
+        Constraint.DeviceIsLocked -> ComposeIconInfo.Vector(Icons.Outlined.Lock)
 
-        Constraint.DeviceIsUnlocked -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_outline_lock_open_24),
-            tintType = TintType.OnSurface,
-        )
+        Constraint.DeviceIsUnlocked -> ComposeIconInfo.Vector(Icons.Outlined.LockOpen)
 
-        Constraint.InPhoneCall -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_outline_call_24),
-            tintType = TintType.OnSurface,
-        )
+        Constraint.InPhoneCall -> ComposeIconInfo.Vector(Icons.Outlined.Call)
 
-        Constraint.NotInPhoneCall -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_baseline_call_end_24),
-            tintType = TintType.OnSurface,
-        )
+        Constraint.NotInPhoneCall -> ComposeIconInfo.Vector(Icons.Outlined.CallEnd)
 
-        Constraint.PhoneRinging -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_baseline_ring_volume_24),
-            tintType = TintType.OnSurface,
-        )
+        Constraint.PhoneRinging -> ComposeIconInfo.Vector(Icons.Outlined.RingVolume)
 
-        Constraint.Charging -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_baseline_battery_charging_full_24),
-            tintType = TintType.OnSurface,
-        )
+        Constraint.Charging -> ComposeIconInfo.Vector(Icons.Outlined.BatteryChargingFull)
 
-        Constraint.Discharging -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_battery_70),
-            tintType = TintType.OnSurface,
-        )
+        Constraint.Discharging -> ComposeIconInfo.Vector(Icons.Outlined.Battery2Bar)
     }
 
-    private fun getAppIconInfo(packageName: String): IconInfo? = getAppIcon(packageName).handle(
-        onSuccess = { IconInfo(it, TintType.None) },
+    private fun getAppIconInfo(packageName: String): ComposeIconInfo? = getAppIcon(packageName).handle(
+        onSuccess = { ComposeIconInfo.Drawable(it) },
         onError = { null },
     )
 }

@@ -80,9 +80,11 @@ class AndroidPermissionAdapter(
 
     private val ctx = context.applicationContext
 
-    override val onPermissionsUpdate: MutableSharedFlow<Unit> = MutableSharedFlow()
+    private val powerManager: PowerManager? = ctx.getSystemService<PowerManager>()
 
+    override val onPermissionsUpdate: MutableSharedFlow<Unit> = MutableSharedFlow()
     private val _request = MutableSharedFlow<Permission>()
+
     val request = _request.asSharedFlow()
 
     /**
@@ -98,6 +100,7 @@ class AndroidPermissionAdapter(
             .stateIn(coroutineScope, SharingStarted.Eagerly, false)
 
     init {
+
         suAdapter.isGranted
             .drop(1)
             .onEach { onPermissionsChanged() }
@@ -279,8 +282,6 @@ class AndroidPermissionAdapter(
 
         Permission.IGNORE_BATTERY_OPTIMISATION ->
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                val powerManager = ctx.getSystemService<PowerManager>()
-
                 val ignoringOptimisations =
                     powerManager?.isIgnoringBatteryOptimizations(Constants.PACKAGE_NAME)
 

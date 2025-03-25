@@ -38,7 +38,7 @@ class TriggerKeyMapFromOtherAppsController(
     fun onDetected(uid: String) {
         val keyMap = keyMapList.find { it.uid == uid }
         if (keyMap != null) {
-            onDetected(keyMap.uid, keyMap)
+            onDetected(keyMap)
 
             Timber.d("Triggered key map successfully from Intent, $keyMap")
         } else {

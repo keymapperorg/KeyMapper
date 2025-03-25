@@ -19,26 +19,18 @@ import io.github.sds100.keymapper.api.KeyEventRelayServiceWrapper
 import io.github.sds100.keymapper.backup.BackupRestoreMappingsUseCaseImpl
 import io.github.sds100.keymapper.constraints.ChooseConstraintViewModel
 import io.github.sds100.keymapper.constraints.CreateConstraintUseCaseImpl
-import io.github.sds100.keymapper.home.FixAppKillingViewModel
 import io.github.sds100.keymapper.home.HomeViewModel
 import io.github.sds100.keymapper.home.ShowHomeScreenAlertsUseCaseImpl
 import io.github.sds100.keymapper.logging.DisplayLogUseCaseImpl
 import io.github.sds100.keymapper.logging.LogViewModel
-import io.github.sds100.keymapper.mappings.fingerprintmaps.ConfigFingerprintMapUseCaseImpl
-import io.github.sds100.keymapper.mappings.fingerprintmaps.ConfigFingerprintMapViewModel
-import io.github.sds100.keymapper.mappings.fingerprintmaps.ListFingerprintMapsUseCaseImpl
+import io.github.sds100.keymapper.mappings.FingerprintGesturesSupportedUseCaseImpl
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapViewModel
 import io.github.sds100.keymapper.mappings.keymaps.CreateKeyMapShortcutViewModel
 import io.github.sds100.keymapper.mappings.keymaps.ListKeyMapsUseCaseImpl
 import io.github.sds100.keymapper.mappings.keymaps.trigger.SetupGuiKeyboardUseCaseImpl
-import io.github.sds100.keymapper.onboarding.AppIntroUseCaseImpl
-import io.github.sds100.keymapper.onboarding.AppIntroViewModel
-import io.github.sds100.keymapper.reportbug.ReportBugUseCaseImpl
-import io.github.sds100.keymapper.reportbug.ReportBugViewModel
 import io.github.sds100.keymapper.settings.ConfigSettingsUseCaseImpl
 import io.github.sds100.keymapper.settings.SettingsViewModel
 import io.github.sds100.keymapper.sorting.SortKeyMapsUseCaseImpl
-import io.github.sds100.keymapper.sorting.SortViewModel
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceController
 import io.github.sds100.keymapper.system.accessibility.MyAccessibilityService
 import io.github.sds100.keymapper.system.apps.ChooseActivityViewModel
@@ -58,7 +50,6 @@ object Inject {
     fun chooseActionViewModel(ctx: Context): ChooseActionViewModel.Factory = ChooseActionViewModel.Factory(
         UseCases.createAction(ctx),
         ServiceLocator.resourceProvider(ctx),
-        UseCases.isActionSupported(ctx),
     )
 
     fun chooseAppViewModel(context: Context): ChooseAppViewModel.Factory = ChooseAppViewModel.Factory(
@@ -138,17 +129,7 @@ object Inject {
             ServiceLocator.inputMethodAdapter(ctx),
             ServiceLocator.packageManagerAdapter(ctx),
         ),
-    )
-
-    fun configFingerprintMapViewModel(
-        ctx: Context,
-    ): ConfigFingerprintMapViewModel.Factory = ConfigFingerprintMapViewModel.Factory(
-        ConfigFingerprintMapUseCaseImpl(ServiceLocator.fingerprintMapRepository(ctx)),
-        TestActionUseCaseImpl(ServiceLocator.accessibilityServiceAdapter(ctx)),
-        UseCases.displaySimpleMapping(ctx),
-        UseCases.onboarding(ctx),
-        UseCases.createAction(ctx),
-        ServiceLocator.resourceProvider(ctx),
+        FingerprintGesturesSupportedUseCaseImpl(ServiceLocator.settingsRepository(ctx)),
     )
 
     fun createActionShortcutViewModel(
@@ -156,7 +137,9 @@ object Inject {
     ): CreateKeyMapShortcutViewModel.Factory = CreateKeyMapShortcutViewModel.Factory(
         UseCases.configKeyMap(ctx),
         ListKeyMapsUseCaseImpl(
-            ServiceLocator.roomKeymapRepository(ctx),
+            ServiceLocator.roomKeyMapRepository(ctx),
+            ServiceLocator.floatingButtonRepository(ctx),
+            ServiceLocator.fileAdapter(ctx),
             ServiceLocator.backupManager(ctx),
             UseCases.displayKeyMap(ctx),
         ),
@@ -166,25 +149,23 @@ object Inject {
 
     fun homeViewModel(ctx: Context): HomeViewModel.Factory = HomeViewModel.Factory(
         ListKeyMapsUseCaseImpl(
-            ServiceLocator.roomKeymapRepository(ctx),
+            ServiceLocator.roomKeyMapRepository(ctx),
+            ServiceLocator.floatingButtonRepository(ctx),
+            ServiceLocator.fileAdapter(ctx),
             ServiceLocator.backupManager(ctx),
             UseCases.displayKeyMap(ctx),
         ),
-        ListFingerprintMapsUseCaseImpl(
-            ServiceLocator.fingerprintMapRepository(ctx),
-            ServiceLocator.backupManager(ctx),
-            ServiceLocator.settingsRepository(ctx),
-            UseCases.displaySimpleMapping(ctx),
-        ),
         UseCases.pauseMappings(ctx),
-        BackupRestoreMappingsUseCaseImpl(ServiceLocator.backupManager(ctx)),
+        BackupRestoreMappingsUseCaseImpl(
+            ServiceLocator.fileAdapter(ctx),
+            ServiceLocator.backupManager(ctx),
+        ),
         ShowHomeScreenAlertsUseCaseImpl(
             ServiceLocator.settingsRepository(ctx),
             ServiceLocator.permissionAdapter(ctx),
             ServiceLocator.accessibilityServiceAdapter(ctx),
             UseCases.pauseMappings(ctx),
         ),
-        UseCases.showImePicker(ctx),
         UseCases.onboarding(ctx),
         ServiceLocator.resourceProvider(ctx),
         SetupGuiKeyboardUseCaseImpl(
@@ -194,8 +175,8 @@ object Inject {
         SortKeyMapsUseCaseImpl(
             ServiceLocator.settingsRepository(ctx),
             UseCases.displayKeyMap(ctx),
-            ServiceLocator.resourceProvider(ctx),
         ),
+        UseCases.listFloatingLayouts(ctx),
     )
 
     fun settingsViewModel(context: Context): SettingsViewModel.Factory = SettingsViewModel.Factory(
@@ -210,39 +191,6 @@ object Inject {
             ServiceLocator.devicesAdapter(context),
         ),
         ServiceLocator.resourceProvider(context),
-    )
-
-    fun appIntroViewModel(
-        context: Context,
-        slides: List<String>,
-    ): AppIntroViewModel.Factory = AppIntroViewModel.Factory(
-        AppIntroUseCaseImpl(
-            ServiceLocator.permissionAdapter(context),
-            ServiceLocator.accessibilityServiceAdapter(context),
-            ServiceLocator.settingsRepository(context),
-            ServiceLocator.shizukuAdapter(context),
-        ),
-        slides,
-        ServiceLocator.resourceProvider(context),
-    )
-
-    fun reportBugViewModel(
-        context: Context,
-    ): ReportBugViewModel.Factory = ReportBugViewModel.Factory(
-        ReportBugUseCaseImpl(
-            ServiceLocator.fileAdapter(context),
-            ServiceLocator.logRepository(context),
-            ServiceLocator.backupManager(context),
-        ),
-        UseCases.controlAccessibilityService(context),
-        ServiceLocator.resourceProvider(context),
-    )
-
-    fun fixCrashViewModel(
-        context: Context,
-    ): FixAppKillingViewModel.Factory = FixAppKillingViewModel.Factory(
-        ServiceLocator.resourceProvider(context),
-        UseCases.controlAccessibilityService(context),
     )
 
     fun accessibilityServiceController(
@@ -264,7 +212,7 @@ object Inject {
             service = service,
             keyEventRelayService = keyEventRelayService,
         ),
-        detectFingerprintMapsUseCase = UseCases.detectFingerprintMaps(service),
+        fingerprintGesturesSupportedUseCase = UseCases.fingerprintGesturesSupported(service),
         pauseMappingsUseCase = UseCases.pauseMappings(service),
         devicesAdapter = ServiceLocator.devicesAdapter(service),
         suAdapter = ServiceLocator.suAdapter(service),
@@ -292,10 +240,5 @@ object Inject {
             ServiceLocator.fileAdapter(ctx),
         ),
         ServiceLocator.resourceProvider(ctx),
-    )
-
-    fun sortViewModel(ctx: Context): SortViewModel.Factory = SortViewModel.Factory(
-        UseCases.sortKeyMapsUseCase(ctx),
-        ServiceLocator.settingsRepository(ctx),
     )
 }

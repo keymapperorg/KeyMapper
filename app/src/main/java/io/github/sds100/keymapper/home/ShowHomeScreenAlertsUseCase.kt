@@ -21,15 +21,15 @@ class ShowHomeScreenAlertsUseCaseImpl(
     private val pauseMappingsUseCase: PauseMappingsUseCase,
 ) : ShowHomeScreenAlertsUseCase {
     override val hideAlerts: Flow<Boolean> =
-        preferences.get(Keys.hideHomeScreenAlerts).map { it ?: false }
+        preferences.get(Keys.hideHomeScreenAlerts).map { it == true }
 
     override val isBatteryOptimised: Flow<Boolean> =
         permissions.isGrantedFlow(Permission.IGNORE_BATTERY_OPTIMISATION)
             .map { !it } // if granted then battery is NOT optimised
 
-    override val areMappingsPaused: Flow<Boolean> = pauseMappingsUseCase.isPaused
+    override val areKeyMapsPaused: Flow<Boolean> = pauseMappingsUseCase.isPaused
 
-    override val isLoggingEnabled: Flow<Boolean> = preferences.get(Keys.log).map { it ?: false }
+    override val isLoggingEnabled: Flow<Boolean> = preferences.get(Keys.log).map { it == true }
 
     override val accessibilityServiceState: Flow<ServiceState> = accessibilityServiceAdapter.state
 
@@ -58,7 +58,7 @@ interface ShowHomeScreenAlertsUseCase {
     val hideAlerts: Flow<Boolean>
     fun disableBatteryOptimisation()
     val isBatteryOptimised: Flow<Boolean>
-    val areMappingsPaused: Flow<Boolean>
+    val areKeyMapsPaused: Flow<Boolean>
     fun resumeMappings()
 
     val isLoggingEnabled: Flow<Boolean>

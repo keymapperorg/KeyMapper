@@ -39,12 +39,16 @@ class SettingsPreferenceRepository(
 
     override fun <T> set(key: Preferences.Key<T>, value: T?) {
         coroutineScope.launch {
-            dataStore.edit {
+            dataStore.updateData {
+                val prefs = it.toMutablePreferences()
+
                 if (value == null) {
-                    it.remove(key)
+                    prefs.remove(key)
                 } else {
-                    it[key] = value
+                    prefs[key] = value
                 }
+
+                prefs
             }
         }
     }
@@ -52,6 +56,24 @@ class SettingsPreferenceRepository(
     override fun deleteAll() {
         coroutineScope.launch {
             dataStore.edit { it.clear() }
+        }
+    }
+
+    override fun <T> update(key: Preferences.Key<T>, update: suspend (T?) -> T?) {
+        coroutineScope.launch {
+            dataStore.updateData {
+                val prefs = it.toMutablePreferences()
+
+                val newValue = update(prefs[key])
+
+                if (newValue == null) {
+                    prefs.remove(key)
+                } else {
+                    prefs[key] = newValue
+                }
+
+                prefs
+            }
         }
     }
 }

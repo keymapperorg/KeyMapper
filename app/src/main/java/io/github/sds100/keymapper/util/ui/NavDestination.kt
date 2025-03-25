@@ -6,18 +6,17 @@ import io.github.sds100.keymapper.actions.sound.ChooseSoundFileResult
 import io.github.sds100.keymapper.actions.swipescreen.SwipePickCoordinateResult
 import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.constraints.Constraint
-import io.github.sds100.keymapper.constraints.ConstraintId
-import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapId
 import io.github.sds100.keymapper.system.apps.ActivityInfo
 import io.github.sds100.keymapper.system.apps.ChooseAppShortcutResult
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import io.github.sds100.keymapper.system.intents.ConfigIntentResult
-import timber.log.Timber
 
 /**
  * Created by sds100 on 25/07/2021.
  */
 sealed class NavDestination<R> {
+    abstract val id: String
+
     companion object {
         const val ID_CHOOSE_APP = "choose_app"
         const val ID_CHOOSE_APP_SHORTCUT = "choose_app_shortcut"
@@ -32,37 +31,11 @@ sealed class NavDestination<R> {
         const val ID_CHOOSE_ACTION = "choose_action"
         const val ID_CHOOSE_CONSTRAINT = "choose_constraint"
         const val ID_CHOOSE_BLUETOOTH_DEVICE = "choose_bluetooth_device"
-        const val ID_REPORT_BUG = "report_bug"
-        const val ID_FIX_APP_KILLING = "fix_app_killing"
         const val ID_SETTINGS = "settings"
         const val ID_ABOUT = "about"
         const val ID_CONFIG_KEY_MAP = "config_key_map"
-        const val ID_CONFIG_FINGERPRINT_MAP = "config_fingerprint_map"
-
-        fun NavDestination<*>.getId(): String {
-            Timber.d("NavDestination: %s", this.toString())
-            return when (this) {
-                is ChooseApp -> ID_CHOOSE_APP
-                ChooseAppShortcut -> ID_CHOOSE_APP_SHORTCUT
-                ChooseKeyCode -> ID_KEY_CODE
-                is ConfigKeyEventAction -> ID_KEY_EVENT
-                is PickCoordinate -> ID_PICK_COORDINATE
-                is PickSwipeCoordinate -> ID_PICK_SWIPE_COORDINATE
-                is PickPinchCoordinate -> ID_PICK_PINCH_COORDINATE
-                is ConfigIntent -> ID_CONFIG_INTENT
-                ChooseActivity -> ID_CHOOSE_ACTIVITY
-                ChooseSound -> ID_CHOOSE_SOUND
-                ChooseAction -> ID_CHOOSE_ACTION
-                is ChooseConstraint -> ID_CHOOSE_CONSTRAINT
-                ChooseBluetoothDevice -> ID_CHOOSE_BLUETOOTH_DEVICE
-                FixAppKilling -> ID_FIX_APP_KILLING
-                ReportBug -> ID_REPORT_BUG
-                Settings -> ID_SETTINGS
-                About -> ID_ABOUT
-                is ConfigKeyMap -> ID_CONFIG_KEY_MAP
-                is ConfigFingerprintMap -> ID_CONFIG_FINGERPRINT_MAP
-            }
-        }
+        const val ID_SHIZUKU_SETTINGS = "shizuku_settings"
+        const val ID_CONFIG_FLOATING_BUTTON = "config_floating_button"
     }
 
     data class ChooseApp(
@@ -70,30 +43,79 @@ sealed class NavDestination<R> {
          * Allow the list to show hidden apps that can't be launched.
          */
         val allowHiddenApps: Boolean,
-    ) : NavDestination<String>()
+    ) : NavDestination<String>() {
+        override val id: String = ID_CHOOSE_APP
+    }
 
-    object ChooseAppShortcut : NavDestination<ChooseAppShortcutResult>()
-    object ChooseKeyCode : NavDestination<Int>()
-    data class ConfigKeyEventAction(val action: ActionData.InputKeyEvent? = null) : NavDestination<ActionData.InputKeyEvent>()
+    data object ChooseAppShortcut : NavDestination<ChooseAppShortcutResult>() {
+        override val id: String = ID_CHOOSE_APP_SHORTCUT
+    }
 
-    data class PickCoordinate(val result: PickCoordinateResult? = null) : NavDestination<PickCoordinateResult>()
+    data object ChooseKeyCode : NavDestination<Int>() {
+        override val id: String = ID_KEY_CODE
+    }
 
-    data class PickSwipeCoordinate(val result: SwipePickCoordinateResult? = null) : NavDestination<SwipePickCoordinateResult>()
+    data class ConfigKeyEventAction(val action: ActionData.InputKeyEvent? = null) : NavDestination<ActionData.InputKeyEvent>() {
+        override val id: String = ID_KEY_EVENT
+    }
 
-    data class PickPinchCoordinate(val result: PinchPickCoordinateResult? = null) : NavDestination<PinchPickCoordinateResult>()
+    data class PickCoordinate(val result: PickCoordinateResult? = null) : NavDestination<PickCoordinateResult>() {
+        override val id: String = ID_PICK_COORDINATE
+    }
 
-    data class ConfigIntent(val result: ConfigIntentResult? = null) : NavDestination<ConfigIntentResult>()
+    data class PickSwipeCoordinate(val result: SwipePickCoordinateResult? = null) : NavDestination<SwipePickCoordinateResult>() {
+        override val id: String = ID_PICK_SWIPE_COORDINATE
+    }
 
-    object ChooseActivity : NavDestination<ActivityInfo>()
-    object ChooseSound : NavDestination<ChooseSoundFileResult>()
-    object ChooseAction : NavDestination<ActionData>()
-    data class ChooseConstraint(val supportedConstraints: List<ConstraintId>) : NavDestination<Constraint>()
+    data class PickPinchCoordinate(val result: PinchPickCoordinateResult? = null) : NavDestination<PinchPickCoordinateResult>() {
+        override val id: String = ID_PICK_PINCH_COORDINATE
+    }
 
-    object ChooseBluetoothDevice : NavDestination<BluetoothDeviceInfo>()
-    object ReportBug : NavDestination<Unit>()
-    object FixAppKilling : NavDestination<Unit>()
-    object Settings : NavDestination<Unit>()
-    object About : NavDestination<Unit>()
-    data class ConfigKeyMap(val keyMapUid: String?, val showAdvancedTriggers: Boolean = false) : NavDestination<Unit>()
-    data class ConfigFingerprintMap(val id: FingerprintMapId) : NavDestination<Unit>()
+    data class ConfigIntent(val result: ConfigIntentResult? = null) : NavDestination<ConfigIntentResult>() {
+        override val id: String = ID_CONFIG_INTENT
+    }
+
+    data object ChooseActivity : NavDestination<ActivityInfo>() {
+        override val id: String = ID_CHOOSE_ACTIVITY
+    }
+
+    data object ChooseSound : NavDestination<ChooseSoundFileResult>() {
+        override val id: String = ID_CHOOSE_SOUND
+    }
+
+    data object ChooseAction : NavDestination<ActionData>() {
+        override val id: String = ID_CHOOSE_ACTION
+    }
+
+    data object ChooseConstraint : NavDestination<Constraint>() {
+        override val id: String = ID_CHOOSE_CONSTRAINT
+    }
+
+    data object ChooseBluetoothDevice : NavDestination<BluetoothDeviceInfo>() {
+        override val id: String = ID_CHOOSE_BLUETOOTH_DEVICE
+    }
+
+    data object Settings : NavDestination<Unit>() {
+        override val id: String = ID_SETTINGS
+    }
+
+    data object About : NavDestination<Unit>() {
+        override val id: String = ID_ABOUT
+    }
+
+    data class ConfigKeyMap(val keyMapUid: String?, val showAdvancedTriggers: Boolean = false) : NavDestination<Unit>() {
+        override val id: String = ID_CONFIG_KEY_MAP
+    }
+
+    data object ChooseFloatingLayout : NavDestination<Unit>() {
+        override val id: String = "choose_floating_layout"
+    }
+
+    data object ShizukuSettings : NavDestination<Unit>() {
+        override val id: String = ID_SHIZUKU_SETTINGS
+    }
+
+    data object ConfigFloatingButton : NavDestination<Unit>() {
+        override val id: String = ID_CONFIG_FLOATING_BUTTON
+    }
 }

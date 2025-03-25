@@ -8,14 +8,12 @@ import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.containsQuery
 import io.github.sds100.keymapper.util.getFullMessage
-import io.github.sds100.keymapper.util.ui.DefaultSimpleListItem
 import io.github.sds100.keymapper.util.ui.DialogResponse
-import io.github.sds100.keymapper.util.ui.IconInfo
-import io.github.sds100.keymapper.util.ui.ListItem
 import io.github.sds100.keymapper.util.ui.PopupUi
 import io.github.sds100.keymapper.util.ui.ResourceProvider
-import io.github.sds100.keymapper.util.ui.SectionHeaderListItem
-import io.github.sds100.keymapper.util.ui.TintType
+import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.util.ui.compose.SimpleListItemGroup
+import io.github.sds100.keymapper.util.ui.compose.SimpleListItemModel
 import io.github.sds100.keymapper.util.ui.showPopup
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -34,9 +32,7 @@ import kotlinx.coroutines.launch
 class ChooseActionViewModel(
     private val useCase: CreateActionUseCase,
     resourceProvider: ResourceProvider,
-    private val isActionSupported: IsActionSupportedUseCase,
 ) : ViewModel(),
-    ResourceProvider by resourceProvider,
     CreateActionViewModel by CreateActionViewModelImpl(useCase, resourceProvider) {
 
     companion object {
@@ -57,31 +53,28 @@ class ChooseActionViewModel(
         )
     }
 
-    private val allGroupedListItems: Map<SectionHeaderListItem, List<DefaultSimpleListItem>> by lazy { createGroupedListItems() }
+    private val allGroupedListItems: List<SimpleListItemGroup> by lazy { buildListGroups() }
 
     private val _returnAction = MutableSharedFlow<ActionData>()
     val returnAction = _returnAction.asSharedFlow()
 
     val searchQuery = MutableStateFlow<String?>(null)
 
-    val listItems: StateFlow<State<List<ListItem>>> =
-        searchQuery
-            .map { query ->
-                allGroupedListItems
-                    .mapNotNull { (header, children) ->
-                        val filteredChildren = children.filter { it.title.containsQuery(query) }
+    val groups: StateFlow<State<List<SimpleListItemGroup>>> =
+        searchQuery.map { query ->
+            val groups = allGroupedListItems.mapNotNull { group ->
 
-                        if (filteredChildren.isEmpty()) {
-                            return@mapNotNull null
-                        } else {
-                            header to filteredChildren
-                        }
-                    }
-                    .flatMap { (sectionHeader, children) -> listOf(sectionHeader).plus(children) }
-                    .let { State.Data(it) }
+                val filteredItems = group.items.filter { it.title.containsQuery(query) }
+
+                if (filteredItems.isEmpty()) {
+                    return@mapNotNull null
+                } else {
+                    group.copy(items = filteredItems)
+                }
             }
-            .flowOn(Dispatchers.Default)
-            .stateIn(viewModelScope, SharingStarted.Eagerly, State.Loading)
+
+            State.Data(groups)
+        }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.Eagerly, State.Loading)
 
     fun onListItemClick(id: String) {
         viewModelScope.launch {
@@ -98,65 +91,47 @@ class ChooseActionViewModel(
         }
     }
 
-    private fun createGroupedListItems(): Map<SectionHeaderListItem, List<DefaultSimpleListItem>> {
-        val groupedActionIds = mutableMapOf<ActionCategory, List<ActionId>>()
-
+    private fun buildListGroups(): List<SimpleListItemGroup> = buildList {
         CATEGORY_ORDER.forEach { category ->
-            val actionIds = ActionId.values().filter { ActionUtils.getCategory(it) == category }
-            groupedActionIds[category] = actionIds
-        }
 
-        return groupedActionIds
-            .map { (category, children) -> createCategoryListItems(category, children) }
-            .toMap()
+            val header = getString(ActionUtils.getCategoryLabel(category))
+
+            val actionIds = ActionId.entries.filter { ActionUtils.getCategory(it) == category }
+
+            add(SimpleListItemGroup(header, buildListItems(actionIds)))
+        }
     }
 
-    private fun createCategoryListItems(
-        category: ActionCategory,
+    private fun buildListItems(
         actionIds: List<ActionId>,
-    ): Pair<SectionHeaderListItem, List<DefaultSimpleListItem>> {
-        val childrenListItems = mutableListOf<DefaultSimpleListItem>()
-
+    ): List<SimpleListItemModel> = buildList {
         for (actionId in actionIds) {
-            val error = isActionSupported.invoke(actionId)
+            val error = useCase.isSupported(actionId)
             val isSupported = error == null
 
             val title = getString(ActionUtils.getTitle(actionId))
-
-            val icon = ActionUtils.getIcon(actionId)?.let {
-                IconInfo(
-                    getDrawable(it),
-                    TintType.OnSurface,
-                )
-            }
+            val icon = ActionUtils.getComposeIcon(actionId)
 
             val requiresRoot = ActionUtils.getRequiredPermissions(actionId)
                 .contains(Permission.ROOT)
 
             val subtitle = when {
-                error != null -> error.getFullMessage(this)
+                error != null -> error.getFullMessage(this@ChooseActionViewModel)
                 requiresRoot -> getString(R.string.choose_action_warning_requires_root)
                 else -> null
             }
 
-            childrenListItems.add(
-                DefaultSimpleListItem(
+            add(
+                SimpleListItemModel(
                     id = actionId.toString(),
                     title = title,
+                    icon = ComposeIconInfo.Vector(icon),
                     subtitle = subtitle,
-                    subtitleTint = TintType.Error,
-                    icon = icon,
+                    isSubtitleError = true,
                     isEnabled = isSupported,
                 ),
             )
         }
-
-        val sectionHeader = SectionHeaderListItem(
-            id = category.toString(),
-            text = getString(ActionUtils.getCategoryLabel(category)),
-        )
-
-        return sectionHeader to childrenListItems.toList()
     }
 
     /**
@@ -224,10 +199,8 @@ class ChooseActionViewModel(
     class Factory(
         private val useCase: CreateActionUseCase,
         private val resourceProvider: ResourceProvider,
-        private val isActionSupported: IsActionSupportedUseCase,
     ) : ViewModelProvider.NewInstanceFactory() {
 
-        override fun <T : ViewModel> create(modelClass: Class<T>): T =
-            ChooseActionViewModel(useCase, resourceProvider, isActionSupported) as T
+        override fun <T : ViewModel> create(modelClass: Class<T>): T = ChooseActionViewModel(useCase, resourceProvider) as T
     }
 }

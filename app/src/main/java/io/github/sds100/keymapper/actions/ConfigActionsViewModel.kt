@@ -2,126 +2,110 @@ package io.github.sds100.keymapper.actions
 
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.home.ChooseAppStoreModel
-import io.github.sds100.keymapper.mappings.ConfigMappingUseCase
-import io.github.sds100.keymapper.mappings.DisplayActionUseCase
-import io.github.sds100.keymapper.mappings.Mapping
-import io.github.sds100.keymapper.mappings.isDelayBeforeNextActionAllowed
+import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapUseCase
+import io.github.sds100.keymapper.mappings.keymaps.KeyMap
+import io.github.sds100.keymapper.mappings.keymaps.ShortcutModel
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.dataOrNull
 import io.github.sds100.keymapper.util.getFullMessage
-import io.github.sds100.keymapper.util.ifIsData
 import io.github.sds100.keymapper.util.isFixable
 import io.github.sds100.keymapper.util.mapData
 import io.github.sds100.keymapper.util.onFailure
 import io.github.sds100.keymapper.util.ui.DialogResponse
-import io.github.sds100.keymapper.util.ui.IconInfo
+import io.github.sds100.keymapper.util.ui.LinkType
 import io.github.sds100.keymapper.util.ui.NavDestination
-import io.github.sds100.keymapper.util.ui.NavigationViewModel
-import io.github.sds100.keymapper.util.ui.NavigationViewModelImpl
 import io.github.sds100.keymapper.util.ui.PopupUi
-import io.github.sds100.keymapper.util.ui.PopupViewModel
-import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.util.ui.ResourceProvider
-import io.github.sds100.keymapper.util.ui.TintType
 import io.github.sds100.keymapper.util.ui.ViewModelHelper
+import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.util.ui.navigate
 import io.github.sds100.keymapper.util.ui.showPopup
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 /**
  * Created by sds100 on 22/11/20.
  */
 
-class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
+class ConfigActionsViewModel(
     private val coroutineScope: CoroutineScope,
-    private val displayActionUseCase: DisplayActionUseCase,
-    private val testActionUseCase: TestActionUseCase,
-    private val config: ConfigMappingUseCase<A, M>,
-    private val uiHelper: ActionUiHelper<M, A>,
-    private val onboardingUseCase: OnboardingUseCase,
+    private val displayAction: DisplayActionUseCase,
+    private val createAction: CreateActionUseCase,
+    private val testAction: TestActionUseCase,
+    private val config: ConfigKeyMapUseCase,
+    private val onboarding: OnboardingUseCase,
     resourceProvider: ResourceProvider,
-) : ResourceProvider by resourceProvider,
-    PopupViewModel by PopupViewModelImpl(),
-    NavigationViewModel by NavigationViewModelImpl() {
+) : CreateActionViewModel by CreateActionViewModelImpl(createAction, resourceProvider),
+    ActionOptionsBottomSheetCallback {
 
-    private val _state = MutableStateFlow<State<List<ActionListItem>>>(State.Loading)
+    private val uiHelper = ActionUiHelper(displayAction, resourceProvider)
+
+    private val _state = MutableStateFlow<State<ConfigActionsState>>(State.Loading)
     val state = _state.asStateFlow()
 
-    private val _openEditOptions = MutableSharedFlow<String>()
+    private val shortcuts: StateFlow<Set<ShortcutModel<ActionData>>> =
+        config.recentlyUsedActions.map { actions ->
+            actions.map(::buildShortcut).toSet()
+        }.stateIn(coroutineScope, SharingStarted.Lazily, emptySet())
 
-    /**
-     * value is the uid of the action
-     */
-    val openEditOptions = _openEditOptions.asSharedFlow()
+    val actionOptionsUid = MutableStateFlow<String?>(null)
+    val actionOptionsState: StateFlow<ActionOptionsState?> =
+        combine(config.keyMap, actionOptionsUid, transform = ::buildOptionsState)
+            .stateIn(coroutineScope, SharingStarted.Lazily, null)
 
-    private val _navigateToShizukuSetup = MutableSharedFlow<Unit>()
-    val navigateToShizukuSetup = _navigateToShizukuSetup.asSharedFlow()
+    private val actionErrorSnapshot: StateFlow<ActionErrorSnapshot?> =
+        displayAction.actionErrorSnapshot.stateIn(coroutineScope, SharingStarted.Lazily, null)
 
     init {
-        val rebuildUiState = MutableSharedFlow<State<M>>()
-
         combine(
-            rebuildUiState,
-            displayActionUseCase.showDeviceDescriptors,
-        ) { mappingState, showDeviceDescriptors ->
-            _state.value = mappingState.mapData { mapping ->
-                createListItems(mapping, showDeviceDescriptors)
+            config.keyMap,
+            shortcuts,
+            displayAction.showDeviceDescriptors,
+            actionErrorSnapshot.filterNotNull(),
+        ) { keyMapState, shortcuts, showDeviceDescriptors, errorSnapshot ->
+            _state.value = keyMapState.mapData { keyMap ->
+                buildState(keyMap, shortcuts, errorSnapshot, showDeviceDescriptors)
             }
-        }.flowOn(Dispatchers.Default).launchIn(coroutineScope)
+        }.launchIn(coroutineScope)
+    }
 
-        coroutineScope.launch {
-            config.mapping.collectLatest {
-                rebuildUiState.emit(it)
-            }
-        }
+    private suspend fun getActionData(uid: String): ActionData? {
+        return config.keyMap.first().dataOrNull()?.actionList?.singleOrNull { it.uid == uid }?.data
+    }
 
+    fun onClickShortcut(action: ActionData) {
         coroutineScope.launch {
-            displayActionUseCase.invalidateActionErrors.collectLatest {
-                rebuildUiState.emit(config.mapping.firstOrNull() ?: return@collectLatest)
-            }
+            config.addAction(action)
         }
     }
 
-    fun onModelClick(uid: String) {
-        coroutineScope.launch(Dispatchers.Default) {
-            config.mapping.first().ifIsData { data ->
-                val actionData = data.actionList.singleOrNull { it.uid == uid }?.data
-                    ?: return@launch
-
-                val error = displayActionUseCase.getError(actionData)
-
-                when {
-                    error == null -> attemptTestAction(actionData)
-                    error.isFixable -> onFixError(error)
-                }
-            }
-        }
-    }
-
-    private fun onFixError(error: Error) {
+    fun onFixError(actionUid: String) {
         coroutineScope.launch {
+            val actionData = getActionData(actionUid) ?: return@launch
+            val error =
+                actionErrorSnapshot.filterNotNull().first().getError(actionData) ?: return@launch
+
             if (error == Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)) {
                 coroutineScope.launch {
                     ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
                         resourceProvider = this@ConfigActionsViewModel,
                         popupViewModel = this@ConfigActionsViewModel,
-                        neverShowDndTriggerErrorAgain = { displayActionUseCase.neverShowDndTriggerError() },
-                        fixError = { displayActionUseCase.fixError(it) },
+                        neverShowDndTriggerErrorAgain = { displayAction.neverShowDndTriggerError() },
+                        fixError = { displayAction.fixError(error) },
                     )
                 }
             } else {
@@ -130,7 +114,7 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
                     popupViewModel = this@ConfigActionsViewModel,
                     error,
                 ) {
-                    displayActionUseCase.fixError(error)
+                    displayAction.fixError(error)
                 }
             }
         }
@@ -140,9 +124,9 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
         coroutineScope.launch {
             val actionData = navigate("add_action", NavDestination.ChooseAction) ?: return@launch
 
-            val showInstallShizukuPrompt = onboardingUseCase.showInstallShizukuPrompt(actionData)
+            val showInstallShizukuPrompt = onboarding.showInstallShizukuPrompt(actionData)
             val showInstallGuiKeyboardPrompt =
-                onboardingUseCase.showInstallGuiKeyboardPrompt(actionData)
+                onboarding.showInstallGuiKeyboardPrompt(actionData)
 
             when {
                 showInstallShizukuPrompt && showInstallGuiKeyboardPrompt ->
@@ -155,7 +139,7 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
         }
     }
 
-    fun moveAction(fromIndex: Int, toIndex: Int) {
+    fun onMoveAction(fromIndex: Int, toIndex: Int) {
         config.moveAction(fromIndex, toIndex)
     }
 
@@ -163,34 +147,110 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
         config.removeAction(actionUid)
     }
 
-    fun editAction(actionUid: String) {
-        runBlocking { _openEditOptions.emit(actionUid) }
+    fun onEditClick(actionUid: String) {
+        actionOptionsUid.value = actionUid
+    }
+
+    fun onTestClick(actionUid: String) {
+        coroutineScope.launch {
+            val actionData = getActionData(actionUid) ?: return@launch
+            attemptTestAction(actionData)
+        }
+    }
+
+    override fun onEditClick() {
+        val actionUid = actionOptionsUid.value ?: return
+        coroutineScope.launch {
+            val keyMap = config.keyMap.first().dataOrNull() ?: return@launch
+
+            val oldAction = keyMap.actionList.find { it.uid == actionUid } ?: return@launch
+            val newActionData = editAction(oldAction.data)
+
+            if (newActionData != null) {
+                actionOptionsUid.update { null }
+                config.setActionData(actionUid, newActionData)
+            }
+        }
+    }
+
+    override fun onReplaceClick() {
+        val actionUid = actionOptionsUid.value ?: return
+        coroutineScope.launch {
+            val newActionData =
+                navigate("replace_action", NavDestination.ChooseAction) ?: return@launch
+
+            actionOptionsUid.update { null }
+            config.setActionData(actionUid, newActionData)
+        }
+    }
+
+    override fun onRepeatCheckedChange(checked: Boolean) {
+        actionOptionsUid.value?.let { uid -> config.setActionRepeatEnabled(uid, checked) }
+    }
+
+    override fun onRepeatLimitChanged(limit: Int) {
+        actionOptionsUid.value?.let { uid -> config.setActionRepeatLimit(uid, limit) }
+    }
+
+    override fun onRepeatRateChanged(rate: Int) {
+        actionOptionsUid.value?.let { uid -> config.setActionRepeatRate(uid, rate) }
+    }
+
+    override fun onRepeatDelayChanged(delay: Int) {
+        actionOptionsUid.value?.let { uid -> config.setActionRepeatDelay(uid, delay) }
+    }
+
+    override fun onHoldDownCheckedChange(checked: Boolean) {
+        actionOptionsUid.value?.let { uid -> config.setActionHoldDownEnabled(uid, checked) }
+    }
+
+    override fun onHoldDownDurationChanged(duration: Int) {
+        actionOptionsUid.value?.let { uid -> config.setActionHoldDownDuration(uid, duration) }
+    }
+
+    override fun onDelayBeforeNextActionChanged(delay: Int) {
+        actionOptionsUid.value?.let { uid -> config.setDelayBeforeNextAction(uid, delay) }
+    }
+
+    override fun onMultiplierChanged(multiplier: Int) {
+        actionOptionsUid.value?.let { uid -> config.setActionMultiplier(uid, multiplier) }
+    }
+
+    override fun onSelectRepeatMode(repeatMode: RepeatMode) {
+        actionOptionsUid.value?.let { uid ->
+            when (repeatMode) {
+                RepeatMode.TRIGGER_RELEASED -> config.setActionStopRepeatingWhenTriggerReleased(uid)
+                RepeatMode.LIMIT_REACHED -> config.setActionStopRepeatingWhenLimitReached(uid)
+                RepeatMode.TRIGGER_PRESSED_AGAIN -> config.setActionStopRepeatingWhenTriggerPressedAgain(
+                    uid,
+                )
+            }
+        }
     }
 
     private suspend fun attemptTestAction(actionData: ActionData) {
-        testActionUseCase.invoke(actionData).onFailure { error ->
+        testAction.invoke(actionData).onFailure { error ->
 
             if (error is Error.AccessibilityServiceDisabled) {
                 ViewModelHelper.handleAccessibilityServiceStoppedDialog(
                     resourceProvider = this,
                     popupViewModel = this,
-                    startService = displayActionUseCase::startAccessibilityService,
+                    startService = displayAction::startAccessibilityService,
                 )
             }
 
             if (error is Error.AccessibilityServiceCrashed) {
-                ViewModelHelper.handleAccessibilityServiceCrashedSnackBar(
+                ViewModelHelper.handleAccessibilityServiceCrashedDialog(
                     resourceProvider = this,
                     popupViewModel = this,
-                    restartService = displayActionUseCase::restartAccessibilityService,
-                    message = R.string.dialog_message_restart_accessibility_service_to_test_action,
+                    restartService = displayAction::restartAccessibilityService,
                 )
             }
         }
     }
 
     private suspend fun promptToInstallGuiKeyboard() {
-        if (onboardingUseCase.isTvDevice()) {
+        if (onboarding.isTvDevice()) {
             val appStoreModel = ChooseAppStoreModel(
                 githubLink = getString(R.string.url_github_keymapper_leanback_keyboard),
             )
@@ -206,7 +266,7 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
             val response = showPopup("download_leanback_ime", dialog) ?: return
 
             if (response == DialogResponse.POSITIVE) {
-                onboardingUseCase.neverShowGuiKeyboardPromptsAgain()
+                onboarding.neverShowGuiKeyboardPromptsAgain()
             }
         } else {
             val appStoreModel = ChooseAppStoreModel(
@@ -226,13 +286,13 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
             val response = showPopup("download_gui_keyboard", dialog) ?: return
 
             if (response == DialogResponse.POSITIVE) {
-                onboardingUseCase.neverShowGuiKeyboardPromptsAgain()
+                onboarding.neverShowGuiKeyboardPromptsAgain()
             }
         }
     }
 
     private suspend fun promptToInstallShizukuOrGuiKeyboard() {
-        if (onboardingUseCase.isTvDevice()) {
+        if (onboarding.isTvDevice()) {
             val chooseSolutionDialog = PopupUi.Dialog(
                 title = getText(R.string.dialog_title_install_shizuku_or_leanback_keyboard),
                 message = getText(R.string.dialog_message_install_shizuku_or_leanback_keyboard),
@@ -247,14 +307,14 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
             when (chooseSolutionResponse) {
                 // install shizuku
                 DialogResponse.POSITIVE -> {
-                    _navigateToShizukuSetup.emit(Unit)
-                    onboardingUseCase.neverShowGuiKeyboardPromptsAgain()
+                    navigate("shizuku", NavDestination.ShizukuSettings)
+                    onboarding.neverShowGuiKeyboardPromptsAgain()
 
                     return
                 }
                 // do nothing
                 DialogResponse.NEUTRAL -> {
-                    onboardingUseCase.neverShowGuiKeyboardPromptsAgain()
+                    onboarding.neverShowGuiKeyboardPromptsAgain()
                     return
                 }
 
@@ -273,7 +333,7 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
                     val response = showPopup("install_leanback_keyboard", chooseAppStoreDialog)
 
                     if (response == DialogResponse.POSITIVE) {
-                        onboardingUseCase.neverShowGuiKeyboardPromptsAgain()
+                        onboarding.neverShowGuiKeyboardPromptsAgain()
                     }
                 }
             }
@@ -292,14 +352,14 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
             when (chooseSolutionResponse) {
                 // install shizuku
                 DialogResponse.POSITIVE -> {
-                    _navigateToShizukuSetup.emit(Unit)
-                    onboardingUseCase.neverShowGuiKeyboardPromptsAgain()
+                    navigate("shizuku_error", NavDestination.ShizukuSettings)
+                    onboarding.neverShowGuiKeyboardPromptsAgain()
 
                     return
                 }
                 // do nothing
                 DialogResponse.NEUTRAL -> {
-                    onboardingUseCase.neverShowGuiKeyboardPromptsAgain()
+                    onboarding.neverShowGuiKeyboardPromptsAgain()
                     return
                 }
 
@@ -320,32 +380,62 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
                     val response = showPopup("install_gui_keyboard", chooseAppStoreDialog)
 
                     if (response == DialogResponse.POSITIVE) {
-                        onboardingUseCase.neverShowGuiKeyboardPromptsAgain()
+                        onboarding.neverShowGuiKeyboardPromptsAgain()
                     }
                 }
             }
         }
     }
 
-    private fun createListItems(mapping: M, showDeviceDescriptors: Boolean): List<ActionListItem> {
-        val actionCount = mapping.actionList.size
+    private fun buildShortcut(action: ActionData): ShortcutModel<ActionData> {
+        return ShortcutModel(
+            icon = uiHelper.getIcon(action),
+            text = uiHelper.getTitle(action, false),
+            data = action,
+        )
+    }
 
-        return mapping.actionList.map { action ->
+    private fun buildState(
+        keyMap: KeyMap,
+        shortcuts: Set<ShortcutModel<ActionData>>,
+        errorSnapshot: ActionErrorSnapshot,
+        showDeviceDescriptors: Boolean,
+    ): ConfigActionsState {
+        if (keyMap.actionList.isEmpty()) {
+            return ConfigActionsState.Empty(shortcuts = shortcuts)
+        }
 
-            val title: String = if (action.multiplier != null && action.multiplier!! > 1) {
+        val actions = createListItems(keyMap, showDeviceDescriptors, errorSnapshot, shortcuts.size)
+
+        return ConfigActionsState.Loaded(
+            actions = actions,
+            isReorderingEnabled = keyMap.actionList.size > 1,
+            shortcuts = shortcuts,
+        )
+    }
+
+    private fun createListItems(
+        keyMap: KeyMap,
+        showDeviceDescriptors: Boolean,
+        errorSnapshot: ActionErrorSnapshot,
+        shortcutCount: Int,
+    ): List<ActionListItemModel> {
+        return keyMap.actionList.mapIndexed { index, action ->
+
+            val title: String = if (action.multiplier != null && action.multiplier > 1) {
                 val multiplier = action.multiplier
                 "${multiplier}x ${uiHelper.getTitle(action.data, showDeviceDescriptors)}"
             } else {
                 uiHelper.getTitle(action.data, showDeviceDescriptors)
             }
 
-            val icon: IconInfo? = uiHelper.getIcon(action.data)
-            val error: Error? = uiHelper.getError(action.data)
+            val icon: ComposeIconInfo = uiHelper.getIcon(action.data)
+            val error: Error? = errorSnapshot.getError(action.data)
 
             val extraInfo = buildString {
                 val midDot = getString(R.string.middot)
 
-                uiHelper.getOptionLabels(mapping, action).forEachIndexed { index, label ->
+                uiHelper.getOptionLabels(keyMap, action).forEachIndexed { index, label ->
                     if (index != 0) {
                         append(" $midDot ")
                     }
@@ -354,7 +444,7 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
                 }
 
                 action.delayBeforeNextAction.apply {
-                    if (mapping.isDelayBeforeNextActionAllowed() && action.delayBeforeNextAction != null) {
+                    if (keyMap.isDelayBeforeNextActionAllowed() && action.delayBeforeNextAction != null) {
                         if (this@buildString.isNotBlank()) {
                             append(" $midDot ")
                         }
@@ -362,30 +452,160 @@ class ConfigActionsViewModel<A : Action, M : Mapping<A>>(
                         append(
                             getString(
                                 R.string.action_title_wait,
-                                action.delayBeforeNextAction!!,
+                                action.delayBeforeNextAction,
                             ),
                         )
                     }
                 }
             }.takeIf { it.isNotBlank() }
 
-            ActionListItem(
+            val linkType = when {
+                index == keyMap.actionList.lastIndex && shortcutCount > 0 -> LinkType.PLUS
+                index < keyMap.actionList.lastIndex -> LinkType.ARROW
+                else -> LinkType.HIDDEN
+            }
+
+            ActionListItemModel(
                 id = action.uid,
-                tintType = if (error != null) {
-                    TintType.Error
-                } else {
-                    icon?.tintType ?: TintType.None
-                },
-                icon = if (error != null) {
-                    getDrawable(R.drawable.ic_baseline_error_outline_24)
-                } else {
-                    icon?.drawable
-                },
-                title = title,
-                extraInfo = extraInfo,
-                errorMessage = error?.getFullMessage(this),
-                dragAndDrop = actionCount > 1,
+                icon = icon,
+                text = title,
+                secondaryText = extraInfo,
+                error = error?.getFullMessage(this),
+                isErrorFixable = error?.isFixable ?: true,
+                linkType = linkType,
             )
         }
     }
+
+    private suspend fun buildOptionsState(
+        keyMap: State<KeyMap>,
+        actionUid: String?,
+    ): ActionOptionsState? {
+        if (actionUid == null) {
+            return null
+        }
+        val keyMap = keyMap.dataOrNull() ?: return null
+        val action = keyMap.actionList.find { it.uid == actionUid } ?: return null
+
+        val allowedRepeatModes = mutableSetOf<RepeatMode>()
+
+        if (keyMap.isChangingRepeatModeAllowed(action)) {
+            allowedRepeatModes.add(RepeatMode.TRIGGER_RELEASED)
+            allowedRepeatModes.add(RepeatMode.TRIGGER_PRESSED_AGAIN)
+            allowedRepeatModes.add(RepeatMode.LIMIT_REACHED)
+        }
+
+        val defaultRepeatRate = config.defaultRepeatRate.first()
+        val defaultRepeatDelay = config.defaultRepeatDelay.first()
+        val defaultHoldDownDuration = config.defaultHoldDownDuration.first()
+        val defaultRepeatLimit = if (action.repeatMode == RepeatMode.LIMIT_REACHED) {
+            1
+        } else {
+            Int.MAX_VALUE
+        }
+
+        return ActionOptionsState(
+            showEditButton = action.data.isEditable(),
+
+            showRepeat = keyMap.isRepeatingActionsAllowed(),
+            isRepeatChecked = action.repeat,
+
+            showRepeatRate = keyMap.isChangingActionRepeatRateAllowed(action),
+            repeatRate = action.repeatRate ?: defaultRepeatRate,
+            defaultRepeatRate = defaultRepeatRate,
+
+            showRepeatDelay = keyMap.isChangingActionRepeatDelayAllowed(action),
+            repeatDelay = action.repeatDelay ?: defaultRepeatDelay,
+            defaultRepeatDelay = defaultRepeatDelay,
+
+            showRepeatLimit = keyMap.isChangingRepeatLimitAllowed(action),
+            repeatLimit = action.repeatLimit ?: defaultRepeatLimit,
+            defaultRepeatLimit = defaultRepeatLimit,
+
+            allowedRepeatModes = allowedRepeatModes,
+            repeatMode = action.repeatMode,
+
+            showHoldDown = keyMap.isHoldingDownActionAllowed(action),
+            isHoldDownChecked = action.holdDown,
+
+            showHoldDownDuration = keyMap.isHoldingDownActionBeforeRepeatingAllowed(action),
+            holdDownDuration = action.holdDownDuration ?: defaultHoldDownDuration,
+            defaultHoldDownDuration = defaultHoldDownDuration,
+
+            showHoldDownMode = keyMap.isStopHoldingDownActionWhenTriggerPressedAgainAllowed(action),
+            holdDownMode = if (action.stopHoldDownWhenTriggerPressedAgain) {
+                HoldDownMode.TRIGGER_PRESSED_AGAIN
+            } else {
+                HoldDownMode.TRIGGER_RELEASED
+            },
+
+            showDelayBeforeNextAction = keyMap.isDelayBeforeNextActionAllowed(),
+            delayBeforeNextAction = action.delayBeforeNextAction ?: 0,
+            defaultDelayBeforeNextAction = 0,
+
+            multiplier = action.multiplier ?: 1,
+            defaultMultiplier = 1,
+        )
+    }
 }
+
+sealed class ConfigActionsState {
+    data class Empty(
+        val shortcuts: Set<ShortcutModel<ActionData>> = emptySet(),
+    ) : ConfigActionsState()
+
+    data class Loaded(
+        val actions: List<ActionListItemModel> = emptyList(),
+        val isReorderingEnabled: Boolean = false,
+        val shortcuts: Set<ShortcutModel<ActionData>> = emptySet(),
+    ) : ConfigActionsState()
+}
+
+data class ActionListItemModel(
+    val id: String,
+    val icon: ComposeIconInfo,
+    val text: String,
+    val secondaryText: String?,
+    val error: String? = null,
+    val isErrorFixable: Boolean = true,
+    val linkType: LinkType = LinkType.HIDDEN,
+)
+
+data class ActionOptionsState(
+    val showEditButton: Boolean,
+
+    val showRepeat: Boolean,
+    val isRepeatChecked: Boolean,
+
+    val showRepeatRate: Boolean,
+    val repeatRate: Int,
+    val defaultRepeatRate: Int,
+
+    val showRepeatDelay: Boolean,
+    val repeatDelay: Int,
+    val defaultRepeatDelay: Int,
+
+    val showRepeatLimit: Boolean,
+    val repeatLimit: Int,
+    val defaultRepeatLimit: Int,
+
+    val allowedRepeatModes: Set<RepeatMode>,
+    val repeatMode: RepeatMode,
+
+    val showHoldDown: Boolean,
+    val isHoldDownChecked: Boolean,
+
+    val showHoldDownDuration: Boolean,
+    val holdDownDuration: Int,
+    val defaultHoldDownDuration: Int,
+
+    val showHoldDownMode: Boolean,
+    val holdDownMode: HoldDownMode,
+
+    val showDelayBeforeNextAction: Boolean,
+    val delayBeforeNextAction: Int,
+    val defaultDelayBeforeNextAction: Int,
+
+    val multiplier: Int,
+    val defaultMultiplier: Int,
+)

@@ -4,15 +4,11 @@ import android.os.Build
 import io.github.sds100.keymapper.system.permissions.SystemFeatureAdapter
 import io.github.sds100.keymapper.util.Error
 
-/**
- * Created by sds100 on 16/03/2021.
- */
-
 class IsActionSupportedUseCaseImpl(
     private val adapter: SystemFeatureAdapter,
 ) : IsActionSupportedUseCase {
 
-    override fun invoke(id: ActionId): Error? {
+    override fun isSupported(id: ActionId): Error? {
         if (Build.VERSION.SDK_INT != 0) {
             val minApi = ActionUtils.getMinApi(id)
 
@@ -38,5 +34,5 @@ class IsActionSupportedUseCaseImpl(
 }
 
 interface IsActionSupportedUseCase {
-    operator fun invoke(id: ActionId): Error?
+    fun isSupported(id: ActionId): Error?
 }

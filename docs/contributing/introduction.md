@@ -44,7 +44,7 @@ There are also 4 build types, which have different optimizations and package nam
 - **debug** = This is the default debug build type that has no optimizations and builds rapidly. It has a `.debug` package name suffix.
 - **release** = This is the default release build type that includes a lot of optimizations and creates an apk/app bundle suitable for releasing. There is no package name suffix.
 - **debug_release** = This is a debug build type that does not include a package name suffix so that it is possible to test how the production app will look. It is the only way to get the Google Play Billing library functioning because it will break if the package name isn't the same as on the Play store.
-- **ci** = This is used for alpha builds to the community in Discord. It includes some optimizations to ensure it is performant but doesn't obfuscate the code so it is possible to understand logs and bug reports. It has a `.ci` package name suffix.
+- **ci** = This is used for alpha builds to the community in Discord. It includes optimizations to dramatically shrink the apk size, improve performance, and has obfuscation. It has a `.ci` package name suffix.
 
 ### Branches 🌴
 

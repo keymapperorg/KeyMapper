@@ -9,7 +9,7 @@
         android:id="@+id/config_key_map_fragment"
         android:name="io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapFragment"
         android:label="Edit Keymap"
-        tools:layout="@layout/fragment_config_mapping">
+        tools:layout="@layout/fragment_config_key_map">
 
         <argument
             android:name="keymapUid"
@@ -22,21 +22,17 @@
             android:defaultValue="false"
             app:argType="boolean" />
 
+        <argument
+            android:name="newFloatingButtonTriggerKey"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+
         <action
             android:id="@+id/action_config_keymap_fragment_to_actionOptionsFragment"
             app:destination="@id/keymapActionOptionsFragment"
             app:enterAnim="@anim/slide_in_bottom" />
-
-        <action
-            android:id="@+id/action_triggerKeyOptionsFragment"
-            app:destination="@id/triggerKeyOptionsFragment"
-            app:enterAnim="@anim/slide_in_bottom" />
     </fragment>
-
-    <dialog
-        android:id="@+id/triggerKeyOptionsFragment"
-        android:name="io.github.sds100.keymapper.mappings.keymaps.trigger.ConfigTriggerKeyFragment"
-        android:label="TriggerKeyOptionsFragment" />
 
     <dialog
         android:id="@+id/keymapActionOptionsFragment"

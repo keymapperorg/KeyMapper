@@ -147,14 +147,18 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider): String = when (thi
     Error.PurchasingError.NetworkError -> resourceProvider.getString(R.string.purchasing_error_network)
     Error.PurchasingError.ProductNotFound -> resourceProvider.getString(R.string.purchasing_error_product_not_found)
     Error.PurchasingError.StoreProblem -> resourceProvider.getString(R.string.purchasing_error_store_problem)
+    Error.PurchasingError.PaymentPending -> resourceProvider.getString(R.string.purchasing_error_payment_pending)
+    Error.PurchasingError.PurchaseInvalid -> resourceProvider.getString(R.string.purchasing_error_purchase_invalid)
     is Error.PurchasingError.Unexpected -> this.message
 
     is Error.ProductNotPurchased -> when (this.product) {
         ProductId.ASSISTANT_TRIGGER -> resourceProvider.getString(R.string.purchasing_error_assistant_not_purchased_home_screen)
+        ProductId.FLOATING_BUTTONS -> resourceProvider.getString(R.string.purchasing_error_floating_buttons_not_purchased_home_screen)
     }
 
     Error.PurchasingNotImplemented -> resourceProvider.getString(R.string.purchasing_error_not_implemented)
     Error.DpadTriggerImeNotSelected -> resourceProvider.getString(R.string.trigger_error_dpad_ime_not_selected)
+    Error.InvalidBackup -> resourceProvider.getString(R.string.error_invalid_backup)
 }
 
 val Error.isFixable: Boolean

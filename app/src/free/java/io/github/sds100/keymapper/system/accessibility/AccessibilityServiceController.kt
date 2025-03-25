@@ -3,8 +3,8 @@ package io.github.sds100.keymapper.system.accessibility
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.mappings.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
-import io.github.sds100.keymapper.mappings.fingerprintmaps.DetectFingerprintMapsUseCase
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCase
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsUseCase
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
@@ -23,7 +23,7 @@ class AccessibilityServiceController(
     detectConstraintsUseCase: DetectConstraintsUseCase,
     performActionsUseCase: PerformActionsUseCase,
     detectKeyMapsUseCase: DetectKeyMapsUseCase,
-    detectFingerprintMapsUseCase: DetectFingerprintMapsUseCase,
+    fingerprintGesturesSupportedUseCase: FingerprintGesturesSupportedUseCase,
     rerouteKeyEventsUseCase: RerouteKeyEventsUseCase,
     pauseMappingsUseCase: PauseMappingsUseCase,
     devicesAdapter: DevicesAdapter,
@@ -38,7 +38,7 @@ class AccessibilityServiceController(
     detectConstraintsUseCase,
     performActionsUseCase,
     detectKeyMapsUseCase,
-    detectFingerprintMapsUseCase,
+    fingerprintGesturesSupportedUseCase,
     rerouteKeyEventsUseCase,
     pauseMappingsUseCase,
     devicesAdapter,

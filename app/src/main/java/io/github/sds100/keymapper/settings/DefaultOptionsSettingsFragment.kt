@@ -9,9 +9,9 @@ import androidx.preference.isEmpty
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
-import io.github.sds100.keymapper.mappings.OptionMinimums
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.SliderMaximums
+import io.github.sds100.keymapper.util.ui.SliderMinimums
 import io.github.sds100.keymapper.util.viewLifecycleScope
 import kotlinx.coroutines.flow.collectLatest
 
@@ -113,7 +113,7 @@ class DefaultOptionsSettingsFragment : BaseSettingsFragment() {
             setTitle(R.string.title_pref_long_press_delay)
             isSingleLineTitle = false
             setSummary(R.string.summary_pref_long_press_delay)
-            min = OptionMinimums.TRIGGER_LONG_PRESS_DELAY
+            min = SliderMinimums.TRIGGER_LONG_PRESS_DELAY
             max = 5000
             showSeekBarValue = true
 
@@ -128,7 +128,7 @@ class DefaultOptionsSettingsFragment : BaseSettingsFragment() {
             setTitle(R.string.title_pref_double_press_delay)
             isSingleLineTitle = false
             setSummary(R.string.summary_pref_double_press_delay)
-            min = OptionMinimums.TRIGGER_DOUBLE_PRESS_DELAY
+            min = SliderMinimums.TRIGGER_DOUBLE_PRESS_DELAY
             max = 5000
             showSeekBarValue = true
 
@@ -143,7 +143,7 @@ class DefaultOptionsSettingsFragment : BaseSettingsFragment() {
             setTitle(R.string.title_pref_vibration_duration)
             isSingleLineTitle = false
             setSummary(R.string.summary_pref_vibration_duration)
-            min = OptionMinimums.VIBRATION_DURATION
+            min = SliderMinimums.VIBRATION_DURATION
             max = 1000
             showSeekBarValue = true
 
@@ -158,7 +158,7 @@ class DefaultOptionsSettingsFragment : BaseSettingsFragment() {
             setTitle(R.string.title_pref_repeat_delay)
             isSingleLineTitle = false
             setSummary(R.string.summary_pref_repeat_delay)
-            min = OptionMinimums.ACTION_REPEAT_DELAY
+            min = SliderMinimums.ACTION_REPEAT_DELAY
             max = SliderMaximums.ACTION_REPEAT_DELAY
             showSeekBarValue = true
 
@@ -173,7 +173,7 @@ class DefaultOptionsSettingsFragment : BaseSettingsFragment() {
             setTitle(R.string.title_pref_repeat_rate)
             isSingleLineTitle = false
             setSummary(R.string.summary_pref_repeat_rate)
-            min = OptionMinimums.ACTION_REPEAT_RATE
+            min = SliderMinimums.ACTION_REPEAT_RATE
             max = SliderMaximums.ACTION_REPEAT_RATE
             showSeekBarValue = true
 
@@ -188,7 +188,7 @@ class DefaultOptionsSettingsFragment : BaseSettingsFragment() {
             setTitle(R.string.title_pref_sequence_trigger_timeout)
             isSingleLineTitle = false
             setSummary(R.string.summary_pref_sequence_trigger_timeout)
-            min = OptionMinimums.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT
+            min = SliderMinimums.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT
             max = 5000
             showSeekBarValue = true
 

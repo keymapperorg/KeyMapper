@@ -18,8 +18,8 @@ object InputEventUtils {
         get() = sequence {
             yieldAll(
                 listOf(
-                    KeyEvent.KEYCODE_VOLUME_DOWN to "Vol down",
-                    KeyEvent.KEYCODE_VOLUME_UP to "Vol up",
+                    KeyEvent.KEYCODE_VOLUME_DOWN to "Volume down",
+                    KeyEvent.KEYCODE_VOLUME_UP to "Volume up",
 
                     KeyEvent.KEYCODE_CTRL_LEFT to "Ctrl Left",
                     KeyEvent.KEYCODE_CTRL_RIGHT to "Ctrl Right",

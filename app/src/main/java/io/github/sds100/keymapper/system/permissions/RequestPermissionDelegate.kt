@@ -107,6 +107,14 @@ class RequestPermissionDelegate(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
 
+            intent.addFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK
+                    or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
+                    // Add this flag so user only has to press back once.
+                    or Intent.FLAG_ACTIVITY_NO_HISTORY,
+            )
+
             try {
                 startActivityForResultLauncher.launch(intent)
             } catch (e: Exception) {
@@ -119,7 +127,14 @@ class RequestPermissionDelegate(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS).apply {
                 data = Uri.parse("package:${Constants.PACKAGE_NAME}")
-                flags = Intent.FLAG_ACTIVITY_NO_HISTORY
+
+                addFlags(
+                    Intent.FLAG_ACTIVITY_NEW_TASK
+                        or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
+                        // Add this flag so user only has to press back once.
+                        or Intent.FLAG_ACTIVITY_NO_HISTORY,
+                )
 
                 try {
                     activity.startActivity(this)
@@ -188,6 +203,14 @@ class RequestPermissionDelegate(
                 intent.putExtra(
                     DevicePolicyManager.EXTRA_DEVICE_ADMIN,
                     ComponentName(activity, DeviceAdmin::class.java),
+                )
+
+                intent.addFlags(
+                    Intent.FLAG_ACTIVITY_NEW_TASK
+                        or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
+                        // Add this flag so user only has to press back once.
+                        or Intent.FLAG_ACTIVITY_NO_HISTORY,
                 )
 
                 intent.putExtra(

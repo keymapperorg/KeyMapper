@@ -5,7 +5,7 @@ import com.github.salomonbrys.kotson.fromJson
 import com.github.salomonbrys.kotson.registerTypeAdapter
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import io.github.sds100.keymapper.data.entities.Extra
+import io.github.sds100.keymapper.data.entities.EntityExtra
 import io.github.sds100.keymapper.data.entities.TriggerEntity
 import io.github.sds100.keymapper.data.entities.TriggerKeyEntity
 
@@ -20,7 +20,7 @@ class TriggerTypeConverter {
             .registerTypeAdapter(TriggerEntity.DESERIALIZER)
             .registerTypeAdapter(TriggerKeyEntity.SERIALIZER)
             .registerTypeAdapter(TriggerKeyEntity.DESERIALIZER)
-            .registerTypeAdapter(Extra.DESERIALIZER).create()
+            .registerTypeAdapter(EntityExtra.DESERIALIZER).create()
 
         return gson.fromJson(json)
     }

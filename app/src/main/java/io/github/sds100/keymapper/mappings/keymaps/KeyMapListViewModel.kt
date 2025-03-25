@@ -3,14 +3,15 @@ package io.github.sds100.keymapper.mappings.keymaps
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.mappings.keymaps.trigger.SetupGuiKeyboardState
 import io.github.sds100.keymapper.mappings.keymaps.trigger.SetupGuiKeyboardUseCase
+import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerError
 import io.github.sds100.keymapper.sorting.SortKeyMapsUseCase
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.mapData
-import io.github.sds100.keymapper.util.ui.ChipUi
 import io.github.sds100.keymapper.util.ui.MultiSelectProvider
 import io.github.sds100.keymapper.util.ui.NavDestination
 import io.github.sds100.keymapper.util.ui.NavigationViewModel
@@ -23,25 +24,22 @@ import io.github.sds100.keymapper.util.ui.ViewModelHelper
 import io.github.sds100.keymapper.util.ui.navigate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-open class KeyMapListViewModel(
+class KeyMapListViewModel(
     private val coroutineScope: CoroutineScope,
     private val listKeyMaps: ListKeyMapsUseCase,
     resourceProvider: ResourceProvider,
-    private val multiSelectProvider: MultiSelectProvider<String>,
+    private val multiSelectProvider: MultiSelectProvider,
     private val setupGuiKeyboard: SetupGuiKeyboardUseCase,
     private val sortKeyMaps: SortKeyMapsUseCase,
 ) : PopupViewModel by PopupViewModelImpl(),
@@ -50,8 +48,12 @@ open class KeyMapListViewModel(
 
     private val listItemCreator = KeyMapListItemCreator(listKeyMaps, resourceProvider)
 
-    private val _state = MutableStateFlow<State<List<KeyMapListItem>>>(State.Loading)
+    private val _state = MutableStateFlow<State<List<KeyMapListItemModel>>>(State.Loading)
     val state = _state.asStateFlow()
+
+    val isSelectable: StateFlow<Boolean> =
+        multiSelectProvider.state.map { it is SelectionState.Selecting }
+            .stateIn(coroutineScope, SharingStarted.Eagerly, false)
 
     val setupGuiKeyboardState: StateFlow<SetupGuiKeyboardState> = combine(
         setupGuiKeyboard.isInstalled,
@@ -67,100 +69,63 @@ open class KeyMapListViewModel(
     var showDpadTriggerSetupBottomSheet: Boolean by mutableStateOf(false)
 
     init {
-        val keyMapStateListFlow =
-            MutableStateFlow<State<List<KeyMapListItem.KeyMapUiState>>>(State.Loading)
-
-        val rebuildUiState = MutableSharedFlow<State<List<KeyMap>>>(replay = 1)
-
-        combine(
+        val keyMapListFlow = combine(
             listKeyMaps.keyMapList,
             sortKeyMaps.observeKeyMapsSorter(),
         ) { keyMapList, sorter ->
-            keyMapList
-                .mapData { list -> list.sortedWith(sorter) }
-                .also { rebuildUiState.emit(it) }
-        }.flowOn(Dispatchers.Default).launchIn(coroutineScope)
+            keyMapList.mapData { list -> list.sortedWith(sorter) }
+        }.flowOn(Dispatchers.Default)
 
-        combine(
-            rebuildUiState,
-            listKeyMaps.showDeviceDescriptors,
-        ) { keyMapListState, showDeviceDescriptors ->
-            keyMapStateListFlow.value = State.Loading
-
-            keyMapStateListFlow.value = keyMapListState.mapData { keyMapList ->
-                keyMapList.map { keyMap ->
-                    listItemCreator.create(keyMap, showDeviceDescriptors)
+        val listItemContentFlow =
+            combine(
+                keyMapListFlow,
+                listKeyMaps.showDeviceDescriptors,
+                listKeyMaps.triggerErrorSnapshot,
+                listKeyMaps.actionErrorSnapshot,
+                listKeyMaps.constraintErrorSnapshot,
+            ) { keyMapListState, showDeviceDescriptors, triggerErrorSnapshot, actionErrorSnapshot, constraintErrorSnapshot ->
+                keyMapListState.mapData { keyMapList ->
+                    keyMapList.map { keyMap ->
+                        listItemCreator.create(
+                            keyMap,
+                            showDeviceDescriptors,
+                            triggerErrorSnapshot,
+                            actionErrorSnapshot,
+                            constraintErrorSnapshot,
+                        )
+                    }
                 }
-            }
-        }.flowOn(Dispatchers.Default).launchIn(coroutineScope)
+            }.flowOn(Dispatchers.Default)
 
-        coroutineScope.launch {
-            listKeyMaps.invalidateActionErrors.drop(1).collectLatest {
-                /*
-                Don't get the key maps from the repository because there can be a race condition
-                when restoring key maps. This happens because when the activity is resumed the
-                key maps in the repository are being updated and this flow is collected
-                at the same time.
-                 */
-                rebuildUiState.emit(rebuildUiState.first())
-            }
-        }
-
-        coroutineScope.launch {
-            listKeyMaps.invalidateTriggerErrors.drop(1).collectLatest {
-                /*
-                Don't get the key maps from the repository because there can be a race condition
-                when restoring key maps. This happens because when the activity is resumed the
-                key maps in the repository are being updated and this flow is collected
-                at the same time.
-                 */
-                rebuildUiState.emit(rebuildUiState.first())
-            }
-        }
-
-        coroutineScope.launch {
-            listKeyMaps.invalidateConstraintErrors.drop(1).collectLatest {
-                /*
-                Don't get the key maps from the repository because there can be a race condition
-                when restoring key maps. This happens because when the activity is resumed the
-                key maps in the repository are being updated and this flow is collected
-                at the same time.
-                 */
-                rebuildUiState.emit(rebuildUiState.first())
-            }
-        }
-
+        // The list item content should be separate from the selection state
+        // because creating the content is an expensive operation and selection should be almost
+        // instantaneous.
         coroutineScope.launch(Dispatchers.Default) {
             combine(
-                keyMapStateListFlow,
+                listItemContentFlow,
                 multiSelectProvider.state,
             ) { keymapListState, selectionState ->
                 Pair(keymapListState, selectionState)
             }.collectLatest { pair ->
-                val (keyMapUiListState, selectionState) = pair
+                val (listItemContentList, selectionState) = pair
 
-                _state.value = keyMapUiListState.mapData { keyMapUiList ->
-                    val isSelectable = selectionState is SelectionState.Selecting<*>
-
-                    keyMapUiList.map { keymapUiState ->
-                        val isSelected = if (selectionState is SelectionState.Selecting<*>) {
-                            selectionState.selectedIds.contains(keymapUiState.uid)
+                _state.value = listItemContentList.mapData { contentList ->
+                    contentList.map { content ->
+                        val isSelected = if (selectionState is SelectionState.Selecting) {
+                            selectionState.selectedIds.contains(content.uid)
                         } else {
                             false
                         }
 
-                        KeyMapListItem(
-                            keymapUiState,
-                            KeyMapListItem.SelectionUiState(isSelected, isSelectable),
-                        )
+                        KeyMapListItemModel(isSelected, content)
                     }
                 }
             }
         }
     }
 
-    fun onKeymapCardClick(uid: String) {
-        if (multiSelectProvider.state.value is SelectionState.Selecting<*>) {
+    fun onKeyMapCardClick(uid: String) {
+        if (multiSelectProvider.state.value is SelectionState.Selecting) {
             multiSelectProvider.toggleSelection(uid)
         } else {
             coroutineScope.launch {
@@ -169,10 +134,18 @@ open class KeyMapListViewModel(
         }
     }
 
-    fun onKeymapCardLongClick(uid: String) {
+    fun onKeyMapCardLongClick(uid: String) {
         if (multiSelectProvider.state.value is SelectionState.NotSelecting) {
             multiSelectProvider.startSelecting()
             multiSelectProvider.select(uid)
+        }
+    }
+
+    fun onKeyMapSelectedChanged(uid: String, isSelected: Boolean) {
+        if (isSelected) {
+            multiSelectProvider.select(uid)
+        } else {
+            multiSelectProvider.deselect(uid)
         }
     }
 
@@ -181,60 +154,53 @@ open class KeyMapListViewModel(
             state.value.apply {
                 if (this is State.Data) {
                     multiSelectProvider.select(
-                        *this.data.map { it.keyMapUiState.uid }
-                            .toTypedArray(),
+                        *this.data.map { it.uid }.toTypedArray(),
                     )
                 }
             }
         }
     }
 
-    fun onTriggerErrorChipClick(chipModel: ChipUi) {
-        if (chipModel is ChipUi.Error) {
-            onFixError(chipModel.error)
+    fun onFixTriggerError(error: TriggerError) {
+        coroutineScope.launch {
+            when (error) {
+                TriggerError.DND_ACCESS_DENIED -> {
+                    ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
+                        resourceProvider = this@KeyMapListViewModel,
+                        popupViewModel = this@KeyMapListViewModel,
+                        neverShowDndTriggerErrorAgain = { listKeyMaps.neverShowDndTriggerError() },
+                        fixError = { listKeyMaps.fixTriggerError(error) },
+                    )
+                }
+
+                TriggerError.DPAD_IME_NOT_SELECTED -> {
+                    showDpadTriggerSetupBottomSheet = true
+                }
+
+                TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED, TriggerError.FLOATING_BUTTONS_NOT_PURCHASED -> {
+                    navigate(
+                        "purchase_advanced_trigger",
+                        NavDestination.ConfigKeyMap(keyMapUid = null, showAdvancedTriggers = true),
+                    )
+                }
+
+                else -> {
+                    listKeyMaps.fixTriggerError(error)
+                }
+            }
         }
     }
 
-    fun onActionChipClick(chipModel: ChipUi) {
-        if (chipModel is ChipUi.Error) {
-            onFixError(chipModel.error)
-        }
-    }
-
-    fun onConstraintsChipClick(chipModel: ChipUi) {
-        if (chipModel is ChipUi.Error) {
-            onFixError(chipModel.error)
-        }
-    }
-
-    fun onEnableGuiKeyboardClick() {
-        setupGuiKeyboard.enableInputMethod()
-    }
-
-    fun onChooseGuiKeyboardClick() {
-        setupGuiKeyboard.chooseInputMethod()
-    }
-
-    fun onNeverShowSetupDpadClick() {
-        listKeyMaps.neverShowDpadImeSetupError()
-    }
-
-    private fun onFixError(error: Error) {
+    fun onFixClick(error: Error) {
         coroutineScope.launch {
             when (error) {
                 Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY) -> {
-                    coroutineScope.launch {
-                        ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
-                            resourceProvider = this@KeyMapListViewModel,
-                            popupViewModel = this@KeyMapListViewModel,
-                            neverShowDndTriggerErrorAgain = { listKeyMaps.neverShowDndTriggerError() },
-                            fixError = { listKeyMaps.fixError(it) },
-                        )
-                    }
-                }
-
-                Error.DpadTriggerImeNotSelected -> {
-                    showDpadTriggerSetupBottomSheet = true
+                    ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
+                        resourceProvider = this@KeyMapListViewModel,
+                        popupViewModel = this@KeyMapListViewModel,
+                        neverShowDndTriggerErrorAgain = { listKeyMaps.neverShowDndTriggerError() },
+                        fixError = { listKeyMaps.fixError(error) },
+                    )
                 }
 
                 else -> {
@@ -248,5 +214,17 @@ open class KeyMapListViewModel(
                 }
             }
         }
+    }
+
+    fun onEnableGuiKeyboardClick() {
+        setupGuiKeyboard.enableInputMethod()
+    }
+
+    fun onChooseGuiKeyboardClick() {
+        setupGuiKeyboard.chooseInputMethod()
+    }
+
+    fun onNeverShowSetupDpadClick() {
+        listKeyMaps.neverShowDpadImeSetupError()
     }
 }

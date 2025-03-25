@@ -51,4 +51,7 @@ class FakeOnboardingUseCase : OnboardingUseCase {
     override val showNoKeysDetectedBottomSheet: Flow<Boolean> = MutableStateFlow(false)
 
     override fun neverShowNoKeysRecordedBottomSheet() {}
+    override val hasViewedAdvancedTriggers: Flow<Boolean> = MutableStateFlow(false)
+
+    override fun viewedAdvancedTriggers() {}
 }

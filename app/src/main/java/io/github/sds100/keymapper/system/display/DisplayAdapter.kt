@@ -1,19 +1,24 @@
 package io.github.sds100.keymapper.system.display
 
 import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.util.SizeKM
 import kotlinx.coroutines.flow.Flow
 
-/**
- * Created by sds100 on 17/04/2021.
- */
 interface DisplayAdapter {
     val isScreenOn: Flow<Boolean>
-    val orientation: Orientation
+    val orientation: Flow<Orientation>
+    val cachedOrientation: Orientation
+    val size: SizeKM
 
     fun isAutoRotateEnabled(): Boolean
     fun enableAutoRotate(): Result<*>
     fun disableAutoRotate(): Result<*>
     fun setOrientation(orientation: Orientation): Result<*>
+
+    /**
+     * Fetch the orientation and bypass the cached value that updates when the listener changes.
+     */
+    fun fetchOrientation(): Orientation
 
     fun isAutoBrightnessEnabled(): Boolean
     fun increaseBrightness(): Result<*>

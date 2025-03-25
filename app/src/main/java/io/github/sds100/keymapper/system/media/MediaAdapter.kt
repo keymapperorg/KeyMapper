@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import io.github.sds100.keymapper.system.volume.VolumeStream
 import io.github.sds100.keymapper.util.Result
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Created by sds100 on 21/04/2021.
@@ -17,6 +18,7 @@ interface MediaAdapter {
      * whether media is possibly playing
      */
     fun getActiveMediaSessionPackages(): List<String>
+    fun getActiveMediaSessionPackagesFlow(): Flow<List<String>>
 
     /**
      * Get the different types of content currently playing. The types can be found in
@@ -24,6 +26,8 @@ interface MediaAdapter {
      */
     @RequiresApi(Build.VERSION_CODES.O)
     fun getActiveAudioVolumeStreams(): Set<Int>
+    fun getActiveAudioVolumeStreamsFlow(): Flow<Set<Int>>
+
     fun fastForward(packageName: String? = null): Result<*>
     fun rewind(packageName: String? = null): Result<*>
     fun play(packageName: String? = null): Result<*>

@@ -223,7 +223,7 @@ class PerformActionsUseCaseImpl(
 
             is ActionData.Rotation.CycleRotations -> {
                 result = displayAdapter.disableAutoRotate().then {
-                    val currentOrientation = displayAdapter.orientation
+                    val currentOrientation = displayAdapter.cachedOrientation
 
                     val index = action.orientations.indexOf(currentOrientation)
 
@@ -442,8 +442,8 @@ class PerformActionsUseCaseImpl(
             }
 
             is ActionData.Rotation.SwitchOrientation -> {
-                if (displayAdapter.orientation == Orientation.ORIENTATION_180 ||
-                    displayAdapter.orientation == Orientation.ORIENTATION_0
+                if (displayAdapter.cachedOrientation == Orientation.ORIENTATION_180 ||
+                    displayAdapter.cachedOrientation == Orientation.ORIENTATION_0
                 ) {
                     result = displayAdapter.setOrientation(Orientation.ORIENTATION_90)
                 } else {
@@ -817,7 +817,9 @@ class PerformActionsUseCaseImpl(
         result?.showErrorMessageOnFail()
     }
 
-    override fun getError(action: ActionData): Error? = getActionError.getError(action)
+    override fun getErrorSnapshot(): ActionErrorSnapshot {
+        return getActionError.actionErrorSnapshot.firstBlocking()
+    }
 
     override val defaultRepeatDelay: Flow<Long> =
         preferenceRepository.get(Keys.defaultRepeatDelay)
@@ -908,5 +910,5 @@ interface PerformActionsUseCase {
         keyMetaState: Int = 0,
     )
 
-    fun getError(action: ActionData): Error?
+    fun getErrorSnapshot(): ActionErrorSnapshot
 }

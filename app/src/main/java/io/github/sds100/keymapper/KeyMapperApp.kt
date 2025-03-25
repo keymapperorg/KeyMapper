@@ -8,7 +8,6 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.multidex.MultiDexApplication
-import com.google.android.material.color.DynamicColors
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.entities.LogEntryEntity
 import io.github.sds100.keymapper.logging.KeyMapperLoggingTree
@@ -130,7 +129,7 @@ class KeyMapperApp : MultiDexApplication() {
     }
     val phoneAdapter by lazy { AndroidPhoneAdapter(this, appCoroutineScope) }
     val intentAdapter by lazy { IntentAdapterImpl(this) }
-    val mediaAdapter by lazy { AndroidMediaAdapter(this) }
+    val mediaAdapter by lazy { AndroidMediaAdapter(this, appCoroutineScope) }
     val lockScreenAdapter by lazy { AndroidLockScreenAdapter(this) }
     val airplaneModeAdapter by lazy { AndroidAirplaneModeAdapter(this, suAdapter) }
     val networkAdapter by lazy { AndroidNetworkAdapter(this, suAdapter) }
@@ -190,7 +189,7 @@ class KeyMapperApp : MultiDexApplication() {
         super.onCreate()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            DynamicColors.applyToActivitiesIfAvailable(this)
+//            DynamicColors.applyToActivitiesIfAvailable(this)
         }
 
         ServiceLocator.settingsRepository(this).get(Keys.darkTheme)
@@ -243,8 +242,6 @@ class KeyMapperApp : MultiDexApplication() {
             @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
             fun onResume() {
                 // when the user returns to the app let everything know that the permissions could have changed
-                permissionAdapter.onPermissionsChanged()
-                accessibilityServiceAdapter.updateWhetherServiceIsEnabled()
                 notificationController.onOpenApp()
 
                 if (BuildConfig.DEBUG && permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)) {
@@ -255,7 +252,7 @@ class KeyMapperApp : MultiDexApplication() {
 
         appCoroutineScope.launch {
             notificationController.openApp.collectLatest { intentAction ->
-                Intent(this@KeyMapperApp, SplashActivity::class.java).apply {
+                Intent(this@KeyMapperApp, MainActivity::class.java).apply {
                     action = intentAction
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK
 

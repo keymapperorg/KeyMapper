@@ -75,6 +75,12 @@ class NotificationReceiverAdapter(
         return Success(Unit)
     }
 
+    override fun sendAsync(event: ServiceEvent) {
+        coroutineScope.launch {
+            eventsToService.emit(event)
+        }
+    }
+
     override fun start(): Boolean = openSettingsPage()
 
     override fun restart(): Boolean = openSettingsPage()

@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.mappings.keymaps.trigger
 
+import io.github.sds100.keymapper.mappings.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapUseCase
 import io.github.sds100.keymapper.mappings.keymaps.CreateKeyMapShortcutUseCase
 import io.github.sds100.keymapper.mappings.keymaps.DisplayKeyMapUseCase
@@ -18,6 +19,7 @@ class ConfigTriggerViewModel(
     resourceProvider: ResourceProvider,
     purchasingManager: PurchasingManager,
     setupGuiKeyboardUseCase: SetupGuiKeyboardUseCase,
+    fingerprintGesturesSupported: FingerprintGesturesSupportedUseCase,
 ) : BaseConfigTriggerViewModel(
     coroutineScope,
     onboarding,
@@ -25,6 +27,11 @@ class ConfigTriggerViewModel(
     recordTrigger,
     createKeyMapShortcut,
     displayKeyMap,
+    purchasingManager,
     setupGuiKeyboardUseCase,
+    fingerprintGesturesSupported,
     resourceProvider,
-)
+) {
+    fun onEditFloatingButtonClick() {}
+    fun onEditFloatingLayoutClick() {}
+}

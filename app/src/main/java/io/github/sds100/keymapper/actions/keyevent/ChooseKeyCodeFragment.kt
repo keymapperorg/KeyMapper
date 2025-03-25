@@ -10,7 +10,7 @@ import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.RecyclerViewUtils
-import io.github.sds100.keymapper.util.ui.SimpleListItem
+import io.github.sds100.keymapper.util.ui.SimpleListItemOld
 import io.github.sds100.keymapper.util.ui.SimpleRecyclerViewFragment
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.collectLatest
  * Created by sds100 on 30/03/2020.
  */
 
-class ChooseKeyCodeFragment : SimpleRecyclerViewFragment<SimpleListItem>() {
+class ChooseKeyCodeFragment : SimpleRecyclerViewFragment<SimpleListItemOld>() {
     companion object {
         const val EXTRA_KEYCODE = "extra_keycode"
         const val SEARCH_STATE_KEY = "key_keycode_search_state"
@@ -32,7 +32,7 @@ class ChooseKeyCodeFragment : SimpleRecyclerViewFragment<SimpleListItem>() {
         Inject.chooseKeyCodeViewModel()
     }
 
-    override val listItems: Flow<State<List<SimpleListItem>>>
+    override val listItems: Flow<State<List<SimpleListItemOld>>>
         get() = viewModel.state
 
     override fun subscribeUi(binding: FragmentSimpleRecyclerviewBinding) {
@@ -47,7 +47,7 @@ class ChooseKeyCodeFragment : SimpleRecyclerViewFragment<SimpleListItem>() {
         }
     }
 
-    override fun populateList(recyclerView: EpoxyRecyclerView, listItems: List<SimpleListItem>) {
+    override fun populateList(recyclerView: EpoxyRecyclerView, listItems: List<SimpleListItemOld>) {
         recyclerView.withModels {
             listItems.forEach {
                 simple {

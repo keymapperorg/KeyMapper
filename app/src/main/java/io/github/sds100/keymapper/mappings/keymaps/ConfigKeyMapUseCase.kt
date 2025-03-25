@@ -1,46 +1,289 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
+import io.github.sds100.keymapper.actions.Action
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.constraints.Constraint
+import io.github.sds100.keymapper.constraints.ConstraintMode
 import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.data.Keys
+import io.github.sds100.keymapper.data.entities.FloatingButtonEntityWithLayout
+import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
+import io.github.sds100.keymapper.data.repositories.FloatingLayoutRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.mappings.BaseConfigMappingUseCase
+import io.github.sds100.keymapper.floating.FloatingButtonEntityMapper
 import io.github.sds100.keymapper.mappings.ClickType
-import io.github.sds100.keymapper.mappings.ConfigMappingUseCase
+import io.github.sds100.keymapper.mappings.FingerprintGestureType
+import io.github.sds100.keymapper.mappings.GetDefaultKeyMapOptionsUseCase
+import io.github.sds100.keymapper.mappings.GetDefaultKeyMapOptionsUseCaseImpl
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerType
+import io.github.sds100.keymapper.mappings.keymaps.trigger.FingerprintTriggerKey
+import io.github.sds100.keymapper.mappings.keymaps.trigger.FloatingButtonKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.mappings.keymaps.trigger.Trigger
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKey
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
+import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
-import io.github.sds100.keymapper.util.Defaultable
+import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.util.ServiceEvent
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.dataOrNull
 import io.github.sds100.keymapper.util.firstBlocking
 import io.github.sds100.keymapper.util.ifIsData
 import io.github.sds100.keymapper.util.moveElement
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import java.util.LinkedList
 
 /**
  * Created by sds100 on 16/02/2021.
  */
-class ConfigKeyMapUseCaseImpl(
+class ConfigKeyMapUseCaseController(
+    private val coroutineScope: CoroutineScope,
     private val keyMapRepository: KeyMapRepository,
     private val devicesAdapter: DevicesAdapter,
     private val preferenceRepository: PreferenceRepository,
-) : BaseConfigMappingUseCase<KeyMapAction, KeyMap>(),
-    ConfigKeyMapUseCase {
+    private val floatingLayoutRepository: FloatingLayoutRepository,
+    private val floatingButtonRepository: FloatingButtonRepository,
+    private val serviceAdapter: ServiceAdapter,
+) : ConfigKeyMapUseCase,
+    GetDefaultKeyMapOptionsUseCase by GetDefaultKeyMapOptionsUseCaseImpl(
+        coroutineScope,
+        preferenceRepository,
+    ) {
+    override val keyMap = MutableStateFlow<State<KeyMap>>(State.Loading)
+
+    override val floatingButtonToUse: MutableStateFlow<String?> = MutableStateFlow(null)
 
     private val showDeviceDescriptors: Flow<Boolean> =
-        preferenceRepository.get(Keys.showDeviceDescriptors).map { it ?: false }
+        preferenceRepository.get(Keys.showDeviceDescriptors).map { it == true }
+
+    /**
+     * The most recently used is first.
+     */
+    override val recentlyUsedActions: StateFlow<List<ActionData>> =
+        preferenceRepository.get(Keys.recentlyUsedActions)
+            .map(::getActionShortcuts)
+            .map { it }
+            .stateIn(
+                coroutineScope,
+                SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+                emptyList(),
+            )
+
+    /**
+     * The most recently used is first.
+     */
+    override val recentlyUsedConstraints: StateFlow<List<Constraint>> =
+        combine(
+            preferenceRepository.get(Keys.recentlyUsedConstraints).map(::getConstraintShortcuts),
+            keyMap.filterIsInstance<State.Data<KeyMap>>(),
+        ) { shortcuts, keyMap ->
+
+            // Do not include constraints that the key map already contains.
+            shortcuts
+                .filter { !keyMap.data.constraintState.constraints.contains(it) }
+                .take(3)
+        }.stateIn(
+            coroutineScope,
+            SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+            emptyList(),
+        )
+
+    init {
+        // Update button data in the key map whenever the floating buttons changes.
+        coroutineScope.launch {
+            floatingButtonRepository.buttonsList
+                .filterIsInstance<State.Data<List<FloatingButtonEntityWithLayout>>>()
+                .map { it.data }
+                .collectLatest(::updateFloatingButtonTriggerKeys)
+        }
+    }
+
+    private fun updateFloatingButtonTriggerKeys(buttons: List<FloatingButtonEntityWithLayout>) {
+        keyMap.update { keyMapState ->
+            if (keyMapState is State.Data) {
+                val trigger = keyMapState.data.trigger
+                val newKeyMap =
+                    keyMapState.data.copy(trigger = trigger.updateFloatingButtonData(buttons))
+
+                State.Data(newKeyMap)
+            } else {
+                keyMapState
+            }
+        }
+    }
+
+    override fun useFloatingButtonTrigger(buttonUid: String) {
+        floatingButtonToUse.update { buttonUid }
+    }
+
+    override fun addConstraint(constraint: Constraint): Boolean {
+        var containsConstraint = false
+
+        keyMap.value.ifIsData { mapping ->
+            val oldState = mapping.constraintState
+
+            containsConstraint = oldState.constraints.contains(constraint)
+            val newState = oldState.copy(constraints = oldState.constraints.plus(constraint))
+
+            setConstraintState(newState)
+        }
+
+        preferenceRepository.update(
+            Keys.recentlyUsedConstraints,
+            { old ->
+                val oldList: List<Constraint> = if (old == null) {
+                    emptyList()
+                } else {
+                    Json.decodeFromString<List<Constraint>>(old)
+                }
+
+                val newShortcuts = LinkedList(oldList)
+                    .also { it.addFirst(constraint) }
+                    .distinct()
+
+                Json.encodeToString(newShortcuts as List<Constraint>)
+            },
+        )
+
+        return !containsConstraint
+    }
+
+    override fun removeConstraint(id: String) {
+        keyMap.value.ifIsData { mapping ->
+            val newList = mapping.constraintState.constraints.toMutableSet().apply {
+                removeAll { it.uid == id }
+            }
+
+            setConstraintState(mapping.constraintState.copy(constraints = newList))
+        }
+    }
+
+    override fun setAndMode() {
+        keyMap.value.ifIsData { mapping ->
+            setConstraintState(mapping.constraintState.copy(mode = ConstraintMode.AND))
+        }
+    }
+
+    override fun setOrMode() {
+        keyMap.value.ifIsData { mapping ->
+            setConstraintState(mapping.constraintState.copy(mode = ConstraintMode.OR))
+        }
+    }
+
+    override fun addAction(data: ActionData) = keyMap.value.ifIsData { mapping ->
+        mapping.actionList.toMutableList().apply {
+            add(createAction(data))
+            setActionList(this)
+        }
+
+        preferenceRepository.update(
+            Keys.recentlyUsedActions,
+            { old ->
+                val oldList: List<ActionData> = if (old == null) {
+                    emptyList()
+                } else {
+                    Json.decodeFromString<List<ActionData>>(old)
+                }
+
+                val newShortcuts = LinkedList(oldList)
+                    .also { it.addFirst(data) }
+                    .distinct()
+
+                Json.encodeToString(newShortcuts as List<ActionData>)
+            },
+        )
+    }
+
+    override fun moveAction(fromIndex: Int, toIndex: Int) {
+        keyMap.value.ifIsData { mapping ->
+            mapping.actionList.toMutableList().apply {
+                moveElement(fromIndex, toIndex)
+                setActionList(this)
+            }
+        }
+    }
+
+    override fun removeAction(uid: String) {
+        keyMap.value.ifIsData { mapping ->
+            mapping.actionList.toMutableList().apply {
+                removeAll { it.uid == uid }
+                setActionList(this)
+            }
+        }
+    }
+
+    override suspend fun addFloatingButtonTriggerKey(buttonUid: String) {
+        floatingButtonToUse.update { null }
+
+        editTrigger { trigger ->
+            val clickType = when (trigger.mode) {
+                is TriggerMode.Parallel -> trigger.mode.clickType
+                TriggerMode.Sequence -> ClickType.SHORT_PRESS
+                TriggerMode.Undefined -> ClickType.SHORT_PRESS
+            }
+
+            // Check whether the trigger already contains the key because if so
+            // then it must be converted to a sequence trigger.
+            val containsKey = trigger.keys
+                .mapNotNull { it as? FloatingButtonKey }
+                .any { keyToCompare -> keyToCompare.buttonUid == buttonUid }
+
+            val button = floatingButtonRepository.get(buttonUid)
+                ?.let { entity ->
+                    FloatingButtonEntityMapper.fromEntity(
+                        entity.button,
+                        entity.layout.name,
+                    )
+                }
+
+            val triggerKey = FloatingButtonKey(
+                buttonUid = buttonUid,
+                button = button,
+                clickType = clickType,
+            )
+
+            var newKeys = trigger.keys.plus(triggerKey)
+
+            val newMode = when {
+                trigger.mode != TriggerMode.Sequence && containsKey -> TriggerMode.Sequence
+                newKeys.size <= 1 -> TriggerMode.Undefined
+
+                /* Automatically make it a parallel trigger when the user makes a trigger with more than one key
+                because this is what most users are expecting when they make a trigger with multiple keys */
+                newKeys.size == 2 && !containsKey -> {
+                    newKeys = newKeys.map { it.setClickType(triggerKey.clickType) }
+                    TriggerMode.Parallel(triggerKey.clickType)
+                }
+
+                else -> trigger.mode
+            }
+
+            trigger.copy(keys = newKeys, mode = newMode)
+        }
+    }
 
     override fun addAssistantTriggerKey(type: AssistantTriggerType) = editTrigger { trigger ->
         val clickType = when (trigger.mode) {
@@ -51,14 +294,14 @@ class ConfigKeyMapUseCaseImpl(
 
         // Check whether the trigger already contains the key because if so
         // then it must be converted to a sequence trigger.
-        val containsKey = trigger.keys.any { it is AssistantTriggerKey }
+        val containsAssistantKey = trigger.keys.any { it is AssistantTriggerKey }
 
         val triggerKey = AssistantTriggerKey(type = type, clickType = clickType)
 
         val newKeys = trigger.keys.plus(triggerKey)
 
         val newMode = when {
-            trigger.mode != TriggerMode.Sequence && containsKey -> TriggerMode.Sequence
+            trigger.mode != TriggerMode.Sequence && containsAssistantKey -> TriggerMode.Sequence
             newKeys.size <= 1 -> TriggerMode.Undefined
 
             /* Automatically make it a parallel trigger when the user makes a trigger with more than one key
@@ -66,7 +309,38 @@ class ConfigKeyMapUseCaseImpl(
 
             It must be a short press because long pressing the assistant key isn't supported.
              */
-            !containsKey -> TriggerMode.Parallel(ClickType.SHORT_PRESS)
+            !containsAssistantKey -> TriggerMode.Parallel(ClickType.SHORT_PRESS)
+            else -> trigger.mode
+        }
+
+        trigger.copy(keys = newKeys, mode = newMode)
+    }
+
+    override fun addFingerprintGesture(type: FingerprintGestureType) = editTrigger { trigger ->
+        val clickType = when (trigger.mode) {
+            is TriggerMode.Parallel -> trigger.mode.clickType
+            TriggerMode.Sequence -> ClickType.SHORT_PRESS
+            TriggerMode.Undefined -> ClickType.SHORT_PRESS
+        }
+
+        // Check whether the trigger already contains the key because if so
+        // then it must be converted to a sequence trigger.
+        val containsFingerprintGesture = trigger.keys.any { it is FingerprintTriggerKey }
+
+        val triggerKey = FingerprintTriggerKey(type = type, clickType = clickType)
+
+        val newKeys = trigger.keys.plus(triggerKey)
+
+        val newMode = when {
+            trigger.mode != TriggerMode.Sequence && containsFingerprintGesture -> TriggerMode.Sequence
+            newKeys.size <= 1 -> TriggerMode.Undefined
+
+            /* Automatically make it a parallel trigger when the user makes a trigger with more than one key
+            because this is what most users are expecting when they make a trigger with multiple keys.
+
+            It must be a short press because long pressing the assistant key isn't supported.
+             */
+            !containsFingerprintGesture -> TriggerMode.Parallel(ClickType.SHORT_PRESS)
             else -> trigger.mode
         }
 
@@ -107,7 +381,7 @@ class ConfigKeyMapUseCaseImpl(
             detectionSource = detectionSource,
         )
 
-        val newKeys = trigger.keys.plus(triggerKey)
+        var newKeys = trigger.keys.plus(triggerKey)
 
         val newMode = when {
             trigger.mode != TriggerMode.Sequence && containsKey -> TriggerMode.Sequence
@@ -115,7 +389,11 @@ class ConfigKeyMapUseCaseImpl(
 
             /* Automatically make it a parallel trigger when the user makes a trigger with more than one key
             because this is what most users are expecting when they make a trigger with multiple keys */
-            newKeys.size == 2 && !containsKey -> TriggerMode.Parallel(triggerKey.clickType)
+            newKeys.size == 2 && !containsKey -> {
+                newKeys = newKeys.map { it.setClickType(triggerKey.clickType) }
+                TriggerMode.Parallel(triggerKey.clickType)
+            }
+
             else -> trigger.mode
         }
 
@@ -138,13 +416,13 @@ class ConfigKeyMapUseCaseImpl(
     override fun moveTriggerKey(fromIndex: Int, toIndex: Int) = editTrigger { trigger ->
         trigger.copy(
             keys = trigger.keys.toMutableList().apply {
-                moveElement(fromIndex, toIndex)
+                add(toIndex, removeAt(fromIndex))
             },
         )
     }
 
     override fun getTriggerKey(uid: String): TriggerKey? {
-        return mapping.value.dataOrNull()?.trigger?.keys?.find { it.uid == uid }
+        return keyMap.value.dataOrNull()?.trigger?.keys?.find { it.uid == uid }
     }
 
     override fun setParallelTriggerMode() = editTrigger { trigger ->
@@ -168,8 +446,9 @@ class ConfigKeyMapUseCaseImpl(
             .distinctBy { key ->
                 when (key) {
                     // You can't mix assistant trigger types in a parallel trigger because there is no notion of a "down" key event, which means they can't be pressed at the same time
-                    is AssistantTriggerKey -> 0
+                    is AssistantTriggerKey, is FingerprintTriggerKey -> 0
                     is KeyCodeTriggerKey -> Pair(key.keyCode, key.device)
+                    is FloatingButtonKey -> key.buttonUid
                 }
             }
 
@@ -228,7 +507,7 @@ class ConfigKeyMapUseCaseImpl(
             // You can't set the trigger to a long press if it contains a key
             // that isn't detected with key codes. This is because there aren't
             // separate key events for the up and down press that can be timed.
-            if (trigger.keys.any { it !is KeyCodeTriggerKey }) {
+            if (trigger.keys.any { it is AssistantTriggerKey }) {
                 return@editTrigger trigger
             }
 
@@ -292,18 +571,52 @@ class ConfigKeyMapUseCaseImpl(
         }
     }
 
-    override fun setVibrateEnabled(enabled: Boolean) = editTrigger { it.copy(vibrate = enabled) }
-
-    override fun setVibrationDuration(duration: Defaultable<Int>) = editTrigger { it.copy(vibrateDuration = duration.nullIfDefault()) }
-
-    override fun setLongPressDelay(delay: Defaultable<Int>) = editTrigger { it.copy(longPressDelay = delay.nullIfDefault()) }
-
-    override fun setDoublePressDelay(delay: Defaultable<Int>) {
-        editTrigger { it.copy(doublePressDelay = delay.nullIfDefault()) }
+    override fun setFingerprintGestureType(keyUid: String, type: FingerprintGestureType) {
+        editTriggerKey(keyUid) { key ->
+            if (key is FingerprintTriggerKey) {
+                key.copy(type = type)
+            } else {
+                key
+            }
+        }
     }
 
-    override fun setSequenceTriggerTimeout(delay: Defaultable<Int>) {
-        editTrigger { it.copy(sequenceTriggerTimeout = delay.nullIfDefault()) }
+    override fun setVibrateEnabled(enabled: Boolean) = editTrigger { it.copy(vibrate = enabled) }
+
+    override fun setVibrationDuration(duration: Int) = editTrigger { trigger ->
+        if (duration == defaultVibrateDuration.value) {
+            trigger.copy(vibrateDuration = null)
+        } else {
+            trigger.copy(vibrateDuration = duration)
+        }
+    }
+
+    override fun setLongPressDelay(delay: Int) = editTrigger { trigger ->
+        if (delay == defaultLongPressDelay.value) {
+            trigger.copy(longPressDelay = null)
+        } else {
+            trigger.copy(longPressDelay = delay)
+        }
+    }
+
+    override fun setDoublePressDelay(delay: Int) {
+        editTrigger { trigger ->
+            if (delay == defaultDoublePressDelay.value) {
+                trigger.copy(doublePressDelay = null)
+            } else {
+                trigger.copy(doublePressDelay = delay)
+            }
+        }
+    }
+
+    override fun setSequenceTriggerTimeout(delay: Int) {
+        editTrigger { trigger ->
+            if (delay == defaultSequenceTriggerTimeout.value) {
+                trigger.copy(sequenceTriggerTimeout = null)
+            } else {
+                trigger.copy(sequenceTriggerTimeout = delay)
+            }
+        }
     }
 
     override fun setLongPressDoubleVibrationEnabled(enabled: Boolean) {
@@ -373,17 +686,59 @@ class ConfigKeyMapUseCaseImpl(
         }
     }
 
-    override fun setActionRepeatEnabled(uid: String, repeat: Boolean) = setActionOption(uid) { it.copy(repeat = repeat) }
+    override fun setActionRepeatEnabled(uid: String, repeat: Boolean) {
+        setActionOption(uid) { action -> action.copy(repeat = repeat) }
+    }
 
-    override fun setActionRepeatRate(uid: String, repeatRate: Int?) = setActionOption(uid) { it.copy(repeatRate = repeatRate) }
+    override fun setActionRepeatRate(uid: String, repeatRate: Int) {
+        setActionOption(uid) { action ->
+            if (repeatRate == defaultRepeatRate.value) {
+                action.copy(repeatRate = null)
+            } else {
+                action.copy(repeatRate = repeatRate)
+            }
+        }
+    }
 
-    override fun setActionRepeatDelay(uid: String, repeatDelay: Int?) = setActionOption(uid) { it.copy(repeatDelay = repeatDelay) }
+    override fun setActionRepeatDelay(uid: String, repeatDelay: Int) {
+        setActionOption(uid) { action ->
+            if (repeatDelay == defaultRepeatDelay.value) {
+                action.copy(repeatDelay = null)
+            } else {
+                action.copy(repeatDelay = repeatDelay)
+            }
+        }
+    }
 
-    override fun setActionRepeatLimit(uid: String, repeatLimit: Int?) = setActionOption(uid) { it.copy(repeatLimit = repeatLimit) }
+    override fun setActionRepeatLimit(uid: String, repeatLimit: Int) {
+        setActionOption(uid) { action ->
+            if (action.repeatMode == RepeatMode.LIMIT_REACHED) {
+                if (repeatLimit == 1) {
+                    action.copy(repeatLimit = null)
+                } else {
+                    action.copy(repeatLimit = repeatLimit)
+                }
+            } else {
+                if (repeatLimit == Int.MAX_VALUE) {
+                    action.copy(repeatLimit = null)
+                } else {
+                    action.copy(repeatLimit = repeatLimit)
+                }
+            }
+        }
+    }
 
     override fun setActionHoldDownEnabled(uid: String, holdDown: Boolean) = setActionOption(uid) { it.copy(holdDown = holdDown) }
 
-    override fun setActionHoldDownDuration(uid: String, holdDownDuration: Int?) = setActionOption(uid) { it.copy(holdDownDuration = holdDownDuration) }
+    override fun setActionHoldDownDuration(uid: String, holdDownDuration: Int) {
+        setActionOption(uid) { action ->
+            if (holdDownDuration == defaultHoldDownDuration.value) {
+                action.copy(holdDownDuration = null)
+            } else {
+                action.copy(holdDownDuration = holdDownDuration)
+            }
+        }
+    }
 
     override fun setActionStopRepeatingWhenTriggerPressedAgain(uid: String) = setActionOption(uid) { it.copy(repeatMode = RepeatMode.TRIGGER_PRESSED_AGAIN) }
 
@@ -393,16 +748,32 @@ class ConfigKeyMapUseCaseImpl(
 
     override fun setActionStopHoldingDownWhenTriggerPressedAgain(uid: String, enabled: Boolean) = setActionOption(uid) { it.copy(stopHoldDownWhenTriggerPressedAgain = enabled) }
 
-    override fun setActionMultiplier(uid: String, multiplier: Int?) = setActionOption(uid) { it.copy(multiplier = multiplier) }
+    override fun setActionMultiplier(uid: String, multiplier: Int) {
+        setActionOption(uid) { action ->
+            if (multiplier == 1) {
+                action.copy(multiplier = null)
+            } else {
+                action.copy(multiplier = multiplier)
+            }
+        }
+    }
 
-    override fun setDelayBeforeNextAction(uid: String, delay: Int?) = setActionOption(uid) { it.copy(delayBeforeNextAction = delay) }
+    override fun setDelayBeforeNextAction(uid: String, delay: Int) {
+        setActionOption(uid) { action ->
+            if (delay == 0) {
+                action.copy(delayBeforeNextAction = null)
+            } else {
+                action.copy(delayBeforeNextAction = delay)
+            }
+        }
+    }
 
-    override fun createAction(data: ActionData): KeyMapAction {
+    private fun createAction(data: ActionData): Action {
         var holdDown = false
         var repeat = false
 
         if (data is ActionData.InputKeyEvent) {
-            val trigger = mapping.value.dataOrNull()?.trigger
+            val trigger = keyMap.value.dataOrNull()?.trigger
 
             val containsDpadKey: Boolean = if (trigger == null) {
                 false
@@ -428,34 +799,38 @@ class ConfigKeyMapUseCaseImpl(
             addConstraint(Constraint.InPhoneCall)
         }
 
-        return KeyMapAction(
+        return Action(
             data = data,
             repeat = repeat,
             holdDown = holdDown,
         )
     }
 
-    override fun setActionList(actionList: List<KeyMapAction>) {
+    private fun setActionList(actionList: List<Action>) {
         editKeyMap { it.copy(actionList = actionList) }
     }
 
-    override fun setConstraintState(constraintState: ConstraintState) {
+    private fun setConstraintState(constraintState: ConstraintState) {
         editKeyMap { it.copy(constraintState = constraintState) }
     }
 
     override suspend fun loadKeyMap(uid: String) {
+        keyMap.update { State.Loading }
         val entity = keyMapRepository.get(uid) ?: return
-        val keyMap = KeyMapEntityMapper.fromEntity(entity)
+        val floatingButtons = floatingButtonRepository.buttonsList
+            .filterIsInstance<State.Data<List<FloatingButtonEntityWithLayout>>>()
+            .map { it.data }
+            .first()
 
-        mapping.value = State.Data(keyMap)
+        keyMap.update { State.Data(KeyMapEntityMapper.fromEntity(entity, floatingButtons)) }
     }
 
     override fun loadNewKeyMap() {
-        mapping.value = State.Data(KeyMap())
+        keyMap.update { State.Data(KeyMap()) }
     }
 
     override fun save() {
-        val keyMap = mapping.value.dataOrNull() ?: return
+        val keyMap = keyMap.value.dataOrNull() ?: return
 
         if (keyMap.dbId == null) {
             keyMapRepository.insert(KeyMapEntityMapper.toEntity(keyMap, 0))
@@ -465,12 +840,20 @@ class ConfigKeyMapUseCaseImpl(
     }
 
     override fun restoreState(keyMap: KeyMap) {
-        mapping.value = State.Data(keyMap)
+        this.keyMap.value = State.Data(keyMap)
+    }
+
+    override suspend fun getFloatingLayoutCount(): Int {
+        return floatingLayoutRepository.count()
+    }
+
+    override suspend fun sendServiceEvent(event: ServiceEvent): Result<*> {
+        return serviceAdapter.send(event)
     }
 
     private fun setActionOption(
         uid: String,
-        block: (action: KeyMapAction) -> KeyMapAction,
+        block: (action: Action) -> Action,
     ) {
         editKeyMap { keyMap ->
             val newActionList = keyMap.actionList.map { action ->
@@ -487,7 +870,41 @@ class ConfigKeyMapUseCaseImpl(
         }
     }
 
-    private fun editTrigger(block: (trigger: Trigger) -> Trigger) {
+    private suspend fun getActionShortcuts(json: String?): List<ActionData> {
+        if (json == null) {
+            return emptyList()
+        }
+
+        try {
+            return withContext(Dispatchers.Default) {
+                val list = Json.decodeFromString<List<ActionData>>(json)
+
+                list.distinct()
+            }
+        } catch (_: Exception) {
+            preferenceRepository.set(Keys.recentlyUsedActions, null)
+            return emptyList()
+        }
+    }
+
+    private suspend fun getConstraintShortcuts(json: String?): List<Constraint> {
+        if (json == null) {
+            return emptyList()
+        }
+
+        try {
+            return withContext(Dispatchers.Default) {
+                val list = Json.decodeFromString<List<Constraint>>(json)
+
+                list.distinct()
+            }
+        } catch (_: Exception) {
+            preferenceRepository.set(Keys.recentlyUsedConstraints, null)
+            return emptyList()
+        }
+    }
+
+    private inline fun editTrigger(block: (trigger: Trigger) -> Trigger) {
         editKeyMap { keyMap ->
             val newTrigger = block(keyMap.trigger)
 
@@ -509,12 +926,45 @@ class ConfigKeyMapUseCaseImpl(
         }
     }
 
-    private fun editKeyMap(block: (keymap: KeyMap) -> KeyMap) {
-        mapping.value.ifIsData { mapping.value = State.Data(block.invoke(it)) }
+    private inline fun editKeyMap(block: (keymap: KeyMap) -> KeyMap) {
+        keyMap.value.ifIsData { keyMap.value = State.Data(block.invoke(it)) }
     }
 }
 
-interface ConfigKeyMapUseCase : ConfigMappingUseCase<KeyMapAction, KeyMap> {
+interface ConfigKeyMapUseCase : GetDefaultKeyMapOptionsUseCase {
+    val keyMap: Flow<State<KeyMap>>
+
+    fun save()
+
+    fun setEnabled(enabled: Boolean)
+
+    fun addAction(data: ActionData)
+    fun moveAction(fromIndex: Int, toIndex: Int)
+    fun removeAction(uid: String)
+
+    val recentlyUsedActions: Flow<List<ActionData>>
+    fun setActionData(uid: String, data: ActionData)
+    fun setActionMultiplier(uid: String, multiplier: Int)
+    fun setDelayBeforeNextAction(uid: String, delay: Int)
+    fun setActionRepeatRate(uid: String, repeatRate: Int)
+    fun setActionRepeatLimit(uid: String, repeatLimit: Int)
+    fun setActionStopRepeatingWhenTriggerPressedAgain(uid: String)
+    fun setActionStopRepeatingWhenLimitReached(uid: String)
+    fun setActionRepeatEnabled(uid: String, repeat: Boolean)
+    fun setActionRepeatDelay(uid: String, repeatDelay: Int)
+    fun setActionHoldDownEnabled(uid: String, holdDown: Boolean)
+    fun setActionHoldDownDuration(uid: String, holdDownDuration: Int)
+    fun setActionStopRepeatingWhenTriggerReleased(uid: String)
+
+    fun setActionStopHoldingDownWhenTriggerPressedAgain(uid: String, enabled: Boolean)
+
+    val recentlyUsedConstraints: Flow<List<Constraint>>
+    fun addConstraint(constraint: Constraint): Boolean
+    fun removeConstraint(id: String)
+    fun setAndMode()
+    fun setOrMode()
+    suspend fun sendServiceEvent(event: ServiceEvent): Result<*>
+
     // trigger
     fun addKeyCodeTriggerKey(
         keyCode: Int,
@@ -522,7 +972,9 @@ interface ConfigKeyMapUseCase : ConfigMappingUseCase<KeyMapAction, KeyMap> {
         detectionSource: KeyEventDetectionSource,
     )
 
+    suspend fun addFloatingButtonTriggerKey(buttonUid: String)
     fun addAssistantTriggerKey(type: AssistantTriggerType)
+    fun addFingerprintGesture(type: FingerprintGestureType)
     fun removeTriggerKey(uid: String)
     fun getTriggerKey(uid: String): TriggerKey?
     fun moveTriggerKey(fromIndex: Int, toIndex: Int)
@@ -543,12 +995,13 @@ interface ConfigKeyMapUseCase : ConfigMappingUseCase<KeyMapAction, KeyMap> {
     fun setTriggerKeyDevice(keyUid: String, device: TriggerKeyDevice)
     fun setTriggerKeyConsumeKeyEvent(keyUid: String, consumeKeyEvent: Boolean)
     fun setAssistantTriggerKeyType(keyUid: String, type: AssistantTriggerType)
+    fun setFingerprintGestureType(keyUid: String, type: FingerprintGestureType)
 
     fun setVibrateEnabled(enabled: Boolean)
-    fun setVibrationDuration(duration: Defaultable<Int>)
-    fun setLongPressDelay(delay: Defaultable<Int>)
-    fun setDoublePressDelay(delay: Defaultable<Int>)
-    fun setSequenceTriggerTimeout(delay: Defaultable<Int>)
+    fun setVibrationDuration(duration: Int)
+    fun setLongPressDelay(delay: Int)
+    fun setDoublePressDelay(delay: Int)
+    fun setSequenceTriggerTimeout(delay: Int)
     fun setLongPressDoubleVibrationEnabled(enabled: Boolean)
     fun setTriggerWhenScreenOff(enabled: Boolean)
     fun setTriggerFromOtherAppsEnabled(enabled: Boolean)
@@ -556,12 +1009,7 @@ interface ConfigKeyMapUseCase : ConfigMappingUseCase<KeyMapAction, KeyMap> {
 
     fun getAvailableTriggerKeyDevices(): List<TriggerKeyDevice>
 
-    // actions
-    fun setActionRepeatEnabled(uid: String, repeat: Boolean)
-    fun setActionRepeatDelay(uid: String, repeatDelay: Int?)
-    fun setActionHoldDownEnabled(uid: String, holdDown: Boolean)
-    fun setActionHoldDownDuration(uid: String, holdDownDuration: Int?)
-    fun setActionStopRepeatingWhenTriggerReleased(uid: String)
-
-    fun setActionStopHoldingDownWhenTriggerPressedAgain(uid: String, enabled: Boolean)
+    val floatingButtonToUse: StateFlow<String?>
+    fun useFloatingButtonTrigger(buttonUid: String)
+    suspend fun getFloatingLayoutCount(): Int
 }

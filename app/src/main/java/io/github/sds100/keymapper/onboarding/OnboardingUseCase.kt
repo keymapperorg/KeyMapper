@@ -142,6 +142,13 @@ class OnboardingUseCaseImpl(
     override fun neverShowNoKeysRecordedBottomSheet() {
         preferences.set(Keys.neverShowNoKeysRecordedError, true)
     }
+
+    override val hasViewedAdvancedTriggers: Flow<Boolean> =
+        get(Keys.viewedAdvancedTriggers).map { it ?: false }
+
+    override fun viewedAdvancedTriggers() {
+        set(Keys.viewedAdvancedTriggers, true)
+    }
 }
 
 interface OnboardingUseCase {
@@ -182,4 +189,7 @@ interface OnboardingUseCase {
 
     val showNoKeysDetectedBottomSheet: Flow<Boolean>
     fun neverShowNoKeysRecordedBottomSheet()
+
+    val hasViewedAdvancedTriggers: Flow<Boolean>
+    fun viewedAdvancedTriggers()
 }

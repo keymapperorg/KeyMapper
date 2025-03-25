@@ -7,7 +7,6 @@ import com.github.salomonbrys.kotson.byNullableString
 import com.github.salomonbrys.kotson.byString
 import com.github.salomonbrys.kotson.jsonDeserializer
 import com.google.gson.annotations.SerializedName
-import io.github.sds100.keymapper.data.entities.ActionEntity.Type
 import kotlinx.parcelize.Parcelize
 import java.util.UUID
 
@@ -47,7 +46,7 @@ data class ActionEntity(
     val data: String,
 
     @SerializedName(NAME_EXTRAS)
-    val extras: List<Extra> = listOf(),
+    val extras: List<EntityExtra> = listOf(),
 
     @SerializedName(NAME_FLAGS)
     val flags: Int = 0,
@@ -116,7 +115,7 @@ data class ActionEntity(
             val data by it.json.byString(NAME_DATA)
 
             val extrasJsonArray by it.json.byArray(NAME_EXTRAS)
-            val extraList = it.context.deserialize<List<Extra>>(extrasJsonArray) ?: listOf()
+            val extraList = it.context.deserialize<List<EntityExtra>>(extrasJsonArray) ?: listOf()
 
             val flags by it.json.byInt(NAME_FLAGS)
 
@@ -152,6 +151,6 @@ data class ActionEntity(
     constructor(
         type: Type,
         data: String,
-        extra: Extra,
+        extra: EntityExtra,
     ) : this(type, data, listOf(extra))
 }

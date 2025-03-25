@@ -19,13 +19,13 @@ import io.github.sds100.keymapper.util.firstBlocking
 import timber.log.Timber
 
 /**
- * Created by sds100 on 08/05/2021.
+ * Created by sds100 on 08/05/2021.f
  */
 
 /**
  * This allows constraints to be checked lazily because some system calls take a significant amount of time.
  */
-class ConstraintSnapshotImpl(
+class LazyConstraintSnapshot(
     accessibilityService: IAccessibilityService,
     mediaAdapter: MediaAdapter,
     devicesAdapter: DevicesAdapter,
@@ -39,7 +39,7 @@ class ConstraintSnapshotImpl(
 ) : ConstraintSnapshot {
     private val appInForeground: String? by lazy { accessibilityService.rootNode?.packageName }
     private val connectedBluetoothDevices: Set<BluetoothDeviceInfo> by lazy { devicesAdapter.connectedBluetoothDevices.value }
-    private val orientation: Orientation by lazy { displayAdapter.orientation }
+    private val orientation: Orientation by lazy { displayAdapter.cachedOrientation }
     private val isScreenOn: Boolean by lazy { displayAdapter.isScreenOn.firstBlocking() }
     private val appsPlayingMedia: List<String> by lazy { mediaAdapter.getActiveMediaSessionPackages() }
 

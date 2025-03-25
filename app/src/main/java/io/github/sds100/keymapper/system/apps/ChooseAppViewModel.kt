@@ -8,7 +8,7 @@ import io.github.sds100.keymapper.util.filterByQuery
 import io.github.sds100.keymapper.util.mapData
 import io.github.sds100.keymapper.util.ui.DefaultSimpleListItem
 import io.github.sds100.keymapper.util.ui.IconInfo
-import io.github.sds100.keymapper.util.ui.SimpleListItem
+import io.github.sds100.keymapper.util.ui.SimpleListItemOld
 import io.github.sds100.keymapper.util.valueOrNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -113,7 +113,7 @@ class ChooseAppViewModel(
         }
     }
 
-    private suspend fun List<PackageInfo>.buildListItems(): List<SimpleListItem> = flow {
+    private suspend fun List<PackageInfo>.buildListItems(): List<SimpleListItemOld> = flow {
         forEach { packageInfo ->
             val name = useCase.getAppName(packageInfo.packageName)
                 .valueOrNull() ?: return@forEach
@@ -144,7 +144,7 @@ class ChooseAppViewModel(
 }
 
 data class AppListState(
-    val listItems: State<List<SimpleListItem>>,
+    val listItems: State<List<SimpleListItemOld>>,
     val showHiddenAppsButton: Boolean,
     val isHiddenAppsChecked: Boolean,
 )

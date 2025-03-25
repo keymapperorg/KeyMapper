@@ -36,7 +36,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import splitties.bitflags.withFlag
-import timber.log.Timber
 import java.io.IOException
 
 /**
@@ -115,11 +114,7 @@ class AndroidPackageManagerAdapter(
 
             // save memory by only storing this stuff as it is needed
             installedPackages.subscriptionCount
-                .map { count ->
-                    Timber.e("SUBSCRIPTION COUNT $count")
-
-                    count > 0
-                }
+                .map { count -> count > 0 }
                 .distinctUntilChanged().collect { isActive ->
                     if (isActive) {
                         fetchPackages.emit(Unit)

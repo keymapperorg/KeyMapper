@@ -6,6 +6,8 @@ import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.constraints.isSatisfied
 import io.github.sds100.keymapper.data.PreferenceDefaults
+import io.github.sds100.keymapper.mappings.keymaps.KeyMap
+import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCase
 import io.github.sds100.keymapper.util.InputEventType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
@@ -16,12 +18,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-/**
- * Created by sds100 on 10/01/21.
- */
 abstract class SimpleMappingController(
     private val coroutineScope: CoroutineScope,
-    private val detectMappingUseCase: DetectMappingUseCase,
+    private val detectMappingUseCase: DetectKeyMapsUseCase,
     private val performActionsUseCase: PerformActionsUseCase,
     private val detectConstraintsUseCase: DetectConstraintsUseCase,
 ) {
@@ -56,32 +55,32 @@ abstract class SimpleMappingController(
             PreferenceDefaults.VIBRATION_DURATION.toLong(),
         )
 
-    fun onDetected(
-        mappingId: String,
-        mapping: Mapping<*>,
-    ) {
-        if (!mapping.isEnabled) return
-        if (mapping.actionList.isEmpty()) return
+    fun onDetected(keyMap: KeyMap) {
+        if (!keyMap.isEnabled) return
+        if (keyMap.actionList.isEmpty()) return
 
-        if (mapping.constraintState.constraints.isNotEmpty()) {
+        if (keyMap.constraintState.constraints.isNotEmpty()) {
             val constraintSnapshot = detectConstraintsUseCase.getSnapshot()
-            if (!constraintSnapshot.isSatisfied(mapping.constraintState)) return
+            if (!constraintSnapshot.isSatisfied(keyMap.constraintState)) return
         }
 
-        repeatJobs[mappingId]?.forEach { it.cancel() }
+        repeatJobs[keyMap.uid]?.forEach { it.cancel() }
 
-        performActionJobs[mappingId]?.cancel()
+        performActionJobs[keyMap.uid]?.cancel()
 
-        performActionJobs[mappingId] = coroutineScope.launch {
+        performActionJobs[keyMap.uid] = coroutineScope.launch {
+            val errorSnapshot = performActionsUseCase.getErrorSnapshot()
+
             val repeatJobs = mutableListOf<RepeatJob>()
 
-            mapping.actionList.forEach { action ->
-                if (performActionsUseCase.getError(action.data) != null) return@forEach
+            keyMap.actionList.forEach { action ->
+                if (errorSnapshot.getError(action.data) != null) return@forEach
 
                 if (action.repeat && action.repeatMode != RepeatMode.TRIGGER_RELEASED) {
                     var alreadyRepeating = false
 
-                    for (job in this@SimpleMappingController.repeatJobs[mappingId] ?: emptyList()) {
+                    for (job in this@SimpleMappingController.repeatJobs[keyMap.uid]
+                        ?: emptyList()) {
                         if (job.actionUid == action.uid && action.repeatMode == RepeatMode.TRIGGER_PRESSED_AGAIN) {
                             alreadyRepeating = true
                             job.cancel()
@@ -114,16 +113,16 @@ abstract class SimpleMappingController(
                 delay(action.delayBeforeNextAction?.toLong() ?: 0)
             }
 
-            this@SimpleMappingController.repeatJobs[mappingId] = repeatJobs
+            this@SimpleMappingController.repeatJobs[keyMap.uid] = repeatJobs
         }
 
-        if (mapping.vibrate || forceVibrate.value) {
+        if (keyMap.vibrate || forceVibrate.value) {
             detectMappingUseCase.vibrate(
-                mapping.vibrateDuration?.toLong() ?: defaultVibrateDuration.value,
+                keyMap.vibrateDuration?.toLong() ?: defaultVibrateDuration.value,
             )
         }
 
-        if (mapping.showToast) {
+        if (keyMap.showToast) {
             detectMappingUseCase.showTriggeredToast()
         }
     }
@@ -165,7 +164,7 @@ abstract class SimpleMappingController(
 
             if (action.repeatLimit != null) {
                 continueRepeating =
-                    repeatCount < action.repeatLimit!! + 1 // this value is how many times it should REPEAT. The first repeat happens after the first time it is performed
+                    repeatCount < action.repeatLimit + 1 // this value is how many times it should REPEAT. The first repeat happens after the first time it is performed
             }
 
             delay(repeatRate)

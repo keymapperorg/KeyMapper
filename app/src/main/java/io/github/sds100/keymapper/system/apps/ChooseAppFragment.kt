@@ -15,7 +15,7 @@ import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.RecyclerViewFragment
 import io.github.sds100.keymapper.util.ui.RecyclerViewUtils
-import io.github.sds100.keymapper.util.ui.SimpleListItem
+import io.github.sds100.keymapper.util.ui.SimpleListItemOld
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.map
 /**
  * Created by sds100 on 22/02/2020.
  */
-class ChooseAppFragment : RecyclerViewFragment<SimpleListItem, FragmentChooseAppBinding>() {
+class ChooseAppFragment : RecyclerViewFragment<SimpleListItemOld, FragmentChooseAppBinding>() {
 
     companion object {
         const val EXTRA_PACKAGE_NAME = "extra_package_name"
@@ -38,7 +38,7 @@ class ChooseAppFragment : RecyclerViewFragment<SimpleListItem, FragmentChooseApp
         Inject.chooseAppViewModel(requireContext())
     }
 
-    override val listItems: Flow<State<List<SimpleListItem>>>
+    override val listItems: Flow<State<List<SimpleListItemOld>>>
         get() = viewModel.state.map { it.listItems }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -68,7 +68,7 @@ class ChooseAppFragment : RecyclerViewFragment<SimpleListItem, FragmentChooseApp
             lifecycleOwner = viewLifecycleOwner
         }
 
-    override fun populateList(recyclerView: EpoxyRecyclerView, listItems: List<SimpleListItem>) {
+    override fun populateList(recyclerView: EpoxyRecyclerView, listItems: List<SimpleListItemOld>) {
         binding.epoxyRecyclerView.withModels {
             listItems.forEach {
                 simple {

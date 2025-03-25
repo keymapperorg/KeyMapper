@@ -145,6 +145,7 @@ class KeyEventRelayService : Service() {
     override fun onCreate() {
         super.onCreate()
 
+        Timber.d("Relay service: onCreate")
         val intent = Intent(ACTION_REBIND_RELAY_SERVICE)
         sendBroadcast(intent)
     }
