@@ -66,6 +66,7 @@ class KeyMapListViewModel(
             isChosen,
         )
     }.stateIn(coroutineScope, SharingStarted.Lazily, SetupGuiKeyboardState.DEFAULT)
+
     var showDpadTriggerSetupBottomSheet: Boolean by mutableStateOf(false)
 
     init {
@@ -106,9 +107,7 @@ class KeyMapListViewModel(
                 multiSelectProvider.state,
             ) { keymapListState, selectionState ->
                 Pair(keymapListState, selectionState)
-            }.collectLatest { pair ->
-                val (listItemContentList, selectionState) = pair
-
+            }.collectLatest { (listItemContentList, selectionState) ->
                 _state.value = listItemContentList.mapData { contentList ->
                     contentList.map { content ->
                         val isSelected = if (selectionState is SelectionState.Selecting) {
@@ -180,7 +179,10 @@ class KeyMapListViewModel(
                 TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED, TriggerError.FLOATING_BUTTONS_NOT_PURCHASED -> {
                     navigate(
                         "purchase_advanced_trigger",
-                        NavDestination.ConfigKeyMap(keyMapUid = null, showAdvancedTriggers = true),
+                        NavDestination.ConfigKeyMap(
+                            keyMapUid = null,
+                            showAdvancedTriggers = true,
+                        ),
                     )
                 }
 

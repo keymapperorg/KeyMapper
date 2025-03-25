@@ -35,7 +35,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -100,7 +100,6 @@ class AndroidPermissionAdapter(
             .stateIn(coroutineScope, SharingStarted.Eagerly, false)
 
     init {
-
         suAdapter.isGranted
             .drop(1)
             .onEach { onPermissionsChanged() }
@@ -122,6 +121,7 @@ class AndroidPermissionAdapter(
         // whenever the setting to never show dnd permission changes
         // update whether permissions are granted.
         neverRequestDndPermission
+            .drop(1)
             .onEach { onPermissionsChanged() }
             .launchIn(coroutineScope)
     }
@@ -338,7 +338,7 @@ class AndroidPermissionAdapter(
             }
     }
 
-    override fun isGrantedFlow(permission: Permission): Flow<Boolean> = callbackFlow {
+    override fun isGrantedFlow(permission: Permission): Flow<Boolean> = channelFlow {
         send(isGranted(permission))
 
         onPermissionsUpdate.collect {

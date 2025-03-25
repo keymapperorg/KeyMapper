@@ -30,8 +30,10 @@ import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.compose.ComposeColors
 import io.github.sds100.keymapper.databinding.ActivityMainBinding
 import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerController
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
+import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
 import io.github.sds100.keymapper.system.permissions.RequestPermissionDelegate
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.showPopups
@@ -56,6 +58,14 @@ abstract class BaseMainActivity : AppCompatActivity() {
 
         const val ACTION_SAVE_FILE = "$PACKAGE_NAME.ACTION_SAVE_FILE"
         const val EXTRA_FILE_URI = "$PACKAGE_NAME.EXTRA_FILE_URI"
+    }
+
+    private val permissionAdapter: AndroidPermissionAdapter by lazy {
+        ServiceLocator.permissionAdapter(this)
+    }
+
+    val serviceAdapter: AccessibilityServiceAdapter by lazy {
+        ServiceLocator.accessibilityServiceAdapter(this)
     }
 
     val viewModel by viewModels<ActivityViewModel> {
@@ -175,6 +185,13 @@ abstract class BaseMainActivity : AppCompatActivity() {
         super.onResume()
 
         Timber.i("MainActivity: onResume. Version: ${Constants.VERSION}")
+
+        // This must be after onResume to ensure all the fragment lifecycles' have also
+        // resumed which are observing these events.
+        // This is checked here and not in KeyMapperApp's lifecycle observer because
+        // the activities have not necessarily resumed at that point.
+        permissionAdapter.onPermissionsChanged()
+        serviceAdapter.updateWhetherServiceIsEnabled()
     }
 
     override fun onDestroy() {

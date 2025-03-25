@@ -27,6 +27,7 @@ import io.github.sds100.keymapper.util.dataOrNull
 import io.github.sds100.keymapper.util.otherwise
 import io.github.sds100.keymapper.util.then
 import io.github.sds100.keymapper.util.valueIfFailure
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.combine
@@ -76,10 +77,13 @@ class DisplayKeyMapUseCaseImpl(
      * say there are no purchases while it is loading.
      */
     private val purchasesFlow: Flow<State<Set<ProductId>>> = callbackFlow {
-        withTimeout(3000L) {
-            val value =
+        try {
+            val value = withTimeout(5000L) {
                 purchasingManager.purchases.filterIsInstance<State.Data<Set<ProductId>>>().first()
+            }
+
             send(value)
+        } catch (_: TimeoutCancellationException) {
         }
 
         purchasingManager.purchases.collect(this::send)
