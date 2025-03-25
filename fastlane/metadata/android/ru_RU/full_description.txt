@@ -1,36 +1,36 @@
 New trigger! 🎉 Remap your Assistant & Bixby, and DPAD buttons!
 
-Что можно переназначить?
+What can be remapped?
 
- * Кнопки громкости.
+ * Volume buttons.
  * Power button, side key, and voice assistant button (one time purchase to support development).
- * Проводные и Bluetooth клавиатуры.
- * Жесты отпечатка пальца на поддерживаемых устройствах.
+ * Bluetooth/wired keyboards.
+ * Fingerprint gestures on supported devices.
  * DPAD buttons on game controllers.
- * Кнопки на других подключенных устройствах также должны работать.
+ * Buttons on other connected devices should also work.
 
-Вы можете совместить нажатие нескольких кнопок на определенном устройстве или нескольких устройствах для создания "события". У каждого события может быть несколько действий. Можно назначить событие на одновременное или последовательное нажатие клавиш. Клавиши можно переназначить при их коротком, длительном или двойном нажатии. Переназначение может иметь набор "ограничений" для того чтобы срабатывать только в определенных ситуациях.
+You can combine multiple keys from a specific device or any device to form a "trigger". Each trigger can have multiple actions. The keys can be set to be pressed at the same time or one after another in a sequence. Keys can be remapped when they are short pressed, long pressed or double pressed. A keymap can have a set of "constraints" so it only has an effect in certain situations.
 
-Что НЕ может быть переназначено:
- * Кнопки мыши
+What can’t be remapped?
+ * Mouse buttons
  * Thumb sticks or triggers on game controllers
 
-Your key maps do not work if the screen is OFF. Это ограничение самого Android. К сожалению с этим ничего нельзя сделать.
+Your key maps do not work if the screen is OFF. This is a limitation in Android. There is nothing the dev can do.
 
-Каким образом можно переназначить клавиши?
-Некоторые действия будут работать только на устройствах с Root правами и/или на конкретных версиях Android.
+What can I remap my keys to do?
+Some actions will only work on rooted devices and specific Android versions.
 
-Здесь настолько много возможностей, что их нельзя перечислить. Посмотрите полный список здесь: https://docs.keymapper.club/user-guide/actions
+There are too many features to list here so check out the full list here: https://docs.keymapper.club/user-guide/actions
 
-Разрешения
-Вам не нужно предоставлять все разрешения для работы приложения. Приложение сообщит, нужно ли вам разрешение для работы функции.
+Permissions
+You don't have to grant all the permissions for the app to work. The app will tell you if a permission needs to be granted for a feature to work.
 
- * Служба спец.возможностей: Базовое требование для работы переназначения клавиш. It is needed so the app can listen to and block key events.
- * Администратор устройства: Чтобы выключить экран при использовании действия для выключения экрана.
- * Изменение системных настроек: для изменения яркости и параметров вращения.
- * Камера: Для управления фонариком.
+ * Accessibility Service: Basic requirement for remapping to work. It is needed so the app can listen to and block key events.
+ * Device Admin: To turn the screen off when using the action to turn off the screen.
+ * Modify System Settings: To change the brightness and rotation settings.
+ * Camera: To control the flashlight.
 
- На некоторых устройствах, включение службы специальных возможностей отключит "расширенное шифрование данных".
+ On some devices, enabling the accessibility service will disable "enhanced data encryption".
 
 Discord: www.keymapper.club
-Вебсайт: www.keymapper.club
+Website: docs.keymapper.club

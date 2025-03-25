@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--  Action descriptions  -->
+    <!--  Action descriptions  -->
+    <!--  Headers  -->
+    <!--  Headers  -->
+    <!--  Hints  -->
+    <!--  Hints  -->
+    <!--  Radio buttons  -->
+    <!--  Radio buttons  -->
+    <!--  Tabs  -->
+    <string name="tab_trigger">Kích hoạt</string>
+    <!--  Tabs  -->
+    <!--  Navigation argument ids  -->
+    <!--  Navigation argument ids  -->
+    <!--  Toasts  -->
+    <!--  Toasts  -->
+    <!-- Extra labels -->
+    <!-- Extra labels -->
+    <!-- Constraints -->
+    <!-- Constraints -->
+    <!-- Click types -->
+    <!-- Click types -->
+    <!-- URLs -->
+    <!-- URLs -->
+    <!-- Activity titles -->
+    <!-- Activity titles -->
+    <!--  Bug report slides-->
+    <string name="slide_button_share_github">GitHub</string>
+    <!--  Bug report slides-->
+    <!-- Menu action titles-->
+    <string name="action_about">Thông tin </string>
+    <!-- Menu action titles-->
+    <!-- Button titles -->
+    <string name="button_advanced_triggers">Trình kích hoạt nâng cao</string>
+    <string name="button_advanced_triggers_badge">Mới!</string>
+    <!-- Button titles -->
+    <!-- Dialog stuff -->
+    <!-- Dialog stuff -->
+    <!-- Notification strings -->
+    <string name="notification_ime_persistent_title">Hộp chọn bàn phím</string>
+    <!--  remove accessibility from the word because the other notification buttons arent visible on small screens  -->
+    <string name="notification_toggle_keyboard_title">Chuyển đổi bàn phím Key Mapper</string>
+    <!-- Notification strings -->
+    <!--Preference titles and summaries-->
+    <!--Preference titles and summaries-->
+    <!--Preference categories-->
+    <!--Preference categories-->
+    <!-- About activity-->
+    <!-- About activity-->
+    <!--flags-->
+    <!--flags-->
+    <!-- system action options -->
+    <!-- system action options -->
+    <!-- Tiles -->
+    <string name="tile_toggle_keymapper_keyboard">Chuyển đổi bàn phím Key Mapper</string>
+    <!-- Tiles -->
+    <!-- Meta States -->
+    <!-- Meta States -->
+    <!-- Error messages -->
+    <!-- Error messages -->
+    <!-- action labels -->
+    <string name="action_consume_keyevent">Không làm gì cả</string>
+    <string name="action_device_controls">Màn hình điều khiển thiết bị</string>
+    <!-- action labels -->
+    <!-- action category labels -->
+    <string name="action_cat_navigation">Điều hướng</string>
+    <string name="action_cat_volume">Âm lượng</string>
+    <string name="action_cat_media">Phương tiện truyền thông</string>
+    <string name="action_cat_keyboard">Bàn phím</string>
+    <string name="action_cat_apps">Ứng dụng</string>
+    <string name="action_cat_input">Đầu vào</string>
+    <string name="action_cat_camera_sound">Máy ảnh &amp; Âm thanh</string>
+    <string name="action_cat_connectivity">Kết nối</string>
+    <string name="action_cat_content">Nội dung</string>
+    <string name="action_cat_interface">Giao diện</string>
+    <string name="action_cat_telephony">Điện thoại</string>
+    <string name="action_cat_display">Hiển thị</string>
+    <!-- action category labels -->
+    <!--  Intent action type strings  -->
+    <string name="intent_type_bool_header">Boolean</string>
+    <string name="intent_type_bool_array_header">Boolean array</string>
+    <string name="intent_type_int_header">Số nguyên</string>
+    <string name="intent_type_int_array_header">Integer array</string>
+    <string name="intent_type_string_header">Chuỗi</string>
+    <string name="intent_type_string_array_header">Mảng chuỗi</string>
+    <string name="intent_type_long_header">Dài</string>
+    <string name="intent_type_long_array_header">Mảng dài</string>
+    <string name="intent_type_byte_header">Byte</string>
+    <string name="intent_type_byte_array_header">Mảng byte</string>
+    <string name="intent_type_double_header">Double</string>
+    <string name="intent_type_double_array_header">Mảng đôi</string>
+    <string name="intent_type_char_header">Ký tự</string>
+    <string name="intent_type_char_array_header">Mảng ký tự</string>
+    <string name="intent_type_float_header">Nổi</string>
+    <string name="intent_type_float_array_header">Mảng nổi</string>
+    <string name="intent_type_short_header">Ngắn</string>
+    <string name="intent_type_short_array_header">Mảng ngắn</string>
+    <string name="intent_type_bool_example">Chỉ có thể là \"đúng\" hoặc \"sai\"</string>
+    <string name="intent_type_bool_array_example">Danh sách \"đúng\" và \"sai\" được phân tách bằng dấu phẩy. Ví dụ: đúng, sai, đúng</string>
+    <string name="intent_type_int_example">Một số nguyên hợp lệ trong ngôn ngữ lập trình Java.</string>
+    <string name="intent_type_int_array_example">Danh sách các số nguyên hợp lệ được phân tách bằng dấu phẩy trong ngôn ngữ lập trình Java. Ví dụ: 100,399 </string>
+    <string name="intent_categories_example">Một danh sách được phân tách bằng dấu phẩy. Ví dụ: loại 1, loại 2</string>
+    <string name="intent_type_string_example">Bất kỳ văn bản nào.</string>
+    <string name="intent_type_string_array_example">Danh sách các chuỗi được phân tách bằng dấu phẩy. Ví dụ: chuỗi1, chuỗi2</string>
+    <string name="intent_type_long_example">Một Long hợp lệ trong ngôn ngữ lập trình Java.</string>
+    <string name="intent_type_long_array_example">Danh sách các Độ dài hợp lệ được phân tách bằng dấu phẩy trong ngôn ngữ lập trình Java. Ví dụ: 102302234234234,399083423234429</string>
+    <string name="intent_type_byte_example">Một Byte hợp lệ trong ngôn ngữ lập trình Java.</string>
+    <string name="intent_type_byte_array_example">Danh sách các Byte hợp lệ được phân tách bằng dấu phẩy trong ngôn ngữ lập trình Java. Ví dụ: 123,3</string>
+    <string name="intent_type_double_example">Một Double hợp lệ trong ngôn ngữ lập trình Java.</string>
+    <string name="intent_type_double_array_example">Danh sách các Mảng đôi hợp lệ được phân tách bằng dấu phẩy trong ngôn ngữ lập trình Java. Ví dụ: 1.0,3.234</string>
+    <string name="intent_type_char_example">Một Char hợp lệ trong ngôn ngữ lập trình Java. Ví dụ: \'a\' hoặc \'b\'</string>
+    <string name="intent_type_char_array_example">Danh sách các ký tự hợp lệ được phân tách bằng dấu phẩy trong ngôn ngữ lập trình Java. Ví dụ: a,b,c</string>
+    <string name="intent_type_float_example">Float hợp lệ trong ngôn ngữ lập trình Java. Ví dụ: 3,145</string>
+    <string name="intent_type_float_array_example">Danh sách các Mảng nổi hợp lệ được phân tách bằng dấu phẩy trong ngôn ngữ lập trình Java. Ví dụ: 1241.123</string>
+    <string name="intent_type_short_example">Một đoạn ngắn hợp lệ bằng ngôn ngữ lập trình Java. Ví dụ: 2342</string>
+    <string name="intent_type_short_array_example">Danh sách các Mảng ngắn hợp lệ được phân tách bằng dấu phẩy bằng ngôn ngữ lập trình Java. Ví dụ: 3242,12354</string>
+    <string name="intent_flags_example">Các cờ cho một Ý định được lưu dưới dạng cờ bit. Những cờ này thay đổi cách xử lý Ý định. Nếu mục này trống đối với Ý định hoạt động thì Trình ánh xạ khóa sẽ sử dụng FLAG_ACTIVITY_NEW_TASK theo mặc định. Để biết thêm thông tin, hãy nhấn vào \'tài liệu\' để xem tài liệu dành cho nhà phát triển Android.</string>
+    <!--  Intent action type strings  -->
+    <!--  Tap targets  -->
+    <string name="tap_target_quick_start_guide_primary">Hướng dẫn bắt đầu nhanh</string>
+    <string name="tap_target_quick_start_guide_secondary">Hãy xem Hướng dẫn bắt đầu nhanh nếu bạn gặp khó khăn.</string>
+    <!--  Tap targets  -->
+    <!--  About  -->
+    <string name="about_link_github">GitHub</string>
+    <string name="about_link_website">Website</string>
+    <string name="about_link_translations">Bản dịch</string>
+    <string name="about_version">Phiên bản %s</string>
+    <string name="about_link_rate">Đánh giá</string>
+    <string name="about_link_changelog">Nhật ký thay đổi</string>
+    <string name="about_header_boring_stuff">Thông tin pháp lý</string>
+    <string name="about_license_title">Giấy phép</string>
+    <string name="about_license_subtitle">Giấy phép nguồn mở cho ứng dụng này.</string>
+    <string name="about_privacy_policy_title">Chính sách bảo mật</string>
+    <string name="about_privacy_policy_subtitle">Chúng tôi không thu thập bất kỳ thông tin cá nhân nào nhưng đây là chính sách bảo mật nói lên điều này.</string>
+    <string name="about_header_our_team">Đội ngũ của chúng tôi</string>
+    <string name="about_team_sds100_role">Nhà phát triển</string>
+    <string name="about_team_kekero_role">Phiên dịch viên (tiếng Ba Lan)</string>
+    <string name="about_team_trollserver_role">Người phiên dịch (tiếng Séc)</string>
+    <string name="about_team_bydario_role">Phiên dịch viên (tiếng Tây Ban Nha)</string>
+    <!--  About  -->
+    <!-- Advanced triggers -->
+    <string name="assistant_any_trigger_name">Trợ lý bất kỳ</string>
+    <string name="assistant_voice_trigger_name">Trợ lý giọng nói</string>
+    <string name="advanced_triggers_sheet_title">Trình kích hoạt nâng cao</string>
+    <string name="advanced_triggers_learn_more_button">Tìm hiểu thêm</string>
+    <!--  Purchasing  -->
+    <string name="unlock_product_button">Mở khóa (%s)</string>
+    <string name="use_product_button">Sử dụng</string>
+    <string name="loading_product_button">Đang tải…</string>
+    <string name="retry_loading_price_button">Thử tìm nạp lại giá</string>
+    <string name="purchasing_error_cancelled">Đã hủy mua hàng.</string>
+    <string name="purchasing_error_not_implemented">Điều này yêu cầu một tính năng trả phí chỉ có thể mua được bằng cách tải xuống Key Mapper từ Google Play.</string>
+    <string name="purchasing_error_network">Đã gặp lỗi mạng. Bạn có kết nối internet không?</string>
+    <string name="purchasing_error_product_not_found">Sản phẩm này không được tìm thấy.</string>
+    <string name="purchasing_error_store_problem">Google Play đã gặp lỗi.</string>
+    <string name="purchasing_error_dialog_title">Đã xảy ra lỗi 😕</string>
+    <string name="purchasing_error_dialog_button_retry">Thử lại</string>
+    <string name="purchasing_contact_developer_button">Liên hệ với nhà phát triển</string>
+    <string name="purchasing_not_implemented_bottom_sheet_text">Trình kích hoạt nâng cao là tính năng trả phí nhưng bạn đã tải xuống bản dựng FOSS của Key Mapper không bao gồm mô-đun này hoặc thanh toán Google Play. Vui lòng tải xuống Key Mapper từ Google Play để có quyền truy cập vào tính năng này.</string>
+    <string name="purchasing_download_key_mapper_from_google_play">Tải xuống bản dựng Play</string>
+    <!--  Dpad trigger setup bottom sheet  -->
+    <!-- No keys recorded bottom sheet -->
+    <!--  Floating buttons  -->
+    <!-- Home screen -->
+    <!-- Trigger screen -->
+    <!--  Action screen  -->
+    <!--  Constraint screen  -->
+</resources>
