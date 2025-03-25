@@ -22,6 +22,7 @@ class TestConstraintSnapshot(
     val isLocked: Boolean = false,
     val isBackFlashlightOn: Boolean = false,
     val isFrontFlashlightOn: Boolean = false,
+    val isLockscreenShowing: Boolean = false,
 ) : ConstraintSnapshot {
 
     override fun isSatisfied(constraint: Constraint): Boolean {
@@ -91,6 +92,8 @@ class TestConstraintSnapshot(
             Constraint.PhoneRinging -> callState == CallState.RINGING
             Constraint.Charging -> isCharging
             Constraint.Discharging -> !isCharging
+            Constraint.LockScreenShowing -> isLockscreenShowing
+            Constraint.LockScreenNotShowing -> !isLockscreenShowing
         }
 
         if (isSatisfied) {
