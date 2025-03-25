@@ -46,7 +46,7 @@ object ConstraintUtils {
 
         ConstraintId.ORIENTATION_90,
         ConstraintId.ORIENTATION_270,
-            -> ComposeIconInfo.Vector(Icons.Outlined.StayCurrentLandscape)
+        -> ComposeIconInfo.Vector(Icons.Outlined.StayCurrentLandscape)
 
         ConstraintId.ORIENTATION_LANDSCAPE -> ComposeIconInfo.Vector(Icons.Outlined.StayCurrentLandscape)
         ConstraintId.ORIENTATION_PORTRAIT -> ComposeIconInfo.Vector(Icons.Outlined.StayCurrentPortrait)
