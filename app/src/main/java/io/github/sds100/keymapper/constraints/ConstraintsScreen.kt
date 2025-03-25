@@ -152,6 +152,18 @@ private fun ConstraintsScreen(
                     is ConfigConstraintsState.Loaded -> {
                         Spacer(Modifier.height(8.dp))
 
+                        if (state.data.constraintList.isNotEmpty()) {
+                            Spacer(Modifier.height(8.dp))
+
+                            Text(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                text = stringResource(R.string.constraint_list_explanation_header),
+                                style = MaterialTheme.typography.titleSmall,
+                            )
+                        }
+
+                        Spacer(Modifier.height(8.dp))
+
                         ConstraintList(
                             modifier = Modifier.weight(1f),
                             constraintList = state.data.constraintList,

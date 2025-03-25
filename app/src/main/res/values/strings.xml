@@ -1380,4 +1380,5 @@
     <string name="constraint_list_delete_cancel">Cancel</string>
     <string name="constraint_mode_title">Logic mode</string>
     <string name="choose_constraint_title">Choose a constraint</string>
+    <string name="constraint_list_explanation_header">This key map will only run if:</string>
 </resources>
