@@ -42,7 +42,7 @@ object ConstraintUtils {
 
         ConstraintId.ORIENTATION_0,
         ConstraintId.ORIENTATION_180,
-            -> ComposeIconInfo.Vector(Icons.Outlined.StayCurrentPortrait)
+        -> ComposeIconInfo.Vector(Icons.Outlined.StayCurrentPortrait)
 
         ConstraintId.ORIENTATION_90,
         ConstraintId.ORIENTATION_270,

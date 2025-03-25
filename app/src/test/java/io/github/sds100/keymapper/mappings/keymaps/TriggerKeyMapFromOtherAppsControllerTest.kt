@@ -2,13 +2,15 @@ package io.github.sds100.keymapper.mappings.keymaps
 
 import io.github.sds100.keymapper.actions.Action
 import io.github.sds100.keymapper.actions.ActionData
+import io.github.sds100.keymapper.actions.ActionErrorSnapshot
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
-import io.github.sds100.keymapper.constraints.LazyConstraintSnapshot
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCase
 import io.github.sds100.keymapper.mappings.keymaps.detection.TriggerKeyMapFromOtherAppsController
 import io.github.sds100.keymapper.mappings.keymaps.trigger.Trigger
+import io.github.sds100.keymapper.util.Error
+import io.github.sds100.keymapper.util.TestConstraintSnapshot
 import junitparams.JUnitParamsRunner
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -77,21 +79,14 @@ class TriggerKeyMapFromOtherAppsControllerTest {
             MutableStateFlow(HOLD_DOWN_DURATION).apply {
                 on { defaultHoldDownDuration } doReturn this
             }
+
+            on { getErrorSnapshot() } doReturn object : ActionErrorSnapshot {
+                override fun getError(action: ActionData): Error? = null
+            }
         }
 
         detectConstraintsUseCase = mock {
-            on { getSnapshot() } doReturn LazyConstraintSnapshot(
-                accessibilityService = mock(),
-                mediaAdapter = mock(),
-                devicesAdapter = mock(),
-                displayAdapter = mock(),
-                cameraAdapter = mock(),
-                networkAdapter = mock(),
-                inputMethodAdapter = mock(),
-                lockScreenAdapter = mock(),
-                phoneAdapter = mock(),
-                powerAdapter = mock(),
-            )
+            on { getSnapshot() } doReturn TestConstraintSnapshot()
         }
 
         controller = TriggerKeyMapFromOtherAppsController(

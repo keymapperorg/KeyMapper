@@ -24,6 +24,7 @@ import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.data.entities.LogEntryEntity
 import io.github.sds100.keymapper.data.migration.Migration10To11
 import io.github.sds100.keymapper.data.migration.Migration11To12
+import io.github.sds100.keymapper.data.migration.Migration13To14
 import io.github.sds100.keymapper.data.migration.Migration1To2
 import io.github.sds100.keymapper.data.migration.Migration2To3
 import io.github.sds100.keymapper.data.migration.Migration3To4
@@ -32,7 +33,6 @@ import io.github.sds100.keymapper.data.migration.Migration5To6
 import io.github.sds100.keymapper.data.migration.Migration6To7
 import io.github.sds100.keymapper.data.migration.Migration8To9
 import io.github.sds100.keymapper.data.migration.Migration9To10
-import io.github.sds100.keymapper.data.migration.Migration13To14
 
 /**
  * Created by sds100 on 24/01/2020.

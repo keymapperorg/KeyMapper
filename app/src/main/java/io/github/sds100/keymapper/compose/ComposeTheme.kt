@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.compose
 
-import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
@@ -8,15 +7,11 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalView
-import androidx.core.view.WindowCompat
 
 object ComposeTheme {
 
-     val lightScheme = lightColorScheme(
+    val lightScheme = lightColorScheme(
         primary = ComposeColors.primaryLight,
         onPrimary = ComposeColors.onPrimaryLight,
         primaryContainer = ComposeColors.primaryContainerLight,
@@ -54,7 +49,7 @@ object ComposeTheme {
         surfaceContainerHighest = ComposeColors.surfaceContainerHighestLight,
     )
 
-     val darkScheme = darkColorScheme(
+    val darkScheme = darkColorScheme(
         primary = ComposeColors.primaryDark,
         onPrimary = ComposeColors.onPrimaryDark,
         primaryContainer = ComposeColors.primaryContainerDark,

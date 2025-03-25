@@ -46,7 +46,6 @@ object ComposeColors {
     val greenContainerLight = Color(0xFFBCF0B4)
     val onGreenContainerLight = Color(0xFF235024)
 
-
     val primaryDark = Color(0xFFAAC7FF)
     val onPrimaryDark = Color(0xFF0A305F)
     val primaryContainerDark = Color(0xFF274777)
@@ -88,5 +87,4 @@ object ComposeColors {
     val onGreenDark = Color(0xFF0A390F)
     val greenContainerDark = Color(0xFF235024)
     val onGreenContainerDark = Color(0xFFBCF0B4)
-
 }

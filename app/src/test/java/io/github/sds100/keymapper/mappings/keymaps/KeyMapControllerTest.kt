@@ -28,6 +28,7 @@ import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
 import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.InputEventType
+import io.github.sds100.keymapper.util.TestConstraintSnapshot
 import io.github.sds100.keymapper.util.parallelTrigger
 import io.github.sds100.keymapper.util.sequenceTrigger
 import io.github.sds100.keymapper.util.singleKeyTrigger
@@ -172,10 +173,14 @@ class KeyMapControllerTest {
             MutableStateFlow(HOLD_DOWN_DURATION).apply {
                 on { defaultHoldDownDuration } doReturn this
             }
+
+            on { getErrorSnapshot() } doReturn object : ActionErrorSnapshot {
+                override fun getError(action: ActionData): Error? = null
+            }
         }
 
         detectConstraintsUseCase = mock {
-            on { getSnapshot() } doReturn mock()
+            on { getSnapshot() } doReturn TestConstraintSnapshot()
         }
 
         controller = KeyMapController(
@@ -922,7 +927,8 @@ class KeyMapControllerTest {
         keyMapListFlow.value = listOf(KeyMap(trigger = trigger, actionList = actionList))
 
         // WHEN
-        whenever(performActionsUseCase.getErrorSnapshot()).thenReturn(object : ActionErrorSnapshot {
+        whenever(performActionsUseCase.getErrorSnapshot()).thenReturn(object :
+            ActionErrorSnapshot {
             override fun getError(action: ActionData): Error {
                 return Error.NoCompatibleImeChosen
             }

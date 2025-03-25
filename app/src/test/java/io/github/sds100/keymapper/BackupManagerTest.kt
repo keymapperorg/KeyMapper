@@ -10,6 +10,8 @@ import io.github.sds100.keymapper.backup.RestoreType
 import io.github.sds100.keymapper.data.db.AppDatabase
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.EntityExtra
+import io.github.sds100.keymapper.data.entities.FloatingButtonEntityWithLayout
+import io.github.sds100.keymapper.data.entities.FloatingLayoutEntityWithButtons
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.data.repositories.FakePreferenceRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
@@ -107,8 +109,12 @@ class BackupManagerTest {
             dispatchers = dispatcherProvider,
             soundsManager = mockSoundsManager,
             uuidGenerator = mockUuidGenerator,
-            floatingButtonRepository = mock(),
-            floatingLayoutRepository = mock(),
+            floatingButtonRepository = mock {
+                on { buttonsList }.then { MutableStateFlow(State.Data(emptyList<FloatingButtonEntityWithLayout>())) }
+            },
+            floatingLayoutRepository = mock {
+                on { layouts }.then { MutableStateFlow(State.Data(emptyList<FloatingLayoutEntityWithButtons>())) }
+            },
         )
 
         parser = JsonParser()
@@ -321,7 +327,7 @@ class BackupManagerTest {
 
     @Test
     fun `restore keymaps with no db version, assume version is 9 and don't show error message`() = runTest(testDispatcher) {
-            val fileName = "restore-keymaps-no-db-version.json"
+        val fileName = "restore-keymaps-no-db-version.json"
 
         val result =
             backupManager.restore(copyFileToPrivateFolder(fileName), RestoreType.REPLACE)
@@ -402,10 +408,10 @@ class BackupManagerTest {
 
     @Test
     fun `backup key maps, return list of default key maps, keymap db version should be current database version`() = runTest(testDispatcher) {
-            // GIVEN
-            val backupDirUuid = "backup_uuid"
+        // GIVEN
+        val backupDirUuid = "backup_uuid"
 
-            whenever(mockUuidGenerator.random()).then {
+        whenever(mockUuidGenerator.random()).then {
             backupDirUuid
         }
 

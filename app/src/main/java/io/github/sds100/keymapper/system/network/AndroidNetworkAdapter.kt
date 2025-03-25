@@ -36,7 +36,7 @@ class AndroidNetworkAdapter(
                 WifiManager.WIFI_STATE_CHANGED_ACTION -> {
                     val state = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, -1)
 
-                    _isWifiEnabled.update { state == WifiManager.WIFI_STATE_ENABLED }
+                    isWifiEnabled.update { state == WifiManager.WIFI_STATE_ENABLED }
                 }
 
                 WifiManager.NETWORK_STATE_CHANGED_ACTION -> {
@@ -56,7 +56,7 @@ class AndroidNetworkAdapter(
         }
 
     override val connectedWifiSSIDFlow = MutableStateFlow(connectedWifiSSID)
-    private val _isWifiEnabled = MutableStateFlow(isWifiEnabled())
+    private val isWifiEnabled = MutableStateFlow(isWifiEnabled())
 
     init {
         IntentFilter().apply {
@@ -74,7 +74,7 @@ class AndroidNetworkAdapter(
 
     override fun isWifiEnabled(): Boolean = wifiManager.isWifiEnabled
 
-    override fun isWifiEnabledFlow(): Flow<Boolean> = _isWifiEnabled
+    override fun isWifiEnabledFlow(): Flow<Boolean> = isWifiEnabled
 
     override fun enableWifi(): Result<*> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
