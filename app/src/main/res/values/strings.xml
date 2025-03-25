@@ -81,12 +81,12 @@
     <string name="trigger_error_gesture_duration_too_high">Gesture duration is too high due to android limitations.</string>
     <string name="trigger_error_dpad_ime_not_selected">You must be using a Key Mapper keyboard for DPAD triggers to work!</string>
 
-    <string name="home_error_is_battery_optimised">Your mappings will stop working randomly!</string>
-    <string name="home_error_key_maps_paused">Your mappings are paused!</string>
+    <string name="home_error_is_battery_optimised">Your key maps will stop working randomly!</string>
+    <string name="home_error_key_maps_paused">Your key maps are paused!</string>
     <string name="home_error_key_maps_paused_button">Unpause</string>
-    <string name="home_error_accessibility_service_is_disabled">The accessibility service needs to be turned on for your mappings to work!</string>
+    <string name="home_error_accessibility_service_is_disabled">The accessibility service needs to be turned on for your key maps to work!</string>
     <string name="home_error_accessibility_service_is_crashed">Your phone killed Key Mapper when it was in the background or it crashed!</string>
-    <string name="home_success_accessibility_service_is_enabled">The accessibility service is enabled! Your mappings should work.</string>
+    <string name="home_success_accessibility_service_is_enabled">The accessibility service is enabled! Your key maps should work.</string>
     <string name="home_error_logging_enabled">Extra logging is turned on! Turn this off if you aren\'t trying to fix an issue.</string>
     <string name="home_error_logging_enabled_button">Turn off</string>
 
@@ -488,7 +488,7 @@
 
     <string name="dialog_message_sort_sort_by">Sort by</string>
     <string name="sorting_drag_and_drop_list_help">Drag the handles to adjust priorities. The item at the top is the most important. You can also tap any item to reverse its sort order.</string>
-    <string name="sorting_drag_and_drop_list_help_example">Example: To sort mappings primarily by their Actions in ascending order and secondarily by their Triggers in descending order, move Actions to the first position and Triggers to the second.</string>
+    <string name="sorting_drag_and_drop_list_help_example">Example: To sort key maps primarily by their Actions in ascending order and secondarily by their Triggers in descending order, move Actions to the first position and Triggers to the second.</string>
     <string name="drag_handle_for">Drag handle for %1$s</string>
     <string name="show_example">Show example</string>
 
@@ -526,7 +526,7 @@
 
     <!-- Notification strings -->
     <string name="notification_channel_ime_picker">Keyboard picker</string>
-    <string name="notification_channel_toggle_mappings">Pause/Resume mappings</string>
+    <string name="notification_channel_toggle_mappings">Pause/Resume key maps</string>
     <string name="notification_channel_keyboard_hidden">Keyboard is hidden warning</string>
     <string name="notification_channel_toggle_keyboard">Toggle Key Mapper keyboard</string>
     <string name="notification_channel_new_features">New features</string>
@@ -591,10 +591,10 @@
     <string name="title_pref_show_ime_picker_notification">Keyboard picker notification</string>
     <string name="summary_pref_show_ime_picker_notification">Show a persistent notification to allow you to pick a keyboard.</string>
 
-    <string name="title_pref_show_toggle_keymaps_notification">Pause/resume mappings notification</string>
-    <string name="summary_pref_show_toggle_keymaps_notification">Show a persistent notification which starts/pauses your mappings.</string>
+    <string name="title_pref_show_toggle_keymaps_notification">Pause/resume key maps notification</string>
+    <string name="summary_pref_show_toggle_keymaps_notification">Show a persistent notification which starts/pauses your key maps.</string>
 
-    <string name="title_pref_automatic_backup_location">Automatically back up mappings to a specified location</string>
+    <string name="title_pref_automatic_backup_location">Automatically back up key maps to a specified location</string>
     <string name="summary_pref_automatic_backup_location_disabled">No location chosen.</string>
 
     <string name="title_pref_choose_devices">Choose devices</string>
@@ -665,7 +665,7 @@
     <string name="title_pref_grant_shizuku_granted">3. Key Mapper will automatically use Shizuku. Tap to read which Key Mapper features use Shizuku.</string>
 
     <string name="title_pref_default_options">Default mapping options</string>
-    <string name="summary_pref_default_options">Change the default options for your mappings.</string>
+    <string name="summary_pref_default_options">Change the default options for your key maps.</string>
 
     <string name="title_pref_reset_settings">Reset all settings</string>
     <string name="summary_pref_reset_settings">DANGER! Reset all settings in the app to the default. Your key maps will NOT be reset.</string>
@@ -753,8 +753,8 @@
     <!-- system action options -->
 
     <!-- Tiles -->
-    <string name="tile_pause">Pause mappings</string>
-    <string name="tile_resume">Resume mappings</string>
+    <string name="tile_pause">Pause key maps</string>
+    <string name="tile_resume">Resume key maps</string>
     <string name="tile_service_disabled">Service Disabled</string>
     <string name="tile_accessibility_service_disabled_content_description">Key Mapper accessibility service is disabled</string>
     <string name="tile_toggle_keymapper_keyboard">Toggle Key Mapper keyboard</string>
