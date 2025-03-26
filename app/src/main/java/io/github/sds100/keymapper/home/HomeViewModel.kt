@@ -379,6 +379,7 @@ class HomeViewModel(
 
         listKeyMaps.deleteKeyMap(*selectedIds)
         multiSelectProvider.deselect(*selectedIds)
+        multiSelectProvider.stopSelecting()
     }
 
     fun onExportSelectedKeyMaps() {
