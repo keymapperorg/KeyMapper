@@ -689,14 +689,15 @@ object InputEventUtils {
     /**
      * Used for keyCode to scanCode fallback to go past possible keyCode values
      */
-    const val KEYCODE_TO_SCANCODE_OFFSET: Int = 1000
+    val KEYCODE_TO_SCANCODE_OFFSET: Int
+        get() = KeyEvent.getMaxKeyCode() + 1
 
     /**
      * Create a text representation of a key event. E.g if the control key was pressed,
      * "Ctrl" will be returned
      */
     fun keyCodeToString(keyCode: Int): String = NON_CHARACTER_KEY_LABELS[keyCode].let {
-        if (keyCode >= KEYCODE_TO_SCANCODE_OFFSET) {
+        if (keyCode >= KEYCODE_TO_SCANCODE_OFFSET || keyCode < 0) {
             "scancode $keyCode"
         } else {
             it ?: "unknown keycode $keyCode"

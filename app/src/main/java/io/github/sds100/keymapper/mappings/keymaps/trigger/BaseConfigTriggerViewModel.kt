@@ -456,7 +456,7 @@ abstract class BaseConfigTriggerViewModel(
         // need to be dismissed before it is added.
         config.addKeyCodeTriggerKey(key.keyCode, key.device, key.detectionSource)
 
-        if (key.keyCode >= InputEventUtils.KEYCODE_TO_SCANCODE_OFFSET) {
+        if (key.keyCode >= InputEventUtils.KEYCODE_TO_SCANCODE_OFFSET || key.keyCode < 0) {
             if (onboarding.shownKeyCodeToScanCodeTriggerExplanation) {
                 return
             }

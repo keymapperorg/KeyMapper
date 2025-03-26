@@ -304,10 +304,17 @@ abstract class BaseAccessibilityServiceController(
         // Guard to ignore processing when not applicable
         if (event.keyCode != KeyEvent.KEYCODE_UNKNOWN) return event
 
+        // Don't offset negative values
+        val scanCodeOffset: Int = if (event.scanCode >= 0) {
+            InputEventUtils.KEYCODE_TO_SCANCODE_OFFSET
+        } else {
+            0
+        }
+
         val eventProxy = event.copy(
             // Fallback to scanCode when keyCode is unknown as it's typically more unique
             // Add offset to go past possible keyCode values
-            keyCode = event.scanCode + InputEventUtils.KEYCODE_TO_SCANCODE_OFFSET,
+            keyCode = event.scanCode + scanCodeOffset,
         )
 
         return eventProxy
