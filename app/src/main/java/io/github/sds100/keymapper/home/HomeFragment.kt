@@ -48,6 +48,7 @@ class HomeFragment : Fragment() {
                             onAboutClick = {
                                 findNavController().navigate(NavAppDirections.actionGlobalAboutFragment())
                             },
+                            finishActivity = requireActivity()::finish,
                         )
                     }
                 }

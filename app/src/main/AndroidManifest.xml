@@ -84,14 +84,9 @@
         android:theme="@style/AppTheme.NoActionBar"
         tools:ignore="GoogleAppIndexingWarning">
 
-        <!--  relinquishTaskIdentity is required because the intent-filter has the
-          DEFAULT category. If relinquishTaskIdentity is false then when the user resumes the
-           app from the launcher they are taken back to the SplashActivity, and consequently the
-           home fragment in MainActivity. -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:relinquishTaskIdentity="true"
             android:theme="@style/Theme.App.Starting"
             android:windowSoftInputMode="adjustResize">
             <!--  IMPORTANT! windowSoftInputMode is needed for IME padding to work
@@ -134,6 +129,32 @@
             android:taskAffinity="">
             <intent-filter>
                 <action android:name="android.intent.action.CREATE_SHORTCUT" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".backup.RestoreKeyMapsActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:launchMode="singleInstance"
+            android:taskAffinity="io.github.sds100.keymapper.restore_key_maps"
+            android:theme="@style/AppTheme.DialogActivity"
+            android:windowSoftInputMode="adjustResize">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:mimeType="application/zip"
+                    android:scheme="content" />
+
+                <data
+                    android:mimeType="application/json"
+                    android:scheme="content" />
+
             </intent-filter>
         </activity>
 

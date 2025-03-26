@@ -129,7 +129,10 @@ private fun ConfigKeyMapScreen(
     if (showBackDialog) {
         BackDialog(
             onDismiss = { showBackDialog = false },
-            onDiscardClick = navigateBack,
+            onDiscardClick = {
+                showBackDialog = false
+                navigateBack()
+            },
         )
     }
 
@@ -202,7 +205,7 @@ private fun ConfigKeyMapScreen(
                         PrimaryScrollableTabRow(
                             selectedTabIndex = pagerState.targetPage,
                             divider = {},
-                            edgePadding = 0.dp,
+                            edgePadding = 16.dp,
                             contentColor = MaterialTheme.colorScheme.onSurface,
                         ) {
                             Tabs()

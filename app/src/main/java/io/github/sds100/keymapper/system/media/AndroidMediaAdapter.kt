@@ -27,7 +27,7 @@ import java.io.FileNotFoundException
 /**
  * Created by sds100 on 21/04/2021.
  */
-class AndroidMediaAdapter(context: Context, private val coroutineScope: CoroutineScope) : MediaAdapter {
+class AndroidMediaAdapter(context: Context, coroutineScope: CoroutineScope) : MediaAdapter {
     private val ctx = context.applicationContext
 
     private val audioManager: AudioManager by lazy { ctx.getSystemService()!! }
@@ -42,10 +42,12 @@ class AndroidMediaAdapter(context: Context, private val coroutineScope: Coroutin
             MutableStateFlow(emptySet())
         }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    private val audioPlaybackCallback = object : AudioManager.AudioPlaybackCallback() {
-        override fun onPlaybackConfigChanged(configs: MutableList<AudioPlaybackConfiguration>?) {
-            audioVolumeControlStreams.update { getActiveAudioVolumeStreams() }
+    private val audioPlaybackCallback by lazy {
+        @RequiresApi(Build.VERSION_CODES.O)
+        object : AudioManager.AudioPlaybackCallback() {
+            override fun onPlaybackConfigChanged(configs: MutableList<AudioPlaybackConfiguration>?) {
+                audioVolumeControlStreams.update { getActiveAudioVolumeStreams() }
+            }
         }
     }
 

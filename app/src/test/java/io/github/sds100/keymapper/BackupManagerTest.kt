@@ -10,8 +10,6 @@ import io.github.sds100.keymapper.backup.RestoreType
 import io.github.sds100.keymapper.data.db.AppDatabase
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.EntityExtra
-import io.github.sds100.keymapper.data.entities.FloatingButtonEntityWithLayout
-import io.github.sds100.keymapper.data.entities.FloatingLayoutEntityWithButtons
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.data.repositories.FakePreferenceRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
@@ -109,12 +107,8 @@ class BackupManagerTest {
             dispatchers = dispatcherProvider,
             soundsManager = mockSoundsManager,
             uuidGenerator = mockUuidGenerator,
-            floatingButtonRepository = mock {
-                on { buttonsList }.then { MutableStateFlow(State.Data(emptyList<FloatingButtonEntityWithLayout>())) }
-            },
-            floatingLayoutRepository = mock {
-                on { layouts }.then { MutableStateFlow(State.Data(emptyList<FloatingLayoutEntityWithButtons>())) }
-            },
+            floatingButtonRepository = mock {},
+            floatingLayoutRepository = mock {},
         )
 
         parser = JsonParser()

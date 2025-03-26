@@ -55,7 +55,7 @@ class AndroidBluetoothAdapter(
                 ctx,
                 broadcastReceiver,
                 this,
-                ContextCompat.RECEIVER_NOT_EXPORTED,
+                ContextCompat.RECEIVER_EXPORTED,
             )
         }
     }

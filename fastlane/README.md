@@ -29,13 +29,13 @@ Create testing release
 
 Create and deploy production release
 
-### alpha
+### internal
 
 ```sh
-[bundle exec] fastlane alpha
+[bundle exec] fastlane internal
 ```
 
-Deploy alpha release
+Create and deploy internal testing release
 
 ----
 

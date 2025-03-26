@@ -14,6 +14,7 @@ import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.backup.BackupRestoreMappingsUseCase
+import io.github.sds100.keymapper.backup.ImportExportState
 import io.github.sds100.keymapper.backup.RestoreType
 import io.github.sds100.keymapper.floating.FloatingLayoutsState
 import io.github.sds100.keymapper.floating.ListFloatingLayoutsUseCase
@@ -378,6 +379,7 @@ class HomeViewModel(
 
         listKeyMaps.deleteKeyMap(*selectedIds)
         multiSelectProvider.deselect(*selectedIds)
+        multiSelectProvider.stopSelecting()
     }
 
     fun onExportSelectedKeyMaps() {
@@ -490,8 +492,13 @@ class HomeViewModel(
         _importExportState.value = ImportExportState.Idle
     }
 
-    fun onBackClick() {
-        multiSelectProvider.stopSelecting()
+    fun onBackClick(): Boolean {
+        if (multiSelectProvider.state.value is SelectionState.Selecting) {
+            multiSelectProvider.stopSelecting()
+            return true
+        } else {
+            return false
+        }
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -519,17 +526,6 @@ class HomeViewModel(
             listFloatingLayouts,
         ) as T
     }
-}
-
-sealed class ImportExportState {
-    data object Idle : ImportExportState()
-    data object Exporting : ImportExportState()
-    data class FinishedExport(val uri: String) : ImportExportState()
-
-    data class ConfirmImport(val fileUri: String, val keyMapCount: Int) : ImportExportState()
-    data object Importing : ImportExportState()
-    data object FinishedImport : ImportExportState()
-    data class Error(val error: String) : ImportExportState()
 }
 
 sealed class HomeState {

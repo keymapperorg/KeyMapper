@@ -29,12 +29,14 @@ import com.anggrayudi.storage.extension.toDocumentFile
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.compose.ComposeColors
 import io.github.sds100.keymapper.databinding.ActivityMainBinding
+import io.github.sds100.keymapper.home.HomeViewModel
 import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerController
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
 import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
 import io.github.sds100.keymapper.system.permissions.RequestPermissionDelegate
+import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.showPopups
 import kotlinx.coroutines.Dispatchers
@@ -70,6 +72,10 @@ abstract class BaseMainActivity : AppCompatActivity() {
 
     val viewModel by viewModels<ActivityViewModel> {
         ActivityViewModel.Factory(ServiceLocator.resourceProvider(this))
+    }
+
+    private val homeViewModel by viewModels<HomeViewModel> {
+        Inject.homeViewModel(this)
     }
 
     private val currentNightMode: Int
@@ -151,7 +157,7 @@ abstract class BaseMainActivity : AppCompatActivity() {
                 return@launchRepeatOnLifecycle
             }
 
-            when (intent.action) {
+            when (intent?.action) {
                 ACTION_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG -> {
                     viewModel.onCantFindAccessibilitySettings()
                     viewModel.handledActivityLaunchIntent = true

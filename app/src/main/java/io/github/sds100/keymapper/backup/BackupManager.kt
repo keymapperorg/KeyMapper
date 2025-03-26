@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.backup
 
+import android.database.sqlite.SQLiteConstraintException
 import com.github.salomonbrys.kotson.byInt
 import com.github.salomonbrys.kotson.byNullableArray
 import com.github.salomonbrys.kotson.byNullableInt
@@ -24,9 +25,8 @@ import io.github.sds100.keymapper.data.entities.ConstraintEntity
 import io.github.sds100.keymapper.data.entities.EntityExtra
 import io.github.sds100.keymapper.data.entities.FingerprintMapEntity
 import io.github.sds100.keymapper.data.entities.FloatingButtonEntity
-import io.github.sds100.keymapper.data.entities.FloatingButtonEntityWithLayout
+import io.github.sds100.keymapper.data.entities.FloatingButtonKeyEntity
 import io.github.sds100.keymapper.data.entities.FloatingLayoutEntity
-import io.github.sds100.keymapper.data.entities.FloatingLayoutEntityWithButtons
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.data.entities.TriggerEntity
 import io.github.sds100.keymapper.data.entities.TriggerKeyEntity
@@ -486,7 +486,21 @@ class BackupManagerImpl(
             }
 
             if (backupContent.floatingLayouts != null) {
-                floatingLayoutRepository.insert(*backupContent.floatingLayouts.toTypedArray())
+                for (layout in backupContent.floatingLayouts) {
+                    var entity = layout
+                    var subCount = 0
+
+                    while (subCount < 1000) {
+                        try {
+                            floatingLayoutRepository.insert(entity)
+                            break
+                        } catch (_: SQLiteConstraintException) {
+                            // If the name already exists try creating it with a new name.
+                            entity = layout.copy(name = "${layout.name} (${subCount + 1})")
+                            subCount++
+                        }
+                    }
+                }
             }
 
             if (backupContent.floatingButtons != null) {
@@ -535,17 +549,26 @@ class BackupManagerImpl(
                 // delete the contents of the file
                 output.clear()
 
-                val floatingLayouts = floatingLayoutRepository.layouts
-                    .filterIsInstance<State.Data<List<FloatingLayoutEntityWithButtons>>>()
-                    .first()
-                    .data
-                    .map { it.layout }
+                val floatingLayouts: MutableList<FloatingLayoutEntity> = mutableListOf()
+                val floatingButtons: MutableList<FloatingButtonEntity> = mutableListOf()
 
-                val floatingButtons = floatingButtonRepository.buttonsList
-                    .filterIsInstance<State.Data<List<FloatingButtonEntityWithLayout>>>()
-                    .first()
-                    .data
-                    .map { it.button }
+                if (keyMapList != null) {
+                    val floatingButtonTriggerKeys = keyMapList
+                        .flatMap { it.trigger.keys }
+                        .filterIsInstance<FloatingButtonKeyEntity>()
+                        .map { it.buttonUid }
+                        .distinct()
+
+                    for (buttonUid in floatingButtonTriggerKeys) {
+                        val buttonWithLayout = floatingButtonRepository.get(buttonUid) ?: continue
+
+                        if (floatingLayouts.none { it.uid == buttonWithLayout.layout.uid }) {
+                            floatingLayouts.add(buttonWithLayout.layout)
+                        }
+
+                        floatingButtons.add(buttonWithLayout.button)
+                    }
+                }
 
                 val backupContent = BackupContent(
                     AppDatabase.DATABASE_VERSION,
@@ -581,8 +604,8 @@ class BackupManagerImpl(
                         .get(Keys.defaultVibrateDuration)
                         .first()
                         .takeIf { it != PreferenceDefaults.VIBRATION_DURATION },
-                    floatingLayouts = floatingLayouts,
-                    floatingButtons = floatingButtons,
+                    floatingLayouts = floatingLayouts.takeIf { it.isNotEmpty() },
+                    floatingButtons = floatingButtons.takeIf { it.isNotEmpty() },
                 )
 
                 val json = gson.toJson(backupContent)

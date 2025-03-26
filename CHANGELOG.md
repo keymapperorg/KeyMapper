@@ -16,6 +16,7 @@ in Jetpack Compose, resulting in many improvements to the user experience.
 - #1487 Add confirmation dialog when importing key maps and offer the option to replace all the key maps or append to the list.
 - #1546 Add short explanation of what constraints mean on top of the list.
 - #1548 Dynamically change key map enabled switch label.
+- #1562 Import key maps by opening .json and .zip files from other apps and file managers.
 
 ## Bug fixes
 - #1518 detect more apps that are playing media (fix to previous fix).

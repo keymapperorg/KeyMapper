@@ -1313,12 +1313,18 @@
     <string name="home_importing_finished_snackbar">Importing successful!</string>
     <string name="home_exporting_snackbar">Exporting…</string>
     <string name="home_export_error_snackbar">Failed: %s</string>
+    <string name="import_dialog_title_loading">Loading file…</string>
+    <string name="import_dialog_title_success">Import successful!</string>
+    <string name="import_dialog_title_importing">Importing…</string>
+    <string name="import_dialog_title_error">Error</string>
+    <string name="import_dialog_button_launch_key_mapper">Open app</string>
     <plurals name="home_importing_dialog_title">
         <item quantity="one">Importing 1 key map</item>
         <item quantity="other">Importing %d key maps</item>
     </plurals>
     <string name="home_importing_dialog_text">Would you like to replace all your existing key maps or append them to the list?</string>
     <string name="home_importing_dialog_cancel">Cancel</string>
+    <string name="home_importing_dialog_dismiss">Dismiss</string>
     <string name="home_importing_dialog_append">Append</string>
     <string name="home_importing_dialog_replace">Replace</string>
     <string name="home_multi_select_duplicate">Duplicate</string>
