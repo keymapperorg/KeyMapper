@@ -122,6 +122,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.backup.ImportExportState
 import io.github.sds100.keymapper.backup.RestoreType
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.compose.LocalCustomColorsPalette
@@ -143,6 +144,7 @@ fun HomeScreen(
     viewModel: HomeViewModel,
     onSettingsClick: () -> Unit,
     onAboutClick: () -> Unit,
+    finishActivity: () -> Unit,
 ) {
     val homeState by viewModel.state.collectAsStateWithLifecycle()
 
@@ -279,7 +281,11 @@ fun HomeScreen(
                 onImportClick = { importFileLauncher.launch(FileUtils.MIME_TYPE_ALL) },
                 onTogglePausedClick = viewModel::onTogglePausedClick,
                 onFixWarningClick = viewModel::onFixWarningClick,
-                onBackClick = viewModel::onBackClick,
+                onBackClick = {
+                    if (!viewModel.onBackClick()) {
+                        finishActivity()
+                    }
+                },
                 onSelectAllClick = viewModel::onSelectAllClick,
             )
         },
