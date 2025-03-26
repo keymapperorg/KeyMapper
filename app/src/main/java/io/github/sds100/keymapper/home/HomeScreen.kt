@@ -936,7 +936,8 @@ private fun SelectionBottomSheet(
     Surface(
         modifier = modifier
             .widthIn(max = BottomSheetDefaults.SheetMaxWidth)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .navigationBarsPadding(),
         shadowElevation = 5.dp,
         shape = BottomSheetDefaults.ExpandedShape,
         tonalElevation = BottomSheetDefaults.Elevation,
@@ -945,10 +946,13 @@ private fun SelectionBottomSheet(
         Row(
             modifier = Modifier
                 .padding(16.dp)
-                .navigationBarsPadding()
                 .height(intrinsicSize = IntrinsicSize.Min),
         ) {
-            Row(modifier = Modifier.horizontalScroll(state = rememberScrollState())) {
+            Row(
+                modifier = Modifier
+                    .weight(1f)
+                    .horizontalScroll(state = rememberScrollState()),
+            ) {
                 SelectionButton(
                     text = stringResource(R.string.home_multi_select_duplicate),
                     icon = Icons.Rounded.ContentCopy,
@@ -971,11 +975,10 @@ private fun SelectionBottomSheet(
                 )
             }
 
-            Spacer(modifier = Modifier.weight(1f))
-
             VerticalDivider(modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp))
 
             KeyMapsEnabledSwitch(
+                modifier = Modifier.width(IntrinsicSize.Max),
                 state = selectedKeyMapsEnabled,
                 enabled = enabled,
                 onCheckedChange = onEnabledKeyMapsChange,
@@ -1047,6 +1050,7 @@ private fun KeyMapsEnabledSwitch(
         Text(
             text = text,
             style = MaterialTheme.typography.labelLarge,
+            maxLines = 1,
             color = if (enabled) {
                 MaterialTheme.colorScheme.onSurface
             } else {
@@ -1178,7 +1182,7 @@ private fun HomeStateWarningsDarkPreview() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(showSystemUi = true)
+@Preview(widthDp = 300, heightDp = 600)
 @Composable
 private fun HomeStateSelectingPreview() {
     val state = HomeState.Selecting(
@@ -1205,7 +1209,7 @@ private fun HomeStateSelectingPreview() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun HomeStateSelectingDisabledPreview() {
     val state = HomeState.Selecting(
