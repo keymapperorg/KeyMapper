@@ -74,4 +74,18 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="AppTheme.DialogActivity" parent="ThemeOverlay.Material3.MaterialAlertDialog.Centered">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.App.MediumComponent</item>
+        <item name="android:windowClipToOutline">true</item>
+    </style>
+
+    <style name="ShapeAppearance.App.MediumComponent" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerSize">16dp</item>
+    </style>
+
 </resources>
