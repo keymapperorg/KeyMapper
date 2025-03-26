@@ -490,13 +490,13 @@ class BackupManagerImpl(
                     var entity = layout
                     var subCount = 0
 
-                    while (true) {
+                    while (subCount < 1000) {
                         try {
-                            floatingLayoutRepository.insert(layout)
+                            floatingLayoutRepository.insert(entity)
                             break
                         } catch (_: SQLiteConstraintException) {
                             // If the name already exists try creating it with a new name.
-                            entity = layout.copy(name = "${entity.name} (${subCount + 1})")
+                            entity = layout.copy(name = "${layout.name} (${subCount + 1})")
                             subCount++
                         }
                     }
