@@ -364,9 +364,21 @@
 
     <activity
         android:id="@+id/configFloatingButtonActivity"
-        android:name="io.github.sds100.keymapper.floating.FloatingButtonConfigActivity" />
+        android:name="io.github.sds100.keymapper.floating.FloatingButtonConfigActivity">
+        <argument
+            android:name="buttonUid"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+    </activity>
 
     <action
         android:id="@+id/to_configFloatingButton"
-        app:destination="@id/configFloatingButtonActivity" />
+        app:destination="@id/configFloatingButtonActivity">
+        <argument
+            android:name="buttonUid"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+    </action>
 </navigation>
