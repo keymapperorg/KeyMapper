@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -16,13 +17,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -193,6 +195,7 @@ private fun SetupGuiKeyboardBottomSheet(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 OutlinedButton(
+                    modifier = Modifier.weight(1f),
                     onClick = {
                         onNeverShowAgainClick()
                         scope.launch {
@@ -204,7 +207,10 @@ private fun SetupGuiKeyboardBottomSheet(
                     Text(stringResource(R.string.pos_never_show_again))
                 }
 
+                Spacer(modifier = Modifier.width(16.dp))
+
                 Button(
+                    modifier = Modifier.weight(1f),
                     onClick = {
                         scope.launch {
                             sheetState.hide()
@@ -261,7 +267,11 @@ private fun StepRow(
 @Composable
 private fun PreviewDpad() {
     KeyMapperTheme {
-        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        val sheetState = SheetState(
+            skipPartiallyExpanded = true,
+            density = LocalDensity.current,
+            initialValue = SheetValue.Expanded,
+        )
 
         SetupGuiKeyboardBottomSheet(
             onDismissRequest = {},
@@ -283,7 +293,11 @@ private fun PreviewDpad() {
 @Composable
 private fun PreviewDpadComplete() {
     KeyMapperTheme {
-        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        val sheetState = SheetState(
+            skipPartiallyExpanded = true,
+            density = LocalDensity.current,
+            initialValue = SheetValue.Expanded,
+        )
 
         SetupGuiKeyboardBottomSheet(
             onDismissRequest = {},
@@ -305,7 +319,11 @@ private fun PreviewDpadComplete() {
 @Composable
 private fun PreviewNoKeyRecordedComplete() {
     KeyMapperTheme {
-        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        val sheetState = SheetState(
+            skipPartiallyExpanded = true,
+            density = LocalDensity.current,
+            initialValue = SheetValue.Expanded,
+        )
 
         SetupGuiKeyboardBottomSheet(
             onDismissRequest = {},

@@ -286,24 +286,28 @@ object ActionDataEntityMapper {
 
             ActionId.TOGGLE_FLASHLIGHT,
             ActionId.ENABLE_FLASHLIGHT,
-            ActionId.DISABLE_FLASHLIGHT,
             -> {
                 val lens = entity.extras.getData(ActionEntity.EXTRA_LENS).then {
                     LENS_MAP.getKey(it)!!.success()
                 }.valueOrNull() ?: return null
 
+                val flashStrength = entity.extras.getData(ActionEntity.EXTRA_FLASH_STRENGTH).then {
+                    it.toFloatOrNull().success()
+                }.valueOrNull()
+
                 when (actionId) {
-                    ActionId.TOGGLE_FLASHLIGHT ->
-                        ActionData.Flashlight.Toggle(lens)
-
-                    ActionId.ENABLE_FLASHLIGHT ->
-                        ActionData.Flashlight.Enable(lens)
-
-                    ActionId.DISABLE_FLASHLIGHT ->
-                        ActionData.Flashlight.Disable(lens)
-
+                    ActionId.TOGGLE_FLASHLIGHT -> ActionData.Flashlight.Toggle(lens, flashStrength)
+                    ActionId.ENABLE_FLASHLIGHT -> ActionData.Flashlight.Enable(lens, flashStrength)
                     else -> throw Exception("don't know how to create system action for $actionId")
                 }
+            }
+
+            ActionId.DISABLE_FLASHLIGHT,
+            -> {
+                val lens = entity.extras.getData(ActionEntity.EXTRA_LENS).then {
+                    LENS_MAP.getKey(it)!!.success()
+                }.valueOrNull() ?: return null
+                ActionData.Flashlight.Disable(lens)
             }
 
             ActionId.TOGGLE_DND_MODE,
@@ -614,9 +618,39 @@ object ActionDataEntityMapper {
             ),
         )
 
-        is ActionData.Flashlight -> listOf(
-            EntityExtra(ActionEntity.EXTRA_LENS, LENS_MAP[data.lens]!!),
-        )
+        is ActionData.Flashlight -> {
+            val lensExtra = EntityExtra(ActionEntity.EXTRA_LENS, LENS_MAP[data.lens]!!)
+
+            when (data) {
+                is ActionData.Flashlight.Toggle -> buildList {
+                    add(lensExtra)
+
+                    if (data.strength != null) {
+                        add(
+                            EntityExtra(
+                                ActionEntity.EXTRA_FLASH_STRENGTH,
+                                data.strength.toString(),
+                            ),
+                        )
+                    }
+                }
+
+                is ActionData.Flashlight.Enable -> buildList {
+                    add(lensExtra)
+
+                    if (data.strength != null) {
+                        add(
+                            EntityExtra(
+                                ActionEntity.EXTRA_FLASH_STRENGTH,
+                                data.strength.toString(),
+                            ),
+                        )
+                    }
+                }
+
+                is ActionData.Flashlight.Disable -> listOf(lensExtra)
+            }
+        }
 
         is ActionData.SwitchKeyboard -> listOf(
             EntityExtra(ActionEntity.EXTRA_IME_ID, data.imeId),

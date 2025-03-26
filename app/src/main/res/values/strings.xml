@@ -982,11 +982,13 @@
     <string name="action_go_last_app">Go to last app. (Double press recents)</string>
 
     <string name="action_toggle_flashlight">Toggle flashlight</string>
-    <string name="action_enable_flashlight">Enable flashlight</string>
+    <string name="action_enable_flashlight">Enable flashlight </string>
     <string name="action_disable_flashlight">Disable flashlight</string>
 
     <string name="action_toggle_flashlight_formatted">Toggle %s flashlight</string>
+    <string name="action_toggle_flashlight_with_strength">Toggle %s flashlight (%d%%)</string>
     <string name="action_enable_flashlight_formatted">Enable %s flashlight</string>
+    <string name="action_enable_flashlight_with_strength">Enable %s flashlight (%d\%%)</string>
     <string name="action_disable_flashlight_formatted">Disable %s flashlight</string>
 
     <string name="action_nfc_enable">Enable NFC</string>
@@ -1381,6 +1383,13 @@
     <string name="action_list_delete_cancel">Cancel</string>
     <string name="action_list_explanation_header">Run these actions when you trigger the key map:</string>
 
+    <string name="action_config_flashlight_choose_side">Choose side</string>
+    <string name="action_config_flashlight_brightness">Brightness</string>
+    <string name="action_config_flashlight_brightness_min">Min</string>
+    <string name="action_config_flashlight_brightness_half">Half</string>
+    <string name="action_config_flashlight_brightness_max">Max</string>
+    <string name="action_config_flashlight_brightness_unsupported_android_version">Requires Android 13 or newer.</string>
+    <string name="action_config_flashlight_brightness_unsupported">This flash does not let you change the brightness.</string>
 
     <!--  Constraint screen  -->
     <string name="constraints_recyclerview_placeholder">Add constraints if you want key maps to only work in some situations.</string>
@@ -1393,4 +1402,5 @@
     <string name="constraint_mode_title">Logic mode</string>
     <string name="choose_constraint_title">Choose a constraint</string>
     <string name="constraint_list_explanation_header">This key map will only run if:</string>
+
 </resources>

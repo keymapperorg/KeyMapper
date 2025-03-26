@@ -242,11 +242,11 @@ class PerformActionsUseCaseImpl(
             }
 
             is ActionData.Flashlight.Enable -> {
-                result = cameraAdapter.enableFlashlight(action.lens)
+                result = cameraAdapter.enableFlashlight(action.lens, action.strength)
             }
 
             is ActionData.Flashlight.Toggle -> {
-                result = cameraAdapter.toggleFlashlight(action.lens)
+                result = cameraAdapter.toggleFlashlight(action.lens, action.strength)
             }
 
             is ActionData.SwitchKeyboard -> {

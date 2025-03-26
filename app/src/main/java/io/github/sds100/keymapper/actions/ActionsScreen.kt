@@ -65,6 +65,8 @@ fun ActionsScreen(modifier: Modifier = Modifier, viewModel: ConfigActionsViewMod
         )
     }
 
+    ConfigFlashlightActionBottomSheet(viewModel)
+
     ActionsScreen(
         modifier = modifier,
         state = state,
@@ -300,7 +302,10 @@ private fun EmptyPreview() {
                         ShortcutModel(
                             icon = ComposeIconInfo.Vector(Icons.Rounded.FlashlightOn),
                             text = "Toggle Back flashlight",
-                            data = ActionData.Flashlight.Toggle(lens = CameraLens.BACK),
+                            data = ActionData.Flashlight.Toggle(
+                                lens = CameraLens.BACK,
+                                strength = null,
+                            ),
                         ),
                     ),
                 ),
@@ -339,7 +344,10 @@ private fun LoadedPreview() {
                         ShortcutModel(
                             icon = ComposeIconInfo.Vector(Icons.Rounded.FlashlightOn),
                             text = "Toggle Back flashlight",
-                            data = ActionData.Flashlight.Toggle(lens = CameraLens.BACK),
+                            data = ActionData.Flashlight.Toggle(
+                                lens = CameraLens.BACK,
+                                strength = null,
+                            ),
                         ),
                     ),
                     isReorderingEnabled = true,

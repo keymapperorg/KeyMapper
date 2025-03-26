@@ -63,26 +63,62 @@ class AndroidCameraAdapter(context: Context) : CameraAdapter {
         }
     }
 
-    override fun hasFlashFacing(lens: CameraLens): Boolean {
-        return cameraManager.cameraIdList.any { cameraId ->
+    override fun getFlashInfo(lens: CameraLens): CameraFlashInfo? {
+        if (getCharacteristicForLens(lens, CameraCharacteristics.FLASH_INFO_AVAILABLE) != true) {
+            return null
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val maxFlashStrength = getCharacteristicForLens(
+                lens,
+                CameraCharacteristics.FLASH_INFO_STRENGTH_MAXIMUM_LEVEL,
+            )
+
+            val defaultFlashStrength = getCharacteristicForLens(
+                lens,
+                CameraCharacteristics.FLASH_INFO_STRENGTH_DEFAULT_LEVEL,
+            )
+
+            return CameraFlashInfo(
+                supportsVariableStrength = true,
+                defaultStrength = defaultFlashStrength ?: 1,
+                maxStrength = maxFlashStrength ?: 1,
+            )
+        } else {
+            return CameraFlashInfo(
+                supportsVariableStrength = false,
+                defaultStrength = 1,
+                maxStrength = 1,
+            )
+        }
+    }
+
+    private fun <T> getCharacteristicForLens(
+        lens: CameraLens,
+        characteristic: CameraCharacteristics.Key<T>,
+    ): T? {
+        for (cameraId in cameraManager.cameraIdList) {
             val camera = cameraManager.getCameraCharacteristics(cameraId)
-            val hasFlash =
-                camera.get(CameraCharacteristics.FLASH_INFO_AVAILABLE) ?: return false
+            val lensFacing = camera.get(CameraCharacteristics.LENS_FACING)!!
 
             val lensToCompareSdkValue = when (lens) {
                 CameraLens.FRONT -> CameraCharacteristics.LENS_FACING_FRONT
                 CameraLens.BACK -> CameraCharacteristics.LENS_FACING_BACK
             }
 
-            return hasFlash && camera.get(CameraCharacteristics.LENS_FACING) == lensToCompareSdkValue
+            if (lensFacing == lensToCompareSdkValue) {
+                return camera.get(characteristic)
+            }
         }
+
+        return null
     }
 
-    override fun enableFlashlight(lens: CameraLens): Result<*> = setFlashlightMode(true, lens)
+    override fun enableFlashlight(lens: CameraLens, strength: Float?): Result<*> = setFlashlightMode(true, lens, strength)
 
     override fun disableFlashlight(lens: CameraLens): Result<*> = setFlashlightMode(false, lens)
 
-    override fun toggleFlashlight(lens: CameraLens): Result<*> = setFlashlightMode(!isFlashEnabledMap.value[lens]!!, lens)
+    override fun toggleFlashlight(lens: CameraLens, strength: Float?): Result<*> = setFlashlightMode(!isFlashEnabledMap.value[lens]!!, lens, strength)
 
     override fun isFlashlightOn(lens: CameraLens): Boolean = isFlashEnabledMap.value[lens] ?: false
 
@@ -93,6 +129,7 @@ class AndroidCameraAdapter(context: Context) : CameraAdapter {
     private fun setFlashlightMode(
         enabled: Boolean,
         lens: CameraLens,
+        strengthPercent: Float? = null,
     ): Result<*> {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return Error.SdkVersionTooLow(minSdk = Build.VERSION_CODES.M)
@@ -113,9 +150,38 @@ class AndroidCameraAdapter(context: Context) : CameraAdapter {
                         CameraLens.BACK -> CameraCharacteristics.LENS_FACING_BACK
                     }
 
+                    val maxStrength = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        getCharacteristicForLens(
+                            lens,
+                            CameraCharacteristics.FLASH_INFO_STRENGTH_MAXIMUM_LEVEL,
+                        )
+                    } else {
+                        null
+                    }
+
+                    val defaultStrength =
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            getCharacteristicForLens(
+                                lens,
+                                CameraCharacteristics.FLASH_INFO_STRENGTH_DEFAULT_LEVEL,
+                            )
+                        } else {
+                            null
+                        }
+
                     // try to find a camera with a flash
                     if (flashAvailable && lensFacing == lensSdkValue) {
-                        setTorchMode(cameraId, enabled)
+                        if (enabled && maxStrength != null && defaultStrength != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            val strength = if (strengthPercent == null) {
+                                defaultStrength
+                            } else {
+                                (strengthPercent * maxStrength).toInt().coerceAtLeast(1)
+                            }
+
+                            turnOnTorchWithStrengthLevel(cameraId, strength)
+                        } else {
+                            setTorchMode(cameraId, enabled)
+                        }
                         return Success(Unit)
                     }
                 } catch (e: CameraAccessException) {

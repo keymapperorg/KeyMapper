@@ -16,13 +16,13 @@ import io.github.sds100.keymapper.util.ui.compose.SimpleListItemGroup
 import io.github.sds100.keymapper.util.ui.compose.SimpleListItemModel
 import io.github.sds100.keymapper.util.ui.showPopup
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -55,8 +55,7 @@ class ChooseActionViewModel(
 
     private val allGroupedListItems: List<SimpleListItemGroup> by lazy { buildListGroups() }
 
-    private val _returnAction = MutableSharedFlow<ActionData>()
-    val returnAction = _returnAction.asSharedFlow()
+    val returnAction = actionResult.filterNotNull().shareIn(viewModelScope, SharingStarted.Eagerly)
 
     val searchQuery = MutableStateFlow<String?>(null)
 
@@ -85,9 +84,7 @@ class ChooseActionViewModel(
                 showMessageForAction(actionId)
             }
 
-            createAction(actionId)?.let { action ->
-                _returnAction.emit(action)
-            }
+            createAction(actionId)
         }
     }
 

@@ -800,7 +800,6 @@ fun ActionData.isEditable(): Boolean = when (this) {
     is ActionData.Rotation.CycleRotations,
     is ActionData.Flashlight.Toggle,
     is ActionData.Flashlight.Enable,
-    is ActionData.Flashlight.Disable,
     is ActionData.TapScreen,
     is ActionData.SwipeScreen,
     is ActionData.PinchScreen,

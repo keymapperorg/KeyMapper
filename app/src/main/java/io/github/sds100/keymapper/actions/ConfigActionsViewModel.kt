@@ -81,6 +81,14 @@ class ConfigActionsViewModel(
                 buildState(keyMap, shortcuts, errorSnapshot, showDeviceDescriptors)
             }
         }.launchIn(coroutineScope)
+
+        coroutineScope.launch {
+            actionResult.filterNotNull().collect { action ->
+                val actionUid = actionOptionsUid.value ?: return@collect
+                config.setActionData(actionUid, action)
+                actionOptionsUid.update { null }
+            }
+        }
     }
 
     private suspend fun getActionData(uid: String): ActionData? {
@@ -164,12 +172,7 @@ class ConfigActionsViewModel(
             val keyMap = config.keyMap.first().dataOrNull() ?: return@launch
 
             val oldAction = keyMap.actionList.find { it.uid == actionUid } ?: return@launch
-            val newActionData = editAction(oldAction.data)
-
-            if (newActionData != null) {
-                actionOptionsUid.update { null }
-                config.setActionData(actionUid, newActionData)
-            }
+            editAction(oldAction.data)
         }
     }
 
