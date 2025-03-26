@@ -129,7 +129,10 @@ private fun ConfigKeyMapScreen(
     if (showBackDialog) {
         BackDialog(
             onDismiss = { showBackDialog = false },
-            onDiscardClick = navigateBack,
+            onDiscardClick = {
+                showBackDialog = false
+                navigateBack()
+            },
         )
     }
 
