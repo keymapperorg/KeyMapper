@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.InlineTextContent
@@ -69,12 +70,17 @@ import io.github.sds100.keymapper.util.ui.compose.ComposeChipModel
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 
 @Composable
-fun KeyMapListScreen(modifier: Modifier = Modifier, viewModel: KeyMapListViewModel) {
+fun KeyMapListScreen(
+    modifier: Modifier = Modifier,
+    viewModel: KeyMapListViewModel,
+    lazyListState: LazyListState,
+) {
     val listItems by viewModel.state.collectAsStateWithLifecycle()
     val isSelectable by viewModel.isSelectable.collectAsStateWithLifecycle()
 
     KeyMapListScreen(
         modifier = modifier,
+        lazyListState = lazyListState,
         listItems = listItems,
         footerText = if (isSelectable) {
             null
@@ -93,6 +99,7 @@ fun KeyMapListScreen(modifier: Modifier = Modifier, viewModel: KeyMapListViewMod
 @Composable
 fun KeyMapListScreen(
     modifier: Modifier = Modifier,
+    lazyListState: LazyListState = rememberLazyListState(),
     listItems: State<List<KeyMapListItemModel>>,
     footerText: String? = stringResource(R.string.home_key_map_list_footer_text),
     isSelectable: Boolean = false,
@@ -116,6 +123,7 @@ fun KeyMapListScreen(
                 } else {
                     KeyMapList(
                         modifier,
+                        lazyListState,
                         listItems.data,
                         footerText,
                         isSelectable,
@@ -156,6 +164,7 @@ private fun EmptyKeyMapList(modifier: Modifier = Modifier) {
 @Composable
 private fun KeyMapList(
     modifier: Modifier = Modifier,
+    lazyListState: LazyListState,
     listItems: List<KeyMapListItemModel>,
     footerText: String?,
     isSelectable: Boolean,
@@ -169,7 +178,7 @@ private fun KeyMapList(
 
     LazyColumn(
         modifier = modifier,
-        state = rememberLazyListState(),
+        state = lazyListState,
         contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {

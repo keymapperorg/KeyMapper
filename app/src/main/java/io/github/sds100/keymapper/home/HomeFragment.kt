@@ -25,7 +25,7 @@ class HomeFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         homeViewModel.setupNavigation(this)
-        homeViewModel.keymapListViewModel.setupNavigation(this)
+        homeViewModel.keyMapListViewModel.setupNavigation(this)
     }
 
     override fun onCreateView(
@@ -61,7 +61,7 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         homeViewModel.showPopups(this, view)
-        homeViewModel.keymapListViewModel.showPopups(this, view)
+        homeViewModel.keyMapListViewModel.showPopups(this, view)
         homeViewModel.listFloatingLayoutsViewModel.showPopups(this, view)
     }
 }

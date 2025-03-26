@@ -102,7 +102,7 @@ class HomeViewModel(
                 ),
             )
 
-    val keymapListViewModel by lazy {
+    val keyMapListViewModel by lazy {
         KeyMapListViewModel(
             viewModelScope,
             listKeyMaps,
@@ -343,7 +343,7 @@ class HomeViewModel(
                 if (state.isAllSelected) {
                     multiSelectProvider.stopSelecting()
                 } else {
-                    keymapListViewModel.selectAll()
+                    keyMapListViewModel.selectAll()
                 }
             }
         }
