@@ -1258,6 +1258,7 @@
     <string name="floating_menu_done_dialog_text_buttons">You need to choose one floating button to use as a trigger.</string>
     <string name="floating_button_trigger_option_configure_button">Configure button</string>
     <string name="floating_button_trigger_option_edit_layout">Edit layout</string>
+    <string name="floating_buttons_product_min_api_error">Requires Android 11 or newer.</string>
 
     <!-- Home screen -->
     <string name="sort_bottom_sheet_trigger">Trigger</string>
