@@ -1388,6 +1388,7 @@
     <string name="action_config_flashlight_brightness_min">Min</string>
     <string name="action_config_flashlight_brightness_half">Half</string>
     <string name="action_config_flashlight_brightness_max">Max</string>
+    <string name="action_config_flashlight_brightness_test">Test</string>
     <string name="action_config_flashlight_brightness_unsupported_android_version">Requires Android 13 or newer.</string>
     <string name="action_config_flashlight_brightness_unsupported">This flash does not let you change the brightness.</string>
 

@@ -17,9 +17,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.BrightnessMedium
 import androidx.compose.material.icons.rounded.CameraFront
+import androidx.compose.material.icons.rounded.FlashlightOn
 import androidx.compose.material.icons.rounded.RestartAlt
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalIconToggleButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -53,31 +55,29 @@ import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ConfigFlashlightActionBottomSheet(viewModel: CreateActionViewModel) {
+fun ConfigFlashlightActionBottomSheet(delegate: CreateActionDelegate) {
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    if (viewModel.configFlashlightActionState != null) {
+    if (delegate.configFlashlightActionState != null) {
         ConfigFlashlightActionBottomSheet(
             sheetState = sheetState,
             onDismissRequest = {
-                viewModel.configFlashlightActionState = null
+                delegate.configFlashlightActionState = null
             },
-            state = viewModel.configFlashlightActionState!!,
-            onSelectStrength = {
-                viewModel.configFlashlightActionState =
-                    viewModel.configFlashlightActionState?.copy(flashStrength = it)
-            },
+            state = delegate.configFlashlightActionState!!,
+            onSelectStrength = delegate::onSelectStrength,
             onSelectLens = {
-                viewModel.configFlashlightActionState =
-                    viewModel.configFlashlightActionState?.copy(selectedLens = it)
+                delegate.configFlashlightActionState =
+                    delegate.configFlashlightActionState?.copy(selectedLens = it)
             },
             onDoneClick = {
                 scope.launch {
                     sheetState.hide()
-                    viewModel.onDoneConfigFlashlightClicked()
+                    delegate.onDoneConfigFlashlightClick()
                 }
             },
+            onTestClick = delegate::onTestFlashlightConfigClick,
         )
     }
 }
@@ -91,6 +91,7 @@ private fun ConfigFlashlightActionBottomSheet(
     onSelectLens: (CameraLens) -> Unit = {},
     onSelectStrength: (Int) -> Unit = {},
     onDoneClick: () -> Unit = {},
+    onTestClick: () -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
@@ -240,6 +241,27 @@ private fun ConfigFlashlightActionBottomSheet(
                     }
                 }
             }
+
+            if (errorText == null) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = stringResource(R.string.action_config_flashlight_brightness_test),
+                        style = MaterialTheme.typography.titleSmall,
+                    )
+
+                    Spacer(Modifier.width(8.dp))
+
+                    FilledTonalIconToggleButton(
+                        checked = state.isFlashEnabled,
+                        onCheckedChange = { onTestClick() },
+                    ) {
+                        Icon(imageVector = Icons.Rounded.FlashlightOn, contentDescription = null)
+                    }
+                }
+            }
         }
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -282,6 +304,7 @@ data class ConfigFlashlightActionState(
     val selectedLens: CameraLens,
     val lensData: Map<CameraLens, CameraFlashInfo>,
     val flashStrength: Int = 1,
+    val isFlashEnabled: Boolean,
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -314,6 +337,7 @@ private fun PreviewBothLenses() {
                         maxStrength = 10,
                     ),
                 ),
+                isFlashEnabled = true,
             ),
         )
     }
@@ -344,6 +368,7 @@ private fun PreviewOnlyBackLens() {
                         maxStrength = 10,
                     ),
                 ),
+                isFlashEnabled = false,
             ),
         )
     }
@@ -374,6 +399,7 @@ private fun PreviewUnsupportedAndroidVersion() {
                         maxStrength = 10,
                     ),
                 ),
+                isFlashEnabled = true,
             ),
         )
     }

@@ -22,33 +22,46 @@ import io.github.sds100.keymapper.system.volume.VolumeStreamUtils
 import io.github.sds100.keymapper.util.ui.MultiChoiceItem
 import io.github.sds100.keymapper.util.ui.NavDestination
 import io.github.sds100.keymapper.util.ui.NavigationViewModel
-import io.github.sds100.keymapper.util.ui.NavigationViewModelImpl
 import io.github.sds100.keymapper.util.ui.PopupUi
 import io.github.sds100.keymapper.util.ui.PopupViewModel
-import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.navigate
 import io.github.sds100.keymapper.util.ui.showPopup
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 /**
  * Created by sds100 on 26/07/2021.
  */
 
-class CreateActionViewModelImpl(
+class CreateActionDelegate(
+    private val coroutineScope: CoroutineScope,
     private val useCase: CreateActionUseCase,
+    popupViewModel: PopupViewModel,
+    navigationViewModelImpl: NavigationViewModel,
     resourceProvider: ResourceProvider,
-) : CreateActionViewModel,
-    ResourceProvider by resourceProvider,
-    PopupViewModel by PopupViewModelImpl(),
-    NavigationViewModel by NavigationViewModelImpl() {
+) : ResourceProvider by resourceProvider,
+    PopupViewModel by popupViewModel,
+    NavigationViewModel by navigationViewModelImpl {
 
-    override val actionResult: MutableStateFlow<ActionData?> = MutableStateFlow(null)
-    override var configFlashlightActionState: ConfigFlashlightActionState? by mutableStateOf(null)
+    val actionResult: MutableStateFlow<ActionData?> = MutableStateFlow(null)
+    var configFlashlightActionState: ConfigFlashlightActionState? by mutableStateOf(null)
 
-    override fun onDoneConfigFlashlightClicked() {
+    init {
+        coroutineScope.launch {
+            useCase.isFlashlightEnabled().collectLatest { enabled ->
+                configFlashlightActionState?.also { state ->
+                    configFlashlightActionState = state.copy(isFlashEnabled = enabled)
+                }
+            }
+        }
+    }
+
+    fun onDoneConfigFlashlightClick() {
         configFlashlightActionState?.also { state ->
             val flashInfo = state.lensData[state.selectedLens] ?: return
 
@@ -74,11 +87,39 @@ class CreateActionViewModelImpl(
 
             configFlashlightActionState = null
 
+            useCase.disableFlashlight()
+
             actionResult.update { action }
         }
     }
 
-    override suspend fun editAction(oldData: ActionData) {
+    fun onSelectStrength(strength: Int) {
+        configFlashlightActionState?.also { state ->
+            configFlashlightActionState = state.copy(flashStrength = strength)
+
+            if (state.isFlashEnabled) {
+                val lensData = state.lensData[state.selectedLens] ?: return
+
+                useCase.setFlashlightBrightness(
+                    state.selectedLens,
+                    strength / lensData.maxStrength.toFloat(),
+                )
+            }
+        }
+    }
+
+    fun onTestFlashlightConfigClick() {
+        configFlashlightActionState?.also { state ->
+            val lensData = state.lensData[state.selectedLens] ?: return
+
+            useCase.toggleFlashlight(
+                state.selectedLens,
+                state.flashStrength / lensData.maxStrength.toFloat(),
+            )
+        }
+    }
+
+    suspend fun editAction(oldData: ActionData) {
         if (!oldData.isEditable()) {
             throw IllegalArgumentException("This action ${oldData.javaClass.name} can't be edited!")
         }
@@ -88,7 +129,7 @@ class CreateActionViewModelImpl(
         }
     }
 
-    override suspend fun createAction(id: ActionId) {
+    suspend fun createAction(id: ActionId) {
         configAction(id)?.let { action ->
             actionResult.update { action }
         }
@@ -330,6 +371,7 @@ class CreateActionViewModelImpl(
                     selectedLens = selectedLens,
                     lensData = lensData,
                     flashStrength = strength,
+                    isFlashEnabled = useCase.isFlashlightEnabled().first(),
                 )
 
                 return null
@@ -678,18 +720,4 @@ class CreateActionViewModelImpl(
             ActionId.DEVICE_CONTROLS -> return ActionData.DeviceControls
         }
     }
-}
-
-interface CreateActionViewModel :
-    ResourceProvider,
-    PopupViewModel,
-    NavigationViewModel {
-
-    val actionResult: StateFlow<ActionData?>
-
-    var configFlashlightActionState: ConfigFlashlightActionState?
-    fun onDoneConfigFlashlightClicked()
-
-    suspend fun editAction(oldData: ActionData)
-    suspend fun createAction(id: ActionId)
 }

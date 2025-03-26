@@ -65,7 +65,7 @@ fun ActionsScreen(modifier: Modifier = Modifier, viewModel: ConfigActionsViewMod
         )
     }
 
-    ConfigFlashlightActionBottomSheet(viewModel)
+    ConfigFlashlightActionBottomSheet(viewModel.createActionDelegate)
 
     ActionsScreen(
         modifier = modifier,
