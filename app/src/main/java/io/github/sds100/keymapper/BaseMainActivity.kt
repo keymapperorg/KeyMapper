@@ -74,7 +74,7 @@ abstract class BaseMainActivity : AppCompatActivity() {
         ActivityViewModel.Factory(ServiceLocator.resourceProvider(this))
     }
 
-    val homeViewModel by viewModels<HomeViewModel> {
+    private val homeViewModel by viewModels<HomeViewModel> {
         Inject.homeViewModel(this)
     }
 
@@ -185,8 +185,6 @@ abstract class BaseMainActivity : AppCompatActivity() {
                 ContextCompat.RECEIVER_EXPORTED,
             )
         }
-
-        importKeyMaps(intent)
     }
 
     override fun onResume() {
@@ -208,12 +206,6 @@ abstract class BaseMainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
-
-        importKeyMaps(intent)
-    }
-
     override fun onGenericMotionEvent(event: MotionEvent?): Boolean {
         event ?: return super.onGenericMotionEvent(event)
 
@@ -225,19 +217,6 @@ abstract class BaseMainActivity : AppCompatActivity() {
         } else {
             // IMPORTANT! return super so that the back navigation button still works.
             super.onGenericMotionEvent(event)
-        }
-    }
-
-    private fun importKeyMaps(intent: Intent?) {
-        intent ?: return
-
-        if (intent.action == Intent.ACTION_VIEW) {
-            intent.data?.let {
-                homeViewModel.onChooseImportFile(it.toString())
-
-                // Do not want to import again on a configuration change so set it to null
-                this.intent = null
-            }
         }
     }
 
