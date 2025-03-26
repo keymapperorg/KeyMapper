@@ -18,6 +18,7 @@ data class FloatingButtonKey(
 ) : TriggerKey() {
 
     override val consumeEvent: Boolean = true
+    override val allowedLongPress: Boolean = true
 
     override fun compareTo(other: TriggerKey) = when (other) {
         is FloatingButtonKey -> compareValuesBy(

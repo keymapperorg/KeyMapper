@@ -292,7 +292,7 @@ abstract class BaseConfigTriggerViewModel(
                 clickTypeButtons.add(ClickType.DOUBLE_PRESS)
             }
 
-            if (trigger.keys.isNotEmpty() && trigger.mode !is TriggerMode.Sequence && trigger.keys.all { it !is AssistantTriggerKey }) {
+            if (trigger.keys.isNotEmpty() && trigger.mode !is TriggerMode.Sequence && trigger.keys.all { it.allowedLongPress }) {
                 clickTypeButtons.add(ClickType.SHORT_PRESS)
                 clickTypeButtons.add(ClickType.LONG_PRESS)
             }
@@ -832,29 +832,38 @@ sealed class TriggerKeyListItemModel {
 sealed class TriggerKeyOptionsState {
     abstract val clickType: ClickType
     abstract val showClickTypes: Boolean
+    abstract val showLongPressClickType: Boolean
 
     data class KeyCode(
         val doNotRemapChecked: Boolean = false,
         override val clickType: ClickType,
         override val showClickTypes: Boolean,
         val devices: List<CheckBoxListItem>,
-    ) : TriggerKeyOptionsState()
+    ) : TriggerKeyOptionsState() {
+        override val showLongPressClickType: Boolean = true
+    }
 
     data class Assistant(
         val assistantType: AssistantTriggerType,
         override val clickType: ClickType,
         override val showClickTypes: Boolean,
-    ) : TriggerKeyOptionsState()
+    ) : TriggerKeyOptionsState() {
+        override val showLongPressClickType: Boolean = false
+    }
 
     data class FingerprintGesture(
         val gestureType: FingerprintGestureType,
         override val clickType: ClickType,
         override val showClickTypes: Boolean,
-    ) : TriggerKeyOptionsState()
+    ) : TriggerKeyOptionsState() {
+        override val showLongPressClickType: Boolean = false
+    }
 
     data class FloatingButton(
         override val clickType: ClickType,
         override val showClickTypes: Boolean,
         val isPurchased: Boolean,
-    ) : TriggerKeyOptionsState()
+    ) : TriggerKeyOptionsState() {
+        override val showLongPressClickType: Boolean = true
+    }
 }
