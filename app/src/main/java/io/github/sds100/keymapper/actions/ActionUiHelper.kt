@@ -245,28 +245,28 @@ class ActionUiHelper(
 
             when (action) {
                 is ActionData.Flashlight.Toggle -> {
-                    if (action.strength == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                    if (action.strengthPercent == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
                         getString(R.string.action_toggle_flashlight_formatted, lensString)
                     } else {
                         getString(
                             R.string.action_toggle_flashlight_with_strength,
                             arrayOf(
                                 lensString,
-                                (action.strength * 100).toInt(),
+                                (action.strengthPercent * 100).toInt(),
                             ),
                         )
                     }
                 }
 
                 is ActionData.Flashlight.Enable -> {
-                    if (action.strength == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                    if (action.strengthPercent == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
                         getString(R.string.action_enable_flashlight_formatted, lensString)
                     } else {
                         getString(
                             R.string.action_enable_flashlight_with_strength,
                             arrayOf(
                                 lensString,
-                                (action.strength * 100).toInt(),
+                                (action.strengthPercent * 100).toInt(),
                             ),
                         )
                     }
@@ -276,6 +276,20 @@ class ActionUiHelper(
                     R.string.action_disable_flashlight_formatted,
                     lensString,
                 )
+
+                is ActionData.Flashlight.ChangeStrength -> {
+                    if (action.percent > 0) {
+                        getString(
+                            R.string.action_flashlight_increase_strength_formatted,
+                            arrayOf(lensString, (action.percent * 100).toInt()),
+                        )
+                    } else {
+                        getString(
+                            R.string.action_flashlight_decrease_strength_formatted,
+                            arrayOf(lensString, (action.percent * 100).toInt()),
+                        )
+                    }
+                }
             }
         }
 

@@ -187,7 +187,7 @@ sealed class ActionData : Comparable<ActionData> {
              * of the flash strength so key maps can be exported to other devices with potentially
              * different strength levels.
              */
-            val strength: Float?,
+            val strengthPercent: Float?,
         ) : Flashlight() {
             override val id = ActionId.TOGGLE_FLASHLIGHT
         }
@@ -200,7 +200,7 @@ sealed class ActionData : Comparable<ActionData> {
              * of the flash strength so key maps can be exported to other devices with potentially
              * different strength levels.
              */
-            val strength: Float?,
+            val strengthPercent: Float?,
         ) : Flashlight() {
             override val id = ActionId.ENABLE_FLASHLIGHT
         }
@@ -208,6 +208,17 @@ sealed class ActionData : Comparable<ActionData> {
         @Serializable
         data class Disable(override val lens: CameraLens) : Flashlight() {
             override val id = ActionId.DISABLE_FLASHLIGHT
+        }
+
+        @Serializable
+        data class ChangeStrength(
+            override val lens: CameraLens,
+            /**
+             * This can be positive or negative to increase/decrease respectively.
+             */
+            val percent: Float,
+        ) : Flashlight() {
+            override val id = ActionId.CHANGE_FLASHLIGHT_STRENGTH
         }
     }
 

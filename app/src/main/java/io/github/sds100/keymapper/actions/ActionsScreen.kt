@@ -65,7 +65,8 @@ fun ActionsScreen(modifier: Modifier = Modifier, viewModel: ConfigActionsViewMod
         )
     }
 
-    ConfigFlashlightActionBottomSheet(viewModel.createActionDelegate)
+    EnableFlashlightActionBottomSheet(viewModel.createActionDelegate)
+    ChangeFlashlightStrengthActionBottomSheet(viewModel.createActionDelegate)
 
     ActionsScreen(
         modifier = modifier,
@@ -304,7 +305,7 @@ private fun EmptyPreview() {
                             text = "Toggle Back flashlight",
                             data = ActionData.Flashlight.Toggle(
                                 lens = CameraLens.BACK,
-                                strength = null,
+                                strengthPercent = null,
                             ),
                         ),
                     ),
@@ -346,7 +347,7 @@ private fun LoadedPreview() {
                             text = "Toggle Back flashlight",
                             data = ActionData.Flashlight.Toggle(
                                 lens = CameraLens.BACK,
-                                strength = null,
+                                strengthPercent = null,
                             ),
                         ),
                     ),

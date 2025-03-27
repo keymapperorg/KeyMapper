@@ -41,6 +41,14 @@ class IsActionSupportedUseCaseImpl(
             }
         }
 
+        if (id == ActionId.CHANGE_FLASHLIGHT_STRENGTH) {
+            if (cameraAdapter.getFlashInfo(CameraLens.BACK)?.supportsVariableStrength != true &&
+                cameraAdapter.getFlashInfo(CameraLens.FRONT)?.supportsVariableStrength != true
+            ) {
+                return Error.CameraVariableFlashlightStrengthUnsupported
+            }
+        }
+
         return null
     }
 }

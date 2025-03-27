@@ -286,6 +286,7 @@ object ActionDataEntityMapper {
 
             ActionId.TOGGLE_FLASHLIGHT,
             ActionId.ENABLE_FLASHLIGHT,
+            ActionId.CHANGE_FLASHLIGHT_STRENGTH,
             -> {
                 val lens = entity.extras.getData(ActionEntity.EXTRA_LENS).then {
                     LENS_MAP.getKey(it)!!.success()
@@ -298,6 +299,15 @@ object ActionDataEntityMapper {
                 when (actionId) {
                     ActionId.TOGGLE_FLASHLIGHT -> ActionData.Flashlight.Toggle(lens, flashStrength)
                     ActionId.ENABLE_FLASHLIGHT -> ActionData.Flashlight.Enable(lens, flashStrength)
+
+                    ActionId.CHANGE_FLASHLIGHT_STRENGTH -> {
+                        flashStrength ?: return null
+                        ActionData.Flashlight.ChangeStrength(
+                            lens,
+                            flashStrength,
+                        )
+                    }
+
                     else -> throw Exception("don't know how to create system action for $actionId")
                 }
             }
@@ -625,11 +635,11 @@ object ActionDataEntityMapper {
                 is ActionData.Flashlight.Toggle -> buildList {
                     add(lensExtra)
 
-                    if (data.strength != null) {
+                    if (data.strengthPercent != null) {
                         add(
                             EntityExtra(
                                 ActionEntity.EXTRA_FLASH_STRENGTH,
-                                data.strength.toString(),
+                                data.strengthPercent.toString(),
                             ),
                         )
                     }
@@ -638,17 +648,26 @@ object ActionDataEntityMapper {
                 is ActionData.Flashlight.Enable -> buildList {
                     add(lensExtra)
 
-                    if (data.strength != null) {
+                    if (data.strengthPercent != null) {
                         add(
                             EntityExtra(
                                 ActionEntity.EXTRA_FLASH_STRENGTH,
-                                data.strength.toString(),
+                                data.strengthPercent.toString(),
                             ),
                         )
                     }
                 }
 
                 is ActionData.Flashlight.Disable -> listOf(lensExtra)
+                is ActionData.Flashlight.ChangeStrength -> buildList {
+                    add(lensExtra)
+                    add(
+                        EntityExtra(
+                            ActionEntity.EXTRA_FLASH_STRENGTH,
+                            data.percent.toString(),
+                        ),
+                    )
+                }
             }
         }
 
@@ -807,6 +826,7 @@ object ActionDataEntityMapper {
         ActionId.TOGGLE_FLASHLIGHT to "toggle_flashlight",
         ActionId.ENABLE_FLASHLIGHT to "enable_flashlight",
         ActionId.DISABLE_FLASHLIGHT to "disable_flashlight",
+        ActionId.CHANGE_FLASHLIGHT_STRENGTH to "change_flashlight_strength",
 
         ActionId.ENABLE_NFC to "nfc_enable",
         ActionId.DISABLE_NFC to "nfc_disable",

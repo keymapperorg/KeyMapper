@@ -49,20 +49,23 @@ class CreateActionDelegate(
     NavigationViewModel by navigationViewModelImpl {
 
     val actionResult: MutableStateFlow<ActionData?> = MutableStateFlow(null)
-    var configFlashlightActionState: ConfigFlashlightActionState? by mutableStateOf(null)
+    var enableFlashlightActionState: EnableFlashlightActionState? by mutableStateOf(null)
+    var changeFlashlightStrengthActionState: ChangeFlashlightStrengthActionState? by mutableStateOf(
+        null,
+    )
 
     init {
         coroutineScope.launch {
             useCase.isFlashlightEnabled().collectLatest { enabled ->
-                configFlashlightActionState?.also { state ->
-                    configFlashlightActionState = state.copy(isFlashEnabled = enabled)
+                enableFlashlightActionState?.also { state ->
+                    enableFlashlightActionState = state.copy(isFlashEnabled = enabled)
                 }
             }
         }
     }
 
-    fun onDoneConfigFlashlightClick() {
-        configFlashlightActionState?.also { state ->
+    fun onDoneConfigEnableFlashlightClick() {
+        enableFlashlightActionState?.also { state ->
             val flashInfo = state.lensData[state.selectedLens] ?: return
 
             val strengthPercent =
@@ -85,7 +88,7 @@ class CreateActionDelegate(
                 else -> return
             }
 
-            configFlashlightActionState = null
+            enableFlashlightActionState = null
 
             useCase.disableFlashlight()
 
@@ -93,9 +96,27 @@ class CreateActionDelegate(
         }
     }
 
+    fun onDoneChangeFlashlightBrightnessClick() {
+        changeFlashlightStrengthActionState?.also { state ->
+            val flashInfo = state.lensData[state.selectedLens] ?: return
+
+            val strengthPercent =
+                (state.flashStrength.toFloat() / flashInfo.maxStrength).coerceIn(-1f, 1f)
+
+            val action = ActionData.Flashlight.ChangeStrength(
+                state.selectedLens,
+                strengthPercent,
+            )
+
+            changeFlashlightStrengthActionState = null
+
+            actionResult.update { action }
+        }
+    }
+
     fun onSelectStrength(strength: Int) {
-        configFlashlightActionState?.also { state ->
-            configFlashlightActionState = state.copy(flashStrength = strength)
+        enableFlashlightActionState?.also { state ->
+            enableFlashlightActionState = state.copy(flashStrength = strength)
 
             if (state.isFlashEnabled) {
                 val lensData = state.lensData[state.selectedLens] ?: return
@@ -109,7 +130,7 @@ class CreateActionDelegate(
     }
 
     fun onTestFlashlightConfigClick() {
-        configFlashlightActionState?.also { state ->
+        enableFlashlightActionState?.also { state ->
             val lensData = state.lensData[state.selectedLens] ?: return
 
             useCase.toggleFlashlight(
@@ -351,27 +372,57 @@ class CreateActionDelegate(
                 val lensInfo = lensData[selectedLens] ?: lensData.values.first()
 
                 val strength: Int = when (oldData) {
-                    is ActionData.Flashlight.Toggle -> if (oldData.strength == null) {
+                    is ActionData.Flashlight.Toggle -> if (oldData.strengthPercent == null) {
                         lensInfo.defaultStrength
                     } else {
-                        (oldData.strength * lensInfo.maxStrength).toInt()
+                        (oldData.strengthPercent * lensInfo.maxStrength).toInt()
                     }
 
-                    is ActionData.Flashlight.Enable -> if (oldData.strength == null) {
+                    is ActionData.Flashlight.Enable -> if (oldData.strengthPercent == null) {
                         lensInfo.defaultStrength
                     } else {
-                        (oldData.strength * lensInfo.maxStrength).toInt()
+                        (oldData.strengthPercent * lensInfo.maxStrength).toInt()
                     }
 
                     else -> lensInfo.defaultStrength
                 }
 
-                configFlashlightActionState = ConfigFlashlightActionState(
+                enableFlashlightActionState = EnableFlashlightActionState(
                     actionToCreate = actionId,
                     selectedLens = selectedLens,
                     lensData = lensData,
                     flashStrength = strength,
                     isFlashEnabled = useCase.isFlashlightEnabled().first(),
+                )
+
+                return null
+            }
+
+            ActionId.CHANGE_FLASHLIGHT_STRENGTH -> {
+                val lenses = useCase.getFlashlightLenses()
+                val selectedLens = if (oldData is ActionData.Flashlight.ChangeStrength) {
+                    oldData.lens
+                } else if (lenses.contains(CameraLens.BACK)) {
+                    CameraLens.BACK
+                } else {
+                    lenses.first()
+                }
+
+                val lensData = lenses.associateWith { useCase.getFlashInfo(it)!! }
+                val lensInfo = lensData[selectedLens] ?: lensData.values.first()
+
+                val strength: Int = when (oldData) {
+                    is ActionData.Flashlight.ChangeStrength -> {
+                        (oldData.percent * lensInfo.maxStrength).toInt()
+                    }
+
+                    else -> (0.1f * lensInfo.maxStrength).toInt()
+                }
+
+                changeFlashlightStrengthActionState = ChangeFlashlightStrengthActionState(
+                    selectedLens = selectedLens,
+                    lensData = lensData,
+                    flashStrength = strength,
                 )
 
                 return null

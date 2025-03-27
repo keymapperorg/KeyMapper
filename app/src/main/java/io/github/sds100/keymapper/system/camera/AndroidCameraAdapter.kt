@@ -114,16 +114,78 @@ class AndroidCameraAdapter(context: Context) : CameraAdapter {
         return null
     }
 
-    override fun enableFlashlight(lens: CameraLens, strength: Float?): Result<*> = setFlashlightMode(true, lens, strength)
+    private fun getFlashlightCameraIdForLens(lens: CameraLens): String? {
+        for (cameraId in cameraManager.cameraIdList) {
+            val camera = cameraManager.getCameraCharacteristics(cameraId)
+            val lensFacing = camera.get(CameraCharacteristics.LENS_FACING)!!
+
+            val lensToCompareSdkValue = when (lens) {
+                CameraLens.FRONT -> CameraCharacteristics.LENS_FACING_FRONT
+                CameraLens.BACK -> CameraCharacteristics.LENS_FACING_BACK
+            }
+
+            val flashAvailable = cameraManager.getCameraCharacteristics(cameraId)
+                .get(CameraCharacteristics.FLASH_INFO_AVAILABLE)!!
+
+            if (flashAvailable && lensFacing == lensToCompareSdkValue) {
+                return cameraId
+            }
+        }
+
+        return null
+    }
+
+    override fun enableFlashlight(lens: CameraLens, strengthPercent: Float?): Result<*> = setFlashlightMode(true, lens, strengthPercent)
 
     override fun disableFlashlight(lens: CameraLens): Result<*> = setFlashlightMode(false, lens)
 
-    override fun toggleFlashlight(lens: CameraLens, strength: Float?): Result<*> = setFlashlightMode(!isFlashEnabledMap.value[lens]!!, lens, strength)
+    override fun toggleFlashlight(lens: CameraLens, strengthPercent: Float?): Result<*> = setFlashlightMode(!isFlashEnabledMap.value[lens]!!, lens, strengthPercent)
 
     override fun isFlashlightOn(lens: CameraLens): Boolean = isFlashEnabledMap.value[lens] ?: false
 
     override fun isFlashlightOnFlow(lens: CameraLens): Flow<Boolean> {
         return isFlashEnabledMap.map { it[lens] ?: false }
+    }
+
+    override fun changeFlashlightStrength(lens: CameraLens, percent: Float): Result<*> {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            return Error.SdkVersionTooLow(minSdk = Build.VERSION_CODES.TIRAMISU)
+        }
+
+        try {
+            val cameraId = getFlashlightCameraIdForLens(lens)
+
+            if (cameraId == null) {
+                return when (lens) {
+                    CameraLens.FRONT -> Error.FrontFlashNotFound
+                    CameraLens.BACK -> Error.BackFlashNotFound
+                }
+            }
+
+            val currentStrength = cameraManager.getTorchStrengthLevel(cameraId)
+
+            val maxStrength = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                getCharacteristicForLens(
+                    lens,
+                    CameraCharacteristics.FLASH_INFO_STRENGTH_MAXIMUM_LEVEL,
+                )
+            } else {
+                null
+            }
+
+            if (maxStrength != null) {
+                val newStrength =
+                    (currentStrength + (percent * maxStrength))
+                        .toInt()
+                        .coerceIn(1, maxStrength)
+
+                cameraManager.turnOnTorchWithStrengthLevel(cameraId, newStrength)
+            }
+
+            return Success(Unit)
+        } catch (e: CameraAccessException) {
+            return convertCameraException(e)
+        }
     }
 
     private fun setFlashlightMode(
@@ -135,74 +197,62 @@ class AndroidCameraAdapter(context: Context) : CameraAdapter {
             return Error.SdkVersionTooLow(minSdk = Build.VERSION_CODES.M)
         }
 
-        // get the CameraManager
-        cameraManager.apply {
-            for (cameraId in cameraIdList) {
-                try {
-                    val flashAvailable = getCameraCharacteristics(cameraId)
-                        .get(CameraCharacteristics.FLASH_INFO_AVAILABLE)!!
+        try {
+            val cameraId = getFlashlightCameraIdForLens(lens)
 
-                    val lensFacing = getCameraCharacteristics(cameraId)
-                        .get(CameraCharacteristics.LENS_FACING)
-
-                    val lensSdkValue = when (lens) {
-                        CameraLens.FRONT -> CameraCharacteristics.LENS_FACING_FRONT
-                        CameraLens.BACK -> CameraCharacteristics.LENS_FACING_BACK
-                    }
-
-                    val maxStrength = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        getCharacteristicForLens(
-                            lens,
-                            CameraCharacteristics.FLASH_INFO_STRENGTH_MAXIMUM_LEVEL,
-                        )
-                    } else {
-                        null
-                    }
-
-                    val defaultStrength =
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            getCharacteristicForLens(
-                                lens,
-                                CameraCharacteristics.FLASH_INFO_STRENGTH_DEFAULT_LEVEL,
-                            )
-                        } else {
-                            null
-                        }
-
-                    // try to find a camera with a flash
-                    if (flashAvailable && lensFacing == lensSdkValue) {
-                        if (enabled && maxStrength != null && defaultStrength != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            val strength = if (strengthPercent == null) {
-                                defaultStrength
-                            } else {
-                                (strengthPercent * maxStrength).toInt().coerceAtLeast(1)
-                            }
-
-                            turnOnTorchWithStrengthLevel(cameraId, strength)
-                        } else {
-                            setTorchMode(cameraId, enabled)
-                        }
-                        return Success(Unit)
-                    }
-                } catch (e: CameraAccessException) {
-                    return when (e.reason) {
-                        CameraAccessException.CAMERA_IN_USE -> Error.CameraInUse
-                        CameraAccessException.CAMERA_DISCONNECTED -> Error.CameraDisconnected
-                        CameraAccessException.CAMERA_DISABLED -> Error.CameraDisabled
-                        CameraAccessException.CAMERA_ERROR -> Error.CameraError
-                        CameraAccessException.MAX_CAMERAS_IN_USE -> Error.MaxCamerasInUse
-                        else -> Error.Exception(e)
-                    }
-                } catch (e: Exception) {
-                    return Error.Exception(e)
+            if (cameraId == null) {
+                return when (lens) {
+                    CameraLens.FRONT -> Error.FrontFlashNotFound
+                    CameraLens.BACK -> Error.BackFlashNotFound
                 }
             }
-        }
 
-        return when (lens) {
-            CameraLens.FRONT -> Error.FrontFlashNotFound
-            CameraLens.BACK -> Error.BackFlashNotFound
+            val maxStrength = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                getCharacteristicForLens(
+                    lens,
+                    CameraCharacteristics.FLASH_INFO_STRENGTH_MAXIMUM_LEVEL,
+                )
+            } else {
+                null
+            }
+
+            val defaultStrength =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    getCharacteristicForLens(
+                        lens,
+                        CameraCharacteristics.FLASH_INFO_STRENGTH_DEFAULT_LEVEL,
+                    )
+                } else {
+                    null
+                }
+
+            // try to find a camera with a flash
+            if (enabled && maxStrength != null && defaultStrength != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                val strength = if (strengthPercent == null) {
+                    defaultStrength
+                } else {
+                    (strengthPercent * maxStrength).toInt().coerceAtLeast(1)
+                }
+                cameraManager.turnOnTorchWithStrengthLevel(cameraId, strength)
+            } else {
+                cameraManager.setTorchMode(cameraId, enabled)
+            }
+
+            return Success(Unit)
+        } catch (e: CameraAccessException) {
+            return convertCameraException(e)
+        } catch (e: Exception) {
+            return Error.Exception(e)
         }
+    }
+
+    private fun convertCameraException(e: CameraAccessException) = when (e.reason) {
+        CameraAccessException.CAMERA_IN_USE -> Error.CameraInUse
+        CameraAccessException.CAMERA_DISCONNECTED -> Error.CameraDisconnected
+        CameraAccessException.CAMERA_DISABLED -> Error.CameraDisabled
+        CameraAccessException.CAMERA_ERROR -> Error.CameraError
+        CameraAccessException.MAX_CAMERAS_IN_USE -> Error.MaxCamerasInUse
+        else -> Error.Exception(e)
     }
 
     private fun updateState(lens: CameraLens, enabled: Boolean) {

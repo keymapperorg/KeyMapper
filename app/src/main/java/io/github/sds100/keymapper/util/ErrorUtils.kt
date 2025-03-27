@@ -91,6 +91,8 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider): String = when (thi
     Error.CameraDisabled -> resourceProvider.getString(R.string.error_camera_disabled)
     Error.CameraDisconnected -> resourceProvider.getString(R.string.error_camera_disconnected)
     Error.MaxCamerasInUse -> resourceProvider.getString(R.string.error_max_cameras_in_use)
+    Error.CameraVariableFlashlightStrengthUnsupported -> resourceProvider.getString(R.string.error_variable_flashlight_strength_unsupported)
+
     is Error.FailedToModifySystemSetting -> resourceProvider.getString(
         R.string.error_failed_to_modify_system_setting,
         setting,
