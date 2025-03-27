@@ -343,12 +343,12 @@ fun HomeScreen(
                         modifier = Modifier.padding(horizontal = 16.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Icon(Icons.Rounded.Add, contentDescription = null)
-
                         val fabText = when (currentDestination?.route) {
                             HomeDestination.FloatingButtons.route -> stringResource(R.string.home_fab_new_floating_layout)
                             else -> stringResource(R.string.home_fab_new_key_map)
                         }
+
+                        Icon(Icons.Rounded.Add, contentDescription = fabText)
 
                         val isFabTextVisible = if (isFloatingLayoutsDestination) {
                             viewModel.listFloatingLayoutsViewModel.showFabText
