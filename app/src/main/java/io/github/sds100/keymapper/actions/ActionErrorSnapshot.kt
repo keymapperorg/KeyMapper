@@ -23,7 +23,11 @@ class LazyActionErrorSnapshot(
     private val soundsManager: SoundsManager,
     shizukuAdapter: ShizukuAdapter,
 ) : ActionErrorSnapshot,
-    IsActionSupportedUseCase by IsActionSupportedUseCaseImpl(systemFeatureAdapter, cameraAdapter) {
+    IsActionSupportedUseCase by IsActionSupportedUseCaseImpl(
+        systemFeatureAdapter,
+        cameraAdapter,
+        permissionAdapter,
+    ) {
     private val keyMapperImeHelper = KeyMapperImeHelper(inputMethodAdapter)
 
     private val isCompatibleImeEnabled by lazy { keyMapperImeHelper.isCompatibleImeEnabled() }

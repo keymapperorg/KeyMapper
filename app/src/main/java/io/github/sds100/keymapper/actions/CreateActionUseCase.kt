@@ -5,6 +5,7 @@ import io.github.sds100.keymapper.system.camera.CameraFlashInfo
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
+import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.permissions.SystemFeatureAdapter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -18,8 +19,13 @@ class CreateActionUseCaseImpl(
     private val inputMethodAdapter: InputMethodAdapter,
     private val systemFeatureAdapter: SystemFeatureAdapter,
     private val cameraAdapter: CameraAdapter,
+    private val permissionAdapter: PermissionAdapter,
 ) : CreateActionUseCase,
-    IsActionSupportedUseCase by IsActionSupportedUseCaseImpl(systemFeatureAdapter, cameraAdapter) {
+    IsActionSupportedUseCase by IsActionSupportedUseCaseImpl(
+        systemFeatureAdapter,
+        cameraAdapter,
+        permissionAdapter,
+    ) {
     override suspend fun getInputMethods(): List<ImeInfo> = inputMethodAdapter.inputMethods.first()
 
     override fun getFlashlightLenses(): Set<CameraLens> {

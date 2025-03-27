@@ -4,12 +4,15 @@ import android.content.pm.PackageManager
 import android.os.Build
 import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.camera.CameraLens
+import io.github.sds100.keymapper.system.permissions.Permission
+import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.permissions.SystemFeatureAdapter
 import io.github.sds100.keymapper.util.Error
 
 class IsActionSupportedUseCaseImpl(
     private val adapter: SystemFeatureAdapter,
     private val cameraAdapter: CameraAdapter,
+    private val permissionAdapter: PermissionAdapter,
 ) : IsActionSupportedUseCase {
 
     override fun isSupported(id: ActionId): Error? {
@@ -47,6 +50,13 @@ class IsActionSupportedUseCaseImpl(
             ) {
                 return Error.CameraVariableFlashlightStrengthUnsupported
             }
+        }
+
+        if (ActionUtils.getRequiredPermissions(id)
+                .contains(Permission.ROOT) &&
+            !permissionAdapter.isGranted(Permission.ROOT)
+        ) {
+            return Error.PermissionDenied(Permission.ROOT)
         }
 
         return null

@@ -1402,6 +1402,8 @@
     <string name="action_config_flashlight_brightness_unsupported">This flash does not let you change the brightness.</string>
     <string name="action_config_flashlight_brightness_factor">Brightness change</string>
 
+    <string name="choose_action_group_unsupported">Unsupported</string>
+
     <!--  Constraint screen  -->
     <string name="constraints_recyclerview_placeholder">Add constraints if you want key maps to only work in some situations.</string>
     <string name="recently_used_constraints">Recently used constraints</string>

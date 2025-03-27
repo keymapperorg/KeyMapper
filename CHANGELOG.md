@@ -8,6 +8,10 @@ _See the changes from previous 3.0 Beta releases as well._
 
 - #1560 Action to change flashlight brightness and also set a custom brightness when enabling the flashlight. 
 
+## Changed
+
+- #1577 Move unsupported actions to the bottom of the list and do not allow selecting root actions if root permission is not granted.
+
 ## Bug fixes
 
 - #1585 Track changes when editing key maps and only prompt to discard changes if there were indeed changes.
