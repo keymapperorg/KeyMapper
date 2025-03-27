@@ -6,7 +6,8 @@ _See the changes from previous 3.0 Beta releases as well._
 
 ## Added
 
-- #1560 Action to change flashlight brightness and also set a custom brightness when enabling the flashlight. 
+- #1560 Action to change flashlight brightness and also set a custom brightness when enabling the flashlight.
+- Prompt to unlock device when using a floating button as a trigger from the lock screen
 
 ## Changed
 
