@@ -1,15 +1,42 @@
+## [3.0 Beta 1](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0-beta.1)
+
+#### TO BE RELEASED
+
+Most of the codebase has been touched and most of the user interface has been rewritten
+in Jetpack Compose, resulting in many improvements to the user experience.
+
+## Added
+
+- #1407 New trigger! Add floating buttons on top of other apps to input key maps.
+- Key maps are much more dense on the home screen.
+- Button to pause/resume key maps at the top of the home screen.
+- #1502 Constraint for lockscreen is (not) showing.
+- #1203 Show a share sheet after exporting key maps rather than asking where to store it. This solves the problem when no apps are installed to select where to back it up. You can still find the file in the Downloads file.
+- #1531 Show shortcuts to quickly add recently used actions and constraints.
+- #1487 Add confirmation dialog when importing key maps and offer the option to replace all the key maps or append to the list.
+- #1546 Add short explanation of what constraints mean on top of the list.
+- #1548 Dynamically change key map enabled switch label.
+- #1562 Import key maps by opening .json and .zip files from other apps and file managers.
+
+## Bug fixes
+- #1518 detect more apps that are playing media (fix to previous fix).
+- #1545 support phone call constraints in more apps.
+- #1536 'Edit action' sometimes does not appear.
+- #1507 only vibrate once when mixing short, long, and double press key maps.
+- Prevent various system errors from crashing the apps.
+
 ## [2.8.3](https://github.com/sds100/KeyMapper/releases/tag/v2.8.3)
 
 #### 17 March 2025
 
 ## Changed
 
-- #1474 always allow specifying a name for key map launcher shortcuts
-- #1533 simplify naming of ringer mode actions
+- #1474 always allow specifying a name for key map launcher shortcuts.
+- #1533 simplify naming of ringer mode actions.
 
 ## Bug fixes
 
-- #1535 side key/assistant trigger does not trigger from non-assistant buttons
+- #1535 side key/assistant trigger does not trigger from non-assistant buttons.
 
 ## [2.8.2](https://github.com/sds100/KeyMapper/releases/tag/v2.8.2)
 

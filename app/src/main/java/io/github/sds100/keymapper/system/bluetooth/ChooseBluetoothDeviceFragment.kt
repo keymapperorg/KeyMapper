@@ -12,7 +12,7 @@ import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.ListItem
 import io.github.sds100.keymapper.util.ui.RecyclerViewUtils
-import io.github.sds100.keymapper.util.ui.SimpleListItem
+import io.github.sds100.keymapper.util.ui.SimpleListItemOld
 import io.github.sds100.keymapper.util.ui.SimpleRecyclerViewFragment
 import io.github.sds100.keymapper.util.ui.TextListItem
 import kotlinx.coroutines.flow.Flow
@@ -61,7 +61,7 @@ class ChooseBluetoothDeviceFragment : SimpleRecyclerViewFragment<ListItem>() {
     ) {
         recyclerView.withModels {
             listItems.forEach { listItem ->
-                if (listItem is SimpleListItem) {
+                if (listItem is SimpleListItemOld) {
                     simple {
                         id(listItem.id)
                         model(listItem)

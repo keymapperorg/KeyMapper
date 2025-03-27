@@ -1,39 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <FrameLayout
         android:id="@android:id/list_container"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/coordinatorLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/bottom_app_bar_height"
         tools:ignore="NewApi" />
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:id="@+id/coordinatorLayout"
+    <com.google.android.material.bottomappbar.BottomAppBar
+        android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        android:layout_gravity="bottom"
+        android:gravity="center"
+        app:menuAlignmentMode="auto"
+        app:navigationIcon="@drawable/ic_baseline_arrow_back_24" />
 
-        <com.google.android.material.bottomappbar.BottomAppBar
-            android:id="@+id/appBar"
-            app:menuAlignmentMode="auto"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:paddingBottomSystemWindowInsets="false"
-            app:paddingLeftSystemWindowInsets="false"
-            app:paddingRightSystemWindowInsets="false"
-            android:layout_gravity="bottom"
-            android:gravity="center"
-            app:navigationIcon="@drawable/ic_baseline_arrow_back_24" />
-
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

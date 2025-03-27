@@ -44,8 +44,6 @@
     <!-- About activity-->
     <!--flags-->
     <!--flags-->
-    <!-- Showcase -->
-    <!-- Showcase -->
     <!-- system action options -->
     <!-- system action options -->
     <!-- Tiles -->
@@ -68,4 +66,9 @@
     <!--  Purchasing  -->
     <!--  Dpad trigger setup bottom sheet  -->
     <!-- No keys recorded bottom sheet -->
+    <!--  Floating buttons  -->
+    <!-- Home screen -->
+    <!-- Trigger screen -->
+    <!--  Action screen  -->
+    <!--  Constraint screen  -->
 </resources>

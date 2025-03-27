@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.constraints
 
-import android.media.AudioAttributes
+import android.media.AudioManager
 import android.os.Build
 import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
@@ -19,13 +19,13 @@ import io.github.sds100.keymapper.util.firstBlocking
 import timber.log.Timber
 
 /**
- * Created by sds100 on 08/05/2021.
+ * Created by sds100 on 08/05/2021.f
  */
 
 /**
  * This allows constraints to be checked lazily because some system calls take a significant amount of time.
  */
-class ConstraintSnapshotImpl(
+class LazyConstraintSnapshot(
     accessibilityService: IAccessibilityService,
     mediaAdapter: MediaAdapter,
     devicesAdapter: DevicesAdapter,
@@ -39,13 +39,13 @@ class ConstraintSnapshotImpl(
 ) : ConstraintSnapshot {
     private val appInForeground: String? by lazy { accessibilityService.rootNode?.packageName }
     private val connectedBluetoothDevices: Set<BluetoothDeviceInfo> by lazy { devicesAdapter.connectedBluetoothDevices.value }
-    private val orientation: Orientation by lazy { displayAdapter.orientation }
+    private val orientation: Orientation by lazy { displayAdapter.cachedOrientation }
     private val isScreenOn: Boolean by lazy { displayAdapter.isScreenOn.firstBlocking() }
     private val appsPlayingMedia: List<String> by lazy { mediaAdapter.getActiveMediaSessionPackages() }
 
-    private val audioContentTypes: Set<Int> by lazy {
+    private val audioVolumeStreams: Set<Int> by lazy {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            mediaAdapter.getActiveAudioContentTypes()
+            mediaAdapter.getActiveAudioVolumeStreams()
         } else {
             emptySet()
         }
@@ -65,9 +65,12 @@ class ConstraintSnapshotImpl(
         }
     }
 
-    private fun isMediaContentTypePlaying(): Boolean {
-        return audioContentTypes.contains(AudioAttributes.CONTENT_TYPE_MOVIE) ||
-            audioContentTypes.contains(AudioAttributes.CONTENT_TYPE_MUSIC)
+    private val isLockscreenShowing: Boolean by lazy {
+        lockScreenAdapter.isLockScreenShowing()
+    }
+
+    private fun isMediaPlaying(): Boolean {
+        return audioVolumeStreams.contains(AudioManager.STREAM_MUSIC) || appsPlayingMedia.isNotEmpty()
     }
 
     override fun isSatisfied(constraint: Constraint): Boolean {
@@ -77,7 +80,7 @@ class ConstraintSnapshotImpl(
             is Constraint.AppPlayingMedia -> {
                 if (appsPlayingMedia.contains(constraint.packageName)) {
                     return true
-                } else if (appInForeground == constraint.packageName && isMediaContentTypePlaying()) {
+                } else if (appInForeground == constraint.packageName && isMediaPlaying()) {
                     return true
                 } else {
                     return false
@@ -86,13 +89,11 @@ class ConstraintSnapshotImpl(
 
             is Constraint.AppNotPlayingMedia ->
                 appsPlayingMedia.none { it == constraint.packageName } &&
-                    !(appInForeground == constraint.packageName && isMediaContentTypePlaying())
+                    !(appInForeground == constraint.packageName && isMediaPlaying())
 
-            Constraint.MediaPlaying ->
-                isMediaContentTypePlaying() || appsPlayingMedia.isNotEmpty()
+            Constraint.MediaPlaying -> isMediaPlaying()
 
-            Constraint.NoMediaPlaying ->
-                !isMediaContentTypePlaying() && appsPlayingMedia.isEmpty()
+            Constraint.NoMediaPlaying -> !isMediaPlaying()
 
             is Constraint.BtDeviceConnected -> {
                 connectedBluetoothDevices.any { it.address == constraint.bluetoothAddress }
@@ -136,11 +137,25 @@ class ConstraintSnapshotImpl(
             is Constraint.ImeNotChosen -> chosenImeId != constraint.imeId
             Constraint.DeviceIsLocked -> isLocked
             Constraint.DeviceIsUnlocked -> !isLocked
-            Constraint.InPhoneCall -> callState == CallState.IN_PHONE_CALL
-            Constraint.NotInPhoneCall -> callState == CallState.NONE
-            Constraint.PhoneRinging -> callState == CallState.RINGING
+            Constraint.InPhoneCall ->
+                callState == CallState.IN_PHONE_CALL ||
+                    audioVolumeStreams.contains(AudioManager.STREAM_VOICE_CALL)
+
+            Constraint.NotInPhoneCall ->
+                callState == CallState.NONE &&
+                    !audioVolumeStreams.contains(AudioManager.STREAM_VOICE_CALL)
+
+            Constraint.PhoneRinging ->
+                callState == CallState.RINGING ||
+                    audioVolumeStreams.contains(AudioManager.STREAM_RING)
+
             Constraint.Charging -> isCharging
             Constraint.Discharging -> !isCharging
+
+            // The keyguard manager still reports the lock screen as showing if you are in
+            // an another activity like the camera app while the phone is locked.
+            Constraint.LockScreenShowing -> isLockscreenShowing && appInForeground == "com.android.systemui"
+            Constraint.LockScreenNotShowing -> !isLockscreenShowing || appInForeground != "com.android.systemui"
         }
 
         if (isSatisfied) {

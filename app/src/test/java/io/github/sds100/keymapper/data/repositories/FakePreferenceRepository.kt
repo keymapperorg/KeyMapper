@@ -26,4 +26,8 @@ class FakePreferenceRepository : PreferenceRepository {
     override fun deleteAll() {
         preferences.value = emptyMap()
     }
+
+    override fun <T> update(key: Preferences.Key<T>, update: suspend (T?) -> T?) {
+        throw NotImplementedError()
+    }
 }

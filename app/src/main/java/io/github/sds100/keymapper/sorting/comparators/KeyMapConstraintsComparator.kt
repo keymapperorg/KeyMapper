@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.sorting.comparators
 
 import io.github.sds100.keymapper.constraints.Constraint
-import io.github.sds100.keymapper.mappings.DisplayConstraintUseCase
+import io.github.sds100.keymapper.constraints.DisplayConstraintUseCase
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
@@ -123,6 +123,8 @@ class KeyMapConstraintsComparator(
 
             Constraint.WifiOff -> Success("")
             Constraint.WifiOn -> Success("")
+            Constraint.LockScreenNotShowing -> Success("")
+            Constraint.LockScreenShowing -> Success("")
         }
     }
 }

@@ -8,13 +8,16 @@ import io.github.sds100.keymapper.actions.sound.SoundsManagerImpl
 import io.github.sds100.keymapper.backup.BackupManager
 import io.github.sds100.keymapper.backup.BackupManagerImpl
 import io.github.sds100.keymapper.data.db.AppDatabase
+import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
+import io.github.sds100.keymapper.data.repositories.FloatingLayoutRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.data.repositories.RoomFingerprintMapRepository
+import io.github.sds100.keymapper.data.repositories.RoomFloatingButtonRepository
+import io.github.sds100.keymapper.data.repositories.RoomFloatingLayoutRepository
 import io.github.sds100.keymapper.data.repositories.RoomKeyMapRepository
 import io.github.sds100.keymapper.data.repositories.RoomLogRepository
 import io.github.sds100.keymapper.data.repositories.SettingsPreferenceRepository
 import io.github.sds100.keymapper.logging.LogRepository
-import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapRepository
+import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapUseCaseController
 import io.github.sds100.keymapper.purchasing.PurchasingManagerImpl
 import io.github.sds100.keymapper.shizuku.ShizukuAdapter
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
@@ -67,29 +70,14 @@ object ServiceLocator {
     @Volatile
     private var roomKeymapRepository: RoomKeyMapRepository? = null
 
-    fun roomKeymapRepository(context: Context): RoomKeyMapRepository {
+    fun roomKeyMapRepository(context: Context): RoomKeyMapRepository {
         synchronized(this) {
             return roomKeymapRepository ?: RoomKeyMapRepository(
-                database(context).keymapDao(),
+                database(context).keyMapDao(),
+                database(context).fingerprintMapDao(),
                 (context.applicationContext as KeyMapperApp).appCoroutineScope,
             ).also {
                 this.roomKeymapRepository = it
-            }
-        }
-    }
-
-    @Volatile
-    private var fingerprintMapRepository: FingerprintMapRepository? = null
-
-    private val Context.legacyFingerprintMapDataStore by preferencesDataStore("fingerprint_gestures")
-    fun fingerprintMapRepository(context: Context): FingerprintMapRepository {
-        synchronized(this) {
-            return fingerprintMapRepository ?: RoomFingerprintMapRepository(
-                database(context).fingerprintMapDao(),
-                (context.applicationContext as KeyMapperApp).appCoroutineScope,
-                devicesAdapter(context),
-            ).also {
-                this.fingerprintMapRepository = it
             }
         }
     }
@@ -123,25 +111,53 @@ object ServiceLocator {
     }
 
     @Volatile
+    private var floatingLayoutRepository: FloatingLayoutRepository? = null
+
+    fun floatingLayoutRepository(context: Context): FloatingLayoutRepository {
+        synchronized(this) {
+            return floatingLayoutRepository ?: RoomFloatingLayoutRepository(
+                database(context).floatingLayoutDao(),
+                (context.applicationContext as KeyMapperApp).appCoroutineScope,
+            ).also {
+                this.floatingLayoutRepository = it
+            }
+        }
+    }
+
+    @Volatile
+    private var floatingButtonRepository: FloatingButtonRepository? = null
+
+    fun floatingButtonRepository(context: Context): FloatingButtonRepository {
+        synchronized(this) {
+            return floatingButtonRepository ?: RoomFloatingButtonRepository(
+                database(context).floatingButtonDao(),
+                (context.applicationContext as KeyMapperApp).appCoroutineScope,
+            ).also {
+                this.floatingButtonRepository = it
+            }
+        }
+    }
+
+    @Volatile
     private var backupManager: BackupManager? = null
 
     fun backupManager(context: Context): BackupManager {
         synchronized(this) {
-            return backupManager ?: createBackupManager(context)
+            return backupManager ?: createBackupManager(context).also {
+                this.backupManager = it
+            }
         }
     }
 
-    private fun createBackupManager(context: Context): BackupManager =
-        backupManager ?: BackupManagerImpl(
-            (context.applicationContext as KeyMapperApp).appCoroutineScope,
-            fileAdapter(context),
-            roomKeymapRepository(context),
-            settingsRepository(context),
-            fingerprintMapRepository(context),
-            soundsManager(context),
-        ).also {
-            this.backupManager = it
-        }
+    private fun createBackupManager(context: Context): BackupManager = backupManager ?: BackupManagerImpl(
+        (context.applicationContext as KeyMapperApp).appCoroutineScope,
+        fileAdapter(context),
+        roomKeyMapRepository(context),
+        settingsRepository(context),
+        floatingLayoutRepository(context),
+        floatingButtonRepository(context),
+        soundsManager(context),
+    )
 
     @Volatile
     private var soundsManager: SoundsManager? = null
@@ -157,104 +173,95 @@ object ServiceLocator {
         }
     }
 
-    fun fileAdapter(context: Context): FileAdapter =
-        (context.applicationContext as KeyMapperApp).fileAdapter
+    @Volatile
+    private var configKeyMapsController: ConfigKeyMapUseCaseController? = null
 
-    fun inputMethodAdapter(context: Context): InputMethodAdapter =
-        (context.applicationContext as KeyMapperApp).inputMethodAdapter
+    fun configKeyMapsController(ctx: Context): ConfigKeyMapUseCaseController {
+        synchronized(this) {
+            return configKeyMapsController
+                ?: createConfigKeyMapsController(ctx).also {
+                    configKeyMapsController = it
+                }
+        }
+    }
 
-    fun devicesAdapter(context: Context): DevicesAdapter =
-        (context.applicationContext as KeyMapperApp).devicesAdapter
+    private fun createConfigKeyMapsController(ctx: Context): ConfigKeyMapUseCaseController {
+        return ConfigKeyMapUseCaseController(
+            appCoroutineScope(ctx),
+            roomKeyMapRepository(ctx),
+            devicesAdapter(ctx),
+            settingsRepository(ctx),
+            floatingLayoutRepository(ctx),
+            floatingButtonRepository(ctx),
+            accessibilityServiceAdapter(ctx),
+        )
+    }
 
-    fun bluetoothAdapter(context: Context): BluetoothAdapter =
-        (context.applicationContext as KeyMapperApp).bluetoothMonitor
+    fun fileAdapter(context: Context): FileAdapter = (context.applicationContext as KeyMapperApp).fileAdapter
 
-    fun notificationController(context: Context): NotificationController =
-        (context.applicationContext as KeyMapperApp).notificationController
+    fun inputMethodAdapter(context: Context): InputMethodAdapter = (context.applicationContext as KeyMapperApp).inputMethodAdapter
 
-    fun resourceProvider(context: Context): ResourceProviderImpl =
-        (context.applicationContext as KeyMapperApp).resourceProvider
+    fun devicesAdapter(context: Context): DevicesAdapter = (context.applicationContext as KeyMapperApp).devicesAdapter
 
-    fun packageManagerAdapter(context: Context): PackageManagerAdapter =
-        (context.applicationContext as KeyMapperApp).packageManagerAdapter
+    fun bluetoothAdapter(context: Context): BluetoothAdapter = (context.applicationContext as KeyMapperApp).bluetoothMonitor
 
-    fun cameraAdapter(context: Context): CameraAdapter =
-        (context.applicationContext as KeyMapperApp).cameraAdapter
+    fun notificationController(context: Context): NotificationController = (context.applicationContext as KeyMapperApp).notificationController
 
-    fun permissionAdapter(context: Context): AndroidPermissionAdapter =
-        (context.applicationContext as KeyMapperApp).permissionAdapter
+    fun resourceProvider(context: Context): ResourceProviderImpl = (context.applicationContext as KeyMapperApp).resourceProvider
 
-    fun systemFeatureAdapter(context: Context): SystemFeatureAdapter =
-        (context.applicationContext as KeyMapperApp).systemFeatureAdapter
+    fun packageManagerAdapter(context: Context): PackageManagerAdapter = (context.applicationContext as KeyMapperApp).packageManagerAdapter
 
-    fun accessibilityServiceAdapter(context: Context): AccessibilityServiceAdapter =
-        (context.applicationContext as KeyMapperApp).accessibilityServiceAdapter
+    fun cameraAdapter(context: Context): CameraAdapter = (context.applicationContext as KeyMapperApp).cameraAdapter
 
-    fun notificationReceiverAdapter(context: Context): NotificationReceiverAdapter =
-        (context.applicationContext as KeyMapperApp).notificationReceiverAdapter
+    fun permissionAdapter(context: Context): AndroidPermissionAdapter = (context.applicationContext as KeyMapperApp).permissionAdapter
 
-    fun appShortcutAdapter(context: Context): AppShortcutAdapter =
-        (context.applicationContext as KeyMapperApp).appShortcutAdapter
+    fun systemFeatureAdapter(context: Context): SystemFeatureAdapter = (context.applicationContext as KeyMapperApp).systemFeatureAdapter
 
-    fun notificationAdapter(context: Context): AndroidNotificationAdapter =
-        (context.applicationContext as KeyMapperApp).notificationAdapter
+    fun accessibilityServiceAdapter(context: Context): AccessibilityServiceAdapter = (context.applicationContext as KeyMapperApp).accessibilityServiceAdapter
 
-    fun popupMessageAdapter(context: Context): PopupMessageAdapter =
-        (context.applicationContext as KeyMapperApp).popupMessageAdapter
+    fun notificationReceiverAdapter(context: Context): NotificationReceiverAdapter = (context.applicationContext as KeyMapperApp).notificationReceiverAdapter
 
-    fun vibratorAdapter(context: Context): VibratorAdapter =
-        (context.applicationContext as KeyMapperApp).vibratorAdapter
+    fun appShortcutAdapter(context: Context): AppShortcutAdapter = (context.applicationContext as KeyMapperApp).appShortcutAdapter
 
-    fun displayAdapter(context: Context): AndroidDisplayAdapter =
-        (context.applicationContext as KeyMapperApp).displayAdapter
+    fun notificationAdapter(context: Context): AndroidNotificationAdapter = (context.applicationContext as KeyMapperApp).notificationAdapter
 
-    fun audioAdapter(context: Context): VolumeAdapter =
-        (context.applicationContext as KeyMapperApp).audioAdapter
+    fun popupMessageAdapter(context: Context): PopupMessageAdapter = (context.applicationContext as KeyMapperApp).popupMessageAdapter
 
-    fun suAdapter(context: Context): SuAdapter =
-        (context.applicationContext as KeyMapperApp).suAdapter
+    fun vibratorAdapter(context: Context): VibratorAdapter = (context.applicationContext as KeyMapperApp).vibratorAdapter
 
-    fun intentAdapter(context: Context): IntentAdapter =
-        (context.applicationContext as KeyMapperApp).intentAdapter
+    fun displayAdapter(context: Context): AndroidDisplayAdapter = (context.applicationContext as KeyMapperApp).displayAdapter
 
-    fun phoneAdapter(context: Context): PhoneAdapter =
-        (context.applicationContext as KeyMapperApp).phoneAdapter
+    fun audioAdapter(context: Context): VolumeAdapter = (context.applicationContext as KeyMapperApp).audioAdapter
 
-    fun mediaAdapter(context: Context): AndroidMediaAdapter =
-        (context.applicationContext as KeyMapperApp).mediaAdapter
+    fun suAdapter(context: Context): SuAdapter = (context.applicationContext as KeyMapperApp).suAdapter
 
-    fun lockScreenAdapter(context: Context): LockScreenAdapter =
-        (context.applicationContext as KeyMapperApp).lockScreenAdapter
+    fun intentAdapter(context: Context): IntentAdapter = (context.applicationContext as KeyMapperApp).intentAdapter
 
-    fun airplaneModeAdapter(context: Context): AirplaneModeAdapter =
-        (context.applicationContext as KeyMapperApp).airplaneModeAdapter
+    fun phoneAdapter(context: Context): PhoneAdapter = (context.applicationContext as KeyMapperApp).phoneAdapter
 
-    fun networkAdapter(context: Context): NetworkAdapter =
-        (context.applicationContext as KeyMapperApp).networkAdapter
+    fun mediaAdapter(context: Context): AndroidMediaAdapter = (context.applicationContext as KeyMapperApp).mediaAdapter
 
-    fun nfcAdapter(context: Context): NfcAdapter =
-        (context.applicationContext as KeyMapperApp).nfcAdapter
+    fun lockScreenAdapter(context: Context): LockScreenAdapter = (context.applicationContext as KeyMapperApp).lockScreenAdapter
 
-    fun openUrlAdapter(context: Context): OpenUrlAdapter =
-        (context.applicationContext as KeyMapperApp).openUrlAdapter
+    fun airplaneModeAdapter(context: Context): AirplaneModeAdapter = (context.applicationContext as KeyMapperApp).airplaneModeAdapter
 
-    fun clipboardAdapter(context: Context): ClipboardAdapter =
-        (context.applicationContext as KeyMapperApp).clipboardAdapter
+    fun networkAdapter(context: Context): NetworkAdapter = (context.applicationContext as KeyMapperApp).networkAdapter
 
-    fun shizukuAdapter(context: Context): ShizukuAdapter =
-        (context.applicationContext as KeyMapperApp).shizukuAdapter
+    fun nfcAdapter(context: Context): NfcAdapter = (context.applicationContext as KeyMapperApp).nfcAdapter
 
-    fun leanbackAdapter(context: Context): LeanbackAdapter =
-        (context.applicationContext as KeyMapperApp).leanbackAdapter
+    fun openUrlAdapter(context: Context): OpenUrlAdapter = (context.applicationContext as KeyMapperApp).openUrlAdapter
 
-    fun powerAdapter(context: Context): PowerAdapter =
-        (context.applicationContext as KeyMapperApp).powerAdapter
+    fun clipboardAdapter(context: Context): ClipboardAdapter = (context.applicationContext as KeyMapperApp).clipboardAdapter
 
-    fun appCoroutineScope(context: Context): CoroutineScope =
-        (context.applicationContext as KeyMapperApp).appCoroutineScope
+    fun shizukuAdapter(context: Context): ShizukuAdapter = (context.applicationContext as KeyMapperApp).shizukuAdapter
 
-    fun purchasingManager(context: Context): PurchasingManagerImpl =
-        (context.applicationContext as KeyMapperApp).purchasingManager
+    fun leanbackAdapter(context: Context): LeanbackAdapter = (context.applicationContext as KeyMapperApp).leanbackAdapter
+
+    fun powerAdapter(context: Context): PowerAdapter = (context.applicationContext as KeyMapperApp).powerAdapter
+
+    fun appCoroutineScope(context: Context): CoroutineScope = (context.applicationContext as KeyMapperApp).appCoroutineScope
+
+    fun purchasingManager(context: Context): PurchasingManagerImpl = (context.applicationContext as KeyMapperApp).purchasingManager
 
     private fun createDatabase(context: Context): AppDatabase = Room.databaseBuilder(
         context.applicationContext,
@@ -273,5 +280,8 @@ object ServiceLocator {
         AppDatabase.MIGRATION_10_11,
         AppDatabase.RoomMigration11To12(context.applicationContext.legacyFingerprintMapDataStore),
         AppDatabase.MIGRATION_12_13,
+        AppDatabase.MIGRATION_13_14,
     ).build()
+
+    private val Context.legacyFingerprintMapDataStore by preferencesDataStore("fingerprint_gestures")
 }

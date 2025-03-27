@@ -338,9 +338,7 @@
             app:fabAlignmentMode="end"
             app:fabAnimationMode="slide"
             app:menuAlignmentMode="auto"
-            app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
-            app:paddingBottomSystemWindowInsets="false"
-            app:paddingRightSystemWindowInsets="false" />
+            app:navigationIcon="@drawable/ic_baseline_arrow_back_24" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"

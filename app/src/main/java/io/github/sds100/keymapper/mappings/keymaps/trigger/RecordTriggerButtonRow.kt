@@ -6,71 +6,32 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Badge
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.compose.LocalCustomColorsPalette
 
-/**
- * This row of buttons is shown at the bottom of the TriggerFragment.
- */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecordTriggerButtonRow(
-    modifier: Modifier = Modifier,
-    viewModel: ConfigTriggerViewModel,
-) {
-    val recordTriggerState by viewModel.recordTriggerState.collectAsState()
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-
-    if (viewModel.showAdvancedTriggersBottomSheet) {
-        AdvancedTriggersBottomSheet(
-            modifier = Modifier.systemBarsPadding(),
-            viewModel = viewModel,
-            onDismissRequest = {
-                viewModel.showAdvancedTriggersBottomSheet = false
-            },
-            sheetState = sheetState,
-        )
-    }
-
-    RecordTriggerButtonRow(
-        modifier = modifier,
-        onRecordTriggerClick = viewModel::onRecordTriggerButtonClick,
-        recordTriggerState = recordTriggerState,
-        onAdvancedTriggersClick = {
-            viewModel.showAdvancedTriggersBottomSheet = true
-        },
-    )
-}
-
-/**
- * This row of buttons is shown at the bottom of the TriggerFragment.
- */
-@Composable
-private fun RecordTriggerButtonRow(
     modifier: Modifier = Modifier,
     onRecordTriggerClick: () -> Unit = {},
     recordTriggerState: RecordTriggerState,
     onAdvancedTriggersClick: () -> Unit = {},
+    showNewBadge: Boolean,
 ) {
     Row(modifier) {
         RecordTriggerButton(
@@ -87,6 +48,7 @@ private fun RecordTriggerButtonRow(
             modifier = Modifier.weight(1f),
             isEnabled = recordTriggerState !is RecordTriggerState.CountingDown,
             onClick = onAdvancedTriggersClick,
+            showNewBadge = showNewBadge,
         )
     }
 }
@@ -115,7 +77,11 @@ private fun RecordTriggerButton(
         onClick = onClick,
         colors = colors,
     ) {
-        Text(text)
+        Text(
+            text = text,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }
 
@@ -123,6 +89,7 @@ private fun RecordTriggerButton(
 private fun AdvancedTriggersButton(
     modifier: Modifier,
     isEnabled: Boolean,
+    showNewBadge: Boolean,
     onClick: () -> Unit,
 ) {
     Box(modifier = modifier) {
@@ -133,21 +100,27 @@ private fun AdvancedTriggersButton(
             enabled = isEnabled,
             onClick = onClick,
         ) {
-            Text(stringResource(R.string.button_advanced_triggers))
+            Text(
+                text = stringResource(R.string.button_advanced_triggers),
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+            )
         }
 
-        Badge(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .height(36.dp),
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-        ) {
-            Text(
-                modifier = Modifier.padding(horizontal = 8.dp),
-                text = stringResource(R.string.button_advanced_triggers_badge),
-                style = MaterialTheme.typography.labelLarge,
-            )
+        if (showNewBadge) {
+            Badge(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .height(36.dp),
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            ) {
+                Text(
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    text = stringResource(R.string.button_advanced_triggers_badge),
+                    style = MaterialTheme.typography.labelLarge,
+                )
+            }
         }
     }
 }
@@ -160,6 +133,7 @@ private fun PreviewCountingDown() {
             RecordTriggerButtonRow(
                 modifier = Modifier.fillMaxWidth(),
                 recordTriggerState = RecordTriggerState.CountingDown(3),
+                showNewBadge = true,
             )
         }
     }
@@ -173,6 +147,7 @@ private fun PreviewStopped() {
             RecordTriggerButtonRow(
                 modifier = Modifier.fillMaxWidth(),
                 recordTriggerState = RecordTriggerState.Idle,
+                showNewBadge = false,
             )
         }
     }

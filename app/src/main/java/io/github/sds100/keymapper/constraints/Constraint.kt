@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.constraints
 
 import io.github.sds100.keymapper.data.entities.ConstraintEntity
-import io.github.sds100.keymapper.data.entities.Extra
+import io.github.sds100.keymapper.data.entities.EntityExtra
 import io.github.sds100.keymapper.data.entities.getData
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.display.Orientation
@@ -156,6 +156,16 @@ sealed class Constraint {
     }
 
     @Serializable
+    data object LockScreenShowing : Constraint() {
+        override val id: ConstraintId = ConstraintId.LOCK_SCREEN_SHOWING
+    }
+
+    @Serializable
+    data object LockScreenNotShowing : Constraint() {
+        override val id: ConstraintId = ConstraintId.LOCK_SCREEN_NOT_SHOWING
+    }
+
+    @Serializable
     data object InPhoneCall : Constraint() {
         override val id: ConstraintId = ConstraintId.IN_PHONE_CALL
     }
@@ -270,6 +280,8 @@ object ConstraintEntityMapper {
 
             ConstraintEntity.DEVICE_IS_UNLOCKED -> Constraint.DeviceIsUnlocked
             ConstraintEntity.DEVICE_IS_LOCKED -> Constraint.DeviceIsLocked
+            ConstraintEntity.LOCK_SCREEN_SHOWING -> Constraint.LockScreenShowing
+            ConstraintEntity.LOCK_SCREEN_NOT_SHOWING -> Constraint.LockScreenNotShowing
 
             ConstraintEntity.PHONE_RINGING -> Constraint.PhoneRinging
             ConstraintEntity.IN_PHONE_CALL -> Constraint.InPhoneCall
@@ -285,22 +297,42 @@ object ConstraintEntityMapper {
     fun toEntity(constraint: Constraint): ConstraintEntity = when (constraint) {
         is Constraint.AppInForeground -> ConstraintEntity(
             type = ConstraintEntity.APP_FOREGROUND,
-            extras = listOf(Extra(ConstraintEntity.EXTRA_PACKAGE_NAME, constraint.packageName)),
+            extras = listOf(
+                EntityExtra(
+                    ConstraintEntity.EXTRA_PACKAGE_NAME,
+                    constraint.packageName,
+                ),
+            ),
         )
 
         is Constraint.AppNotInForeground -> ConstraintEntity(
             type = ConstraintEntity.APP_NOT_FOREGROUND,
-            extras = listOf(Extra(ConstraintEntity.EXTRA_PACKAGE_NAME, constraint.packageName)),
+            extras = listOf(
+                EntityExtra(
+                    ConstraintEntity.EXTRA_PACKAGE_NAME,
+                    constraint.packageName,
+                ),
+            ),
         )
 
         is Constraint.AppPlayingMedia -> ConstraintEntity(
             type = ConstraintEntity.APP_PLAYING_MEDIA,
-            extras = listOf(Extra(ConstraintEntity.EXTRA_PACKAGE_NAME, constraint.packageName)),
+            extras = listOf(
+                EntityExtra(
+                    ConstraintEntity.EXTRA_PACKAGE_NAME,
+                    constraint.packageName,
+                ),
+            ),
         )
 
         is Constraint.AppNotPlayingMedia -> ConstraintEntity(
             type = ConstraintEntity.APP_NOT_PLAYING_MEDIA,
-            extras = listOf(Extra(ConstraintEntity.EXTRA_PACKAGE_NAME, constraint.packageName)),
+            extras = listOf(
+                EntityExtra(
+                    ConstraintEntity.EXTRA_PACKAGE_NAME,
+                    constraint.packageName,
+                ),
+            ),
         )
 
         Constraint.MediaPlaying -> ConstraintEntity(ConstraintEntity.MEDIA_PLAYING)
@@ -309,16 +341,16 @@ object ConstraintEntityMapper {
         is Constraint.BtDeviceConnected -> ConstraintEntity(
             type = ConstraintEntity.BT_DEVICE_CONNECTED,
             extras = listOf(
-                Extra(ConstraintEntity.EXTRA_BT_ADDRESS, constraint.bluetoothAddress),
-                Extra(ConstraintEntity.EXTRA_BT_NAME, constraint.deviceName),
+                EntityExtra(ConstraintEntity.EXTRA_BT_ADDRESS, constraint.bluetoothAddress),
+                EntityExtra(ConstraintEntity.EXTRA_BT_NAME, constraint.deviceName),
             ),
         )
 
         is Constraint.BtDeviceDisconnected -> ConstraintEntity(
             type = ConstraintEntity.BT_DEVICE_DISCONNECTED,
             extras = listOf(
-                Extra(ConstraintEntity.EXTRA_BT_ADDRESS, constraint.bluetoothAddress),
-                Extra(ConstraintEntity.EXTRA_BT_NAME, constraint.deviceName),
+                EntityExtra(ConstraintEntity.EXTRA_BT_ADDRESS, constraint.bluetoothAddress),
+                EntityExtra(ConstraintEntity.EXTRA_BT_NAME, constraint.deviceName),
             ),
         )
 
@@ -336,29 +368,29 @@ object ConstraintEntityMapper {
 
         is Constraint.FlashlightOff -> ConstraintEntity(
             ConstraintEntity.FLASHLIGHT_OFF,
-            Extra(ConstraintEntity.EXTRA_FLASHLIGHT_CAMERA_LENS, LENS_MAP[constraint.lens]!!),
+            EntityExtra(ConstraintEntity.EXTRA_FLASHLIGHT_CAMERA_LENS, LENS_MAP[constraint.lens]!!),
         )
 
         is Constraint.FlashlightOn -> ConstraintEntity(
             ConstraintEntity.FLASHLIGHT_ON,
-            Extra(ConstraintEntity.EXTRA_FLASHLIGHT_CAMERA_LENS, LENS_MAP[constraint.lens]!!),
+            EntityExtra(ConstraintEntity.EXTRA_FLASHLIGHT_CAMERA_LENS, LENS_MAP[constraint.lens]!!),
         )
 
         is Constraint.WifiConnected -> {
-            val extras = mutableListOf<Extra>()
+            val extras = mutableListOf<EntityExtra>()
 
             if (constraint.ssid != null) {
-                extras.add(Extra(ConstraintEntity.EXTRA_SSID, constraint.ssid))
+                extras.add(EntityExtra(ConstraintEntity.EXTRA_SSID, constraint.ssid))
             }
 
             ConstraintEntity(ConstraintEntity.WIFI_CONNECTED, extras)
         }
 
         is Constraint.WifiDisconnected -> {
-            val extras = mutableListOf<Extra>()
+            val extras = mutableListOf<EntityExtra>()
 
             if (constraint.ssid != null) {
-                extras.add(Extra(ConstraintEntity.EXTRA_SSID, constraint.ssid))
+                extras.add(EntityExtra(ConstraintEntity.EXTRA_SSID, constraint.ssid))
             }
 
             ConstraintEntity(ConstraintEntity.WIFI_DISCONNECTED, extras)
@@ -370,21 +402,23 @@ object ConstraintEntityMapper {
         is Constraint.ImeChosen -> {
             ConstraintEntity(
                 ConstraintEntity.IME_CHOSEN,
-                Extra(ConstraintEntity.EXTRA_IME_ID, constraint.imeId),
-                Extra(ConstraintEntity.EXTRA_IME_LABEL, constraint.imeLabel),
+                EntityExtra(ConstraintEntity.EXTRA_IME_ID, constraint.imeId),
+                EntityExtra(ConstraintEntity.EXTRA_IME_LABEL, constraint.imeLabel),
             )
         }
 
         is Constraint.ImeNotChosen -> {
             ConstraintEntity(
                 ConstraintEntity.IME_NOT_CHOSEN,
-                Extra(ConstraintEntity.EXTRA_IME_ID, constraint.imeId),
-                Extra(ConstraintEntity.EXTRA_IME_LABEL, constraint.imeLabel),
+                EntityExtra(ConstraintEntity.EXTRA_IME_ID, constraint.imeId),
+                EntityExtra(ConstraintEntity.EXTRA_IME_LABEL, constraint.imeLabel),
             )
         }
 
         Constraint.DeviceIsLocked -> ConstraintEntity(ConstraintEntity.DEVICE_IS_LOCKED)
         Constraint.DeviceIsUnlocked -> ConstraintEntity(ConstraintEntity.DEVICE_IS_UNLOCKED)
+        Constraint.LockScreenShowing -> ConstraintEntity(ConstraintEntity.LOCK_SCREEN_SHOWING)
+        Constraint.LockScreenNotShowing -> ConstraintEntity(ConstraintEntity.LOCK_SCREEN_NOT_SHOWING)
         Constraint.InPhoneCall -> ConstraintEntity(ConstraintEntity.IN_PHONE_CALL)
         Constraint.NotInPhoneCall -> ConstraintEntity(ConstraintEntity.NOT_IN_PHONE_CALL)
         Constraint.PhoneRinging -> ConstraintEntity(ConstraintEntity.PHONE_RINGING)

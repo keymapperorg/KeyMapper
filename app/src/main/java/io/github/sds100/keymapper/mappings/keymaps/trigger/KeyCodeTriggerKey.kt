@@ -18,6 +18,8 @@ data class KeyCodeTriggerKey(
     val detectionSource: KeyEventDetectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
 ) : TriggerKey() {
 
+    override val allowedLongPress: Boolean = true
+
     override fun toString(): String {
         val deviceString = when (device) {
             TriggerKeyDevice.Any -> "any"

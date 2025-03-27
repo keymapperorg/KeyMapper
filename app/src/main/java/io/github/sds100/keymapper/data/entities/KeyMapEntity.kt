@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.data.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.github.salomonbrys.kotson.byArray
 import com.github.salomonbrys.kotson.byBool
@@ -18,7 +19,10 @@ import java.util.UUID
  * Created by sds100 on 12/07/2018.
  */
 
-@Entity(tableName = KeyMapDao.TABLE_NAME)
+@Entity(
+    tableName = KeyMapDao.TABLE_NAME,
+    indices = [Index(value = [KeyMapDao.KEY_UID], unique = true)],
+)
 data class KeyMapEntity(
     @SerializedName(NAME_ID)
     @PrimaryKey(autoGenerate = true)

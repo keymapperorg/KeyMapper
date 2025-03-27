@@ -3,13 +3,15 @@ package io.github.sds100.keymapper.mappings.keymaps.detection
 import android.accessibilityservice.AccessibilityService
 import android.os.SystemClock
 import android.view.KeyEvent
+import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
+import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.mappings.DetectMappingUseCase
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapEntityMapper
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapRepository
+import io.github.sds100.keymapper.mappings.keymaps.trigger.FingerprintTriggerKey
 import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.display.DisplayAdapter
 import io.github.sds100.keymapper.system.inputevents.InputEventInjector
@@ -18,16 +20,19 @@ import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.system.navigation.OpenMenuHelper
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
+import io.github.sds100.keymapper.system.popup.PopupMessageAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
+import io.github.sds100.keymapper.system.vibrator.VibratorAdapter
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import io.github.sds100.keymapper.util.InputEventType
 import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.dataOrNull
+import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 import timber.log.Timber
 
 /**
@@ -35,8 +40,8 @@ import timber.log.Timber
  */
 
 class DetectKeyMapsUseCaseImpl(
-    detectMappingUseCase: DetectMappingUseCase,
     private val keyMapRepository: KeyMapRepository,
+    private val floatingButtonRepository: FloatingButtonRepository,
     private val preferenceRepository: PreferenceRepository,
     private val suAdapter: SuAdapter,
     private val displayAdapter: DisplayAdapter,
@@ -44,21 +49,34 @@ class DetectKeyMapsUseCaseImpl(
     private val imeInputEventInjector: ImeInputEventInjector,
     private val accessibilityService: IAccessibilityService,
     private val shizukuInputEventInjector: InputEventInjector,
+    private val popupMessageAdapter: PopupMessageAdapter,
     private val permissionAdapter: PermissionAdapter,
-) : DetectKeyMapsUseCase,
-    DetectMappingUseCase by detectMappingUseCase {
+    private val resourceProvider: ResourceProvider,
+    private val vibrator: VibratorAdapter,
+) : DetectKeyMapsUseCase {
 
-    override val allKeyMapList: Flow<List<KeyMap>> =
-        keyMapRepository.keyMapList
-            .mapNotNull { state ->
-                if (state is State.Data) {
-                    state.data
-                } else {
-                    null
-                }
+    override val allKeyMapList: Flow<List<KeyMap>> = combine(
+        keyMapRepository.keyMapList,
+        floatingButtonRepository.buttonsList,
+    ) { keyMapListState, buttonListState ->
+        if (keyMapListState is State.Loading || buttonListState is State.Loading) {
+            return@combine emptyList()
+        }
+
+        val keyMapList = keyMapListState.dataOrNull() ?: return@combine emptyList()
+        val buttonList = buttonListState.dataOrNull() ?: return@combine emptyList()
+
+        keyMapList.map { keyMap ->
+            KeyMapEntityMapper.fromEntity(keyMap, buttonList)
+        }
+    }.flowOn(Dispatchers.Default)
+
+    override val requestFingerprintGestureDetection: Flow<Boolean> =
+        allKeyMapList.map { keyMaps ->
+            keyMaps.any { keyMap ->
+                keyMap.isEnabled && keyMap.trigger.keys.any { it is FingerprintTriggerKey }
             }
-            .map { entityList -> entityList.map { KeyMapEntityMapper.fromEntity(it) } }
-            .flowOn(Dispatchers.Default)
+        }
 
     override val keyMapsToTriggerFromOtherApps: Flow<List<KeyMap>> =
         allKeyMapList.map { keyMapList ->
@@ -97,6 +115,22 @@ class DetectKeyMapsUseCaseImpl(
         shizukuInputEventInjector,
         permissionAdapter,
     )
+
+    override val forceVibrate: Flow<Boolean> =
+        preferenceRepository.get(Keys.forceVibrate).map { it == true }
+
+    override val defaultVibrateDuration: Flow<Long> =
+        preferenceRepository.get(Keys.defaultVibrateDuration)
+            .map { it ?: PreferenceDefaults.VIBRATION_DURATION }
+            .map { it.toLong() }
+
+    override fun showTriggeredToast() {
+        popupMessageAdapter.showPopupMessage(resourceProvider.getString(R.string.toast_triggered_keymap))
+    }
+
+    override fun vibrate(duration: Long) {
+        vibrator.vibrate(duration)
+    }
 
     override fun imitateButtonPress(
         keyCode: Int,
@@ -149,14 +183,21 @@ class DetectKeyMapsUseCaseImpl(
     override val isScreenOn: Flow<Boolean> = displayAdapter.isScreenOn
 }
 
-interface DetectKeyMapsUseCase : DetectMappingUseCase {
+interface DetectKeyMapsUseCase {
     val allKeyMapList: Flow<List<KeyMap>>
+    val requestFingerprintGestureDetection: Flow<Boolean>
     val keyMapsToTriggerFromOtherApps: Flow<List<KeyMap>>
     val detectScreenOffTriggers: Flow<Boolean>
 
     val defaultLongPressDelay: Flow<Long>
     val defaultDoublePressDelay: Flow<Long>
     val defaultSequenceTriggerTimeout: Flow<Long>
+
+    val forceVibrate: Flow<Boolean>
+    val defaultVibrateDuration: Flow<Long>
+
+    fun showTriggeredToast()
+    fun vibrate(duration: Long)
 
     val currentTime: Long
 

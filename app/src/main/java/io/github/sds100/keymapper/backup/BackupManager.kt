@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.backup
 
-import androidx.annotation.VisibleForTesting
+import android.database.sqlite.SQLiteConstraintException
 import com.github.salomonbrys.kotson.byInt
 import com.github.salomonbrys.kotson.byNullableArray
 import com.github.salomonbrys.kotson.byNullableInt
@@ -14,7 +14,6 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.google.gson.JsonParser
 import com.google.gson.JsonSyntaxException
-import com.google.gson.annotations.SerializedName
 import com.google.gson.stream.MalformedJsonException
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.actions.sound.SoundsManager
@@ -23,8 +22,11 @@ import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.db.AppDatabase
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.ConstraintEntity
-import io.github.sds100.keymapper.data.entities.Extra
+import io.github.sds100.keymapper.data.entities.EntityExtra
 import io.github.sds100.keymapper.data.entities.FingerprintMapEntity
+import io.github.sds100.keymapper.data.entities.FloatingButtonEntity
+import io.github.sds100.keymapper.data.entities.FloatingButtonKeyEntity
+import io.github.sds100.keymapper.data.entities.FloatingLayoutEntity
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.data.entities.TriggerEntity
 import io.github.sds100.keymapper.data.entities.TriggerKeyEntity
@@ -35,8 +37,10 @@ import io.github.sds100.keymapper.data.migration.Migration9To10
 import io.github.sds100.keymapper.data.migration.MigrationUtils
 import io.github.sds100.keymapper.data.migration.fingerprintmaps.FingerprintMapMigration0To1
 import io.github.sds100.keymapper.data.migration.fingerprintmaps.FingerprintMapMigration1To2
+import io.github.sds100.keymapper.data.migration.fingerprintmaps.FingerprintToKeyMapMigration
+import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
+import io.github.sds100.keymapper.data.repositories.FloatingLayoutRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapRepository
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapRepository
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.files.IFile
@@ -48,25 +52,24 @@ import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.UuidGenerator
-import io.github.sds100.keymapper.util.dataOrNull
 import io.github.sds100.keymapper.util.onFailure
 import io.github.sds100.keymapper.util.then
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import java.io.IOException
 import java.io.InputStream
+import java.util.UUID
 
 /**
  * Created by sds100 on 16/03/2021.
@@ -77,7 +80,8 @@ class BackupManagerImpl(
     private val fileAdapter: FileAdapter,
     private val keyMapRepository: KeyMapRepository,
     private val preferenceRepository: PreferenceRepository,
-    private val fingerprintMapRepository: FingerprintMapRepository,
+    private val floatingLayoutRepository: FloatingLayoutRepository,
+    private val floatingButtonRepository: FloatingButtonRepository,
     private val soundsManager: SoundsManager,
     private val throwExceptions: Boolean = false,
     private val dispatchers: DispatcherProvider = DefaultDispatcherProvider(),
@@ -85,23 +89,16 @@ class BackupManagerImpl(
 ) : BackupManager {
 
     companion object {
-        // DON'T CHANGE THESE. Used for serialization and parsing.
-        @VisibleForTesting
-        private const val NAME_DB_VERSION = "keymap_db_version"
-        private const val NAME_APP_VERSION = "app_version"
-        private const val NAME_KEYMAP_LIST = "keymap_list"
-        private const val NAME_FINGERPRINT_MAP_LIST = "fingerprint_map_list"
-        private const val NAME_DEFAULT_LONG_PRESS_DELAY = "default_long_press_delay"
-        private const val NAME_DEFAULT_DOUBLE_PRESS_DELAY = "default_double_press_delay"
-        private const val NAME_DEFAULT_VIBRATION_DURATION = "default_vibration_duration"
-        private const val NAME_DEFAULT_REPEAT_DELAY = "default_repeat_delay"
-        private const val NAME_DEFAULT_REPEAT_RATE = "default_repeat_rate"
-        private const val NAME_DEFAULT_SEQUENCE_TRIGGER_TIMEOUT = "default_sequence_trigger_timeout"
-
         // DON'T CHANGE THIS.
         private const val DATA_JSON_FILE_NAME = "data.json"
         private const val SOUNDS_DIR_NAME = "sounds"
 
+        // This is where completed back ups are stored in private app data.
+        // IMPORTANT! This must be the same as the path in res/xml/provider_paths.xml
+        // so when sharing back up files other apps can read them.
+        const val BACKUP_DIR = "backups"
+
+        // This is where the temp files for creating a back up are stored.
         private const val TEMP_BACKUP_ROOT_DIR = "backup_temp"
         private const val TEMP_RESTORE_ROOT_DIR = "restore_temp"
     }
@@ -116,8 +113,10 @@ class BackupManagerImpl(
             .registerTypeAdapter(TriggerKeyEntity.SERIALIZER)
             .registerTypeAdapter(TriggerKeyEntity.DESERIALIZER)
             .registerTypeAdapter(ActionEntity.DESERIALIZER)
-            .registerTypeAdapter(Extra.DESERIALIZER)
+            .registerTypeAdapter(EntityExtra.DESERIALIZER)
             .registerTypeAdapter(ConstraintEntity.DESERIALIZER)
+            .registerTypeAdapter(FloatingLayoutEntity.DESERIALIZER)
+            .registerTypeAdapter(FloatingButtonEntity.DESERIALIZER)
             .create()
     }
 
@@ -135,11 +134,7 @@ class BackupManagerImpl(
                     ?: return@collectLatest
 
                 val outputFile = fileAdapter.getFileFromUri(backupLocation)
-                val result = backupAsync(
-                    outputFile,
-                    backupData.keyMapList,
-                    backupData.fingerprintMapList,
-                ).await()
+                val result = backupAsync(outputFile, backupData.keyMapList)
 
                 onAutomaticBackupResult.emit(result)
             }
@@ -147,22 +142,7 @@ class BackupManagerImpl(
 
         coroutineScope.launch {
             keyMapRepository.requestBackup.collectLatest { keyMapList ->
-                val backupData = AutomaticBackup(
-                    keyMapList = keyMapList,
-                    fingerprintMapList = fingerprintMapRepository.fingerprintMapList.firstOrNull()
-                        ?.dataOrNull(),
-                )
-
-                doAutomaticBackup.emit(backupData)
-            }
-        }
-
-        coroutineScope.launch {
-            fingerprintMapRepository.requestBackup.collectLatest { fingerprintMaps ->
-                val backupData = AutomaticBackup(
-                    keyMapList = keyMapRepository.keyMapList.firstOrNull()?.dataOrNull(),
-                    fingerprintMapList = fingerprintMaps,
-                )
+                val backupData = AutomaticBackup(keyMapList = keyMapList)
 
                 doAutomaticBackup.emit(backupData)
             }
@@ -173,127 +153,80 @@ class BackupManagerImpl(
             val keyMaps =
                 keyMapRepository.keyMapList.first { it is State.Data } as State.Data
 
-            val fingerprintMaps =
-                fingerprintMapRepository.fingerprintMapList.first { it is State.Data } as State.Data
-
-            val data = AutomaticBackup(
-                keyMapList = keyMaps.data,
-                fingerprintMapList = fingerprintMaps.data,
-            )
+            val data = AutomaticBackup(keyMapList = keyMaps.data)
 
             doAutomaticBackup.emit(data)
         }.launchIn(coroutineScope)
     }
 
-    override suspend fun backupKeyMaps(uri: String, keyMapIds: List<String>): Result<String> =
-        withContext(dispatchers.default()) {
-            val outputFile = fileAdapter.getFileFromUri(uri)
+    override suspend fun backupKeyMaps(output: IFile, keyMapIds: List<String>): Result<Unit> {
+        return withContext(dispatchers.default()) {
             val allKeyMaps = keyMapRepository.keyMapList
-                .first { it is State.Data } as State.Data
+                .filterIsInstance<State.Data<List<KeyMapEntity>>>()
+                .first()
 
             val keyMapsToBackup = allKeyMaps.data.filter { keyMapIds.contains(it.uid) }
 
-            backupAsync(outputFile, keyMapsToBackup).await().then { Success(uri) }
-        }
+            backupAsync(output, keyMapsToBackup)
 
-    override suspend fun backupFingerprintMaps(uri: String): Result<String> =
-        withContext(dispatchers.default()) {
-            val outputFile = fileAdapter.getFileFromUri(uri)
-            val fingerprintMaps =
-                fingerprintMapRepository.fingerprintMapList.first { it is State.Data } as State.Data
-
-            backupAsync(outputFile, fingerprintMaps = fingerprintMaps.data).await()
-                .then { Success(uri) }
-        }
-
-    override suspend fun backupMappings(uri: String): Result<String> =
-        withContext(dispatchers.default()) {
-            val outputFile = fileAdapter.getFileFromUri(uri)
-
-            val keyMaps =
-                keyMapRepository.keyMapList.first { it is State.Data } as State.Data
-
-            val fingerprintMaps =
-                fingerprintMapRepository.fingerprintMapList.first { it is State.Data } as State.Data
-
-            backupAsync(outputFile, keyMaps.data, fingerprintMaps.data).await()
-                .then { Success(uri) }
-        }
-
-    @Suppress("BlockingMethodInNonBlockingContext")
-    override suspend fun restoreMappings(uri: String): Result<*> {
-        return withContext(dispatchers.default()) {
-            val restoreUuid = uuidGenerator.random()
-
-            val file = fileAdapter.getFileFromUri(uri)
-
-            val result = if (file.extension == "zip") {
-                val zipDestination =
-                    fileAdapter.getPrivateFile("$TEMP_RESTORE_ROOT_DIR/$restoreUuid")
-
-                try {
-                    fileAdapter.extractZipFile(file, zipDestination).then {
-                        val dataJsonFile = fileAdapter.getFile(zipDestination, DATA_JSON_FILE_NAME)
-                        val soundDir = fileAdapter.getFile(zipDestination, SOUNDS_DIR_NAME)
-
-                        val inputStream = dataJsonFile.inputStream()
-
-                        if (inputStream == null) {
-                            return@withContext Error.UnknownIOError
-                        }
-
-                        val soundFiles =
-                            soundDir.listFiles() ?: emptyList() // null if dir doesn't exist
-
-                        restore(inputStream, soundFiles)
-                    }
-                } finally {
-                    zipDestination.delete()
-                }
-            } else {
-                val inputStream = file.inputStream()
-
-                if (inputStream == null) {
-                    return@withContext Error.UnknownIOError
-                }
-
-                restore(inputStream, emptyList())
-            }
-
-            return@withContext result
+            Success(Unit)
         }
     }
 
-    @Suppress("DEPRECATION")
-    private suspend fun restore(inputStream: InputStream, soundFiles: List<IFile>): Result<*> {
-        try {
-            val parser = JsonParser()
+    override suspend fun backupEverything(output: IFile): Result<Unit> {
+        return withContext(dispatchers.io()) {
+            val keyMaps =
+                keyMapRepository.keyMapList
+                    .filterIsInstance<State.Data<List<KeyMapEntity>>>()
+                    .first()
 
-            val rootElement = inputStream.bufferedReader().use {
-                val element = parser.parse(it)
+            backupAsync(output, keyMaps.data)
+
+            Success(Unit)
+        }
+    }
+
+    override suspend fun getBackupContent(file: IFile): Result<BackupContent> {
+        return extractFile(file).then { extractedDir ->
+
+            val dataJsonFile = fileAdapter.getFile(extractedDir, DATA_JSON_FILE_NAME)
+
+            val inputStream = dataJsonFile.inputStream()
+
+            if (inputStream == null) {
+                return Error.UnknownIOError
+            }
+
+            return parseBackupContent(inputStream)
+        }
+    }
+
+    private suspend fun parseBackupContent(jsonFile: InputStream): Result<BackupContent> = withContext(dispatchers.io()) {
+        try {
+            val rootElement = jsonFile.bufferedReader().use {
+                val element = JsonParser().parse(it)
 
                 if (element.isJsonNull) {
-                    return Error.EmptyJson
+                    return@withContext Error.EmptyJson
                 }
 
                 element.asJsonObject
             }
 
-            // started storing database version at db version 10
-            val backupDbVersion = rootElement.get(NAME_DB_VERSION).nullInt ?: 9
-            val backupAppVersion = rootElement.get(NAME_APP_VERSION).nullInt
+            val backupDbVersion = rootElement.get(BackupContent.NAME_DB_VERSION).nullInt ?: 9
+            val backupAppVersion = rootElement.get(BackupContent.NAME_APP_VERSION).nullInt
 
             if (backupAppVersion != null && backupAppVersion > Constants.VERSION_CODE) {
-                return Error.BackupVersionTooNew
+                return@withContext Error.BackupVersionTooNew
             }
 
             if (backupDbVersion > AppDatabase.DATABASE_VERSION) {
-                return Error.BackupVersionTooNew
+                return@withContext Error.BackupVersionTooNew
             }
 
-            val keymapListJsonArray by rootElement.byNullableArray(NAME_KEYMAP_LIST)
+            val keyMapListJsonArray by rootElement.byNullableArray(BackupContent.NAME_KEYMAP_LIST)
 
-            val deviceInfoList by rootElement.byNullableArray("device_info")
+            val deviceInfoList by rootElement.byNullableArray(BackupContent.NAME_DEVICE_INFO)
 
             val migratedKeyMapList = mutableListOf<KeyMapEntity>()
 
@@ -305,28 +238,26 @@ class BackupManagerImpl(
                 },
                 // do nothing because this added the log table
                 JsonMigration(12, 13) { json -> json },
+
+                // Do nothing because this just add the floating layouts table and indexes.
+                JsonMigration(13, 14) { json -> json },
             )
 
-            keymapListJsonArray?.forEach { keyMap ->
-                val migratedKeyMap = MigrationUtils.migrate(
-                    keyMapMigrations,
-                    inputVersion = backupDbVersion,
-                    inputJson = keyMap.asJsonObject,
-                    outputVersion = AppDatabase.DATABASE_VERSION,
-                )
-                val keyMapEntity: KeyMapEntity = gson.fromJson(migratedKeyMap)
-                val keyMapWithNewId = keyMapEntity.copy(id = 0)
+            if (keyMapListJsonArray != null) {
+                for (keyMap in keyMapListJsonArray!!) {
+                    val migratedKeyMap = MigrationUtils.migrate(
+                        keyMapMigrations,
+                        inputVersion = backupDbVersion,
+                        inputJson = keyMap.asJsonObject,
+                        outputVersion = AppDatabase.DATABASE_VERSION,
+                    )
 
-                migratedKeyMapList.add(keyMapWithNewId)
+                    val keyMapEntity: KeyMapEntity = gson.fromJson(migratedKeyMap)
+                    val keyMapWithNewId = keyMapEntity.copy(id = 0)
+
+                    migratedKeyMapList.add(keyMapWithNewId)
+                }
             }
-
-            // Key maps with the same uid must be overwritten when restoring
-            // so delete all key maps with the same uid as the ones being
-            // restored
-            val keyMapUids = migratedKeyMapList.map { it.uid }
-            keyMapRepository.delete(*keyMapUids.toTypedArray())
-
-            keyMapRepository.insert(*migratedKeyMapList.toTypedArray())
 
             val migratedFingerprintMaps = mutableListOf<FingerprintMapEntity>()
 
@@ -335,13 +266,13 @@ class BackupManagerImpl(
                 JsonMigration(12, 13) { json -> json },
             )
 
-            if (rootElement.contains(NAME_FINGERPRINT_MAP_LIST) && backupDbVersion >= 12) {
-                rootElement.get(NAME_FINGERPRINT_MAP_LIST).asJsonArray.forEach { fingerprintMap ->
+            if (rootElement.contains(BackupContent.NAME_FINGERPRINT_MAP_LIST) && backupDbVersion >= 12) {
+                rootElement.get(BackupContent.NAME_FINGERPRINT_MAP_LIST).asJsonArray.forEach { fingerprintMap ->
                     val migratedFingerprintMapJson = MigrationUtils.migrate(
                         newFingerprintMapMigrations,
                         inputVersion = backupDbVersion,
                         inputJson = fingerprintMap.asJsonObject,
-                        outputVersion = AppDatabase.DATABASE_VERSION,
+                        outputVersion = 13,
                     )
 
                     migratedFingerprintMaps.add(gson.fromJson(migratedFingerprintMapJson))
@@ -369,8 +300,14 @@ class BackupManagerImpl(
                     }
 
                     val legacyMigrations = listOf(
-                        JsonMigration(0, 1) { json -> FingerprintMapMigration0To1.migrate(json) },
-                        JsonMigration(1, 2) { json -> FingerprintMapMigration1To2.migrate(json) },
+                        JsonMigration(
+                            0,
+                            1,
+                        ) { json -> FingerprintMapMigration0To1.migrate(json) },
+                        JsonMigration(
+                            1,
+                            2,
+                        ) { json -> FingerprintMapMigration1To2.migrate(json) },
                         JsonMigration(2, 12) { json ->
                             Migration11To12.migrateFingerprintMap(
                                 gestureId,
@@ -384,40 +321,190 @@ class BackupManagerImpl(
                         legacyMigrations.plus(newFingerprintMapMigrations),
                         inputVersion = version,
                         inputJson = fingerprintMap!!.asJsonObject,
-                        outputVersion = AppDatabase.DATABASE_VERSION,
+                        outputVersion = 13,
                     )
 
                     migratedFingerprintMaps.add(gson.fromJson(migratedFingerprintMapJson))
                 }
 
                 if (backupVersionTooNew) {
-                    return Error.BackupVersionTooNew
+                    return@withContext Error.BackupVersionTooNew
                 }
             }
 
-            fingerprintMapRepository.update(*migratedFingerprintMaps.toTypedArray())
+            for (entity in migratedFingerprintMaps) {
+                FingerprintToKeyMapMigration.migrate(entity)?.let { migratedKeyMapList.add(it) }
+            }
 
-            val settingsJsonNameToPreferenceKeyMap = mapOf(
-                NAME_DEFAULT_LONG_PRESS_DELAY to Keys.defaultLongPressDelay,
-                NAME_DEFAULT_DOUBLE_PRESS_DELAY to Keys.defaultDoublePressDelay,
-                NAME_DEFAULT_VIBRATION_DURATION to Keys.defaultVibrateDuration,
-                NAME_DEFAULT_REPEAT_DELAY to Keys.defaultRepeatDelay,
-                NAME_DEFAULT_REPEAT_RATE to Keys.defaultRepeatRate,
-                NAME_DEFAULT_SEQUENCE_TRIGGER_TIMEOUT to Keys.defaultSequenceTriggerTimeout,
+            val defaultLongPressDelay by rootElement.byNullableInt(BackupContent.NAME_DEFAULT_LONG_PRESS_DELAY)
+            val defaultDoublePressDelay by rootElement.byNullableInt(BackupContent.NAME_DEFAULT_DOUBLE_PRESS_DELAY)
+            val defaultVibrationDuration by rootElement.byNullableInt(BackupContent.NAME_DEFAULT_VIBRATION_DURATION)
+            val defaultRepeatDelay by rootElement.byNullableInt(BackupContent.NAME_DEFAULT_REPEAT_DELAY)
+            val defaultRepeatRate by rootElement.byNullableInt(BackupContent.NAME_DEFAULT_REPEAT_RATE)
+            val defaultSequenceTriggerTimeout by rootElement.byNullableInt(BackupContent.NAME_DEFAULT_SEQUENCE_TRIGGER_TIMEOUT)
+
+            val floatingLayoutsJson by rootElement.byNullableArray(BackupContent.NAME_FLOATING_LAYOUTS)
+            val floatingLayouts: List<FloatingLayoutEntity>? =
+                floatingLayoutsJson?.map { json -> gson.fromJson(json) }
+
+            val floatingButtonsJson by rootElement.byNullableArray(BackupContent.NAME_FLOATING_BUTTONS)
+            val floatingButtons: List<FloatingButtonEntity>? =
+                floatingButtonsJson?.map { json -> gson.fromJson(json) }
+
+            val content = BackupContent(
+                dbVersion = backupDbVersion,
+                appVersion = backupAppVersion,
+                keyMapList = migratedKeyMapList,
+                defaultLongPressDelay = defaultLongPressDelay,
+                defaultDoublePressDelay = defaultDoublePressDelay,
+                defaultVibrationDuration = defaultVibrationDuration,
+                defaultRepeatDelay = defaultRepeatDelay,
+                defaultRepeatRate = defaultRepeatRate,
+                defaultSequenceTriggerTimeout = defaultSequenceTriggerTimeout,
+                floatingLayouts = floatingLayouts,
+                floatingButtons = floatingButtons,
             )
 
-            settingsJsonNameToPreferenceKeyMap.forEach { (jsonName, preferenceKey) ->
-                val settingValue by rootElement.byNullableInt(jsonName)
+            return@withContext Success(content)
+        } catch (e: MalformedJsonException) {
+            return@withContext Error.CorruptJsonFile(e.message ?: "")
+        } catch (e: JsonSyntaxException) {
+            return@withContext Error.CorruptJsonFile(e.message ?: "")
+        } catch (e: NoSuchElementException) {
+            return@withContext Error.CorruptJsonFile(e.message ?: "")
+        } catch (e: Exception) {
+            Timber.e(e)
 
-                if (settingValue != null) {
-                    preferenceRepository.set(preferenceKey, settingValue)
+            if (throwExceptions) {
+                throw e
+            }
+
+            return@withContext Error.Exception(e)
+        }
+    }
+
+    override suspend fun restore(file: IFile, restoreType: RestoreType): Result<*> {
+        return extractFile(file).then { extractedDir ->
+
+            val dataJsonFile = fileAdapter.getFile(extractedDir, DATA_JSON_FILE_NAME)
+
+            val inputStream = dataJsonFile.inputStream()
+
+            if (inputStream == null) {
+                return@then Error.UnknownIOError
+            }
+
+            val soundDir = fileAdapter.getFile(extractedDir, SOUNDS_DIR_NAME)
+            val soundFiles = soundDir.listFiles() ?: emptyList() // null if dir doesn't exist
+
+            return@then parseBackupContent(inputStream).then { backupContent ->
+                restore(restoreType, backupContent, soundFiles)
+            }
+        }
+    }
+
+    /**
+     * @return the directory with the extracted contents.
+     */
+    private suspend fun extractFile(file: IFile): Result<IFile> {
+        val restoreUuid = uuidGenerator.random()
+
+        val zipDestination =
+            fileAdapter.getPrivateFile("$TEMP_RESTORE_ROOT_DIR/$restoreUuid")
+
+        try {
+            if (file.extension == "zip") {
+                withContext(dispatchers.io()) {
+                    fileAdapter.extractZipFile(file, zipDestination)
                 }
+            } else {
+                withContext(dispatchers.io()) {
+                    file.copyTo(zipDestination, DATA_JSON_FILE_NAME)
+                }
+            }
+
+            return Success(zipDestination)
+        } catch (e: IOException) {
+            return Error.UnknownIOError
+        }
+    }
+
+    private suspend fun restore(
+        restoreType: RestoreType,
+        backupContent: BackupContent,
+        soundFiles: List<IFile>,
+    ): Result<*> {
+        try {
+            when (restoreType) {
+                RestoreType.APPEND ->
+                    appendKeyMapsInRepository(backupContent.keyMapList ?: emptyList())
+
+                RestoreType.REPLACE ->
+                    replaceKeyMapsInRepository(backupContent.keyMapList ?: emptyList())
+            }
+
+            if (backupContent.defaultLongPressDelay != null) {
+                preferenceRepository.set(
+                    Keys.defaultLongPressDelay,
+                    backupContent.defaultLongPressDelay,
+                )
+            }
+
+            if (backupContent.defaultDoublePressDelay != null) {
+                preferenceRepository.set(
+                    Keys.defaultDoublePressDelay,
+                    backupContent.defaultDoublePressDelay,
+                )
+            }
+
+            if (backupContent.defaultVibrationDuration != null) {
+                preferenceRepository.set(
+                    Keys.defaultVibrateDuration,
+                    backupContent.defaultVibrationDuration,
+                )
+            }
+
+            if (backupContent.defaultRepeatDelay != null) {
+                preferenceRepository.set(Keys.defaultRepeatDelay, backupContent.defaultRepeatDelay)
+            }
+
+            if (backupContent.defaultRepeatRate != null) {
+                preferenceRepository.set(Keys.defaultRepeatRate, backupContent.defaultRepeatRate)
+            }
+
+            if (backupContent.defaultSequenceTriggerTimeout != null) {
+                preferenceRepository.set(
+                    Keys.defaultSequenceTriggerTimeout,
+                    backupContent.defaultSequenceTriggerTimeout,
+                )
             }
 
             soundFiles.forEach { file ->
                 soundsManager.restoreSound(file).onFailure {
                     return it
                 }
+            }
+
+            if (backupContent.floatingLayouts != null) {
+                for (layout in backupContent.floatingLayouts) {
+                    var entity = layout
+                    var subCount = 0
+
+                    while (subCount < 1000) {
+                        try {
+                            floatingLayoutRepository.insert(entity)
+                            break
+                        } catch (_: SQLiteConstraintException) {
+                            // If the name already exists try creating it with a new name.
+                            entity = layout.copy(name = "${layout.name} (${subCount + 1})")
+                            subCount++
+                        }
+                    }
+                }
+            }
+
+            if (backupContent.floatingButtons != null) {
+                floatingButtonRepository.insert(*backupContent.floatingButtons.toTypedArray())
             }
 
             return Success(Unit)
@@ -438,160 +525,153 @@ class BackupManagerImpl(
         }
     }
 
-    @Suppress("BlockingMethodInNonBlockingContext")
-    private fun backupAsync(
+    private suspend fun appendKeyMapsInRepository(keyMaps: List<KeyMapEntity>) = withContext(dispatchers.default()) {
+        val randomUids = keyMaps.map { it.copy(uid = UUID.randomUUID().toString()) }
+        keyMapRepository.insert(*randomUids.toTypedArray())
+    }
+
+    private suspend fun replaceKeyMapsInRepository(keyMaps: List<KeyMapEntity>) = withContext(dispatchers.default()) {
+        keyMapRepository.deleteAll()
+        keyMapRepository.insert(*keyMaps.toTypedArray())
+    }
+
+    private suspend fun backupAsync(
         output: IFile,
         keyMapList: List<KeyMapEntity>? = null,
-        fingerprintMaps: List<FingerprintMapEntity>? = null,
-    ): Deferred<Result<*>> = coroutineScope.async(dispatchers.io()) {
-        var tempBackupDir: IFile? = null
-
-        try {
-            // delete the contents of the file
-            output.clear()
-
-            val backupModel = BackupModel(
-                AppDatabase.DATABASE_VERSION,
-                Constants.VERSION_CODE,
-                keyMapList,
-                fingerprintMaps,
-                defaultLongPressDelay =
-                preferenceRepository
-                    .get(Keys.defaultLongPressDelay)
-                    .first()
-                    .takeIf { it != PreferenceDefaults.LONG_PRESS_DELAY },
-                defaultDoublePressDelay =
-                preferenceRepository
-                    .get(Keys.defaultDoublePressDelay)
-                    .first()
-                    .takeIf { it != PreferenceDefaults.DOUBLE_PRESS_DELAY },
-                defaultRepeatDelay =
-                preferenceRepository
-                    .get(Keys.defaultRepeatDelay)
-                    .first()
-                    .takeIf { it != PreferenceDefaults.REPEAT_DELAY },
-                defaultRepeatRate =
-                preferenceRepository
-                    .get(Keys.defaultRepeatRate)
-                    .first()
-                    .takeIf { it != PreferenceDefaults.REPEAT_RATE },
-                defaultSequenceTriggerTimeout =
-                preferenceRepository
-                    .get(Keys.defaultSequenceTriggerTimeout)
-                    .first()
-                    .takeIf { it != PreferenceDefaults.SEQUENCE_TRIGGER_TIMEOUT },
-                defaultVibrationDuration =
-                preferenceRepository
-                    .get(Keys.defaultVibrateDuration)
-                    .first()
-                    .takeIf { it != PreferenceDefaults.VIBRATION_DURATION },
-            )
-
-            val json = gson.toJson(backupModel)
-
+    ): Result<IFile> {
+        return withContext(dispatchers.io()) {
             val backupUid = uuidGenerator.random()
 
-            tempBackupDir = fileAdapter.getPrivateFile("$TEMP_BACKUP_ROOT_DIR/$backupUid")
+            val tempBackupDir = fileAdapter.getPrivateFile("$TEMP_BACKUP_ROOT_DIR/$backupUid")
             tempBackupDir.createDirectory()
 
-            val filesToBackup = mutableSetOf<IFile>()
+            try {
+                // delete the contents of the file
+                output.clear()
 
-            val dataJsonFile = fileAdapter.getFile(tempBackupDir, DATA_JSON_FILE_NAME)
-            dataJsonFile.createFile()
+                val floatingLayouts: MutableList<FloatingLayoutEntity> = mutableListOf()
+                val floatingButtons: MutableList<FloatingButtonEntity> = mutableListOf()
 
-            dataJsonFile.outputStream()?.bufferedWriter()?.use {
-                it.write(json)
-            }
+                if (keyMapList != null) {
+                    val floatingButtonTriggerKeys = keyMapList
+                        .flatMap { it.trigger.keys }
+                        .filterIsInstance<FloatingButtonKeyEntity>()
+                        .map { it.buttonUid }
+                        .distinct()
 
-            filesToBackup.add(dataJsonFile)
+                    for (buttonUid in floatingButtonTriggerKeys) {
+                        val buttonWithLayout = floatingButtonRepository.get(buttonUid) ?: continue
 
-            // backup all sounds
-            val soundsToBackup = soundsManager.soundFiles.value.map { it.uid }
-
-            if (soundsToBackup.isNotEmpty()) {
-                val soundsBackupDirectory = fileAdapter.getFile(tempBackupDir, SOUNDS_DIR_NAME)
-                soundsBackupDirectory.createDirectory()
-
-                soundsToBackup.forEach { soundUid ->
-                    soundsManager.getSound(soundUid)
-                        .then { soundFile ->
-                            soundFile.copyTo(soundsBackupDirectory)
-                        }.onFailure {
-                            return@async it
+                        if (floatingLayouts.none { it.uid == buttonWithLayout.layout.uid }) {
+                            floatingLayouts.add(buttonWithLayout.layout)
                         }
+
+                        floatingButtons.add(buttonWithLayout.button)
+                    }
                 }
 
-                filesToBackup.add(soundsBackupDirectory)
+                val backupContent = BackupContent(
+                    AppDatabase.DATABASE_VERSION,
+                    Constants.VERSION_CODE,
+                    keyMapList,
+                    defaultLongPressDelay =
+                    preferenceRepository
+                        .get(Keys.defaultLongPressDelay)
+                        .first()
+                        .takeIf { it != PreferenceDefaults.LONG_PRESS_DELAY },
+                    defaultDoublePressDelay =
+                    preferenceRepository
+                        .get(Keys.defaultDoublePressDelay)
+                        .first()
+                        .takeIf { it != PreferenceDefaults.DOUBLE_PRESS_DELAY },
+                    defaultRepeatDelay =
+                    preferenceRepository
+                        .get(Keys.defaultRepeatDelay)
+                        .first()
+                        .takeIf { it != PreferenceDefaults.REPEAT_DELAY },
+                    defaultRepeatRate =
+                    preferenceRepository
+                        .get(Keys.defaultRepeatRate)
+                        .first()
+                        .takeIf { it != PreferenceDefaults.REPEAT_RATE },
+                    defaultSequenceTriggerTimeout =
+                    preferenceRepository
+                        .get(Keys.defaultSequenceTriggerTimeout)
+                        .first()
+                        .takeIf { it != PreferenceDefaults.SEQUENCE_TRIGGER_TIMEOUT },
+                    defaultVibrationDuration =
+                    preferenceRepository
+                        .get(Keys.defaultVibrateDuration)
+                        .first()
+                        .takeIf { it != PreferenceDefaults.VIBRATION_DURATION },
+                    floatingLayouts = floatingLayouts.takeIf { it.isNotEmpty() },
+                    floatingButtons = floatingButtons.takeIf { it.isNotEmpty() },
+                )
+
+                val json = gson.toJson(backupContent)
+
+                val filesToBackup = mutableSetOf<IFile>()
+
+                val dataJsonFile = fileAdapter.getFile(tempBackupDir, DATA_JSON_FILE_NAME)
+                dataJsonFile.createFile()
+
+                dataJsonFile.outputStream()?.bufferedWriter()?.use {
+                    it.write(json)
+                }
+
+                filesToBackup.add(dataJsonFile)
+
+                // backup all sounds
+                val soundsToBackup = soundsManager.soundFiles.value.map { it.uid }
+
+                if (soundsToBackup.isNotEmpty()) {
+                    val soundsBackupDirectory = fileAdapter.getFile(tempBackupDir, SOUNDS_DIR_NAME)
+                    soundsBackupDirectory.createDirectory()
+
+                    soundsToBackup.forEach { soundUid ->
+                        soundsManager.getSound(soundUid)
+                            .then { soundFile ->
+                                soundFile.copyTo(soundsBackupDirectory)
+                            }.onFailure {
+                                return@withContext it
+                            }
+                    }
+
+                    filesToBackup.add(soundsBackupDirectory)
+                }
+
+                return@withContext fileAdapter.createZipFile(output, filesToBackup)
+                    .then { Success(output) }
+            } catch (e: Exception) {
+                Timber.e(e)
+
+                if (throwExceptions) {
+                    throw e
+                }
+
+                return@withContext Error.Exception(e)
             }
-
-            return@async fileAdapter.createZipFile(output, filesToBackup)
-        } catch (e: Exception) {
-            Timber.e(e)
-
-            if (throwExceptions) {
-                throw e
-            }
-
-            return@async Error.Exception(e)
-        } finally {
-            tempBackupDir?.delete()
         }
     }
 
     private data class AutomaticBackup(
         val keyMapList: List<KeyMapEntity>?,
-        val fingerprintMapList: List<FingerprintMapEntity>?,
-    )
-
-    private data class BackupModel(
-        @SerializedName(NAME_DB_VERSION)
-        val dbVersion: Int,
-
-        @SerializedName(NAME_APP_VERSION)
-        val appVersion: Int,
-
-        @SerializedName(NAME_KEYMAP_LIST)
-        val keyMapList: List<KeyMapEntity>? = null,
-
-        @SerializedName(NAME_FINGERPRINT_MAP_LIST)
-        val fingerprintMapList: List<FingerprintMapEntity>?,
-
-        @SerializedName(NAME_DEFAULT_LONG_PRESS_DELAY)
-        val defaultLongPressDelay: Int? = null,
-
-        @SerializedName(NAME_DEFAULT_DOUBLE_PRESS_DELAY)
-        val defaultDoublePressDelay: Int? = null,
-
-        @SerializedName(NAME_DEFAULT_VIBRATION_DURATION)
-        val defaultVibrationDuration: Int? = null,
-
-        @SerializedName(NAME_DEFAULT_REPEAT_DELAY)
-        val defaultRepeatDelay: Int? = null,
-
-        @SerializedName(NAME_DEFAULT_REPEAT_RATE)
-        val defaultRepeatRate: Int? = null,
-
-        @SerializedName(NAME_DEFAULT_SEQUENCE_TRIGGER_TIMEOUT)
-        val defaultSequenceTriggerTimeout: Int? = null,
     )
 }
 
 interface BackupManager {
     val onAutomaticBackupResult: Flow<Result<*>>
 
-    /**
-     * @return the URI to the back up
-     */
-    suspend fun backupKeyMaps(uri: String, keyMapIds: List<String>): Result<String>
+    suspend fun getBackupContent(file: IFile): Result<BackupContent>
 
     /**
      * @return the URI to the back up
      */
-    suspend fun backupFingerprintMaps(uri: String): Result<String>
+    suspend fun backupKeyMaps(output: IFile, keyMapIds: List<String>): Result<Unit>
 
     /**
-     * @return the URI to the back up
+     * @return the URI to the back up file which can then be used for sharing.
      */
-    suspend fun backupMappings(uri: String): Result<String>
-    suspend fun restoreMappings(uri: String): Result<*>
+    suspend fun backupEverything(output: IFile): Result<Unit>
+    suspend fun restore(file: IFile, restoreType: RestoreType): Result<*>
 }

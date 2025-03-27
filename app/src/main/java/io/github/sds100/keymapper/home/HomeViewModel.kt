@@ -1,28 +1,42 @@
 package io.github.sds100.keymapper.home
 
+import android.os.Build
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.BubbleChart
+import androidx.compose.material.icons.outlined.Gamepad
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.backup.BackupRestoreMappingsUseCase
+import io.github.sds100.keymapper.backup.ImportExportState
+import io.github.sds100.keymapper.backup.RestoreType
+import io.github.sds100.keymapper.floating.FloatingLayoutsState
+import io.github.sds100.keymapper.floating.ListFloatingLayoutsUseCase
+import io.github.sds100.keymapper.floating.ListFloatingLayoutsViewModel
 import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
-import io.github.sds100.keymapper.mappings.fingerprintmaps.FingerprintMapListViewModel
-import io.github.sds100.keymapper.mappings.fingerprintmaps.ListFingerprintMapsUseCase
+import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapListViewModel
 import io.github.sds100.keymapper.mappings.keymaps.ListKeyMapsUseCase
 import io.github.sds100.keymapper.mappings.keymaps.trigger.SetupGuiKeyboardUseCase
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.sorting.SortKeyMapsUseCase
+import io.github.sds100.keymapper.sorting.SortViewModel
 import io.github.sds100.keymapper.system.accessibility.ServiceState
-import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.getFullMessage
+import io.github.sds100.keymapper.util.onFailure
+import io.github.sds100.keymapper.util.onSuccess
 import io.github.sds100.keymapper.util.ui.DialogResponse
-import io.github.sds100.keymapper.util.ui.ListItem
 import io.github.sds100.keymapper.util.ui.MultiSelectProvider
-import io.github.sds100.keymapper.util.ui.MultiSelectProviderImpl
 import io.github.sds100.keymapper.util.ui.NavDestination
 import io.github.sds100.keymapper.util.ui.NavigationViewModel
 import io.github.sds100.keymapper.util.ui.NavigationViewModelImpl
@@ -31,22 +45,19 @@ import io.github.sds100.keymapper.util.ui.PopupViewModel
 import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.SelectionState
-import io.github.sds100.keymapper.util.ui.TextListItem
 import io.github.sds100.keymapper.util.ui.ViewModelHelper
 import io.github.sds100.keymapper.util.ui.navigate
 import io.github.sds100.keymapper.util.ui.showPopup
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -55,15 +66,14 @@ import kotlinx.coroutines.launch
  */
 class HomeViewModel(
     private val listKeyMaps: ListKeyMapsUseCase,
-    private val listFingerprintMaps: ListFingerprintMapsUseCase,
     private val pauseMappings: PauseMappingsUseCase,
     private val backupRestore: BackupRestoreMappingsUseCase,
     private val showAlertsUseCase: ShowHomeScreenAlertsUseCase,
-    private val showImePicker: ShowInputMethodPickerUseCase,
     private val onboarding: OnboardingUseCase,
     resourceProvider: ResourceProvider,
     private val setupGuiKeyboard: SetupGuiKeyboardUseCase,
     private val sortKeyMaps: SortKeyMapsUseCase,
+    private val listFloatingLayouts: ListFloatingLayoutsUseCase,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
     PopupViewModel by PopupViewModelImpl(),
@@ -72,25 +82,27 @@ class HomeViewModel(
     private companion object {
         const val ID_ACCESSIBILITY_SERVICE_DISABLED_LIST_ITEM = "accessibility_service_disabled"
         const val ID_ACCESSIBILITY_SERVICE_CRASHED_LIST_ITEM = "accessibility_service_crashed"
-        const val ID_ACCESSIBILITY_SERVICE_ENABLED_LIST_ITEM = "accessibility_service_enabled"
         const val ID_BATTERY_OPTIMISATION_LIST_ITEM = "battery_optimised"
-        const val ID_MAPPINGS_PAUSED_LIST_ITEM = "mappings_paused"
         const val ID_LOGGING_ENABLED_LIST_ITEM = "logging_enabled"
     }
 
-    private val multiSelectProvider: MultiSelectProvider<String> = MultiSelectProviderImpl()
-
-    val menuViewModel by lazy {
-        HomeMenuViewModel(
-            viewModelScope,
-            showAlertsUseCase,
-            pauseMappings,
-            showImePicker,
-            resourceProvider,
+    private val multiSelectProvider: MultiSelectProvider = MultiSelectProvider()
+    val navBarItems: StateFlow<List<HomeNavBarItem>> =
+        combine(
+            listFloatingLayouts.showFloatingLayouts,
+            onboarding.hasViewedAdvancedTriggers,
+            transform = ::buildNavBarItems,
         )
-    }
+            .stateIn(
+                viewModelScope,
+                SharingStarted.Eagerly,
+                buildNavBarItems(
+                    showFloatingLayouts = false,
+                    viewedAdvancedTriggers = false,
+                ),
+            )
 
-    val keymapListViewModel by lazy {
+    val keyMapListViewModel by lazy {
         KeyMapListViewModel(
             viewModelScope,
             listKeyMaps,
@@ -101,166 +113,119 @@ class HomeViewModel(
         )
     }
 
-    val fingerprintMapListViewModel by lazy {
-        FingerprintMapListViewModel(
+    val listFloatingLayoutsViewModel by lazy {
+        ListFloatingLayoutsViewModel(
             viewModelScope,
-            listFingerprintMaps,
+            listFloatingLayouts,
             resourceProvider,
         )
     }
 
-    private val _showQuickStartGuideHint = MutableStateFlow(false)
-    val showQuickStartGuideHint = _showQuickStartGuideHint.asStateFlow()
-
-    private val _shareBackup = MutableSharedFlow<String>()
-    val shareBackup = _shareBackup.asSharedFlow()
-
-    val selectionCountViewState = multiSelectProvider.state.map {
-        when (it) {
-            SelectionState.NotSelecting -> SelectionCountViewState(
-                isVisible = false,
-                text = "",
-            )
-
-            is SelectionState.Selecting<*> -> SelectionCountViewState(
-                isVisible = true,
-                text = getString(R.string.selection_count, it.selectedIds.size),
-            )
-        }
+    val sortViewModel by lazy {
+        SortViewModel(viewModelScope, sortKeyMaps)
     }
-        .flowOn(Dispatchers.Default)
-        .stateIn(
-            viewModelScope,
-            SharingStarted.Lazily,
-            SelectionCountViewState(
-                isVisible = false,
-                text = "",
-            ),
-        )
 
-    val tabsState =
-        combine(
-            multiSelectProvider.state,
-            listFingerprintMaps.showFingerprintMaps,
-        ) { selectionState, showFingerprintMaps ->
+    var showSortBottomSheet by mutableStateOf(false)
 
-            val tabs = sequence {
-                yield(HomeTab.KEY_EVENTS)
+    private val _importExportState = MutableStateFlow<ImportExportState>(ImportExportState.Idle)
+    val importExportState: StateFlow<ImportExportState> = _importExportState.asStateFlow()
 
-                if (showFingerprintMaps) {
-                    yield(HomeTab.FINGERPRINT_MAPS)
-                }
-            }.toList()
-
-            val showTabs = when {
-                tabs.size == 1 -> false
-                selectionState is SelectionState.Selecting<*> -> false
-                else -> true
-            }
-
-            HomeTabsState(
-                enableViewPagerSwiping = showTabs,
-                showTabs = showTabs,
-                tabs = tabs,
-            )
-        }
-            .flowOn(Dispatchers.Default)
-            .stateIn(
-                viewModelScope,
-                SharingStarted.Lazily,
-                HomeTabsState(
-                    enableViewPagerSwiping = false,
-                    showTabs = false,
-                    emptyList(),
-                ),
-            )
-
-    val appBarState = multiSelectProvider.state.map {
-        when (it) {
-            SelectionState.NotSelecting -> HomeAppBarState.NORMAL
-            is SelectionState.Selecting<*> -> HomeAppBarState.MULTI_SELECTING
-        }
-    }
-        .flowOn(Dispatchers.Default)
-        .stateIn(
-            viewModelScope,
-            SharingStarted.Lazily,
-            HomeAppBarState.NORMAL,
-        )
-
-    val errorListState = combine(
+    private val warnings: Flow<List<HomeWarningListItem>> = combine(
         showAlertsUseCase.isBatteryOptimised,
         showAlertsUseCase.accessibilityServiceState,
         showAlertsUseCase.hideAlerts,
-        showAlertsUseCase.areMappingsPaused,
         showAlertsUseCase.isLoggingEnabled,
-    ) { isBatteryOptimised, serviceState, isHidden, areMappingsPaused, isLoggingEnabled ->
-        val listItems = sequence {
+    ) { isBatteryOptimised, serviceState, isHidden, isLoggingEnabled ->
+        if (isHidden) {
+            return@combine emptyList()
+        }
 
+        buildList {
             when (serviceState) {
                 ServiceState.CRASHED ->
-                    yield(
-                        TextListItem.Error(
+                    add(
+                        HomeWarningListItem(
                             ID_ACCESSIBILITY_SERVICE_CRASHED_LIST_ITEM,
                             getString(R.string.home_error_accessibility_service_is_crashed),
                         ),
                     )
 
                 ServiceState.DISABLED ->
-                    yield(
-                        TextListItem.Error(
+                    add(
+                        HomeWarningListItem(
                             ID_ACCESSIBILITY_SERVICE_DISABLED_LIST_ITEM,
                             getString(R.string.home_error_accessibility_service_is_disabled),
                         ),
                     )
 
-                ServiceState.ENABLED ->
-                    yield(
-                        TextListItem.Success(
-                            ID_ACCESSIBILITY_SERVICE_ENABLED_LIST_ITEM,
-                            getString(R.string.home_success_accessibility_service_is_enabled),
-                        ),
-                    )
+                ServiceState.ENABLED -> {}
             }
 
             if (isBatteryOptimised) {
-                yield(
-                    TextListItem.Error(
+                add(
+                    HomeWarningListItem(
                         ID_BATTERY_OPTIMISATION_LIST_ITEM,
                         getString(R.string.home_error_is_battery_optimised),
                     ),
                 )
             } // don't show a success message for this
 
-            if (areMappingsPaused) {
-                yield(
-                    TextListItem.Error(
-                        ID_MAPPINGS_PAUSED_LIST_ITEM,
-                        getString(R.string.home_error_key_maps_paused),
-                        customButtonText = getString(R.string.home_error_key_maps_paused_button),
-                    ),
-                )
-            }
-
             if (isLoggingEnabled) {
-                yield(
-                    TextListItem.Error(
+                add(
+                    HomeWarningListItem(
                         ID_LOGGING_ENABLED_LIST_ITEM,
                         getString(R.string.home_error_logging_enabled),
-                        customButtonText = getString(R.string.home_error_logging_enabled_button),
                     ),
                 )
             }
-        }.toList()
-        HomeErrorListState(listItems, !isHidden)
-    }.flowOn(Dispatchers.Default)
-        .stateIn(viewModelScope, SharingStarted.Lazily, HomeErrorListState(emptyList(), false))
+        }
+    }
 
-    private val _showMenu = MutableSharedFlow<Unit>()
-    val showMenu = _showMenu.asSharedFlow()
+    val state: StateFlow<HomeState> =
+        combine(
+            multiSelectProvider.state,
+            warnings,
+            showAlertsUseCase.areKeyMapsPaused,
+            listKeyMaps.keyMapList.filterIsInstance<State.Data<List<KeyMap>>>(),
+            listFloatingLayoutsViewModel.state,
+        ) { selectionState, warnings, isPaused, keyMaps, floatingLayoutsState ->
 
-    private val _closeKeyMapper = MutableSharedFlow<Unit>()
-    val closeKeyMapper = _closeKeyMapper.asSharedFlow()
+            if (selectionState is SelectionState.Selecting) {
+
+                var selectedKeyMapsEnabled: SelectedKeyMapsEnabled? = null
+
+                for (keyMap in keyMaps.data) {
+                    if (keyMap.uid in selectionState.selectedIds) {
+                        if (selectedKeyMapsEnabled == null) {
+                            if (keyMap.isEnabled) {
+                                selectedKeyMapsEnabled = SelectedKeyMapsEnabled.ALL
+                            } else {
+                                selectedKeyMapsEnabled = SelectedKeyMapsEnabled.NONE
+                            }
+                        } else {
+                            if ((keyMap.isEnabled && selectedKeyMapsEnabled == SelectedKeyMapsEnabled.NONE) ||
+                                (!keyMap.isEnabled && selectedKeyMapsEnabled == SelectedKeyMapsEnabled.ALL)
+                            ) {
+                                selectedKeyMapsEnabled = SelectedKeyMapsEnabled.MIXED
+                                break
+                            }
+                        }
+                    }
+                }
+
+                HomeState.Selecting(
+                    selectionCount = multiSelectProvider.getSelectedIds().size,
+                    selectedKeyMapsEnabled = selectedKeyMapsEnabled ?: SelectedKeyMapsEnabled.NONE,
+                    isAllSelected = selectionState.selectedIds.size == keyMaps.data.size,
+                )
+            } else {
+                HomeState.Normal(
+                    warnings,
+                    isPaused,
+                    showNewLayoutButton = floatingLayoutsState is FloatingLayoutsState.Purchased,
+                )
+            }
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, HomeState.Normal())
 
     init {
         viewModelScope.launch {
@@ -277,8 +242,6 @@ class HomeViewModel(
             if (showWhatsNew) {
                 showWhatsNewDialog()
             }
-
-            _showQuickStartGuideHint.value = showQuickStartGuideHint
         }.launchIn(viewModelScope)
 
         viewModelScope.launch {
@@ -286,6 +249,38 @@ class HomeViewModel(
                 showUpgradeGuiKeyboardDialog()
             }
         }
+    }
+
+    private fun buildNavBarItems(
+        showFloatingLayouts: Boolean,
+        viewedAdvancedTriggers: Boolean,
+    ): List<HomeNavBarItem> {
+        val items = mutableListOf<HomeNavBarItem>()
+        items.add(
+            HomeNavBarItem(
+                HomeDestination.KeyMaps,
+                getString(R.string.home_nav_bar_key_maps),
+                icon = Icons.Outlined.Gamepad,
+                badge = null,
+            ),
+        )
+
+        if (showFloatingLayouts && Build.VERSION.SDK_INT >= Constants.MIN_API_FLOATING_BUTTONS) {
+            items.add(
+                HomeNavBarItem(
+                    HomeDestination.FloatingButtons,
+                    getString(R.string.home_nav_bar_floating_buttons),
+                    icon = Icons.Outlined.BubbleChart,
+                    badge = if (viewedAdvancedTriggers) {
+                        null
+                    } else {
+                        getString(R.string.button_advanced_triggers_badge)
+                    },
+                ),
+            )
+        }
+
+        return items
     }
 
     private suspend fun showWhatsNewDialog() {
@@ -308,12 +303,7 @@ class HomeViewModel(
 
     private suspend fun onAutomaticBackupResult(result: Result<*>) {
         when (result) {
-            is Success -> {
-                showPopup(
-                    "successful_automatic_backup_result",
-                    PopupUi.SnackBar(getString(R.string.toast_automatic_backup_successful)),
-                )
-            }
+            is Success -> {}
 
             is Error -> {
                 val response = showPopup(
@@ -351,103 +341,69 @@ class HomeViewModel(
         }
     }
 
-    fun approvedQuickStartGuideTapTarget() {
-        onboarding.shownQuickStartGuideHint()
-    }
-
-    fun onAppBarNavigationButtonClick() {
-        viewModelScope.launch {
-            if (multiSelectProvider.state.value is SelectionState.Selecting<*>) {
-                multiSelectProvider.stopSelecting()
-            } else {
-                _showMenu.emit(Unit)
-            }
-        }
-    }
-
-    fun onBackPressed() {
-        viewModelScope.launch {
-            if (multiSelectProvider.state.value is SelectionState.Selecting<*>) {
-                multiSelectProvider.stopSelecting()
-            } else {
-                _closeKeyMapper.emit(Unit)
-            }
-        }
-    }
-
-    fun onFabPressed() {
-        viewModelScope.launch {
-            val selectionState = multiSelectProvider.state.value
-            if (selectionState is SelectionState.Selecting<*>) {
-                val selectedIds = selectionState.selectedIds as Set<String>
-
-                listKeyMaps.deleteKeyMap(*selectedIds.toTypedArray())
-
-                multiSelectProvider.stopSelecting()
-            } else {
-                navigate("create_new_keymap", NavDestination.ConfigKeyMap(keyMapUid = null))
-            }
-        }
-    }
-
     fun onSelectAllClick() {
-        keymapListViewModel.selectAll()
+        state.value.also { state ->
+            if (state is HomeState.Selecting) {
+                if (state.isAllSelected) {
+                    multiSelectProvider.stopSelecting()
+                } else {
+                    keyMapListViewModel.selectAll()
+                }
+            }
+        }
     }
 
-    fun onEnableSelectedKeymapsClick() {
+    fun onEnabledKeyMapsChange(enabled: Boolean) {
         val selectionState = multiSelectProvider.state.value
 
-        if (selectionState !is SelectionState.Selecting<*>) return
-        val selectedIds = selectionState.selectedIds as Set<String>
+        if (selectionState !is SelectionState.Selecting) return
+        val selectedIds = selectionState.selectedIds
 
-        listKeyMaps.enableKeyMap(*selectedIds.toTypedArray())
+        if (enabled) {
+            listKeyMaps.enableKeyMap(*selectedIds.toTypedArray())
+        } else {
+            listKeyMaps.disableKeyMap(*selectedIds.toTypedArray())
+        }
     }
 
-    fun onDisableSelectedKeymapsClick() {
+    fun onDuplicateSelectedKeyMapsClick() {
         val selectionState = multiSelectProvider.state.value
 
-        if (selectionState !is SelectionState.Selecting<*>) return
-        val selectedIds = selectionState.selectedIds as Set<String>
-
-        listKeyMaps.disableKeyMap(*selectedIds.toTypedArray())
-    }
-
-    fun onDuplicateSelectedKeymapsClick() {
-        val selectionState = multiSelectProvider.state.value
-
-        if (selectionState !is SelectionState.Selecting<*>) return
-        val selectedIds = selectionState.selectedIds as Set<String>
+        if (selectionState !is SelectionState.Selecting) return
+        val selectedIds = selectionState.selectedIds
 
         listKeyMaps.duplicateKeyMap(*selectedIds.toTypedArray())
     }
 
-    fun backupFingerprintMaps(uri: String) {
-        viewModelScope.launch {
-            val result = listFingerprintMaps.backupFingerprintMaps(uri)
+    fun onDeleteSelectedKeyMapsClick() {
+        val selectionState = multiSelectProvider.state.value
 
-            onBackupResult(result)
-        }
+        if (selectionState !is SelectionState.Selecting) return
+        val selectedIds = selectionState.selectedIds.toTypedArray()
+
+        listKeyMaps.deleteKeyMap(*selectedIds)
+        multiSelectProvider.deselect(*selectedIds)
+        multiSelectProvider.stopSelecting()
     }
 
-    fun backupSelectedKeyMaps(uri: String) {
+    fun onExportSelectedKeyMaps() {
+        val selectionState = multiSelectProvider.state.value
+
+        if (selectionState !is SelectionState.Selecting) return
+
         viewModelScope.launch {
-            val selectionState = multiSelectProvider.state.first()
+            val selectedIds = selectionState.selectedIds
 
-            if (selectionState !is SelectionState.Selecting<*>) return@launch
-
-            val selectedIds = selectionState.selectedIds as Set<String>
-
-            launch {
-                val result = listKeyMaps.backupKeyMaps(*selectedIds.toTypedArray(), uri = uri)
-
-                onBackupResult(result)
+            listKeyMaps.backupKeyMaps(*selectedIds.toTypedArray()).onSuccess {
+                _importExportState.value = ImportExportState.FinishedExport(it)
+            }.onFailure {
+                _importExportState.value =
+                    ImportExportState.Error(it.getFullMessage(this@HomeViewModel))
             }
-
-            multiSelectProvider.stopSelecting()
         }
     }
 
-    fun onFixErrorListItemClick(id: String) {
+    fun onFixWarningClick(id: String) {
         viewModelScope.launch {
             when (id) {
                 ID_ACCESSIBILITY_SERVICE_DISABLED_LIST_ITEM -> {
@@ -472,121 +428,138 @@ class HomeViewModel(
                 ID_ACCESSIBILITY_SERVICE_CRASHED_LIST_ITEM ->
                     ViewModelHelper.handleKeyMapperCrashedDialog(
                         resourceProvider = this@HomeViewModel,
-                        navigationViewModel = this@HomeViewModel,
                         popupViewModel = this@HomeViewModel,
                         restartService = showAlertsUseCase::restartAccessibilityService,
+                        ignoreCrashed = showAlertsUseCase::acknowledgeCrashed,
                     )
 
                 ID_BATTERY_OPTIMISATION_LIST_ITEM -> showAlertsUseCase.disableBatteryOptimisation()
-                ID_MAPPINGS_PAUSED_LIST_ITEM -> showAlertsUseCase.resumeMappings()
                 ID_LOGGING_ENABLED_LIST_ITEM -> showAlertsUseCase.disableLogging()
             }
         }
     }
 
-    fun onChoseRestoreFile(uri: String) {
+    fun onTogglePausedClick() {
         viewModelScope.launch {
-            when (val result = backupRestore.restoreMappings(uri)) {
-                is Success -> {
-                    showPopup(
-                        "successful_restore_result",
-                        PopupUi.SnackBar(getString(R.string.toast_restore_successful)),
-                    )
-                }
-
-                is Error -> showPopup(
-                    "restore_error",
-                    PopupUi.Ok(
-                        title = getString(R.string.toast_restore_failed),
-                        message = result.getFullMessage(this@HomeViewModel),
-                    ),
-                )
+            if (pauseMappings.isPaused.first()) {
+                pauseMappings.resume()
+            } else {
+                pauseMappings.pause()
             }
         }
     }
 
-    fun onChoseBackupFile(uri: String) {
+    fun onExportClick() {
         viewModelScope.launch {
-            val result = backupRestore.backupAllMappings(uri)
+            if (_importExportState.value != ImportExportState.Idle) {
+                return@launch
+            }
 
-            onBackupResult(result)
+            _importExportState.value = ImportExportState.Exporting
+            backupRestore.backupEverything().onSuccess {
+                _importExportState.value = ImportExportState.FinishedExport(it)
+            }.onFailure {
+                _importExportState.value =
+                    ImportExportState.Error(it.getFullMessage(this@HomeViewModel))
+            }
         }
     }
 
-    private suspend fun onBackupResult(result: Result<String>) {
-        when (result) {
-            is Success -> {
-                val response = showPopup(
-                    "successful_backup_result",
-                    PopupUi.SnackBar(
-                        message = getString(R.string.toast_backup_successful),
-                        actionText = getString(R.string.share_backup),
-                    ),
-                )
-
-                if (response != null) {
-                    val uri = result.value
-
-                    _shareBackup.emit(uri)
-                }
+    fun onChooseImportFile(uri: String) {
+        viewModelScope.launch {
+            backupRestore.getKeyMapCountInBackup(uri).onSuccess {
+                _importExportState.value = ImportExportState.ConfirmImport(uri, it)
+            }.onFailure {
+                _importExportState.value =
+                    ImportExportState.Error(it.getFullMessage(this@HomeViewModel))
             }
+        }
+    }
 
-            is Error -> showPopup(
-                "backup_error",
-                PopupUi.Ok(
-                    title = getString(R.string.toast_backup_failed),
-                    message = result.getFullMessage(this@HomeViewModel),
-                ),
-            )
+    fun onConfirmImport(restoreType: RestoreType) {
+        val state = _importExportState.value as? ImportExportState.ConfirmImport
+        state ?: return
+
+        _importExportState.value = ImportExportState.Importing
+
+        viewModelScope.launch {
+            backupRestore.restoreKeyMaps(state.fileUri, restoreType).onSuccess {
+                _importExportState.value = ImportExportState.FinishedImport
+            }.onFailure {
+                _importExportState.value =
+                    ImportExportState.Error(it.getFullMessage(this@HomeViewModel))
+            }
+        }
+    }
+
+    fun setImportExportIdle() {
+        _importExportState.value = ImportExportState.Idle
+    }
+
+    fun onBackClick(): Boolean {
+        if (multiSelectProvider.state.value is SelectionState.Selecting) {
+            multiSelectProvider.stopSelecting()
+            return true
+        } else {
+            return false
         }
     }
 
     @Suppress("UNCHECKED_CAST")
     class Factory(
         private val listKeyMaps: ListKeyMapsUseCase,
-        private val listFingerprintMaps: ListFingerprintMapsUseCase,
         private val pauseMappings: PauseMappingsUseCase,
         private val backupRestore: BackupRestoreMappingsUseCase,
         private val showAlertsUseCase: ShowHomeScreenAlertsUseCase,
-        private val showImePicker: ShowInputMethodPickerUseCase,
         private val onboarding: OnboardingUseCase,
         private val resourceProvider: ResourceProvider,
         private val setupGuiKeyboard: SetupGuiKeyboardUseCase,
         private val sortKeyMaps: SortKeyMapsUseCase,
+        private val listFloatingLayouts: ListFloatingLayoutsUseCase,
     ) : ViewModelProvider.NewInstanceFactory() {
 
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeViewModel(
             listKeyMaps,
-            listFingerprintMaps,
             pauseMappings,
             backupRestore,
             showAlertsUseCase,
-            showImePicker,
             onboarding,
             resourceProvider,
             setupGuiKeyboard,
             sortKeyMaps,
+            listFloatingLayouts,
         ) as T
     }
 }
 
-data class SelectionCountViewState(
-    val isVisible: Boolean,
+sealed class HomeState {
+    data class Selecting(
+        val selectionCount: Int,
+        val selectedKeyMapsEnabled: SelectedKeyMapsEnabled,
+        val isAllSelected: Boolean,
+    ) : HomeState()
+
+    data class Normal(
+        val warnings: List<HomeWarningListItem> = emptyList(),
+        val isPaused: Boolean = false,
+        val showNewLayoutButton: Boolean = false,
+    ) : HomeState()
+}
+
+enum class SelectedKeyMapsEnabled {
+    ALL,
+    NONE,
+    MIXED,
+}
+
+data class HomeWarningListItem(
+    val id: String,
     val text: String,
 )
 
-enum class HomeAppBarState {
-    NORMAL,
-    MULTI_SELECTING,
-}
-
-data class HomeTabsState(
-    val enableViewPagerSwiping: Boolean = true,
-    val showTabs: Boolean = false,
-    val tabs: List<HomeTab>,
-)
-
-data class HomeErrorListState(
-    val listItems: List<ListItem>,
-    val isVisible: Boolean,
+data class HomeNavBarItem(
+    val destination: HomeDestination,
+    val label: String,
+    val icon: ImageVector,
+    val badge: String? = null,
 )

@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.util.Error
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
@@ -78,7 +79,7 @@ class GetActionFailedUseCaseTest {
             val action = ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN)
 
             // WHEN
-            val error = useCase.getError(action)
+            val error = useCase.actionErrorSnapshot.first().getError(action)
 
             // THEN
             assertThat(error, nullValue())
@@ -108,7 +109,7 @@ class GetActionFailedUseCaseTest {
 
             val action = ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN)
             // WHEN
-            val error = useCase.getError(action)
+            val error = useCase.actionErrorSnapshot.first().getError(action)
 
             // THEN
             assertThat(error, `is`(Error.ShizukuNotStarted))

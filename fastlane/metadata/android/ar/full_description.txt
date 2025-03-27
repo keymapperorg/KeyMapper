@@ -1,36 +1,36 @@
 New trigger! 🎉 Remap your Assistant & Bixby, and DPAD buttons!
 
-ما الذي يمكن إعادة تعيينه؟
+What can be remapped?
 
- * أزرار الصوت.
+ * Volume buttons.
  * Power button, side key, and voice assistant button (one time purchase to support development).
- * بلوتوث / لوحات المفاتيح السلكية.
- * إيماءات بصمات الأصابع على الأجهزة المدعومة.
+ * Bluetooth/wired keyboards.
+ * Fingerprint gestures on supported devices.
  * DPAD buttons on game controllers.
- * يجب أن تعمل الأزرار الموجودة على الأجهزة المتصلة الأخرى أيضا.
+ * Buttons on other connected devices should also work.
 
-يمكنك الجمع بين مفاتيح متعددة من جهاز معين أو أي جهاز لتشكيل "المشغل". يمكن أن يكون لكل مشغل إجراءات متعددة. يمكن ضبط المفاتيح للضغط عليها في نفس الوقت أو واحدة تلو الأخرى في تسلسل. يمكن إعادة تعيين المفاتيح عند الضغط عليها لفترة قصيرة أو الضغط عليها لفترة طويلة أو الضغط عليها مرتين. يمكن أن تحتوي خريطة المفاتيح على مجموعة من "القيود" بحيث يكون لها التأثير فقط في مواقف معينة.
+You can combine multiple keys from a specific device or any device to form a "trigger". Each trigger can have multiple actions. The keys can be set to be pressed at the same time or one after another in a sequence. Keys can be remapped when they are short pressed, long pressed or double pressed. A keymap can have a set of "constraints" so it only has an effect in certain situations.
 
-ما الذي لا يمكن إعادة تعيينه؟
- * أزرار الماوس
+What can’t be remapped?
+ * Mouse buttons
  * Thumb sticks or triggers on game controllers
 
-Your key maps do not work if the screen is OFF. هذا مقيد في Android. لا يوجد شيء يمكن للمطور القيام به حيال ذلك.
+Your key maps do not work if the screen is OFF. This is a limitation in Android. There is nothing the dev can do.
 
-ما الذي يمكنني لإعادة تعيين مفاتيحي للقيام به؟
-ستعمل بعض الإجراءات فقط على الأجهزة التي تم عمل روت لها وإصدارات Android محددة.
+What can I remap my keys to do?
+Some actions will only work on rooted devices and specific Android versions.
 
-هناك الكثير من الميزات التي يجب سردها هنا ، لذا تحقق من القائمة الكاملة هنا: https://docs.keymapper.club/user-guide/actions
+There are too many features to list here so check out the full list here: https://docs.keymapper.club/user-guide/actions
 
-الصلاحيات
-لا يلزمك منح جميع الأذونات حتى يعمل التطبيق. سيخبرك التطبيق ما إذا كان يجب منح إذن حتى تعمل الميزة.
+Permissions
+You don't have to grant all the permissions for the app to work. The app will tell you if a permission needs to be granted for a feature to work.
 
- * خدمة إمكانية الوصول: الشرط الأساسي لإعادة التعيين لأجل العمل. It is needed so the app can listen to and block key events.
- * مسؤول الجهاز: لإيقاف تشغيل الشاشة عند استخدام الإجراء لإيقاف تشغيل الشاشة.
- * تعديل إعدادات النظام: لتغيير إعدادات السطوع والدوران.
- * الكاميرا: للتحكم في الكشاف.
+ * Accessibility Service: Basic requirement for remapping to work. It is needed so the app can listen to and block key events.
+ * Device Admin: To turn the screen off when using the action to turn off the screen.
+ * Modify System Settings: To change the brightness and rotation settings.
+ * Camera: To control the flashlight.
 
- في بعض الأجهزة ، سيؤدي تمكين خدمة إمكانية الوصول إلى تعطيل "تشفير البيانات المحسن".
+ On some devices, enabling the accessibility service will disable "enhanced data encryption".
 
-ديسكورد: www.keymapper.club
-الموقع الإلكتروني: docs.keymapper.club
+Discord: www.keymapper.club
+Website: docs.keymapper.club

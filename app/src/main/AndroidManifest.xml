@@ -20,6 +20,9 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <uses-permission android:name="android.permission.REORDER_TASKS" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <uses-permission android:name="com.termux.permission.RUN_COMMAND" />
 
     <uses-permission
@@ -81,15 +84,13 @@
         android:theme="@style/AppTheme.NoActionBar"
         tools:ignore="GoogleAppIndexingWarning">
 
-        <!--  relinquishTaskIdentity is required because the intent-filter has the
-          DEFAULT category. If relinquishTaskIdentity is false then when the user resumes the
-           app from the launcher they are taken back to the SplashActivity, and consequently the
-           home fragment in MainActivity. -->
         <activity
-            android:name=".SplashActivity"
+            android:name=".MainActivity"
             android:exported="true"
-            android:relinquishTaskIdentity="true"
-            android:theme="@style/Theme.App.Starting">
+            android:theme="@style/Theme.App.Starting"
+            android:windowSoftInputMode="adjustResize">
+            <!--  IMPORTANT! windowSoftInputMode is needed for IME padding to work
+               properly in the ChooseActionScreen search bar for example. -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -105,11 +106,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".onboarding.AppIntroActivity" />
-        <activity android:name=".MainActivity" />
-        <activity android:name=".reportbug.ReportBugActivity" />
-        <activity android:name=".home.FixAppKillingActivity" />
 
         <!-- Use a different task affinity so this activity doesn't close other activities -->
         <activity
@@ -133,6 +129,32 @@
             android:taskAffinity="">
             <intent-filter>
                 <action android:name="android.intent.action.CREATE_SHORTCUT" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".backup.RestoreKeyMapsActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:launchMode="singleInstance"
+            android:taskAffinity="io.github.sds100.keymapper.restore_key_maps"
+            android:theme="@style/AppTheme.DialogActivity"
+            android:windowSoftInputMode="adjustResize">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:mimeType="application/zip"
+                    android:scheme="content" />
+
+                <data
+                    android:mimeType="application/json"
+                    android:scheme="content" />
+
             </intent-filter>
         </activity>
 
@@ -197,6 +219,7 @@
 
         <service
             android:name=".system.accessibility.MyAccessibilityService"
+            android:configChanges="orientation|screenSize"
             android:exported="true"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>
@@ -226,7 +249,8 @@
             android:exported="true"
             android:icon="@drawable/ic_tile_pause"
             android:label="@string/tile_pause"
-            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+            tools:targetApi="24">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
@@ -237,7 +261,8 @@
             android:exported="true"
             android:icon="@drawable/ic_tile_keyboard"
             android:label="@string/tile_toggle_keymapper_keyboard"
-            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+            tools:targetApi="24">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
@@ -280,5 +305,15 @@
             android:exported="true"
             android:multiprocess="false"
             android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
     </application>
 </manifest>

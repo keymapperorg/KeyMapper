@@ -13,7 +13,9 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.os.BadParcelableException
 import android.os.Build
+import android.os.DeadSystemException
 import android.os.TransactionTooLargeException
 import android.provider.MediaStore
 import android.provider.Settings
@@ -26,9 +28,11 @@ import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.success
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import splitties.bitflags.withFlag
@@ -44,6 +48,8 @@ class AndroidPackageManagerAdapter(
     private val ctx: Context = context.applicationContext
     private val packageManager: PackageManager = ctx.packageManager
 
+    private val fetchPackages: MutableSharedFlow<Unit> = MutableSharedFlow()
+    override val onPackagesChanged: MutableSharedFlow<Unit> = MutableSharedFlow()
     override val installedPackages = MutableStateFlow<State<List<PackageInfo>>>(State.Loading)
 
     private val broadcastReceiver = object : BroadcastReceiver() {
@@ -57,8 +63,9 @@ class AndroidPackageManagerAdapter(
                 Intent.ACTION_PACKAGE_REMOVED,
                 Intent.ACTION_PACKAGE_REPLACED,
                 -> {
-                    coroutineScope.launch(Dispatchers.Default) {
-                        updatePackageList()
+                    coroutineScope.launch {
+                        fetchPackages.emit(Unit)
+                        onPackagesChanged.emit(Unit)
                     }
                 }
             }
@@ -66,21 +73,6 @@ class AndroidPackageManagerAdapter(
     }
 
     init {
-        coroutineScope.launch(Dispatchers.Default) {
-            // save memory by only storing this stuff as it is needed
-            installedPackages.subscriptionCount
-                .onEach { count ->
-                    if (count == 0) {
-                        installedPackages.value = State.Loading
-                    }
-
-                    if (count > 0 && installedPackages.value == State.Loading) {
-                        updatePackageList()
-                    }
-                }
-                .launchIn(this)
-        }
-
         val filter = IntentFilter()
         filter.addAction(Intent.ACTION_PACKAGE_CHANGED)
         filter.addAction(Intent.ACTION_PACKAGE_ADDED)
@@ -94,6 +86,43 @@ class AndroidPackageManagerAdapter(
             filter,
             ContextCompat.RECEIVER_NOT_EXPORTED,
         )
+
+        coroutineScope.launch {
+            // Collect latest so packages aren't being fetched multiple times at the same time.
+            fetchPackages.collectLatest {
+                if (installedPackages.subscriptionCount.value == 0) {
+                    return@collectLatest
+                }
+                installedPackages.value = State.Loading
+
+                val packages = withContext(Dispatchers.Default) {
+                    try {
+                        packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
+                            .mapNotNull { createPackageInfoModel(it) }
+                    } catch (_: BadParcelableException) {
+                        emptyList()
+                    } catch (_: DeadSystemException) {
+                        emptyList()
+                    }
+                }
+
+                installedPackages.value = State.Data(packages)
+            }
+        }
+
+        coroutineScope.launch {
+
+            // save memory by only storing this stuff as it is needed
+            installedPackages.subscriptionCount
+                .map { count -> count > 0 }
+                .distinctUntilChanged().collect { isActive ->
+                    if (isActive) {
+                        fetchPackages.emit(Unit)
+                    } else {
+                        installedPackages.value = State.Loading
+                    }
+                }
+        }
     }
 
     override fun downloadApp(packageName: String) {
@@ -276,6 +305,17 @@ class AndroidPackageManagerAdapter(
         }
     }
 
+    override fun getPackageInfo(packageName: String): PackageInfo? {
+        try {
+            val applicationInfo =
+                packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
+
+            return createPackageInfoModel(applicationInfo)
+        } catch (e: PackageManager.NameNotFoundException) {
+            return null
+        }
+    }
+
     override fun getAppName(packageName: String): Result<String> {
         try {
             return packageManager
@@ -327,17 +367,6 @@ class AndroidPackageManagerAdapter(
                 .success()
         } catch (e: PackageManager.NameNotFoundException) {
             return Error.AppNotFound(packageName)
-        }
-    }
-
-    private suspend fun updatePackageList() {
-        withContext(Dispatchers.Default) {
-            installedPackages.value = State.Loading
-
-            val packages = packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
-                .mapNotNull { createPackageInfoModel(it) }
-
-            installedPackages.value = State.Data(packages)
         }
     }
 

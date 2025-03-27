@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.actions
 
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
+import io.github.sds100.keymapper.system.permissions.SystemFeatureAdapter
 import kotlinx.coroutines.flow.first
 
 /**
@@ -10,10 +11,12 @@ import kotlinx.coroutines.flow.first
 
 class CreateActionUseCaseImpl(
     private val inputMethodAdapter: InputMethodAdapter,
-) : CreateActionUseCase {
+    private val systemFeatureAdapter: SystemFeatureAdapter,
+) : CreateActionUseCase,
+    IsActionSupportedUseCase by IsActionSupportedUseCaseImpl(systemFeatureAdapter) {
     override suspend fun getInputMethods(): List<ImeInfo> = inputMethodAdapter.inputMethods.first()
 }
 
-interface CreateActionUseCase {
+interface CreateActionUseCase : IsActionSupportedUseCase {
     suspend fun getInputMethods(): List<ImeInfo>
 }

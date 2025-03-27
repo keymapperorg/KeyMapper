@@ -1,29 +1,90 @@
 package io.github.sds100.keymapper.util.ui
 
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 
 /**
  * Created by sds100 on 11/02/2020.
  */
 
-interface MultiSelectProvider<T> {
-    val state: StateFlow<SelectionState>
+class MultiSelectProvider {
+    private val lock = Any()
+    val state = MutableStateFlow<SelectionState>(SelectionState.NotSelecting)
 
-    /**
-     * @return true if it wasn't already selecting
-     */
-    fun startSelecting(): Boolean
+    fun startSelecting(): Boolean {
+        if (state.value !is SelectionState.Selecting) {
+            state.update { SelectionState.Selecting(emptySet()) }
 
-    fun stopSelecting()
+            return true
+        }
 
-    fun toggleSelection(id: T)
+        return false
+    }
 
-    fun select(vararg id: T)
-    fun deselect(vararg id: T)
+    fun stopSelecting() {
+        state.update { SelectionState.NotSelecting }
+    }
 
-    fun isSelected(id: T): Boolean
-    fun getSelectedIds(): Set<T>
-    fun isSelecting(): Boolean
+    fun toggleSelection(id: String) {
+        if (state.value !is SelectionState.Selecting) return
 
-    fun reset()
+        if ((state.value as SelectionState.Selecting).selectedIds.contains(id)) {
+            deselect(id)
+        } else {
+            select(id)
+        }
+    }
+
+    fun isSelected(id: String): Boolean = state.value is SelectionState.Selecting &&
+        (state.value as SelectionState.Selecting).selectedIds.contains(
+            id,
+        )
+
+    fun isSelecting(): Boolean = state.value is SelectionState.Selecting
+
+    fun getSelectedIds(): Set<String> {
+        synchronized(lock) {
+            val selectionState = state.value
+
+            if (selectionState is SelectionState.Selecting) {
+                return selectionState.selectedIds
+            } else {
+                return emptySet()
+            }
+        }
+    }
+
+    fun select(vararg id: String) {
+        synchronized(lock) {
+            state.value.apply {
+                if (this !is SelectionState.Selecting) return
+
+                state.value = SelectionState.Selecting(selectedIds.plus(id))
+            }
+        }
+    }
+
+    fun deselect(vararg id: String) {
+        synchronized(lock) {
+            state.value.apply {
+                if (this !is SelectionState.Selecting) return
+
+                state.value = SelectionState.Selecting(selectedIds.minus(id))
+            }
+        }
+    }
+
+    fun clear() {
+        state.update { state ->
+            if (state is SelectionState.Selecting) {
+                state.copy(selectedIds = emptySet())
+            } else {
+                state
+            }
+        }
+    }
+
+    fun reset() {
+        state.value = SelectionState.NotSelecting
+    }
 }

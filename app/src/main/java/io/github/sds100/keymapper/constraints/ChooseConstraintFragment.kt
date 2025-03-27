@@ -1,33 +1,34 @@
 package io.github.sds100.keymapper.constraints
 
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.withStateAtLeast
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.GridLayoutManager
-import com.airbnb.epoxy.EpoxyRecyclerView
-import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
-import io.github.sds100.keymapper.simple
-import io.github.sds100.keymapper.simpleGrid
+import io.github.sds100.keymapper.compose.KeyMapperTheme
+import io.github.sds100.keymapper.databinding.FragmentComposeBinding
 import io.github.sds100.keymapper.util.Inject
-import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
-import io.github.sds100.keymapper.util.ui.RecyclerViewUtils
-import io.github.sds100.keymapper.util.ui.SimpleListItem
-import io.github.sds100.keymapper.util.ui.SimpleRecyclerViewFragment
 import io.github.sds100.keymapper.util.ui.setupNavigation
 import io.github.sds100.keymapper.util.ui.showPopups
 import io.github.sds100.keymapper.util.viewLifecycleScope
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.serialization.decodeFromString
+import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-/**
- * A placeholder fragment containing a simple view.
- */
-class ChooseConstraintFragment : SimpleRecyclerViewFragment<SimpleListItem>() {
+class ChooseConstraintFragment : Fragment() {
 
     companion object {
         const val EXTRA_CONSTRAINT = "extra_constraint"
@@ -39,68 +40,53 @@ class ChooseConstraintFragment : SimpleRecyclerViewFragment<SimpleListItem>() {
         Inject.chooseConstraintListViewModel(requireContext())
     }
 
-    override val listItems: Flow<State<List<SimpleListItem>>>
-        get() = viewModel.listItems
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel.setSupportedConstraints(Json.decodeFromString(navArgs.supportedConstraints))
         viewModel.setupNavigation(this)
 
         launchRepeatOnLifecycle(Lifecycle.State.CREATED) {
-            viewModel.returnResult.collectLatest {
-                viewLifecycleScope.launchWhenResumed {
-                    returnResult(EXTRA_CONSTRAINT to Json.encodeToString(it))
-                }
-            }
-        }
-    }
-
-    override fun subscribeUi(binding: FragmentSimpleRecyclerviewBinding) {
-        super.subscribeUi(binding)
-
-        viewModel.showPopups(this, binding)
-
-        binding.epoxyRecyclerView.apply {
-            RecyclerViewUtils.applySimpleListItemDecorations(this)
-
-            layoutManager = GridLayoutManager(requireContext(), 1)
-            clipToPadding = false
-            clipChildren = false
-        }
-    }
-
-    override fun populateList(
-        recyclerView: EpoxyRecyclerView,
-        listItems: List<SimpleListItem>,
-    ) {
-        RecyclerViewUtils.setSpanCountForSimpleListItemGrid(recyclerView)
-
-        recyclerView.withModels {
-            listItems.forEach { listItem ->
-                if (spanCount == 1) {
-                    simple {
-                        id(listItem.id)
-                        model(listItem)
-
-                        onClickListener { _ ->
-                            viewModel.onListItemClick(listItem.id)
-                        }
-                    }
-                } else {
-                    simpleGrid {
-                        id(listItem.id)
-                        model(listItem)
-
-                        onClickListener { _ ->
-                            viewModel.onListItemClick(listItem.id)
-                        }
+            viewModel.returnResult.collectLatest { constraint ->
+                viewLifecycleScope.launch {
+                    withStateAtLeast(Lifecycle.State.RESUMED) {
+                        setFragmentResult(
+                            navArgs.requestKey,
+                            bundleOf(EXTRA_CONSTRAINT to Json.encodeToString(constraint)),
+                        )
+                        findNavController().navigateUp()
                     }
                 }
             }
         }
     }
 
-    override fun getRequestKey(): String = navArgs.requestKey
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
+        FragmentComposeBinding.inflate(inflater, container, false).apply {
+            composeView.apply {
+                // Dispose of the Composition when the view's LifecycleOwner
+                // is destroyed
+                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                setContent {
+                    KeyMapperTheme {
+                        ChooseConstraintScreen(
+                            modifier = Modifier.fillMaxSize(),
+                            viewModel = viewModel,
+                            onNavigateBack = findNavController()::navigateUp,
+                        )
+                    }
+                }
+            }
+            return this.root
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewModel.showPopups(this, view)
+    }
 }

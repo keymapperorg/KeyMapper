@@ -40,4 +40,4 @@ fun AccessibilityNodeInfo.toModel(): AccessibilityNodeModel = AccessibilityNodeM
     isEditable = isEditable,
 )
 
-fun AccessibilityEvent.toModel(): AccessibilityEventModel = AccessibilityEventModel(eventTime)
+fun AccessibilityEvent.toModel(): AccessibilityEventModel = AccessibilityEventModel(eventTime, eventType)

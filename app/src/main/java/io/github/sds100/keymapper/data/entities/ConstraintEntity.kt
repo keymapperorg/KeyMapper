@@ -14,10 +14,10 @@ data class ConstraintEntity(
     val type: String,
 
     @SerializedName(NAME_EXTRAS)
-    val extras: List<Extra>,
+    val extras: List<EntityExtra>,
 ) {
 
-    constructor(type: String, vararg extra: Extra) : this(type, extra.toList())
+    constructor(type: String, vararg extra: EntityExtra) : this(type, extra.toList())
 
     companion object {
         // DON'T CHANGE THESE. Used for JSON serialization and parsing.
@@ -62,6 +62,8 @@ data class ConstraintEntity(
 
         const val DEVICE_IS_LOCKED = "is_locked"
         const val DEVICE_IS_UNLOCKED = "is_unlocked"
+        const val LOCK_SCREEN_SHOWING = "lock_screen_showing"
+        const val LOCK_SCREEN_NOT_SHOWING = "lock_screen_not_showing"
 
         const val IN_PHONE_CALL = "in_phone_call"
         const val NOT_IN_PHONE_CALL = "not_in_phone_call"
@@ -82,7 +84,7 @@ data class ConstraintEntity(
             val type by it.json.byString(NAME_TYPE)
 
             val extrasJsonArray by it.json.byArray(NAME_EXTRAS)
-            val extraList = it.context.deserialize<List<Extra>>(extrasJsonArray) ?: listOf()
+            val extraList = it.context.deserialize<List<EntityExtra>>(extrasJsonArray) ?: listOf()
 
             ConstraintEntity(type, extraList)
         }

@@ -24,6 +24,8 @@ end
 
 desc "Create and deploy production release"
 lane :prod do
+    prompt(text: "Did you write whats new?")
+
     version_code = get_properties_value(key: "VERSION_CODE", path: "./app/version.properties")
     version_name = get_properties_value(key: "VERSION_NAME", path: "./app/version.properties")
 
@@ -60,8 +62,7 @@ lane :prod do
     # creating the git tag.
     supply(
         aab: "app/build/outputs/bundle/proRelease/app-pro-release.aab",
-        track: "beta",
-        release_status: "draft",
+        track: "internal",
         skip_upload_apk: true
     )
 
@@ -80,10 +81,13 @@ lane :prod do
     )
 end
 
-desc "Deploy alpha release"
-lane :alpha do
+desc "Create and deploy internal testing release"
+lane :internal do
     version_code = get_properties_value(key: "VERSION_CODE", path: "./app/version.properties")
     version_name = get_properties_value(key: "VERSION_NAME", path: "./app/version.properties")
+
+#   Don't create changelog for f-droid because not committing it
+#   File.write("metadata/android/en-US/changelogs/" + version_code + ".txt", whats_new)
 
     ENV["KEYSTORE_PASSWORD"] = prompt(
                     text: "Key store password: ",
@@ -95,12 +99,17 @@ lane :alpha do
                     secure_text: true
                    )
 
+#   Do not release a debug build for pro version.
+#   gradle(task: "assembleDebug")
+
+#   Release the free build to GitHub because billing only works if signed by Google Play
     gradle(task: "bundleProRelease")
 
+    # First release to google play so any errors with the descriptions are resolved before
+    # creating the git tag.
     supply(
         aab: "app/build/outputs/bundle/proRelease/app-pro-release.aab",
-        track: "alpha",
-        release_status: "completed",
+        track: "internal",
         skip_upload_apk: true,
         skip_upload_metadata: true,
         skip_upload_changelogs: true,
@@ -108,3 +117,4 @@ lane :alpha do
         skip_upload_screenshots: true
     )
 end
+

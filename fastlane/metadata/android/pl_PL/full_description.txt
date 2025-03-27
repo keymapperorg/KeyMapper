@@ -1,36 +1,36 @@
-Nowy wyzwalacz! 🎉 Remap your Assistant & Bixby, and DPAD buttons!
+New trigger! 🎉 Remap your Assistant & Bixby, and DPAD buttons!
 
-Funkcje jakich przycisków można zmienić?
+What can be remapped?
 
- * Przyciski głośności.
+ * Volume buttons.
  * Power button, side key, and voice assistant button (one time purchase to support development).
- * Klawiatury przewodowe i Bluetooth.
- * Gesty czytnika linii papilarnych na obsługiwanych urządzeniach.
+ * Bluetooth/wired keyboards.
+ * Fingerprint gestures on supported devices.
  * DPAD buttons on game controllers.
- * Przyciski na innych podłączonych urządzeniach również powinny działać.
+ * Buttons on other connected devices should also work.
 
-Możesz połączyć wiele przycisków z określonego lub dowolnego urządzenia, aby utworzyć "wyzwalacz". Każdy wyzwalacz może mieć wiele czynności. Przyciski można ustawić tak, aby były naciskane jednocześnie lub jeden po drugim w kolejności. Przyciski mogą być wykorzystane, gdy są wciśnięte krótko, długo lub podwójnie. Zmiana funkcji może mieć zestaw "ograniczeń", aby działała tylko w określonych sytuacjach.
+You can combine multiple keys from a specific device or any device to form a "trigger". Each trigger can have multiple actions. The keys can be set to be pressed at the same time or one after another in a sequence. Keys can be remapped when they are short pressed, long pressed or double pressed. A keymap can have a set of "constraints" so it only has an effect in certain situations.
 
-Funkcje jakich przycisków nie można zmieniać?
- * Przyciski myszy
+What can’t be remapped?
+ * Mouse buttons
  * Thumb sticks or triggers on game controllers
 
-Twoje zmiany funkcji nie będą działać, gdy ekran jest WYŁĄCZONY. To jest ograniczenie w systemie Android. Programista nic nie może na to poradzić.
+Your key maps do not work if the screen is OFF. This is a limitation in Android. There is nothing the dev can do.
 
-Jakie funkcje można przypisać do przycisków?
-Niektóre czynności będą działać tylko na zrootowanych urządzeniach i określonych wersjach Androida.
+What can I remap my keys to do?
+Some actions will only work on rooted devices and specific Android versions.
 
-Mamy zbyt wiele funkcji, aby wszystko się tu zmieściło, więc zapoznaj się z pełną listą na tej stronie: https://docs.keymapper.club/user-guide/actions
+There are too many features to list here so check out the full list here: https://docs.keymapper.club/user-guide/actions
 
-Uprawnienia
-Nie musisz przyznawać wszystkich uprawnień, aby aplikacja działała. Aplikacja poinformuje Cię, czy do działania funkcji wymagane jest określone uprawnienie.
+Permissions
+You don't have to grant all the permissions for the app to work. The app will tell you if a permission needs to be granted for a feature to work.
 
- * Usługa ułatwień dostępu: Podstawowe wymaganie dotyczące zmiany funkcji przycisków. Jest to potrzebne, aby aplikacja mogła nasłuchiwać i blokować zdarzenia przycisków.
- * Zarządzanie urządzeniem: aby wyłączyć ekran podczas korzystania z czynności wyłączenia ekranu.
- * Modyfikowanie ustawień systemu: Aby zmienić ustawienia jasności i obracania.
- * Aparat: Aby sterować latarką.
+ * Accessibility Service: Basic requirement for remapping to work. It is needed so the app can listen to and block key events.
+ * Device Admin: To turn the screen off when using the action to turn off the screen.
+ * Modify System Settings: To change the brightness and rotation settings.
+ * Camera: To control the flashlight.
 
- Na niektórych urządzeniach włączenie usługi ułatwień dostępu spowoduje wyłączenie "Ulepszonego szyfrowania danych".
+ On some devices, enabling the accessibility service will disable "enhanced data encryption".
 
 Discord: www.keymapper.club
-Strona internetowa: docs.keymapper.club
+Website: docs.keymapper.club

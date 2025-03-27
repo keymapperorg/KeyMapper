@@ -24,6 +24,10 @@ class FakeFileAdapter(
         throw Exception()
     }
 
+    override fun openDownloadsFile(fileName: String, mimeType: String): Result<IFile> {
+        throw Exception()
+    }
+
     override fun getPrivateFile(path: String): IFile {
         val file = File(privateFolder, path)
 
@@ -36,6 +40,10 @@ class FakeFileAdapter(
 
     override fun getFileFromUri(uri: String): IFile {
         return JavaFile(File(uri))
+    }
+
+    override fun getPublicUriForPrivateFile(privateFile: IFile): String {
+        return ""
     }
 
     override fun createZipFile(destination: IFile, files: Set<IFile>): Result<*> {

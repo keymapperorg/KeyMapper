@@ -3,30 +3,26 @@ package io.github.sds100.keymapper.mappings.keymaps
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.Drawable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.util.Error
+import io.github.sds100.keymapper.actions.ActionUiHelper
+import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.mapData
-import io.github.sds100.keymapper.util.ui.ChipUi
-import io.github.sds100.keymapper.util.ui.PopupUi
-import io.github.sds100.keymapper.util.ui.PopupViewModel
-import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.TintType
-import io.github.sds100.keymapper.util.ui.ViewModelHelper
-import io.github.sds100.keymapper.util.ui.showPopup
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
 
 /**
@@ -34,70 +30,60 @@ import kotlinx.coroutines.launch
  */
 class CreateKeyMapShortcutViewModel(
     private val configKeyMapUseCase: ConfigKeyMapUseCase,
-    private val listUseCase: ListKeyMapsUseCase,
+    private val listKeyMaps: ListKeyMapsUseCase,
     private val createShortcutUseCase: CreateKeyMapShortcutUseCase,
     resourceProvider: ResourceProvider,
 ) : ViewModel(),
-    PopupViewModel by PopupViewModelImpl(),
     ResourceProvider by resourceProvider {
+    private val actionUiHelper = ActionUiHelper(listKeyMaps, resourceProvider)
+    private val listItemCreator = KeyMapListItemCreator(listKeyMaps, resourceProvider)
 
-    private val actionUiHelper = KeyMapActionUiHelper(listUseCase, resourceProvider)
-    private val listItemCreator = KeyMapListItemCreator(listUseCase, resourceProvider)
-
-    private val _state = MutableStateFlow<State<List<KeyMapListItem>>>(State.Loading)
+    private val _state = MutableStateFlow<State<List<KeyMapListItemModel>>>(State.Loading)
     val state = _state.asStateFlow()
 
     private val _returnIntentResult = MutableSharedFlow<Intent>()
     val returnIntentResult = _returnIntentResult.asSharedFlow()
 
+    var showShortcutNameDialog: String? by mutableStateOf(null)
+    val shortcutNameDialogResult = MutableStateFlow<String?>(null)
+
     init {
-        val rebuildUiState = MutableSharedFlow<State<List<KeyMap>>>(replay = 1)
+        viewModelScope.launch {
+            combine(
+                listKeyMaps.keyMapList,
+                listKeyMaps.showDeviceDescriptors,
+                listKeyMaps.triggerErrorSnapshot,
+                listKeyMaps.actionErrorSnapshot,
+                listKeyMaps.constraintErrorSnapshot,
+            ) { keyMapListState, showDeviceDescriptors, triggerErrorSnapshot, actionErrorSnapshot, constraintErrorSnapshot ->
+                _state.value = keyMapListState.mapData { keyMapList ->
+                    keyMapList.map { keyMap ->
+                        val listItem =
+                            listItemCreator.create(
+                                keyMap,
+                                showDeviceDescriptors,
+                                triggerErrorSnapshot,
+                                actionErrorSnapshot,
+                                constraintErrorSnapshot,
+                            )
 
-        combine(
-            rebuildUiState,
-            listUseCase.showDeviceDescriptors,
-        ) { keyMapListState, showDeviceDescriptors ->
-            val selectionUiState =
-                KeyMapListItem.SelectionUiState(isSelected = false, isSelectable = false)
-
-            _state.value = keyMapListState.mapData { keyMapList ->
-                keyMapList.map { keyMap ->
-                    val keyMapListUiState = listItemCreator.create(keyMap, showDeviceDescriptors)
-
-                    KeyMapListItem(keyMapListUiState, selectionUiState)
+                        KeyMapListItemModel(isSelected = false, listItem)
+                    }
                 }
-            }
-        }.launchIn(viewModelScope)
-
-        viewModelScope.launch {
-            listUseCase.keyMapList.collectLatest {
-                rebuildUiState.emit(it)
-            }
-        }
-
-        viewModelScope.launch {
-            listUseCase.invalidateActionErrors.drop(1).collectLatest {
-                /*
-                Don't get the key maps from the repository because there can be a race condition
-                when restoring key maps. This happens because when the activity is resumed the
-                key maps in the repository are being updated and this flow is collected
-                at the same time.
-                 */
-                rebuildUiState.emit(rebuildUiState.first())
-            }
+            }.collect()
         }
     }
 
     fun onKeyMapCardClick(uid: String) {
         viewModelScope.launch {
-            val state = listUseCase.keyMapList.first { it is State.Data }
+            val state = listKeyMaps.keyMapList.first { it is State.Data }
 
             if (state !is State.Data) return@launch
 
             configKeyMapUseCase.loadKeyMap(uid)
             configKeyMapUseCase.setTriggerFromOtherAppsEnabled(true)
 
-            val keyMapState = configKeyMapUseCase.mapping.first()
+            val keyMapState = configKeyMapUseCase.keyMap.first()
 
             if (keyMapState !is State.Data) return@launch
 
@@ -114,7 +100,7 @@ class CreateKeyMapShortcutViewModel(
                     showDeviceDescriptors = false,
                 )
 
-                val iconInfo = actionUiHelper.getIcon(action)
+                val iconInfo = actionUiHelper.getDrawableIcon(action)
 
                 if (iconInfo == null) {
                     icon = null
@@ -135,14 +121,14 @@ class CreateKeyMapShortcutViewModel(
                 icon = null
             }
 
-            val shortcutName = showPopup(
-                key,
-                PopupUi.Text(
-                    getString(R.string.hint_shortcut_name),
-                    allowEmpty = false,
-                    text = defaultShortcutName,
-                ),
-            ) ?: return@launch
+            showShortcutNameDialog = defaultShortcutName
+
+            val shortcutName = shortcutNameDialogResult.filterNotNull().first()
+            shortcutNameDialogResult.value = null
+
+            if (shortcutName.isBlank()) {
+                return@launch
+            }
 
             val intent = createShortcutUseCase.createIntent(
                 keyMapUid = keyMap.uid,
@@ -153,36 +139,6 @@ class CreateKeyMapShortcutViewModel(
             configKeyMapUseCase.save()
 
             _returnIntentResult.emit(intent)
-        }
-    }
-
-    fun onTriggerErrorChipClick(chipModel: ChipUi) {
-        if (chipModel is ChipUi.Error) {
-            showDialogAndFixError(chipModel.error)
-        }
-    }
-
-    fun onActionChipClick(chipModel: ChipUi) {
-        if (chipModel is ChipUi.Error) {
-            showDialogAndFixError(chipModel.error)
-        }
-    }
-
-    fun onConstraintsChipClick(chipModel: ChipUi) {
-        if (chipModel is ChipUi.Error) {
-            showDialogAndFixError(chipModel.error)
-        }
-    }
-
-    private fun showDialogAndFixError(error: Error) {
-        viewModelScope.launch {
-            ViewModelHelper.showFixErrorDialog(
-                resourceProvider = this@CreateKeyMapShortcutViewModel,
-                popupViewModel = this@CreateKeyMapShortcutViewModel,
-                error,
-            ) {
-                listUseCase.fixError(error)
-            }
         }
     }
 

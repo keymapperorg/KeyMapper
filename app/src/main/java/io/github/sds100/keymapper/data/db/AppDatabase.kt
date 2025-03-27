@@ -9,6 +9,8 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import io.github.sds100.keymapper.data.db.AppDatabase.Companion.DATABASE_VERSION
 import io.github.sds100.keymapper.data.db.dao.FingerprintMapDao
+import io.github.sds100.keymapper.data.db.dao.FloatingButtonDao
+import io.github.sds100.keymapper.data.db.dao.FloatingLayoutDao
 import io.github.sds100.keymapper.data.db.dao.KeyMapDao
 import io.github.sds100.keymapper.data.db.dao.LogEntryDao
 import io.github.sds100.keymapper.data.db.typeconverter.ActionListTypeConverter
@@ -16,10 +18,13 @@ import io.github.sds100.keymapper.data.db.typeconverter.ConstraintListTypeConver
 import io.github.sds100.keymapper.data.db.typeconverter.ExtraListTypeConverter
 import io.github.sds100.keymapper.data.db.typeconverter.TriggerTypeConverter
 import io.github.sds100.keymapper.data.entities.FingerprintMapEntity
+import io.github.sds100.keymapper.data.entities.FloatingButtonEntity
+import io.github.sds100.keymapper.data.entities.FloatingLayoutEntity
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.data.entities.LogEntryEntity
 import io.github.sds100.keymapper.data.migration.Migration10To11
 import io.github.sds100.keymapper.data.migration.Migration11To12
+import io.github.sds100.keymapper.data.migration.Migration13To14
 import io.github.sds100.keymapper.data.migration.Migration1To2
 import io.github.sds100.keymapper.data.migration.Migration2To3
 import io.github.sds100.keymapper.data.migration.Migration3To4
@@ -33,7 +38,7 @@ import io.github.sds100.keymapper.data.migration.Migration9To10
  * Created by sds100 on 24/01/2020.
  */
 @Database(
-    entities = [KeyMapEntity::class, FingerprintMapEntity::class, LogEntryEntity::class],
+    entities = [KeyMapEntity::class, FingerprintMapEntity::class, LogEntryEntity::class, FloatingLayoutEntity::class, FloatingButtonEntity::class],
     version = DATABASE_VERSION,
     exportSchema = true,
 )
@@ -46,7 +51,7 @@ import io.github.sds100.keymapper.data.migration.Migration9To10
 abstract class AppDatabase : RoomDatabase() {
     companion object {
         const val DATABASE_NAME = "key_map_database"
-        const val DATABASE_VERSION = 13
+        const val DATABASE_VERSION = 14
 
         val MIGRATION_1_2 = object : Migration(1, 2) {
 
@@ -115,6 +120,12 @@ abstract class AppDatabase : RoomDatabase() {
                 database.execSQL("CREATE TABLE `log` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `time` INTEGER NOT NULL, `severity` INTEGER NOT NULL, `message` TEXT NOT NULL)")
             }
         }
+
+        val MIGRATION_13_14 = object : Migration(13, 14) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                Migration13To14.migrateDatabase(database)
+            }
+        }
     }
 
     class RoomMigration11To12(
@@ -125,7 +136,9 @@ abstract class AppDatabase : RoomDatabase() {
         }
     }
 
-    abstract fun keymapDao(): KeyMapDao
+    abstract fun keyMapDao(): KeyMapDao
     abstract fun fingerprintMapDao(): FingerprintMapDao
     abstract fun logEntryDao(): LogEntryDao
+    abstract fun floatingLayoutDao(): FloatingLayoutDao
+    abstract fun floatingButtonDao(): FloatingButtonDao
 }

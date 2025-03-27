@@ -2,23 +2,20 @@ package io.github.sds100.keymapper.mappings.keymaps.trigger
 
 import io.github.sds100.keymapper.system.apps.PackageInfo
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
+import io.github.sds100.keymapper.system.apps.getPackageInfoFlow
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
-import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.onSuccess
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 
 class SetupGuiKeyboardUseCaseImpl(
     private val inputMethodAdapter: InputMethodAdapter,
     private val packageManager: PackageManagerAdapter,
 ) : SetupGuiKeyboardUseCase {
     private val guiKeyboardPackage: Flow<PackageInfo?> =
-        packageManager.installedPackages
-            .mapNotNull { it as? State.Data }
-            .map { packages -> packages.data.find { it.packageName == KeyMapperImeHelper.KEY_MAPPER_GUI_IME_PACKAGE } }
+        packageManager.getPackageInfoFlow(KeyMapperImeHelper.KEY_MAPPER_GUI_IME_PACKAGE)
 
     override val isInstalled: Flow<Boolean> = guiKeyboardPackage.map { it != null }
 

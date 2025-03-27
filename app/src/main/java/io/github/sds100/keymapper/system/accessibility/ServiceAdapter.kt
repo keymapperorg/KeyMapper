@@ -27,11 +27,18 @@ interface ServiceAdapter {
     fun stop(): Boolean
 
     suspend fun isCrashed(): Boolean
+    fun acknowledgeCrashed()
 
     /**
      * Send an event to the service.
      */
     suspend fun send(event: ServiceEvent): Result<*>
+
+    /**
+     * Send an event to the service asynchronously. This method
+     * will return immediately and you won't be notified of whether it is sent.
+     */
+    fun sendAsync(event: ServiceEvent)
 
     /**
      * A flow of events coming from the service.

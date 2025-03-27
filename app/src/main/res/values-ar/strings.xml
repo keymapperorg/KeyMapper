@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="slogan">أطلق العنان لمفاتيحك!</string>
     <!--  Action descriptions  -->
     <!--  Action descriptions  -->
     <!--  Headers  -->
@@ -44,8 +43,6 @@
     <!-- About activity-->
     <!--flags-->
     <!--flags-->
-    <!-- Showcase -->
-    <!-- Showcase -->
     <!-- system action options -->
     <!-- system action options -->
     <!-- Tiles -->
@@ -68,4 +65,9 @@
     <!--  Purchasing  -->
     <!--  Dpad trigger setup bottom sheet  -->
     <!-- No keys recorded bottom sheet -->
+    <!--  Floating buttons  -->
+    <!-- Home screen -->
+    <!-- Trigger screen -->
+    <!--  Action screen  -->
+    <!--  Constraint screen  -->
 </resources>

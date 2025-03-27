@@ -16,7 +16,6 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
 import androidx.preference.SwitchPreferenceCompat
 import androidx.preference.isEmpty
-import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.backup.BackupUtils
 import io.github.sds100.keymapper.data.Keys
@@ -466,18 +465,17 @@ class MainSettingsFragment : BaseSettingsFragment() {
         }
 
         // report issue to developer
-        Preference(requireContext()).apply {
-            isSingleLineTitle = false
-            setTitle(R.string.title_pref_report_issue)
-
-            setOnPreferenceClickListener {
-                findNavController().navigate(NavAppDirections.goToReportBugActivity())
-
-                true
-            }
-
-            addPreference(this)
-        }
+//        Preference(requireContext()).apply {
+//            isSingleLineTitle = false
+//            setTitle(R.string.title_pref_report_issue)
+//
+//            setOnPreferenceClickListener {
+//
+//                true
+//            }
+//
+//            addPreference(this)
+//        }
     }
 
     @SuppressLint("NewApi")

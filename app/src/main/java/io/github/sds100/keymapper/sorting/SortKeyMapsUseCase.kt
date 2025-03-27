@@ -2,13 +2,12 @@ package io.github.sds100.keymapper.sorting
 
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.mappings.DisplaySimpleMappingUseCase
+import io.github.sds100.keymapper.mappings.keymaps.DisplayKeyMapUseCase
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.sorting.comparators.KeyMapActionsComparator
 import io.github.sds100.keymapper.sorting.comparators.KeyMapConstraintsComparator
 import io.github.sds100.keymapper.sorting.comparators.KeyMapOptionsComparator
 import io.github.sds100.keymapper.sorting.comparators.KeyMapTriggerComparator
-import io.github.sds100.keymapper.util.ui.ResourceProviderImpl
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
@@ -16,9 +15,14 @@ import kotlinx.serialization.json.Json
 
 class SortKeyMapsUseCaseImpl(
     private val preferenceRepository: PreferenceRepository,
-    private val displaySimpleMappingUseCase: DisplaySimpleMappingUseCase,
-    private val resourceProvider: ResourceProviderImpl,
+    private val displaySimpleMappingUseCase: DisplayKeyMapUseCase,
 ) : SortKeyMapsUseCase {
+
+    override val showHelp = preferenceRepository.get(Keys.sortShowHelp).map { it ?: true }
+
+    override fun setShowHelp(show: Boolean) {
+        preferenceRepository.set(Keys.sortShowHelp, show)
+    }
 
     /**
      * Observes the order in which key map fields should be sorted, prioritizing specific fields.
@@ -31,19 +35,19 @@ class SortKeyMapsUseCaseImpl(
             .get(Keys.sortOrderJson)
             .map {
                 if (it == null) {
-                    return@map Companion.defaultOrder
+                    return@map defaultOrder
                 }
 
                 val result = runCatching {
                     Json.decodeFromString<List<SortFieldOrder>>(it)
-                }.getOrDefault(Companion.defaultOrder).distinct()
+                }.getOrDefault(defaultOrder).distinct()
 
                 // If the result is not the expected size it means that the preference is corrupted
                 // or there are missing fields (e.g. a new field was added). In this case, return
                 // the default order.
 
                 if (result.size != SortField.entries.size) {
-                    return@map Companion.defaultOrder
+                    return@map defaultOrder
                 }
 
                 result
@@ -74,6 +78,7 @@ class SortKeyMapsUseCaseImpl(
                 displaySimpleMappingUseCase,
                 reverseOrder,
             )
+
             SortField.OPTIONS -> KeyMapOptionsComparator(reverseOrder)
         }
     }
@@ -89,6 +94,9 @@ class SortKeyMapsUseCaseImpl(
 }
 
 interface SortKeyMapsUseCase {
+    val showHelp: Flow<Boolean>
+    fun setShowHelp(show: Boolean)
+
     fun observeSortFieldOrder(): Flow<List<SortFieldOrder>>
     fun setSortFieldOrder(sortFieldOrders: List<SortFieldOrder>)
     fun observeKeyMapsSorter(): Flow<Comparator<KeyMap>>

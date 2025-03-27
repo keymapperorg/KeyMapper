@@ -263,15 +263,6 @@
                                     layout="@layout/list_item_about_item"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    bind:icon="@{@drawable/profile_pic_gl513}"
-                                    bind:subtitle="@{@string/about_team_gl513_role}"
-                                    bind:title="@{@string/about_team_gl513_name}"
-                                    bind:url="@{@string/about_team_gl513_url}" />
-
-                                <include
-                                    layout="@layout/list_item_about_item"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
                                     bind:icon="@{@drawable/profile_pic_kekero}"
                                     bind:subtitle="@{@string/about_team_kekero_role}"
                                     bind:title="@{@string/about_team_kekero_name}"
@@ -366,10 +357,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             app:menuAlignmentMode="auto"
-            app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
-            app:paddingBottomSystemWindowInsets="false"
-            app:paddingLeftSystemWindowInsets="false"
-            app:paddingRightSystemWindowInsets="false" />
+            app:navigationIcon="@drawable/ic_baseline_arrow_back_24" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

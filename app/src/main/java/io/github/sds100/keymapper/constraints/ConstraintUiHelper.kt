@@ -1,13 +1,13 @@
 package io.github.sds100.keymapper.constraints
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Android
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.mappings.DisplayConstraintUseCase
 import io.github.sds100.keymapper.system.camera.CameraLensUtils
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.util.handle
-import io.github.sds100.keymapper.util.ui.IconInfo
 import io.github.sds100.keymapper.util.ui.ResourceProvider
-import io.github.sds100.keymapper.util.ui.TintType
+import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.util.valueIfFailure
 
 /**
@@ -140,145 +140,28 @@ class ConstraintUiHelper(
         Constraint.PhoneRinging -> getString(R.string.constraint_phone_ringing)
         Constraint.Charging -> getString(R.string.constraint_charging)
         Constraint.Discharging -> getString(R.string.constraint_discharging)
+        Constraint.LockScreenShowing -> getString(R.string.constraint_lock_screen_showing)
+        Constraint.LockScreenNotShowing -> getString(R.string.constraint_lock_screen_not_showing)
     }
 
-    fun getIcon(constraint: Constraint): IconInfo? = when (constraint) {
+    fun getIcon(constraint: Constraint): ComposeIconInfo = when (constraint) {
         is Constraint.AppInForeground -> getAppIconInfo(constraint.packageName)
+            ?: ComposeIconInfo.Vector(Icons.Rounded.Android)
+
         is Constraint.AppNotInForeground -> getAppIconInfo(constraint.packageName)
+            ?: ComposeIconInfo.Vector(Icons.Rounded.Android)
+
         is Constraint.AppPlayingMedia -> getAppIconInfo(constraint.packageName)
+            ?: ComposeIconInfo.Vector(Icons.Rounded.Android)
+
         is Constraint.AppNotPlayingMedia -> getAppIconInfo(constraint.packageName)
-        Constraint.MediaPlaying -> IconInfo(
-            getDrawable(R.drawable.ic_outline_play_arrow_24),
-            TintType.OnSurface,
-        )
+            ?: ComposeIconInfo.Vector(Icons.Rounded.Android)
 
-        Constraint.NoMediaPlaying -> IconInfo(
-            getDrawable(R.drawable.ic_outline_stop_circle_24),
-            TintType.OnSurface,
-        )
-
-        is Constraint.BtDeviceConnected -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_outline_bluetooth_connected_24),
-            tintType = TintType.OnSurface,
-        )
-
-        is Constraint.BtDeviceDisconnected -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_outline_bluetooth_disabled_24),
-            tintType = TintType.OnSurface,
-        )
-
-        is Constraint.OrientationCustom -> {
-            val resId = when (constraint.orientation) {
-                Orientation.ORIENTATION_0 -> R.drawable.ic_outline_stay_current_portrait_24
-                Orientation.ORIENTATION_90 -> R.drawable.ic_outline_stay_current_landscape_24
-                Orientation.ORIENTATION_180 -> R.drawable.ic_outline_stay_current_portrait_24
-                Orientation.ORIENTATION_270 -> R.drawable.ic_outline_stay_current_landscape_24
-            }
-
-            IconInfo(
-                drawable = getDrawable(resId),
-                tintType = TintType.OnSurface,
-            )
-        }
-
-        Constraint.OrientationLandscape -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_outline_stay_current_landscape_24),
-            tintType = TintType.OnSurface,
-        )
-
-        Constraint.OrientationPortrait -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_outline_stay_current_portrait_24),
-            tintType = TintType.OnSurface,
-        )
-
-        Constraint.ScreenOff -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_baseline_mobile_off_24),
-            tintType = TintType.OnSurface,
-        )
-
-        Constraint.ScreenOn -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_outline_stay_current_portrait_24),
-            tintType = TintType.OnSurface,
-        )
-
-        is Constraint.FlashlightOff -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_flashlight_off),
-            tintType = TintType.OnSurface,
-        )
-
-        is Constraint.FlashlightOn -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_flashlight),
-            tintType = TintType.OnSurface,
-        )
-
-        is Constraint.WifiConnected -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_outline_wifi_24),
-            tintType = TintType.OnSurface,
-        )
-
-        is Constraint.WifiDisconnected -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_outline_signal_wifi_statusbar_null_24),
-            tintType = TintType.OnSurface,
-        )
-
-        Constraint.WifiOff -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_outline_wifi_off_24),
-            tintType = TintType.OnSurface,
-        )
-
-        Constraint.WifiOn -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_outline_wifi_24),
-            tintType = TintType.OnSurface,
-        )
-
-        is Constraint.ImeChosen -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_outline_keyboard_24),
-            tintType = TintType.OnSurface,
-        )
-
-        is Constraint.ImeNotChosen -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_outline_keyboard_24),
-            tintType = TintType.OnSurface,
-        )
-
-        Constraint.DeviceIsLocked -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_outline_lock_24),
-            tintType = TintType.OnSurface,
-        )
-
-        Constraint.DeviceIsUnlocked -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_outline_lock_open_24),
-            tintType = TintType.OnSurface,
-        )
-
-        Constraint.InPhoneCall -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_outline_call_24),
-            tintType = TintType.OnSurface,
-        )
-
-        Constraint.NotInPhoneCall -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_baseline_call_end_24),
-            tintType = TintType.OnSurface,
-        )
-
-        Constraint.PhoneRinging -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_baseline_ring_volume_24),
-            tintType = TintType.OnSurface,
-        )
-
-        Constraint.Charging -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_baseline_battery_charging_full_24),
-            tintType = TintType.OnSurface,
-        )
-
-        Constraint.Discharging -> IconInfo(
-            drawable = getDrawable(R.drawable.ic_battery_70),
-            tintType = TintType.OnSurface,
-        )
+        else -> ConstraintUtils.getIcon(constraint.id)
     }
 
-    private fun getAppIconInfo(packageName: String): IconInfo? = getAppIcon(packageName).handle(
-        onSuccess = { IconInfo(it, TintType.None) },
+    private fun getAppIconInfo(packageName: String): ComposeIconInfo? = getAppIcon(packageName).handle(
+        onSuccess = { ComposeIconInfo.Drawable(it) },
         onError = { null },
     )
 }

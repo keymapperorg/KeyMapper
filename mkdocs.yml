@@ -12,6 +12,7 @@ nav:
   - User Guide:
       - Key Maps: user-guide/keymaps.md
       - Fingerprint Gesture Maps (2.2.0+, Android 8.0+): user-guide/fingerprint-gestures.md
+      - Floating Buttons (3.0.0+, Android 11.0+): user-guide/floating-buttons.md
       - Actions: user-guide/actions.md
       - Constraints: user-guide/constraints.md
       - Settings: user-guide/settings.md
@@ -116,6 +117,9 @@ plugins:
         'redirects/shizuku-benefits.md': 'https://keymapperorg.github.io/KeyMapper/user-guide/shizuku#benefits'
         'redirects/cant-find-accessibility-settings.md': 'https://keymapperorg.github.io/KeyMapper/known-issues#key-mapper-cant-open-the-accessibility-settings-on-some-devices'
         'redirects/advanced-triggers.md': 'https://keymapperorg.github.io/KeyMapper/user-guide/keymaps#advanced-triggers'
+        'redirects/floating-buttons': 'https://keymapperorg.github.io/KeyMapper/user-guide/floating-buttons'
+        'redirects/floating-layouts': 'https://keymapperorg.github.io/KeyMapper/user-guide/floating-buttons'
+        'redirects/floating-button-config': 'https://keymapperorg.github.io/KeyMapper/user-guide/floating-buttons'
   - search:
       lang:
         - en

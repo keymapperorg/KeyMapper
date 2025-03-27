@@ -10,11 +10,11 @@ data class DefaultSimpleListItem(
     override val subtitleTint: TintType = TintType.OnSurface,
     override val icon: IconInfo? = null,
     override val isEnabled: Boolean = true,
-) : SimpleListItem {
+) : SimpleListItemOld {
     override fun getSearchableString(): String = title
 }
 
-interface SimpleListItem :
+interface SimpleListItemOld :
     ListItem,
     ISearchable {
     override val id: String

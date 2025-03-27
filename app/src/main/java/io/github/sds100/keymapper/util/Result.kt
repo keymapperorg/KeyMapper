@@ -114,6 +114,7 @@ sealed class Error : Result<Nothing>() {
     data object TargetDirectoryMatchesSourceDirectory : Error()
     data class NoSpaceLeftOnTarget(val uri: String) : Error()
     data object NoFileName : Error()
+    data object InvalidBackup : Error()
 
     data object EmptyJson : Error()
     data object CantFindSoundFile : Error()
@@ -133,6 +134,8 @@ sealed class Error : Result<Nothing>() {
         data object Cancelled : PurchasingError()
         data object StoreProblem : PurchasingError()
         data object NetworkError : PurchasingError()
+        data object PaymentPending : PurchasingError()
+        data object PurchaseInvalid : PurchasingError()
         data class Unexpected(val message: String) : PurchasingError()
     }
 
@@ -158,38 +161,33 @@ inline fun <T, U> Result<T>.onFailure(f: (error: Error) -> U): Result<T> {
     return this
 }
 
-inline infix fun <T, U> Result<T>.then(f: (T) -> Result<U>) =
-    when (this) {
-        is Success -> f(this.value)
-        is Error -> this
-    }
+inline infix fun <T, U> Result<T>.then(f: (T) -> Result<U>) = when (this) {
+    is Success -> f(this.value)
+    is Error -> this
+}
 
-suspend infix fun <T, U> Result<T>.suspendThen(f: suspend (T) -> Result<U>) =
-    when (this) {
-        is Success -> f(this.value)
-        is Error -> this
-    }
+suspend infix fun <T, U> Result<T>.suspendThen(f: suspend (T) -> Result<U>) = when (this) {
+    is Success -> f(this.value)
+    is Error -> this
+}
 
-inline infix fun <T> Result<T>.otherwise(f: (error: Error) -> Result<T>) =
-    when (this) {
-        is Success -> this
-        is Error -> f(this)
-    }
+inline infix fun <T> Result<T>.otherwise(f: (error: Error) -> Result<T>) = when (this) {
+    is Success -> this
+    is Error -> f(this)
+}
 
 inline fun <T, U> Result<T>.resolve(
     onSuccess: (value: T) -> U,
     onFailure: (error: Error) -> U,
-) =
-    when (this) {
-        is Success -> onSuccess(this.value)
-        is Error -> onFailure(this)
-    }
+) = when (this) {
+    is Success -> onSuccess(this.value)
+    is Error -> onFailure(this)
+}
 
-inline infix fun <T> Result<T>.valueIfFailure(f: (error: Error) -> T): T =
-    when (this) {
-        is Success -> this.value
-        is Error -> f(this)
-    }
+inline infix fun <T> Result<T>.valueIfFailure(f: (error: Error) -> T): T = when (this) {
+    is Success -> this.value
+    is Error -> f(this)
+}
 
 fun <T> Result<T>.errorOrNull(): Error? {
     when (this) {
@@ -215,10 +213,9 @@ val <T> Result<T>.isError: Boolean
 val <T> Result<T>.isSuccess: Boolean
     get() = this is Success
 
-fun <T, U> Result<T>.handle(onSuccess: (value: T) -> U, onError: (error: Error) -> U): U =
-    when (this) {
-        is Success -> onSuccess(value)
-        is Error -> onError(this)
-    }
+fun <T, U> Result<T>.handle(onSuccess: (value: T) -> U, onError: (error: Error) -> U): U = when (this) {
+    is Success -> onSuccess(value)
+    is Error -> onError(this)
+}
 
 fun <T> T.success() = Success(this)

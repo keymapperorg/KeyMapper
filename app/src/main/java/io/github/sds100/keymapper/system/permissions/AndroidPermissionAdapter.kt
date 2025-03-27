@@ -35,7 +35,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -80,9 +80,11 @@ class AndroidPermissionAdapter(
 
     private val ctx = context.applicationContext
 
-    override val onPermissionsUpdate: MutableSharedFlow<Unit> = MutableSharedFlow()
+    private val powerManager: PowerManager? = ctx.getSystemService<PowerManager>()
 
+    override val onPermissionsUpdate: MutableSharedFlow<Unit> = MutableSharedFlow()
     private val _request = MutableSharedFlow<Permission>()
+
     val request = _request.asSharedFlow()
 
     /**
@@ -119,6 +121,7 @@ class AndroidPermissionAdapter(
         // whenever the setting to never show dnd permission changes
         // update whether permissions are granted.
         neverRequestDndPermission
+            .drop(1)
             .onEach { onPermissionsChanged() }
             .launchIn(coroutineScope)
     }
@@ -279,8 +282,6 @@ class AndroidPermissionAdapter(
 
         Permission.IGNORE_BATTERY_OPTIMISATION ->
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                val powerManager = ctx.getSystemService<PowerManager>()
-
                 val ignoringOptimisations =
                     powerManager?.isIgnoringBatteryOptimizations(Constants.PACKAGE_NAME)
 
@@ -337,7 +338,7 @@ class AndroidPermissionAdapter(
             }
     }
 
-    override fun isGrantedFlow(permission: Permission): Flow<Boolean> = callbackFlow {
+    override fun isGrantedFlow(permission: Permission): Flow<Boolean> = channelFlow {
         send(isGranted(permission))
 
         onPermissionsUpdate.collect {

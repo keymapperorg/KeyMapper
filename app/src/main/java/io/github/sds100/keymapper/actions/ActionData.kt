@@ -149,17 +149,17 @@ sealed class ActionData : Comparable<ActionData> {
         }
 
         @Serializable
-        object ShowDialog : Volume() {
+        data object ShowDialog : Volume() {
             override val id = ActionId.VOLUME_SHOW_DIALOG
         }
 
         @Serializable
-        object CycleRingerMode : Volume() {
+        data object CycleRingerMode : Volume() {
             override val id = ActionId.CYCLE_RINGER_MODE
         }
 
         @Serializable
-        object CycleVibrateRing : Volume() {
+        data object CycleVibrateRing : Volume() {
             override val id = ActionId.CYCLE_VIBRATE_RING
         }
     }
