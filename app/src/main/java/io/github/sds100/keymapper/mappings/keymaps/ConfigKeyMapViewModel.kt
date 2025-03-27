@@ -83,6 +83,9 @@ class ConfigKeyMapViewModel(
         .map { state -> state.dataOrNull()?.isEnabled ?: true }
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
+    val isKeyMapEdited: Boolean
+        get() = config.isEdited
+
     fun save() = config.save()
 
     fun saveState(outState: Bundle) {

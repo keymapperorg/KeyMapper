@@ -1,6 +1,14 @@
-## [3.0 Beta 1](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0-beta.1)
+## [3.0 Beta 2](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0-beta.2)
 
 #### TO BE RELEASED
+
+## Bug fixes
+
+- #1585 Track changes when editing key maps and only prompt to discard changes if there were indeed changes.
+
+## [3.0 Beta 1](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0-beta.1)
+
+#### 26 March 2025
 
 Most of the codebase has been touched and most of the user interface has been rewritten
 in Jetpack Compose, resulting in many improvements to the user experience.

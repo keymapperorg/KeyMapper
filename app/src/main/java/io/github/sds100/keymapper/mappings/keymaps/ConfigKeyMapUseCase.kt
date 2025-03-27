@@ -72,6 +72,8 @@ class ConfigKeyMapUseCaseController(
         coroutineScope,
         preferenceRepository,
     ) {
+
+    private var originalKeyMap: KeyMap? = null
     override val keyMap = MutableStateFlow<State<KeyMap>>(State.Loading)
 
     override val floatingButtonToUse: MutableStateFlow<String?> = MutableStateFlow(null)
@@ -110,6 +112,15 @@ class ConfigKeyMapUseCaseController(
             SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
             emptyList(),
         )
+
+    /**
+     * Whether any changes were made to the key map.
+     */
+    override val isEdited: Boolean
+        get() = when (val keyMap = keyMap.value) {
+            is State.Data<KeyMap> -> originalKeyMap?.let { it != keyMap.data } ?: false
+            State.Loading -> false
+        }
 
     init {
         // Update button data in the key map whenever the floating buttons changes.
@@ -822,11 +833,15 @@ class ConfigKeyMapUseCaseController(
             .map { it.data }
             .first()
 
-        keyMap.update { State.Data(KeyMapEntityMapper.fromEntity(entity, floatingButtons)) }
+        val keyMap = KeyMapEntityMapper.fromEntity(entity, floatingButtons)
+        this.keyMap.update { State.Data(keyMap) }
+        originalKeyMap = keyMap
     }
 
     override fun loadNewKeyMap() {
-        keyMap.update { State.Data(KeyMap()) }
+        val keyMap = KeyMap()
+        this.keyMap.update { State.Data(keyMap) }
+        originalKeyMap = keyMap
     }
 
     override fun save() {
@@ -933,6 +948,7 @@ class ConfigKeyMapUseCaseController(
 
 interface ConfigKeyMapUseCase : GetDefaultKeyMapOptionsUseCase {
     val keyMap: Flow<State<KeyMap>>
+    val isEdited: Boolean
 
     fun save()
 
