@@ -461,13 +461,17 @@ abstract class BaseConfigTriggerViewModel(
                 return
             }
 
-            val dialog = PopupUi.Ok(
+            val dialog = PopupUi.Dialog(
+                title = getString(R.string.dialog_title_keycode_to_scancode_trigger_explanation),
                 message = getString(R.string.dialog_message_keycode_to_scancode_trigger_explanation),
+                positiveButtonText = getString(R.string.pos_understood),
             )
 
-            showPopup("keycode_to_scancode_message", dialog)
+            val response = showPopup("keycode_to_scancode_message", dialog)
 
-            onboarding.shownKeyCodeToScanCodeTriggerExplanation = true
+            if (response == DialogResponse.POSITIVE) {
+                onboarding.shownKeyCodeToScanCodeTriggerExplanation = true
+            }
         }
 
         if (key.keyCode == KeyEvent.KEYCODE_CAPS_LOCK) {
