@@ -598,7 +598,7 @@ abstract class BaseConfigTriggerViewModel(
         }
     }
 
-    fun onTriggerErrorClick(error: TriggerError) {
+    open fun onTriggerErrorClick(error: TriggerError) {
         coroutineScope.launch {
             when (error) {
                 TriggerError.DND_ACCESS_DENIED ->
@@ -608,12 +608,6 @@ abstract class BaseConfigTriggerViewModel(
                         neverShowDndTriggerErrorAgain = { displayKeyMap.neverShowDndTriggerError() },
                         fixError = { displayKeyMap.fixTriggerError(error) },
                     )
-
-                TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED,
-                TriggerError.FLOATING_BUTTONS_NOT_PURCHASED,
-                -> {
-                    showAdvancedTriggersBottomSheet = true
-                }
 
                 TriggerError.DPAD_IME_NOT_SELECTED -> {
                     showDpadTriggerSetupBottomSheet = true

@@ -24,6 +24,7 @@ import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.util.Error
+import io.github.sds100.keymapper.util.isFixable
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.compose.ComposeChipModel
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
@@ -149,7 +150,7 @@ class KeyMapListItemCreator(
             val chip = if (error == null) {
                 ComposeChipModel.Normal(id = action.uid, text = chipText, icon = icon)
             } else {
-                ComposeChipModel.Error(action.uid, chipText, error)
+                ComposeChipModel.Error(action.uid, chipText, error, isFixable = error.isFixable)
             }
 
             yield(chip)

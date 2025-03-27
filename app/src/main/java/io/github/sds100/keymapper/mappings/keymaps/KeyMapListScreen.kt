@@ -296,6 +296,7 @@ private fun KeyMapListItem(
                             ErrorChip(
                                 onClick = { onTriggerErrorClick(error) },
                                 text = getTriggerErrorMessage(error),
+                                enabled = error.isFixable,
                             )
                         }
                     }
@@ -486,7 +487,11 @@ private fun ActionConstraintChip(
             )
         }
 
-        is ComposeChipModel.Error -> ErrorChip(onClick = { onFixClick(model.error) }, model.text)
+        is ComposeChipModel.Error -> ErrorChip(
+            onClick = { onFixClick(model.error) },
+            model.text,
+            model.isFixable,
+        )
     }
 }
 
@@ -494,6 +499,7 @@ private fun ActionConstraintChip(
 private fun ErrorChip(
     onClick: () -> Unit,
     text: String,
+    enabled: Boolean,
 ) {
     CompactChip(
         text = text,
@@ -507,6 +513,7 @@ private fun ErrorChip(
         containerColor = MaterialTheme.colorScheme.errorContainer,
         contentColor = MaterialTheme.colorScheme.onErrorContainer,
         onClick = onClick,
+        enabled = enabled,
     )
 }
 
@@ -517,35 +524,29 @@ private fun CompactChip(
     icon: (@Composable () -> Unit)? = null,
     containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
     contentColor: Color = MaterialTheme.colorScheme.onSurface,
-) {
-    Surface(
-        modifier = modifier.height(chipHeight),
-        color = containerColor,
-        shape = AssistChipDefaults.shape,
-    ) {
-        CompactChipContent(icon, text, contentColor)
-    }
-}
-
-@Composable
-private fun CompactChip(
-    modifier: Modifier = Modifier,
-    text: String,
-    icon: (@Composable () -> Unit)? = null,
-    containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
-    contentColor: Color = MaterialTheme.colorScheme.onSurface,
-    onClick: () -> Unit,
+    onClick: (() -> Unit)? = null,
+    enabled: Boolean = false,
 ) {
     CompositionLocalProvider(
         LocalMinimumInteractiveComponentSize provides 16.dp,
     ) {
-        Surface(
-            modifier = modifier.height(chipHeight),
-            color = containerColor,
-            shape = AssistChipDefaults.shape,
-            onClick = onClick,
-        ) {
-            CompactChipContent(icon, text, contentColor)
+        if (onClick == null || !enabled) {
+            Surface(
+                modifier = modifier.height(chipHeight),
+                color = containerColor,
+                shape = AssistChipDefaults.shape,
+            ) {
+                CompactChipContent(icon, text, contentColor)
+            }
+        } else {
+            Surface(
+                modifier = modifier.height(chipHeight),
+                color = containerColor,
+                shape = AssistChipDefaults.shape,
+                onClick = onClick,
+            ) {
+                CompactChipContent(icon, text, contentColor)
+            }
         }
     }
 }
