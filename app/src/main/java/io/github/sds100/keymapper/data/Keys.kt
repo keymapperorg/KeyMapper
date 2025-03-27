@@ -43,8 +43,11 @@ object Keys {
     val acknowledgedGuiKeyboard = booleanPreferencesKey("pref_acknowledged_gui_keyboard")
     val showDeviceDescriptors = booleanPreferencesKey("pref_show_device_descriptors")
 
-    val approvedAssistantTriggerFeaturePrompt =
-        booleanPreferencesKey("pref_approved_assistant_trigger_feature_prompt")
+    //    val approvedAssistantTriggerFeaturePrompt =
+//        booleanPreferencesKey("pref_approved_assistant_trigger_feature_prompt")
+    val approvedFloatingButtonFeaturePrompt =
+        booleanPreferencesKey("pref_approved_floating_button_feature_prompt")
+
     val shownParallelTriggerOrderExplanation =
         booleanPreferencesKey("key_shown_parallel_trigger_order_warning")
     val shownSequenceTriggerExplanation =

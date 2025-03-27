@@ -77,27 +77,23 @@ class OnboardingUseCaseImpl(
         readText()
     }
 
-    override var approvedAssistantTriggerFeaturePrompt by PrefDelegate(
-        Keys.approvedAssistantTriggerFeaturePrompt,
+    override var approvedFloatingButtonFeaturePrompt by PrefDelegate(
+        Keys.approvedFloatingButtonFeaturePrompt,
         false,
     )
 
     /**
-     * Show the assistant trigger only when they *upgrade* to the new version and after they've
+     * Show only when they *upgrade* to the new version and after they've
      * completed the app intro, which asks them whether they want to receive notifications.
      */
-    override val showAssistantTriggerFeatureNotification: Flow<Boolean> =
-        combine(
-            get(Keys.lastInstalledVersionCodeBackground).map { it ?: -1 },
-            get(Keys.shownAppIntro).map { it ?: false },
-            get(Keys.approvedAssistantTriggerFeaturePrompt).map { it ?: false },
-        ) { oldVersionCode, shownAppIntro, approvedPrompt ->
-            oldVersionCode < VersionHelper.ASSISTANT_TRIGGER_MIN_VERSION &&
-                shownAppIntro &&
-                !approvedPrompt
-        }
+    override val showFloatingButtonFeatureNotification: Flow<Boolean> = combine(
+        get(Keys.lastInstalledVersionCodeBackground).map { it ?: -1 },
+        get(Keys.approvedFloatingButtonFeaturePrompt).map { it ?: false },
+    ) { oldVersionCode, approvedPrompt ->
+        oldVersionCode < VersionHelper.FLOATING_BUTTON_MIN_VERSION && !approvedPrompt
+    }
 
-    override fun showedAssistantTriggerFeatureNotification() {
+    override fun showedFloatingButtonFeatureNotification() {
         set(Keys.lastInstalledVersionCodeBackground, Constants.VERSION_CODE)
     }
 
@@ -172,9 +168,9 @@ interface OnboardingUseCase {
     var shownParallelTriggerOrderExplanation: Boolean
     var shownSequenceTriggerExplanation: Boolean
 
-    val showAssistantTriggerFeatureNotification: Flow<Boolean>
-    fun showedAssistantTriggerFeatureNotification()
-    var approvedAssistantTriggerFeaturePrompt: Boolean
+    val showFloatingButtonFeatureNotification: Flow<Boolean>
+    fun showedFloatingButtonFeatureNotification()
+    var approvedFloatingButtonFeaturePrompt: Boolean
 
     val showWhatsNew: Flow<Boolean>
     fun showedWhatsNew()

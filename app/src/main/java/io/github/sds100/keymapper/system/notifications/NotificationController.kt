@@ -52,7 +52,9 @@ class NotificationController(
         private const val ID_KEYBOARD_HIDDEN = 747
         private const val ID_TOGGLE_MAPPINGS = 231
         private const val ID_TOGGLE_KEYBOARD = 143
-        private const val ID_FEATURE_ASSISTANT_TRIGGER = 900
+
+        //        private const val ID_FEATURE_ASSISTANT_TRIGGER = 900
+        private const val ID_FEATURE_FLOATING_BUTTONS = 901
 
         const val CHANNEL_TOGGLE_KEYMAPS = "channel_toggle_remaps"
         const val CHANNEL_IME_PICKER = "channel_ime_picker"
@@ -156,15 +158,15 @@ class NotificationController(
 
         coroutineScope.launch(dispatchers.default()) {
             // suspend until the notification should be shown.
-            onboardingUseCase.showAssistantTriggerFeatureNotification.first { it }
+            onboardingUseCase.showFloatingButtonFeatureNotification.first { it }
 
-            manageNotifications.show(assistantTriggerFeatureNotification())
+            manageNotifications.show(floatingButtonFeatureNotification())
 
             // Only save that the notification is shown if the app has
             // permissions to show notifications so that it is shown
             // the next time permission is granted.
             if (manageNotifications.isPermissionGranted()) {
-                onboardingUseCase.showedAssistantTriggerFeatureNotification()
+                onboardingUseCase.showedFloatingButtonFeatureNotification()
             }
         }
 
@@ -438,13 +440,13 @@ class NotificationController(
         priority = NotificationCompat.PRIORITY_LOW,
     )
 
-    private fun assistantTriggerFeatureNotification(): NotificationModel = NotificationModel(
-        id = ID_FEATURE_ASSISTANT_TRIGGER,
+    private fun floatingButtonFeatureNotification(): NotificationModel = NotificationModel(
+        id = ID_FEATURE_FLOATING_BUTTONS,
         channel = CHANNEL_NEW_FEATURES,
-        title = getString(R.string.notification_assistant_trigger_feature_title),
-        text = getString(R.string.notification_assistant_trigger_feature_text),
-        icon = R.drawable.ic_outline_assistant_24,
-        onClickAction = NotificationIntentType.MainActivity(BaseMainActivity.ACTION_USE_ASSISTANT_TRIGGER),
+        title = getString(R.string.notification_floating_buttons_feature_title),
+        text = getString(R.string.notification_floating_buttons_feature_text),
+        icon = R.drawable.outline_bubble_chart_24,
+        onClickAction = NotificationIntentType.MainActivity(BaseMainActivity.ACTION_USE_FLOATING_BUTTONS),
         priority = NotificationCompat.PRIORITY_LOW,
         autoCancel = true,
         onGoing = false,

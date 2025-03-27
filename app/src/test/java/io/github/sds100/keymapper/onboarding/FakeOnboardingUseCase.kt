@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
  * Created by sds100 on 26/04/2021.
  */
 class FakeOnboardingUseCase : OnboardingUseCase {
-    override var shownAppIntro: Boolean = false
+    override var firstTime: Boolean = false
 
     override suspend fun showInstallGuiKeyboardPrompt(action: ActionData): Boolean {
         throw NotImplementedError()

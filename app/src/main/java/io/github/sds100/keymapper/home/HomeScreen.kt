@@ -146,6 +146,7 @@ fun HomeScreen(
     onSettingsClick: () -> Unit,
     onAboutClick: () -> Unit,
     finishActivity: () -> Unit,
+    startDestination: HomeDestination = HomeDestination.KeyMaps,
 ) {
     val homeState by viewModel.state.collectAsStateWithLifecycle()
 
@@ -270,6 +271,7 @@ fun HomeScreen(
     HomeScreen(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         navController = navController,
+        startDestination = startDestination,
         homeState = homeState,
         snackBarState = snackbarState,
         navBarItems = navBarItems,
@@ -382,6 +384,7 @@ fun HomeScreen(
 private fun HomeScreen(
     modifier: Modifier = Modifier,
     homeState: HomeState,
+    startDestination: HomeDestination = HomeDestination.KeyMaps,
     navController: NavHostController,
     snackBarState: SnackbarHostState = SnackbarHostState(),
     navBarItems: List<HomeNavBarItem>,
@@ -493,7 +496,7 @@ private fun HomeScreen(
                     ),
                 contentAlignment = Alignment.TopCenter,
                 navController = navController,
-                startDestination = HomeDestination.KeyMaps.route,
+                startDestination = startDestination.route,
                 // use no animations because otherwise the transition freezes
                 // when quickly navigating to another page while the transition is still happening.
                 enterTransition = { EnterTransition.None },
