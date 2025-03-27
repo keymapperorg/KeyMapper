@@ -2,6 +2,12 @@
 
 #### TO BE RELEASED
 
+_See the changes from previous 3.0 Beta releases as well._
+
+## Added
+
+- #1560 Action to change flashlight brightness and also set a custom brightness when enabling the flashlight. 
+
 ## Bug fixes
 
 - #1585 Track changes when editing key maps and only prompt to discard changes if there were indeed changes.
