@@ -77,7 +77,11 @@ private fun RecordTriggerButton(
         onClick = onClick,
         colors = colors,
     ) {
-        Text(text)
+        Text(
+            text = text,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }
 
@@ -98,7 +102,7 @@ private fun AdvancedTriggersButton(
         ) {
             Text(
                 text = stringResource(R.string.button_advanced_triggers),
-                maxLines = 1,
+                maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
         }
