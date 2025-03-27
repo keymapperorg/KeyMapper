@@ -12,6 +12,7 @@ _See the changes from previous 3.0 Beta releases as well._
 ## Changed
 
 - #1577 Move unsupported actions to the bottom of the list and do not allow selecting root actions if root permission is not granted.
+- #1593 Deprecate the 'Open menu' action by not letting new key maps use it. It is a relic of the past when most apps had a 3-dot menu with a consistent content description making it somewhat easy to identify.
 
 ## Bug fixes
 

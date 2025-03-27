@@ -169,6 +169,8 @@ This will increase or decrease a specific one of these volume streams.
 
 ### Open menu
 
+!!! attention "Deprecated in Key Mapper 3.0+"
+
 ### Toggle/enable/disable flashlight
 
 In Key Mapper 3.0+ there is the option to also set a custom brightness. This is only supported on Android 13+ and on some devices.

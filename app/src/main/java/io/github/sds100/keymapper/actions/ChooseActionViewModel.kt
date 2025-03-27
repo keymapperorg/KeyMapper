@@ -126,6 +126,14 @@ class ChooseActionViewModel(
         actionIds: List<ActionId>,
     ): List<SimpleListItemModel> = buildList {
         for (actionId in actionIds) {
+            // See Issue #1593. This action should no longer exist because it is a relic
+            // of the past when most apps had a 3-dot menu with a consistent content description
+            // making it somewhat easy to identify. This action should still be usable
+            // if a user already has a key map with it so just hide it from the list.
+            if (actionId == ActionId.OPEN_MENU) {
+                continue
+            }
+
             val error = useCase.isSupported(actionId)
             val isSupported = error == null
 
