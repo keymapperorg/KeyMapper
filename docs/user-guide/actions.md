@@ -171,6 +171,12 @@ This will increase or decrease a specific one of these volume streams.
 
 ### Toggle/enable/disable flashlight
 
+In Key Mapper 3.0+ there is the option to also set a custom brightness. This is only supported on Android 13+ and on some devices.
+
+### Change flashlight brightness (3.0+, Android 13.0+)
+
+This is only supported on devices that let you change the flashlight brightness.
+
 ### Toggle/enable/disable NFC
 
 !!! attention "Requires ROOT permission"

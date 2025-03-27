@@ -286,24 +286,38 @@ object ActionDataEntityMapper {
 
             ActionId.TOGGLE_FLASHLIGHT,
             ActionId.ENABLE_FLASHLIGHT,
-            ActionId.DISABLE_FLASHLIGHT,
+            ActionId.CHANGE_FLASHLIGHT_STRENGTH,
             -> {
                 val lens = entity.extras.getData(ActionEntity.EXTRA_LENS).then {
                     LENS_MAP.getKey(it)!!.success()
                 }.valueOrNull() ?: return null
 
+                val flashStrength = entity.extras.getData(ActionEntity.EXTRA_FLASH_STRENGTH).then {
+                    it.toFloatOrNull().success()
+                }.valueOrNull()
+
                 when (actionId) {
-                    ActionId.TOGGLE_FLASHLIGHT ->
-                        ActionData.Flashlight.Toggle(lens)
+                    ActionId.TOGGLE_FLASHLIGHT -> ActionData.Flashlight.Toggle(lens, flashStrength)
+                    ActionId.ENABLE_FLASHLIGHT -> ActionData.Flashlight.Enable(lens, flashStrength)
 
-                    ActionId.ENABLE_FLASHLIGHT ->
-                        ActionData.Flashlight.Enable(lens)
-
-                    ActionId.DISABLE_FLASHLIGHT ->
-                        ActionData.Flashlight.Disable(lens)
+                    ActionId.CHANGE_FLASHLIGHT_STRENGTH -> {
+                        flashStrength ?: return null
+                        ActionData.Flashlight.ChangeStrength(
+                            lens,
+                            flashStrength,
+                        )
+                    }
 
                     else -> throw Exception("don't know how to create system action for $actionId")
                 }
+            }
+
+            ActionId.DISABLE_FLASHLIGHT,
+            -> {
+                val lens = entity.extras.getData(ActionEntity.EXTRA_LENS).then {
+                    LENS_MAP.getKey(it)!!.success()
+                }.valueOrNull() ?: return null
+                ActionData.Flashlight.Disable(lens)
             }
 
             ActionId.TOGGLE_DND_MODE,
@@ -614,9 +628,48 @@ object ActionDataEntityMapper {
             ),
         )
 
-        is ActionData.Flashlight -> listOf(
-            EntityExtra(ActionEntity.EXTRA_LENS, LENS_MAP[data.lens]!!),
-        )
+        is ActionData.Flashlight -> {
+            val lensExtra = EntityExtra(ActionEntity.EXTRA_LENS, LENS_MAP[data.lens]!!)
+
+            when (data) {
+                is ActionData.Flashlight.Toggle -> buildList {
+                    add(lensExtra)
+
+                    if (data.strengthPercent != null) {
+                        add(
+                            EntityExtra(
+                                ActionEntity.EXTRA_FLASH_STRENGTH,
+                                data.strengthPercent.toString(),
+                            ),
+                        )
+                    }
+                }
+
+                is ActionData.Flashlight.Enable -> buildList {
+                    add(lensExtra)
+
+                    if (data.strengthPercent != null) {
+                        add(
+                            EntityExtra(
+                                ActionEntity.EXTRA_FLASH_STRENGTH,
+                                data.strengthPercent.toString(),
+                            ),
+                        )
+                    }
+                }
+
+                is ActionData.Flashlight.Disable -> listOf(lensExtra)
+                is ActionData.Flashlight.ChangeStrength -> buildList {
+                    add(lensExtra)
+                    add(
+                        EntityExtra(
+                            ActionEntity.EXTRA_FLASH_STRENGTH,
+                            data.percent.toString(),
+                        ),
+                    )
+                }
+            }
+        }
 
         is ActionData.SwitchKeyboard -> listOf(
             EntityExtra(ActionEntity.EXTRA_IME_ID, data.imeId),
@@ -773,6 +826,7 @@ object ActionDataEntityMapper {
         ActionId.TOGGLE_FLASHLIGHT to "toggle_flashlight",
         ActionId.ENABLE_FLASHLIGHT to "enable_flashlight",
         ActionId.DISABLE_FLASHLIGHT to "disable_flashlight",
+        ActionId.CHANGE_FLASHLIGHT_STRENGTH to "change_flashlight_strength",
 
         ActionId.ENABLE_NFC to "nfc_enable",
         ActionId.DISABLE_NFC to "nfc_disable",

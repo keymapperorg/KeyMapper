@@ -66,6 +66,9 @@ fun ChooseActionScreen(
     val state by viewModel.groups.collectAsStateWithLifecycle()
     val query by viewModel.searchQuery.collectAsStateWithLifecycle()
 
+    EnableFlashlightActionBottomSheet(viewModel.createActionDelegate)
+    ChangeFlashlightStrengthActionBottomSheet(viewModel.createActionDelegate)
+
     ChooseActionScreen(
         modifier = modifier,
         state = state,

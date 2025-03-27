@@ -191,6 +191,7 @@ object ActionUtils {
         ActionId.TOGGLE_FLASHLIGHT -> ActionCategory.CAMERA_SOUND
         ActionId.ENABLE_FLASHLIGHT -> ActionCategory.CAMERA_SOUND
         ActionId.DISABLE_FLASHLIGHT -> ActionCategory.CAMERA_SOUND
+        ActionId.CHANGE_FLASHLIGHT_STRENGTH -> ActionCategory.CAMERA_SOUND
         ActionId.SOUND -> ActionCategory.CAMERA_SOUND
 
         ActionId.ENABLE_NFC -> ActionCategory.CONNECTIVITY
@@ -294,6 +295,7 @@ object ActionUtils {
         ActionId.TOGGLE_FLASHLIGHT -> R.string.action_toggle_flashlight
         ActionId.ENABLE_FLASHLIGHT -> R.string.action_enable_flashlight
         ActionId.DISABLE_FLASHLIGHT -> R.string.action_disable_flashlight
+        ActionId.CHANGE_FLASHLIGHT_STRENGTH -> R.string.action_flashlight_change_strength
         ActionId.ENABLE_NFC -> R.string.action_nfc_enable
         ActionId.DISABLE_NFC -> R.string.action_nfc_disable
         ActionId.TOGGLE_NFC -> R.string.action_nfc_toggle
@@ -404,6 +406,7 @@ object ActionUtils {
         ActionId.TOGGLE_FLASHLIGHT -> R.drawable.ic_flashlight
         ActionId.ENABLE_FLASHLIGHT -> R.drawable.ic_flashlight
         ActionId.DISABLE_FLASHLIGHT -> R.drawable.ic_flashlight_off
+        ActionId.CHANGE_FLASHLIGHT_STRENGTH -> R.drawable.ic_flashlight
         ActionId.ENABLE_NFC -> R.drawable.ic_outline_nfc_24
         ActionId.DISABLE_NFC -> R.drawable.ic_nfc_off
         ActionId.TOGGLE_NFC -> R.drawable.ic_outline_nfc_24
@@ -471,6 +474,9 @@ object ActionUtils {
         ActionId.TOGGLE_FLASHLIGHT,
         -> Build.VERSION_CODES.M
 
+        ActionId.CHANGE_FLASHLIGHT_STRENGTH,
+        -> Build.VERSION_CODES.TIRAMISU
+
         ActionId.TOGGLE_KEYBOARD,
         ActionId.SHOW_KEYBOARD,
         ActionId.HIDE_KEYBOARD,
@@ -533,6 +539,7 @@ object ActionUtils {
         ActionId.TOGGLE_FLASHLIGHT,
         ActionId.ENABLE_FLASHLIGHT,
         ActionId.DISABLE_FLASHLIGHT,
+        ActionId.CHANGE_FLASHLIGHT_STRENGTH,
         -> listOf(PackageManager.FEATURE_CAMERA_FLASH)
 
         else -> emptyList()
@@ -596,6 +603,7 @@ object ActionUtils {
             ActionId.TOGGLE_FLASHLIGHT,
             ActionId.ENABLE_FLASHLIGHT,
             ActionId.DISABLE_FLASHLIGHT,
+            ActionId.CHANGE_FLASHLIGHT_STRENGTH,
             -> return listOf(Permission.CAMERA)
 
             ActionId.ENABLE_NFC,
@@ -714,6 +722,7 @@ object ActionUtils {
         ActionId.TOGGLE_FLASHLIGHT -> Icons.Outlined.FlashlightOn
         ActionId.ENABLE_FLASHLIGHT -> Icons.Outlined.FlashlightOn
         ActionId.DISABLE_FLASHLIGHT -> Icons.Outlined.FlashlightOff
+        ActionId.CHANGE_FLASHLIGHT_STRENGTH -> Icons.Outlined.FlashlightOn
         ActionId.ENABLE_NFC -> Icons.Outlined.Nfc
         ActionId.DISABLE_NFC -> KeyMapperIcons.NfcOff
         ActionId.TOGGLE_NFC -> Icons.Outlined.Nfc
@@ -800,7 +809,7 @@ fun ActionData.isEditable(): Boolean = when (this) {
     is ActionData.Rotation.CycleRotations,
     is ActionData.Flashlight.Toggle,
     is ActionData.Flashlight.Enable,
-    is ActionData.Flashlight.Disable,
+    is ActionData.Flashlight.ChangeStrength,
     is ActionData.TapScreen,
     is ActionData.SwipeScreen,
     is ActionData.PinchScreen,

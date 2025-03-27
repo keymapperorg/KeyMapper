@@ -7,6 +7,7 @@ import com.github.salomonbrys.kotson.byNullableString
 import com.github.salomonbrys.kotson.byString
 import com.github.salomonbrys.kotson.jsonDeserializer
 import com.google.gson.annotations.SerializedName
+import io.github.sds100.keymapper.data.entities.ActionEntity.Type
 import kotlinx.parcelize.Parcelize
 import java.util.UUID
 
@@ -82,6 +83,7 @@ data class ActionEntity(
         const val EXTRA_INTENT_DESCRIPTION = "extra_intent_description"
         const val EXTRA_SOUND_FILE_DESCRIPTION = "extra_sound_file_description"
         const val EXTRA_INTENT_EXTRAS = "extra_intent_extras"
+        const val EXTRA_FLASH_STRENGTH = "extra_flash_strength"
 
         // DON'T CHANGE THESE. Used for JSON serialization and parsing.
         const val NAME_ACTION_TYPE = "type"

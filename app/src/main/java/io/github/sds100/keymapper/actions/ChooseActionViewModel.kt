@@ -9,20 +9,24 @@ import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.containsQuery
 import io.github.sds100.keymapper.util.getFullMessage
 import io.github.sds100.keymapper.util.ui.DialogResponse
+import io.github.sds100.keymapper.util.ui.NavigationViewModel
+import io.github.sds100.keymapper.util.ui.NavigationViewModelImpl
 import io.github.sds100.keymapper.util.ui.PopupUi
+import io.github.sds100.keymapper.util.ui.PopupViewModel
+import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.util.ui.compose.SimpleListItemGroup
 import io.github.sds100.keymapper.util.ui.compose.SimpleListItemModel
 import io.github.sds100.keymapper.util.ui.showPopup
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -33,7 +37,9 @@ class ChooseActionViewModel(
     private val useCase: CreateActionUseCase,
     resourceProvider: ResourceProvider,
 ) : ViewModel(),
-    CreateActionViewModel by CreateActionViewModelImpl(useCase, resourceProvider) {
+    ResourceProvider by resourceProvider,
+    PopupViewModel by PopupViewModelImpl(),
+    NavigationViewModel by NavigationViewModelImpl() {
 
     companion object {
         private val CATEGORY_ORDER = arrayOf(
@@ -53,10 +59,13 @@ class ChooseActionViewModel(
         )
     }
 
+    val createActionDelegate =
+        CreateActionDelegate(viewModelScope, useCase, this, this, this)
+
     private val allGroupedListItems: List<SimpleListItemGroup> by lazy { buildListGroups() }
 
-    private val _returnAction = MutableSharedFlow<ActionData>()
-    val returnAction = _returnAction.asSharedFlow()
+    val returnAction = createActionDelegate.actionResult.filterNotNull()
+        .shareIn(viewModelScope, SharingStarted.Eagerly)
 
     val searchQuery = MutableStateFlow<String?>(null)
 
@@ -85,9 +94,7 @@ class ChooseActionViewModel(
                 showMessageForAction(actionId)
             }
 
-            createAction(actionId)?.let { action ->
-                _returnAction.emit(action)
-            }
+            createActionDelegate.createAction(actionId)
         }
     }
 

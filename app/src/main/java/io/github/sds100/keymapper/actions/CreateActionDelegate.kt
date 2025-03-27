@@ -1,6 +1,9 @@
 package io.github.sds100.keymapper.actions
 
 import android.text.InputType
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.pinchscreen.PinchPickCoordinateResult
 import io.github.sds100.keymapper.actions.swipescreen.SwipePickCoordinateResult
@@ -19,35 +22,139 @@ import io.github.sds100.keymapper.system.volume.VolumeStreamUtils
 import io.github.sds100.keymapper.util.ui.MultiChoiceItem
 import io.github.sds100.keymapper.util.ui.NavDestination
 import io.github.sds100.keymapper.util.ui.NavigationViewModel
-import io.github.sds100.keymapper.util.ui.NavigationViewModelImpl
 import io.github.sds100.keymapper.util.ui.PopupUi
 import io.github.sds100.keymapper.util.ui.PopupViewModel
-import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.navigate
 import io.github.sds100.keymapper.util.ui.showPopup
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 /**
  * Created by sds100 on 26/07/2021.
  */
 
-class CreateActionViewModelImpl(
+class CreateActionDelegate(
+    private val coroutineScope: CoroutineScope,
     private val useCase: CreateActionUseCase,
+    popupViewModel: PopupViewModel,
+    navigationViewModelImpl: NavigationViewModel,
     resourceProvider: ResourceProvider,
-) : CreateActionViewModel,
-    ResourceProvider by resourceProvider,
-    PopupViewModel by PopupViewModelImpl(),
-    NavigationViewModel by NavigationViewModelImpl() {
+) : ResourceProvider by resourceProvider,
+    PopupViewModel by popupViewModel,
+    NavigationViewModel by navigationViewModelImpl {
 
-    override suspend fun editAction(oldData: ActionData): ActionData? {
+    val actionResult: MutableStateFlow<ActionData?> = MutableStateFlow(null)
+    var enableFlashlightActionState: EnableFlashlightActionState? by mutableStateOf(null)
+    var changeFlashlightStrengthActionState: ChangeFlashlightStrengthActionState? by mutableStateOf(
+        null,
+    )
+
+    init {
+        coroutineScope.launch {
+            useCase.isFlashlightEnabled().collectLatest { enabled ->
+                enableFlashlightActionState?.also { state ->
+                    enableFlashlightActionState = state.copy(isFlashEnabled = enabled)
+                }
+            }
+        }
+    }
+
+    fun onDoneConfigEnableFlashlightClick() {
+        enableFlashlightActionState?.also { state ->
+            val flashInfo = state.lensData[state.selectedLens] ?: return
+
+            val strengthPercent =
+                state.flashStrength
+                    .takeIf { it != flashInfo.defaultStrength }
+                    ?.let { it.toFloat() / flashInfo.maxStrength }
+                    ?.coerceIn(0f, 1f)
+
+            val action = when (state.actionToCreate) {
+                ActionId.TOGGLE_FLASHLIGHT -> ActionData.Flashlight.Toggle(
+                    state.selectedLens,
+                    strengthPercent,
+                )
+
+                ActionId.ENABLE_FLASHLIGHT -> ActionData.Flashlight.Enable(
+                    state.selectedLens,
+                    strengthPercent,
+                )
+
+                else -> return
+            }
+
+            enableFlashlightActionState = null
+
+            useCase.disableFlashlight()
+
+            actionResult.update { action }
+        }
+    }
+
+    fun onDoneChangeFlashlightBrightnessClick() {
+        changeFlashlightStrengthActionState?.also { state ->
+            val flashInfo = state.lensData[state.selectedLens] ?: return
+
+            val strengthPercent =
+                (state.flashStrength.toFloat() / flashInfo.maxStrength).coerceIn(-1f, 1f)
+
+            val action = ActionData.Flashlight.ChangeStrength(
+                state.selectedLens,
+                strengthPercent,
+            )
+
+            changeFlashlightStrengthActionState = null
+
+            actionResult.update { action }
+        }
+    }
+
+    fun onSelectStrength(strength: Int) {
+        enableFlashlightActionState?.also { state ->
+            enableFlashlightActionState = state.copy(flashStrength = strength)
+
+            if (state.isFlashEnabled) {
+                val lensData = state.lensData[state.selectedLens] ?: return
+
+                useCase.setFlashlightBrightness(
+                    state.selectedLens,
+                    strength / lensData.maxStrength.toFloat(),
+                )
+            }
+        }
+    }
+
+    fun onTestFlashlightConfigClick() {
+        enableFlashlightActionState?.also { state ->
+            val lensData = state.lensData[state.selectedLens] ?: return
+
+            useCase.toggleFlashlight(
+                state.selectedLens,
+                state.flashStrength / lensData.maxStrength.toFloat(),
+            )
+        }
+    }
+
+    suspend fun editAction(oldData: ActionData) {
         if (!oldData.isEditable()) {
             throw IllegalArgumentException("This action ${oldData.javaClass.name} can't be edited!")
         }
 
-        return configAction(oldData.id, oldData)
+        configAction(oldData.id, oldData)?.let { action ->
+            actionResult.update { action }
+        }
     }
 
-    override suspend fun createAction(id: ActionId): ActionData? = configAction(id)
+    suspend fun createAction(id: ActionId) {
+        configAction(id)?.let { action ->
+            actionResult.update { action }
+        }
+    }
 
     private suspend fun configAction(actionId: ActionId, oldData: ActionData? = null): ActionData? {
         when (actionId) {
@@ -251,25 +358,90 @@ class CreateActionViewModelImpl(
                 return ActionData.Rotation.CycleRotations(orientations)
             }
 
-            ActionId.TOGGLE_FLASHLIGHT,
-            ActionId.ENABLE_FLASHLIGHT,
+            ActionId.TOGGLE_FLASHLIGHT, ActionId.ENABLE_FLASHLIGHT -> {
+                val lenses = useCase.getFlashlightLenses()
+                val selectedLens = if (oldData is ActionData.Flashlight) {
+                    oldData.lens
+                } else if (lenses.contains(CameraLens.BACK)) {
+                    CameraLens.BACK
+                } else {
+                    lenses.first()
+                }
+
+                val lensData = lenses.associateWith { useCase.getFlashInfo(it)!! }
+                val lensInfo = lensData[selectedLens] ?: lensData.values.first()
+
+                val strength: Int = when (oldData) {
+                    is ActionData.Flashlight.Toggle -> if (oldData.strengthPercent == null) {
+                        lensInfo.defaultStrength
+                    } else {
+                        (oldData.strengthPercent * lensInfo.maxStrength).toInt()
+                    }
+
+                    is ActionData.Flashlight.Enable -> if (oldData.strengthPercent == null) {
+                        lensInfo.defaultStrength
+                    } else {
+                        (oldData.strengthPercent * lensInfo.maxStrength).toInt()
+                    }
+
+                    else -> lensInfo.defaultStrength
+                }
+
+                enableFlashlightActionState = EnableFlashlightActionState(
+                    actionToCreate = actionId,
+                    selectedLens = selectedLens,
+                    lensData = lensData,
+                    flashStrength = strength,
+                    isFlashEnabled = useCase.isFlashlightEnabled().first(),
+                )
+
+                return null
+            }
+
+            ActionId.CHANGE_FLASHLIGHT_STRENGTH -> {
+                val lenses = useCase.getFlashlightLenses()
+                val selectedLens = if (oldData is ActionData.Flashlight.ChangeStrength) {
+                    oldData.lens
+                } else if (lenses.contains(CameraLens.BACK)) {
+                    CameraLens.BACK
+                } else {
+                    lenses.first()
+                }
+
+                val lensData = lenses.associateWith { useCase.getFlashInfo(it)!! }
+                val lensInfo = lensData[selectedLens] ?: lensData.values.first()
+
+                val strength: Int = when (oldData) {
+                    is ActionData.Flashlight.ChangeStrength -> {
+                        (oldData.percent * lensInfo.maxStrength).toInt()
+                    }
+
+                    else -> (0.1f * lensInfo.maxStrength).toInt()
+                }
+
+                changeFlashlightStrengthActionState = ChangeFlashlightStrengthActionState(
+                    selectedLens = selectedLens,
+                    lensData = lensData,
+                    flashStrength = strength,
+                )
+
+                return null
+            }
+
             ActionId.DISABLE_FLASHLIGHT,
             -> {
-                val items = CameraLens.values().map {
+                val items = useCase.getFlashlightLenses().map {
                     it to getString(CameraLensUtils.getLabel(it))
                 }
 
-                val lens = showPopup("pick_lens", PopupUi.SingleChoice(items))
-                    ?: return null
+                if (items.size == 1) {
+                    return ActionData.Flashlight.Disable(items.first().first)
+                } else {
+                    val lens = showPopup("pick_lens", PopupUi.SingleChoice(items))
+                        ?: return null
 
-                val action = when (actionId) {
-                    ActionId.TOGGLE_FLASHLIGHT -> ActionData.Flashlight.Toggle(lens)
-                    ActionId.ENABLE_FLASHLIGHT -> ActionData.Flashlight.Enable(lens)
-                    ActionId.DISABLE_FLASHLIGHT -> ActionData.Flashlight.Disable(lens)
-                    else -> throw Exception("don't know how to create action for $actionId")
+                    return ActionData.Flashlight.Disable(lens)
                 }
-
-                return action
             }
 
             ActionId.APP -> {
@@ -599,12 +771,4 @@ class CreateActionViewModelImpl(
             ActionId.DEVICE_CONTROLS -> return ActionData.DeviceControls
         }
     }
-}
-
-interface CreateActionViewModel :
-    ResourceProvider,
-    PopupViewModel,
-    NavigationViewModel {
-    suspend fun editAction(oldData: ActionData): ActionData?
-    suspend fun createAction(id: ActionId): ActionData?
 }
