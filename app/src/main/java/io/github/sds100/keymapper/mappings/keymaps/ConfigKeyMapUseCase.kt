@@ -87,7 +87,7 @@ class ConfigKeyMapUseCaseController(
     override val recentlyUsedActions: StateFlow<List<ActionData>> =
         preferenceRepository.get(Keys.recentlyUsedActions)
             .map(::getActionShortcuts)
-            .map { it }
+            .map { it.take(5) }
             .stateIn(
                 coroutineScope,
                 SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
@@ -106,7 +106,7 @@ class ConfigKeyMapUseCaseController(
             // Do not include constraints that the key map already contains.
             shortcuts
                 .filter { !keyMap.data.constraintState.constraints.contains(it) }
-                .take(3)
+                .take(5)
         }.stateIn(
             coroutineScope,
             SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
