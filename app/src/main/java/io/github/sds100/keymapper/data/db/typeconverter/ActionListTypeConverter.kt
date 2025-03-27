@@ -15,9 +15,9 @@ class ActionListTypeConverter {
     @TypeConverter
     fun toActionList(json: String): List<ActionEntity> {
         val gson = GsonBuilder().registerTypeAdapter(ActionEntity.DESERIALIZER).create()
-        return gson.fromJson<MutableList<ActionEntity>>(json)
+        return gson.fromJson<List<ActionEntity>>(json)
     }
 
     @TypeConverter
-    fun toJsonString(actionList: MutableList<ActionEntity>): String = Gson().toJson(actionList)!!
+    fun toJsonString(actionList: List<ActionEntity>): String = Gson().toJson(actionList)!!
 }

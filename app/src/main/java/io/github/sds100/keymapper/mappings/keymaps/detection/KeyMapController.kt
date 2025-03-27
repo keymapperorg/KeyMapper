@@ -10,7 +10,6 @@ import io.github.sds100.keymapper.constraints.ConstraintSnapshot
 import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.data.PreferenceDefaults
-import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapAction
@@ -662,7 +661,7 @@ class KeyMapController(
 
         /* cache whether an action can be performed to avoid repeatedly checking when multiple triggers have the
         same action */
-        val canActionBePerformed = SparseArrayCompat<Result<ActionEntity>>()
+        val canActionBePerformed = SparseArrayCompat<Error>()
 
         /*
         loop through triggers in a different loop first to increment the last matched index.
@@ -685,12 +684,12 @@ class KeyMapController(
                     val action = actionMap[actionKey] ?: continue
 
                     val result = performActionsUseCase.getError(action.data)
-                    canActionBePerformed.put(actionKey, result)
+                    result?.let { canActionBePerformed.put(actionKey, it) }
 
                     if (result != null) {
                         continue@triggerLoop
                     }
-                } else if (canActionBePerformed.get(actionKey, null) is Error) {
+                } else if (canActionBePerformed.containsKey(actionKey)) {
                     continue@triggerLoop
                 }
             }

@@ -328,7 +328,7 @@ class AndroidPackageManagerAdapter(
 
             val activityModels = mutableListOf<ActivityInfo>()
 
-            activityPackageInfo.activities.forEach { activity ->
+            activityPackageInfo.activities?.forEach { activity ->
                 val model = ActivityInfo(
                     activityName = activity.name,
                     packageName = activity.packageName,

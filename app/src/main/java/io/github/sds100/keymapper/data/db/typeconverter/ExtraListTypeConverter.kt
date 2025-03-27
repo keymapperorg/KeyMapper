@@ -11,8 +11,8 @@ import io.github.sds100.keymapper.data.entities.Extra
 
 class ExtraListTypeConverter {
     @TypeConverter
-    fun toExtraObject(string: String) = Gson().fromJson<MutableList<Extra>>(string)
+    fun toExtraObject(string: String) = Gson().fromJson<List<Extra>>(string)
 
     @TypeConverter
-    fun toString(extras: MutableList<Extra>) = Gson().toJson(extras)!!
+    fun toString(extras: List<Extra>) = Gson().toJson(extras)!!
 }

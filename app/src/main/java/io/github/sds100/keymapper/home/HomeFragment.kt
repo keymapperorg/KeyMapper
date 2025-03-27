@@ -140,7 +140,7 @@ class HomeFragment : Fragment() {
         binding.appBar.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.action_help -> {
-                    UrlUtils.launchCustomTab(
+                    UrlUtils.openUrl(
                         requireContext(),
                         str(R.string.url_quick_start_guide),
                     )

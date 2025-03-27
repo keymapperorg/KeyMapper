@@ -11,9 +11,8 @@ import io.github.sds100.keymapper.data.entities.ConstraintEntity
 
 class ConstraintListTypeConverter {
     @TypeConverter
-    fun toConstraintList(json: String) = Gson().fromJson<MutableList<ConstraintEntity>>(json)
+    fun toConstraintList(json: String) = Gson().fromJson<List<ConstraintEntity>>(json)
 
     @TypeConverter
-    fun toJsonString(constraintList: MutableList<ConstraintEntity>) =
-        Gson().toJson(constraintList)!!
+    fun toJsonString(constraintList: List<ConstraintEntity>) = Gson().toJson(constraintList)!!
 }
