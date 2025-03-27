@@ -1372,6 +1372,7 @@
     <string name="trigger_key_fingerprint_gesture_down">Swipe down fingerprint reader</string>
     <string name="trigger_key_fingerprint_gesture_left">Swipe left fingerprint reader</string>
     <string name="trigger_key_fingerprint_gesture_right">Swipe right fingerprint reader</string>
+    <string name="trigger_shortcuts_header">Advanced triggers</string>
 
     <!--  Action screen  -->
     <string name="action_list_item_remove">Remove</string>
