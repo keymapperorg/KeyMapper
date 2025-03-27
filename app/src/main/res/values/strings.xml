@@ -1260,6 +1260,7 @@
     <string name="floating_menu_done_dialog_text_buttons">You need to choose one floating button to use as a trigger.</string>
     <string name="floating_button_trigger_option_configure_button">Configure button</string>
     <string name="floating_button_trigger_option_edit_layout">Edit layout</string>
+    <string name="floating_buttons_product_min_api_error">Requires Android 11 or newer.</string>
 
     <!-- Home screen -->
     <string name="sort_bottom_sheet_trigger">Trigger</string>
@@ -1278,6 +1279,7 @@
     <string name="home_floating_layouts_hide_promo_button">Hide this page</string>
     <string name="home_floating_layouts_empty_title">Thank you for supporting Key\u00A0Mapper\u00A0❤️!</string>
     <string name="home_floating_layouts_empty_text">Create your first layout!</string>
+    <string name="home_floating_layouts_explanation">Layouts let you organize floating buttons into groups. They do not affect which buttons can be shown. Any button from any layout can be shown at the same time.</string>
     <string name="home_floating_layouts_edit_name_content_description">Change name of layout %s</string>
     <string name="home_floating_layouts_delete_content_description">Delete layout %s</string>
     <string name="home_floating_layouts_floating_buttons_subtitle">Floating buttons</string>

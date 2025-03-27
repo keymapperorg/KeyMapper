@@ -214,7 +214,9 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
 
             is NavDestination.ChooseFloatingLayout -> NavAppDirections.toChooseFloatingLayoutFragment()
             NavDestination.ShizukuSettings -> NavAppDirections.toShizukuSettingsFragment()
-            NavDestination.ConfigFloatingButton -> NavAppDirections.toConfigFloatingButton()
+            is NavDestination.ConfigFloatingButton -> NavAppDirections.toConfigFloatingButton(
+                destination.buttonUid,
+            )
         }
 
         fragment.findNavController().navigate(direction)

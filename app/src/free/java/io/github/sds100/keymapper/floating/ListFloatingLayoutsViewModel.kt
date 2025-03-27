@@ -13,6 +13,7 @@ class ListFloatingLayoutsViewModel(
     resourceProvider: ResourceProvider,
 ) : PopupViewModel by PopupViewModelImpl() {
     val state: StateFlow<FloatingLayoutsState> = MutableStateFlow(FloatingLayoutsState.NotPurchased)
+    val showFabText: Boolean = false
 
     fun onNewLayoutClick() {
     }

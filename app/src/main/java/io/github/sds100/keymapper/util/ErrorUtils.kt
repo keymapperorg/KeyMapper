@@ -173,6 +173,7 @@ val Error.isFixable: Boolean
         is Error.PermissionDenied,
         is Error.ShizukuNotStarted,
         is Error.CantDetectKeyEventsInPhoneCall,
+
         -> true
 
         else -> false

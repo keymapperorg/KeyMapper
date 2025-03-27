@@ -18,6 +18,7 @@ data class FingerprintTriggerKey(
     override val clickType: ClickType,
 ) : TriggerKey() {
     override val consumeEvent: Boolean = true
+    override val allowedLongPress: Boolean = false
 
     override fun compareTo(other: TriggerKey) = when (other) {
         is FingerprintTriggerKey -> compareValuesBy(

@@ -11,6 +11,7 @@ import io.github.sds100.keymapper.sorting.SortKeyMapsUseCase
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.dataOrNull
 import io.github.sds100.keymapper.util.ifIsData
 import io.github.sds100.keymapper.util.mapData
 import io.github.sds100.keymapper.util.ui.MultiSelectProvider
@@ -51,6 +52,8 @@ class KeyMapListViewModel(
 
     private val _state = MutableStateFlow<State<List<KeyMapListItemModel>>>(State.Loading)
     val state = _state.asStateFlow()
+
+    var showFabText: Boolean by mutableStateOf(true)
 
     val isSelectable: StateFlow<Boolean> =
         multiSelectProvider.state.map { it is SelectionState.Selecting }
@@ -115,6 +118,8 @@ class KeyMapListViewModel(
                         multiSelectProvider.stopSelecting()
                     }
                 }
+
+                showFabText = listItemContentList.dataOrNull()?.isEmpty() ?: true
 
                 _state.value = listItemContentList.mapData { contentList ->
                     contentList.map { content ->

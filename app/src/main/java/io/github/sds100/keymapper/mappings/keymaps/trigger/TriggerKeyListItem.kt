@@ -186,7 +186,7 @@ fun TriggerKeyListItem(
                 CompositionLocalProvider(
                     LocalMinimumInteractiveComponentSize provides 16.dp,
                 ) {
-                    if (model.error != null) {
+                    if (model.error != null && model.error?.isFixable ?: false) {
                         FilledTonalButton(
                             modifier = Modifier.padding(start = 8.dp, end = 8.dp),
                             onClick = { onFixClick(model.error!!) },

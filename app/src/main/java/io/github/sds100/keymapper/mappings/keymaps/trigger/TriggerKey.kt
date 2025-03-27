@@ -14,6 +14,7 @@ sealed class TriggerKey : Comparable<TriggerKey> {
      */
     abstract val consumeEvent: Boolean
     abstract val uid: String
+    abstract val allowedLongPress: Boolean
 
     fun setClickType(clickType: ClickType): TriggerKey = when (this) {
         is AssistantTriggerKey -> copy(clickType = clickType)

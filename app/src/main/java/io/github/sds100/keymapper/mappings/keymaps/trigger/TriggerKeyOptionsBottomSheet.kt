@@ -122,12 +122,16 @@ fun TriggerKeyOptionsBottomSheet(
                         text = stringResource(R.string.radio_button_short_press),
                         onSelected = { onSelectClickType(ClickType.SHORT_PRESS) },
                     )
-                    RadioButtonText(
-                        modifier = Modifier.weight(1f),
-                        isSelected = state.clickType == ClickType.LONG_PRESS,
-                        text = stringResource(R.string.radio_button_long_press),
-                        onSelected = { onSelectClickType(ClickType.LONG_PRESS) },
-                    )
+
+                    if (state.showLongPressClickType) {
+                        RadioButtonText(
+                            modifier = Modifier.weight(1f),
+                            isSelected = state.clickType == ClickType.LONG_PRESS,
+                            text = stringResource(R.string.radio_button_long_press),
+                            onSelected = { onSelectClickType(ClickType.LONG_PRESS) },
+                        )
+                    }
+
                     RadioButtonText(
                         modifier = Modifier.weight(1f),
                         isSelected = state.clickType == ClickType.DOUBLE_PRESS,
@@ -347,7 +351,7 @@ private fun FloatingButtonPreview() {
             sheetState = sheetState,
             state = TriggerKeyOptionsState.FloatingButton(
                 clickType = ClickType.SHORT_PRESS,
-                showClickTypes = false,
+                showClickTypes = true,
                 isPurchased = true,
             ),
         )

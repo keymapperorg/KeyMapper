@@ -44,6 +44,7 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
@@ -71,8 +72,8 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -152,19 +153,19 @@ fun HomeScreen(
     val navBarItems by viewModel.navBarItems.collectAsStateWithLifecycle()
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val setupGuiKeyboardState by viewModel.keymapListViewModel.setupGuiKeyboardState.collectAsStateWithLifecycle()
+    val setupGuiKeyboardState by viewModel.keyMapListViewModel.setupGuiKeyboardState.collectAsStateWithLifecycle()
 
-    if (viewModel.keymapListViewModel.showDpadTriggerSetupBottomSheet) {
+    if (viewModel.keyMapListViewModel.showDpadTriggerSetupBottomSheet) {
         DpadTriggerSetupBottomSheet(
             modifier = Modifier.systemBarsPadding(),
             onDismissRequest = {
-                viewModel.keymapListViewModel.showDpadTriggerSetupBottomSheet =
+                viewModel.keyMapListViewModel.showDpadTriggerSetupBottomSheet =
                     false
             },
             guiKeyboardState = setupGuiKeyboardState,
-            onEnableKeyboardClick = viewModel.keymapListViewModel::onEnableGuiKeyboardClick,
-            onChooseKeyboardClick = viewModel.keymapListViewModel::onChooseGuiKeyboardClick,
-            onNeverShowAgainClick = viewModel.keymapListViewModel::onNeverShowSetupDpadClick,
+            onEnableKeyboardClick = viewModel.keyMapListViewModel::onEnableGuiKeyboardClick,
+            onChooseKeyboardClick = viewModel.keyMapListViewModel::onChooseGuiKeyboardClick,
+            onNeverShowAgainClick = viewModel.keyMapListViewModel::onNeverShowSetupDpadClick,
             sheetState = sheetState,
         )
     }
@@ -263,6 +264,9 @@ fun HomeScreen(
         )
     }
 
+    val keyMapLazyListState = rememberLazyListState()
+    val floatingLayoutsLazyListState = rememberLazyListState()
+
     HomeScreen(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         navController = navController,
@@ -292,7 +296,8 @@ fun HomeScreen(
         keyMapsContent = {
             KeyMapListScreen(
                 modifier = Modifier.fillMaxSize(),
-                viewModel = viewModel.keymapListViewModel,
+                viewModel = viewModel.keyMapListViewModel,
+                lazyListState = keyMapLazyListState,
             )
         },
         floatingButtonsContent = {
@@ -300,11 +305,15 @@ fun HomeScreen(
                 Modifier.fillMaxSize(),
                 viewModel = viewModel.listFloatingLayoutsViewModel,
                 navController = navController,
+                lazyListState = floatingLayoutsLazyListState,
             )
         },
         floatingActionButton = {
+            val isFloatingLayoutsDestination =
+                currentDestination?.route == HomeDestination.FloatingButtons.route
+
             val showFab = if (homeState is HomeState.Normal) {
-                if (currentDestination?.route == HomeDestination.FloatingButtons.route) {
+                if (isFloatingLayoutsDestination) {
                     (homeState as HomeState.Normal).showNewLayoutButton
                 } else {
                     true
@@ -314,9 +323,9 @@ fun HomeScreen(
             }
 
             if (showFab) {
-                ExtendedFloatingActionButton(
+                FloatingActionButton(
                     onClick = {
-                        if (currentDestination?.route == HomeDestination.FloatingButtons.route) {
+                        if (isFloatingLayoutsDestination) {
                             viewModel.listFloatingLayoutsViewModel.onNewLayoutClick()
                         } else {
                             scope.launch {
@@ -329,17 +338,31 @@ fun HomeScreen(
                             }
                         }
                     },
-                    text = {
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(Icons.Rounded.Add, contentDescription = null)
+
                         val fabText = when (currentDestination?.route) {
                             HomeDestination.FloatingButtons.route -> stringResource(R.string.home_fab_new_floating_layout)
                             else -> stringResource(R.string.home_fab_new_key_map)
                         }
-                        AnimatedContent(fabText) { text ->
-                            Text(text)
+
+                        val isFabTextVisible = if (isFloatingLayoutsDestination) {
+                            viewModel.listFloatingLayoutsViewModel.showFabText
+                        } else {
+                            viewModel.keyMapListViewModel.showFabText
                         }
-                    },
-                    icon = { Icon(Icons.Rounded.Add, contentDescription = null) },
-                )
+
+                        AnimatedVisibility(isFabTextVisible) {
+                            AnimatedContent(fabText) { text ->
+                                Text(modifier = Modifier.padding(start = 8.dp), text = text)
+                            }
+                        }
+                    }
+                }
             }
         },
         selectionBottomSheet = { state ->
@@ -936,7 +959,8 @@ private fun SelectionBottomSheet(
     Surface(
         modifier = modifier
             .widthIn(max = BottomSheetDefaults.SheetMaxWidth)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .navigationBarsPadding(),
         shadowElevation = 5.dp,
         shape = BottomSheetDefaults.ExpandedShape,
         tonalElevation = BottomSheetDefaults.Elevation,
@@ -945,10 +969,13 @@ private fun SelectionBottomSheet(
         Row(
             modifier = Modifier
                 .padding(16.dp)
-                .navigationBarsPadding()
                 .height(intrinsicSize = IntrinsicSize.Min),
         ) {
-            Row(modifier = Modifier.horizontalScroll(state = rememberScrollState())) {
+            Row(
+                modifier = Modifier
+                    .weight(1f)
+                    .horizontalScroll(state = rememberScrollState()),
+            ) {
                 SelectionButton(
                     text = stringResource(R.string.home_multi_select_duplicate),
                     icon = Icons.Rounded.ContentCopy,
@@ -971,11 +998,10 @@ private fun SelectionBottomSheet(
                 )
             }
 
-            Spacer(modifier = Modifier.weight(1f))
-
             VerticalDivider(modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp))
 
             KeyMapsEnabledSwitch(
+                modifier = Modifier.width(IntrinsicSize.Max),
                 state = selectedKeyMapsEnabled,
                 enabled = enabled,
                 onCheckedChange = onEnabledKeyMapsChange,
@@ -1047,6 +1073,7 @@ private fun KeyMapsEnabledSwitch(
         Text(
             text = text,
             style = MaterialTheme.typography.labelLarge,
+            maxLines = 1,
             color = if (enabled) {
                 MaterialTheme.colorScheme.onSurface
             } else {
@@ -1178,7 +1205,7 @@ private fun HomeStateWarningsDarkPreview() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(showSystemUi = true)
+@Preview(widthDp = 300, heightDp = 600)
 @Composable
 private fun HomeStateSelectingPreview() {
     val state = HomeState.Selecting(
@@ -1205,7 +1232,7 @@ private fun HomeStateSelectingPreview() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun HomeStateSelectingDisabledPreview() {
     val state = HomeState.Selecting(

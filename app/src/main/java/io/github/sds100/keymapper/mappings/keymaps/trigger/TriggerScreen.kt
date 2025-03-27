@@ -187,7 +187,9 @@ private fun TriggerScreenVertical(
             when (configState) {
                 is ConfigTriggerState.Empty -> {
                     Column(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .weight(1f)
+                            .verticalScroll(state = rememberScrollState()),
                         verticalArrangement = Arrangement.Center,
                     ) {
                         Text(
@@ -277,7 +279,8 @@ private fun TriggerScreenHorizontal(
                 Text(
                     modifier = Modifier
                         .widthIn(max = 400.dp)
-                        .padding(32.dp),
+                        .padding(32.dp)
+                        .verticalScroll(state = rememberScrollState()),
                     text = stringResource(R.string.triggers_recyclerview_placeholder),
                     textAlign = TextAlign.Center,
                 )
@@ -286,7 +289,8 @@ private fun TriggerScreenHorizontal(
                         modifier = Modifier
                             .padding(16.dp)
                             .fillMaxWidth()
-                            .weight(1f),
+                            .weight(1f)
+                            .verticalScroll(state = rememberScrollState()),
                         shortcuts = configState.shortcuts,
                         onClick = onClickShortcut,
                     )

@@ -102,7 +102,7 @@ class HomeViewModel(
                 ),
             )
 
-    val keymapListViewModel by lazy {
+    val keyMapListViewModel by lazy {
         KeyMapListViewModel(
             viewModelScope,
             listKeyMaps,
@@ -136,10 +136,14 @@ class HomeViewModel(
         showAlertsUseCase.hideAlerts,
         showAlertsUseCase.isLoggingEnabled,
     ) { isBatteryOptimised, serviceState, isHidden, isLoggingEnabled ->
-        sequence {
+        if (isHidden) {
+            return@combine emptyList()
+        }
+
+        buildList {
             when (serviceState) {
                 ServiceState.CRASHED ->
-                    yield(
+                    add(
                         HomeWarningListItem(
                             ID_ACCESSIBILITY_SERVICE_CRASHED_LIST_ITEM,
                             getString(R.string.home_error_accessibility_service_is_crashed),
@@ -147,7 +151,7 @@ class HomeViewModel(
                     )
 
                 ServiceState.DISABLED ->
-                    yield(
+                    add(
                         HomeWarningListItem(
                             ID_ACCESSIBILITY_SERVICE_DISABLED_LIST_ITEM,
                             getString(R.string.home_error_accessibility_service_is_disabled),
@@ -158,7 +162,7 @@ class HomeViewModel(
             }
 
             if (isBatteryOptimised) {
-                yield(
+                add(
                     HomeWarningListItem(
                         ID_BATTERY_OPTIMISATION_LIST_ITEM,
                         getString(R.string.home_error_is_battery_optimised),
@@ -167,14 +171,14 @@ class HomeViewModel(
             } // don't show a success message for this
 
             if (isLoggingEnabled) {
-                yield(
+                add(
                     HomeWarningListItem(
                         ID_LOGGING_ENABLED_LIST_ITEM,
                         getString(R.string.home_error_logging_enabled),
                     ),
                 )
             }
-        }.toList()
+        }
     }
 
     val state: StateFlow<HomeState> =
@@ -343,7 +347,7 @@ class HomeViewModel(
                 if (state.isAllSelected) {
                     multiSelectProvider.stopSelecting()
                 } else {
-                    keymapListViewModel.selectAll()
+                    keyMapListViewModel.selectAll()
                 }
             }
         }

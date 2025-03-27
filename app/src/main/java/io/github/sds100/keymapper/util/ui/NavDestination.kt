@@ -115,7 +115,7 @@ sealed class NavDestination<R> {
         override val id: String = ID_SHIZUKU_SETTINGS
     }
 
-    data object ConfigFloatingButton : NavDestination<Unit>() {
+    data class ConfigFloatingButton(val buttonUid: String?) : NavDestination<Unit>() {
         override val id: String = ID_CONFIG_FLOATING_BUTTON
     }
 }
