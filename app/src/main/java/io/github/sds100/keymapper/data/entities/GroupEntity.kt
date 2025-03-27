@@ -1,0 +1,75 @@
+package io.github.sds100.keymapper.data.entities
+
+import android.os.Parcelable
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Index
+import androidx.room.PrimaryKey
+import com.github.salomonbrys.kotson.byArray
+import com.github.salomonbrys.kotson.byInt
+import com.github.salomonbrys.kotson.byString
+import com.github.salomonbrys.kotson.jsonDeserializer
+import com.google.gson.annotations.SerializedName
+import io.github.sds100.keymapper.data.db.dao.GroupDao
+import io.github.sds100.keymapper.data.entities.KeyMapEntity.Companion.NAME_CONSTRAINT_LIST
+import kotlinx.parcelize.Parcelize
+
+@Entity(
+    tableName = GroupDao.TABLE_NAME,
+    indices = [Index(value = [GroupDao.KEY_NAME], unique = true)],
+    foreignKeys = [
+        ForeignKey(
+            entity = GroupEntity::class,
+            parentColumns = [GroupDao.KEY_UID],
+            childColumns = [GroupDao.KEY_PARENT_UID],
+            onDelete = ForeignKey.CASCADE,
+        ),
+    ],
+)
+@Parcelize
+data class GroupEntity(
+    @PrimaryKey
+    @ColumnInfo(name = GroupDao.KEY_UID)
+    @SerializedName(NAME_UID)
+    val uid: String,
+
+    @ColumnInfo(name = GroupDao.KEY_NAME)
+    @SerializedName(NAME_NAME)
+    val name: String,
+
+    @ColumnInfo(name = GroupDao.KEY_CONSTRAINTS)
+    @SerializedName(NAME_CONSTRAINTS)
+    val constraints: List<ConstraintEntity> = emptyList(),
+
+    @ColumnInfo(name = GroupDao.KEY_CONSTRAINT_MODE)
+    @SerializedName(NAME_CONSTRAINT_MODE)
+    val constraintMode: Int = ConstraintEntity.MODE_AND,
+
+    @ColumnInfo(name = GroupDao.KEY_PARENT_UID)
+    @SerializedName(NAME_PARENT_UID)
+    val parentUid: String?,
+
+) : Parcelable {
+    companion object {
+        // DON'T CHANGE THESE. Used for JSON serialization and parsing.
+        const val NAME_UID = "uid"
+        const val NAME_NAME = "name"
+        const val NAME_CONSTRAINTS = "constraints"
+        const val NAME_CONSTRAINT_MODE = "constraint_mode"
+        const val NAME_PARENT_UID = "parent_uid"
+
+        val DESERIALIZER = jsonDeserializer {
+            val uid by it.json.byString(NAME_UID)
+            val name by it.json.byString(NAME_NAME)
+            val constraintListJsonArray by it.json.byArray(NAME_CONSTRAINT_LIST)
+            val constraintList =
+                it.context.deserialize<List<ConstraintEntity>>(constraintListJsonArray)
+
+            val constraintMode by it.json.byInt(KeyMapEntity.NAME_CONSTRAINT_MODE)
+            val parentUid by it.json.byString(NAME_PARENT_UID)
+
+            GroupEntity(uid, name, constraintList, constraintMode, parentUid)
+        }
+    }
+}

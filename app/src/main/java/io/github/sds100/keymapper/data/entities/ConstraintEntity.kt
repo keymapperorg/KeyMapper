@@ -1,21 +1,24 @@
 package io.github.sds100.keymapper.data.entities
 
+import android.os.Parcelable
 import com.github.salomonbrys.kotson.byArray
 import com.github.salomonbrys.kotson.byString
 import com.github.salomonbrys.kotson.jsonDeserializer
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
 /**
  * Created by sds100 on 17/03/2020.
  */
 
+@Parcelize
 data class ConstraintEntity(
     @SerializedName(NAME_TYPE)
     val type: String,
 
     @SerializedName(NAME_EXTRAS)
     val extras: List<EntityExtra>,
-) {
+) : Parcelable {
 
     constructor(type: String, vararg extra: EntityExtra) : this(type, extra.toList())
 

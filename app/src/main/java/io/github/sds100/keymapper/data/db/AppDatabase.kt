@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.data.db
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
@@ -11,6 +12,7 @@ import io.github.sds100.keymapper.data.db.AppDatabase.Companion.DATABASE_VERSION
 import io.github.sds100.keymapper.data.db.dao.FingerprintMapDao
 import io.github.sds100.keymapper.data.db.dao.FloatingButtonDao
 import io.github.sds100.keymapper.data.db.dao.FloatingLayoutDao
+import io.github.sds100.keymapper.data.db.dao.GroupDao
 import io.github.sds100.keymapper.data.db.dao.KeyMapDao
 import io.github.sds100.keymapper.data.db.dao.LogEntryDao
 import io.github.sds100.keymapper.data.db.typeconverter.ActionListTypeConverter
@@ -20,8 +22,10 @@ import io.github.sds100.keymapper.data.db.typeconverter.TriggerTypeConverter
 import io.github.sds100.keymapper.data.entities.FingerprintMapEntity
 import io.github.sds100.keymapper.data.entities.FloatingButtonEntity
 import io.github.sds100.keymapper.data.entities.FloatingLayoutEntity
+import io.github.sds100.keymapper.data.entities.GroupEntity
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.data.entities.LogEntryEntity
+import io.github.sds100.keymapper.data.migration.AutoMigration14To15
 import io.github.sds100.keymapper.data.migration.Migration10To11
 import io.github.sds100.keymapper.data.migration.Migration11To12
 import io.github.sds100.keymapper.data.migration.Migration13To14
@@ -38,9 +42,12 @@ import io.github.sds100.keymapper.data.migration.Migration9To10
  * Created by sds100 on 24/01/2020.
  */
 @Database(
-    entities = [KeyMapEntity::class, FingerprintMapEntity::class, LogEntryEntity::class, FloatingLayoutEntity::class, FloatingButtonEntity::class],
+    entities = [KeyMapEntity::class, FingerprintMapEntity::class, LogEntryEntity::class, FloatingLayoutEntity::class, FloatingButtonEntity::class, GroupEntity::class],
     version = DATABASE_VERSION,
     exportSchema = true,
+    autoMigrations = [
+        AutoMigration(from = 14, to = 15, spec = AutoMigration14To15::class),
+    ],
 )
 @TypeConverters(
     ActionListTypeConverter::class,
@@ -51,7 +58,7 @@ import io.github.sds100.keymapper.data.migration.Migration9To10
 abstract class AppDatabase : RoomDatabase() {
     companion object {
         const val DATABASE_NAME = "key_map_database"
-        const val DATABASE_VERSION = 14
+        const val DATABASE_VERSION = 15
 
         val MIGRATION_1_2 = object : Migration(1, 2) {
 
@@ -141,4 +148,5 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun logEntryDao(): LogEntryDao
     abstract fun floatingLayoutDao(): FloatingLayoutDao
     abstract fun floatingButtonDao(): FloatingButtonDao
+    abstract fun groupDao(): GroupDao
 }
