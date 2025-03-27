@@ -111,7 +111,7 @@ class KeyMapControllerTest {
         private const val HOLD_DOWN_DURATION = 1000L
 
         private val TEST_ACTION: Action = Action(
-            data = ActionData.Flashlight.Toggle(CameraLens.BACK),
+            data = ActionData.Flashlight.Toggle(CameraLens.BACK, strengthPercent = null),
         )
 
         private val TEST_ACTION_2: Action = Action(
@@ -1098,7 +1098,7 @@ class KeyMapControllerTest {
     @Test
     fun `Long press trigger shouldn't be triggered if the constraints are changed by the actions`() = runTest(testDispatcher) {
         // GIVEN
-        val actionData = ActionData.Flashlight.Toggle(CameraLens.BACK)
+        val actionData = ActionData.Flashlight.Toggle(CameraLens.BACK, strengthPercent = null)
 
         val keyMap = KeyMap(
             trigger = singleKeyTrigger(

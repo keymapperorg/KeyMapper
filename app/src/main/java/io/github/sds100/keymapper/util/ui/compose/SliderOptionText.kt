@@ -17,7 +17,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -35,7 +34,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
@@ -96,10 +94,7 @@ fun SliderOptionText(
                 valueRange = valueRange,
                 interactionSource = interactionSource,
                 thumb = { state ->
-                    SliderDefaults.Thumb(
-                        interactionSource = interactionSource,
-                        thumbSize = DpSize(4.dp, 28.dp),
-                    )
+                    KeyMapperSliderThumb(interactionSource)
                 },
                 steps = (((valueRange.endInclusive - valueRange.start) / stepSize.toFloat()).toInt()) - 1,
             )

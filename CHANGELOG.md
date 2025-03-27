@@ -1,6 +1,26 @@
-## [3.0 Beta 1](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0-beta.1)
+## [3.0 Beta 2](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0-beta.2)
 
 #### TO BE RELEASED
+
+_See the changes from previous 3.0 Beta releases as well._
+
+## Added
+
+- #1560 Action to change flashlight brightness and also set a custom brightness when enabling the flashlight.
+- Prompt to unlock device when using a floating button as a trigger from the lock screen
+
+## Changed
+
+- #1577 Move unsupported actions to the bottom of the list and do not allow selecting root actions if root permission is not granted.
+- #1593 Deprecate the 'Open menu' action by not letting new key maps use it. It is a relic of the past when most apps had a 3-dot menu with a consistent content description making it somewhat easy to identify.
+
+## Bug fixes
+
+- #1585 Track changes when editing key maps and only prompt to discard changes if there were indeed changes.
+
+## [3.0 Beta 1](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0-beta.1)
+
+#### 26 March 2025
 
 Most of the codebase has been touched and most of the user interface has been rewritten
 in Jetpack Compose, resulting in many improvements to the user experience.

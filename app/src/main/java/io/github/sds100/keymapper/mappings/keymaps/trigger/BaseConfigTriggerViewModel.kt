@@ -636,8 +636,8 @@ abstract class BaseConfigTriggerViewModel(
             }
 
             val linkType = when {
-                trigger.mode is TriggerMode.Sequence && (index < trigger.keys.lastIndex || shortcutCount > 0) -> LinkType.ARROW
-                (index < trigger.keys.lastIndex || shortcutCount > 0) -> LinkType.PLUS
+                trigger.mode is TriggerMode.Sequence && (index < trigger.keys.lastIndex) -> LinkType.ARROW
+                (index < trigger.keys.lastIndex) -> LinkType.PLUS
                 else -> LinkType.HIDDEN
             }
 

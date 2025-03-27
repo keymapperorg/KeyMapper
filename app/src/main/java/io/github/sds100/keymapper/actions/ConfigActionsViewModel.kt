@@ -17,7 +17,11 @@ import io.github.sds100.keymapper.util.onFailure
 import io.github.sds100.keymapper.util.ui.DialogResponse
 import io.github.sds100.keymapper.util.ui.LinkType
 import io.github.sds100.keymapper.util.ui.NavDestination
+import io.github.sds100.keymapper.util.ui.NavigationViewModel
+import io.github.sds100.keymapper.util.ui.NavigationViewModelImpl
 import io.github.sds100.keymapper.util.ui.PopupUi
+import io.github.sds100.keymapper.util.ui.PopupViewModel
+import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.ViewModelHelper
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
@@ -49,9 +53,13 @@ class ConfigActionsViewModel(
     private val config: ConfigKeyMapUseCase,
     private val onboarding: OnboardingUseCase,
     resourceProvider: ResourceProvider,
-) : CreateActionViewModel by CreateActionViewModelImpl(createAction, resourceProvider),
-    ActionOptionsBottomSheetCallback {
+) : ActionOptionsBottomSheetCallback,
+    ResourceProvider by resourceProvider,
+    PopupViewModel by PopupViewModelImpl(),
+    NavigationViewModel by NavigationViewModelImpl() {
 
+    val createActionDelegate =
+        CreateActionDelegate(coroutineScope, createAction, this, this, this)
     private val uiHelper = ActionUiHelper(displayAction, resourceProvider)
 
     private val _state = MutableStateFlow<State<ConfigActionsState>>(State.Loading)
@@ -81,6 +89,14 @@ class ConfigActionsViewModel(
                 buildState(keyMap, shortcuts, errorSnapshot, showDeviceDescriptors)
             }
         }.launchIn(coroutineScope)
+
+        coroutineScope.launch {
+            createActionDelegate.actionResult.filterNotNull().collect { action ->
+                val actionUid = actionOptionsUid.value ?: return@collect
+                config.setActionData(actionUid, action)
+                actionOptionsUid.update { null }
+            }
+        }
     }
 
     private suspend fun getActionData(uid: String): ActionData? {
@@ -164,12 +180,7 @@ class ConfigActionsViewModel(
             val keyMap = config.keyMap.first().dataOrNull() ?: return@launch
 
             val oldAction = keyMap.actionList.find { it.uid == actionUid } ?: return@launch
-            val newActionData = editAction(oldAction.data)
-
-            if (newActionData != null) {
-                actionOptionsUid.update { null }
-                config.setActionData(actionUid, newActionData)
-            }
+            createActionDelegate.editAction(oldAction.data)
         }
     }
 

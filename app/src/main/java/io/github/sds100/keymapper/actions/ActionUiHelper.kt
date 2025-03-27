@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.actions
 
+import android.os.Build
 import android.view.KeyEvent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Android
@@ -240,15 +241,56 @@ class ActionUiHelper(
             )
 
         is ActionData.Flashlight -> {
-            val resId = when (action) {
-                is ActionData.Flashlight.Toggle -> R.string.action_toggle_flashlight_formatted
-                is ActionData.Flashlight.Enable -> R.string.action_enable_flashlight_formatted
-                is ActionData.Flashlight.Disable -> R.string.action_disable_flashlight_formatted
-            }
-
             val lensString = getString(CameraLensUtils.getLabel(action.lens))
 
-            getString(resId, lensString)
+            when (action) {
+                is ActionData.Flashlight.Toggle -> {
+                    if (action.strengthPercent == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                        getString(R.string.action_toggle_flashlight_formatted, lensString)
+                    } else {
+                        getString(
+                            R.string.action_toggle_flashlight_with_strength,
+                            arrayOf(
+                                lensString,
+                                (action.strengthPercent * 100).toInt(),
+                            ),
+                        )
+                    }
+                }
+
+                is ActionData.Flashlight.Enable -> {
+                    if (action.strengthPercent == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                        getString(R.string.action_enable_flashlight_formatted, lensString)
+                    } else {
+                        getString(
+                            R.string.action_enable_flashlight_with_strength,
+                            arrayOf(
+                                lensString,
+                                (action.strengthPercent * 100).toInt(),
+                            ),
+                        )
+                    }
+                }
+
+                is ActionData.Flashlight.Disable -> getString(
+                    R.string.action_disable_flashlight_formatted,
+                    lensString,
+                )
+
+                is ActionData.Flashlight.ChangeStrength -> {
+                    if (action.percent > 0) {
+                        getString(
+                            R.string.action_flashlight_increase_strength_formatted,
+                            arrayOf(lensString, (action.percent * 100).toInt()),
+                        )
+                    } else {
+                        getString(
+                            R.string.action_flashlight_decrease_strength_formatted,
+                            arrayOf(lensString, (action.percent * 100).toInt()),
+                        )
+                    }
+                }
+            }
         }
 
         is ActionData.SwitchKeyboard -> getInputMethodLabel(action.imeId).handle(

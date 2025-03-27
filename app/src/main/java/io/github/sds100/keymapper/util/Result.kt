@@ -96,6 +96,7 @@ sealed class Error : Result<Nothing>() {
     data object CameraDisabled : Error()
     data object MaxCamerasInUse : Error()
     data object CameraError : Error()
+    data object CameraVariableFlashlightStrengthUnsupported : Error()
 
     data class FailedToModifySystemSetting(val setting: String) : Error()
     data object FailedToChangeIme : Error()

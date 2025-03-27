@@ -69,6 +69,18 @@ fun ConfigKeyMapScreen(
     val isKeyMapEnabled by viewModel.isEnabled.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
+    var showBackDialog by rememberSaveable { mutableStateOf(false) }
+
+    if (showBackDialog) {
+        BackDialog(
+            onDismiss = { showBackDialog = false },
+            onDiscardClick = {
+                showBackDialog = false
+                navigateBack()
+            },
+        )
+    }
+
     ConfigKeyMapScreen(
         modifier = modifier,
         isKeyMapEnabled = isKeyMapEnabled,
@@ -92,7 +104,13 @@ fun ConfigKeyMapScreen(
                 viewModel.configTriggerViewModel.optionsViewModel,
             )
         },
-        navigateBack = navigateBack,
+        onBackClick = {
+            if (viewModel.isKeyMapEdited) {
+                showBackDialog = true
+            } else {
+                navigateBack()
+            }
+        },
         onDoneClick = {
             viewModel.save()
             navigateBack()
@@ -111,7 +129,7 @@ private fun ConfigKeyMapScreen(
     actionScreen: @Composable () -> Unit,
     constraintsScreen: @Composable () -> Unit,
     optionsScreen: @Composable () -> Unit,
-    navigateBack: () -> Unit = {},
+    onBackClick: () -> Unit = {},
     onDoneClick: () -> Unit = {},
     snackbarHostState: SnackbarHostState = SnackbarHostState(),
 ) {
@@ -124,21 +142,7 @@ private fun ConfigKeyMapScreen(
     var currentTab: ConfigKeyMapTab? by remember { mutableStateOf(null) }
     val uriHandler = LocalUriHandler.current
 
-    var showBackDialog by rememberSaveable { mutableStateOf(false) }
-
-    if (showBackDialog) {
-        BackDialog(
-            onDismiss = { showBackDialog = false },
-            onDiscardClick = {
-                showBackDialog = false
-                navigateBack()
-            },
-        )
-    }
-
-    BackHandler {
-        showBackDialog = true
-    }
+    BackHandler(onBack = onBackClick)
 
     Scaffold(
         modifier.displayCutoutPadding(),
@@ -147,9 +151,7 @@ private fun ConfigKeyMapScreen(
             KeyMapAppBar(
                 isKeyMapEnabled = isKeyMapEnabled,
                 onKeyMapEnabledChange = onKeyMapEnabledChange,
-                onBackClick = {
-                    showBackDialog = true
-                },
+                onBackClick = onBackClick,
                 onDoneClick = onDoneClick,
                 showHelpButton = currentTab == ConfigKeyMapTab.TRIGGER ||
                     currentTab == ConfigKeyMapTab.ACTIONS ||
@@ -602,7 +604,6 @@ private fun SmallScreenPreview() {
             actionScreen = {},
             constraintsScreen = {},
             optionsScreen = {},
-            navigateBack = {},
         )
     }
 }
@@ -618,7 +619,6 @@ private fun MediumScreenPreview() {
             actionScreen = {},
             constraintsScreen = {},
             optionsScreen = {},
-            navigateBack = {},
         )
     }
 }
@@ -634,7 +634,6 @@ private fun MediumScreenLandscapePreview() {
             actionScreen = {},
             constraintsScreen = {},
             optionsScreen = {},
-            navigateBack = {},
         )
     }
 }
@@ -650,7 +649,6 @@ private fun LargeScreenPreview() {
             actionScreen = {},
             constraintsScreen = {},
             optionsScreen = {},
-            navigateBack = {},
         )
     }
 }

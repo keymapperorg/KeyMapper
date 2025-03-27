@@ -8,7 +8,10 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
+import io.github.sds100.keymapper.ActivityViewModel
+import io.github.sds100.keymapper.BaseMainActivity
 import io.github.sds100.keymapper.NavAppDirections
+import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.databinding.FragmentComposeBinding
 import io.github.sds100.keymapper.util.Inject
@@ -19,6 +22,10 @@ class HomeFragment : Fragment() {
 
     private val homeViewModel: HomeViewModel by activityViewModels {
         Inject.homeViewModel(requireContext())
+    }
+
+    val activityViewModel: ActivityViewModel by activityViewModels<ActivityViewModel> {
+        ActivityViewModel.Factory(ServiceLocator.resourceProvider(requireContext()))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,6 +40,16 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
+        val startDestination =
+            if (!activityViewModel.handledActivityLaunchIntent &&
+                requireActivity().intent?.action == BaseMainActivity.ACTION_USE_FLOATING_BUTTONS
+            ) {
+                activityViewModel.handledActivityLaunchIntent = true
+                HomeDestination.FloatingButtons
+            } else {
+                HomeDestination.KeyMaps
+            }
+
         FragmentComposeBinding.inflate(inflater, container, false).apply {
             composeView.apply {
                 // Dispose of the Composition when the view's LifecycleOwner
@@ -49,6 +66,7 @@ class HomeFragment : Fragment() {
                                 findNavController().navigate(NavAppDirections.actionGlobalAboutFragment())
                             },
                             finishActivity = requireActivity()::finish,
+                            startDestination = startDestination,
                         )
                     }
                 }

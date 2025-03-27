@@ -146,6 +146,7 @@ fun HomeScreen(
     onSettingsClick: () -> Unit,
     onAboutClick: () -> Unit,
     finishActivity: () -> Unit,
+    startDestination: HomeDestination = HomeDestination.KeyMaps,
 ) {
     val homeState by viewModel.state.collectAsStateWithLifecycle()
 
@@ -270,6 +271,7 @@ fun HomeScreen(
     HomeScreen(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         navController = navController,
+        startDestination = startDestination,
         homeState = homeState,
         snackBarState = snackbarState,
         navBarItems = navBarItems,
@@ -343,12 +345,12 @@ fun HomeScreen(
                         modifier = Modifier.padding(horizontal = 16.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Icon(Icons.Rounded.Add, contentDescription = null)
-
                         val fabText = when (currentDestination?.route) {
                             HomeDestination.FloatingButtons.route -> stringResource(R.string.home_fab_new_floating_layout)
                             else -> stringResource(R.string.home_fab_new_key_map)
                         }
+
+                        Icon(Icons.Rounded.Add, contentDescription = fabText)
 
                         val isFabTextVisible = if (isFloatingLayoutsDestination) {
                             viewModel.listFloatingLayoutsViewModel.showFabText
@@ -382,6 +384,7 @@ fun HomeScreen(
 private fun HomeScreen(
     modifier: Modifier = Modifier,
     homeState: HomeState,
+    startDestination: HomeDestination = HomeDestination.KeyMaps,
     navController: NavHostController,
     snackBarState: SnackbarHostState = SnackbarHostState(),
     navBarItems: List<HomeNavBarItem>,
@@ -493,7 +496,7 @@ private fun HomeScreen(
                     ),
                 contentAlignment = Alignment.TopCenter,
                 navController = navController,
-                startDestination = HomeDestination.KeyMaps.route,
+                startDestination = startDestination.route,
                 // use no animations because otherwise the transition freezes
                 // when quickly navigating to another page while the transition is still happening.
                 enterTransition = { EnterTransition.None },

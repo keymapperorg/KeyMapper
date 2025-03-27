@@ -13,7 +13,7 @@ object VersionHelper {
     const val FINGERPRINT_GESTURES_MIN_VERSION = 40
 
     /**
-     * This is version 2.7.0 when the assistant trigger was first introduced.
+     * This is version 3.0.0-beta.1 when the assistant trigger was first introduced.
      */
-    const val ASSISTANT_TRIGGER_MIN_VERSION = 66
+    const val FLOATING_BUTTON_MIN_VERSION = 81
 }

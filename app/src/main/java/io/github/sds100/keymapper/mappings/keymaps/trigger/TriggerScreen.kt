@@ -198,13 +198,24 @@ private fun TriggerScreenVertical(
                             textAlign = TextAlign.Center,
                         )
 
-                        ShortcutRow(
-                            modifier = Modifier
-                                .padding(16.dp)
-                                .fillMaxWidth(),
-                            shortcuts = configState.shortcuts,
-                            onClick = onClickShortcut,
-                        )
+                        if (configState.shortcuts.isNotEmpty()) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text(
+                                    text = stringResource(R.string.trigger_shortcuts_header),
+                                    style = MaterialTheme.typography.titleSmall,
+                                )
+
+                                Spacer(Modifier.height(8.dp))
+
+                                ShortcutRow(
+                                    modifier = Modifier
+                                        .padding(horizontal = 16.dp)
+                                        .fillMaxWidth(),
+                                    shortcuts = configState.shortcuts,
+                                    onClick = onClickShortcut,
+                                )
+                            }
+                        }
                     }
                 }
 
@@ -285,15 +296,30 @@ private fun TriggerScreenHorizontal(
                     textAlign = TextAlign.Center,
                 )
                 Column {
-                    ShortcutRow(
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .fillMaxWidth()
-                            .weight(1f)
-                            .verticalScroll(state = rememberScrollState()),
-                        shortcuts = configState.shortcuts,
-                        onClick = onClickShortcut,
-                    )
+                    if (configState.shortcuts.isNotEmpty()) {
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .verticalScroll(state = rememberScrollState()),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                        ) {
+                            Text(
+                                text = stringResource(R.string.trigger_shortcuts_header),
+                                style = MaterialTheme.typography.titleSmall,
+                            )
+
+                            Spacer(Modifier.height(8.dp))
+
+                            ShortcutRow(
+                                modifier = Modifier
+                                    .padding(horizontal = 16.dp)
+                                    .fillMaxWidth(),
+                                shortcuts = configState.shortcuts,
+                                onClick = onClickShortcut,
+                            )
+                        }
+                    }
 
                     RecordTriggerButtonRow(
                         modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
@@ -419,12 +445,23 @@ private fun TriggerList(
             }
         }
 
-        item(key = "shortcuts", contentType = "shortcuts") {
-            ShortcutRow(
-                modifier = Modifier.fillMaxWidth(),
-                shortcuts = shortcuts,
-                onClick = { onClickShortcut(it) },
-            )
+        if (shortcuts.isNotEmpty()) {
+            item(key = "shortcuts", contentType = "shortcuts") {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = stringResource(R.string.trigger_shortcuts_header),
+                        style = MaterialTheme.typography.titleSmall,
+                    )
+
+                    Spacer(Modifier.height(8.dp))
+
+                    ShortcutRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        shortcuts = shortcuts,
+                        onClick = { onClickShortcut(it) },
+                    )
+                }
+            }
         }
     }
 }
@@ -521,7 +558,7 @@ private val sampleList = listOf(
         id = "id3",
         assistantType = AssistantTriggerType.DEVICE,
         clickType = ClickType.DOUBLE_PRESS,
-        linkType = LinkType.ARROW,
+        linkType = LinkType.HIDDEN,
         error = null,
     ),
 )

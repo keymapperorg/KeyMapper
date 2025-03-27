@@ -194,6 +194,8 @@ object UseCases {
     fun createAction(ctx: Context) = CreateActionUseCaseImpl(
         ServiceLocator.inputMethodAdapter(ctx),
         ServiceLocator.systemFeatureAdapter(ctx),
+        ServiceLocator.cameraAdapter(ctx),
+        ServiceLocator.permissionAdapter(ctx),
     )
 
     private fun keyMapperImeMessenger(

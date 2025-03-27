@@ -23,7 +23,11 @@ class LazyActionErrorSnapshot(
     private val soundsManager: SoundsManager,
     shizukuAdapter: ShizukuAdapter,
 ) : ActionErrorSnapshot,
-    IsActionSupportedUseCase by IsActionSupportedUseCaseImpl(systemFeatureAdapter) {
+    IsActionSupportedUseCase by IsActionSupportedUseCaseImpl(
+        systemFeatureAdapter,
+        cameraAdapter,
+        permissionAdapter,
+    ) {
     private val keyMapperImeHelper = KeyMapperImeHelper(inputMethodAdapter)
 
     private val isCompatibleImeEnabled by lazy { keyMapperImeHelper.isCompatibleImeEnabled() }
@@ -34,11 +38,11 @@ class LazyActionErrorSnapshot(
     private val grantedPermissions: MutableMap<Permission, Boolean> = mutableMapOf()
     private val flashLenses by lazy {
         buildSet {
-            if (cameraAdapter.hasFlashFacing(CameraLens.FRONT)) {
+            if (cameraAdapter.getFlashInfo(CameraLens.FRONT) != null) {
                 add(CameraLens.FRONT)
             }
 
-            if (cameraAdapter.hasFlashFacing(CameraLens.BACK)) {
+            if (cameraAdapter.getFlashInfo(CameraLens.BACK) != null) {
                 add(CameraLens.BACK)
             }
         }

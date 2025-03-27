@@ -5,24 +5,29 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.system.permissions.Permission
+import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.containsQuery
 import io.github.sds100.keymapper.util.getFullMessage
 import io.github.sds100.keymapper.util.ui.DialogResponse
+import io.github.sds100.keymapper.util.ui.NavigationViewModel
+import io.github.sds100.keymapper.util.ui.NavigationViewModelImpl
 import io.github.sds100.keymapper.util.ui.PopupUi
+import io.github.sds100.keymapper.util.ui.PopupViewModel
+import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.util.ui.compose.SimpleListItemGroup
 import io.github.sds100.keymapper.util.ui.compose.SimpleListItemModel
 import io.github.sds100.keymapper.util.ui.showPopup
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -33,7 +38,9 @@ class ChooseActionViewModel(
     private val useCase: CreateActionUseCase,
     resourceProvider: ResourceProvider,
 ) : ViewModel(),
-    CreateActionViewModel by CreateActionViewModelImpl(useCase, resourceProvider) {
+    ResourceProvider by resourceProvider,
+    PopupViewModel by PopupViewModelImpl(),
+    NavigationViewModel by NavigationViewModelImpl() {
 
     companion object {
         private val CATEGORY_ORDER = arrayOf(
@@ -53,10 +60,13 @@ class ChooseActionViewModel(
         )
     }
 
+    val createActionDelegate =
+        CreateActionDelegate(viewModelScope, useCase, this, this, this)
+
     private val allGroupedListItems: List<SimpleListItemGroup> by lazy { buildListGroups() }
 
-    private val _returnAction = MutableSharedFlow<ActionData>()
-    val returnAction = _returnAction.asSharedFlow()
+    val returnAction = createActionDelegate.actionResult.filterNotNull()
+        .shareIn(viewModelScope, SharingStarted.Eagerly)
 
     val searchQuery = MutableStateFlow<String?>(null)
 
@@ -85,39 +95,54 @@ class ChooseActionViewModel(
                 showMessageForAction(actionId)
             }
 
-            createAction(actionId)?.let { action ->
-                _returnAction.emit(action)
-            }
+            createActionDelegate.createAction(actionId)
         }
     }
 
     private fun buildListGroups(): List<SimpleListItemGroup> = buildList {
-        CATEGORY_ORDER.forEach { category ->
+        val listItems = buildListItems(ActionId.entries)
 
+        for (category in CATEGORY_ORDER) {
             val header = getString(ActionUtils.getCategoryLabel(category))
 
-            val actionIds = ActionId.entries.filter { ActionUtils.getCategory(it) == category }
-
-            add(SimpleListItemGroup(header, buildListItems(actionIds)))
+            val group = SimpleListItemGroup(
+                header,
+                items = listItems.filter {
+                    it.isEnabled &&
+                        ActionUtils.getCategory(ActionId.valueOf(it.id)) == category
+                },
+            )
+            add(group)
         }
+
+        val unsupportedGroup = SimpleListItemGroup(
+            header = getString(R.string.choose_action_group_unsupported),
+            items = listItems.filter { !it.isEnabled },
+        )
+        add(unsupportedGroup)
     }
 
     private fun buildListItems(
         actionIds: List<ActionId>,
     ): List<SimpleListItemModel> = buildList {
         for (actionId in actionIds) {
+            // See Issue #1593. This action should no longer exist because it is a relic
+            // of the past when most apps had a 3-dot menu with a consistent content description
+            // making it somewhat easy to identify. This action should still be usable
+            // if a user already has a key map with it so just hide it from the list.
+            if (actionId == ActionId.OPEN_MENU) {
+                continue
+            }
+
             val error = useCase.isSupported(actionId)
             val isSupported = error == null
 
             val title = getString(ActionUtils.getTitle(actionId))
             val icon = ActionUtils.getComposeIcon(actionId)
 
-            val requiresRoot = ActionUtils.getRequiredPermissions(actionId)
-                .contains(Permission.ROOT)
-
             val subtitle = when {
+                error == Error.PermissionDenied(Permission.ROOT) -> getString(R.string.choose_action_warning_requires_root)
                 error != null -> error.getFullMessage(this@ChooseActionViewModel)
-                requiresRoot -> getString(R.string.choose_action_warning_requires_root)
                 else -> null
             }
 
