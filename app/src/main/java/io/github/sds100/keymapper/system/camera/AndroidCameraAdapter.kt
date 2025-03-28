@@ -179,7 +179,11 @@ class AndroidCameraAdapter(context: Context) : CameraAdapter {
                         .toInt()
                         .coerceIn(1, maxStrength)
 
-                cameraManager.turnOnTorchWithStrengthLevel(cameraId, newStrength)
+                if (newStrength == 1 && currentStrength == 1) {
+                    cameraManager.setTorchMode(cameraId, false)
+                } else {
+                    cameraManager.turnOnTorchWithStrengthLevel(cameraId, newStrength)
+                }
             }
 
             return Success(Unit)
