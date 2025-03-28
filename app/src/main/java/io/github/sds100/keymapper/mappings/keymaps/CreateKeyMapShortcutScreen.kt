@@ -113,7 +113,7 @@ private fun CreateKeyMapShortcutScreen(
                 text = stringResource(R.string.caption_create_keymap_shortcut),
             )
 
-            KeyMapListScreen(
+            KeyMapList(
                 modifier = Modifier.fillMaxSize(),
                 footerText = stringResource(R.string.create_key_map_shortcut_footer),
                 listItems = listItems,

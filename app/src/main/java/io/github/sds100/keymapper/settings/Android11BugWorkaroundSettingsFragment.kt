@@ -8,7 +8,7 @@ import androidx.preference.SwitchPreference
 import androidx.preference.isEmpty
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.Keys
-import io.github.sds100.keymapper.home.ChooseAppStoreModel
+import io.github.sds100.keymapper.util.ui.ChooseAppStoreModel
 import io.github.sds100.keymapper.system.leanback.LeanbackUtils
 import io.github.sds100.keymapper.system.url.UrlUtils
 import io.github.sds100.keymapper.util.drawable

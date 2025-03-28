@@ -14,7 +14,7 @@ import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.FingerprintGestureType
 import io.github.sds100.keymapper.mappings.FingerprintGesturesSupportedUseCase
-import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
+import io.github.sds100.keymapper.mappings.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCase
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectScreenOffKeyEventsController
 import io.github.sds100.keymapper.mappings.keymaps.detection.DpadMotionEventTracker
@@ -67,7 +67,7 @@ abstract class BaseAccessibilityServiceController(
     private val detectKeyMapsUseCase: DetectKeyMapsUseCase,
     private val fingerprintGesturesSupported: FingerprintGesturesSupportedUseCase,
     rerouteKeyEventsUseCase: RerouteKeyEventsUseCase,
-    private val pauseMappingsUseCase: PauseMappingsUseCase,
+    private val pauseKeyMapsUseCase: PauseKeyMapsUseCase,
     private val devicesAdapter: DevicesAdapter,
     private val suAdapter: SuAdapter,
     private val inputMethodAdapter: InputMethodAdapter,
@@ -106,7 +106,7 @@ abstract class BaseAccessibilityServiceController(
     private val recordDpadMotionEventTracker: DpadMotionEventTracker =
         DpadMotionEventTracker()
 
-    val isPaused: StateFlow<Boolean> = pauseMappingsUseCase.isPaused
+    val isPaused: StateFlow<Boolean> = pauseKeyMapsUseCase.isPaused
         .stateIn(coroutineScope, SharingStarted.Eagerly, false)
 
     private val screenOffTriggersEnabled: StateFlow<Boolean> =
@@ -204,7 +204,7 @@ abstract class BaseAccessibilityServiceController(
             }.launchIn(coroutineScope)
         }
 
-        pauseMappingsUseCase.isPaused.distinctUntilChanged().onEach {
+        pauseKeyMapsUseCase.isPaused.distinctUntilChanged().onEach {
             keyMapController.reset()
             triggerKeyMapFromOtherAppsController.reset()
         }.launchIn(coroutineScope)
@@ -234,7 +234,7 @@ abstract class BaseAccessibilityServiceController(
             }.launchIn(coroutineScope)
 
         combine(
-            pauseMappingsUseCase.isPaused,
+            pauseKeyMapsUseCase.isPaused,
             detectKeyMapsUseCase.allKeyMapList,
         ) { isPaused, keyMaps ->
             val enableAccessibilityVolumeStream: Boolean

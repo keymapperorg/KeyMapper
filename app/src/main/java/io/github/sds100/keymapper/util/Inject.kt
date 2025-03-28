@@ -215,7 +215,7 @@ object Inject {
             keyEventRelayService = keyEventRelayService,
         ),
         fingerprintGesturesSupportedUseCase = UseCases.fingerprintGesturesSupported(service),
-        pauseMappingsUseCase = UseCases.pauseMappings(service),
+        pauseKeyMapsUseCase = UseCases.pauseMappings(service),
         devicesAdapter = ServiceLocator.devicesAdapter(service),
         suAdapter = ServiceLocator.suAdapter(service),
         rerouteKeyEventsUseCase = UseCases.rerouteKeyEvents(

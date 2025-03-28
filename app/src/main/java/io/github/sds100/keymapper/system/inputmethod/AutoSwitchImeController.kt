@@ -4,7 +4,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
+import io.github.sds100.keymapper.mappings.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.popup.PopupMessageAdapter
@@ -28,7 +28,7 @@ class AutoSwitchImeController(
     private val coroutineScope: CoroutineScope,
     private val preferenceRepository: PreferenceRepository,
     private val inputMethodAdapter: InputMethodAdapter,
-    private val pauseMappingsUseCase: PauseMappingsUseCase,
+    private val pauseKeyMapsUseCase: PauseKeyMapsUseCase,
     private val devicesAdapter: DevicesAdapter,
     private val popupMessageAdapter: PopupMessageAdapter,
     private val resourceProvider: ResourceProvider,
@@ -55,7 +55,7 @@ class AutoSwitchImeController(
     private var showToast: Boolean = PreferenceDefaults.SHOW_TOAST_WHEN_AUTO_CHANGE_IME
 
     init {
-        pauseMappingsUseCase.isPaused.onEach { isPaused ->
+        pauseKeyMapsUseCase.isPaused.onEach { isPaused ->
 
             if (!toggleKeyboardOnToggleKeymaps) return@onEach
 
