@@ -199,6 +199,9 @@ fun HomeKeyMapListScreen(
                     }
                 },
                 onSelectAllClick = viewModel::onSelectAllClick,
+                onNewGroupClick = viewModel::onNewGroupClick,
+                onRenameGroupClick = viewModel::onRenameGroupClick,
+                isEditingGroupName = viewModel.isEditingGroupName,
             )
         },
         selectionBottomSheet = {

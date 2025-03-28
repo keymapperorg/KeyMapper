@@ -1,8 +1,11 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
+import android.database.sqlite.SQLiteConstraintException
+import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.backup.BackupManager
 import io.github.sds100.keymapper.backup.BackupManagerImpl
 import io.github.sds100.keymapper.backup.BackupUtils
+import io.github.sds100.keymapper.data.entities.GroupEntity
 import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
 import io.github.sds100.keymapper.data.repositories.GroupRepository
 import io.github.sds100.keymapper.groups.GroupEntityMapper
@@ -12,6 +15,7 @@ import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.dataOrNull
+import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -34,11 +38,50 @@ class ListKeyMapsUseCaseImpl(
     private val floatingButtonRepository: FloatingButtonRepository,
     private val fileAdapter: FileAdapter,
     private val backupManager: BackupManager,
+    private val resourceProvider: ResourceProvider,
     displayKeyMapUseCase: DisplayKeyMapUseCase,
 ) : ListKeyMapsUseCase,
     DisplayKeyMapUseCase by displayKeyMapUseCase {
 
     private val groupUid = MutableStateFlow<String?>(null)
+
+    override suspend fun newGroup() {
+        val defaultName = resourceProvider.getString(R.string.default_group_name)
+        val group = GroupEntity(parentUid = groupUid.value, name = defaultName)
+
+        ensureUniqueName(group) {
+            groupRepository.insert(it)
+        }
+
+        groupUid.update { group.uid }
+    }
+
+    override fun deleteGroup() {
+        groupUid.value?.also { groupUid ->
+            this.groupUid.value = null
+            groupRepository.delete(groupUid)
+        }
+    }
+
+    override suspend fun renameGroup(name: String): Boolean {
+        if (name.isBlank()) {
+            return true
+        }
+
+        groupUid.value?.also { groupUid ->
+            var entity = groupRepository.getGroup(groupUid) ?: return true
+
+            entity = entity.copy(name = name.trim())
+
+            try {
+                groupRepository.update(entity)
+            } catch (_: SQLiteConstraintException) {
+                return false
+            }
+        }
+
+        return true
+    }
 
     override suspend fun openGroup(uid: String) {
         // Check if the group exists.
@@ -58,6 +101,29 @@ class ListKeyMapsUseCaseImpl(
             val group = groupRepository.getGroup(currentGroup.parentUid) ?: return
             groupUid.update { group.uid }
         }
+    }
+
+    private suspend fun ensureUniqueName(
+        entity: GroupEntity,
+        block: suspend (entity: GroupEntity) -> Unit,
+    ): GroupEntity {
+        var group = entity
+        var count = 0
+
+        while (true) {
+            // Insert must be suspending so we only update the layout uid once the layout
+            // has been saved.
+            try {
+                block(group)
+                break
+            } catch (_: SQLiteConstraintException) {
+                // If the name already exists try creating it with a new name.
+                group = group.copy(name = "${entity.name} (${count + 1})")
+                count++
+            }
+        }
+
+        return group
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -155,8 +221,11 @@ class ListKeyMapsUseCaseImpl(
 interface ListKeyMapsUseCase : DisplayKeyMapUseCase {
     val keyMapGroup: Flow<KeyMapGroup>
 
+    suspend fun newGroup()
     suspend fun openGroup(uid: String)
     suspend fun popGroup()
+    fun deleteGroup()
+    suspend fun renameGroup(name: String): Boolean
 
     fun deleteKeyMap(vararg uid: String)
     fun enableKeyMap(vararg uid: String)

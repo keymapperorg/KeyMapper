@@ -1,7 +1,11 @@
 package io.github.sds100.keymapper.data.db.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import io.github.sds100.keymapper.data.entities.GroupEntity
 import io.github.sds100.keymapper.data.entities.GroupEntityWithSubGroups
 import io.github.sds100.keymapper.data.entities.KeyMapEntitiesWithGroup
@@ -32,4 +36,16 @@ interface GroupDao {
 
     @Query("SELECT * FROM $TABLE_NAME WHERE $KEY_PARENT_UID = (:uid)")
     fun getGroupsByParent(uid: String?): Flow<List<GroupEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    suspend fun insert(vararg group: GroupEntity)
+
+    @Update(onConflict = OnConflictStrategy.ABORT)
+    suspend fun update(vararg group: GroupEntity)
+
+    @Delete
+    suspend fun delete(vararg group: GroupEntity)
+
+    @Query("DELETE FROM $TABLE_NAME WHERE $KEY_UID in (:uid)")
+    suspend fun deleteByUid(vararg uid: String)
 }

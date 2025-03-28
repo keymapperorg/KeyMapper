@@ -14,6 +14,7 @@ import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.data.db.dao.GroupDao
 import io.github.sds100.keymapper.data.entities.KeyMapEntity.Companion.NAME_CONSTRAINT_LIST
 import kotlinx.parcelize.Parcelize
+import java.util.UUID
 
 @Entity(
     tableName = GroupDao.TABLE_NAME,
@@ -32,7 +33,7 @@ data class GroupEntity(
     @PrimaryKey
     @ColumnInfo(name = GroupDao.KEY_UID)
     @SerializedName(NAME_UID)
-    val uid: String,
+    val uid: String = UUID.randomUUID().toString(),
 
     @ColumnInfo(name = GroupDao.KEY_NAME)
     @SerializedName(NAME_NAME)

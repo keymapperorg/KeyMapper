@@ -181,6 +181,13 @@ class KeyMapListViewModel(
         }
     }
 
+    /**
+     * Whether the current group was just created and hasn't been saved with a user defined
+     * name yet.
+     */
+    private var isNewGroup = false
+    var isEditingGroupName by mutableStateOf(false)
+
     init {
         val sortedKeyMapsFlow = combine(
             keyMapGroupStateFlow.map { it.keyMaps }.distinctUntilChanged(),
@@ -604,11 +611,44 @@ class KeyMapListViewModel(
     }
 
     fun onBackClick(): Boolean {
-        if (multiSelectProvider.state.value is SelectionState.Selecting) {
-            multiSelectProvider.stopSelecting()
-            return true
-        } else {
-            return false
+        when {
+            multiSelectProvider.state.value is SelectionState.Selecting -> {
+                multiSelectProvider.stopSelecting()
+                return true
+            }
+
+            state.value.appBarState is KeyMapAppBarState.ChildGroup -> {
+                if (isEditingGroupName && isNewGroup) {
+                    listKeyMaps.deleteGroup()
+                } else {
+                    coroutineScope.launch {
+                        listKeyMaps.popGroup()
+                    }
+                }
+
+                isEditingGroupName = false
+                return true
+            }
+
+            else -> {
+                return false
+            }
+        }
+    }
+
+    suspend fun onRenameGroupClick(name: String): Boolean {
+        return listKeyMaps.renameGroup(name).also { success ->
+            if (success) {
+                isEditingGroupName = false
+            }
+        }
+    }
+
+    fun onNewGroupClick() {
+        coroutineScope.launch {
+            listKeyMaps.newGroup()
+            isNewGroup = true
+            isEditingGroupName = true
         }
     }
 

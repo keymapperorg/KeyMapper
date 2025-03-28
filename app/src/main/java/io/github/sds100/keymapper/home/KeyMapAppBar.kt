@@ -16,15 +16,20 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.HelpOutline
 import androidx.compose.material.icons.automirrored.rounded.Sort
+import androidx.compose.material.icons.rounded.Done
+import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.IosShare
@@ -42,23 +47,32 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.R
@@ -74,6 +88,7 @@ import io.github.sds100.keymapper.util.ui.compose.ComposeChipModel
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.util.ui.compose.icons.Import
 import io.github.sds100.keymapper.util.ui.compose.icons.KeyMapperIcons
+import kotlinx.coroutines.launch
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
@@ -90,6 +105,49 @@ fun KeyMapAppBar(
     onBackClick: () -> Unit = {},
     onSelectAllClick: () -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+    onNewGroupClick: () -> Unit = {},
+    onRenameGroupClick: suspend (String) -> Boolean = { true },
+    isEditingGroupName: Boolean = false,
+) {
+    BackHandler(onBack = onBackClick)
+
+    Column {
+        RootGroupAppBar(
+            scrollBehavior,
+            state,
+            onTogglePausedClick,
+            onSortClick,
+            onBackClick,
+            onFixWarningClick,
+            onNewGroupClick = onNewGroupClick,
+            actions = {
+                AnimatedVisibility(!isEditingGroupName) {
+                    AppBarActions(
+                        state,
+                        onSelectAllClick,
+                        onHelpClick,
+                        onSettingsClick,
+                        onAboutClick,
+                        onExportClick,
+                        onImportClick,
+                    )
+                }
+            },
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun RootGroupAppBar(
+    modifier: Modifier = Modifier,
+    state: KeyMapAppBarState.RootGroup,
+    scrollBehavior: TopAppBarScrollBehavior,
+    onTogglePausedClick: () -> Unit,
+    onSortClick: () -> Unit,
+    onFixWarningClick: (String) -> Unit,
+    onNewGroupClick: () -> Unit,
+    actions: @Composable RowScope.() -> Unit,
 ) {
     // This is taken from the AppBar color code.
     val colorTransitionFraction by
@@ -101,17 +159,13 @@ fun KeyMapAppBar(
             }
         }
 
-    val appBarColors = if (state is KeyMapAppBarState.Selecting) {
-        TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            scrolledContainerColor = MaterialTheme.colorScheme.primaryContainer,
-            navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-            titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-            actionIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-        )
-    } else {
-        TopAppBarDefaults.centerAlignedTopAppBarColors()
-    }
+    val appBarColors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+        containerColor = MaterialTheme.colorScheme.primaryContainer,
+        scrolledContainerColor = MaterialTheme.colorScheme.primaryContainer,
+        navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        actionIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+    )
 
     val appBarContainerColor by animateColorAsState(
         targetValue = lerp(
@@ -122,136 +176,290 @@ fun KeyMapAppBar(
         animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
     )
 
-    var expandedDropdown by rememberSaveable { mutableStateOf(false) }
-
-    BackHandler(onBack = onBackClick)
-
-    // TODO to solve the problem of the key map list jumping up when showing the bottom sheet:
-    // Always show it behind the bottom nav bar and add the necessary padding at the end of the list. The bottom sheet
-    // will then just replace the bottom sheet.
-
-    Column {
+    Column(modifier) {
         CenterAlignedTopAppBar(
             scrollBehavior = scrollBehavior,
             title = {
-                when (state) {
-                    is KeyMapAppBarState.RootGroup -> AppBarStatus(
-                        state = state,
-                        onTogglePausedClick = onTogglePausedClick,
-                    )
-
-                    is KeyMapAppBarState.Selecting -> SelectedText(selectionCount = state.selectionCount)
-                    is KeyMapAppBarState.ChildGroup -> TODO()
-                }
+                AppBarStatus(
+                    isPaused = state.isPaused,
+                    warnings = state.warnings,
+                    onTogglePausedClick = onTogglePausedClick,
+                )
             },
             navigationIcon = {
-                AnimatedContent(state is KeyMapAppBarState.Selecting) { isSelecting ->
-                    if (isSelecting) {
-                        IconButton(onClick = onBackClick) {
-                            Icon(
-                                Icons.AutoMirrored.Rounded.ArrowBack,
-                                contentDescription = stringResource(R.string.home_app_bar_cancel_selecting),
-                            )
-                        }
-                    } else {
-                        IconButton(onClick = onSortClick) {
-                            Icon(
-                                Icons.AutoMirrored.Rounded.Sort,
-                                contentDescription = stringResource(R.string.home_app_bar_sort),
-                            )
-                        }
-                    }
+                IconButton(onClick = onSortClick) {
+                    Icon(
+                        Icons.AutoMirrored.Rounded.Sort,
+                        contentDescription = stringResource(R.string.home_app_bar_sort),
+                    )
                 }
             },
-            actions = {
-                AnimatedContent(state is KeyMapAppBarState.Selecting) { isSelecting ->
-                    if (isSelecting && state is KeyMapAppBarState.Selecting) {
-                        OutlinedButton(
-                            modifier = Modifier.padding(horizontal = 8.dp),
-                            onClick = onSelectAllClick,
-                        ) {
-                            val text = if (state.isAllSelected) {
-                                stringResource(R.string.home_app_bar_deselect_all)
-                            } else {
-                                stringResource(R.string.home_app_bar_select_all)
-                            }
-                            Text(text)
-                        }
-                    } else {
-                        Row {
-                            IconButton(onClick = onHelpClick) {
-                                Icon(
-                                    Icons.AutoMirrored.Rounded.HelpOutline,
-                                    contentDescription = stringResource(R.string.home_app_bar_help),
-                                )
-                            }
-
-                            IconButton(onClick = { expandedDropdown = true }) {
-                                Icon(
-                                    Icons.Rounded.MoreVert,
-                                    contentDescription = stringResource(R.string.home_app_bar_more),
-                                )
-                            }
-
-                            AppBarDropdownMenu(
-                                expanded = expandedDropdown,
-                                onSettingsClick = {
-                                    expandedDropdown = false
-                                    onSettingsClick()
-                                },
-                                onAboutClick = {
-                                    expandedDropdown = false
-                                    onAboutClick()
-                                },
-                                onExportClick = {
-                                    expandedDropdown = false
-                                    onExportClick()
-                                },
-                                onImportClick = {
-                                    expandedDropdown = false
-                                    onImportClick()
-                                },
-                                onDismissRequest = { expandedDropdown = false },
-                            )
-                        }
-                    }
-                }
-            },
+            actions = actions,
             colors = appBarColors,
         )
 
-        Column {
-            AnimatedVisibility(
-                visible = state is KeyMapAppBarState.RootGroup && state.warnings.isNotEmpty(),
-            ) {
-                // Use separate Surfaces so the animation doesn't jump when they both disappear
-                // going into selection mode.
-                Surface(color = appBarContainerColor) {
-                    HomeWarningList(
-                        modifier = Modifier.padding(bottom = 8.dp),
-                        warnings = (state as? KeyMapAppBarState.RootGroup)?.warnings ?: emptyList(),
-                        onFixClick = onFixWarningClick,
-                    )
-                }
+        AnimatedVisibility(visible = state.warnings.isNotEmpty()) {
+            // Use separate Surfaces so the animation doesn't jump when they both disappear
+            // going into selection mode.
+            Surface(color = appBarContainerColor) {
+                HomeWarningList(
+                    modifier = Modifier.padding(bottom = 8.dp),
+                    warnings = (state as? KeyMapAppBarState.RootGroup)?.warnings ?: emptyList(),
+                    onFixClick = onFixWarningClick,
+                )
+            }
+        }
+
+        Surface(color = appBarContainerColor) {
+            GroupRow(
+                modifier = Modifier
+                    .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
+                    .fillMaxWidth(),
+                groups = state.subGroups,
+                onNewGroupClick = onNewGroupClick,
+                onGroupClick = {},
+            )
+        }
+    }
+}
+
+@Composable
+private fun ChildGroupAppBar(
+    modifier: Modifier = Modifier,
+    state: KeyMapAppBarState.ChildGroup,
+    onBackClick: () -> Unit,
+    onNewGroupClick: () -> Unit = {},
+    onRenameGroupClick: suspend (String) -> Boolean = { true },
+    isEditingGroupName: Boolean = false,
+    actions: @Composable RowScope.() -> Unit,
+) {
+    Row(modifier) {
+        IconButton(onClick = onBackClick) {
+            Icon(
+                Icons.AutoMirrored.Rounded.ArrowBack,
+                contentDescription = stringResource(R.string.home_app_bar_pop_group),
+            )
+        }
+        GroupNameRow(
+            modifier = Modifier,
+            name = state.groupName,
+            onRenameClick = onRenameGroupClick,
+            isEditing = isEditingGroupName,
+        )
+
+        AnimatedVisibility(!isEditingGroupName) {
+            actions()
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SelectingAppBar(
+    modifier: Modifier = Modifier,
+    state: KeyMapAppBarState.Selecting,
+    onBackClick: () -> Unit,
+) {
+    CenterAlignedTopAppBar(
+        modifier = Modifier,
+        title = {
+            SelectedText(selectionCount = state.selectionCount)
+        },
+        navigationIcon = {
+            IconButton(onClick = onBackClick) {
+                Icon(
+                    Icons.AutoMirrored.Rounded.ArrowBack,
+                    contentDescription = stringResource(R.string.home_app_bar_cancel_selecting),
+                )
+            }
+        },
+        actions = {
+        },
+        colors = appBarColors,
+    )
+
+    Column {
+        AnimatedVisibility(
+            visible = state is KeyMapAppBarState.RootGroup && state.warnings.isNotEmpty(),
+        ) {
+            // Use separate Surfaces so the animation doesn't jump when they both disappear
+            // going into selection mode.
+            Surface(color = appBarContainerColor) {
+                HomeWarningList(
+                    modifier = Modifier.padding(bottom = 8.dp),
+                    warnings = (state as? KeyMapAppBarState.RootGroup)?.warnings ?: emptyList(),
+                    onFixClick = onFixWarningClick,
+                )
+            }
+        }
+
+        AnimatedVisibility(
+            visible = state !is KeyMapAppBarState.Selecting && !isEditingGroupName,
+        ) {
+            val subGroups = when (state) {
+                is KeyMapAppBarState.ChildGroup -> state.subGroups
+                is KeyMapAppBarState.RootGroup -> state.subGroups
+                is KeyMapAppBarState.Selecting -> emptyList()
             }
 
-            AnimatedVisibility(
-                visible = state !is KeyMapAppBarState.Selecting,
+            Surface(color = appBarContainerColor) {
+                GroupRow(
+                    modifier = Modifier
+                        .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
+                        .fillMaxWidth(),
+                    groups = subGroups,
+                    onNewGroupClick = onNewGroupClick,
+                    onGroupClick = {},
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun AppBarActions(
+    state: KeyMapAppBarState,
+    onSelectAllClick: () -> Unit,
+    onHelpClick: () -> Unit,
+    onSettingsClick: () -> Unit,
+    onAboutClick: () -> Unit,
+    onExportClick: () -> Unit,
+    onImportClick: () -> Unit,
+) {
+    var expandedDropdown by rememberSaveable { mutableStateOf(false) }
+
+    AnimatedContent(state is KeyMapAppBarState.Selecting) { isSelecting ->
+        if (isSelecting && state is KeyMapAppBarState.Selecting) {
+            OutlinedButton(
+                modifier = Modifier.padding(horizontal = 8.dp),
+                onClick = onSelectAllClick,
             ) {
-                val subGroups = when (state) {
-                    is KeyMapAppBarState.ChildGroup -> state.subGroups
-                    is KeyMapAppBarState.RootGroup -> state.subGroups
-                    is KeyMapAppBarState.Selecting -> emptyList()
+                val text = if (state.isAllSelected) {
+                    stringResource(R.string.home_app_bar_deselect_all)
+                } else {
+                    stringResource(R.string.home_app_bar_select_all)
+                }
+                Text(text)
+            }
+        } else {
+            Row {
+                IconButton(onClick = onHelpClick) {
+                    Icon(
+                        Icons.AutoMirrored.Rounded.HelpOutline,
+                        contentDescription = stringResource(R.string.home_app_bar_help),
+                    )
                 }
 
-                Surface(color = appBarContainerColor) {
-                    GroupRow(
-                        modifier = Modifier
-                            .padding(horizontal = 8.dp)
-                            .fillMaxWidth(),
-                        groups = subGroups,
-                        onNewGroupClick = {},
-                        onGroupClick = {},
+                IconButton(onClick = { expandedDropdown = true }) {
+                    Icon(
+                        Icons.Rounded.MoreVert,
+                        contentDescription = stringResource(R.string.home_app_bar_more),
+                    )
+                }
+
+                AppBarDropdownMenu(
+                    expanded = expandedDropdown,
+                    onSettingsClick = {
+                        expandedDropdown = false
+                        onSettingsClick()
+                    },
+                    onAboutClick = {
+                        expandedDropdown = false
+                        onAboutClick()
+                    },
+                    onExportClick = {
+                        expandedDropdown = false
+                        onExportClick()
+                    },
+                    onImportClick = {
+                        expandedDropdown = false
+                        onImportClick()
+                    },
+                    onDismissRequest = { expandedDropdown = false },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun GroupNameRow(
+    modifier: Modifier = Modifier,
+    name: String,
+    onRenameClick: suspend (String) -> Boolean = { true },
+    isEditing: Boolean,
+) {
+    val scope = rememberCoroutineScope()
+    val focusRequester = remember { FocusRequester() }
+    var newName by rememberSaveable { mutableStateOf(name) }
+    var error: String? by rememberSaveable { mutableStateOf(null) }
+
+    LaunchedEffect(isEditing) {
+        focusRequester.requestFocus()
+    }
+
+    val uniqueErrorText = stringResource(R.string.home_app_bar_group_name_unique_error)
+
+    fun onDoneClick(name: String) {
+        scope.launch {
+            val success = onRenameClick(name)
+            if (!success) {
+                error = uniqueErrorText
+            }
+        }
+    }
+
+    Row(modifier, verticalAlignment = Alignment.CenterVertically) {
+        OutlinedTextField(
+            modifier = Modifier
+                .focusRequester(focusRequester),
+            value = newName,
+            placeholder = { Text(name) },
+            onValueChange = {
+                error = null
+                newName = it
+            },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Done,
+                showKeyboardOnFocus = true,
+            ),
+            colors = if (isEditing) {
+                OutlinedTextFieldDefaults.colors()
+            } else {
+                OutlinedTextFieldDefaults.colors(
+                    unfocusedBorderColor = Color.Transparent,
+                    focusedBorderColor = Color.Transparent,
+                    disabledBorderColor = Color.Transparent,
+                    disabledTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                )
+            },
+            keyboardActions = KeyboardActions(onDone = { onDoneClick(newName) }),
+            isError = error != null,
+            supportingText = if (error == null) {
+                null
+            } else {
+                { Text(error!!) }
+            },
+            enabled = isEditing,
+        )
+
+        AnimatedContent(isEditing) { isEditing ->
+            if (isEditing) {
+                IconButton(onClick = { onDoneClick(newName) }) {
+                    Icon(
+                        Icons.Rounded.Done,
+                        contentDescription = stringResource(R.string.home_app_bar_save_group_name),
+                    )
+                }
+            } else {
+                IconButton(onClick = {
+                    focusRequester.freeFocus()
+                    focusRequester.requestFocus()
+                }) {
+                    Icon(
+                        Icons.Rounded.Edit,
+                        contentDescription = stringResource(R.string.home_app_bar_edit_group_name),
                     )
                 }
             }
@@ -261,11 +469,12 @@ fun KeyMapAppBar(
 
 @Composable
 private fun AppBarStatus(
-    state: KeyMapAppBarState.RootGroup,
+    isPaused: Boolean,
+    warnings: List<HomeWarningListItem>,
     onTogglePausedClick: () -> Unit,
 ) {
     val pausedButtonContainerColor by animateColorAsState(
-        targetValue = if (state.isPaused || state.warnings.isNotEmpty()) {
+        targetValue = if (isPaused || warnings.isNotEmpty()) {
             MaterialTheme.colorScheme.errorContainer
         } else {
             LocalCustomColorsPalette.current.greenContainer
@@ -273,7 +482,7 @@ private fun AppBarStatus(
     )
 
     val pausedButtonContentColor by animateColorAsState(
-        targetValue = if (state.isPaused || state.warnings.isNotEmpty()) {
+        targetValue = if (isPaused || warnings.isNotEmpty()) {
             MaterialTheme.colorScheme.onErrorContainer
         } else {
             LocalCustomColorsPalette.current.onGreenContainer
@@ -292,15 +501,15 @@ private fun AppBarStatus(
         val buttonIcon: ImageVector
         val buttonText: String
 
-        if (state.isPaused) {
+        if (isPaused) {
             buttonIcon = Icons.Rounded.PauseCircleOutline
             buttonText = stringResource(R.string.home_app_bar_status_paused)
-        } else if (state.warnings.isNotEmpty()) {
+        } else if (warnings.isNotEmpty()) {
             buttonIcon = Icons.Rounded.ErrorOutline
             buttonText = pluralStringResource(
                 R.plurals.home_app_bar_status_warnings,
-                state.warnings.size,
-                state.warnings.size,
+                warnings.size,
+                warnings.size,
             )
         } else {
             buttonIcon = Icons.Rounded.PlayCircleOutline
@@ -444,7 +653,32 @@ private fun KeyMapsChildGroupPreview() {
         constraintMode = ConstraintMode.AND,
     )
     KeyMapperTheme {
-        KeyMapAppBar(state = state)
+        KeyMapAppBar(state = state, isEditingGroupName = false)
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun KeyMapsChildGroupEditingPreview() {
+    val state = KeyMapAppBarState.ChildGroup(
+        groupName = "My group",
+        subGroups = groupSampleList(),
+        constraints = constraintsSampleList(),
+        constraintMode = ConstraintMode.AND,
+    )
+
+    val focusRequester = FocusRequester()
+
+    LaunchedEffect("") {
+        focusRequester.requestFocus()
+    }
+
+    KeyMapperTheme {
+        KeyMapAppBar(
+            state = state,
+            isEditingGroupName = true,
+        )
     }
 }
 
@@ -492,7 +726,11 @@ private fun HomeStateWarningsPreview() {
     )
 
     val state =
-        KeyMapAppBarState.RootGroup(subGroups = emptyList(), warnings = warnings, isPaused = true)
+        KeyMapAppBarState.RootGroup(
+            subGroups = emptyList(),
+            warnings = warnings,
+            isPaused = true,
+        )
     KeyMapperTheme {
         KeyMapAppBar(state = state)
     }
@@ -514,7 +752,11 @@ private fun HomeStateWarningsDarkPreview() {
     )
 
     val state =
-        KeyMapAppBarState.RootGroup(subGroups = emptyList(), warnings = warnings, isPaused = true)
+        KeyMapAppBarState.RootGroup(
+            subGroups = emptyList(),
+            warnings = warnings,
+            isPaused = true,
+        )
     KeyMapperTheme {
         KeyMapAppBar(state = state)
     }
