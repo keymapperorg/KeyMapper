@@ -30,6 +30,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -79,36 +80,41 @@ fun KeyMapList(
 ) {
     when (listItems) {
         is State.Loading -> {
-            LoadingList()
+            Surface(modifier = modifier) {
+                LoadingList(modifier = Modifier.fillMaxSize())
+            }
         }
 
         is State.Data -> {
-            if (listItems.data.isEmpty()) {
-                EmptyKeyMapList(modifier = modifier)
-            } else {
-                LoadedKeyMapList(
-                    modifier,
-                    lazyListState,
-                    listItems.data,
-                    footerText,
-                    isSelectable,
-                    onClickKeyMap,
-                    onLongClickKeyMap,
-                    onSelectedChange,
-                    onFixClick,
-                    onTriggerErrorClick,
-                )
+            Surface(modifier = modifier) {
+                if (listItems.data.isEmpty()) {
+                    EmptyKeyMapList(modifier = Modifier.fillMaxSize())
+                } else {
+                    LoadedKeyMapList(
+                        Modifier.fillMaxSize(),
+                        lazyListState,
+                        listItems.data,
+                        footerText,
+                        isSelectable,
+                        onClickKeyMap,
+                        onLongClickKeyMap,
+                        onSelectedChange,
+                        onFixClick,
+                        onTriggerErrorClick,
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-private fun LoadingList() {
-    Box {
+private fun LoadingList(modifier: Modifier = Modifier) {
+    Box(modifier) {
         CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
     }
 }
+
 @Composable
 private fun EmptyKeyMapList(modifier: Modifier = Modifier) {
     Box(modifier) {
@@ -181,7 +187,7 @@ private fun LoadedKeyMapList(
 
         // Give some space at the end of the list so that the FAB doesn't block the items.
         item {
-            Spacer(Modifier.height(100.dp))
+            Spacer(Modifier.height(140.dp))
         }
     }
 }

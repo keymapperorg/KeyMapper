@@ -28,7 +28,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
@@ -57,11 +56,7 @@ fun HomeScreen(
     val navController = rememberNavController()
     val navBarItems by viewModel.navBarItems.collectAsStateWithLifecycle()
 
-    val scope = rememberCoroutineScope()
     val snackbarState = remember { SnackbarHostState() }
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentDestination = navBackStackEntry?.destination
-
     val selectionState by viewModel.keyMapListViewModel.multiSelectProvider.state.collectAsStateWithLifecycle()
 
     HomeScreen(
@@ -85,16 +80,6 @@ fun HomeScreen(
                 navController = navController,
             )
         },
-        selectionBottomSheet = {
-//            SelectionBottomSheet(
-//                enabled = selectionState.selectionCount > 0,
-//                selectedKeyMapsEnabled = state.selectedKeyMapsEnabled,
-//                onEnabledKeyMapsChange = viewModel::onEnabledKeyMapsChange,
-//                onDuplicateClick = viewModel::onDuplicateSelectedKeyMapsClick,
-//                onExportClick = viewModel::onExportSelectedKeyMaps,
-//                onDeleteClick = { showDeleteDialog = true },
-//            )
-        },
     )
 }
 
@@ -107,7 +92,6 @@ private fun HomeScreen(
     navBarItems: List<HomeNavBarItem>,
     keyMapsContent: @Composable () -> Unit,
     floatingButtonsContent: @Composable () -> Unit,
-    selectionBottomSheet: @Composable () -> Unit = {},
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
@@ -137,77 +121,69 @@ private fun HomeScreen(
             }
 
             this@Column.AnimatedVisibility(
-                visible = isSelectingKeyMaps,
+                visible = !isSelectingKeyMaps && navBarItems.size > 1,
                 enter = slideInVertically { it },
                 exit = slideOutVertically { it },
             ) {
-                selectionBottomSheet()
-            }
-        }
-
-        AnimatedVisibility(
-            visible = isSelectingKeyMaps && navBarItems.size > 1,
-            enter = slideInVertically { it },
-            exit = slideOutVertically { it },
-        ) {
-            NavigationBar {
-                navBarItems.forEach { item ->
-                    NavigationBarItem(
-                        icon = {
-                            if (item.badge == null) {
-                                Icon(item.icon, contentDescription = null)
-                            } else {
-                                BadgedBox(
-                                    badge = {
-                                        Badge(
-                                            modifier = Modifier
-                                                .height(22.dp)
-                                                .padding(start = 10.dp),
-                                            containerColor = MaterialTheme.colorScheme.primary,
-                                            contentColor = MaterialTheme.colorScheme.onPrimary,
-                                        ) {
-                                            Text(
-                                                modifier = Modifier.padding(horizontal = 2.dp),
-                                                text = item.badge,
-                                                style = MaterialTheme.typography.labelLarge,
-                                            )
-                                        }
-                                    },
-                                ) {
+                NavigationBar {
+                    navBarItems.forEach { item ->
+                        NavigationBarItem(
+                            icon = {
+                                if (item.badge == null) {
                                     Icon(item.icon, contentDescription = null)
+                                } else {
+                                    BadgedBox(
+                                        badge = {
+                                            Badge(
+                                                modifier = Modifier
+                                                    .height(22.dp)
+                                                    .padding(start = 10.dp),
+                                                containerColor = MaterialTheme.colorScheme.primary,
+                                                contentColor = MaterialTheme.colorScheme.onPrimary,
+                                            ) {
+                                                Text(
+                                                    modifier = Modifier.padding(horizontal = 2.dp),
+                                                    text = item.badge,
+                                                    style = MaterialTheme.typography.labelLarge,
+                                                )
+                                            }
+                                        },
+                                    ) {
+                                        Icon(item.icon, contentDescription = null)
+                                    }
                                 }
-                            }
-                        },
-                        label = {
-                            Text(
-                                item.label,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                        },
-                        selected = currentDestination?.hierarchy?.any { it.route == item.destination.route } == true,
-                        onClick = {
-                            // don't do anything if clicking on the current
-                            // destination because this results in some ugly animations.
-                            if (currentDestination?.route == item.destination.route) {
-                                return@NavigationBarItem
-                            }
+                            },
+                            label = {
+                                Text(
+                                    item.label,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                            },
+                            selected = currentDestination?.hierarchy?.any { it.route == item.destination.route } == true,
+                            onClick = {
+                                // don't do anything if clicking on the current
+                                // destination because this results in some ugly animations.
+                                if (currentDestination?.route == item.destination.route) {
+                                    return@NavigationBarItem
+                                }
 
-                            navController.navigate(item.destination.route) {
-                                // Pop up to the start destination of the graph to
-                                // avoid building up a large stack of destinations
-                                // on the back stack as users select items
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
+                                navController.navigate(item.destination.route) {
+                                    // Pop up to the start destination of the graph to
+                                    // avoid building up a large stack of destinations
+                                    // on the back stack as users select items
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    // Avoid multiple copies of the same destination when
+                                    // reselecting the same item
+                                    launchSingleTop = true
+                                    // Restore state when re-selecting a previously selected item
+                                    restoreState = true
                                 }
-                                // Avoid multiple copies of the same destination when
-                                // reselecting the same item
-                                launchSingleTop = true
-                                // Restore state when re-selecting a previously selected item
-                                restoreState = true
-                            }
-                        },
-                    )
+                            },
+                        )
+                    }
                 }
             }
         }

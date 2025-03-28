@@ -92,6 +92,7 @@ private fun CreateKeyMapShortcutScreen(
         )
     }
 
+    // TODO allow navigating between groups and hide the FAB.
     Scaffold(
         modifier = modifier,
         bottomBar = {

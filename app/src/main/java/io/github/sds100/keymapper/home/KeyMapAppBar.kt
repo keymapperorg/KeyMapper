@@ -55,18 +55,26 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.compose.LocalCustomColorsPalette
+import io.github.sds100.keymapper.constraints.ConstraintMode
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapAppBarState
+import io.github.sds100.keymapper.util.Error
+import io.github.sds100.keymapper.util.drawable
+import io.github.sds100.keymapper.util.ui.compose.ComposeChipModel
+import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.util.ui.compose.icons.Import
 import io.github.sds100.keymapper.util.ui.compose.icons.KeyMapperIcons
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
- fun KeyMapAppBar(
+fun KeyMapAppBar(
     state: KeyMapAppBarState,
     onSettingsClick: () -> Unit = {},
     onAboutClick: () -> Unit = {},
@@ -360,5 +368,138 @@ private fun AppBarDropdownMenu(
             text = { Text(stringResource(R.string.home_menu_about)) },
             onClick = onAboutClick,
         )
+    }
+}
+
+@Composable
+private fun constraintsSampleList(): List<ComposeChipModel> {
+    val context = LocalContext.current
+
+    return listOf(
+        ComposeChipModel.Normal(
+            id = "0",
+            ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
+            "Key Mapper is not open",
+        ),
+        ComposeChipModel.Error(
+            id = "1",
+            "Key Mapper is playing media",
+            error = Error.AppNotFound(""),
+        ),
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun KeyMapsChildGroupPreview() {
+    val state = KeyMapAppBarState.ChildGroup(
+        groupName = "My group",
+        subGroups = emptyList(),
+        constraints = constraintsSampleList(),
+        constraintMode = ConstraintMode.AND,
+    )
+    KeyMapperTheme {
+        KeyMapAppBar(state = state)
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun KeyMapsRunningPreview() {
+    val state = KeyMapAppBarState.RootGroup(
+        subGroups = emptyList(),
+        warnings = emptyList(),
+        isPaused = false,
+    )
+    KeyMapperTheme {
+        KeyMapAppBar(state = state)
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun HomeStatePausedPreview() {
+    val state = KeyMapAppBarState.RootGroup(
+        subGroups = emptyList(),
+        warnings = emptyList(),
+        isPaused = true,
+    )
+    KeyMapperTheme {
+        KeyMapAppBar(state = state)
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun HomeStateWarningsPreview() {
+    val warnings = listOf(
+        HomeWarningListItem(
+            id = "0",
+            text = stringResource(R.string.home_error_accessibility_service_is_disabled),
+        ),
+        HomeWarningListItem(
+            id = "1",
+            text = stringResource(R.string.home_error_is_battery_optimised),
+        ),
+    )
+
+    val state =
+        KeyMapAppBarState.RootGroup(subGroups = emptyList(), warnings = warnings, isPaused = true)
+    KeyMapperTheme {
+        KeyMapAppBar(state = state)
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun HomeStateWarningsDarkPreview() {
+    val warnings = listOf(
+        HomeWarningListItem(
+            id = "0",
+            text = stringResource(R.string.home_error_accessibility_service_is_disabled),
+        ),
+        HomeWarningListItem(
+            id = "1",
+            text = stringResource(R.string.home_error_is_battery_optimised),
+        ),
+    )
+
+    val state =
+        KeyMapAppBarState.RootGroup(subGroups = emptyList(), warnings = warnings, isPaused = true)
+    KeyMapperTheme {
+        KeyMapAppBar(state = state)
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(widthDp = 300, heightDp = 600)
+@Composable
+private fun HomeStateSelectingPreview() {
+    val state = KeyMapAppBarState.Selecting(
+        selectionCount = 4,
+        selectedKeyMapsEnabled = SelectedKeyMapsEnabled.MIXED,
+        isAllSelected = false,
+    )
+    KeyMapperTheme {
+        KeyMapAppBar(state = state)
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showSystemUi = true)
+@Composable
+private fun HomeStateSelectingDisabledPreview() {
+    val state = KeyMapAppBarState.Selecting(
+        selectionCount = 4,
+        selectedKeyMapsEnabled = SelectedKeyMapsEnabled.MIXED,
+        isAllSelected = true,
+    )
+    KeyMapperTheme {
+        KeyMapAppBar(state = state)
     }
 }

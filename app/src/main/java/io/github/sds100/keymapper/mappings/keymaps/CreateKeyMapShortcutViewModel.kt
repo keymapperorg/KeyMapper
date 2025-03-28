@@ -12,6 +12,7 @@ import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.actions.ActionErrorSnapshot
 import io.github.sds100.keymapper.actions.ActionUiHelper
 import io.github.sds100.keymapper.constraints.ConstraintErrorSnapshot
+import io.github.sds100.keymapper.constraints.ConstraintMode
 import io.github.sds100.keymapper.groups.SubGroupListModel
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerErrorSnapshot
@@ -42,7 +43,15 @@ class CreateKeyMapShortcutViewModel(
     private val actionUiHelper = ActionUiHelper(listKeyMaps, resourceProvider)
     private val listItemCreator = KeyMapListItemCreator(listKeyMaps, resourceProvider)
 
-    private val _state = MutableStateFlow<KeyMapListState>(KeyMapListState.Root())
+    private val initialState = KeyMapListState(
+        appBarState = KeyMapAppBarState.RootGroup(
+            subGroups = emptyList(),
+            warnings = emptyList(),
+            isPaused = false,
+        ),
+        listItems = State.Loading,
+    )
+    private val _state: MutableStateFlow<KeyMapListState> = MutableStateFlow(initialState)
     val state = _state.asStateFlow()
 
     private val _returnIntentResult = MutableSharedFlow<Intent>()
@@ -100,23 +109,22 @@ class CreateKeyMapShortcutViewModel(
             )
         }
 
-        if (keyMapGroup.group == null) {
-            return KeyMapListState.Root(
+        val appBarState = if (keyMapGroup.group == null) {
+            KeyMapAppBarState.RootGroup(
                 subGroups = subGroupListItems,
-                listItems = listItemsState,
+                warnings = emptyList(),
+                isPaused = false,
             )
         } else {
-            return KeyMapListState.Child(
+            KeyMapAppBarState.ChildGroup(
                 groupName = keyMapGroup.group.name,
-                constraints = listItemCreator.buildConstraintChipList(
-                    keyMapGroup.group.constraintState,
-                    constraintErrorSnapshot,
-                ),
-                constraintMode = keyMapGroup.group.constraintState.mode,
                 subGroups = subGroupListItems,
-                listItems = listItemsState,
+                constraints = emptyList(),
+                constraintMode = ConstraintMode.AND,
             )
         }
+
+        return KeyMapListState(appBarState, listItemsState)
     }
 
     fun onKeyMapCardClick(uid: String) {

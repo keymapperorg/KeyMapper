@@ -5,11 +5,17 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowForward
+import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.FlashlightOn
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -32,26 +38,34 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.compose.rememberNavController
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.backup.ImportExportState
 import io.github.sds100.keymapper.backup.RestoreType
 import io.github.sds100.keymapper.compose.KeyMapperTheme
+import io.github.sds100.keymapper.constraints.ConstraintMode
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapAppBarState
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapList
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapListViewModel
 import io.github.sds100.keymapper.mappings.keymaps.trigger.DpadTriggerSetupBottomSheet
+import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapListItemModel
+import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerError
 import io.github.sds100.keymapper.sorting.SortBottomSheet
 import io.github.sds100.keymapper.system.files.FileUtils
+import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.ShareUtils
+import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.drawable
 import io.github.sds100.keymapper.util.ui.NavDestination
 import io.github.sds100.keymapper.util.ui.NavigateEvent
+import io.github.sds100.keymapper.util.ui.compose.ComposeChipModel
+import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -109,8 +123,8 @@ fun HomeKeyMapListScreen(
 
     var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
 
-    if (showDeleteDialog) {
-        val keyMapCount = (state.appBarState as? KeyMapAppBarState.Selecting)?.selectionCount ?: 0
+    if (showDeleteDialog && state.appBarState is KeyMapAppBarState.Selecting) {
+        val keyMapCount = (state.appBarState as KeyMapAppBarState.Selecting).selectionCount
 
         DeleteKeyMapsDialog(
             keyMapCount = keyMapCount,
@@ -131,8 +145,9 @@ fun HomeKeyMapListScreen(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         snackbarState = snackbarState,
         floatingActionButton = {
-            if (state.appBarState !is KeyMapAppBarState.Selecting) {
-                FloatingActionButton(
+            AnimatedVisibility(state.appBarState !is KeyMapAppBarState.Selecting) {
+                NewKeyMapFab(
+                    modifier = Modifier.padding(bottom = 80.dp),
                     onClick = {
                         scope.launch {
                             viewModel.navigate(
@@ -143,21 +158,8 @@ fun HomeKeyMapListScreen(
                             )
                         }
                     },
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        val fabText = stringResource(R.string.home_fab_new_key_map)
-                        Icon(Icons.Rounded.Add, contentDescription = fabText)
-
-                        AnimatedVisibility(viewModel.showFabText) {
-                            AnimatedContent(fabText) { text ->
-                                Text(modifier = Modifier.padding(start = 8.dp), text = fabText)
-                            }
-                        }
-                    }
-                }
+                    showText = viewModel.showFabText,
+                )
             }
         },
         listContent = {
@@ -194,16 +196,40 @@ fun HomeKeyMapListScreen(
                 onSelectAllClick = viewModel::onSelectAllClick,
             )
         },
+        selectionBottomSheet = {
+            AnimatedVisibility(
+                visible = state.appBarState is KeyMapAppBarState.Selecting,
+                enter = slideInVertically { it },
+                exit = slideOutVertically { it },
+            ) {
+                val selectionState = (state.appBarState as? KeyMapAppBarState.Selecting)
+                    ?: KeyMapAppBarState.Selecting(
+                        selectionCount = 0,
+                        selectedKeyMapsEnabled = SelectedKeyMapsEnabled.NONE,
+                        isAllSelected = false,
+                    )
+
+                SelectionBottomSheet(
+                    enabled = selectionState.selectionCount > 0,
+                    selectedKeyMapsEnabled = selectionState.selectedKeyMapsEnabled,
+                    onEnabledKeyMapsChange = viewModel::onEnabledKeyMapsChange,
+                    onDuplicateClick = viewModel::onDuplicateSelectedKeyMapsClick,
+                    onExportClick = viewModel::onExportSelectedKeyMaps,
+                    onDeleteClick = { showDeleteDialog = true },
+                )
+            }
+        },
     )
 }
 
 @Composable
 private fun HomeKeyMapListScreen(
     modifier: Modifier = Modifier,
-    snackbarState: SnackbarHostState,
+    snackbarState: SnackbarHostState = SnackbarHostState(),
     appBarContent: @Composable () -> Unit,
     listContent: @Composable () -> Unit,
     floatingActionButton: @Composable () -> Unit,
+    selectionBottomSheet: @Composable () -> Unit,
 ) {
     Scaffold(
         modifier,
@@ -212,7 +238,10 @@ private fun HomeKeyMapListScreen(
         floatingActionButton = floatingActionButton,
     ) { padding ->
         Surface(modifier = Modifier.padding(padding)) {
-            listContent()
+            Box(contentAlignment = Alignment.BottomCenter) {
+                listContent()
+                selectionBottomSheet()
+            }
         }
     }
 }
@@ -279,119 +308,205 @@ fun HandleImportExportState(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview
 @Composable
-private fun HomeStateRunningPreview() {
-    val state = HomeState.Normal(warnings = emptyList(), isPaused = false)
-    KeyMapperTheme {
-        HomeScreen(
-            navController = rememberNavController(),
-            homeState = state,
-            navBarItems = sampleNavBarItems(),
-            topAppBar = { HomeAppBar(state) },
-            keyMapsContent = {},
-            floatingButtonsContent = {},
-        )
+private fun NewKeyMapFab(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
+    showText: Boolean,
+) {
+    FloatingActionButton(
+        modifier = modifier,
+        onClick = onClick,
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            val fabText = stringResource(R.string.home_fab_new_key_map)
+            Icon(Icons.Rounded.Add, contentDescription = fabText)
+
+            AnimatedVisibility(showText) {
+                AnimatedContent(fabText) { text ->
+                    Text(modifier = Modifier.padding(start = 8.dp), text = fabText)
+                }
+            }
+        }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview
 @Composable
-private fun HomeStatePausedPreview() {
-    val state = HomeState.Normal(warnings = emptyList(), isPaused = true)
-    KeyMapperTheme {
-        HomeScreen(
-            navController = rememberNavController(),
-            homeState = state,
-            navBarItems = sampleNavBarItems(),
-            topAppBar = { HomeAppBar(state) },
-            keyMapsContent = {},
-            floatingButtonsContent = {},
-        )
-    }
-}
+private fun sampleList(): List<KeyMapListItemModel> {
+    val context = LocalContext.current
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview
-@Composable
-private fun HomeStateWarningsPreview() {
-    val state = HomeState.Normal(
-        warnings = listOf(
-            HomeWarningListItem(
-                id = "0",
-                text = stringResource(R.string.home_error_accessibility_service_is_disabled),
-            ),
-            HomeWarningListItem(
-                id = "1",
-                text = stringResource(R.string.home_error_is_battery_optimised),
+    return listOf(
+        KeyMapListItemModel(
+            isSelected = true,
+            KeyMapListItemModel.Content(
+                uid = "0",
+                triggerKeys = listOf("Volume down", "Volume up", "Volume down"),
+                triggerSeparatorIcon = Icons.AutoMirrored.Outlined.ArrowForward,
+                actions = listOf(
+                    ComposeChipModel.Normal(
+                        id = "0",
+                        ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
+                        "Open Key Mapper",
+                    ),
+                    ComposeChipModel.Error(
+                        id = "1",
+                        text = "Input KEYCODE_0 • Repeat until released",
+                        error = Error.NoCompatibleImeChosen,
+                    ),
+                    ComposeChipModel.Normal(
+                        id = "2",
+                        text = "Input KEYCODE_Q",
+                        icon = null,
+                    ),
+                    ComposeChipModel.Normal(
+                        id = "3",
+                        text = "Toggle flashlight",
+                        icon = ComposeIconInfo.Vector(Icons.Outlined.FlashlightOn),
+                    ),
+                ),
+                constraintMode = ConstraintMode.AND,
+                constraints = listOf(
+                    ComposeChipModel.Normal(
+                        id = "0",
+                        ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
+                        "Key Mapper is not open",
+                    ),
+                    ComposeChipModel.Error(
+                        id = "1",
+                        "Key Mapper is playing media",
+                        error = Error.AppNotFound(""),
+                    ),
+                ),
+                options = listOf("Vibrate"),
+                triggerErrors = listOf(TriggerError.DND_ACCESS_DENIED),
+                extraInfo = "Disabled • No trigger",
             ),
         ),
-        isPaused = false,
+        KeyMapListItemModel(
+            isSelected = true,
+            KeyMapListItemModel.Content(
+                uid = "1",
+                triggerKeys = listOf("Volume down", "Volume up"),
+                triggerSeparatorIcon = Icons.Outlined.Add,
+                actions = listOf(
+                    ComposeChipModel.Normal(
+                        id = "0",
+                        ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
+                        "Open Key Mapper",
+                    ),
+                ),
+                constraintMode = ConstraintMode.AND,
+                constraints = listOf(
+                    ComposeChipModel.Normal(
+                        id = "0",
+                        ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
+                        "Key Mapper is not open",
+                    ),
+                ),
+                options = listOf(
+                    "Vibrate",
+                    "Vibrate when keys are initially pressed and again when long pressed",
+                ),
+                triggerErrors = emptyList(),
+                extraInfo = null,
+            ),
+        ),
+        KeyMapListItemModel(
+            isSelected = true,
+            KeyMapListItemModel.Content(
+                uid = "2",
+                triggerKeys = listOf("Volume down", "Volume up"),
+                triggerSeparatorIcon = Icons.Outlined.Add,
+                actions = listOf(
+                    ComposeChipModel.Normal(
+                        id = "0",
+                        ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
+                        "Open Key Mapper",
+                    ),
+                ),
+                constraintMode = ConstraintMode.AND,
+                constraints = listOf(
+                    ComposeChipModel.Normal(
+                        id = "0",
+                        ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
+                        "Key Mapper is not open",
+                    ),
+                ),
+                options = emptyList(),
+                triggerErrors = emptyList(),
+                extraInfo = null,
+            ),
+        ),
+        KeyMapListItemModel(
+            isSelected = true,
+            KeyMapListItemModel.Content(
+                uid = "3",
+                triggerKeys = listOf("Volume down", "Volume up"),
+                triggerSeparatorIcon = Icons.Outlined.Add,
+                actions = listOf(
+                    ComposeChipModel.Normal(
+                        id = "0",
+                        ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
+                        "Open Key Mapper",
+                    ),
+                ),
+                constraintMode = ConstraintMode.AND,
+                constraints = emptyList(),
+                options = emptyList(),
+                triggerErrors = emptyList(),
+                extraInfo = null,
+            ),
+        ),
+        KeyMapListItemModel(
+            isSelected = false,
+            content = KeyMapListItemModel.Content(
+                uid = "4",
+                triggerKeys = emptyList(),
+                triggerSeparatorIcon = Icons.Outlined.Add,
+                actions = emptyList(),
+                constraintMode = ConstraintMode.OR,
+                constraints = emptyList(),
+                options = emptyList(),
+                triggerErrors = emptyList(),
+                extraInfo = "Disabled • No trigger",
+            ),
+        ),
     )
-    KeyMapperTheme {
-        HomeScreen(
-            navController = rememberNavController(),
-            homeState = state,
-            navBarItems = sampleNavBarItems(),
-            topAppBar = { HomeAppBar(state) },
-            keyMapsContent = {},
-            floatingButtonsContent = {},
-        )
-    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
-private fun HomeStateWarningsDarkPreview() {
-    val state = HomeState.Normal(
-        warnings = listOf(
-            HomeWarningListItem(
-                id = "0",
-                text = stringResource(R.string.home_error_accessibility_service_is_disabled),
-            ),
-            HomeWarningListItem(
-                id = "1",
-                text = stringResource(R.string.home_error_is_battery_optimised),
-            ),
-        ),
-        isPaused = false,
-    )
-    KeyMapperTheme(darkTheme = true) {
-        HomeScreen(
-            navController = rememberNavController(),
-            homeState = state,
-            navBarItems = sampleNavBarItems(),
-            topAppBar = { HomeAppBar(state) },
-            keyMapsContent = {},
-            floatingButtonsContent = {},
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview(widthDp = 300, heightDp = 600)
-@Composable
-private fun HomeStateSelectingPreview() {
-    val state = HomeState.Selecting(
-        selectionCount = 4,
+private fun PreviewSelectingKeyMaps() {
+    val appBarState = KeyMapAppBarState.Selecting(
+        selectionCount = 2,
         selectedKeyMapsEnabled = SelectedKeyMapsEnabled.MIXED,
         isAllSelected = false,
     )
+
+    val listState = State.Data(sampleList())
+
     KeyMapperTheme {
-        HomeScreen(
-            navController = rememberNavController(),
-            homeState = state,
-            navBarItems = sampleNavBarItems(),
-            topAppBar = { HomeAppBar(state) },
-            keyMapsContent = {},
-            floatingButtonsContent = {},
+        HomeKeyMapListScreen(
+            floatingActionButton = {},
+            listContent = {
+                KeyMapList(
+                    lazyListState = rememberLazyListState(initialFirstVisibleItemIndex = 4),
+                    listItems = listState,
+                    footerText = stringResource(R.string.home_key_map_list_footer_text),
+                    isSelectable = true,
+                )
+            },
+            appBarContent = {
+                KeyMapAppBar(state = appBarState)
+            },
             selectionBottomSheet = {
                 SelectionBottomSheet(
                     enabled = true,
-                    selectedKeyMapsEnabled = SelectedKeyMapsEnabled.ALL,
+                    selectedKeyMapsEnabled = SelectedKeyMapsEnabled.MIXED,
                 )
             },
         )
@@ -399,61 +514,155 @@ private fun HomeStateSelectingPreview() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(showSystemUi = true)
+@Preview
 @Composable
-private fun HomeStateSelectingDisabledPreview() {
-    val state = HomeState.Selecting(
-        selectionCount = 4,
-        selectedKeyMapsEnabled = SelectedKeyMapsEnabled.MIXED,
-        isAllSelected = true,
+private fun PreviewKeyMapsRunning() {
+    val appBarState = KeyMapAppBarState.RootGroup(
+        subGroups = emptyList(),
+        warnings = emptyList(),
+        isPaused = false,
     )
+
+    val listState = State.Data(sampleList())
+
     KeyMapperTheme {
-        HomeScreen(
-            navController = rememberNavController(),
-            homeState = state,
-            navBarItems = sampleNavBarItems(),
-            topAppBar = { HomeAppBar(state) },
-            keyMapsContent = {},
-            floatingButtonsContent = {},
-            selectionBottomSheet = {
-                SelectionBottomSheet(
-                    enabled = false,
-                    selectedKeyMapsEnabled = SelectedKeyMapsEnabled.NONE,
+        HomeKeyMapListScreen(
+            floatingActionButton = {
+                NewKeyMapFab(showText = true)
+            },
+            listContent = {
+                KeyMapList(
+                    lazyListState = rememberLazyListState(),
+                    listItems = listState,
+                    footerText = stringResource(R.string.home_key_map_list_footer_text),
+                    isSelectable = false,
                 )
             },
+            appBarContent = {
+                KeyMapAppBar(state = appBarState)
+            },
+            selectionBottomSheet = {},
         )
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
-private fun ImportDialogPreview() {
+private fun PreviewKeyMapsPaused() {
+    val appBarState = KeyMapAppBarState.RootGroup(
+        subGroups = emptyList(),
+        warnings = emptyList(),
+        isPaused = true,
+    )
+
+    val listState = State.Data(sampleList())
+
     KeyMapperTheme {
-        ImportDialog(
-            keyMapCount = 3,
-            onDismissRequest = {},
-            onAppendClick = {},
-            onReplaceClick = {},
+        HomeKeyMapListScreen(
+            floatingActionButton = {
+                NewKeyMapFab(showText = true)
+            },
+            listContent = {
+                KeyMapList(
+                    lazyListState = rememberLazyListState(),
+                    listItems = listState,
+                    footerText = stringResource(R.string.home_key_map_list_footer_text),
+                    isSelectable = false,
+                )
+            },
+            appBarContent = {
+                KeyMapAppBar(state = appBarState)
+            },
+            selectionBottomSheet = {},
         )
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
-private fun DropdownPreview() {
+private fun PreviewKeyMapsWarnings() {
+    val warnings = listOf(
+        HomeWarningListItem(
+            id = "0",
+            text = stringResource(R.string.home_error_accessibility_service_is_disabled),
+        ),
+        HomeWarningListItem(
+            id = "1",
+            text = stringResource(R.string.home_error_is_battery_optimised),
+        ),
+    )
+
+    val appBarState = KeyMapAppBarState.RootGroup(
+        subGroups = emptyList(),
+        warnings = warnings,
+        isPaused = true,
+    )
+
+    val listState = State.Data(sampleList())
+
     KeyMapperTheme {
-        HomeDropdownMenu(
-            expanded = true,
+        HomeKeyMapListScreen(
+            floatingActionButton = {
+                NewKeyMapFab(showText = true)
+            },
+            listContent = {
+                KeyMapList(
+                    lazyListState = rememberLazyListState(),
+                    listItems = listState,
+                    footerText = stringResource(R.string.home_key_map_list_footer_text),
+                    isSelectable = false,
+                )
+            },
+            appBarContent = {
+                KeyMapAppBar(state = appBarState)
+            },
+            selectionBottomSheet = {},
         )
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
-private fun DropdownExportingPreview() {
+private fun PreviewKeyMapsWarningsEmpty() {
+    val warnings = listOf(
+        HomeWarningListItem(
+            id = "0",
+            text = stringResource(R.string.home_error_accessibility_service_is_disabled),
+        ),
+        HomeWarningListItem(
+            id = "1",
+            text = stringResource(R.string.home_error_is_battery_optimised),
+        ),
+    )
+
+    val appBarState = KeyMapAppBarState.RootGroup(
+        subGroups = emptyList(),
+        warnings = warnings,
+        isPaused = true,
+    )
+
+    val listState = State.Data(emptyList<KeyMapListItemModel>())
+
     KeyMapperTheme {
-        HomeDropdownMenu(
-            expanded = true,
+        HomeKeyMapListScreen(
+            floatingActionButton = {
+                NewKeyMapFab(showText = true)
+            },
+            listContent = {
+                KeyMapList(
+                    lazyListState = rememberLazyListState(),
+                    listItems = listState,
+                    footerText = stringResource(R.string.home_key_map_list_footer_text),
+                    isSelectable = false,
+                )
+            },
+            appBarContent = {
+                KeyMapAppBar(state = appBarState)
+            },
+            selectionBottomSheet = {},
         )
     }
 }

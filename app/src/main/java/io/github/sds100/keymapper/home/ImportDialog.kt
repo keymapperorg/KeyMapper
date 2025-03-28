@@ -8,7 +8,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.compose.KeyMapperTheme
 
 @Composable
  fun ImportDialog(
@@ -51,4 +53,17 @@ import io.github.sds100.keymapper.R
             }
         },
     )
+}
+
+@Preview
+@Composable
+private fun ImportDialogPreview() {
+    KeyMapperTheme {
+        ImportDialog(
+            keyMapCount = 3,
+            onDismissRequest = {},
+            onAppendClick = {},
+            onReplaceClick = {},
+        )
+    }
 }
