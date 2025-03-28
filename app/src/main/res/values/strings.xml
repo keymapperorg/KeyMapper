@@ -1354,6 +1354,12 @@
     <string name="home_key_maps_delete_cancel">Cancel</string>
     <string name="home_export_share_sheet_save_to_files">Save to files</string>
 
+    <string name="home_new_group_button">New group</string>
+    <string name="home_new_subgroup_button">New subgroup</string>
+    <string name="home_new_view_all_groups_button">View all</string>
+    <string name="home_group_constraints_title">Group constraints</string>
+    <string name="home_new_group_constraint_button">New group constraint</string>
+
     <!-- Trigger screen -->
     <string name="trigger_key_list_item_remove">Remove</string>
     <string name="trigger_key_list_item_edit">Edit</string>

@@ -4,7 +4,11 @@ import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -44,6 +48,7 @@ import io.github.sds100.keymapper.backup.ImportExportState
 import io.github.sds100.keymapper.backup.RestoreType
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.constraints.ConstraintMode
+import io.github.sds100.keymapper.groups.SubGroupListModel
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapAppBarState
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapList
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapListViewModel
@@ -140,7 +145,11 @@ fun HomeKeyMapListScreen(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         snackbarState = snackbarState,
         floatingActionButton = {
-            AnimatedVisibility(state.appBarState !is KeyMapAppBarState.Selecting) {
+            AnimatedVisibility(
+                state.appBarState !is KeyMapAppBarState.Selecting,
+                enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
+                exit = fadeOut() + slideOutHorizontally(targetOffsetX = { it }),
+            ) {
                 CollapsableFloatingActionButton(
                     modifier = Modifier.padding(bottom = 80.dp),
                     onClick = {
@@ -559,6 +568,8 @@ private fun PreviewKeyMapsPaused() {
 @Preview
 @Composable
 private fun PreviewKeyMapsWarnings() {
+    val ctx = LocalContext.current
+
     val warnings = listOf(
         HomeWarningListItem(
             id = "0",
@@ -571,7 +582,13 @@ private fun PreviewKeyMapsWarnings() {
     )
 
     val appBarState = KeyMapAppBarState.RootGroup(
-        subGroups = emptyList(),
+        subGroups = listOf(
+            SubGroupListModel(
+                uid = "0",
+                name = "Key Mapper",
+                icon = ComposeIconInfo.Drawable(ctx.drawable(R.mipmap.ic_launcher_round)),
+            ),
+        ),
         warnings = warnings,
         isPaused = true,
     )

@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
@@ -64,6 +65,8 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.compose.LocalCustomColorsPalette
 import io.github.sds100.keymapper.constraints.ConstraintMode
+import io.github.sds100.keymapper.groups.GroupRow
+import io.github.sds100.keymapper.groups.SubGroupListModel
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapAppBarState
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.drawable
@@ -216,13 +219,41 @@ fun KeyMapAppBar(
             },
             colors = appBarColors,
         )
-        AnimatedVisibility(state is KeyMapAppBarState.RootGroup && state.warnings.isNotEmpty()) {
-            Surface(color = appBarContainerColor) {
-                HomeWarningList(
-                    modifier = Modifier.padding(bottom = 8.dp),
-                    warnings = (state as? KeyMapAppBarState.RootGroup)?.warnings ?: emptyList(),
-                    onFixClick = onFixWarningClick,
-                )
+
+        Column {
+            AnimatedVisibility(
+                visible = state is KeyMapAppBarState.RootGroup && state.warnings.isNotEmpty(),
+            ) {
+                // Use separate Surfaces so the animation doesn't jump when they both disappear
+                // going into selection mode.
+                Surface(color = appBarContainerColor) {
+                    HomeWarningList(
+                        modifier = Modifier.padding(bottom = 8.dp),
+                        warnings = (state as? KeyMapAppBarState.RootGroup)?.warnings ?: emptyList(),
+                        onFixClick = onFixWarningClick,
+                    )
+                }
+            }
+
+            AnimatedVisibility(
+                visible = state !is KeyMapAppBarState.Selecting,
+            ) {
+                val subGroups = when (state) {
+                    is KeyMapAppBarState.ChildGroup -> state.subGroups
+                    is KeyMapAppBarState.RootGroup -> state.subGroups
+                    is KeyMapAppBarState.Selecting -> emptyList()
+                }
+
+                Surface(color = appBarContainerColor) {
+                    GroupRow(
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp)
+                            .fillMaxWidth(),
+                        groups = subGroups,
+                        onNewGroupClick = {},
+                        onGroupClick = {},
+                    )
+                }
             }
         }
     }
@@ -389,13 +420,26 @@ private fun constraintsSampleList(): List<ComposeChipModel> {
     )
 }
 
+@Composable
+private fun groupSampleList(): List<SubGroupListModel> {
+    val ctx = LocalContext.current
+
+    return listOf(
+        SubGroupListModel(
+            uid = "0",
+            name = "Key Mapper",
+            icon = ComposeIconInfo.Drawable(ctx.drawable(R.mipmap.ic_launcher_round)),
+        ),
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 private fun KeyMapsChildGroupPreview() {
     val state = KeyMapAppBarState.ChildGroup(
         groupName = "My group",
-        subGroups = emptyList(),
+        subGroups = groupSampleList(),
         constraints = constraintsSampleList(),
         constraintMode = ConstraintMode.AND,
     )
