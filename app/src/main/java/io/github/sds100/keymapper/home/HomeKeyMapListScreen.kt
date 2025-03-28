@@ -3,12 +3,10 @@ package io.github.sds100.keymapper.home
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -16,16 +14,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowForward
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.FlashlightOn
-import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -64,6 +58,7 @@ import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.drawable
 import io.github.sds100.keymapper.util.ui.NavDestination
 import io.github.sds100.keymapper.util.ui.NavigateEvent
+import io.github.sds100.keymapper.util.ui.compose.CollapsableFloatingActionButton
 import io.github.sds100.keymapper.util.ui.compose.ComposeChipModel
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 import kotlinx.coroutines.launch
@@ -146,7 +141,7 @@ fun HomeKeyMapListScreen(
         snackbarState = snackbarState,
         floatingActionButton = {
             AnimatedVisibility(state.appBarState !is KeyMapAppBarState.Selecting) {
-                NewKeyMapFab(
+                CollapsableFloatingActionButton(
                     modifier = Modifier.padding(bottom = 80.dp),
                     onClick = {
                         scope.launch {
@@ -159,6 +154,7 @@ fun HomeKeyMapListScreen(
                         }
                     },
                     showText = viewModel.showFabText,
+                    text = stringResource(R.string.home_fab_new_key_map),
                 )
             }
         },
@@ -304,32 +300,6 @@ fun HandleImportExportState(
                 onAppendClick = { onConfirmImport(RestoreType.APPEND) },
                 onReplaceClick = { onConfirmImport(RestoreType.REPLACE) },
             )
-        }
-    }
-}
-
-@Composable
-private fun NewKeyMapFab(
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit = {},
-    showText: Boolean,
-) {
-    FloatingActionButton(
-        modifier = modifier,
-        onClick = onClick,
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            val fabText = stringResource(R.string.home_fab_new_key_map)
-            Icon(Icons.Rounded.Add, contentDescription = fabText)
-
-            AnimatedVisibility(showText) {
-                AnimatedContent(fabText) { text ->
-                    Text(modifier = Modifier.padding(start = 8.dp), text = fabText)
-                }
-            }
         }
     }
 }
@@ -528,7 +498,10 @@ private fun PreviewKeyMapsRunning() {
     KeyMapperTheme {
         HomeKeyMapListScreen(
             floatingActionButton = {
-                NewKeyMapFab(showText = true)
+                CollapsableFloatingActionButton(
+                    showText = true,
+                    text = stringResource(R.string.home_fab_new_key_map),
+                )
             },
             listContent = {
                 KeyMapList(
@@ -561,7 +534,10 @@ private fun PreviewKeyMapsPaused() {
     KeyMapperTheme {
         HomeKeyMapListScreen(
             floatingActionButton = {
-                NewKeyMapFab(showText = true)
+                CollapsableFloatingActionButton(
+                    showText = true,
+                    text = stringResource(R.string.home_fab_new_key_map),
+                )
             },
             listContent = {
                 KeyMapList(
@@ -605,7 +581,10 @@ private fun PreviewKeyMapsWarnings() {
     KeyMapperTheme {
         HomeKeyMapListScreen(
             floatingActionButton = {
-                NewKeyMapFab(showText = true)
+                CollapsableFloatingActionButton(
+                    showText = true,
+                    text = stringResource(R.string.home_fab_new_key_map),
+                )
             },
             listContent = {
                 KeyMapList(
@@ -649,7 +628,10 @@ private fun PreviewKeyMapsWarningsEmpty() {
     KeyMapperTheme {
         HomeKeyMapListScreen(
             floatingActionButton = {
-                NewKeyMapFab(showText = true)
+                CollapsableFloatingActionButton(
+                    showText = true,
+                    text = stringResource(R.string.home_fab_new_key_map),
+                )
             },
             listContent = {
                 KeyMapList(

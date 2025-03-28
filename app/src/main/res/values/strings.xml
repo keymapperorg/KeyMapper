@@ -1302,6 +1302,7 @@
     <string name="home_floating_layouts_name_delete_cancel">Cancel</string>
     <string name="home_floating_layouts_hide_dialog_title">Hide floating layouts</string>
     <string name="home_floating_layouts_hide_dialog_text">You can find floating buttons in the Advanced Triggers button when creating a trigger.</string>
+    <string name="home_floating_layouts_app_bar_title">Floating buttons</string>
     <string name="home_app_bar_menu">Menu</string>
     <string name="home_app_bar_sort">Sort</string>
     <string name="home_app_bar_more">More</string>

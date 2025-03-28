@@ -40,7 +40,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import io.github.sds100.keymapper.floating.FloatingLayoutsScreen
 import io.github.sds100.keymapper.util.ui.SelectionState
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -75,9 +74,10 @@ fun HomeScreen(
             )
         },
         floatingButtonsContent = {
-            FloatingLayoutsScreen(
+            HomeFloatingLayoutsScreen(
                 viewModel = viewModel.listFloatingLayoutsViewModel,
                 navController = navController,
+                snackbarState = snackbarState,
             )
         },
     )
