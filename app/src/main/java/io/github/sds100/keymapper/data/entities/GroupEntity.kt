@@ -40,7 +40,7 @@ data class GroupEntity(
 
     @ColumnInfo(name = GroupDao.KEY_CONSTRAINTS)
     @SerializedName(NAME_CONSTRAINTS)
-    val constraints: List<ConstraintEntity> = emptyList(),
+    val constraintList: List<ConstraintEntity> = emptyList(),
 
     @ColumnInfo(name = GroupDao.KEY_CONSTRAINT_MODE)
     @SerializedName(NAME_CONSTRAINT_MODE)

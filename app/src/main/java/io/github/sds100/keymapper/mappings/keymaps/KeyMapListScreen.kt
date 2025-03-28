@@ -75,13 +75,13 @@ fun KeyMapListScreen(
     viewModel: KeyMapListViewModel,
     lazyListState: LazyListState,
 ) {
-    val listItems by viewModel.state.collectAsStateWithLifecycle()
+    val state by viewModel.state.collectAsStateWithLifecycle()
     val isSelectable by viewModel.isSelectable.collectAsStateWithLifecycle()
 
     KeyMapListScreen(
         modifier = modifier,
         lazyListState = lazyListState,
-        listItems = listItems,
+        listItems = state.listItems,
         footerText = if (isSelectable) {
             null
         } else {

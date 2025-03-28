@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.mappings.keymaps
 import android.view.KeyEvent
 import io.github.sds100.keymapper.actions.Action
 import io.github.sds100.keymapper.actions.ActionData
-import io.github.sds100.keymapper.actions.KeymapActionEntityMapper
+import io.github.sds100.keymapper.actions.ActionEntityMapper
 import io.github.sds100.keymapper.actions.canBeHeldDown
 import io.github.sds100.keymapper.constraints.ConstraintEntityMapper
 import io.github.sds100.keymapper.constraints.ConstraintModeEntityMapper
@@ -109,7 +109,7 @@ object KeyMapEntityMapper {
         entity: KeyMapEntity,
         floatingButtons: List<FloatingButtonEntityWithLayout>,
     ): KeyMap {
-        val actionList = entity.actionList.mapNotNull { KeymapActionEntityMapper.fromEntity(it) }
+        val actionList = entity.actionList.mapNotNull { ActionEntityMapper.fromEntity(it) }
 
         val constraintList =
             entity.constraintList.map { ConstraintEntityMapper.fromEntity(it) }.toSet()
@@ -127,7 +127,7 @@ object KeyMapEntityMapper {
     }
 
     fun toEntity(keyMap: KeyMap, dbId: Long): KeyMapEntity {
-        val actionEntityList = KeymapActionEntityMapper.toEntity(keyMap)
+        val actionEntityList = ActionEntityMapper.toEntity(keyMap)
 
         return KeyMapEntity(
             id = dbId,

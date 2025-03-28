@@ -39,7 +39,7 @@ data class Action(
     }
 }
 
-object KeymapActionEntityMapper {
+object ActionEntityMapper {
     fun fromEntity(entity: ActionEntity): Action? {
         val data = ActionDataEntityMapper.fromEntity(entity) ?: return null
 

@@ -3,6 +3,8 @@ package io.github.sds100.keymapper.mappings.keymaps
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import io.github.sds100.keymapper.constraints.ConstraintMode
+import io.github.sds100.keymapper.groups.SubGroupListModel
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.mappings.keymaps.trigger.SetupGuiKeyboardState
 import io.github.sds100.keymapper.mappings.keymaps.trigger.SetupGuiKeyboardUseCase
@@ -23,6 +25,7 @@ import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.SelectionState
 import io.github.sds100.keymapper.util.ui.ViewModelHelper
+import io.github.sds100.keymapper.util.ui.compose.ComposeChipModel
 import io.github.sds100.keymapper.util.ui.navigate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -50,7 +53,7 @@ class KeyMapListViewModel(
 
     private val listItemCreator = KeyMapListItemCreator(listKeyMaps, resourceProvider)
 
-    private val _state = MutableStateFlow<State<List<KeyMapListItemModel>>>(State.Loading)
+    private val _state = MutableStateFlow<KeyMapListState>(KeyMapListState.Root())
     val state = _state.asStateFlow()
 
     var showFabText: Boolean by mutableStateOf(true)
@@ -121,7 +124,7 @@ class KeyMapListViewModel(
 
                 showFabText = listItemContentList.dataOrNull()?.isEmpty() ?: true
 
-                _state.value = listItemContentList.mapData { contentList ->
+                val listItems = listItemContentList.mapData { contentList ->
                     contentList.map { content ->
                         val isSelected = if (selectionState is SelectionState.Selecting) {
                             selectionState.selectedIds.contains(content.uid)
@@ -132,6 +135,8 @@ class KeyMapListViewModel(
                         KeyMapListItemModel(isSelected, content)
                     }
                 }
+
+                _state.value = KeyMapListState.Root(listItems = listItems)
             }
         }
     }
@@ -171,7 +176,7 @@ class KeyMapListViewModel(
 
     fun selectAll() {
         coroutineScope.launch {
-            state.value.apply {
+            state.value.listItems.apply {
                 if (this is State.Data) {
                     multiSelectProvider.select(
                         *this.data.map { it.uid }.toTypedArray(),
@@ -250,4 +255,23 @@ class KeyMapListViewModel(
     fun onNeverShowSetupDpadClick() {
         listKeyMaps.neverShowDpadImeSetupError()
     }
+}
+
+sealed class KeyMapListState {
+    abstract val subGroups: List<SubGroupListModel>
+    abstract val listItems: State<List<KeyMapListItemModel>>
+
+    data class Root(
+        override val subGroups: List<SubGroupListModel> = emptyList(),
+        override val listItems: State<List<KeyMapListItemModel>> = State.Loading,
+    ) : KeyMapListState()
+
+    data class Child(
+        val groupName: String,
+        val constraints: List<ComposeChipModel>,
+        val constraintMode: ConstraintMode,
+        override val subGroups: List<SubGroupListModel>,
+        override val listItems: State<List<KeyMapListItemModel>>,
+
+    ) : KeyMapListState()
 }

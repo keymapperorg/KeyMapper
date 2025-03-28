@@ -11,6 +11,8 @@ interface KeyMapRepository {
     val keyMapList: Flow<State<List<KeyMapEntity>>>
     val requestBackup: Flow<List<KeyMapEntity>>
 
+    fun getAll(): Flow<List<KeyMapEntity>>
+    fun getByGroup(groupUid: String?): Flow<List<KeyMapEntity>>
     fun insert(vararg keyMap: KeyMapEntity)
     fun update(vararg keyMap: KeyMapEntity)
     suspend fun get(uid: String): KeyMapEntity?

@@ -276,6 +276,7 @@ fun HomeScreen(
         snackBarState = snackbarState,
         navBarItems = navBarItems,
         topAppBar = {
+            // TODO use different app bars for each screen.
             HomeAppBar(
                 scrollBehavior = scrollBehavior,
                 homeState = homeState,

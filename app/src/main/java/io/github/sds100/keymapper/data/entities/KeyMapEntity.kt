@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.data.entities
 
+import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
@@ -14,6 +15,7 @@ import com.github.salomonbrys.kotson.jsonDeserializer
 import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.data.db.dao.GroupDao
 import io.github.sds100.keymapper.data.db.dao.KeyMapDao
+import kotlinx.parcelize.Parcelize
 import java.util.UUID
 
 /**
@@ -32,6 +34,7 @@ import java.util.UUID
         ),
     ],
 )
+@Parcelize
 data class KeyMapEntity(
     @SerializedName(NAME_ID)
     @PrimaryKey(autoGenerate = true)
@@ -71,7 +74,7 @@ data class KeyMapEntity(
     @SerializedName(GROUP_UID)
     @ColumnInfo(name = KeyMapDao.KEY_GROUP_UID)
     val groupUid: String? = null,
-) {
+) : Parcelable {
     companion object {
 
         // DON'T CHANGE THESE. Used for JSON serialization and parsing.

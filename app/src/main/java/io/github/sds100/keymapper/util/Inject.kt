@@ -138,6 +138,7 @@ object Inject {
         UseCases.configKeyMap(ctx),
         ListKeyMapsUseCaseImpl(
             ServiceLocator.roomKeyMapRepository(ctx),
+            ServiceLocator.groupRepository(ctx),
             ServiceLocator.floatingButtonRepository(ctx),
             ServiceLocator.fileAdapter(ctx),
             ServiceLocator.backupManager(ctx),
@@ -150,6 +151,7 @@ object Inject {
     fun homeViewModel(ctx: Context): HomeViewModel.Factory = HomeViewModel.Factory(
         ListKeyMapsUseCaseImpl(
             ServiceLocator.roomKeyMapRepository(ctx),
+            ServiceLocator.groupRepository(ctx),
             ServiceLocator.floatingButtonRepository(ctx),
             ServiceLocator.fileAdapter(ctx),
             ServiceLocator.backupManager(ctx),

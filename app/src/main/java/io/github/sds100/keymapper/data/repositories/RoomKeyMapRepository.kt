@@ -11,6 +11,7 @@ import io.github.sds100.keymapper.util.DispatcherProvider
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.splitIntoBatches
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
@@ -45,6 +46,14 @@ class RoomKeyMapRepository(
 
             requestBackup()
         }
+    }
+
+    override fun getAll(): Flow<List<KeyMapEntity>> {
+        return keyMapDao.getAll().flowOn(dispatchers.io())
+    }
+
+    override fun getByGroup(groupUid: String?): Flow<List<KeyMapEntity>> {
+        return keyMapDao.getByGroup(groupUid).flowOn(dispatchers.io())
     }
 
     override fun insert(vararg keyMap: KeyMapEntity) {

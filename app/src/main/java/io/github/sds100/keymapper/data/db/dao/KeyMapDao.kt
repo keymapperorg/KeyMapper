@@ -37,6 +37,10 @@ interface KeyMapDao {
     @Query("SELECT * FROM $TABLE_NAME")
     fun getAll(): Flow<List<KeyMapEntity>>
 
+    // Must use IS to check if it is null.
+    @Query("SELECT * FROM $TABLE_NAME WHERE $KEY_GROUP_UID IS (:groupUid)")
+    fun getByGroup(groupUid: String?): Flow<List<KeyMapEntity>>
+
     @Query("UPDATE $TABLE_NAME SET $KEY_ENABLED=0")
     suspend fun disableAll()
 
