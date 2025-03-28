@@ -91,6 +91,8 @@ class ListKeyMapsUseCaseImpl(
             .onEach { send(it) }
             .flatMapLatest { keyMapGroup ->
                 getKeyMapsByGroup(keyMapGroup.group?.uid).map { keyMapGroup.copy(keyMaps = it) }
+            }.collect {
+                send(it)
             }
     }
 
@@ -118,8 +120,6 @@ class ListKeyMapsUseCaseImpl(
             send(State.Data(keyMaps))
         }
     }
-
-    override val keyMapList: Flow<State<List<KeyMap>>> = getKeyMapsByGroup(null)
 
     override fun deleteKeyMap(vararg uid: String) {
         keyMapRepository.delete(*uid)
@@ -154,7 +154,6 @@ class ListKeyMapsUseCaseImpl(
 
 interface ListKeyMapsUseCase : DisplayKeyMapUseCase {
     val keyMapGroup: Flow<KeyMapGroup>
-    val keyMapList: Flow<State<List<KeyMap>>>
 
     suspend fun openGroup(uid: String)
     suspend fun popGroup()

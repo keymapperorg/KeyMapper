@@ -58,6 +58,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -186,7 +187,7 @@ class HomeViewModel(
             multiSelectProvider.state,
             warnings,
             showAlertsUseCase.areKeyMapsPaused,
-            listKeyMaps.keyMapList.filterIsInstance<State.Data<List<KeyMap>>>(),
+            listKeyMaps.keyMapGroup.map { it.keyMaps }.filterIsInstance<State.Data<List<KeyMap>>>(),
             listFloatingLayoutsViewModel.state,
         ) { selectionState, warnings, isPaused, keyMaps, floatingLayoutsState ->
 

@@ -9,8 +9,12 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import io.github.sds100.keymapper.actions.ActionErrorSnapshot
 import io.github.sds100.keymapper.actions.ActionUiHelper
+import io.github.sds100.keymapper.constraints.ConstraintErrorSnapshot
+import io.github.sds100.keymapper.groups.SubGroupListModel
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapListItemModel
+import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerErrorSnapshot
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.mapData
 import io.github.sds100.keymapper.util.ui.ResourceProvider
@@ -38,7 +42,7 @@ class CreateKeyMapShortcutViewModel(
     private val actionUiHelper = ActionUiHelper(listKeyMaps, resourceProvider)
     private val listItemCreator = KeyMapListItemCreator(listKeyMaps, resourceProvider)
 
-    private val _state = MutableStateFlow<State<List<KeyMapListItemModel>>>(State.Loading)
+    private val _state = MutableStateFlow<KeyMapListState>(KeyMapListState.Root())
     val state = _state.asStateFlow()
 
     private val _returnIntentResult = MutableSharedFlow<Intent>()
@@ -50,35 +54,76 @@ class CreateKeyMapShortcutViewModel(
     init {
         viewModelScope.launch {
             combine(
-                listKeyMaps.keyMapList,
+                listKeyMaps.keyMapGroup,
                 listKeyMaps.showDeviceDescriptors,
                 listKeyMaps.triggerErrorSnapshot,
                 listKeyMaps.actionErrorSnapshot,
                 listKeyMaps.constraintErrorSnapshot,
-            ) { keyMapListState, showDeviceDescriptors, triggerErrorSnapshot, actionErrorSnapshot, constraintErrorSnapshot ->
-                _state.value = keyMapListState.mapData { keyMapList ->
-                    keyMapList.map { keyMap ->
-                        val listItem =
-                            listItemCreator.create(
-                                keyMap,
-                                showDeviceDescriptors,
-                                triggerErrorSnapshot,
-                                actionErrorSnapshot,
-                                constraintErrorSnapshot,
-                            )
-
-                        KeyMapListItemModel(isSelected = false, listItem)
-                    }
-                }
+            ) { keyMapGroup, showDeviceDescriptors, triggerErrorSnapshot, actionErrorSnapshot, constraintErrorSnapshot ->
+                _state.value = buildState(
+                    keyMapGroup,
+                    showDeviceDescriptors,
+                    triggerErrorSnapshot,
+                    actionErrorSnapshot,
+                    constraintErrorSnapshot,
+                )
             }.collect()
+        }
+    }
+
+    private fun buildState(
+        keyMapGroup: KeyMapGroup,
+        showDeviceDescriptors: Boolean,
+        triggerErrorSnapshot: TriggerErrorSnapshot,
+        actionErrorSnapshot: ActionErrorSnapshot,
+        constraintErrorSnapshot: ConstraintErrorSnapshot,
+    ): KeyMapListState {
+        val listItemsState = keyMapGroup.keyMaps.mapData { list ->
+            list.map {
+                val content = listItemCreator.build(
+                    it,
+                    showDeviceDescriptors,
+                    triggerErrorSnapshot,
+                    actionErrorSnapshot,
+                    constraintErrorSnapshot,
+                )
+
+                KeyMapListItemModel(isSelected = false, content)
+            }
+        }
+
+        val subGroupListItems = keyMapGroup.subGroups.map { group ->
+            SubGroupListModel(
+                uid = group.uid,
+                name = group.name,
+                icon = null, // TODO show icon depending on constraints
+            )
+        }
+
+        if (keyMapGroup.group == null) {
+            return KeyMapListState.Root(
+                subGroups = subGroupListItems,
+                listItems = listItemsState,
+            )
+        } else {
+            return KeyMapListState.Child(
+                groupName = keyMapGroup.group.name,
+                constraints = listItemCreator.buildConstraintChipList(
+                    keyMapGroup.group.constraintState,
+                    constraintErrorSnapshot,
+                ),
+                constraintMode = keyMapGroup.group.constraintState.mode,
+                subGroups = subGroupListItems,
+                listItems = listItemsState,
+            )
         }
     }
 
     fun onKeyMapCardClick(uid: String) {
         viewModelScope.launch {
-            val state = listKeyMaps.keyMapList.first { it is State.Data }
+            val state = listKeyMaps.keyMapGroup.first { it.keyMaps is State.Data }
 
-            if (state !is State.Data) return@launch
+            if (state.keyMaps !is State.Data) return@launch
 
             configKeyMapUseCase.loadKeyMap(uid)
             configKeyMapUseCase.setTriggerFromOtherAppsEnabled(true)

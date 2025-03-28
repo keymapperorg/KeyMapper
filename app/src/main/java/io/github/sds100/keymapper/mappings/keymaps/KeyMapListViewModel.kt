@@ -3,12 +3,14 @@ package io.github.sds100.keymapper.mappings.keymaps
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import io.github.sds100.keymapper.constraints.ConstraintMode
+import io.github.sds100.keymapper.actions.ActionErrorSnapshot
+import io.github.sds100.keymapper.constraints.ConstraintErrorSnapshot
 import io.github.sds100.keymapper.groups.SubGroupListModel
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.mappings.keymaps.trigger.SetupGuiKeyboardState
 import io.github.sds100.keymapper.mappings.keymaps.trigger.SetupGuiKeyboardUseCase
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerError
+import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerErrorSnapshot
 import io.github.sds100.keymapper.sorting.SortKeyMapsUseCase
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.util.Error
@@ -25,7 +27,6 @@ import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.SelectionState
 import io.github.sds100.keymapper.util.ui.ViewModelHelper
-import io.github.sds100.keymapper.util.ui.compose.ComposeChipModel
 import io.github.sds100.keymapper.util.ui.navigate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -76,68 +77,120 @@ class KeyMapListViewModel(
 
     var showDpadTriggerSetupBottomSheet: Boolean by mutableStateOf(false)
 
+    private val keyMapGroupStateFlow = listKeyMaps.keyMapGroup.stateIn(
+        coroutineScope,
+        SharingStarted.Eagerly,
+        KeyMapGroup(
+            group = null,
+            subGroups = emptyList(),
+            keyMaps = State.Loading,
+        ),
+    )
+
     init {
-        val keyMapListFlow = combine(
-            listKeyMaps.keyMapList,
+        val keyMapGroupFlow = combine(
+            keyMapGroupStateFlow,
             sortKeyMaps.observeKeyMapsSorter(),
-        ) { keyMapList, sorter ->
-            keyMapList.mapData { list -> list.sortedWith(sorter) }
+        ) { keyMapGroup, sorter ->
+            keyMapGroup.copy(
+                keyMaps = keyMapGroup.keyMaps.mapData { list -> list.sortedWith(sorter) },
+            )
         }.flowOn(Dispatchers.Default)
 
-        val listItemContentFlow =
+        val listStateFlow =
             combine(
-                keyMapListFlow,
+                keyMapGroupFlow,
                 listKeyMaps.showDeviceDescriptors,
                 listKeyMaps.triggerErrorSnapshot,
                 listKeyMaps.actionErrorSnapshot,
                 listKeyMaps.constraintErrorSnapshot,
-            ) { keyMapListState, showDeviceDescriptors, triggerErrorSnapshot, actionErrorSnapshot, constraintErrorSnapshot ->
-                keyMapListState.mapData { keyMapList ->
-                    keyMapList.map { keyMap ->
-                        listItemCreator.create(
-                            keyMap,
-                            showDeviceDescriptors,
-                            triggerErrorSnapshot,
-                            actionErrorSnapshot,
-                            constraintErrorSnapshot,
-                        )
-                    }
-                }
-            }.flowOn(Dispatchers.Default)
+                transform = ::buildState,
+            ).flowOn(Dispatchers.Default)
 
         // The list item content should be separate from the selection state
         // because creating the content is an expensive operation and selection should be almost
         // instantaneous.
         coroutineScope.launch(Dispatchers.Default) {
             combine(
-                listItemContentFlow,
+                listStateFlow,
                 multiSelectProvider.state,
-            ) { keymapListState, selectionState ->
-                Pair(keymapListState, selectionState)
-            }.collectLatest { (listItemContentList, selectionState) ->
+            ) { listState, selectionState ->
+                Pair(listState, selectionState)
+            }.collectLatest { (listState, selectionState) ->
                 // Stop selecting when there are no key maps
-                listItemContentList.ifIsData { list ->
+                listState.listItems.ifIsData { list ->
                     if (list.isEmpty()) {
                         multiSelectProvider.stopSelecting()
                     }
                 }
 
-                showFabText = listItemContentList.dataOrNull()?.isEmpty() ?: true
+                showFabText = listState.listItems.dataOrNull()?.isEmpty() ?: true
 
-                val listItems = listItemContentList.mapData { contentList ->
-                    contentList.map { content ->
+                val listItemsWithSelection = listState.listItems.mapData { listItems ->
+                    listItems.map { item ->
                         val isSelected = if (selectionState is SelectionState.Selecting) {
-                            selectionState.selectedIds.contains(content.uid)
+                            selectionState.selectedIds.contains(item.uid)
                         } else {
                             false
                         }
 
-                        KeyMapListItemModel(isSelected, content)
+                        item.copy(isSelected = isSelected)
                     }
                 }
 
-                _state.value = KeyMapListState.Root(listItems = listItems)
+                _state.value = when (listState) {
+                    is KeyMapListState.Root -> listState.copy(listItems = listItemsWithSelection)
+                    is KeyMapListState.Child -> listState.copy(listItems = listItemsWithSelection)
+                }
             }
+        }
+    }
+
+    private fun buildState(
+        keyMapGroup: KeyMapGroup,
+        showDeviceDescriptors: Boolean,
+        triggerErrorSnapshot: TriggerErrorSnapshot,
+        actionErrorSnapshot: ActionErrorSnapshot,
+        constraintErrorSnapshot: ConstraintErrorSnapshot,
+    ): KeyMapListState {
+        val listItemsState = keyMapGroup.keyMaps.mapData { list ->
+            list.map {
+                val content = listItemCreator.build(
+                    it,
+                    showDeviceDescriptors,
+                    triggerErrorSnapshot,
+                    actionErrorSnapshot,
+                    constraintErrorSnapshot,
+                )
+
+                KeyMapListItemModel(isSelected = false, content)
+            }
+        }
+
+        val subGroupListItems = keyMapGroup.subGroups.map { group ->
+            SubGroupListModel(
+                uid = group.uid,
+                name = group.name,
+                icon = null, // TODO show icon depending on constraints
+            )
+        }
+
+        if (keyMapGroup.group == null) {
+            return KeyMapListState.Root(
+                subGroups = subGroupListItems,
+                listItems = listItemsState,
+            )
+        } else {
+            return KeyMapListState.Child(
+                groupName = keyMapGroup.group.name,
+                constraints = listItemCreator.buildConstraintChipList(
+                    keyMapGroup.group.constraintState,
+                    constraintErrorSnapshot,
+                ),
+                constraintMode = keyMapGroup.group.constraintState.mode,
+                subGroups = subGroupListItems,
+                listItems = listItemsState,
+            )
         }
     }
 
@@ -255,23 +308,4 @@ class KeyMapListViewModel(
     fun onNeverShowSetupDpadClick() {
         listKeyMaps.neverShowDpadImeSetupError()
     }
-}
-
-sealed class KeyMapListState {
-    abstract val subGroups: List<SubGroupListModel>
-    abstract val listItems: State<List<KeyMapListItemModel>>
-
-    data class Root(
-        override val subGroups: List<SubGroupListModel> = emptyList(),
-        override val listItems: State<List<KeyMapListItemModel>> = State.Loading,
-    ) : KeyMapListState()
-
-    data class Child(
-        val groupName: String,
-        val constraints: List<ComposeChipModel>,
-        val constraintMode: ConstraintMode,
-        override val subGroups: List<SubGroupListModel>,
-        override val listItems: State<List<KeyMapListItemModel>>,
-
-    ) : KeyMapListState()
 }

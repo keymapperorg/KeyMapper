@@ -48,11 +48,11 @@ fun CreateKeyMapShortcutScreen(
     viewModel: CreateKeyMapShortcutViewModel,
     finishActivity: () -> Unit = {},
 ) {
-    val listItems by viewModel.state.collectAsStateWithLifecycle()
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     CreateKeyMapShortcutScreen(
         modifier = modifier,
-        listItems = listItems,
+        listItems = state.listItems,
         showShortcutNameDialog = viewModel.showShortcutNameDialog,
         dismissShortcutNameDialog = { viewModel.showShortcutNameDialog = null },
         onShortcutNameResult = { name ->
