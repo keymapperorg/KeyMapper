@@ -1,8 +1,9 @@
 Key Mapper 3.0 is here! 🎉
 
 🫧 This release introduces Floating Buttons: you can create custom on-screen buttons to trigger key maps.
+🔦 You can now change the flashlight brightness. Tip: use the constraint for when the flashlight is showing to remap your volume buttons to change the brightness.
 ❤️ There are also tonnes of improvements to make your key mapping experience more enjoyable.
 
-👀 Grouping key maps into folders with shared constraints are in the pipeline.
+👀 Grouping key maps into folders with shared constraints are a work in progress. This will be free for everyone!
 
 See all the changes at http://changelog.keymapper.club.
