@@ -1,5 +1,7 @@
 ## [3.0 Beta 3](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0-beta.3)
 
+#### TO BE RELEASED
+
 ## Changed
 
 - Turn off flashlight when using decrease brightness action.
