@@ -12,7 +12,6 @@ _See the changes from previous 3.0 Beta releases as well._
 
 - Turn off flashlight when using decrease brightness action.
 - Animate floating buttons in and out.
-- Omit "Back" from Back flashlight actions since most devices only have a back flashlight anyway.
 
 ## Bug fixes
 
@@ -21,6 +20,8 @@ _See the changes from previous 3.0 Beta releases as well._
 - Prompt to unlock device when tapping "Go back" on the floating menu.
 - #1596 Do not show the option for front flashlight if the device does not have one.
 - #1598 Do not allow changing flashlight brightness on devices that do not support it.
+- Omit "Back" from Back flashlight actions and constraints since most devices only have a back flashlight anyway.
+- Do not ask for which flashlight to use in constraints if the device only has one
 
 ## [3.0 Beta 2](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0-beta.2)
 

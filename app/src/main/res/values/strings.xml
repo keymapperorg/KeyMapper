@@ -227,8 +227,10 @@
     <string name="constraint_bt_device_disconnected_description">%s is disconnected</string>
     <string name="constraint_screen_on_description">Screen is on</string>
     <string name="constraint_screen_off_description">Screen is off</string>
-    <string name="constraint_flashlight_off_description">%s flashlight is off</string>
-    <string name="constraint_flashlight_on_description">%s flashlight is on</string>
+    <string name="constraint_flashlight_off_description">Flashlight is off</string>
+    <string name="constraint_flashlight_on_description">Flashlight is on</string>
+    <string name="constraint_front_flashlight_off_description">Front flashlight is off</string>
+    <string name="constraint_front_flashlight_on_description">Front flashlight is on</string>
 
     <string name="constraint_mode_and">AND</string>
     <string name="constraint_mode_or">OR</string>

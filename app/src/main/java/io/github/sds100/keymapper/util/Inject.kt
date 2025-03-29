@@ -72,6 +72,7 @@ object Inject {
             ServiceLocator.networkAdapter(ctx),
             ServiceLocator.inputMethodAdapter(ctx),
             ServiceLocator.settingsRepository(ctx),
+            ServiceLocator.cameraAdapter(ctx),
         ),
         ServiceLocator.resourceProvider(ctx),
     )
