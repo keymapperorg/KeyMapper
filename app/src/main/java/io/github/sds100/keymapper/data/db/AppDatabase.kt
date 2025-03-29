@@ -26,6 +26,7 @@ import io.github.sds100.keymapper.data.entities.GroupEntity
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.data.entities.LogEntryEntity
 import io.github.sds100.keymapper.data.migration.AutoMigration14To15
+import io.github.sds100.keymapper.data.migration.AutoMigration15To16
 import io.github.sds100.keymapper.data.migration.Migration10To11
 import io.github.sds100.keymapper.data.migration.Migration11To12
 import io.github.sds100.keymapper.data.migration.Migration13To14
@@ -46,7 +47,10 @@ import io.github.sds100.keymapper.data.migration.Migration9To10
     version = DATABASE_VERSION,
     exportSchema = true,
     autoMigrations = [
+        // This adds the button and background opacity columns to the floating button entity
         AutoMigration(from = 14, to = 15, spec = AutoMigration14To15::class),
+        // This deletes the folder name column from key maps
+        AutoMigration(from = 15, to = 16, spec = AutoMigration15To16::class),
     ],
 )
 @TypeConverters(
@@ -58,7 +62,7 @@ import io.github.sds100.keymapper.data.migration.Migration9To10
 abstract class AppDatabase : RoomDatabase() {
     companion object {
         const val DATABASE_NAME = "key_map_database"
-        const val DATABASE_VERSION = 15
+        const val DATABASE_VERSION = 16
 
         val MIGRATION_1_2 = object : Migration(1, 2) {
 
@@ -131,6 +135,12 @@ abstract class AppDatabase : RoomDatabase() {
         val MIGRATION_13_14 = object : Migration(13, 14) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 Migration13To14.migrateDatabase(database)
+            }
+        }
+
+        val MIGRATION_14_15 = object : Migration(14, 15) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("")
             }
         }
     }

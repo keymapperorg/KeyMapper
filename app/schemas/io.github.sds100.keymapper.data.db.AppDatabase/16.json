@@ -1,12 +1,12 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 15,
-    "identityHash": "eb7c2d3cb69e3eb4170ee2a3227c4805",
+    "version": 16,
+    "identityHash": "9d6274fe030cd7a35ed4138fcc163383",
     "entities": [
       {
         "tableName": "keymaps",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `trigger` TEXT NOT NULL, `action_list` TEXT NOT NULL, `constraint_list` TEXT NOT NULL, `constraint_mode` INTEGER NOT NULL, `flags` INTEGER NOT NULL, `folder_name` TEXT, `is_enabled` INTEGER NOT NULL, `uid` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `trigger` TEXT NOT NULL, `action_list` TEXT NOT NULL, `constraint_list` TEXT NOT NULL, `constraint_mode` INTEGER NOT NULL, `flags` INTEGER NOT NULL, `is_enabled` INTEGER NOT NULL, `uid` TEXT NOT NULL, `group_uid` TEXT, FOREIGN KEY(`group_uid`) REFERENCES `groups`(`uid`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -45,12 +45,6 @@
             "notNull": true
           },
           {
-            "fieldPath": "folderName",
-            "columnName": "folder_name",
-            "affinity": "TEXT",
-            "notNull": false
-          },
-          {
             "fieldPath": "isEnabled",
             "columnName": "is_enabled",
             "affinity": "INTEGER",
@@ -61,6 +55,12 @@
             "columnName": "uid",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "groupUid",
+            "columnName": "group_uid",
+            "affinity": "TEXT",
+            "notNull": false
           }
         ],
         "primaryKey": {
@@ -80,7 +80,19 @@
             "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_keymaps_uid` ON `${TABLE_NAME}` (`uid`)"
           }
         ],
-        "foreignKeys": []
+        "foreignKeys": [
+          {
+            "table": "groups",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "group_uid"
+            ],
+            "referencedColumns": [
+              "uid"
+            ]
+          }
+        ]
       },
       {
         "tableName": "fingerprintmaps",
@@ -313,12 +325,78 @@
             ]
           }
         ]
+      },
+      {
+        "tableName": "groups",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` TEXT NOT NULL, `name` TEXT NOT NULL, `constraints` TEXT NOT NULL, `constraint_mode` INTEGER NOT NULL, `parent_uid` TEXT, PRIMARY KEY(`uid`), FOREIGN KEY(`parent_uid`) REFERENCES `groups`(`uid`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "uid",
+            "columnName": "uid",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "constraintList",
+            "columnName": "constraints",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "constraintMode",
+            "columnName": "constraint_mode",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "parentUid",
+            "columnName": "parent_uid",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "uid"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_groups_name",
+            "unique": true,
+            "columnNames": [
+              "name"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_groups_name` ON `${TABLE_NAME}` (`name`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "groups",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "parent_uid"
+            ],
+            "referencedColumns": [
+              "uid"
+            ]
+          }
+        ]
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'eb7c2d3cb69e3eb4170ee2a3227c4805')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9d6274fe030cd7a35ed4138fcc163383')"
     ]
   }
 }

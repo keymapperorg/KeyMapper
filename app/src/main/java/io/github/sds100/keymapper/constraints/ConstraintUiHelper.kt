@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.constraints
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Android
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.system.camera.CameraLensUtils
+import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.util.handle
 import io.github.sds100.keymapper.util.ui.ResourceProvider
@@ -88,15 +88,17 @@ class ConstraintUiHelper(
         Constraint.ScreenOn ->
             getString(R.string.constraint_screen_on_description)
 
-        is Constraint.FlashlightOff -> getString(
-            R.string.constraint_flashlight_off_description,
-            getString(CameraLensUtils.getLabel(constraint.lens)),
-        )
+        is Constraint.FlashlightOff -> if (constraint.lens == CameraLens.FRONT) {
+            getString(R.string.constraint_front_flashlight_off_description)
+        } else {
+            getString(R.string.constraint_flashlight_off_description)
+        }
 
-        is Constraint.FlashlightOn -> getString(
-            R.string.constraint_flashlight_on_description,
-            getString(CameraLensUtils.getLabel(constraint.lens)),
-        )
+        is Constraint.FlashlightOn -> if (constraint.lens == CameraLens.FRONT) {
+            getString(R.string.constraint_front_flashlight_on_description)
+        } else {
+            getString(R.string.constraint_flashlight_on_description)
+        }
 
         is Constraint.WifiConnected -> {
             if (constraint.ssid == null) {

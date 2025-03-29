@@ -43,3 +43,7 @@ fun String.getWordBoundaries(@IntRange(from = 0L) cursorPosition: Int): Pair<Int
 
     return Pair(firstBoundary ?: 0, secondBoundary ?: lastIndex)
 }
+
+fun Float.toPercentString(): String {
+    return "${(this * 100).toInt()}%"
+}

@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.system.camera.CameraLens
+import io.github.sds100.keymapper.system.camera.CameraLensUtils
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.containsQuery
@@ -196,10 +197,13 @@ class ChooseConstraintViewModel(
     }
 
     private suspend fun chooseFlashlightLens(): CameraLens? {
-        val items = listOf(
-            CameraLens.FRONT to getString(R.string.lens_front),
-            CameraLens.BACK to getString(R.string.lens_back),
-        )
+        val items = useCase.getFlashlightLenses().map {
+            it to getString(CameraLensUtils.getLabel(it))
+        }
+
+        if (items.size == 1) {
+            return items.first().first
+        }
 
         val dialog = PopupUi.SingleChoice(items)
 

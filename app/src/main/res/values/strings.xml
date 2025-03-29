@@ -227,8 +227,10 @@
     <string name="constraint_bt_device_disconnected_description">%s is disconnected</string>
     <string name="constraint_screen_on_description">Screen is on</string>
     <string name="constraint_screen_off_description">Screen is off</string>
-    <string name="constraint_flashlight_off_description">%s flashlight is off</string>
-    <string name="constraint_flashlight_on_description">%s flashlight is on</string>
+    <string name="constraint_flashlight_off_description">Flashlight is off</string>
+    <string name="constraint_flashlight_on_description">Flashlight is on</string>
+    <string name="constraint_front_flashlight_off_description">Front flashlight is off</string>
+    <string name="constraint_front_flashlight_on_description">Front flashlight is on</string>
 
     <string name="constraint_mode_and">AND</string>
     <string name="constraint_mode_or">OR</string>
@@ -492,6 +494,9 @@
     <string name="drag_handle_for">Drag handle for %1$s</string>
     <string name="show_example">Show example</string>
 
+    <string name="dialog_title_keycode_to_scancode_trigger_explanation">Unrecognized key code</string>
+    <string name="dialog_message_keycode_to_scancode_trigger_explanation">The pressed button was not recognized by the input system. In the past Key Mapper detected such buttons as one and the same. Currently the app tries to distinguish the button based on the scan code, which should be more unique. However, this is a makeshift incomplete solution, which doesn\'t guarantee uniqueness.</string>
+
     <string name="pos_done">Done</string>
     <string name="pos_grant_write_secure_settings_guide">Guide</string>
     <string name="pos_start_service_with_adb_guide">Guide</string>
@@ -503,6 +508,7 @@
     <string name="pos_apply">Apply</string>
     <string name="pos_discard_changes">Discard changes</string>
     <string name="pos_save">Save</string>
+    <string name="pos_understood">Understood</string>
 
     <string name="neg_turn_off">Turn off</string>
     <string name="neg_cancel">Cancel</string>
@@ -986,16 +992,23 @@
     <string name="action_enable_flashlight">Enable flashlight </string>
     <string name="action_disable_flashlight">Disable flashlight</string>
 
-    <string name="action_toggle_flashlight_formatted">Toggle %s flashlight</string>
-    <string name="action_toggle_flashlight_with_strength">Toggle %s flashlight (%d%%)</string>
-    <string name="action_enable_flashlight_formatted">Enable %s flashlight</string>
-    <string name="action_enable_flashlight_with_strength">Enable %s flashlight (%d\%%)</string>
-    <string name="action_disable_flashlight_formatted">Disable %s flashlight</string>
-
+    <string name="action_toggle_flashlight_formatted">Toggle flashlight</string>
+    <string name="action_toggle_flashlight_with_strength">Toggle flashlight (%s)</string>
+    <string name="action_enable_flashlight_formatted">Enable flashlight</string>
+    <string name="action_enable_flashlight_with_strength">Enable flashlight (%s)</string>
+    <string name="action_disable_flashlight_formatted">Disable flashlight</string>
     <string name="action_flashlight_change_strength">Change flashlight brightness</string>
+    <string name="action_flashlight_increase_strength_formatted">Brighten flashlight %s</string>
+    <string name="action_flashlight_decrease_strength_formatted">Dim flashlight %s</string>
 
-    <string name="action_flashlight_increase_strength_formatted">Brighten %s flashlight %d\%%</string>
-    <string name="action_flashlight_decrease_strength_formatted">Dim %s flashlight %d\%%</string>
+    <string name="action_toggle_front_flashlight_formatted">Toggle front flashlight</string>
+    <string name="action_toggle_front_flashlight_with_strength">Toggle front flashlight (%s)</string>
+    <string name="action_enable_front_flashlight_formatted">Enable front flashlight</string>
+    <string name="action_enable_front_flashlight_with_strength">Enable front flashlight (%s)</string>
+    <string name="action_disable_front_flashlight_formatted">Disable front flashlight</string>
+    <string name="action_front_flashlight_change_strength">Change front flashlight brightness</string>
+    <string name="action_front_flashlight_increase_strength_formatted">Brighten front flashlight %s</string>
+    <string name="action_front_flashlight_decrease_strength_formatted">Dim front flashlight %s</string>
 
     <string name="action_nfc_enable">Enable NFC</string>
     <string name="action_nfc_disable">Disable NFC</string>
@@ -1244,6 +1257,8 @@
     <string name="floating_button_config_delete_button">Delete</string>
     <string name="floating_button_config_button_text_label">Button text (Tip: use an emoji)</string>
     <string name="floating_button_config_button_size_label">Button size:</string>
+    <string name="floating_button_config_border_opacity_label">Border opacity:</string>
+    <string name="floating_button_config_background_opacity_label">Background opacity:</string>
     <string name="floating_button_config_cancel_button">Cancel</string>
     <string name="floating_button_config_done_button">Done</string>
     <string name="floating_button_config_empty_text_error">The button must have text!</string>
@@ -1407,7 +1422,7 @@
     <string name="action_config_flashlight_brightness_max">Max</string>
     <string name="action_config_flashlight_brightness_test">Test</string>
     <string name="action_config_flashlight_brightness_unsupported_android_version">Requires Android 13 or newer.</string>
-    <string name="action_config_flashlight_brightness_unsupported">This flash does not let you change the brightness.</string>
+    <string name="action_config_flashlight_brightness_unsupported">This device does not let you change the brightness.</string>
     <string name="action_config_flashlight_brightness_factor">Brightness change</string>
 
     <string name="choose_action_group_unsupported">Unsupported</string>

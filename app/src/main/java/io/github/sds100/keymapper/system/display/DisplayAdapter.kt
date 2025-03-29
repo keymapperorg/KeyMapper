@@ -9,6 +9,7 @@ interface DisplayAdapter {
     val orientation: Flow<Orientation>
     val cachedOrientation: Orientation
     val size: SizeKM
+    val isAmbientDisplayEnabled: Flow<Boolean>
 
     fun isAutoRotateEnabled(): Boolean
     fun enableAutoRotate(): Result<*>

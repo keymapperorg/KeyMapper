@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.FlashlightOn
+import androidx.compose.material.icons.rounded.Pinch
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -148,7 +149,7 @@ private fun ActionsScreen(
 
                                 ShortcutRow(
                                     modifier = Modifier
-                                        .padding(horizontal = 16.dp)
+                                        .padding(horizontal = 32.dp)
                                         .fillMaxWidth(),
                                     shortcuts = state.data.shortcuts,
                                     onClick = onClickShortcut,
@@ -282,7 +283,9 @@ private fun ActionList(
                     Spacer(Modifier.height(8.dp))
 
                     ShortcutRow(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 32.dp),
                         shortcuts = shortcuts,
                         onClick = { onClickShortcut(it) },
                     )
@@ -307,6 +310,11 @@ private fun EmptyPreview() {
                                 lens = CameraLens.BACK,
                                 strengthPercent = null,
                             ),
+                        ),
+                        ShortcutModel(
+                            icon = ComposeIconInfo.Vector(Icons.Rounded.Pinch),
+                            text = "Pinch in with 2 finger(s) on coordinates 5/4 with a pinch distance of 8px in 200ms",
+                            data = ActionData.ConsumeKeyEvent,
                         ),
                     ),
                 ),
@@ -349,6 +357,11 @@ private fun LoadedPreview() {
                                 lens = CameraLens.BACK,
                                 strengthPercent = null,
                             ),
+                        ),
+                        ShortcutModel(
+                            icon = ComposeIconInfo.Vector(Icons.Rounded.Pinch),
+                            text = "Pinch in with 2 finger(s) on coordinates 5/4 with a pinch distance of 8px in 200ms",
+                            data = ActionData.ConsumeKeyEvent,
                         ),
                     ),
                     isReorderingEnabled = true,
