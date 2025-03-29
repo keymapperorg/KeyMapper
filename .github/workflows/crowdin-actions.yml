@@ -20,6 +20,7 @@ jobs:
 
       - name: crowdin action
         uses: crowdin/github-action@v2
+        if: github.event.repository.fork == false
         with:
           upload_sources: true
           upload_translations: false

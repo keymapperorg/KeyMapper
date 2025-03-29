@@ -52,6 +52,8 @@ object Keys {
         booleanPreferencesKey("key_shown_parallel_trigger_order_warning")
     val shownSequenceTriggerExplanation =
         booleanPreferencesKey("key_shown_sequence_trigger_explanation_dialog")
+    val shownKeyCodeToScanCodeTriggerExplanation =
+        booleanPreferencesKey("key_shown_keycode_to_scancode_trigger_explanation_dialog")
     val lastInstalledVersionCodeHomeScreen =
         intPreferencesKey("last_installed_version_home_screen")
     val lastInstalledVersionCodeBackground =

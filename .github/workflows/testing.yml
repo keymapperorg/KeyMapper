@@ -96,6 +96,7 @@ jobs:
           ruby-version: '3.3'
 
       - name: Create debug keystore
+        if: github.event.repository.fork == false
         env:
           CI_KEYSTORE: ${{ secrets.CI_KEYSTORE }}
         run: |
@@ -123,6 +124,7 @@ jobs:
 
       - name: Upload to Discord
         uses: sinshutu/upload-to-discord@v2.0.0
+        if: github.event.repository.fork == false
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
@@ -130,7 +132,7 @@ jobs:
 
       - name: Report build status to Discord
         uses: sarisia/actions-status-discord@v1
-        if: failure()
+        if: github.event.repository.fork == false && failure()
         with:
           title: "Build apk"
           webhook: ${{ secrets.DISCORD_BUILD_STATUS_WEBHOOK }}

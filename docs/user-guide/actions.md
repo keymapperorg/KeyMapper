@@ -3,7 +3,7 @@
 Launch an app.
 
 !!! warning "Extra permission on Xiaomi devices!"
-    See issue [#1370](https://github.com/keymapperorg/KeyMapper/issues/1370https://github.com/keymapperorg/KeyMapper/issues/1370). Xioami blocks apps from launching apps when they are in the background unless you give permission to "Display pop-up windows while running in the background" and "Display pop-up window". Follow these steps through the Settings app: Apps > Manage apps > Key Mapper App Settings > Other Permissions > Display pop-up windows while running in the background.
+    See issue [#1370](https://github.com/keymapperorg/KeyMapper/issues/1370). Xiaomi blocks apps from launching apps when they are in the background unless you give permission to "Display pop-up windows while running in the background" and "Display pop-up window". Follow these steps through the Settings app: Apps > Manage apps > Key Mapper App Settings > Other Permissions > Display pop-up windows while running in the background.
 
 ### Launch app shortcut
 
@@ -24,7 +24,7 @@ Android restricts what apps can do with this so you won't be able to tap the scr
 
 ### Swipe screen (2.5.0+, Android 7.0+)
 
-This will swipe from a start point to and end point on your screen. You can also setup the amount of "fingers" to simulate and the duration for the gesture, **but** this is limitied due to your Android Version. 
+This will swipe from a start point to and end point on your screen. You can also setup the amount of "fingers" to simulate and the duration for the gesture, **but** this is limited due to your Android Version. 
 
 See: [getMaxStrokeCount](https://developer.android.com/reference/android/accessibilityservice/GestureDescription#getMaxStrokeCount()) and [getMaxStrokeDuration](https://developer.android.com/reference/android/accessibilityservice/GestureDescription#getMaxGestureDuration()) for more information.
 
@@ -32,7 +32,7 @@ See: [getMaxStrokeCount](https://developer.android.com/reference/android/accessi
 
 This will simulate a pinch gesture from a start point to and end point on your screen. You can choose between *pinch in* and *pinch out* and also the "pinch distance" for the pinch gesture. This is the distance between the start and the end point. The higher the distance, the stronger the pinch gesture, so you may want to start with a lower value for the pinch with max. 100. Later on you can adjust this by your needs, **but** the endpoints will never be less than 0 due to android restrictions.
 
-You can also setup the amount of "fingers" to simulate and the duration for the gesture, **but** this is limitied due to your Android Version. 
+You can also setup the amount of "fingers" to simulate and the duration for the gesture, **but** this is limited due to your Android Version. 
 
 See: [getMaxStrokeCount](https://developer.android.com/reference/android/accessibilityservice/GestureDescription#getMaxStrokeCount()) and [getMaxStrokeDuration](https://developer.android.com/reference/android/accessibilityservice/GestureDescription#getMaxGestureDuration()) for more information.
 
