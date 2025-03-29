@@ -644,6 +644,10 @@ class KeyMapListViewModel(
         }
     }
 
+    fun onEditGroupNameClick() {
+        isEditingGroupName = true
+    }
+
     fun onNewGroupClick() {
         coroutineScope.launch {
             listKeyMaps.newGroup()

@@ -202,6 +202,7 @@ fun HomeKeyMapListScreen(
                 onNewGroupClick = viewModel::onNewGroupClick,
                 onRenameGroupClick = viewModel::onRenameGroupClick,
                 isEditingGroupName = viewModel.isEditingGroupName,
+                onEditGroupNameClick = viewModel::onEditGroupNameClick,
             )
         },
         selectionBottomSheet = {

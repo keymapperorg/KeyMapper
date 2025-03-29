@@ -13,15 +13,23 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.interaction.InteractionSource
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -47,14 +55,17 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -72,7 +83,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.R
@@ -93,6 +107,7 @@ import kotlinx.coroutines.launch
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun KeyMapAppBar(
+    modifier: Modifier = Modifier,
     state: KeyMapAppBarState,
     onSettingsClick: () -> Unit = {},
     onAboutClick: () -> Unit = {},
@@ -108,17 +123,18 @@ fun KeyMapAppBar(
     onNewGroupClick: () -> Unit = {},
     onRenameGroupClick: suspend (String) -> Boolean = { true },
     isEditingGroupName: Boolean = false,
+    onEditGroupNameClick: () -> Unit = {},
 ) {
     BackHandler(onBack = onBackClick)
 
-    Column {
-        RootGroupAppBar(
-            scrollBehavior,
-            state,
-            onTogglePausedClick,
-            onSortClick,
-            onBackClick,
-            onFixWarningClick,
+    when (state) {
+        is KeyMapAppBarState.RootGroup -> RootGroupAppBar(
+            modifier = modifier,
+            state = state,
+            scrollBehavior = scrollBehavior,
+            onTogglePausedClick = onTogglePausedClick,
+            onSortClick = onSortClick,
+            onFixWarningClick = onFixWarningClick,
             onNewGroupClick = onNewGroupClick,
             actions = {
                 AnimatedVisibility(!isEditingGroupName) {
@@ -134,7 +150,49 @@ fun KeyMapAppBar(
                 }
             },
         )
+
+        is KeyMapAppBarState.Selecting -> SelectingAppBar(
+            modifier = modifier,
+            state = state,
+            onBackClick = onBackClick,
+            onSelectAllClick = onSelectAllClick,
+        )
+
+        is KeyMapAppBarState.ChildGroup -> ChildGroupAppBar(
+            modifier = modifier,
+            state = state,
+            onBackClick = onBackClick,
+            onEditGroupNameClick = onNewGroupClick,
+            onRenameGroupClick = onRenameGroupClick,
+            onEditClick = onEditGroupNameClick,
+            isEditingGroupName = isEditingGroupName,
+            actions = {
+                AnimatedVisibility(!isEditingGroupName) {
+                    AppBarActions(
+                        state,
+                        onSelectAllClick,
+                        onHelpClick,
+                        onSettingsClick,
+                        onAboutClick,
+                        onExportClick,
+                        onImportClick,
+                    )
+                }
+            },
+        )
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun primaryAppBarColors(): TopAppBarColors {
+    return TopAppBarDefaults.centerAlignedTopAppBarColors(
+        containerColor = MaterialTheme.colorScheme.primaryContainer,
+        scrolledContainerColor = MaterialTheme.colorScheme.primaryContainer,
+        navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        actionIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -159,13 +217,7 @@ private fun RootGroupAppBar(
             }
         }
 
-    val appBarColors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-        containerColor = MaterialTheme.colorScheme.primaryContainer,
-        scrolledContainerColor = MaterialTheme.colorScheme.primaryContainer,
-        navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-        titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-        actionIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-    )
+    val appBarColors = TopAppBarDefaults.centerAlignedTopAppBarColors()
 
     val appBarContainerColor by animateColorAsState(
         targetValue = lerp(
@@ -223,34 +275,44 @@ private fun RootGroupAppBar(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ChildGroupAppBar(
     modifier: Modifier = Modifier,
     state: KeyMapAppBarState.ChildGroup,
     onBackClick: () -> Unit,
-    onNewGroupClick: () -> Unit = {},
+    onEditGroupNameClick: () -> Unit = {},
+    onEditClick: () -> Unit = {},
     onRenameGroupClick: suspend (String) -> Boolean = { true },
     isEditingGroupName: Boolean = false,
     actions: @Composable RowScope.() -> Unit,
 ) {
-    Row(modifier) {
-        IconButton(onClick = onBackClick) {
-            Icon(
-                Icons.AutoMirrored.Rounded.ArrowBack,
-                contentDescription = stringResource(R.string.home_app_bar_pop_group),
+    TopAppBar(
+        modifier = modifier,
+        title = {
+            GroupNameRow(
+                modifier = Modifier,
+                name = state.groupName,
+                onRenameClick = onRenameGroupClick,
+                isEditing = isEditingGroupName,
+                onEditClick = onEditClick,
             )
-        }
-        GroupNameRow(
-            modifier = Modifier,
-            name = state.groupName,
-            onRenameClick = onRenameGroupClick,
-            isEditing = isEditingGroupName,
-        )
-
-        AnimatedVisibility(!isEditingGroupName) {
-            actions()
-        }
-    }
+        },
+        navigationIcon = {
+            IconButton(onClick = onBackClick) {
+                Icon(
+                    Icons.AutoMirrored.Rounded.ArrowBack,
+                    contentDescription = stringResource(R.string.home_app_bar_pop_group),
+                )
+            }
+        },
+        actions = {
+            AnimatedVisibility(visible = !isEditingGroupName) {
+                actions()
+            }
+        },
+        colors = primaryAppBarColors(),
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -259,9 +321,10 @@ private fun SelectingAppBar(
     modifier: Modifier = Modifier,
     state: KeyMapAppBarState.Selecting,
     onBackClick: () -> Unit,
+    onSelectAllClick: () -> Unit,
 ) {
     CenterAlignedTopAppBar(
-        modifier = Modifier,
+        modifier = modifier,
         title = {
             SelectedText(selectionCount = state.selectionCount)
         },
@@ -274,46 +337,20 @@ private fun SelectingAppBar(
             }
         },
         actions = {
+            OutlinedButton(
+                modifier = Modifier.padding(horizontal = 8.dp),
+                onClick = onSelectAllClick,
+            ) {
+                val text = if (state.isAllSelected) {
+                    stringResource(R.string.home_app_bar_deselect_all)
+                } else {
+                    stringResource(R.string.home_app_bar_select_all)
+                }
+                Text(text)
+            }
         },
-        colors = appBarColors,
+        colors = primaryAppBarColors(),
     )
-
-    Column {
-        AnimatedVisibility(
-            visible = state is KeyMapAppBarState.RootGroup && state.warnings.isNotEmpty(),
-        ) {
-            // Use separate Surfaces so the animation doesn't jump when they both disappear
-            // going into selection mode.
-            Surface(color = appBarContainerColor) {
-                HomeWarningList(
-                    modifier = Modifier.padding(bottom = 8.dp),
-                    warnings = (state as? KeyMapAppBarState.RootGroup)?.warnings ?: emptyList(),
-                    onFixClick = onFixWarningClick,
-                )
-            }
-        }
-
-        AnimatedVisibility(
-            visible = state !is KeyMapAppBarState.Selecting && !isEditingGroupName,
-        ) {
-            val subGroups = when (state) {
-                is KeyMapAppBarState.ChildGroup -> state.subGroups
-                is KeyMapAppBarState.RootGroup -> state.subGroups
-                is KeyMapAppBarState.Selecting -> emptyList()
-            }
-
-            Surface(color = appBarContainerColor) {
-                GroupRow(
-                    modifier = Modifier
-                        .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
-                        .fillMaxWidth(),
-                    groups = subGroups,
-                    onNewGroupClick = onNewGroupClick,
-                    onGroupClick = {},
-                )
-            }
-        }
-    }
 }
 
 @Composable
@@ -386,12 +423,13 @@ private fun AppBarActions(
 private fun GroupNameRow(
     modifier: Modifier = Modifier,
     name: String,
-    onRenameClick: suspend (String) -> Boolean = { true },
     isEditing: Boolean,
+    onRenameClick: suspend (String) -> Boolean = { true },
+    onEditClick: () -> Unit = {},
 ) {
     val scope = rememberCoroutineScope()
     val focusRequester = remember { FocusRequester() }
-    var newName by rememberSaveable { mutableStateOf(name) }
+    var textFieldValue by remember { mutableStateOf(TextFieldValue(name)) }
     var error: String? by rememberSaveable { mutableStateOf(null) }
 
     LaunchedEffect(isEditing) {
@@ -409,54 +447,88 @@ private fun GroupNameRow(
         }
     }
 
-    Row(modifier, verticalAlignment = Alignment.CenterVertically) {
-        OutlinedTextField(
-            modifier = Modifier
-                .focusRequester(focusRequester),
-            value = newName,
-            placeholder = { Text(name) },
-            onValueChange = {
-                error = null
-                newName = it
-            },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Done,
-                showKeyboardOnFocus = true,
-            ),
-            colors = if (isEditing) {
-                OutlinedTextFieldDefaults.colors()
-            } else {
-                OutlinedTextFieldDefaults.colors(
-                    unfocusedBorderColor = Color.Transparent,
-                    focusedBorderColor = Color.Transparent,
-                    disabledBorderColor = Color.Transparent,
-                    disabledTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                )
-            },
-            keyboardActions = KeyboardActions(onDone = { onDoneClick(newName) }),
-            isError = error != null,
-            supportingText = if (error == null) {
-                null
-            } else {
-                { Text(error!!) }
-            },
-            enabled = isEditing,
-        )
+    AnimatedContent(isEditing) { isEditing ->
+        Row(modifier.height(IntrinsicSize.Min), verticalAlignment = Alignment.Top) {
+            val interactionSource = remember { MutableInteractionSource() }
 
-        AnimatedContent(isEditing) { isEditing ->
+            // TODO handle error squishing the text field
+
+            val isDoubleTap by interactionSource.collectIsDoubleTapAsState()
+
+            LaunchedEffect(isDoubleTap) {
+                val endRange = if (isDoubleTap) textFieldValue.text.length else 0
+
+                textFieldValue = textFieldValue.copy(
+                    selection = TextRange(start = 0, end = endRange),
+                )
+            }
+            BasicTextField(
+                modifier = Modifier
+                    .focusRequester(focusRequester)
+                    .widthIn(max = 300.dp)
+                    .fillMaxHeight()
+                    .heightIn(max = 30.dp)
+                    .then(
+                        if (isEditing) {
+                            Modifier.weight(1f)
+                        } else {
+                            Modifier
+                        },
+                    ),
+                value = textFieldValue,
+                onValueChange = {
+                    error = null
+                    textFieldValue = it
+                },
+                enabled = isEditing,
+                keyboardActions = KeyboardActions(onDone = { onDoneClick(textFieldValue.text) }),
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Done,
+                    showKeyboardOnFocus = true,
+                ),
+                interactionSource = interactionSource,
+            ) { innerTextField ->
+                @OptIn(ExperimentalMaterial3Api::class)
+                OutlinedTextFieldDefaults.DecorationBox(
+                    value = textFieldValue.text,
+                    placeholder = { Text(name) },
+                    innerTextField = innerTextField,
+                    singleLine = true,
+                    colors = if (isEditing) {
+                        OutlinedTextFieldDefaults.colors()
+                    } else {
+                        OutlinedTextFieldDefaults.colors(
+                            unfocusedBorderColor = Color.Transparent,
+                            focusedBorderColor = Color.Transparent,
+                            disabledBorderColor = Color.Transparent,
+                            disabledTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        )
+                    },
+                    isError = error != null,
+                    enabled = isEditing,
+                    supportingText = if (error == null) {
+                        null
+                    } else {
+                        { Text(error!!, maxLines = 1) }
+                    },
+                    visualTransformation = VisualTransformation.None,
+                    interactionSource = interactionSource,
+                    contentPadding = TextFieldDefaults.contentPaddingWithoutLabel(
+                        top = 0.dp,
+                        bottom = 0.dp,
+                    ),
+                )
+            }
+
             if (isEditing) {
-                IconButton(onClick = { onDoneClick(newName) }) {
+                IconButton(onClick = { onDoneClick(textFieldValue.text) }) {
                     Icon(
                         Icons.Rounded.Done,
                         contentDescription = stringResource(R.string.home_app_bar_save_group_name),
                     )
                 }
             } else {
-                IconButton(onClick = {
-                    focusRequester.freeFocus()
-                    focusRequester.requestFocus()
-                }) {
+                IconButton(onClick = onEditClick) {
                     Icon(
                         Icons.Rounded.Edit,
                         contentDescription = stringResource(R.string.home_app_bar_edit_group_name),
@@ -465,6 +537,33 @@ private fun GroupNameRow(
             }
         }
     }
+}
+
+/**
+ * This is required due to a bug in compose where double tapping in BasicTextFields doesn't work.
+ * See https://issuetracker.google.com/issues/137321832
+ */
+@Composable
+private fun InteractionSource.collectIsDoubleTapAsState(): MutableState<Boolean> {
+    val isDoubleTap = remember { mutableStateOf(false) }
+    var firstInteractionTimeInMillis = 0L
+    LaunchedEffect(this) {
+        interactions.collect { interaction ->
+            when (interaction) {
+                is PressInteraction.Press -> {
+                    val pressTimeInMillis = System.currentTimeMillis()
+                    if (pressTimeInMillis - firstInteractionTimeInMillis <= 500L) {
+                        firstInteractionTimeInMillis = 0
+                        isDoubleTap.value = true
+                    } else {
+                        firstInteractionTimeInMillis = System.currentTimeMillis()
+                        isDoubleTap.value = false
+                    }
+                }
+            }
+        }
+    }
+    return isDoubleTap
 }
 
 @Composable
@@ -647,13 +746,13 @@ private fun groupSampleList(): List<SubGroupListModel> {
 @Composable
 private fun KeyMapsChildGroupPreview() {
     val state = KeyMapAppBarState.ChildGroup(
-        groupName = "My group",
+        groupName = "Untitled group 23",
         subGroups = groupSampleList(),
         constraints = constraintsSampleList(),
         constraintMode = ConstraintMode.AND,
     )
     KeyMapperTheme {
-        KeyMapAppBar(state = state, isEditingGroupName = false)
+        KeyMapAppBar(modifier = Modifier.fillMaxWidth(), state = state, isEditingGroupName = false)
     }
 }
 
@@ -662,7 +761,7 @@ private fun KeyMapsChildGroupPreview() {
 @Composable
 private fun KeyMapsChildGroupEditingPreview() {
     val state = KeyMapAppBarState.ChildGroup(
-        groupName = "My group",
+        groupName = "Untitled group 23",
         subGroups = groupSampleList(),
         constraints = constraintsSampleList(),
         constraintMode = ConstraintMode.AND,
