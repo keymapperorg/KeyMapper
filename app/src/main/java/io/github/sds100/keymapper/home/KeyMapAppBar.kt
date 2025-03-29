@@ -13,9 +13,8 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.PressInteraction
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
@@ -25,7 +24,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
@@ -53,6 +51,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -65,7 +64,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -83,9 +81,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -158,28 +154,48 @@ fun KeyMapAppBar(
             onSelectAllClick = onSelectAllClick,
         )
 
-        is KeyMapAppBarState.ChildGroup -> ChildGroupAppBar(
-            modifier = modifier,
-            state = state,
-            onBackClick = onBackClick,
-            onEditGroupNameClick = onNewGroupClick,
-            onRenameGroupClick = onRenameGroupClick,
-            onEditClick = onEditGroupNameClick,
-            isEditingGroupName = isEditingGroupName,
-            actions = {
-                AnimatedVisibility(!isEditingGroupName) {
-                    AppBarActions(
-                        state,
-                        onSelectAllClick,
-                        onHelpClick,
-                        onSettingsClick,
-                        onAboutClick,
-                        onExportClick,
-                        onImportClick,
-                    )
-                }
-            },
-        )
+        is KeyMapAppBarState.ChildGroup -> {
+            val scope = rememberCoroutineScope()
+            val uniqueErrorText = stringResource(R.string.home_app_bar_group_name_unique_error)
+
+            var error: String? by rememberSaveable { mutableStateOf(null) }
+
+            var newName by remember { mutableStateOf(state.groupName) }
+
+            ChildGroupAppBar(
+                modifier = modifier,
+                value = newName,
+                placeholder = state.groupName,
+                onValueChange = {
+                    newName = it
+                    error = null
+                },
+                onRenameClick = {
+                    scope.launch {
+                        if (!onRenameGroupClick(newName)) {
+                            error = uniqueErrorText
+                        }
+                    }
+                },
+                onBackClick = onBackClick,
+                onNewGroupClick = onNewGroupClick,
+                onEditClick = onEditGroupNameClick,
+                isEditingGroupName = isEditingGroupName,
+                actions = {
+                    AnimatedVisibility(!isEditingGroupName) {
+                        AppBarActions(
+                            state,
+                            onSelectAllClick,
+                            onHelpClick,
+                            onSettingsClick,
+                            onAboutClick,
+                            onExportClick,
+                            onImportClick,
+                        )
+                    }
+                },
+            )
+        }
     }
 }
 
@@ -279,21 +295,27 @@ private fun RootGroupAppBar(
 @Composable
 private fun ChildGroupAppBar(
     modifier: Modifier = Modifier,
-    state: KeyMapAppBarState.ChildGroup,
-    onBackClick: () -> Unit,
-    onEditGroupNameClick: () -> Unit = {},
+    value: String,
+    placeholder: String,
+    onValueChange: (String) -> Unit = {},
+    error: String? = null,
+    onBackClick: () -> Unit = {},
     onEditClick: () -> Unit = {},
-    onRenameGroupClick: suspend (String) -> Boolean = { true },
+    onRenameClick: () -> Unit = {},
     isEditingGroupName: Boolean = false,
-    actions: @Composable RowScope.() -> Unit,
+    onNewGroupClick: () -> Unit = {},
+    actions: @Composable RowScope.() -> Unit = {},
 ) {
     TopAppBar(
         modifier = modifier,
         title = {
             GroupNameRow(
                 modifier = Modifier,
-                name = state.groupName,
-                onRenameClick = onRenameGroupClick,
+                value = value,
+                onValueChange = onValueChange,
+                placeholder = placeholder,
+                onRenameClick = onRenameClick,
+                error = error,
                 isEditing = isEditingGroupName,
                 onEditClick = onEditClick,
             )
@@ -422,29 +444,18 @@ private fun AppBarActions(
 @Composable
 private fun GroupNameRow(
     modifier: Modifier = Modifier,
-    name: String,
+    value: String,
+    onValueChange: (String) -> Unit = {},
+    placeholder: String,
     isEditing: Boolean,
-    onRenameClick: suspend (String) -> Boolean = { true },
+    onRenameClick: () -> Unit,
     onEditClick: () -> Unit = {},
+    error: String? = null,
 ) {
-    val scope = rememberCoroutineScope()
     val focusRequester = remember { FocusRequester() }
-    var textFieldValue by remember { mutableStateOf(TextFieldValue(name)) }
-    var error: String? by rememberSaveable { mutableStateOf(null) }
 
     LaunchedEffect(isEditing) {
         focusRequester.requestFocus()
-    }
-
-    val uniqueErrorText = stringResource(R.string.home_app_bar_group_name_unique_error)
-
-    fun onDoneClick(name: String) {
-        scope.launch {
-            val success = onRenameClick(name)
-            if (!success) {
-                error = uniqueErrorText
-            }
-        }
     }
 
     AnimatedContent(isEditing) { isEditing ->
@@ -453,21 +464,10 @@ private fun GroupNameRow(
 
             // TODO handle error squishing the text field
 
-            val isDoubleTap by interactionSource.collectIsDoubleTapAsState()
-
-            LaunchedEffect(isDoubleTap) {
-                val endRange = if (isDoubleTap) textFieldValue.text.length else 0
-
-                textFieldValue = textFieldValue.copy(
-                    selection = TextRange(start = 0, end = endRange),
-                )
-            }
             BasicTextField(
                 modifier = Modifier
                     .focusRequester(focusRequester)
-                    .widthIn(max = 300.dp)
                     .fillMaxHeight()
-                    .heightIn(max = 30.dp)
                     .then(
                         if (isEditing) {
                             Modifier.weight(1f)
@@ -475,24 +475,24 @@ private fun GroupNameRow(
                             Modifier
                         },
                     ),
-                value = textFieldValue,
-                onValueChange = {
-                    error = null
-                    textFieldValue = it
-                },
+                value = value,
+                onValueChange = onValueChange,
+                textStyle = LocalTextStyle.current,
                 enabled = isEditing,
-                keyboardActions = KeyboardActions(onDone = { onDoneClick(textFieldValue.text) }),
+                keyboardActions = KeyboardActions(onDone = { onRenameClick() }),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done,
                     showKeyboardOnFocus = true,
                 ),
+                singleLine = true,
+                maxLines = 1,
                 interactionSource = interactionSource,
             ) { innerTextField ->
                 @OptIn(ExperimentalMaterial3Api::class)
                 OutlinedTextFieldDefaults.DecorationBox(
-                    value = textFieldValue.text,
-                    placeholder = { Text(name) },
-                    innerTextField = innerTextField,
+                    value = value,
+                    placeholder = { Text(value, style = LocalTextStyle.current) },
+                    innerTextField = { Box(Modifier.width(IntrinsicSize.Min)) { innerTextField() } },
                     singleLine = true,
                     colors = if (isEditing) {
                         OutlinedTextFieldDefaults.colors()
@@ -509,7 +509,7 @@ private fun GroupNameRow(
                     supportingText = if (error == null) {
                         null
                     } else {
-                        { Text(error!!, maxLines = 1) }
+                        { Text(error, maxLines = 1) }
                     },
                     visualTransformation = VisualTransformation.None,
                     interactionSource = interactionSource,
@@ -521,7 +521,7 @@ private fun GroupNameRow(
             }
 
             if (isEditing) {
-                IconButton(onClick = { onDoneClick(textFieldValue.text) }) {
+                IconButton(onClick = onRenameClick) {
                     Icon(
                         Icons.Rounded.Done,
                         contentDescription = stringResource(R.string.home_app_bar_save_group_name),
@@ -537,33 +537,6 @@ private fun GroupNameRow(
             }
         }
     }
-}
-
-/**
- * This is required due to a bug in compose where double tapping in BasicTextFields doesn't work.
- * See https://issuetracker.google.com/issues/137321832
- */
-@Composable
-private fun InteractionSource.collectIsDoubleTapAsState(): MutableState<Boolean> {
-    val isDoubleTap = remember { mutableStateOf(false) }
-    var firstInteractionTimeInMillis = 0L
-    LaunchedEffect(this) {
-        interactions.collect { interaction ->
-            when (interaction) {
-                is PressInteraction.Press -> {
-                    val pressTimeInMillis = System.currentTimeMillis()
-                    if (pressTimeInMillis - firstInteractionTimeInMillis <= 500L) {
-                        firstInteractionTimeInMillis = 0
-                        isDoubleTap.value = true
-                    } else {
-                        firstInteractionTimeInMillis = System.currentTimeMillis()
-                        isDoubleTap.value = false
-                    }
-                }
-            }
-        }
-    }
-    return isDoubleTap
 }
 
 @Composable
@@ -742,11 +715,11 @@ private fun groupSampleList(): List<SubGroupListModel> {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun KeyMapsChildGroupPreview() {
     val state = KeyMapAppBarState.ChildGroup(
-        groupName = "Untitled group 23",
+        groupName = "Short name",
         subGroups = groupSampleList(),
         constraints = constraintsSampleList(),
         constraintMode = ConstraintMode.AND,
@@ -757,7 +730,7 @@ private fun KeyMapsChildGroupPreview() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun KeyMapsChildGroupEditingPreview() {
     val state = KeyMapAppBarState.ChildGroup(
@@ -776,6 +749,25 @@ private fun KeyMapsChildGroupEditingPreview() {
     KeyMapperTheme {
         KeyMapAppBar(
             state = state,
+            isEditingGroupName = true,
+        )
+    }
+}
+
+@Preview(showSystemUi = true)
+@Composable
+private fun KeyMapsChildGroupErrorPreview() {
+    val focusRequester = FocusRequester()
+
+    LaunchedEffect("") {
+        focusRequester.requestFocus()
+    }
+
+    KeyMapperTheme {
+        ChildGroupAppBar(
+            value = "Untitled group 23",
+            placeholder = "Untitled group 23",
+            error = stringResource(R.string.home_app_bar_group_name_unique_error),
             isEditingGroupName = true,
         )
     }
@@ -862,7 +854,7 @@ private fun HomeStateWarningsDarkPreview() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(widthDp = 300, heightDp = 600)
+@Preview(showSystemUi = true)
 @Composable
 private fun HomeStateSelectingPreview() {
     val state = KeyMapAppBarState.Selecting(
