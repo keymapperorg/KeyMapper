@@ -21,10 +21,11 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.text.BasicTextField
@@ -51,14 +52,12 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
@@ -166,6 +165,7 @@ fun KeyMapAppBar(
                 modifier = modifier,
                 value = newName,
                 placeholder = state.groupName,
+                error = error,
                 onValueChange = {
                     newName = it
                     error = null
@@ -291,7 +291,6 @@ private fun RootGroupAppBar(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ChildGroupAppBar(
     modifier: Modifier = Modifier,
@@ -306,11 +305,30 @@ private fun ChildGroupAppBar(
     onNewGroupClick: () -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
 ) {
-    TopAppBar(
+    Surface(
         modifier = modifier,
-        title = {
+        color = MaterialTheme.colorScheme.primaryContainer,
+        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+    ) {
+        Row(
+            Modifier
+                .statusBarsPadding()
+                .fillMaxWidth()
+                .heightIn(min = 48.dp)
+                .padding(vertical = 8.dp)
+                .height(intrinsicSize = IntrinsicSize.Min),
+            verticalAlignment = Alignment.Top,
+        ) {
+            IconButton(onClick = onBackClick) {
+                Icon(
+                    Icons.AutoMirrored.Rounded.ArrowBack,
+                    contentDescription = stringResource(R.string.home_app_bar_pop_group),
+                )
+            }
+
+            Spacer(Modifier.width(8.dp))
+
             GroupNameRow(
-                modifier = Modifier,
                 value = value,
                 onValueChange = onValueChange,
                 placeholder = placeholder,
@@ -319,22 +337,14 @@ private fun ChildGroupAppBar(
                 isEditing = isEditingGroupName,
                 onEditClick = onEditClick,
             )
-        },
-        navigationIcon = {
-            IconButton(onClick = onBackClick) {
-                Icon(
-                    Icons.AutoMirrored.Rounded.ArrowBack,
-                    contentDescription = stringResource(R.string.home_app_bar_pop_group),
-                )
-            }
-        },
-        actions = {
+
+            Spacer(Modifier.weight(1f))
+
             AnimatedVisibility(visible = !isEditingGroupName) {
                 actions()
             }
-        },
-        colors = primaryAppBarColors(),
-    )
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -467,7 +477,7 @@ private fun GroupNameRow(
             BasicTextField(
                 modifier = Modifier
                     .focusRequester(focusRequester)
-                    .fillMaxHeight()
+                    .height(IntrinsicSize.Max)
                     .then(
                         if (isEditing) {
                             Modifier.weight(1f)
@@ -477,7 +487,7 @@ private fun GroupNameRow(
                     ),
                 value = value,
                 onValueChange = onValueChange,
-                textStyle = LocalTextStyle.current,
+                textStyle = MaterialTheme.typography.titleLarge,
                 enabled = isEditing,
                 keyboardActions = KeyboardActions(onDone = { onRenameClick() }),
                 keyboardOptions = KeyboardOptions(
@@ -491,8 +501,20 @@ private fun GroupNameRow(
                 @OptIn(ExperimentalMaterial3Api::class)
                 OutlinedTextFieldDefaults.DecorationBox(
                     value = value,
-                    placeholder = { Text(value, style = LocalTextStyle.current) },
-                    innerTextField = { Box(Modifier.width(IntrinsicSize.Min)) { innerTextField() } },
+                    placeholder = {
+                        Text(
+                            placeholder,
+                            style = MaterialTheme.typography.titleLarge,
+                        )
+                    },
+                    innerTextField = {
+                        Box(
+                            Modifier
+                                .width(IntrinsicSize.Min)
+                                .height(48.dp),
+                            contentAlignment = Alignment.CenterStart,
+                        ) { innerTextField() }
+                    },
                     singleLine = true,
                     colors = if (isEditing) {
                         OutlinedTextFieldDefaults.colors()
