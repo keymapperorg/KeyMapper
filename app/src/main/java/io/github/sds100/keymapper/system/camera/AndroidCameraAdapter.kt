@@ -152,6 +152,11 @@ class AndroidCameraAdapter(context: Context) : CameraAdapter {
             return Error.SdkVersionTooLow(minSdk = Build.VERSION_CODES.TIRAMISU)
         }
 
+        // If the flash is disabled and it should be decreased then do nothing.
+        if (percent < 0 && isFlashEnabledMap.value[lens] == false) {
+            return Success(Unit)
+        }
+
         try {
             val cameraId = getFlashlightCameraIdForLens(lens)
 
