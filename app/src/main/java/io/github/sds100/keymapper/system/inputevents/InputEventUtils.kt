@@ -689,8 +689,7 @@ object InputEventUtils {
     /**
      * Used for keyCode to scanCode fallback to go past possible keyCode values
      */
-    val KEYCODE_TO_SCANCODE_OFFSET: Int
-        get() = KeyEvent.getMaxKeyCode() + 1
+    val KEYCODE_TO_SCANCODE_OFFSET: Int = 1000
 
     /**
      * Create a text representation of a key event. E.g if the control key was pressed,
