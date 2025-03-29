@@ -1,5 +1,7 @@
 ## [3.0 Beta 3](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0-beta.3)
 
+_See the changes from previous 3.0 Beta releases as well._
+
 #### TO BE RELEASED
 
 ## Added
@@ -20,8 +22,6 @@
 ## [3.0 Beta 2](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0-beta.2)
 
 #### 27 March 2025
-
-_See the changes from previous 3.0 Beta releases as well._
 
 ## Added
 
