@@ -18,6 +18,7 @@ _See the changes from previous 3.0 Beta releases as well._
 - Do not show floating buttons on the always-on display or when the display is "off".
 - Prompt to unlock device when tapping "Go back" on the floating menu.
 - #1596 Do not show the option for front flashlight if the device does not have one.
+- #1598 Do not allow changing flashlight brightness on devices that do not support it.
 
 ## [3.0 Beta 2](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0-beta.2)
 

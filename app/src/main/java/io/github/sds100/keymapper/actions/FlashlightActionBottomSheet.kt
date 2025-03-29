@@ -281,9 +281,7 @@ private fun ChangeFlashlightStrengthActionBottomSheet(
         onDismissRequest = onDismissRequest,
         title = stringResource(R.string.action_flashlight_change_strength),
         selectedLens = state.selectedLens,
-        availableLenses = state.lensData.entries
-            .filter { it.value.supportsVariableStrength }
-            .map { it.key }.toSet(),
+        availableLenses = state.lensData.entries.map { it.key }.toSet(),
         onSelectLens = onSelectLens,
         onDoneClick = onDoneClick,
     ) {

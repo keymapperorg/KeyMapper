@@ -72,7 +72,7 @@ class AndroidCameraAdapter(context: Context) : CameraAdapter {
             val maxFlashStrength = getCharacteristicForLens(
                 lens,
                 CameraCharacteristics.FLASH_INFO_STRENGTH_MAXIMUM_LEVEL,
-            )
+            ) ?: 1
 
             val defaultFlashStrength = getCharacteristicForLens(
                 lens,
@@ -80,9 +80,9 @@ class AndroidCameraAdapter(context: Context) : CameraAdapter {
             )
 
             return CameraFlashInfo(
-                supportsVariableStrength = true,
+                supportsVariableStrength = maxFlashStrength > 1,
                 defaultStrength = defaultFlashStrength ?: 1,
-                maxStrength = maxFlashStrength ?: 1,
+                maxStrength = maxFlashStrength,
             )
         } else {
             return CameraFlashInfo(

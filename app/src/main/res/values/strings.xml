@@ -1401,7 +1401,7 @@
     <string name="action_config_flashlight_brightness_max">Max</string>
     <string name="action_config_flashlight_brightness_test">Test</string>
     <string name="action_config_flashlight_brightness_unsupported_android_version">Requires Android 13 or newer.</string>
-    <string name="action_config_flashlight_brightness_unsupported">This flash does not let you change the brightness.</string>
+    <string name="action_config_flashlight_brightness_unsupported">This device does not let you change the brightness.</string>
     <string name="action_config_flashlight_brightness_factor">Brightness change</string>
 
     <string name="choose_action_group_unsupported">Unsupported</string>
