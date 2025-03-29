@@ -7,7 +7,7 @@ import androidx.compose.material.icons.outlined.Android
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
-import io.github.sds100.keymapper.system.camera.CameraLensUtils
+import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.display.OrientationUtils
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
@@ -16,6 +16,7 @@ import io.github.sds100.keymapper.system.volume.DndModeUtils
 import io.github.sds100.keymapper.system.volume.RingerModeUtils
 import io.github.sds100.keymapper.system.volume.VolumeStreamUtils
 import io.github.sds100.keymapper.util.handle
+import io.github.sds100.keymapper.util.toPercentString
 import io.github.sds100.keymapper.util.ui.IconInfo
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.TintType
@@ -241,53 +242,85 @@ class ActionUiHelper(
             )
 
         is ActionData.Flashlight -> {
-            val lensString = getString(CameraLensUtils.getLabel(action.lens))
-
             when (action) {
                 is ActionData.Flashlight.Toggle -> {
                     if (action.strengthPercent == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-                        getString(R.string.action_toggle_flashlight_formatted, lensString)
+                        if (action.lens == CameraLens.FRONT) {
+                            getString(R.string.action_toggle_front_flashlight_formatted)
+                        } else {
+                            getString(R.string.action_toggle_flashlight_formatted)
+                        }
                     } else {
-                        getString(
-                            R.string.action_toggle_flashlight_with_strength,
-                            arrayOf(
-                                lensString,
-                                (action.strengthPercent * 100).toInt(),
-                            ),
-                        )
+                        if (action.lens == CameraLens.FRONT) {
+                            getString(
+                                R.string.action_toggle_front_flashlight_with_strength,
+                                action.strengthPercent.toPercentString(),
+
+                            )
+                        } else {
+                            getString(
+                                R.string.action_toggle_flashlight_with_strength,
+                                action.strengthPercent.toPercentString(),
+                            )
+                        }
                     }
                 }
 
                 is ActionData.Flashlight.Enable -> {
                     if (action.strengthPercent == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-                        getString(R.string.action_enable_flashlight_formatted, lensString)
+                        if (action.lens == CameraLens.FRONT) {
+                            getString(R.string.action_enable_front_flashlight_formatted)
+                        } else {
+                            getString(R.string.action_enable_flashlight_formatted)
+                        }
                     } else {
-                        getString(
-                            R.string.action_enable_flashlight_with_strength,
-                            arrayOf(
-                                lensString,
-                                (action.strengthPercent * 100).toInt(),
-                            ),
-                        )
+                        if (action.lens == CameraLens.FRONT) {
+                            getString(
+                                R.string.action_enable_front_flashlight_with_strength,
+                                action.strengthPercent.toPercentString(),
+                            )
+                        } else {
+                            getString(
+                                R.string.action_enable_flashlight_with_strength,
+                                action.strengthPercent.toPercentString(),
+                            )
+                        }
                     }
                 }
 
-                is ActionData.Flashlight.Disable -> getString(
-                    R.string.action_disable_flashlight_formatted,
-                    lensString,
-                )
+                is ActionData.Flashlight.Disable -> {
+                    if (action.lens == CameraLens.FRONT) {
+                        getString(R.string.action_disable_front_flashlight_formatted)
+                    } else {
+                        getString(R.string.action_disable_flashlight_formatted)
+                    }
+                }
 
                 is ActionData.Flashlight.ChangeStrength -> {
                     if (action.percent > 0) {
-                        getString(
-                            R.string.action_flashlight_increase_strength_formatted,
-                            arrayOf(lensString, (action.percent * 100).toInt()),
-                        )
+                        if (action.lens == CameraLens.FRONT) {
+                            getString(
+                                R.string.action_front_flashlight_increase_strength_formatted,
+                                action.percent.toPercentString(),
+                            )
+                        } else {
+                            getString(
+                                R.string.action_flashlight_increase_strength_formatted,
+                                action.percent.toPercentString(),
+                            )
+                        }
                     } else {
-                        getString(
-                            R.string.action_flashlight_decrease_strength_formatted,
-                            arrayOf(lensString, (action.percent * 100).toInt()),
-                        )
+                        if (action.lens == CameraLens.FRONT) {
+                            getString(
+                                R.string.action_front_flashlight_decrease_strength_formatted,
+                                action.percent.toPercentString(),
+                            )
+                        } else {
+                            getString(
+                                R.string.action_flashlight_decrease_strength_formatted,
+                                action.percent.toPercentString(),
+                            )
+                        }
                     }
                 }
             }

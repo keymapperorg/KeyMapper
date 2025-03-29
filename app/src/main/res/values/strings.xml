@@ -990,16 +990,23 @@
     <string name="action_enable_flashlight">Enable flashlight </string>
     <string name="action_disable_flashlight">Disable flashlight</string>
 
-    <string name="action_toggle_flashlight_formatted">Toggle %s flashlight</string>
-    <string name="action_toggle_flashlight_with_strength">Toggle %s flashlight (%d%%)</string>
-    <string name="action_enable_flashlight_formatted">Enable %s flashlight</string>
-    <string name="action_enable_flashlight_with_strength">Enable %s flashlight (%d\%%)</string>
-    <string name="action_disable_flashlight_formatted">Disable %s flashlight</string>
-
+    <string name="action_toggle_flashlight_formatted">Toggle flashlight</string>
+    <string name="action_toggle_flashlight_with_strength">Toggle flashlight (%s)</string>
+    <string name="action_enable_flashlight_formatted">Enable flashlight</string>
+    <string name="action_enable_flashlight_with_strength">Enable flashlight (%s)</string>
+    <string name="action_disable_flashlight_formatted">Disable flashlight</string>
     <string name="action_flashlight_change_strength">Change flashlight brightness</string>
+    <string name="action_flashlight_increase_strength_formatted">Brighten flashlight %s</string>
+    <string name="action_flashlight_decrease_strength_formatted">Dim flashlight %s</string>
 
-    <string name="action_flashlight_increase_strength_formatted">Brighten %s flashlight %d\%%</string>
-    <string name="action_flashlight_decrease_strength_formatted">Dim %s flashlight %d\%%</string>
+    <string name="action_toggle_front_flashlight_formatted">Toggle front flashlight</string>
+    <string name="action_toggle_front_flashlight_with_strength">Toggle front flashlight (%s)</string>
+    <string name="action_enable_front_flashlight_formatted">Enable front flashlight</string>
+    <string name="action_enable_front_flashlight_with_strength">Enable front flashlight (%s)</string>
+    <string name="action_disable_front_flashlight_formatted">Disable front flashlight</string>
+    <string name="action_front_flashlight_change_strength">Change front flashlight brightness</string>
+    <string name="action_front_flashlight_increase_strength_formatted">Brighten front flashlight %s</string>
+    <string name="action_front_flashlight_decrease_strength_formatted">Dim front flashlight %s</string>
 
     <string name="action_nfc_enable">Enable NFC</string>
     <string name="action_nfc_disable">Disable NFC</string>

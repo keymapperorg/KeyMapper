@@ -12,6 +12,7 @@ _See the changes from previous 3.0 Beta releases as well._
 
 - Turn off flashlight when using decrease brightness action.
 - Animate floating buttons in and out.
+- Omit "Back" from Back flashlight actions since most devices only have a back flashlight anyway.
 
 ## Bug fixes
 
