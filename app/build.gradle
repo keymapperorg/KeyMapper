@@ -103,7 +103,7 @@ android {
             if (file.exists()) {
                 def localProperties = new Properties()
                 localProperties.load(new FileInputStream(file))
-                if (localProperties.hasProperty(keyName)) {
+                if (localProperties.containsKey(keyName)) {
                     buildConfigField("String", keyName, localProperties[keyName])
                 }
             }
