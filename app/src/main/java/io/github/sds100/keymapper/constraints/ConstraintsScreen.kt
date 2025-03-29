@@ -140,7 +140,7 @@ private fun ConstraintsScreen(
 
                                 ShortcutRow(
                                     modifier = Modifier
-                                        .padding(horizontal = 16.dp)
+                                        .padding(horizontal = 32.dp)
                                         .fillMaxWidth(),
                                     shortcuts = state.data.shortcuts,
                                     onClick = onClickShortcut,
@@ -284,7 +284,9 @@ private fun ConstraintList(
                     Spacer(Modifier.height(8.dp))
 
                     ShortcutRow(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 32.dp),
                         shortcuts = shortcuts,
                         onClick = { onClickShortcut(it) },
                     )

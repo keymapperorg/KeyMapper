@@ -209,7 +209,7 @@ private fun TriggerScreenVertical(
 
                                 ShortcutRow(
                                     modifier = Modifier
-                                        .padding(horizontal = 16.dp)
+                                        .padding(horizontal = 32.dp)
                                         .fillMaxWidth(),
                                     shortcuts = configState.shortcuts,
                                     onClick = onClickShortcut,
@@ -313,7 +313,7 @@ private fun TriggerScreenHorizontal(
 
                             ShortcutRow(
                                 modifier = Modifier
-                                    .padding(horizontal = 16.dp)
+                                    .padding(horizontal = 32.dp)
                                     .fillMaxWidth(),
                                 shortcuts = configState.shortcuts,
                                 onClick = onClickShortcut,
@@ -456,7 +456,9 @@ private fun TriggerList(
                     Spacer(Modifier.height(8.dp))
 
                     ShortcutRow(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 32.dp),
                         shortcuts = shortcuts,
                         onClick = { onClickShortcut(it) },
                     )
