@@ -241,6 +241,9 @@ class BackupManagerImpl(
 
                 // Do nothing because this just add the floating layouts table and indexes.
                 JsonMigration(13, 14) { json -> json },
+
+                // Do nothing just added floating button entity columns
+                JsonMigration(14, 15) { json -> json },
             )
 
             if (keyMapListJsonArray != null) {
