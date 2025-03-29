@@ -6,9 +6,12 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.github.salomonbrys.kotson.byInt
+import com.github.salomonbrys.kotson.byNullableFloat
 import com.github.salomonbrys.kotson.byString
 import com.github.salomonbrys.kotson.jsonDeserializer
 import com.google.gson.annotations.SerializedName
+import io.github.sds100.keymapper.data.db.dao.FloatingButtonDao.Companion.KEY_BACKGROUND_OPACITY
+import io.github.sds100.keymapper.data.db.dao.FloatingButtonDao.Companion.KEY_BORDER_OPACITY
 import io.github.sds100.keymapper.data.db.dao.FloatingButtonDao.Companion.KEY_BUTTON_SIZE
 import io.github.sds100.keymapper.data.db.dao.FloatingButtonDao.Companion.KEY_DISPLAY_HEIGHT
 import io.github.sds100.keymapper.data.db.dao.FloatingButtonDao.Companion.KEY_DISPLAY_WIDTH
@@ -70,6 +73,15 @@ data class FloatingButtonEntity(
     @ColumnInfo(name = KEY_DISPLAY_HEIGHT)
     @SerializedName(NAME_DISPLAY_HEIGHT)
     val displayHeight: Int,
+
+    @ColumnInfo(name = KEY_BORDER_OPACITY)
+    @SerializedName(NAME_BORDER_OPACITY)
+    val borderOpacity: Float?,
+
+    @ColumnInfo(name = KEY_BACKGROUND_OPACITY)
+    @SerializedName(NAME_BACKGROUND_OPACITY)
+    val backgroundOpacity: Float? = 1f,
+
 ) : Parcelable {
     companion object {
         // DON'T CHANGE THESE. Used for JSON serialization and parsing.
@@ -82,6 +94,8 @@ data class FloatingButtonEntity(
         const val NAME_ORIENTATION = "orientation"
         const val NAME_DISPLAY_WIDTH = "displayWidth"
         const val NAME_DISPLAY_HEIGHT = "displayHeight"
+        const val NAME_BORDER_OPACITY = "border_opacity"
+        const val NAME_BACKGROUND_OPACITY = "background_opacity"
 
         val DESERIALIZER = jsonDeserializer {
             val uid by it.json.byString(NAME_UID)
@@ -93,6 +107,8 @@ data class FloatingButtonEntity(
             val orientation by it.json.byString(NAME_ORIENTATION)
             val displayWidth by it.json.byInt(NAME_DISPLAY_WIDTH)
             val displayHeight by it.json.byInt(NAME_DISPLAY_HEIGHT)
+            val borderOpacity by it.json.byNullableFloat(NAME_BORDER_OPACITY)
+            val backgroundOpacity by it.json.byNullableFloat(NAME_BACKGROUND_OPACITY)
 
             FloatingButtonEntity(
                 uid = uid,
@@ -104,6 +120,8 @@ data class FloatingButtonEntity(
                 orientation = orientation,
                 displayWidth = displayWidth,
                 displayHeight = displayHeight,
+                borderOpacity = borderOpacity,
+                backgroundOpacity = backgroundOpacity,
             )
         }
     }

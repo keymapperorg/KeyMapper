@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.data.db
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
@@ -22,6 +23,7 @@ import io.github.sds100.keymapper.data.entities.FloatingButtonEntity
 import io.github.sds100.keymapper.data.entities.FloatingLayoutEntity
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.data.entities.LogEntryEntity
+import io.github.sds100.keymapper.data.migration.AutoMigration14To15
 import io.github.sds100.keymapper.data.migration.Migration10To11
 import io.github.sds100.keymapper.data.migration.Migration11To12
 import io.github.sds100.keymapper.data.migration.Migration13To14
@@ -41,6 +43,10 @@ import io.github.sds100.keymapper.data.migration.Migration9To10
     entities = [KeyMapEntity::class, FingerprintMapEntity::class, LogEntryEntity::class, FloatingLayoutEntity::class, FloatingButtonEntity::class],
     version = DATABASE_VERSION,
     exportSchema = true,
+    autoMigrations = [
+        // This adds the button and background opacity columns to the floating button entity
+        AutoMigration(from = 14, to = 15, spec = AutoMigration14To15::class),
+    ],
 )
 @TypeConverters(
     ActionListTypeConverter::class,
@@ -51,7 +57,7 @@ import io.github.sds100.keymapper.data.migration.Migration9To10
 abstract class AppDatabase : RoomDatabase() {
     companion object {
         const val DATABASE_NAME = "key_map_database"
-        const val DATABASE_VERSION = 14
+        const val DATABASE_VERSION = 15
 
         val MIGRATION_1_2 = object : Migration(1, 2) {
 
@@ -124,6 +130,12 @@ abstract class AppDatabase : RoomDatabase() {
         val MIGRATION_13_14 = object : Migration(13, 14) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 Migration13To14.migrateDatabase(database)
+            }
+        }
+
+        val MIGRATION_14_15 = object : Migration(14, 15) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("")
             }
         }
     }

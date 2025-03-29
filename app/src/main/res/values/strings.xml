@@ -1248,6 +1248,8 @@
     <string name="floating_button_config_delete_button">Delete</string>
     <string name="floating_button_config_button_text_label">Button text (Tip: use an emoji)</string>
     <string name="floating_button_config_button_size_label">Button size:</string>
+    <string name="floating_button_config_border_opacity_label">Border opacity:</string>
+    <string name="floating_button_config_background_opacity_label">Background opacity:</string>
     <string name="floating_button_config_cancel_button">Cancel</string>
     <string name="floating_button_config_done_button">Done</string>
     <string name="floating_button_config_empty_text_error">The button must have text!</string>
@@ -1403,7 +1405,7 @@
     <string name="action_config_flashlight_brightness_max">Max</string>
     <string name="action_config_flashlight_brightness_test">Test</string>
     <string name="action_config_flashlight_brightness_unsupported_android_version">Requires Android 13 or newer.</string>
-    <string name="action_config_flashlight_brightness_unsupported">This flash does not let you change the brightness.</string>
+    <string name="action_config_flashlight_brightness_unsupported">This device does not let you change the brightness.</string>
     <string name="action_config_flashlight_brightness_factor">Brightness change</string>
 
     <string name="choose_action_group_unsupported">Unsupported</string>

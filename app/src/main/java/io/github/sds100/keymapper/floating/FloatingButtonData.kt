@@ -45,6 +45,8 @@ object FloatingButtonEntityMapper {
         return entity.copy(
             text = appearance.text,
             buttonSize = appearance.size,
+            borderOpacity = appearance.borderOpacity,
+            backgroundOpacity = appearance.backgroundOpacity,
         )
     }
 
@@ -66,6 +68,10 @@ object FloatingButtonEntityMapper {
             appearance = FloatingButtonAppearance(
                 text = entity.text,
                 size = entity.buttonSize,
+                borderOpacity = entity.borderOpacity
+                    ?: FloatingButtonAppearance.DEFAULT_BORDER_OPACITY,
+                backgroundOpacity = entity.backgroundOpacity
+                    ?: FloatingButtonAppearance.DEFAULT_BACKGROUND_OPACITY,
             ),
             location = Location(
                 x = entity.x,
@@ -82,6 +88,8 @@ object FloatingButtonEntityMapper {
             layoutUid = button.layoutUid,
             text = button.appearance.text,
             buttonSize = button.appearance.size,
+            borderOpacity = button.appearance.borderOpacity,
+            backgroundOpacity = button.appearance.backgroundOpacity,
             x = button.location.x,
             y = button.location.y,
             orientation = ConstantTypeConverters.ORIENTATION_MAP[button.location.orientation]!!,
