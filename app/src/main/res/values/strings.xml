@@ -1244,6 +1244,8 @@
     <string name="floating_button_config_delete_button">Delete</string>
     <string name="floating_button_config_button_text_label">Button text (Tip: use an emoji)</string>
     <string name="floating_button_config_button_size_label">Button size:</string>
+    <string name="floating_button_config_border_opacity_label">Border opacity:</string>
+    <string name="floating_button_config_background_opacity_label">Background opacity:</string>
     <string name="floating_button_config_cancel_button">Cancel</string>
     <string name="floating_button_config_done_button">Done</string>
     <string name="floating_button_config_empty_text_error">The button must have text!</string>

@@ -23,6 +23,8 @@ interface FloatingButtonDao {
         const val KEY_ORIENTATION = "orientation"
         const val KEY_DISPLAY_WIDTH = "display_width"
         const val KEY_DISPLAY_HEIGHT = "display_height"
+        const val KEY_BORDER_OPACITY = "border_opacity"
+        const val KEY_BACKGROUND_OPACITY = "background_opacity"
     }
 
     @Query("SELECT * FROM $TABLE_NAME WHERE $KEY_UID = (:uid)")

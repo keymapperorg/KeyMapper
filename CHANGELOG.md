@@ -2,6 +2,9 @@
 
 #### TO BE RELEASED
 
+## Added
+- #1586 🎨 Customise floating button border and background opacity.
+
 ## Changed
 
 - Turn off flashlight when using decrease brightness action.
