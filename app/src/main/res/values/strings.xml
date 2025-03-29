@@ -492,6 +492,9 @@
     <string name="drag_handle_for">Drag handle for %1$s</string>
     <string name="show_example">Show example</string>
 
+    <string name="dialog_title_keycode_to_scancode_trigger_explanation">Unrecognized key code</string>
+    <string name="dialog_message_keycode_to_scancode_trigger_explanation">The pressed button was not recognized by the input system. In the past Key Mapper detected such buttons as one and the same. Currently the app tries to distinguish the button based on the scan code, which should be more unique. However, this is a makeshift incomplete solution, which doesn\'t guarantee uniqueness.</string>
+
     <string name="pos_done">Done</string>
     <string name="pos_grant_write_secure_settings_guide">Guide</string>
     <string name="pos_start_service_with_adb_guide">Guide</string>
@@ -503,6 +506,7 @@
     <string name="pos_apply">Apply</string>
     <string name="pos_discard_changes">Discard changes</string>
     <string name="pos_save">Save</string>
+    <string name="pos_understood">Understood</string>
 
     <string name="neg_turn_off">Turn off</string>
     <string name="neg_cancel">Cancel</string>
