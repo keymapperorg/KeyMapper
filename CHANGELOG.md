@@ -11,6 +11,7 @@
 - Do not hide floating button when the quick settings are showing if the key map action can collapse the status bar.
 - Do not show floating buttons on the always-on display or when the display is "off".
 - Prompt to unlock device when tapping "Go back" on the floating menu.
+- #1596 Do not show the option for front flashlight if the device does not have one.
 
 ## [3.0 Beta 2](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0-beta.2)
 

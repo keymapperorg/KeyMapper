@@ -371,28 +371,30 @@ private fun FlashlightActionBottomSheet(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            OptionsHeaderRow(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                icon = Icons.Rounded.CameraFront,
-                text = stringResource(R.string.action_config_flashlight_choose_side),
-            )
-
-            Row(modifier = Modifier.padding(horizontal = 8.dp)) {
-                RadioButtonText(
-                    modifier = Modifier,
-                    text = stringResource(R.string.lens_front),
-                    isSelected = selectedLens == CameraLens.FRONT,
-                    onSelected = { onSelectLens(CameraLens.FRONT) },
-                    isEnabled = availableLenses.contains(CameraLens.FRONT),
+            if (availableLenses.size > 1) {
+                OptionsHeaderRow(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    icon = Icons.Rounded.CameraFront,
+                    text = stringResource(R.string.action_config_flashlight_choose_side),
                 )
 
-                RadioButtonText(
-                    modifier = Modifier,
-                    text = stringResource(R.string.lens_back),
-                    isSelected = selectedLens == CameraLens.BACK,
-                    onSelected = { onSelectLens(CameraLens.BACK) },
-                    isEnabled = availableLenses.contains(CameraLens.BACK),
-                )
+                Row(modifier = Modifier.padding(horizontal = 8.dp)) {
+                    RadioButtonText(
+                        modifier = Modifier,
+                        text = stringResource(R.string.lens_front),
+                        isSelected = selectedLens == CameraLens.FRONT,
+                        onSelected = { onSelectLens(CameraLens.FRONT) },
+                        isEnabled = availableLenses.contains(CameraLens.FRONT),
+                    )
+
+                    RadioButtonText(
+                        modifier = Modifier,
+                        text = stringResource(R.string.lens_back),
+                        isSelected = selectedLens == CameraLens.BACK,
+                        onSelected = { onSelectLens(CameraLens.BACK) },
+                        isEnabled = availableLenses.contains(CameraLens.BACK),
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(8.dp))
