@@ -6,6 +6,7 @@ _See the changes from previous 3.0 Beta releases as well._
 
 ## Added
 - #1586 🎨 Customise floating button border and background opacity.
+- #1276 Use key event scan code as fallback if the key code is unrecognized.
 
 ## Changed
 
