@@ -177,9 +177,10 @@ class AndroidCameraAdapter(context: Context) : CameraAdapter {
                 val newStrength =
                     (currentStrength + (percent * maxStrength))
                         .toInt()
-                        .coerceIn(1, maxStrength)
+                        .coerceAtMost(maxStrength)
 
-                if (newStrength == 1 && currentStrength == 1) {
+                // If we want to go below the current strength then turn off the flashlight.
+                if (newStrength < 1) {
                     cameraManager.setTorchMode(cameraId, false)
                 } else {
                     cameraManager.turnOnTorchWithStrengthLevel(cameraId, newStrength)
