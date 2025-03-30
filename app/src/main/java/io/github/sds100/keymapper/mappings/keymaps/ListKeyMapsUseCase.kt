@@ -65,7 +65,7 @@ class ListKeyMapsUseCaseImpl(
 
             this.groupUid.value = group.parentUid
             this.parentGroupUids.update { list ->
-                list.takeWhile { it != group.parentUid }
+                list.takeWhile { it != group.uid }
             }
             groupRepository.delete(groupUid)
         }

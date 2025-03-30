@@ -667,6 +667,12 @@ class KeyMapListViewModel(
         }
     }
 
+    fun onDeleteGroupClick() {
+        coroutineScope.launch {
+            listKeyMaps.deleteGroup()
+        }
+    }
+
     fun onNewGroupClick() {
         coroutineScope.launch {
             listKeyMaps.newGroup()
