@@ -629,9 +629,13 @@ class KeyMapListViewModel(
             }
 
             state.value.appBarState is KeyMapAppBarState.ChildGroup -> {
-                if (isEditingGroupName && isNewGroup) {
-                    coroutineScope.launch {
-                        listKeyMaps.deleteGroup()
+                if (isEditingGroupName) {
+                    if (isNewGroup) {
+                        coroutineScope.launch {
+                            listKeyMaps.deleteGroup()
+                        }
+                    } else {
+                        isEditingGroupName = false
                     }
                 } else {
                     coroutineScope.launch {

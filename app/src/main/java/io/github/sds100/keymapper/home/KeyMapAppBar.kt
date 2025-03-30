@@ -89,7 +89,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -171,9 +173,15 @@ fun KeyMapAppBar(
 
                 var error: String? by rememberSaveable { mutableStateOf(null) }
 
-                var newName by remember { mutableStateOf(state.groupName) }
+                var newName by remember { mutableStateOf(TextFieldValue(state.groupName)) }
 
                 var showDeleteGroupDialog by remember { mutableStateOf(false) }
+
+                LaunchedEffect(isEditingGroupName) {
+                    if (isEditingGroupName) {
+                        newName = newName.copy(selection = TextRange(0, newName.text.length))
+                    }
+                }
 
                 if (showDeleteGroupDialog) {
                     DeleteGroupDialog(
@@ -194,7 +202,7 @@ fun KeyMapAppBar(
                     },
                     onRenameClick = {
                         scope.launch {
-                            if (!onRenameGroupClick(newName)) {
+                            if (!onRenameGroupClick(newName.text)) {
                                 error = uniqueErrorText
                             }
                         }
@@ -323,9 +331,9 @@ private fun RootGroupAppBar(
 @Composable
 private fun ChildGroupAppBar(
     modifier: Modifier = Modifier,
-    groupName: String,
+    groupName: TextFieldValue,
     placeholder: String,
-    onValueChange: (String) -> Unit = {},
+    onValueChange: (TextFieldValue) -> Unit = {},
     error: String? = null,
     onBackClick: () -> Unit = {},
     onEditClick: () -> Unit = {},
@@ -571,8 +579,8 @@ private fun AppBarActions(
 @Composable
 private fun GroupNameRow(
     modifier: Modifier = Modifier,
-    value: String,
-    onValueChange: (String) -> Unit = {},
+    value: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit = {},
     placeholder: String,
     isEditing: Boolean,
     onRenameClick: () -> Unit,
@@ -616,7 +624,7 @@ private fun GroupNameRow(
             ) { innerTextField ->
                 @OptIn(ExperimentalMaterial3Api::class)
                 OutlinedTextFieldDefaults.DecorationBox(
-                    value = value,
+                    value = value.text,
                     placeholder = {
                         Text(
                             placeholder,
@@ -967,7 +975,7 @@ private fun KeyMapsChildGroupErrorPreview() {
 
     KeyMapperTheme {
         ChildGroupAppBar(
-            groupName = "Untitled group 23",
+            groupName = TextFieldValue("Untitled group 23"),
             placeholder = "Untitled group 23",
             error = stringResource(R.string.home_app_bar_group_name_unique_error),
             isEditingGroupName = true,
