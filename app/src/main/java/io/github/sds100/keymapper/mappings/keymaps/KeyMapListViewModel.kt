@@ -9,6 +9,7 @@ import io.github.sds100.keymapper.backup.BackupRestoreMappingsUseCase
 import io.github.sds100.keymapper.backup.ImportExportState
 import io.github.sds100.keymapper.backup.RestoreType
 import io.github.sds100.keymapper.constraints.ConstraintErrorSnapshot
+import io.github.sds100.keymapper.constraints.ConstraintMode
 import io.github.sds100.keymapper.groups.SubGroupListModel
 import io.github.sds100.keymapper.home.HomeWarningListItem
 import io.github.sds100.keymapper.home.SelectedKeyMapsEnabled
@@ -682,6 +683,29 @@ class KeyMapListViewModel(
             listKeyMaps.newGroup()
             isNewGroup = true
             isEditingGroupName = true
+        }
+    }
+
+    fun onNewGroupConstraintClick() {
+        coroutineScope.launch {
+            val constraint = navigate(
+                "add_group_constraint",
+                NavDestination.ChooseConstraint,
+            ) ?: return@launch
+
+            listKeyMaps.addGroupConstraint(constraint)
+        }
+    }
+
+    fun onRemoveGroupConstraintClick(uid: String) {
+        coroutineScope.launch {
+            listKeyMaps.removeGroupConstraint(uid)
+        }
+    }
+
+    fun onGroupConstraintModeChanged(mode: ConstraintMode) {
+        coroutineScope.launch {
+            listKeyMaps.setGroupConstraintMode(mode)
         }
     }
 

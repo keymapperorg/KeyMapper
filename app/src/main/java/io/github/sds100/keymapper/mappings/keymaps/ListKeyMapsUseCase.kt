@@ -5,6 +5,10 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.backup.BackupManager
 import io.github.sds100.keymapper.backup.BackupManagerImpl
 import io.github.sds100.keymapper.backup.BackupUtils
+import io.github.sds100.keymapper.constraints.Constraint
+import io.github.sds100.keymapper.constraints.ConstraintEntityMapper
+import io.github.sds100.keymapper.constraints.ConstraintMode
+import io.github.sds100.keymapper.constraints.ConstraintModeEntityMapper
 import io.github.sds100.keymapper.data.entities.GroupEntity
 import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
 import io.github.sds100.keymapper.data.repositories.GroupRepository
@@ -91,6 +95,29 @@ class ListKeyMapsUseCaseImpl(
         return true
     }
 
+    private suspend fun ensureUniqueName(
+        entity: GroupEntity,
+        block: suspend (entity: GroupEntity) -> Unit,
+    ): GroupEntity {
+        var group = entity
+        var count = 0
+
+        while (true) {
+            // Insert must be suspending so we only update the layout uid once the layout
+            // has been saved.
+            try {
+                block(group)
+                break
+            } catch (_: SQLiteConstraintException) {
+                // If the name already exists try creating it with a new name.
+                group = group.copy(name = "${entity.name} (${count + 1})")
+                count++
+            }
+        }
+
+        return group
+    }
+
     override suspend fun openGroup(uid: String?) {
         if (uid == null) {
             // If null then open the root group.
@@ -127,27 +154,55 @@ class ListKeyMapsUseCaseImpl(
         }
     }
 
-    private suspend fun ensureUniqueName(
-        entity: GroupEntity,
-        block: suspend (entity: GroupEntity) -> Unit,
-    ): GroupEntity {
-        var group = entity
-        var count = 0
+    override suspend fun addGroupConstraint(constraint: Constraint) {
+        groupUid.value?.also { groupUid ->
+            val constraintEntity = ConstraintEntityMapper.toEntity(constraint)
+            var groupEntity = groupRepository.getGroup(groupUid) ?: return
 
-        while (true) {
-            // Insert must be suspending so we only update the layout uid once the layout
-            // has been saved.
+            groupEntity = groupEntity.copy(
+                constraintList = groupEntity.constraintList.plus(constraintEntity),
+            )
+
             try {
-                block(group)
-                break
+                groupRepository.update(groupEntity)
             } catch (_: SQLiteConstraintException) {
-                // If the name already exists try creating it with a new name.
-                group = group.copy(name = "${entity.name} (${count + 1})")
-                count++
+                return
             }
         }
+    }
 
-        return group
+    override suspend fun setGroupConstraintMode(mode: ConstraintMode) {
+        groupUid.value?.also { groupUid ->
+            val group = groupRepository.getGroup(groupUid) ?: return
+
+            val groupEntity = group.copy(constraintMode = ConstraintModeEntityMapper.toEntity(mode))
+
+            try {
+                groupRepository.update(groupEntity)
+            } catch (_: SQLiteConstraintException) {
+                return
+            }
+        }
+    }
+
+    override suspend fun removeGroupConstraint(constraintUid: String) {
+        groupUid.value?.also { groupUid ->
+            val groupEntity = groupRepository.getGroup(groupUid) ?: return
+            var group = GroupEntityMapper.fromEntity(groupEntity)
+
+            val constraints = group.constraintState.constraints
+                .filterNot { it.uid == constraintUid }
+                .toSet()
+
+            group =
+                group.copy(constraintState = group.constraintState.copy(constraints = constraints))
+
+            try {
+                groupRepository.update(GroupEntityMapper.toEntity(group))
+            } catch (_: SQLiteConstraintException) {
+                return
+            }
+        }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -262,6 +317,9 @@ interface ListKeyMapsUseCase : DisplayKeyMapUseCase {
     suspend fun popGroup()
     suspend fun deleteGroup()
     suspend fun renameGroup(name: String): Boolean
+    suspend fun addGroupConstraint(constraint: Constraint)
+    suspend fun removeGroupConstraint(constraintUid: String)
+    suspend fun setGroupConstraintMode(mode: ConstraintMode)
 
     fun deleteKeyMap(vararg uid: String)
     fun enableKeyMap(vararg uid: String)

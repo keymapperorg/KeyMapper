@@ -36,7 +36,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.HelpOutline
-import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.rounded.Sort
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.rounded.Delete
@@ -59,7 +58,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -70,7 +68,6 @@ import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -95,11 +92,14 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.compose.LocalCustomColorsPalette
 import io.github.sds100.keymapper.constraints.ConstraintMode
 import io.github.sds100.keymapper.groups.DeleteGroupDialog
+import io.github.sds100.keymapper.groups.GroupBreadcrumbRow
+import io.github.sds100.keymapper.groups.GroupConstraintRow
 import io.github.sds100.keymapper.groups.GroupRow
 import io.github.sds100.keymapper.groups.SubGroupListModel
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapAppBarState
@@ -133,6 +133,9 @@ fun KeyMapAppBar(
     isEditingGroupName: Boolean = false,
     onEditGroupNameClick: () -> Unit = {},
     onDeleteGroupClick: () -> Unit = {},
+    onNewConstraintClick: () -> Unit = {},
+    onRemoveConstraintClick: (String) -> Unit = {},
+    onConstraintModeChanged: (ConstraintMode) -> Unit = {},
 ) {
     BackHandler(onBack = onBackClick)
 
@@ -214,6 +217,11 @@ fun KeyMapAppBar(
                     subGroups = state.subGroups,
                     parentGroups = state.parentGroups,
                     onGroupClick = onGroupClick,
+                    constraints = state.constraints,
+                    constraintMode = state.constraintMode,
+                    onNewConstraintClick = onNewConstraintClick,
+                    onRemoveConstraintClick = onRemoveConstraintClick,
+                    onConstraintModeChanged = onConstraintModeChanged,
                     actions = {
                         AnimatedVisibility(!isEditingGroupName) {
                             AppBarActions(
@@ -343,6 +351,11 @@ private fun ChildGroupAppBar(
     parentGroups: List<SubGroupListModel>,
     onNewGroupClick: () -> Unit = {},
     onGroupClick: (String?) -> Unit = {},
+    constraints: List<ComposeChipModel> = emptyList(),
+    constraintMode: ConstraintMode,
+    onNewConstraintClick: () -> Unit = {},
+    onRemoveConstraintClick: (String) -> Unit = {},
+    onConstraintModeChanged: (ConstraintMode) -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
 ) {
     // Make custom top app bar because the height can not be set to fix the text field error in.
@@ -390,16 +403,32 @@ private fun ChildGroupAppBar(
 
             AnimatedVisibility(!isEditingGroupName) {
                 Column {
+                    Text(
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                        text = stringResource(R.string.home_group_constraints_title),
+                        style = MaterialTheme.typography.titleSmall,
+                    )
+
+                    // TODO constraint mode
+                    GroupConstraintRow(
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .fillMaxWidth(),
+                        constraints = constraints,
+                        onNewConstraintClick = onNewConstraintClick,
+                        onRemoveConstraintClick = onRemoveConstraintClick,
+                    )
+
+                    HorizontalDivider()
+
                     GroupRow(
                         modifier = Modifier
-                            .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
+                            .padding(8.dp)
                             .fillMaxWidth(),
                         groups = subGroups,
                         onNewGroupClick = onNewGroupClick,
                         onGroupClick = onGroupClick,
                     )
-
-                    HorizontalDivider()
 
                     val scrollState = rememberScrollState()
 
@@ -407,78 +436,16 @@ private fun ChildGroupAppBar(
                         scrollState.animateScrollTo(scrollState.maxValue)
                     }
 
-                    BreadcrumbRow(
+                    GroupBreadcrumbRow(
                         modifier = Modifier
                             .horizontalScroll(scrollState)
                             .fillMaxWidth()
-                            .padding(
-                                start = 8.dp,
-                                end = 8.dp,
-                                bottom = 8.dp,
-                                top = 8.dp,
-                            ),
+                            .padding(8.dp),
                         groups = parentGroups,
                         onGroupClick = onGroupClick,
                     )
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun BreadcrumbRow(
-    modifier: Modifier = Modifier,
-    groups: List<SubGroupListModel>,
-    onGroupClick: (String?) -> Unit,
-) {
-    Row(modifier = modifier) {
-        val color = LocalContentColor.current.copy(alpha = 0.6f)
-        Breadcrumb(
-            text = stringResource(R.string.home_groups_breadcrumb_home),
-            onClick = { onGroupClick(null) },
-            color = color,
-        )
-
-        for ((index, group) in groups.withIndex()) {
-            Icon(imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight, null, tint = color)
-
-            Breadcrumb(
-                text = group.name,
-                onClick = { onGroupClick(group.uid) },
-                color = if (index == groups.lastIndex) {
-                    LocalContentColor.current
-                } else {
-                    color
-                },
-            )
-        }
-    }
-}
-
-@Composable
-private fun Breadcrumb(
-    modifier: Modifier = Modifier,
-    text: String,
-    color: Color,
-    onClick: () -> Unit,
-) {
-    CompositionLocalProvider(
-        LocalMinimumInteractiveComponentSize provides 16.dp,
-    ) {
-        Surface(
-            modifier = modifier,
-            onClick = onClick,
-            shape = MaterialTheme.shapes.medium,
-            color = Color.Transparent,
-        ) {
-            Text(
-                modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp),
-                text = text,
-                style = MaterialTheme.typography.labelMedium,
-                color = color,
-                maxLines = 1,
-            )
         }
     }
 }
@@ -841,18 +808,23 @@ private fun AppBarDropdownMenu(
 
 @Composable
 private fun constraintsSampleList(): List<ComposeChipModel> {
-    val context = LocalContext.current
+    val ctx = LocalContext.current
 
     return listOf(
         ComposeChipModel.Normal(
-            id = "0",
-            ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
-            "Key Mapper is not open",
+            id = "1",
+            text = "Device is locked",
+            icon = ComposeIconInfo.Vector(Icons.Outlined.Lock),
+        ),
+        ComposeChipModel.Normal(
+            id = "2",
+            text = "Key Mapper is open",
+            icon = ComposeIconInfo.Drawable(ctx.drawable(R.mipmap.ic_launcher_round)),
         ),
         ComposeChipModel.Error(
-            id = "1",
-            "Key Mapper is playing media",
-            error = Error.AppNotFound(""),
+            id = "2",
+            text = "Key Mapper not found",
+            error = Error.AppNotFound(Constants.PACKAGE_NAME),
         ),
     )
 }
@@ -903,7 +875,7 @@ private fun KeyMapsChildGroupDarkPreview() {
     val state = KeyMapAppBarState.ChildGroup(
         groupName = "Short name",
         subGroups = groupSampleList(),
-        constraints = constraintsSampleList(),
+        constraints = emptyList(),
         constraintMode = ConstraintMode.AND,
         parentGroups = emptyList(),
     )
@@ -981,6 +953,8 @@ private fun KeyMapsChildGroupErrorPreview() {
             isEditingGroupName = true,
             subGroups = emptyList(),
             parentGroups = emptyList(),
+            constraints = emptyList(),
+            constraintMode = ConstraintMode.AND,
         )
     }
 }

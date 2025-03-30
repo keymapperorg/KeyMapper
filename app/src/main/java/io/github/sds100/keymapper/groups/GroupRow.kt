@@ -83,18 +83,22 @@ fun GroupRow(
                     when (group.icon) {
                         is ComposeIconInfo.Drawable -> {
                             Icon(
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .padding(end = 8.dp),
                                 painter = rememberDrawablePainter(group.icon.drawable),
                                 contentDescription = null,
-                                modifier = Modifier.size(24.dp),
                                 tint = Color.Unspecified,
                             )
                         }
 
                         is ComposeIconInfo.Vector -> {
                             Icon(
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .padding(end = 8.dp),
                                 imageVector = group.icon.imageVector,
                                 contentDescription = null,
-                                modifier = Modifier.size(24.dp),
                             )
                         }
 
@@ -181,7 +185,7 @@ private fun GroupButton(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             icon()
-            Spacer(modifier = Modifier.width(8.dp))
+
             Text(
                 text = text,
                 maxLines = 1,

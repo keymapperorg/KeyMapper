@@ -190,6 +190,9 @@ fun HomeKeyMapListScreen(
                 onEditGroupNameClick = viewModel::onEditGroupNameClick,
                 onGroupClick = viewModel::onGroupClick,
                 onDeleteGroupClick = viewModel::onDeleteGroupClick,
+                onNewConstraintClick = viewModel::onNewGroupConstraintClick,
+                onRemoveConstraintClick = viewModel::onRemoveGroupConstraintClick,
+                onConstraintModeChanged = viewModel::onGroupConstraintModeChanged,
             )
         },
         selectionBottomSheet = {
