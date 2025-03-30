@@ -35,6 +35,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.HelpOutline
 import androidx.compose.material.icons.automirrored.rounded.Sort
+import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.ErrorOutline
@@ -52,6 +53,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -123,66 +125,17 @@ fun KeyMapAppBar(
 ) {
     BackHandler(onBack = onBackClick)
 
-    when (state) {
-        is KeyMapAppBarState.RootGroup -> RootGroupAppBar(
-            modifier = modifier,
-            state = state,
-            scrollBehavior = scrollBehavior,
-            onTogglePausedClick = onTogglePausedClick,
-            onSortClick = onSortClick,
-            onFixWarningClick = onFixWarningClick,
-            onNewGroupClick = onNewGroupClick,
-            onGroupClick = onGroupClick,
-            actions = {
-                AnimatedVisibility(!isEditingGroupName) {
-                    AppBarActions(
-                        state,
-                        onSelectAllClick,
-                        onHelpClick,
-                        onSettingsClick,
-                        onAboutClick,
-                        onExportClick,
-                        onImportClick,
-                    )
-                }
-            },
-        )
-
-        is KeyMapAppBarState.Selecting -> SelectingAppBar(
-            modifier = modifier,
-            state = state,
-            onBackClick = onBackClick,
-            onSelectAllClick = onSelectAllClick,
-        )
-
-        is KeyMapAppBarState.ChildGroup -> {
-            val scope = rememberCoroutineScope()
-            val uniqueErrorText = stringResource(R.string.home_app_bar_group_name_unique_error)
-
-            var error: String? by rememberSaveable { mutableStateOf(null) }
-
-            var newName by remember { mutableStateOf(state.groupName) }
-
-            ChildGroupAppBar(
+    AnimatedContent(state) { state ->
+        when (state) {
+            is KeyMapAppBarState.RootGroup -> RootGroupAppBar(
                 modifier = modifier,
-                value = newName,
-                placeholder = state.groupName,
-                error = error,
-                onValueChange = {
-                    newName = it
-                    error = null
-                },
-                onRenameClick = {
-                    scope.launch {
-                        if (!onRenameGroupClick(newName)) {
-                            error = uniqueErrorText
-                        }
-                    }
-                },
-                onBackClick = onBackClick,
+                state = state,
+                scrollBehavior = scrollBehavior,
+                onTogglePausedClick = onTogglePausedClick,
+                onSortClick = onSortClick,
+                onFixWarningClick = onFixWarningClick,
                 onNewGroupClick = onNewGroupClick,
-                onEditClick = onEditGroupNameClick,
-                isEditingGroupName = isEditingGroupName,
+                onGroupClick = onGroupClick,
                 actions = {
                     AnimatedVisibility(!isEditingGroupName) {
                         AppBarActions(
@@ -197,6 +150,59 @@ fun KeyMapAppBar(
                     }
                 },
             )
+
+            is KeyMapAppBarState.Selecting -> SelectingAppBar(
+                modifier = modifier,
+                state = state,
+                onBackClick = onBackClick,
+                onSelectAllClick = onSelectAllClick,
+            )
+
+            is KeyMapAppBarState.ChildGroup -> {
+                val scope = rememberCoroutineScope()
+                val uniqueErrorText = stringResource(R.string.home_app_bar_group_name_unique_error)
+
+                var error: String? by rememberSaveable { mutableStateOf(null) }
+
+                var newName by remember { mutableStateOf(state.groupName) }
+
+                ChildGroupAppBar(
+                    modifier = modifier,
+                    value = newName,
+                    placeholder = state.groupName,
+                    error = error,
+                    onValueChange = {
+                        newName = it
+                        error = null
+                    },
+                    onRenameClick = {
+                        scope.launch {
+                            if (!onRenameGroupClick(newName)) {
+                                error = uniqueErrorText
+                            }
+                        }
+                    },
+                    onBackClick = onBackClick,
+                    onNewGroupClick = onNewGroupClick,
+                    onEditClick = onEditGroupNameClick,
+                    isEditingGroupName = isEditingGroupName,
+                    subGroups = state.subGroups,
+                    onGroupClick = onGroupClick,
+                    actions = {
+                        AnimatedVisibility(!isEditingGroupName) {
+                            AppBarActions(
+                                state,
+                                onSelectAllClick,
+                                onHelpClick,
+                                onSettingsClick,
+                                onAboutClick,
+                                onExportClick,
+                                onImportClick,
+                            )
+                        }
+                    },
+                )
+            }
         }
     }
 }
@@ -305,7 +311,9 @@ private fun ChildGroupAppBar(
     onEditClick: () -> Unit = {},
     onRenameClick: () -> Unit = {},
     isEditingGroupName: Boolean = false,
+    subGroups: List<SubGroupListModel>,
     onNewGroupClick: () -> Unit = {},
+    onGroupClick: (String) -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
 ) {
     // Make custom top app bar because the height can not be set to fix the text field error in.
@@ -314,38 +322,51 @@ private fun ChildGroupAppBar(
         color = MaterialTheme.colorScheme.primaryContainer,
         contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
     ) {
-        Row(
-            Modifier
-                .statusBarsPadding()
-                .fillMaxWidth()
-                .heightIn(min = 48.dp)
-                .padding(vertical = 8.dp)
-                .height(intrinsicSize = IntrinsicSize.Min),
-            verticalAlignment = Alignment.Top,
-        ) {
-            IconButton(onClick = onBackClick) {
-                Icon(
-                    Icons.AutoMirrored.Rounded.ArrowBack,
-                    contentDescription = stringResource(R.string.home_app_bar_pop_group),
+        Column {
+            Row(
+                Modifier
+                    .statusBarsPadding()
+                    .fillMaxWidth()
+                    .heightIn(min = 48.dp)
+                    .padding(vertical = 8.dp)
+                    .height(intrinsicSize = IntrinsicSize.Min),
+                verticalAlignment = Alignment.Top,
+            ) {
+                IconButton(onClick = onBackClick) {
+                    Icon(
+                        Icons.AutoMirrored.Rounded.ArrowBack,
+                        contentDescription = stringResource(R.string.home_app_bar_pop_group),
+                    )
+                }
+
+                Spacer(Modifier.width(8.dp))
+
+                GroupNameRow(
+                    value = value,
+                    onValueChange = onValueChange,
+                    placeholder = placeholder,
+                    onRenameClick = onRenameClick,
+                    error = error,
+                    isEditing = isEditingGroupName,
+                    onEditClick = onEditClick,
                 )
+
+                Spacer(Modifier.weight(1f))
+
+                AnimatedVisibility(visible = !isEditingGroupName) {
+                    actions()
+                }
             }
 
-            Spacer(Modifier.width(8.dp))
-
-            GroupNameRow(
-                value = value,
-                onValueChange = onValueChange,
-                placeholder = placeholder,
-                onRenameClick = onRenameClick,
-                error = error,
-                isEditing = isEditingGroupName,
-                onEditClick = onEditClick,
-            )
-
-            Spacer(Modifier.weight(1f))
-
-            AnimatedVisibility(visible = !isEditingGroupName) {
-                actions()
+            AnimatedVisibility(!isEditingGroupName) {
+                GroupRow(
+                    modifier = Modifier
+                        .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
+                        .fillMaxWidth(),
+                    groups = subGroups,
+                    onNewGroupClick = onNewGroupClick,
+                    onGroupClick = onGroupClick,
+                )
             }
         }
     }
@@ -490,7 +511,7 @@ private fun GroupNameRow(
                     ),
                 value = value,
                 onValueChange = onValueChange,
-                textStyle = MaterialTheme.typography.titleLarge,
+                textStyle = MaterialTheme.typography.titleLarge.copy(color = LocalContentColor.current),
                 enabled = isEditing,
                 keyboardActions = KeyboardActions(onDone = { onRenameClick() }),
                 keyboardOptions = KeyboardOptions(
@@ -732,9 +753,19 @@ private fun groupSampleList(): List<SubGroupListModel> {
 
     return listOf(
         SubGroupListModel(
-            uid = "0",
+            uid = "1",
+            name = "Lockscreen",
+            icon = ComposeIconInfo.Vector(Icons.Outlined.Lock),
+        ),
+        SubGroupListModel(
+            uid = "2",
             name = "Key Mapper",
             icon = ComposeIconInfo.Drawable(ctx.drawable(R.mipmap.ic_launcher_round)),
+        ),
+        SubGroupListModel(
+            uid = "3",
+            name = "Key Mapper",
+            icon = null,
         ),
     )
 }
@@ -750,6 +781,21 @@ private fun KeyMapsChildGroupPreview() {
         constraintMode = ConstraintMode.AND,
     )
     KeyMapperTheme {
+        KeyMapAppBar(modifier = Modifier.fillMaxWidth(), state = state, isEditingGroupName = false)
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showSystemUi = true)
+@Composable
+private fun KeyMapsChildGroupDarkPreview() {
+    val state = KeyMapAppBarState.ChildGroup(
+        groupName = "Short name",
+        subGroups = groupSampleList(),
+        constraints = constraintsSampleList(),
+        constraintMode = ConstraintMode.AND,
+    )
+    KeyMapperTheme(darkTheme = true) {
         KeyMapAppBar(modifier = Modifier.fillMaxWidth(), state = state, isEditingGroupName = false)
     }
 }
@@ -779,6 +825,31 @@ private fun KeyMapsChildGroupEditingPreview() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showSystemUi = true)
+@Composable
+private fun KeyMapsChildGroupEditingDarkPreview() {
+    val state = KeyMapAppBarState.ChildGroup(
+        groupName = "Untitled group 23",
+        subGroups = groupSampleList(),
+        constraints = constraintsSampleList(),
+        constraintMode = ConstraintMode.AND,
+    )
+
+    val focusRequester = FocusRequester()
+
+    LaunchedEffect("") {
+        focusRequester.requestFocus()
+    }
+
+    KeyMapperTheme(darkTheme = true) {
+        KeyMapAppBar(
+            state = state,
+            isEditingGroupName = true,
+        )
+    }
+}
+
 @Preview(showSystemUi = true)
 @Composable
 private fun KeyMapsChildGroupErrorPreview() {
@@ -794,6 +865,7 @@ private fun KeyMapsChildGroupErrorPreview() {
             placeholder = "Untitled group 23",
             error = stringResource(R.string.home_app_bar_group_name_unique_error),
             isEditingGroupName = true,
+            subGroups = emptyList(),
         )
     }
 }
@@ -873,7 +945,7 @@ private fun HomeStateWarningsDarkPreview() {
             warnings = warnings,
             isPaused = true,
         )
-    KeyMapperTheme {
+    KeyMapperTheme(darkTheme = true) {
         KeyMapAppBar(state = state)
     }
 }

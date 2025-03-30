@@ -1,9 +1,6 @@
 package io.github.sds100.keymapper.groups
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.FlowRow
@@ -46,13 +43,6 @@ fun GroupRow(
     onGroupClick: (String) -> Unit = {},
 ) {
     var viewAllState by rememberSaveable { mutableStateOf(false) }
-    val transition =
-        slideInVertically { height -> -height } togetherWith slideOutVertically { height -> height }
-//
-//    AnimatedContent(
-//        viewAllState,
-// //        transitionSpec = { transition },
-//    ) { viewAll ->
     FlowRow(
         modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -72,14 +62,16 @@ fun GroupRow(
             showText = groups.isEmpty(),
         )
 
-        ViewAllButton(
-            onClick = { viewAllState = !viewAllState },
-            text = if (viewAllState) {
-                stringResource(R.string.home_new_hide_groups_button)
-            } else {
-                stringResource(R.string.home_new_view_all_groups_button)
-            },
-        )
+        if (groups.isNotEmpty()) {
+            ViewAllButton(
+                onClick = { viewAllState = !viewAllState },
+                text = if (viewAllState) {
+                    stringResource(R.string.home_new_hide_groups_button)
+                } else {
+                    stringResource(R.string.home_new_view_all_groups_button)
+                },
+            )
+        }
 
         for (group in groups) {
             GroupButton(
@@ -109,7 +101,6 @@ fun GroupRow(
                 },
             )
         }
-//        }
     }
 }
 
@@ -126,6 +117,7 @@ private fun NewGroupButton(
         onClick = onClick,
         shape = MaterialTheme.shapes.medium,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface),
+        color = Color.Transparent,
     ) {
         Row(
             modifier = Modifier.padding(vertical = 8.dp, horizontal = 12.dp),
@@ -156,6 +148,7 @@ private fun ViewAllButton(
         onClick = onClick,
         shape = MaterialTheme.shapes.medium,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface),
+        color = Color.Transparent,
     ) {
         AnimatedContent(text) { text ->
             Text(
@@ -179,7 +172,7 @@ private fun GroupButton(
         modifier = modifier.height(36.dp),
         onClick = onClick,
         shape = MaterialTheme.shapes.medium,
-        color = MaterialTheme.colorScheme.surfaceContainerHighest,
+        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
     ) {
         Row(
             modifier = Modifier.padding(vertical = 8.dp, horizontal = 12.dp),
