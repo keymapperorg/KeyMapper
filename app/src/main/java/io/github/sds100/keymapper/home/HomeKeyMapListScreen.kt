@@ -61,12 +61,9 @@ import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.ShareUtils
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.drawable
-import io.github.sds100.keymapper.util.ui.NavDestination
-import io.github.sds100.keymapper.util.ui.NavigateEvent
 import io.github.sds100.keymapper.util.ui.compose.CollapsableFloatingActionButton
 import io.github.sds100.keymapper.util.ui.compose.ComposeChipModel
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -152,16 +149,7 @@ fun HomeKeyMapListScreen(
             ) {
                 CollapsableFloatingActionButton(
                     modifier = Modifier.padding(bottom = 80.dp),
-                    onClick = {
-                        scope.launch {
-                            viewModel.navigate(
-                                NavigateEvent(
-                                    "config_key_map",
-                                    NavDestination.ConfigKeyMap(keyMapUid = null),
-                                ),
-                            )
-                        }
-                    },
+                    onClick = viewModel::onNewKeyMapClick,
                     showText = viewModel.showFabText,
                     text = stringResource(R.string.home_fab_new_key_map),
                 )

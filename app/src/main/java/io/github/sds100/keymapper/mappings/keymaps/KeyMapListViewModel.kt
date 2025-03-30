@@ -36,6 +36,7 @@ import io.github.sds100.keymapper.util.onSuccess
 import io.github.sds100.keymapper.util.ui.DialogResponse
 import io.github.sds100.keymapper.util.ui.MultiSelectProvider
 import io.github.sds100.keymapper.util.ui.NavDestination
+import io.github.sds100.keymapper.util.ui.NavigateEvent
 import io.github.sds100.keymapper.util.ui.NavigationViewModel
 import io.github.sds100.keymapper.util.ui.NavigationViewModelImpl
 import io.github.sds100.keymapper.util.ui.PopupUi
@@ -355,7 +356,7 @@ class KeyMapListViewModel(
             }
         } else {
             coroutineScope.launch {
-                navigate("config_key_map", NavDestination.ConfigKeyMap(uid))
+                navigate("config_key_map", NavDestination.ConfigKeyMap.Open(uid))
             }
         }
     }
@@ -398,8 +399,8 @@ class KeyMapListViewModel(
                 TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED, TriggerError.FLOATING_BUTTONS_NOT_PURCHASED -> {
                     navigate(
                         "purchase_advanced_trigger",
-                        NavDestination.ConfigKeyMap(
-                            keyMapUid = null,
+                        NavDestination.ConfigKeyMap.New(
+                            groupUid = null,
                             showAdvancedTriggers = true,
                         ),
                     )
@@ -653,6 +654,19 @@ class KeyMapListViewModel(
             listKeyMaps.newGroup()
             isNewGroup = true
             isEditingGroupName = true
+        }
+    }
+
+    fun onNewKeyMapClick() {
+        coroutineScope.launch {
+            val groupUid = listKeyMaps.keyMapGroup.first().group?.uid
+
+            navigate(
+                NavigateEvent(
+                    "config_key_map",
+                    NavDestination.ConfigKeyMap.New(groupUid = groupUid),
+                ),
+            )
         }
     }
 

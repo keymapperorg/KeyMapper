@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -16,11 +17,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
+import io.github.sds100.keymapper.util.drawable
+import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 
 @Composable
 fun GroupRow(
@@ -78,5 +82,44 @@ private fun GroupButton(
 private fun PreviewEmpty() {
     KeyMapperTheme {
         GroupRow(groups = emptyList())
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewOneItem() {
+    KeyMapperTheme {
+        GroupRow(
+            groups = listOf(
+                SubGroupListModel(
+                    uid = "1",
+                    name = "Device is locked",
+                    icon = ComposeIconInfo.Vector(Icons.Outlined.Lock),
+                ),
+            ),
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewMultipleItems() {
+    val ctx = LocalContext.current
+
+    KeyMapperTheme {
+        GroupRow(
+            groups = listOf(
+                SubGroupListModel(
+                    uid = "1",
+                    name = "Device is locked",
+                    icon = ComposeIconInfo.Vector(Icons.Outlined.Lock),
+                ),
+                SubGroupListModel(
+                    uid = "2",
+                    name = "Key Mapper is open",
+                    icon = ComposeIconInfo.Drawable(ctx.drawable(R.mipmap.ic_launcher_round)),
+                ),
+            ),
+        )
     }
 }

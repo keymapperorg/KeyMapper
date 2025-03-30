@@ -30,6 +30,7 @@ data class KeyMap(
     val actionList: List<Action> = emptyList(),
     val constraintState: ConstraintState = ConstraintState(),
     val isEnabled: Boolean = true,
+    val groupUid: String? = null
 ) {
 
     val showToast: Boolean
@@ -105,7 +106,7 @@ fun KeyMap.requiresImeKeyEventForwardingInPhoneCall(triggerKey: TriggerKey): Boo
 }
 
 object KeyMapEntityMapper {
-    suspend fun fromEntity(
+    fun fromEntity(
         entity: KeyMapEntity,
         floatingButtons: List<FloatingButtonEntityWithLayout>,
     ): KeyMap {
@@ -123,6 +124,7 @@ object KeyMapEntityMapper {
             actionList = actionList,
             constraintState = ConstraintState(constraintList, constraintMode),
             isEnabled = entity.isEnabled,
+            groupUid = entity.groupUid,
         )
     }
 
@@ -141,6 +143,7 @@ object KeyMapEntityMapper {
             constraintMode = ConstraintModeEntityMapper.toEntity(keyMap.constraintState.mode),
             isEnabled = keyMap.isEnabled,
             uid = keyMap.uid,
+            groupUid = keyMap.groupUid,
         )
     }
 }

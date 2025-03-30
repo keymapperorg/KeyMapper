@@ -838,8 +838,8 @@ class ConfigKeyMapUseCaseController(
         originalKeyMap = keyMap
     }
 
-    override fun loadNewKeyMap() {
-        val keyMap = KeyMap()
+    override fun loadNewKeyMap(groupUid: String?) {
+        val keyMap = KeyMap(groupUid = groupUid)
         this.keyMap.update { State.Data(keyMap) }
         originalKeyMap = keyMap
     }
@@ -997,7 +997,7 @@ interface ConfigKeyMapUseCase : GetDefaultKeyMapOptionsUseCase {
 
     fun restoreState(keyMap: KeyMap)
     suspend fun loadKeyMap(uid: String)
-    fun loadNewKeyMap()
+    fun loadNewKeyMap(groupUid: String?)
 
     fun setParallelTriggerMode()
     fun setSequenceTriggerMode()

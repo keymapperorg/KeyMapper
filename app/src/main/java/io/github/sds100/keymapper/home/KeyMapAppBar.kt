@@ -305,6 +305,7 @@ private fun ChildGroupAppBar(
     onNewGroupClick: () -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
 ) {
+    // Make custom top app bar because the height can not be set to fix the text field error in.
     Surface(
         modifier = modifier,
         color = MaterialTheme.colorScheme.primaryContainer,
@@ -472,8 +473,7 @@ private fun GroupNameRow(
         Row(modifier.height(IntrinsicSize.Min), verticalAlignment = Alignment.Top) {
             val interactionSource = remember { MutableInteractionSource() }
 
-            // TODO handle error squishing the text field
-
+            // Use a custom text field so the content padding can be customised.
             BasicTextField(
                 modifier = Modifier
                     .focusRequester(focusRequester)
