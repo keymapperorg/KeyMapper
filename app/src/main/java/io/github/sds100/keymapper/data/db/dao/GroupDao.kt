@@ -34,7 +34,7 @@ interface GroupDao {
     @Query("SELECT * FROM $TABLE_NAME WHERE $KEY_UID = (:uid)")
     fun getGroupWithSubGroups(uid: String): Flow<GroupEntityWithSubGroups>
 
-    @Query("SELECT * FROM $TABLE_NAME WHERE $KEY_PARENT_UID = (:uid)")
+    @Query("SELECT * FROM $TABLE_NAME WHERE $KEY_PARENT_UID IS (:uid)")
     fun getGroupsByParent(uid: String?): Flow<List<GroupEntity>>
 
     @Insert(onConflict = OnConflictStrategy.ABORT)

@@ -1373,6 +1373,7 @@
     <string name="home_new_group_button">New group</string>
     <string name="home_new_subgroup_button">New subgroup</string>
     <string name="home_new_view_all_groups_button">View all</string>
+    <string name="home_new_hide_groups_button">Hide</string>
     <string name="home_group_constraints_title">Group constraints</string>
     <string name="home_new_group_constraint_button">New group constraint</string>
 

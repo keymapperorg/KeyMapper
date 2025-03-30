@@ -146,14 +146,13 @@ class ListKeyMapsUseCaseImpl(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override val keyMapGroup: Flow<KeyMapGroup> = channelFlow {
-        group
-            .map { group ->
-                KeyMapGroup(
-                    group = group.group,
-                    subGroups = group.subGroups,
-                    keyMaps = State.Loading,
-                )
-            }
+        group.map { group ->
+            KeyMapGroup(
+                group = group.group,
+                subGroups = group.subGroups,
+                keyMaps = State.Loading,
+            )
+        }
             .onEach { send(it) }
             .flatMapLatest { keyMapGroup ->
                 getKeyMapsByGroup(keyMapGroup.group?.uid).map { keyMapGroup.copy(keyMaps = it) }
