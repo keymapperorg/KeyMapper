@@ -116,6 +116,7 @@ fun KeyMapAppBar(
     onSelectAllClick: () -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     onNewGroupClick: () -> Unit = {},
+    onGroupClick: (String) -> Unit = {},
     onRenameGroupClick: suspend (String) -> Boolean = { true },
     isEditingGroupName: Boolean = false,
     onEditGroupNameClick: () -> Unit = {},
@@ -131,6 +132,7 @@ fun KeyMapAppBar(
             onSortClick = onSortClick,
             onFixWarningClick = onFixWarningClick,
             onNewGroupClick = onNewGroupClick,
+            onGroupClick = onGroupClick,
             actions = {
                 AnimatedVisibility(!isEditingGroupName) {
                     AppBarActions(
@@ -221,6 +223,7 @@ private fun RootGroupAppBar(
     onSortClick: () -> Unit,
     onFixWarningClick: (String) -> Unit,
     onNewGroupClick: () -> Unit,
+    onGroupClick: (String) -> Unit,
     actions: @Composable RowScope.() -> Unit,
 ) {
     // This is taken from the AppBar color code.
@@ -285,7 +288,7 @@ private fun RootGroupAppBar(
                     .fillMaxWidth(),
                 groups = state.subGroups,
                 onNewGroupClick = onNewGroupClick,
-                onGroupClick = {},
+                onGroupClick = onGroupClick,
             )
         }
     }

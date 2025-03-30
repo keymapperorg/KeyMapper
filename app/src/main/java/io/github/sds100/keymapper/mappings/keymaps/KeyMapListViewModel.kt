@@ -649,6 +649,12 @@ class KeyMapListViewModel(
         isEditingGroupName = true
     }
 
+    fun onGroupClick(uid: String) {
+        coroutineScope.launch {
+            listKeyMaps.openGroup(uid)
+        }
+    }
+
     fun onNewGroupClick() {
         coroutineScope.launch {
             listKeyMaps.newGroup()
