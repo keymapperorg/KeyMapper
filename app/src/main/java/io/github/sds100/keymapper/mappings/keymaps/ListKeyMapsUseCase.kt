@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.backup.BackupUtils
 import io.github.sds100.keymapper.data.entities.GroupEntity
 import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
 import io.github.sds100.keymapper.data.repositories.GroupRepository
+import io.github.sds100.keymapper.groups.Group
 import io.github.sds100.keymapper.groups.GroupEntityMapper
 import io.github.sds100.keymapper.groups.GroupWithSubGroups
 import io.github.sds100.keymapper.system.files.FileAdapter
@@ -44,6 +45,7 @@ class ListKeyMapsUseCaseImpl(
     DisplayKeyMapUseCase by displayKeyMapUseCase {
 
     private val groupUid = MutableStateFlow<String?>(null)
+    private val parentGroupUids = MutableStateFlow<List<String>>(emptyList())
 
     override suspend fun newGroup() {
         val defaultName = resourceProvider.getString(R.string.default_group_name)
@@ -54,11 +56,17 @@ class ListKeyMapsUseCaseImpl(
         }
 
         groupUid.update { group.uid }
+        parentGroupUids.update { it.plus(group.uid) }
     }
 
-    override fun deleteGroup() {
+    override suspend fun deleteGroup() {
         groupUid.value?.also { groupUid ->
-            this.groupUid.value = null
+            val group = groupRepository.getGroup(groupUid) ?: return
+
+            this.groupUid.value = group.parentUid
+            this.parentGroupUids.update { list ->
+                list.takeWhile { it != group.parentUid }
+            }
             groupRepository.delete(groupUid)
         }
     }
@@ -83,10 +91,24 @@ class ListKeyMapsUseCaseImpl(
         return true
     }
 
-    override suspend fun openGroup(uid: String) {
-        // Check if the group exists.
-        val group = groupRepository.getGroup(uid) ?: return
-        groupUid.update { group.uid }
+    override suspend fun openGroup(uid: String?) {
+        if (uid == null) {
+            // If null then open the root group.
+            groupUid.update { null }
+            parentGroupUids.update { emptyList() }
+        } else {
+            // Check if the group exists.
+            val group = groupRepository.getGroup(uid) ?: return
+            groupUid.update { group.uid }
+
+            parentGroupUids.update { list ->
+                if (list.contains(group.uid)) {
+                    list.takeWhile { it != uid }.plus(group.uid)
+                } else {
+                    list.plus(group.uid)
+                }
+            }
+        }
     }
 
     override suspend fun popGroup() {
@@ -96,10 +118,12 @@ class ListKeyMapsUseCaseImpl(
         // If stuck in a non existent group, or the parent is null then pop to the root.
         if (currentGroup?.parentUid == null) {
             groupUid.value = null
+            parentGroupUids.update { emptyList() }
         } else {
             // Check if the group exists.
             val group = groupRepository.getGroup(currentGroup.parentUid) ?: return
             groupUid.update { group.uid }
+            parentGroupUids.update { list -> list.dropLast(1) }
         }
     }
 
@@ -145,15 +169,28 @@ class ListKeyMapsUseCaseImpl(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
+    private val parentGroups: Flow<List<Group>> =
+        parentGroupUids
+            .flatMapLatest { uids ->
+                groupRepository.getGroups(*uids.toTypedArray())
+                    .map { groups ->
+                        // The repository returns the objects unordered so order them by the
+                        // original UID list again.
+                        val mapped = groups.associateBy { it.uid }
+                        uids.map { GroupEntityMapper.fromEntity(mapped[it]!!) }
+                    }
+            }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
     override val keyMapGroup: Flow<KeyMapGroup> = channelFlow {
-        group.map { group ->
+        combine(group, parentGroups) { group, parentGroups ->
             KeyMapGroup(
                 group = group.group,
                 subGroups = group.subGroups,
                 keyMaps = State.Loading,
+                parents = parentGroups,
             )
-        }
-            .onEach { send(it) }
+        }.onEach { send(it) }
             .flatMapLatest { keyMapGroup ->
                 getKeyMapsByGroup(keyMapGroup.group?.uid).map { keyMapGroup.copy(keyMaps = it) }
             }.collect {
@@ -221,9 +258,9 @@ interface ListKeyMapsUseCase : DisplayKeyMapUseCase {
     val keyMapGroup: Flow<KeyMapGroup>
 
     suspend fun newGroup()
-    suspend fun openGroup(uid: String)
+    suspend fun openGroup(uid: String?)
     suspend fun popGroup()
-    fun deleteGroup()
+    suspend fun deleteGroup()
     suspend fun renameGroup(name: String): Boolean
 
     fun deleteKeyMap(vararg uid: String)

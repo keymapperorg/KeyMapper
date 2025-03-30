@@ -28,6 +28,9 @@ interface GroupDao {
     @Query("SELECT * FROM $TABLE_NAME WHERE $KEY_UID = (:uid)")
     fun getById(uid: String): GroupEntity?
 
+    @Query("SELECT * FROM $TABLE_NAME WHERE $KEY_UID IN (:uid)")
+    fun getManyByIdFlow(vararg uid: String): Flow<List<GroupEntity>>
+
     @Query("SELECT * FROM $TABLE_NAME WHERE $KEY_UID = (:uid)")
     fun getByIdFlow(uid: String): Flow<GroupEntity?>
 
@@ -46,6 +49,6 @@ interface GroupDao {
     @Delete
     suspend fun delete(vararg group: GroupEntity)
 
-    @Query("DELETE FROM $TABLE_NAME WHERE $KEY_UID in (:uid)")
+    @Query("DELETE FROM $TABLE_NAME WHERE $KEY_UID IN (:uid)")
     suspend fun deleteByUid(vararg uid: String)
 }

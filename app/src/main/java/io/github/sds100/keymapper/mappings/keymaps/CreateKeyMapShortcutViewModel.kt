@@ -109,6 +109,14 @@ class CreateKeyMapShortcutViewModel(
             )
         }
 
+        val parentGroupListItems = keyMapGroup.parents.map { group ->
+            SubGroupListModel(
+                uid = group.uid,
+                name = group.name,
+                icon = null,
+            )
+        }
+
         val appBarState = if (keyMapGroup.group == null) {
             KeyMapAppBarState.RootGroup(
                 subGroups = subGroupListItems,
@@ -121,6 +129,7 @@ class CreateKeyMapShortcutViewModel(
                 subGroups = subGroupListItems,
                 constraints = emptyList(),
                 constraintMode = ConstraintMode.AND,
+                parentGroups = parentGroupListItems,
             )
         }
 

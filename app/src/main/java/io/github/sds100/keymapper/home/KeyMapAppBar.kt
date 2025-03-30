@@ -13,6 +13,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,12 +29,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.HelpOutline
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.rounded.Sort
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.rounded.Done
@@ -51,9 +54,11 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -64,6 +69,7 @@ import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -118,7 +124,7 @@ fun KeyMapAppBar(
     onSelectAllClick: () -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
     onNewGroupClick: () -> Unit = {},
-    onGroupClick: (String) -> Unit = {},
+    onGroupClick: (String?) -> Unit = {},
     onRenameGroupClick: suspend (String) -> Boolean = { true },
     isEditingGroupName: Boolean = false,
     onEditGroupNameClick: () -> Unit = {},
@@ -168,7 +174,7 @@ fun KeyMapAppBar(
 
                 ChildGroupAppBar(
                     modifier = modifier,
-                    value = newName,
+                    groupName = newName,
                     placeholder = state.groupName,
                     error = error,
                     onValueChange = {
@@ -187,6 +193,7 @@ fun KeyMapAppBar(
                     onEditClick = onEditGroupNameClick,
                     isEditingGroupName = isEditingGroupName,
                     subGroups = state.subGroups,
+                    parentGroups = state.parentGroups,
                     onGroupClick = onGroupClick,
                     actions = {
                         AnimatedVisibility(!isEditingGroupName) {
@@ -303,7 +310,7 @@ private fun RootGroupAppBar(
 @Composable
 private fun ChildGroupAppBar(
     modifier: Modifier = Modifier,
-    value: String,
+    groupName: String,
     placeholder: String,
     onValueChange: (String) -> Unit = {},
     error: String? = null,
@@ -312,8 +319,9 @@ private fun ChildGroupAppBar(
     onRenameClick: () -> Unit = {},
     isEditingGroupName: Boolean = false,
     subGroups: List<SubGroupListModel>,
+    parentGroups: List<SubGroupListModel>,
     onNewGroupClick: () -> Unit = {},
-    onGroupClick: (String) -> Unit = {},
+    onGroupClick: (String?) -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
 ) {
     // Make custom top app bar because the height can not be set to fix the text field error in.
@@ -341,8 +349,10 @@ private fun ChildGroupAppBar(
 
                 Spacer(Modifier.width(8.dp))
 
+                Spacer(Modifier.width(8.dp))
+
                 GroupNameRow(
-                    value = value,
+                    value = groupName,
                     onValueChange = onValueChange,
                     placeholder = placeholder,
                     onRenameClick = onRenameClick,
@@ -359,15 +369,96 @@ private fun ChildGroupAppBar(
             }
 
             AnimatedVisibility(!isEditingGroupName) {
-                GroupRow(
-                    modifier = Modifier
-                        .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
-                        .fillMaxWidth(),
-                    groups = subGroups,
-                    onNewGroupClick = onNewGroupClick,
-                    onGroupClick = onGroupClick,
-                )
+                Column {
+                    GroupRow(
+                        modifier = Modifier
+                            .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
+                            .fillMaxWidth(),
+                        groups = subGroups,
+                        onNewGroupClick = onNewGroupClick,
+                        onGroupClick = onGroupClick,
+                    )
+
+                    HorizontalDivider()
+
+                    val scrollState = rememberScrollState()
+
+                    LaunchedEffect(parentGroups) {
+                        scrollState.animateScrollTo(scrollState.maxValue)
+                    }
+
+                    BreadcrumbRow(
+                        modifier = Modifier
+                            .horizontalScroll(scrollState)
+                            .fillMaxWidth()
+                            .padding(
+                                start = 8.dp,
+                                end = 8.dp,
+                                bottom = 8.dp,
+                                top = 8.dp,
+                            ),
+                        groups = parentGroups,
+                        onGroupClick = onGroupClick,
+                    )
+                }
             }
+        }
+    }
+}
+
+@Composable
+private fun BreadcrumbRow(
+    modifier: Modifier = Modifier,
+    groups: List<SubGroupListModel>,
+    onGroupClick: (String?) -> Unit,
+) {
+    Row(modifier = modifier) {
+        val color = LocalContentColor.current.copy(alpha = 0.6f)
+        Breadcrumb(
+            text = stringResource(R.string.home_groups_breadcrumb_home),
+            onClick = { onGroupClick(null) },
+            color = color,
+        )
+
+        for ((index, group) in groups.withIndex()) {
+            Icon(imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight, null, tint = color)
+
+            Breadcrumb(
+                text = group.name,
+                onClick = { onGroupClick(group.uid) },
+                color = if (index == groups.lastIndex) {
+                    LocalContentColor.current
+                } else {
+                    color
+                },
+            )
+        }
+    }
+}
+
+@Composable
+private fun Breadcrumb(
+    modifier: Modifier = Modifier,
+    text: String,
+    color: Color,
+    onClick: () -> Unit,
+) {
+    CompositionLocalProvider(
+        LocalMinimumInteractiveComponentSize provides 16.dp,
+    ) {
+        Surface(
+            modifier = modifier,
+            onClick = onClick,
+            shape = MaterialTheme.shapes.medium,
+            color = Color.Transparent,
+        ) {
+            Text(
+                modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp),
+                text = text,
+                style = MaterialTheme.typography.labelMedium,
+                color = color,
+                maxLines = 1,
+            )
         }
     }
 }
@@ -779,6 +870,7 @@ private fun KeyMapsChildGroupPreview() {
         subGroups = groupSampleList(),
         constraints = constraintsSampleList(),
         constraintMode = ConstraintMode.AND,
+        parentGroups = groupSampleList(),
     )
     KeyMapperTheme {
         KeyMapAppBar(modifier = Modifier.fillMaxWidth(), state = state, isEditingGroupName = false)
@@ -794,6 +886,7 @@ private fun KeyMapsChildGroupDarkPreview() {
         subGroups = groupSampleList(),
         constraints = constraintsSampleList(),
         constraintMode = ConstraintMode.AND,
+        parentGroups = emptyList(),
     )
     KeyMapperTheme(darkTheme = true) {
         KeyMapAppBar(modifier = Modifier.fillMaxWidth(), state = state, isEditingGroupName = false)
@@ -809,6 +902,7 @@ private fun KeyMapsChildGroupEditingPreview() {
         subGroups = groupSampleList(),
         constraints = constraintsSampleList(),
         constraintMode = ConstraintMode.AND,
+        parentGroups = emptyList(),
     )
 
     val focusRequester = FocusRequester()
@@ -834,6 +928,7 @@ private fun KeyMapsChildGroupEditingDarkPreview() {
         subGroups = groupSampleList(),
         constraints = constraintsSampleList(),
         constraintMode = ConstraintMode.AND,
+        parentGroups = emptyList(),
     )
 
     val focusRequester = FocusRequester()
@@ -861,11 +956,12 @@ private fun KeyMapsChildGroupErrorPreview() {
 
     KeyMapperTheme {
         ChildGroupAppBar(
-            value = "Untitled group 23",
+            groupName = "Untitled group 23",
             placeholder = "Untitled group 23",
             error = stringResource(R.string.home_app_bar_group_name_unique_error),
             isEditingGroupName = true,
             subGroups = emptyList(),
+            parentGroups = emptyList(),
         )
     }
 }

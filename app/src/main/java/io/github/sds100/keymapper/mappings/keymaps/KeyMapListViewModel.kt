@@ -125,6 +125,7 @@ class KeyMapListViewModel(
             group = null,
             subGroups = emptyList(),
             keyMaps = State.Loading,
+            parents = emptyList(),
         ),
     )
 
@@ -307,6 +308,14 @@ class KeyMapListViewModel(
                 )
             }
 
+            val parentGroupListItems = keyMapGroup.parents.map { group ->
+                SubGroupListModel(
+                    uid = group.uid,
+                    name = group.name,
+                    icon = null,
+                )
+            }
+
             if (keyMapGroup.group == null) {
                 return KeyMapAppBarState.RootGroup(
                     subGroups = subGroupListItems,
@@ -322,6 +331,7 @@ class KeyMapListViewModel(
                     ),
                     constraintMode = keyMapGroup.group.constraintState.mode,
                     subGroups = subGroupListItems,
+                    parentGroups = parentGroupListItems,
                 )
             }
         }
@@ -620,7 +630,9 @@ class KeyMapListViewModel(
 
             state.value.appBarState is KeyMapAppBarState.ChildGroup -> {
                 if (isEditingGroupName && isNewGroup) {
-                    listKeyMaps.deleteGroup()
+                    coroutineScope.launch {
+                        listKeyMaps.deleteGroup()
+                    }
                 } else {
                     coroutineScope.launch {
                         listKeyMaps.popGroup()
@@ -649,7 +661,7 @@ class KeyMapListViewModel(
         isEditingGroupName = true
     }
 
-    fun onGroupClick(uid: String) {
+    fun onGroupClick(uid: String?) {
         coroutineScope.launch {
             listKeyMaps.openGroup(uid)
         }

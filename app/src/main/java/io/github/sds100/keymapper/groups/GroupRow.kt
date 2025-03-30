@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.rounded.Add
@@ -44,7 +46,7 @@ fun GroupRow(
 ) {
     var viewAllState by rememberSaveable { mutableStateOf(false) }
     FlowRow(
-        modifier,
+        modifier.verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         maxLines = if (viewAllState) {
@@ -182,6 +184,7 @@ private fun GroupButton(
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = text,
+                maxLines = 1,
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.onSurface,
             )

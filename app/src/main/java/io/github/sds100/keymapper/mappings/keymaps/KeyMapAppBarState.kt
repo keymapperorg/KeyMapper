@@ -18,6 +18,7 @@ sealed class KeyMapAppBarState {
         val constraints: List<ComposeChipModel>,
         val constraintMode: ConstraintMode,
         val subGroups: List<SubGroupListModel>,
+        val parentGroups: List<SubGroupListModel>,
 
     ) : KeyMapAppBarState()
 

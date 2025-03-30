@@ -187,7 +187,7 @@ private fun LoadedKeyMapList(
 
         // Give some space at the end of the list so that the FAB doesn't block the items.
         item {
-            Spacer(Modifier.height(140.dp))
+            Spacer(Modifier.height(100.dp))
         }
     }
 }

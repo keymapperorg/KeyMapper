@@ -1445,4 +1445,5 @@
     <string name="home_app_bar_edit_group_name">Edit group name</string>
     <string name="home_app_bar_save_group_name">Save group name</string>
     <string name="home_app_bar_group_name_unique_error">Name must be unique!</string>
+    <string name="home_groups_breadcrumb_home">Home</string>
 </resources>

@@ -30,7 +30,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -136,10 +135,9 @@ fun HomeKeyMapListScreen(
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val uriHandler = LocalUriHandler.current
     val helpUrl = stringResource(R.string.url_quick_start_guide)
-    val scope = rememberCoroutineScope()
 
     HomeKeyMapListScreen(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         snackbarState = snackbarState,
         floatingActionButton = {
             AnimatedVisibility(
@@ -157,7 +155,6 @@ fun HomeKeyMapListScreen(
         },
         listContent = {
             KeyMapList(
-                modifier = modifier,
                 lazyListState = rememberLazyListState(),
                 listItems = state.listItems,
                 footerText = stringResource(R.string.home_key_map_list_footer_text),
