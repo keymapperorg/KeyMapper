@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -42,7 +41,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import io.github.sds100.keymapper.util.ui.SelectionState
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
@@ -71,6 +69,11 @@ fun HomeScreen(
                 onSettingsClick = onSettingsClick,
                 onAboutClick = onAboutClick,
                 finishActivity = finishActivity,
+                fabBottomPadding = if (navBarItems.size == 1) {
+                    0.dp
+                } else {
+                    80.dp
+                },
             )
         },
         floatingButtonsContent = {
@@ -78,6 +81,11 @@ fun HomeScreen(
                 viewModel = viewModel.listFloatingLayoutsViewModel,
                 navController = navController,
                 snackbarState = snackbarState,
+                fabBottomPadding = if (navBarItems.size == 1) {
+                    0.dp
+                } else {
+                    80.dp
+                },
             )
         },
     )

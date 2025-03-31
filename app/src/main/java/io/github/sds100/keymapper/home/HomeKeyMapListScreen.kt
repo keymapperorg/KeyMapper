@@ -39,7 +39,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.Dp
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sds100.keymapper.R
@@ -73,6 +73,7 @@ fun HomeKeyMapListScreen(
     onSettingsClick: () -> Unit,
     onAboutClick: () -> Unit,
     finishActivity: () -> Unit,
+    fabBottomPadding: Dp
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -146,7 +147,7 @@ fun HomeKeyMapListScreen(
                 exit = fadeOut() + slideOutHorizontally(targetOffsetX = { it }),
             ) {
                 CollapsableFloatingActionButton(
-                    modifier = Modifier.padding(bottom = 80.dp),
+                    modifier = Modifier.padding(bottom = fabBottomPadding),
                     onClick = viewModel::onNewKeyMapClick,
                     showText = viewModel.showFabText,
                     text = stringResource(R.string.home_fab_new_key_map),
