@@ -460,7 +460,7 @@ class BackupManagerImpl(
             if (backupContent.groups != null) {
                 val groupUids = backupContent.groups.map { it.uid }.toMutableSet()
 
-                groupRepository.getAllGroups().first()
+                val existingGroupUids = groupRepository.getAllGroups().first()
                     .map { it.uid }
                     .toSet()
                     .also { groupUids.addAll(it) }
@@ -478,13 +478,26 @@ class BackupManagerImpl(
                         modifiedGroup = modifiedGroup.copy(parentUid = null)
                     }
 
-                    RepositoryUtils.saveUniqueName(
+                    val siblings =
+                        groupRepository.getGroupsByParent(modifiedGroup.parentUid).first()
+
+                    modifiedGroup = RepositoryUtils.saveUniqueName(
                         modifiedGroup,
-                        saveBlock = { groupRepository.insert(it) },
+                        saveBlock = { renamedGroup ->
+                            if (siblings.any { sibling -> sibling.name == renamedGroup.name }) {
+                                throw IllegalStateException("Non unique group name")
+                            }
+                        },
                         renameBlock = { entity, suffix ->
                             entity.copy(name = "${entity.name} $suffix")
                         },
                     )
+
+                    if (existingGroupUids.contains(modifiedGroup.uid)) {
+                        groupRepository.update(modifiedGroup)
+                    } else {
+                        groupRepository.insert(modifiedGroup)
+                    }
                 }
             }
 

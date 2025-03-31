@@ -1,7 +1,5 @@
 package io.github.sds100.keymapper.data.repositories
 
-import android.database.sqlite.SQLiteConstraintException
-
 object RepositoryUtils {
     suspend fun <T> saveUniqueName(
         entity: T,
@@ -17,7 +15,7 @@ object RepositoryUtils {
             try {
                 saveBlock(group)
                 break
-            } catch (_: SQLiteConstraintException) {
+            } catch (_: Exception) {
                 // If the name already exists try creating it with a new name.
                 group = renameBlock(entity, "(${count + 1})")
                 count++

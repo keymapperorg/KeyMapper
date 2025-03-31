@@ -761,6 +761,7 @@ class KeyMapListViewModel(
 
     fun onGroupClick(uid: String?) {
         coroutineScope.launch {
+            isEditingGroupName.update { false }
             isNewGroup = false
             listKeyMaps.openGroup(uid)
         }
@@ -768,6 +769,7 @@ class KeyMapListViewModel(
 
     fun onDeleteGroupClick() {
         coroutineScope.launch {
+            isEditingGroupName.update { false }
             listKeyMaps.deleteGroup()
         }
     }

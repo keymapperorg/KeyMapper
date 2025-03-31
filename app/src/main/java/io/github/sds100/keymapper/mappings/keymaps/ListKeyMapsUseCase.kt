@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -49,6 +50,10 @@ class ListKeyMapsUseCaseImpl(
 ) : ListKeyMapsUseCase,
     DisplayKeyMapUseCase by displayKeyMapUseCase {
     private val groupUid = MutableStateFlow<String?>(null)
+
+    /**
+     * These are the parents, grandparents etc of the current group.
+     */
     private val parentGroupUids = MutableStateFlow<List<String>>(emptyList())
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -73,16 +78,14 @@ class ListKeyMapsUseCaseImpl(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val parentGroups: Flow<List<Group>> =
-        parentGroupUids
-            .flatMapLatest { uids ->
-                groupRepository.getGroups(*uids.toTypedArray())
-                    .map { groups ->
-                        // The repository returns the objects unordered so order them by the
-                        // original UID list again.
-                        val mapped = groups.associateBy { it.uid }
-                        uids.map { GroupEntityMapper.fromEntity(mapped[it]!!) }
-                    }
+        parentGroupUids.flatMapLatest { parentUids ->
+            groupRepository.getGroups(*parentUids.toTypedArray()).map { groups ->
+                // The repository returns the objects unordered so order them by the
+                // original UID list again.
+                val mapped = groups.associateBy { it.uid }
+                parentUids.map { GroupEntityMapper.fromEntity(mapped[it]!!) }
             }
+        }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override val keyMapGroup: Flow<KeyMapGroup> = channelFlow {
@@ -107,15 +110,14 @@ class ListKeyMapsUseCaseImpl(
 
     override suspend fun newGroup() {
         val defaultName = resourceProvider.getString(R.string.default_group_name)
-        val group = GroupEntity(
+        var group = GroupEntity(
             parentUid = groupUid.value,
             name = defaultName,
             lastOpenedDate = System.currentTimeMillis(),
         )
 
-        ensureUniqueName(group) {
-            groupRepository.insert(it)
-        }
+        group = ensureUniqueName(group)
+        groupRepository.insert(group)
 
         groupUid.update { group.uid }
         parentGroupUids.update { it.plus(group.uid) }
@@ -143,23 +145,28 @@ class ListKeyMapsUseCaseImpl(
 
             entity = entity.copy(name = name.trim())
 
-            try {
-                groupRepository.update(entity)
-            } catch (_: SQLiteConstraintException) {
+            val siblings = groupRepository.getGroupsByParent(entity.parentUid).first()
+
+            if (siblings.any { it.name == entity.name }) {
                 return false
             }
+
+            groupRepository.update(entity)
         }
 
         return true
     }
 
-    private suspend fun ensureUniqueName(
-        group: GroupEntity,
-        block: suspend (entity: GroupEntity) -> Unit,
-    ): GroupEntity {
+    private suspend fun ensureUniqueName(group: GroupEntity): GroupEntity {
+        val siblings = groupRepository.getGroupsByParent(group.parentUid).first()
+
         return RepositoryUtils.saveUniqueName(
             entity = group,
-            saveBlock = block,
+            saveBlock = { renamedGroup ->
+                if (siblings.any { sibling -> sibling.name == renamedGroup.name }) {
+                    throw IllegalStateException("Non unique group name")
+                }
+            },
             renameBlock = { entity, suffix ->
                 entity.copy(name = "${entity.name} $suffix")
             },
