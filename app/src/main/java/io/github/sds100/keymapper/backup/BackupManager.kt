@@ -253,6 +253,9 @@ class BackupManagerImpl(
 
                 // Do nothing just added nullable group uid column
                 JsonMigration(15, 16) { json -> json },
+
+                // Do nothing just added nullable column for when a group was last opened
+                JsonMigration(16, 17) { json -> json },
             )
 
             if (keyMapListJsonArray != null) {

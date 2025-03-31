@@ -290,6 +290,7 @@ class ProcessKeyMapGroupsForDetectionTest {
                 mode = mode,
             ),
             parentUid = parentUid,
+            lastOpenedDate = 0,
         )
     }
 }
