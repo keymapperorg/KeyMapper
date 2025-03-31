@@ -66,7 +66,9 @@ fun GroupRow(
         },
         overflow = FlowRowOverflow.expandOrCollapseIndicator(
             expandIndicator = {
+                // Some padding is required on the end to stop it overflowing the screen.
                 ViewAllButton(
+                    modifier = Modifier.padding(end = 16.dp),
                     onClick = { viewAllState = true },
                     text = stringResource(R.string.home_new_view_all_groups_button),
                     enabled = enabled,
@@ -74,6 +76,7 @@ fun GroupRow(
             },
             collapseIndicator = {
                 ViewAllButton(
+                    modifier = Modifier.padding(end = 16.dp),
                     onClick = { viewAllState = false },
                     text = stringResource(R.string.home_new_hide_groups_button),
                     enabled = enabled,

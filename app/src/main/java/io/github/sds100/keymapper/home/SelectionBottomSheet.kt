@@ -70,7 +70,7 @@ fun SelectionBottomSheet(
         tonalElevation = BottomSheetDefaults.Elevation,
         color = BottomSheetDefaults.ContainerColor,
     ) {
-        Column(Modifier.padding(16.dp)) {
+        Column {
             Row(
                 modifier = Modifier
                     .height(intrinsicSize = IntrinsicSize.Min),
@@ -80,6 +80,8 @@ fun SelectionBottomSheet(
                         .weight(1f)
                         .horizontalScroll(state = rememberScrollState()),
                 ) {
+                    Spacer(Modifier.width(16.dp))
+
                     SelectionButton(
                         text = stringResource(R.string.home_multi_select_duplicate),
                         icon = Icons.Rounded.ContentCopy,
@@ -100,17 +102,18 @@ fun SelectionBottomSheet(
                         enabled = enabled,
                         onClick = onExportClick,
                     )
+
+                    Spacer(Modifier.width(16.dp))
                 }
 
                 VerticalDivider(
-                    modifier = Modifier.padding(
-                        vertical = 8.dp,
-                        horizontal = 16.dp,
-                    ),
+                    modifier = Modifier.padding(vertical = 8.dp),
                 )
 
                 KeyMapsEnabledSwitch(
-                    modifier = Modifier.width(IntrinsicSize.Max),
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .width(IntrinsicSize.Max),
                     state = selectedKeyMapsEnabled,
                     enabled = enabled,
                     onCheckedChange = onEnabledKeyMapsChange,
@@ -124,14 +127,15 @@ fun SelectionBottomSheet(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                stringResource(R.string.home_move_to_group),
+                modifier = Modifier.padding(horizontal = 16.dp),
+                text = stringResource(R.string.home_move_to_group),
                 style = MaterialTheme.typography.labelLarge,
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
             GroupRow(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .padding(horizontal = 16.dp, vertical = 4.dp)
+                    .fillMaxWidth(),
                 groups = groups,
                 onNewGroupClick = onNewGroupClick,
                 onGroupClick = onMoveToGroupClick,
@@ -248,6 +252,31 @@ private fun PreviewGroups() {
                     uid = "2",
                     name = "Key Mapper",
                     icon = ComposeIconInfo.Drawable(ctx.drawable(R.mipmap.ic_launcher_round)),
+                ),
+                GroupListItemModel(
+                    uid = "3",
+                    name = "Key Mapper",
+                    icon = null,
+                ),
+                GroupListItemModel(
+                    uid = "3",
+                    name = "Key Mapper",
+                    icon = null,
+                ),
+                GroupListItemModel(
+                    uid = "3",
+                    name = "Key Mapper",
+                    icon = null,
+                ),
+                GroupListItemModel(
+                    uid = "3",
+                    name = "Key Mapper",
+                    icon = null,
+                ),
+                GroupListItemModel(
+                    uid = "3",
+                    name = "Key Mapper",
+                    icon = null,
                 ),
                 GroupListItemModel(
                     uid = "3",
