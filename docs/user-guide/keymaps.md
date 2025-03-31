@@ -80,12 +80,12 @@ Read about floating buttons [here](floating-buttons.md).
 This trigger allows you to remap the various ways that your device can trigger the side key or assistant.
 
 !!! danger
-    Key Mapper can not walk you through setting this trigger up because the steps are unique to every device and Android skin. **You must read the instructions below.**
+    Key Mapper can not walk you through setting this trigger up because the steps are unique to almost every device and Android skin. **You must read the instructions below.**
 
 There are 2 options you can choose to change how the trigger works.
 
 - **Side key/power button**: The key map will be triggered whenever the "Key Mapper: Side key" app is launched. Read more in the next section on how to set this up on some devices.
-- **Voice assistant**: This is the assistant launched from the hands-free voice button on keyboards/headsets.
+- **Voice assistant**: This is the assistant launched from the hands-free voice button on keyboards/headsets. When you launch the voice assistant, your device should ask you which app to use by default and you should see Key Mapper in that list.
 
 !!! note
     It is not possible to create long-press key maps with this trigger! But you can do double press. You also can not use multiple assistant triggers in a parallel trigger because there is no way to detect them being pressed at exactly the same time.
@@ -106,6 +106,11 @@ Many external devices such as headsets and keyboards have a button for launching
 
 !!! warning
     Some headphones have hardcoded the assistant apps that they support and will not work with Key Mapper. The developer has Sony WH1000XM3 headphones that only support Alexa and Google Assistant and refuse to launch Key Mapper when it is selected as the default assistant app.
+
+**Help 😱! None of these steps work on my device**
+
+!!! question
+    You will need to search in your device settings or on the internet for how to remap the side key/power button on your device. If you're still stuck you can contact the developer in the app with the 'Contact developer' button shown in [this](keymaps.md#advanced-triggers) screenshot. _You **must** fill in the template otherwise we will ignore the email._
 
 ## Customising actions
 
