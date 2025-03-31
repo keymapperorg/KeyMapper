@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -120,7 +120,7 @@ private fun NewConstraintButton(
         LocalMinimumInteractiveComponentSize provides 16.dp,
     ) {
         Surface(
-            modifier = modifier.height(28.dp),
+            modifier = modifier,
             onClick = onClick,
             shape = MaterialTheme.shapes.small,
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurfaceVariant.copy(0.2f)),
@@ -161,12 +161,14 @@ private fun ConstraintButton(
         LocalMinimumInteractiveComponentSize provides 16.dp,
     ) {
         Surface(
-            modifier = modifier.height(28.dp),
+            modifier = modifier,
             shape = MaterialTheme.shapes.small,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f),
         ) {
             Row(
-                modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp),
+                modifier = Modifier
+                    .padding(vertical = 4.dp, horizontal = 8.dp)
+                    .heightIn(min = 24.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 icon()
@@ -206,14 +208,16 @@ private fun ConstraintErrorButton(
         LocalMinimumInteractiveComponentSize provides 16.dp,
     ) {
         Surface(
-            modifier = modifier.height(28.dp),
+            modifier = modifier,
             shape = MaterialTheme.shapes.small,
             color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.8f),
             onClick = onClick,
             enabled = enabled,
         ) {
             Row(
-                modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp),
+                modifier = Modifier
+                    .padding(vertical = 4.dp, horizontal = 8.dp)
+                    .heightIn(min = 24.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
@@ -293,6 +297,11 @@ private fun PreviewMultipleItems() {
                         id = "2",
                         text = "Key Mapper is open",
                         icon = ComposeIconInfo.Drawable(ctx.drawable(R.mipmap.ic_launcher_round)),
+                    ),
+                    ComposeChipModel.Normal(
+                        id = "2",
+                        text = "Key Mapper is open",
+                        icon = null,
                     ),
                     ComposeChipModel.Error(
                         id = "2",

@@ -337,7 +337,7 @@ private fun RootGroupAppBar(
         Surface(color = appBarContainerColor) {
             GroupRow(
                 modifier = Modifier
-                    .padding(8.dp)
+                    .padding(horizontal = 8.dp)
                     .fillMaxWidth(),
                 groups = state.subGroups,
                 onNewGroupClick = onNewGroupClick,
@@ -479,7 +479,7 @@ private fun ChildGroupAppBar(
                     modifier = Modifier
                         .horizontalScroll(scrollState)
                         .fillMaxWidth()
-                        .padding(8.dp),
+                        .padding(horizontal = 8.dp),
                     groups = parentGroups,
                     onGroupClick = onGroupClick,
                 )

@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.FlowRowOverflow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -58,7 +58,6 @@ fun GroupRow(
         modifier
             .verticalScroll(rememberScrollState())
             .animateContentSize(),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         maxLines = if (viewAllState) {
             Int.MAX_VALUE
@@ -152,7 +151,7 @@ private fun NewGroupButton(
         LocalContentColor provides color,
     ) {
         Surface(
-            modifier = modifier.height(36.dp),
+            modifier = modifier,
             onClick = onClick,
             shape = MaterialTheme.shapes.medium,
             border = BorderStroke(1.dp, color = color),
@@ -160,7 +159,7 @@ private fun NewGroupButton(
             enabled = enabled,
         ) {
             Row(
-                modifier = Modifier.padding(vertical = 8.dp, horizontal = 12.dp),
+                modifier = Modifier.padding(vertical = 6.dp, horizontal = 12.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 icon()
@@ -201,12 +200,18 @@ private fun ViewAllButton(
             color = Color.Transparent,
             enabled = enabled,
         ) {
-            AnimatedContent(text) { text ->
-                Text(
-                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 12.dp),
-                    text = text,
-                    style = MaterialTheme.typography.titleSmall,
-                )
+            Row(
+                modifier = Modifier
+                    .padding(vertical = 6.dp, horizontal = 12.dp)
+                    .heightIn(min = 24.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                AnimatedContent(text) { text ->
+                    Text(
+                        text = text,
+                        style = MaterialTheme.typography.titleSmall,
+                    )
+                }
             }
         }
     }
@@ -228,7 +233,9 @@ private fun GroupButton(
         enabled = enabled,
     ) {
         Row(
-            modifier = Modifier.padding(vertical = 8.dp, horizontal = 12.dp),
+            modifier = Modifier
+                .padding(vertical = 6.dp, horizontal = 12.dp)
+                .heightIn(min = 24.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             icon()
@@ -299,7 +306,7 @@ private fun PreviewMultipleItems() {
                     GroupListItemModel(
                         uid = "2",
                         name = "Lockscreen",
-                        icon = ComposeIconInfo.Vector(Icons.Outlined.Lock),
+                        icon = null,
                     ),
                     GroupListItemModel(
                         uid = "3",
