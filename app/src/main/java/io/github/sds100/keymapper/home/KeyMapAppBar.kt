@@ -599,7 +599,12 @@ private fun GroupNameRow(
     }
 
     AnimatedContent(modifier = modifier, targetState = isEditing) { isEditing ->
-        Row(Modifier.height(IntrinsicSize.Min), verticalAlignment = Alignment.Top) {
+        Row(
+            Modifier
+                .height(IntrinsicSize.Min)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.Top,
+        ) {
             val interactionSource = remember { MutableInteractionSource() }
 
             // Use a custom text field so the content padding can be customised.
@@ -611,7 +616,7 @@ private fun GroupNameRow(
                         if (isEditing) {
                             Modifier.weight(1f)
                         } else {
-                            Modifier
+                            Modifier.weight(1f, fill = false)
                         },
                     ),
                 value = value,
@@ -667,6 +672,8 @@ private fun GroupNameRow(
                     contentPadding = TextFieldDefaults.contentPaddingWithoutLabel(
                         top = 0.dp,
                         bottom = 0.dp,
+                        end = 4.dp,
+                        start = 8.dp,
                     ),
                 )
             }
