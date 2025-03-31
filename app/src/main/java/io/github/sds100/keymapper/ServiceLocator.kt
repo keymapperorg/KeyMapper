@@ -298,6 +298,7 @@ object ServiceLocator {
         AppDatabase.RoomMigration11To12(context.applicationContext.legacyFingerprintMapDataStore),
         AppDatabase.MIGRATION_12_13,
         AppDatabase.MIGRATION_13_14,
+        AppDatabase.MIGRATION_17_18,
     ).build()
 
     private val Context.legacyFingerprintMapDataStore by preferencesDataStore("fingerprint_gestures")

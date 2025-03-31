@@ -4,7 +4,6 @@ import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
-import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.github.salomonbrys.kotson.byArray
 import com.github.salomonbrys.kotson.byInt
@@ -19,7 +18,6 @@ import java.util.UUID
 
 @Entity(
     tableName = GroupDao.TABLE_NAME,
-    indices = [Index(value = [GroupDao.KEY_NAME], unique = true)],
     foreignKeys = [
         ForeignKey(
             entity = GroupEntity::class,

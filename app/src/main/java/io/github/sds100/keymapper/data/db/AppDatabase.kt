@@ -27,6 +27,7 @@ import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.data.entities.LogEntryEntity
 import io.github.sds100.keymapper.data.migration.AutoMigration14To15
 import io.github.sds100.keymapper.data.migration.AutoMigration15To16
+import io.github.sds100.keymapper.data.migration.AutoMigration16To17
 import io.github.sds100.keymapper.data.migration.Migration10To11
 import io.github.sds100.keymapper.data.migration.Migration11To12
 import io.github.sds100.keymapper.data.migration.Migration13To14
@@ -38,7 +39,6 @@ import io.github.sds100.keymapper.data.migration.Migration5To6
 import io.github.sds100.keymapper.data.migration.Migration6To7
 import io.github.sds100.keymapper.data.migration.Migration8To9
 import io.github.sds100.keymapper.data.migration.Migration9To10
-import io.github.sds100.keymapper.data.migration.fingerprintmaps.AutoMigration16To17
 
 /**
  * Created by sds100 on 24/01/2020.
@@ -65,7 +65,7 @@ import io.github.sds100.keymapper.data.migration.fingerprintmaps.AutoMigration16
 abstract class AppDatabase : RoomDatabase() {
     companion object {
         const val DATABASE_NAME = "key_map_database"
-        const val DATABASE_VERSION = 17
+        const val DATABASE_VERSION = 18
 
         val MIGRATION_1_2 = object : Migration(1, 2) {
 
@@ -141,9 +141,9 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
-        val MIGRATION_14_15 = object : Migration(14, 15) {
+        val MIGRATION_17_18 = object : Migration(17, 18) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("")
+                database.execSQL("DROP INDEX IF EXISTS `index_groups_name`")
             }
         }
     }
