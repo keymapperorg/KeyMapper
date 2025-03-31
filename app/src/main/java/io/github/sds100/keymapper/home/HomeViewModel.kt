@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.home
 import android.os.Build
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BubbleChart
-import androidx.compose.material.icons.outlined.Gamepad
+import androidx.compose.material.icons.outlined.Keyboard
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -116,7 +116,7 @@ class HomeViewModel(
             HomeNavBarItem(
                 HomeDestination.KeyMaps,
                 getString(R.string.home_nav_bar_key_maps),
-                icon = Icons.Outlined.Gamepad,
+                icon = Icons.Outlined.Keyboard,
                 badge = null,
             ),
         )
