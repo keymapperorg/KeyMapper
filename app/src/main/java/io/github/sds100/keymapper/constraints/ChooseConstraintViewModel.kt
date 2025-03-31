@@ -113,8 +113,8 @@ class ChooseConstraintViewModel(
                 ConstraintId.APP_NOT_PLAYING_MEDIA,
                 -> onSelectAppConstraint(constraintType)
 
-                ConstraintId.MEDIA_PLAYING -> _returnResult.emit(Constraint.MediaPlaying)
-                ConstraintId.MEDIA_NOT_PLAYING -> _returnResult.emit(Constraint.NoMediaPlaying)
+                ConstraintId.MEDIA_PLAYING -> _returnResult.emit(Constraint.MediaPlaying())
+                ConstraintId.MEDIA_NOT_PLAYING -> _returnResult.emit(Constraint.NoMediaPlaying())
 
                 ConstraintId.BT_DEVICE_CONNECTED,
                 ConstraintId.BT_DEVICE_DISCONNECTED,
@@ -126,35 +126,35 @@ class ChooseConstraintViewModel(
                 ConstraintId.SCREEN_OFF -> onSelectScreenOffConstraint()
 
                 ConstraintId.ORIENTATION_PORTRAIT ->
-                    _returnResult.emit(Constraint.OrientationPortrait)
+                    _returnResult.emit(Constraint.OrientationPortrait())
 
                 ConstraintId.ORIENTATION_LANDSCAPE ->
-                    _returnResult.emit(Constraint.OrientationLandscape)
+                    _returnResult.emit(Constraint.OrientationLandscape())
 
                 ConstraintId.ORIENTATION_0 ->
-                    _returnResult.emit(Constraint.OrientationCustom(Orientation.ORIENTATION_0))
+                    _returnResult.emit(Constraint.OrientationCustom(orientation = Orientation.ORIENTATION_0))
 
                 ConstraintId.ORIENTATION_90 ->
-                    _returnResult.emit(Constraint.OrientationCustom(Orientation.ORIENTATION_90))
+                    _returnResult.emit(Constraint.OrientationCustom(orientation = Orientation.ORIENTATION_90))
 
                 ConstraintId.ORIENTATION_180 ->
-                    _returnResult.emit(Constraint.OrientationCustom(Orientation.ORIENTATION_180))
+                    _returnResult.emit(Constraint.OrientationCustom(orientation = Orientation.ORIENTATION_180))
 
                 ConstraintId.ORIENTATION_270 ->
-                    _returnResult.emit(Constraint.OrientationCustom(Orientation.ORIENTATION_270))
+                    _returnResult.emit(Constraint.OrientationCustom(orientation = Orientation.ORIENTATION_270))
 
                 ConstraintId.FLASHLIGHT_ON -> {
                     val lens = chooseFlashlightLens() ?: return@launch
-                    _returnResult.emit(Constraint.FlashlightOn(lens))
+                    _returnResult.emit(Constraint.FlashlightOn(lens = lens))
                 }
 
                 ConstraintId.FLASHLIGHT_OFF -> {
                     val lens = chooseFlashlightLens() ?: return@launch
-                    _returnResult.emit(Constraint.FlashlightOff(lens))
+                    _returnResult.emit(Constraint.FlashlightOff(lens = lens))
                 }
 
-                ConstraintId.WIFI_ON -> _returnResult.emit(Constraint.WifiOn)
-                ConstraintId.WIFI_OFF -> _returnResult.emit(Constraint.WifiOff)
+                ConstraintId.WIFI_ON -> _returnResult.emit(Constraint.WifiOn())
+                ConstraintId.WIFI_OFF -> _returnResult.emit(Constraint.WifiOff())
 
                 ConstraintId.WIFI_CONNECTED,
                 ConstraintId.WIFI_DISCONNECTED,
@@ -167,31 +167,31 @@ class ChooseConstraintViewModel(
                 -> onSelectImeChosenConstraint(constraintType)
 
                 ConstraintId.DEVICE_IS_LOCKED ->
-                    _returnResult.emit(Constraint.DeviceIsLocked)
+                    _returnResult.emit(Constraint.DeviceIsLocked())
 
                 ConstraintId.DEVICE_IS_UNLOCKED ->
-                    _returnResult.emit(Constraint.DeviceIsUnlocked)
+                    _returnResult.emit(Constraint.DeviceIsUnlocked())
 
                 ConstraintId.IN_PHONE_CALL ->
-                    _returnResult.emit(Constraint.InPhoneCall)
+                    _returnResult.emit(Constraint.InPhoneCall())
 
                 ConstraintId.NOT_IN_PHONE_CALL ->
-                    _returnResult.emit(Constraint.NotInPhoneCall)
+                    _returnResult.emit(Constraint.NotInPhoneCall())
 
                 ConstraintId.PHONE_RINGING ->
-                    _returnResult.emit(Constraint.PhoneRinging)
+                    _returnResult.emit(Constraint.PhoneRinging())
 
                 ConstraintId.CHARGING ->
-                    _returnResult.emit(Constraint.Charging)
+                    _returnResult.emit(Constraint.Charging())
 
                 ConstraintId.DISCHARGING ->
-                    _returnResult.emit(Constraint.Discharging)
+                    _returnResult.emit(Constraint.Discharging())
 
                 ConstraintId.LOCK_SCREEN_SHOWING ->
-                    _returnResult.emit(Constraint.LockScreenShowing)
+                    _returnResult.emit(Constraint.LockScreenShowing())
 
                 ConstraintId.LOCK_SCREEN_NOT_SHOWING ->
-                    _returnResult.emit(Constraint.LockScreenNotShowing)
+                    _returnResult.emit(Constraint.LockScreenNotShowing())
             }
         }
     }
@@ -275,10 +275,10 @@ class ChooseConstraintViewModel(
 
         when (type) {
             ConstraintId.WIFI_CONNECTED ->
-                _returnResult.emit(Constraint.WifiConnected(chosenSSID))
+                _returnResult.emit(Constraint.WifiConnected(ssid = chosenSSID))
 
             ConstraintId.WIFI_DISCONNECTED ->
-                _returnResult.emit(Constraint.WifiDisconnected(chosenSSID))
+                _returnResult.emit(Constraint.WifiDisconnected(ssid = chosenSSID))
 
             else -> Unit
         }
@@ -295,10 +295,20 @@ class ChooseConstraintViewModel(
 
         when (type) {
             ConstraintId.IME_CHOSEN ->
-                _returnResult.emit(Constraint.ImeChosen(imeInfo.id, imeInfo.label))
+                _returnResult.emit(
+                    Constraint.ImeChosen(
+                        imeId = imeInfo.id,
+                        imeLabel = imeInfo.label,
+                    ),
+                )
 
             ConstraintId.IME_NOT_CHOSEN ->
-                _returnResult.emit(Constraint.ImeNotChosen(imeInfo.id, imeInfo.label))
+                _returnResult.emit(
+                    Constraint.ImeNotChosen(
+                        imeId = imeInfo.id,
+                        imeLabel = imeInfo.label,
+                    ),
+                )
 
             else -> Unit
         }
@@ -312,7 +322,7 @@ class ChooseConstraintViewModel(
 
         response ?: return
 
-        _returnResult.emit(Constraint.ScreenOn)
+        _returnResult.emit(Constraint.ScreenOn())
     }
 
     private suspend fun onSelectScreenOffConstraint() {
@@ -323,7 +333,7 @@ class ChooseConstraintViewModel(
 
         response ?: return
 
-        _returnResult.emit(Constraint.ScreenOff)
+        _returnResult.emit(Constraint.ScreenOff())
     }
 
     private suspend fun onSelectBluetoothConstraint(type: ConstraintId) {
@@ -341,13 +351,13 @@ class ChooseConstraintViewModel(
 
         val constraint = when (type) {
             ConstraintId.BT_DEVICE_CONNECTED -> Constraint.BtDeviceConnected(
-                device.address,
-                device.name,
+                bluetoothAddress = device.address,
+                deviceName = device.name,
             )
 
             ConstraintId.BT_DEVICE_DISCONNECTED -> Constraint.BtDeviceDisconnected(
-                device.address,
-                device.name,
+                bluetoothAddress = device.address,
+                deviceName = device.name,
             )
 
             else -> throw IllegalArgumentException("Don't know how to create $type constraint after choosing app")
@@ -366,19 +376,19 @@ class ChooseConstraintViewModel(
 
         val constraint = when (type) {
             ConstraintId.APP_IN_FOREGROUND -> Constraint.AppInForeground(
-                packageName,
+                packageName = packageName,
             )
 
             ConstraintId.APP_NOT_IN_FOREGROUND -> Constraint.AppNotInForeground(
-                packageName,
+                packageName = packageName,
             )
 
             ConstraintId.APP_PLAYING_MEDIA -> Constraint.AppPlayingMedia(
-                packageName,
+                packageName = packageName,
             )
 
             ConstraintId.APP_NOT_PLAYING_MEDIA -> Constraint.AppNotPlayingMedia(
-                packageName,
+                packageName = packageName,
             )
 
             else -> throw IllegalArgumentException("Don't know how to create $type constraint after choosing app")

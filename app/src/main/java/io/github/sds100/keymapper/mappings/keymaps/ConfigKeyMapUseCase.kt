@@ -803,11 +803,11 @@ class ConfigKeyMapUseCaseController(
         }
 
         if (data is ActionData.AnswerCall) {
-            addConstraint(Constraint.PhoneRinging)
+            addConstraint(Constraint.PhoneRinging())
         }
 
         if (data is ActionData.EndCall) {
-            addConstraint(Constraint.InPhoneCall)
+            addConstraint(Constraint.InPhoneCall())
         }
 
         return Action(

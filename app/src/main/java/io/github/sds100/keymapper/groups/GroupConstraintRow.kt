@@ -71,32 +71,26 @@ fun GroupConstraintRow(
                             // Only allow clicking on error chips
                             enabled = enabled,
                             icon = {
-                                when (constraint) {
-                                    is ComposeChipModel.Normal -> {
-                                        if (constraint.icon is ComposeIconInfo.Vector) {
-                                            Icon(
-                                                modifier = Modifier
-                                                    .size(20.dp)
-                                                    .padding(end = 8.dp),
-                                                imageVector = constraint.icon.imageVector,
-                                                contentDescription = null,
-                                            )
-                                        } else if (constraint.icon is ComposeIconInfo.Drawable) {
-                                            Icon(
-                                                modifier = Modifier
-                                                    .size(20.dp)
-                                                    .padding(end = 8.dp),
-                                                painter = rememberDrawablePainter(constraint.icon.drawable),
-                                                contentDescription = null,
-                                                tint = Color.Unspecified,
-                                            )
-                                        }
-                                    }
-
-                                    is ComposeChipModel.Error -> {
-                                    }
+                                if (constraint.icon is ComposeIconInfo.Vector) {
+                                    Icon(
+                                        modifier = Modifier
+                                            .size(24.dp)
+                                            .padding(end = 8.dp),
+                                        imageVector = constraint.icon.imageVector,
+                                        contentDescription = null,
+                                    )
+                                } else if (constraint.icon is ComposeIconInfo.Drawable) {
+                                    Icon(
+                                        modifier = Modifier
+                                            .size(24.dp)
+                                            .padding(end = 8.dp),
+                                        painter = rememberDrawablePainter(constraint.icon.drawable),
+                                        contentDescription = null,
+                                        tint = Color.Unspecified,
+                                    )
                                 }
                             },
+
                         )
                     }
 
@@ -224,7 +218,7 @@ private fun ConstraintErrorButton(
             ) {
                 Icon(
                     modifier = Modifier
-                        .size(20.dp)
+                        .size(24.dp)
                         .padding(end = 8.dp),
                     imageVector = Icons.Rounded.ErrorOutline,
                     contentDescription = null,
