@@ -12,6 +12,7 @@ import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.EntityExtra
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.data.repositories.FakePreferenceRepository
+import io.github.sds100.keymapper.data.repositories.GroupRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapRepository
 import io.github.sds100.keymapper.system.files.FakeFileAdapter
@@ -43,6 +44,7 @@ import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyVararg
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
@@ -109,6 +111,9 @@ class BackupManagerTest {
             uuidGenerator = mockUuidGenerator,
             floatingButtonRepository = mock {},
             floatingLayoutRepository = mock {},
+            groupRepository = mock<GroupRepository> {
+                on { getAllGroups() } doReturn MutableStateFlow(emptyList())
+            },
         )
 
         parser = JsonParser()

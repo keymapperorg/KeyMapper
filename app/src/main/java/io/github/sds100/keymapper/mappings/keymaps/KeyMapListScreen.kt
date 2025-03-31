@@ -49,6 +49,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
@@ -77,6 +78,7 @@ fun KeyMapList(
     onSelectedChange: (String, Boolean) -> Unit = { _, _ -> },
     onFixClick: (Error) -> Unit = {},
     onTriggerErrorClick: (TriggerError) -> Unit = {},
+    bottomListPadding: Dp = 100.dp,
 ) {
     when (listItems) {
         is State.Loading -> {
@@ -101,6 +103,7 @@ fun KeyMapList(
                         onSelectedChange,
                         onFixClick,
                         onTriggerErrorClick,
+                        bottomListPadding,
                     )
                 }
             }
@@ -149,6 +152,7 @@ private fun LoadedKeyMapList(
     onSelectedChange: (String, Boolean) -> Unit,
     onFixClick: (Error) -> Unit,
     onTriggerErrorClick: (TriggerError) -> Unit,
+    bottomListPadding: Dp,
 ) {
     val haptics = LocalHapticFeedback.current
 
@@ -187,7 +191,7 @@ private fun LoadedKeyMapList(
 
         // Give some space at the end of the list so that the FAB doesn't block the items.
         item {
-            Spacer(Modifier.height(100.dp))
+            Spacer(Modifier.height(bottomListPadding))
         }
     }
 }

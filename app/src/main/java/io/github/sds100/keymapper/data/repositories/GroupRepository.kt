@@ -20,8 +20,8 @@ interface GroupRepository {
 
     fun getKeyMapsByGroup(groupUid: String): Flow<KeyMapEntitiesWithGroup>
     suspend fun getGroup(uid: String): GroupEntity?
-    suspend fun getAllGroups(): Flow<List<GroupEntity>>
-    suspend fun getGroups(vararg uid: String): Flow<List<GroupEntity>>
+    fun getAllGroups(): Flow<List<GroupEntity>>
+    fun getGroups(vararg uid: String): Flow<List<GroupEntity>>
     fun getGroupsByParent(uid: String?): Flow<List<GroupEntity>>
     fun getGroupWithSubGroups(uid: String): Flow<GroupEntityWithSubGroups>
     suspend fun insert(groupEntity: GroupEntity)
@@ -46,12 +46,12 @@ class RoomGroupRepository(
         return withContext(dispatchers.io()) { dao.getById(uid) }
     }
 
-    override suspend fun getAllGroups(): Flow<List<GroupEntity>> {
-        return withContext(dispatchers.io()) { dao.getAll() }
+    override fun getAllGroups(): Flow<List<GroupEntity>> {
+        return dao.getAll().flowOn(dispatchers.io())
     }
 
-    override suspend fun getGroups(vararg uid: String): Flow<List<GroupEntity>> {
-        return withContext(dispatchers.io()) { dao.getManyByIdFlow(*uid) }
+    override fun getGroups(vararg uid: String): Flow<List<GroupEntity>> {
+        return dao.getManyByIdFlow(*uid).flowOn(dispatchers.io())
     }
 
     override fun getGroupsByParent(uid: String?): Flow<List<GroupEntity>> {

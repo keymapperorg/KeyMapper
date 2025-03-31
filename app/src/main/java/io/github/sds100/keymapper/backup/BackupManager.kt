@@ -457,7 +457,7 @@ class BackupManagerImpl(
             if (backupContent.groups != null) {
                 val groupUids = backupContent.groups.map { it.uid }.toMutableSet()
 
-                groupRepository.groups.first()
+                groupRepository.getAllGroups().first()
                     .map { it.uid }
                     .toSet()
                     .also { groupUids.addAll(it) }

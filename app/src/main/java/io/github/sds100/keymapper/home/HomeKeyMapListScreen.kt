@@ -4,6 +4,7 @@ import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
@@ -30,16 +31,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sds100.keymapper.R
@@ -137,6 +141,8 @@ fun HomeKeyMapListScreen(
     val uriHandler = LocalUriHandler.current
     val helpUrl = stringResource(R.string.url_quick_start_guide)
 
+    var keyMapListBottomPadding by remember { mutableStateOf(100.dp) }
+
     HomeKeyMapListScreen(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         snackbarState = snackbarState,
@@ -156,6 +162,7 @@ fun HomeKeyMapListScreen(
         },
         listContent = {
             KeyMapList(
+                modifier = Modifier.animateContentSize(),
                 lazyListState = rememberLazyListState(),
                 listItems = state.listItems,
                 footerText = stringResource(R.string.home_key_map_list_footer_text),
@@ -165,6 +172,7 @@ fun HomeKeyMapListScreen(
                 onSelectedChange = viewModel::onKeyMapSelectedChanged,
                 onFixClick = viewModel::onFixClick,
                 onTriggerErrorClick = viewModel::onFixTriggerError,
+                bottomListPadding = keyMapListBottomPadding,
             )
         },
         appBarContent = {
@@ -212,6 +220,10 @@ fun HomeKeyMapListScreen(
                     )
 
                 SelectionBottomSheet(
+                    modifier = Modifier.onSizeChanged { size ->
+                        keyMapListBottomPadding =
+                            ((size.height.dp / 2) - 100.dp).coerceAtLeast(0.dp)
+                    },
                     enabled = selectionState.selectionCount > 0,
                     groups = selectionState.groups,
                     selectedKeyMapsEnabled = selectionState.selectedKeyMapsEnabled,
