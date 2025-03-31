@@ -11,7 +11,8 @@ import io.github.sds100.keymapper.backup.RestoreType
 import io.github.sds100.keymapper.constraints.ConstraintErrorSnapshot
 import io.github.sds100.keymapper.constraints.ConstraintMode
 import io.github.sds100.keymapper.constraints.ConstraintUiHelper
-import io.github.sds100.keymapper.groups.SubGroupListModel
+import io.github.sds100.keymapper.groups.Group
+import io.github.sds100.keymapper.groups.GroupListItemModel
 import io.github.sds100.keymapper.home.HomeWarningListItem
 import io.github.sds100.keymapper.home.SelectedKeyMapsEnabled
 import io.github.sds100.keymapper.home.ShowHomeScreenAlertsUseCase
@@ -52,6 +53,7 @@ import io.github.sds100.keymapper.util.ui.navigate
 import io.github.sds100.keymapper.util.ui.showPopup
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -60,7 +62,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -85,6 +89,8 @@ class KeyMapListViewModel(
         const val ID_ACCESSIBILITY_SERVICE_CRASHED_LIST_ITEM = "accessibility_service_crashed"
         const val ID_BATTERY_OPTIMISATION_LIST_ITEM = "battery_optimised"
         const val ID_LOGGING_ENABLED_LIST_ITEM = "logging_enabled"
+
+        private const val HOME_GROUP_UID = "home_group"
     }
 
     val sortViewModel = SortViewModel(coroutineScope, sortKeyMaps)
@@ -235,14 +241,64 @@ class KeyMapListViewModel(
             }
         }
 
-        val appBarStateFlow = combine(
+        val homeGroupListItem = GroupListItemModel(
+            uid = HOME_GROUP_UID,
+            name = getString(R.string.home_groups_breadcrumb_home),
+            icon = null,
+        )
+
+        val groupListItems =
+            combine(keyMapGroupStateFlow, listKeyMaps.getGroups()) { keyMapGroup, groupList ->
+                val listItems = mutableListOf<GroupListItemModel>()
+
+                // Only add the home group list item if the current group is not the home one.
+                if (keyMapGroup.group != null) {
+                    listItems.add(homeGroupListItem)
+                }
+
+                val filteredGroups = groupList
+                    .filter { it.uid != keyMapGroup.group?.uid }
+                    .map(::buildGroupListItem)
+
+                listItems.addAll(filteredGroups)
+
+                listItems
+            }
+
+        val selectionAppBarState = combine(
+            multiSelectProvider.state.filterIsInstance<SelectionState.Selecting>(),
+            keyMapGroupStateFlow,
+            groupListItems,
+        ) { selectionState, keyMapGroup, groups ->
+            buildSelectingAppBarState(
+                keyMapGroup,
+                selectionState,
+                groups,
+            )
+        }
+
+        val groupAppBarState = combine(
             keyMapGroupStateFlow,
             warnings,
-            multiSelectProvider.state,
             pauseKeyMaps.isPaused,
             listKeyMaps.constraintErrorSnapshot,
-            transform = ::buildAppBarState,
-        )
+        ) { keyMapGroup, warnings, isPaused, constraintErrorSnapshot ->
+            buildGroupAppBarState(
+                keyMapGroup,
+                warnings,
+                isPaused,
+                constraintErrorSnapshot,
+            )
+        }
+
+        @OptIn(ExperimentalCoroutinesApi::class)
+        val appBarStateFlow: Flow<KeyMapAppBarState> =
+            multiSelectProvider.state.flatMapLatest { selectionState ->
+                when (selectionState) {
+                    is SelectionState.Selecting -> selectionAppBarState
+                    SelectionState.NotSelecting -> groupAppBarState
+                }
+            }
 
         coroutineScope.launch {
             combine(
@@ -268,84 +324,92 @@ class KeyMapListViewModel(
         }
     }
 
-    private fun buildAppBarState(
+    private fun buildSelectingAppBarState(
         keyMapGroup: KeyMapGroup,
-        warnings: List<HomeWarningListItem>,
-        selectionState: SelectionState,
-        isPaused: Boolean,
-        constraintErrorSnapshot: ConstraintErrorSnapshot,
-    ): KeyMapAppBarState {
-        if (selectionState is SelectionState.Selecting) {
-            var selectedKeyMapsEnabled: SelectedKeyMapsEnabled? = null
-            val keyMaps = keyMapGroup.keyMaps.dataOrNull() ?: emptyList()
+        selectionState: SelectionState.Selecting,
+        groupListItems: List<GroupListItemModel>,
+    ): KeyMapAppBarState.Selecting {
+        var selectedKeyMapsEnabled: SelectedKeyMapsEnabled? = null
+        val keyMaps = keyMapGroup.keyMaps.dataOrNull() ?: emptyList()
 
-            for (keyMap in keyMaps) {
-                if (keyMap.uid in selectionState.selectedIds) {
-                    if (selectedKeyMapsEnabled == null) {
-                        selectedKeyMapsEnabled = if (keyMap.isEnabled) {
-                            SelectedKeyMapsEnabled.ALL
-                        } else {
-                            SelectedKeyMapsEnabled.NONE
-                        }
+        for (keyMap in keyMaps) {
+            if (keyMap.uid in selectionState.selectedIds) {
+                if (selectedKeyMapsEnabled == null) {
+                    selectedKeyMapsEnabled = if (keyMap.isEnabled) {
+                        SelectedKeyMapsEnabled.ALL
                     } else {
-                        if ((keyMap.isEnabled && selectedKeyMapsEnabled == SelectedKeyMapsEnabled.NONE) ||
-                            (!keyMap.isEnabled && selectedKeyMapsEnabled == SelectedKeyMapsEnabled.ALL)
-                        ) {
-                            selectedKeyMapsEnabled = SelectedKeyMapsEnabled.MIXED
-                            break
-                        }
+                        SelectedKeyMapsEnabled.NONE
+                    }
+                } else {
+                    if ((keyMap.isEnabled && selectedKeyMapsEnabled == SelectedKeyMapsEnabled.NONE) ||
+                        (!keyMap.isEnabled && selectedKeyMapsEnabled == SelectedKeyMapsEnabled.ALL)
+                    ) {
+                        selectedKeyMapsEnabled = SelectedKeyMapsEnabled.MIXED
+                        break
                     }
                 }
             }
+        }
 
-            return KeyMapAppBarState.Selecting(
-                selectionCount = selectionState.selectedIds.size,
-                selectedKeyMapsEnabled = selectedKeyMapsEnabled ?: SelectedKeyMapsEnabled.NONE,
-                isAllSelected = selectionState.selectedIds.size == keyMaps.size,
+        return KeyMapAppBarState.Selecting(
+            selectionCount = selectionState.selectedIds.size,
+            selectedKeyMapsEnabled = selectedKeyMapsEnabled ?: SelectedKeyMapsEnabled.NONE,
+            isAllSelected = selectionState.selectedIds.size == keyMaps.size,
+            groups = groupListItems,
+        )
+    }
+
+    private fun buildGroupAppBarState(
+        keyMapGroup: KeyMapGroup,
+        warnings: List<HomeWarningListItem>,
+        isPaused: Boolean,
+        constraintErrorSnapshot: ConstraintErrorSnapshot,
+    ): KeyMapAppBarState {
+        val subGroupListItems = keyMapGroup.subGroups.map { group ->
+            buildGroupListItem(group)
+        }
+
+        val parentGroupListItems = keyMapGroup.parents.map { group ->
+            GroupListItemModel(
+                uid = group.uid,
+                name = group.name,
+                icon = null,
+            )
+        }
+
+        if (keyMapGroup.group == null) {
+            return KeyMapAppBarState.RootGroup(
+                subGroups = subGroupListItems,
+                warnings = warnings,
+                isPaused = isPaused,
             )
         } else {
-            val subGroupListItems = keyMapGroup.subGroups.map { group ->
-                var icon: ComposeIconInfo? = null
-
-                val constraint = group.constraintState.constraints.firstOrNull()
-                if (constraint != null) {
-                    icon = constraintUiHelper.getIcon(constraint)
-                }
-
-                SubGroupListModel(
-                    uid = group.uid,
-                    name = group.name,
-                    icon = icon,
-                )
-            }
-
-            val parentGroupListItems = keyMapGroup.parents.map { group ->
-                SubGroupListModel(
-                    uid = group.uid,
-                    name = group.name,
-                    icon = null,
-                )
-            }
-
-            if (keyMapGroup.group == null) {
-                return KeyMapAppBarState.RootGroup(
-                    subGroups = subGroupListItems,
-                    warnings = warnings,
-                    isPaused = isPaused,
-                )
-            } else {
-                return KeyMapAppBarState.ChildGroup(
-                    groupName = keyMapGroup.group.name,
-                    constraints = listItemCreator.buildConstraintChipList(
-                        keyMapGroup.group.constraintState,
-                        constraintErrorSnapshot,
-                    ),
-                    constraintMode = keyMapGroup.group.constraintState.mode,
-                    subGroups = subGroupListItems,
-                    parentGroups = parentGroupListItems,
-                )
-            }
+            return KeyMapAppBarState.ChildGroup(
+                groupName = keyMapGroup.group.name,
+                constraints = listItemCreator.buildConstraintChipList(
+                    keyMapGroup.group.constraintState,
+                    constraintErrorSnapshot,
+                ),
+                constraintMode = keyMapGroup.group.constraintState.mode,
+                subGroups = subGroupListItems,
+                parentGroups = parentGroupListItems,
+            )
         }
+    }
+
+    private fun buildGroupListItem(group: Group): GroupListItemModel {
+        var icon: ComposeIconInfo? = null
+
+        val constraint = group.constraintState.constraints.firstOrNull()
+        if (constraint != null) {
+            icon = constraintUiHelper.getIcon(constraint)
+        }
+
+        return GroupListItemModel(
+            uid = group.uid,
+            name = group.name,
+            icon = icon,
+        )
     }
 
     private fun buildListItems(
@@ -539,6 +603,22 @@ class KeyMapListViewModel(
         }
     }
 
+    fun onMoveToGroupClick(groupUid: String) {
+        val selectionState = multiSelectProvider.state.value
+
+        if (selectionState !is SelectionState.Selecting) return
+        val selectedIds = selectionState.selectedIds.toTypedArray()
+
+        if (groupUid == HOME_GROUP_UID) {
+            listKeyMaps.moveKeyMapsToGroup(null, *selectedIds)
+        } else {
+            listKeyMaps.moveKeyMapsToGroup(groupUid, *selectedIds)
+        }
+
+        multiSelectProvider.deselect(*selectedIds)
+        multiSelectProvider.stopSelecting()
+    }
+
     fun onFixWarningClick(id: String) {
         coroutineScope.launch {
             when (id) {
@@ -690,6 +770,7 @@ class KeyMapListViewModel(
 
     fun onNewGroupClick() {
         coroutineScope.launch {
+            multiSelectProvider.stopSelecting()
             listKeyMaps.newGroup()
             isNewGroup = true
             isEditingGroupName = true

@@ -99,8 +99,8 @@ import io.github.sds100.keymapper.constraints.ConstraintMode
 import io.github.sds100.keymapper.groups.DeleteGroupDialog
 import io.github.sds100.keymapper.groups.GroupBreadcrumbRow
 import io.github.sds100.keymapper.groups.GroupConstraintRow
+import io.github.sds100.keymapper.groups.GroupListItemModel
 import io.github.sds100.keymapper.groups.GroupRow
-import io.github.sds100.keymapper.groups.SubGroupListModel
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapAppBarState
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.drawable
@@ -358,8 +358,8 @@ private fun ChildGroupAppBar(
     onEditClick: () -> Unit = {},
     onRenameClick: () -> Unit = {},
     isEditingGroupName: Boolean = false,
-    subGroups: List<SubGroupListModel>,
-    parentGroups: List<SubGroupListModel>,
+    subGroups: List<GroupListItemModel>,
+    parentGroups: List<GroupListItemModel>,
     onNewGroupClick: () -> Unit = {},
     onGroupClick: (String?) -> Unit = {},
     constraints: List<ComposeChipModel> = emptyList(),
@@ -866,21 +866,21 @@ private fun constraintsSampleList(): List<ComposeChipModel> {
 }
 
 @Composable
-private fun groupSampleList(): List<SubGroupListModel> {
+private fun groupSampleList(): List<GroupListItemModel> {
     val ctx = LocalContext.current
 
     return listOf(
-        SubGroupListModel(
+        GroupListItemModel(
             uid = "1",
             name = "Lockscreen",
             icon = ComposeIconInfo.Vector(Icons.Outlined.Lock),
         ),
-        SubGroupListModel(
+        GroupListItemModel(
             uid = "2",
             name = "Key Mapper",
             icon = ComposeIconInfo.Drawable(ctx.drawable(R.mipmap.ic_launcher_round)),
         ),
-        SubGroupListModel(
+        GroupListItemModel(
             uid = "3",
             name = "Key Mapper",
             icon = null,
@@ -1083,6 +1083,7 @@ private fun HomeStateSelectingPreview() {
         selectionCount = 4,
         selectedKeyMapsEnabled = SelectedKeyMapsEnabled.MIXED,
         isAllSelected = false,
+        groups = emptyList(),
     )
     KeyMapperTheme {
         KeyMapAppBar(state = state)
@@ -1097,6 +1098,7 @@ private fun HomeStateSelectingDisabledPreview() {
         selectionCount = 4,
         selectedKeyMapsEnabled = SelectedKeyMapsEnabled.MIXED,
         isAllSelected = true,
+        groups = emptyList(),
     )
     KeyMapperTheme {
         KeyMapAppBar(state = state)

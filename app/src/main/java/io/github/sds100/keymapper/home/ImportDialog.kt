@@ -13,7 +13,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 
 @Composable
- fun ImportDialog(
+fun ImportDialog(
     modifier: Modifier = Modifier,
     keyMapCount: Int,
     onDismissRequest: () -> Unit,

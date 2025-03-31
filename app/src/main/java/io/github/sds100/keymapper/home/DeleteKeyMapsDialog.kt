@@ -11,7 +11,7 @@ import androidx.compose.ui.res.stringResource
 import io.github.sds100.keymapper.R
 
 @Composable
- fun DeleteKeyMapsDialog(
+fun DeleteKeyMapsDialog(
     modifier: Modifier = Modifier,
     keyMapCount: Int,
     onDismissRequest: () -> Unit,

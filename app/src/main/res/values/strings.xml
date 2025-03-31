@@ -1361,6 +1361,7 @@
     <string name="home_enabled_key_maps_enabled">Enabled</string>
     <string name="home_enabled_key_maps_disabled">Disabled</string>
     <string name="home_enabled_key_maps_mixed">Mixed</string>
+    <string name="home_move_to_group">Move to group</string>
 
     <plurals name="home_key_maps_delete_dialog_title">
         <item quantity="one">Delete 1 key map</item>

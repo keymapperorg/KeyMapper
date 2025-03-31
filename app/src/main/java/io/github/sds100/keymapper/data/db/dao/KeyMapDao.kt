@@ -53,6 +53,9 @@ interface KeyMapDao {
     @Query("UPDATE $TABLE_NAME SET $KEY_ENABLED=0 WHERE $KEY_UID in (:uid)")
     suspend fun disableKeyMapByUid(vararg uid: String)
 
+    @Query("UPDATE $TABLE_NAME SET $KEY_GROUP_UID=(:groupUid) WHERE $KEY_UID in (:uid)")
+    suspend fun setKeyMapGroup(groupUid: String?, vararg uid: String)
+
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insert(vararg keyMap: KeyMapEntity)
 

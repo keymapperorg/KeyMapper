@@ -30,7 +30,7 @@ data class KeyMap(
     val actionList: List<Action> = emptyList(),
     val constraintState: ConstraintState = ConstraintState(),
     val isEnabled: Boolean = true,
-    val groupUid: String? = null
+    val groupUid: String? = null,
 ) {
 
     val showToast: Boolean

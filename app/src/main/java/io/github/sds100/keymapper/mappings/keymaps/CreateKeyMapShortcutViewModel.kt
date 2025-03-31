@@ -13,13 +13,15 @@ import io.github.sds100.keymapper.actions.ActionErrorSnapshot
 import io.github.sds100.keymapper.actions.ActionUiHelper
 import io.github.sds100.keymapper.constraints.ConstraintErrorSnapshot
 import io.github.sds100.keymapper.constraints.ConstraintMode
-import io.github.sds100.keymapper.groups.SubGroupListModel
+import io.github.sds100.keymapper.constraints.ConstraintUiHelper
+import io.github.sds100.keymapper.groups.GroupListItemModel
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerErrorSnapshot
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.mapData
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.TintType
+import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -41,6 +43,10 @@ class CreateKeyMapShortcutViewModel(
 ) : ViewModel(),
     ResourceProvider by resourceProvider {
     private val actionUiHelper = ActionUiHelper(listKeyMaps, resourceProvider)
+    private val constraintUiHelper = ConstraintUiHelper(
+        listKeyMaps,
+        resourceProvider,
+    )
     private val listItemCreator = KeyMapListItemCreator(listKeyMaps, resourceProvider)
 
     private val initialState = KeyMapListState(
@@ -102,15 +108,22 @@ class CreateKeyMapShortcutViewModel(
         }
 
         val subGroupListItems = keyMapGroup.subGroups.map { group ->
-            SubGroupListModel(
+            var icon: ComposeIconInfo? = null
+
+            val constraint = group.constraintState.constraints.firstOrNull()
+            if (constraint != null) {
+                icon = constraintUiHelper.getIcon(constraint)
+            }
+
+            GroupListItemModel(
                 uid = group.uid,
                 name = group.name,
-                icon = null, // TODO show icon depending on constraints
+                icon = icon,
             )
         }
 
         val parentGroupListItems = keyMapGroup.parents.map { group ->
-            SubGroupListModel(
+            GroupListItemModel(
                 uid = group.uid,
                 name = group.name,
                 icon = null,

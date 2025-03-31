@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.R
 
 @Composable
- fun HomeWarningList(
+fun HomeWarningList(
     modifier: Modifier = Modifier,
     warnings: List<HomeWarningListItem>,
     onFixClick: (String) -> Unit,

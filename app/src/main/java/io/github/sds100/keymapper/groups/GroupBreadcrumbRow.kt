@@ -21,7 +21,7 @@ import io.github.sds100.keymapper.R
 @Composable
 fun GroupBreadcrumbRow(
     modifier: Modifier = Modifier,
-    groups: List<SubGroupListModel>,
+    groups: List<GroupListItemModel>,
     onGroupClick: (String?) -> Unit,
     enabled: Boolean = true,
 ) {

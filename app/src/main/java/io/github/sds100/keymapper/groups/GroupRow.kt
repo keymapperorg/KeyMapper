@@ -45,7 +45,7 @@ import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 @Composable
 fun GroupRow(
     modifier: Modifier = Modifier,
-    groups: List<SubGroupListModel>,
+    groups: List<GroupListItemModel>,
     onNewGroupClick: () -> Unit = {},
     onGroupClick: (String) -> Unit = {},
     enabled: Boolean = true,
@@ -265,7 +265,7 @@ private fun PreviewOneItem() {
         Surface {
             GroupRow(
                 groups = listOf(
-                    SubGroupListModel(
+                    GroupListItemModel(
                         uid = "1",
                         name = "Device is locked",
                         icon = ComposeIconInfo.Vector(Icons.Outlined.Lock),
@@ -286,17 +286,17 @@ private fun PreviewMultipleItems() {
         Surface {
             GroupRow(
                 groups = listOf(
-                    SubGroupListModel(
+                    GroupListItemModel(
                         uid = "1",
                         name = "Lockscreen",
                         icon = ComposeIconInfo.Vector(Icons.Outlined.Lock),
                     ),
-                    SubGroupListModel(
+                    GroupListItemModel(
                         uid = "2",
                         name = "Key Mapper",
                         icon = ComposeIconInfo.Drawable(ctx.drawable(R.mipmap.ic_launcher_round)),
                     ),
-                    SubGroupListModel(
+                    GroupListItemModel(
                         uid = "3",
                         name = "Key Mapper",
                         icon = null,

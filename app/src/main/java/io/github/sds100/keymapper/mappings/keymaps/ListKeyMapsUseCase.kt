@@ -47,9 +47,60 @@ class ListKeyMapsUseCaseImpl(
     displayKeyMapUseCase: DisplayKeyMapUseCase,
 ) : ListKeyMapsUseCase,
     DisplayKeyMapUseCase by displayKeyMapUseCase {
-
     private val groupUid = MutableStateFlow<String?>(null)
     private val parentGroupUids = MutableStateFlow<List<String>>(emptyList())
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val group: Flow<GroupWithSubGroups> = groupUid.flatMapLatest { groupUid ->
+        if (groupUid == null) {
+            groupRepository.getGroupsByParent(null).map { subGroupEntities ->
+                val subGroups = subGroupEntities.map(GroupEntityMapper::fromEntity)
+                GroupWithSubGroups(group = null, subGroups = subGroups)
+            }
+        } else {
+            groupRepository.getGroupWithSubGroups(groupUid).map { groupWithSubGroups ->
+                val group = GroupEntityMapper.fromEntity(groupWithSubGroups.group)
+                val subGroups =
+                    groupWithSubGroups.subGroups.map(GroupEntityMapper::fromEntity)
+
+                GroupWithSubGroups(group, subGroups)
+            }
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val parentGroups: Flow<List<Group>> =
+        parentGroupUids
+            .flatMapLatest { uids ->
+                groupRepository.getGroups(*uids.toTypedArray())
+                    .map { groups ->
+                        // The repository returns the objects unordered so order them by the
+                        // original UID list again.
+                        val mapped = groups.associateBy { it.uid }
+                        uids.map { GroupEntityMapper.fromEntity(mapped[it]!!) }
+                    }
+            }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override val keyMapGroup: Flow<KeyMapGroup> = channelFlow {
+        combine(group, parentGroups) { group, parentGroups ->
+            KeyMapGroup(
+                group = group.group,
+                subGroups = group.subGroups,
+                keyMaps = State.Loading,
+                parents = parentGroups,
+            )
+        }.onEach { send(it) }
+            .flatMapLatest { keyMapGroup ->
+                getKeyMapsByGroup(keyMapGroup.group?.uid).map { keyMapGroup.copy(keyMaps = it) }
+            }.collect {
+                send(it)
+            }
+    }
+
+    override fun getGroups(): Flow<List<Group>> {
+        return groupRepository.groups.map { list -> list.map(GroupEntityMapper::fromEntity) }
+    }
 
     override suspend fun newGroup() {
         val defaultName = resourceProvider.getString(R.string.default_group_name)
@@ -205,52 +256,8 @@ class ListKeyMapsUseCaseImpl(
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private val group: Flow<GroupWithSubGroups> = groupUid.flatMapLatest { groupUid ->
-        if (groupUid == null) {
-            groupRepository.getGroupsByParent(null).map { subGroupEntities ->
-                val subGroups = subGroupEntities.map(GroupEntityMapper::fromEntity)
-                GroupWithSubGroups(group = null, subGroups = subGroups)
-            }
-        } else {
-            groupRepository.getGroupWithSubGroups(groupUid).map { groupWithSubGroups ->
-                val group = GroupEntityMapper.fromEntity(groupWithSubGroups.group)
-                val subGroups =
-                    groupWithSubGroups.subGroups.map(GroupEntityMapper::fromEntity)
-
-                GroupWithSubGroups(group, subGroups)
-            }
-        }
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private val parentGroups: Flow<List<Group>> =
-        parentGroupUids
-            .flatMapLatest { uids ->
-                groupRepository.getGroups(*uids.toTypedArray())
-                    .map { groups ->
-                        // The repository returns the objects unordered so order them by the
-                        // original UID list again.
-                        val mapped = groups.associateBy { it.uid }
-                        uids.map { GroupEntityMapper.fromEntity(mapped[it]!!) }
-                    }
-            }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override val keyMapGroup: Flow<KeyMapGroup> = channelFlow {
-        combine(group, parentGroups) { group, parentGroups ->
-            KeyMapGroup(
-                group = group.group,
-                subGroups = group.subGroups,
-                keyMaps = State.Loading,
-                parents = parentGroups,
-            )
-        }.onEach { send(it) }
-            .flatMapLatest { keyMapGroup ->
-                getKeyMapsByGroup(keyMapGroup.group?.uid).map { keyMapGroup.copy(keyMaps = it) }
-            }.collect {
-                send(it)
-            }
+    override fun moveKeyMapsToGroup(groupUid: String?, vararg keyMapUids: String) {
+        keyMapRepository.moveToGroup(groupUid, *keyMapUids)
     }
 
     private fun getKeyMapsByGroup(groupUid: String?): Flow<State<List<KeyMap>>> = channelFlow {
@@ -320,6 +327,8 @@ interface ListKeyMapsUseCase : DisplayKeyMapUseCase {
     suspend fun addGroupConstraint(constraint: Constraint)
     suspend fun removeGroupConstraint(constraintUid: String)
     suspend fun setGroupConstraintMode(mode: ConstraintMode)
+    fun getGroups(): Flow<List<Group>>
+    fun moveKeyMapsToGroup(groupUid: String?, vararg keyMapUids: String)
 
     fun deleteKeyMap(vararg uid: String)
     fun enableKeyMap(vararg uid: String)

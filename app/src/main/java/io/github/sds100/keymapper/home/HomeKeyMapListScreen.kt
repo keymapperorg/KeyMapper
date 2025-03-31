@@ -47,7 +47,7 @@ import io.github.sds100.keymapper.backup.ImportExportState
 import io.github.sds100.keymapper.backup.RestoreType
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.constraints.ConstraintMode
-import io.github.sds100.keymapper.groups.SubGroupListModel
+import io.github.sds100.keymapper.groups.GroupListItemModel
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapAppBarState
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapList
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapListViewModel
@@ -73,7 +73,7 @@ fun HomeKeyMapListScreen(
     onSettingsClick: () -> Unit,
     onAboutClick: () -> Unit,
     finishActivity: () -> Unit,
-    fabBottomPadding: Dp
+    fabBottomPadding: Dp,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -208,15 +208,19 @@ fun HomeKeyMapListScreen(
                         selectionCount = 0,
                         selectedKeyMapsEnabled = SelectedKeyMapsEnabled.NONE,
                         isAllSelected = false,
+                        groups = emptyList(),
                     )
 
                 SelectionBottomSheet(
                     enabled = selectionState.selectionCount > 0,
+                    groups = selectionState.groups,
                     selectedKeyMapsEnabled = selectionState.selectedKeyMapsEnabled,
                     onEnabledKeyMapsChange = viewModel::onEnabledKeyMapsChange,
                     onDuplicateClick = viewModel::onDuplicateSelectedKeyMapsClick,
                     onExportClick = viewModel::onExportSelectedKeyMaps,
                     onDeleteClick = { showDeleteDialog = true },
+                    onMoveToGroupClick = viewModel::onMoveToGroupClick,
+                    onNewGroupClick = viewModel::onNewGroupClick,
                 )
             }
         },
@@ -460,6 +464,7 @@ private fun PreviewSelectingKeyMaps() {
         selectionCount = 2,
         selectedKeyMapsEnabled = SelectedKeyMapsEnabled.MIXED,
         isAllSelected = false,
+        groups = emptyList(),
     )
 
     val listState = State.Data(sampleList())
@@ -482,6 +487,7 @@ private fun PreviewSelectingKeyMaps() {
                 SelectionBottomSheet(
                     enabled = true,
                     selectedKeyMapsEnabled = SelectedKeyMapsEnabled.MIXED,
+                    groups = emptyList(),
                 )
             },
         )
@@ -579,7 +585,7 @@ private fun PreviewKeyMapsWarnings() {
 
     val appBarState = KeyMapAppBarState.RootGroup(
         subGroups = listOf(
-            SubGroupListModel(
+            GroupListItemModel(
                 uid = "0",
                 name = "Key Mapper",
                 icon = ComposeIconInfo.Drawable(ctx.drawable(R.mipmap.ic_launcher_round)),

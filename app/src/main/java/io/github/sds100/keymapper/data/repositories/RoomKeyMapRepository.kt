@@ -58,7 +58,7 @@ class RoomKeyMapRepository(
 
     override fun insert(vararg keyMap: KeyMapEntity) {
         coroutineScope.launch(dispatchers.io()) {
-            keyMap.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE).forEach {
+            for (it in keyMap.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {
                 keyMapDao.insert(*it)
             }
 
@@ -74,7 +74,7 @@ class RoomKeyMapRepository(
 
     override fun update(vararg keyMap: KeyMapEntity) {
         coroutineScope.launch(dispatchers.io()) {
-            keyMap.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE).forEach {
+            for (it in keyMap.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {
                 keyMapDao.update(*it)
             }
 
@@ -86,7 +86,7 @@ class RoomKeyMapRepository(
 
     override fun delete(vararg uid: String) {
         coroutineScope.launch(dispatchers.io()) {
-            uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE).forEach {
+            for (it in uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {
                 keyMapDao.deleteById(*it)
             }
 
@@ -96,7 +96,7 @@ class RoomKeyMapRepository(
 
     override fun duplicate(vararg uid: String) {
         coroutineScope.launch(dispatchers.io()) {
-            uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE).forEach { uidBatch ->
+            for (uidBatch in uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {
                 val keymaps = mutableListOf<KeyMapEntity>()
 
                 for (keyMapUid in uidBatch) {
@@ -113,7 +113,7 @@ class RoomKeyMapRepository(
 
     override fun enableById(vararg uid: String) {
         coroutineScope.launch(dispatchers.io()) {
-            uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE).forEach {
+            for (it in uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {
                 keyMapDao.enableKeyMapByUid(*it)
             }
 
@@ -123,8 +123,18 @@ class RoomKeyMapRepository(
 
     override fun disableById(vararg uid: String) {
         coroutineScope.launch(dispatchers.io()) {
-            uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE).forEach {
+            for (it in uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {
                 keyMapDao.disableKeyMapByUid(*it)
+            }
+
+            requestBackup()
+        }
+    }
+
+    override fun moveToGroup(groupUid: String?, vararg uid: String) {
+        coroutineScope.launch {
+            for (it in uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {
+                keyMapDao.setKeyMapGroup(groupUid, *it)
             }
 
             requestBackup()
