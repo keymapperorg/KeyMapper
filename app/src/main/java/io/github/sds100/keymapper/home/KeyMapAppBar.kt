@@ -342,6 +342,7 @@ private fun RootGroupAppBar(
                 groups = state.subGroups,
                 onNewGroupClick = onNewGroupClick,
                 onGroupClick = onGroupClick,
+                isSubgroups = false,
             )
         }
     }
@@ -465,6 +466,7 @@ private fun ChildGroupAppBar(
                     onNewGroupClick = onNewGroupClick,
                     onGroupClick = onGroupClick,
                     enabled = !isEditingGroupName,
+                    isSubgroups = true,
                 )
 
                 val scrollState = rememberScrollState()

@@ -49,6 +49,7 @@ fun GroupRow(
     onNewGroupClick: () -> Unit = {},
     onGroupClick: (String) -> Unit = {},
     enabled: Boolean = true,
+    isSubgroups: Boolean = false,
 ) {
     var viewAllState by rememberSaveable { mutableStateOf(false) }
 
@@ -84,7 +85,11 @@ fun GroupRow(
     ) {
         NewGroupButton(
             onClick = onNewGroupClick,
-            text = stringResource(R.string.home_new_group_button),
+            text = if (isSubgroups) {
+                stringResource(R.string.home_new_subgroup_button)
+            } else {
+                stringResource(R.string.home_new_group_button)
+            },
             icon = {
                 Icon(imageVector = Icons.Rounded.Add, null)
             },
@@ -189,7 +194,7 @@ private fun ViewAllButton(
         LocalContentColor provides color,
     ) {
         Surface(
-            modifier = modifier.height(36.dp),
+            modifier = modifier,
             onClick = onClick,
             shape = MaterialTheme.shapes.medium,
             border = BorderStroke(1.dp, color),
@@ -216,7 +221,7 @@ private fun GroupButton(
     enabled: Boolean,
 ) {
     Surface(
-        modifier = modifier.height(36.dp),
+        modifier = modifier,
         onClick = onClick,
         shape = MaterialTheme.shapes.medium,
         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
@@ -286,6 +291,26 @@ private fun PreviewMultipleItems() {
         Surface {
             GroupRow(
                 groups = listOf(
+                    GroupListItemModel(
+                        uid = "1",
+                        name = "Lockscreen",
+                        icon = ComposeIconInfo.Vector(Icons.Outlined.Lock),
+                    ),
+                    GroupListItemModel(
+                        uid = "2",
+                        name = "Lockscreen",
+                        icon = ComposeIconInfo.Vector(Icons.Outlined.Lock),
+                    ),
+                    GroupListItemModel(
+                        uid = "3",
+                        name = "Lockscreen",
+                        icon = ComposeIconInfo.Vector(Icons.Outlined.Lock),
+                    ),
+                    GroupListItemModel(
+                        uid = "1",
+                        name = "Lockscreen",
+                        icon = ComposeIconInfo.Vector(Icons.Outlined.Lock),
+                    ),
                     GroupListItemModel(
                         uid = "1",
                         name = "Lockscreen",
