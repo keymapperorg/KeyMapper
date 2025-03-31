@@ -4,7 +4,7 @@ import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.FingerprintGesturesSupportedUseCase
-import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
+import io.github.sds100.keymapper.mappings.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCase
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsUseCase
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
@@ -25,7 +25,7 @@ class AccessibilityServiceController(
     detectKeyMapsUseCase: DetectKeyMapsUseCase,
     fingerprintGesturesSupportedUseCase: FingerprintGesturesSupportedUseCase,
     rerouteKeyEventsUseCase: RerouteKeyEventsUseCase,
-    pauseMappingsUseCase: PauseMappingsUseCase,
+    pauseKeyMapsUseCase: PauseKeyMapsUseCase,
     devicesAdapter: DevicesAdapter,
     suAdapter: SuAdapter,
     inputMethodAdapter: InputMethodAdapter,
@@ -40,7 +40,7 @@ class AccessibilityServiceController(
     detectKeyMapsUseCase,
     fingerprintGesturesSupportedUseCase,
     rerouteKeyEventsUseCase,
-    pauseMappingsUseCase,
+    pauseKeyMapsUseCase,
     devicesAdapter,
     suAdapter,
     inputMethodAdapter,

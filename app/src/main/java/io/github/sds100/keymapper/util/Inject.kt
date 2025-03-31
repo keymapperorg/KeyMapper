@@ -160,7 +160,7 @@ object Inject {
             ServiceLocator.resourceProvider(ctx),
             UseCases.displayKeyMap(ctx),
         ),
-        UseCases.pauseMappings(ctx),
+        UseCases.pauseKeyMaps(ctx),
         BackupRestoreMappingsUseCaseImpl(
             ServiceLocator.fileAdapter(ctx),
             ServiceLocator.backupManager(ctx),
@@ -169,7 +169,7 @@ object Inject {
             ServiceLocator.settingsRepository(ctx),
             ServiceLocator.permissionAdapter(ctx),
             ServiceLocator.accessibilityServiceAdapter(ctx),
-            UseCases.pauseMappings(ctx),
+            UseCases.pauseKeyMaps(ctx),
         ),
         UseCases.onboarding(ctx),
         ServiceLocator.resourceProvider(ctx),
@@ -218,7 +218,7 @@ object Inject {
             keyEventRelayService = keyEventRelayService,
         ),
         fingerprintGesturesSupportedUseCase = UseCases.fingerprintGesturesSupported(service),
-        pauseKeyMapsUseCase = UseCases.pauseMappings(service),
+        pauseKeyMapsUseCase = UseCases.pauseKeyMaps(service),
         devicesAdapter = ServiceLocator.devicesAdapter(service),
         suAdapter = ServiceLocator.suAdapter(service),
         rerouteKeyEventsUseCase = UseCases.rerouteKeyEvents(

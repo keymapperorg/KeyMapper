@@ -36,6 +36,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.R
 
+// TODO add move to group
 @Composable
 fun SelectionBottomSheet(
     modifier: Modifier = Modifier,

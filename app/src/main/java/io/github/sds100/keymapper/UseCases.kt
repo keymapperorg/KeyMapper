@@ -97,7 +97,7 @@ object UseCases {
 
     fun fingerprintGesturesSupported(ctx: Context) = FingerprintGesturesSupportedUseCaseImpl(ServiceLocator.settingsRepository(ctx))
 
-    fun pauseMappings(ctx: Context) = PauseKeyMapsUseCaseImpl(
+    fun pauseKeyMaps(ctx: Context) = PauseKeyMapsUseCaseImpl(
         ServiceLocator.settingsRepository(ctx),
         ServiceLocator.mediaAdapter(ctx),
     )

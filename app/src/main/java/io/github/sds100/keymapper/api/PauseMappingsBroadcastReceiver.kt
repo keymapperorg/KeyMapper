@@ -16,7 +16,7 @@ class PauseMappingsBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         context ?: return
 
-        val useCase = UseCases.pauseMappings(context)
+        val useCase = UseCases.pauseKeyMaps(context)
 
         when (intent?.action) {
             Api.ACTION_PAUSE_MAPPINGS -> useCase.pause()
