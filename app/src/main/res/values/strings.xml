@@ -323,6 +323,7 @@
     <string name="url_rate" translatable="false">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper</string>
     <string name="url_website" translatable="false">https://keymapperorg.github.io/KeyMapper</string>
     <string name="url_advanced_triggers" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/advanced-triggers</string>
+    <string name="url_assistant_trigger_instructions" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/assistant-trigger</string>
     <string name="url_floating_buttons_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/floating-buttons</string>
     <string name="url_floating_layouts_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/floating-layouts</string>
     <string name="url_floating_button_config_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/floating-button-config</string>
@@ -1194,6 +1195,11 @@
     <string name="trigger_error_floating_buttons_not_purchased">You must purchase floating buttons.</string>
     <string name="trigger_error_floating_button_deleted">Button was deleted.</string>
     <string name="trigger_error_floating_button_deleted_title">Floating button</string>
+    <string name="setup_assistant_trigger_title">Set up side key trigger</string>
+    <string name="setup_assistant_trigger_attention">Attention!</string>
+    <string name="setup_assistant_trigger_text">You must read the instructions on our website that describe how to set up this trigger. Key Mapper will not guide you.</string>
+    <string name="setup_assistant_trigger_read_instructions_button">Read instructions</string>
+    <string name="setup_assistant_trigger_select_type_button">Select trigger type</string>
 
     <!--  Purchasing  -->
     <string name="unlock_product_button">Unlock (%s)</string>

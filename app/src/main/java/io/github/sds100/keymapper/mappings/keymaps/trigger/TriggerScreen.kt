@@ -56,6 +56,8 @@ fun TriggerScreen(modifier: Modifier = Modifier, viewModel: ConfigTriggerViewMod
     val setupGuiKeyboardState by viewModel.setupGuiKeyboardState.collectAsStateWithLifecycle()
     val recordTriggerState by viewModel.recordTriggerState.collectAsStateWithLifecycle()
 
+    HandleAssistantTriggerSetupBottomSheet(viewModel = viewModel)
+
     if (viewModel.showAdvancedTriggersBottomSheet) {
         AdvancedTriggersBottomSheet(
             modifier = Modifier.systemBarsPadding(),

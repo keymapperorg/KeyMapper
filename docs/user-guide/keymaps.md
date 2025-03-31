@@ -82,7 +82,7 @@ This trigger allows you to remap the various ways that your device can trigger t
 !!! danger
     Key Mapper can not walk you through setting this trigger up because the steps are unique to almost every device and Android skin. **You must read the instructions below.**
 
-There are 2 options you can choose to change how the trigger works.
+There are 2 options you can choose to configure how the trigger works.
 
 - **Side key/power button**: The key map will be triggered whenever the "Key Mapper: Side key" app is launched. Read more in the next section on how to set this up on some devices.
 - **Voice assistant**: This is the assistant launched from the hands-free voice button on keyboards/headsets. When you launch the voice assistant, your device should ask you which app to use by default and you should see Key Mapper in that list.
