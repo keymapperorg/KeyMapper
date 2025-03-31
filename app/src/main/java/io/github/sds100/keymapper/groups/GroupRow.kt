@@ -16,10 +16,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -43,6 +45,7 @@ fun GroupRow(
     groups: List<SubGroupListModel>,
     onNewGroupClick: () -> Unit = {},
     onGroupClick: (String) -> Unit = {},
+    enabled: Boolean = true,
 ) {
     var viewAllState by rememberSaveable { mutableStateOf(false) }
     FlowRow(
@@ -62,6 +65,7 @@ fun GroupRow(
                 Icon(imageVector = Icons.Rounded.Add, null)
             },
             showText = groups.isEmpty(),
+            enabled = enabled,
         )
 
         if (groups.isNotEmpty()) {
@@ -72,6 +76,7 @@ fun GroupRow(
                 } else {
                     stringResource(R.string.home_new_view_all_groups_button)
                 },
+                enabled = enabled,
             )
         }
 
@@ -79,6 +84,7 @@ fun GroupRow(
             GroupButton(
                 onClick = { onGroupClick(group.uid) },
                 text = group.name,
+                enabled = enabled,
                 icon = {
                     when (group.icon) {
                         is ComposeIconInfo.Drawable -> {
@@ -117,27 +123,38 @@ private fun NewGroupButton(
     text: String,
     icon: @Composable () -> Unit,
     showText: Boolean = true,
+    enabled: Boolean,
 ) {
-    Surface(
-        modifier = modifier.height(36.dp),
-        onClick = onClick,
-        shape = MaterialTheme.shapes.medium,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface),
-        color = Color.Transparent,
-    ) {
-        Row(
-            modifier = Modifier.padding(vertical = 8.dp, horizontal = 12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            icon()
+    val color = if (enabled) {
+        MaterialTheme.colorScheme.onSurface
+    } else {
+        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+    }
 
-            if (showText) {
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = text,
-                    style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
+    CompositionLocalProvider(
+        LocalContentColor provides color,
+    ) {
+        Surface(
+            modifier = modifier.height(36.dp),
+            onClick = onClick,
+            shape = MaterialTheme.shapes.medium,
+            border = BorderStroke(1.dp, color = color),
+            color = Color.Transparent,
+            enabled = enabled,
+        ) {
+            Row(
+                modifier = Modifier.padding(vertical = 8.dp, horizontal = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                icon()
+
+                if (showText) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = text,
+                        style = MaterialTheme.typography.titleSmall,
+                    )
+                }
             }
         }
     }
@@ -148,21 +165,32 @@ private fun ViewAllButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
     text: String,
+    enabled: Boolean,
 ) {
-    Surface(
-        modifier = modifier.height(36.dp),
-        onClick = onClick,
-        shape = MaterialTheme.shapes.medium,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface),
-        color = Color.Transparent,
+    val color = if (enabled) {
+        MaterialTheme.colorScheme.onSurface
+    } else {
+        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+    }
+
+    CompositionLocalProvider(
+        LocalContentColor provides color,
     ) {
-        AnimatedContent(text) { text ->
-            Text(
-                modifier = Modifier.padding(vertical = 8.dp, horizontal = 12.dp),
-                text = text,
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
+        Surface(
+            modifier = modifier.height(36.dp),
+            onClick = onClick,
+            shape = MaterialTheme.shapes.medium,
+            border = BorderStroke(1.dp, color),
+            color = Color.Transparent,
+            enabled = enabled,
+        ) {
+            AnimatedContent(text) { text ->
+                Text(
+                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 12.dp),
+                    text = text,
+                    style = MaterialTheme.typography.titleSmall,
+                )
+            }
         }
     }
 }
@@ -173,12 +201,14 @@ private fun GroupButton(
     onClick: () -> Unit,
     text: String,
     icon: @Composable () -> Unit,
+    enabled: Boolean,
 ) {
     Surface(
         modifier = modifier.height(36.dp),
         onClick = onClick,
         shape = MaterialTheme.shapes.medium,
         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
+        enabled = enabled,
     ) {
         Row(
             modifier = Modifier.padding(vertical = 8.dp, horizontal = 12.dp),
@@ -200,7 +230,19 @@ private fun GroupButton(
 @Composable
 private fun PreviewEmpty() {
     KeyMapperTheme {
-        GroupRow(groups = emptyList())
+        Surface {
+            GroupRow(groups = emptyList())
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewEmptyDisabled() {
+    KeyMapperTheme {
+        Surface {
+            GroupRow(groups = emptyList(), enabled = false)
+        }
     }
 }
 
@@ -208,15 +250,18 @@ private fun PreviewEmpty() {
 @Composable
 private fun PreviewOneItem() {
     KeyMapperTheme {
-        GroupRow(
-            groups = listOf(
-                SubGroupListModel(
-                    uid = "1",
-                    name = "Device is locked",
-                    icon = ComposeIconInfo.Vector(Icons.Outlined.Lock),
+        Surface {
+            GroupRow(
+                groups = listOf(
+                    SubGroupListModel(
+                        uid = "1",
+                        name = "Device is locked",
+                        icon = ComposeIconInfo.Vector(Icons.Outlined.Lock),
+                    ),
                 ),
-            ),
-        )
+                enabled = false,
+            )
+        }
     }
 }
 

@@ -175,7 +175,7 @@ class KeyMapListItemCreator(
                     icon = icon,
                 )
             } else {
-                ComposeChipModel.Error(constraint.uid, text, error)
+                ComposeChipModel.Error(constraint.uid, text, error, error.isFixable)
             }
 
             yield(chip)

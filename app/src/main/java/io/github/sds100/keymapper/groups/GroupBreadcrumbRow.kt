@@ -23,13 +23,15 @@ fun GroupBreadcrumbRow(
     modifier: Modifier = Modifier,
     groups: List<SubGroupListModel>,
     onGroupClick: (String?) -> Unit,
+    enabled: Boolean = true,
 ) {
     Row(modifier = modifier) {
-        val color = LocalContentColor.current.copy(alpha = 0.6f)
+        val color = LocalContentColor.current.copy(alpha = 0.7f)
         Breadcrumb(
             text = stringResource(R.string.home_groups_breadcrumb_home),
             onClick = { onGroupClick(null) },
             color = color,
+            enabled = enabled,
         )
 
         for ((index, group) in groups.withIndex()) {
@@ -43,6 +45,7 @@ fun GroupBreadcrumbRow(
                 } else {
                     color
                 },
+                enabled = enabled,
             )
         }
     }
@@ -54,6 +57,7 @@ private fun Breadcrumb(
     text: String,
     color: Color,
     onClick: () -> Unit,
+    enabled: Boolean,
 ) {
     CompositionLocalProvider(
         LocalMinimumInteractiveComponentSize provides 16.dp,
@@ -63,6 +67,7 @@ private fun Breadcrumb(
             onClick = onClick,
             shape = MaterialTheme.shapes.small,
             color = Color.Transparent,
+            enabled = enabled,
         ) {
             Text(
                 modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp),

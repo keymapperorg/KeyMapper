@@ -193,6 +193,7 @@ fun HomeKeyMapListScreen(
                 onNewConstraintClick = viewModel::onNewGroupConstraintClick,
                 onRemoveConstraintClick = viewModel::onRemoveGroupConstraintClick,
                 onConstraintModeChanged = viewModel::onGroupConstraintModeChanged,
+                onFixConstraintClick = viewModel::onFixClick,
             )
         },
         selectionBottomSheet = {

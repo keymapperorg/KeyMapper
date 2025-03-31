@@ -47,6 +47,8 @@ fun GroupConstraintRow(
     constraints: List<ComposeChipModel>,
     onNewConstraintClick: () -> Unit = {},
     onRemoveConstraintClick: (String) -> Unit = {},
+    onFixConstraintClick: (Error) -> Unit = {},
+    enabled: Boolean = true,
 ) {
     FlowRow(
         modifier.verticalScroll(rememberScrollState()),
@@ -56,53 +58,58 @@ fun GroupConstraintRow(
         NewConstraintButton(
             onClick = onNewConstraintClick,
             showText = constraints.isEmpty(),
+            enabled = enabled,
         )
 
         for (constraint in constraints) {
-            val contentColor = when (constraint) {
-                is ComposeChipModel.Error -> MaterialTheme.colorScheme.onErrorContainer
-                is ComposeChipModel.Normal -> MaterialTheme.colorScheme.onSurface
-            }
-            CompositionLocalProvider(LocalContentColor provides contentColor) {
-                ConstraintButton(
-                    text = constraint.text,
-                    isError = constraint is ComposeChipModel.Error,
-                    onRemoveClick = { onRemoveConstraintClick(constraint.id) },
-                    icon = {
-                        when (constraint) {
-                            is ComposeChipModel.Normal -> {
-                                if (constraint.icon is ComposeIconInfo.Vector) {
-                                    Icon(
-                                        modifier = Modifier
-                                            .size(20.dp)
-                                            .padding(end = 8.dp),
-                                        imageVector = constraint.icon.imageVector,
-                                        contentDescription = null,
-                                    )
-                                } else if (constraint.icon is ComposeIconInfo.Drawable) {
-                                    Icon(
-                                        modifier = Modifier
-                                            .size(20.dp)
-                                            .padding(end = 8.dp),
-                                        painter = rememberDrawablePainter(constraint.icon.drawable),
-                                        contentDescription = null,
-                                        tint = Color.Unspecified,
-                                    )
-                                }
-                            }
+            when (constraint) {
+                is ComposeChipModel.Normal ->
+                    CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
+                        ConstraintButton(
+                            text = constraint.text,
+                            onRemoveClick = { onRemoveConstraintClick(constraint.id) },
+                            // Only allow clicking on error chips
+                            enabled = enabled,
+                            icon = {
+                                when (constraint) {
+                                    is ComposeChipModel.Normal -> {
+                                        if (constraint.icon is ComposeIconInfo.Vector) {
+                                            Icon(
+                                                modifier = Modifier
+                                                    .size(20.dp)
+                                                    .padding(end = 8.dp),
+                                                imageVector = constraint.icon.imageVector,
+                                                contentDescription = null,
+                                            )
+                                        } else if (constraint.icon is ComposeIconInfo.Drawable) {
+                                            Icon(
+                                                modifier = Modifier
+                                                    .size(20.dp)
+                                                    .padding(end = 8.dp),
+                                                painter = rememberDrawablePainter(constraint.icon.drawable),
+                                                contentDescription = null,
+                                                tint = Color.Unspecified,
+                                            )
+                                        }
+                                    }
 
-                            is ComposeChipModel.Error -> {
-                                Icon(
-                                    modifier = Modifier
-                                        .size(20.dp)
-                                        .padding(end = 8.dp),
-                                    imageVector = Icons.Rounded.ErrorOutline,
-                                    contentDescription = null,
-                                )
-                            }
-                        }
-                    },
-                )
+                                    is ComposeChipModel.Error -> {
+                                    }
+                                }
+                            },
+                        )
+                    }
+
+                is ComposeChipModel.Error ->
+                    CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onErrorContainer) {
+                        ConstraintErrorButton(
+                            text = constraint.text,
+                            onClick = { onFixConstraintClick(constraint.error) },
+                            onRemoveClick = { onRemoveConstraintClick(constraint.id) },
+                            // Only allow clicking on error chips
+                            enabled = enabled,
+                        )
+                    }
             }
         }
     }
@@ -113,6 +120,7 @@ private fun NewConstraintButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
     showText: Boolean = true,
+    enabled: Boolean,
 ) {
     CompositionLocalProvider(
         LocalMinimumInteractiveComponentSize provides 16.dp,
@@ -123,6 +131,7 @@ private fun NewConstraintButton(
             shape = MaterialTheme.shapes.small,
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurfaceVariant.copy(0.2f)),
             color = Color.Transparent,
+            enabled = enabled,
         ) {
             Row(
                 modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp),
@@ -152,21 +161,15 @@ private fun ConstraintButton(
     text: String,
     icon: @Composable () -> Unit,
     onRemoveClick: () -> Unit = {},
-    isError: Boolean,
+    enabled: Boolean,
 ) {
     CompositionLocalProvider(
         LocalMinimumInteractiveComponentSize provides 16.dp,
     ) {
-        val color = if (isError) {
-            MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.8f)
-        } else {
-            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)
-        }
-
         Surface(
             modifier = modifier.height(28.dp),
             shape = MaterialTheme.shapes.small,
-            color = color,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f),
         ) {
             Row(
                 modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp),
@@ -182,7 +185,64 @@ private fun ConstraintButton(
 
                 Spacer(modifier = Modifier.width(4.dp))
 
-                IconButton(modifier = Modifier.size(16.dp), onClick = onRemoveClick) {
+                IconButton(
+                    modifier = Modifier.size(16.dp),
+                    onClick = onRemoveClick,
+                    enabled = enabled,
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Close,
+                        contentDescription = stringResource(R.string.home_group_delete_constraint_button),
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ConstraintErrorButton(
+    modifier: Modifier = Modifier,
+    text: String,
+    onClick: () -> Unit,
+    onRemoveClick: () -> Unit = {},
+    enabled: Boolean,
+) {
+    CompositionLocalProvider(
+        LocalMinimumInteractiveComponentSize provides 16.dp,
+    ) {
+        Surface(
+            modifier = modifier.height(28.dp),
+            shape = MaterialTheme.shapes.small,
+            color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.8f),
+            onClick = onClick,
+            enabled = enabled,
+        ) {
+            Row(
+                modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    modifier = Modifier
+                        .size(20.dp)
+                        .padding(end = 8.dp),
+                    imageVector = Icons.Rounded.ErrorOutline,
+                    contentDescription = null,
+                )
+
+                Text(
+                    text = text,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.titleSmall,
+                )
+
+                Spacer(modifier = Modifier.width(4.dp))
+
+                IconButton(
+                    modifier = Modifier.size(16.dp),
+                    onClick = onRemoveClick,
+                    enabled = enabled,
+                ) {
                     Icon(
                         imageVector = Icons.Rounded.Close,
                         contentDescription = stringResource(R.string.home_group_delete_constraint_button),

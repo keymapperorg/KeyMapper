@@ -54,7 +54,6 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
@@ -136,10 +135,13 @@ fun KeyMapAppBar(
     onNewConstraintClick: () -> Unit = {},
     onRemoveConstraintClick: (String) -> Unit = {},
     onConstraintModeChanged: (ConstraintMode) -> Unit = {},
+    onFixConstraintClick: (Error) -> Unit = {},
 ) {
     BackHandler(onBack = onBackClick)
 
-    AnimatedContent(state) { state ->
+    // Use the class as the content key so the content is animated if the data inside the
+    // same state class changes.
+    AnimatedContent(state, contentKey = { it::class }) { state ->
         when (state) {
             is KeyMapAppBarState.RootGroup -> RootGroupAppBar(
                 modifier = modifier,
@@ -177,6 +179,10 @@ fun KeyMapAppBar(
                 var error: String? by rememberSaveable { mutableStateOf(null) }
 
                 var newName by remember { mutableStateOf(TextFieldValue(state.groupName)) }
+
+                LaunchedEffect(state.groupName) {
+                    newName = TextFieldValue(state.groupName)
+                }
 
                 var showDeleteGroupDialog by remember { mutableStateOf(false) }
 
@@ -222,6 +228,7 @@ fun KeyMapAppBar(
                     onNewConstraintClick = onNewConstraintClick,
                     onRemoveConstraintClick = onRemoveConstraintClick,
                     onConstraintModeChanged = onConstraintModeChanged,
+                    onFixConstraintClick = onFixConstraintClick,
                     actions = {
                         AnimatedVisibility(!isEditingGroupName) {
                             AppBarActions(
@@ -356,58 +363,55 @@ private fun ChildGroupAppBar(
     onNewConstraintClick: () -> Unit = {},
     onRemoveConstraintClick: (String) -> Unit = {},
     onConstraintModeChanged: (ConstraintMode) -> Unit = {},
+    onFixConstraintClick: (Error) -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
 ) {
     // Make custom top app bar because the height can not be set to fix the text field error in.
-    Surface(
-        modifier = modifier,
-        color = MaterialTheme.colorScheme.primaryContainer,
-        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-    ) {
-        Column {
-            Row(
-                Modifier
-                    .statusBarsPadding()
-                    .fillMaxWidth()
-                    .heightIn(min = 48.dp)
-                    .padding(vertical = 8.dp)
-                    .height(intrinsicSize = IntrinsicSize.Min),
-                verticalAlignment = Alignment.Top,
-            ) {
-                IconButton(onClick = onBackClick) {
-                    Icon(
-                        Icons.AutoMirrored.Rounded.ArrowBack,
-                        contentDescription = stringResource(R.string.home_app_bar_pop_group),
+    Column {
+        Surface(
+            modifier = modifier,
+            color = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        ) {
+            Column {
+                Row(
+                    Modifier
+                        .statusBarsPadding()
+                        .fillMaxWidth()
+                        .heightIn(min = 48.dp)
+                        .padding(vertical = 8.dp)
+                        .height(intrinsicSize = IntrinsicSize.Min),
+                    verticalAlignment = Alignment.Top,
+                ) {
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            Icons.AutoMirrored.Rounded.ArrowBack,
+                            contentDescription = stringResource(R.string.home_app_bar_pop_group),
+                        )
+                    }
+
+                    GroupNameRow(
+                        modifier = Modifier.weight(1f),
+                        value = groupName,
+                        onValueChange = onValueChange,
+                        placeholder = placeholder,
+                        onRenameClick = onRenameClick,
+                        error = error,
+                        isEditing = isEditingGroupName,
+                        onEditClick = onEditClick,
                     )
+
+                    AnimatedVisibility(visible = !isEditingGroupName) {
+                        actions()
+                    }
                 }
 
-                Spacer(Modifier.width(8.dp))
-
-                Spacer(Modifier.width(8.dp))
-
-                GroupNameRow(
-                    modifier = Modifier.weight(1f),
-                    value = groupName,
-                    onValueChange = onValueChange,
-                    placeholder = placeholder,
-                    onRenameClick = onRenameClick,
-                    error = error,
-                    isEditing = isEditingGroupName,
-                    onEditClick = onEditClick,
-                )
-
-                AnimatedVisibility(visible = !isEditingGroupName) {
-                    actions()
-                }
-            }
-
-            AnimatedVisibility(!isEditingGroupName) {
                 Column {
-                    Text(
-                        modifier = Modifier.padding(horizontal = 8.dp),
-                        text = stringResource(R.string.home_group_constraints_title),
-                        style = MaterialTheme.typography.titleSmall,
-                    )
+                    //                    Text(
+                    //                        modifier = Modifier.padding(horizontal = 8.dp),
+                    //                        text = stringResource(R.string.home_group_constraints_title),
+                    //                        style = MaterialTheme.typography.titleSmall,
+                    //                    )
 
                     // TODO constraint mode
                     GroupConstraintRow(
@@ -415,36 +419,41 @@ private fun ChildGroupAppBar(
                             .padding(8.dp)
                             .fillMaxWidth(),
                         constraints = constraints,
+                        onFixConstraintClick = onFixConstraintClick,
                         onNewConstraintClick = onNewConstraintClick,
                         onRemoveConstraintClick = onRemoveConstraintClick,
-                    )
-
-                    HorizontalDivider()
-
-                    GroupRow(
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .fillMaxWidth(),
-                        groups = subGroups,
-                        onNewGroupClick = onNewGroupClick,
-                        onGroupClick = onGroupClick,
-                    )
-
-                    val scrollState = rememberScrollState()
-
-                    LaunchedEffect(parentGroups) {
-                        scrollState.animateScrollTo(scrollState.maxValue)
-                    }
-
-                    GroupBreadcrumbRow(
-                        modifier = Modifier
-                            .horizontalScroll(scrollState)
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                        groups = parentGroups,
-                        onGroupClick = onGroupClick,
+                        enabled = !isEditingGroupName,
                     )
                 }
+            }
+        }
+
+        Surface {
+            Column {
+                GroupRow(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth(),
+                    groups = subGroups,
+                    onNewGroupClick = onNewGroupClick,
+                    onGroupClick = onGroupClick,
+                    enabled = !isEditingGroupName,
+                )
+
+                val scrollState = rememberScrollState()
+
+                LaunchedEffect(parentGroups) {
+                    scrollState.animateScrollTo(scrollState.maxValue)
+                }
+
+                GroupBreadcrumbRow(
+                    modifier = Modifier
+                        .horizontalScroll(scrollState)
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    groups = parentGroups,
+                    onGroupClick = onGroupClick,
+                )
             }
         }
     }
