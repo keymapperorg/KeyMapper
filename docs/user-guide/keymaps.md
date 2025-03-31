@@ -69,37 +69,36 @@ type above the trigger mode buttons as shown in the image at the top of this Tri
 
 These triggers can be purchased so that the Key Mapper project has a little financial support and the developer is able to invest time maintaining and working on the project. You can see the list of advanced triggers below by tapping 'advanced triggers' on the trigger page.
 
-![](../images/advanced-triggers-paywall.png)
+![](../images/advanced-triggers-paywall.png){ width="200" }
 
-### Assistant trigger
+### Floating buttons
 
-This trigger allows you to remap the various ways that your devices trigger the 'assistant' such as Google Assistant, Bixby, Alexa etc.
+Read about floating buttons [here](floating-buttons.md).
 
-There are 3 assistant options you can choose:
+### Side key & Assistant trigger
 
-- **Device assistant**: This is the assistant usually triggered from a long press of a power button or a dedicated button. 
-- **Voice assistant**: This is the assistant launched from the hands-free voice button on keyboards/headsets. 
-- **Any assistant**: This will trigger the key map when any of the above are triggered.
+This trigger allows you to remap the various ways that your device can trigger the side key or assistant.
+
+!!! danger
+    Key Mapper can not walk you through setting this trigger up because the steps are unique to every device and Android skin. **You must read the instructions below.**
+
+There are 2 options you can choose to change how the trigger works.
+
+- **Side key/power button**: The key map will be triggered whenever the "Key Mapper: Side key" app is launched. Read more in the next section on how to set this up on some devices.
+- **Voice assistant**: This is the assistant launched from the hands-free voice button on keyboards/headsets.
 
 !!! note
     It is not possible to create long-press key maps with this trigger! But you can do double press. You also can not use multiple assistant triggers in a parallel trigger because there is no way to detect them being pressed at exactly the same time.
 
-### Setting up
-
-There are multiple ways of triggering the assistant on different devices.
-
 **Long press power button, Pixel squeeze**
 
-This works on most Android devices. Android devices now have the option for remapping a long press of the power button to the assistant app. Older Pixels, such as the Pixel 2, also had a feature called "Active Edge" that allowed you to _squeeze_ the bottom half of the phone to trigger the assistant. If you select Key Mapper as the 'device assistant' app then your key map will be triggered with both of these methods.
+Most stock Android devices have this option. In your settings app you should have the option to remap a long press of the power button to the assistant app. Older Pixels, such as the Pixel 2, also have a feature called "Active Edge" that allowed you to _squeeze_ the bottom half of the phone to trigger the assistant. If you select Key Mapper as the default 'digital assistant' app then your key map will be triggered with both of these methods.
 
-You can set up the long-press of the power button by going to Android Settings :material-arrow-right-thin: System :material-arrow-right-thin: Gestures :material-arrow-right-thin: Press and hold power button. Then choose the digital assistant instead of showing power menu when you long press the power button. Key Mapper will prompt you to select it as the default digital assistant app.
+You can set up the long-press of the power button by going to Android Settings :material-arrow-right-thin: System :material-arrow-right-thin: Gestures :material-arrow-right-thin: Press and hold power button. Then choose the digital assistant instead of showing the power menu when you long press the power button.
 
-**Bixby button**
+**Samsung side key/Bixby button**
 
-This *should* work on Samsung devices that have a dedicated Bixby button but also devices that have the option of remapping the power button to another app when you double press it. You can use the assistant trigger for double pressing the Bixby or power button by picking the 'Assistant trigger' app/activity that shows in your list of apps.
-
-!!! note
-    The developer does not have a Samsung device with a Bixby button so there is no guarantee that it works. If it does, please let the developer know so we can be more confident about support in the future 😄.
+This *should* work on Samsung devices that have a dedicated side key button but also devices that have the option of remapping the power button to another app when you long or double press it. You can use the assistant trigger for double pressing the Bixby or power button by picking the 'Key Mapper: Side key' app that shows in your list of apps.
 
 **Voice assistant button on keyboards and Bluetooth headphones**
 
