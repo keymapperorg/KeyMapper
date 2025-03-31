@@ -20,6 +20,7 @@ interface GroupDao {
         const val KEY_CONSTRAINTS = "constraints"
         const val KEY_CONSTRAINT_MODE = "constraint_mode"
         const val KEY_PARENT_UID = "parent_uid"
+        const val KEY_LAST_OPENED_DATE = "last_opened_date"
     }
 
     @Query("SELECT * FROM $TABLE_NAME")
@@ -54,4 +55,7 @@ interface GroupDao {
 
     @Query("DELETE FROM $TABLE_NAME WHERE $KEY_UID IN (:uid)")
     suspend fun deleteByUid(vararg uid: String)
+
+    @Query("UPDATE $TABLE_NAME SET $KEY_LAST_OPENED_DATE = (:timestamp) WHERE $KEY_UID IS (:groupUid)")
+    suspend fun setLastOpenedDate(groupUid: String, timestamp: Long)
 }

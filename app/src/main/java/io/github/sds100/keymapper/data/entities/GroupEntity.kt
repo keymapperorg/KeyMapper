@@ -8,6 +8,7 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.github.salomonbrys.kotson.byArray
 import com.github.salomonbrys.kotson.byInt
+import com.github.salomonbrys.kotson.byNullableLong
 import com.github.salomonbrys.kotson.byNullableString
 import com.github.salomonbrys.kotson.byString
 import com.github.salomonbrys.kotson.jsonDeserializer
@@ -51,6 +52,10 @@ data class GroupEntity(
     @SerializedName(NAME_PARENT_UID)
     val parentUid: String?,
 
+    @ColumnInfo(name = GroupDao.KEY_LAST_OPENED_DATE)
+    @SerializedName(NAME_LAST_OPENED_DATE)
+    val lastOpenedDate: Long?,
+
 ) : Parcelable {
     companion object {
         // DON'T CHANGE THESE. Used for JSON serialization and parsing.
@@ -59,6 +64,7 @@ data class GroupEntity(
         const val NAME_CONSTRAINTS = "constraints"
         const val NAME_CONSTRAINT_MODE = "constraint_mode"
         const val NAME_PARENT_UID = "parent_uid"
+        const val NAME_LAST_OPENED_DATE = "last_opened_date"
 
         val DESERIALIZER = jsonDeserializer {
             val uid by it.json.byString(NAME_UID)
@@ -69,8 +75,9 @@ data class GroupEntity(
 
             val constraintMode by it.json.byInt(NAME_CONSTRAINT_MODE)
             val parentUid by it.json.byNullableString(NAME_PARENT_UID)
+            val lastOpenedDate by it.json.byNullableLong(NAME_LAST_OPENED_DATE)
 
-            GroupEntity(uid, name, constraintList, constraintMode, parentUid)
+            GroupEntity(uid, name, constraintList, constraintMode, parentUid, lastOpenedDate)
         }
     }
 }

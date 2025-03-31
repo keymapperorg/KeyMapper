@@ -462,17 +462,21 @@ class BackupManagerImpl(
                     .toSet()
                     .also { groupUids.addAll(it) }
 
+                val currentTime = System.currentTimeMillis()
+
                 for (group in backupContent.groups) {
-                    var movedGroup = group
+                    // Set the last opened date to now so that the imported group
+                    // shows as the most recent.
+                    var modifiedGroup = group.copy(lastOpenedDate = currentTime)
 
                     // If the group's parent wasn't backed up or doesn't exist
                     // then set it the parent to the root group
                     if (!groupUids.contains(group.parentUid)) {
-                        movedGroup = movedGroup.copy(parentUid = null)
+                        modifiedGroup = modifiedGroup.copy(parentUid = null)
                     }
 
                     RepositoryUtils.saveUniqueName(
-                        movedGroup,
+                        modifiedGroup,
                         saveBlock = { groupRepository.insert(it) },
                         renameBlock = { entity, suffix ->
                             entity.copy(name = "${entity.name} $suffix")

@@ -27,6 +27,7 @@ interface GroupRepository {
     suspend fun insert(groupEntity: GroupEntity)
     suspend fun update(groupEntity: GroupEntity)
     fun delete(uid: String)
+    suspend fun setLastOpenedDate(groupUid: String, timestamp: Long)
 }
 
 class RoomGroupRepository(
@@ -79,6 +80,12 @@ class RoomGroupRepository(
             withContext(dispatchers.io()) {
                 dao.deleteByUid(uid)
             }
+        }
+    }
+
+    override suspend fun setLastOpenedDate(groupUid: String, timestamp: Long) {
+        withContext(dispatchers.io()) {
+            dao.setLastOpenedDate(groupUid, timestamp)
         }
     }
 }

@@ -55,7 +55,9 @@ class ListKeyMapsUseCaseImpl(
     private val group: Flow<GroupWithSubGroups> = groupUid.flatMapLatest { groupUid ->
         if (groupUid == null) {
             groupRepository.getGroupsByParent(null).map { subGroupEntities ->
-                val subGroups = subGroupEntities.map(GroupEntityMapper::fromEntity)
+                val subGroups = subGroupEntities
+                    .map(GroupEntityMapper::fromEntity)
+                    .sortedByDescending { it.lastOpenedDate }
                 GroupWithSubGroups(group = null, subGroups = subGroups)
             }
         } else {
@@ -105,7 +107,11 @@ class ListKeyMapsUseCaseImpl(
 
     override suspend fun newGroup() {
         val defaultName = resourceProvider.getString(R.string.default_group_name)
-        val group = GroupEntity(parentUid = groupUid.value, name = defaultName)
+        val group = GroupEntity(
+            parentUid = groupUid.value,
+            name = defaultName,
+            lastOpenedDate = System.currentTimeMillis(),
+        )
 
         ensureUniqueName(group) {
             groupRepository.insert(it)
@@ -177,6 +183,8 @@ class ListKeyMapsUseCaseImpl(
                     list.plus(group.uid)
                 }
             }
+
+            groupRepository.setLastOpenedDate(group.uid, System.currentTimeMillis())
         }
     }
 

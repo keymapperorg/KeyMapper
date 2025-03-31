@@ -38,6 +38,7 @@ import io.github.sds100.keymapper.data.migration.Migration5To6
 import io.github.sds100.keymapper.data.migration.Migration6To7
 import io.github.sds100.keymapper.data.migration.Migration8To9
 import io.github.sds100.keymapper.data.migration.Migration9To10
+import io.github.sds100.keymapper.data.migration.fingerprintmaps.AutoMigration16To17
 
 /**
  * Created by sds100 on 24/01/2020.
@@ -51,6 +52,8 @@ import io.github.sds100.keymapper.data.migration.Migration9To10
         AutoMigration(from = 14, to = 15, spec = AutoMigration14To15::class),
         // This deletes the folder name column from key maps
         AutoMigration(from = 15, to = 16, spec = AutoMigration15To16::class),
+        // This adds last opened timestamp to groups
+        AutoMigration(from = 16, to = 17, spec = AutoMigration16To17::class),
     ],
 )
 @TypeConverters(
@@ -62,7 +65,7 @@ import io.github.sds100.keymapper.data.migration.Migration9To10
 abstract class AppDatabase : RoomDatabase() {
     companion object {
         const val DATABASE_NAME = "key_map_database"
-        const val DATABASE_VERSION = 16
+        const val DATABASE_VERSION = 17
 
         val MIGRATION_1_2 = object : Migration(1, 2) {
 

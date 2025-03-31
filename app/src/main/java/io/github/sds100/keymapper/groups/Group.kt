@@ -10,6 +10,7 @@ data class Group(
     val name: String,
     val constraintState: ConstraintState,
     val parentUid: String?,
+    val lastOpenedDate: Long,
 )
 
 object GroupEntityMapper {
@@ -24,6 +25,7 @@ object GroupEntityMapper {
             name = entity.name,
             constraintState = ConstraintState(constraintList, constraintMode),
             parentUid = entity.parentUid,
+            lastOpenedDate = entity.lastOpenedDate ?: System.currentTimeMillis(),
         )
     }
 
@@ -36,6 +38,7 @@ object GroupEntityMapper {
             },
             constraintMode = ConstraintModeEntityMapper.toEntity(group.constraintState.mode),
             parentUid = group.parentUid,
+            lastOpenedDate = group.lastOpenedDate,
         )
     }
 }
