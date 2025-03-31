@@ -35,8 +35,8 @@ class TestConstraintSnapshot(
             is Constraint.AppNotPlayingMedia ->
                 appsPlayingMedia.none { it == constraint.packageName }
 
-            Constraint.MediaPlaying -> appsPlayingMedia.isNotEmpty()
-            Constraint.NoMediaPlaying -> appsPlayingMedia.isEmpty()
+            is Constraint.MediaPlaying -> appsPlayingMedia.isNotEmpty()
+            is Constraint.NoMediaPlaying -> appsPlayingMedia.isEmpty()
             is Constraint.BtDeviceConnected -> {
                 connectedBluetoothDevices.any { it.address == constraint.bluetoothAddress }
             }
@@ -46,14 +46,14 @@ class TestConstraintSnapshot(
             }
 
             is Constraint.OrientationCustom -> orientation == constraint.orientation
-            Constraint.OrientationLandscape ->
+            is Constraint.OrientationLandscape ->
                 orientation == Orientation.ORIENTATION_90 || orientation == Orientation.ORIENTATION_270
 
-            Constraint.OrientationPortrait ->
+            is Constraint.OrientationPortrait ->
                 orientation == Orientation.ORIENTATION_0 || orientation == Orientation.ORIENTATION_180
 
-            Constraint.ScreenOff -> !isScreenOn
-            Constraint.ScreenOn -> isScreenOn
+            is Constraint.ScreenOff -> !isScreenOn
+            is Constraint.ScreenOn -> isScreenOn
             is Constraint.FlashlightOff -> when (constraint.lens) {
                 CameraLens.BACK -> !isBackFlashlightOn
                 CameraLens.FRONT -> !isFrontFlashlightOn
@@ -81,19 +81,19 @@ class TestConstraintSnapshot(
                     connectedWifiSSID != constraint.ssid
                 }
 
-            Constraint.WifiOff -> !isWifiEnabled
-            Constraint.WifiOn -> isWifiEnabled
+            is Constraint.WifiOff -> !isWifiEnabled
+            is Constraint.WifiOn -> isWifiEnabled
             is Constraint.ImeChosen -> chosenImeId == constraint.imeId
             is Constraint.ImeNotChosen -> chosenImeId != constraint.imeId
-            Constraint.DeviceIsLocked -> isLocked
-            Constraint.DeviceIsUnlocked -> !isLocked
-            Constraint.InPhoneCall -> callState == CallState.IN_PHONE_CALL
-            Constraint.NotInPhoneCall -> callState == CallState.NONE
-            Constraint.PhoneRinging -> callState == CallState.RINGING
-            Constraint.Charging -> isCharging
-            Constraint.Discharging -> !isCharging
-            Constraint.LockScreenShowing -> isLockscreenShowing
-            Constraint.LockScreenNotShowing -> !isLockscreenShowing
+            is Constraint.DeviceIsLocked -> isLocked
+            is Constraint.DeviceIsUnlocked -> !isLocked
+            is Constraint.InPhoneCall -> callState == CallState.IN_PHONE_CALL
+            is Constraint.NotInPhoneCall -> callState == CallState.NONE
+            is Constraint.PhoneRinging -> callState == CallState.RINGING
+            is Constraint.Charging -> isCharging
+            is Constraint.Discharging -> !isCharging
+            is Constraint.LockScreenShowing -> isLockscreenShowing
+            is Constraint.LockScreenNotShowing -> !isLockscreenShowing
         }
 
         if (isSatisfied) {

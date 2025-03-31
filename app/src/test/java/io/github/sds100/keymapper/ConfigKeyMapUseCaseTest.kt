@@ -265,7 +265,10 @@ class ConfigKeyMapUseCaseTest {
 
         // THEN
         val keyMap = useCase.keyMap.value.dataOrNull()!!
-        assertThat(keyMap.constraintState.constraints, contains(Constraint.PhoneRinging))
+        assertThat(
+            keyMap.constraintState.constraints,
+            contains(instanceOf(Constraint.PhoneRinging::class.java)),
+        )
     }
 
     /**
@@ -283,7 +286,10 @@ class ConfigKeyMapUseCaseTest {
 
         // THEN
         val keyMap = useCase.keyMap.value.dataOrNull()!!
-        assertThat(keyMap.constraintState.constraints, contains(Constraint.InPhoneCall))
+        assertThat(
+            keyMap.constraintState.constraints,
+            contains(instanceOf(Constraint.InPhoneCall::class.java)),
+        )
     }
 
     /**

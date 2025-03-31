@@ -1,19 +1,38 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
+import android.database.sqlite.SQLiteConstraintException
+import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.backup.BackupManager
 import io.github.sds100.keymapper.backup.BackupManagerImpl
 import io.github.sds100.keymapper.backup.BackupUtils
+import io.github.sds100.keymapper.constraints.Constraint
+import io.github.sds100.keymapper.constraints.ConstraintEntityMapper
+import io.github.sds100.keymapper.constraints.ConstraintMode
+import io.github.sds100.keymapper.constraints.ConstraintModeEntityMapper
+import io.github.sds100.keymapper.data.entities.GroupEntity
 import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
+import io.github.sds100.keymapper.data.repositories.GroupRepository
+import io.github.sds100.keymapper.data.repositories.RepositoryUtils
+import io.github.sds100.keymapper.groups.Group
+import io.github.sds100.keymapper.groups.GroupEntityMapper
+import io.github.sds100.keymapper.groups.GroupWithSubGroups
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.dataOrNull
+import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 
 /**
@@ -21,27 +40,230 @@ import kotlinx.coroutines.withContext
  */
 class ListKeyMapsUseCaseImpl(
     private val keyMapRepository: KeyMapRepository,
+    private val groupRepository: GroupRepository,
     private val floatingButtonRepository: FloatingButtonRepository,
     private val fileAdapter: FileAdapter,
     private val backupManager: BackupManager,
+    private val resourceProvider: ResourceProvider,
     displayKeyMapUseCase: DisplayKeyMapUseCase,
 ) : ListKeyMapsUseCase,
     DisplayKeyMapUseCase by displayKeyMapUseCase {
+    private val groupUid = MutableStateFlow<String?>(null)
+    private val parentGroupUids = MutableStateFlow<List<String>>(emptyList())
 
-    override val keyMapList: Flow<State<List<KeyMap>>> = channelFlow {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val group: Flow<GroupWithSubGroups> = groupUid.flatMapLatest { groupUid ->
+        if (groupUid == null) {
+            groupRepository.getGroupsByParent(null).map { subGroupEntities ->
+                val subGroups = subGroupEntities.map(GroupEntityMapper::fromEntity)
+                GroupWithSubGroups(group = null, subGroups = subGroups)
+            }
+        } else {
+            groupRepository.getGroupWithSubGroups(groupUid).map { groupWithSubGroups ->
+                val group = GroupEntityMapper.fromEntity(groupWithSubGroups.group)
+                val subGroups =
+                    groupWithSubGroups.subGroups.map(GroupEntityMapper::fromEntity)
+
+                GroupWithSubGroups(group, subGroups)
+            }
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val parentGroups: Flow<List<Group>> =
+        parentGroupUids
+            .flatMapLatest { uids ->
+                groupRepository.getGroups(*uids.toTypedArray())
+                    .map { groups ->
+                        // The repository returns the objects unordered so order them by the
+                        // original UID list again.
+                        val mapped = groups.associateBy { it.uid }
+                        uids.map { GroupEntityMapper.fromEntity(mapped[it]!!) }
+                    }
+            }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override val keyMapGroup: Flow<KeyMapGroup> = channelFlow {
+        combine(group, parentGroups) { group, parentGroups ->
+            KeyMapGroup(
+                group = group.group,
+                subGroups = group.subGroups,
+                keyMaps = State.Loading,
+                parents = parentGroups,
+            )
+        }.onEach { send(it) }
+            .flatMapLatest { keyMapGroup ->
+                getKeyMapsByGroup(keyMapGroup.group?.uid).map { keyMapGroup.copy(keyMaps = it) }
+            }.collect {
+                send(it)
+            }
+    }
+
+    override fun getGroups(): Flow<List<Group>> {
+        return groupRepository.groups.map { list -> list.map(GroupEntityMapper::fromEntity) }
+    }
+
+    override suspend fun newGroup() {
+        val defaultName = resourceProvider.getString(R.string.default_group_name)
+        val group = GroupEntity(parentUid = groupUid.value, name = defaultName)
+
+        ensureUniqueName(group) {
+            groupRepository.insert(it)
+        }
+
+        groupUid.update { group.uid }
+        parentGroupUids.update { it.plus(group.uid) }
+    }
+
+    override suspend fun deleteGroup() {
+        groupUid.value?.also { groupUid ->
+            val group = groupRepository.getGroup(groupUid) ?: return
+
+            this.groupUid.value = group.parentUid
+            this.parentGroupUids.update { list ->
+                list.takeWhile { it != group.uid }
+            }
+            groupRepository.delete(groupUid)
+        }
+    }
+
+    override suspend fun renameGroup(name: String): Boolean {
+        if (name.isBlank()) {
+            return true
+        }
+
+        groupUid.value?.also { groupUid ->
+            var entity = groupRepository.getGroup(groupUid) ?: return true
+
+            entity = entity.copy(name = name.trim())
+
+            try {
+                groupRepository.update(entity)
+            } catch (_: SQLiteConstraintException) {
+                return false
+            }
+        }
+
+        return true
+    }
+
+    private suspend fun ensureUniqueName(
+        group: GroupEntity,
+        block: suspend (entity: GroupEntity) -> Unit,
+    ): GroupEntity {
+        return RepositoryUtils.saveUniqueName(
+            entity = group,
+            saveBlock = block,
+            renameBlock = { entity, suffix ->
+                entity.copy(name = "${entity.name} $suffix")
+            },
+        )
+    }
+
+    override suspend fun openGroup(uid: String?) {
+        if (uid == null) {
+            // If null then open the root group.
+            groupUid.update { null }
+            parentGroupUids.update { emptyList() }
+        } else {
+            // Check if the group exists.
+            val group = groupRepository.getGroup(uid) ?: return
+            groupUid.update { group.uid }
+
+            parentGroupUids.update { list ->
+                if (list.contains(group.uid)) {
+                    list.takeWhile { it != uid }.plus(group.uid)
+                } else {
+                    list.plus(group.uid)
+                }
+            }
+        }
+    }
+
+    override suspend fun popGroup() {
+        val currentGroupUid = groupUid.value ?: return
+        val currentGroup = groupRepository.getGroup(currentGroupUid)
+
+        // If stuck in a non existent group, or the parent is null then pop to the root.
+        if (currentGroup?.parentUid == null) {
+            groupUid.value = null
+            parentGroupUids.update { emptyList() }
+        } else {
+            // Check if the group exists.
+            val group = groupRepository.getGroup(currentGroup.parentUid) ?: return
+            groupUid.update { group.uid }
+            parentGroupUids.update { list -> list.dropLast(1) }
+        }
+    }
+
+    override suspend fun addGroupConstraint(constraint: Constraint) {
+        groupUid.value?.also { groupUid ->
+            val constraintEntity = ConstraintEntityMapper.toEntity(constraint)
+            var groupEntity = groupRepository.getGroup(groupUid) ?: return
+
+            groupEntity = groupEntity.copy(
+                constraintList = groupEntity.constraintList.plus(constraintEntity),
+            )
+
+            try {
+                groupRepository.update(groupEntity)
+            } catch (_: SQLiteConstraintException) {
+                return
+            }
+        }
+    }
+
+    override suspend fun setGroupConstraintMode(mode: ConstraintMode) {
+        groupUid.value?.also { groupUid ->
+            val group = groupRepository.getGroup(groupUid) ?: return
+
+            val groupEntity = group.copy(constraintMode = ConstraintModeEntityMapper.toEntity(mode))
+
+            try {
+                groupRepository.update(groupEntity)
+            } catch (_: SQLiteConstraintException) {
+                return
+            }
+        }
+    }
+
+    override suspend fun removeGroupConstraint(constraintUid: String) {
+        groupUid.value?.also { groupUid ->
+            val groupEntity = groupRepository.getGroup(groupUid) ?: return
+            var group = GroupEntityMapper.fromEntity(groupEntity)
+
+            val constraints = group.constraintState.constraints
+                .filterNot { it.uid == constraintUid }
+                .toSet()
+
+            group =
+                group.copy(constraintState = group.constraintState.copy(constraints = constraints))
+
+            try {
+                groupRepository.update(GroupEntityMapper.toEntity(group))
+            } catch (_: SQLiteConstraintException) {
+                return
+            }
+        }
+    }
+
+    override fun moveKeyMapsToGroup(groupUid: String?, vararg keyMapUids: String) {
+        keyMapRepository.moveToGroup(groupUid, *keyMapUids)
+    }
+
+    private fun getKeyMapsByGroup(groupUid: String?): Flow<State<List<KeyMap>>> = channelFlow {
         send(State.Loading)
 
         combine(
-            keyMapRepository.keyMapList,
+            keyMapRepository.getByGroup(groupUid),
             floatingButtonRepository.buttonsList,
-        ) { keyMapListState, buttonListState ->
-            Pair(keyMapListState, buttonListState)
-        }.collectLatest { (keyMapListState, buttonListState) ->
-            if (keyMapListState is State.Loading || buttonListState is State.Loading) {
+        ) { keyMapList, buttonListState ->
+            Pair(keyMapList, buttonListState)
+        }.collectLatest { (keyMapList, buttonListState) ->
+            if (buttonListState is State.Loading) {
                 send(State.Loading)
             }
 
-            val keyMapList = keyMapListState.dataOrNull() ?: return@collectLatest
             val buttonList = buttonListState.dataOrNull() ?: return@collectLatest
 
             val keyMaps = withContext(Dispatchers.Default) {
@@ -86,7 +308,18 @@ class ListKeyMapsUseCaseImpl(
 }
 
 interface ListKeyMapsUseCase : DisplayKeyMapUseCase {
-    val keyMapList: Flow<State<List<KeyMap>>>
+    val keyMapGroup: Flow<KeyMapGroup>
+
+    suspend fun newGroup()
+    suspend fun openGroup(uid: String?)
+    suspend fun popGroup()
+    suspend fun deleteGroup()
+    suspend fun renameGroup(name: String): Boolean
+    suspend fun addGroupConstraint(constraint: Constraint)
+    suspend fun removeGroupConstraint(constraintUid: String)
+    suspend fun setGroupConstraintMode(mode: ConstraintMode)
+    fun getGroups(): Flow<List<Group>>
+    fun moveKeyMapsToGroup(groupUid: String?, vararg keyMapUids: String)
 
     fun deleteKeyMap(vararg uid: String)
     fun enableKeyMap(vararg uid: String)

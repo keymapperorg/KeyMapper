@@ -10,7 +10,7 @@ import io.github.sds100.keymapper.constraints.GetConstraintErrorUseCaseImpl
 import io.github.sds100.keymapper.floating.ListFloatingLayoutsUseCase
 import io.github.sds100.keymapper.floating.ListFloatingLayoutsUseCaseImpl
 import io.github.sds100.keymapper.mappings.FingerprintGesturesSupportedUseCaseImpl
-import io.github.sds100.keymapper.mappings.PauseMappingsUseCaseImpl
+import io.github.sds100.keymapper.mappings.PauseKeyMapsUseCaseImpl
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapUseCase
 import io.github.sds100.keymapper.mappings.keymaps.CreateKeyMapShortcutUseCaseImpl
 import io.github.sds100.keymapper.mappings.keymaps.DisplayKeyMapUseCase
@@ -97,7 +97,7 @@ object UseCases {
 
     fun fingerprintGesturesSupported(ctx: Context) = FingerprintGesturesSupportedUseCaseImpl(ServiceLocator.settingsRepository(ctx))
 
-    fun pauseMappings(ctx: Context) = PauseMappingsUseCaseImpl(
+    fun pauseKeyMaps(ctx: Context) = PauseKeyMapsUseCaseImpl(
         ServiceLocator.settingsRepository(ctx),
         ServiceLocator.mediaAdapter(ctx),
     )
@@ -172,6 +172,7 @@ object UseCases {
     ) = DetectKeyMapsUseCaseImpl(
         ServiceLocator.roomKeyMapRepository(ctx),
         ServiceLocator.floatingButtonRepository(ctx),
+        ServiceLocator.groupRepository(ctx),
         ServiceLocator.settingsRepository(ctx),
         ServiceLocator.suAdapter(ctx),
         ServiceLocator.displayAdapter(ctx),

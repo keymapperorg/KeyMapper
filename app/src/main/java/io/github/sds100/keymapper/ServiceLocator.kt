@@ -10,9 +10,11 @@ import io.github.sds100.keymapper.backup.BackupManagerImpl
 import io.github.sds100.keymapper.data.db.AppDatabase
 import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
 import io.github.sds100.keymapper.data.repositories.FloatingLayoutRepository
+import io.github.sds100.keymapper.data.repositories.GroupRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.data.repositories.RoomFloatingButtonRepository
 import io.github.sds100.keymapper.data.repositories.RoomFloatingLayoutRepository
+import io.github.sds100.keymapper.data.repositories.RoomGroupRepository
 import io.github.sds100.keymapper.data.repositories.RoomKeyMapRepository
 import io.github.sds100.keymapper.data.repositories.RoomLogRepository
 import io.github.sds100.keymapper.data.repositories.SettingsPreferenceRepository
@@ -139,6 +141,20 @@ object ServiceLocator {
     }
 
     @Volatile
+    private var groupRepository: GroupRepository? = null
+
+    fun groupRepository(context: Context): GroupRepository {
+        synchronized(this) {
+            return groupRepository ?: RoomGroupRepository(
+                database(context).groupDao(),
+                (context.applicationContext as KeyMapperApp).appCoroutineScope,
+            ).also {
+                this.groupRepository = it
+            }
+        }
+    }
+
+    @Volatile
     private var backupManager: BackupManager? = null
 
     fun backupManager(context: Context): BackupManager {
@@ -156,6 +172,7 @@ object ServiceLocator {
         settingsRepository(context),
         floatingLayoutRepository(context),
         floatingButtonRepository(context),
+        groupRepository(context),
         soundsManager(context),
     )
 

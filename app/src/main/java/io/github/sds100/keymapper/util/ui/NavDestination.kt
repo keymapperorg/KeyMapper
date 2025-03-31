@@ -103,8 +103,13 @@ sealed class NavDestination<R> {
         override val id: String = ID_ABOUT
     }
 
-    data class ConfigKeyMap(val keyMapUid: String?, val showAdvancedTriggers: Boolean = false) : NavDestination<Unit>() {
+    sealed class ConfigKeyMap : NavDestination<Unit>() {
         override val id: String = ID_CONFIG_KEY_MAP
+        abstract val showAdvancedTriggers: Boolean
+
+        data class Open(val keyMapUid: String, override val showAdvancedTriggers: Boolean = false) : ConfigKeyMap()
+
+        data class New(val groupUid: String?, override val showAdvancedTriggers: Boolean = false) : ConfigKeyMap()
     }
 
     data object ChooseFloatingLayout : NavDestination<Unit>() {

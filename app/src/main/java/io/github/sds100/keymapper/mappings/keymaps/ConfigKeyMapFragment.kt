@@ -31,11 +31,14 @@ class ConfigKeyMapFragment : Fragment() {
 
         // only load the keymap if opening this fragment for the first time
         if (savedInstanceState == null) {
-            args.keymapUid.let {
-                if (it == null) {
-                    viewModel.loadNewKeymap(args.newFloatingButtonTriggerKey)
+            args.keyMapUid.also { keyMapUid ->
+                if (keyMapUid == null) {
+                    viewModel.loadNewKeymap(
+                        args.newFloatingButtonTriggerKey,
+                        groupUid = args.groupUid,
+                    )
                 } else {
-                    viewModel.loadKeyMap(it)
+                    viewModel.loadKeyMap(keyMapUid)
                 }
             }
 

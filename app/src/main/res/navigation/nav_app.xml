@@ -32,7 +32,12 @@
         app:popEnterAnim="@anim/slide_in_left"
         app:popExitAnim="@anim/slide_out_right">
         <argument
-            android:name="keymapUid"
+            android:name="keyMapUid"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="groupUid"
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />

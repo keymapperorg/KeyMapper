@@ -8,11 +8,13 @@ import io.github.sds100.keymapper.actions.ActionErrorSnapshot
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.constraints.Constraint
+import io.github.sds100.keymapper.constraints.ConstraintMode
 import io.github.sds100.keymapper.constraints.ConstraintSnapshot
 import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.FingerprintGestureType
+import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapModel
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCase
 import io.github.sds100.keymapper.mappings.keymaps.detection.KeyMapController
 import io.github.sds100.keymapper.mappings.keymaps.trigger.FingerprintTriggerKey
@@ -39,6 +41,7 @@ import junitparams.naming.TestCaseName
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceTimeBy
@@ -124,6 +127,7 @@ class KeyMapControllerTest {
     private lateinit var performActionsUseCase: PerformActionsUseCase
     private lateinit var detectConstraintsUseCase: DetectConstraintsUseCase
     private lateinit var keyMapListFlow: MutableStateFlow<List<KeyMap>>
+    private lateinit var detectKeyMapListFlow: MutableStateFlow<List<DetectKeyMapModel>>
 
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
@@ -134,9 +138,15 @@ class KeyMapControllerTest {
     @Before
     fun init() {
         keyMapListFlow = MutableStateFlow(emptyList())
+        detectKeyMapListFlow = MutableStateFlow(emptyList())
 
         detectKeyMapsUseCase = mock {
-            on { allKeyMapList } doReturn keyMapListFlow
+            on { allKeyMapList } doReturn combine(
+                keyMapListFlow,
+                detectKeyMapListFlow,
+            ) { keyMapList, detectKeyMapList ->
+                keyMapList.map { DetectKeyMapModel(keyMap = it) }.plus(detectKeyMapList)
+            }
 
             MutableStateFlow(VIBRATION_DURATION).apply {
                 on { defaultVibrateDuration } doReturn this
@@ -189,6 +199,100 @@ class KeyMapControllerTest {
             performActionsUseCase,
             detectConstraintsUseCase,
         )
+    }
+
+    @Test
+    fun `Do not perform if one group constraint set is not satisfied`() = runTest(testDispatcher) {
+        val trigger = singleKeyTrigger(triggerKey(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN))
+        detectKeyMapListFlow.value = listOf(
+            DetectKeyMapModel(
+                keyMap = KeyMap(
+                    trigger = trigger,
+                    actionList = listOf(TEST_ACTION),
+                    constraintState = ConstraintState(
+                        constraints = setOf(Constraint.WifiOn(), Constraint.DeviceIsLocked()),
+                        mode = ConstraintMode.OR,
+                    ),
+                ),
+                groupConstraintStates = listOf(
+                    ConstraintState(
+                        constraints = setOf(
+                            Constraint.LockScreenNotShowing(),
+                            Constraint.DeviceIsLocked(),
+                        ),
+                        mode = ConstraintMode.AND,
+                    ),
+                    ConstraintState(
+                        constraints = setOf(
+                            Constraint.AppInForeground(packageName = "app"),
+                            Constraint.DeviceIsUnlocked(),
+                        ),
+                        mode = ConstraintMode.OR,
+                    ),
+                ),
+            ),
+        )
+
+        whenever(detectConstraintsUseCase.getSnapshot())
+            .thenReturn(
+                TestConstraintSnapshot(
+                    isWifiEnabled = true,
+                    isLocked = true,
+                    isLockscreenShowing = true,
+                    appInForeground = "app",
+                ),
+            )
+
+        mockTriggerKeyInput(trigger.keys[0])
+
+        verify(performActionsUseCase, never()).perform(TEST_ACTION.data)
+    }
+
+    @Test
+    fun `Perform if all group constraints and key map constraints are satisfied`() = runTest(testDispatcher) {
+        val trigger = singleKeyTrigger(triggerKey(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN))
+        detectKeyMapListFlow.value = listOf(
+            DetectKeyMapModel(
+                keyMap = KeyMap(
+                    trigger = trigger,
+                    actionList = listOf(TEST_ACTION),
+                    constraintState = ConstraintState(
+                        constraints = setOf(Constraint.WifiOn(), Constraint.DeviceIsLocked()),
+                        mode = ConstraintMode.OR,
+                    ),
+                ),
+                groupConstraintStates = listOf(
+                    ConstraintState(
+                        constraints = setOf(
+                            Constraint.LockScreenNotShowing(),
+                            Constraint.DeviceIsLocked(),
+                        ),
+                        mode = ConstraintMode.AND,
+                    ),
+                    ConstraintState(
+                        constraints = setOf(
+                            Constraint.AppInForeground(packageName = "app"),
+                            Constraint.DeviceIsUnlocked(),
+                        ),
+                        mode = ConstraintMode.OR,
+                    ),
+                ),
+            ),
+        )
+
+        whenever(detectConstraintsUseCase.getSnapshot())
+            .thenReturn(
+                TestConstraintSnapshot(
+                    isWifiEnabled = true,
+                    isLocked = true,
+                    isLockscreenShowing = false,
+                    appInForeground = "app",
+                ),
+            )
+
+        mockTriggerKeyInput(trigger.keys[0])
+
+        verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
     }
 
     /**
@@ -950,12 +1054,12 @@ class KeyMapControllerTest {
         val shortPressTrigger = singleKeyTrigger(
             triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
         )
-        val shortPressConstraints = ConstraintState(constraints = setOf(Constraint.WifiOn))
+        val shortPressConstraints = ConstraintState(constraints = setOf(Constraint.WifiOn()))
 
         val longPressTrigger = singleKeyTrigger(
             triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
         )
-        val doublePressConstraints = ConstraintState(constraints = setOf(Constraint.WifiOff))
+        val doublePressConstraints = ConstraintState(constraints = setOf(Constraint.WifiOff()))
 
         keyMapListFlow.value = listOf(
             KeyMap(
@@ -973,7 +1077,8 @@ class KeyMapControllerTest {
         )
 
         // Only the short press trigger is allowed.
-        mockConstraintSnapshot { constraint -> constraint == Constraint.WifiOn }
+        val constraintSnapshot = TestConstraintSnapshot(isWifiEnabled = true)
+        whenever(detectConstraintsUseCase.getSnapshot()).thenReturn(constraintSnapshot)
 
         mockTriggerKeyInput(shortPressTrigger.keys.first())
 
@@ -989,12 +1094,12 @@ class KeyMapControllerTest {
         val shortPressTrigger = singleKeyTrigger(
             triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
         )
-        val shortPressConstraints = ConstraintState(constraints = setOf(Constraint.WifiOn))
+        val shortPressConstraints = ConstraintState(constraints = setOf(Constraint.WifiOn()))
 
         val doublePressTrigger = singleKeyTrigger(
             triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.DOUBLE_PRESS),
         )
-        val doublePressConstraints = ConstraintState(constraints = setOf(Constraint.WifiOff))
+        val doublePressConstraints = ConstraintState(constraints = setOf(Constraint.WifiOff()))
 
         keyMapListFlow.value = listOf(
             KeyMap(
@@ -1012,7 +1117,8 @@ class KeyMapControllerTest {
         )
 
         // Only the short press trigger is allowed.
-        mockConstraintSnapshot { constraint -> constraint == Constraint.WifiOn }
+        val constraintSnapshot = TestConstraintSnapshot(isWifiEnabled = true)
+        whenever(detectConstraintsUseCase.getSnapshot()).thenReturn(constraintSnapshot)
 
         mockTriggerKeyInput(shortPressTrigger.keys.first())
 
@@ -1109,7 +1215,7 @@ class KeyMapControllerTest {
             ),
             actionList = listOf(Action(data = actionData)),
             constraintState = ConstraintState(
-                constraints = setOf(Constraint.FlashlightOn(CameraLens.BACK)),
+                constraints = setOf(Constraint.FlashlightOn(lens = CameraLens.BACK)),
             ),
         )
 
@@ -4100,12 +4206,5 @@ class KeyMapControllerTest {
             id = deviceId,
             isGameController = isGameController,
         )
-    }
-
-    private fun mockConstraintSnapshot(isSatisfiedBlock: (constraint: Constraint) -> Boolean) {
-        val snapshot = object : ConstraintSnapshot {
-            override fun isSatisfied(constraint: Constraint): Boolean = isSatisfiedBlock(constraint)
-        }
-        whenever(detectConstraintsUseCase.getSnapshot()).thenReturn(snapshot)
     }
 }

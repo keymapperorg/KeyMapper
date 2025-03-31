@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.mappings.keymaps
 import android.view.KeyEvent
 import io.github.sds100.keymapper.actions.Action
 import io.github.sds100.keymapper.actions.ActionData
-import io.github.sds100.keymapper.actions.KeymapActionEntityMapper
+import io.github.sds100.keymapper.actions.ActionEntityMapper
 import io.github.sds100.keymapper.actions.canBeHeldDown
 import io.github.sds100.keymapper.constraints.ConstraintEntityMapper
 import io.github.sds100.keymapper.constraints.ConstraintModeEntityMapper
@@ -30,6 +30,7 @@ data class KeyMap(
     val actionList: List<Action> = emptyList(),
     val constraintState: ConstraintState = ConstraintState(),
     val isEnabled: Boolean = true,
+    val groupUid: String? = null,
 ) {
 
     val showToast: Boolean
@@ -105,11 +106,11 @@ fun KeyMap.requiresImeKeyEventForwardingInPhoneCall(triggerKey: TriggerKey): Boo
 }
 
 object KeyMapEntityMapper {
-    suspend fun fromEntity(
+    fun fromEntity(
         entity: KeyMapEntity,
         floatingButtons: List<FloatingButtonEntityWithLayout>,
     ): KeyMap {
-        val actionList = entity.actionList.mapNotNull { KeymapActionEntityMapper.fromEntity(it) }
+        val actionList = entity.actionList.mapNotNull { ActionEntityMapper.fromEntity(it) }
 
         val constraintList =
             entity.constraintList.map { ConstraintEntityMapper.fromEntity(it) }.toSet()
@@ -123,11 +124,12 @@ object KeyMapEntityMapper {
             actionList = actionList,
             constraintState = ConstraintState(constraintList, constraintMode),
             isEnabled = entity.isEnabled,
+            groupUid = entity.groupUid,
         )
     }
 
     fun toEntity(keyMap: KeyMap, dbId: Long): KeyMapEntity {
-        val actionEntityList = KeymapActionEntityMapper.toEntity(keyMap)
+        val actionEntityList = ActionEntityMapper.toEntity(keyMap)
 
         return KeyMapEntity(
             id = dbId,
@@ -141,6 +143,7 @@ object KeyMapEntityMapper {
             constraintMode = ConstraintModeEntityMapper.toEntity(keyMap.constraintState.mode),
             isEnabled = keyMap.isEnabled,
             uid = keyMap.uid,
+            groupUid = keyMap.groupUid,
         )
     }
 }

@@ -1,7 +1,9 @@
 package io.github.sds100.keymapper.data.entities
 
+import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.github.salomonbrys.kotson.byArray
@@ -12,7 +14,9 @@ import com.github.salomonbrys.kotson.byObject
 import com.github.salomonbrys.kotson.byString
 import com.github.salomonbrys.kotson.jsonDeserializer
 import com.google.gson.annotations.SerializedName
+import io.github.sds100.keymapper.data.db.dao.GroupDao
 import io.github.sds100.keymapper.data.db.dao.KeyMapDao
+import kotlinx.parcelize.Parcelize
 import java.util.UUID
 
 /**
@@ -22,7 +26,16 @@ import java.util.UUID
 @Entity(
     tableName = KeyMapDao.TABLE_NAME,
     indices = [Index(value = [KeyMapDao.KEY_UID], unique = true)],
+    foreignKeys = [
+        ForeignKey(
+            entity = GroupEntity::class,
+            parentColumns = [GroupDao.KEY_UID],
+            childColumns = [KeyMapDao.KEY_GROUP_UID],
+            onDelete = ForeignKey.CASCADE,
+        ),
+    ],
 )
+@Parcelize
 data class KeyMapEntity(
     @SerializedName(NAME_ID)
     @PrimaryKey(autoGenerate = true)
@@ -51,10 +64,6 @@ data class KeyMapEntity(
     @ColumnInfo(name = KeyMapDao.KEY_FLAGS)
     val flags: Int = 0,
 
-    @SerializedName(NAME_FOLDER_NAME)
-    @ColumnInfo(name = KeyMapDao.KEY_FOLDER_NAME)
-    val folderName: String? = null,
-
     @SerializedName(NAME_IS_ENABLED)
     @ColumnInfo(name = KeyMapDao.KEY_ENABLED)
     val isEnabled: Boolean = true,
@@ -62,7 +71,11 @@ data class KeyMapEntity(
     @SerializedName(NAME_UID)
     @ColumnInfo(name = KeyMapDao.KEY_UID)
     val uid: String = UUID.randomUUID().toString(),
-) {
+
+    @SerializedName(NAME_GROUP_UID)
+    @ColumnInfo(name = KeyMapDao.KEY_GROUP_UID)
+    val groupUid: String? = null,
+) : Parcelable {
     companion object {
 
         // DON'T CHANGE THESE. Used for JSON serialization and parsing.
@@ -72,9 +85,9 @@ data class KeyMapEntity(
         const val NAME_CONSTRAINT_LIST = "constraintList"
         const val NAME_CONSTRAINT_MODE = "constraintMode"
         const val NAME_FLAGS = "flags"
-        const val NAME_FOLDER_NAME = "folderName"
         const val NAME_IS_ENABLED = "isEnabled"
         const val NAME_UID = "uid"
+        const val NAME_GROUP_UID = "group_uid"
 
         val DESERIALIZER = jsonDeserializer {
             val actionListJsonArray by it.json.byArray(NAME_ACTION_LIST)
@@ -89,20 +102,20 @@ data class KeyMapEntity(
 
             val constraintMode by it.json.byInt(NAME_CONSTRAINT_MODE)
             val flags by it.json.byInt(NAME_FLAGS)
-            val folderName by it.json.byNullableString(NAME_FOLDER_NAME)
             val isEnabled by it.json.byBool(NAME_IS_ENABLED)
             val uid by it.json.byString(NAME_UID) { UUID.randomUUID().toString() }
+            val groupUid by it.json.byNullableString(NAME_GROUP_UID)
 
             KeyMapEntity(
-                0,
-                trigger,
-                actionList,
-                constraintList,
-                constraintMode,
-                flags,
-                folderName,
-                isEnabled,
-                uid,
+                id = 0,
+                trigger = trigger,
+                actionList = actionList,
+                constraintList = constraintList,
+                constraintMode = constraintMode,
+                flags = flags,
+                isEnabled = isEnabled,
+                uid = uid,
+                groupUid = groupUid,
             )
         }
     }

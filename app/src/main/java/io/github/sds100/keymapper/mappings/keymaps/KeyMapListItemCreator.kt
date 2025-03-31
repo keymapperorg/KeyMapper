@@ -7,6 +7,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.ActionErrorSnapshot
 import io.github.sds100.keymapper.actions.ActionUiHelper
 import io.github.sds100.keymapper.constraints.ConstraintErrorSnapshot
+import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.constraints.ConstraintUiHelper
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.FingerprintGestureType
@@ -42,7 +43,7 @@ class KeyMapListItemCreator(
 
     private val actionUiHelper = ActionUiHelper(displayMapping, resourceProvider)
 
-    fun create(
+    fun build(
         keyMap: KeyMap,
         showDeviceDescriptors: Boolean,
         triggerErrorSnapshot: TriggerErrorSnapshot,
@@ -66,7 +67,8 @@ class KeyMapListItemCreator(
         val options = getTriggerOptionLabels(keyMap.trigger)
 
         val actionChipList = getActionChipList(keyMap, showDeviceDescriptors, actionErrorSnapshot)
-        val constraintChipList = getConstraintChipList(keyMap, constraintErrorSnapshot)
+        val constraintChipList =
+            buildConstraintChipList(keyMap.constraintState, constraintErrorSnapshot)
 
         val extraInfo = buildString {
             append(createExtraInfoString(keyMap, actionChipList, constraintChipList))
@@ -157,11 +159,11 @@ class KeyMapListItemCreator(
         }
     }.toList()
 
-    private fun getConstraintChipList(
-        keyMap: KeyMap,
+    fun buildConstraintChipList(
+        constraintState: ConstraintState,
         errorSnapshot: ConstraintErrorSnapshot,
     ): List<ComposeChipModel> = sequence {
-        for (constraint in keyMap.constraintState.constraints) {
+        for (constraint in constraintState.constraints) {
             val text: String = constraintUiHelper.getTitle(constraint)
             val icon: ComposeIconInfo = constraintUiHelper.getIcon(constraint)
             val error: Error? = errorSnapshot.getError(constraint)
@@ -173,7 +175,7 @@ class KeyMapListItemCreator(
                     icon = icon,
                 )
             } else {
-                ComposeChipModel.Error(constraint.uid, text, error)
+                ComposeChipModel.Error(constraint.uid, text, error, error.isFixable)
             }
 
             yield(chip)

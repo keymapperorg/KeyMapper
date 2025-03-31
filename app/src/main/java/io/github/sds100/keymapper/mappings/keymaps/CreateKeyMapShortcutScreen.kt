@@ -48,11 +48,11 @@ fun CreateKeyMapShortcutScreen(
     viewModel: CreateKeyMapShortcutViewModel,
     finishActivity: () -> Unit = {},
 ) {
-    val listItems by viewModel.state.collectAsStateWithLifecycle()
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     CreateKeyMapShortcutScreen(
         modifier = modifier,
-        listItems = listItems,
+        listItems = state.listItems,
         showShortcutNameDialog = viewModel.showShortcutNameDialog,
         dismissShortcutNameDialog = { viewModel.showShortcutNameDialog = null },
         onShortcutNameResult = { name ->
@@ -92,6 +92,7 @@ private fun CreateKeyMapShortcutScreen(
         )
     }
 
+    // TODO allow navigating between groups and hide the FAB.
     Scaffold(
         modifier = modifier,
         bottomBar = {
@@ -113,7 +114,7 @@ private fun CreateKeyMapShortcutScreen(
                 text = stringResource(R.string.caption_create_keymap_shortcut),
             )
 
-            KeyMapListScreen(
+            KeyMapList(
                 modifier = Modifier.fillMaxSize(),
                 footerText = stringResource(R.string.create_key_map_shortcut_footer),
                 listItems = listItems,
