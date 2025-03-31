@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.backup
 
-import android.database.sqlite.SQLiteConstraintException
 import com.github.salomonbrys.kotson.byInt
 import com.github.salomonbrys.kotson.byNullableArray
 import com.github.salomonbrys.kotson.byNullableInt
@@ -27,6 +26,7 @@ import io.github.sds100.keymapper.data.entities.FingerprintMapEntity
 import io.github.sds100.keymapper.data.entities.FloatingButtonEntity
 import io.github.sds100.keymapper.data.entities.FloatingButtonKeyEntity
 import io.github.sds100.keymapper.data.entities.FloatingLayoutEntity
+import io.github.sds100.keymapper.data.entities.GroupEntity
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.data.entities.TriggerEntity
 import io.github.sds100.keymapper.data.entities.TriggerKeyEntity
@@ -40,7 +40,9 @@ import io.github.sds100.keymapper.data.migration.fingerprintmaps.FingerprintMapM
 import io.github.sds100.keymapper.data.migration.fingerprintmaps.FingerprintToKeyMapMigration
 import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
 import io.github.sds100.keymapper.data.repositories.FloatingLayoutRepository
+import io.github.sds100.keymapper.data.repositories.GroupRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.data.repositories.RepositoryUtils
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapRepository
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.files.IFile
@@ -82,6 +84,7 @@ class BackupManagerImpl(
     private val preferenceRepository: PreferenceRepository,
     private val floatingLayoutRepository: FloatingLayoutRepository,
     private val floatingButtonRepository: FloatingButtonRepository,
+    private val groupRepository: GroupRepository,
     private val soundsManager: SoundsManager,
     private val throwExceptions: Boolean = false,
     private val dispatchers: DispatcherProvider = DefaultDispatcherProvider(),
@@ -117,6 +120,7 @@ class BackupManagerImpl(
             .registerTypeAdapter(ConstraintEntity.DESERIALIZER)
             .registerTypeAdapter(FloatingLayoutEntity.DESERIALIZER)
             .registerTypeAdapter(FloatingButtonEntity.DESERIALIZER)
+            .registerTypeAdapter(GroupEntity.DESERIALIZER)
             .create()
     }
 
@@ -180,7 +184,9 @@ class BackupManagerImpl(
                     .filterIsInstance<State.Data<List<KeyMapEntity>>>()
                     .first()
 
-            backupAsync(output, keyMaps.data)
+            val groups = groupRepository.getAllGroups().first()
+
+            backupAsync(output, keyMaps.data, groups)
 
             Success(Unit)
         }
@@ -244,6 +250,9 @@ class BackupManagerImpl(
 
                 // Do nothing just added floating button entity columns
                 JsonMigration(14, 15) { json -> json },
+
+                // Do nothing just added nullable group uid column
+                JsonMigration(15, 16) { json -> json },
             )
 
             if (keyMapListJsonArray != null) {
@@ -354,6 +363,10 @@ class BackupManagerImpl(
             val floatingButtons: List<FloatingButtonEntity>? =
                 floatingButtonsJson?.map { json -> gson.fromJson(json) }
 
+            val groupsJson by rootElement.byNullableArray(BackupContent.NAME_GROUPS)
+            val groups: List<GroupEntity> =
+                groupsJson?.map { json -> gson.fromJson(json) } ?: emptyList()
+
             val content = BackupContent(
                 dbVersion = backupDbVersion,
                 appVersion = backupAppVersion,
@@ -366,6 +379,7 @@ class BackupManagerImpl(
                 defaultSequenceTriggerTimeout = defaultSequenceTriggerTimeout,
                 floatingLayouts = floatingLayouts,
                 floatingButtons = floatingButtons,
+                groups = groups,
             )
 
             return@withContext Success(content)
@@ -438,12 +452,46 @@ class BackupManagerImpl(
         soundFiles: List<IFile>,
     ): Result<*> {
         try {
-            when (restoreType) {
-                RestoreType.APPEND ->
-                    appendKeyMapsInRepository(backupContent.keyMapList ?: emptyList())
+            // MUST come before restoring key maps so it is possible to
+            // validate that each key map's group exists in the repository.
+            if (backupContent.groups != null) {
+                val groupUids = backupContent.groups.map { it.uid }.toMutableSet()
 
-                RestoreType.REPLACE ->
-                    replaceKeyMapsInRepository(backupContent.keyMapList ?: emptyList())
+                groupRepository.groups.first()
+                    .map { it.uid }
+                    .toSet()
+                    .also { groupUids.addAll(it) }
+
+                for (group in backupContent.groups) {
+                    var movedGroup = group
+
+                    // If the group's parent wasn't backed up or doesn't exist
+                    // then set it the parent to the root group
+                    if (!groupUids.contains(group.parentUid)) {
+                        movedGroup = movedGroup.copy(parentUid = null)
+                    }
+
+                    RepositoryUtils.saveUniqueName(
+                        movedGroup,
+                        saveBlock = { groupRepository.insert(it) },
+                        renameBlock = { entity, suffix ->
+                            entity.copy(name = "${entity.name} $suffix")
+                        },
+                    )
+                }
+            }
+
+            if (backupContent.keyMapList != null) {
+                val groups = groupRepository.getAllGroups().first()
+                val keyMapList = validateKeyMapGroups(backupContent.keyMapList, groups)
+
+                when (restoreType) {
+                    RestoreType.APPEND ->
+                        appendKeyMapsInRepository(keyMapList)
+
+                    RestoreType.REPLACE ->
+                        replaceKeyMapsInRepository(keyMapList)
+                }
             }
 
             if (backupContent.defaultLongPressDelay != null) {
@@ -490,19 +538,13 @@ class BackupManagerImpl(
 
             if (backupContent.floatingLayouts != null) {
                 for (layout in backupContent.floatingLayouts) {
-                    var entity = layout
-                    var subCount = 0
-
-                    while (subCount < 1000) {
-                        try {
-                            floatingLayoutRepository.insert(entity)
-                            break
-                        } catch (_: SQLiteConstraintException) {
-                            // If the name already exists try creating it with a new name.
-                            entity = layout.copy(name = "${layout.name} (${subCount + 1})")
-                            subCount++
-                        }
-                    }
+                    RepositoryUtils.saveUniqueName(
+                        layout,
+                        saveBlock = { floatingLayoutRepository.insert(it) },
+                        renameBlock = { entity, suffix ->
+                            entity.copy(name = "${entity.name} $suffix")
+                        },
+                    )
                 }
             }
 
@@ -538,9 +580,29 @@ class BackupManagerImpl(
         keyMapRepository.insert(*keyMaps.toTypedArray())
     }
 
+    /**
+     * Check whether the group each key map is assigned to actually exists. If it does not
+     * then move it to the root group by setting the group uid to null.
+     */
+    private fun validateKeyMapGroups(
+        keyMaps: List<KeyMapEntity>,
+        groups: List<GroupEntity>,
+    ): List<KeyMapEntity> {
+        val groupMap = groups.associateBy { it.uid }
+
+        return keyMaps.map { keyMap ->
+            if (keyMap.groupUid == null || groupMap.containsKey(keyMap.groupUid)) {
+                keyMap
+            } else {
+                keyMap.copy(groupUid = null)
+            }
+        }
+    }
+
     private suspend fun backupAsync(
         output: IFile,
         keyMapList: List<KeyMapEntity>? = null,
+        extraGroups: List<GroupEntity> = emptyList(),
     ): Result<IFile> {
         return withContext(dispatchers.io()) {
             val backupUid = uuidGenerator.random()
@@ -554,6 +616,7 @@ class BackupManagerImpl(
 
                 val floatingLayouts: MutableList<FloatingLayoutEntity> = mutableListOf()
                 val floatingButtons: MutableList<FloatingButtonEntity> = mutableListOf()
+                val groupMap: MutableMap<String, GroupEntity> = mutableMapOf()
 
                 if (keyMapList != null) {
                     val floatingButtonTriggerKeys = keyMapList
@@ -570,6 +633,20 @@ class BackupManagerImpl(
                         }
 
                         floatingButtons.add(buttonWithLayout.button)
+                    }
+
+                    for (keyMap in keyMapList) {
+                        val groupUid = keyMap.groupUid ?: continue
+                        if (!groupMap.containsKey(groupUid)) {
+                            val groupEntity = groupRepository.getGroup(groupUid) ?: continue
+                            groupMap[groupUid] = groupEntity
+                        }
+                    }
+
+                    for (group in extraGroups) {
+                        if (!groupMap.containsKey(group.uid)) {
+                            groupMap[group.uid] = group
+                        }
                     }
                 }
 
@@ -609,6 +686,7 @@ class BackupManagerImpl(
                         .takeIf { it != PreferenceDefaults.VIBRATION_DURATION },
                     floatingLayouts = floatingLayouts.takeIf { it.isNotEmpty() },
                     floatingButtons = floatingButtons.takeIf { it.isNotEmpty() },
+                    groups = groupMap.values.toList(),
                 )
 
                 val json = gson.toJson(backupContent)

@@ -9,6 +9,7 @@ import androidx.room.PrimaryKey
 import com.github.salomonbrys.kotson.byArray
 import com.github.salomonbrys.kotson.byBool
 import com.github.salomonbrys.kotson.byInt
+import com.github.salomonbrys.kotson.byNullableString
 import com.github.salomonbrys.kotson.byObject
 import com.github.salomonbrys.kotson.byString
 import com.github.salomonbrys.kotson.jsonDeserializer
@@ -71,7 +72,7 @@ data class KeyMapEntity(
     @ColumnInfo(name = KeyMapDao.KEY_UID)
     val uid: String = UUID.randomUUID().toString(),
 
-    @SerializedName(GROUP_UID)
+    @SerializedName(NAME_GROUP_UID)
     @ColumnInfo(name = KeyMapDao.KEY_GROUP_UID)
     val groupUid: String? = null,
 ) : Parcelable {
@@ -86,7 +87,7 @@ data class KeyMapEntity(
         const val NAME_FLAGS = "flags"
         const val NAME_IS_ENABLED = "isEnabled"
         const val NAME_UID = "uid"
-        const val GROUP_UID = "group_uid"
+        const val NAME_GROUP_UID = "group_uid"
 
         val DESERIALIZER = jsonDeserializer {
             val actionListJsonArray by it.json.byArray(NAME_ACTION_LIST)
@@ -103,16 +104,18 @@ data class KeyMapEntity(
             val flags by it.json.byInt(NAME_FLAGS)
             val isEnabled by it.json.byBool(NAME_IS_ENABLED)
             val uid by it.json.byString(NAME_UID) { UUID.randomUUID().toString() }
+            val groupUid by it.json.byNullableString(NAME_GROUP_UID)
 
             KeyMapEntity(
-                0,
-                trigger,
-                actionList,
-                constraintList,
-                constraintMode,
-                flags,
-                isEnabled,
-                uid,
+                id = 0,
+                trigger = trigger,
+                actionList = actionList,
+                constraintList = constraintList,
+                constraintMode = constraintMode,
+                flags = flags,
+                isEnabled = isEnabled,
+                uid = uid,
+                groupUid = groupUid,
             )
         }
     }

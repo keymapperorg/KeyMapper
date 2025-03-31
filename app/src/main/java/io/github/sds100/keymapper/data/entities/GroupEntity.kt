@@ -8,11 +8,11 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.github.salomonbrys.kotson.byArray
 import com.github.salomonbrys.kotson.byInt
+import com.github.salomonbrys.kotson.byNullableString
 import com.github.salomonbrys.kotson.byString
 import com.github.salomonbrys.kotson.jsonDeserializer
 import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.data.db.dao.GroupDao
-import io.github.sds100.keymapper.data.entities.KeyMapEntity.Companion.NAME_CONSTRAINT_LIST
 import kotlinx.parcelize.Parcelize
 import java.util.UUID
 
@@ -63,12 +63,12 @@ data class GroupEntity(
         val DESERIALIZER = jsonDeserializer {
             val uid by it.json.byString(NAME_UID)
             val name by it.json.byString(NAME_NAME)
-            val constraintListJsonArray by it.json.byArray(NAME_CONSTRAINT_LIST)
+            val constraintListJsonArray by it.json.byArray(NAME_CONSTRAINTS)
             val constraintList =
                 it.context.deserialize<List<ConstraintEntity>>(constraintListJsonArray)
 
-            val constraintMode by it.json.byInt(KeyMapEntity.NAME_CONSTRAINT_MODE)
-            val parentUid by it.json.byString(NAME_PARENT_UID)
+            val constraintMode by it.json.byInt(NAME_CONSTRAINT_MODE)
+            val parentUid by it.json.byNullableString(NAME_PARENT_UID)
 
             GroupEntity(uid, name, constraintList, constraintMode, parentUid)
         }

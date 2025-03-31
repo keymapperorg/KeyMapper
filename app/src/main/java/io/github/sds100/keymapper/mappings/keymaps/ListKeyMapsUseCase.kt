@@ -12,6 +12,7 @@ import io.github.sds100.keymapper.constraints.ConstraintModeEntityMapper
 import io.github.sds100.keymapper.data.entities.GroupEntity
 import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
 import io.github.sds100.keymapper.data.repositories.GroupRepository
+import io.github.sds100.keymapper.data.repositories.RepositoryUtils
 import io.github.sds100.keymapper.groups.Group
 import io.github.sds100.keymapper.groups.GroupEntityMapper
 import io.github.sds100.keymapper.groups.GroupWithSubGroups
@@ -147,26 +148,16 @@ class ListKeyMapsUseCaseImpl(
     }
 
     private suspend fun ensureUniqueName(
-        entity: GroupEntity,
+        group: GroupEntity,
         block: suspend (entity: GroupEntity) -> Unit,
     ): GroupEntity {
-        var group = entity
-        var count = 0
-
-        while (true) {
-            // Insert must be suspending so we only update the layout uid once the layout
-            // has been saved.
-            try {
-                block(group)
-                break
-            } catch (_: SQLiteConstraintException) {
-                // If the name already exists try creating it with a new name.
-                group = group.copy(name = "${entity.name} (${count + 1})")
-                count++
-            }
-        }
-
-        return group
+        return RepositoryUtils.saveUniqueName(
+            entity = group,
+            saveBlock = block,
+            renameBlock = { entity, suffix ->
+                entity.copy(name = "${entity.name} $suffix")
+            },
+        )
     }
 
     override suspend fun openGroup(uid: String?) {

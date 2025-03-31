@@ -172,6 +172,7 @@ object ServiceLocator {
         settingsRepository(context),
         floatingLayoutRepository(context),
         floatingButtonRepository(context),
+        groupRepository(context),
         soundsManager(context),
     )
 

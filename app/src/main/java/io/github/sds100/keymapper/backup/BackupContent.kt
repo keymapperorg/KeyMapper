@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.backup
 import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.data.entities.FloatingButtonEntity
 import io.github.sds100.keymapper.data.entities.FloatingLayoutEntity
+import io.github.sds100.keymapper.data.entities.GroupEntity
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
 
 // TODO back up groups that are referenced by key maps - back up all the children as well. If the parent is not included in the back up then set the parent uid to null
@@ -39,6 +40,9 @@ data class BackupContent(
 
     @SerializedName(NAME_FLOATING_BUTTONS)
     val floatingButtons: List<FloatingButtonEntity>? = null,
+
+    @SerializedName(NAME_GROUPS)
+    val groups: List<GroupEntity>? = null,
 ) {
     companion object {
         const val NAME_DB_VERSION = "keymap_db_version"
@@ -52,6 +56,7 @@ data class BackupContent(
         const val NAME_DEFAULT_SEQUENCE_TRIGGER_TIMEOUT = "default_sequence_trigger_timeout"
         const val NAME_FLOATING_LAYOUTS = "floating_layouts"
         const val NAME_FLOATING_BUTTONS = "floating_buttons"
+        const val NAME_GROUPS = "groups"
 
         @Deprecated("Device info used to be stored in a database table but they are now stored inside the triggers and actions.")
         const val NAME_DEVICE_INFO = "device_info"
