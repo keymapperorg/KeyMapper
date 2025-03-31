@@ -243,8 +243,8 @@ abstract class BaseAccessibilityServiceController(
             if (isPaused) {
                 enableAccessibilityVolumeStream = false
             } else {
-                enableAccessibilityVolumeStream = keyMaps.any { mapping ->
-                    mapping.isEnabled && mapping.actionList.any { it.data is ActionData.Sound }
+                enableAccessibilityVolumeStream = keyMaps.any { model ->
+                    model.keyMap.isEnabled && model.keyMap.actionList.any { it.data is ActionData.Sound }
                 }
             }
 

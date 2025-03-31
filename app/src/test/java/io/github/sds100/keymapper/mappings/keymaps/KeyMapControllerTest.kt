@@ -13,6 +13,7 @@ import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.FingerprintGestureType
+import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapModel
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCase
 import io.github.sds100.keymapper.mappings.keymaps.detection.KeyMapController
 import io.github.sds100.keymapper.mappings.keymaps.trigger.FingerprintTriggerKey
@@ -39,6 +40,7 @@ import junitparams.naming.TestCaseName
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceTimeBy
@@ -124,6 +126,7 @@ class KeyMapControllerTest {
     private lateinit var performActionsUseCase: PerformActionsUseCase
     private lateinit var detectConstraintsUseCase: DetectConstraintsUseCase
     private lateinit var keyMapListFlow: MutableStateFlow<List<KeyMap>>
+    private lateinit var detectKeyMapListFlow: MutableStateFlow<List<DetectKeyMapModel>>
 
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
@@ -134,9 +137,15 @@ class KeyMapControllerTest {
     @Before
     fun init() {
         keyMapListFlow = MutableStateFlow(emptyList())
+        detectKeyMapListFlow = MutableStateFlow(emptyList())
 
         detectKeyMapsUseCase = mock {
-            on { allKeyMapList } doReturn keyMapListFlow
+            on { allKeyMapList } doReturn combine(
+                keyMapListFlow,
+                detectKeyMapListFlow,
+            ) { keyMapList, detectKeyMapList ->
+                keyMapList.map { DetectKeyMapModel(keyMap = it) }.plus(detectKeyMapList)
+            }
 
             MutableStateFlow(VIBRATION_DURATION).apply {
                 on { defaultVibrateDuration } doReturn this
@@ -973,7 +982,8 @@ class KeyMapControllerTest {
         )
 
         // Only the short press trigger is allowed.
-        mockConstraintSnapshot { constraint -> constraint == Constraint.WifiOn() }
+        val constraintSnapshot = TestConstraintSnapshot(isWifiEnabled = true)
+        whenever(detectConstraintsUseCase.getSnapshot()).thenReturn(constraintSnapshot)
 
         mockTriggerKeyInput(shortPressTrigger.keys.first())
 
@@ -1012,7 +1022,8 @@ class KeyMapControllerTest {
         )
 
         // Only the short press trigger is allowed.
-        mockConstraintSnapshot { constraint -> constraint == Constraint.WifiOn() }
+        val constraintSnapshot = TestConstraintSnapshot(isWifiEnabled = true)
+        whenever(detectConstraintsUseCase.getSnapshot()).thenReturn(constraintSnapshot)
 
         mockTriggerKeyInput(shortPressTrigger.keys.first())
 
@@ -4100,12 +4111,5 @@ class KeyMapControllerTest {
             id = deviceId,
             isGameController = isGameController,
         )
-    }
-
-    private fun mockConstraintSnapshot(isSatisfiedBlock: (constraint: Constraint) -> Boolean) {
-        val snapshot = object : ConstraintSnapshot {
-            override fun isSatisfied(constraint: Constraint): Boolean = isSatisfiedBlock(constraint)
-        }
-        whenever(detectConstraintsUseCase.getSnapshot()).thenReturn(snapshot)
     }
 }

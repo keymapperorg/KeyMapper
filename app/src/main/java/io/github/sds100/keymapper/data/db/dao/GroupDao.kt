@@ -22,6 +22,9 @@ interface GroupDao {
         const val KEY_PARENT_UID = "parent_uid"
     }
 
+    @Query("SELECT * FROM $TABLE_NAME")
+    fun getAll(): Flow<List<GroupEntity>>
+
     @Query("SELECT * FROM $TABLE_NAME WHERE $KEY_UID = (:groupUid)")
     fun getKeyMapsByGroup(groupUid: String): Flow<KeyMapEntitiesWithGroup>
 

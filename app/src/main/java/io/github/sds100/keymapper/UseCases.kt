@@ -172,6 +172,7 @@ object UseCases {
     ) = DetectKeyMapsUseCaseImpl(
         ServiceLocator.roomKeyMapRepository(ctx),
         ServiceLocator.floatingButtonRepository(ctx),
+        ServiceLocator.groupRepository(ctx),
         ServiceLocator.settingsRepository(ctx),
         ServiceLocator.suAdapter(ctx),
         ServiceLocator.displayAdapter(ctx),

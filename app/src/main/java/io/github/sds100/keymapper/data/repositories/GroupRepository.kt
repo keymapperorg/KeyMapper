@@ -8,11 +8,16 @@ import io.github.sds100.keymapper.util.DefaultDispatcherProvider
 import io.github.sds100.keymapper.util.DispatcherProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 interface GroupRepository {
+    val groups: Flow<List<GroupEntity>>
+
     fun getKeyMapsByGroup(groupUid: String): Flow<KeyMapEntitiesWithGroup>
     suspend fun getGroup(uid: String): GroupEntity?
     suspend fun getGroups(vararg uid: String): Flow<List<GroupEntity>>
@@ -28,6 +33,10 @@ class RoomGroupRepository(
     private val coroutineScope: CoroutineScope,
     private val dispatchers: DispatcherProvider = DefaultDispatcherProvider(),
 ) : GroupRepository {
+
+    override val groups: StateFlow<List<GroupEntity>> =
+        dao.getAll().stateIn(coroutineScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
     override fun getKeyMapsByGroup(groupUid: String): Flow<KeyMapEntitiesWithGroup> {
         return dao.getKeyMapsByGroup(groupUid).flowOn(dispatchers.io())
     }
