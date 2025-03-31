@@ -195,7 +195,6 @@ fun HomeKeyMapListScreen(
                 onSelectAllClick = viewModel::onSelectAllClick,
                 onNewGroupClick = viewModel::onNewGroupClick,
                 onRenameGroupClick = viewModel::onRenameGroupClick,
-                isEditingGroupName = viewModel.isEditingGroupName,
                 onEditGroupNameClick = viewModel::onEditGroupNameClick,
                 onGroupClick = viewModel::onGroupClick,
                 onDeleteGroupClick = viewModel::onDeleteGroupClick,

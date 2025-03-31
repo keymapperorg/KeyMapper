@@ -130,7 +130,6 @@ fun KeyMapAppBar(
     onNewGroupClick: () -> Unit = {},
     onGroupClick: (String?) -> Unit = {},
     onRenameGroupClick: suspend (String) -> Boolean = { true },
-    isEditingGroupName: Boolean = false,
     onEditGroupNameClick: () -> Unit = {},
     onDeleteGroupClick: () -> Unit = {},
     onNewConstraintClick: () -> Unit = {},
@@ -154,15 +153,13 @@ fun KeyMapAppBar(
                 onNewGroupClick = onNewGroupClick,
                 onGroupClick = onGroupClick,
                 actions = {
-                    AnimatedVisibility(!isEditingGroupName) {
-                        AppBarActions(
-                            onHelpClick,
-                            onSettingsClick,
-                            onAboutClick,
-                            onExportClick,
-                            onImportClick,
-                        )
-                    }
+                    AppBarActions(
+                        onHelpClick,
+                        onSettingsClick,
+                        onAboutClick,
+                        onExportClick,
+                        onImportClick,
+                    )
                 },
             )
 
@@ -186,9 +183,15 @@ fun KeyMapAppBar(
                     error = null
                 }
 
-                LaunchedEffect(isEditingGroupName) {
-                    if (isEditingGroupName) {
-                        newName = newName.copy(selection = TextRange(0, state.groupName.length))
+                LaunchedEffect(state.isEditingGroupName) {
+                    if (state.isEditingGroupName) {
+                        if (state.isNewGroup) {
+                            newName = TextFieldValue()
+                        } else {
+                            val endPosition = newName.text.length
+
+                            newName = newName.copy(selection = TextRange(endPosition))
+                        }
                     }
                 }
 
@@ -202,7 +205,7 @@ fun KeyMapAppBar(
 
                 ChildGroupAppBar(
                     modifier = modifier,
-                    groupName = if (isEditingGroupName) {
+                    groupName = if (state.isEditingGroupName) {
                         newName
                     } else {
                         TextFieldValue(state.groupName)
@@ -223,7 +226,7 @@ fun KeyMapAppBar(
                     onBackClick = onBackClick,
                     onNewGroupClick = onNewGroupClick,
                     onEditClick = onEditGroupNameClick,
-                    isEditingGroupName = isEditingGroupName,
+                    isEditingGroupName = state.isEditingGroupName,
                     subGroups = state.subGroups,
                     parentGroups = state.parentGroups,
                     onGroupClick = onGroupClick,
@@ -234,7 +237,7 @@ fun KeyMapAppBar(
                     onConstraintModeChanged = onConstraintModeChanged,
                     onFixConstraintClick = onFixConstraintClick,
                     actions = {
-                        AnimatedVisibility(!isEditingGroupName) {
+                        AnimatedVisibility(!state.isEditingGroupName) {
                             AppBarActions(
                                 onHelpClick,
                                 onSettingsClick,
@@ -423,6 +426,7 @@ private fun ChildGroupAppBar(
                             .padding(horizontal = 8.dp)
                             .fillMaxWidth(),
                         constraints = constraints,
+                        mode = constraintMode,
                         onFixConstraintClick = onFixConstraintClick,
                         onNewConstraintClick = onNewConstraintClick,
                         onRemoveConstraintClick = onRemoveConstraintClick,
@@ -907,9 +911,11 @@ private fun KeyMapsChildGroupPreview() {
         constraints = constraintsSampleList(),
         constraintMode = ConstraintMode.AND,
         parentGroups = groupSampleList(),
+        isEditingGroupName = false,
+        isNewGroup = false,
     )
     KeyMapperTheme {
-        KeyMapAppBar(modifier = Modifier.fillMaxWidth(), state = state, isEditingGroupName = false)
+        KeyMapAppBar(modifier = Modifier.fillMaxWidth(), state = state)
     }
 }
 
@@ -923,9 +929,11 @@ private fun KeyMapsChildGroupDarkPreview() {
         constraints = emptyList(),
         constraintMode = ConstraintMode.AND,
         parentGroups = emptyList(),
+        isEditingGroupName = false,
+        isNewGroup = false,
     )
     KeyMapperTheme(darkTheme = true) {
-        KeyMapAppBar(modifier = Modifier.fillMaxWidth(), state = state, isEditingGroupName = false)
+        KeyMapAppBar(modifier = Modifier.fillMaxWidth(), state = state)
     }
 }
 
@@ -939,6 +947,8 @@ private fun KeyMapsChildGroupEditingPreview() {
         constraints = constraintsSampleList(),
         constraintMode = ConstraintMode.AND,
         parentGroups = emptyList(),
+        isEditingGroupName = true,
+        isNewGroup = true,
     )
 
     val focusRequester = FocusRequester()
@@ -950,7 +960,6 @@ private fun KeyMapsChildGroupEditingPreview() {
     KeyMapperTheme {
         KeyMapAppBar(
             state = state,
-            isEditingGroupName = true,
         )
     }
 }
@@ -965,6 +974,8 @@ private fun KeyMapsChildGroupEditingDarkPreview() {
         constraints = constraintsSampleList(),
         constraintMode = ConstraintMode.AND,
         parentGroups = emptyList(),
+        isEditingGroupName = true,
+        isNewGroup = true,
     )
 
     val focusRequester = FocusRequester()
@@ -976,7 +987,6 @@ private fun KeyMapsChildGroupEditingDarkPreview() {
     KeyMapperTheme(darkTheme = true) {
         KeyMapAppBar(
             state = state,
-            isEditingGroupName = true,
         )
     }
 }

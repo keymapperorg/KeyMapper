@@ -36,6 +36,7 @@ import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
+import io.github.sds100.keymapper.constraints.ConstraintMode
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.drawable
 import io.github.sds100.keymapper.util.ui.compose.ComposeChipModel
@@ -45,6 +46,7 @@ import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 fun GroupConstraintRow(
     modifier: Modifier = Modifier,
     constraints: List<ComposeChipModel>,
+    mode: ConstraintMode,
     onNewConstraintClick: () -> Unit = {},
     onRemoveConstraintClick: (String) -> Unit = {},
     onFixConstraintClick: (Error) -> Unit = {},
@@ -54,6 +56,7 @@ fun GroupConstraintRow(
         modifier.verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
+        itemVerticalAlignment = Alignment.CenterVertically,
     ) {
         NewConstraintButton(
             onClick = onNewConstraintClick,
@@ -61,7 +64,7 @@ fun GroupConstraintRow(
             enabled = enabled,
         )
 
-        for (constraint in constraints) {
+        for ((index, constraint) in constraints.withIndex()) {
             when (constraint) {
                 is ComposeChipModel.Normal ->
                     CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
@@ -90,7 +93,6 @@ fun GroupConstraintRow(
                                     )
                                 }
                             },
-
                         )
                     }
 
@@ -104,6 +106,20 @@ fun GroupConstraintRow(
                             enabled = enabled,
                         )
                     }
+            }
+
+            if (index < constraints.lastIndex) {
+                when (mode) {
+                    ConstraintMode.AND -> Text(
+                        text = stringResource(R.string.constraint_mode_and),
+                        style = MaterialTheme.typography.labelMedium,
+                    )
+
+                    ConstraintMode.OR -> Text(
+                        text = stringResource(R.string.constraint_mode_or),
+                        style = MaterialTheme.typography.labelMedium,
+                    )
+                }
             }
         }
     }
@@ -256,7 +272,7 @@ private fun ConstraintErrorButton(
 private fun PreviewEmpty() {
     KeyMapperTheme {
         Surface {
-            GroupConstraintRow(constraints = emptyList())
+            GroupConstraintRow(constraints = emptyList(), mode = ConstraintMode.AND)
         }
     }
 }
@@ -274,6 +290,7 @@ private fun PreviewOneItem() {
                         icon = ComposeIconInfo.Vector(Icons.Outlined.Lock),
                     ),
                 ),
+                mode = ConstraintMode.OR,
             )
         }
     }
@@ -309,6 +326,7 @@ private fun PreviewMultipleItems() {
                         error = Error.AppNotFound(Constants.PACKAGE_NAME),
                     ),
                 ),
+                mode = ConstraintMode.AND,
             )
         }
     }

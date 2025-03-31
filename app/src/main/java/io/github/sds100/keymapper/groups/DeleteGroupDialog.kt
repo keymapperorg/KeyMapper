@@ -20,7 +20,12 @@ fun DeleteGroupDialog(
         modifier = modifier,
         onDismissRequest = onDismissRequest,
         title = {
-            Text(stringResource(R.string.home_key_maps_delete_group_dialog_title, groupName))
+            Text(
+                stringResource(
+                    R.string.home_key_maps_delete_group_dialog_title,
+                    groupName.take(50),
+                ),
+            )
         },
         text = {
             Text(

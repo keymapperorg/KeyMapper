@@ -68,6 +68,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class KeyMapListViewModel(
@@ -142,6 +143,8 @@ class KeyMapListViewModel(
     private val _importExportState = MutableStateFlow<ImportExportState>(ImportExportState.Idle)
     val importExportState: StateFlow<ImportExportState> = _importExportState.asStateFlow()
 
+    private val isEditingGroupName = MutableStateFlow(false)
+
     private val warnings: Flow<List<HomeWarningListItem>> = combine(
         showAlertsUseCase.isBatteryOptimised,
         showAlertsUseCase.accessibilityServiceState,
@@ -198,7 +201,6 @@ class KeyMapListViewModel(
      * name yet.
      */
     private var isNewGroup = false
-    var isEditingGroupName by mutableStateOf(false)
 
     init {
         val sortedKeyMapsFlow = combine(
@@ -282,14 +284,9 @@ class KeyMapListViewModel(
             warnings,
             pauseKeyMaps.isPaused,
             listKeyMaps.constraintErrorSnapshot,
-        ) { keyMapGroup, warnings, isPaused, constraintErrorSnapshot ->
-            buildGroupAppBarState(
-                keyMapGroup,
-                warnings,
-                isPaused,
-                constraintErrorSnapshot,
-            )
-        }
+            isEditingGroupName,
+            transform = ::buildGroupAppBarState,
+        )
 
         @OptIn(ExperimentalCoroutinesApi::class)
         val appBarStateFlow: Flow<KeyMapAppBarState> =
@@ -364,6 +361,7 @@ class KeyMapListViewModel(
         warnings: List<HomeWarningListItem>,
         isPaused: Boolean,
         constraintErrorSnapshot: ConstraintErrorSnapshot,
+        isEditingGroupName: Boolean,
     ): KeyMapAppBarState {
         val subGroupListItems = keyMapGroup.subGroups.map { group ->
             buildGroupListItem(group)
@@ -393,6 +391,8 @@ class KeyMapListViewModel(
                 constraintMode = keyMapGroup.group.constraintState.mode,
                 subGroups = subGroupListItems,
                 parentGroups = parentGroupListItems,
+                isEditingGroupName = isEditingGroupName,
+                isNewGroup = isNewGroup,
             )
         }
     }
@@ -720,13 +720,13 @@ class KeyMapListViewModel(
             }
 
             state.value.appBarState is KeyMapAppBarState.ChildGroup -> {
-                if (isEditingGroupName) {
+                if (isEditingGroupName.value) {
                     if (isNewGroup) {
                         coroutineScope.launch {
                             listKeyMaps.deleteGroup()
                         }
                     } else {
-                        isEditingGroupName = false
+                        isEditingGroupName.update { false }
                     }
                 } else {
                     coroutineScope.launch {
@@ -734,7 +734,8 @@ class KeyMapListViewModel(
                     }
                 }
 
-                isEditingGroupName = false
+                isNewGroup = false
+                isEditingGroupName.update { false }
                 return true
             }
 
@@ -747,17 +748,20 @@ class KeyMapListViewModel(
     suspend fun onRenameGroupClick(name: String): Boolean {
         return listKeyMaps.renameGroup(name).also { success ->
             if (success) {
-                isEditingGroupName = false
+                isNewGroup = false
+                isEditingGroupName.update { false }
             }
         }
     }
 
     fun onEditGroupNameClick() {
-        isEditingGroupName = true
+        isNewGroup = false
+        isEditingGroupName.update { true }
     }
 
     fun onGroupClick(uid: String?) {
         coroutineScope.launch {
+            isNewGroup = false
             listKeyMaps.openGroup(uid)
         }
     }
@@ -773,7 +777,7 @@ class KeyMapListViewModel(
             multiSelectProvider.stopSelecting()
             listKeyMaps.newGroup()
             isNewGroup = true
-            isEditingGroupName = true
+            isEditingGroupName.update { true }
         }
     }
 

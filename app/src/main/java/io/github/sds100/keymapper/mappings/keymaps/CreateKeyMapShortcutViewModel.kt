@@ -143,6 +143,8 @@ class CreateKeyMapShortcutViewModel(
                 constraints = emptyList(),
                 constraintMode = ConstraintMode.AND,
                 parentGroups = parentGroupListItems,
+                isEditingGroupName = false,
+                isNewGroup = false,
             )
         }
 

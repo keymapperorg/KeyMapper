@@ -19,7 +19,8 @@ sealed class KeyMapAppBarState {
         val constraintMode: ConstraintMode,
         val subGroups: List<GroupListItemModel>,
         val parentGroups: List<GroupListItemModel>,
-
+        val isEditingGroupName: Boolean,
+        val isNewGroup: Boolean,
     ) : KeyMapAppBarState()
 
     data class Selecting(
