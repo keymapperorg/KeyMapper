@@ -1,9 +1,12 @@
 package io.github.sds100.keymapper.groups
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.FlowRowOverflow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -48,8 +51,12 @@ fun GroupRow(
     enabled: Boolean = true,
 ) {
     var viewAllState by rememberSaveable { mutableStateOf(false) }
+
+    @OptIn(ExperimentalLayoutApi::class)
     FlowRow(
-        modifier.verticalScroll(rememberScrollState()),
+        modifier
+            .verticalScroll(rememberScrollState())
+            .animateContentSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         maxLines = if (viewAllState) {
@@ -57,6 +64,23 @@ fun GroupRow(
         } else {
             2
         },
+        overflow = FlowRowOverflow.expandOrCollapseIndicator(
+            expandIndicator = {
+                ViewAllButton(
+                    onClick = { viewAllState = true },
+                    text = stringResource(R.string.home_new_view_all_groups_button),
+                    enabled = enabled,
+                )
+            },
+            collapseIndicator = {
+                ViewAllButton(
+                    onClick = { viewAllState = false },
+                    text = stringResource(R.string.home_new_hide_groups_button),
+                    enabled = enabled,
+                )
+            },
+            minRowsToShowCollapse = 3,
+        ),
     ) {
         NewGroupButton(
             onClick = onNewGroupClick,
@@ -67,18 +91,6 @@ fun GroupRow(
             showText = groups.isEmpty(),
             enabled = enabled,
         )
-
-        if (groups.isNotEmpty()) {
-            ViewAllButton(
-                onClick = { viewAllState = !viewAllState },
-                text = if (viewAllState) {
-                    stringResource(R.string.home_new_hide_groups_button)
-                } else {
-                    stringResource(R.string.home_new_view_all_groups_button)
-                },
-                enabled = enabled,
-            )
-        }
 
         for (group in groups) {
             GroupButton(
