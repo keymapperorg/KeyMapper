@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.actions.ActionErrorSnapshot
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.constraints.Constraint
+import io.github.sds100.keymapper.constraints.ConstraintMode
 import io.github.sds100.keymapper.constraints.ConstraintSnapshot
 import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
@@ -198,6 +199,100 @@ class KeyMapControllerTest {
             performActionsUseCase,
             detectConstraintsUseCase,
         )
+    }
+
+    @Test
+    fun `Do not perform if one group constraint set is not satisfied`() = runTest(testDispatcher) {
+        val trigger = singleKeyTrigger(triggerKey(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN))
+        detectKeyMapListFlow.value = listOf(
+            DetectKeyMapModel(
+                keyMap = KeyMap(
+                    trigger = trigger,
+                    actionList = listOf(TEST_ACTION),
+                    constraintState = ConstraintState(
+                        constraints = setOf(Constraint.WifiOn(), Constraint.DeviceIsLocked()),
+                        mode = ConstraintMode.OR,
+                    ),
+                ),
+                groupConstraintStates = listOf(
+                    ConstraintState(
+                        constraints = setOf(
+                            Constraint.LockScreenNotShowing(),
+                            Constraint.DeviceIsLocked(),
+                        ),
+                        mode = ConstraintMode.AND,
+                    ),
+                    ConstraintState(
+                        constraints = setOf(
+                            Constraint.AppInForeground(packageName = "app"),
+                            Constraint.DeviceIsUnlocked(),
+                        ),
+                        mode = ConstraintMode.OR,
+                    ),
+                ),
+            ),
+        )
+
+        whenever(detectConstraintsUseCase.getSnapshot())
+            .thenReturn(
+                TestConstraintSnapshot(
+                    isWifiEnabled = true,
+                    isLocked = true,
+                    isLockscreenShowing = true,
+                    appInForeground = "app",
+                ),
+            )
+
+        mockTriggerKeyInput(trigger.keys[0])
+
+        verify(performActionsUseCase, never()).perform(TEST_ACTION.data)
+    }
+
+    @Test
+    fun `Perform if all group constraints and key map constraints are satisfied`() = runTest(testDispatcher) {
+        val trigger = singleKeyTrigger(triggerKey(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN))
+        detectKeyMapListFlow.value = listOf(
+            DetectKeyMapModel(
+                keyMap = KeyMap(
+                    trigger = trigger,
+                    actionList = listOf(TEST_ACTION),
+                    constraintState = ConstraintState(
+                        constraints = setOf(Constraint.WifiOn(), Constraint.DeviceIsLocked()),
+                        mode = ConstraintMode.OR,
+                    ),
+                ),
+                groupConstraintStates = listOf(
+                    ConstraintState(
+                        constraints = setOf(
+                            Constraint.LockScreenNotShowing(),
+                            Constraint.DeviceIsLocked(),
+                        ),
+                        mode = ConstraintMode.AND,
+                    ),
+                    ConstraintState(
+                        constraints = setOf(
+                            Constraint.AppInForeground(packageName = "app"),
+                            Constraint.DeviceIsUnlocked(),
+                        ),
+                        mode = ConstraintMode.OR,
+                    ),
+                ),
+            ),
+        )
+
+        whenever(detectConstraintsUseCase.getSnapshot())
+            .thenReturn(
+                TestConstraintSnapshot(
+                    isWifiEnabled = true,
+                    isLocked = true,
+                    isLockscreenShowing = false,
+                    appInForeground = "app",
+                ),
+            )
+
+        mockTriggerKeyInput(trigger.keys[0])
+
+        verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
     }
 
     /**
