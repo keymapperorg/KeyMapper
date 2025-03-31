@@ -643,6 +643,7 @@ private fun GroupNameRow(
                         Text(
                             placeholder,
                             style = MaterialTheme.typography.titleLarge,
+                            maxLines = 1,
                         )
                     },
                     innerTextField = {
