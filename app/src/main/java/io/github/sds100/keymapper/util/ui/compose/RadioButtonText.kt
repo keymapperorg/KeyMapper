@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.util.ui.compose
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
@@ -42,7 +43,11 @@ fun RadioButtonText(
                 style = if (isEnabled) {
                     MaterialTheme.typography.bodyMedium
                 } else {
-                    MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.surfaceVariant)
+                    MaterialTheme.typography.bodyMedium.copy(
+                        color = LocalContentColor.current.copy(
+                            alpha = 0.5f,
+                        ),
+                    )
                 },
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,

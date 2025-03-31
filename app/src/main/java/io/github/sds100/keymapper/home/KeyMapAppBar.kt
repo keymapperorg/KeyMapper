@@ -106,6 +106,7 @@ import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.drawable
 import io.github.sds100.keymapper.util.ui.compose.ComposeChipModel
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.util.ui.compose.RadioButtonText
 import io.github.sds100.keymapper.util.ui.compose.icons.Import
 import io.github.sds100.keymapper.util.ui.compose.icons.KeyMapperIcons
 import kotlinx.coroutines.launch
@@ -175,20 +176,19 @@ fun KeyMapAppBar(
             is KeyMapAppBarState.ChildGroup -> {
                 val scope = rememberCoroutineScope()
                 val uniqueErrorText = stringResource(R.string.home_app_bar_group_name_unique_error)
-
                 var error: String? by rememberSaveable { mutableStateOf(null) }
-
                 var newName by remember { mutableStateOf(TextFieldValue(state.groupName)) }
+                var showDeleteGroupDialog by remember { mutableStateOf(false) }
 
                 LaunchedEffect(state.groupName) {
                     newName = TextFieldValue(state.groupName)
+                    showDeleteGroupDialog = false
+                    error = null
                 }
-
-                var showDeleteGroupDialog by remember { mutableStateOf(false) }
 
                 LaunchedEffect(isEditingGroupName) {
                     if (isEditingGroupName) {
-                        newName = newName.copy(selection = TextRange(0, newName.text.length))
+                        newName = newName.copy(selection = TextRange(0, state.groupName.length))
                     }
                 }
 
@@ -202,7 +202,11 @@ fun KeyMapAppBar(
 
                 ChildGroupAppBar(
                     modifier = modifier,
-                    groupName = newName,
+                    groupName = if (isEditingGroupName) {
+                        newName
+                    } else {
+                        TextFieldValue(state.groupName)
+                    },
                     placeholder = state.groupName,
                     error = error,
                     onValueChange = {
@@ -333,7 +337,7 @@ private fun RootGroupAppBar(
         Surface(color = appBarContainerColor) {
             GroupRow(
                 modifier = Modifier
-                    .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
+                    .padding(8.dp)
                     .fillMaxWidth(),
                 groups = state.subGroups,
                 onNewGroupClick = onNewGroupClick,
@@ -406,17 +410,16 @@ private fun ChildGroupAppBar(
                     }
                 }
 
-                Column {
+                Column(horizontalAlignment = Alignment.End) {
                     //                    Text(
                     //                        modifier = Modifier.padding(horizontal = 8.dp),
                     //                        text = stringResource(R.string.home_group_constraints_title),
                     //                        style = MaterialTheme.typography.titleSmall,
                     //                    )
 
-                    // TODO constraint mode
                     GroupConstraintRow(
                         modifier = Modifier
-                            .padding(8.dp)
+                            .padding(horizontal = 8.dp)
                             .fillMaxWidth(),
                         constraints = constraints,
                         onFixConstraintClick = onFixConstraintClick,
@@ -424,6 +427,30 @@ private fun ChildGroupAppBar(
                         onRemoveConstraintClick = onRemoveConstraintClick,
                         enabled = !isEditingGroupName,
                     )
+
+                    Spacer(Modifier.height(8.dp))
+
+                    androidx.compose.animation.AnimatedVisibility(constraints.size > 1) {
+                        Row {
+                            RadioButtonText(
+                                text = stringResource(R.string.constraint_mode_and),
+                                isSelected = constraintMode == ConstraintMode.AND,
+                                isEnabled = !isEditingGroupName,
+                                onSelected = {
+                                    onConstraintModeChanged(ConstraintMode.AND)
+                                },
+                            )
+
+                            RadioButtonText(
+                                text = stringResource(R.string.constraint_mode_or),
+                                isSelected = constraintMode == ConstraintMode.OR,
+                                isEnabled = !isEditingGroupName,
+                                onSelected = {
+                                    onConstraintModeChanged(ConstraintMode.OR)
+                                },
+                            )
+                        }
+                    }
                 }
             }
         }
