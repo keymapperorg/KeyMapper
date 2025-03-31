@@ -10,6 +10,7 @@ import io.github.sds100.keymapper.backup.ImportExportState
 import io.github.sds100.keymapper.backup.RestoreType
 import io.github.sds100.keymapper.constraints.ConstraintErrorSnapshot
 import io.github.sds100.keymapper.constraints.ConstraintMode
+import io.github.sds100.keymapper.constraints.ConstraintUiHelper
 import io.github.sds100.keymapper.groups.SubGroupListModel
 import io.github.sds100.keymapper.home.HomeWarningListItem
 import io.github.sds100.keymapper.home.SelectedKeyMapsEnabled
@@ -46,6 +47,7 @@ import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.SelectionState
 import io.github.sds100.keymapper.util.ui.ViewModelHelper
+import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.util.ui.navigate
 import io.github.sds100.keymapper.util.ui.showPopup
 import kotlinx.coroutines.CoroutineScope
@@ -91,6 +93,7 @@ class KeyMapListViewModel(
     val multiSelectProvider: MultiSelectProvider = MultiSelectProvider()
 
     private val listItemCreator = KeyMapListItemCreator(listKeyMaps, resourceProvider)
+    private val constraintUiHelper = ConstraintUiHelper(listKeyMaps, resourceProvider)
 
     private val initialState = KeyMapListState(
         appBarState = KeyMapAppBarState.RootGroup(
@@ -302,10 +305,17 @@ class KeyMapListViewModel(
             )
         } else {
             val subGroupListItems = keyMapGroup.subGroups.map { group ->
+                var icon: ComposeIconInfo? = null
+
+                val constraint = group.constraintState.constraints.firstOrNull()
+                if (constraint != null) {
+                    icon = constraintUiHelper.getIcon(constraint)
+                }
+
                 SubGroupListModel(
                     uid = group.uid,
                     name = group.name,
-                    icon = null, // TODO show icon depending on constraints
+                    icon = icon,
                 )
             }
 
