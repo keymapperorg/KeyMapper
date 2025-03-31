@@ -950,12 +950,12 @@ class KeyMapControllerTest {
         val shortPressTrigger = singleKeyTrigger(
             triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
         )
-        val shortPressConstraints = ConstraintState(constraints = setOf(Constraint.WifiOn))
+        val shortPressConstraints = ConstraintState(constraints = setOf(Constraint.WifiOn()))
 
         val longPressTrigger = singleKeyTrigger(
             triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
         )
-        val doublePressConstraints = ConstraintState(constraints = setOf(Constraint.WifiOff))
+        val doublePressConstraints = ConstraintState(constraints = setOf(Constraint.WifiOff()))
 
         keyMapListFlow.value = listOf(
             KeyMap(
@@ -973,7 +973,7 @@ class KeyMapControllerTest {
         )
 
         // Only the short press trigger is allowed.
-        mockConstraintSnapshot { constraint -> constraint == Constraint.WifiOn }
+        mockConstraintSnapshot { constraint -> constraint == Constraint.WifiOn() }
 
         mockTriggerKeyInput(shortPressTrigger.keys.first())
 
@@ -989,12 +989,12 @@ class KeyMapControllerTest {
         val shortPressTrigger = singleKeyTrigger(
             triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
         )
-        val shortPressConstraints = ConstraintState(constraints = setOf(Constraint.WifiOn))
+        val shortPressConstraints = ConstraintState(constraints = setOf(Constraint.WifiOn()))
 
         val doublePressTrigger = singleKeyTrigger(
             triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.DOUBLE_PRESS),
         )
-        val doublePressConstraints = ConstraintState(constraints = setOf(Constraint.WifiOff))
+        val doublePressConstraints = ConstraintState(constraints = setOf(Constraint.WifiOff()))
 
         keyMapListFlow.value = listOf(
             KeyMap(
@@ -1012,7 +1012,7 @@ class KeyMapControllerTest {
         )
 
         // Only the short press trigger is allowed.
-        mockConstraintSnapshot { constraint -> constraint == Constraint.WifiOn }
+        mockConstraintSnapshot { constraint -> constraint == Constraint.WifiOn() }
 
         mockTriggerKeyInput(shortPressTrigger.keys.first())
 
@@ -1109,7 +1109,7 @@ class KeyMapControllerTest {
             ),
             actionList = listOf(Action(data = actionData)),
             constraintState = ConstraintState(
-                constraints = setOf(Constraint.FlashlightOn(CameraLens.BACK)),
+                constraints = setOf(Constraint.FlashlightOn(lens = CameraLens.BACK)),
             ),
         )
 

@@ -172,19 +172,42 @@ interface ConstraintSnapshot {
     fun isSatisfied(constraint: Constraint): Boolean
 }
 
-fun ConstraintSnapshot.isSatisfied(constraintState: ConstraintState): Boolean {
-    // Required in case OR is used with empty list of constraints.
-    if (constraintState.constraints.isEmpty()) {
-        return true
+/**
+ * Whether multiple constraint states are satisfied. This does an AND on the
+ * constraint states.
+ */
+fun ConstraintSnapshot.isSatisfied(vararg constraintState: ConstraintState): Boolean {
+    for (state in constraintState) {
+        when (state.mode) {
+            ConstraintMode.AND -> {
+                for (constraint in state.constraints) {
+                    if (!isSatisfied(constraint)) {
+                        return false
+                    }
+                }
+            }
+
+            ConstraintMode.OR -> {
+                // If no constraints then still satisfied
+                if (state.constraints.isEmpty()) {
+                    continue
+                }
+
+                var anySatisfied = false
+
+                for (constraint in state.constraints) {
+                    if (isSatisfied(constraint)) {
+                        anySatisfied = true
+                        break
+                    }
+                }
+
+                if (!anySatisfied) {
+                    return false
+                }
+            }
+        }
     }
 
-    return when (constraintState.mode) {
-        ConstraintMode.AND -> {
-            constraintState.constraints.all { isSatisfied(it) }
-        }
-
-        ConstraintMode.OR -> {
-            constraintState.constraints.any { isSatisfied(it) }
-        }
-    }
+    return true
 }
