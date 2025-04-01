@@ -13,7 +13,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,7 +28,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -174,7 +172,14 @@ fun KeyMapAppBar(
                 val scope = rememberCoroutineScope()
                 val uniqueErrorText = stringResource(R.string.home_app_bar_group_name_unique_error)
                 var error: String? by rememberSaveable { mutableStateOf(null) }
-                var newName by remember { mutableStateOf(TextFieldValue(state.groupName)) }
+                var newName by remember {
+                    mutableStateOf(
+                        TextFieldValue(
+                            state.groupName,
+                            selection = TextRange(state.groupName.length),
+                        ),
+                    )
+                }
                 var showDeleteGroupDialog by remember { mutableStateOf(false) }
 
                 LaunchedEffect(state.groupName) {
@@ -185,11 +190,10 @@ fun KeyMapAppBar(
                         if (state.isNewGroup) {
                             newName = TextFieldValue()
                         } else {
-                            val endPosition = newName.text.length
+                            val endPosition = state.groupName.length
 
-                            newName = TextFieldValue(state.groupName).copy(
-                                selection = TextRange(endPosition),
-                            )
+                            newName =
+                                TextFieldValue(state.groupName, selection = TextRange(endPosition))
                         }
                     }
                 }
@@ -459,15 +463,8 @@ private fun ChildGroupAppBar(
 
         Surface {
             Column {
-                val scrollState = rememberScrollState()
-
-                LaunchedEffect(parentGroups) {
-                    scrollState.animateScrollTo(scrollState.maxValue)
-                }
-
                 GroupBreadcrumbRow(
                     modifier = Modifier
-                        .horizontalScroll(scrollState)
                         .fillMaxWidth()
                         .padding(8.dp),
                     groups = parentGroups,

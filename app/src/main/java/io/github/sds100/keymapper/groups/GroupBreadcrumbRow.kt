@@ -1,7 +1,12 @@
 package io.github.sds100.keymapper.groups
 
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material3.Icon
@@ -12,9 +17,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.R
 
@@ -25,28 +33,47 @@ fun GroupBreadcrumbRow(
     onGroupClick: (String?) -> Unit,
     enabled: Boolean = true,
 ) {
-    Row(modifier = modifier) {
-        val color = LocalContentColor.current.copy(alpha = 0.7f)
-        Breadcrumb(
-            text = stringResource(R.string.home_groups_breadcrumb_home),
-            onClick = { onGroupClick(null) },
-            color = color,
-            enabled = enabled,
-        )
+    val scrollState = rememberScrollState()
 
-        for ((index, group) in groups.withIndex()) {
-            Icon(imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight, null, tint = color)
+    LaunchedEffect(groups) {
+        scrollState.animateScrollTo(scrollState.maxValue)
+    }
 
+    BoxWithConstraints(modifier = modifier) {
+        val maxCrumbWidth = constraints.maxWidth / 3
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(scrollState),
+
+        ) {
+            val color = LocalContentColor.current.copy(alpha = 0.7f)
             Breadcrumb(
-                text = group.name,
-                onClick = { onGroupClick(group.uid) },
-                color = if (index == groups.lastIndex) {
-                    LocalContentColor.current
-                } else {
-                    color
-                },
+                text = stringResource(R.string.home_groups_breadcrumb_home),
+                onClick = { onGroupClick(null) },
+                color = color,
                 enabled = enabled,
             )
+
+            for ((index, group) in groups.withIndex()) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
+                    null,
+                    tint = color,
+                )
+
+                Breadcrumb(
+                    modifier = Modifier.widthIn(max = LocalDensity.current.run { maxCrumbWidth.toDp() }),
+                    text = group.name,
+                    onClick = { onGroupClick(group.uid) },
+                    color = if (index == groups.lastIndex) {
+                        LocalContentColor.current
+                    } else {
+                        color
+                    },
+                    enabled = enabled,
+                )
+            }
         }
     }
 }
@@ -75,6 +102,7 @@ private fun Breadcrumb(
                 style = MaterialTheme.typography.labelMedium,
                 color = color,
                 maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
         }
     }

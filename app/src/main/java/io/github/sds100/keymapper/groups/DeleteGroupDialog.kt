@@ -7,6 +7,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import io.github.sds100.keymapper.R
 
 @Composable
@@ -23,8 +24,10 @@ fun DeleteGroupDialog(
             Text(
                 stringResource(
                     R.string.home_key_maps_delete_group_dialog_title,
-                    groupName.take(50),
+                    groupName,
                 ),
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis,
             )
         },
         text = {

@@ -4,15 +4,18 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.FlowRowOverflow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -33,7 +36,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
@@ -55,92 +60,98 @@ fun GroupRow(
 ) {
     var viewAllState by rememberSaveable { mutableStateOf(false) }
 
-    @OptIn(ExperimentalLayoutApi::class)
-    FlowRow(
-        modifier
-            .verticalScroll(rememberScrollState())
-            .animateContentSize(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        maxLines = if (viewAllState) {
-            Int.MAX_VALUE
-        } else {
-            2
-        },
-        overflow = FlowRowOverflow.expandOrCollapseIndicator(
-            expandIndicator = {
-                // Some padding is required on the end to stop it overflowing the screen.
-                TextGroupButton(
-                    modifier = Modifier.padding(end = 16.dp),
-                    onClick = { viewAllState = true },
-                    text = stringResource(R.string.home_new_view_all_groups_button),
-                    enabled = enabled,
-                )
-            },
-            collapseIndicator = {
-                TextGroupButton(
-                    modifier = Modifier.padding(end = 16.dp),
-                    onClick = { viewAllState = false },
-                    text = stringResource(R.string.home_new_hide_groups_button),
-                    enabled = enabled,
-                )
-            },
-            minRowsToShowCollapse = 3,
-        ),
-    ) {
-        NewGroupButton(
-            onClick = onNewGroupClick,
-            text = if (isSubgroups) {
-                stringResource(R.string.home_new_subgroup_button)
+    BoxWithConstraints(modifier = modifier) {
+        val maxChipWidth = constraints.maxWidth / 2
+
+        @OptIn(ExperimentalLayoutApi::class)
+        FlowRow(
+            Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .animateContentSize(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            maxLines = if (viewAllState) {
+                Int.MAX_VALUE
             } else {
-                stringResource(R.string.home_new_group_button)
+                2
             },
-            icon = {
-                Icon(imageVector = Icons.Rounded.Add, null)
-            },
-            showText = groups.isEmpty(),
-            enabled = enabled,
-        )
-
-        if (showThisGroupButton) {
-            TextGroupButton(
-                onClick = onThisGroupClick,
-                text = stringResource(R.string.home_this_group_button),
-                enabled = enabled,
-            )
-        }
-
-        for (group in groups) {
-            GroupButton(
-                onClick = { onGroupClick(group.uid) },
-                text = group.name,
-                enabled = enabled,
-                icon = {
-                    when (group.icon) {
-                        is ComposeIconInfo.Drawable -> {
-                            Icon(
-                                modifier = Modifier
-                                    .size(24.dp)
-                                    .padding(end = 8.dp),
-                                painter = rememberDrawablePainter(group.icon.drawable),
-                                contentDescription = null,
-                                tint = Color.Unspecified,
-                            )
-                        }
-
-                        is ComposeIconInfo.Vector -> {
-                            Icon(
-                                modifier = Modifier
-                                    .size(24.dp)
-                                    .padding(end = 8.dp),
-                                imageVector = group.icon.imageVector,
-                                contentDescription = null,
-                            )
-                        }
-
-                        null -> {}
-                    }
+            overflow = FlowRowOverflow.expandOrCollapseIndicator(
+                expandIndicator = {
+                    // Some padding is required on the end to stop it overflowing the screen.
+                    TextGroupButton(
+                        modifier = Modifier.padding(end = 16.dp),
+                        onClick = { viewAllState = true },
+                        text = stringResource(R.string.home_new_view_all_groups_button),
+                        enabled = enabled,
+                    )
                 },
+                collapseIndicator = {
+                    TextGroupButton(
+                        modifier = Modifier.padding(end = 16.dp),
+                        onClick = { viewAllState = false },
+                        text = stringResource(R.string.home_new_hide_groups_button),
+                        enabled = enabled,
+                    )
+                },
+                minRowsToShowCollapse = 3,
+            ),
+        ) {
+            NewGroupButton(
+                onClick = onNewGroupClick,
+                text = if (isSubgroups) {
+                    stringResource(R.string.home_new_subgroup_button)
+                } else {
+                    stringResource(R.string.home_new_group_button)
+                },
+                icon = {
+                    Icon(imageVector = Icons.Rounded.Add, null)
+                },
+                showText = groups.isEmpty(),
+                enabled = enabled,
             )
+
+            if (showThisGroupButton) {
+                TextGroupButton(
+                    onClick = onThisGroupClick,
+                    text = stringResource(R.string.home_this_group_button),
+                    enabled = enabled,
+                )
+            }
+
+            for (group in groups) {
+                GroupButton(
+                    modifier = Modifier.widthIn(max = LocalDensity.current.run { maxChipWidth.toDp() }),
+                    onClick = { onGroupClick(group.uid) },
+                    text = group.name,
+                    enabled = enabled,
+                    icon = {
+                        when (group.icon) {
+                            is ComposeIconInfo.Drawable -> {
+                                Icon(
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .padding(end = 8.dp),
+                                    painter = rememberDrawablePainter(group.icon.drawable),
+                                    contentDescription = null,
+                                    tint = Color.Unspecified,
+                                )
+                            }
+
+                            is ComposeIconInfo.Vector -> {
+                                Icon(
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .padding(end = 8.dp),
+                                    imageVector = group.icon.imageVector,
+                                    contentDescription = null,
+                                )
+                            }
+
+                            null -> {}
+                        }
+                    },
+                )
+            }
         }
     }
 }
@@ -258,6 +269,7 @@ private fun GroupButton(
                 maxLines = 1,
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.onSurface,
+                overflow = TextOverflow.Ellipsis,
             )
         }
     }
