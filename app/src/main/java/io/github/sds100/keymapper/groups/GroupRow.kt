@@ -77,15 +77,36 @@ fun GroupRow(
             },
             overflow = FlowRowOverflow.expandOrCollapseIndicator(
                 expandIndicator = {
-                    // Some padding is required on the end to stop it overflowing the screen.
-                    TextGroupButton(
-                        modifier = Modifier.padding(end = 16.dp),
-                        onClick = { viewAllState = true },
-                        text = stringResource(R.string.home_new_view_all_groups_button),
-                        enabled = enabled,
-                    )
+                    // Show new group button in the expand indicator if the new group button
+                    // in the flow row has overflowed.
+                    Row {
+                        NewGroupButton(
+                            onClick = onNewGroupClick,
+                            text = if (isSubgroups) {
+                                stringResource(R.string.home_new_subgroup_button)
+                            } else {
+                                stringResource(R.string.home_new_group_button)
+                            },
+                            icon = {
+                                Icon(imageVector = Icons.Rounded.Add, null)
+                            },
+                            showText = groups.isEmpty(),
+                            enabled = enabled,
+                        )
+
+                        Spacer(Modifier.width(8.dp))
+
+                        // Some padding is required on the end to stop it overflowing the screen.
+                        TextGroupButton(
+                            modifier = Modifier.padding(end = 16.dp),
+                            onClick = { viewAllState = true },
+                            text = stringResource(R.string.home_new_view_all_groups_button),
+                            enabled = enabled,
+                        )
+                    }
                 },
                 collapseIndicator = {
+                    // Some padding is required on the end to stop it overflowing the screen.
                     TextGroupButton(
                         modifier = Modifier.padding(end = 16.dp),
                         onClick = { viewAllState = false },
@@ -96,20 +117,6 @@ fun GroupRow(
                 minRowsToShowCollapse = 3,
             ),
         ) {
-            NewGroupButton(
-                onClick = onNewGroupClick,
-                text = if (isSubgroups) {
-                    stringResource(R.string.home_new_subgroup_button)
-                } else {
-                    stringResource(R.string.home_new_group_button)
-                },
-                icon = {
-                    Icon(imageVector = Icons.Rounded.Add, null)
-                },
-                showText = groups.isEmpty(),
-                enabled = enabled,
-            )
-
             if (showThisGroupButton) {
                 TextGroupButton(
                     onClick = onThisGroupClick,
@@ -152,6 +159,20 @@ fun GroupRow(
                     },
                 )
             }
+
+            NewGroupButton(
+                onClick = onNewGroupClick,
+                text = if (isSubgroups) {
+                    stringResource(R.string.home_new_subgroup_button)
+                } else {
+                    stringResource(R.string.home_new_group_button)
+                },
+                icon = {
+                    Icon(imageVector = Icons.Rounded.Add, null)
+                },
+                showText = groups.isEmpty(),
+                enabled = enabled,
+            )
         }
     }
 }

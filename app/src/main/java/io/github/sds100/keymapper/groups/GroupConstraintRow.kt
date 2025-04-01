@@ -69,12 +69,6 @@ fun GroupConstraintRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             itemVerticalAlignment = Alignment.CenterVertically,
         ) {
-            NewConstraintButton(
-                onClick = onNewConstraintClick,
-                showText = constraints.isEmpty(),
-                enabled = enabled,
-            )
-
             for ((index, constraint) in constraints.withIndex()) {
                 when (constraint) {
                     is ComposeChipModel.Normal ->
@@ -148,6 +142,12 @@ fun GroupConstraintRow(
                     style = MaterialTheme.typography.labelMedium,
                 )
             }
+
+            NewConstraintButton(
+                onClick = onNewConstraintClick,
+                showText = constraints.isEmpty(),
+                enabled = enabled,
+            )
         }
     }
 }
