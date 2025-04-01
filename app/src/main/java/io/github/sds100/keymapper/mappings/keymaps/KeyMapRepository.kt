@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.Flow
  */
 interface KeyMapRepository {
     val keyMapList: Flow<State<List<KeyMapEntity>>>
-    val requestBackup: Flow<List<KeyMapEntity>>
 
     fun getAll(): Flow<List<KeyMapEntity>>
     fun getByGroup(groupUid: String?): Flow<List<KeyMapEntity>>

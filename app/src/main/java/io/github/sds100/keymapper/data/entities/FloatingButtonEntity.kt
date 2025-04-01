@@ -80,7 +80,7 @@ data class FloatingButtonEntity(
 
     @ColumnInfo(name = KEY_BACKGROUND_OPACITY)
     @SerializedName(NAME_BACKGROUND_OPACITY)
-    val backgroundOpacity: Float? = 1f,
+    val backgroundOpacity: Float?,
 
 ) : Parcelable {
     companion object {

@@ -12,7 +12,6 @@ import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.splitIntoBatches
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
@@ -38,13 +37,9 @@ class RoomKeyMapRepository(
         .flowOn(dispatchers.io())
         .stateIn(coroutineScope, SharingStarted.Eagerly, State.Loading)
 
-    override val requestBackup = MutableSharedFlow<List<KeyMapEntity>>()
-
     init {
         coroutineScope.launch {
             migrateFingerprintMaps()
-
-            requestBackup()
         }
     }
 
@@ -61,8 +56,6 @@ class RoomKeyMapRepository(
             for (it in keyMap.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {
                 keyMapDao.insert(*it)
             }
-
-            requestBackup()
         }
     }
 
@@ -77,8 +70,6 @@ class RoomKeyMapRepository(
             for (it in keyMap.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {
                 keyMapDao.update(*it)
             }
-
-            requestBackup()
         }
     }
 
@@ -89,8 +80,6 @@ class RoomKeyMapRepository(
             for (it in uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {
                 keyMapDao.deleteById(*it)
             }
-
-            requestBackup()
         }
     }
 
@@ -106,8 +95,6 @@ class RoomKeyMapRepository(
 
                 keyMapDao.insert(*keymaps.toTypedArray())
             }
-
-            requestBackup()
         }
     }
 
@@ -116,8 +103,6 @@ class RoomKeyMapRepository(
             for (it in uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {
                 keyMapDao.enableKeyMapByUid(*it)
             }
-
-            requestBackup()
         }
     }
 
@@ -126,8 +111,6 @@ class RoomKeyMapRepository(
             for (it in uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {
                 keyMapDao.disableKeyMapByUid(*it)
             }
-
-            requestBackup()
         }
     }
 
@@ -136,8 +119,6 @@ class RoomKeyMapRepository(
             for (it in uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {
                 keyMapDao.setKeyMapGroup(groupUid, *it)
             }
-
-            requestBackup()
         }
     }
 
@@ -151,13 +132,6 @@ class RoomKeyMapRepository(
             val migratedFingerprintMapEntity =
                 entity.copy(flags = entity.flags or FingerprintMapEntity.FLAG_MIGRATED_TO_KEY_MAP)
             fingerprintMapDao.update(migratedFingerprintMapEntity)
-        }
-    }
-
-    private fun requestBackup() {
-        coroutineScope.launch {
-            val keyMapList = keyMapList.first { it is State.Data } as State.Data
-            requestBackup.emit(keyMapList.data)
         }
     }
 }
