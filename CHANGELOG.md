@@ -16,7 +16,6 @@ This is not an April Fool's joke ;)
 
 - Turn off flashlight when using decrease brightness action.
 - Animate floating buttons in and out.
-- #1607 rename parallel triggers to "combination"
 
 ## Bug fixes
 
