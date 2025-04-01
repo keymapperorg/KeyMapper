@@ -2,7 +2,7 @@
 
 _See the changes from previous 3.0 Beta releases as well._
 
-#### TO BE RELEASED
+#### 1 April 2025
 
 ## Added
 - #320 🗂️ Key map groups! You can now sort key maps into groups and share constraints across all the key maps in the group.

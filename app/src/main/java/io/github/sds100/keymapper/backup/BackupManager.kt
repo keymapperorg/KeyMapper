@@ -256,6 +256,9 @@ class BackupManagerImpl(
 
                 // Do nothing just added nullable column for when a group was last opened
                 JsonMigration(16, 17) { json -> json },
+
+                // Do nothing. It just removed the group name index.
+                JsonMigration(17, 18) { json -> json },
             )
 
             if (keyMapListJsonArray != null) {
