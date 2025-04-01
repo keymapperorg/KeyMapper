@@ -11,10 +11,10 @@ import timber.log.Timber
  * Created by sds100 on 16/04/2021.
  */
 
-class PauseMappingsUseCaseImpl(
+class PauseKeyMapsUseCaseImpl(
     private val preferenceRepository: PreferenceRepository,
     private val mediaAdapter: MediaAdapter,
-) : PauseMappingsUseCase {
+) : PauseKeyMapsUseCase {
 
     override val isPaused: Flow<Boolean> =
         preferenceRepository.get(Keys.mappingsPaused).map { it ?: false }
@@ -31,7 +31,7 @@ class PauseMappingsUseCaseImpl(
     }
 }
 
-interface PauseMappingsUseCase {
+interface PauseKeyMapsUseCase {
     val isPaused: Flow<Boolean>
     fun pause()
     fun resume()

@@ -1,9 +1,5 @@
 # Welcome to  Key Mapper Documentation
 
-!!! warning "MAINTENANCE NOTICE!"
-
-    Feature development has slowed down.
-
 [Key Mapper](https://github.com/keymapperorg/KeyMapper) is a free and open source Android app that can map single or multiple buttons to a custom action. 
 
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/keymapperorg/KeyMapper.svg)
@@ -41,7 +37,6 @@ This wiki aims to provide users with a comprehensive guide to using and setting 
 ### Community moderators/support
 
 - [Jack Ambler (jambl3r)](https://linkedin.com/in/jambl3r)
-- [GL513](https://gl513.github.io/)
 
 ### Translators
 

@@ -4,10 +4,14 @@ import android.accessibilityservice.AccessibilityService
 import android.os.SystemClock
 import android.view.KeyEvent
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
+import io.github.sds100.keymapper.data.repositories.GroupRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.groups.Group
+import io.github.sds100.keymapper.groups.GroupEntityMapper
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapEntityMapper
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapRepository
@@ -42,6 +46,7 @@ import timber.log.Timber
 class DetectKeyMapsUseCaseImpl(
     private val keyMapRepository: KeyMapRepository,
     private val floatingButtonRepository: FloatingButtonRepository,
+    private val groupRepository: GroupRepository,
     private val preferenceRepository: PreferenceRepository,
     private val suAdapter: SuAdapter,
     private val displayAdapter: DisplayAdapter,
@@ -55,32 +60,77 @@ class DetectKeyMapsUseCaseImpl(
     private val vibrator: VibratorAdapter,
 ) : DetectKeyMapsUseCase {
 
-    override val allKeyMapList: Flow<List<KeyMap>> = combine(
+    companion object {
+        fun processKeyMapsAndGroups(
+            keyMaps: List<KeyMap>,
+            groups: List<Group>,
+        ): List<DetectKeyMapModel> = buildList {
+            val groupMap = groups.associateBy { it.uid }
+
+            keyMapLoop@ for (keyMap in keyMaps) {
+                var depth = 0
+                var groupUid: String? = keyMap.groupUid
+                val constraintStates = mutableListOf<ConstraintState>()
+
+                while (depth < 100) {
+                    if (groupUid == null) {
+                        add(
+                            DetectKeyMapModel(
+                                keyMap = keyMap,
+                                groupConstraintStates = constraintStates,
+                            ),
+                        )
+                        break
+                    }
+
+                    if (!groupMap.containsKey(groupUid)) {
+                        continue@keyMapLoop
+                    }
+
+                    val group = groupMap[groupUid]!!
+                    groupUid = group.parentUid
+
+                    if (group.constraintState.constraints.isNotEmpty()) {
+                        constraintStates.add(group.constraintState)
+                    }
+
+                    depth++
+                }
+            }
+        }
+    }
+
+    override val allKeyMapList: Flow<List<DetectKeyMapModel>> = combine(
         keyMapRepository.keyMapList,
         floatingButtonRepository.buttonsList,
-    ) { keyMapListState, buttonListState ->
+        groupRepository.groups,
+    ) { keyMapListState, buttonListState, groupEntities ->
         if (keyMapListState is State.Loading || buttonListState is State.Loading) {
             return@combine emptyList()
         }
 
-        val keyMapList = keyMapListState.dataOrNull() ?: return@combine emptyList()
-        val buttonList = buttonListState.dataOrNull() ?: return@combine emptyList()
+        val keyMapEntityList = keyMapListState.dataOrNull() ?: return@combine emptyList()
+        val buttonEntityList = buttonListState.dataOrNull() ?: return@combine emptyList()
 
-        keyMapList.map { keyMap ->
-            KeyMapEntityMapper.fromEntity(keyMap, buttonList)
+        val keyMapList = keyMapEntityList.map { keyMap ->
+            KeyMapEntityMapper.fromEntity(keyMap, buttonEntityList)
         }
+
+        val groupList = groupEntities.map { GroupEntityMapper.fromEntity(it) }
+
+        processKeyMapsAndGroups(keyMapList, groupList)
     }.flowOn(Dispatchers.Default)
 
     override val requestFingerprintGestureDetection: Flow<Boolean> =
-        allKeyMapList.map { keyMaps ->
-            keyMaps.any { keyMap ->
-                keyMap.isEnabled && keyMap.trigger.keys.any { it is FingerprintTriggerKey }
+        allKeyMapList.map { models ->
+            models.any { model ->
+                model.keyMap.isEnabled && model.keyMap.trigger.keys.any { it is FingerprintTriggerKey }
             }
         }
 
     override val keyMapsToTriggerFromOtherApps: Flow<List<KeyMap>> =
         allKeyMapList.map { keyMapList ->
-            keyMapList.filter { it.trigger.triggerFromOtherApps }
+            keyMapList.filter { it.keyMap.trigger.triggerFromOtherApps }.map { it.keyMap }
         }.flowOn(Dispatchers.Default)
 
     override val detectScreenOffTriggers: Flow<Boolean> =
@@ -88,7 +138,7 @@ class DetectKeyMapsUseCaseImpl(
             allKeyMapList,
             suAdapter.isGranted,
         ) { keyMapList, isRootPermissionGranted ->
-            keyMapList.any { it.trigger.screenOffTrigger } && isRootPermissionGranted
+            keyMapList.any { it.keyMap.trigger.screenOffTrigger } && isRootPermissionGranted
         }.flowOn(Dispatchers.Default)
 
     override val defaultLongPressDelay: Flow<Long> =
@@ -184,7 +234,7 @@ class DetectKeyMapsUseCaseImpl(
 }
 
 interface DetectKeyMapsUseCase {
-    val allKeyMapList: Flow<List<KeyMap>>
+    val allKeyMapList: Flow<List<DetectKeyMapModel>>
     val requestFingerprintGestureDetection: Flow<Boolean>
     val keyMapsToTriggerFromOtherApps: Flow<List<KeyMap>>
     val detectScreenOffTriggers: Flow<Boolean>

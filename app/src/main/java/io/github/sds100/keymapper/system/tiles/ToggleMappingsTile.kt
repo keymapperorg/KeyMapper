@@ -28,7 +28,7 @@ class ToggleMappingsTile :
     LifecycleOwner {
 
     private val serviceAdapter by lazy { ServiceLocator.accessibilityServiceAdapter(this) }
-    private val useCase by lazy { UseCases.pauseMappings(this) }
+    private val useCase by lazy { UseCases.pauseKeyMaps(this) }
 
     private lateinit var lifecycleRegistry: LifecycleRegistry
 

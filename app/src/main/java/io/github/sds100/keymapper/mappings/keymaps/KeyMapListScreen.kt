@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -24,9 +23,7 @@ import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowForward
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Error
 import androidx.compose.material.icons.outlined.FlashlightOn
-import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -37,7 +34,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -51,12 +47,11 @@ import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
@@ -66,38 +61,13 @@ import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerError
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.drawable
+import io.github.sds100.keymapper.util.ui.compose.CompactChip
 import io.github.sds100.keymapper.util.ui.compose.ComposeChipModel
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.util.ui.compose.ErrorCompactChip
 
 @Composable
-fun KeyMapListScreen(
-    modifier: Modifier = Modifier,
-    viewModel: KeyMapListViewModel,
-    lazyListState: LazyListState,
-) {
-    val listItems by viewModel.state.collectAsStateWithLifecycle()
-    val isSelectable by viewModel.isSelectable.collectAsStateWithLifecycle()
-
-    KeyMapListScreen(
-        modifier = modifier,
-        lazyListState = lazyListState,
-        listItems = listItems,
-        footerText = if (isSelectable) {
-            null
-        } else {
-            stringResource(R.string.home_key_map_list_footer_text)
-        },
-        isSelectable = isSelectable,
-        onClickKeyMap = viewModel::onKeyMapCardClick,
-        onLongClickKeyMap = viewModel::onKeyMapCardLongClick,
-        onSelectedChange = viewModel::onKeyMapSelectedChanged,
-        onFixClick = viewModel::onFixClick,
-        onTriggerErrorClick = viewModel::onFixTriggerError,
-    )
-}
-
-@Composable
-fun KeyMapListScreen(
+fun KeyMapList(
     modifier: Modifier = Modifier,
     lazyListState: LazyListState = rememberLazyListState(),
     listItems: State<List<KeyMapListItemModel>>,
@@ -108,21 +78,22 @@ fun KeyMapListScreen(
     onSelectedChange: (String, Boolean) -> Unit = { _, _ -> },
     onFixClick: (Error) -> Unit = {},
     onTriggerErrorClick: (TriggerError) -> Unit = {},
+    bottomListPadding: Dp = 100.dp,
 ) {
-    Surface(modifier = modifier) {
-        when (listItems) {
-            is State.Loading -> {
-                Box {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                }
+    when (listItems) {
+        is State.Loading -> {
+            Surface(modifier = modifier) {
+                LoadingList(modifier = Modifier.fillMaxSize())
             }
+        }
 
-            is State.Data -> {
+        is State.Data -> {
+            Surface(modifier = modifier) {
                 if (listItems.data.isEmpty()) {
-                    EmptyKeyMapList(modifier = modifier)
+                    EmptyKeyMapList(modifier = Modifier.fillMaxSize())
                 } else {
-                    KeyMapList(
-                        modifier,
+                    LoadedKeyMapList(
+                        Modifier.fillMaxSize(),
                         lazyListState,
                         listItems.data,
                         footerText,
@@ -132,10 +103,18 @@ fun KeyMapListScreen(
                         onSelectedChange,
                         onFixClick,
                         onTriggerErrorClick,
+                        bottomListPadding,
                     )
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun LoadingList(modifier: Modifier = Modifier) {
+    Box(modifier) {
+        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
     }
 }
 
@@ -162,7 +141,7 @@ private fun EmptyKeyMapList(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun KeyMapList(
+private fun LoadedKeyMapList(
     modifier: Modifier = Modifier,
     lazyListState: LazyListState,
     listItems: List<KeyMapListItemModel>,
@@ -173,6 +152,7 @@ private fun KeyMapList(
     onSelectedChange: (String, Boolean) -> Unit,
     onFixClick: (Error) -> Unit,
     onTriggerErrorClick: (TriggerError) -> Unit,
+    bottomListPadding: Dp,
 ) {
     val haptics = LocalHapticFeedback.current
 
@@ -211,7 +191,7 @@ private fun KeyMapList(
 
         // Give some space at the end of the list so that the FAB doesn't block the items.
         item {
-            Spacer(Modifier.height(100.dp))
+            Spacer(Modifier.height(bottomListPadding))
         }
     }
 }
@@ -293,7 +273,7 @@ private fun KeyMapListItem(
                         ),
                     ) {
                         for (error in model.content.triggerErrors) {
-                            ErrorChip(
+                            ErrorCompactChip(
                                 onClick = { onTriggerErrorClick(error) },
                                 text = getTriggerErrorMessage(error),
                                 enabled = error.isFixable,
@@ -487,91 +467,10 @@ private fun ActionConstraintChip(
             )
         }
 
-        is ComposeChipModel.Error -> ErrorChip(
+        is ComposeChipModel.Error -> ErrorCompactChip(
             onClick = { onFixClick(model.error) },
             model.text,
             model.isFixable,
-        )
-    }
-}
-
-@Composable
-private fun ErrorChip(
-    onClick: () -> Unit,
-    text: String,
-    enabled: Boolean,
-) {
-    CompactChip(
-        text = text,
-        icon = {
-            Icon(
-                modifier = Modifier.fillMaxHeight(),
-                imageVector = Icons.Outlined.Error,
-                contentDescription = null,
-            )
-        },
-        containerColor = MaterialTheme.colorScheme.errorContainer,
-        contentColor = MaterialTheme.colorScheme.onErrorContainer,
-        onClick = onClick,
-        enabled = enabled,
-    )
-}
-
-@Composable
-private fun CompactChip(
-    modifier: Modifier = Modifier,
-    text: String,
-    icon: (@Composable () -> Unit)? = null,
-    containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
-    contentColor: Color = MaterialTheme.colorScheme.onSurface,
-    onClick: (() -> Unit)? = null,
-    enabled: Boolean = false,
-) {
-    CompositionLocalProvider(
-        LocalMinimumInteractiveComponentSize provides 16.dp,
-    ) {
-        if (onClick == null || !enabled) {
-            Surface(
-                modifier = modifier.height(chipHeight),
-                color = containerColor,
-                shape = AssistChipDefaults.shape,
-            ) {
-                CompactChipContent(icon, text, contentColor)
-            }
-        } else {
-            Surface(
-                modifier = modifier.height(chipHeight),
-                color = containerColor,
-                shape = AssistChipDefaults.shape,
-                onClick = onClick,
-            ) {
-                CompactChipContent(icon, text, contentColor)
-            }
-        }
-    }
-}
-
-@Composable
-private fun CompactChipContent(
-    icon: @Composable (() -> Unit)?,
-    text: String,
-    contentColor: Color,
-) {
-    Row(
-        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        if (icon != null) {
-            icon()
-            Spacer(Modifier.width(4.dp))
-        }
-
-        Text(
-            text,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            style = MaterialTheme.typography.labelLarge,
-            color = contentColor,
         )
     }
 }
@@ -736,7 +635,7 @@ private fun sampleList(): List<KeyMapListItemModel> {
 @Composable
 private fun ListPreview() {
     KeyMapperTheme {
-        KeyMapListScreen(modifier = Modifier.fillMaxSize(), listItems = State.Data(sampleList()))
+        KeyMapList(modifier = Modifier.fillMaxSize(), listItems = State.Data(sampleList()))
     }
 }
 
@@ -744,7 +643,7 @@ private fun ListPreview() {
 @Composable
 private fun SelectableListPreview() {
     KeyMapperTheme {
-        KeyMapListScreen(
+        KeyMapList(
             modifier = Modifier.fillMaxSize(),
             listItems = State.Data(sampleList()),
             isSelectable = true,
@@ -756,7 +655,7 @@ private fun SelectableListPreview() {
 @Composable
 private fun EmptyPreview() {
     KeyMapperTheme {
-        KeyMapListScreen(modifier = Modifier.fillMaxSize(), listItems = State.Data(emptyList()))
+        KeyMapList(modifier = Modifier.fillMaxSize(), listItems = State.Data(emptyList()))
     }
 }
 
@@ -764,6 +663,6 @@ private fun EmptyPreview() {
 @Composable
 private fun LoadingPreview() {
     KeyMapperTheme {
-        KeyMapListScreen(modifier = Modifier.fillMaxSize(), listItems = State.Loading)
+        KeyMapList(modifier = Modifier.fillMaxSize(), listItems = State.Loading)
     }
 }

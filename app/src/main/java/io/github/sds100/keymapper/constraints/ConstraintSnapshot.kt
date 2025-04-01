@@ -91,9 +91,9 @@ class LazyConstraintSnapshot(
                 appsPlayingMedia.none { it == constraint.packageName } &&
                     !(appInForeground == constraint.packageName && isMediaPlaying())
 
-            Constraint.MediaPlaying -> isMediaPlaying()
+            is Constraint.MediaPlaying -> isMediaPlaying()
 
-            Constraint.NoMediaPlaying -> !isMediaPlaying()
+            is Constraint.NoMediaPlaying -> !isMediaPlaying()
 
             is Constraint.BtDeviceConnected -> {
                 connectedBluetoothDevices.any { it.address == constraint.bluetoothAddress }
@@ -104,14 +104,14 @@ class LazyConstraintSnapshot(
             }
 
             is Constraint.OrientationCustom -> orientation == constraint.orientation
-            Constraint.OrientationLandscape ->
+            is Constraint.OrientationLandscape ->
                 orientation == Orientation.ORIENTATION_90 || orientation == Orientation.ORIENTATION_270
 
-            Constraint.OrientationPortrait ->
+            is Constraint.OrientationPortrait ->
                 orientation == Orientation.ORIENTATION_0 || orientation == Orientation.ORIENTATION_180
 
-            Constraint.ScreenOff -> !isScreenOn
-            Constraint.ScreenOn -> isScreenOn
+            is Constraint.ScreenOff -> !isScreenOn
+            is Constraint.ScreenOn -> isScreenOn
             is Constraint.FlashlightOff -> !cameraAdapter.isFlashlightOn(constraint.lens)
             is Constraint.FlashlightOn -> cameraAdapter.isFlashlightOn(constraint.lens)
             is Constraint.WifiConnected -> {
@@ -131,31 +131,31 @@ class LazyConstraintSnapshot(
                     connectedWifiSSID != constraint.ssid
                 }
 
-            Constraint.WifiOff -> !isWifiEnabled
-            Constraint.WifiOn -> isWifiEnabled
+            is Constraint.WifiOff -> !isWifiEnabled
+            is Constraint.WifiOn -> isWifiEnabled
             is Constraint.ImeChosen -> chosenImeId == constraint.imeId
             is Constraint.ImeNotChosen -> chosenImeId != constraint.imeId
-            Constraint.DeviceIsLocked -> isLocked
-            Constraint.DeviceIsUnlocked -> !isLocked
-            Constraint.InPhoneCall ->
+            is Constraint.DeviceIsLocked -> isLocked
+            is Constraint.DeviceIsUnlocked -> !isLocked
+            is Constraint.InPhoneCall ->
                 callState == CallState.IN_PHONE_CALL ||
                     audioVolumeStreams.contains(AudioManager.STREAM_VOICE_CALL)
 
-            Constraint.NotInPhoneCall ->
+            is Constraint.NotInPhoneCall ->
                 callState == CallState.NONE &&
                     !audioVolumeStreams.contains(AudioManager.STREAM_VOICE_CALL)
 
-            Constraint.PhoneRinging ->
+            is Constraint.PhoneRinging ->
                 callState == CallState.RINGING ||
                     audioVolumeStreams.contains(AudioManager.STREAM_RING)
 
-            Constraint.Charging -> isCharging
-            Constraint.Discharging -> !isCharging
+            is Constraint.Charging -> isCharging
+            is Constraint.Discharging -> !isCharging
 
             // The keyguard manager still reports the lock screen as showing if you are in
             // an another activity like the camera app while the phone is locked.
-            Constraint.LockScreenShowing -> isLockscreenShowing && appInForeground == "com.android.systemui"
-            Constraint.LockScreenNotShowing -> !isLockscreenShowing || appInForeground != "com.android.systemui"
+            is Constraint.LockScreenShowing -> isLockscreenShowing && appInForeground == "com.android.systemui"
+            is Constraint.LockScreenNotShowing -> !isLockscreenShowing || appInForeground != "com.android.systemui"
         }
 
         if (isSatisfied) {
@@ -172,19 +172,42 @@ interface ConstraintSnapshot {
     fun isSatisfied(constraint: Constraint): Boolean
 }
 
-fun ConstraintSnapshot.isSatisfied(constraintState: ConstraintState): Boolean {
-    // Required in case OR is used with empty list of constraints.
-    if (constraintState.constraints.isEmpty()) {
-        return true
+/**
+ * Whether multiple constraint states are satisfied. This does an AND on the
+ * constraint states.
+ */
+fun ConstraintSnapshot.isSatisfied(vararg constraintState: ConstraintState): Boolean {
+    for (state in constraintState) {
+        when (state.mode) {
+            ConstraintMode.AND -> {
+                for (constraint in state.constraints) {
+                    if (!isSatisfied(constraint)) {
+                        return false
+                    }
+                }
+            }
+
+            ConstraintMode.OR -> {
+                // If no constraints then still satisfied
+                if (state.constraints.isEmpty()) {
+                    continue
+                }
+
+                var anySatisfied = false
+
+                for (constraint in state.constraints) {
+                    if (isSatisfied(constraint)) {
+                        anySatisfied = true
+                        break
+                    }
+                }
+
+                if (!anySatisfied) {
+                    return false
+                }
+            }
+        }
     }
 
-    return when (constraintState.mode) {
-        ConstraintMode.AND -> {
-            constraintState.constraints.all { isSatisfied(it) }
-        }
-
-        ConstraintMode.OR -> {
-            constraintState.constraints.any { isSatisfied(it) }
-        }
-    }
+    return true
 }

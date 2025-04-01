@@ -1,28 +1,41 @@
 package io.github.sds100.keymapper.data.entities
 
+import android.os.Parcelable
 import com.github.salomonbrys.kotson.byArray
+import com.github.salomonbrys.kotson.byNullableString
 import com.github.salomonbrys.kotson.byString
 import com.github.salomonbrys.kotson.jsonDeserializer
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
+import java.util.UUID
 
 /**
  * Created by sds100 on 17/03/2020.
  */
 
+@Parcelize
 data class ConstraintEntity(
     @SerializedName(NAME_TYPE)
     val type: String,
 
     @SerializedName(NAME_EXTRAS)
     val extras: List<EntityExtra>,
-) {
 
-    constructor(type: String, vararg extra: EntityExtra) : this(type, extra.toList())
+    @SerializedName(NAME_UID)
+    val uid: String,
+) : Parcelable {
+
+    constructor(uid: String, type: String, vararg extra: EntityExtra) : this(
+        uid = uid,
+        type = type,
+        extras = extra.toList(),
+    )
 
     companion object {
         // DON'T CHANGE THESE. Used for JSON serialization and parsing.
         const val NAME_TYPE = "type"
         const val NAME_EXTRAS = "extras"
+        const val NAME_UID = "uid"
 
         const val MODE_OR = 0
         const val MODE_AND = 1
@@ -86,7 +99,14 @@ data class ConstraintEntity(
             val extrasJsonArray by it.json.byArray(NAME_EXTRAS)
             val extraList = it.context.deserialize<List<EntityExtra>>(extrasJsonArray) ?: listOf()
 
-            ConstraintEntity(type, extraList)
+            // Constraints did not always have UID so this could be null.
+            val uid by it.json.byNullableString(NAME_UID)
+
+            ConstraintEntity(
+                uid = uid ?: UUID.randomUUID().toString(),
+                type = type,
+                extras = extraList,
+            )
         }
     }
 }

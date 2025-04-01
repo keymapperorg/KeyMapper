@@ -72,7 +72,7 @@ class AndroidCameraAdapter(context: Context) : CameraAdapter {
             val maxFlashStrength = getCharacteristicForLens(
                 lens,
                 CameraCharacteristics.FLASH_INFO_STRENGTH_MAXIMUM_LEVEL,
-            )
+            ) ?: 1
 
             val defaultFlashStrength = getCharacteristicForLens(
                 lens,
@@ -80,9 +80,9 @@ class AndroidCameraAdapter(context: Context) : CameraAdapter {
             )
 
             return CameraFlashInfo(
-                supportsVariableStrength = true,
+                supportsVariableStrength = maxFlashStrength > 1,
                 defaultStrength = defaultFlashStrength ?: 1,
-                maxStrength = maxFlashStrength ?: 1,
+                maxStrength = maxFlashStrength,
             )
         } else {
             return CameraFlashInfo(
@@ -152,6 +152,11 @@ class AndroidCameraAdapter(context: Context) : CameraAdapter {
             return Error.SdkVersionTooLow(minSdk = Build.VERSION_CODES.TIRAMISU)
         }
 
+        // If the flash is disabled and it should be decreased then do nothing.
+        if (percent < 0 && isFlashEnabledMap.value[lens] == false) {
+            return Success(Unit)
+        }
+
         try {
             val cameraId = getFlashlightCameraIdForLens(lens)
 
@@ -177,9 +182,14 @@ class AndroidCameraAdapter(context: Context) : CameraAdapter {
                 val newStrength =
                     (currentStrength + (percent * maxStrength))
                         .toInt()
-                        .coerceIn(1, maxStrength)
+                        .coerceAtMost(maxStrength)
 
-                cameraManager.turnOnTorchWithStrengthLevel(cameraId, newStrength)
+                // If we want to go below the current strength then turn off the flashlight.
+                if (newStrength < 1) {
+                    cameraManager.setTorchMode(cameraId, false)
+                } else {
+                    cameraManager.turnOnTorchWithStrengthLevel(cameraId, newStrength)
+                }
             }
 
             return Success(Unit)

@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.actions
 
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.home.ChooseAppStoreModel
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapUseCase
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.mappings.keymaps.ShortcutModel
@@ -14,6 +13,7 @@ import io.github.sds100.keymapper.util.getFullMessage
 import io.github.sds100.keymapper.util.isFixable
 import io.github.sds100.keymapper.util.mapData
 import io.github.sds100.keymapper.util.onFailure
+import io.github.sds100.keymapper.util.ui.ChooseAppStoreModel
 import io.github.sds100.keymapper.util.ui.DialogResponse
 import io.github.sds100.keymapper.util.ui.LinkType
 import io.github.sds100.keymapper.util.ui.NavDestination

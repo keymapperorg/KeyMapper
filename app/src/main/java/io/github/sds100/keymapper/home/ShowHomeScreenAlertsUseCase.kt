@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.home
 
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
+import io.github.sds100.keymapper.mappings.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.permissions.Permission
@@ -18,7 +18,7 @@ class ShowHomeScreenAlertsUseCaseImpl(
     private val preferences: PreferenceRepository,
     private val permissions: PermissionAdapter,
     private val accessibilityServiceAdapter: ServiceAdapter,
-    private val pauseMappingsUseCase: PauseMappingsUseCase,
+    private val pauseKeyMapsUseCase: PauseKeyMapsUseCase,
 ) : ShowHomeScreenAlertsUseCase {
     override val hideAlerts: Flow<Boolean> =
         preferences.get(Keys.hideHomeScreenAlerts).map { it == true }
@@ -27,7 +27,7 @@ class ShowHomeScreenAlertsUseCaseImpl(
         permissions.isGrantedFlow(Permission.IGNORE_BATTERY_OPTIMISATION)
             .map { !it } // if granted then battery is NOT optimised
 
-    override val areKeyMapsPaused: Flow<Boolean> = pauseMappingsUseCase.isPaused
+    override val areKeyMapsPaused: Flow<Boolean> = pauseKeyMapsUseCase.isPaused
 
     override val isLoggingEnabled: Flow<Boolean> = preferences.get(Keys.log).map { it == true }
 
@@ -46,7 +46,7 @@ class ShowHomeScreenAlertsUseCaseImpl(
     }
 
     override fun resumeMappings() {
-        pauseMappingsUseCase.resume()
+        pauseKeyMapsUseCase.resume()
     }
 
     override fun disableLogging() {

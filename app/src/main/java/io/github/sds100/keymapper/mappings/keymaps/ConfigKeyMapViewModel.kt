@@ -99,8 +99,8 @@ class ConfigKeyMapViewModel(
         config.restoreState(keyMap)
     }
 
-    fun loadNewKeymap(floatingButtonUid: String? = null) {
-        config.loadNewKeyMap()
+    fun loadNewKeymap(floatingButtonUid: String? = null, groupUid: String?) {
+        config.loadNewKeyMap(groupUid)
         if (floatingButtonUid != null) {
             viewModelScope.launch {
                 config.addFloatingButtonTriggerKey(floatingButtonUid)

@@ -206,11 +206,19 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
             NavDestination.About -> NavAppDirections.actionGlobalAboutFragment()
             NavDestination.Settings -> NavAppDirections.toSettingsFragment()
 
-            is NavDestination.ConfigKeyMap ->
-                NavAppDirections.actionToConfigKeymap(
-                    destination.keyMapUid,
-                    showAdvancedTriggers = destination.showAdvancedTriggers,
-                )
+            is NavDestination.ConfigKeyMap -> when (destination) {
+                is NavDestination.ConfigKeyMap.New ->
+                    NavAppDirections.actionToConfigKeymap(
+                        groupUid = destination.groupUid,
+                        showAdvancedTriggers = destination.showAdvancedTriggers,
+                    )
+
+                is NavDestination.ConfigKeyMap.Open ->
+                    NavAppDirections.actionToConfigKeymap(
+                        keyMapUid = destination.keyMapUid,
+                        showAdvancedTriggers = destination.showAdvancedTriggers,
+                    )
+            }
 
             is NavDestination.ChooseFloatingLayout -> NavAppDirections.toChooseFloatingLayoutFragment()
             NavDestination.ShizukuSettings -> NavAppDirections.toShizukuSettingsFragment()

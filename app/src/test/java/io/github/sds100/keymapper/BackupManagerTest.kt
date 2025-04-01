@@ -10,8 +10,14 @@ import io.github.sds100.keymapper.backup.RestoreType
 import io.github.sds100.keymapper.data.db.AppDatabase
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.EntityExtra
+import io.github.sds100.keymapper.data.entities.FloatingButtonEntity
+import io.github.sds100.keymapper.data.entities.FloatingLayoutEntity
+import io.github.sds100.keymapper.data.entities.FloatingLayoutEntityWithButtons
+import io.github.sds100.keymapper.data.entities.GroupEntity
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.data.repositories.FakePreferenceRepository
+import io.github.sds100.keymapper.data.repositories.FloatingLayoutRepository
+import io.github.sds100.keymapper.data.repositories.GroupRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.keymaps.KeyMapRepository
 import io.github.sds100.keymapper.system.files.FakeFileAdapter
@@ -23,7 +29,6 @@ import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.UuidGenerator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -32,6 +37,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.core.IsInstanceOf
 import org.junit.After
@@ -43,6 +49,7 @@ import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyVararg
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
@@ -86,9 +93,7 @@ class BackupManagerTest {
 
         fakePreferenceRepository = FakePreferenceRepository()
 
-        mockKeyMapRepository = mock {
-            on { requestBackup }.then { MutableSharedFlow<List<KeyMapEntity>>() }
-        }
+        mockKeyMapRepository = mock()
 
         fakeFileAdapter = FakeFileAdapter(temporaryFolder)
 
@@ -108,7 +113,12 @@ class BackupManagerTest {
             soundsManager = mockSoundsManager,
             uuidGenerator = mockUuidGenerator,
             floatingButtonRepository = mock {},
-            floatingLayoutRepository = mock {},
+            floatingLayoutRepository = mock<FloatingLayoutRepository> {
+                on { layouts } doReturn MutableStateFlow(State.Data(emptyList()))
+            },
+            groupRepository = mock<GroupRepository> {
+                on { getAllGroups() } doReturn MutableStateFlow(emptyList())
+            },
         )
 
         parser = JsonParser()
@@ -120,13 +130,66 @@ class BackupManagerTest {
         Dispatchers.resetMain()
     }
 
+    @Test
+    fun `when backing up everything include layouts that are not in the list of key maps`() = runTest(testDispatcher) {
+        val layoutWithButtons = FloatingLayoutEntityWithButtons(
+            layout = FloatingLayoutEntity(
+                uid = "layout_uid",
+                name = "layout_name",
+            ),
+            buttons = listOf(
+                FloatingButtonEntity(
+                    uid = "button_uid",
+                    layoutUid = "layout_uid",
+                    text = "Button",
+                    buttonSize = 10,
+                    x = 0,
+                    y = 0,
+                    orientation = "orientation",
+                    displayWidth = 100,
+                    displayHeight = 100,
+                    borderOpacity = null,
+                    backgroundOpacity = null,
+                ),
+            ),
+        )
+
+        val content = backupManager.createBackupContent(
+            keyMapList = emptyList(),
+            extraGroups = emptyList(),
+            extraLayouts = listOf(layoutWithButtons),
+        )
+
+        assertThat(content.floatingLayouts, Matchers.contains(layoutWithButtons.layout))
+        assertThat(
+            content.floatingButtons,
+            Matchers.contains(*layoutWithButtons.buttons.toTypedArray()),
+        )
+    }
+
+    @Test
+    fun `when backing up everything include groups that are not in the list of key maps`() = runTest(testDispatcher) {
+        val group = GroupEntity(
+            uid = "group_uid",
+            name = "group_name",
+            parentUid = null,
+            lastOpenedDate = 0L,
+        )
+
+        val content = backupManager.createBackupContent(
+            keyMapList = emptyList(),
+            extraGroups = listOf(group),
+            extraLayouts = emptyList(),
+        )
+
+        assertThat(content.groups, Matchers.contains(group))
+    }
+
     /**
      * #745
      */
     @Test
     fun `Don't allow back ups from a newer version of key mapper`() = runTest(testDispatcher) {
-        advanceUntilIdle()
-
         // GIVEN
         val dataJsonFile = "restore-app-version-too-big.zip/data.json"
         val zipFile = fakeFileAdapter.getPrivateFile("backup.zip")
@@ -145,11 +208,8 @@ class BackupManagerTest {
      * #745
      */
     @Test
-    fun `Allow back ups from a back up without a key mapper version in it`() = runTest(testDispatcher) {
+    fun `Allow restoring a back up without a key mapper version in it`() = runTest(testDispatcher) {
         // GIVEN
-        whenever(mockKeyMapRepository.keyMapList).then {
-            MutableStateFlow(State.Data(emptyList<KeyMapEntity>()))
-        }
 
         val dataJsonFile = "restore-no-app-version.zip/data.json"
         val zipFile = fakeFileAdapter.getPrivateFile("backup.zip")
@@ -167,9 +227,6 @@ class BackupManagerTest {
     @Test
     fun `don't crash if back up does not contain sounds folder`() = runTest(testDispatcher) {
         // GIVEN
-        whenever(mockKeyMapRepository.keyMapList).then {
-            MutableStateFlow(State.Data(emptyList<KeyMapEntity>()))
-        }
 
         val dataJsonFile = "restore-no-sounds-folder.zip/data.json"
         val zipFile = fakeFileAdapter.getPrivateFile("backup.zip")

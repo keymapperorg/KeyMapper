@@ -46,6 +46,8 @@ class RoomFloatingButtonRepository(
                     layoutUid = button.layoutUid,
                     text = button.text,
                     buttonSize = button.buttonSize,
+                    borderOpacity = button.borderOpacity,
+                    backgroundOpacity = button.backgroundOpacity,
                     x = button.x,
                     y = button.y,
                     orientation = button.orientation,

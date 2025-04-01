@@ -5,4 +5,4 @@
     android:canRequestFingerprintGestures="true"
     android:canRetrieveWindowContent="true"
     android:description="@string/accessibility_service_explanation"
-    android:notificationTimeout="100" /><!-- IMPORTANT. Set an accessibility event timeout because WINDOW_CONTENT_CHANGED events can be sent very frequently. -->
+    android:notificationTimeout="200" /><!-- IMPORTANT. Set an accessibility event timeout because WINDOW_CONTENT_CHANGED events can be sent very frequently. -->

@@ -6,7 +6,7 @@ import androidx.core.app.NotificationManagerCompat
 import io.github.sds100.keymapper.BaseMainActivity
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
+import io.github.sds100.keymapper.mappings.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.system.accessibility.ControlAccessibilityServiceUseCase
 import io.github.sds100.keymapper.system.accessibility.ServiceState
@@ -37,7 +37,7 @@ import kotlinx.coroutines.launch
 class NotificationController(
     private val coroutineScope: CoroutineScope,
     private val manageNotifications: ManageNotificationsUseCase,
-    private val pauseMappings: PauseMappingsUseCase,
+    private val pauseMappings: PauseKeyMapsUseCase,
     private val showImePicker: ShowInputMethodPickerUseCase,
     private val controlAccessibilityService: ControlAccessibilityServiceUseCase,
     private val toggleCompatibleIme: ToggleCompatibleImeUseCase,

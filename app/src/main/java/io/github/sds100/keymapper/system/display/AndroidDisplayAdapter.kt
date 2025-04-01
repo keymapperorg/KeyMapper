@@ -57,7 +57,10 @@ class AndroidDisplayAdapter(
                     }
                 }
 
-                Intent.ACTION_SCREEN_OFF -> isScreenOn.update { false }
+                Intent.ACTION_SCREEN_OFF -> {
+                    isAmbientDisplayEnabled.update { isAodEnabled() }
+                    isScreenOn.update { false }
+                }
             }
         }
     }
@@ -73,6 +76,9 @@ class AndroidDisplayAdapter(
 
     override val size: SizeKM
         get() = ctx.getRealDisplaySize()
+
+    override val isAmbientDisplayEnabled: MutableStateFlow<Boolean> =
+        MutableStateFlow(isAodEnabled())
 
     init {
         displayManager.registerDisplayListener(
@@ -231,5 +237,9 @@ class AndroidDisplayAdapter(
         Surface.ROTATION_270 -> Orientation.ORIENTATION_270
 
         else -> throw Exception("Don't know how to convert $sdkRotation to Orientation")
+    }
+
+    private fun isAodEnabled(): Boolean {
+        return SettingsUtils.getSecureSetting<Int>(ctx, "doze_always_on") == 1
     }
 }

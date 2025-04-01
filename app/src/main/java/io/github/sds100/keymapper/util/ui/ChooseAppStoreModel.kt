@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.home
+package io.github.sds100.keymapper.util.ui
 
 /**
  * Created by sds100 on 24/07/20.

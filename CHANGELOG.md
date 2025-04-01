@@ -1,8 +1,35 @@
-## [3.0 Beta 2](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0-beta.2)
-
-#### TO BE RELEASED
+## [3.0 Beta 3](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0-beta.3)
 
 _See the changes from previous 3.0 Beta releases as well._
+
+#### 1 April 2025
+
+This is not an April Fool's joke ;)
+
+## Added
+- #320 🗂️ Key map groups! You can now sort key maps into groups and share constraints across all the key maps in the group.
+- #1586 🎨 Customise floating button border and background opacity.
+- #1276 Use key event scan code as fallback if the key code is unrecognized.
+- Make it clearer that the instructions need to be read for the assistant trigger.
+
+## Changed
+
+- Turn off flashlight when using decrease brightness action.
+- Animate floating buttons in and out.
+
+## Bug fixes
+
+- Do not hide floating button when the quick settings are showing if the key map action can collapse the status bar.
+- Do not show floating buttons on the always-on display or when the display is "off".
+- Prompt to unlock device when tapping "Go back" on the floating menu.
+- #1596 Do not show the option for front flashlight if the device does not have one.
+- #1598 Do not allow changing flashlight brightness on devices that do not support it.
+- Omit "Back" from Back flashlight actions and constraints since most devices only have a back flashlight anyway.
+- Do not ask for which flashlight to use in constraints if the device only has one
+
+## [3.0 Beta 2](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0-beta.2)
+
+#### 27 March 2025
 
 ## Added
 

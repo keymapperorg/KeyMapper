@@ -14,7 +14,7 @@ import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.FingerprintGestureType
 import io.github.sds100.keymapper.mappings.FingerprintGesturesSupportedUseCase
-import io.github.sds100.keymapper.mappings.PauseMappingsUseCase
+import io.github.sds100.keymapper.mappings.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCase
 import io.github.sds100.keymapper.mappings.keymaps.detection.DetectScreenOffKeyEventsController
 import io.github.sds100.keymapper.mappings.keymaps.detection.DpadMotionEventTracker
@@ -24,6 +24,7 @@ import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyEventDetectionSour
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsController
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsUseCase
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
+import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
 import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
@@ -67,7 +68,7 @@ abstract class BaseAccessibilityServiceController(
     private val detectKeyMapsUseCase: DetectKeyMapsUseCase,
     private val fingerprintGesturesSupported: FingerprintGesturesSupportedUseCase,
     rerouteKeyEventsUseCase: RerouteKeyEventsUseCase,
-    private val pauseMappingsUseCase: PauseMappingsUseCase,
+    private val pauseKeyMapsUseCase: PauseKeyMapsUseCase,
     private val devicesAdapter: DevicesAdapter,
     private val suAdapter: SuAdapter,
     private val inputMethodAdapter: InputMethodAdapter,
@@ -106,7 +107,7 @@ abstract class BaseAccessibilityServiceController(
     private val recordDpadMotionEventTracker: DpadMotionEventTracker =
         DpadMotionEventTracker()
 
-    val isPaused: StateFlow<Boolean> = pauseMappingsUseCase.isPaused
+    val isPaused: StateFlow<Boolean> = pauseKeyMapsUseCase.isPaused
         .stateIn(coroutineScope, SharingStarted.Eagerly, false)
 
     private val screenOffTriggersEnabled: StateFlow<Boolean> =
@@ -204,7 +205,7 @@ abstract class BaseAccessibilityServiceController(
             }.launchIn(coroutineScope)
         }
 
-        pauseMappingsUseCase.isPaused.distinctUntilChanged().onEach {
+        pauseKeyMapsUseCase.isPaused.distinctUntilChanged().onEach {
             keyMapController.reset()
             triggerKeyMapFromOtherAppsController.reset()
         }.launchIn(coroutineScope)
@@ -234,7 +235,7 @@ abstract class BaseAccessibilityServiceController(
             }.launchIn(coroutineScope)
 
         combine(
-            pauseMappingsUseCase.isPaused,
+            pauseKeyMapsUseCase.isPaused,
             detectKeyMapsUseCase.allKeyMapList,
         ) { isPaused, keyMaps ->
             val enableAccessibilityVolumeStream: Boolean
@@ -242,8 +243,8 @@ abstract class BaseAccessibilityServiceController(
             if (isPaused) {
                 enableAccessibilityVolumeStream = false
             } else {
-                enableAccessibilityVolumeStream = keyMaps.any { mapping ->
-                    mapping.isEnabled && mapping.actionList.any { it.data is ActionData.Sound }
+                enableAccessibilityVolumeStream = keyMaps.any { model ->
+                    model.keyMap.isEnabled && model.keyMap.actionList.any { it.data is ActionData.Sound }
                 }
             }
 
@@ -296,6 +297,29 @@ abstract class BaseAccessibilityServiceController(
     open fun onConfigurationChanged(newConfig: Configuration) {
     }
 
+    /**
+     * Returns an MyKeyEvent which is either the same or more unique
+     */
+    private fun getUniqueEvent(event: MyKeyEvent): MyKeyEvent {
+        // Guard to ignore processing when not applicable
+        if (event.keyCode != KeyEvent.KEYCODE_UNKNOWN) return event
+
+        // Don't offset negative values
+        val scanCodeOffset: Int = if (event.scanCode >= 0) {
+            InputEventUtils.KEYCODE_TO_SCANCODE_OFFSET
+        } else {
+            0
+        }
+
+        val eventProxy = event.copy(
+            // Fallback to scanCode when keyCode is unknown as it's typically more unique
+            // Add offset to go past possible keyCode values
+            keyCode = event.scanCode + scanCodeOffset,
+        )
+
+        return eventProxy
+    }
+
     fun onKeyEvent(
         event: MyKeyEvent,
         detectionSource: KeyEventDetectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
@@ -305,11 +329,14 @@ abstract class BaseAccessibilityServiceController(
         if (recordingTrigger) {
             if (event.action == KeyEvent.ACTION_DOWN) {
                 Timber.d("Recorded key ${KeyEvent.keyCodeToString(event.keyCode)}, $detailedLogInfo")
+
+                val uniqueEvent: MyKeyEvent = getUniqueEvent(event)
+
                 coroutineScope.launch {
                     outputEvents.emit(
                         ServiceEvent.RecordedTriggerKey(
-                            event.keyCode,
-                            event.device,
+                            uniqueEvent.keyCode,
+                            uniqueEvent.device,
                             detectionSource,
                         ),
                     )
@@ -327,16 +354,17 @@ abstract class BaseAccessibilityServiceController(
         } else {
             try {
                 var consume: Boolean
+                val uniqueEvent: MyKeyEvent = getUniqueEvent(event)
 
-                consume = keyMapController.onKeyEvent(event)
+                consume = keyMapController.onKeyEvent(uniqueEvent)
 
                 if (!consume) {
-                    consume = rerouteKeyEventsController.onKeyEvent(event)
+                    consume = rerouteKeyEventsController.onKeyEvent(uniqueEvent)
                 }
 
-                when (event.action) {
-                    KeyEvent.ACTION_DOWN -> Timber.d("Down ${KeyEvent.keyCodeToString(event.keyCode)} - consumed: $consume, $detailedLogInfo")
-                    KeyEvent.ACTION_UP -> Timber.d("Up ${KeyEvent.keyCodeToString(event.keyCode)} - consumed: $consume, $detailedLogInfo")
+                when (uniqueEvent.action) {
+                    KeyEvent.ACTION_DOWN -> Timber.d("Down ${KeyEvent.keyCodeToString(uniqueEvent.keyCode)} - consumed: $consume, $detailedLogInfo")
+                    KeyEvent.ACTION_UP -> Timber.d("Up ${KeyEvent.keyCodeToString(uniqueEvent.keyCode)} - consumed: $consume, $detailedLogInfo")
                 }
 
                 return consume

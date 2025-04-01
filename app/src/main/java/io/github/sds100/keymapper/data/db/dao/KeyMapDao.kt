@@ -24,8 +24,8 @@ interface KeyMapDao {
         const val KEY_ACTION_LIST = "action_list"
         const val KEY_CONSTRAINT_LIST = "constraint_list"
         const val KEY_CONSTRAINT_MODE = "constraint_mode"
-        const val KEY_FOLDER_NAME = "folder_name"
         const val KEY_UID = "uid"
+        const val KEY_GROUP_UID = "group_uid"
     }
 
     @Query("SELECT * FROM $TABLE_NAME WHERE $KEY_ID = (:id)")
@@ -36,6 +36,10 @@ interface KeyMapDao {
 
     @Query("SELECT * FROM $TABLE_NAME")
     fun getAll(): Flow<List<KeyMapEntity>>
+
+    // Must use IS to check if it is null.
+    @Query("SELECT * FROM $TABLE_NAME WHERE $KEY_GROUP_UID IS (:groupUid)")
+    fun getByGroup(groupUid: String?): Flow<List<KeyMapEntity>>
 
     @Query("UPDATE $TABLE_NAME SET $KEY_ENABLED=0")
     suspend fun disableAll()
@@ -48,6 +52,9 @@ interface KeyMapDao {
 
     @Query("UPDATE $TABLE_NAME SET $KEY_ENABLED=0 WHERE $KEY_UID in (:uid)")
     suspend fun disableKeyMapByUid(vararg uid: String)
+
+    @Query("UPDATE $TABLE_NAME SET $KEY_GROUP_UID=(:groupUid) WHERE $KEY_UID in (:uid)")
+    suspend fun setKeyMapGroup(groupUid: String?, vararg uid: String)
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insert(vararg keyMap: KeyMapEntity)

@@ -11,7 +11,7 @@ import io.github.sds100.keymapper.util.DispatcherProvider
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.splitIntoBatches
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
@@ -37,23 +37,25 @@ class RoomKeyMapRepository(
         .flowOn(dispatchers.io())
         .stateIn(coroutineScope, SharingStarted.Eagerly, State.Loading)
 
-    override val requestBackup = MutableSharedFlow<List<KeyMapEntity>>()
-
     init {
         coroutineScope.launch {
             migrateFingerprintMaps()
-
-            requestBackup()
         }
+    }
+
+    override fun getAll(): Flow<List<KeyMapEntity>> {
+        return keyMapDao.getAll().flowOn(dispatchers.io())
+    }
+
+    override fun getByGroup(groupUid: String?): Flow<List<KeyMapEntity>> {
+        return keyMapDao.getByGroup(groupUid).flowOn(dispatchers.io())
     }
 
     override fun insert(vararg keyMap: KeyMapEntity) {
         coroutineScope.launch(dispatchers.io()) {
-            keyMap.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE).forEach {
+            for (it in keyMap.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {
                 keyMapDao.insert(*it)
             }
-
-            requestBackup()
         }
     }
 
@@ -65,11 +67,9 @@ class RoomKeyMapRepository(
 
     override fun update(vararg keyMap: KeyMapEntity) {
         coroutineScope.launch(dispatchers.io()) {
-            keyMap.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE).forEach {
+            for (it in keyMap.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {
                 keyMapDao.update(*it)
             }
-
-            requestBackup()
         }
     }
 
@@ -77,17 +77,15 @@ class RoomKeyMapRepository(
 
     override fun delete(vararg uid: String) {
         coroutineScope.launch(dispatchers.io()) {
-            uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE).forEach {
+            for (it in uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {
                 keyMapDao.deleteById(*it)
             }
-
-            requestBackup()
         }
     }
 
     override fun duplicate(vararg uid: String) {
         coroutineScope.launch(dispatchers.io()) {
-            uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE).forEach { uidBatch ->
+            for (uidBatch in uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {
                 val keymaps = mutableListOf<KeyMapEntity>()
 
                 for (keyMapUid in uidBatch) {
@@ -97,28 +95,30 @@ class RoomKeyMapRepository(
 
                 keyMapDao.insert(*keymaps.toTypedArray())
             }
-
-            requestBackup()
         }
     }
 
     override fun enableById(vararg uid: String) {
         coroutineScope.launch(dispatchers.io()) {
-            uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE).forEach {
+            for (it in uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {
                 keyMapDao.enableKeyMapByUid(*it)
             }
-
-            requestBackup()
         }
     }
 
     override fun disableById(vararg uid: String) {
         coroutineScope.launch(dispatchers.io()) {
-            uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE).forEach {
+            for (it in uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {
                 keyMapDao.disableKeyMapByUid(*it)
             }
+        }
+    }
 
-            requestBackup()
+    override fun moveToGroup(groupUid: String?, vararg uid: String) {
+        coroutineScope.launch {
+            for (it in uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {
+                keyMapDao.setKeyMapGroup(groupUid, *it)
+            }
         }
     }
 
@@ -132,13 +132,6 @@ class RoomKeyMapRepository(
             val migratedFingerprintMapEntity =
                 entity.copy(flags = entity.flags or FingerprintMapEntity.FLAG_MIGRATED_TO_KEY_MAP)
             fingerprintMapDao.update(migratedFingerprintMapEntity)
-        }
-    }
-
-    private fun requestBackup() {
-        coroutineScope.launch {
-            val keyMapList = keyMapList.first { it is State.Data } as State.Data
-            requestBackup.emit(keyMapList.data)
         }
     }
 }
