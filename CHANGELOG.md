@@ -1,3 +1,11 @@
+## [3.0 Beta 4](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0-beta.4)
+
+_See the changes from previous 3.0 Beta releases as well._
+
+## Changed
+
+- *Finally* renamed the theme settings after many years. @jambl3r 
+
 ## [3.0 Beta 3](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0-beta.3)
 
 _See the changes from previous 3.0 Beta releases as well._

@@ -9,5 +9,5 @@ object ThemeUtils {
     const val LIGHT = 1
     const val AUTO = 2
 
-    val THEMES = arrayOf(DARK, LIGHT, AUTO)
+    val THEMES = arrayOf(LIGHT, DARK, AUTO)
 }

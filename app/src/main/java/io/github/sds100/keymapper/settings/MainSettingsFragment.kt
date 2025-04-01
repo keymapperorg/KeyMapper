@@ -11,7 +11,6 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.preference.DropDownPreference
-import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
 import androidx.preference.SwitchPreferenceCompat
@@ -135,9 +134,9 @@ class MainSettingsFragment : BaseSettingsFragment() {
             isSingleLineTitle = false
 
             setTitle(R.string.title_pref_dark_theme)
+            setSummary(R.string.summary_pref_dark_theme)
             entries = strArray(R.array.pref_dark_theme_entries)
             entryValues = ThemeUtils.THEMES.map { it.toString() }.toTypedArray()
-            summaryProvider = ListPreference.SimpleSummaryProvider.getInstance()
 
             addPreference(this)
         }

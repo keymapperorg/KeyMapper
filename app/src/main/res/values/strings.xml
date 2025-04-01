@@ -621,7 +621,8 @@
     <string name="summary_pref_root_permission">Enable this if you want to use features/actions which only work on rooted devices. Key Mapper must have root permission from your root-access-management app (e.g Magisk, SuperSU) for these features to work.
             Only turn this on if you know your device is rooted and you have given Key Mapper root permission.</string>
 
-    <string name="title_pref_dark_theme">Dark theme</string>
+    <string name="title_pref_dark_theme">Choose theme</string>
+    <string name="summary_pref_dark_theme">Light and dark themes available</string>
 
     <string name="summary_pref_show_toggle_keyboard_notification">Switch between the Key Mapper keyboard and your default keyboard when you tap the notification.</string>
     <string name="title_pref_show_toggle_keyboard_notification">Toggle Key Mapper keyboard notification</string>
@@ -708,9 +709,9 @@
     <!-- About activity-->
 
     <string-array name="pref_dark_theme_entries" translatable="false">
-        <item>@string/on</item>
-        <item>@string/off</item>
-        <item>@string/follow_system</item>
+        <item>Light</item>
+        <item>Dark</item>
+        <item>Follow system</item>
     </string-array>
 
     <!--flags-->
