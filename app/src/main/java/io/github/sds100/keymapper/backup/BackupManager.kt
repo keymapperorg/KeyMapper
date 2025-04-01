@@ -476,7 +476,8 @@ class BackupManagerImpl(
                     modifiedGroup = RepositoryUtils.saveUniqueName(
                         modifiedGroup,
                         saveBlock = { renamedGroup ->
-                            if (siblings.any { sibling -> sibling.name == renamedGroup.name }) {
+                            // Do not rename the group with a (1) if it is the same UID. Just overwrite the name.
+                            if (siblings.any { sibling -> sibling.uid != renamedGroup.uid && sibling.name == renamedGroup.name }) {
                                 throw IllegalStateException("Non unique group name")
                             }
                         },
