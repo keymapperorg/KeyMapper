@@ -14,6 +14,7 @@ _See the changes from previous 3.0 Beta releases as well._
 
 - Turn off flashlight when using decrease brightness action.
 - Animate floating buttons in and out.
+- #1607 rename parallel triggers to "combination"
 
 ## Bug fixes
 
