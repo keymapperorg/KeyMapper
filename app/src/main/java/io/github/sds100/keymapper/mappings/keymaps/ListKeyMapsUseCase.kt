@@ -141,7 +141,7 @@ class ListKeyMapsUseCaseImpl(
     }
 
     override suspend fun newGroup() {
-        var newGroup = createNewGroup()
+        val newGroup = createNewGroup()
         setCurrentGroup(newGroup.uid)
     }
 

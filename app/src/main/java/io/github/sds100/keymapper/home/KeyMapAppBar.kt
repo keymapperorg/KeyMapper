@@ -178,19 +178,18 @@ fun KeyMapAppBar(
                 var showDeleteGroupDialog by remember { mutableStateOf(false) }
 
                 LaunchedEffect(state.groupName) {
-                    newName = TextFieldValue(state.groupName)
                     showDeleteGroupDialog = false
                     error = null
-                }
 
-                LaunchedEffect(state.isEditingGroupName) {
                     if (state.isEditingGroupName) {
                         if (state.isNewGroup) {
                             newName = TextFieldValue()
                         } else {
                             val endPosition = newName.text.length
 
-                            newName = newName.copy(selection = TextRange(endPosition))
+                            newName = TextFieldValue(state.groupName).copy(
+                                selection = TextRange(endPosition),
+                            )
                         }
                     }
                 }

@@ -780,6 +780,7 @@ class KeyMapListViewModel(
 
     fun onDeleteGroupClick() {
         coroutineScope.launch {
+            isNewGroup = false
             isEditingGroupName.update { false }
             listKeyMaps.deleteGroup()
         }
@@ -787,6 +788,9 @@ class KeyMapListViewModel(
 
     fun onNewGroupClick() {
         coroutineScope.launch {
+            // Must come first
+            isNewGroup = true
+
             when (val selectionState = multiSelectProvider.state.value) {
                 is SelectionState.Selecting ->
                     listKeyMaps.moveKeyMapsToNewGroup(*selectionState.selectedIds.toTypedArray())
@@ -797,7 +801,6 @@ class KeyMapListViewModel(
             }
 
             multiSelectProvider.stopSelecting()
-            isNewGroup = true
             isEditingGroupName.update { true }
         }
     }
