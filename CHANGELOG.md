@@ -4,6 +4,8 @@ _See the changes from previous 3.0 Beta releases as well._
 
 #### 1 April 2025
 
+This is not an April Fool's joke ;)
+
 ## Added
 - #320 🗂️ Key map groups! You can now sort key maps into groups and share constraints across all the key maps in the group.
 - #1586 🎨 Customise floating button border and background opacity.
