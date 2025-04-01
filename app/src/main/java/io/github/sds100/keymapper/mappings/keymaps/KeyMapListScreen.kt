@@ -90,7 +90,9 @@ fun KeyMapList(
         is State.Data -> {
             Surface(modifier = modifier) {
                 if (listItems.data.isEmpty()) {
-                    EmptyKeyMapList(modifier = Modifier.fillMaxSize())
+                    EmptyKeyMapList(
+                        modifier = Modifier.fillMaxSize().padding(bottom = bottomListPadding),
+                    )
                 } else {
                     LoadedKeyMapList(
                         Modifier.fillMaxSize(),
