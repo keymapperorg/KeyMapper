@@ -1461,4 +1461,8 @@
     <string name="home_key_maps_delete_group_dialog_text">Are you sure you want to delete this group? All the key maps in this group and its subgroups will also be deleted!</string>
     <string name="home_key_maps_delete_group_yes">Yes, delete</string>
     <string name="home_key_maps_delete_group_cancel">Cancel</string>
+    <plurals name="home_groups_inherited_constraints">
+        <item quantity="one">+%d inherited constraint</item>
+        <item quantity="other">+%d inherited constraints</item>
+    </plurals>
 </resources>

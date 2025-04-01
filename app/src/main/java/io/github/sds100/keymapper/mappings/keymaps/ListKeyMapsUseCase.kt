@@ -118,7 +118,11 @@ class ListKeyMapsUseCaseImpl(
         val list = LinkedList<Group>()
         var count = 0
 
-        var currentGroup: String? = groupUid
+        if (groupUid == null) {
+            return emptyList()
+        }
+
+        var currentGroup: String? = groupRepository.getGroup(groupUid)?.parentUid
 
         while (count < 1000) {
             if (currentGroup == null) {

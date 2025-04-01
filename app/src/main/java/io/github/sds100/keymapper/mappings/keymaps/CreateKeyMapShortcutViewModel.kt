@@ -145,6 +145,7 @@ class CreateKeyMapShortcutViewModel(
                 breadcrumbs = parentGroupListItems,
                 isEditingGroupName = false,
                 isNewGroup = false,
+                parentConstraintCount = keyMapGroup.parents.sumOf { it.constraintState.constraints.size },
             )
         }
 

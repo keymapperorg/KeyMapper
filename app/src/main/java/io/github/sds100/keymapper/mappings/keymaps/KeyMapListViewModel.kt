@@ -249,8 +249,9 @@ class KeyMapListViewModel(
             GroupFamily(null, emptyList(), emptyList()),
         )
         val selectionBreadcrumbs: Flow<List<GroupListItemModel>> =
-            selectionGroupFamilyStateFlow.map { list ->
-                list.parents.map { GroupListItemModel(uid = it.uid, name = it.name, icon = null) }
+            selectionGroupFamilyStateFlow.map { family ->
+                family.parents.plus(family.group).filterNotNull()
+                    .map { GroupListItemModel(uid = it.uid, name = it.name, icon = null) }
             }
 
         val selectionGroupListItems: Flow<List<GroupListItemModel>> =
@@ -377,7 +378,7 @@ class KeyMapListViewModel(
             buildGroupListItem(group)
         }
 
-        val parentGroupListItems = keyMapGroup.parents.map { group ->
+        val breadcrumbs = keyMapGroup.parents.plus(keyMapGroup.group).filterNotNull().map { group ->
             GroupListItemModel(
                 uid = group.uid,
                 name = group.name,
@@ -399,8 +400,9 @@ class KeyMapListViewModel(
                     constraintErrorSnapshot,
                 ),
                 constraintMode = keyMapGroup.group.constraintState.mode,
+                parentConstraintCount = keyMapGroup.parents.sumOf { it.constraintState.constraints.size },
                 subGroups = subGroupListItems,
-                breadcrumbs = parentGroupListItems,
+                breadcrumbs = breadcrumbs,
                 isEditingGroupName = isEditingGroupName,
                 isNewGroup = isNewGroup,
             )

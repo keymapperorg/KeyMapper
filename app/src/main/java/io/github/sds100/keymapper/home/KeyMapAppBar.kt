@@ -231,6 +231,7 @@ fun KeyMapAppBar(
                     onGroupClick = onGroupClick,
                     constraints = state.constraints,
                     constraintMode = state.constraintMode,
+                    parentConstraintCount = state.parentConstraintCount,
                     onNewConstraintClick = onNewConstraintClick,
                     onRemoveConstraintClick = onRemoveConstraintClick,
                     onConstraintModeChanged = onConstraintModeChanged,
@@ -367,6 +368,7 @@ private fun ChildGroupAppBar(
     onGroupClick: (String?) -> Unit = {},
     constraints: List<ComposeChipModel> = emptyList(),
     constraintMode: ConstraintMode,
+    parentConstraintCount: Int,
     onNewConstraintClick: () -> Unit = {},
     onRemoveConstraintClick: (String) -> Unit = {},
     onConstraintModeChanged: (ConstraintMode) -> Unit = {},
@@ -413,41 +415,43 @@ private fun ChildGroupAppBar(
                     }
                 }
 
-                Column(horizontalAlignment = Alignment.End) {
-                    GroupConstraintRow(
-                        modifier = Modifier
-                            .padding(horizontal = 8.dp)
-                            .fillMaxWidth(),
-                        constraints = constraints,
-                        mode = constraintMode,
-                        onFixConstraintClick = onFixConstraintClick,
-                        onNewConstraintClick = onNewConstraintClick,
-                        onRemoveConstraintClick = onRemoveConstraintClick,
-                        enabled = !isEditingGroupName,
-                    )
+                GroupConstraintRow(
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .fillMaxWidth(),
+                    constraints = constraints,
+                    mode = constraintMode,
+                    parentConstraintCount = parentConstraintCount,
+                    onFixConstraintClick = onFixConstraintClick,
+                    onNewConstraintClick = onNewConstraintClick,
+                    onRemoveConstraintClick = onRemoveConstraintClick,
+                    enabled = !isEditingGroupName,
+                )
 
-                    Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(8.dp))
 
-                    androidx.compose.animation.AnimatedVisibility(constraints.size > 1) {
-                        Row {
-                            RadioButtonText(
-                                text = stringResource(R.string.constraint_mode_and),
-                                isSelected = constraintMode == ConstraintMode.AND,
-                                isEnabled = !isEditingGroupName,
-                                onSelected = {
-                                    onConstraintModeChanged(ConstraintMode.AND)
-                                },
-                            )
+                androidx.compose.animation.AnimatedVisibility(
+                    modifier = Modifier.align(Alignment.End),
+                    visible = constraints.size > 1,
+                ) {
+                    Row {
+                        RadioButtonText(
+                            text = stringResource(R.string.constraint_mode_and),
+                            isSelected = constraintMode == ConstraintMode.AND,
+                            isEnabled = !isEditingGroupName,
+                            onSelected = {
+                                onConstraintModeChanged(ConstraintMode.AND)
+                            },
+                        )
 
-                            RadioButtonText(
-                                text = stringResource(R.string.constraint_mode_or),
-                                isSelected = constraintMode == ConstraintMode.OR,
-                                isEnabled = !isEditingGroupName,
-                                onSelected = {
-                                    onConstraintModeChanged(ConstraintMode.OR)
-                                },
-                            )
-                        }
+                        RadioButtonText(
+                            text = stringResource(R.string.constraint_mode_or),
+                            isSelected = constraintMode == ConstraintMode.OR,
+                            isEnabled = !isEditingGroupName,
+                            onSelected = {
+                                onConstraintModeChanged(ConstraintMode.OR)
+                            },
+                        )
                     }
                 }
             }
@@ -904,6 +908,7 @@ private fun KeyMapsChildGroupPreview() {
         groupName = "Very very very very very long name",
         subGroups = groupSampleList(),
         constraints = constraintsSampleList(),
+        parentConstraintCount = 1,
         constraintMode = ConstraintMode.AND,
         breadcrumbs = groupSampleList(),
         isEditingGroupName = false,
@@ -923,6 +928,7 @@ private fun KeyMapsChildGroupDarkPreview() {
         subGroups = groupSampleList(),
         constraints = emptyList(),
         constraintMode = ConstraintMode.AND,
+        parentConstraintCount = 0,
         breadcrumbs = emptyList(),
         isEditingGroupName = false,
         isNewGroup = false,
@@ -952,6 +958,7 @@ private fun KeyMapsChildGroupEditingPreview() {
             parentGroups = emptyList(),
             constraints = emptyList(),
             constraintMode = ConstraintMode.AND,
+            parentConstraintCount = 1,
         )
     }
 }
@@ -964,6 +971,7 @@ private fun KeyMapsChildGroupEditingDarkPreview() {
         groupName = "Untitled group 23",
         subGroups = groupSampleList(),
         constraints = constraintsSampleList(),
+        parentConstraintCount = 3,
         constraintMode = ConstraintMode.AND,
         breadcrumbs = emptyList(),
         isEditingGroupName = true,
@@ -1002,6 +1010,7 @@ private fun KeyMapsChildGroupErrorPreview() {
             parentGroups = emptyList(),
             constraints = emptyList(),
             constraintMode = ConstraintMode.AND,
+            parentConstraintCount = 0,
         )
     }
 }

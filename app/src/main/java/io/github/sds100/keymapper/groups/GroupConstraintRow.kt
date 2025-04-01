@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -47,6 +48,7 @@ fun GroupConstraintRow(
     modifier: Modifier = Modifier,
     constraints: List<ComposeChipModel>,
     mode: ConstraintMode,
+    parentConstraintCount: Int,
     onNewConstraintClick: () -> Unit = {},
     onRemoveConstraintClick: (String) -> Unit = {},
     onFixConstraintClick: (Error) -> Unit = {},
@@ -121,6 +123,19 @@ fun GroupConstraintRow(
                     )
                 }
             }
+        }
+
+        if (parentConstraintCount > 0) {
+            Text(
+                modifier = Modifier
+                    .padding(horizontal = 8.dp),
+                text = pluralStringResource(
+                    R.plurals.home_groups_inherited_constraints,
+                    parentConstraintCount,
+                    parentConstraintCount,
+                ),
+                style = MaterialTheme.typography.labelMedium,
+            )
         }
     }
 }
@@ -272,7 +287,11 @@ private fun ConstraintErrorButton(
 private fun PreviewEmpty() {
     KeyMapperTheme {
         Surface {
-            GroupConstraintRow(constraints = emptyList(), mode = ConstraintMode.AND)
+            GroupConstraintRow(
+                constraints = emptyList(),
+                mode = ConstraintMode.AND,
+                parentConstraintCount = 0,
+            )
         }
     }
 }
@@ -291,6 +310,7 @@ private fun PreviewOneItem() {
                     ),
                 ),
                 mode = ConstraintMode.OR,
+                parentConstraintCount = 1,
             )
         }
     }
@@ -327,6 +347,7 @@ private fun PreviewMultipleItems() {
                     ),
                 ),
                 mode = ConstraintMode.AND,
+                parentConstraintCount = 3,
             )
         }
     }
