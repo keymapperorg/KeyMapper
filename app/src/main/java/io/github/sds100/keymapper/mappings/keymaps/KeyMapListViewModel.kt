@@ -12,6 +12,7 @@ import io.github.sds100.keymapper.constraints.ConstraintErrorSnapshot
 import io.github.sds100.keymapper.constraints.ConstraintMode
 import io.github.sds100.keymapper.constraints.ConstraintUiHelper
 import io.github.sds100.keymapper.groups.Group
+import io.github.sds100.keymapper.groups.GroupFamily
 import io.github.sds100.keymapper.groups.GroupListItemModel
 import io.github.sds100.keymapper.home.HomeWarningListItem
 import io.github.sds100.keymapper.home.SelectedKeyMapsEnabled
@@ -71,6 +72,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class KeyMapListViewModel(
     private val coroutineScope: CoroutineScope,
     private val listKeyMaps: ListKeyMapsUseCase,
@@ -90,8 +92,6 @@ class KeyMapListViewModel(
         const val ID_ACCESSIBILITY_SERVICE_CRASHED_LIST_ITEM = "accessibility_service_crashed"
         const val ID_BATTERY_OPTIMISATION_LIST_ITEM = "battery_optimised"
         const val ID_LOGGING_ENABLED_LIST_ITEM = "logging_enabled"
-
-        private const val HOME_GROUP_UID = "home_group"
     }
 
     val sortViewModel = SortViewModel(coroutineScope, sortKeyMaps)
@@ -243,39 +243,45 @@ class KeyMapListViewModel(
             }
         }
 
-        val homeGroupListItem = GroupListItemModel(
-            uid = HOME_GROUP_UID,
-            name = getString(R.string.home_groups_breadcrumb_home),
-            icon = null,
+        val selectionGroupFamilyStateFlow = listKeyMaps.selectionGroupFamily.stateIn(
+            coroutineScope,
+            SharingStarted.WhileSubscribed(5000),
+            GroupFamily(null, emptyList(), emptyList()),
         )
-
-        val groupListItems =
-            combine(keyMapGroupStateFlow, listKeyMaps.getGroups()) { keyMapGroup, groupList ->
-                val listItems = mutableListOf<GroupListItemModel>()
-
-                // Only add the home group list item if the current group is not the home one.
-                if (keyMapGroup.group != null) {
-                    listItems.add(homeGroupListItem)
-                }
-
-                val filteredGroups = groupList
-                    .filter { it.uid != keyMapGroup.group?.uid }
-                    .map(::buildGroupListItem)
-
-                listItems.addAll(filteredGroups)
-
-                listItems
+        val selectionBreadcrumbs: Flow<List<GroupListItemModel>> =
+            selectionGroupFamilyStateFlow.map { list ->
+                list.parents.map { GroupListItemModel(uid = it.uid, name = it.name, icon = null) }
             }
+
+        val selectionGroupListItems: Flow<List<GroupListItemModel>> =
+            selectionGroupFamilyStateFlow.map { family ->
+                family.children.map {
+                    GroupListItemModel(
+                        uid = it.uid,
+                        name = it.name,
+                        icon = null,
+                    )
+                }
+            }
+
+        val showThisGroup = combine(
+            keyMapGroupStateFlow,
+            selectionGroupFamilyStateFlow,
+        ) { keyMapGroup, selectionGroup -> keyMapGroup.group?.uid != selectionGroup.group?.uid }
 
         val selectionAppBarState = combine(
             multiSelectProvider.state.filterIsInstance<SelectionState.Selecting>(),
             keyMapGroupStateFlow,
-            groupListItems,
-        ) { selectionState, keyMapGroup, groups ->
+            selectionGroupListItems,
+            selectionBreadcrumbs,
+            showThisGroup,
+        ) { selectionState, keyMapGroup, groups, selectionBreadcrumbs, showThisGroup ->
             buildSelectingAppBarState(
                 keyMapGroup,
                 selectionState,
                 groups,
+                selectionBreadcrumbs,
+                showThisGroup,
             )
         }
 
@@ -325,6 +331,8 @@ class KeyMapListViewModel(
         keyMapGroup: KeyMapGroup,
         selectionState: SelectionState.Selecting,
         groupListItems: List<GroupListItemModel>,
+        breadcrumbListItems: List<GroupListItemModel>,
+        showThisGroup: Boolean,
     ): KeyMapAppBarState.Selecting {
         var selectedKeyMapsEnabled: SelectedKeyMapsEnabled? = null
         val keyMaps = keyMapGroup.keyMaps.dataOrNull() ?: emptyList()
@@ -353,6 +361,8 @@ class KeyMapListViewModel(
             selectedKeyMapsEnabled = selectedKeyMapsEnabled ?: SelectedKeyMapsEnabled.NONE,
             isAllSelected = selectionState.selectedIds.size == keyMaps.size,
             groups = groupListItems,
+            breadcrumbs = breadcrumbListItems,
+            showThisGroup = showThisGroup,
         )
     }
 
@@ -390,7 +400,7 @@ class KeyMapListViewModel(
                 ),
                 constraintMode = keyMapGroup.group.constraintState.mode,
                 subGroups = subGroupListItems,
-                parentGroups = parentGroupListItems,
+                breadcrumbs = parentGroupListItems,
                 isEditingGroupName = isEditingGroupName,
                 isNewGroup = isNewGroup,
             )
@@ -448,8 +458,11 @@ class KeyMapListViewModel(
 
     fun onKeyMapCardLongClick(uid: String) {
         if (multiSelectProvider.state.value is SelectionState.NotSelecting) {
-            multiSelectProvider.startSelecting()
-            multiSelectProvider.select(uid)
+            coroutineScope.launch {
+                val currentGroupUid = listKeyMaps.keyMapGroup.first().group?.uid
+                multiSelectProvider.startSelecting()
+                multiSelectProvider.select(uid)
+            }
         }
     }
 
@@ -603,17 +616,19 @@ class KeyMapListViewModel(
         }
     }
 
-    fun onMoveToGroupClick(groupUid: String) {
+    fun onSelectionGroupClick(groupUid: String?) {
+        coroutineScope.launch {
+            listKeyMaps.openSelectionGroup(groupUid)
+        }
+    }
+
+    fun onMoveToThisGroupClick() {
         val selectionState = multiSelectProvider.state.value
 
         if (selectionState !is SelectionState.Selecting) return
         val selectedIds = selectionState.selectedIds.toTypedArray()
 
-        if (groupUid == HOME_GROUP_UID) {
-            listKeyMaps.moveKeyMapsToGroup(null, *selectedIds)
-        } else {
-            listKeyMaps.moveKeyMapsToGroup(groupUid, *selectedIds)
-        }
+        listKeyMaps.moveKeyMapsToSelectedGroup(*selectedIds)
 
         multiSelectProvider.deselect(*selectedIds)
         multiSelectProvider.stopSelecting()
@@ -712,6 +727,9 @@ class KeyMapListViewModel(
         _importExportState.value = ImportExportState.Idle
     }
 
+    /**
+     * @return whether the back was handled and the activity should not finish.
+     */
     fun onBackClick(): Boolean {
         when {
             multiSelectProvider.state.value is SelectionState.Selecting -> {
@@ -720,15 +738,7 @@ class KeyMapListViewModel(
             }
 
             state.value.appBarState is KeyMapAppBarState.ChildGroup -> {
-                if (isEditingGroupName.value) {
-                    if (isNewGroup) {
-                        coroutineScope.launch {
-                            listKeyMaps.deleteGroup()
-                        }
-                    } else {
-                        isEditingGroupName.update { false }
-                    }
-                } else {
+                if (!isEditingGroupName.value) {
                     coroutineScope.launch {
                         listKeyMaps.popGroup()
                     }
@@ -736,6 +746,7 @@ class KeyMapListViewModel(
 
                 isNewGroup = false
                 isEditingGroupName.update { false }
+
                 return true
             }
 
@@ -761,8 +772,8 @@ class KeyMapListViewModel(
 
     fun onGroupClick(uid: String?) {
         coroutineScope.launch {
-            isEditingGroupName.update { false }
             isNewGroup = false
+            isEditingGroupName.update { false }
             listKeyMaps.openGroup(uid)
         }
     }
@@ -776,8 +787,16 @@ class KeyMapListViewModel(
 
     fun onNewGroupClick() {
         coroutineScope.launch {
+            when (val selectionState = multiSelectProvider.state.value) {
+                is SelectionState.Selecting ->
+                    listKeyMaps.moveKeyMapsToNewGroup(*selectionState.selectedIds.toTypedArray())
+
+                SelectionState.NotSelecting -> {
+                    listKeyMaps.newGroup()
+                }
+            }
+
             multiSelectProvider.stopSelecting()
-            listKeyMaps.newGroup()
             isNewGroup = true
             isEditingGroupName.update { true }
         }

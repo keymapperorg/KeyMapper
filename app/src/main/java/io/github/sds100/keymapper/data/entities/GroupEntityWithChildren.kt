@@ -4,7 +4,7 @@ import androidx.room.Embedded
 import androidx.room.Relation
 import io.github.sds100.keymapper.data.db.dao.GroupDao
 
-data class GroupEntityWithSubGroups(
+data class GroupEntityWithChildren(
     @Embedded
     val group: GroupEntity,
 
@@ -12,5 +12,5 @@ data class GroupEntityWithSubGroups(
         parentColumn = GroupDao.KEY_UID,
         entityColumn = GroupDao.KEY_PARENT_UID,
     )
-    val subGroups: List<GroupEntity>,
+    val children: List<GroupEntity>,
 )

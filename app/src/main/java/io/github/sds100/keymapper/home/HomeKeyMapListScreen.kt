@@ -216,6 +216,8 @@ fun HomeKeyMapListScreen(
                         selectedKeyMapsEnabled = SelectedKeyMapsEnabled.NONE,
                         isAllSelected = false,
                         groups = emptyList(),
+                        breadcrumbs = emptyList(),
+                        showThisGroup = false,
                     )
 
                 SelectionBottomSheet(
@@ -225,13 +227,16 @@ fun HomeKeyMapListScreen(
                     },
                     enabled = selectionState.selectionCount > 0,
                     groups = selectionState.groups,
+                    breadcrumbs = selectionState.breadcrumbs,
                     selectedKeyMapsEnabled = selectionState.selectedKeyMapsEnabled,
                     onEnabledKeyMapsChange = viewModel::onEnabledKeyMapsChange,
                     onDuplicateClick = viewModel::onDuplicateSelectedKeyMapsClick,
                     onExportClick = viewModel::onExportSelectedKeyMaps,
                     onDeleteClick = { showDeleteDialog = true },
-                    onMoveToGroupClick = viewModel::onMoveToGroupClick,
+                    onGroupClick = viewModel::onSelectionGroupClick,
                     onNewGroupClick = viewModel::onNewGroupClick,
+                    showThisGroup = selectionState.showThisGroup,
+                    onThisGroupClick = viewModel::onMoveToThisGroupClick,
                 )
             }
         },
@@ -476,6 +481,8 @@ private fun PreviewSelectingKeyMaps() {
         selectedKeyMapsEnabled = SelectedKeyMapsEnabled.MIXED,
         isAllSelected = false,
         groups = emptyList(),
+        breadcrumbs = emptyList(),
+        showThisGroup = false,
     )
 
     val listState = State.Data(sampleList())
@@ -499,6 +506,7 @@ private fun PreviewSelectingKeyMaps() {
                     enabled = true,
                     selectedKeyMapsEnabled = SelectedKeyMapsEnabled.MIXED,
                     groups = emptyList(),
+                    breadcrumbs = emptyList(),
                 )
             },
         )

@@ -50,6 +50,8 @@ fun GroupRow(
     onGroupClick: (String) -> Unit = {},
     enabled: Boolean = true,
     isSubgroups: Boolean = false,
+    showThisGroupButton: Boolean = false,
+    onThisGroupClick: () -> Unit = {},
 ) {
     var viewAllState by rememberSaveable { mutableStateOf(false) }
 
@@ -67,7 +69,7 @@ fun GroupRow(
         overflow = FlowRowOverflow.expandOrCollapseIndicator(
             expandIndicator = {
                 // Some padding is required on the end to stop it overflowing the screen.
-                ViewAllButton(
+                TextGroupButton(
                     modifier = Modifier.padding(end = 16.dp),
                     onClick = { viewAllState = true },
                     text = stringResource(R.string.home_new_view_all_groups_button),
@@ -75,7 +77,7 @@ fun GroupRow(
                 )
             },
             collapseIndicator = {
-                ViewAllButton(
+                TextGroupButton(
                     modifier = Modifier.padding(end = 16.dp),
                     onClick = { viewAllState = false },
                     text = stringResource(R.string.home_new_hide_groups_button),
@@ -98,6 +100,14 @@ fun GroupRow(
             showText = groups.isEmpty(),
             enabled = enabled,
         )
+
+        if (showThisGroupButton) {
+            TextGroupButton(
+                onClick = onThisGroupClick,
+                text = stringResource(R.string.home_this_group_button),
+                enabled = enabled,
+            )
+        }
 
         for (group in groups) {
             GroupButton(
@@ -180,7 +190,7 @@ private fun NewGroupButton(
 }
 
 @Composable
-private fun ViewAllButton(
+private fun TextGroupButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
     text: String,
@@ -287,6 +297,7 @@ private fun PreviewOneItem() {
                     ),
                 ),
                 enabled = false,
+                showThisGroupButton = false,
             )
         }
     }
@@ -337,6 +348,7 @@ private fun PreviewMultipleItems() {
                         icon = null,
                     ),
                 ),
+                showThisGroupButton = true,
             )
         }
     }

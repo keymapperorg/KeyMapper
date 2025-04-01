@@ -41,6 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
+import io.github.sds100.keymapper.groups.GroupBreadcrumbRow
 import io.github.sds100.keymapper.groups.GroupListItemModel
 import io.github.sds100.keymapper.groups.GroupRow
 import io.github.sds100.keymapper.util.drawable
@@ -50,15 +51,18 @@ import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 @Composable
 fun SelectionBottomSheet(
     modifier: Modifier = Modifier,
-    groups: List<GroupListItemModel>,
     enabled: Boolean,
+    groups: List<GroupListItemModel>,
+    breadcrumbs: List<GroupListItemModel>,
     selectedKeyMapsEnabled: SelectedKeyMapsEnabled,
     onDuplicateClick: () -> Unit = {},
     onDeleteClick: () -> Unit = {},
     onExportClick: () -> Unit = {},
     onEnabledKeyMapsChange: (Boolean) -> Unit = {},
     onNewGroupClick: () -> Unit = {},
-    onMoveToGroupClick: (String) -> Unit = {},
+    onGroupClick: (String?) -> Unit = {},
+    showThisGroup: Boolean = false,
+    onThisGroupClick: () -> Unit = {},
 ) {
     Surface(
         modifier = modifier
@@ -132,15 +136,27 @@ fun SelectionBottomSheet(
                 style = MaterialTheme.typography.labelLarge,
             )
 
+            Spacer(modifier = Modifier.height(8.dp))
+
+            GroupBreadcrumbRow(
+                modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 4.dp),
+                groups = breadcrumbs,
+                onGroupClick = onGroupClick,
+                enabled = true,
+            )
+
             GroupRow(
                 modifier = Modifier
-                    .padding(horizontal = 16.dp, vertical = 4.dp)
+                    .padding(horizontal = 16.dp)
                     .fillMaxWidth(),
                 groups = groups,
                 onNewGroupClick = onNewGroupClick,
-                onGroupClick = onMoveToGroupClick,
+                onGroupClick = onGroupClick,
                 enabled = enabled,
+                showThisGroupButton = showThisGroup,
+                onThisGroupClick = onThisGroupClick,
             )
+            Spacer(modifier = Modifier.height(4.dp))
         }
     }
 }
@@ -225,6 +241,7 @@ private fun PreviewEmptyGroups() {
         SelectionBottomSheet(
             enabled = true,
             groups = emptyList(),
+            breadcrumbs = emptyList(),
             selectedKeyMapsEnabled = SelectedKeyMapsEnabled.ALL,
             onDuplicateClick = {},
             onDeleteClick = {},
@@ -280,6 +297,13 @@ private fun PreviewGroups() {
                 ),
                 GroupListItemModel(
                     uid = "3",
+                    name = "Key Mapper",
+                    icon = null,
+                ),
+            ),
+            breadcrumbs = listOf(
+                GroupListItemModel(
+                    uid = "2",
                     name = "Key Mapper",
                     icon = null,
                 ),

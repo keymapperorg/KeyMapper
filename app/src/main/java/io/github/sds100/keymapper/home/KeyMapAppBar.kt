@@ -228,7 +228,7 @@ fun KeyMapAppBar(
                     onEditClick = onEditGroupNameClick,
                     isEditingGroupName = state.isEditingGroupName,
                     subGroups = state.subGroups,
-                    parentGroups = state.parentGroups,
+                    parentGroups = state.breadcrumbs,
                     onGroupClick = onGroupClick,
                     constraints = state.constraints,
                     constraintMode = state.constraintMode,
@@ -415,12 +415,6 @@ private fun ChildGroupAppBar(
                 }
 
                 Column(horizontalAlignment = Alignment.End) {
-                    //                    Text(
-                    //                        modifier = Modifier.padding(horizontal = 8.dp),
-                    //                        text = stringResource(R.string.home_group_constraints_title),
-                    //                        style = MaterialTheme.typography.titleSmall,
-                    //                    )
-
                     GroupConstraintRow(
                         modifier = Modifier
                             .padding(horizontal = 8.dp)
@@ -462,17 +456,6 @@ private fun ChildGroupAppBar(
 
         Surface {
             Column {
-                GroupRow(
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .fillMaxWidth(),
-                    groups = subGroups,
-                    onNewGroupClick = onNewGroupClick,
-                    onGroupClick = onGroupClick,
-                    enabled = !isEditingGroupName,
-                    isSubgroups = true,
-                )
-
                 val scrollState = rememberScrollState()
 
                 LaunchedEffect(parentGroups) {
@@ -483,9 +466,20 @@ private fun ChildGroupAppBar(
                     modifier = Modifier
                         .horizontalScroll(scrollState)
                         .fillMaxWidth()
-                        .padding(horizontal = 8.dp),
+                        .padding(8.dp),
                     groups = parentGroups,
                     onGroupClick = onGroupClick,
+                )
+
+                GroupRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp),
+                    groups = subGroups,
+                    onNewGroupClick = onNewGroupClick,
+                    onGroupClick = onGroupClick,
+                    enabled = !isEditingGroupName,
+                    isSubgroups = true,
                 )
             }
         }
@@ -644,6 +638,7 @@ private fun GroupNameRow(
                             placeholder,
                             style = MaterialTheme.typography.titleLarge,
                             maxLines = 1,
+                            color = OutlinedTextFieldDefaults.colors().disabledPlaceholderColor,
                         )
                     },
                     innerTextField = {
@@ -911,7 +906,7 @@ private fun KeyMapsChildGroupPreview() {
         subGroups = groupSampleList(),
         constraints = constraintsSampleList(),
         constraintMode = ConstraintMode.AND,
-        parentGroups = groupSampleList(),
+        breadcrumbs = groupSampleList(),
         isEditingGroupName = false,
         isNewGroup = false,
     )
@@ -929,7 +924,7 @@ private fun KeyMapsChildGroupDarkPreview() {
         subGroups = groupSampleList(),
         constraints = emptyList(),
         constraintMode = ConstraintMode.AND,
-        parentGroups = emptyList(),
+        breadcrumbs = emptyList(),
         isEditingGroupName = false,
         isNewGroup = false,
     )
@@ -942,16 +937,6 @@ private fun KeyMapsChildGroupDarkPreview() {
 @Preview(showSystemUi = true)
 @Composable
 private fun KeyMapsChildGroupEditingPreview() {
-    val state = KeyMapAppBarState.ChildGroup(
-        groupName = "Untitled group 23",
-        subGroups = groupSampleList(),
-        constraints = constraintsSampleList(),
-        constraintMode = ConstraintMode.AND,
-        parentGroups = emptyList(),
-        isEditingGroupName = true,
-        isNewGroup = true,
-    )
-
     val focusRequester = FocusRequester()
 
     LaunchedEffect("") {
@@ -959,8 +944,15 @@ private fun KeyMapsChildGroupEditingPreview() {
     }
 
     KeyMapperTheme {
-        KeyMapAppBar(
-            state = state,
+        ChildGroupAppBar(
+            groupName = TextFieldValue(""),
+            placeholder = "Untitled group 23",
+            error = stringResource(R.string.home_app_bar_group_name_unique_error),
+            isEditingGroupName = true,
+            subGroups = emptyList(),
+            parentGroups = emptyList(),
+            constraints = emptyList(),
+            constraintMode = ConstraintMode.AND,
         )
     }
 }
@@ -974,7 +966,7 @@ private fun KeyMapsChildGroupEditingDarkPreview() {
         subGroups = groupSampleList(),
         constraints = constraintsSampleList(),
         constraintMode = ConstraintMode.AND,
-        parentGroups = emptyList(),
+        breadcrumbs = emptyList(),
         isEditingGroupName = true,
         isNewGroup = true,
     )
@@ -1104,6 +1096,8 @@ private fun HomeStateSelectingPreview() {
         selectedKeyMapsEnabled = SelectedKeyMapsEnabled.MIXED,
         isAllSelected = false,
         groups = emptyList(),
+        breadcrumbs = emptyList(),
+        showThisGroup = false,
     )
     KeyMapperTheme {
         KeyMapAppBar(state = state)
@@ -1119,6 +1113,8 @@ private fun HomeStateSelectingDisabledPreview() {
         selectedKeyMapsEnabled = SelectedKeyMapsEnabled.MIXED,
         isAllSelected = true,
         groups = emptyList(),
+        breadcrumbs = emptyList(),
+        showThisGroup = false,
     )
     KeyMapperTheme {
         KeyMapAppBar(state = state)

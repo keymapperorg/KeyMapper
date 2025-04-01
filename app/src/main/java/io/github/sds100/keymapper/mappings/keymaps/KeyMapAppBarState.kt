@@ -18,7 +18,7 @@ sealed class KeyMapAppBarState {
         val constraints: List<ComposeChipModel>,
         val constraintMode: ConstraintMode,
         val subGroups: List<GroupListItemModel>,
-        val parentGroups: List<GroupListItemModel>,
+        val breadcrumbs: List<GroupListItemModel>,
         val isEditingGroupName: Boolean,
         val isNewGroup: Boolean,
     ) : KeyMapAppBarState()
@@ -28,5 +28,7 @@ sealed class KeyMapAppBarState {
         val selectedKeyMapsEnabled: SelectedKeyMapsEnabled,
         val isAllSelected: Boolean,
         val groups: List<GroupListItemModel>,
+        val breadcrumbs: List<GroupListItemModel>,
+        val showThisGroup: Boolean,
     ) : KeyMapAppBarState()
 }

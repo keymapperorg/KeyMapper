@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.data.repositories
 
 import io.github.sds100.keymapper.data.db.dao.GroupDao
 import io.github.sds100.keymapper.data.entities.GroupEntity
-import io.github.sds100.keymapper.data.entities.GroupEntityWithSubGroups
+import io.github.sds100.keymapper.data.entities.GroupEntityWithChildren
 import io.github.sds100.keymapper.data.entities.KeyMapEntitiesWithGroup
 import io.github.sds100.keymapper.util.DefaultDispatcherProvider
 import io.github.sds100.keymapper.util.DispatcherProvider
@@ -23,7 +23,7 @@ interface GroupRepository {
     fun getAllGroups(): Flow<List<GroupEntity>>
     fun getGroups(vararg uid: String): Flow<List<GroupEntity>>
     fun getGroupsByParent(uid: String?): Flow<List<GroupEntity>>
-    fun getGroupWithSubGroups(uid: String): Flow<GroupEntityWithSubGroups>
+    fun getGroupWithChildren(uid: String): Flow<GroupEntityWithChildren>
     suspend fun insert(groupEntity: GroupEntity)
     suspend fun update(groupEntity: GroupEntity)
     fun delete(uid: String)
@@ -59,7 +59,7 @@ class RoomGroupRepository(
         return dao.getGroupsByParent(uid).flowOn(dispatchers.io())
     }
 
-    override fun getGroupWithSubGroups(uid: String): Flow<GroupEntityWithSubGroups> {
+    override fun getGroupWithChildren(uid: String): Flow<GroupEntityWithChildren> {
         return dao.getGroupWithSubGroups(uid).flowOn(dispatchers.io())
     }
 

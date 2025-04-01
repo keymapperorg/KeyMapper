@@ -15,7 +15,7 @@ import io.github.sds100.keymapper.data.repositories.GroupRepository
 import io.github.sds100.keymapper.data.repositories.RepositoryUtils
 import io.github.sds100.keymapper.groups.Group
 import io.github.sds100.keymapper.groups.GroupEntityMapper
-import io.github.sds100.keymapper.groups.GroupWithSubGroups
+import io.github.sds100.keymapper.groups.GroupFamily
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.State
@@ -35,10 +35,12 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
+import java.util.LinkedList
 
 /**
  * Created by sds100 on 16/04/2021.
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 class ListKeyMapsUseCaseImpl(
     private val keyMapRepository: KeyMapRepository,
     private val groupRepository: GroupRepository,
@@ -49,54 +51,48 @@ class ListKeyMapsUseCaseImpl(
     displayKeyMapUseCase: DisplayKeyMapUseCase,
 ) : ListKeyMapsUseCase,
     DisplayKeyMapUseCase by displayKeyMapUseCase {
-    private val groupUid = MutableStateFlow<String?>(null)
+    private val keyMapListGroupUid = MutableStateFlow<String?>(null)
+    private val selectionGroupUid = MutableStateFlow<String?>(null)
 
-    /**
-     * These are the parents, grandparents etc of the current group.
-     */
-    private val parentGroupUids = MutableStateFlow<List<String>>(emptyList())
+    private fun setCurrentGroup(groupUid: String?) {
+        keyMapListGroupUid.update { groupUid }
+        selectionGroupUid.update { groupUid }
+    }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private val group: Flow<GroupWithSubGroups> = groupUid.flatMapLatest { groupUid ->
+    private suspend fun getGroupFamily(groupUid: String?): Flow<GroupFamily> {
+        // If the current group is the root then just get the subgroups.
         if (groupUid == null) {
-            groupRepository.getGroupsByParent(null).map { subGroupEntities ->
-                val subGroups = subGroupEntities
+            return groupRepository.getGroupsByParent(null).map { childrenEntities ->
+                val children = childrenEntities
                     .map(GroupEntityMapper::fromEntity)
                     .sortedByDescending { it.lastOpenedDate }
-                GroupWithSubGroups(group = null, subGroups = subGroups)
+                GroupFamily(group = null, children = children, parents = emptyList())
             }
         } else {
-            groupRepository.getGroupWithSubGroups(groupUid).map { groupWithSubGroups ->
-                val group = GroupEntityMapper.fromEntity(groupWithSubGroups.group)
-                val subGroups =
-                    groupWithSubGroups.subGroups.map(GroupEntityMapper::fromEntity)
+            val parents = getParentsRecursively(groupUid)
 
-                GroupWithSubGroups(group, subGroups)
+            return groupRepository.getGroupWithChildren(groupUid).map { groupWithChildren ->
+                val group = GroupEntityMapper.fromEntity(groupWithChildren.group)
+                val children = groupWithChildren.children.map(GroupEntityMapper::fromEntity)
+
+                GroupFamily(group, children = children, parents = parents)
             }
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private val parentGroups: Flow<List<Group>> =
-        parentGroupUids.flatMapLatest { parentUids ->
-            groupRepository.getGroups(*parentUids.toTypedArray()).map { groups ->
-                // The repository returns the objects unordered so order them by the
-                // original UID list again.
-                val mapped = groups.associateBy { it.uid }
-                parentUids.map { GroupEntityMapper.fromEntity(mapped[it]!!) }
-            }
-        }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
     override val keyMapGroup: Flow<KeyMapGroup> = channelFlow {
-        combine(group, parentGroups) { group, parentGroups ->
-            KeyMapGroup(
-                group = group.group,
-                subGroups = group.subGroups,
-                keyMaps = State.Loading,
-                parents = parentGroups,
-            )
-        }.onEach { send(it) }
+        keyMapListGroupUid
+            .flatMapLatest(::getGroupFamily)
+            .map { groupFamily ->
+                val parentGroups = getParentsRecursively(groupFamily.group?.uid)
+
+                KeyMapGroup(
+                    group = groupFamily.group,
+                    subGroups = groupFamily.children,
+                    keyMaps = State.Loading,
+                    parents = parentGroups,
+                )
+            }.onEach { send(it) }
             .flatMapLatest { keyMapGroup ->
                 getKeyMapsByGroup(keyMapGroup.group?.uid).map { keyMapGroup.copy(keyMaps = it) }
             }.collect {
@@ -104,33 +100,76 @@ class ListKeyMapsUseCaseImpl(
             }
     }
 
-    override fun getGroups(): Flow<List<Group>> {
-        return groupRepository.groups.map { list -> list.map(GroupEntityMapper::fromEntity) }
+    override val selectionGroupFamily: Flow<GroupFamily> =
+        selectionGroupUid.flatMapLatest(::getGroupFamily)
+
+    override suspend fun openSelectionGroup(uid: String?) {
+        if (uid == null) {
+            // If null then open the root group.
+            selectionGroupUid.update { null }
+        } else {
+            // Check if the group exists.
+            val group = groupRepository.getGroup(uid) ?: return
+            selectionGroupUid.update { group.uid }
+        }
+    }
+
+    private suspend fun getParentsRecursively(groupUid: String?): List<Group> {
+        val list = LinkedList<Group>()
+        var count = 0
+
+        var currentGroup: String? = groupUid
+
+        while (count < 1000) {
+            if (currentGroup == null) {
+                break
+            }
+
+            val group = groupRepository.getGroup(currentGroup) ?: break
+            list.addFirst(GroupEntityMapper.fromEntity(group))
+            currentGroup = group.parentUid
+
+            count++
+        }
+
+        return list
+    }
+
+    override fun getGroups(parentUid: String?): Flow<List<Group>> {
+        return groupRepository.getGroupsByParent(parentUid)
+            .map { list -> list.map(GroupEntityMapper::fromEntity) }
     }
 
     override suspend fun newGroup() {
+        var newGroup = createNewGroup()
+        setCurrentGroup(newGroup.uid)
+    }
+
+    override suspend fun moveKeyMapsToNewGroup(vararg keyMapUids: String) {
+        val newGroup = createNewGroup()
+        moveKeyMapsToGroup(newGroup.uid, *keyMapUids)
+        setCurrentGroup(newGroup.uid)
+    }
+
+    private suspend fun createNewGroup(): GroupEntity {
         val defaultName = resourceProvider.getString(R.string.default_group_name)
         var group = GroupEntity(
-            parentUid = groupUid.value,
+            parentUid = keyMapListGroupUid.value,
             name = defaultName,
             lastOpenedDate = System.currentTimeMillis(),
         )
 
         group = ensureUniqueName(group)
         groupRepository.insert(group)
-
-        groupUid.update { group.uid }
-        parentGroupUids.update { it.plus(group.uid) }
+        return group
     }
 
     override suspend fun deleteGroup() {
-        groupUid.value?.also { groupUid ->
+        keyMapListGroupUid.value?.also { groupUid ->
             val group = groupRepository.getGroup(groupUid) ?: return
 
-            this.groupUid.value = group.parentUid
-            this.parentGroupUids.update { list ->
-                list.takeWhile { it != group.uid }
-            }
+            setCurrentGroup(group.parentUid)
+
             groupRepository.delete(groupUid)
         }
     }
@@ -140,14 +179,14 @@ class ListKeyMapsUseCaseImpl(
             return true
         }
 
-        groupUid.value?.also { groupUid ->
+        keyMapListGroupUid.value?.also { groupUid ->
             var entity = groupRepository.getGroup(groupUid) ?: return true
 
             entity = entity.copy(name = name.trim())
 
             val siblings = groupRepository.getGroupsByParent(entity.parentUid).first()
 
-            if (siblings.any { it.name == entity.name }) {
+            if (siblings.any { it.uid != groupUid && it.name == entity.name }) {
                 return false
             }
 
@@ -163,7 +202,7 @@ class ListKeyMapsUseCaseImpl(
         return RepositoryUtils.saveUniqueName(
             entity = group,
             saveBlock = { renamedGroup ->
-                if (siblings.any { sibling -> sibling.name == renamedGroup.name }) {
+                if (siblings.any { sibling -> sibling.uid != group.uid && sibling.name == renamedGroup.name }) {
                     throw IllegalStateException("Non unique group name")
                 }
             },
@@ -176,43 +215,31 @@ class ListKeyMapsUseCaseImpl(
     override suspend fun openGroup(uid: String?) {
         if (uid == null) {
             // If null then open the root group.
-            groupUid.update { null }
-            parentGroupUids.update { emptyList() }
+            setCurrentGroup(null)
         } else {
             // Check if the group exists.
             val group = groupRepository.getGroup(uid) ?: return
-            groupUid.update { group.uid }
-
-            parentGroupUids.update { list ->
-                if (list.contains(group.uid)) {
-                    list.takeWhile { it != uid }.plus(group.uid)
-                } else {
-                    list.plus(group.uid)
-                }
-            }
-
+            setCurrentGroup(group.uid)
             groupRepository.setLastOpenedDate(group.uid, System.currentTimeMillis())
         }
     }
 
     override suspend fun popGroup() {
-        val currentGroupUid = groupUid.value ?: return
+        val currentGroupUid = keyMapListGroupUid.value ?: return
         val currentGroup = groupRepository.getGroup(currentGroupUid)
 
         // If stuck in a non existent group, or the parent is null then pop to the root.
         if (currentGroup?.parentUid == null) {
-            groupUid.value = null
-            parentGroupUids.update { emptyList() }
+            setCurrentGroup(null)
         } else {
             // Check if the group exists.
             val group = groupRepository.getGroup(currentGroup.parentUid) ?: return
-            groupUid.update { group.uid }
-            parentGroupUids.update { list -> list.dropLast(1) }
+            setCurrentGroup(group.uid)
         }
     }
 
     override suspend fun addGroupConstraint(constraint: Constraint) {
-        groupUid.value?.also { groupUid ->
+        keyMapListGroupUid.value?.also { groupUid ->
             val constraintEntity = ConstraintEntityMapper.toEntity(constraint)
             var groupEntity = groupRepository.getGroup(groupUid) ?: return
 
@@ -229,7 +256,7 @@ class ListKeyMapsUseCaseImpl(
     }
 
     override suspend fun setGroupConstraintMode(mode: ConstraintMode) {
-        groupUid.value?.also { groupUid ->
+        keyMapListGroupUid.value?.also { groupUid ->
             val group = groupRepository.getGroup(groupUid) ?: return
 
             val groupEntity = group.copy(constraintMode = ConstraintModeEntityMapper.toEntity(mode))
@@ -243,7 +270,7 @@ class ListKeyMapsUseCaseImpl(
     }
 
     override suspend fun removeGroupConstraint(constraintUid: String) {
-        groupUid.value?.also { groupUid ->
+        keyMapListGroupUid.value?.also { groupUid ->
             val groupEntity = groupRepository.getGroup(groupUid) ?: return
             var group = GroupEntityMapper.fromEntity(groupEntity)
 
@@ -264,6 +291,10 @@ class ListKeyMapsUseCaseImpl(
 
     override fun moveKeyMapsToGroup(groupUid: String?, vararg keyMapUids: String) {
         keyMapRepository.moveToGroup(groupUid, *keyMapUids)
+    }
+
+    override fun moveKeyMapsToSelectedGroup(vararg keyMapUids: String) {
+        keyMapRepository.moveToGroup(selectionGroupUid.value, *keyMapUids)
     }
 
     private fun getKeyMapsByGroup(groupUid: String?): Flow<State<List<KeyMap>>> = channelFlow {
@@ -333,8 +364,13 @@ interface ListKeyMapsUseCase : DisplayKeyMapUseCase {
     suspend fun addGroupConstraint(constraint: Constraint)
     suspend fun removeGroupConstraint(constraintUid: String)
     suspend fun setGroupConstraintMode(mode: ConstraintMode)
-    fun getGroups(): Flow<List<Group>>
+    fun getGroups(parentUid: String?): Flow<List<Group>>
+
+    val selectionGroupFamily: Flow<GroupFamily>
+    suspend fun openSelectionGroup(uid: String?)
     fun moveKeyMapsToGroup(groupUid: String?, vararg keyMapUids: String)
+    fun moveKeyMapsToSelectedGroup(vararg keyMapUids: String)
+    suspend fun moveKeyMapsToNewGroup(vararg keyMapUids: String)
 
     fun deleteKeyMap(vararg uid: String)
     fun enableKeyMap(vararg uid: String)

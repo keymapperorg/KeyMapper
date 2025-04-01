@@ -7,7 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import io.github.sds100.keymapper.data.entities.GroupEntity
-import io.github.sds100.keymapper.data.entities.GroupEntityWithSubGroups
+import io.github.sds100.keymapper.data.entities.GroupEntityWithChildren
 import io.github.sds100.keymapper.data.entities.KeyMapEntitiesWithGroup
 import kotlinx.coroutines.flow.Flow
 
@@ -39,7 +39,7 @@ interface GroupDao {
     fun getByIdFlow(uid: String): Flow<GroupEntity?>
 
     @Query("SELECT * FROM $TABLE_NAME WHERE $KEY_UID = (:uid)")
-    fun getGroupWithSubGroups(uid: String): Flow<GroupEntityWithSubGroups>
+    fun getGroupWithSubGroups(uid: String): Flow<GroupEntityWithChildren>
 
     @Query("SELECT * FROM $TABLE_NAME WHERE $KEY_PARENT_UID IS (:uid)")
     fun getGroupsByParent(uid: String?): Flow<List<GroupEntity>>

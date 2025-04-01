@@ -1385,6 +1385,7 @@
     <string name="home_group_constraints_title">Group constraints</string>
     <string name="home_group_new_constraint_button">New constraint</string>
     <string name="home_group_delete_constraint_button">Delete group constraint</string>
+    <string name="home_this_group_button">This group</string>
 
     <!-- Trigger screen -->
     <string name="trigger_key_list_item_remove">Remove</string>
