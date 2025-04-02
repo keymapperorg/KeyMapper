@@ -8,6 +8,8 @@ import io.github.sds100.keymapper.actions.sound.SoundsManagerImpl
 import io.github.sds100.keymapper.backup.BackupManager
 import io.github.sds100.keymapper.backup.BackupManagerImpl
 import io.github.sds100.keymapper.data.db.AppDatabase
+import io.github.sds100.keymapper.data.repositories.AccessibilityNodeRepository
+import io.github.sds100.keymapper.data.repositories.AccessibilityNodeRepositoryImpl
 import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
 import io.github.sds100.keymapper.data.repositories.FloatingLayoutRepository
 import io.github.sds100.keymapper.data.repositories.GroupRepository
@@ -212,6 +214,19 @@ object ServiceLocator {
             floatingButtonRepository(ctx),
             accessibilityServiceAdapter(ctx),
         )
+    }
+
+    @Volatile
+    private var accessibilityNodeRepository: AccessibilityNodeRepository? = null
+
+    fun accessibilityNodeRepository(context: Context): AccessibilityNodeRepository {
+        synchronized(this) {
+            return accessibilityNodeRepository ?: AccessibilityNodeRepositoryImpl(
+                (context.applicationContext as KeyMapperApp).appCoroutineScope,
+            ).also {
+                this.accessibilityNodeRepository = it
+            }
+        }
     }
 
     fun fileAdapter(context: Context): FileAdapter = (context.applicationContext as KeyMapperApp).fileAdapter
