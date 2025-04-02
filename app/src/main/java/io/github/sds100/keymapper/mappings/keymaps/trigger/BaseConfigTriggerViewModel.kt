@@ -754,7 +754,9 @@ abstract class BaseConfigTriggerViewModel(
     }
 
     fun onEnableGuiKeyboardClick() {
-        setupGuiKeyboard.enableInputMethod()
+        coroutineScope.launch {
+            setupGuiKeyboard.enableInputMethod()
+        }
     }
 
     fun onChooseGuiKeyboardClick() {

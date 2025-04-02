@@ -81,7 +81,7 @@ class ConfigSettingsUseCaseImpl(
     override val connectedInputDevices: StateFlow<State<List<InputDeviceInfo>>>
         get() = devicesAdapter.connectedInputDevices
 
-    override fun enableCompatibleIme() {
+    override suspend fun enableCompatibleIme() {
         imeHelper.enableCompatibleInputMethods()
     }
 
@@ -190,7 +190,7 @@ interface ConfigSettingsUseCase {
     val rerouteKeyEvents: Flow<Boolean>
     val isCompatibleImeChosen: Flow<Boolean>
     val isCompatibleImeEnabled: Flow<Boolean>
-    fun enableCompatibleIme()
+    suspend fun enableCompatibleIme()
     suspend fun chooseCompatibleIme(): Result<ImeInfo>
     suspend fun showImePicker(): Result<*>
 

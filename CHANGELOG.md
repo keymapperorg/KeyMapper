@@ -2,13 +2,17 @@
 
 _See the changes from previous 3.0 Beta releases as well._
 
+## Added
+
+- #1620 enable Key Mapper Basic Input Method without user interaction on Android 13+.
+
 ## Changed
 
-- *Finally* renamed the theme settings after many years. @jambl3r
+- *Finally* renamed the theme settings after many years. @jambl3r.
 
 ## Bug fixes
 
-- #1618, #1532, #1590 The Key Mapper keyboard is no longer required for Text actions
+- #1618, #1532, #1590 The Key Mapper keyboard is no longer required for Text actions.
 
 ## [3.0 Beta 3](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0-beta.3)
 

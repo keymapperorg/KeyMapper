@@ -40,7 +40,7 @@ class KeyMapperImeHelper(private val imeAdapter: InputMethodAdapter) {
         imeAdapter.inputMethods
             .map { containsCompatibleIme(it) }
 
-    fun enableCompatibleInputMethods() {
+    suspend fun enableCompatibleInputMethods() {
         KEY_MAPPER_IME_PACKAGE_LIST.forEach { packageName ->
             imeAdapter.getInfoByPackageName(packageName).onSuccess {
                 imeAdapter.enableIme(it.id)

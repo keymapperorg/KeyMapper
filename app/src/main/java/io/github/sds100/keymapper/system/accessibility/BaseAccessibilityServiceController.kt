@@ -509,6 +509,11 @@ abstract class BaseAccessibilityServiceController(
             }
 
             is ServiceEvent.TriggerKeyMap -> triggerKeyMapFromIntent(event.uid)
+
+            is ServiceEvent.EnableInputMethod -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                accessibilityService.setInputMethodEnabled(event.imeId, true)
+            }
+
             else -> Unit
         }
     }
