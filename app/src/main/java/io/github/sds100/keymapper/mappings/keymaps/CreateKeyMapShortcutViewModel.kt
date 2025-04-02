@@ -122,14 +122,6 @@ class CreateKeyMapShortcutViewModel(
             )
         }
 
-        val parentGroupListItems = keyMapGroup.parents.map { group ->
-            GroupListItemModel(
-                uid = group.uid,
-                name = group.name,
-                icon = null,
-            )
-        }
-
         val breadcrumbs = keyMapGroup.parents.plus(keyMapGroup.group).filterNotNull().map { group ->
             GroupListItemModel(
                 uid = group.uid,
