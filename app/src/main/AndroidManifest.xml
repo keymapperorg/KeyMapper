@@ -79,6 +79,7 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:directBootAware="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
@@ -174,6 +175,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
@@ -231,8 +233,10 @@
                 android:resource="@xml/config_accessibility_service" />
         </service>
 
+        <!--  IMPORTANT! Must be direct boot aware so it can automatically choose a proper keyboard when the user wants to unlock their phone.  -->
         <service
             android:name=".system.inputmethod.KeyMapperImeService"
+            android:directBootAware="true"
             android:exported="true"
             android:label="@string/ime_service_label"
             android:permission="android.permission.BIND_INPUT_METHOD">

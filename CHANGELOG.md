@@ -5,6 +5,7 @@ _See the changes from previous 3.0 Beta releases as well._
 ## Added
 
 - #1620 enable Key Mapper Basic Input Method without user interaction on Android 13+.
+- #1619 Automatically select the non key mapper keyboard when the device is locked and wanting to type.
 
 ## Changed
 

@@ -1,13 +1,21 @@
 package io.github.sds100.keymapper.system.inputmethod
 
+import android.annotation.SuppressLint
+import android.app.KeyguardManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.inputmethodservice.InputMethodService
+import android.os.Build
+import android.os.UserManager
+import android.util.Log
 import android.view.KeyEvent
 import android.view.MotionEvent
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
+import androidx.core.content.getSystemService
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback
 import io.github.sds100.keymapper.api.KeyEventRelayService
@@ -34,6 +42,15 @@ class KeyMapperImeService : InputMethodService() {
             "io.github.sds100.keymapper.inputmethod.EXTRA_TEXT"
         const val KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT =
             "io.github.sds100.keymapper.inputmethod.EXTRA_KEY_EVENT"
+    }
+
+    private val userManager: UserManager? by lazy { getSystemService<UserManager>() }
+    private val inputMethodManager: InputMethodManager? by lazy {
+        getSystemService<InputMethodManager>()
+    }
+
+    private val keyguardManager: KeyguardManager? by lazy {
+        getSystemService<KeyguardManager>()
     }
 
     private val broadcastReceiver = object : BroadcastReceiver() {
@@ -120,6 +137,23 @@ class KeyMapperImeService : InputMethodService() {
         keyEventRelayServiceWrapper.onCreate()
     }
 
+    override fun onStartInput(attribute: EditorInfo?, restarting: Boolean) {
+        super.onStartInput(attribute, restarting)
+
+        // IMPORTANT! Select a keyboard with an actual GUI if the user needs
+        // to unlock their device. This must not be in onCreate because
+        // the switchInputMethod does not work there.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && userManager?.isUserUnlocked == false) {
+            selectNonBasicKeyboard()
+        } else if (
+            !restarting &&
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1 &&
+            keyguardManager?.isDeviceLocked == true
+        ) {
+            selectNonBasicKeyboard()
+        }
+    }
+
     override fun onGenericMotionEvent(event: MotionEvent?): Boolean {
         event ?: return super.onGenericMotionEvent(null)
 
@@ -173,5 +207,29 @@ class KeyMapperImeService : InputMethodService() {
         keyEventRelayServiceWrapper.onDestroy()
 
         super.onDestroy()
+    }
+
+    @SuppressLint("LogNotTimber")
+    private fun selectNonBasicKeyboard() {
+        inputMethodManager ?: return
+
+        inputMethodManager!!.enabledInputMethodList
+            .filter {
+                it.packageName != "io.github.sds100.keymapper" &&
+                    it.packageName != "io.github.sds100.keymapper.debug" &&
+                    it.packageName != "io.github.sds100.keymapper.ci"
+            }
+            // Select a random one in case one of them can't be used on the lock screen such as
+            // the Google Voice Typing keyboard. This is critical because i
+            // f an input method can't be used
+            // then it will select the Key Mapper Basic Input method again and loop forever.
+            .randomOrNull()
+            ?.also {
+                Log.e(
+                    KeyMapperImeService::class.simpleName,
+                    "Device is locked! Select ${it.id} input method",
+                )
+                switchInputMethod(it.id)
+            }
     }
 }
