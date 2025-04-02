@@ -59,4 +59,7 @@ interface IAccessibilityService {
     fun disableSelf()
 
     fun findFocussedNode(focus: Int): AccessibilityNodeModel?
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    fun inputText(text: String)
 }

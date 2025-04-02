@@ -560,4 +560,10 @@ class MyAccessibilityService :
     }
 
     override fun findFocussedNode(focus: Int): AccessibilityNodeModel? = findFocus(focus)?.toModel()
+
+    override fun inputText(text: String) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            inputMethod?.currentInputConnection?.commitText(text, 1, null)
+        }
+    }
 }
