@@ -177,7 +177,7 @@ fun HomeKeyMapListScreen(
             )
         },
         appBarContent = {
-            KeyMapAppBar(
+            KeyMapListAppBar(
                 state = state.appBarState,
                 scrollBehavior = scrollBehavior,
                 onSettingsClick = onSettingsClick,
@@ -500,7 +500,7 @@ private fun PreviewSelectingKeyMaps() {
                 )
             },
             appBarContent = {
-                KeyMapAppBar(state = appBarState)
+                KeyMapListAppBar(state = appBarState)
             },
             selectionBottomSheet = {
                 SelectionBottomSheet(
@@ -543,7 +543,7 @@ private fun PreviewKeyMapsRunning() {
                 )
             },
             appBarContent = {
-                KeyMapAppBar(state = appBarState)
+                KeyMapListAppBar(state = appBarState)
             },
             selectionBottomSheet = {},
         )
@@ -579,7 +579,7 @@ private fun PreviewKeyMapsPaused() {
                 )
             },
             appBarContent = {
-                KeyMapAppBar(state = appBarState)
+                KeyMapListAppBar(state = appBarState)
             },
             selectionBottomSheet = {},
         )
@@ -634,7 +634,7 @@ private fun PreviewKeyMapsWarnings() {
                 )
             },
             appBarContent = {
-                KeyMapAppBar(state = appBarState)
+                KeyMapListAppBar(state = appBarState)
             },
             selectionBottomSheet = {},
         )
@@ -681,7 +681,7 @@ private fun PreviewKeyMapsWarningsEmpty() {
                 )
             },
             appBarContent = {
-                KeyMapAppBar(state = appBarState)
+                KeyMapListAppBar(state = appBarState)
             },
             selectionBottomSheet = {},
         )
