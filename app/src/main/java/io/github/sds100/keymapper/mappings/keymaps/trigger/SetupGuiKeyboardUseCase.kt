@@ -31,7 +31,7 @@ class SetupGuiKeyboardUseCaseImpl(
             }
         }
 
-    override fun enableInputMethod() {
+    override suspend fun enableInputMethod() {
         inputMethodAdapter.getInfoByPackageName(KeyMapperImeHelper.KEY_MAPPER_GUI_IME_PACKAGE)
             .onSuccess {
                 inputMethodAdapter.enableIme(it.id)
@@ -54,7 +54,7 @@ interface SetupGuiKeyboardUseCase {
     val isInstalled: Flow<Boolean>
 
     val isEnabled: Flow<Boolean>
-    fun enableInputMethod()
+    suspend fun enableInputMethod()
 
     val isChosen: Flow<Boolean>
     fun chooseInputMethod()

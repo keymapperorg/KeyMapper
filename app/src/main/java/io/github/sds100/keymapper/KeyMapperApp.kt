@@ -1,8 +1,12 @@
 package io.github.sds100.keymapper
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
+import android.os.UserManager
+import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.getSystemService
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
@@ -64,7 +68,10 @@ import java.util.Calendar
 /**
  * Created by sds100 on 19/05/2020.
  */
+@SuppressLint("LogNotTimber")
 class KeyMapperApp : MultiDexApplication() {
+    private val tag = KeyMapperApp::class.simpleName
+
     val appCoroutineScope = MainScope()
 
     val notificationAdapter by lazy { AndroidNotificationAdapter(this, appCoroutineScope) }
@@ -167,8 +174,15 @@ class KeyMapperApp : MultiDexApplication() {
 
     private val processLifecycleOwner by lazy { ProcessLifecycleOwner.get() }
 
+    private val userManager: UserManager? by lazy { getSystemService<UserManager>() }
+
+    private val initLock: Any = Any()
+    private var initialized = false
+
     override fun onCreate() {
         val priorExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
+
+        Log.i(tag, "KeyMapperApp: OnCreate")
 
         Thread.setDefaultUncaughtExceptionHandler { thread, exception ->
             // log in a blocking manner and always log regardless of whether the setting is turned on
@@ -188,9 +202,30 @@ class KeyMapperApp : MultiDexApplication() {
 
         super.onCreate()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-//            DynamicColors.applyToActivitiesIfAvailable(this)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && userManager?.isUserUnlocked == false) {
+            Log.i(tag, "KeyMapperApp: Delay init because locked.")
+            // If the device is still encrypted and locked do not initialize anything that
+            // may potentially need the encrypted app storage like databases.
+            return
         }
+
+        synchronized(initLock) {
+            init()
+            initialized = true
+        }
+    }
+
+    fun onBootUnlocked() {
+        synchronized(initLock) {
+            if (!initialized) {
+                init()
+            }
+            initialized = true
+        }
+    }
+
+    private fun init() {
+        Log.i(tag, "KeyMapperApp: Init")
 
         ServiceLocator.settingsRepository(this).get(Keys.darkTheme)
             .map { it?.toIntOrNull() }

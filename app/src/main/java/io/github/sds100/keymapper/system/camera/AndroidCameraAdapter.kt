@@ -209,39 +209,21 @@ class AndroidCameraAdapter(context: Context) : CameraAdapter {
 
         try {
             val cameraId = getFlashlightCameraIdForLens(lens)
+            val flashInfo = getFlashInfo(lens)
 
-            if (cameraId == null) {
+            if (cameraId == null || flashInfo == null) {
                 return when (lens) {
                     CameraLens.FRONT -> Error.FrontFlashNotFound
                     CameraLens.BACK -> Error.BackFlashNotFound
                 }
             }
 
-            val maxStrength = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                getCharacteristicForLens(
-                    lens,
-                    CameraCharacteristics.FLASH_INFO_STRENGTH_MAXIMUM_LEVEL,
-                )
-            } else {
-                null
-            }
-
-            val defaultStrength =
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    getCharacteristicForLens(
-                        lens,
-                        CameraCharacteristics.FLASH_INFO_STRENGTH_DEFAULT_LEVEL,
-                    )
-                } else {
-                    null
-                }
-
             // try to find a camera with a flash
-            if (enabled && maxStrength != null && defaultStrength != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && enabled && flashInfo.supportsVariableStrength) {
                 val strength = if (strengthPercent == null) {
-                    defaultStrength
+                    flashInfo.defaultStrength
                 } else {
-                    (strengthPercent * maxStrength).toInt().coerceAtLeast(1)
+                    (strengthPercent * flashInfo.maxStrength).toInt().coerceAtLeast(1)
                 }
                 cameraManager.turnOnTorchWithStrengthLevel(cameraId, strength)
             } else {

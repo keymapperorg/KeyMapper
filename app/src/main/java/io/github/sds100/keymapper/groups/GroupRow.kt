@@ -51,6 +51,7 @@ import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 fun GroupRow(
     modifier: Modifier = Modifier,
     groups: List<GroupListItemModel>,
+    showNewGroup: Boolean = true,
     onNewGroupClick: () -> Unit = {},
     onGroupClick: (String) -> Unit = {},
     enabled: Boolean = true,
@@ -80,19 +81,21 @@ fun GroupRow(
                     // Show new group button in the expand indicator if the new group button
                     // in the flow row has overflowed.
                     Row {
-                        NewGroupButton(
-                            onClick = onNewGroupClick,
-                            text = if (isSubgroups) {
-                                stringResource(R.string.home_new_subgroup_button)
-                            } else {
-                                stringResource(R.string.home_new_group_button)
-                            },
-                            icon = {
-                                Icon(imageVector = Icons.Rounded.Add, null)
-                            },
-                            showText = groups.isEmpty(),
-                            enabled = enabled,
-                        )
+                        if (showNewGroup) {
+                            NewGroupButton(
+                                onClick = onNewGroupClick,
+                                text = if (isSubgroups) {
+                                    stringResource(R.string.home_new_subgroup_button)
+                                } else {
+                                    stringResource(R.string.home_new_group_button)
+                                },
+                                icon = {
+                                    Icon(imageVector = Icons.Rounded.Add, null)
+                                },
+                                showText = groups.isEmpty(),
+                                enabled = enabled,
+                            )
+                        }
 
                         Spacer(Modifier.width(8.dp))
 
@@ -160,19 +163,21 @@ fun GroupRow(
                 )
             }
 
-            NewGroupButton(
-                onClick = onNewGroupClick,
-                text = if (isSubgroups) {
-                    stringResource(R.string.home_new_subgroup_button)
-                } else {
-                    stringResource(R.string.home_new_group_button)
-                },
-                icon = {
-                    Icon(imageVector = Icons.Rounded.Add, null)
-                },
-                showText = groups.isEmpty(),
-                enabled = enabled,
-            )
+            if (showNewGroup) {
+                NewGroupButton(
+                    onClick = onNewGroupClick,
+                    text = if (isSubgroups) {
+                        stringResource(R.string.home_new_subgroup_button)
+                    } else {
+                        stringResource(R.string.home_new_group_button)
+                    },
+                    icon = {
+                        Icon(imageVector = Icons.Rounded.Add, null)
+                    },
+                    showText = groups.isEmpty(),
+                    enabled = enabled,
+                )
+            }
         }
     }
 }

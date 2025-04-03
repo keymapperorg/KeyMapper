@@ -148,7 +148,7 @@ private fun ConfigKeyMapScreen(
         modifier.displayCutoutPadding(),
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
-            KeyMapAppBar(
+            ConfigKeyMapAppBar(
                 isKeyMapEnabled = isKeyMapEnabled,
                 onKeyMapEnabledChange = onKeyMapEnabledChange,
                 onBackClick = onBackClick,
@@ -163,7 +163,7 @@ private fun ConfigKeyMapScreen(
                         ConfigKeyMapTab.ACTIONS -> actionsHelpUrl
                         ConfigKeyMapTab.CONSTRAINTS -> constraintsHelpUrl
                         ConfigKeyMapTab.OPTIONS -> optionsHelpUrl
-                        else -> return@KeyMapAppBar
+                        else -> return@ConfigKeyMapAppBar
                     }
 
                     if (url.isNotEmpty()) {
@@ -298,7 +298,7 @@ private fun ConfigKeyMapScreen(
 }
 
 @Composable
-private fun KeyMapAppBar(
+private fun ConfigKeyMapAppBar(
     modifier: Modifier = Modifier,
     isKeyMapEnabled: Boolean,
     onKeyMapEnabledChange: (Boolean) -> Unit = {},

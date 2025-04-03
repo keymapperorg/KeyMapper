@@ -140,7 +140,9 @@ class SettingsViewModel(
     }
 
     fun onEnableCompatibleImeClick() {
-        useCase.enableCompatibleIme()
+        viewModelScope.launch {
+            useCase.enableCompatibleIme()
+        }
     }
 
     fun resetDefaultMappingOptions() {

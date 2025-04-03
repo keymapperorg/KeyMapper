@@ -49,6 +49,8 @@ interface IAccessibilityService {
     val rootNode: AccessibilityNodeModel?
     val activeWindowPackage: Flow<String?>
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    fun setInputMethodEnabled(imeId: String, enabled: Boolean)
     fun hideKeyboard()
     fun showKeyboard()
     val isKeyboardHidden: Flow<Boolean>
@@ -59,4 +61,7 @@ interface IAccessibilityService {
     fun disableSelf()
 
     fun findFocussedNode(focus: Int): AccessibilityNodeModel?
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    fun inputText(text: String)
 }

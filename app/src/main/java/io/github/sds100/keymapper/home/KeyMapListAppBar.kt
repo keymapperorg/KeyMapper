@@ -111,7 +111,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-fun KeyMapAppBar(
+fun KeyMapListAppBar(
     modifier: Modifier = Modifier,
     state: KeyMapAppBarState,
     onSettingsClick: () -> Unit = {},
@@ -146,10 +146,17 @@ fun KeyMapAppBar(
                 state = state,
                 scrollBehavior = scrollBehavior,
                 onTogglePausedClick = onTogglePausedClick,
-                onSortClick = onSortClick,
                 onFixWarningClick = onFixWarningClick,
                 onNewGroupClick = onNewGroupClick,
                 onGroupClick = onGroupClick,
+                navigationIcon = {
+                    IconButton(onClick = onSortClick) {
+                        Icon(
+                            Icons.AutoMirrored.Rounded.Sort,
+                            contentDescription = stringResource(R.string.home_app_bar_sort),
+                        )
+                    }
+                },
                 actions = {
                     AppBarActions(
                         onHelpClick,
@@ -185,16 +192,18 @@ fun KeyMapAppBar(
                 LaunchedEffect(state.groupName) {
                     showDeleteGroupDialog = false
                     error = null
+                    val endPosition = state.groupName.length
 
                     if (state.isEditingGroupName) {
                         if (state.isNewGroup) {
                             newName = TextFieldValue()
                         } else {
-                            val endPosition = state.groupName.length
-
                             newName =
                                 TextFieldValue(state.groupName, selection = TextRange(endPosition))
                         }
+                    } else {
+                        newName =
+                            TextFieldValue(state.groupName, selection = TextRange(endPosition))
                     }
                 }
 
@@ -280,10 +289,10 @@ private fun RootGroupAppBar(
     state: KeyMapAppBarState.RootGroup,
     scrollBehavior: TopAppBarScrollBehavior,
     onTogglePausedClick: () -> Unit,
-    onSortClick: () -> Unit,
     onFixWarningClick: (String) -> Unit,
     onNewGroupClick: () -> Unit,
     onGroupClick: (String) -> Unit,
+    navigationIcon: @Composable () -> Unit,
     actions: @Composable RowScope.() -> Unit,
 ) {
     // This is taken from the AppBar color code.
@@ -317,14 +326,7 @@ private fun RootGroupAppBar(
                     onTogglePausedClick = onTogglePausedClick,
                 )
             },
-            navigationIcon = {
-                IconButton(onClick = onSortClick) {
-                    Icon(
-                        Icons.AutoMirrored.Rounded.Sort,
-                        contentDescription = stringResource(R.string.home_app_bar_sort),
-                    )
-                }
-            },
+            navigationIcon = navigationIcon,
             actions = actions,
             colors = appBarColors,
         )
@@ -912,7 +914,7 @@ private fun KeyMapsChildGroupPreview() {
         isNewGroup = false,
     )
     KeyMapperTheme {
-        KeyMapAppBar(modifier = Modifier.fillMaxWidth(), state = state)
+        KeyMapListAppBar(modifier = Modifier.fillMaxWidth(), state = state)
     }
 }
 
@@ -931,7 +933,7 @@ private fun KeyMapsChildGroupDarkPreview() {
         isNewGroup = false,
     )
     KeyMapperTheme(darkTheme = true) {
-        KeyMapAppBar(modifier = Modifier.fillMaxWidth(), state = state)
+        KeyMapListAppBar(modifier = Modifier.fillMaxWidth(), state = state)
     }
 }
 
@@ -982,7 +984,7 @@ private fun KeyMapsChildGroupEditingDarkPreview() {
     }
 
     KeyMapperTheme(darkTheme = true) {
-        KeyMapAppBar(
+        KeyMapListAppBar(
             state = state,
         )
     }
@@ -1022,7 +1024,7 @@ private fun KeyMapsRunningPreview() {
         isPaused = false,
     )
     KeyMapperTheme {
-        KeyMapAppBar(state = state)
+        KeyMapListAppBar(state = state)
     }
 }
 
@@ -1036,7 +1038,7 @@ private fun HomeStatePausedPreview() {
         isPaused = true,
     )
     KeyMapperTheme {
-        KeyMapAppBar(state = state)
+        KeyMapListAppBar(state = state)
     }
 }
 
@@ -1062,7 +1064,7 @@ private fun HomeStateWarningsPreview() {
             isPaused = true,
         )
     KeyMapperTheme {
-        KeyMapAppBar(state = state)
+        KeyMapListAppBar(state = state)
     }
 }
 
@@ -1088,7 +1090,7 @@ private fun HomeStateWarningsDarkPreview() {
             isPaused = true,
         )
     KeyMapperTheme(darkTheme = true) {
-        KeyMapAppBar(state = state)
+        KeyMapListAppBar(state = state)
     }
 }
 
@@ -1105,7 +1107,7 @@ private fun HomeStateSelectingPreview() {
         showThisGroup = false,
     )
     KeyMapperTheme {
-        KeyMapAppBar(state = state)
+        KeyMapListAppBar(state = state)
     }
 }
 
@@ -1122,6 +1124,6 @@ private fun HomeStateSelectingDisabledPreview() {
         showThisGroup = false,
     )
     KeyMapperTheme {
-        KeyMapAppBar(state = state)
+        KeyMapListAppBar(state = state)
     }
 }

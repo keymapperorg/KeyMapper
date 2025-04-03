@@ -41,6 +41,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -176,7 +177,7 @@ fun HomeKeyMapListScreen(
             )
         },
         appBarContent = {
-            KeyMapAppBar(
+            KeyMapListAppBar(
                 state = state.appBarState,
                 scrollBehavior = scrollBehavior,
                 onSettingsClick = onSettingsClick,
@@ -499,7 +500,7 @@ private fun PreviewSelectingKeyMaps() {
                 )
             },
             appBarContent = {
-                KeyMapAppBar(state = appBarState)
+                KeyMapListAppBar(state = appBarState)
             },
             selectionBottomSheet = {
                 SelectionBottomSheet(
@@ -542,7 +543,7 @@ private fun PreviewKeyMapsRunning() {
                 )
             },
             appBarContent = {
-                KeyMapAppBar(state = appBarState)
+                KeyMapListAppBar(state = appBarState)
             },
             selectionBottomSheet = {},
         )
@@ -578,7 +579,7 @@ private fun PreviewKeyMapsPaused() {
                 )
             },
             appBarContent = {
-                KeyMapAppBar(state = appBarState)
+                KeyMapListAppBar(state = appBarState)
             },
             selectionBottomSheet = {},
         )
@@ -633,7 +634,7 @@ private fun PreviewKeyMapsWarnings() {
                 )
             },
             appBarContent = {
-                KeyMapAppBar(state = appBarState)
+                KeyMapListAppBar(state = appBarState)
             },
             selectionBottomSheet = {},
         )
@@ -641,7 +642,7 @@ private fun PreviewKeyMapsWarnings() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(device = Devices.PIXEL)
 @Composable
 private fun PreviewKeyMapsWarningsEmpty() {
     val warnings = listOf(
@@ -680,7 +681,7 @@ private fun PreviewKeyMapsWarningsEmpty() {
                 )
             },
             appBarContent = {
-                KeyMapAppBar(state = appBarState)
+                KeyMapListAppBar(state = appBarState)
             },
             selectionBottomSheet = {},
         )
