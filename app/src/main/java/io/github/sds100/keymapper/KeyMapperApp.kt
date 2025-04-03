@@ -70,7 +70,7 @@ import java.util.Calendar
  */
 @SuppressLint("LogNotTimber")
 class KeyMapperApp : MultiDexApplication() {
-    private val TAG = KeyMapperApp::class.simpleName
+    private val tag = KeyMapperApp::class.simpleName
 
     val appCoroutineScope = MainScope()
 
@@ -182,7 +182,7 @@ class KeyMapperApp : MultiDexApplication() {
     override fun onCreate() {
         val priorExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
 
-        Log.i(TAG, "KeyMapperApp: OnCreate")
+        Log.i(tag, "KeyMapperApp: OnCreate")
 
         Thread.setDefaultUncaughtExceptionHandler { thread, exception ->
             // log in a blocking manner and always log regardless of whether the setting is turned on
@@ -203,7 +203,7 @@ class KeyMapperApp : MultiDexApplication() {
         super.onCreate()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && userManager?.isUserUnlocked == false) {
-            Log.i(TAG, "KeyMapperApp: Delay init because locked.")
+            Log.i(tag, "KeyMapperApp: Delay init because locked.")
             // If the device is still encrypted and locked do not initialize anything that
             // may potentially need the encrypted app storage like databases.
             return
@@ -225,7 +225,7 @@ class KeyMapperApp : MultiDexApplication() {
     }
 
     private fun init() {
-        Log.i(TAG, "KeyMapperApp: Init")
+        Log.i(tag, "KeyMapperApp: Init")
 
         ServiceLocator.settingsRepository(this).get(Keys.darkTheme)
             .map { it?.toIntOrNull() }
