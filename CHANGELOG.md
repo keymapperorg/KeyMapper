@@ -1,5 +1,7 @@
 ## [3.0 Beta 4](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0-beta.4)
 
+#### 2 April 2025
+
 _See the changes from previous 3.0 Beta releases as well._
 
 ## Added
@@ -14,6 +16,7 @@ _See the changes from previous 3.0 Beta releases as well._
 ## Bug fixes
 
 - #1618, #1532, #1590 The Key Mapper keyboard is no longer required for Text actions.
+- Flashlight action works again on devices that do not support variable brightness
 
 ## [3.0 Beta 3](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0-beta.3)
 
