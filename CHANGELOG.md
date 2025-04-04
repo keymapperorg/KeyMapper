@@ -1,3 +1,11 @@
+## [3.0 Beta 5](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0-beta.5)
+
+#### TO BE RELEASED
+
+## Bug fixes
+
+- #1627 open camera app action does not work when device is locked
+
 ## [3.0 Beta 4](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0-beta.4)
 
 #### 2 April 2025

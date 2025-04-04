@@ -281,14 +281,31 @@ class AndroidPackageManagerAdapter(
 
     override fun launchCameraApp(): Result<*> {
         try {
-            Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA).apply {
+            /**
+             * See this guide on how the camera is launched with double press power button in
+             * SystemUI. https://cs.android.com/android/platform/superproject/+/master:frameworks/base/packages/SystemUI/docs/camera.md
+             *
+             * First launch the SECURE camera intent so the camera opens when the device
+             * is locked.
+             */
+            Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA_SECURE).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 ctx.startActivity(this)
             }
 
             return Success(Unit)
         } catch (e: ActivityNotFoundException) {
-            return Error.NoCameraApp
+            // Just in case the camera app didn't implement the secure intent, try the normal one.
+            try {
+                Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    ctx.startActivity(this)
+                }
+
+                return Success(Unit)
+            } catch (e: ActivityNotFoundException) {
+                return Error.NoCameraApp
+            }
         }
     }
 
