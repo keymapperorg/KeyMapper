@@ -152,13 +152,15 @@ class AndroidNetworkAdapter(
             }
 
             val request = requestBody
-                .url("https://posttestserver.dev/p/kmr33yjcz5h38hkq/post")
+                .url(url)
                 .headers(headers.build())
                 .build()
 
             withContext(Dispatchers.IO) { httpClient.newCall(request).execute() }
                 .use { response ->
-                    Timber.e(response.toString())
+                    // Keep this in. It is useful for debugging.
+                    Timber.d(response.toString())
+
                     if (!response.isSuccessful) {
                         return Error.UnknownIOError
                     }
@@ -166,6 +168,7 @@ class AndroidNetworkAdapter(
                     return Success(Unit)
                 }
         } catch (e: IOException) {
+            Timber.e(e)
             return Error.UnknownIOError
         }
     }

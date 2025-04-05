@@ -73,6 +73,10 @@ fun HttpRequestBottomSheet(delegate: CreateActionDelegate) {
                 delegate.httpRequestBottomSheetState =
                     delegate.httpRequestBottomSheetState?.copy(body = it)
             },
+            onAuthorizationChanged = {
+                delegate.httpRequestBottomSheetState =
+                    delegate.httpRequestBottomSheetState?.copy(authorizationHeader = it)
+            },
             onDoneClick = {
                 val result = delegate.httpRequestBottomSheetState ?: return@HttpRequestBottomSheet
                 delegate.httpRequestBottomSheetState = null
@@ -92,6 +96,7 @@ private fun HttpRequestBottomSheet(
     onDescriptionChanged: (String) -> Unit = {},
     onUrlChanged: (String) -> Unit = {},
     onBodyChanged: (String) -> Unit = {},
+    onAuthorizationChanged: (String) -> Unit = {},
     onDoneClick: () -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
@@ -221,11 +226,16 @@ private fun HttpRequestBottomSheet(
                 value = state.authorizationHeader,
                 label = { Text(stringResource(R.string.action_http_request_authorization_label)) },
                 onValueChange = {
-                    onBodyChanged(it)
+                    onAuthorizationChanged(it)
                 },
                 supportingText = {
                     Text(stringResource(R.string.action_http_request_authorization_supporting_text))
                 },
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.None,
+                    autoCorrectEnabled = false,
+                    keyboardType = KeyboardType.Text,
+                ),
             )
 
             Spacer(modifier = Modifier.height(16.dp))

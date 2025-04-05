@@ -839,5 +839,10 @@ sealed class ActionData : Comparable<ActionData> {
         val authorizationHeader: String,
     ) : ActionData() {
         override val id: ActionId = ActionId.HTTP_REQUEST
+
+        override fun toString(): String {
+            // Do not leak sensitive request info to logs.
+            return "HttpRequest(description=$description)"
+        }
     }
 }
