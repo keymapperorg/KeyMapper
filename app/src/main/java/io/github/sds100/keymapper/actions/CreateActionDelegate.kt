@@ -13,6 +13,7 @@ import io.github.sds100.keymapper.system.camera.CameraLensUtils
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.system.display.OrientationUtils
 import io.github.sds100.keymapper.system.intents.ConfigIntentResult
+import io.github.sds100.keymapper.system.network.HttpMethod
 import io.github.sds100.keymapper.system.volume.DndMode
 import io.github.sds100.keymapper.system.volume.DndModeUtils
 import io.github.sds100.keymapper.system.volume.RingerMode
@@ -53,6 +54,8 @@ class CreateActionDelegate(
     var changeFlashlightStrengthActionState: ChangeFlashlightStrengthActionState? by mutableStateOf(
         null,
     )
+
+    var httpRequestBottomSheetState: ActionData.HttpRequest? by mutableStateOf(null)
 
     init {
         coroutineScope.launch {
@@ -769,6 +772,19 @@ class CreateActionDelegate(
             ActionId.ANSWER_PHONE_CALL -> return ActionData.AnswerCall
             ActionId.END_PHONE_CALL -> return ActionData.EndCall
             ActionId.DEVICE_CONTROLS -> return ActionData.DeviceControls
+            ActionId.HTTP_REQUEST -> {
+                if (oldData == null) {
+                    httpRequestBottomSheetState = ActionData.HttpRequest(
+                        description = "",
+                        method = HttpMethod.GET,
+                        url = "",
+                        body = "",
+                    )
+                } else {
+                    httpRequestBottomSheetState = oldData as? ActionData.HttpRequest
+                }
+                return null
+            }
         }
     }
 }

@@ -1,6 +1,10 @@
 ## [3.0 Beta 5](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0-beta.5)
 
-#### TO BE RELEASED
+#### 4 April 2025
+
+- #1625 HTTP Request action.
+
+###
 
 ## Bug fixes
 

@@ -84,6 +84,10 @@ data class ActionEntity(
         const val EXTRA_SOUND_FILE_DESCRIPTION = "extra_sound_file_description"
         const val EXTRA_INTENT_EXTRAS = "extra_intent_extras"
         const val EXTRA_FLASH_STRENGTH = "extra_flash_strength"
+        const val EXTRA_HTTP_METHOD = "extra_http_method"
+        const val EXTRA_HTTP_URL = "extra_http_url"
+        const val EXTRA_HTTP_BODY = "extra_http_body"
+        const val EXTRA_HTTP_DESCRIPTION = "extra_http_description"
 
         // DON'T CHANGE THESE. Used for JSON serialization and parsing.
         const val NAME_ACTION_TYPE = "type"

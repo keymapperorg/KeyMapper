@@ -5,6 +5,7 @@ import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.system.intents.IntentExtraModel
 import io.github.sds100.keymapper.system.intents.IntentTarget
+import io.github.sds100.keymapper.system.network.HttpMethod
 import io.github.sds100.keymapper.system.volume.DndMode
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeStream
@@ -827,5 +828,15 @@ sealed class ActionData : Comparable<ActionData> {
     @Serializable
     object DeviceControls : ActionData() {
         override val id: ActionId = ActionId.DEVICE_CONTROLS
+    }
+
+    @Serializable
+    data class HttpRequest(
+        val description: String,
+        val method: HttpMethod,
+        val url: String,
+        val body: String,
+    ) : ActionData() {
+        override val id: ActionId = ActionId.HTTP_REQUEST
     }
 }

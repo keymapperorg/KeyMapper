@@ -129,4 +129,6 @@ enum class ActionId {
     ANSWER_PHONE_CALL,
     END_PHONE_CALL,
     DEVICE_CONTROLS,
+
+    HTTP_REQUEST,
 }

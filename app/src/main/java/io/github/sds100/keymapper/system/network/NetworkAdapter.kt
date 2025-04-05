@@ -22,4 +22,10 @@ interface NetworkAdapter {
     fun disableMobileData(): Result<*>
 
     fun getKnownWifiSSIDs(): List<String>?
+
+    suspend fun sendHttpRequest(
+        method: HttpMethod,
+        url: String,
+        body: String,
+    ): Result<*>
 }

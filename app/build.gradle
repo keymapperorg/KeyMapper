@@ -191,6 +191,7 @@ dependencies {
     implementation "org.lsposed.hiddenapibypass:hiddenapibypass:4.3"
     proImplementation 'com.revenuecat.purchases:purchases:8.15.0'
     proImplementation "com.airbnb.android:lottie-compose:6.6.3"
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
     // splitties
     implementation "com.louiscad.splitties:splitties-bitflags:$splitties_version"

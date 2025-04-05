@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.data.entities.getData
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.intents.IntentExtraModel
 import io.github.sds100.keymapper.system.intents.IntentTarget
+import io.github.sds100.keymapper.system.network.HttpMethod
 import io.github.sds100.keymapper.system.volume.DndMode
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeStream
@@ -15,7 +16,6 @@ import io.github.sds100.keymapper.util.getKey
 import io.github.sds100.keymapper.util.success
 import io.github.sds100.keymapper.util.then
 import io.github.sds100.keymapper.util.valueOrNull
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import splitties.bitflags.hasFlag
 
@@ -496,6 +496,27 @@ object ActionDataEntityMapper {
             ActionId.ANSWER_PHONE_CALL -> ActionData.AnswerCall
             ActionId.END_PHONE_CALL -> ActionData.EndCall
             ActionId.DEVICE_CONTROLS -> ActionData.DeviceControls
+            ActionId.HTTP_REQUEST -> {
+                val method = entity.extras.getData(ActionEntity.EXTRA_HTTP_METHOD).then {
+                    HTTP_METHOD_MAP.getKey(it)!!.success()
+                }.valueOrNull() ?: return null
+
+                val description =
+                    entity.extras.getData(ActionEntity.EXTRA_HTTP_DESCRIPTION).valueOrNull()
+                        ?: return null
+
+                val url = entity.extras.getData(ActionEntity.EXTRA_HTTP_URL).valueOrNull()
+                    ?: return null
+
+                val body = entity.extras.getData(ActionEntity.EXTRA_HTTP_BODY).valueOrNull() ?: ""
+
+                ActionData.HttpRequest(
+                    description = description,
+                    method = method,
+                    url = url,
+                    body = body,
+                )
+            }
         }
     }
 
@@ -713,6 +734,13 @@ object ActionDataEntityMapper {
             EntityExtra(ActionEntity.EXTRA_SOUND_FILE_DESCRIPTION, data.soundDescription),
         )
 
+        is ActionData.HttpRequest -> listOf(
+            EntityExtra(ActionEntity.EXTRA_HTTP_DESCRIPTION, data.description),
+            EntityExtra(ActionEntity.EXTRA_HTTP_METHOD, HTTP_METHOD_MAP[data.method]!!),
+            EntityExtra(ActionEntity.EXTRA_HTTP_URL, data.url),
+            EntityExtra(ActionEntity.EXTRA_HTTP_BODY, data.body),
+        )
+
         else -> emptyList()
     }
 
@@ -748,6 +776,14 @@ object ActionDataEntityMapper {
         IntentTarget.ACTIVITY to "ACTIVITY",
         IntentTarget.BROADCAST_RECEIVER to "BROADCAST_RECEIVER",
         IntentTarget.SERVICE to "SERVICE",
+    )
+
+    private val HTTP_METHOD_MAP = mapOf(
+        HttpMethod.GET to "GET",
+        HttpMethod.POST to "POST",
+        HttpMethod.PUT to "PUT",
+        HttpMethod.DELETE to "DELETE",
+        HttpMethod.PATCH to "PATCH",
     )
 
     /**
@@ -865,5 +901,6 @@ object ActionDataEntityMapper {
         ActionId.ANSWER_PHONE_CALL to "answer_phone_call",
         ActionId.END_PHONE_CALL to "end_phone_call",
         ActionId.DEVICE_CONTROLS to "device_controls",
+        ActionId.HTTP_REQUEST to "http_request",
     )
 }

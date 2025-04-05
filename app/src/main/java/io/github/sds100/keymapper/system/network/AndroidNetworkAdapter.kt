@@ -10,11 +10,20 @@ import android.telephony.TelephonyManager
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import io.github.sds100.keymapper.system.root.SuAdapter
+import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import okio.IOException
+import okio.use
+import timber.log.Timber
 
 /**
  * Created by sds100 on 24/04/2021.
@@ -24,9 +33,9 @@ class AndroidNetworkAdapter(
     private val suAdapter: SuAdapter,
 ) : NetworkAdapter {
     private val ctx = context.applicationContext
-
     private val wifiManager: WifiManager by lazy { ctx.getSystemService()!! }
     private val telephonyManager: TelephonyManager by lazy { ctx.getSystemService()!! }
+    private val httpClient: OkHttpClient by lazy { OkHttpClient() }
 
     private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -116,6 +125,35 @@ class AndroidNetworkAdapter(
             return wifiManager.configuredNetworks?.map {
                 it.SSID.removeSurrounding("\"")
             } ?: emptyList()
+        }
+    }
+
+    override suspend fun sendHttpRequest(method: HttpMethod, url: String, body: String): Result<*> {
+        try {
+            val requestBody = when (method) {
+                HttpMethod.HEAD -> Request.Builder().head()
+                HttpMethod.PUT -> Request.Builder().put(body.toRequestBody())
+                HttpMethod.POST -> Request.Builder().post(body.toRequestBody())
+                HttpMethod.GET -> Request.Builder().get()
+                HttpMethod.DELETE -> Request.Builder().delete()
+                HttpMethod.PATCH -> Request.Builder().patch(body.toRequestBody())
+            }
+
+            val request = requestBody
+                .url("https://posttestserver.dev/p/kmr33yjcz5h38hkq/post")
+                .build()
+
+            withContext(Dispatchers.IO) { httpClient.newCall(request).execute() }
+                .use { response ->
+                    Timber.e(response.toString())
+                    if (!response.isSuccessful) {
+                        return Error.UnknownIOError
+                    }
+
+                    return Success(Unit)
+                }
+        } catch (e: IOException) {
+            return Error.UnknownIOError
         }
     }
 }
