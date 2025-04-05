@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
+import okhttp3.Headers
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -128,7 +129,12 @@ class AndroidNetworkAdapter(
         }
     }
 
-    override suspend fun sendHttpRequest(method: HttpMethod, url: String, body: String): Result<*> {
+    override suspend fun sendHttpRequest(
+        method: HttpMethod,
+        url: String,
+        body: String,
+        authorizationHeader: String,
+    ): Result<*> {
         try {
             val requestBody = when (method) {
                 HttpMethod.HEAD -> Request.Builder().head()
@@ -139,8 +145,15 @@ class AndroidNetworkAdapter(
                 HttpMethod.PATCH -> Request.Builder().patch(body.toRequestBody())
             }
 
+            val headers = Headers.Builder()
+
+            if (authorizationHeader.isNotBlank()) {
+                headers.add("Authorization", authorizationHeader)
+            }
+
             val request = requestBody
                 .url("https://posttestserver.dev/p/kmr33yjcz5h38hkq/post")
+                .headers(headers.build())
                 .build()
 
             withContext(Dispatchers.IO) { httpClient.newCall(request).execute() }

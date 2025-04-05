@@ -1084,6 +1084,8 @@
     <string name="action_http_request_url_label">URL</string>
     <string name="action_http_request_url_empty_error">Can not be empty!</string>
     <string name="action_http_request_body_label">Request body (optional)</string>
+    <string name="action_http_request_authorization_label">Authorization header (optional)</string>
+    <string name="action_http_request_authorization_supporting_text">You must prepend \'Bearer\' if necessary</string>
     <!-- action labels -->
 
     <!-- action category labels -->

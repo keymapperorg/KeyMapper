@@ -820,6 +820,7 @@ class PerformActionsUseCaseImpl(
                         method = action.method,
                         url = action.url,
                         body = action.body,
+                        authorizationHeader = action.authorizationHeader,
                     ).showErrorMessageOnFail()
                 }
 

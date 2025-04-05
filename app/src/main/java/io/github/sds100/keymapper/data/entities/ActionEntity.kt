@@ -88,6 +88,7 @@ data class ActionEntity(
         const val EXTRA_HTTP_URL = "extra_http_url"
         const val EXTRA_HTTP_BODY = "extra_http_body"
         const val EXTRA_HTTP_DESCRIPTION = "extra_http_description"
+        const val EXTRA_HTTP_AUTHORIZATION_HEADER = "extra_http_authorization_header"
 
         // DON'T CHANGE THESE. Used for JSON serialization and parsing.
         const val NAME_ACTION_TYPE = "type"

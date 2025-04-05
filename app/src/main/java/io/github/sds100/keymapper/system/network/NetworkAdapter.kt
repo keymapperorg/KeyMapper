@@ -27,5 +27,6 @@ interface NetworkAdapter {
         method: HttpMethod,
         url: String,
         body: String,
+        authorizationHeader: String,
     ): Result<*>
 }

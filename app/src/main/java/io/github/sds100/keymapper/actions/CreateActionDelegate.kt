@@ -779,6 +779,7 @@ class CreateActionDelegate(
                         method = HttpMethod.GET,
                         url = "",
                         body = "",
+                        authorizationHeader = "",
                     )
                 } else {
                     httpRequestBottomSheetState = oldData as? ActionData.HttpRequest

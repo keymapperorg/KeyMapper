@@ -214,6 +214,22 @@ private fun HttpRequestBottomSheet(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                value = state.authorizationHeader,
+                label = { Text(stringResource(R.string.action_http_request_authorization_label)) },
+                onValueChange = {
+                    onBodyChanged(it)
+                },
+                supportingText = {
+                    Text(stringResource(R.string.action_http_request_authorization_supporting_text))
+                },
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -278,6 +294,7 @@ private fun PreviewEmpty() {
                 method = HttpMethod.GET,
                 url = "",
                 body = "",
+                authorizationHeader = "",
             ),
         )
     }
@@ -301,6 +318,7 @@ private fun PreviewFilled() {
                 method = HttpMethod.GET,
                 url = "https://example.com",
                 body = "Hello, world!",
+                authorizationHeader = "Bearer token",
             ),
         )
     }

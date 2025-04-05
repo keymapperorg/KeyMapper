@@ -836,6 +836,7 @@ sealed class ActionData : Comparable<ActionData> {
         val method: HttpMethod,
         val url: String,
         val body: String,
+        val authorizationHeader: String,
     ) : ActionData() {
         override val id: ActionId = ActionId.HTTP_REQUEST
     }

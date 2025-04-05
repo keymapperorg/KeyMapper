@@ -510,11 +510,16 @@ object ActionDataEntityMapper {
 
                 val body = entity.extras.getData(ActionEntity.EXTRA_HTTP_BODY).valueOrNull() ?: ""
 
+                val authorizationHeader =
+                    entity.extras.getData(ActionEntity.EXTRA_HTTP_AUTHORIZATION_HEADER)
+                        .valueOrNull() ?: ""
+
                 ActionData.HttpRequest(
                     description = description,
                     method = method,
                     url = url,
                     body = body,
+                    authorizationHeader = authorizationHeader,
                 )
             }
         }
@@ -739,6 +744,10 @@ object ActionDataEntityMapper {
             EntityExtra(ActionEntity.EXTRA_HTTP_METHOD, HTTP_METHOD_MAP[data.method]!!),
             EntityExtra(ActionEntity.EXTRA_HTTP_URL, data.url),
             EntityExtra(ActionEntity.EXTRA_HTTP_BODY, data.body),
+            EntityExtra(
+                ActionEntity.EXTRA_HTTP_AUTHORIZATION_HEADER,
+                data.authorizationHeader,
+            ),
         )
 
         else -> emptyList()
