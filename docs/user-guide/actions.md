@@ -239,3 +239,5 @@ respectively.
 ### Dismiss all notifications (2.4.0+)
 
 ### Dismiss most recent notification (2.4.0+)
+
+### HTTP Request (3.0.0+)

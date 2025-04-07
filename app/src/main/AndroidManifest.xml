@@ -77,13 +77,15 @@
     <application
         android:name="io.github.sds100.keymapper.KeyMapperApp"
         android:allowBackup="true"
+        android:directBootAware="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:directBootAware="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
+        android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
+        <!--  Allow clear text traffic due to the HTTP Request Action. -->
 
         <activity
             android:name=".MainActivity"

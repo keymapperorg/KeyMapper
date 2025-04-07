@@ -1077,6 +1077,15 @@
     <string name="action_dismiss_most_recent_notification">Dismiss most recent notification</string>
     <string name="action_dismiss_all_notifications">Dismiss all notifications</string>
     <string name="action_device_controls">Device controls screen</string>
+    <string name="action_http_request">HTTP request</string>
+    <string name="action_http_request_method_label">HTTP Method</string>
+    <string name="action_http_request_description_label">Description</string>
+    <string name="action_http_request_description_empty_error">Can not be empty!</string>
+    <string name="action_http_request_url_label">URL</string>
+    <string name="action_http_request_url_empty_error">Can not be empty!</string>
+    <string name="action_http_request_body_label">Request body (optional)</string>
+    <string name="action_http_request_authorization_label">Authorization header (optional)</string>
+    <string name="action_http_request_authorization_supporting_text">You must prepend \'Bearer\' if necessary</string>
     <!-- action labels -->
 
     <!-- action category labels -->

@@ -528,6 +528,7 @@ class ActionUiHelper(
         ActionData.EndCall -> getString(R.string.action_end_call)
 
         ActionData.DeviceControls -> getString(R.string.action_device_controls)
+        is ActionData.HttpRequest -> action.description
     }
 
     fun getIcon(action: ActionData): ComposeIconInfo = when (action) {

@@ -813,6 +813,19 @@ class PerformActionsUseCaseImpl(
                     extras = emptyList(),
                 )
             }
+
+            is ActionData.HttpRequest -> {
+                coroutineScope.launch {
+                    networkAdapter.sendHttpRequest(
+                        method = action.method,
+                        url = action.url,
+                        body = action.body,
+                        authorizationHeader = action.authorizationHeader,
+                    ).showErrorMessageOnFail()
+                }
+
+                result = null
+            }
         }
 
         when (result) {

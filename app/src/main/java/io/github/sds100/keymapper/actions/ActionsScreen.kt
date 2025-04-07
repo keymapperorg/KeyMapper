@@ -68,6 +68,7 @@ fun ActionsScreen(modifier: Modifier = Modifier, viewModel: ConfigActionsViewMod
 
     EnableFlashlightActionBottomSheet(viewModel.createActionDelegate)
     ChangeFlashlightStrengthActionBottomSheet(viewModel.createActionDelegate)
+    HttpRequestBottomSheet(viewModel.createActionDelegate)
 
     ActionsScreen(
         modifier = modifier,
