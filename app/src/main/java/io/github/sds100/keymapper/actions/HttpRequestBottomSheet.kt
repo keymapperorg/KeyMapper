@@ -43,6 +43,7 @@ import io.github.sds100.keymapper.system.network.HttpMethod
 import io.github.sds100.keymapper.util.ui.compose.KeyMapperDropdownMenu
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -106,6 +107,7 @@ private fun HttpRequestBottomSheet(
     val descriptionEmptyErrorString =
         stringResource(R.string.action_http_request_description_empty_error)
     val urlEmptyErrorString = stringResource(R.string.action_http_request_url_empty_error)
+    val malformedUrlErrorString = stringResource(R.string.action_http_request_malformed_url_error)
 
     var descriptionError: String? by rememberSaveable { mutableStateOf(null) }
     var urlError: String? by rememberSaveable { mutableStateOf(null) }
@@ -270,6 +272,10 @@ private fun HttpRequestBottomSheet(
 
                         if (state.url.isBlank()) {
                             urlError = urlEmptyErrorString
+                        }
+
+                        if (state.url.toHttpUrlOrNull() == null) {
+                            urlError = malformedUrlErrorString
                         }
 
                         if (descriptionError == null && urlError == null) {

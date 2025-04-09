@@ -144,6 +144,7 @@ sealed class Error : Result<Nothing>() {
      * DPAD triggers require a Key Mapper keyboard to be selected.
      */
     data object DpadTriggerImeNotSelected : Error()
+    data object MalformedUrl : Error()
 }
 
 inline fun <T> Result<T>.onSuccess(f: (T) -> Unit): Result<T> {

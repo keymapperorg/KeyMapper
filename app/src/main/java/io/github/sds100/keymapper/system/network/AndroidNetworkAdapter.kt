@@ -170,6 +170,8 @@ class AndroidNetworkAdapter(
         } catch (e: IOException) {
             Timber.e(e)
             return Error.UnknownIOError
+        } catch (e: IllegalArgumentException) {
+            return Error.MalformedUrl
         }
     }
 }

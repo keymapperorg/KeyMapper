@@ -885,6 +885,7 @@
     <string name="error_no_file_name">This file has no name!</string>
     <string name="error_invalid_backup">Invalid file. Must be a zip exported from Key Mapper.</string>
     <string name="error_choose_bluetooth_devices_permission_denied">You must grant Key Mapper permission to see your paired Bluetooth devices.</string>
+    <string name="error_malformed_url">Malformed URL. Did you forget the http://?</string>
 
     <string name="error_access_fine_location_permission_denied">Denied permission to read fine location!</string>
     <string name="error_answer_end_phone_call_permission_denied">Denied permission to answer and end phone calls!</string>
@@ -1083,6 +1084,7 @@
     <string name="action_http_request_description_empty_error">Can not be empty!</string>
     <string name="action_http_request_url_label">URL</string>
     <string name="action_http_request_url_empty_error">Can not be empty!</string>
+    <string name="action_http_request_malformed_url_error">Malformed URL. Did you forget the http://?</string>
     <string name="action_http_request_body_label">Request body (optional)</string>
     <string name="action_http_request_authorization_label">Authorization header (optional)</string>
     <string name="action_http_request_authorization_supporting_text">You must prepend \'Bearer\' if necessary</string>
