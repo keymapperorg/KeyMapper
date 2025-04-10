@@ -1,12 +1,14 @@
-## [3.0 Beta 6](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0-beta.6)
+## [3.0.0](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0)
 
-#### TO BE RELEASED
+_See the changes from previous 3.0 Beta releases._
 
-## Bug fixes
+#### 10 April 2025
 
 - #1635 do not crash if the URL for the HTTP action is malformed
 
 ## [3.0 Beta 5](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0-beta.5)
+
+_See the changes from previous 3.0 Beta releases as well._
 
 #### 6 April 2025
 
