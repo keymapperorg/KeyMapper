@@ -8,6 +8,6 @@ Key Mapper 3.0 is here! 🎉
 
 🛜 Send HTTP requests with a new action.
 
-❤️ There are also tonnes of improvements to make your key mapping experience more enjoyable.
+❤️ There are tonnes of improvements to make your key mapping experience more enjoyable.
 
 See all the changes at http://changelog.keymapper.club.
