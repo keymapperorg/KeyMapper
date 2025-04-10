@@ -1,36 +1,43 @@
-New trigger! 🎉 Remap your Assistant & Bixby, and DPAD buttons!
+Make custom macros on your keyboard or gamepad, make on-screen buttons in any app, and unlock new functionality from your volume buttons!
 
-Mit lehet átállítani?
+Key Mapper supports a huge variety of buttons and keys*:
 
- * Hangerőszabályzó gombok.
- * Power button, side key, and voice assistant button (one time purchase to support development).
- * Bluetooth/vezetékes billentyűzeteket.
- * Ujjlenyomat-gesztusok a támogatott eszközökön.
- * DPAD buttons on game controllers.
- * Más csatlakoztatott eszközök gombjainak is működniük kell.
+- ALL your phone buttons (volume AND side key)
+- Game controllers (D-pad, ABXY, and most others)
+- Keyboards
+- Headsets and headphones
+- Fingerprint sensor
 
-Egy adott eszköz vagy bármely eszköz több billentyűjét kombinálhatod aktiválásként. Minden egyes aktiváláshoz több művelet is tartozhat. A billentyűk egyszerre vagy egymás után, sorrendben nyomhatók le. A billentyűk rövid, hosszú vagy dupla megnyomás esetén átállíthatóak. A billentyű-térképnek lehet egy sor "korlátozása", így csak bizonyos helyzetekben van hatása.
+Not enough keys? Design your own on-screen button layouts and remap those just like real keys!
 
-Mit nem lehet átállítani?
- * Egér gombok
- * Thumb sticks or triggers on game controllers
 
-Your key maps do not work if the screen is OFF. Ez az Android egyik korlátozása. A fejlesztő semmit sem tehet ez ellen.
+What shortcuts can I make?
+--------------------------
 
-Mit tudok a billentyűimnek beállítani?
-Egyes műveletek csak rootolt eszközökön és bizonyos Android-verziókon működnek.
+With over 100 individual actions, the sky is the limit.
+Build complex macros with screen taps and gestures, keyboard inputs, open apps, control media, and even send intents directly to other apps.
 
-Túl sok funkció van ahhoz, hogy itt felsoroljuk, ezért a teljes listát itt találod: https://docs.keymapper.club/user-guide/actions
 
-Engedélyek
-Nem kell minden engedélyt megadnod ahhoz, hogy az alkalmazás működjön. Az alkalmazás megmondja, ha egy funkció működéséhez engedélyt kell adni.
+How much control do I have?
+---------------------------
 
- * Akadálymentesítési szolgáltatás: Alapvető követelmény az átállításhoz. It is needed so the app can listen to and block key events.
- * Adminisztrátor: A képernyő kikapcsolása a képernyő kikapcsolására szolgáló művelet használatakor.
- * Rendszerbeállítások módosítása: A fényerő és a forgatási beállítások megváltoztatásához.
- * Kamera: A zseblámpa vezérléséhez.
+TRIGGERS: You decide how to trigger a key map. Long press, double press, press as many times as you like! Combine keys on different devices, and even include your on-screen buttons.
 
- Egyes eszközökön a akadálymentesítési szolgáltatás engedélyezése letiltja a "fokozott adattitkosítást".
+ACTIONS: Design specific macros for what you want to do. Combine over 100 actions, and choose the delay between each one. Set repeating actions to automate and speed up slow tasks.
 
-Discord: www.keymapper.club
-Website: docs.keymapper.club
+CONSTRAINTS: You choose when key maps should run and when they shouldn't. Only need it in one specific app? Or when media is playing? On your lockscreen? Constrain your key maps for maximum control.
+
+* Most devices are already supported, with new devices being added over time. Let us know if it's not working for you and we can prioritize your device.
+
+Not currently supported:
+ - Mouse buttons
+ - Joysticks and triggers (LT,RT) on gamepads
+
+Come say hi in our Discord community!
+www.keymapper.club
+
+See the code for yourself! (Open source)
+code.keymapper.club
+
+Read the documentation:
+docs.keymapper.club

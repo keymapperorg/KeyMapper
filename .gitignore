@@ -90,3 +90,7 @@ app/play-service-account-key.json
 
 app/.env
 .venv/
+/.idea/appInsightsSettings.xml
+/.idea/AndroidProjectSystem.xml
+/.idea/runConfigurations.xml
+/.idea/studiobot.xml

@@ -1,36 +1,43 @@
-New trigger! 🎉 Remap your Assistant & Bixby, and DPAD buttons!
+Make custom macros on your keyboard or gamepad, make on-screen buttons in any app, and unlock new functionality from your volume buttons!
 
-What can be remapped?
+Key Mapper supports a huge variety of buttons and keys*:
 
- * Volume buttons.
- * Power button, side key, and voice assistant button (one time purchase to support development).
- * Bluetooth/wired keyboards.
- * Fingerprint gestures on supported devices.
- * DPAD buttons on game controllers.
- * Buttons on other connected devices should also work.
+- ALL your phone buttons (volume AND side key)
+- Game controllers (D-pad, ABXY, and most others)
+- Keyboards
+- Headsets and headphones
+- Fingerprint sensor
 
-You can combine multiple keys from a specific device or any device to form a "trigger". Each trigger can have multiple actions. The keys can be set to be pressed at the same time or one after another in a sequence. Keys can be remapped when they are short pressed, long pressed or double pressed. A keymap can have a set of "constraints" so it only has an effect in certain situations.
+Not enough keys? Design your own on-screen button layouts and remap those just like real keys!
 
-What can’t be remapped?
- * Mouse buttons
- * Thumb sticks or triggers on game controllers
 
-Your key maps do not work if the screen is OFF. This is a limitation in Android. There is nothing the dev can do.
+What shortcuts can I make?
+--------------------------
 
-What can I remap my keys to do?
-Some actions will only work on rooted devices and specific Android versions.
+With over 100 individual actions, the sky is the limit.
+Build complex macros with screen taps and gestures, keyboard inputs, open apps, control media, and even send intents directly to other apps.
 
-There are too many features to list here so check out the full list here: https://docs.keymapper.club/user-guide/actions
 
-Permissions
-You don't have to grant all the permissions for the app to work. The app will tell you if a permission needs to be granted for a feature to work.
+How much control do I have?
+---------------------------
 
- * Accessibility Service: Basic requirement for remapping to work. It is needed so the app can listen to and block key events.
- * Device Admin: To turn the screen off when using the action to turn off the screen.
- * Modify System Settings: To change the brightness and rotation settings.
- * Camera: To control the flashlight.
+TRIGGERS: You decide how to trigger a key map. Long press, double press, press as many times as you like! Combine keys on different devices, and even include your on-screen buttons.
 
- On some devices, enabling the accessibility service will disable "enhanced data encryption".
+ACTIONS: Design specific macros for what you want to do. Combine over 100 actions, and choose the delay between each one. Set repeating actions to automate and speed up slow tasks.
 
-Discord: www.keymapper.club
-Website: docs.keymapper.club
+CONSTRAINTS: You choose when key maps should run and when they shouldn't. Only need it in one specific app? Or when media is playing? On your lockscreen? Constrain your key maps for maximum control.
+
+* Most devices are already supported, with new devices being added over time. Let us know if it's not working for you and we can prioritize your device.
+
+Not currently supported:
+ - Mouse buttons
+ - Joysticks and triggers (LT,RT) on gamepads
+
+Come say hi in our Discord community!
+www.keymapper.club
+
+See the code for yourself! (Open source)
+code.keymapper.club
+
+Read the documentation:
+docs.keymapper.club

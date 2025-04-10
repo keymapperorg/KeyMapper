@@ -160,6 +160,7 @@ fun KeyMapListAppBar(
                 actions = {
                     AppBarActions(
                         onHelpClick,
+                        onSortClick,
                         onSettingsClick,
                         onAboutClick,
                         onExportClick,
@@ -253,11 +254,13 @@ fun KeyMapListAppBar(
                         AnimatedVisibility(!state.isEditingGroupName) {
                             AppBarActions(
                                 onHelpClick,
+                                onSortClick,
                                 onSettingsClick,
                                 onAboutClick,
                                 onExportClick,
                                 onImportClick,
                                 showDeleteGroup = true,
+                                showSort = true,
                                 onDeleteGroupClick = {
                                     showDeleteGroupDialog = true
                                 },
@@ -529,11 +532,13 @@ private fun SelectingAppBar(
 @Composable
 private fun AppBarActions(
     onHelpClick: () -> Unit,
+    onSortClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onAboutClick: () -> Unit,
     onExportClick: () -> Unit,
     onImportClick: () -> Unit,
     showDeleteGroup: Boolean = false,
+    showSort: Boolean = false,
     onDeleteGroupClick: () -> Unit = {},
 ) {
     var expandedDropdown by rememberSaveable { mutableStateOf(false) }
@@ -555,6 +560,10 @@ private fun AppBarActions(
 
         AppBarDropdownMenu(
             expanded = expandedDropdown,
+            onSortClick = {
+                expandedDropdown = false
+                onSortClick()
+            },
             onSettingsClick = {
                 expandedDropdown = false
                 onSettingsClick()
@@ -573,6 +582,7 @@ private fun AppBarActions(
             },
             onDismissRequest = { expandedDropdown = false },
             showDeleteGroup = showDeleteGroup,
+            showSort = showSort,
             onDeleteGroupClick = {
                 expandedDropdown = false
                 onDeleteGroupClick()
@@ -810,12 +820,14 @@ private fun selectedTextTransition(
 @Composable
 private fun AppBarDropdownMenu(
     expanded: Boolean,
+    onSortClick: () -> Unit = {},
     onSettingsClick: () -> Unit = {},
     onAboutClick: () -> Unit = {},
     onExportClick: () -> Unit = {},
     onImportClick: () -> Unit = {},
     onDismissRequest: () -> Unit = {},
     showDeleteGroup: Boolean = false,
+    showSort: Boolean = false,
     onDeleteGroupClick: () -> Unit = {},
 ) {
     DropdownMenu(
@@ -827,6 +839,14 @@ private fun AppBarDropdownMenu(
                 leadingIcon = { Icon(Icons.Rounded.Delete, contentDescription = null) },
                 text = { Text(stringResource(R.string.home_menu_delete_group)) },
                 onClick = onDeleteGroupClick,
+            )
+        }
+
+        if (showSort) {
+            DropdownMenuItem(
+                leadingIcon = { Icon(Icons.AutoMirrored.Rounded.Sort, contentDescription = null) },
+                text = { Text(stringResource(R.string.home_app_bar_sort)) },
+                onClick = onSortClick,
             )
         }
 
