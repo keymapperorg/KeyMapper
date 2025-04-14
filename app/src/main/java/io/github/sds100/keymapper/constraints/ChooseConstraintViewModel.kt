@@ -104,6 +104,15 @@ class ChooseConstraintViewModel(
             State.Data(filteredItems)
         }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.Eagerly, State.Loading)
 
+    var timeConstraintState: Constraint.Time? = null
+
+    fun onDoneConfigTimeConstraintClick() {
+        timeConstraintState?.let { constraint ->
+            _returnResult.tryEmit(constraint)
+            timeConstraintState = null
+        }
+    }
+
     fun onListItemClick(id: String) {
         viewModelScope.launch {
             when (val constraintType = ConstraintId.valueOf(id)) {
@@ -192,6 +201,15 @@ class ChooseConstraintViewModel(
 
                 ConstraintId.LOCK_SCREEN_NOT_SHOWING ->
                     _returnResult.emit(Constraint.LockScreenNotShowing())
+
+                ConstraintId.TIME -> {
+                    timeConstraintState = Constraint.Time(
+                        startHour = 0,
+                        startMinute = 0,
+                        endHour = 0,
+                        endMinute = 0,
+                    )
+                }
             }
         }
     }
