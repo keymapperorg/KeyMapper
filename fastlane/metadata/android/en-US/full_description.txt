@@ -33,6 +33,18 @@ Not currently supported:
  - Mouse buttons
  - Joysticks and triggers (LT,RT) on gamepads
 
+
+Security and accessibility services
+---------------------------
+
+This app includes our Key Mapper Accessibility service that uses the Android Accessibility API to detect the app in focus and adapt key presses to user-defined key maps. It is also used to draw assistive Floating Button overlays on top of other apps.
+
+By accepting to run the accessibility service, the app will monitor key strokes while you're using your device. It will also emulate swipes and pinches if you are using those actions in the app.
+
+It will NOT collect any user data or connect to the internet to send any data anywhere.
+
+Our accessibility service is only triggered by the user when pressing a physical key on their device. It can be turned off any time by the user in the system accessibility settings.
+
 Come say hi in our Discord community!
 www.keymapper.club
 
