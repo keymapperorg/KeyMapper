@@ -68,6 +68,7 @@ import io.github.sds100.keymapper.util.drawable
 import io.github.sds100.keymapper.util.ui.compose.CollapsableFloatingActionButton
 import io.github.sds100.keymapper.util.ui.compose.ComposeChipModel
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.util.ui.compose.openUriSafe
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -140,6 +141,7 @@ fun HomeKeyMapListScreen(
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val uriHandler = LocalUriHandler.current
+    val ctx = LocalContext.current
     val helpUrl = stringResource(R.string.url_quick_start_guide)
 
     var keyMapListBottomPadding by remember { mutableStateOf(100.dp) }
@@ -183,7 +185,7 @@ fun HomeKeyMapListScreen(
                 onSettingsClick = onSettingsClick,
                 onAboutClick = onAboutClick,
                 onSortClick = { viewModel.showSortBottomSheet = true },
-                onHelpClick = { uriHandler.openUri(helpUrl) },
+                onHelpClick = { uriHandler.openUriSafe(ctx, helpUrl) },
                 onExportClick = viewModel::onExportClick,
                 onImportClick = { importFileLauncher.launch(FileUtils.MIME_TYPE_ALL) },
                 onTogglePausedClick = viewModel::onTogglePausedClick,

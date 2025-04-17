@@ -30,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
@@ -44,6 +45,7 @@ import io.github.sds100.keymapper.util.ui.SliderStepSizes
 import io.github.sds100.keymapper.util.ui.compose.CheckBoxText
 import io.github.sds100.keymapper.util.ui.compose.RadioButtonText
 import io.github.sds100.keymapper.util.ui.compose.SliderOptionText
+import io.github.sds100.keymapper.util.ui.compose.openUriSafe
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -63,6 +65,7 @@ fun ActionOptionsBottomSheet(
         dragHandle = {},
     ) {
         val uriHandler = LocalUriHandler.current
+        val ctx = LocalContext.current
         val helpUrl = stringResource(R.string.url_keymap_action_options_guide)
         val scope = rememberCoroutineScope()
 
@@ -80,7 +83,7 @@ fun ActionOptionsBottomSheet(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
                         .padding(horizontal = 8.dp),
-                    onClick = { uriHandler.openUri(helpUrl) },
+                    onClick = { uriHandler.openUriSafe(ctx, helpUrl) },
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Rounded.HelpOutline,
