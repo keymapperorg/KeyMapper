@@ -7,6 +7,10 @@ import java.util.Collections
  */
 
 fun MutableList<*>.moveElement(fromIndex: Int, toIndex: Int) {
+    if (toIndex >= size || fromIndex >= size) {
+        return
+    }
+
     if (fromIndex < toIndex) {
         for (i in fromIndex until toIndex) {
             Collections.swap(this, i, i + 1)
