@@ -16,7 +16,9 @@ import timber.log.Timber
 class ShizukuInputEventInjector : InputEventInjector {
 
     companion object {
-        private const val INJECT_INPUT_EVENT_MODE_ASYNC = 0
+        // private const val INJECT_INPUT_EVENT_MODE_ASYNC = 0
+
+        private const val INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH = 2
     }
 
     private val iInputManager: IInputManager by lazy {
@@ -46,12 +48,15 @@ class ShizukuInputEventInjector : InputEventInjector {
             model.scanCode,
         )
 
-        iInputManager.injectInputEvent(keyEvent, INJECT_INPUT_EVENT_MODE_ASYNC)
+        // MUST wait for the application to finish processing the event before sending the next one.
+        // Otherwise, rapidly repeating input events will go in a big queue and all inputs
+        // into the application will be delayed or overloaded.
+        iInputManager.injectInputEvent(keyEvent, INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH)
 
         if (model.inputType == InputEventType.DOWN_UP) {
             val upEvent = KeyEvent.changeAction(keyEvent, KeyEvent.ACTION_UP)
 
-            iInputManager.injectInputEvent(upEvent, INJECT_INPUT_EVENT_MODE_ASYNC)
+            iInputManager.injectInputEvent(upEvent, INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH)
         }
     }
 }
