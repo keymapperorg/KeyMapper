@@ -13,6 +13,8 @@ import io.github.sds100.keymapper.util.InputEventType
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.firstBlocking
 import io.github.sds100.keymapper.util.success
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 /**
  * Created by sds100 on 21/04/2021.
@@ -22,6 +24,7 @@ class OpenMenuHelper(
     private val accessibilityService: IAccessibilityService,
     private val shizukuInputEventInjector: InputEventInjector,
     private val permissionAdapter: PermissionAdapter,
+    private val coroutineScope: CoroutineScope,
 ) {
 
     companion object {
@@ -36,7 +39,9 @@ class OpenMenuHelper(
                     inputType = InputEventType.DOWN_UP,
                 )
 
-                shizukuInputEventInjector.inputKeyEvent(inputKeyModel)
+                coroutineScope.launch {
+                    shizukuInputEventInjector.inputKeyEvent(inputKeyModel)
+                }
 
                 return success()
             }

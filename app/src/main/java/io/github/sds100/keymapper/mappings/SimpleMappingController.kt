@@ -127,7 +127,7 @@ abstract class SimpleMappingController(
         }
     }
 
-    private fun performAction(
+    private suspend fun performAction(
         action: Action,
         inputEventType: InputEventType = InputEventType.DOWN_UP,
     ) {
@@ -172,20 +172,22 @@ abstract class SimpleMappingController(
     }
 
     fun reset() {
-        repeatJobs.values.forEach { jobs ->
+        for (jobs in repeatJobs.values) {
             jobs.forEach { it.cancel() }
         }
 
         repeatJobs.clear()
 
-        performActionJobs.values.forEach {
-            it.cancel()
+        for (job in performActionJobs.values) {
+            job.cancel()
         }
 
         performActionJobs.clear()
 
-        actionsBeingHeldDown.forEach {
-            performAction(it, InputEventType.UP)
+        coroutineScope.launch {
+            for (it in actionsBeingHeldDown) {
+                performAction(it, InputEventType.UP)
+            }
         }
 
         actionsBeingHeldDown.clear()

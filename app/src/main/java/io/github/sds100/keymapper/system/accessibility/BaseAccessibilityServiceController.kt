@@ -495,7 +495,11 @@ abstract class BaseAccessibilityServiceController(
                 }
             }
 
-            is ServiceEvent.TestAction -> performActionsUseCase.perform(event.action)
+            is ServiceEvent.TestAction -> coroutineScope.launch {
+                performActionsUseCase.perform(
+                    event.action,
+                )
+            }
 
             is ServiceEvent.Ping -> coroutineScope.launch {
                 outputEvents.emit(ServiceEvent.Pong(event.key))

@@ -1,3 +1,9 @@
+## [3.0.1](https://github.com/sds100/KeyMapper/releases/tag/v3.0.1)
+
+## Bug fixes
+
+- Inputting key events with Shizuku does not crash the app if a Key Mapper keyboard is being used at the same time. And latency when inputting key events has been improved in some apps.
+
 ## [3.0.0](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0)
 
 _See the changes from previous 3.0 Beta releases._

@@ -25,7 +25,7 @@ class SequenceTriggerActionPerformer(
          */
         job?.cancel()
         job = coroutineScope.launch {
-            actionList.forEach { action ->
+            for (action in actionList) {
                 performAction(action, metaState)
 
                 delay(action.delayBeforeNextAction?.toLong() ?: 0L)
@@ -38,7 +38,7 @@ class SequenceTriggerActionPerformer(
         job = null
     }
 
-    private fun performAction(action: Action, metaState: Int) {
+    private suspend fun performAction(action: Action, metaState: Int) {
         repeat(action.multiplier ?: 1) {
             useCase.perform(action.data, InputEventType.DOWN_UP, metaState)
         }
