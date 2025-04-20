@@ -70,6 +70,7 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.IOException
 import java.io.InputStream
+import java.util.LinkedList
 import java.util.UUID
 
 /**
@@ -410,7 +411,12 @@ class BackupManagerImpl(
             val soundFiles = soundDir.listFiles() ?: emptyList() // null if dir doesn't exist
 
             return@then parseBackupContent(inputStream).then { backupContent ->
-                restore(restoreType, backupContent, soundFiles)
+                restore(
+                    restoreType,
+                    backupContent,
+                    soundFiles,
+                    currentTime = System.currentTimeMillis(),
+                )
             }
         }
     }
@@ -441,25 +447,45 @@ class BackupManagerImpl(
         }
     }
 
-    private suspend fun restore(
+    suspend fun restore(
         restoreType: RestoreType,
         backupContent: BackupContent,
         soundFiles: List<IFile>,
+        currentTime: Long,
     ): Result<*> {
         try {
             // MUST come before restoring key maps so it is possible to
             // validate that each key map's group exists in the repository.
             if (backupContent.groups != null) {
-                val groupUids = backupContent.groups.map { it.uid }.toMutableSet()
-
                 val existingGroupUids = groupRepository.getAllGroups().first()
                     .map { it.uid }
                     .toSet()
-                    .also { groupUids.addAll(it) }
 
-                val currentTime = System.currentTimeMillis()
+                val groupUids = backupContent.groups.map { it.uid }.toMutableSet()
 
+                groupUids.addAll(existingGroupUids)
+
+                // Group parents must be restored first so an SqliteConstraintException
+                // is not thrown when restoring a child group.
+                val groupsToRestoreMap = backupContent.groups.associateBy { it.uid }.toMutableMap()
+                val groupRestoreQueue = LinkedList<GroupEntity>()
+
+                // Order the groups into a queue such that a parent is always before a child.
                 for (group in backupContent.groups) {
+                    if (groupsToRestoreMap.containsKey(group.uid)) {
+                        groupRestoreQueue.addFirst(group)
+                    }
+
+                    var parent = groupsToRestoreMap[group.parentUid]
+
+                    while (parent != null) {
+                        groupRestoreQueue.addFirst(parent)
+                        groupsToRestoreMap.remove(parent.uid)
+                        parent = groupsToRestoreMap[parent.parentUid]
+                    }
+                }
+
+                for (group in groupRestoreQueue) {
                     // Set the last opened date to now so that the imported group
                     // shows as the most recent.
                     var modifiedGroup = group.copy(lastOpenedDate = currentTime)
