@@ -1,5 +1,10 @@
 ## [3.0.1](https://github.com/sds100/KeyMapper/releases/tag/v3.0.1)
 
+
+## Changed
+
+- #1654 The Key Mapper keyboard is now required again for Text actions because the accessibility service API does not work in all situations.
+
 ## Bug fixes
 
 - Inputting key events with Shizuku does not crash the app if a Key Mapper keyboard is being used at the same time. And latency when inputting key events has been improved in some apps.
