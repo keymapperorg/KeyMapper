@@ -52,7 +52,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.util.LinkedList
 
@@ -800,6 +799,10 @@ class ConfigKeyMapUseCaseController(
             } else {
                 repeat = true
             }
+        }
+
+        if (data is ActionData.Volume.Down || data is ActionData.Volume.Up || data is ActionData.Volume.Stream) {
+            repeat = true
         }
 
         if (data is ActionData.AnswerCall) {
