@@ -1,9 +1,9 @@
 ## [3.0.1](https://github.com/sds100/KeyMapper/releases/tag/v3.0.1)
 
-
 ## Changed
 
 - #1654 The Key Mapper keyboard is now required again for Text actions because the accessibility service API does not work in all situations.
+- #1653 Hide the export/import menu buttons in groups
 
 ## Bug fixes
 
