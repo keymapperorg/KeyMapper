@@ -1,5 +1,11 @@
 ## [3.0.1](https://github.com/sds100/KeyMapper/releases/tag/v3.0.1)
 
+#### TO BE RELEASED
+
+## Added
+
+- #1652 Bring back the menu button to show input method picker
+
 ## Changed
 
 - #1654 The Key Mapper keyboard is now required again for Text actions because the accessibility service API does not work in all situations.

@@ -39,6 +39,7 @@ import io.github.sds100.keymapper.system.apps.ChooseAppViewModel
 import io.github.sds100.keymapper.system.apps.DisplayAppShortcutsUseCaseImpl
 import io.github.sds100.keymapper.system.bluetooth.ChooseBluetoothDeviceUseCaseImpl
 import io.github.sds100.keymapper.system.bluetooth.ChooseBluetoothDeviceViewModel
+import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCaseImpl
 import io.github.sds100.keymapper.system.intents.ConfigIntentViewModel
 
 /**
@@ -182,6 +183,7 @@ object Inject {
             UseCases.displayKeyMap(ctx),
         ),
         UseCases.listFloatingLayouts(ctx),
+        ShowInputMethodPickerUseCaseImpl(ServiceLocator.inputMethodAdapter(ctx))
     )
 
     fun settingsViewModel(context: Context): SettingsViewModel.Factory = SettingsViewModel.Factory(

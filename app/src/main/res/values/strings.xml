@@ -1355,6 +1355,7 @@
     <string name="home_menu_about">About</string>
     <string name="home_menu_export">Export all</string>
     <string name="home_menu_import">Import</string>
+    <string name="home_menu_input_method_picker">Choose keyboard</string>
     <string name="home_importing_snackbar">Importing…</string>
     <string name="home_importing_finished_snackbar">Importing successful!</string>
     <string name="home_exporting_snackbar">Exporting…</string>

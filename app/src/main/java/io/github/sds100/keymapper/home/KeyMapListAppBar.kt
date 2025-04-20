@@ -42,6 +42,7 @@ import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.IosShare
+import androidx.compose.material.icons.rounded.Keyboard
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.PauseCircleOutline
 import androidx.compose.material.icons.rounded.PlayCircleOutline
@@ -122,6 +123,7 @@ fun KeyMapListAppBar(
     onFixWarningClick: (String) -> Unit = {},
     onExportClick: () -> Unit = {},
     onImportClick: () -> Unit = {},
+    onInputMethodPickerClick: () -> Unit = {},
     onBackClick: () -> Unit = {},
     onSelectAllClick: () -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
@@ -185,6 +187,10 @@ fun KeyMapListAppBar(
                                 onImportClick = {
                                     expandedDropdown = false
                                     onImportClick()
+                                },
+                                onInputMethodPickerClick = {
+                                    expandedDropdown = false
+                                    onInputMethodPickerClick()
                                 },
                                 onDismissRequest = { expandedDropdown = false },
                             )
@@ -827,6 +833,7 @@ private fun RootGroupDropdownMenu(
     onAboutClick: () -> Unit = {},
     onExportClick: () -> Unit = {},
     onImportClick: () -> Unit = {},
+    onInputMethodPickerClick: () -> Unit = {},
     onDismissRequest: () -> Unit = {},
 ) {
     DropdownMenu(
@@ -847,6 +854,11 @@ private fun RootGroupDropdownMenu(
             leadingIcon = { Icon(KeyMapperIcons.Import, contentDescription = null) },
             text = { Text(stringResource(R.string.home_menu_import)) },
             onClick = onImportClick,
+        )
+        DropdownMenuItem(
+            leadingIcon = { Icon(Icons.Rounded.Keyboard, contentDescription = null) },
+            text = { Text(stringResource(R.string.home_menu_input_method_picker)) },
+            onClick = onInputMethodPickerClick,
         )
         DropdownMenuItem(
             leadingIcon = { Icon(Icons.Rounded.Info, contentDescription = null) },

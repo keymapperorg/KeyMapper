@@ -26,6 +26,7 @@ import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerErrorSnapshot
 import io.github.sds100.keymapper.sorting.SortKeyMapsUseCase
 import io.github.sds100.keymapper.sorting.SortViewModel
 import io.github.sds100.keymapper.system.accessibility.ServiceState
+import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
@@ -82,6 +83,7 @@ class KeyMapListViewModel(
     private val showAlertsUseCase: ShowHomeScreenAlertsUseCase,
     private val pauseKeyMaps: PauseKeyMapsUseCase,
     private val backupRestore: BackupRestoreMappingsUseCase,
+    private val showInputMethodPickerUseCase: ShowInputMethodPickerUseCase,
 
 ) : PopupViewModel by PopupViewModelImpl(),
     ResourceProvider by resourceProvider,
@@ -843,6 +845,10 @@ class KeyMapListViewModel(
                 ),
             )
         }
+    }
+
+    fun showInputMethodPicker() {
+        showInputMethodPickerUseCase.show(fromForeground = true)
     }
 
     private suspend fun onAutomaticBackupResult(result: Result<*>) {

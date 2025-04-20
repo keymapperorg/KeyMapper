@@ -188,6 +188,7 @@ fun HomeKeyMapListScreen(
                 onHelpClick = { uriHandler.openUriSafe(ctx, helpUrl) },
                 onExportClick = viewModel::onExportClick,
                 onImportClick = { importFileLauncher.launch(FileUtils.MIME_TYPE_ALL) },
+                onInputMethodPickerClick = viewModel::showInputMethodPicker,
                 onTogglePausedClick = viewModel::onTogglePausedClick,
                 onFixWarningClick = viewModel::onFixWarningClick,
                 onBackClick = {
