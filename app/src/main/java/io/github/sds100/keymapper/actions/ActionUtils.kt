@@ -781,8 +781,7 @@ fun ActionData.canBeHeldDown(): Boolean = when (this) {
 
 fun ActionData.canUseImeToPerform(): Boolean = when (this) {
     is ActionData.InputKeyEvent -> !useShell
-    // Android 13+ can use the accessibility service to input text.
-    is ActionData.Text -> Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
+    is ActionData.Text -> true
     is ActionData.MoveCursorToEnd -> true
     else -> false
 }

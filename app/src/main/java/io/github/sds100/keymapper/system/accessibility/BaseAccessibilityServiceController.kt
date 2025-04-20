@@ -150,10 +150,6 @@ abstract class BaseAccessibilityServiceController(
             flags = flags.withFlag(AccessibilityServiceInfo.FLAG_ENABLE_ACCESSIBILITY_VOLUME)
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            flags = flags.withFlag(AccessibilityServiceInfo.FLAG_INPUT_METHOD_EDITOR)
-        }
-
         return@lazy flags
     }
 

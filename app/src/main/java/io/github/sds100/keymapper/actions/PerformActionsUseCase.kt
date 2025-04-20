@@ -328,11 +328,7 @@ class PerformActionsUseCaseImpl(
             }
 
             is ActionData.Text -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    accessibilityService.inputText(action.text)
-                } else {
-                    imeInputEventInjector.inputText(action.text)
-                }
+                imeInputEventInjector.inputText(action.text)
                 result = Success(Unit)
             }
 
