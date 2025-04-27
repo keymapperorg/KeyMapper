@@ -145,10 +145,6 @@ class ConfigKeyMapUseCaseController(
         }
     }
 
-    override fun useFloatingButtonTrigger(buttonUid: String) {
-        floatingButtonToUse.update { buttonUid }
-    }
-
     override fun addConstraint(constraint: Constraint): Boolean {
         var containsConstraint = false
 
@@ -1028,7 +1024,6 @@ interface ConfigKeyMapUseCase : GetDefaultKeyMapOptionsUseCase {
 
     fun getAvailableTriggerKeyDevices(): List<TriggerKeyDevice>
 
-    val floatingButtonToUse: StateFlow<String?>
-    fun useFloatingButtonTrigger(buttonUid: String)
+    val floatingButtonToUse: MutableStateFlow<String?>
     suspend fun getFloatingLayoutCount(): Int
 }
