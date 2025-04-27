@@ -19,6 +19,7 @@
 - #1655 do not crash when restoring key map groups.
 - #1649 show purchase verification failed error if no network connection.
 - #1648 caching purchases works so you can use floating buttons and assistant trigger without an internet connection.
+- #1658 floating buttons appear in the wrong place in portrait if saved in landscape.
 
 ## [3.0.0](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0)
 
