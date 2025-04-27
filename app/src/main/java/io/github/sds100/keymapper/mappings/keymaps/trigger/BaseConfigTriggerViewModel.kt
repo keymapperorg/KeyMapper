@@ -291,7 +291,7 @@ abstract class BaseConfigTriggerViewModel(
              * or there are only key code keys in the trigger. It is not possible to do a long press of
              * non-key code keys in a parallel trigger.
              */
-            if (trigger.keys.size == 1) {
+            if (trigger.keys.size == 1 && trigger.keys.all { it.allowedDoublePress }) {
                 clickTypeButtons.add(ClickType.SHORT_PRESS)
                 clickTypeButtons.add(ClickType.DOUBLE_PRESS)
             }
@@ -363,7 +363,6 @@ abstract class BaseConfigTriggerViewModel(
                         return TriggerKeyOptionsState.Assistant(
                             assistantType = key.type,
                             clickType = key.clickType,
-                            showClickTypes = showClickTypes,
                         )
                     }
 
@@ -379,7 +378,6 @@ abstract class BaseConfigTriggerViewModel(
                         return TriggerKeyOptionsState.FingerprintGesture(
                             gestureType = key.type,
                             clickType = key.clickType,
-                            showClickTypes = showClickTypes,
                         )
                     }
                 }
@@ -864,16 +862,16 @@ sealed class TriggerKeyOptionsState {
     data class Assistant(
         val assistantType: AssistantTriggerType,
         override val clickType: ClickType,
-        override val showClickTypes: Boolean,
     ) : TriggerKeyOptionsState() {
+        override val showClickTypes: Boolean = false
         override val showLongPressClickType: Boolean = false
     }
 
     data class FingerprintGesture(
         val gestureType: FingerprintGestureType,
         override val clickType: ClickType,
-        override val showClickTypes: Boolean,
     ) : TriggerKeyOptionsState() {
+        override val showClickTypes: Boolean = false
         override val showLongPressClickType: Boolean = false
     }
 
