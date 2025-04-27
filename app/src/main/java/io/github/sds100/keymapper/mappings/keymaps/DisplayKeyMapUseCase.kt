@@ -76,10 +76,11 @@ class DisplayKeyMapUseCaseImpl(
      * This waits for the purchases to be processed with a timeout so the UI doesn't
      * say there are no purchases while it is loading.
      */
-    private val purchasesFlow: Flow<State<Set<ProductId>>> = callbackFlow {
+    private val purchasesFlow: Flow<State<Result<Set<ProductId>>>> = callbackFlow {
         try {
             val value = withTimeout(5000L) {
-                purchasingManager.purchases.filterIsInstance<State.Data<Set<ProductId>>>().first()
+                purchasingManager.purchases.filterIsInstance<State.Data<Result<Set<ProductId>>>>()
+                    .first()
             }
 
             send(value)
@@ -103,7 +104,7 @@ class DisplayKeyMapUseCaseImpl(
             isKeyMapperImeChosen = keyMapperImeHelper.isCompatibleImeChosen(),
             isDndAccessGranted = permissionAdapter.isGranted(Permission.ACCESS_NOTIFICATION_POLICY),
             isRootGranted = permissionAdapter.isGranted(Permission.ROOT),
-            purchases = purchases.dataOrNull() ?: emptySet(),
+            purchases = purchases.dataOrNull() ?: Success(emptySet()),
             showDpadImeSetupError = showDpadImeSetupError,
         )
     }
@@ -150,6 +151,8 @@ class DisplayKeyMapUseCaseImpl(
                     ProductId.FLOATING_BUTTONS,
                 ),
             )
+
+            TriggerError.PURCHASE_VERIFICATION_FAILED -> purchasingManager.refresh()
         }
     }
 

@@ -1212,6 +1212,7 @@
     <string name="setup_assistant_trigger_text">You must read the instructions on our website that describe how to set up this trigger. Key Mapper will not guide you.</string>
     <string name="setup_assistant_trigger_read_instructions_button">Read instructions</string>
     <string name="setup_assistant_trigger_select_type_button">Select trigger type</string>
+    <string name="trigger_error_product_verification_failed">Purchase can not be verified. Do you have an internet connection?</string>
 
     <!--  Purchasing  -->
     <string name="unlock_product_button">Unlock (%s)</string>
