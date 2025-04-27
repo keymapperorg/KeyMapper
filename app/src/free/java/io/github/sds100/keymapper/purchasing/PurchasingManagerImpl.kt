@@ -14,7 +14,8 @@ class PurchasingManagerImpl(
     private val coroutineScope: CoroutineScope,
 ) : PurchasingManager {
     override val onCompleteProductPurchase: MutableSharedFlow<ProductId> = MutableSharedFlow()
-    override val purchases: Flow<State<Set<ProductId>>> = MutableStateFlow(State.Data(emptySet()))
+    override val purchases: Flow<State<Result<Set<ProductId>>>> =
+        MutableStateFlow(State.Data(Error.PurchasingNotImplemented))
 
     override suspend fun launchPurchasingFlow(product: ProductId): Result<Unit> {
         return Error.PurchasingNotImplemented
@@ -27,4 +28,6 @@ class PurchasingManagerImpl(
     override suspend fun isPurchased(product: ProductId): Result<Boolean> {
         return Error.PurchasingNotImplemented
     }
+
+    override fun refresh() {}
 }
