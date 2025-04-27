@@ -1218,6 +1218,7 @@
     <string name="setup_assistant_trigger_text">You must read the instructions on our website that describe how to set up this trigger. Key Mapper will not guide you.</string>
     <string name="setup_assistant_trigger_read_instructions_button">Read instructions</string>
     <string name="setup_assistant_trigger_select_type_button">Select trigger type</string>
+    <string name="trigger_error_product_verification_failed">Purchase can not be verified. Do you have an internet connection?</string>
 
     <!--  Purchasing  -->
     <string name="unlock_product_button">Unlock (%s)</string>
@@ -1361,6 +1362,7 @@
     <string name="home_menu_about">About</string>
     <string name="home_menu_export">Export all</string>
     <string name="home_menu_import">Import</string>
+    <string name="home_menu_input_method_picker">Choose keyboard</string>
     <string name="home_importing_snackbar">Importing…</string>
     <string name="home_importing_finished_snackbar">Importing successful!</string>
     <string name="home_exporting_snackbar">Exporting…</string>

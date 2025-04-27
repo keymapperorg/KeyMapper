@@ -42,6 +42,7 @@ import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.IosShare
+import androidx.compose.material.icons.rounded.Keyboard
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.PauseCircleOutline
 import androidx.compose.material.icons.rounded.PlayCircleOutline
@@ -122,6 +123,7 @@ fun KeyMapListAppBar(
     onFixWarningClick: (String) -> Unit = {},
     onExportClick: () -> Unit = {},
     onImportClick: () -> Unit = {},
+    onInputMethodPickerClick: () -> Unit = {},
     onBackClick: () -> Unit = {},
     onSelectAllClick: () -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
@@ -158,13 +160,41 @@ fun KeyMapListAppBar(
                     }
                 },
                 actions = {
+                    var expandedDropdown by rememberSaveable { mutableStateOf(false) }
+
                     AppBarActions(
                         onHelpClick,
-                        onSortClick,
-                        onSettingsClick,
-                        onAboutClick,
-                        onExportClick,
-                        onImportClick,
+                        onMenuClick = { expandedDropdown = true },
+                        dropdownMenuContent = {
+                            RootGroupDropdownMenu(
+                                expanded = expandedDropdown,
+                                onSortClick = {
+                                    expandedDropdown = false
+                                    onSortClick()
+                                },
+                                onSettingsClick = {
+                                    expandedDropdown = false
+                                    onSettingsClick()
+                                },
+                                onAboutClick = {
+                                    expandedDropdown = false
+                                    onAboutClick()
+                                },
+                                onExportClick = {
+                                    expandedDropdown = false
+                                    onExportClick()
+                                },
+                                onImportClick = {
+                                    expandedDropdown = false
+                                    onImportClick()
+                                },
+                                onInputMethodPickerClick = {
+                                    expandedDropdown = false
+                                    onInputMethodPickerClick()
+                                },
+                                onDismissRequest = { expandedDropdown = false },
+                            )
+                        },
                     )
                 },
             )
@@ -252,17 +282,32 @@ fun KeyMapListAppBar(
                     onFixConstraintClick = onFixConstraintClick,
                     actions = {
                         AnimatedVisibility(!state.isEditingGroupName) {
+                            var expandedDropdown by rememberSaveable { mutableStateOf(false) }
+
                             AppBarActions(
                                 onHelpClick,
-                                onSortClick,
-                                onSettingsClick,
-                                onAboutClick,
-                                onExportClick,
-                                onImportClick,
-                                showDeleteGroup = true,
-                                showSort = true,
-                                onDeleteGroupClick = {
-                                    showDeleteGroupDialog = true
+                                onMenuClick = { expandedDropdown = true },
+                                dropdownMenuContent = {
+                                    ChildGroupDropdownMenu(
+                                        expanded = expandedDropdown,
+                                        onSortClick = {
+                                            expandedDropdown = false
+                                            onSortClick()
+                                        },
+                                        onSettingsClick = {
+                                            expandedDropdown = false
+                                            onSettingsClick()
+                                        },
+                                        onAboutClick = {
+                                            expandedDropdown = false
+                                            onAboutClick()
+                                        },
+                                        onDismissRequest = { expandedDropdown = false },
+                                        onDeleteGroupClick = {
+                                            expandedDropdown = false
+                                            showDeleteGroupDialog = true
+                                        },
+                                    )
                                 },
                             )
                         }
@@ -532,17 +577,9 @@ private fun SelectingAppBar(
 @Composable
 private fun AppBarActions(
     onHelpClick: () -> Unit,
-    onSortClick: () -> Unit,
-    onSettingsClick: () -> Unit,
-    onAboutClick: () -> Unit,
-    onExportClick: () -> Unit,
-    onImportClick: () -> Unit,
-    showDeleteGroup: Boolean = false,
-    showSort: Boolean = false,
-    onDeleteGroupClick: () -> Unit = {},
+    onMenuClick: () -> Unit = {},
+    dropdownMenuContent: @Composable () -> Unit,
 ) {
-    var expandedDropdown by rememberSaveable { mutableStateOf(false) }
-
     Row {
         IconButton(onClick = onHelpClick) {
             Icon(
@@ -551,43 +588,14 @@ private fun AppBarActions(
             )
         }
 
-        IconButton(onClick = { expandedDropdown = true }) {
+        IconButton(onClick = onMenuClick) {
             Icon(
                 Icons.Rounded.MoreVert,
                 contentDescription = stringResource(R.string.home_app_bar_more),
             )
         }
 
-        AppBarDropdownMenu(
-            expanded = expandedDropdown,
-            onSortClick = {
-                expandedDropdown = false
-                onSortClick()
-            },
-            onSettingsClick = {
-                expandedDropdown = false
-                onSettingsClick()
-            },
-            onAboutClick = {
-                expandedDropdown = false
-                onAboutClick()
-            },
-            onExportClick = {
-                expandedDropdown = false
-                onExportClick()
-            },
-            onImportClick = {
-                expandedDropdown = false
-                onImportClick()
-            },
-            onDismissRequest = { expandedDropdown = false },
-            showDeleteGroup = showDeleteGroup,
-            showSort = showSort,
-            onDeleteGroupClick = {
-                expandedDropdown = false
-                onDeleteGroupClick()
-            },
-        )
+        dropdownMenuContent()
     }
 }
 
@@ -818,38 +826,20 @@ private fun selectedTextTransition(
 }
 
 @Composable
-private fun AppBarDropdownMenu(
+private fun RootGroupDropdownMenu(
     expanded: Boolean,
     onSortClick: () -> Unit = {},
     onSettingsClick: () -> Unit = {},
     onAboutClick: () -> Unit = {},
     onExportClick: () -> Unit = {},
     onImportClick: () -> Unit = {},
+    onInputMethodPickerClick: () -> Unit = {},
     onDismissRequest: () -> Unit = {},
-    showDeleteGroup: Boolean = false,
-    showSort: Boolean = false,
-    onDeleteGroupClick: () -> Unit = {},
 ) {
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = onDismissRequest,
     ) {
-        if (showDeleteGroup) {
-            DropdownMenuItem(
-                leadingIcon = { Icon(Icons.Rounded.Delete, contentDescription = null) },
-                text = { Text(stringResource(R.string.home_menu_delete_group)) },
-                onClick = onDeleteGroupClick,
-            )
-        }
-
-        if (showSort) {
-            DropdownMenuItem(
-                leadingIcon = { Icon(Icons.AutoMirrored.Rounded.Sort, contentDescription = null) },
-                text = { Text(stringResource(R.string.home_app_bar_sort)) },
-                onClick = onSortClick,
-            )
-        }
-
         DropdownMenuItem(
             leadingIcon = { Icon(Icons.Rounded.Settings, contentDescription = null) },
             text = { Text(stringResource(R.string.home_menu_settings)) },
@@ -864,6 +854,47 @@ private fun AppBarDropdownMenu(
             leadingIcon = { Icon(KeyMapperIcons.Import, contentDescription = null) },
             text = { Text(stringResource(R.string.home_menu_import)) },
             onClick = onImportClick,
+        )
+        DropdownMenuItem(
+            leadingIcon = { Icon(Icons.Rounded.Keyboard, contentDescription = null) },
+            text = { Text(stringResource(R.string.home_menu_input_method_picker)) },
+            onClick = onInputMethodPickerClick,
+        )
+        DropdownMenuItem(
+            leadingIcon = { Icon(Icons.Rounded.Info, contentDescription = null) },
+            text = { Text(stringResource(R.string.home_menu_about)) },
+            onClick = onAboutClick,
+        )
+    }
+}
+
+@Composable
+private fun ChildGroupDropdownMenu(
+    expanded: Boolean,
+    onSortClick: () -> Unit = {},
+    onSettingsClick: () -> Unit = {},
+    onAboutClick: () -> Unit = {},
+    onDismissRequest: () -> Unit = {},
+    onDeleteGroupClick: () -> Unit = {},
+) {
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = onDismissRequest,
+    ) {
+        DropdownMenuItem(
+            leadingIcon = { Icon(Icons.Rounded.Delete, contentDescription = null) },
+            text = { Text(stringResource(R.string.home_menu_delete_group)) },
+            onClick = onDeleteGroupClick,
+        )
+        DropdownMenuItem(
+            leadingIcon = { Icon(Icons.AutoMirrored.Rounded.Sort, contentDescription = null) },
+            text = { Text(stringResource(R.string.home_app_bar_sort)) },
+            onClick = onSortClick,
+        )
+        DropdownMenuItem(
+            leadingIcon = { Icon(Icons.Rounded.Settings, contentDescription = null) },
+            text = { Text(stringResource(R.string.home_menu_settings)) },
+            onClick = onSettingsClick,
         )
         DropdownMenuItem(
             leadingIcon = { Icon(Icons.Rounded.Info, contentDescription = null) },

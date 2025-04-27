@@ -150,10 +150,6 @@ abstract class BaseAccessibilityServiceController(
             flags = flags.withFlag(AccessibilityServiceInfo.FLAG_ENABLE_ACCESSIBILITY_VOLUME)
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            flags = flags.withFlag(AccessibilityServiceInfo.FLAG_INPUT_METHOD_EDITOR)
-        }
-
         return@lazy flags
     }
 
@@ -495,7 +491,11 @@ abstract class BaseAccessibilityServiceController(
                 }
             }
 
-            is ServiceEvent.TestAction -> performActionsUseCase.perform(event.action)
+            is ServiceEvent.TestAction -> coroutineScope.launch {
+                performActionsUseCase.perform(
+                    event.action,
+                )
+            }
 
             is ServiceEvent.Ping -> coroutineScope.launch {
                 outputEvents.emit(ServiceEvent.Pong(event.key))

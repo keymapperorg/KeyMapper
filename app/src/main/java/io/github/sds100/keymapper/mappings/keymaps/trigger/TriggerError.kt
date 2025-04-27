@@ -20,4 +20,6 @@ enum class TriggerError(val isFixable: Boolean) {
     FLOATING_BUTTON_DELETED(isFixable = false),
 
     FLOATING_BUTTONS_NOT_PURCHASED(isFixable = true),
+
+    PURCHASE_VERIFICATION_FAILED(isFixable = true),
 }

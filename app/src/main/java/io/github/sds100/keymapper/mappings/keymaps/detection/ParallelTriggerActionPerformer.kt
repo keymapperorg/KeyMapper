@@ -57,7 +57,7 @@ class ParallelTriggerActionPerformer(
         once before repeating (if configured).
          */
         performActionsJob = coroutineScope.launch {
-            actionList.forEachIndexed { actionIndex, action ->
+            for ((actionIndex, action) in actionList.withIndex()) {
                 var performUpAction = false
 
                 if (action.holdDown && action.repeat && action.repeatMode == RepeatMode.TRIGGER_PRESSED_AGAIN) {
@@ -94,15 +94,17 @@ class ParallelTriggerActionPerformer(
             }
         }
 
-        repeatJobs.forEach { it?.cancel() }
+        for (job in repeatJobs) {
+            job?.cancel()
+        }
 
-        actionList.forEachIndexed { actionIndex, action ->
+        for ((actionIndex, action) in actionList.withIndex()) {
             if (!action.repeat) {
-                return@forEachIndexed
+                continue
             }
 
             if (calledOnTriggerRelease && action.repeatMode == RepeatMode.TRIGGER_RELEASED) {
-                return@forEachIndexed
+                continue
             }
 
             // don't start repeating if it is already repeating
@@ -110,11 +112,11 @@ class ParallelTriggerActionPerformer(
                 repeatJobs[actionIndex]?.cancel()
                 repeatJobs[actionIndex] = null
 
-                return@forEachIndexed
+                continue
             }
 
             if (action.data is ActionData.InputKeyEvent && InputEventUtils.isModifierKey(action.data.keyCode)) {
-                return@forEachIndexed
+                continue
             }
 
             repeatJobs[actionIndex] = coroutineScope.launch {
@@ -124,9 +126,11 @@ class ParallelTriggerActionPerformer(
                 delay(action.repeatDelay?.toLong() ?: defaultRepeatDelay.value)
 
                 while (isActive && continueRepeating) {
-                    if (action.holdDown && action.repeat) {
+                    if (action.holdDown) {
                         performAction(action, InputEventType.DOWN, metaState)
-                        delay(action.holdDownDuration?.toLong() ?: defaultHoldDownDuration.value)
+                        delay(
+                            action.holdDownDuration?.toLong() ?: defaultHoldDownDuration.value,
+                        )
                         performAction(action, InputEventType.UP, metaState)
                     } else {
                         performAction(action, InputEventType.DOWN_UP, metaState)
@@ -152,12 +156,14 @@ class ParallelTriggerActionPerformer(
             }
         }
 
-        actionList.forEachIndexed { actionIndex, action ->
-            if (action.holdDown && !action.stopHoldDownWhenTriggerPressedAgain) {
-                if (actionIsHeldDown[actionIndex]) {
-                    actionIsHeldDown[actionIndex] = false
+        coroutineScope.launch {
+            for ((actionIndex, action) in actionList.withIndex()) {
+                if (action.holdDown && !action.stopHoldDownWhenTriggerPressedAgain) {
+                    if (actionIsHeldDown[actionIndex]) {
+                        actionIsHeldDown[actionIndex] = false
 
-                    performAction(action, InputEventType.UP, metaState)
+                        performAction(action, InputEventType.UP, metaState)
+                    }
                 }
             }
         }
@@ -167,9 +173,11 @@ class ParallelTriggerActionPerformer(
         performActionsJob?.cancel()
         performActionsJob = null
 
-        actionIsHeldDown.forEachIndexed { index, isHeldDown ->
-            if (isHeldDown) {
-                performAction(actionList[index], inputEventType = InputEventType.UP, 0)
+        coroutineScope.launch {
+            for ((index, isHeldDown) in actionIsHeldDown.withIndex()) {
+                if (isHeldDown) {
+                    performAction(actionList[index], inputEventType = InputEventType.UP, 0)
+                }
             }
         }
 
@@ -183,7 +191,7 @@ class ParallelTriggerActionPerformer(
         }
     }
 
-    private fun performAction(
+    private suspend fun performAction(
         action: Action,
         inputEventType: InputEventType,
         metaState: Int,

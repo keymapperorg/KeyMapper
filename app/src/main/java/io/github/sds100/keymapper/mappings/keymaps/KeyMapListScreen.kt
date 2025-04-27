@@ -91,7 +91,9 @@ fun KeyMapList(
             Surface(modifier = modifier) {
                 if (listItems.data.isEmpty()) {
                     EmptyKeyMapList(
-                        modifier = Modifier.fillMaxSize().padding(bottom = bottomListPadding),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(bottom = bottomListPadding),
                     )
                 } else {
                     LoadedKeyMapList(
@@ -487,6 +489,7 @@ private fun getTriggerErrorMessage(error: TriggerError): String {
         TriggerError.DPAD_IME_NOT_SELECTED -> stringResource(R.string.trigger_error_dpad_ime_not_selected)
         TriggerError.FLOATING_BUTTON_DELETED -> stringResource(R.string.trigger_error_floating_button_deleted)
         TriggerError.FLOATING_BUTTONS_NOT_PURCHASED -> stringResource(R.string.trigger_error_floating_buttons_not_purchased)
+        TriggerError.PURCHASE_VERIFICATION_FAILED -> stringResource(R.string.trigger_error_product_verification_failed)
     }
 }
 

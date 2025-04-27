@@ -1,3 +1,29 @@
+## [3.0.1](https://github.com/sds100/KeyMapper/releases/tag/v3.0.1)
+
+#### TO BE RELEASED
+
+## Added
+
+- #1652 Bring back the menu button to show input method picker.
+- #1657 Turn on repeat by default for volume actions.
+
+## Changed
+
+- #1654 The Key Mapper keyboard is now required again for Text actions because the accessibility service API does not work in all situations.
+- #1653 Hide the export/import menu buttons in groups.
+
+## Bug fixes
+
+- Inputting key events with Shizuku does not crash the app if a Key Mapper keyboard is being used at the same time. And latency when inputting key events has been improved in some apps.
+- #1646 disabling Bluetooth clears the list of connected devices.
+- #1655 do not crash when restoring key map groups.
+- #1649 show purchase verification failed error if no network connection.
+- #1648 caching purchases works so you can use floating buttons and assistant trigger without an internet connection.
+- #1658 floating buttons appear in the wrong place in portrait if saved in landscape.
+- #1659 Use trigger does not work if the screen orientation changes when re-entering the app.
+- #1668 Crashes when floating menu does not fit in the display height.
+- #1667 Hold down mode UI is missing from 2.8.
+
 ## [3.0.0](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0)
 
 _See the changes from previous 3.0 Beta releases._

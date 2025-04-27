@@ -9,6 +9,7 @@ import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.util.firstBlocking
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 
 /**
  * Created by sds100 on 27/04/2021.
@@ -48,7 +49,10 @@ class RerouteKeyEventsUseCaseImpl(
     }
 
     override fun inputKeyEvent(keyModel: InputKeyModel) {
-        imeInputEventInjector.inputKeyEvent(keyModel)
+        // It is safe to run the ime injector on the main thread.
+        runBlocking {
+            imeInputEventInjector.inputKeyEvent(keyModel)
+        }
     }
 }
 

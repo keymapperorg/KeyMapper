@@ -45,7 +45,7 @@ class ImeInputEventInjectorImpl(
 
     private val ctx = context.applicationContext
 
-    override fun inputKeyEvent(model: InputKeyModel) {
+    override suspend fun inputKeyEvent(model: InputKeyModel) {
         Timber.d("Inject key event with input method ${KeyEvent.keyCodeToString(model.keyCode)}, $model")
 
         val imePackageName = inputMethodAdapter.chosenIme.value?.packageName

@@ -27,7 +27,9 @@ import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.dataOrNull
+import io.github.sds100.keymapper.util.ifIsData
 import io.github.sds100.keymapper.util.mapData
+import io.github.sds100.keymapper.util.onSuccess
 import io.github.sds100.keymapper.util.ui.CheckBoxListItem
 import io.github.sds100.keymapper.util.ui.DialogResponse
 import io.github.sds100.keymapper.util.ui.LinkType
@@ -93,7 +95,7 @@ abstract class BaseConfigTriggerViewModel(
     private val triggerKeyShortcuts = combine(
         fingerprintGesturesSupported.isSupported,
         purchasingManager.purchases,
-    ) { isFingerprintGesturesSupported, purchases ->
+    ) { isFingerprintGesturesSupported, purchasesState ->
         val newShortcuts = mutableSetOf<ShortcutModel<TriggerKeyShortcut>>()
 
         if (isFingerprintGesturesSupported == true) {
@@ -106,25 +108,27 @@ abstract class BaseConfigTriggerViewModel(
             )
         }
 
-        if (purchases is State.Data) {
-            if (purchases.data.contains(ProductId.ASSISTANT_TRIGGER)) {
-                newShortcuts.add(
-                    ShortcutModel(
-                        icon = ComposeIconInfo.Vector(Icons.Rounded.Assistant),
-                        text = getString(R.string.trigger_key_shortcut_add_assistant),
-                        data = TriggerKeyShortcut.ASSISTANT,
-                    ),
-                )
-            }
+        purchasesState.ifIsData { result ->
+            result.onSuccess { purchases ->
+                if (purchases.contains(ProductId.ASSISTANT_TRIGGER)) {
+                    newShortcuts.add(
+                        ShortcutModel(
+                            icon = ComposeIconInfo.Vector(Icons.Rounded.Assistant),
+                            text = getString(R.string.trigger_key_shortcut_add_assistant),
+                            data = TriggerKeyShortcut.ASSISTANT,
+                        ),
+                    )
+                }
 
-            if (purchases.data.contains(ProductId.FLOATING_BUTTONS)) {
-                newShortcuts.add(
-                    ShortcutModel(
-                        icon = ComposeIconInfo.Vector(Icons.Rounded.BubbleChart),
-                        text = getString(R.string.trigger_key_shortcut_add_floating_button),
-                        data = TriggerKeyShortcut.FLOATING_BUTTON,
-                    ),
-                )
+                if (purchases.contains(ProductId.FLOATING_BUTTONS)) {
+                    newShortcuts.add(
+                        ShortcutModel(
+                            icon = ComposeIconInfo.Vector(Icons.Rounded.BubbleChart),
+                            text = getString(R.string.trigger_key_shortcut_add_floating_button),
+                            data = TriggerKeyShortcut.FLOATING_BUTTON,
+                        ),
+                    )
+                }
             }
         }
 

@@ -19,6 +19,7 @@ import io.github.sds100.keymapper.mappings.keymaps.ListKeyMapsUseCase
 import io.github.sds100.keymapper.mappings.keymaps.trigger.SetupGuiKeyboardUseCase
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.sorting.SortKeyMapsUseCase
+import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
 import io.github.sds100.keymapper.util.ui.DialogResponse
 import io.github.sds100.keymapper.util.ui.NavigationViewModel
 import io.github.sds100.keymapper.util.ui.NavigationViewModelImpl
@@ -48,6 +49,7 @@ class HomeViewModel(
     private val setupGuiKeyboard: SetupGuiKeyboardUseCase,
     private val sortKeyMaps: SortKeyMapsUseCase,
     private val listFloatingLayouts: ListFloatingLayoutsUseCase,
+    private val showInputMethodPickerUseCase: ShowInputMethodPickerUseCase,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
     PopupViewModel by PopupViewModelImpl(),
@@ -78,6 +80,7 @@ class HomeViewModel(
             showAlertsUseCase,
             pauseKeyMaps,
             backupRestore,
+            showInputMethodPickerUseCase,
         )
     }
 
@@ -186,6 +189,7 @@ class HomeViewModel(
         private val setupGuiKeyboard: SetupGuiKeyboardUseCase,
         private val sortKeyMaps: SortKeyMapsUseCase,
         private val listFloatingLayouts: ListFloatingLayoutsUseCase,
+        private val showInputMethodPickerUseCase: ShowInputMethodPickerUseCase,
     ) : ViewModelProvider.NewInstanceFactory() {
 
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeViewModel(
@@ -198,6 +202,7 @@ class HomeViewModel(
             setupGuiKeyboard,
             sortKeyMaps,
             listFloatingLayouts,
+            showInputMethodPickerUseCase,
         ) as T
     }
 }

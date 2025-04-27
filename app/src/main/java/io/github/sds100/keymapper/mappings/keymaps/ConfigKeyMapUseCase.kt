@@ -52,7 +52,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.util.LinkedList
 
@@ -144,10 +143,6 @@ class ConfigKeyMapUseCaseController(
                 keyMapState
             }
         }
-    }
-
-    override fun useFloatingButtonTrigger(buttonUid: String) {
-        floatingButtonToUse.update { buttonUid }
     }
 
     override fun addConstraint(constraint: Constraint): Boolean {
@@ -802,6 +797,10 @@ class ConfigKeyMapUseCaseController(
             }
         }
 
+        if (data is ActionData.Volume.Down || data is ActionData.Volume.Up || data is ActionData.Volume.Stream) {
+            repeat = true
+        }
+
         if (data is ActionData.AnswerCall) {
             addConstraint(Constraint.PhoneRinging())
         }
@@ -1025,7 +1024,6 @@ interface ConfigKeyMapUseCase : GetDefaultKeyMapOptionsUseCase {
 
     fun getAvailableTriggerKeyDevices(): List<TriggerKeyDevice>
 
-    val floatingButtonToUse: StateFlow<String?>
-    fun useFloatingButtonTrigger(buttonUid: String)
+    val floatingButtonToUse: MutableStateFlow<String?>
     suspend fun getFloatingLayoutCount(): Int
 }

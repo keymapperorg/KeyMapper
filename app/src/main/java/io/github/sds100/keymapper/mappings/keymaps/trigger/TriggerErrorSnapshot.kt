@@ -6,6 +6,10 @@ import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.mappings.keymaps.requiresImeKeyEventForwardingInPhoneCall
 import io.github.sds100.keymapper.purchasing.ProductId
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
+import io.github.sds100.keymapper.util.Error
+import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.util.onFailure
+import io.github.sds100.keymapper.util.onSuccess
 
 /**
  * Store the data required for determining trigger errors to reduce the number of calls with
@@ -15,7 +19,7 @@ data class TriggerErrorSnapshot(
     val isKeyMapperImeChosen: Boolean,
     val isDndAccessGranted: Boolean,
     val isRootGranted: Boolean,
-    val purchases: Set<ProductId>,
+    val purchases: Result<Set<ProductId>>,
     val showDpadImeSetupError: Boolean,
 ) {
     companion object {
@@ -26,13 +30,21 @@ data class TriggerErrorSnapshot(
     }
 
     fun getTriggerError(keyMap: KeyMap, key: TriggerKey): TriggerError? {
-        if (key is AssistantTriggerKey && !purchases.contains(ProductId.ASSISTANT_TRIGGER)) {
-            return TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED
+        purchases.onSuccess { purchases ->
+            if (key is AssistantTriggerKey && !purchases.contains(ProductId.ASSISTANT_TRIGGER)) {
+                return TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED
+            }
+
+            if (key is FloatingButtonKey && !purchases.contains(ProductId.FLOATING_BUTTONS)) {
+                return TriggerError.FLOATING_BUTTONS_NOT_PURCHASED
+            }
+        }.onFailure { error ->
+            if ((key is AssistantTriggerKey || key is FloatingButtonKey) && error == Error.PurchasingError.NetworkError) {
+                return TriggerError.PURCHASE_VERIFICATION_FAILED
+            }
         }
 
-        if (key is FloatingButtonKey && !purchases.contains(ProductId.FLOATING_BUTTONS)) {
-            return TriggerError.FLOATING_BUTTONS_NOT_PURCHASED
-        } else if (key is FloatingButtonKey && key.button == null) {
+        if (key is FloatingButtonKey && key.button == null) {
             return TriggerError.FLOATING_BUTTON_DELETED
         }
 

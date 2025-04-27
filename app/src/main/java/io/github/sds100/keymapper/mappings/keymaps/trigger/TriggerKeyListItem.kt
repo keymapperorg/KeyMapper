@@ -259,6 +259,7 @@ private fun getErrorMessage(error: TriggerError): String {
         TriggerError.DPAD_IME_NOT_SELECTED -> stringResource(R.string.trigger_error_dpad_ime_not_selected)
         TriggerError.FLOATING_BUTTON_DELETED -> stringResource(R.string.trigger_error_floating_button_deleted)
         TriggerError.FLOATING_BUTTONS_NOT_PURCHASED -> stringResource(R.string.trigger_error_floating_buttons_not_purchased)
+        TriggerError.PURCHASE_VERIFICATION_FAILED -> stringResource(R.string.trigger_error_product_verification_failed)
     }
 }
 
