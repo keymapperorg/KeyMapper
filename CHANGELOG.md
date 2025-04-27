@@ -17,6 +17,8 @@
 - Inputting key events with Shizuku does not crash the app if a Key Mapper keyboard is being used at the same time. And latency when inputting key events has been improved in some apps.
 - #1646 disabling Bluetooth clears the list of connected devices.
 - #1655 do not crash when restoring key map groups.
+- #1649 show purchase verification failed error if no network connection.
+- #1648 caching purchases works so you can use floating buttons and assistant trigger without an internet connection.
 
 ## [3.0.0](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0)
 
