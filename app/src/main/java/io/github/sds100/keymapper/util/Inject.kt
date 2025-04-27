@@ -183,7 +183,7 @@ object Inject {
             UseCases.displayKeyMap(ctx),
         ),
         UseCases.listFloatingLayouts(ctx),
-        ShowInputMethodPickerUseCaseImpl(ServiceLocator.inputMethodAdapter(ctx))
+        ShowInputMethodPickerUseCaseImpl(ServiceLocator.inputMethodAdapter(ctx)),
     )
 
     fun settingsViewModel(context: Context): SettingsViewModel.Factory = SettingsViewModel.Factory(
