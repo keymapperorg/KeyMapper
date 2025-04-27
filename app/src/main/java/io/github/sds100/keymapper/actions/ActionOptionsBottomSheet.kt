@@ -264,7 +264,36 @@ fun ActionOptionsBottomSheet(
                 )
             }
 
-            Spacer(Modifier.height(8.dp))
+            if (state.showHoldDownMode) {
+                Spacer(Modifier.height(8.dp))
+
+                Text(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    text = stringResource(R.string.hold_down_until_trigger_is_dot_dot_dot),
+                    style = MaterialTheme.typography.titleSmall,
+                )
+
+                FlowRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    RadioButtonText(
+                        isSelected = state.holdDownMode == HoldDownMode.TRIGGER_RELEASED,
+                        text = stringResource(R.string.stop_holding_down_when_trigger_released),
+                        onSelected = { callback.onSelectHoldDownMode(HoldDownMode.TRIGGER_RELEASED) },
+                    )
+
+                    RadioButtonText(
+                        isSelected = state.holdDownMode == HoldDownMode.TRIGGER_PRESSED_AGAIN,
+                        text = stringResource(R.string.stop_holding_down_trigger_pressed_again),
+                        onSelected = { callback.onSelectHoldDownMode(HoldDownMode.TRIGGER_PRESSED_AGAIN) },
+                    )
+
+                    Spacer(Modifier.width(8.dp))
+                }
+            }
 
             if (state.showHoldDown) {
                 Spacer(Modifier.height(8.dp))
@@ -355,6 +384,7 @@ interface ActionOptionsBottomSheetCallback {
     fun onRepeatDelayChanged(delay: Int) = run { }
     fun onHoldDownCheckedChange(checked: Boolean) = run { }
     fun onHoldDownDurationChanged(duration: Int) = run { }
+    fun onSelectHoldDownMode(holdDownMode: HoldDownMode) = run { }
     fun onDelayBeforeNextActionChanged(delay: Int) = run { }
     fun onMultiplierChanged(multiplier: Int) = run { }
 }

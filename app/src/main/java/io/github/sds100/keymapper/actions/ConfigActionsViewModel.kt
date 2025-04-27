@@ -219,6 +219,15 @@ class ConfigActionsViewModel(
         actionOptionsUid.value?.let { uid -> config.setActionHoldDownDuration(uid, duration) }
     }
 
+    override fun onSelectHoldDownMode(holdDownMode: HoldDownMode) {
+        actionOptionsUid.value?.let { uid ->
+            config.setActionStopHoldingDownWhenTriggerPressedAgain(
+                uid,
+                holdDownMode == HoldDownMode.TRIGGER_PRESSED_AGAIN,
+            )
+        }
+    }
+
     override fun onDelayBeforeNextActionChanged(delay: Int) {
         actionOptionsUid.value?.let { uid -> config.setDelayBeforeNextAction(uid, delay) }
     }
@@ -230,7 +239,10 @@ class ConfigActionsViewModel(
     override fun onSelectRepeatMode(repeatMode: RepeatMode) {
         actionOptionsUid.value?.let { uid ->
             when (repeatMode) {
-                RepeatMode.TRIGGER_RELEASED -> config.setActionStopRepeatingWhenTriggerReleased(uid)
+                RepeatMode.TRIGGER_RELEASED -> config.setActionStopRepeatingWhenTriggerReleased(
+                    uid,
+                )
+
                 RepeatMode.LIMIT_REACHED -> config.setActionStopRepeatingWhenLimitReached(uid)
                 RepeatMode.TRIGGER_PRESSED_AGAIN -> config.setActionStopRepeatingWhenTriggerPressedAgain(
                     uid,
@@ -416,7 +428,8 @@ class ConfigActionsViewModel(
             return ConfigActionsState.Empty(shortcuts = shortcuts)
         }
 
-        val actions = createListItems(keyMap, showDeviceDescriptors, errorSnapshot, shortcuts.size)
+        val actions =
+            createListItems(keyMap, showDeviceDescriptors, errorSnapshot, shortcuts.size)
 
         return ConfigActionsState.Loaded(
             actions = actions,
@@ -542,7 +555,9 @@ class ConfigActionsViewModel(
             holdDownDuration = action.holdDownDuration ?: defaultHoldDownDuration,
             defaultHoldDownDuration = defaultHoldDownDuration,
 
-            showHoldDownMode = keyMap.isStopHoldingDownActionWhenTriggerPressedAgainAllowed(action),
+            showHoldDownMode = keyMap.isStopHoldingDownActionWhenTriggerPressedAgainAllowed(
+                action,
+            ),
             holdDownMode = if (action.stopHoldDownWhenTriggerPressedAgain) {
                 HoldDownMode.TRIGGER_PRESSED_AGAIN
             } else {
