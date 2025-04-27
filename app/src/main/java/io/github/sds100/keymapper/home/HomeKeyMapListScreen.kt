@@ -12,8 +12,13 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowForward
@@ -156,7 +161,9 @@ fun HomeKeyMapListScreen(
                 exit = fadeOut() + slideOutHorizontally(targetOffsetX = { it }),
             ) {
                 CollapsableFloatingActionButton(
-                    modifier = Modifier.padding(bottom = fabBottomPadding),
+                    modifier = Modifier
+                        .padding(bottom = fabBottomPadding)
+                        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.End)),
                     onClick = viewModel::onNewKeyMapClick,
                     showText = viewModel.showFabText,
                     text = stringResource(R.string.home_fab_new_key_map),
