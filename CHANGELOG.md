@@ -21,6 +21,7 @@
 - #1648 caching purchases works so you can use floating buttons and assistant trigger without an internet connection.
 - #1658 floating buttons appear in the wrong place in portrait if saved in landscape.
 - #1659 Use trigger does not work if the screen orientation changes when re-entering the app.
+- #1668 Crashes when floating menu does not fit in the display height.
 
 ## [3.0.0](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0)
 
