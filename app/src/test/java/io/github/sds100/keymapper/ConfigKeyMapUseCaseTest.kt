@@ -5,6 +5,7 @@ import io.github.sds100.keymapper.actions.Action
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.mappings.ClickType
+import io.github.sds100.keymapper.mappings.FingerprintGestureType
 import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapUseCaseController
 import io.github.sds100.keymapper.mappings.keymaps.KeyMap
 import io.github.sds100.keymapper.mappings.keymaps.trigger.AssistantTriggerKey
@@ -55,6 +56,150 @@ class ConfigKeyMapUseCaseTest {
             floatingButtonRepository = mock(),
             serviceAdapter = mock(),
         )
+    }
+
+    @Test
+    fun `Do not allow setting double press for parallel trigger with side key`() = runTest(testDispatcher) {
+        useCase.keyMap.value = State.Data(KeyMap())
+
+        useCase.addKeyCodeTriggerKey(
+            KeyEvent.KEYCODE_VOLUME_DOWN,
+            TriggerKeyDevice.Any,
+            detectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
+        )
+        useCase.addAssistantTriggerKey(AssistantTriggerType.ANY)
+
+        useCase.setTriggerDoublePress()
+
+        val trigger = useCase.keyMap.value.dataOrNull()!!.trigger
+        assertThat(trigger.mode, `is`(TriggerMode.Parallel(clickType = ClickType.SHORT_PRESS)))
+        assertThat(trigger.keys[0].clickType, `is`(ClickType.SHORT_PRESS))
+        assertThat(trigger.keys[1].clickType, `is`(ClickType.SHORT_PRESS))
+    }
+
+    @Test
+    fun `Do not allow setting long press for parallel trigger with side key`() = runTest(testDispatcher) {
+        useCase.keyMap.value = State.Data(KeyMap())
+
+        useCase.addKeyCodeTriggerKey(
+            KeyEvent.KEYCODE_VOLUME_DOWN,
+            TriggerKeyDevice.Any,
+            detectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
+        )
+        useCase.addAssistantTriggerKey(AssistantTriggerType.ANY)
+
+        useCase.setTriggerLongPress()
+
+        val trigger = useCase.keyMap.value.dataOrNull()!!.trigger
+        assertThat(trigger.mode, `is`(TriggerMode.Parallel(clickType = ClickType.SHORT_PRESS)))
+        assertThat(trigger.keys[0].clickType, `is`(ClickType.SHORT_PRESS))
+        assertThat(trigger.keys[1].clickType, `is`(ClickType.SHORT_PRESS))
+    }
+
+    @Test
+    fun `Do not allow setting double press for side key`() = runTest(testDispatcher) {
+        useCase.keyMap.value = State.Data(KeyMap())
+
+        useCase.addAssistantTriggerKey(AssistantTriggerType.ANY)
+
+        useCase.setTriggerDoublePress()
+
+        val trigger = useCase.keyMap.value.dataOrNull()!!.trigger
+        assertThat(trigger.mode, `is`(TriggerMode.Undefined))
+        assertThat(trigger.keys[0].clickType, `is`(ClickType.SHORT_PRESS))
+    }
+
+    @Test
+    fun `Do not allow setting long press for side key`() = runTest(testDispatcher) {
+        useCase.keyMap.value = State.Data(KeyMap())
+
+        useCase.addAssistantTriggerKey(AssistantTriggerType.ANY)
+
+        useCase.setTriggerLongPress()
+
+        val trigger = useCase.keyMap.value.dataOrNull()!!.trigger
+        assertThat(trigger.mode, `is`(TriggerMode.Undefined))
+        assertThat(trigger.keys[0].clickType, `is`(ClickType.SHORT_PRESS))
+    }
+
+    @Test
+    fun `Set click type to short press if side key added to double press volume button`() = runTest(testDispatcher) {
+        useCase.keyMap.value = State.Data(KeyMap())
+
+        useCase.addKeyCodeTriggerKey(
+            KeyEvent.KEYCODE_VOLUME_DOWN,
+            TriggerKeyDevice.Any,
+            detectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
+        )
+
+        useCase.setTriggerDoublePress()
+
+        useCase.addAssistantTriggerKey(AssistantTriggerType.ANY)
+
+        val trigger = useCase.keyMap.value.dataOrNull()!!.trigger
+        assertThat(trigger.mode, `is`(TriggerMode.Parallel(clickType = ClickType.SHORT_PRESS)))
+        assertThat(trigger.keys[0].clickType, `is`(ClickType.SHORT_PRESS))
+        assertThat(trigger.keys[1].clickType, `is`(ClickType.SHORT_PRESS))
+    }
+
+    @Test
+    fun `Set click type to short press if fingerprint gestures added to double press volume button`() = runTest(testDispatcher) {
+        useCase.keyMap.value = State.Data(KeyMap())
+
+        useCase.addKeyCodeTriggerKey(
+            KeyEvent.KEYCODE_VOLUME_DOWN,
+            TriggerKeyDevice.Any,
+            detectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
+        )
+
+        useCase.setTriggerDoublePress()
+
+        useCase.addFingerprintGesture(FingerprintGestureType.SWIPE_UP)
+
+        val trigger = useCase.keyMap.value.dataOrNull()!!.trigger
+        assertThat(trigger.mode, `is`(TriggerMode.Parallel(clickType = ClickType.SHORT_PRESS)))
+        assertThat(trigger.keys[0].clickType, `is`(ClickType.SHORT_PRESS))
+        assertThat(trigger.keys[1].clickType, `is`(ClickType.SHORT_PRESS))
+    }
+
+    @Test
+    fun `Set click type to short press if side key added to long press volume button`() = runTest(testDispatcher) {
+        useCase.keyMap.value = State.Data(KeyMap())
+
+        useCase.addKeyCodeTriggerKey(
+            KeyEvent.KEYCODE_VOLUME_DOWN,
+            TriggerKeyDevice.Any,
+            detectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
+        )
+
+        useCase.setTriggerLongPress()
+
+        useCase.addAssistantTriggerKey(AssistantTriggerType.ANY)
+
+        val trigger = useCase.keyMap.value.dataOrNull()!!.trigger
+        assertThat(trigger.mode, `is`(TriggerMode.Parallel(clickType = ClickType.SHORT_PRESS)))
+        assertThat(trigger.keys[0].clickType, `is`(ClickType.SHORT_PRESS))
+        assertThat(trigger.keys[1].clickType, `is`(ClickType.SHORT_PRESS))
+    }
+
+    @Test
+    fun `Set click type to short press if fingerprint gestures added to long press volume button`() = runTest(testDispatcher) {
+        useCase.keyMap.value = State.Data(KeyMap())
+
+        useCase.addKeyCodeTriggerKey(
+            KeyEvent.KEYCODE_VOLUME_DOWN,
+            TriggerKeyDevice.Any,
+            detectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
+        )
+
+        useCase.setTriggerLongPress()
+
+        useCase.addFingerprintGesture(FingerprintGestureType.SWIPE_UP)
+
+        val trigger = useCase.keyMap.value.dataOrNull()!!.trigger
+        assertThat(trigger.mode, `is`(TriggerMode.Parallel(clickType = ClickType.SHORT_PRESS)))
+        assertThat(trigger.keys[0].clickType, `is`(ClickType.SHORT_PRESS))
+        assertThat(trigger.keys[1].clickType, `is`(ClickType.SHORT_PRESS))
     }
 
     @Test

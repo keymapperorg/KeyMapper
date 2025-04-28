@@ -304,7 +304,7 @@ class ConfigKeyMapUseCaseController(
 
         val triggerKey = AssistantTriggerKey(type = type, clickType = clickType)
 
-        val newKeys = trigger.keys.plus(triggerKey)
+        val newKeys = trigger.keys.plus(triggerKey).map { it.setClickType(ClickType.SHORT_PRESS) }
 
         val newMode = when {
             trigger.mode != TriggerMode.Sequence && containsAssistantKey -> TriggerMode.Sequence
@@ -335,7 +335,7 @@ class ConfigKeyMapUseCaseController(
 
         val triggerKey = FingerprintTriggerKey(type = type, clickType = clickType)
 
-        val newKeys = trigger.keys.plus(triggerKey)
+        val newKeys = trigger.keys.plus(triggerKey).map { it.setClickType(ClickType.SHORT_PRESS) }
 
         val newMode = when {
             trigger.mode != TriggerMode.Sequence && containsFingerprintGesture -> TriggerMode.Sequence
@@ -513,7 +513,7 @@ class ConfigKeyMapUseCaseController(
             // You can't set the trigger to a long press if it contains a key
             // that isn't detected with key codes. This is because there aren't
             // separate key events for the up and down press that can be timed.
-            if (trigger.keys.any { it is AssistantTriggerKey }) {
+            if (trigger.keys.any { !it.allowedLongPress }) {
                 return@editTrigger trigger
             }
 
@@ -531,6 +531,10 @@ class ConfigKeyMapUseCaseController(
     override fun setTriggerDoublePress() {
         editTrigger { trigger ->
             if (trigger.mode != TriggerMode.Undefined) {
+                return@editTrigger trigger
+            }
+
+            if (trigger.keys.any { !it.allowedDoublePress }) {
                 return@editTrigger trigger
             }
 
