@@ -761,8 +761,10 @@
     <!-- system action options -->
 
     <!-- Tiles -->
-    <string name="tile_pause">Pause key maps</string>
-    <string name="tile_resume">Resume key maps</string>
+    <string name="tile_pause_title">Pause key maps</string>
+    <string name="tile_resume_title">Resume key maps</string>
+    <string name="tile_paused_subtitle">Paused</string>
+    <string name="tile_running_subtitle">Running</string>
     <string name="tile_service_disabled">Service Disabled</string>
     <string name="tile_accessibility_service_disabled_content_description">Key Mapper accessibility service is disabled</string>
     <string name="tile_toggle_keymapper_keyboard">Toggle Key Mapper keyboard</string>

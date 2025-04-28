@@ -12,6 +12,7 @@
 - #1654 The Key Mapper keyboard is now required again for Text actions because the accessibility service API does not work in all situations.
 - #1653 Hide the export/import menu buttons in groups.
 - #1553 Hide double press option for side key and fingerprint gesture triggers because it is misleading. Double activations can be done with sequence triggers instead.
+- #1669 Change quick settings tile text.
 
 ## Bug fixes
 

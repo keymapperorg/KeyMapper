@@ -45,33 +45,81 @@ class ToggleMappingsTile :
 
                 val ctx = this@ToggleMappingsTile
 
-                when {
-                    serviceState == ServiceState.DISABLED -> {
-                        qsTile.label = str(R.string.tile_service_disabled)
-                        qsTile.contentDescription =
-                            str(R.string.tile_accessibility_service_disabled_content_description)
-                        qsTile.icon = Icon.createWithResource(ctx, R.drawable.ic_tile_error)
-                        qsTile.state = Tile.STATE_UNAVAILABLE
-                    }
-
-                    isPaused -> {
-                        qsTile.label = str(R.string.tile_resume)
-                        qsTile.contentDescription = str(R.string.tile_resume)
-                        qsTile.icon = Icon.createWithResource(ctx, R.drawable.ic_tile_resume)
-                        qsTile.state = Tile.STATE_INACTIVE
-                    }
-
-                    !isPaused -> {
-                        qsTile.label = str(R.string.tile_pause)
-                        qsTile.contentDescription = str(R.string.tile_pause)
-                        qsTile.icon = Icon.createWithResource(ctx, R.drawable.ic_tile_pause)
-                        qsTile.state = Tile.STATE_ACTIVE
-                    }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    updateQsTile(serviceState, ctx, isPaused)
+                } else {
+                    updateQsTilePreSdk29(serviceState, ctx, isPaused)
                 }
-
-                qsTile.updateTile()
             }.collect()
         }
+    }
+
+    private fun updateQsTilePreSdk29(
+        serviceState: ServiceState,
+        ctx: ToggleMappingsTile,
+        isPaused: Boolean,
+    ) {
+        when {
+            serviceState == ServiceState.DISABLED -> {
+                qsTile.label = str(R.string.tile_service_disabled)
+                qsTile.contentDescription =
+                    str(R.string.tile_accessibility_service_disabled_content_description)
+                qsTile.icon = Icon.createWithResource(ctx, R.drawable.ic_tile_error)
+                qsTile.state = Tile.STATE_UNAVAILABLE
+            }
+
+            isPaused -> {
+                qsTile.label = str(R.string.tile_resume_title)
+                qsTile.contentDescription = str(R.string.tile_resume_title)
+                qsTile.icon = Icon.createWithResource(ctx, R.drawable.ic_tile_pause)
+                qsTile.state = Tile.STATE_INACTIVE
+            }
+
+            !isPaused -> {
+                qsTile.label = str(R.string.tile_pause_title)
+                qsTile.contentDescription = str(R.string.tile_pause_title)
+                qsTile.icon = Icon.createWithResource(ctx, R.drawable.ic_tile_resume)
+                qsTile.state = Tile.STATE_ACTIVE
+            }
+        }
+
+        qsTile.updateTile()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private fun updateQsTile(
+        serviceState: ServiceState,
+        ctx: ToggleMappingsTile,
+        isPaused: Boolean,
+    ) {
+        when {
+            serviceState == ServiceState.DISABLED -> {
+                qsTile.label = str(R.string.app_name)
+                qsTile.subtitle = str(R.string.tile_service_disabled)
+                qsTile.contentDescription =
+                    str(R.string.tile_accessibility_service_disabled_content_description)
+                qsTile.icon = Icon.createWithResource(ctx, R.drawable.ic_tile_error)
+                qsTile.state = Tile.STATE_UNAVAILABLE
+            }
+
+            isPaused -> {
+                qsTile.label = str(R.string.app_name)
+                qsTile.subtitle = str(R.string.tile_paused_subtitle)
+                qsTile.contentDescription = str(R.string.tile_resume_title)
+                qsTile.icon = Icon.createWithResource(ctx, R.drawable.ic_tile_pause)
+                qsTile.state = Tile.STATE_INACTIVE
+            }
+
+            !isPaused -> {
+                qsTile.label = str(R.string.app_name)
+                qsTile.subtitle = str(R.string.tile_running_subtitle)
+                qsTile.contentDescription = str(R.string.tile_pause_title)
+                qsTile.icon = Icon.createWithResource(ctx, R.drawable.ic_tile_resume)
+                qsTile.state = Tile.STATE_ACTIVE
+            }
+        }
+
+        qsTile.updateTile()
     }
 
     override fun onStartListening() {
