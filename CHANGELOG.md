@@ -1,6 +1,6 @@
 ## [3.0.1](https://github.com/sds100/KeyMapper/releases/tag/v3.0.1)
 
-#### TO BE RELEASED
+#### 28 April 2025
 
 ## Added
 
