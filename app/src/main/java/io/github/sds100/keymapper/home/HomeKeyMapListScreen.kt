@@ -12,8 +12,13 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowForward
@@ -68,6 +73,7 @@ import io.github.sds100.keymapper.util.drawable
 import io.github.sds100.keymapper.util.ui.compose.CollapsableFloatingActionButton
 import io.github.sds100.keymapper.util.ui.compose.ComposeChipModel
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.util.ui.compose.openUriSafe
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -140,6 +146,7 @@ fun HomeKeyMapListScreen(
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val uriHandler = LocalUriHandler.current
+    val ctx = LocalContext.current
     val helpUrl = stringResource(R.string.url_quick_start_guide)
 
     var keyMapListBottomPadding by remember { mutableStateOf(100.dp) }
@@ -154,7 +161,9 @@ fun HomeKeyMapListScreen(
                 exit = fadeOut() + slideOutHorizontally(targetOffsetX = { it }),
             ) {
                 CollapsableFloatingActionButton(
-                    modifier = Modifier.padding(bottom = fabBottomPadding),
+                    modifier = Modifier
+                        .padding(bottom = fabBottomPadding)
+                        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.End)),
                     onClick = viewModel::onNewKeyMapClick,
                     showText = viewModel.showFabText,
                     text = stringResource(R.string.home_fab_new_key_map),
@@ -183,9 +192,10 @@ fun HomeKeyMapListScreen(
                 onSettingsClick = onSettingsClick,
                 onAboutClick = onAboutClick,
                 onSortClick = { viewModel.showSortBottomSheet = true },
-                onHelpClick = { uriHandler.openUri(helpUrl) },
+                onHelpClick = { uriHandler.openUriSafe(ctx, helpUrl) },
                 onExportClick = viewModel::onExportClick,
                 onImportClick = { importFileLauncher.launch(FileUtils.MIME_TYPE_ALL) },
+                onInputMethodPickerClick = viewModel::showInputMethodPicker,
                 onTogglePausedClick = viewModel::onTogglePausedClick,
                 onFixWarningClick = viewModel::onFixWarningClick,
                 onBackClick = {

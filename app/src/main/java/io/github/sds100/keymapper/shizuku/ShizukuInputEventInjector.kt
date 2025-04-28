@@ -8,15 +8,20 @@ import android.view.KeyEvent
 import io.github.sds100.keymapper.system.inputevents.InputEventInjector
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.util.InputEventType
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import rikka.shizuku.ShizukuBinderWrapper
 import rikka.shizuku.SystemServiceHelper
 import timber.log.Timber
 
 @SuppressLint("PrivateApi")
-class ShizukuInputEventInjector : InputEventInjector {
+class ShizukuInputEventInjector(private val coroutineScope: CoroutineScope) : InputEventInjector {
 
     companion object {
-        private const val INJECT_INPUT_EVENT_MODE_ASYNC = 0
+        // private const val INJECT_INPUT_EVENT_MODE_ASYNC = 0
+
+        private const val INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH = 2
     }
 
     private val iInputManager: IInputManager by lazy {
@@ -25,7 +30,7 @@ class ShizukuInputEventInjector : InputEventInjector {
         IInputManager.Stub.asInterface(binder)
     }
 
-    override fun inputKeyEvent(model: InputKeyModel) {
+    override suspend fun inputKeyEvent(model: InputKeyModel) {
         Timber.d("Inject input event with Shizuku ${KeyEvent.keyCodeToString(model.keyCode)}, $model")
 
         val action = when (model.inputType) {
@@ -46,12 +51,17 @@ class ShizukuInputEventInjector : InputEventInjector {
             model.scanCode,
         )
 
-        iInputManager.injectInputEvent(keyEvent, INJECT_INPUT_EVENT_MODE_ASYNC)
+        withContext(Dispatchers.IO) {
+            // MUST wait for the application to finish processing the event before sending the next one.
+            // Otherwise, rapidly repeating input events will go in a big queue and all inputs
+            // into the application will be delayed or overloaded.
+            iInputManager.injectInputEvent(keyEvent, INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH)
 
-        if (model.inputType == InputEventType.DOWN_UP) {
-            val upEvent = KeyEvent.changeAction(keyEvent, KeyEvent.ACTION_UP)
+            if (model.inputType == InputEventType.DOWN_UP) {
+                val upEvent = KeyEvent.changeAction(keyEvent, KeyEvent.ACTION_UP)
 
-            iInputManager.injectInputEvent(upEvent, INJECT_INPUT_EVENT_MODE_ASYNC)
+                iInputManager.injectInputEvent(upEvent, INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH)
+            }
         }
     }
 }

@@ -46,6 +46,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
@@ -58,6 +59,7 @@ import io.github.sds100.keymapper.actions.ActionsScreen
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.constraints.ConstraintsScreen
 import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerScreen
+import io.github.sds100.keymapper.util.ui.compose.openUriSafe
 import kotlinx.coroutines.launch
 
 @Composable
@@ -141,6 +143,7 @@ private fun ConfigKeyMapScreen(
 
     var currentTab: ConfigKeyMapTab? by remember { mutableStateOf(null) }
     val uriHandler = LocalUriHandler.current
+    val ctx = LocalContext.current
 
     BackHandler(onBack = onBackClick)
 
@@ -167,7 +170,7 @@ private fun ConfigKeyMapScreen(
                     }
 
                     if (url.isNotEmpty()) {
-                        uriHandler.openUri(url)
+                        uriHandler.openUriSafe(ctx, url)
                     }
                 },
             )
@@ -505,6 +508,7 @@ private fun ScreenCard(
     screen: @Composable () -> Unit,
 ) {
     val uriHandler = LocalUriHandler.current
+    val ctx = LocalContext.current
 
     OutlinedCard(modifier = modifier) {
         Column {
@@ -520,7 +524,7 @@ private fun ScreenCard(
                     color = MaterialTheme.colorScheme.primary,
                 )
 
-                IconButton(onClick = { uriHandler.openUri(helpUrl) }) {
+                IconButton(onClick = { uriHandler.openUriSafe(ctx, helpUrl) }) {
                     Icon(
                         Icons.AutoMirrored.Rounded.HelpOutline,
                         contentDescription = stringResource(R.string.button_help),

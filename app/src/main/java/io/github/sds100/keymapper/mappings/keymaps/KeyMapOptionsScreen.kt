@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -48,6 +49,7 @@ import io.github.sds100.keymapper.util.ui.SliderMinimums
 import io.github.sds100.keymapper.util.ui.SliderStepSizes
 import io.github.sds100.keymapper.util.ui.compose.CheckBoxText
 import io.github.sds100.keymapper.util.ui.compose.SliderOptionText
+import io.github.sds100.keymapper.util.ui.compose.openUriSafe
 import kotlinx.coroutines.launch
 
 @Composable
@@ -323,6 +325,7 @@ private fun TriggerFromOtherAppsSection(
                 }
 
                 val uriHandler = LocalUriHandler.current
+                val ctx = LocalContext.current
                 val intentGuideUrl = stringResource(R.string.url_trigger_by_intent_guide)
 
                 FilledTonalButton(
@@ -330,7 +333,7 @@ private fun TriggerFromOtherAppsSection(
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
                     onClick = {
-                        uriHandler.openUri(intentGuideUrl)
+                        uriHandler.openUriSafe(ctx, intentGuideUrl)
                     },
                 ) {
                     Text(text = stringResource(R.string.button_open_trigger_keymap_from_intent_guide))

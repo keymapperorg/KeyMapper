@@ -27,7 +27,9 @@ import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.dataOrNull
+import io.github.sds100.keymapper.util.ifIsData
 import io.github.sds100.keymapper.util.mapData
+import io.github.sds100.keymapper.util.onSuccess
 import io.github.sds100.keymapper.util.ui.CheckBoxListItem
 import io.github.sds100.keymapper.util.ui.DialogResponse
 import io.github.sds100.keymapper.util.ui.LinkType
@@ -93,7 +95,7 @@ abstract class BaseConfigTriggerViewModel(
     private val triggerKeyShortcuts = combine(
         fingerprintGesturesSupported.isSupported,
         purchasingManager.purchases,
-    ) { isFingerprintGesturesSupported, purchases ->
+    ) { isFingerprintGesturesSupported, purchasesState ->
         val newShortcuts = mutableSetOf<ShortcutModel<TriggerKeyShortcut>>()
 
         if (isFingerprintGesturesSupported == true) {
@@ -106,25 +108,27 @@ abstract class BaseConfigTriggerViewModel(
             )
         }
 
-        if (purchases is State.Data) {
-            if (purchases.data.contains(ProductId.ASSISTANT_TRIGGER)) {
-                newShortcuts.add(
-                    ShortcutModel(
-                        icon = ComposeIconInfo.Vector(Icons.Rounded.Assistant),
-                        text = getString(R.string.trigger_key_shortcut_add_assistant),
-                        data = TriggerKeyShortcut.ASSISTANT,
-                    ),
-                )
-            }
+        purchasesState.ifIsData { result ->
+            result.onSuccess { purchases ->
+                if (purchases.contains(ProductId.ASSISTANT_TRIGGER)) {
+                    newShortcuts.add(
+                        ShortcutModel(
+                            icon = ComposeIconInfo.Vector(Icons.Rounded.Assistant),
+                            text = getString(R.string.trigger_key_shortcut_add_assistant),
+                            data = TriggerKeyShortcut.ASSISTANT,
+                        ),
+                    )
+                }
 
-            if (purchases.data.contains(ProductId.FLOATING_BUTTONS)) {
-                newShortcuts.add(
-                    ShortcutModel(
-                        icon = ComposeIconInfo.Vector(Icons.Rounded.BubbleChart),
-                        text = getString(R.string.trigger_key_shortcut_add_floating_button),
-                        data = TriggerKeyShortcut.FLOATING_BUTTON,
-                    ),
-                )
+                if (purchases.contains(ProductId.FLOATING_BUTTONS)) {
+                    newShortcuts.add(
+                        ShortcutModel(
+                            icon = ComposeIconInfo.Vector(Icons.Rounded.BubbleChart),
+                            text = getString(R.string.trigger_key_shortcut_add_floating_button),
+                            data = TriggerKeyShortcut.FLOATING_BUTTON,
+                        ),
+                    )
+                }
             }
         }
 
@@ -287,7 +291,7 @@ abstract class BaseConfigTriggerViewModel(
              * or there are only key code keys in the trigger. It is not possible to do a long press of
              * non-key code keys in a parallel trigger.
              */
-            if (trigger.keys.size == 1) {
+            if (trigger.keys.size == 1 && trigger.keys.all { it.allowedDoublePress }) {
                 clickTypeButtons.add(ClickType.SHORT_PRESS)
                 clickTypeButtons.add(ClickType.DOUBLE_PRESS)
             }
@@ -359,7 +363,6 @@ abstract class BaseConfigTriggerViewModel(
                         return TriggerKeyOptionsState.Assistant(
                             assistantType = key.type,
                             clickType = key.clickType,
-                            showClickTypes = showClickTypes,
                         )
                     }
 
@@ -375,7 +378,6 @@ abstract class BaseConfigTriggerViewModel(
                         return TriggerKeyOptionsState.FingerprintGesture(
                             gestureType = key.type,
                             clickType = key.clickType,
-                            showClickTypes = showClickTypes,
                         )
                     }
                 }
@@ -860,16 +862,16 @@ sealed class TriggerKeyOptionsState {
     data class Assistant(
         val assistantType: AssistantTriggerType,
         override val clickType: ClickType,
-        override val showClickTypes: Boolean,
     ) : TriggerKeyOptionsState() {
+        override val showClickTypes: Boolean = false
         override val showLongPressClickType: Boolean = false
     }
 
     data class FingerprintGesture(
         val gestureType: FingerprintGestureType,
         override val clickType: ClickType,
-        override val showClickTypes: Boolean,
     ) : TriggerKeyOptionsState() {
+        override val showClickTypes: Boolean = false
         override val showLongPressClickType: Boolean = false
     }
 

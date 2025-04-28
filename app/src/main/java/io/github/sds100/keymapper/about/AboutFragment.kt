@@ -57,7 +57,7 @@ class AboutFragment : Fragment() {
                 onBackPressed()
             }
 
-            version = Constants.VERSION
+            version = "${Constants.VERSION} ${Constants.VERSION_CODE}"
         }
     }
 

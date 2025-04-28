@@ -142,7 +142,7 @@ object UseCases {
         ServiceLocator.intentAdapter(ctx),
         getActionError(ctx),
         keyMapperImeMessenger(ctx, keyEventRelayService),
-        ShizukuInputEventInjector(),
+        ShizukuInputEventInjector(coroutineScope = ServiceLocator.appCoroutineScope(ctx)),
         ServiceLocator.packageManagerAdapter(ctx),
         ServiceLocator.appShortcutAdapter(ctx),
         ServiceLocator.popupMessageAdapter(ctx),
@@ -179,11 +179,12 @@ object UseCases {
         ServiceLocator.audioAdapter(ctx),
         keyMapperImeMessenger(ctx, keyEventRelayService),
         service,
-        ShizukuInputEventInjector(),
+        ShizukuInputEventInjector(ServiceLocator.appCoroutineScope(ctx)),
         ServiceLocator.popupMessageAdapter(ctx),
         ServiceLocator.permissionAdapter(ctx),
         ServiceLocator.resourceProvider(ctx),
         ServiceLocator.vibratorAdapter(ctx),
+        ServiceLocator.appCoroutineScope(ctx),
     )
 
     fun rerouteKeyEvents(ctx: Context, keyEventRelayService: KeyEventRelayServiceWrapper) = RerouteKeyEventsUseCaseImpl(

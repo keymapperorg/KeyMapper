@@ -5,6 +5,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonParser
 import io.github.sds100.keymapper.actions.sound.SoundFileInfo
 import io.github.sds100.keymapper.actions.sound.SoundsManager
+import io.github.sds100.keymapper.backup.BackupContent
 import io.github.sds100.keymapper.backup.BackupManagerImpl
 import io.github.sds100.keymapper.backup.RestoreType
 import io.github.sds100.keymapper.data.db.AppDatabase
@@ -46,10 +47,12 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
+import org.mockito.ArgumentMatchers
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyVararg
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.inOrder
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
@@ -79,6 +82,7 @@ class BackupManagerTest {
     private lateinit var fakeFileAdapter: FakeFileAdapter
     private lateinit var fakePreferenceRepository: PreferenceRepository
     private lateinit var mockKeyMapRepository: KeyMapRepository
+    private lateinit var mockGroupRepository: GroupRepository
     private lateinit var mockSoundsManager: SoundsManager
     private lateinit var mockUuidGenerator: UuidGenerator
 
@@ -94,6 +98,10 @@ class BackupManagerTest {
         fakePreferenceRepository = FakePreferenceRepository()
 
         mockKeyMapRepository = mock()
+        mockGroupRepository = mock<GroupRepository> {
+            on { getAllGroups() } doReturn MutableStateFlow(emptyList())
+            on { getGroupsByParent(ArgumentMatchers.any()) }.thenReturn(MutableStateFlow(emptyList()))
+        }
 
         fakeFileAdapter = FakeFileAdapter(temporaryFolder)
 
@@ -116,9 +124,7 @@ class BackupManagerTest {
             floatingLayoutRepository = mock<FloatingLayoutRepository> {
                 on { layouts } doReturn MutableStateFlow(State.Data(emptyList()))
             },
-            groupRepository = mock<GroupRepository> {
-                on { getAllGroups() } doReturn MutableStateFlow(emptyList())
-            },
+            groupRepository = mockGroupRepository,
         )
 
         parser = JsonParser()
@@ -128,6 +134,62 @@ class BackupManagerTest {
     @After
     fun tearDown() {
         Dispatchers.resetMain()
+    }
+
+    /**
+     * Issue #1655. If the list of groups in the backup has a child before the parent then the
+     * parent must be restored first. Otherwise the SqliteConstraintException will be thrown.
+     */
+    @Test
+    fun `restore groups breadth first so parents exist before children are restored`() = runTest(testDispatcher) {
+        val parentGroup1 = GroupEntity(
+            uid = "parent_group_1_uid",
+            name = "parent_group_1_name",
+            parentUid = null,
+            lastOpenedDate = 0L,
+        )
+
+        val parentGroup2 = GroupEntity(
+            uid = "parent_group_2_uid",
+            name = "parent_group_2_name",
+            parentUid = null,
+            lastOpenedDate = 0L,
+        )
+
+        val childGroup = GroupEntity(
+            uid = "child_group_uid",
+            name = "child_group_name",
+            parentUid = parentGroup1.uid,
+            lastOpenedDate = 0L,
+        )
+
+        val grandChildGroup = GroupEntity(
+            uid = "grand_child_group_uid",
+            name = "grand_child_group_name",
+            parentUid = childGroup.uid,
+            lastOpenedDate = 0L,
+        )
+
+        val backupContent = BackupContent(
+            appVersion = Constants.VERSION_CODE,
+            dbVersion = AppDatabase.DATABASE_VERSION,
+            groups = listOf(parentGroup2, grandChildGroup, childGroup, parentGroup1),
+        )
+
+        inOrder(mockGroupRepository) {
+            backupManager.restore(
+                RestoreType.REPLACE,
+                backupContent,
+                emptyList(),
+                currentTime = 0L,
+            )
+
+            verify(mockGroupRepository).insert(parentGroup1)
+            verify(mockGroupRepository).insert(childGroup)
+            verify(mockGroupRepository).insert(grandChildGroup)
+            verify(mockGroupRepository).insert(parentGroup2)
+            verify(mockGroupRepository, never()).update(any())
+        }
     }
 
     @Test
