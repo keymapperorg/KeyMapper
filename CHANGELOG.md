@@ -1,3 +1,11 @@
+## [3.1.0](https://github.com/sds100/KeyMapper/releases/tag/v3.1.0)
+
+#### TO BE RELEASED
+
+## Added
+
+- #699 Time constraints ⏰
+
 ## [3.0.1](https://github.com/sds100/KeyMapper/releases/tag/v3.0.1)
 
 #### 28 April 2025
