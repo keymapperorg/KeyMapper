@@ -119,6 +119,9 @@ android {
     }
 
     compileOptions {
+        // Required for desugaring new Java time API on lower than API 26
+        coreLibraryDesugaringEnabled = true
+
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
@@ -192,6 +195,7 @@ dependencies {
     proImplementation 'com.revenuecat.purchases:purchases:8.15.0'
     proImplementation "com.airbnb.android:lottie-compose:6.6.3"
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
 
     // splitties
     implementation "com.louiscad.splitties:splitties-bitflags:$splitties_version"

@@ -85,6 +85,8 @@ data class ConstraintEntity(
         const val CHARGING = "charging"
         const val DISCHARGING = "discharging"
 
+        const val TIME = "time"
+
         const val EXTRA_PACKAGE_NAME = "extra_package_name"
         const val EXTRA_BT_ADDRESS = "extra_bluetooth_device_address"
         const val EXTRA_BT_NAME = "extra_bluetooth_device_name"
@@ -92,6 +94,12 @@ data class ConstraintEntity(
         const val EXTRA_SSID = "extra_ssid"
         const val EXTRA_IME_ID = "extra_ime_id"
         const val EXTRA_IME_LABEL = "extra_ime_label"
+
+        /**
+         * The time is stored in the following format: 20:25.
+         */
+        const val EXTRA_START_TIME = "extra_start_time"
+        const val EXTRA_END_TIME = "extra_end_time"
 
         val DESERIALIZER = jsonDeserializer {
             val type by it.json.byString(NAME_TYPE)

@@ -62,6 +62,8 @@ fun ChooseConstraintScreen(
     val listItems by viewModel.listItems.collectAsStateWithLifecycle()
     val query by viewModel.searchQuery.collectAsStateWithLifecycle()
 
+    TimeConstraintBottomSheet(viewModel)
+
     ChooseConstraintScreen(
         modifier = modifier,
         state = listItems,

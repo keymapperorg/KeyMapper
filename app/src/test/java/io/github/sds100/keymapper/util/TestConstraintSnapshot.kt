@@ -7,6 +7,7 @@ import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.system.phone.CallState
 import timber.log.Timber
+import java.time.LocalTime
 
 class TestConstraintSnapshot(
     val appInForeground: String? = null,
@@ -23,6 +24,7 @@ class TestConstraintSnapshot(
     val isBackFlashlightOn: Boolean = false,
     val isFrontFlashlightOn: Boolean = false,
     val isLockscreenShowing: Boolean = false,
+    val localTime: LocalTime = LocalTime.now(),
 ) : ConstraintSnapshot {
 
     override fun isSatisfied(constraint: Constraint): Boolean {
@@ -94,6 +96,16 @@ class TestConstraintSnapshot(
             is Constraint.Discharging -> !isCharging
             is Constraint.LockScreenShowing -> isLockscreenShowing
             is Constraint.LockScreenNotShowing -> !isLockscreenShowing
+            is Constraint.Time -> {
+                val startTime = constraint.startTime
+                val endTime = constraint.endTime
+
+                if (startTime.isAfter(endTime)) {
+                    localTime.isAfter(startTime) || localTime.isBefore(endTime)
+                } else {
+                    localTime.isAfter(startTime) && localTime.isBefore(endTime)
+                }
+            }
         }
 
         if (isSatisfied) {
