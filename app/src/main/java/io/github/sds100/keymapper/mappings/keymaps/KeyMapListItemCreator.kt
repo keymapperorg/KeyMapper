@@ -267,21 +267,25 @@ class KeyMapListItemCreator(
             }
         }
 
-        if (deviceName != null || key.detectionSource == KeyEventDetectionSource.INPUT_METHOD || !key.consumeEvent) {
-            append(" (")
+        val parts = mutableListOf<String>()
 
+        if (deviceName != null || key.detectionSource == KeyEventDetectionSource.INPUT_METHOD || !key.consumeEvent) {
             if (key.detectionSource == KeyEventDetectionSource.INPUT_METHOD) {
-                append("${getString(R.string.flag_detect_from_input_method)} $midDot ")
+                parts.add(getString(R.string.flag_detect_from_input_method))
             }
 
             if (deviceName != null) {
-                append(deviceName)
+                parts.add(deviceName)
             }
 
             if (!key.consumeEvent) {
-                append(" $midDot ${getString(R.string.flag_dont_override_default_action)}")
+                parts.add(getString(R.string.flag_dont_override_default_action))
             }
+        }
 
+        if (parts.isNotEmpty()) {
+            append(" (")
+            append(parts.joinToString(separator = " $midDot "))
             append(")")
         }
     }

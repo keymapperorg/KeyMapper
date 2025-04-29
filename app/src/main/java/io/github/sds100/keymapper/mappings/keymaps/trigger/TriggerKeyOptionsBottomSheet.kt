@@ -333,7 +333,6 @@ private fun AssistantPreview() {
             state = TriggerKeyOptionsState.Assistant(
                 assistantType = AssistantTriggerType.VOICE,
                 clickType = ClickType.DOUBLE_PRESS,
-                showClickTypes = true,
             ),
         )
     }
