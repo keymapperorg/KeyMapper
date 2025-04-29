@@ -19,6 +19,7 @@ data class KeyCodeTriggerKey(
 ) : TriggerKey() {
 
     override val allowedLongPress: Boolean = true
+    override val allowedDoublePress: Boolean = true
 
     override fun toString(): String {
         val deviceString = when (device) {

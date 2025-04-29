@@ -1,10 +1,78 @@
-## [3.0 Beta 4](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0-beta.4)
+## [3.1.0](https://github.com/sds100/KeyMapper/releases/tag/v3.1.0)
 
-_See the changes from previous 3.0 Beta releases as well._
+#### TO BE RELEASED
+
+## Added
+
+- #699 Time constraints ⏰
+
+## [3.0.1](https://github.com/sds100/KeyMapper/releases/tag/v3.0.1)
+
+#### 28 April 2025
+
+## Added
+
+- #1652 Bring back the menu button to show input method picker.
+- #1657 Turn on repeat by default for volume actions.
 
 ## Changed
 
-- *Finally* renamed the theme settings after many years. @jambl3r 
+- #1654 The Key Mapper keyboard is now required again for Text actions because the accessibility service API does not work in all situations.
+- #1653 Hide the export/import menu buttons in groups.
+- #1553 Hide double press option for side key and fingerprint gesture triggers because it is misleading. Double activations can be done with sequence triggers instead.
+- #1669 Change quick settings tile text.
+
+## Bug fixes
+
+- Inputting key events with Shizuku does not crash the app if a Key Mapper keyboard is being used at the same time. And latency when inputting key events has been improved in some apps.
+- #1646 disabling Bluetooth clears the list of connected devices.
+- #1655 do not crash when restoring key map groups.
+- #1649 show purchase verification failed error if no network connection.
+- #1648 caching purchases works so you can use floating buttons and assistant trigger without an internet connection.
+- #1658 floating buttons appear in the wrong place in portrait if saved in landscape.
+- #1659 Use trigger does not work if the screen orientation changes when re-entering the app.
+- #1668 Crashes when floating menu does not fit in the display height.
+- #1667 Hold down mode UI is missing from 2.8.
+
+## [3.0.0](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0)
+
+_See the changes from previous 3.0 Beta releases._
+
+#### 10 April 2025
+
+- #1635 do not crash if the URL for the HTTP action is malformed
+
+## [3.0 Beta 5](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0-beta.5)
+
+_See the changes from previous 3.0 Beta releases as well._
+
+#### 6 April 2025
+
+- #1625 HTTP Request action.
+
+## Bug fixes
+
+- #1627 open camera app action does not work when device is locked
+
+## [3.0 Beta 4](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0-beta.4)
+
+#### 2 April 2025
+
+_See the changes from previous 3.0 Beta releases as well._
+
+## Added
+
+- #1620 enable Key Mapper Basic Input Method without user interaction on Android 13+.
+- #1619 Automatically select the non key mapper keyboard when the device is locked and wanting to type.
+
+## Changed
+
+- *Finally* renamed the theme settings after many years. @jambl3r.
+
+## Bug fixes
+
+- #1618, #1532, #1590 The Key Mapper keyboard is no longer required for Text actions.
+- Flashlight action works again on devices that do not support variable brightness
 
 ## [3.0 Beta 3](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0-beta.3)
 

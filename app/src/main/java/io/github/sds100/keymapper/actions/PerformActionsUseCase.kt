@@ -67,7 +67,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import splitties.bitflags.withFlag
 import timber.log.Timber
 
@@ -114,6 +113,7 @@ class PerformActionsUseCaseImpl(
             accessibilityService,
             shizukuInputEventInjector,
             permissionAdapter,
+            coroutineScope,
         )
     }
 
@@ -124,7 +124,7 @@ class PerformActionsUseCaseImpl(
         permissionAdapter.isGrantedFlow(Permission.SHIZUKU)
             .stateIn(coroutineScope, SharingStarted.Eagerly, false)
 
-    override fun perform(
+    override suspend fun perform(
         action: ActionData,
         inputEventType: InputEventType,
         keyMetaState: Int,
@@ -132,7 +132,7 @@ class PerformActionsUseCaseImpl(
         /**
          * Is null if the action is being performed asynchronously
          */
-        val result: Result<*>?
+        val result: Result<*>
 
         when (action) {
             is ActionData.App -> {
@@ -254,20 +254,15 @@ class PerformActionsUseCaseImpl(
             }
 
             is ActionData.SwitchKeyboard -> {
-                coroutineScope.launch {
-                    inputMethodAdapter
-                        .chooseImeWithoutUserInput(action.imeId)
-                        .onSuccess {
-                            val message = resourceProvider.getString(
-                                R.string.toast_chose_keyboard,
-                                it.label,
-                            )
-                            popupMessageAdapter.showPopupMessage(message)
-                        }
-                        .showErrorMessageOnFail()
-                }
-
-                result = null
+                result = inputMethodAdapter
+                    .chooseImeWithoutUserInput(action.imeId)
+                    .onSuccess {
+                        val message = resourceProvider.getString(
+                            R.string.toast_chose_keyboard,
+                            it.label,
+                        )
+                        popupMessageAdapter.showPopupMessage(message)
+                    }
             }
 
             is ActionData.Volume.Down -> {
@@ -574,14 +569,10 @@ class PerformActionsUseCaseImpl(
             }
 
             is ActionData.GoLastApp -> {
-                coroutineScope.launch {
+                accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS)
+                delay(100)
+                result =
                     accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS)
-                    delay(100)
-                    accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS)
-                        .showErrorMessageOnFail()
-                }
-
-                result = null
             }
 
             is ActionData.OpenMenu -> {
@@ -707,11 +698,11 @@ class PerformActionsUseCaseImpl(
 
             is ActionData.Screenshot -> {
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-                    coroutineScope.launch {
-                        val picturesFolder = fileAdapter.getPicturesFolder()
-                        val screenshotsFolder = "$picturesFolder/Screenshots"
-                        val fileDate = FileUtils.createFileDate()
+                    val picturesFolder = fileAdapter.getPicturesFolder()
+                    val screenshotsFolder = "$picturesFolder/Screenshots"
+                    val fileDate = FileUtils.createFileDate()
 
+                    result =
                         suAdapter.execute("mkdir -p $screenshotsFolder; screencap -p $screenshotsFolder/Screenshot_$fileDate.png")
                             .onSuccess {
                                 // Wait 3 seconds so the message isn't shown in the screenshot.
@@ -722,9 +713,7 @@ class PerformActionsUseCaseImpl(
                                         R.string.toast_screenshot_taken,
                                     ),
                                 )
-                            }.showErrorMessageOnFail()
-                    }
-                    result = null
+                            }
                 } else {
                     result =
                         accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_TAKE_SCREENSHOT)
@@ -777,19 +766,11 @@ class PerformActionsUseCaseImpl(
             }
 
             ActionData.DismissAllNotifications -> {
-                coroutineScope.launch {
-                    notificationReceiverAdapter.send(ServiceEvent.DismissAllNotifications)
-                }
-
-                result = null
+                result = notificationReceiverAdapter.send(ServiceEvent.DismissAllNotifications)
             }
 
             ActionData.DismissLastNotification -> {
-                coroutineScope.launch {
-                    notificationReceiverAdapter.send(ServiceEvent.DismissLastNotification)
-                }
-
-                result = null
+                result = notificationReceiverAdapter.send(ServiceEvent.DismissLastNotification)
             }
 
             ActionData.AnswerCall -> {
@@ -809,16 +790,25 @@ class PerformActionsUseCaseImpl(
                     extras = emptyList(),
                 )
             }
+
+            is ActionData.HttpRequest -> {
+                result = networkAdapter.sendHttpRequest(
+                    method = action.method,
+                    url = action.url,
+                    body = action.body,
+                    authorizationHeader = action.authorizationHeader,
+                )
+            }
         }
 
         when (result) {
-            null, is Success -> Timber.d("Performed action $action, input event type: $inputEventType, key meta state: $keyMetaState")
+            is Success -> Timber.d("Performed action $action, input event type: $inputEventType, key meta state: $keyMetaState")
             is Error -> Timber.d(
                 "Failed to perform action $action, reason: ${result.getFullMessage(resourceProvider)}, action: $action, input event type: $inputEventType, key meta state: $keyMetaState",
             )
         }
 
-        result?.showErrorMessageOnFail()
+        result.showErrorMessageOnFail()
     }
 
     override fun getErrorSnapshot(): ActionErrorSnapshot {
@@ -908,7 +898,7 @@ interface PerformActionsUseCase {
     val defaultRepeatDelay: Flow<Long>
     val defaultRepeatRate: Flow<Long>
 
-    fun perform(
+    suspend fun perform(
         action: ActionData,
         inputEventType: InputEventType = InputEventType.DOWN_UP,
         keyMetaState: Int = 0,

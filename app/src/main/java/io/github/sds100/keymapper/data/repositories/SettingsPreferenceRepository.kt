@@ -1,11 +1,9 @@
 package io.github.sds100.keymapper.data.repositories
 
 import android.content.Context
-import androidx.datastore.preferences.SharedPreferencesMigration
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
-import io.github.sds100.keymapper.Constants
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -17,21 +15,9 @@ class SettingsPreferenceRepository(
     private val coroutineScope: CoroutineScope,
 ) : PreferenceRepository {
 
-    companion object {
-        private const val DEFAULT_SHARED_PREFS_NAME = "${Constants.PACKAGE_NAME}_preferences"
-    }
-
     private val ctx = context.applicationContext
 
-    private val sharedPreferencesMigration = SharedPreferencesMigration(
-        ctx,
-        DEFAULT_SHARED_PREFS_NAME,
-    )
-
-    private val Context.dataStore by preferencesDataStore(
-        name = "preferences",
-        produceMigrations = { listOf(sharedPreferencesMigration) },
-    )
+    private val Context.dataStore by preferencesDataStore(name = "preferences")
 
     private val dataStore = ctx.dataStore
 

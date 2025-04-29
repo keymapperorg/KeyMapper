@@ -77,12 +77,15 @@
     <application
         android:name="io.github.sds100.keymapper.KeyMapperApp"
         android:allowBackup="true"
+        android:directBootAware="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
+        android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
+        <!--  Allow clear text traffic due to the HTTP Request Action. -->
 
         <activity
             android:name=".MainActivity"
@@ -174,6 +177,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
@@ -231,8 +235,10 @@
                 android:resource="@xml/config_accessibility_service" />
         </service>
 
+        <!--  IMPORTANT! Must be direct boot aware so it can automatically choose a proper keyboard when the user wants to unlock their phone.  -->
         <service
             android:name=".system.inputmethod.KeyMapperImeService"
+            android:directBootAware="true"
             android:exported="true"
             android:label="@string/ime_service_label"
             android:permission="android.permission.BIND_INPUT_METHOD">
@@ -248,7 +254,7 @@
             android:name=".system.tiles.ToggleMappingsTile"
             android:exported="true"
             android:icon="@drawable/ic_tile_pause"
-            android:label="@string/tile_pause"
+            android:label="@string/tile_pause_title"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
             tools:targetApi="24">
             <intent-filter>

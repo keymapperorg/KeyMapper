@@ -32,11 +32,14 @@ import io.github.sds100.keymapper.util.InputEventType
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.dataOrNull
 import io.github.sds100.keymapper.util.ui.ResourceProvider
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 
 /**
@@ -58,6 +61,7 @@ class DetectKeyMapsUseCaseImpl(
     private val permissionAdapter: PermissionAdapter,
     private val resourceProvider: ResourceProvider,
     private val vibrator: VibratorAdapter,
+    private val coroutineScope: CoroutineScope,
 ) : DetectKeyMapsUseCase {
 
     companion object {
@@ -164,6 +168,7 @@ class DetectKeyMapsUseCaseImpl(
         accessibilityService,
         shizukuInputEventInjector,
         permissionAdapter,
+        coroutineScope,
     )
 
     override val forceVibrate: Flow<Boolean> =
@@ -189,18 +194,20 @@ class DetectKeyMapsUseCaseImpl(
         inputEventType: InputEventType,
         scanCode: Int,
     ) {
+        val model = InputKeyModel(
+            keyCode,
+            inputEventType,
+            metaState,
+            deviceId,
+            scanCode,
+        )
+
         if (permissionAdapter.isGranted(Permission.SHIZUKU)) {
             Timber.d("Imitate button press ${KeyEvent.keyCodeToString(keyCode)} with Shizuku, key code: $keyCode, device id: $deviceId, meta state: $metaState, scan code: $scanCode")
 
-            shizukuInputEventInjector.inputKeyEvent(
-                InputKeyModel(
-                    keyCode,
-                    inputEventType,
-                    metaState,
-                    deviceId,
-                    scanCode,
-                ),
-            )
+            coroutineScope.launch {
+                shizukuInputEventInjector.inputKeyEvent(model)
+            }
         } else {
             Timber.d("Imitate button press ${KeyEvent.keyCodeToString(keyCode)}, key code: $keyCode, device id: $deviceId, meta state: $metaState, scan code: $scanCode")
 
@@ -217,15 +224,9 @@ class DetectKeyMapsUseCaseImpl(
 
                 KeyEvent.KEYCODE_MENU -> openMenuHelper.openMenu()
 
-                else -> imeInputEventInjector.inputKeyEvent(
-                    InputKeyModel(
-                        keyCode,
-                        inputEventType,
-                        metaState,
-                        deviceId,
-                        scanCode,
-                    ),
-                )
+                else -> runBlocking {
+                    imeInputEventInjector.inputKeyEvent(model)
+                }
             }
         }
     }

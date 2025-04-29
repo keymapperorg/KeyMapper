@@ -71,6 +71,9 @@ sealed class ServiceEvent {
     data class TriggerKeyMap(val uid: String) : ServiceEvent()
 
     @Serializable
+    data class EnableInputMethod(val imeId: String) : ServiceEvent()
+
+    @Serializable
     data object StartRecordingNodes : ServiceEvent()
 
     @Serializable

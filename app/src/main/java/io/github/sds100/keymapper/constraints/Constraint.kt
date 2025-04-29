@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.util.getKey
 import io.github.sds100.keymapper.util.valueOrNull
 import kotlinx.serialization.Serializable
+import java.time.LocalTime
 import java.util.UUID
 
 /**
@@ -216,6 +217,20 @@ sealed class Constraint {
     data class Discharging(override val uid: String = UUID.randomUUID().toString()) : Constraint() {
         override val id: ConstraintId = ConstraintId.DISCHARGING
     }
+
+    @Serializable
+    data class Time(
+        override val uid: String = UUID.randomUUID().toString(),
+        val startHour: Int,
+        val startMinute: Int,
+        val endHour: Int,
+        val endMinute: Int,
+    ) : Constraint() {
+        override val id: ConstraintId = ConstraintId.TIME
+
+        val startTime: LocalTime by lazy { LocalTime.of(startHour, startMinute) }
+        val endTime: LocalTime by lazy { LocalTime.of(endHour, endMinute) }
+    }
 }
 
 object ConstraintModeEntityMapper {
@@ -374,6 +389,28 @@ object ConstraintEntityMapper {
 
             ConstraintEntity.CHARGING -> Constraint.Charging(uid = entity.uid)
             ConstraintEntity.DISCHARGING -> Constraint.Discharging(uid = entity.uid)
+
+            ConstraintEntity.TIME -> {
+                val startTime =
+                    entity.extras.getData(ConstraintEntity.EXTRA_START_TIME).valueOrNull()!!
+                        .split(":")
+                val startHour = startTime[0].toInt()
+                val startMin = startTime[1].toInt()
+
+                val endTime =
+                    entity.extras.getData(ConstraintEntity.EXTRA_END_TIME).valueOrNull()!!
+                        .split(":")
+                val endHour = endTime[0].toInt()
+                val endMin = endTime[1].toInt()
+
+                Constraint.Time(
+                    uid = entity.uid,
+                    startHour = startHour,
+                    startMinute = startMin,
+                    endHour = endHour,
+                    endMinute = endMin,
+                )
+            }
 
             else -> throw Exception("don't know how to convert constraint entity with type ${entity.type}")
         }
@@ -605,6 +642,19 @@ object ConstraintEntityMapper {
         is Constraint.Discharging -> ConstraintEntity(
             uid = constraint.uid,
             ConstraintEntity.DISCHARGING,
+        )
+
+        is Constraint.Time -> ConstraintEntity(
+            uid = constraint.uid,
+            type = ConstraintEntity.TIME,
+            EntityExtra(
+                ConstraintEntity.EXTRA_START_TIME,
+                "${constraint.startHour}:${constraint.startMinute}",
+            ),
+            EntityExtra(
+                ConstraintEntity.EXTRA_END_TIME,
+                "${constraint.endHour}:${constraint.endMinute}",
+            ),
         )
     }
 }

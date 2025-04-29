@@ -519,7 +519,11 @@ abstract class BaseAccessibilityServiceController(
                 }
             }
 
-            is ServiceEvent.TestAction -> performActionsUseCase.perform(event.action)
+            is ServiceEvent.TestAction -> coroutineScope.launch {
+                performActionsUseCase.perform(
+                    event.action,
+                )
+            }
 
             is ServiceEvent.Ping -> coroutineScope.launch {
                 outputEvents.emit(ServiceEvent.Pong(event.key))
@@ -533,6 +537,11 @@ abstract class BaseAccessibilityServiceController(
             }
 
             is ServiceEvent.TriggerKeyMap -> triggerKeyMapFromIntent(event.uid)
+
+            is ServiceEvent.EnableInputMethod -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                accessibilityService.setInputMethodEnabled(event.imeId, true)
+            }
+
 
             is ServiceEvent.StartRecordingNodes -> {
                 accessibilityNodeRecorder.startRecording()

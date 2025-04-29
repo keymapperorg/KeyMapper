@@ -4,6 +4,7 @@ import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.FingerprintGestureController
 import android.accessibilityservice.GestureDescription
 import android.accessibilityservice.GestureDescription.StrokeDescription
+import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.content.Intent
 import android.content.res.Configuration
@@ -571,4 +572,11 @@ class MyAccessibilityService :
     }
 
     override fun findFocussedNode(focus: Int): AccessibilityNodeModel? = findFocus(focus)?.toModel()
+
+    override fun setInputMethodEnabled(imeId: String, enabled: Boolean) {
+        @SuppressLint("CheckResult")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            softKeyboardController.setInputMethodEnabled(imeId, enabled)
+        }
+    }
 }

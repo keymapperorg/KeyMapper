@@ -11,7 +11,7 @@ interface InputMethodAdapter {
     val isUserInputRequiredToChangeIme: Flow<Boolean>
 
     fun showImePicker(fromForeground: Boolean): Result<*>
-    fun enableIme(imeId: String): Result<*>
+    suspend fun enableIme(imeId: String): Result<*>
 
     suspend fun chooseImeWithoutUserInput(imeId: String): Result<ImeInfo>
 

@@ -1,5 +1,8 @@
 package io.github.sds100.keymapper.constraints
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -88,6 +91,8 @@ class ChooseConstraintViewModel(
 
             ConstraintId.CHARGING,
             ConstraintId.DISCHARGING,
+
+            ConstraintId.TIME,
         )
     }
 
@@ -103,6 +108,17 @@ class ChooseConstraintViewModel(
             val filteredItems = allListItems.filter { it.title.containsQuery(query) }
             State.Data(filteredItems)
         }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.Eagerly, State.Loading)
+
+    var timeConstraintState: Constraint.Time? by mutableStateOf(null)
+
+    fun onDoneConfigTimeConstraintClick() {
+        timeConstraintState?.let { constraint ->
+            viewModelScope.launch {
+                _returnResult.emit(constraint)
+                timeConstraintState = null
+            }
+        }
+    }
 
     fun onListItemClick(id: String) {
         viewModelScope.launch {
@@ -192,6 +208,15 @@ class ChooseConstraintViewModel(
 
                 ConstraintId.LOCK_SCREEN_NOT_SHOWING ->
                     _returnResult.emit(Constraint.LockScreenNotShowing())
+
+                ConstraintId.TIME -> {
+                    timeConstraintState = Constraint.Time(
+                        startHour = 0,
+                        startMinute = 0,
+                        endHour = 0,
+                        endMinute = 0,
+                    )
+                }
             }
         }
     }

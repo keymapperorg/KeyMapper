@@ -32,6 +32,7 @@ import androidx.compose.material.icons.outlined.FlashlightOff
 import androidx.compose.material.icons.outlined.FlashlightOn
 import androidx.compose.material.icons.outlined.Fullscreen
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Http
 import androidx.compose.material.icons.outlined.Keyboard
 import androidx.compose.material.icons.outlined.KeyboardHide
 import androidx.compose.material.icons.outlined.Link
@@ -220,6 +221,7 @@ object ActionUtils {
         ActionId.TEXT_PASTE -> ActionCategory.CONTENT
         ActionId.SCREENSHOT -> ActionCategory.CONTENT
         ActionId.URL -> ActionCategory.CONTENT
+        ActionId.HTTP_REQUEST -> ActionCategory.CONTENT
 
         ActionId.PHONE_CALL -> ActionCategory.TELEPHONY
         ActionId.ANSWER_PHONE_CALL -> ActionCategory.TELEPHONY
@@ -339,6 +341,7 @@ object ActionUtils {
         ActionId.ANSWER_PHONE_CALL -> R.string.action_answer_call
         ActionId.END_PHONE_CALL -> R.string.action_end_call
         ActionId.DEVICE_CONTROLS -> R.string.action_device_controls
+        ActionId.HTTP_REQUEST -> R.string.action_http_request
     }
 
     @DrawableRes
@@ -433,7 +436,6 @@ object ActionUtils {
         ActionId.CONSUME_KEY_EVENT -> null
         ActionId.OPEN_SETTINGS -> R.drawable.ic_outline_settings_24
         ActionId.SHOW_POWER_MENU -> R.drawable.ic_outline_power_settings_new_24
-
         ActionId.APP -> R.drawable.ic_outline_android_24
         ActionId.APP_SHORTCUT -> R.drawable.ic_outline_open_in_new_24
         ActionId.KEY_CODE -> R.drawable.ic_q_24
@@ -451,6 +453,7 @@ object ActionUtils {
         ActionId.ANSWER_PHONE_CALL -> R.drawable.ic_outline_call_24
         ActionId.END_PHONE_CALL -> R.drawable.ic_outline_call_end_24
         ActionId.DEVICE_CONTROLS -> R.drawable.ic_home_automation
+        ActionId.HTTP_REQUEST -> null
     }
 
     fun getMinApi(id: ActionId): Int = when (id) {
@@ -766,6 +769,7 @@ object ActionUtils {
         ActionId.ANSWER_PHONE_CALL -> Icons.Outlined.Call
         ActionId.END_PHONE_CALL -> Icons.Outlined.CallEnd
         ActionId.DEVICE_CONTROLS -> KeyMapperIcons.HomeIotDevice
+        ActionId.HTTP_REQUEST -> Icons.Outlined.Http
     }
 }
 
@@ -816,6 +820,7 @@ fun ActionData.isEditable(): Boolean = when (this) {
     is ActionData.Text,
     is ActionData.Url,
     is ActionData.PhoneCall,
+    is ActionData.HttpRequest,
     -> true
 
     else -> false

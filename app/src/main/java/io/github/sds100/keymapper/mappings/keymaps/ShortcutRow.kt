@@ -38,7 +38,7 @@ fun <T> ShortcutRow(
     FlowRow(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(
-            16.dp,
+            8.dp,
             alignment = Alignment.CenterHorizontally,
         ),
         verticalArrangement = Arrangement.Center,

@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import splitties.mainthread.mainLooper
 
@@ -108,6 +109,12 @@ class AndroidDevicesAdapter(
             val currentValue = connectedBluetoothDevices.value
 
             connectedBluetoothDevices.value = currentValue.minus(device)
+        }.launchIn(coroutineScope)
+
+        bluetoothAdapter.isBluetoothEnabled.onEach { isEnabled ->
+            if (!isEnabled) {
+                connectedBluetoothDevices.update { emptySet() }
+            }
         }.launchIn(coroutineScope)
     }
 

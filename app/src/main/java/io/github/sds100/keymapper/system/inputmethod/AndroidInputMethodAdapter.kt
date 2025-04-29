@@ -13,6 +13,7 @@ import android.provider.Settings
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
+import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.system.JobSchedulerHelper
 import io.github.sds100.keymapper.system.SettingsUtils
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
@@ -177,7 +178,7 @@ class AndroidInputMethodAdapter(
         }
     }
 
-    override fun enableIme(imeId: String): Result<*> = enableImeWithoutUserInput(imeId).otherwise {
+    override suspend fun enableIme(imeId: String): Result<*> = enableImeWithoutUserInput(imeId).otherwise {
         try {
             val intent = Intent(Settings.ACTION_INPUT_METHOD_SETTINGS)
             intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_ACTIVITY_NEW_TASK
@@ -189,7 +190,15 @@ class AndroidInputMethodAdapter(
         }
     }
 
-    private fun enableImeWithoutUserInput(imeId: String): Result<*> = suAdapter.execute("ime enable $imeId")
+    private suspend fun enableImeWithoutUserInput(imeId: String): Result<*> {
+        return getInfoByPackageName(Constants.PACKAGE_NAME).then { keyMapperImeInfo ->
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && imeId == keyMapperImeInfo.id) {
+                serviceAdapter.send(ServiceEvent.EnableInputMethod(keyMapperImeInfo.id))
+            } else {
+                suAdapter.execute("ime enable $imeId")
+            }
+        }
+    }
 
     override suspend fun chooseImeWithoutUserInput(imeId: String): Result<ImeInfo> {
         getInfoById(imeId).onSuccess {
@@ -292,7 +301,8 @@ class AndroidInputMethodAdapter(
     private fun getChosenImeId(): String = Settings.Secure.getString(ctx.contentResolver, Settings.Secure.DEFAULT_INPUT_METHOD)
 
     private fun getImeId(packageName: String): Result<String> {
-        val imeId = inputMethodManager.inputMethodList.find { it.packageName == packageName }?.id
+        val imeId =
+            inputMethodManager.inputMethodList.find { it.packageName == packageName }?.id
 
         return if (imeId == null) {
             Error.InputMethodNotFound(packageName)

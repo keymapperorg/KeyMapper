@@ -27,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
@@ -40,6 +41,7 @@ import io.github.sds100.keymapper.mappings.FingerprintGestureType
 import io.github.sds100.keymapper.util.ui.CheckBoxListItem
 import io.github.sds100.keymapper.util.ui.compose.CheckBoxText
 import io.github.sds100.keymapper.util.ui.compose.RadioButtonText
+import io.github.sds100.keymapper.util.ui.compose.openUriSafe
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -65,6 +67,7 @@ fun TriggerKeyOptionsBottomSheet(
         dragHandle = {},
     ) {
         val uriHandler = LocalUriHandler.current
+        val ctx = LocalContext.current
         val helpUrl = stringResource(R.string.url_trigger_key_options_guide)
         val scope = rememberCoroutineScope()
 
@@ -82,7 +85,7 @@ fun TriggerKeyOptionsBottomSheet(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
                         .padding(horizontal = 8.dp),
-                    onClick = { uriHandler.openUri(helpUrl) },
+                    onClick = { uriHandler.openUriSafe(ctx, helpUrl) },
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Rounded.HelpOutline,
@@ -330,7 +333,6 @@ private fun AssistantPreview() {
             state = TriggerKeyOptionsState.Assistant(
                 assistantType = AssistantTriggerType.VOICE,
                 clickType = ClickType.DOUBLE_PRESS,
-                showClickTypes = true,
             ),
         )
     }

@@ -55,8 +55,8 @@
     You can delete saved sound files in the settings.</string>
 
     <string name="caption_no_paired_bt_devices">Can\'t find any paired devices. Is Bluetooth turned on?</string>
-    <string name="caption_create_keymap_shortcut">The \"Allow other apps to trigger this key map\" option will be turned on for the key map that you select if it isn\'t already. If you turn this option off later then any shortcuts or Intents to trigger this key map will not work.</string>
     <string name="create_key_map_shortcut_footer">Tap a key map to use as a shortcut.</string>
+    <string name="create_key_map_shortcut_app_title">Create key map shortcut</string>
 
     <string name="switch_enabled">Enabled</string>
     <string name="switch_disabled">Disabled</string>
@@ -288,6 +288,14 @@
     <string name="orientation_90">Landscape (90°)</string>
     <string name="orientation_180">Portrait (180°)</string>
     <string name="orientation_270">Landscape (270°)</string>
+
+    <string name="constraint_time">Time</string>
+    <string name="constraint_time_formatted">Time between %s and %s</string>
+    <string name="constraint_time_bottom_sheet_title">Time constraint</string>
+    <string name="constraint_time_bottom_sheet_start_time">Start time</string>
+    <string name="constraint_time_bottom_sheet_edit_start_time">Edit start time</string>
+    <string name="constraint_time_bottom_sheet_end_time">End time</string>
+    <string name="constraint_time_bottom_sheet_edit_end_time">Edit end time</string>
     <!-- Constraints -->
 
     <!-- Click types -->
@@ -299,34 +307,34 @@
     <string name="url_play_store_listing" translatable="false">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper</string>
     <string name="url_license" translatable="false">https://github.com/keymapperorg/KeyMapper/blob/master/LICENSE.md</string>
     <string name="url_changelog" translatable="false">https://github.com/keymapperorg/KeyMapper/blob/master/CHANGELOG.md</string>
-    <string name="url_translate" translatable="false">https://keymapperorg.github.io/KeyMapper/contributing/#translating</string>
+    <string name="url_translate" translatable="false">https://docs.keymapper.club/contributing/#translating?utm_source=in_app</string>
     <string name="url_privacy_policy" translatable="false">https://github.com/keymapperorg/KeyMapper/blob/master/PRIVACY_POLICY.md</string>
     <string name="url_discord_server_invite" translatable="false">https://discord.gg/Suj6nyw</string>
-    <string name="url_trigger_by_intent_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/trigger-by-intent</string>
-    <string name="url_trigger_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/trigger</string>
-    <string name="url_trigger_options_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/trigger-options</string>
-    <string name="url_action_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/action</string>
-    <string name="url_constraints_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/constraints</string>
-    <string name="url_fingerprint_map_options_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/fingerprint-map-options</string>
-    <string name="url_quick_start_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/quick-start</string>
-    <string name="url_faq" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/faq</string>
-    <string name="url_grant_write_secure_settings_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/grant-write-secure-settings</string>
+    <string name="url_trigger_by_intent_guide" translatable="false">https://docs.keymapper.club/redirects/trigger-by-intent</string>
+    <string name="url_trigger_guide" translatable="false">https://docs.keymapper.club/redirects/trigger</string>
+    <string name="url_trigger_options_guide" translatable="false">https://docs.keymapper.club/redirects/trigger-options</string>
+    <string name="url_action_guide" translatable="false">https://docs.keymapper.club/redirects/action</string>
+    <string name="url_constraints_guide" translatable="false">https://docs.keymapper.club/redirects/constraints</string>
+    <string name="url_fingerprint_map_options_guide" translatable="false">https://docs.keymapper.club/redirects/fingerprint-map-options</string>
+    <string name="url_quick_start_guide" translatable="false">https://docs.keymapper.club/redirects/quick-start</string>
+    <string name="url_faq" translatable="false">https://docs.keymapper.club/redirects/faq</string>
+    <string name="url_grant_write_secure_settings_guide" translatable="false">https://docs.keymapper.club/redirects/grant-write-secure-settings</string>
     <string name="url_dont_kill_my_app" translatable="false">https://dontkillmyapp.com</string>
-    <string name="url_keymap_action_options_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/keymap-action-options</string>
-    <string name="url_trigger_key_options_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/trigger-key-options</string>
-    <string name="url_android_11_bug_reset_id_work_around_setting_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/android-11-device-id-bug-work-around</string>
-    <string name="url_cant_find_accessibility_settings_issue" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/cant-find-accessibility-settings</string>
-    <string name="url_shizuku_setting_benefits" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/shizuku-benefits</string>
-    <string name="url_settings_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/settings</string>
+    <string name="url_keymap_action_options_guide" translatable="false">https://docs.keymapper.club/redirects/keymap-action-options</string>
+    <string name="url_trigger_key_options_guide" translatable="false">https://docs.keymapper.club/redirects/trigger-key-options</string>
+    <string name="url_android_11_bug_reset_id_work_around_setting_guide" translatable="false">https://docs.keymapper.club/redirects/android-11-device-id-bug-work-around</string>
+    <string name="url_cant_find_accessibility_settings_issue" translatable="false">https://docs.keymapper.club/redirects/cant-find-accessibility-settings</string>
+    <string name="url_shizuku_setting_benefits" translatable="false">https://docs.keymapper.club/redirects/shizuku-benefits</string>
+    <string name="url_settings_guide" translatable="false">https://docs.keymapper.club/redirects/settings</string>
     <string name="url_intent_set_flags_help" translatable="false">https://developer.android.com/reference/android/content/Intent#setFlags(int)</string>
     <string name="url_github_repo" translatable="false">https://github.com/keymapperorg/KeyMapper</string>
     <string name="url_rate" translatable="false">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper</string>
-    <string name="url_website" translatable="false">https://keymapperorg.github.io/KeyMapper</string>
-    <string name="url_advanced_triggers" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/advanced-triggers</string>
-    <string name="url_assistant_trigger_instructions" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/assistant-trigger</string>
-    <string name="url_floating_buttons_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/floating-buttons</string>
-    <string name="url_floating_layouts_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/floating-layouts</string>
-    <string name="url_floating_button_config_guide" translatable="false">https://keymapperorg.github.io/KeyMapper/redirects/floating-button-config</string>
+    <string name="url_website" translatable="false">https://docs.keymapper.club?utm_source=in_app</string>
+    <string name="url_advanced_triggers" translatable="false">https://docs.keymapper.club/redirects/advanced-triggers</string>
+    <string name="url_assistant_trigger_instructions" translatable="false">https://docs.keymapper.club/redirects/assistant-trigger</string>
+    <string name="url_floating_buttons_guide" translatable="false">https://docs.keymapper.club/redirects/floating-buttons</string>
+    <string name="url_floating_layouts_guide" translatable="false">https://docs.keymapper.club/redirects/floating-layouts</string>
+    <string name="url_floating_button_config_guide" translatable="false">https://docs.keymapper.club/redirects/floating-button-config</string>
 
     <string name="url_play_store_keymapper_gui_keyboard" translatable="false">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper.inputmethod.latin</string>
     <string name="url_fdroid_keymapper_gui_keyboard" translatable="false">https://f-droid.org/en/packages/io.github.sds100.keymapper.inputmethod.latin</string>
@@ -761,8 +769,10 @@
     <!-- system action options -->
 
     <!-- Tiles -->
-    <string name="tile_pause">Pause key maps</string>
-    <string name="tile_resume">Resume key maps</string>
+    <string name="tile_pause_title">Pause key maps</string>
+    <string name="tile_resume_title">Resume key maps</string>
+    <string name="tile_paused_subtitle">Paused</string>
+    <string name="tile_running_subtitle">Running</string>
     <string name="tile_service_disabled">Service Disabled</string>
     <string name="tile_accessibility_service_disabled_content_description">Key Mapper accessibility service is disabled</string>
     <string name="tile_toggle_keymapper_keyboard">Toggle Key Mapper keyboard</string>
@@ -885,6 +895,7 @@
     <string name="error_no_file_name">This file has no name!</string>
     <string name="error_invalid_backup">Invalid file. Must be a zip exported from Key Mapper.</string>
     <string name="error_choose_bluetooth_devices_permission_denied">You must grant Key Mapper permission to see your paired Bluetooth devices.</string>
+    <string name="error_malformed_url">Malformed URL. Did you forget the http://?</string>
 
     <string name="error_access_fine_location_permission_denied">Denied permission to read fine location!</string>
     <string name="error_answer_end_phone_call_permission_denied">Denied permission to answer and end phone calls!</string>
@@ -1077,6 +1088,16 @@
     <string name="action_dismiss_most_recent_notification">Dismiss most recent notification</string>
     <string name="action_dismiss_all_notifications">Dismiss all notifications</string>
     <string name="action_device_controls">Device controls screen</string>
+    <string name="action_http_request">HTTP request</string>
+    <string name="action_http_request_method_label">HTTP Method</string>
+    <string name="action_http_request_description_label">Description</string>
+    <string name="action_http_request_description_empty_error">Can not be empty!</string>
+    <string name="action_http_request_url_label">URL</string>
+    <string name="action_http_request_url_empty_error">Can not be empty!</string>
+    <string name="action_http_request_malformed_url_error">Malformed URL. Did you forget the http://?</string>
+    <string name="action_http_request_body_label">Request body (optional)</string>
+    <string name="action_http_request_authorization_label">Authorization header (optional)</string>
+    <string name="action_http_request_authorization_supporting_text">You must prepend \'Bearer\' if necessary</string>
     <!-- action labels -->
 
     <!-- action category labels -->
@@ -1201,6 +1222,7 @@
     <string name="setup_assistant_trigger_text">You must read the instructions on our website that describe how to set up this trigger. Key Mapper will not guide you.</string>
     <string name="setup_assistant_trigger_read_instructions_button">Read instructions</string>
     <string name="setup_assistant_trigger_select_type_button">Select trigger type</string>
+    <string name="trigger_error_product_verification_failed">Purchase can not be verified. Do you have an internet connection?</string>
 
     <!--  Purchasing  -->
     <string name="unlock_product_button">Unlock (%s)</string>
@@ -1344,6 +1366,7 @@
     <string name="home_menu_about">About</string>
     <string name="home_menu_export">Export all</string>
     <string name="home_menu_import">Import</string>
+    <string name="home_menu_input_method_picker">Choose keyboard</string>
     <string name="home_importing_snackbar">Importing…</string>
     <string name="home_importing_finished_snackbar">Importing successful!</string>
     <string name="home_exporting_snackbar">Exporting…</string>

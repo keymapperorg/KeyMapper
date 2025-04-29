@@ -122,7 +122,7 @@ class CreateKeyMapShortcutViewModel(
             )
         }
 
-        val parentGroupListItems = keyMapGroup.parents.map { group ->
+        val breadcrumbs = keyMapGroup.parents.plus(keyMapGroup.group).filterNotNull().map { group ->
             GroupListItemModel(
                 uid = group.uid,
                 name = group.name,
@@ -142,7 +142,7 @@ class CreateKeyMapShortcutViewModel(
                 subGroups = subGroupListItems,
                 constraints = emptyList(),
                 constraintMode = ConstraintMode.AND,
-                breadcrumbs = parentGroupListItems,
+                breadcrumbs = breadcrumbs,
                 isEditingGroupName = false,
                 isNewGroup = false,
                 parentConstraintCount = keyMapGroup.parents.sumOf { it.constraintState.constraints.size },
@@ -217,6 +217,18 @@ class CreateKeyMapShortcutViewModel(
             configKeyMapUseCase.save()
 
             _returnIntentResult.emit(intent)
+        }
+    }
+
+    fun onGroupClick(uid: String?) {
+        viewModelScope.launch {
+            listKeyMaps.openGroup(uid)
+        }
+    }
+
+    fun onPopGroupClick() {
+        viewModelScope.launch {
+            listKeyMaps.popGroup()
         }
     }
 

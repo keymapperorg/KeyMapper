@@ -161,6 +161,7 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider): String = when (thi
     Error.PurchasingNotImplemented -> resourceProvider.getString(R.string.purchasing_error_not_implemented)
     Error.DpadTriggerImeNotSelected -> resourceProvider.getString(R.string.trigger_error_dpad_ime_not_selected)
     Error.InvalidBackup -> resourceProvider.getString(R.string.error_invalid_backup)
+    Error.MalformedUrl -> resourceProvider.getString(R.string.error_malformed_url)
 }
 
 val Error.isFixable: Boolean

@@ -24,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
@@ -34,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
+import io.github.sds100.keymapper.util.ui.compose.openUriSafe
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -101,6 +103,7 @@ private fun SetupGuiKeyboardBottomSheet(
 ) {
     val scope = rememberCoroutineScope()
     val uriHandler = LocalUriHandler.current
+    val ctx = LocalContext.current
     val scrollState = rememberScrollState()
 
     ModalBottomSheet(
@@ -145,7 +148,7 @@ private fun SetupGuiKeyboardBottomSheet(
                 buttonTextEnabled = stringResource(R.string.setup_gui_keyboard_install_keyboard_button),
                 buttonTextDisabled = stringResource(R.string.setup_gui_keyboard_install_keyboard_button_disabled),
                 onButtonClick = {
-                    uriHandler.openUri(guiKeyboardUrl)
+                    uriHandler.openUriSafe(ctx, guiKeyboardUrl)
                 },
             )
 
