@@ -293,7 +293,9 @@
     <string name="constraint_time_formatted">Time between %s and %s</string>
     <string name="constraint_time_bottom_sheet_title">Time constraint</string>
     <string name="constraint_time_bottom_sheet_start_time">Start time</string>
+    <string name="constraint_time_bottom_sheet_edit_start_time">Edit start time</string>
     <string name="constraint_time_bottom_sheet_end_time">End time</string>
+    <string name="constraint_time_bottom_sheet_edit_end_time">Edit end time</string>
     <!-- Constraints -->
 
     <!-- Click types -->

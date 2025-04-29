@@ -5,10 +5,12 @@ import androidx.compose.material.icons.rounded.Android
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.display.Orientation
+import io.github.sds100.keymapper.util.TimeUtils
 import io.github.sds100.keymapper.util.handle
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.util.valueIfFailure
+import java.time.format.FormatStyle
 
 /**
  * Created by sds100 on 18/03/2021.
@@ -19,6 +21,8 @@ class ConstraintUiHelper(
     resourceProvider: ResourceProvider,
 ) : DisplayConstraintUseCase by displayConstraintUseCase,
     ResourceProvider by resourceProvider {
+
+    private val timeFormatter by lazy { TimeUtils.localeDateFormatter(FormatStyle.SHORT) }
 
     fun getTitle(constraint: Constraint): String = when (constraint) {
         is Constraint.AppInForeground ->
@@ -144,6 +148,13 @@ class ConstraintUiHelper(
         is Constraint.Discharging -> getString(R.string.constraint_discharging)
         is Constraint.LockScreenShowing -> getString(R.string.constraint_lock_screen_showing)
         is Constraint.LockScreenNotShowing -> getString(R.string.constraint_lock_screen_not_showing)
+        is Constraint.Time -> getString(
+            R.string.constraint_time_formatted,
+            arrayOf(
+                timeFormatter.format(constraint.startTime),
+                timeFormatter.format(constraint.endTime),
+            ),
+        )
     }
 
     fun getIcon(constraint: Constraint): ComposeIconInfo = when (constraint) {

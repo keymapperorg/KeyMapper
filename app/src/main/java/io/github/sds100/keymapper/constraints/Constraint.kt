@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.util.getKey
 import io.github.sds100.keymapper.util.valueOrNull
 import kotlinx.serialization.Serializable
+import java.time.LocalTime
 import java.util.UUID
 
 /**
@@ -226,6 +227,9 @@ sealed class Constraint {
         val endMinute: Int,
     ) : Constraint() {
         override val id: ConstraintId = ConstraintId.TIME
+
+        val startTime: LocalTime by lazy { LocalTime.of(startHour, startMinute) }
+        val endTime: LocalTime by lazy { LocalTime.of(endHour, endMinute) }
     }
 }
 
@@ -638,6 +642,19 @@ object ConstraintEntityMapper {
         is Constraint.Discharging -> ConstraintEntity(
             uid = constraint.uid,
             ConstraintEntity.DISCHARGING,
+        )
+
+        is Constraint.Time -> ConstraintEntity(
+            uid = constraint.uid,
+            type = ConstraintEntity.TIME,
+            EntityExtra(
+                ConstraintEntity.EXTRA_START_TIME,
+                "${constraint.startHour}:${constraint.startMinute}",
+            ),
+            EntityExtra(
+                ConstraintEntity.EXTRA_END_TIME,
+                "${constraint.endHour}:${constraint.endMinute}",
+            ),
         )
     }
 }

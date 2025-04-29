@@ -1,5 +1,8 @@
 package io.github.sds100.keymapper.constraints
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -88,6 +91,8 @@ class ChooseConstraintViewModel(
 
             ConstraintId.CHARGING,
             ConstraintId.DISCHARGING,
+
+            ConstraintId.TIME,
         )
     }
 
@@ -104,12 +109,14 @@ class ChooseConstraintViewModel(
             State.Data(filteredItems)
         }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.Eagerly, State.Loading)
 
-    var timeConstraintState: Constraint.Time? = null
+    var timeConstraintState: Constraint.Time? by mutableStateOf(null)
 
     fun onDoneConfigTimeConstraintClick() {
         timeConstraintState?.let { constraint ->
-            _returnResult.tryEmit(constraint)
-            timeConstraintState = null
+            viewModelScope.launch {
+                _returnResult.emit(constraint)
+                timeConstraintState = null
+            }
         }
     }
 
