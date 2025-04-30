@@ -5,6 +5,7 @@ import io.github.sds100.keymapper.data.db.typeconverter.ConstantTypeConverters
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.EntityExtra
 import io.github.sds100.keymapper.data.entities.getData
+import io.github.sds100.keymapper.system.accessibility.AccessibilityNodeModel
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.intents.IntentExtraModel
 import io.github.sds100.keymapper.system.intents.IntentTarget
@@ -12,6 +13,7 @@ import io.github.sds100.keymapper.system.network.HttpMethod
 import io.github.sds100.keymapper.system.volume.DndMode
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeStream
+import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.getKey
 import io.github.sds100.keymapper.util.success
 import io.github.sds100.keymapper.util.then
@@ -41,6 +43,8 @@ object ActionDataEntityMapper {
             ActionEntity.Type.SYSTEM_ACTION -> {
                 SYSTEM_ACTION_ID_MAP.getKey(entity.data) ?: return null
             }
+
+            ActionEntity.Type.INTERACT_UI_ELEMENT -> ActionId.INTERACT_UI_ELEMENT
         }
 
         return when (actionId) {
@@ -266,7 +270,7 @@ object ActionDataEntityMapper {
             ActionId.VOLUME_TOGGLE_MUTE,
             ActionId.VOLUME_UNMUTE,
             ActionId.VOLUME_MUTE,
-            -> {
+                -> {
                 val showVolumeUi =
                     entity.flags.hasFlag(ActionEntity.ACTION_FLAG_SHOW_VOLUME_UI)
 
@@ -287,7 +291,7 @@ object ActionDataEntityMapper {
             ActionId.TOGGLE_FLASHLIGHT,
             ActionId.ENABLE_FLASHLIGHT,
             ActionId.CHANGE_FLASHLIGHT_STRENGTH,
-            -> {
+                -> {
                 val lens = entity.extras.getData(ActionEntity.EXTRA_LENS).then {
                     LENS_MAP.getKey(it)!!.success()
                 }.valueOrNull() ?: return null
@@ -313,7 +317,7 @@ object ActionDataEntityMapper {
             }
 
             ActionId.DISABLE_FLASHLIGHT,
-            -> {
+                -> {
                 val lens = entity.extras.getData(ActionEntity.EXTRA_LENS).then {
                     LENS_MAP.getKey(it)!!.success()
                 }.valueOrNull() ?: return null
@@ -322,7 +326,7 @@ object ActionDataEntityMapper {
 
             ActionId.TOGGLE_DND_MODE,
             ActionId.ENABLE_DND_MODE,
-            -> {
+                -> {
                 val dndMode = entity.extras.getData(ActionEntity.EXTRA_DND_MODE).then {
                     DND_MODE_MAP.getKey(it)!!.success()
                 }.valueOrNull() ?: return null
@@ -349,7 +353,7 @@ object ActionDataEntityMapper {
             ActionId.PREVIOUS_TRACK_PACKAGE,
             ActionId.FAST_FORWARD_PACKAGE,
             ActionId.REWIND_PACKAGE,
-            -> {
+                -> {
                 val packageName =
                     entity.extras.getData(ActionEntity.EXTRA_PACKAGE_NAME).valueOrNull()
                         ?: return null
@@ -522,6 +526,70 @@ object ActionDataEntityMapper {
                     authorizationHeader = authorizationHeader,
                 )
             }
+
+            ActionId.INTERACT_UI_ELEMENT -> {
+                val packageName =
+                    entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_PACKAGE_NAME)
+                        .valueOrNull()
+
+                val contentDescription =
+                    entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_CONTENT_DESCRIPTION)
+                        .valueOrNull()
+
+                val isFocused = entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_IS_FOCUSED)
+                    .then { Success(it.toBoolean()) }.valueOrNull() ?: false
+
+                val text =
+                    entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_TEXT).valueOrNull()
+
+                val textSelectionStart =
+                    entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_TEXT_SELECTION_START)
+                        .then { Success(it.toInt()) }.valueOrNull() ?: 0
+
+                val textSelectionEnd =
+                    entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_TEXT_SELECTION_END)
+                        .then { Success(it.toInt()) }.valueOrNull() ?: 0
+
+                val isEditable = entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_IS_EDITABLE)
+                    .then { Success(it.toBoolean()) }.valueOrNull() ?: false
+
+                val className =
+                    entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_CLASS_NAME).valueOrNull()
+
+                val viewResourceId =
+                    entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_VIEW_RESOURCE_ID)
+                        .valueOrNull()
+
+                val uniqueId =
+                    entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_UNIQUE_ID).valueOrNull()
+
+                val actions = entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_ACTIONS).then {
+                    val intList = it.split(",").map { action -> action.toInt() }
+                    Success(intList)
+                }.valueOrNull() ?: emptyList()
+
+                val nodeAction =
+                    entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_NODE_ACTION).then {
+                        Success(it.toInt())
+                    }.valueOrNull()!!
+
+                ActionData.InteractUiElement(
+                    nodeAction = nodeAction,
+                    node = AccessibilityNodeModel(
+                        packageName = packageName,
+                        contentDescription = contentDescription,
+                        isFocused = isFocused,
+                        text = text,
+                        textSelectionStart = textSelectionStart,
+                        textSelectionEnd = textSelectionEnd,
+                        isEditable = isEditable,
+                        className = className,
+                        uniqueId = uniqueId,
+                        viewResourceId = viewResourceId,
+                        actions = actions,
+                    ),
+                )
+            }
         }
     }
 
@@ -538,6 +606,7 @@ object ActionDataEntityMapper {
             is ActionData.Text -> ActionEntity.Type.TEXT_BLOCK
             is ActionData.Url -> ActionEntity.Type.URL
             is ActionData.Sound -> ActionEntity.Type.SOUND
+            is ActionData.InteractUiElement -> ActionEntity.Type.INTERACT_UI_ELEMENT
             else -> ActionEntity.Type.SYSTEM_ACTION
         }
 
@@ -579,6 +648,7 @@ object ActionDataEntityMapper {
         is ActionData.Text -> data.text
         is ActionData.Url -> data.url
         is ActionData.Sound -> data.soundUid
+        is ActionData.InteractUiElement -> "" // No data string needed for UI element interaction
         else -> SYSTEM_ACTION_ID_MAP[data.id]!!
     }
 
@@ -749,6 +819,99 @@ object ActionDataEntityMapper {
                 data.authorizationHeader,
             ),
         )
+
+        is ActionData.InteractUiElement -> buildList {
+            add(
+                EntityExtra(
+                    ActionEntity.EXTRA_ACCESSIBILITY_NODE_ACTION,
+                    data.nodeAction.toString(),
+                ),
+            )
+
+            data.node.packageName?.let {
+                add(
+                    EntityExtra(
+                        ActionEntity.EXTRA_ACCESSIBILITY_PACKAGE_NAME,
+                        it,
+                    ),
+                )
+            }
+
+            data.node.contentDescription?.let {
+                add(
+                    EntityExtra(
+                        ActionEntity.EXTRA_ACCESSIBILITY_CONTENT_DESCRIPTION,
+                        it,
+                    ),
+                )
+            }
+
+            add(
+                EntityExtra(
+                    ActionEntity.EXTRA_ACCESSIBILITY_IS_FOCUSED,
+                    data.node.isFocused.toString(),
+                ),
+            )
+
+            data.node.text?.let { add(EntityExtra(ActionEntity.EXTRA_ACCESSIBILITY_TEXT, it)) }
+
+            add(
+                EntityExtra(
+                    ActionEntity.EXTRA_ACCESSIBILITY_TEXT_SELECTION_START,
+                    data.node.textSelectionStart.toString(),
+                ),
+            )
+
+            add(
+                EntityExtra(
+                    ActionEntity.EXTRA_ACCESSIBILITY_TEXT_SELECTION_END,
+                    data.node.textSelectionEnd.toString(),
+                ),
+            )
+
+            add(
+                EntityExtra(
+                    ActionEntity.EXTRA_ACCESSIBILITY_IS_EDITABLE,
+                    data.node.isEditable.toString(),
+                ),
+            )
+
+            data.node.className?.let {
+                add(
+                    EntityExtra(
+                        ActionEntity.EXTRA_ACCESSIBILITY_CLASS_NAME,
+                        it,
+                    ),
+                )
+            }
+
+            data.node.viewResourceId?.let {
+                add(
+                    EntityExtra(
+                        ActionEntity.EXTRA_ACCESSIBILITY_VIEW_RESOURCE_ID,
+                        it,
+                    ),
+                )
+            }
+
+            data.node.uniqueId?.let {
+                add(
+                    EntityExtra(
+                        ActionEntity.EXTRA_ACCESSIBILITY_UNIQUE_ID,
+                        it,
+                    ),
+                )
+            }
+
+            if (data.node.actions.isNotEmpty()) {
+                add(
+                    EntityExtra(
+                        ActionEntity.EXTRA_ACCESSIBILITY_ACTIONS,
+                        data.node.actions.joinToString(","),
+                    ),
+                )
+            }
+        }
 
         else -> emptyList()
     }

@@ -529,6 +529,8 @@ class ActionUiHelper(
 
         ActionData.DeviceControls -> getString(R.string.action_device_controls)
         is ActionData.HttpRequest -> action.description
+
+        is ActionData.InteractUiElement -> getString(R.string.action_interact_ui_element_title)
     }
 
     fun getIcon(action: ActionData): ComposeIconInfo = when (action) {

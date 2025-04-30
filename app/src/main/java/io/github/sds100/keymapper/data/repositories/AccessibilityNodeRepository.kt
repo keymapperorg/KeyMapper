@@ -14,6 +14,7 @@ interface AccessibilityNodeRepository {
 }
 
 class AccessibilityNodeRepositoryImpl(private val coroutineScope: CoroutineScope) : AccessibilityNodeRepository {
+    // TODO have a DAO to remember between app launches and so it isn't all cached in memory?
     override val nodes =
         MutableStateFlow<State<List<AccessibilityNodeEntity>>>(State.Data(ArrayList(128)))
 

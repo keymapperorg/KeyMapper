@@ -16,6 +16,7 @@ enum class ActionId {
     INTENT,
     PHONE_CALL,
     SOUND,
+    INTERACT_UI_ELEMENT,
 
     TOGGLE_WIFI,
     ENABLE_WIFI,

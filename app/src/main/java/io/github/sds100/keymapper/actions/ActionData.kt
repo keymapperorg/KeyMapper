@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.actions
 
 import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
+import io.github.sds100.keymapper.system.accessibility.AccessibilityNodeModel
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.system.intents.IntentExtraModel
@@ -260,7 +261,7 @@ sealed class ActionData : Comparable<ActionData> {
         }
 
         @Serializable
-        object Disable : DoNotDisturb() {
+        data object Disable : DoNotDisturb() {
             override val id = ActionId.DISABLE_DND_MODE
         }
     }
@@ -268,32 +269,32 @@ sealed class ActionData : Comparable<ActionData> {
     @Serializable
     sealed class Rotation : ActionData() {
         @Serializable
-        object EnableAuto : Rotation() {
+        data object EnableAuto : Rotation() {
             override val id = ActionId.ENABLE_AUTO_ROTATE
         }
 
         @Serializable
-        object DisableAuto : Rotation() {
+        data object DisableAuto : Rotation() {
             override val id = ActionId.DISABLE_AUTO_ROTATE
         }
 
         @Serializable
-        object ToggleAuto : Rotation() {
+        data object ToggleAuto : Rotation() {
             override val id = ActionId.TOGGLE_AUTO_ROTATE
         }
 
         @Serializable
-        object Portrait : Rotation() {
+        data object Portrait : Rotation() {
             override val id = ActionId.PORTRAIT_MODE
         }
 
         @Serializable
-        object Landscape : Rotation() {
+        data object Landscape : Rotation() {
             override val id = ActionId.LANDSCAPE_MODE
         }
 
         @Serializable
-        object SwitchOrientation : Rotation() {
+        data object SwitchOrientation : Rotation() {
             override val id = ActionId.SWITCH_ORIENTATION
         }
 
@@ -369,37 +370,37 @@ sealed class ActionData : Comparable<ActionData> {
     @Serializable
     sealed class ControlMedia : ActionData() {
         @Serializable
-        object Pause : ControlMedia() {
+        data object Pause : ControlMedia() {
             override val id = ActionId.PAUSE_MEDIA
         }
 
         @Serializable
-        object Play : ControlMedia() {
+        data object Play : ControlMedia() {
             override val id = ActionId.PLAY_MEDIA
         }
 
         @Serializable
-        object PlayPause : ControlMedia() {
+        data object PlayPause : ControlMedia() {
             override val id = ActionId.PLAY_PAUSE_MEDIA
         }
 
         @Serializable
-        object NextTrack : ControlMedia() {
+        data object NextTrack : ControlMedia() {
             override val id = ActionId.NEXT_TRACK
         }
 
         @Serializable
-        object PreviousTrack : ControlMedia() {
+        data object PreviousTrack : ControlMedia() {
             override val id = ActionId.PREVIOUS_TRACK
         }
 
         @Serializable
-        object FastForward : ControlMedia() {
+        data object FastForward : ControlMedia() {
             override val id = ActionId.FAST_FORWARD
         }
 
         @Serializable
-        object Rewind : ControlMedia() {
+        data object Rewind : ControlMedia() {
             override val id = ActionId.REWIND
         }
     }
@@ -537,17 +538,17 @@ sealed class ActionData : Comparable<ActionData> {
     @Serializable
     sealed class Wifi : ActionData() {
         @Serializable
-        object Enable : Wifi() {
+        data object Enable : Wifi() {
             override val id = ActionId.ENABLE_WIFI
         }
 
         @Serializable
-        object Disable : Wifi() {
+        data object Disable : Wifi() {
             override val id = ActionId.DISABLE_WIFI
         }
 
         @Serializable
-        object Toggle : Wifi() {
+        data object Toggle : Wifi() {
             override val id = ActionId.TOGGLE_WIFI
         }
     }
@@ -555,17 +556,17 @@ sealed class ActionData : Comparable<ActionData> {
     @Serializable
     sealed class Bluetooth : ActionData() {
         @Serializable
-        object Enable : Bluetooth() {
+        data object Enable : Bluetooth() {
             override val id = ActionId.ENABLE_BLUETOOTH
         }
 
         @Serializable
-        object Disable : Bluetooth() {
+        data object Disable : Bluetooth() {
             override val id = ActionId.DISABLE_BLUETOOTH
         }
 
         @Serializable
-        object Toggle : Bluetooth() {
+        data object Toggle : Bluetooth() {
             override val id = ActionId.TOGGLE_BLUETOOTH
         }
     }
@@ -573,17 +574,17 @@ sealed class ActionData : Comparable<ActionData> {
     @Serializable
     sealed class Nfc : ActionData() {
         @Serializable
-        object Enable : Nfc() {
+        data object Enable : Nfc() {
             override val id = ActionId.ENABLE_NFC
         }
 
         @Serializable
-        object Disable : Nfc() {
+        data object Disable : Nfc() {
             override val id = ActionId.DISABLE_NFC
         }
 
         @Serializable
-        object Toggle : Nfc() {
+        data object Toggle : Nfc() {
             override val id = ActionId.TOGGLE_NFC
         }
     }
@@ -591,17 +592,17 @@ sealed class ActionData : Comparable<ActionData> {
     @Serializable
     sealed class AirplaneMode : ActionData() {
         @Serializable
-        object Enable : AirplaneMode() {
+        data object Enable : AirplaneMode() {
             override val id = ActionId.ENABLE_AIRPLANE_MODE
         }
 
         @Serializable
-        object Disable : AirplaneMode() {
+        data object Disable : AirplaneMode() {
             override val id = ActionId.DISABLE_AIRPLANE_MODE
         }
 
         @Serializable
-        object Toggle : AirplaneMode() {
+        data object Toggle : AirplaneMode() {
             override val id = ActionId.TOGGLE_AIRPLANE_MODE
         }
     }
@@ -609,17 +610,17 @@ sealed class ActionData : Comparable<ActionData> {
     @Serializable
     sealed class MobileData : ActionData() {
         @Serializable
-        object Enable : MobileData() {
+        data object Enable : MobileData() {
             override val id = ActionId.ENABLE_MOBILE_DATA
         }
 
         @Serializable
-        object Disable : MobileData() {
+        data object Disable : MobileData() {
             override val id = ActionId.DISABLE_MOBILE_DATA
         }
 
         @Serializable
-        object Toggle : MobileData() {
+        data object Toggle : MobileData() {
             override val id = ActionId.TOGGLE_MOBILE_DATA
         }
     }
@@ -627,27 +628,27 @@ sealed class ActionData : Comparable<ActionData> {
     @Serializable
     sealed class Brightness : ActionData() {
         @Serializable
-        object EnableAuto : Brightness() {
+        data object EnableAuto : Brightness() {
             override val id = ActionId.ENABLE_AUTO_BRIGHTNESS
         }
 
         @Serializable
-        object DisableAuto : Brightness() {
+        data object DisableAuto : Brightness() {
             override val id = ActionId.DISABLE_AUTO_BRIGHTNESS
         }
 
         @Serializable
-        object ToggleAuto : Brightness() {
+        data object ToggleAuto : Brightness() {
             override val id = ActionId.TOGGLE_AUTO_BRIGHTNESS
         }
 
         @Serializable
-        object Increase : Brightness() {
+        data object Increase : Brightness() {
             override val id = ActionId.INCREASE_BRIGHTNESS
         }
 
         @Serializable
-        object Decrease : Brightness() {
+        data object Decrease : Brightness() {
             override val id = ActionId.DECREASE_BRIGHTNESS
         }
     }
@@ -655,178 +656,178 @@ sealed class ActionData : Comparable<ActionData> {
     @Serializable
     sealed class StatusBar : ActionData() {
         @Serializable
-        object ExpandNotifications : StatusBar() {
+        data object ExpandNotifications : StatusBar() {
             override val id = ActionId.EXPAND_NOTIFICATION_DRAWER
         }
 
         @Serializable
-        object ToggleNotifications : StatusBar() {
+        data object ToggleNotifications : StatusBar() {
             override val id = ActionId.TOGGLE_NOTIFICATION_DRAWER
         }
 
         @Serializable
-        object ExpandQuickSettings : StatusBar() {
+        data object ExpandQuickSettings : StatusBar() {
             override val id = ActionId.EXPAND_QUICK_SETTINGS
         }
 
         @Serializable
-        object ToggleQuickSettings : StatusBar() {
+        data object ToggleQuickSettings : StatusBar() {
             override val id = ActionId.TOGGLE_QUICK_SETTINGS
         }
 
         @Serializable
-        object Collapse : StatusBar() {
+        data object Collapse : StatusBar() {
             override val id = ActionId.COLLAPSE_STATUS_BAR
         }
     }
 
     @Serializable
-    object GoBack : ActionData() {
+    data object GoBack : ActionData() {
         override val id = ActionId.GO_BACK
     }
 
     @Serializable
-    object GoHome : ActionData() {
+    data object GoHome : ActionData() {
         override val id = ActionId.GO_HOME
     }
 
     @Serializable
-    object OpenRecents : ActionData() {
+    data object OpenRecents : ActionData() {
         override val id = ActionId.OPEN_RECENTS
     }
 
     @Serializable
-    object GoLastApp : ActionData() {
+    data object GoLastApp : ActionData() {
         override val id = ActionId.GO_LAST_APP
     }
 
     @Serializable
-    object OpenMenu : ActionData() {
+    data object OpenMenu : ActionData() {
         override val id = ActionId.OPEN_MENU
     }
 
     @Serializable
-    object ToggleSplitScreen : ActionData() {
+    data object ToggleSplitScreen : ActionData() {
         override val id = ActionId.TOGGLE_SPLIT_SCREEN
     }
 
     @Serializable
-    object Screenshot : ActionData() {
+    data object Screenshot : ActionData() {
         override val id = ActionId.SCREENSHOT
     }
 
     @Serializable
-    object MoveCursorToEnd : ActionData() {
+    data object MoveCursorToEnd : ActionData() {
         override val id = ActionId.MOVE_CURSOR_TO_END
     }
 
     @Serializable
-    object ToggleKeyboard : ActionData() {
+    data object ToggleKeyboard : ActionData() {
         override val id = ActionId.TOGGLE_KEYBOARD
     }
 
     @Serializable
-    object ShowKeyboard : ActionData() {
+    data object ShowKeyboard : ActionData() {
         override val id = ActionId.SHOW_KEYBOARD
     }
 
     @Serializable
-    object HideKeyboard : ActionData() {
+    data object HideKeyboard : ActionData() {
         override val id = ActionId.HIDE_KEYBOARD
     }
 
     @Serializable
-    object ShowKeyboardPicker : ActionData() {
+    data object ShowKeyboardPicker : ActionData() {
         override val id = ActionId.SHOW_KEYBOARD_PICKER
     }
 
     @Serializable
-    object CopyText : ActionData() {
+    data object CopyText : ActionData() {
         override val id = ActionId.TEXT_COPY
     }
 
     @Serializable
-    object PasteText : ActionData() {
+    data object PasteText : ActionData() {
         override val id = ActionId.TEXT_PASTE
     }
 
     @Serializable
-    object CutText : ActionData() {
+    data object CutText : ActionData() {
         override val id = ActionId.TEXT_CUT
     }
 
     @Serializable
-    object SelectWordAtCursor : ActionData() {
+    data object SelectWordAtCursor : ActionData() {
         override val id = ActionId.SELECT_WORD_AT_CURSOR
     }
 
     @Serializable
-    object VoiceAssistant : ActionData() {
+    data object VoiceAssistant : ActionData() {
         override val id = ActionId.OPEN_VOICE_ASSISTANT
     }
 
     @Serializable
-    object DeviceAssistant : ActionData() {
+    data object DeviceAssistant : ActionData() {
         override val id = ActionId.OPEN_DEVICE_ASSISTANT
     }
 
     @Serializable
-    object OpenCamera : ActionData() {
+    data object OpenCamera : ActionData() {
         override val id = ActionId.OPEN_CAMERA
     }
 
     @Serializable
-    object LockDevice : ActionData() {
+    data object LockDevice : ActionData() {
         override val id = ActionId.LOCK_DEVICE
     }
 
     @Serializable
-    object ScreenOnOff : ActionData() {
+    data object ScreenOnOff : ActionData() {
         override val id = ActionId.POWER_ON_OFF_DEVICE
     }
 
     @Serializable
-    object SecureLock : ActionData() {
+    data object SecureLock : ActionData() {
         override val id = ActionId.SECURE_LOCK_DEVICE
     }
 
     @Serializable
-    object ConsumeKeyEvent : ActionData() {
+    data object ConsumeKeyEvent : ActionData() {
         override val id = ActionId.CONSUME_KEY_EVENT
     }
 
     @Serializable
-    object OpenSettings : ActionData() {
+    data object OpenSettings : ActionData() {
         override val id = ActionId.OPEN_SETTINGS
     }
 
     @Serializable
-    object ShowPowerMenu : ActionData() {
+    data object ShowPowerMenu : ActionData() {
         override val id = ActionId.SHOW_POWER_MENU
     }
 
     @Serializable
-    object DismissLastNotification : ActionData() {
+    data object DismissLastNotification : ActionData() {
         override val id: ActionId = ActionId.DISMISS_MOST_RECENT_NOTIFICATION
     }
 
     @Serializable
-    object DismissAllNotifications : ActionData() {
+    data object DismissAllNotifications : ActionData() {
         override val id: ActionId = ActionId.DISMISS_ALL_NOTIFICATIONS
     }
 
     @Serializable
-    object AnswerCall : ActionData() {
+    data object AnswerCall : ActionData() {
         override val id: ActionId = ActionId.ANSWER_PHONE_CALL
     }
 
     @Serializable
-    object EndCall : ActionData() {
+    data object EndCall : ActionData() {
         override val id: ActionId = ActionId.END_PHONE_CALL
     }
 
     @Serializable
-    object DeviceControls : ActionData() {
+    data object DeviceControls : ActionData() {
         override val id: ActionId = ActionId.DEVICE_CONTROLS
     }
 
@@ -844,5 +845,13 @@ sealed class ActionData : Comparable<ActionData> {
             // Do not leak sensitive request info to logs.
             return "HttpRequest(description=$description)"
         }
+    }
+
+    @Serializable
+    data class InteractUiElement(
+        val nodeAction: Int,
+        val node: AccessibilityNodeModel,
+    ) : ActionData() {
+        override val id: ActionId = ActionId.INTERACT_UI_ELEMENT
     }
 }
