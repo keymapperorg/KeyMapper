@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.util
 import android.os.Parcelable
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyEventDetectionSource
+import io.github.sds100.keymapper.system.accessibility.RecordAccessibilityNodeState
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
@@ -78,4 +79,7 @@ sealed class ServiceEvent {
 
     @Serializable
     data object StopRecordingNodes : ServiceEvent()
+
+    @Serializable
+    data class OnRecordNodeStateChanged(val state: RecordAccessibilityNodeState) : ServiceEvent()
 }

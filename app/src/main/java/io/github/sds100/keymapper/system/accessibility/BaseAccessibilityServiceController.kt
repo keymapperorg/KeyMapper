@@ -11,6 +11,7 @@ import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
+import io.github.sds100.keymapper.data.repositories.AccessibilityNodeRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.FingerprintGestureType
 import io.github.sds100.keymapper.mappings.FingerprintGesturesSupportedUseCase
@@ -40,6 +41,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
@@ -73,6 +75,7 @@ abstract class BaseAccessibilityServiceController(
     private val suAdapter: SuAdapter,
     private val inputMethodAdapter: InputMethodAdapter,
     private val settingsRepository: PreferenceRepository,
+    private val nodeRepository: AccessibilityNodeRepository,
 ) {
 
     companion object {
@@ -102,7 +105,7 @@ abstract class BaseAccessibilityServiceController(
     )
 
     private val accessibilityNodeRecorder: AccessibilityNodeRecorder =
-        AccessibilityNodeRecorder(service, coroutineScope)
+        AccessibilityNodeRecorder(nodeRepository)
 
     private var recordingTriggerJob: Job? = null
     private val recordingTrigger: Boolean
@@ -260,12 +263,19 @@ abstract class BaseAccessibilityServiceController(
             }
         }.launchIn(coroutineScope)
 
+        coroutineScope.launch {
+            accessibilityNodeRecorder.recordState.collectLatest { state ->
+                outputEvents.emit(ServiceEvent.OnRecordNodeStateChanged(state))
+            }
+        }
+
         val imeInputFocusEvents =
             AccessibilityEvent.TYPE_VIEW_FOCUSED or AccessibilityEvent.TYPE_VIEW_CLICKED
         val recordNodeEvents = AccessibilityEvent.TYPE_VIEW_FOCUSED or
             AccessibilityEvent.TYPE_VIEW_CLICKED or
             AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED
 
+        // TODO
 //        coroutineScope.launch {
 //            combine(
 //                changeImeOnInputFocusFlow,
@@ -318,6 +328,10 @@ abstract class BaseAccessibilityServiceController(
                 denyFingerprintGestureDetection()
             }
         }
+    }
+
+    open fun onDestroy() {
+        accessibilityNodeRecorder.teardown()
     }
 
     open fun onConfigurationChanged(newConfig: Configuration) {
@@ -539,9 +553,8 @@ abstract class BaseAccessibilityServiceController(
             is ServiceEvent.TriggerKeyMap -> triggerKeyMapFromIntent(event.uid)
 
             is ServiceEvent.EnableInputMethod -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                accessibilityService.setInputMethodEnabled(event.imeId, true)
+                service.setInputMethodEnabled(event.imeId, true)
             }
-
 
             is ServiceEvent.StartRecordingNodes -> {
                 accessibilityNodeRecorder.startRecording()
@@ -556,6 +569,7 @@ abstract class BaseAccessibilityServiceController(
     }
 
     private fun recordTriggerJob() = coroutineScope.launch {
+        // TODO use Kotlin timer.
         repeat(RECORD_TRIGGER_TIMER_LENGTH) { iteration ->
             if (isActive) {
                 val timeLeft = RECORD_TRIGGER_TIMER_LENGTH - iteration

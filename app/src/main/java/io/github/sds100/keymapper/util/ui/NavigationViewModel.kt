@@ -42,7 +42,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 /**
@@ -224,6 +223,11 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
             NavDestination.ShizukuSettings -> NavAppDirections.toShizukuSettingsFragment()
             is NavDestination.ConfigFloatingButton -> NavAppDirections.toConfigFloatingButton(
                 destination.buttonUid,
+            )
+
+            is NavDestination.InteractUiElement -> NavAppDirections.interactUiElement(
+                requestKey = requestKey,
+                action = destination.action?.let { Json.encodeToString(destination.action) },
             )
         }
 

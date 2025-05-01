@@ -1,53 +1,67 @@
 package io.github.sds100.keymapper.system.accessibility
 
-import android.accessibilityservice.AccessibilityService
 import android.os.Build
+import android.os.CountDownTimer
 import android.view.accessibility.AccessibilityEvent
-import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.data.entities.AccessibilityNodeEntity
 import io.github.sds100.keymapper.data.repositories.AccessibilityNodeRepository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 class AccessibilityNodeRecorder(
-    private val service: AccessibilityService,
-    private val coroutineScope: CoroutineScope,
+    private val nodeRepository: AccessibilityNodeRepository,
 ) {
     companion object {
         private const val RECORD_DURATION = 60000L
     }
 
-    private val nodeRepository: AccessibilityNodeRepository by lazy {
-        ServiceLocator.accessibilityNodeRepository(service)
-    }
-
-    private var recordJob: Job? = null
-    private val _isRecording = MutableStateFlow(false)
-    val isRecording = _isRecording.asStateFlow()
+    private val timerLock = Any()
+    private var timer: CountDownTimer? = null
+    private val _recordState: MutableStateFlow<RecordAccessibilityNodeState> =
+        MutableStateFlow(RecordAccessibilityNodeState.Idle)
+    val recordState = _recordState.asStateFlow()
 
     fun startRecording() {
-        _isRecording.update { true }
-        recordJob?.cancel()
-        recordJob = recordJob()
+        synchronized(timerLock) {
+            timer?.cancel()
+            timer = object : CountDownTimer(RECORD_DURATION, 1000) {
+
+                override fun onTick(millisUntilFinished: Long) {
+                    _recordState.update {
+                        RecordAccessibilityNodeState.CountingDown(
+                            timeLeft = (millisUntilFinished / 1000).toInt(),
+                        )
+                    }
+                }
+
+                override fun onFinish() {
+                    _recordState.update { RecordAccessibilityNodeState.Idle }
+                }
+            }
+
+            timer!!.start()
+        }
     }
 
     fun stopRecording() {
-        recordJob?.cancel()
-        recordJob = null
-        _isRecording.update { false }
+        synchronized(timerLock) {
+            timer?.cancel()
+            timer = null
+            _recordState.update { RecordAccessibilityNodeState.Idle }
+        }
     }
 
     fun onAccessibilityEvent(event: AccessibilityEvent) {
-        if (!isRecording.value) {
+        if (_recordState.value is RecordAccessibilityNodeState.Idle) {
             return
         }
 
         val source = event.source ?: return
+
+        if (source.actionList.isNullOrEmpty()) {
+            return
+        }
 
         val entity =
             AccessibilityNodeEntity(
@@ -62,13 +76,16 @@ class AccessibilityNodeRecorder(
                     null
                 },
                 actions = source.actionList?.map { it.id } ?: emptyList(),
+                userInteractedActionId = event.action,
             )
 
         nodeRepository.insert(entity)
     }
 
-    private fun recordJob() = coroutineScope.launch {
-        delay(RECORD_DURATION)
-        _isRecording.update { false }
+    fun teardown() {
+        synchronized(timerLock) {
+            timer?.cancel()
+            timer = null
+        }
     }
 }

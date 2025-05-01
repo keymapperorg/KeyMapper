@@ -1127,6 +1127,7 @@
     <string name="action_interact_ui_element_interaction_type_scroll_backward">Scroll backward</string>
     <string name="action_interact_ui_element_interaction_type_expand">Expand</string>
     <string name="action_interact_ui_element_interaction_type_collapse">Collapse</string>
+    <string name="action_interact_ui_element_interaction_type_unknown">Unknown: %d</string>
 
     <string name="action_interact_ui_element_text_label">Text</string>
 

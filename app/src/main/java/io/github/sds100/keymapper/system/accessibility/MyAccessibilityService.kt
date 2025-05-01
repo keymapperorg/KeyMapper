@@ -255,6 +255,7 @@ class MyAccessibilityService :
     override fun onInterrupt() {}
 
     override fun onDestroy() {
+        controller?.onDestroy()
         controller = null
 
         lifecycleRegistry.currentState = Lifecycle.State.DESTROYED

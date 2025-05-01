@@ -65,6 +65,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import splitties.bitflags.withFlag
@@ -797,6 +798,20 @@ class PerformActionsUseCaseImpl(
                     url = action.url,
                     body = action.body,
                     authorizationHeader = action.authorizationHeader,
+                )
+            }
+
+            is ActionData.InteractUiElement -> {
+                if (accessibilityService.activeWindowPackage.first() != action.packageName) {
+                    // TODO
+                }
+
+                result = accessibilityService.performActionOnNode(
+                    findNode = { node ->
+                        // TODO compare other values
+                        node.uniqueId == action.uniqueId
+                    },
+                    performAction = { AccessibilityNodeAction(action = action.nodeAction) },
                 )
             }
         }

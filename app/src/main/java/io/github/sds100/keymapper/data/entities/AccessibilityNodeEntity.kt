@@ -1,5 +1,11 @@
 package io.github.sds100.keymapper.data.entities
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
+
+@Serializable
+@Parcelize
 data class AccessibilityNodeEntity(
     val id: Long = 0L,
     val parentId: Long? = null,
@@ -19,4 +25,4 @@ data class AccessibilityNodeEntity(
      * this node.
      */
     val userInteractedActionId: Int?,
-)
+) : Parcelable

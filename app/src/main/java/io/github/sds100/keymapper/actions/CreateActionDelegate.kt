@@ -786,6 +786,19 @@ class CreateActionDelegate(
                 }
                 return null
             }
+
+            ActionId.INTERACT_UI_ELEMENT -> {
+                val oldAction = if (oldData is ActionData.InteractUiElement) {
+                    oldData
+                } else {
+                    null
+                }
+
+                return navigate(
+                    "config_interact_ui_element_action",
+                    NavDestination.InteractUiElement(oldAction),
+                )
+            }
         }
     }
 }

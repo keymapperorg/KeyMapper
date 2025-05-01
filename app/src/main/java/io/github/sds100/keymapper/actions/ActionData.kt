@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.actions
 
 import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
-import io.github.sds100.keymapper.system.accessibility.AccessibilityNodeModel
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.system.intents.IntentExtraModel
@@ -849,8 +848,18 @@ sealed class ActionData : Comparable<ActionData> {
 
     @Serializable
     data class InteractUiElement(
+        val description: String,
         val nodeAction: Int,
-        val node: AccessibilityNodeModel,
+        val packageName: String,
+        val text: String?,
+        val contentDescription: String?,
+        val className: String?,
+        val viewResourceId: String?,
+        val uniqueId: String?,
+        /**
+         * A list of the allowed accessibility node actions.
+         */
+        val nodeActions: List<Int>,
     ) : ActionData() {
         override val id: ActionId = ActionId.INTERACT_UI_ELEMENT
     }
