@@ -11,13 +11,18 @@ import io.github.sds100.keymapper.util.ServiceEvent
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.mapData
 import io.github.sds100.keymapper.util.onFailure
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 
-class InteractUiElementUseCaseImpl(
+class InteractUiElementController(
+    private val coroutineScope: CoroutineScope,
     private val serviceAdapter: ServiceAdapter,
     private val nodeRepository: AccessibilityNodeRepository,
     private val packageManagerAdapter: PackageManagerAdapter,
@@ -34,6 +39,13 @@ class InteractUiElementUseCaseImpl(
         }
     }
 
+    init {
+        serviceAdapter.eventReceiver
+            .filterIsInstance<ServiceEvent.OnRecordNodeStateChanged>()
+            .onEach { event -> recordState.update { event.state } }
+            .launchIn(coroutineScope)
+    }
+
     override fun getInteractionsByPackage(packageName: String): Flow<State<List<AccessibilityNodeEntity>>> {
         return nodeRepository.nodes.map { state ->
             state.mapData { nodes ->
@@ -47,14 +59,17 @@ class InteractUiElementUseCaseImpl(
     override fun getAppIcon(packageName: String): Result<Drawable> = packageManagerAdapter.getAppIcon(packageName)
 
     override suspend fun startRecording(): Result<*> {
-        // TODO show snackbar when accessibility service is disabled error
-        return serviceAdapter.send(ServiceEvent.StartRecordingTrigger)
+        return serviceAdapter.send(ServiceEvent.StartRecordingNodes)
     }
 
     override suspend fun stopRecording() {
         serviceAdapter.send(ServiceEvent.StopRecordingNodes).onFailure {
             recordState.update { RecordAccessibilityNodeState.Idle }
         }
+    }
+
+    override fun startService(): Boolean {
+        return serviceAdapter.start()
     }
 }
 
@@ -70,4 +85,6 @@ interface InteractUiElementUseCase {
 
     suspend fun startRecording(): Result<*>
     suspend fun stopRecording()
+
+    fun startService(): Boolean
 }

@@ -15,7 +15,6 @@ import io.github.sds100.keymapper.actions.sound.ChooseSoundFileUseCaseImpl
 import io.github.sds100.keymapper.actions.sound.ChooseSoundFileViewModel
 import io.github.sds100.keymapper.actions.swipescreen.SwipePickDisplayCoordinateViewModel
 import io.github.sds100.keymapper.actions.tapscreen.PickDisplayCoordinateViewModel
-import io.github.sds100.keymapper.actions.uielement.InteractUiElementUseCaseImpl
 import io.github.sds100.keymapper.actions.uielement.InteractUiElementViewModel
 import io.github.sds100.keymapper.api.KeyEventRelayServiceWrapper
 import io.github.sds100.keymapper.backup.BackupRestoreMappingsUseCaseImpl
@@ -255,11 +254,7 @@ object Inject {
     fun interactUiElementViewModel(
         ctx: Context,
     ): InteractUiElementViewModel.Factory = InteractUiElementViewModel.Factory(
-        InteractUiElementUseCaseImpl(
-            serviceAdapter = ServiceLocator.accessibilityServiceAdapter(ctx),
-            nodeRepository = ServiceLocator.accessibilityNodeRepository(ctx),
-            packageManagerAdapter = ServiceLocator.packageManagerAdapter(ctx),
-        ),
+        (ctx.applicationContext as KeyMapperApp).interactUiElementController,
         resourceProvider = ServiceLocator.resourceProvider(ctx),
     )
 }

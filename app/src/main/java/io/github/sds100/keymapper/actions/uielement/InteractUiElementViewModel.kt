@@ -7,9 +7,15 @@ import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.system.accessibility.RecordAccessibilityNodeState
+import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.dataOrNull
+import io.github.sds100.keymapper.util.ifIsData
+import io.github.sds100.keymapper.util.onFailure
+import io.github.sds100.keymapper.util.ui.PopupViewModel
+import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.util.ui.ViewModelHelper
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.util.valueOrNull
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -27,7 +33,8 @@ class InteractUiElementViewModel(
     private val useCase: InteractUiElementUseCase,
     private val resourceProvider: ResourceProvider,
 ) : ViewModel(),
-    ResourceProvider by resourceProvider {
+    ResourceProvider by resourceProvider,
+    PopupViewModel by PopupViewModelImpl() {
 
     private val _returnAction: MutableSharedFlow<ActionData.InteractUiElement> = MutableSharedFlow()
     val returnAction: SharedFlow<ActionData.InteractUiElement> = _returnAction
@@ -106,6 +113,36 @@ class InteractUiElementViewModel(
         )
 
         _returnAction.tryEmit(action)
+    }
+
+    fun onRecordClick() {
+        recordState.value.ifIsData { recordState ->
+            viewModelScope.launch {
+                when (recordState) {
+                    is RecordUiElementState.CountingDown -> useCase.stopRecording()
+                    RecordUiElementState.Empty -> startRecording()
+                    is RecordUiElementState.Recorded -> startRecording()
+                }
+            }
+        }
+    }
+
+    private suspend fun startRecording() {
+        useCase.startRecording().onFailure { error ->
+            if (error == Error.AccessibilityServiceDisabled) {
+                ViewModelHelper.handleAccessibilityServiceStoppedDialog(
+                    this,
+                    this,
+                    startService = { useCase.startService() },
+                )
+            } else if (error == Error.AccessibilityServiceCrashed) {
+                ViewModelHelper.handleAccessibilityServiceCrashedDialog(
+                    this,
+                    this,
+                    restartService = { useCase.startService() },
+                )
+            }
+        }
     }
 
     private fun getNodeActionName(nodeAction: Int): String {

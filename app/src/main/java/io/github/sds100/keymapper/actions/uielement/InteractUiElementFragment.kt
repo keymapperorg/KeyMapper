@@ -18,6 +18,7 @@ import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.databinding.FragmentComposeBinding
 import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
+import io.github.sds100.keymapper.util.ui.showPopups
 import io.github.sds100.keymapper.util.viewLifecycleScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -76,5 +77,11 @@ class InteractUiElementFragment : Fragment() {
             }
             return this.root
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewModel.showPopups(this, view)
     }
 }
