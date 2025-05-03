@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -69,6 +71,7 @@ class InteractUiElementFragment : Fragment() {
                 setContent {
                     KeyMapperTheme {
                         InteractUiElementScreen(
+                            modifier = Modifier.fillMaxSize(),
                             viewModel = viewModel,
                             navigateBack = findNavController()::navigateUp,
                         )

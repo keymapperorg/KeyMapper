@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.actions.uielement
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -46,14 +47,23 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.compose.LocalCustomColorsPalette
+import io.github.sds100.keymapper.system.apps.ChooseAppScreen
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.drawable
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.util.ui.compose.icons.AdGroup
 import io.github.sds100.keymapper.util.ui.compose.icons.KeyMapperIcons
+import kotlinx.coroutines.flow.update
+
+private const val DEST_LANDING = "landing"
+private const val DEST_SELECT_APP = "select_app"
+private const val DEST_SELECT_ELEMENT = "select_element"
 
 @Composable
 fun InteractUiElementScreen(
@@ -61,32 +71,70 @@ fun InteractUiElementScreen(
     viewModel: InteractUiElementViewModel,
     navigateBack: () -> Unit,
 ) {
-    val snackbarHostState = SnackbarHostState()
+    val navController = rememberNavController()
+
     val recordState by viewModel.recordState.collectAsStateWithLifecycle()
     val selectedElementState by viewModel.selectedElementState.collectAsStateWithLifecycle()
 
-    InteractUiElementScreen(
+    val chooseAppState by viewModel.filteredAppListItems.collectAsStateWithLifecycle()
+    val appSearchQuery by viewModel.appSearchQuery.collectAsStateWithLifecycle()
+
+    val onBackClick = {
+        if (!navController.navigateUp()) {
+            navigateBack()
+        }
+    }
+
+    BackHandler(onBack = onBackClick)
+
+    NavHost(
         modifier = modifier,
-        recordState = recordState,
-        selectedElementState = selectedElementState,
-        onBackClick = navigateBack,
-        onDoneClick = viewModel::onDoneClick,
-        onRecordClick = viewModel::onRecordClick,
-        snackbarHostState = snackbarHostState,
-    )
+        navController = navController,
+        startDestination = DEST_LANDING,
+        enterTransition = { slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Left) },
+        exitTransition = { slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right) },
+        popEnterTransition = { slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right) },
+        popExitTransition = { slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right) },
+    ) {
+        composable(DEST_LANDING) {
+            LandingScreen(
+                modifier = Modifier.fillMaxSize(),
+                recordState = recordState,
+                selectedElementState = selectedElementState,
+                onRecordClick = viewModel::onRecordClick,
+                onBackClick = onBackClick,
+                onDoneClick = viewModel::onDoneClick,
+                openSelectAppScreen = {
+                    navController.navigate(DEST_SELECT_APP)
+                },
+            )
+        }
+
+        composable(DEST_SELECT_APP) {
+            ChooseAppScreen(
+                modifier = Modifier.fillMaxSize(),
+                title = stringResource(R.string.action_interact_ui_element_choose_element_title),
+                state = chooseAppState,
+                query = appSearchQuery,
+                onQueryChange = { query -> viewModel.appSearchQuery.update { query } },
+                onCloseSearch = { viewModel.appSearchQuery.update { null } },
+                onNavigateBack = onBackClick,
+            )
+        }
+    }
 }
 
 @Composable
-private fun InteractUiElementScreen(
+private fun LandingScreen(
     modifier: Modifier = Modifier,
     recordState: State<RecordUiElementState>,
     selectedElementState: SelectedUiElementState?,
+    onRecordClick: () -> Unit = {},
     onBackClick: () -> Unit = {},
     onDoneClick: () -> Unit = {},
-    onRecordClick: () -> Unit = {},
-    snackbarHostState: SnackbarHostState = SnackbarHostState(),
+    openSelectAppScreen: () -> Unit = {},
 ) {
-    BackHandler(onBack = onBackClick)
+    val snackbarHostState = SnackbarHostState()
 
     Scaffold(
         modifier.displayCutoutPadding(),
@@ -126,7 +174,6 @@ private fun InteractUiElementScreen(
                     start = startPadding,
                     end = endPadding,
                 ),
-
         ) {
             Column {
                 Text(
@@ -156,6 +203,7 @@ private fun InteractUiElementScreen(
                         .padding(horizontal = 16.dp),
                     state = recordState,
                     onRecordClick = onRecordClick,
+                    openSelectAppScreen = openSelectAppScreen,
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -173,6 +221,7 @@ private fun RecordingSection(
     modifier: Modifier = Modifier,
     state: State<RecordUiElementState>,
     onRecordClick: () -> Unit = {},
+    openSelectAppScreen: () -> Unit = {},
 ) {
     Column(modifier = modifier) {
         when (state) {
@@ -186,7 +235,7 @@ private fun RecordingSection(
                 InteractionCountBox(
                     modifier = Modifier.fillMaxWidth(),
                     interactionCount = interactionCount,
-                    onClick = {},
+                    onClick = openSelectAppScreen,
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -319,7 +368,7 @@ private fun SelectedElementSection(modifier: Modifier = Modifier, state: Selecte
 @Composable
 private fun PreviewEmpty() {
     KeyMapperTheme {
-        InteractUiElementScreen(
+        LandingScreen(
             recordState = State.Data(RecordUiElementState.Empty),
             selectedElementState = null,
         )
@@ -332,7 +381,7 @@ private fun PreviewSelectedElement() {
     val appIcon = LocalContext.current.drawable(R.mipmap.ic_launcher_round)
 
     KeyMapperTheme {
-        InteractUiElementScreen(
+        LandingScreen(
             recordState = State.Data(RecordUiElementState.Recorded(3)),
             selectedElementState = SelectedUiElementState(
                 description = "Test",
@@ -353,7 +402,7 @@ private fun PreviewSelectedElement() {
 @Composable
 private fun PreviewLoading() {
     KeyMapperTheme {
-        InteractUiElementScreen(
+        LandingScreen(
             recordState = State.Loading,
             selectedElementState = null,
         )

@@ -1,6 +1,8 @@
 package io.github.sds100.keymapper.actions.uielement
 
 import android.view.accessibility.AccessibilityNodeInfo
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Android
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -9,15 +11,22 @@ import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.system.accessibility.RecordAccessibilityNodeState
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.Success
+import io.github.sds100.keymapper.util.containsQuery
 import io.github.sds100.keymapper.util.dataOrNull
 import io.github.sds100.keymapper.util.ifIsData
+import io.github.sds100.keymapper.util.mapData
 import io.github.sds100.keymapper.util.onFailure
+import io.github.sds100.keymapper.util.otherwise
+import io.github.sds100.keymapper.util.then
 import io.github.sds100.keymapper.util.ui.PopupViewModel
 import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.ViewModelHelper
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.util.ui.compose.SimpleListItemModel
 import io.github.sds100.keymapper.util.valueOrNull
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -25,6 +34,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -71,6 +81,22 @@ class InteractUiElementViewModel(
     private val _selectedElementState = MutableStateFlow<SelectedUiElementState?>(null)
     val selectedElementState: StateFlow<SelectedUiElementState?> =
         _selectedElementState.asStateFlow()
+
+    val appSearchQuery = MutableStateFlow<String?>(null)
+
+    private val appListItems: Flow<State<List<SimpleListItemModel>>> = useCase.interactedPackages
+        .map { state -> state.mapData(::createInteractedPackageListItems) }
+
+    val filteredAppListItems = combine(
+        appListItems,
+        appSearchQuery,
+    ) { state, query ->
+        state.mapData { listItems ->
+            listItems.filter { model ->
+                model.title.containsQuery(query)
+            }
+        }
+    }.stateIn(viewModelScope, SharingStarted.Lazily, State.Loading)
 
     fun loadAction(action: ActionData.InteractUiElement) {
         viewModelScope.launch {
@@ -142,6 +168,23 @@ class InteractUiElementViewModel(
                     restartService = { useCase.startService() },
                 )
             }
+        }
+    }
+
+    private fun createInteractedPackageListItems(packages: List<String>): List<SimpleListItemModel> {
+        return packages.map { packageName ->
+            val appName = useCase.getAppName(packageName).valueOrNull() ?: packageName
+            val appIcon = useCase
+                .getAppIcon(packageName)
+                .then { Success(ComposeIconInfo.Drawable(it)) }
+                .otherwise { Success(ComposeIconInfo.Vector(Icons.Rounded.Android)) }
+                .valueOrNull()!!
+
+            SimpleListItemModel(
+                id = packageName,
+                title = appName,
+                icon = appIcon,
+            )
         }
     }
 
