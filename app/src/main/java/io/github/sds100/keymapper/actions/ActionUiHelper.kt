@@ -356,7 +356,7 @@ class ActionUiHelper(
         } else {
             getString(
                 R.string.description_tap_coordinate_with_description,
-                arrayOf(action.x, action.y, action.description),
+                action.description,
             )
         }
 
