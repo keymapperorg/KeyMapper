@@ -33,7 +33,6 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -101,34 +100,14 @@ private fun InteractUiElementScreen(
                     )
                 }
             }, floatingActionButton = {
-                val isEnabled = selectedElementState != null
-                val containerColor = if (isEnabled) {
-                    FloatingActionButtonDefaults.containerColor
-                } else {
-                    FloatingActionButtonDefaults.containerColor.copy(alpha = 0.5f)
-                }
-
-                val contentColor = if (isEnabled) {
-                    MaterialTheme.colorScheme.contentColorFor(containerColor)
-                } else {
-                    MaterialTheme.colorScheme.contentColorFor(containerColor).copy(alpha = 0.5f)
-                }
-
-                CompositionLocalProvider(
-                    LocalContentColor provides contentColor,
-                ) {
+                if (selectedElementState != null) {
                     ExtendedFloatingActionButton(
-                        onClick = if (isEnabled) {
-                            onDoneClick
-                        } else {
-                            {}
-                        },
+                        onClick = onDoneClick,
                         text = { Text(stringResource(R.string.button_done)) },
                         icon = {
                             Icon(Icons.Rounded.Check, stringResource(R.string.button_done))
                         },
                         elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(),
-                        containerColor = containerColor,
                     )
                 }
             })
@@ -242,15 +221,21 @@ private fun InteractionCountBox(
         MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
     }
 
-    Surface(modifier = modifier, onClick = onClick, enabled = enabled) {
+    Surface(
+        modifier = modifier,
+        onClick = onClick,
+        enabled = enabled,
+        shape = MaterialTheme.shapes.medium,
+    ) {
         CompositionLocalProvider(
             LocalContentColor provides color,
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Spacer(modifier = Modifier.width(16.dp))
                 Icon(imageVector = KeyMapperIcons.AdGroup, contentDescription = null)
                 Spacer(modifier = Modifier.width(16.dp))
                 Column(modifier = Modifier.weight(1f)) {
@@ -271,7 +256,6 @@ private fun InteractionCountBox(
 
                 Spacer(modifier = Modifier.width(16.dp))
                 Icon(imageVector = Icons.Rounded.ChevronRight, contentDescription = null)
-                Spacer(modifier = Modifier.width(16.dp))
             }
         }
     }

@@ -66,7 +66,7 @@ class AccessibilityNodeRecorder(
         val entity =
             AccessibilityNodeEntity(
                 packageName = event.packageName.toString(),
-                text = source.text.firstOrNull()?.toString(),
+                text = source.text?.toString(),
                 contentDescription = source.contentDescription?.toString(),
                 className = source.className?.toString(),
                 viewResourceId = source.viewIdResourceName,

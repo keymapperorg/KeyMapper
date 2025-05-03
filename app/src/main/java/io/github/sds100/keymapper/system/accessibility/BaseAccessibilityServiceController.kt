@@ -41,6 +41,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -49,6 +50,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -271,37 +273,39 @@ abstract class BaseAccessibilityServiceController(
 
         val imeInputFocusEvents =
             AccessibilityEvent.TYPE_VIEW_FOCUSED or AccessibilityEvent.TYPE_VIEW_CLICKED
+
         val recordNodeEvents = AccessibilityEvent.TYPE_VIEW_FOCUSED or
             AccessibilityEvent.TYPE_VIEW_CLICKED or
-            AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED
+            AccessibilityEvent.TYPE_VIEW_LONG_CLICKED or
+            AccessibilityEvent.TYPE_VIEW_SELECTED or
+            AccessibilityEvent.TYPE_VIEW_SCROLLED
 
-        // TODO
-//        coroutineScope.launch {
-//            combine(
-//                changeImeOnInputFocusFlow,
-//                accessibilityNodeRecorder.isRecording
-//            ) { changeImeOnInputFocus, isRecordingNodes ->
-//                serviceEventTypes.update { eventTypes ->
-//                    var newEventTypes = eventTypes
-//
-//
-//
-//                    newEventTypes
-//                }
-//
-//            }.collect()
-//        }
-//        changeImeOnInputFocusFlow.onEach { changeImeOnInputFocus ->
-//            if (changeImeOnInputFocus) {
-//                serviceEventTypes.value = serviceEventTypes.value
-//                    .withFlag(AccessibilityEvent.TYPE_VIEW_FOCUSED)
-//                    .withFlag(AccessibilityEvent.TYPE_VIEW_CLICKED)
-//            } else {
-//                serviceEventTypes.value = serviceEventTypes.value
-//                    .minusFlag(AccessibilityEvent.TYPE_VIEW_FOCUSED)
-//                    .minusFlag(AccessibilityEvent.TYPE_VIEW_CLICKED)
-//            }
-//        }.launchIn(coroutineScope)
+        coroutineScope.launch {
+            combine(
+                changeImeOnInputFocusFlow,
+                accessibilityNodeRecorder.recordState,
+            ) { changeImeOnInputFocus, recordState ->
+
+                serviceEventTypes.update { eventTypes ->
+                    var newEventTypes = eventTypes
+
+                    if (!changeImeOnInputFocus && recordState == RecordAccessibilityNodeState.Idle) {
+                        newEventTypes =
+                            newEventTypes and (imeInputFocusEvents or recordNodeEvents).inv()
+                    } else {
+                        if (changeImeOnInputFocus) {
+                            newEventTypes = newEventTypes or imeInputFocusEvents
+                        }
+
+                        if (recordState is RecordAccessibilityNodeState.CountingDown) {
+                            newEventTypes = newEventTypes or recordNodeEvents
+                        }
+                    }
+
+                    newEventTypes
+                }
+            }.collect()
+        }
     }
 
     open fun onServiceConnected() {
