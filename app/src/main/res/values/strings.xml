@@ -98,8 +98,8 @@
     <string name="description_keyevent_through_shell">Input %s through shell</string>
     <string name="description_keyevent_from_device">Input %s%s from %s</string>
     <string name="description_url">Open %s</string>
-    <string name="description_tap_coordinate_default">Tap coordinates %d, %d</string>
-    <string name="description_tap_coordinate_with_description">Tap coordinates %d, %d (%s)</string>
+    <string name="description_tap_coordinate_default">Tap screen (%d, %d)</string>
+    <string name="description_tap_coordinate_with_description">Tap screen (%s)</string>
     <string name="description_swipe_coordinate_default">Swipe with %d finger(s) from coordinates %d/%d to %d/%d in %dms</string>
     <string name="description_swipe_coordinate_with_description">Swipe with %d finger(s) from coordinates %d/%d to %d/%d in %dms (%s)</string>
     <string name="description_pinch_coordinate_default">%s with %d finger(s) on coordinates %d/%d with a pinch distance of %dpx in %dms</string>
